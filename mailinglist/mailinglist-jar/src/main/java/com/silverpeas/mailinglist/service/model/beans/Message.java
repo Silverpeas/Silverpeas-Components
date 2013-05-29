@@ -1,37 +1,65 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.mailinglist.service.model.beans;
 
+import com.stratelia.webactiv.util.FileRepositoryManager;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.Access;
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
 
-import com.stratelia.webactiv.util.FileRepositoryManager;
+@Entity
+@Table(name = "sc_mailinglist_message",
+    uniqueConstraints =
+    @UniqueConstraint(columnNames = {"mailId", "componentId"}))
+@Access(javax.persistence.AccessType.PROPERTY)
+@NamedQueries({
+  @NamedQuery(name = "findMessage", query =
+      "from Message where componentId = :componentId and messageId = :messageId"),
+  @NamedQuery(name = "countOfMessages", query =
+      "select count(m) from Message m where m.componentId = :componentId"),
+  @NamedQuery(name = "countOfMessagesByModeration", query =
+      "select count(m) from Message m where m.componentId = :componentId and m.moderated = :moderated"),
+  @NamedQuery(name = "findActivitiesFromMessages", query =
+      "select new com.silverpeas.mailinglist.service.model.beans.Activity(count(m), m.year, "
+      + "m.month) from Message m where m.componentId = :componentId and m.moderated = :moderated "
+      + "group by m.year, m.month")
+})
+public class Message extends IdentifiableObject {
 
-public class Message extends IdentifiedObject {
   private Set<Attachment> attachments = new HashSet<Attachment>();
   private String title;
   private String sender;
@@ -44,6 +72,8 @@ public class Message extends IdentifiedObject {
   private String componentId;
   private String contentType;
 
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+  @JoinColumn(name = "messageId")
   public Set<Attachment> getAttachments() {
     return attachments;
   }
@@ -52,6 +82,7 @@ public class Message extends IdentifiedObject {
     this.attachments = attachments;
   }
 
+  @Basic
   public String getTitle() {
     return title;
   }
@@ -60,6 +91,7 @@ public class Message extends IdentifiedObject {
     this.title = title;
   }
 
+  @Basic
   public String getSender() {
     return sender;
   }
@@ -68,6 +100,7 @@ public class Message extends IdentifiedObject {
     this.sender = sender;
   }
 
+  @Temporal(javax.persistence.TemporalType.TIMESTAMP)
   public Date getSentDate() {
     if (sentDate == null) {
       return null;
@@ -81,6 +114,7 @@ public class Message extends IdentifiedObject {
     }
   }
 
+  @Lob
   public String getBody() {
     return body;
   }
@@ -89,6 +123,7 @@ public class Message extends IdentifiedObject {
     this.body = body;
   }
 
+  @Basic
   public String getSummary() {
     return summary;
   }
@@ -97,6 +132,7 @@ public class Message extends IdentifiedObject {
     this.summary = summary;
   }
 
+  @Basic
   public boolean isModerated() {
     return moderated;
   }
@@ -109,6 +145,7 @@ public class Message extends IdentifiedObject {
     // do nothing
   }
 
+  @Basic
   public long getAttachmentsSize() {
     long size = 0;
     for (Attachment attachment : attachments) {
@@ -117,10 +154,12 @@ public class Message extends IdentifiedObject {
     return size;
   }
 
+  @Transient
   public String getAttachmentsSizeToDisplay() {
     return FileRepositoryManager.formatFileSize(getAttachmentsSize());
   }
 
+  @Column(name = "mailId", nullable = false)
   public String getMessageId() {
     return messageId;
   }
@@ -129,6 +168,7 @@ public class Message extends IdentifiedObject {
     this.messageId = messageId;
   }
 
+  @Basic
   public String getReferenceId() {
     return referenceId;
   }
@@ -137,6 +177,7 @@ public class Message extends IdentifiedObject {
     this.referenceId = referenceId;
   }
 
+  @Column(name = "componentId", nullable = false)
   public String getComponentId() {
     return componentId;
   }
@@ -145,6 +186,7 @@ public class Message extends IdentifiedObject {
     this.componentId = componentId;
   }
 
+  @Column(name = "messageYear")
   public int getYear() {
     if (this.sentDate != null) {
       Calendar calend = Calendar.getInstance();
@@ -157,6 +199,7 @@ public class Message extends IdentifiedObject {
   public void setYear(int year) {
   }
 
+  @Column(name = "messageMonth")
   public int getMonth() {
     if (this.sentDate != null) {
       Calendar calend = Calendar.getInstance();
@@ -210,6 +253,7 @@ public class Message extends IdentifiedObject {
     return true;
   }
 
+  @Basic
   public String getContentType() {
     return contentType;
   }

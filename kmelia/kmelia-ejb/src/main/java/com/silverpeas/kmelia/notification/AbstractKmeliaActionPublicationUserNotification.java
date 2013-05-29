@@ -32,7 +32,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 /**
  * @author Yohann Chastagnier
  */
-public abstract class AbstractKmeliaActionPublicationUserNotification extends KmeliaSubscriptionPublicationUserNotification {
+public abstract class AbstractKmeliaActionPublicationUserNotification extends AbstractKmeliaPublicationUserNotification {
 
   public AbstractKmeliaActionPublicationUserNotification(NodePK nodePK, PublicationDetail resource, NotifAction action) {
     super(nodePK, resource, action);

@@ -33,11 +33,11 @@
   </label>
   <description>
     <message lang="fr">Les images peuvent être définies avec précision grâce à un formulaire personnalisable.
-		Organisées en albums, elles peuvent être ajoutées par glisser/
-		déposer. Le moteur de recherche exploite les données EXIF, IPTC et les
-		données personnalisées. Retaillées automatiquement, de nombreux traitements
-		par lot sont possibles.
-	</message>
+      Organisées en albums, elles peuvent être ajoutées par glisser/
+      déposer. Le moteur de recherche exploite les données EXIF, IPTC et les
+      données personnalisées. Retaillées automatiquement, de nombreux traitements
+      par lot sont possibles.
+    </message>
     <message lang="en">Images are stored into albums. Creating albums and uploading images is easy with the drag and drop.</message>
     <message lang="de">Die Bilder werden in Alben abgelegt. Erstellen von Alben und das Hochladen von Bildern geht einfach durch der Drag and Drop.</message>
   </description>
@@ -47,7 +47,7 @@
     <message lang="de">04 Inhaltsverwaltung</message>
   </suite>
   <visible>true</visible>
-  <visibleInPersonalSpace>no</visibleInPersonalSpace>
+  <visibleInPersonalSpace>false</visibleInPersonalSpace>
   <portlet>true</portlet>
   <instanceClassName>com.silverpeas.gallery.GalleryInstanciator</instanceClassName>
   <profiles>

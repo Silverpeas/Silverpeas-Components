@@ -338,13 +338,13 @@ public class ForumHelper {
       if (messagesCount > 0) {
         out
             .println(
-            "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\" class=\"contourintfdcolor\">");
+            "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\" class=\"principal-message\">");
         displayOneMessage(messages, out, resource, userId, currentForumId, admin, moderator,
             reader, view, messageId, 0, simpleMode, call, fsc, resources);
         out.println("</table>");
 
         if (messagesCount > 1) {
-          out.println("<div class=\"contourintfdcolor\" id=\"msgDiv\">");
+          out.println("<div class=\"answer-message\" id=\"msgDiv\">");
           out
               .println(
               "<table id=\"msgTable\" width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\">");

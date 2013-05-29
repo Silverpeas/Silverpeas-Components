@@ -23,31 +23,33 @@
  */
 package com.silverpeas.kmelia.export;
 
-import com.silverpeas.gallery.control.ejb.GalleryBm;
-import com.silverpeas.gallery.control.ejb.GalleryBmHome;
-import com.silverpeas.gallery.model.PhotoDetail;
-import com.silverpeas.gallery.model.PhotoPK;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.FileServerUtils;
-import com.stratelia.webactiv.util.JNDINames;
-import org.apache.commons.lang.SystemUtils;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.silverpeas.gallery.control.ejb.GalleryBm;
+import com.silverpeas.gallery.model.PhotoDetail;
+import com.silverpeas.gallery.model.PhotoPK;
+
+import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.FileServerUtils;
+import com.stratelia.webactiv.util.JNDINames;
+
+import org.apache.commons.lang.SystemUtils;
 
 /**
- * A finder of images that were uploaded by a Silverpeas component instance, whatever this
- * component is.
- * 
+ * A finder of images that were uploaded by a Silverpeas component instance, whatever this component
+ * is.
+ *
  * Images in Silverpeas can be uploaded by different Silverpeas components. So, as each component
  * has its own way to refer an image that was upload through it, there is several ways to access an
  * image in Silverpeas. So, in the case a publication embeds one or more images coming from
- * different components, it is required to support the different mechanisme of finding an image.
- * The purpose of this class is to wrap theses different mechanismes for the export of Kmelia
+ * different components, it is required to support the different mechanisme of finding an image. The
+ * purpose of this class is to wrap theses different mechanismes for the export of Kmelia
  * publications.
  */
 public class SilverpeasImageFinder {
@@ -61,6 +63,7 @@ public class SilverpeasImageFinder {
 
   /**
    * Gets an instance of this class.
+   *
    * @return a SilverpeasImageFinder instance.
    */
   public static SilverpeasImageFinder getImageFinder() {
@@ -69,6 +72,7 @@ public class SilverpeasImageFinder {
 
   /**
    * Finds the image having as unique identifier in Silverpeas the specified relative web reference.
+   *
    * @param href the web reference of the image is the path of the image relative to the web context
    * of Silverpeas. This path is Silverpeas component dependent, so that only a given Silverpeas
    * component can process it.
@@ -140,9 +144,9 @@ public class SilverpeasImageFinder {
     String imageId = parameters.get("ImageId");
     String componentId = parameters.get("ComponentId");
     PhotoDetail image = getGalleryBm().getPhoto(
-            new PhotoPK(imageId, componentId));
-    return FileRepositoryManager.getAbsolutePath(image.getPhotoPK().getInstanceId()) + "image" +
-            image.getId() + "/" + image.getImageName();
+        new PhotoPK(imageId, componentId));
+    return FileRepositoryManager.getAbsolutePath(image.getPhotoPK().getInstanceId()) + "image"
+        + image.getId() + "/" + image.getImageName();
   }
 
   private Map<String, String> getQueryParameters(String href) {
@@ -158,8 +162,6 @@ public class SilverpeasImageFinder {
   }
 
   private GalleryBm getGalleryBm() throws Exception {
-    GalleryBmHome galleryBmHome = EJBUtilitaire.getEJBObjectRef(
-            JNDINames.GALLERYBM_EJBHOME, GalleryBmHome.class);
-    return galleryBmHome.create();
+    return EJBUtilitaire.getEJBObjectRef(JNDINames.GALLERYBM_EJBHOME, GalleryBm.class);
   }
 }

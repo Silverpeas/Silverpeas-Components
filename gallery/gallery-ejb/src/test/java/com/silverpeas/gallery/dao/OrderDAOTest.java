@@ -21,18 +21,24 @@
  */
 package com.silverpeas.gallery.dao;
 
-import com.google.common.collect.Lists;
-import com.silverpeas.gallery.model.Order;
-import com.silverpeas.gallery.model.OrderRow;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.DBUtil;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
+
 import javax.inject.Inject;
 import javax.sql.DataSource;
+
+import org.silverpeas.core.admin.OrganisationController;
+
+import com.silverpeas.gallery.model.Order;
+import com.silverpeas.gallery.model.OrderRow;
+import com.silverpeas.util.CollectionUtil;
+
+import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.DBUtil;
+
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.ReplacementDataSet;
@@ -40,17 +46,15 @@ import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-
-import org.junit.runner.RunWith;
-import org.silverpeas.core.admin.OrganisationController;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  *
@@ -72,8 +76,8 @@ public class OrderDAOTest {
   @Before
   public void generalSetUp() throws Exception {
     ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(
-            PhotoDaoTest.class.getClassLoader().getResourceAsStream(
-            "com/silverpeas/gallery/dao/order_dataset.xml")));
+        PhotoDaoTest.class.getClassLoader().getResourceAsStream(
+        "com/silverpeas/gallery/dao/order_dataset.xml")));
     dataSet.addReplacementObject("[NULL]", null);
     IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
     DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);
@@ -85,7 +89,7 @@ public class OrderDAOTest {
    */
   @Test
   public void testCreateOrder() throws Exception {
-    Collection<String> basket = Lists.newArrayList("100", "102", "101");
+    Collection<String> basket = CollectionUtil.asList("100", "102", "101");
     String userId = "10";
     String instanceId = "gallery50";
     UserDetail bart = new UserDetail();
@@ -162,7 +166,7 @@ public class OrderDAOTest {
   /**
    * Test of getAllOrders method, of class OrderDAO.
    */
- // @Test
+  // @Test
   public void testGetAllOrders() throws Exception {
     String userId = "10";
     String instanceId = "gallery50";
@@ -264,7 +268,7 @@ public class OrderDAOTest {
    */
   @Test
   public void testDeleteOrder() throws Exception {
-   String userId = "10";
+    String userId = "10";
     String orderId = "200";
     String instanceId = "gallery50";
     UserDetail bart = new UserDetail();

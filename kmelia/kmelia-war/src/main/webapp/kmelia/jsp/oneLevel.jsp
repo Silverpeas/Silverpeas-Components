@@ -122,7 +122,7 @@ function getComponentId() {
 }
 
 function getComponentLabel() {
-	return "<%=componentLabel%>";
+	return "<%=EncodeHelper.javaStringToJsString(componentLabel)%>";
 }
 
 function getLanguage() {
@@ -226,7 +226,7 @@ function getToValidateFolderId() {
 
 <form name="pubForm" action="ViewPublication" method="post">
 	<input type="hidden" name="PubId"/>
-	<input type="hidden" name="CheckPath"/>
+	<input type="hidden" id="CheckPath" name="CheckPath"/>
 </form>
 
 <form name="fupload" action="fileUpload.jsp" method="post" enctype="multipart/form-data" accept-charset="UTF-8">

@@ -53,53 +53,12 @@
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <c:set var="profile" value="${requestScope['Profile']}"/>
-<%!String displayAlreadyVotes(QuestionContainerDetail survey, SurveySessionController surveyScc,
-      GraphicElementFactory gef, ResourcesWrapper resources) throws SurveyException, ParseException {
-
-    String r = "";
-    String labelButton = resources.getString("Survey.revote");
-    if (surveyScc.isPollingStationMode())
-      labelButton = resources.getString("PollingStation.revote");
-
-    Board board = gef.getBoard();
-    try {
-      if (survey != null) {
-        Collection votes = survey.getCurrentUserVotes();
-        if (votes != null) {
-          if (votes.size() > 0) {
-            Iterator it = votes.iterator();
-            if (it.hasNext()) {
-              QuestionResult vote = (QuestionResult) it.next();
-              r += board.printBefore();
-              r += "<table border=\"0\" width=\"100%\">";
-              r +=
-                  "<tr><td align=center><span class=txtnav>" +
-                      resources.getString("YouHaveAlreadyParticipate") + " " +
-                      resources.getOutputDate(vote.getVoteDate()) + "</span></td></tr>";
-              //DLE
-              if (surveyScc.isParticipationMultipleAllowedForUser())
-                r +=
-                    "<tr><td align=center><a href=\"surveyDetail.jsp?Action=Vote&SurveyId=" +
-                        survey.getHeader().getId() + "\">" + labelButton + "</a></td></tr>";
-              r += "</table>";
-              r += board.printAfter();
-            }
-          }
-        } else
-          r += "";
-      }
-    } catch (Exception e) {
-      throw new SurveyException("SurveyDetail_JSP.displayAlreadyVotes", SurveyException.WARNING,
-          "Survey.EX_NO_VOTES_FOR_SURVEY", e);
-    }
-    return r;
-  }%>
-
 <%
   String action = request.getParameter("Action");
   String surveyId = request.getParameter("SurveyId");
   String roundId = request.getParameter("RoundId");
   String profile = (String) request.getAttribute("Profile");
+  List listDocument = (List) request.getAttribute("ListDocument");
   String choice = request.getParameter("Choice");
   if (!StringUtil.isDefined(choice)) {
     choice = "D";
@@ -113,9 +72,16 @@
   boolean isParticipationMultipleUsed = surveyScc.isParticipationMultipleUsed();
   boolean isParticipationMultipleAllowedForUser =
       surveyScc.isParticipationMultipleAllowedForUser();
-
+  
+  String destinationPath = "surveyDetail.jsp?Action=ViewCurrentQuestions&Participated="+participated+"&SurveyId="+surveyId;
+  if ((SilverpeasRole.admin.toString().equals(profile) ||
+      SilverpeasRole.publisher.toString().equals(profile)) &&
+      !participated) {
+      destinationPath = "surveyDetail.jsp?Action=ViewResult&Participated="+participated+"&SurveyId="+surveyId;
+  }
+  
   ResourceLocator settings =
-      new ResourceLocator("com.stratelia.webactiv.survey.surveySettings", surveyScc
+      new ResourceLocator("org.silverpeas.survey.surveySettings", surveyScc
           .getLanguage());
   String m_context =
       GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
@@ -123,15 +89,15 @@
 
 
   //Icons
-  String topicAddSrc = m_context + "/util/icons/folderAdd.gif";
   String alertSrc = m_context + "/util/icons/alert.gif";
   String exportSrc = m_context + "/util/icons/export.gif";
   String copySrc = m_context + "util/icons/copy.gif";
+  String deleteSrc = m_context + "/util/icons/delete.gif";
 %>
 <c:url value="/util/icons/alert.gif" var="alertSrc"></c:url>
 <c:url value="/util/icons/export.gif" var="exportSrc"></c:url>
+<c:url value="/util/icons/publish.gif" var="publishSrc"></c:url>
 <c:url value="/util/icons/copy.gif" var="copySrc"></c:url>
-
 <%
   QuestionContainerDetail survey = null;
   boolean isClosed = false;
@@ -209,6 +175,8 @@
     surveyScc.recordReply(surveyId, hash, comment, iAC);
 
     surveyScc.removeSessionResponses();
+    
+    survey = surveyScc.getSurvey(surveyId);
 
     //Record participation in cookie
     if (surveyScc.isAnonymousModeAuthorized()) {
@@ -275,7 +243,8 @@
     surveyScc.removeSessionSurveyUnderConstruction();
   } else if (action.equals("PreviewSurvey")) {
 %>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel />
 </head>
@@ -285,7 +254,7 @@
     BrowseBar browseBar = window.getBrowseBar();
     browseBar.setDomainName(surveyScc.getSpaceLabel());
     browseBar.setComponentName(surveyScc.getComponentLabel(), "surveyList.jsp?Action=View");
-    browseBar.setExtraInformation(resources.getString("GML.preview"));
+    browseBar.setExtraInformation(resources.getString("survey.preview"));
 
     String surveyPart =
         displaySurveyPreview(survey, gef, m_context, surveyScc, resources, settings);
@@ -295,7 +264,8 @@
   }
   if (action.equals("ViewSurvey")) {
     %>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel />
 </head>
@@ -327,7 +297,8 @@
 
   else if (action.equals("ViewComments")) {
 %>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
 <view:looknfeel />
@@ -352,7 +323,8 @@
 
   else if (action.equals("ViewCurrentQuestions")) {
 %>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
 <view:looknfeel />
@@ -365,7 +337,7 @@ function sendVote(roundId) {
 
 	 try
 	 {
- document.survey.anonymousComment.disabled = false;
+ 		document.survey.anonymousComment.disabled = false;
 		 if (document.survey.anonymousComment.checked)
 			 x = 1;
 		 else
@@ -525,21 +497,21 @@ function clipboardCopy() {
         "javaScript:onClick=clipboardCopy()");
   
     out.println(surveyPart);
-    //window.addBody(surveyPart);
-    //out.println(window.print());
 %>
 <view:pdcClassification componentId="<%= componentId %>" contentId="<%= surveyId %>" />
 </view:window>
 <%
   } else if (action.equals("ViewResult")) {
-    String iconsPath =
-        GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+    String iconsPath = GeneralPropertiesManager.getString("ApplicationURL");
+    int resultView = survey.getHeader().getResultView();
 %>
 
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
 <view:looknfeel />
+<view:includePlugin name="popup"/>
 <script type="text/javascript" src="<%=iconsPath%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 
@@ -619,49 +591,189 @@ function clipboardCopy() {
     function clipboardCopy() {
         top.IdleFrame.location.href = '../..<%=surveyScc.getComponentUrl()%>copy?Id=<%=survey.getHeader().getId()%>';
     }
+    
+    function changeScope(mode, participated, surveyId) {
+    	if(mode == 'classic') {
+    		location.href="surveyDetail.jsp?Action=ViewResult&Participated="+participated+"&SurveyId="+surveyId+"&Choice=C";
+    	} else if (mode == 'detail') {
+    		location.href="surveyDetail.jsp?Action=ViewResult&Participated="+participated+"&SurveyId="+surveyId+"&Choice=D";
+    	}
+    }
+    
+    function isCorrectForm() {
+    	  var errorMsg = "";
+    	  var errorNb = 0;
+    	                                      
+    	    switch(errorNb) {
+    	        case 0 :
+    	            result = true;
+    	            break;
+    	        case 1 :
+    	            errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
+    	            window.alert(errorMsg);
+    	            result = false;
+    	            break;
+    	        default :
+    	            errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
+    	            window.alert(errorMsg);
+    	            result = false;
+    	            break;
+    	     } 
+    	    return result;
+    	}
+
+    	function sendData() {
+    	  document.publishResultForm.submit();
+    	}
+    
+    function showDialog(title) {
+	 	  $("#publishResultDialog").popup({
+	      title: title,
+	      callback: function() {
+	        if (isCorrectForm()) {
+	          sendData();
+	        }
+	        return isCorrect;
+	      }
+	    });
+    }
+    
+    function PublishResult(title) {
+    	  
+    	  $("#publishResultDialog #SynthesisFile").show();
+        document.publishResultForm.removeSynthesisFile.value = "no";
+          
+    	  showDialog(title)
+    }
+    
+    function hideSynthesisFile() {
+    	  $("#publishResultDialog #SynthesisFile").hide();
+    	  document.publishResultForm.removeSynthesisFile.value = "yes";
+    }
 
      	</script>
 </head>
 <body id="survey-result-<%=choice%>">
-<%
-  survey = surveyScc.getSurvey(surveyId);
-%>
 <view:browseBar extraInformations="<%=survey.getHeader().getTitle()%>" componentId="<%=surveyScc.getComponentId()%>">
 </view:browseBar>
 <view:operationPane>
   <fmt:message key="GML.notify" var="notifyUserMsg" />
   <c:set var="notifyUserAction">javaScript:onClick=goToNotify('ToAlertUser?SurveyId=<%=surveyId%>');</c:set>
   <view:operation altText="${notifyUserMsg}" icon="${alertSrc}" action="${notifyUserAction}" />
+  
+  <%
+  if (survey.getHeader().getResultMode() == QuestionContainerHeader.DELAYED_RESULTS &&
+      (SilverpeasRole.admin.toString().equals(profile) || 
+      SilverpeasRole.publisher.toString().equals(profile))) {
+  %>
+    <fmt:message key="survey.publishResult" var="publishMsg" />
+    <c:set var="publishAction">javaScript:onClick=PublishResult('${publishMsg}');</c:set>
+    <view:operation altText="${publishMsg}" icon="${publishSrc}" action="${publishAction}" />
+  <%
+  }
+  %>
 
-  <c:if test="${fn:contains(profile,'admin')}">
+  <%
+  if (SilverpeasRole.admin.toString().equals(profile) ||
+      SilverpeasRole.publisher.toString().equals(profile)) {
+  %>
     <fmt:message key="GML.export" var="exportMsg" />
     <c:set var="exportAction">javaScript:onClick=Export('ExportCSV?SurveyId=<%=surveyId%>');</c:set>
     <view:operation altText="${exportMsg}" icon="${exportSrc}" action="${exportAction}" />
-  </c:if>
+  <%
+  }
+  %>
   <fmt:message key="GML.copy" var="copyMsg" />
   <view:operation altText="${copyMsg}" icon="${copySrc}" action="javaScript:onClick=clipboardCopy();" />
+  
 </view:operationPane>
 <view:window>
-<view:frame>
 <%
-Frame frame = gef.getFrame();
-String alreadyVotes = displayAlreadyVotes(survey, surveyScc, gef, resources);
 String surveyPart =
     displaySurveyResult(choice, survey, gef, m_context, surveyScc, resources, isClosed,
-        settings, frame, participated);
+        settings, participated, profile, request);
 out.println(displayTabs(surveyScc, survey.getHeader().getPK().getId(), gef, action,
-    profile, resources, pollingStationMode, participated).print() +
-    frame.printBefore() + "<center>" + alreadyVotes + "</center><BR>" + surveyPart);
-
+    profile, resources, pollingStationMode, participated).print());
+out.println(surveyPart);
 %>
 <view:pdcClassification componentId="<%= componentId %>" contentId="<%= surveyId %>" />
-</view:frame>
 </view:window>
+
+<div id="publishResultDialog" style="display: none;">
+  <form name="publishResultForm" action="PublishResult" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
+  <input type="hidden" name="destination" value="<%=destinationPath%>" />
+  <div id="view-publishResultDialog">
+    <fmt:message key="survey.resultView" var="resultViewMsg" />
+    <fmt:message key="survey.C" var="classicMsg" />
+    <fmt:message key="survey.D" var="detailedMsg" />
+    <fmt:message key="survey.resultView.C" var="classicDescMsg" />
+    <fmt:message key="survey.resultView.D" var="detailedDescMsg" />
+    <fmt:message key="survey.synthesisFile" var="synthesisFileMsg" />
+    <fmt:message key="survey.notifications" var="notificationMsg" />
+    <fmt:message key="survey.noNotification" var="noNotificationMsg" />
+    <fmt:message key="survey.notificationParticipants" var="notificationParticipantsMsg" />
+    <fmt:message key="survey.notificationAllUsers" var="notificationAllUsersMsg" />
+    <label class="label-ui-dialog" for="view">${resultViewMsg}</label>
+    <%
+    String checked = "";
+    if(QuestionContainerHeader.CLASSIC_DISPLAY_RESULTS == resultView || 
+        QuestionContainerHeader.TWICE_DISPLAY_RESULTS == resultView) {
+      checked = "checked=\"checked\"";
+    }
+    %>
+    <span class="champs-ui-dialog"><input name="checkedViewC" type="checkbox" <%=checked%>/><b>${classicMsg}</b><br />${classicDescMsg}</span>
+    <% 
+    //Si Mode anonyme ou Enquete anonyme -> le mode détaillé n'a pas lieu d'être
+    String disabled = "";
+    if(surveyScc.isAnonymousModeEnabled() || survey.getHeader().isAnonymous()) {
+      disabled = "disabled=\"disabled\"";
+    }
+    
+    checked = "";
+    if(QuestionContainerHeader.DETAILED_DISPLAY_RESULTS == resultView || 
+      QuestionContainerHeader.TWICE_DISPLAY_RESULTS == resultView) {
+      checked = "checked=\"checked\"";
+    }
+    %>
+    <span class="champs-ui-dialog"><input name="checkedViewD" type="checkbox" <%=checked%> <%=disabled%>/><b>${detailedMsg}</b><br />${detailedDescMsg}</span>
+  </div>
+  <div id="synthesisFile-publishResultDialog">
+    <label class="label-ui-dialog" for="synthesisFile">${synthesisFileMsg}</label>
+    <% if(listDocument != null && listDocument.size() > 0) {
+      SimpleDocument simpleDocument = (SimpleDocument) listDocument.get(0);
+      String url = m_context +  simpleDocument.getAttachmentURL(); 
+    %>
+    <div id="SynthesisFile">
+    <span class="champs-ui-dialog">
+    <a href="<%=url%>" target="_blank"><%=simpleDocument.getFilename()%></a>
+    <%=FileRepositoryManager.formatFileSize(simpleDocument.getSize())%>    
+    <a href="javascript:onclick=hideSynthesisFile();"><img src="<%=deleteSrc%>" border="0"/></a>
+    <input type="hidden" name="idSynthesisFile" value="<%=simpleDocument.getId()%>"/>
+    </span>  
+    </div>
+    <% } %>
+    <span class="champs-ui-dialog"><input name="synthesisNewFile" type="file" id="synthesisNewFile" /></span>
+    <input type="hidden" name="removeSynthesisFile" value="no"/>
+  </div>
+  <div id="notification-publishResultDialog"> 
+  <label class="label-ui-dialog" for="notification">${notificationMsg}</label>
+  <span class="champs-ui-dialog">
+    <select name="notification">
+      <option value="0">${noNotificationMsg}</option>
+      <option value="1">${notificationParticipantsMsg}</option>
+      <option value="2">${notificationAllUsersMsg}</option>
+    </select>
+  </span>
+  </div>
+  </form>
+</div>
+
 <%
 
   } else if (action.equals("SubmitAndUpdateSurvey")) {
 %>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <script language="Javascript">
 function Replace() {

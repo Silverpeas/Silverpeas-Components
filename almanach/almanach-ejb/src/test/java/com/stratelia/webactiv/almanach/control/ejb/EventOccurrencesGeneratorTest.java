@@ -32,6 +32,9 @@ import java.util.Calendar;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
+import org.silverpeas.date.Period;
+import org.silverpeas.date.PeriodType;
+
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
 import static com.stratelia.webactiv.almanach.model.EventDetailBuilder.*;
@@ -57,7 +60,7 @@ public class EventOccurrencesGeneratorTest extends BaseAlmanachTest {
   @Test
   public void generateOccurrencesInYearWithNoEvents() {
     List<EventDetail> events = new ArrayList<EventDetail>();
-    List<EventOccurrence> occurrences = generator.generateOccurrencesInYear(aPeriod(), events);
+    List<EventOccurrence> occurrences = generator.generateOccurrencesInPeriod(aYear(), events);
     assertThat(occurrences.isEmpty(), is(true));
   }
   
@@ -66,7 +69,7 @@ public class EventOccurrencesGeneratorTest extends BaseAlmanachTest {
     List<EventDetail> events = new ArrayList<EventDetail>();
     events.add(anEventDetailOfId(NON_PERIODIC_EVENTS[0]).build());
     events.add(anEventDetailOfId(NON_PERIODIC_EVENTS[1]).build());
-    List<EventOccurrence> occurrences = generator.generateOccurrencesInYear(aPeriod(), events);
+    List<EventOccurrence> occurrences = generator.generateOccurrencesInPeriod(aYear(), events);
     assertThat(occurrences.size(), is(events.size()));
     assertThat(occurrences.get(0), is(anOccurrenceOfEvent(NON_PERIODIC_EVENTS[0],
         startingAt("2011-04-13T09:30"),
@@ -81,7 +84,7 @@ public class EventOccurrencesGeneratorTest extends BaseAlmanachTest {
     List<EventDetail> events = new ArrayList<EventDetail>();
     events.add(anEventDetailOfId(PERIODIC_EVENTS[0]).build()); // it has 20 occurrences in the given year
     events.add(anEventDetailOfId(PERIODIC_EVENTS[1]).build()); // it has 5 occurrences in the given year
-    List<EventOccurrence> occurrences = generator.generateOccurrencesInYear(aPeriod(), events);
+    List<EventOccurrence> occurrences = generator.generateOccurrencesInPeriod(aYear(), events);
     assertThat(occurrences.size(), is(25));
   }
   
@@ -92,14 +95,14 @@ public class EventOccurrencesGeneratorTest extends BaseAlmanachTest {
     events.add(anEventDetailOfId(NON_PERIODIC_EVENTS[0]).build());
     events.add(anEventDetailOfId(PERIODIC_EVENTS[1]).build()); // it has 5 occurrences in the given year
     events.add(anEventDetailOfId(NON_PERIODIC_EVENTS[1]).build());
-    List<EventOccurrence> occurrences = generator.generateOccurrencesInYear(aPeriod(), events);
+    List<EventOccurrence> occurrences = generator.generateOccurrencesInPeriod(aYear(), events);
     assertThat(occurrences.size(), is(27));
   }
 
   @Test
   public void generateOccurrencesInMonthWithNoEvents() {
     List<EventDetail> events = new ArrayList<EventDetail>();
-    List<EventOccurrence> occurrences = generator.generateOccurrencesInMonth(aPeriod(), events);
+    List<EventOccurrence> occurrences = generator.generateOccurrencesInPeriod(aMonth(), events);
     assertThat(occurrences.isEmpty(), is(true));
   }
   
@@ -108,7 +111,7 @@ public class EventOccurrencesGeneratorTest extends BaseAlmanachTest {
     List<EventDetail> events = new ArrayList<EventDetail>();
     events.add(anEventDetailOfId(NON_PERIODIC_EVENTS[0]).build());
     events.add(anEventDetailOfId(NON_PERIODIC_EVENTS[1]).build());
-    List<EventOccurrence> occurrences = generator.generateOccurrencesInMonth(aPeriod(), events);
+    List<EventOccurrence> occurrences = generator.generateOccurrencesInPeriod(aMonth(), events);
     assertThat(occurrences.size(), is(events.size()));
     assertThat(occurrences.get(0), is(anOccurrenceOfEvent(NON_PERIODIC_EVENTS[0],
         startingAt("2011-04-13T09:30"),
@@ -123,7 +126,7 @@ public class EventOccurrencesGeneratorTest extends BaseAlmanachTest {
     List<EventDetail> events = new ArrayList<EventDetail>();
     events.add(anEventDetailOfId(PERIODIC_EVENTS[0]).build()); // it has two occurrences in the given month
     events.add(anEventDetailOfId(PERIODIC_EVENTS[1]).build()); // it has only one occurrence in the given month
-    List<EventOccurrence> occurrences = generator.generateOccurrencesInMonth(aPeriod(), events);
+    List<EventOccurrence> occurrences = generator.generateOccurrencesInPeriod(aMonth(), events);
     assertThat(occurrences.size(), is(3));
     assertThat(occurrences.get(0), is(anOccurrenceOfEvent(PERIODIC_EVENTS[0],
         startingAt("2011-04-05T09:30"),
@@ -143,7 +146,7 @@ public class EventOccurrencesGeneratorTest extends BaseAlmanachTest {
     events.add(anEventDetailOfId(NON_PERIODIC_EVENTS[0]).build());
     events.add(anEventDetailOfId(PERIODIC_EVENTS[1]).build()); // it has only one occurrence in the given month
     events.add(anEventDetailOfId(NON_PERIODIC_EVENTS[1]).build());
-    List<EventOccurrence> occurrences = generator.generateOccurrencesInMonth(aPeriod(), events);
+    List<EventOccurrence> occurrences = generator.generateOccurrencesInPeriod(aMonth(), events);
     assertThat(occurrences.size(), is(5));
     assertThat(occurrences.get(0), is(anOccurrenceOfEvent(PERIODIC_EVENTS[0],
         startingAt("2011-04-05T09:30"),
@@ -165,7 +168,7 @@ public class EventOccurrencesGeneratorTest extends BaseAlmanachTest {
   @Test
   public void generateOccurrencesInWeekWithNoEvents() {
     List<EventDetail> events = new ArrayList<EventDetail>();
-    List<EventOccurrence> occurrences = generator.generateOccurrencesInWeek(aPeriod(), events);
+    List<EventOccurrence> occurrences = generator.generateOccurrencesInPeriod(aWeek(), events);
     assertThat(occurrences.isEmpty(), is(true));
   }
 
@@ -174,7 +177,7 @@ public class EventOccurrencesGeneratorTest extends BaseAlmanachTest {
     List<EventDetail> events = new ArrayList<EventDetail>();
     events.add(anEventDetailOfId(NON_PERIODIC_EVENTS[0]).build());
     events.add(anEventDetailOfId(NON_PERIODIC_EVENTS[1]).build());
-    List<EventOccurrence> occurrences = generator.generateOccurrencesInWeek(aPeriod(), events);
+    List<EventOccurrence> occurrences = generator.generateOccurrencesInPeriod(aWeek(), events);
     assertThat(occurrences.size(), is(events.size()));
     assertThat(occurrences.get(0), is(anOccurrenceOfEvent(NON_PERIODIC_EVENTS[0],
         startingAt("2011-04-13T09:30"),
@@ -183,19 +186,19 @@ public class EventOccurrencesGeneratorTest extends BaseAlmanachTest {
         startingAt("2011-04-15"),
         endingAt("2011-04-15"))));
   }
-  
+
   @Test
   public void generateOccurrencesInWeekWithPeriodicEvents() throws Exception {
     List<EventDetail> events = new ArrayList<EventDetail>();
     events.add(anEventDetailOfId(PERIODIC_EVENTS[0]).build()); // it has one occurrence in the given week
     events.add(anEventDetailOfId(PERIODIC_EVENTS[1]).build()); // it has no occurrence in the given week
-    List<EventOccurrence> occurrences = generator.generateOccurrencesInWeek(aPeriod(), events);
+    List<EventOccurrence> occurrences = generator.generateOccurrencesInPeriod(aWeek(), events);
     assertThat(occurrences.size(), is(1));
     assertThat(occurrences.get(0), is(anOccurrenceOfEvent(PERIODIC_EVENTS[0],
         startingAt("2011-04-12T09:30"),
         endingAt("2011-04-12T12:00"))));
   }
-  
+
   @Test
   public void generateOccurrencesInWeekWithPeriodicAndNonPeriodicEvents() throws Exception {
     List<EventDetail> events = new ArrayList<EventDetail>();
@@ -203,7 +206,7 @@ public class EventOccurrencesGeneratorTest extends BaseAlmanachTest {
     events.add(anEventDetailOfId(NON_PERIODIC_EVENTS[0]).build());
     events.add(anEventDetailOfId(PERIODIC_EVENTS[1]).build()); // it has no occurrence in the given week
     events.add(anEventDetailOfId(NON_PERIODIC_EVENTS[1]).build());
-    List<EventOccurrence> occurrences = generator.generateOccurrencesInWeek(aPeriod(), events);
+    List<EventOccurrence> occurrences = generator.generateOccurrencesInPeriod(aWeek(), events);
     assertThat(occurrences.size(), is(3));
     assertThat(occurrences.get(0), is(anOccurrenceOfEvent(PERIODIC_EVENTS[0],
         startingAt("2011-04-12T09:30"),
@@ -294,12 +297,24 @@ public class EventOccurrencesGeneratorTest extends BaseAlmanachTest {
     assertThat(occurrences.size(), is(11));
   }
 
-  private Calendar aPeriod() {
+  private Period aYear() {
+    return Period.from(aReferenceDate().getTime(), PeriodType.year, "en");
+  }
+
+  private Period aMonth() {
+    return Period.from(aReferenceDate().getTime(), PeriodType.month, "en");
+  }
+
+  private Period aWeek() {
+    return Period.from(aReferenceDate().getTime(), PeriodType.week, "en");
+  }
+
+  private Calendar aReferenceDate() {
     Calendar date = Calendar.getInstance();
     date.setTime(dateToUseInTests());
     return date;
   }
-  
+
   private Date aDate() {
     return new Date(dateToUseInTests());
   }

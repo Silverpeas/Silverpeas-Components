@@ -455,36 +455,36 @@
           operationPane.addOperation(pdfSrc, resources.getString("kmelia.ExportPublication"), "javascript:exportPublication()");
         }
         if (!currentUser.isAnonymous()) {
-          operationPane.addOperation(favoriteAddSrc, resources.getString("FavoritesAddPublication") + " " + resources.getString("FavoritesAdd2"), "javaScript:addFavorite()");
+          operationPane.addOperation(favoriteAddSrc, resources.getString("FavoritesAddPublication") + " " + resources.getString("FavoritesAdd2"), "javascript:addFavorite()");
         }
         operationPane.addLine();
 
         if (isOwner) {
           if (!"supervisor".equals(profile)) {
             if (attachmentsUpdatable) {
-            	operationPane.addOperation("#", resources.getString("kmelia.AddFile"), "javaScript:AddAttachment()");
+            	operationPane.addOperation("#", resources.getString("kmelia.AddFile"), "javascript:addAttachment('" +pubDetail.getId() + "')");
             }
 
             if (kmeliaScc.isDraftEnabled() && !pubDetail.haveGotClone()) {
               if (pubDetail.isDraft()) {
-                operationPane.addOperation(pubDraftOutSrc, resources.getString("PubDraftOut"), "javaScript:pubDraftOut()");
+                operationPane.addOperation(pubDraftOutSrc, resources.getString("PubDraftOut"), "javascript:pubDraftOut()");
               } else {
-                operationPane.addOperation(pubDraftInSrc, resources.getString("PubDraftIn"), "javaScript:pubDraftIn()");
+                operationPane.addOperation(pubDraftInSrc, resources.getString("PubDraftIn"), "javascript:pubDraftIn()");
               }
             }
 
             if (suppressionAllowed) {
-              operationPane.addOperation(deletePubliSrc, resources.getString("GML.delete"), "javaScript:pubDeleteConfirm()");
+              operationPane.addOperation(deletePubliSrc, resources.getString("GML.delete"), "javascript:pubDeleteConfirm()");
             }
             operationPane.addLine();
           }
         }
         if (!kmaxMode) {
           if (!currentUser.isAnonymous()) {
-            operationPane.addOperation(resources.getIcon("kmelia.copy"), resources.getString("GML.copy"), "javaScript:clipboardCopy()");
+            operationPane.addOperation(resources.getIcon("kmelia.copy"), resources.getString("GML.copy"), "javascript:clipboardCopy()");
           }
           if (isOwner) {
-            operationPane.addOperation(resources.getIcon("kmelia.cut"), resources.getString("GML.cut"), "javaScript:clipboardCut()");
+            operationPane.addOperation(resources.getIcon("kmelia.cut"), resources.getString("GML.cut"), "javascript:clipboardCut()");
           }
         }
         if (!toolboxMode && isOwner) {
@@ -544,8 +544,8 @@
         <% }%>
       </div>
       <% } %>
-      
-	  <% 
+
+	  <%
 	    	String backURL = "GoToCurrentTopic";
 	  		String backLabel = resources.getString("kmelia.publication.link.folder");
 	    	if (searchScope == SearchContext.GLOBAL) {
@@ -560,7 +560,7 @@
 	  	<div id="backToSearch">
 	  	 <a href="<%=backURL%>" class="button"><span><%=backLabel%></span></a>
 	  	</div>
-      
+
       <div class="rightContent">
       <%
 
@@ -781,10 +781,10 @@
                         if (kmeliaScc.getInvisibleTabs().indexOf(kmeliaScc.TAB_COMMENT) == -1 && !kmaxMode)	 {
 			      %>
       <view:comments	userId="<%= user_id%>" componentId="<%= componentId %>"
-      					resourceType="<%= resourceType %>" resourceId="<%= id %>" indexed="<%= indexIt %>"/>      
-      <% } %>	  
+      					resourceType="<%= resourceType %>" resourceId="<%= id %>" indexed="<%= indexIt %>"/>
+      <% } %>
 	  </div>
-    
+
       <div id="publication-export" style="display: none;">
         <form id="exportForm" action="<c:url value='/exportPublication'/>" target="_blank">
           <fieldset>

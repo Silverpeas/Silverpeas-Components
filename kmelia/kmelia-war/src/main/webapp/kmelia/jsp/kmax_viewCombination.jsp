@@ -125,17 +125,15 @@ out.println(gef.getLookStyleSheet());
 	String id = kmeliaScc.getSessionPublication().getDetail().getId();
 	browseBar.setI18N(action, currentLang);
 	
-    out.println(window.printBefore());
+  out.println(window.printBefore());
 
 	if ("progress".equals(wizard)) {
-		KmeliaDisplayHelper.displayWizardOperations(wizardRow, id, kmeliaScc, gef, action, resources,
-          out, kmaxMode);
+		KmeliaDisplayHelper.displayWizardOperations(wizardRow, id, kmeliaScc, gef, action, resources, out, kmaxMode);
 	} else {
 		KmeliaDisplayHelper.displayAllOperations(id, kmeliaScc, gef, action, resources, out, true);
 	}
-    	
-    out.println(frame.printBefore());
-    if ("finish".equals(wizard) || "progress".equals(wizard)) {
+  out.println(frame.printBefore());
+  if ("finish".equals(wizard) || "progress".equals(wizard)) {
     %>
     	<!-- cadre d'aide -->
 		<div class="inlineMessage">
@@ -160,17 +158,16 @@ out.println(gef.getLookStyleSheet());
       List axisHeaders = kmeliaScc.getAxisHeaders();
       Iterator headersIt = axisHeaders.iterator();
       NodeDetail nodeDetail = null;
-	  out.println("<tr><td colspan=\"15\" align=\"center\" class=\"intfdcolor\" height=\"1\"><img src=\""+hLineSrc+"\" width=\"100%\" height=\"1\"></td></tr>");
+	    out.println("<tr><td colspan=\"15\" align=\"center\" class=\"intfdcolor\" height=\"1\"><img src=\""+hLineSrc+"\" width=\"100%\" height=\"1\"></td></tr>");
       out.println("<tr>");
       while (headersIt.hasNext()) {
           nodeDetail = (NodeDetail) headersIt.next();
 		  //Do not get hidden nodes (Basket and unclassified)
 		  if (!NodeDetail.STATUS_INVISIBLE.equals(nodeDetail.getStatus()))
-			  out.println("<td align=\"center\"><b>" + EncodeHelper.javaStringToHtmlString(nodeDetail
-                .getName(currentLang)) + "</b></td>");
+			  out.println("<td align=\"center\"><b>" + EncodeHelper.javaStringToHtmlString(nodeDetail.getName(currentLang)) + "</b></td>");
       }
      out.println("<td align=\"center\"><b>"+kmeliaScc.getString("Del")+"</b></td></tr>");
-	 out.println("<tr><td colspan=\"15\" align=\"center\" class=\"intfdcolor\" height=\"1\"><img src=\""+hLineSrc+"\" width=\"100%\" height=\"1\"></td></tr>");
+	   out.println("<tr><td colspan=\"15\" align=\"center\" class=\"intfdcolor\" height=\"1\"><img src=\""+hLineSrc+"\" width=\"100%\" height=\"1\"></td></tr>");
 
       //display coordinates
       Iterator it = coordinates.iterator();
@@ -187,27 +184,25 @@ out.println(gef.getLookStyleSheet());
           headersIt = axisHeaders.iterator();
           while (headersIt.hasNext()) {
           	nodeDetail 	= (NodeDetail) headersIt.next();
-          	if (!NodeDetail.STATUS_INVISIBLE.equals(nodeDetail.getStatus()))
-          	{
+          	if (!NodeDetail.STATUS_INVISIBLE.equals(nodeDetail.getStatus())) {
 	          	point		= getPoint(nodeDetail, points, currentLang, kmeliaScc);
-	          	if (point != null)
-	          	{
+	          	if (point != null) {
 	          		pointName = point.getName();
-	              	pointLevel = point.getLevel();
-	              	if (pointLevel == 2)
-	                	out.println("<td align=\"center\">"+kmeliaScc.getString("All")+"</td>");
-	              	else
-	                	out.println("<td align=\"center\">" + EncodeHelper.javaStringToHtmlSt
-                            ring(point N ame)+"</td>");
-	          	}
-	          	else
+	              pointLevel = point.getLevel();
+	              if (pointLevel == 2) {
+                  out.println("<td align=\"center\">" + kmeliaScc.getString("All") + "</td>");
+                } else {
+                  out.println("<td align=\"center\">" + EncodeHelper.javaStringToHtmlString(pointName)+"</td>");
+                }
+	          	} else {
 	          		out.println("<td align=\"center\">"+kmeliaScc.getString("All")+"</td>");
+              }
           	}
-       	}
+       	  }
           out.println("<td  align=\"center\"><A href=\"javaScript:deleteCoordinate('"+coordinate.getCoordinateId()+"')\"><img src=\""+deleteSrc+"\" title=\""+kmeliaScc.getString("Delete")+"\" border=0></A></td>");
           out.println("</tr>");
-      }
-	  out.println("<tr><td colspan=\"15\" align=\"center\" class=\"intfdcolor\" height=\"1\"><img src=\""+hLineSrc+"\" width=\"100%\" height=\"1\"></td></tr>");
+        }
+      out.println("<tr><td colspan=\"15\" align=\"center\" class=\"intfdcolor\" height=\"1\"><img src=\""+hLineSrc+"\" width=\"100%\" height=\"1\"></td></tr>");
     }
     out.println("</table>");
     out.println("</center>");

@@ -1,25 +1,22 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.almanach;
 
@@ -36,7 +33,6 @@ import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.contentManager.SilverContentVisibility;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.almanach.control.ejb.AlmanachBm;
-import com.stratelia.webactiv.almanach.control.ejb.AlmanachBmHome;
 import com.stratelia.webactiv.almanach.control.ejb.AlmanachException;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.EventPK;
@@ -51,6 +47,7 @@ public class AlmanachContentManager implements ContentInterface {
 
   /**
    * Find all the SilverContent with the given list of SilverContentId
+   *
    * @param ids list of silverContentId to retrieve
    * @param peasId the id of the instance
    * @param userId the id of the user who wants to retrieve silverContent
@@ -75,6 +72,7 @@ public class AlmanachContentManager implements ContentInterface {
 
   /**
    * add a new content. It is registered to contentManager service
+   *
    * @param con a Connection
    * @param pubDetail the content to register
    * @param userId the creator of the content
@@ -90,6 +88,7 @@ public class AlmanachContentManager implements ContentInterface {
 
   /**
    * delete a content. It is registered to contentManager service
+   *
    * @param con a Connection
    * @param pubPK the identifiant of the content to unregister
    */
@@ -106,6 +105,7 @@ public class AlmanachContentManager implements ContentInterface {
 
   /**
    * update the visibility attributes of the content. Here, the type of content is a EventDetail
+   *
    * @param eventDetail the content
    */
   public void updateSilverContentVisibility(EventDetail eventDetail)
@@ -128,6 +128,7 @@ public class AlmanachContentManager implements ContentInterface {
 
   /**
    * return a list of almanachPK according to a list of silverContentId
+   *
    * @param idList a list of silverContentId
    * @param peasId the id of the instance
    * @return a list of almanachPK
@@ -155,6 +156,7 @@ public class AlmanachContentManager implements ContentInterface {
 
   /**
    * return a list of silverContent according to a list of almanachPK
+   *
    * @param ids a list of almanachPK
    * @return a list of EventDetail
    */
@@ -176,8 +178,8 @@ public class AlmanachContentManager implements ContentInterface {
   private AlmanachBm getAlmanachBm() throws AlmanachException {
     if (currentAlmanachBm == null) {
       try {
-        currentAlmanachBm = ((AlmanachBmHome) EJBUtilitaire.getEJBObjectRef(
-            JNDINames.ALMANACHBM_EJBHOME, AlmanachBmHome.class)).create();
+        currentAlmanachBm = EJBUtilitaire.getEJBObjectRef(JNDINames.ALMANACHBM_EJBHOME,
+            AlmanachBm.class);
       } catch (Exception e) {
         throw new AlmanachException("AlmanachContentManager.getAlmanachBm()",
             SilverpeasException.ERROR, "almanach.EX_EJB_CREATION_FAIL", e);
@@ -191,12 +193,10 @@ public class AlmanachContentManager implements ContentInterface {
       try {
         contentManager = new ContentManager();
       } catch (Exception e) {
-        SilverTrace.fatal("almanach",
-            "AlmanachContentManager.getContentManager()",
+        SilverTrace.fatal("almanach", "AlmanachContentManager.getContentManager()",
             "root.EX_UNKNOWN_CONTENT_MANAGER", e);
       }
     }
     return contentManager;
   }
-
 }

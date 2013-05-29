@@ -21,22 +21,13 @@
 package org.silverpeas.resourcemanager.model;
 
 import com.silverpeas.util.StringUtil;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.TableGenerator;
-import javax.persistence.Transient;
 
 import static org.silverpeas.resourcemanager.model.ResourceStatus.*;
 
@@ -73,6 +64,18 @@ public class Resource {
   @Transient
   private String status;
 
+  @PrePersist
+  public void beforePersist() {
+    Date now = new Date();
+    setCreationDate(now);
+    setUpdateDate(now);
+  }
+
+  @PreUpdate
+  public void beforeUpdate() {
+    setUpdateDate(new Date());
+  }
+
   public boolean isBookable() {
     return bookable == 1;
   }
@@ -103,11 +106,7 @@ public class Resource {
   }
 
   public void setCreationDate(Date creationDate) {
-    if (creationDate != null) {
-      this.creationDate = String.valueOf(creationDate.getTime());
-    } else {
-      creationDate = null;
-    }
+     this.creationDate = String.valueOf(creationDate.getTime());
   }
 
   public Date getUpdateDate() {
@@ -120,9 +119,7 @@ public class Resource {
   }
 
   public void setUpdateDate(Date updateDate) {
-    if (updateDate != null) {
-      this.updateDate = String.valueOf(updateDate.getTime());
-    }
+    this.updateDate = String.valueOf(updateDate.getTime());
   }
 
   public String getDescription() {
@@ -133,21 +130,19 @@ public class Resource {
     this.description = description;
   }
 
-  public String getId() {
-    return String.valueOf(id);
-  }
-
-  public Long getIntegerId() {
+  public Long getId() {
     return id;
   }
 
-  public final void setId(String id) {
-    if (StringUtil.isLong(id)) {
-      this.id = Long.parseLong(id);
-    }
+  public void setId(final Long id) {
+    this.id = id;
   }
 
-  public String getCategoryId() {
+  public String getIdAsString() {
+    return String.valueOf(id);
+  }
+
+  public Long getCategoryId() {
     if (category != null) {
       return category.getId();
     }
@@ -209,56 +204,15 @@ public class Resource {
     this.updaterId = resource.updaterId;
   }
 
-
-  public Resource(String name, Category category, boolean bookable) {
-    this.name = name;
-    this.category = category;
-    setBookable(bookable);
-  }
-
-  public Resource(String name, Category category, String description, boolean bookable) {
-    this.category = category;
-    this.name = name;
-    this.description = description;
-    setBookable(bookable);
-  }
-
-  public Resource(String id, Category category, String name, Date creationDate, Date updateDate,
-      String description, String createrId, String updaterId, String instanceId,
-      boolean bookable) {
+  public Resource(Long id, Category category, String name, String description, String createrId,
+      String updaterId, String instanceId, boolean bookable) {
     setId(id);
     this.category = category;
     this.name = name;
-    setCreationDate(creationDate);
-    setUpdateDate(updateDate);
     this.description = description;
     this.createrId = createrId;
     this.updaterId = updaterId;
     this.instanceId = instanceId;
-    setBookable(bookable);
-  }
-
-  public Resource(String id, Category category, String name, Date creationDate, Date updateDate,
-      String description, String createrId, String updaterId, String instanceId,
-      boolean bookable, String status) {
-    setId(id);
-    this.category = category;
-    this.name = name;
-    setCreationDate(creationDate);
-    setUpdateDate(updateDate);
-    this.description = description;
-    this.createrId = createrId;
-    this.updaterId = updaterId;
-    this.instanceId = instanceId;
-    setBookable(bookable);
-    this.setStatus(status);
-  }
-
-  public Resource(String id, Category category, String name, String description, boolean bookable) {
-    setId(id);
-    this.category = category;
-    this.name = name;
-    this.description = description;
     setBookable(bookable);
   }
 
@@ -271,61 +225,30 @@ public class Resource {
       return false;
     }
     final Resource other = (Resource) obj;
-    if (this.id != other.id && (this.id == null || !this.id.equals(other.id))) {
-      return false;
-    }
-    if (this.category != other.category && (this.category == null || !this.category.equals(
-        other.category))) {
-      return false;
-    }
-    if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
-      return false;
-    }
-    if ((this.creationDate == null) ? (other.creationDate != null) : !this.creationDate.equals(
-        other.creationDate)) {
-      return false;
-    }
-    if ((this.updateDate == null) ? (other.updateDate != null) : !this.updateDate.equals(
-        other.updateDate)) {
-      return false;
-    }
-    if (this.bookable != other.bookable && (this.bookable == null || !this.bookable.equals(
-        other.bookable))) {
-      return false;
-    }
-    if ((this.description == null) ? (other.description != null) : !this.description.equals(
-        other.description)) {
-      return false;
-    }
-    if ((this.createrId == null) ? (other.createrId != null) : !this.createrId.equals(
-        other.createrId)) {
-      return false;
-    }
-    if ((this.updaterId == null) ? (other.updaterId != null) : !this.updaterId.equals(
-        other.updaterId)) {
-      return false;
-    }
-    if ((this.instanceId == null) ? (other.instanceId != null) : !this.instanceId.equals(
-        other.instanceId)) {
-      return false;
-    }
-    return true;
+    EqualsBuilder matcher = new EqualsBuilder();
+    matcher.append(getId(), other.getId());
+    matcher.append(getCategory(), other.getCategory());
+    matcher.append(getName(), other.getName());
+    matcher.append(isBookable(), other.isBookable());
+    matcher.append(getDescription(), other.getDescription());
+    matcher.append(getCreaterId(), other.getCreaterId());
+    matcher.append(getUpdaterId(), other.getUpdaterId());
+    matcher.append(getInstanceId(), other.getInstanceId());
+    return matcher.isEquals();
   }
 
   @Override
   public int hashCode() {
-    int hash = 7;
-    hash = 29 * hash + (this.id != null ? this.id.hashCode() : 0);
-    hash = 29 * hash + (this.category != null ? this.category.hashCode() : 0);
-    hash = 29 * hash + (this.name != null ? this.name.hashCode() : 0);
-    hash = 29 * hash + (this.creationDate != null ? this.creationDate.hashCode() : 0);
-    hash = 29 * hash + (this.updateDate != null ? this.updateDate.hashCode() : 0);
-    hash = 29 * hash + (this.bookable != null ? this.bookable.hashCode() : 0);
-    hash = 29 * hash + (this.description != null ? this.description.hashCode() : 0);
-    hash = 29 * hash + (this.createrId != null ? this.createrId.hashCode() : 0);
-    hash = 29 * hash + (this.updaterId != null ? this.updaterId.hashCode() : 0);
-    hash = 29 * hash + (this.instanceId != null ? this.instanceId.hashCode() : 0);
-    return hash;
+    HashCodeBuilder hash = new HashCodeBuilder();
+    hash.append(getId());
+    hash.append(getCategory());
+    hash.append(getName());
+    hash.append(isBookable());
+    hash.append(getDescription());
+    hash.append(getCreaterId());
+    hash.append(getUpdaterId());
+    hash.append(getInstanceId());
+    return hash.toHashCode();
   }
 
   @Override

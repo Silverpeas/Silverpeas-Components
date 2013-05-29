@@ -126,7 +126,7 @@ function getComponentId() {
 }
 
 function getComponentLabel() {
-	return "<%=componentLabel%>";
+	return "<%=EncodeHelper.javaStringToJsString(componentLabel)%>";
 }
 
 function getLanguage() {
@@ -246,7 +246,7 @@ var searchFolderId = "<%=id%>";
 
 <form name="pubForm" action="ViewPublication" method="post">
 	<input type="hidden" name="PubId"/>
-	<input type="hidden" name="CheckPath"/>
+	<input type="hidden" id="CheckPath" name="CheckPath"/>
 </form>
 
 <form name="fupload" action="fileUpload.jsp" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
@@ -804,7 +804,7 @@ $(document).ready(
 						} else {
 							if (n.data) {
 								// this is the root
-								n.data = "<%=componentLabel%>";
+								n.data = "<%=EncodeHelper.javaStringToJsString(componentLabel)%>";
 								if (n.attr['nbItems']) {
 									n.data = n.data + " ("+n.attr['nbItems']+")";
 								}

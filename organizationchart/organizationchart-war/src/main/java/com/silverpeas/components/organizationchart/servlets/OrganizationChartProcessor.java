@@ -51,13 +51,9 @@ public class OrganizationChartProcessor {
       OrganizationChartSessionController controller) {
     request.removeAttribute("error");
     String rootOu = request.getParameter("baseOu");
-
     String chartType = request.getParameter("chartType");
     ChartVO chart = controller.getChart(rootOu, OrganizationalChartType.fromString(chartType));
-
     request.getSession().setAttribute("organigramme", chart);
-    // request.getSession().setAttribute("organigramme", buildFakePersonUnit());
-
     return JSP_BASE + DESTINATION_DISPLAY_CHART;
   }
 

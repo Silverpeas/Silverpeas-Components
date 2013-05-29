@@ -183,7 +183,7 @@ function exportCSV(){
 }
 </script>
 </head>
-<body id="<%=componentId %>">
+<body id="<%=componentId %>" class="yellowpages">
 <%
   Window window = gef.getWindow();
 

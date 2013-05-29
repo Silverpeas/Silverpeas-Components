@@ -83,9 +83,9 @@ function deletePublications() {
 							var nb = data.substring(3);
 							displayPublications(getCurrentNodeId());
 							if (getCurrentNodeId() == "1") {
-								notySuccess(nb+ getString('kmelia.publications.delete.info'));
+								notySuccess(nb + ' ' + getString('kmelia.publications.delete.info'));
 							} else {
-								notySuccess(nb+ getString('kmelia.publications.trash.info'));
+								notySuccess(nb + ' ' + getString('kmelia.publications.trash.info'));
 							}
 							publicationsRemovedSuccessfully(nb);
 						} catch (e) {

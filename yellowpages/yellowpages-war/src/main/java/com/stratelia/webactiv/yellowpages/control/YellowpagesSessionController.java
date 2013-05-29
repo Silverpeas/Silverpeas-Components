@@ -25,19 +25,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
-import javax.ejb.RemoveException;
-
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.util.GlobalContext;
 
 import com.silverpeas.form.AbstractForm;
@@ -56,6 +52,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.csv.CSVReader;
 import com.silverpeas.util.csv.Variant;
+
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -81,20 +78,18 @@ import com.stratelia.webactiv.util.contact.model.ContactPK;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilTrappedException;
 import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.yellowpages.ImportReport;
 import com.stratelia.webactiv.yellowpages.YellowpagesException;
-
 import com.stratelia.webactiv.yellowpages.control.ejb.YellowpagesBm;
-import com.stratelia.webactiv.yellowpages.control.ejb.YellowpagesBmHome;
 import com.stratelia.webactiv.yellowpages.model.GroupDetail;
 import com.stratelia.webactiv.yellowpages.model.TopicDetail;
 import com.stratelia.webactiv.yellowpages.model.UserCompleteContact;
 import com.stratelia.webactiv.yellowpages.model.UserContact;
 import com.stratelia.webactiv.yellowpages.model.YellowpagesRuntimeException;
 
-import java.util.Locale;
+import org.apache.commons.fileupload.FileItem;
 
 public class YellowpagesSessionController extends AbstractComponentSessionController {
 
@@ -123,9 +118,9 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   public YellowpagesSessionController(MainSessionController mainSessionCtrl,
       ComponentContext context) {
     super(mainSessionCtrl, context,
-        "com.stratelia.webactiv.yellowpages.multilang.yellowpagesBundle",
-        "com.stratelia.webactiv.yellowpages.settings.yellowpagesIcons",
-        "com.stratelia.webactiv.yellowpages.settings.yellowpagesSettings");
+        "org.silverpeas.yellowpages.multilang.yellowpagesBundle",
+        "org.silverpeas.yellowpages.settings.yellowpagesIcons",
+        "org.silverpeas.yellowpages.settings.yellowpagesSettings");
     initEJB();
     setProfile();
     String domainId = getSettings().getString("columns.domainId");
@@ -151,8 +146,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
       setCurrentUser(getUserDetail());
       setComponentId(getComponentId());
     } catch (Exception e) {
-      throw new YellowpagesRuntimeException(
-          "YellowpagesSessionController.initEJB()",
+      throw new YellowpagesRuntimeException("YellowpagesSessionController.initEJB()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }
@@ -160,9 +154,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   private void setYellowpagesBm() {
     if (kscEjb == null) {
       try {
-        YellowpagesBmHome kscEjbHome = EJBUtilitaire.getEJBObjectRef(
-            JNDINames.YELLOWPAGESBM_EJBHOME, YellowpagesBmHome.class);
-        kscEjb = kscEjbHome.create();
+        kscEjb = EJBUtilitaire.getEJBObjectRef(JNDINames.YELLOWPAGESBM_EJBHOME, YellowpagesBm.class);
       } catch (Exception e) {
         throw new YellowpagesRuntimeException("YellowpagesSessionController.setYellowpagesBm()",
             SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
@@ -170,47 +162,20 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     }
   }
 
-  public synchronized void setPrefixTableName(String prefixTableName)
-      throws RemoteException {
+  public synchronized void setPrefixTableName(String prefixTableName) {
+    kscEjb.setPrefixTableName(prefixTableName);
+  }
+
+  public synchronized void setSpaceId(String prefixTableName) {
     kscEjb.setPrefixTableName(prefixTableName);
   }
 
   /**
-   * *********************************************************************************************
-   */
-  // Current Space operations
-  /**
-   * @param prefixTableName
-   * @throws
-   * java.rmi.RemoteException*********************************************************************************************
-   */
-  public synchronized void setSpaceId(String prefixTableName) throws RemoteException {
-    try {
-      kscEjb.setPrefixTableName(prefixTableName);
-    } catch (NoSuchObjectException nsoe) {
-      initEJB();
-      setSpaceId(prefixTableName);
-    }
-  }
-
-  /**
-   * *********************************************************************************************
-   */
-  // Current Component operations
-  /**
-   * *********************************************************************************************
-   */
-  /**
    * @param componentId
    * @throws java.rmi.RemoteException
    */
-  public synchronized void setComponentId(String componentId) throws RemoteException {
-    try {
-      kscEjb.setComponentId(componentId);
-    } catch (NoSuchObjectException nsoe) {
-      initEJB();
-      setComponentId(componentId);
-    }
+  public synchronized void setComponentId(String componentId) {
+    kscEjb.setComponentId(componentId);
   }
 
   /**
@@ -223,15 +188,10 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   /**
    *
    * @param user
-   * @throws RemoteException
+   * @
    */
-  public synchronized void setCurrentUser(UserDetail user) throws RemoteException {
-    try {
-      kscEjb.setActor(user);
-    } catch (NoSuchObjectException nsoe) {
-      initEJB();
-      setCurrentUser(user);
-    }
+  public synchronized void setCurrentUser(UserDetail user) {
+    kscEjb.setActor(user);
   }
 
   private String getFlag(String[] profiles) {
@@ -291,25 +251,11 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     return kscEjb;
   }
 
-  /**
-   * ***********************************************************************************
-   */
-  /* YELLOWPAGES - Gestion des themes */
-  /**
-   * @param id
-   * @return
-   * @throws java.rmi.RemoteException
-   */
-  public synchronized TopicDetail getTopic(String id) throws RemoteException {
-    try {
-      return kscEjb.goTo(id);
-    } catch (NoSuchObjectException nsoe) {
-      initEJB();
-      return getTopic(id);
-    }
+  public synchronized TopicDetail getTopic(String id) {
+    return kscEjb.goTo(id);
   }
 
-  public GroupDetail getGroup(String groupId) throws RemoteException {
+  public GroupDetail getGroup(String groupId) {
     Group group = getOrganisationController().getGroup(groupId);
     GroupDetail groupDetail = new GroupDetail(group);
 
@@ -366,77 +312,39 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     groupPath.clear();
   }
 
-  public synchronized List<NodeDetail> getTree() throws RemoteException {
-    try {
-      return kscEjb.getTree();
-    } catch (NoSuchObjectException nsoe) {
-      initEJB();
-      return getTree();
-    }
+  public synchronized List<NodeDetail> getTree() {
+    return kscEjb.getTree();
   }
 
-  public synchronized NodePK updateTopicHeader(NodeDetail nd)
-      throws RemoteException {
+  public synchronized NodePK updateTopicHeader(NodeDetail nd) {
     SilverTrace.info("yellowpages",
         "YellowpagesSessionController.updateTopicHeader()",
         "root.MSG_GEN_PARAM_VALUE", "id = " + nd.getNodePK().getId());
-    try {
-      return kscEjb.updateTopic(nd);
-    } catch (NoSuchObjectException nsoe) {
-      initEJB();
-      return updateTopicHeader(nd);
-    }
+    return kscEjb.updateTopic(nd);
   }
 
-  public synchronized NodeDetail getSubTopicDetail(String subTopicId)
-      throws RemoteException {
-    try {
-      return kscEjb.getSubTopicDetail(subTopicId);
-    } catch (NoSuchObjectException nsoe) {
-      initEJB();
-      return getSubTopicDetail(subTopicId);
-    }
+  public synchronized NodeDetail getSubTopicDetail(String subTopicId) {
+    return kscEjb.getSubTopicDetail(subTopicId);
   }
 
-  public synchronized NodePK addSubTopic(NodeDetail nd) throws RemoteException {
-    try {
-      return kscEjb.addSubTopic(nd);
-    } catch (NoSuchObjectException nsoe) {
-      initEJB();
-      return addSubTopic(nd);
-    }
+  public synchronized NodePK addSubTopic(NodeDetail nd) {
+    return kscEjb.addSubTopic(nd);
   }
 
-  public synchronized void deleteTopic(String topicId) throws RemoteException {
-    SilverTrace.info("yellowpages",
-        "YellowpagesSessionController.deleteTopic()",
+  public synchronized void deleteTopic(String topicId) {
+    SilverTrace.info("yellowpages", "YellowpagesSessionController.deleteTopic()",
         "root.MSG_GEN_PARAM_VALUE", "topicId = " + topicId);
 
-    try {
-      kscEjb.deleteTopic(topicId);
-      resetCurrentFullCompleteUsers();
-    } catch (NoSuchObjectException nsoe) {
-      initEJB();
-      deleteTopic(topicId);
-    }
+    kscEjb.deleteTopic(topicId);
+    resetCurrentFullCompleteUsers();
   }
 
-  public synchronized void emptyBasketByUserId() throws RemoteException {
-    try {
-      kscEjb.emptyBasketByUserId();
-    } catch (NoSuchObjectException nsoe) {
-      initEJB();
-      emptyBasketByUserId();
-    }
+  public synchronized void emptyBasketByUserId() {
+    kscEjb.emptyBasketByUserId();
   }
 
-  public synchronized void emptyPublisherDZ() throws RemoteException {
-    try {
-      kscEjb.emptyDZByUserId();
-    } catch (NoSuchObjectException nsoe) {
-      initEJB();
-      emptyPublisherDZ();
-    }
+  public synchronized void emptyPublisherDZ() {
+    kscEjb.emptyDZByUserId();
   }
 
   /**
@@ -451,14 +359,8 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
    * @throws java.rmi.RemoteException
    * @return
    */
-  public synchronized ContactDetail getContactDetail(String contactId)
-      throws RemoteException {
-    try {
-      return kscEjb.getContactDetail(contactId);
-    } catch (NoSuchObjectException nsoe) {
-      initEJB();
-      return getContactDetail(contactId);
-    }
+  public synchronized ContactDetail getContactDetail(String contactId) {
+    return kscEjb.getContactDetail(contactId);
   }
 
   private synchronized void resetCurrentFullCompleteUsers() {
@@ -466,257 +368,140 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     this.currentCompleteUsers = null;
   }
 
-  private synchronized Collection<ContactFatherDetail> setCurrentFullCompleteUsers()
-      throws RemoteException {// tous les contacts � la racine
-    try {
-      // racine
-      TopicDetail rootTopic = getTopic("0");
-      Collection<ContactFatherDetail> contacts = getAllContactDetails(rootTopic.getNodePK());
-
-      if (this.currentFullUsers == null || this.currentCompleteUsers == null) {
-
-        Iterator<ContactFatherDetail> itContact = contacts.iterator();
-        ContactFatherDetail contact;
-        UserFull userFull;
-        ArrayList<UserFull> listUserFull = new ArrayList<UserFull>();
-        UserCompleteContact userComplete;
-        ArrayList<UserCompleteContact> listUserComplete = new ArrayList<UserCompleteContact>();
-        while (itContact.hasNext()) {
-          contact = itContact.next();
-          if (contact.getNodeId() != null
-              && contact.getNodeId().startsWith(GroupReferentielPrefix)
-              && contact.getContactDetail().getUserId() != null) {// contact de
-            // type user appartenanta un groupe Silverpeas
-            userFull = getOrganisationController().getUserFull(contact.getContactDetail().
-                getUserId());
-            if (userFull != null) {
-              listUserFull.add(userFull);
-            }
-          } else {// contacts annuaire interne et externe
-            userComplete = getCompleteContactInNode(contact.getContactDetail().getPK().getId(),
-                contact.getNodeId());
-            listUserComplete.add(userComplete);
+  private synchronized Collection<ContactFatherDetail> setCurrentFullCompleteUsers() {// tous les contacts a la racine
+    // racine
+    TopicDetail rootTopic = getTopic(NodePK.ROOT_NODE_ID);
+    Collection<ContactFatherDetail> contacts = getAllContactDetails(rootTopic.getNodePK());
+    if (this.currentFullUsers == null || this.currentCompleteUsers == null) {
+      Iterator<ContactFatherDetail> itContact = contacts.iterator();
+      ContactFatherDetail contact;
+      UserFull userFull;
+      ArrayList<UserFull> listUserFull = new ArrayList<UserFull>();
+      UserCompleteContact userComplete;
+      ArrayList<UserCompleteContact> listUserComplete = new ArrayList<UserCompleteContact>();
+      while (itContact.hasNext()) {
+        contact = itContact.next();
+        if (contact.getNodeId() != null
+            && contact.getNodeId().startsWith(GroupReferentielPrefix)
+            && contact.getContactDetail().getUserId() != null) {// contact de
+          // type user appartenanta un groupe Silverpeas
+          userFull = getOrganisationController().getUserFull(contact.getContactDetail().
+              getUserId());
+          if (userFull != null) {
+            listUserFull.add(userFull);
           }
-        }
-
-        this.currentFullUsers = listUserFull;
-        this.currentCompleteUsers = listUserComplete;
-
-      }
-
-      return contacts;
-    } catch (NoSuchObjectException nsoe) {
-      initEJB();
-      return setCurrentFullCompleteUsers();
-    }
-  }
-
-  public synchronized Collection<ContactFatherDetail> getAllContactDetails(NodePK fatherPK)
-      throws RemoteException {
-    try {
-      Collection<ContactFatherDetail> contacts = kscEjb.getAllContactDetails(fatherPK);
-      if (contacts != null) {
-        // contacts.addAll(getAllUsers(fatherPK.getId()));
-
-        // get users of groups contained in subtree
-        List<NodeDetail> tree = getNodeBm().getSubTree(
-            new NodePK(fatherPK.getId(), getComponentId()));
-        for (int t = 0; tree != null && t < tree.size(); t++) {
-          NodeDetail node = tree.get(t);
-          contacts.addAll(getAllUsers(node.getNodePK().getId()));
-        }
-      } else {
-        contacts = new ArrayList<ContactFatherDetail>(getAllUsers(fatherPK.getId()));
-      }
-
-      return contacts;
-    } catch (NoSuchObjectException nsoe) {
-      initEJB();
-      return getAllContactDetails(fatherPK);
-    }
-  }
-
-  public synchronized Collection<NodeDetail> getPathList(String contactId)
-      throws RemoteException {
-    try {
-      return kscEjb.getPathList(contactId);
-    } catch (NoSuchObjectException nsoe) {
-      initEJB();
-      return getPathList(contactId);
-    }
-  }
-
-  public synchronized String createContact(ContactDetail contactDetail)
-      throws RemoteException {
-    try {
-      String contactId = kscEjb.createContact(contactDetail);
-      resetCurrentFullCompleteUsers();
-      return contactId;
-    } catch (NoSuchObjectException nsoe) {
-      initEJB();
-      return createContact(contactDetail);
-    }
-  }
-
-  public synchronized void updateContact(ContactDetail contactDetail)
-      throws RemoteException {
-    try {
-      kscEjb.updateContact(contactDetail);
-      resetCurrentFullCompleteUsers();
-    } catch (NoSuchObjectException nsoe) {
-      initEJB();
-      updateContact(contactDetail);
-    }
-  }
-
-  public synchronized void deleteContact(String contactId)
-      throws RemoteException, PublicationTemplateException, FormException {
-    try {
-      // delete donnees formulaires XML
-      UserCompleteContact userCompleteContact = getCompleteContact(contactId);
-      String modelId = userCompleteContact.getContact().getModelId();
-      if (StringUtil.isDefined(modelId) && modelId.endsWith(".xml")) {
-        String xmlFormName = modelId;
-        String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName
-            .indexOf("."));
-
-        // recuperation des donnees du formulaire (via le DataRecord)
-        PublicationTemplate pubTemplate = getPublicationTemplateManager().getPublicationTemplate(
-            getComponentId() + ":" + xmlFormShortName);
-
-        RecordSet recordSet = pubTemplate.getRecordSet();
-        DataRecord data = recordSet.getRecord(contactId);
-        recordSet.delete(data);
-      }
-
-      // delete contact
-      kscEjb.deleteContact(contactId);
-      resetCurrentFullCompleteUsers();
-    } catch (NoSuchObjectException nsoe) {
-      initEJB();
-      deleteContact(contactId);
-    }
-  }
-
-  public synchronized void addContactToTopic(String contactId, String fatherId)
-      throws RemoteException {
-    try {
-      kscEjb.addContactToTopic(contactId, fatherId);
-      resetCurrentFullCompleteUsers();
-    } catch (NoSuchObjectException nsoe) {
-      initEJB();
-      addContactToTopic(contactId, fatherId);
-    }
-  }
-
-  public synchronized void deleteContactFromTopic(String contactId,
-      String fatherId) throws RemoteException {
-    try {
-      kscEjb.deleteContactFromTopic(contactId, fatherId);
-    } catch (NoSuchObjectException nsoe) {
-      initEJB();
-      deleteContactFromTopic(contactId, fatherId);
-    }
-  }
-
-  public synchronized void createInfoModel(String contactId, String modelId)
-      throws RemoteException {
-    try {
-      kscEjb.createInfoModel(contactId, modelId);
-      resetCurrentFullCompleteUsers();
-    } catch (NoSuchObjectException nsoe) {
-      initEJB();
-      createInfoModel(contactId, modelId);
-    }
-  }
-
-  public synchronized UserCompleteContact getCompleteContact(String contactId)
-      throws RemoteException {
-    try {
-      return kscEjb.getCompleteContact(contactId);
-    } catch (NoSuchObjectException nsoe) {
-      initEJB();
-      return getCompleteContact(contactId);
-    }
-  }
-
-  public synchronized UserCompleteContact getCompleteContactInNode(
-      String contactId, String nodeId) throws RemoteException {
-    try {
-      return kscEjb.getCompleteContactInNode(contactId, nodeId);
-    } catch (NoSuchObjectException nsoe) {
-      initEJB();
-      return getCompleteContactInNode(contactId, nodeId);
-    }
-  }
-
-  public synchronized TopicDetail getContactFather(String contactId)
-      throws RemoteException {
-    try {
-      return kscEjb.getContactFather(contactId);
-    } catch (NoSuchObjectException nsoe) {
-      initEJB();
-      return getContactFather(contactId);
-    }
-  }
-
-  public synchronized Collection<NodePK> getContactFathers(String contactId)
-      throws RemoteException {
-    try {
-      return kscEjb.getContactFathers(contactId);
-    } catch (NoSuchObjectException nsoe) {
-      initEJB();
-      return getContactFathers(contactId);
-    }
-  }
-
-  public synchronized void deleteContactFathers(String contactId)
-      throws RemoteException {
-    String fatherId;
-    try {
-      Collection<NodePK> fathers = kscEjb.getContactFathers(contactId);
-      if (fathers != null) {
-        Iterator<NodePK> it = fathers.iterator();
-        while (it.hasNext()) {
-          fatherId = ((NodePK) it.next()).getId();
-          deleteContactFromTopic(contactId, fatherId);
+        } else {// contacts annuaire interne et externe
+          userComplete = getCompleteContactInNode(contact.getContactDetail().getPK().getId(),
+              contact.getNodeId());
+          listUserComplete.add(userComplete);
         }
       }
-      resetCurrentFullCompleteUsers();
-    } catch (NoSuchObjectException nsoe) {
-      initEJB();
-      deleteContactFathers(contactId);
+      this.currentFullUsers = listUserFull;
+      this.currentCompleteUsers = listUserComplete;
     }
+    return contacts;
   }
 
-  public synchronized boolean isDescendant(String descId, String nodeId)
-      throws RemoteException {
-    try {
-      return kscEjb.isDescendant(descId, nodeId);
-    } catch (NoSuchObjectException nsoe) {
-      initEJB();
-      return isDescendant(descId, nodeId);
+  public synchronized Collection<ContactFatherDetail> getAllContactDetails(NodePK fatherPK) {
+    Collection<ContactFatherDetail> contacts = kscEjb.getAllContactDetails(fatherPK);
+    if (contacts != null) {
+      // get users of groups contained in subtree
+      List<NodeDetail> tree = getNodeBm().getSubTree(
+          new NodePK(fatherPK.getId(), getComponentId()));
+      for (int t = 0; tree != null && t < tree.size(); t++) {
+        NodeDetail node = tree.get(t);
+        contacts.addAll(getAllUsers(node.getNodePK().getId()));
+      }
+    } else {
+      contacts = new ArrayList<ContactFatherDetail>(getAllUsers(fatherPK.getId()));
     }
+    return contacts;
   }
 
-  /**
-   * ***********************************************************************************
-   */
-  /* Yellowpages - Gestion des Liens */
-  /**
-   * @param targetIds
-   * @throws java.rmi.RemoteException
-   * @return***********************************************************************************
-   */
-  // return a ContactDetail collection
-  public synchronized Collection<UserContact> getContacts(Collection<String> targetIds)
-      throws RemoteException {
-    try {
-      return kscEjb.getContacts(targetIds);
-    } catch (NoSuchObjectException nsoe) {
-      initEJB();
-      return getContacts(targetIds);
+  public synchronized List<Collection<NodeDetail>> getPathList(String contactId) {
+    return kscEjb.getPathList(contactId);
+  }
+
+  public synchronized String createContact(ContactDetail contactDetail) {
+    String contactId = kscEjb.createContact(contactDetail);
+    resetCurrentFullCompleteUsers();
+    return contactId;
+  }
+
+  public synchronized void updateContact(ContactDetail contactDetail) {
+    kscEjb.updateContact(contactDetail);
+    resetCurrentFullCompleteUsers();
+  }
+
+  public synchronized void deleteContact(String contactId) throws PublicationTemplateException,
+      FormException {
+    // delete donnees formulaires XML
+    UserCompleteContact userCompleteContact = getCompleteContact(contactId);
+    String modelId = userCompleteContact.getContact().getModelId();
+    if (StringUtil.isDefined(modelId) && modelId.endsWith(".xml")) {
+      String xmlFormName = modelId;
+      String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName
+          .indexOf('.'));
+      // recuperation des donnees du formulaire (via le DataRecord)
+      PublicationTemplate pubTemplate = getPublicationTemplateManager().getPublicationTemplate(
+          getComponentId() + ":" + xmlFormShortName);
+      RecordSet recordSet = pubTemplate.getRecordSet();
+      DataRecord data = recordSet.getRecord(contactId);
+      recordSet.delete(data);
     }
+    // delete contact
+    kscEjb.deleteContact(contactId);
+    resetCurrentFullCompleteUsers();
+  }
+
+  public synchronized void addContactToTopic(String contactId, String fatherId) {
+    kscEjb.addContactToTopic(contactId, fatherId);
+    resetCurrentFullCompleteUsers();
+  }
+
+  public synchronized void deleteContactFromTopic(String contactId, String fatherId) {
+    kscEjb.deleteContactFromTopic(contactId, fatherId);
+  }
+
+  public synchronized void createInfoModel(String contactId, String modelId) {
+    kscEjb.createInfoModel(contactId, modelId);
+    resetCurrentFullCompleteUsers();
+  }
+
+  public synchronized UserCompleteContact getCompleteContact(String contactId) {
+    return kscEjb.getCompleteContact(contactId);
+  }
+
+  public synchronized UserCompleteContact getCompleteContactInNode(String contactId, String nodeId) {
+    return kscEjb.getCompleteContactInNode(contactId, nodeId);
+  }
+
+  public synchronized TopicDetail getContactFather(String contactId) {
+    return kscEjb.getContactFather(contactId);
+  }
+
+  public synchronized Collection<NodePK> getContactFathers(String contactId) {
+    return kscEjb.getContactFathers(contactId);
+  }
+
+  public synchronized void deleteContactFathers(String contactId) {
+    Collection<NodePK> fathers = kscEjb.getContactFathers(contactId);
+    if (fathers != null) {
+      Iterator<NodePK> it = fathers.iterator();
+      while (it.hasNext()) {
+        String fatherId = it.next().getId();
+        deleteContactFromTopic(contactId, fatherId);
+      }
+    }
+    resetCurrentFullCompleteUsers();
+  }
+
+  public synchronized boolean isDescendant(String descId, String nodeId) {
+    return kscEjb.isDescendant(descId, nodeId);
+  }
+
+  public synchronized Collection<UserContact> getContacts(Collection<String> targetIds) {
+    return kscEjb.getContacts(targetIds);
   }
 
   /**
@@ -728,18 +513,14 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     return getOrganisationController().getAllUsers();
   }
 
-  public UserDetail getUserDetail(String userId) {
-    return getOrganisationController().getUserDetail(userId);
-  }
-
   /**
    * get others instances of yellowpages
    *
    * @return
    */
   public CompoSpace[] getYellowPagesInstances() {
-    CompoSpace[] compoSpaces = getOrganisationController().getCompoForUser(
-        getUserId(), "yellowpages");
+    CompoSpace[] compoSpaces = getOrganisationController().getCompoForUser(getUserId(),
+        "yellowpages");
     return compoSpaces;
   }
 
@@ -775,8 +556,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
    * @see
    */
   public String initUserPanel() {
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-        "ApplicationURL");
+    String m_context = GeneralPropertiesManager.getString("ApplicationURL");
     String hostSpaceName = getSpaceLabel();
     PairObject hostComponentName = new PairObject(getComponentLabel(), "");
     PairObject[] hostPath = new PairObject[1];
@@ -837,8 +617,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   }
 
   public String initGroupPanel() {
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-        "ApplicationURL");
+    String m_context = GeneralPropertiesManager.getString("ApplicationURL");
     String hostSpaceName = getSpaceLabel();
     PairObject hostComponentName = new PairObject(getComponentLabel(), "");
     PairObject[] hostPath = new PairObject[1];
@@ -866,14 +645,14 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
   }
 
-  public void setGroupSelected() throws RemoteException {
+  public void setGroupSelected() {
     String sel = getSelection().getFirstSelectedSet();
     if (sel != null && sel.length() > 0) {
       addGroup(sel);
     }
   }
 
-  public List<ContactFatherDetail> getAllUsers(String nodeId) throws RemoteException {
+  public List<ContactFatherDetail> getAllUsers(String nodeId) {
     List<ContactFatherDetail> users = new ArrayList<ContactFatherDetail>();
 
     List<String> groupIds = kscEjb.getGroupIds(nodeId);
@@ -887,7 +666,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     return users;
   }
 
-  public List<UserDetail> getAllUserDetails(String nodeId) throws RemoteException {
+  public List<UserDetail> getAllUserDetails(String nodeId) {
     List<UserDetail> users = new ArrayList<UserDetail>();
 
     List<String> groupIds = kscEjb.getGroupIds(nodeId);
@@ -904,7 +683,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     return users;
   }
 
-  public List<ContactFatherDetail> getAllUsersOfGroup(String groupId) throws RemoteException {
+  public List<ContactFatherDetail> getAllUsersOfGroup(String groupId) {
     List<ContactFatherDetail> users = new ArrayList<ContactFatherDetail>();
 
     GroupDetail groupDetail = getGroup(groupId);
@@ -960,13 +739,13 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     return contactFather;
   }
 
-  public void addGroup(String groupId) throws RemoteException {
+  public void addGroup(String groupId) {
     SilverTrace.info("yellowpages", "YellowpagesSessionController.addGroup()",
         "root.MSG_GEN_ENTER_METHOD", "groupId = " + groupId);
     kscEjb.addGroup(groupId);
   }
 
-  public void removeGroup(String groupId) throws RemoteException {
+  public void removeGroup(String groupId) {
     kscEjb.removeGroup(groupId);
     resetCurrentFullCompleteUsers();
   }
@@ -1105,14 +884,13 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
    * @param typeSearch
    * @param query
    * @return list of ContactFatherDetail
-   * @throws RemoteException
+   * @
    * @throws FormException
    * @throws PublicationTemplateException
    */
-  public List<ContactFatherDetail> search(String typeSearch, String query) throws RemoteException,
-      PublicationTemplateException, FormException {
+  public List<ContactFatherDetail> search(String typeSearch, String query)
+      throws PublicationTemplateException, FormException {
     List<ContactFatherDetail> result = new ArrayList<ContactFatherDetail>();
-
     query = query.trim();
 
     if (!"All".equals(typeSearch)) {// typeSearch = LastName || FirstName ||
@@ -1194,7 +972,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
       }
 
       // filter users who are in the component
-      TopicDetail rootTopic = getTopic("0");
+      TopicDetail rootTopic = getTopic(NodePK.ROOT_NODE_ID);
       Collection<ContactFatherDetail> contactsUser = getAllContactDetails(rootTopic.getNodePK());
       Iterator<ContactFatherDetail> iterator = contactsUser.iterator();
       ContactFatherDetail contactFather;
@@ -1225,10 +1003,10 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
         contacts = (List<ContactDetail>) kscEjb.getContactDetailsByLastNameAndFirstName(
             new ContactPK("useless", "useless", getComponentId()), nom, prenom);
       } else if ("LastNameFirstName".equals(typeSearch)) {
-        if (prenom == null) {// nom ou pr�nom
+        if (prenom == null) {// nom ou prenom
           contacts = (List<ContactDetail>) kscEjb.getContactDetailsByLastNameOrFirstName(
               new ContactPK("useless", "useless", getComponentId()), nom);
-        } else {// nom et pr�nom
+        } else {// nom et prenom
           contacts = (List<ContactDetail>) kscEjb.getContactDetailsByLastNameAndFirstName(
               new ContactPK("useless", "useless", getComponentId()), nom,
               prenom);
@@ -1269,7 +1047,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
           // Silverpeas
           itUserFull = listFullUsers.iterator();
           while (itUserFull.hasNext()) {
-            userFull = (UserFull) itUserFull.next();
+            userFull = itUserFull.next();
             if (contactFather.getContactDetail().getUserId().equals(
                 userFull.getId())) {
               result.add(contactFather);
@@ -1294,7 +1072,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   }
 
   public List<ContactFatherDetail> getListContactFather(List<ContactDetail> contacts,
-      boolean retourneUserReferentiel) throws RemoteException {
+      boolean retourneUserReferentiel) {
     List<ContactFatherDetail> result = new ArrayList<ContactFatherDetail>();
     if (contacts != null) {
       for (ContactDetail contact : contacts) {
@@ -1316,16 +1094,8 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
 
   @Override
   public void close() {
-    try {
-      if (kscEjb != null) {
-        kscEjb.remove();
-      }
-    } catch (RemoteException e) {
-      SilverTrace.error("yellowpagesSession",
-          "YellowpagesSessionController.close", "", e);
-    } catch (RemoveException e) {
-      SilverTrace.error("yellowpagesSession",
-          "YellowpagesSessionController.close", "", e);
+    if (kscEjb != null) {
+      kscEjb = null;
     }
   }
 
@@ -1347,9 +1117,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
 
   public NodeBm getNodeBm() {
     try {
-      NodeBmHome nodeBmHome = (NodeBmHome) EJBUtilitaire.getEJBObjectRef(
-          JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
-      return nodeBmHome.create();
+      return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
     } catch (Exception re) {
       throw new YellowpagesRuntimeException("YellowpagesSessionController.getNodeBm()",
           SilverpeasRuntimeException.ERROR, "yellowpages.EX_GET_NODEBM_HOME_FAILED", re);
@@ -1364,33 +1132,19 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
    * @param models
    */
   public void addModelUsed(String[] models) {
-    try {
-      getKSCEJB().addModelUsed(models, getComponentId());
-    } catch (RemoteException e) {
-      throw new YellowpagesRuntimeException("YellowpagesSessionController.addModelUsed()",
-          SilverpeasRuntimeException.ERROR, "kmelia.MSG_ERR_GENERAL", e);
-    }
+    getKSCEJB().addModelUsed(models, getComponentId());
   }
 
   public Collection<String> getModelUsed() {
-    Collection<String> result = null;
-    try {
-      result = getKSCEJB().getModelUsed(getComponentId());
-    } catch (RemoteException e) {
-      throw new YellowpagesRuntimeException("YellowpagesSessionController.getModelUsed()",
-          SilverpeasRuntimeException.ERROR, "kmelia.MSG_ERR_GENERAL", e);
-    }
-    return result;
+    return getKSCEJB().getModelUsed(getComponentId());
   }
 
-  public synchronized void deleteBasketContent() throws RemoteException,
-      FormException, PublicationTemplateException {
+  public synchronized void deleteBasketContent() throws FormException, PublicationTemplateException {
     SilverTrace.info("yellowpages", "YellowpagesSessionControl.deleteBasketContent",
         "root.MSG_ENTER_METHOD");
     TopicDetail td = getCurrentTopic();
     Collection<UserContact> pds = td.getContactDetails();
-    SilverTrace.info("yellowpages",
-        "YellowpagesSessionControl.deleteBasketContent",
+    SilverTrace.info("yellowpages", "YellowpagesSessionControl.deleteBasketContent",
         "root.MSG_PARAM_VALUE", "NbContacts=" + pds.size());
     for (UserContact userContact : pds) {
       SilverTrace.info("yellowpages", "YellowpagesSessionControl.deleteBasketContent",
@@ -1433,13 +1187,13 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     return domainMultilang;
   }
 
-  public String exportAsCSV() throws RemoteException {
+  public String exportAsCSV() {
     List<StringBuffer> csvRows = exportAllDataAsCSV();
 
     return writeCSVFile(csvRows);
   }
 
-  private List<StringBuffer> exportAllDataAsCSV() throws RemoteException {
+  private List<StringBuffer> exportAllDataAsCSV() {
     Collection<ContactFatherDetail> contacts =
         getAllContactDetails(currentTopic.getNodePK());
 
@@ -1585,29 +1339,42 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
    * @return HashMap<isError, messages>
    * @throws com.stratelia.webactiv.yellowpages.YellowpagesException
    */
-  public HashMap<Boolean, String> importCSV(FileItem filePart, String modelId) throws
-      YellowpagesException {
+  public ImportReport importCSV(FileItem filePart, String modelId) throws YellowpagesException {
     SilverTrace.info("yellowpages", "YellowpagesSessionController.importCSV()",
-        "root.MSG_GEN_ENTER_METHOD");
-    HashMap<Boolean, String> result = new HashMap<Boolean, String>();
-    InputStream is;
-    int nbContactsAdded = 0;
-    Variant[][] csvHeaderValues;
+      "root.MSG_GEN_ENTER_METHOD");
+    
+    ImportReport report = new ImportReport();
     try {
-      is = filePart.getInputStream();
+      InputStream is = filePart.getInputStream();
       CSVReader csvReader = new CSVReader(getLanguage());
       csvReader.setColumnNumberControlEnabled(false);
       csvReader.setExtraColumnsControlEnabled(false);
-      csvReader.initCSVFormat("com.stratelia.webactiv.yellowpages.settings.yellowpagesSettings",
-          "User", ",");
+      csvReader.initCSVFormat("org.silverpeas.yellowpages.settings.yellowpagesSettings",
+        "User", ",");
 
       try {
-        csvHeaderValues = csvReader.parseStream(is);
+        Variant[][] csvHeaderValues = csvReader.parseStream(is);
 
-        StringBuilder listErrors = new StringBuilder("");
-        ContactDetail contactDetail;
         int nbColumns = csvReader.getM_nbCols() + csvReader.getM_specificNbCols();
+        
+        // load optional template
+        PublicationTemplate pubTemplate = null;
+        String xmlFormShortName = null;
+        try {
+          if (StringUtil.isDefined(modelId) && modelId.endsWith(".xml")) {
+            xmlFormShortName = modelId.substring(modelId.indexOf("/") + 1, modelId.indexOf("."));
+            pubTemplate =
+                getPublicationTemplateManager().getPublicationTemplate(
+                    getComponentId() + ":" + xmlFormShortName);
+          }
+        } catch (PublicationTemplateException e) {
+          SilverTrace.error("yellowpages",
+              "YellowpagesSessionController.importCSV", "yellowpages.EX_CSV_FILE", e);
+            report.addError(e.getExtraInfos());
+        }
 
+        int currentLine = 1;
+        int nbContactsAdded = 0;
         for (Variant[] csvHeaderValue : csvHeaderValues) {
           String[] CSVRow = new String[csvHeaderValue.length];
           // Read all columns
@@ -1615,21 +1382,14 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
             CSVRow[column] = formatStringSeparator(csvHeaderValue[column].getValueString());
           }
           // Header columns (lastName, firstName, email, phone, fax)
-          contactDetail =
-              new ContactDetail("X", CSVRow[1], CSVRow[0], CSVRow[2], CSVRow[3], CSVRow[4], null,
-              null, null);
+          ContactDetail contactDetail =
+            new ContactDetail("X", CSVRow[1], CSVRow[0], CSVRow[2], CSVRow[3], CSVRow[4], null,
+            null, null);
 
           try {
             String contactId = createContact(contactDetail);
             // Extra columns from xml form ?
-            if (StringUtil.isDefined(modelId)) {
-              String xmlFormShortName = modelId.substring(modelId.indexOf("/") + 1, modelId.indexOf(
-                  "."));
-
-              // récupération des données du formulaire (via le DataRecord)
-              PublicationTemplate pubTemplate = getPublicationTemplateManager()
-                  .getPublicationTemplate(getComponentId() + ":"
-                  + xmlFormShortName);
+            if (pubTemplate != null) {
               DataRecord record = pubTemplate.getRecordSet().getEmptyRecord();
               record.setId(contactId);
 
@@ -1659,34 +1419,30 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
                   new CompleteContact(contactDetail, xmlFormShortName));
               setCurrentContact(userContactComplete);
             }
-          } catch (Exception re) {
-            SilverTrace.error("yellowpagesSession",
-                "YellowpagesSessionController.importCSV", "yellowpages.EX_CSV_FILE", re);
-          }
-          if (listErrors.length() > 0) {
-            result.put(Boolean.TRUE, listErrors.toString());
-          } else {
             nbContactsAdded++;
+          } catch (Exception re) {
+            report.addError("Erreur à la ligne #"+currentLine);
+            SilverTrace.error("yellowpages",
+              "YellowpagesSessionController.importCSV", "yellowpages.EX_CSV_FILE", re);
           }
-
+          currentLine++;
         }
+        report.setNbAdded(nbContactsAdded);
       } catch (UtilTrappedException ute) {
-        SilverTrace.error("yellowpagesSession",
-            "YellowpagesSessionController.importCSV", "yellowpages.EX_CSV_FILE", ute);
-        result.put(Boolean.TRUE, ute.getExtraInfos());
+        SilverTrace.error("yellowpages",
+          "YellowpagesSessionController.importCSV", "yellowpages.EX_CSV_FILE", ute);
+        report.addError(ute.getExtraInfos());
       }
-      result.put(Boolean.FALSE, Integer.toString(nbContactsAdded));
-
     } catch (IOException e) {
-      SilverTrace.error("yellowpagesSession",
-          "YellowpagesSessionController.importCSV", "yellowpages.EX_CSV_FILE", e);
-      result.put(Boolean.TRUE, e.getMessage());
+      SilverTrace.error("yellowpages", "YellowpagesSessionController.importCSV",
+          "yellowpages.EX_CSV_FILE", e);
+      report.addError(e.getMessage());
     }
 
     SilverTrace.info("yellowpages", "YellowpagesSessionController.importCSV()",
         "root.MSG_GEN_EXIT_METHOD");
 
-    return result;
+    return report;
   }
 
   /**
@@ -1717,14 +1473,15 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     String modelId = getCurrentTopic().getNodeDetail().getModelId();
     return StringUtil.isDefined(modelId) && !"0".equals(modelId);
   }
-  
+
   public List<PublicationTemplate> getForms() {
     List<PublicationTemplate> templates = new ArrayList<PublicationTemplate>();
     try {
       GlobalContext context = new GlobalContext(getSpaceId(), getComponentId());
       templates = getPublicationTemplateManager().getPublicationTemplates(context);
     } catch (PublicationTemplateException e) {
-      SilverTrace.error("yellowpages", "YellowpagesSessionController.getForms()", "root.CANT_GET_FORMS", e);
+      SilverTrace.error("yellowpages", "YellowpagesSessionController.getForms()",
+          "root.CANT_GET_FORMS", e);
     }
     return templates;
   }

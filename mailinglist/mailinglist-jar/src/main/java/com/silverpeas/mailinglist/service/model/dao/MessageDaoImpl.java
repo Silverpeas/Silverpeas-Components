@@ -1,46 +1,55 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.mailinglist.service.model.dao;
 
+import com.silverpeas.annotation.Repository;
 import com.silverpeas.mailinglist.service.model.beans.Activity;
 import com.silverpeas.mailinglist.service.model.beans.Attachment;
 import com.silverpeas.mailinglist.service.model.beans.Message;
 import com.silverpeas.mailinglist.service.util.OrderBy;
+import com.silverpeas.util.StringUtil;
 import org.silverpeas.util.crypto.CryptMD5;
 import com.stratelia.webactiv.util.exception.UtilException;
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
-import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
-
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import org.springframework.transaction.annotation.Transactional;
 
-public class MessageDaoImpl extends HibernateDaoSupport implements MessageDao {
+@Repository("messageDao")
+@Transactional
+public class MessageDaoImpl implements MessageDao {
 
+  @PersistenceContext
+  private EntityManager entityManager;
+
+  private EntityManager getEntityManager() {
+    return this.entityManager;
+  }
+
+  @Override
   public String saveMessage(Message message) {
     Message existingMessage = findMessageByMailId(message.getMessageId(),
         message.getComponentId());
@@ -51,141 +60,137 @@ public class MessageDaoImpl extends HibernateDaoSupport implements MessageDao {
           saveAttachmentFile(attachment);
         }
       }
-      String id = (String) getSession().save(message);
-      message.setId(id);
-      return id;
+      getEntityManager().persist(message);
+      return message.getId();
     }
     return existingMessage.getId();
   }
 
+  @Override
   public void updateMessage(Message message) {
-    getSession().update(message);
+    getEntityManager().merge(message);
   }
 
+  @Override
   public void deleteMessage(Message message) {
+    EntityManager theEntityManager = getEntityManager();
+    Message reattachedMessage = theEntityManager.merge(message);
     if (message.getAttachments() != null && !message.getAttachments().isEmpty()) {
       for (Attachment attachment : message.getAttachments()) {
         deleteAttachmentFile(attachment);
       }
     }
-    getSession().delete(message);
+    theEntityManager.remove(reattachedMessage);
   }
 
+  @Override
   public Message findMessageById(final String id) {
-    Criteria criteria = getSession().createCriteria(Message.class);
-    criteria.add(Restrictions.eq("id", id));
-    return (Message) criteria.uniqueResult();
+    return getEntityManager().find(Message.class, id);
   }
 
   public Message findMessageByMailId(final String messageId, String componentId) {
-    Criteria criteria = getSession().createCriteria(Message.class);
-    criteria.add(Restrictions.naturalId().set("componentId", componentId).set(
-        "messageId", messageId));
-    return (Message) criteria.uniqueResult();
+    TypedQuery<Message> query = getEntityManager().createNamedQuery("findMessage", Message.class);
+    query.setParameter("componentId", componentId);
+    query.setParameter("messageId", messageId);
+    Message result = null;
+    try {
+      result = query.getSingleResult();
+    } catch (NoResultException ex) {
+      Logger.getLogger(MessageDao.class.getSimpleName()).log(Level.FINER, ex.getMessage());
+    }
+    return result;
   }
 
-  @SuppressWarnings("unchecked")
+  @Override
   public List<Message> listAllMessagesOfMailingList(final String componentId,
       final int page, final int elementsPerPage, final OrderBy orderBy) {
-    Criteria criteria = getSession().createCriteria(Message.class);
-    criteria.add(Restrictions.eq("componentId", componentId));
-    criteria.addOrder(orderBy.getOrder());
-    int firstResult = page * elementsPerPage;
-    criteria.setFirstResult(firstResult);
-    criteria.setMaxResults(elementsPerPage);
-    return criteria.list();
+    TypedQuery<Message> query = getEntityManager().createQuery(
+        "from Message where componentId = :componentId " + orderBy.getOrderExpression(),
+        Message.class);
+    query.setParameter("componentId", componentId);
+    query.setFirstResult(page * elementsPerPage);
+    query.setMaxResults(elementsPerPage);
+    return query.getResultList();
   }
 
-  @SuppressWarnings("unchecked")
+  @Override
   public List<Message> listDisplayableMessagesOfMailingList(String componentId,
       final int month, final int year, final int page,
       final int elementsPerPage, final OrderBy orderBy) {
-    Criteria criteria = getSession().createCriteria(Message.class);
-    criteria.add(Restrictions.eq("componentId", componentId));
-    criteria.add(Restrictions.eq("moderated", Boolean.TRUE));
+    String queryText = "from Message where componentId = :componentId and moderated = :moderated";
     if (month >= 0) {
-      criteria.add(Restrictions.eq("month", month));
+      queryText += " and month = " + month;
     }
     if (year >= 0) {
-      criteria.add(Restrictions.eq("year", year));
+      queryText += " and year = " + year;
     }
-    criteria.addOrder(orderBy.getOrder());
-    int firstResult = page * elementsPerPage;
-    criteria.setFirstResult(firstResult);
-    criteria.setMaxResults(elementsPerPage);
-    return criteria.list();
+    queryText += " " + orderBy.getOrderExpression();
+
+    TypedQuery<Message> query = getEntityManager().createQuery(queryText, Message.class);
+    query.setParameter("componentId", componentId);
+    query.setParameter("moderated", true);
+    query.setFirstResult(page * elementsPerPage);
+    query.setMaxResults(elementsPerPage);
+    return query.getResultList();
   }
 
-  @SuppressWarnings("unchecked")
+  @Override
   public List<Message> listUnmoderatedMessagesOfMailingList(String componentId,
       int page, int elementsPerPage, OrderBy orderBy) {
-    Criteria criteria = getSession().createCriteria(Message.class);
-    criteria.add(Restrictions.eq("componentId", componentId));
-    criteria.add(Restrictions.eq("moderated", Boolean.FALSE));
-    criteria.addOrder(orderBy.getOrder());
-    int firstResult = page * elementsPerPage;
-    criteria.setFirstResult(firstResult);
-    criteria.setMaxResults(elementsPerPage);
-    return criteria.list();
+    TypedQuery<Message> query = getEntityManager().createQuery(
+        "from Message where componentId = :componentId and moderated = :moderated " + orderBy.
+        getOrderExpression(), Message.class);
+    query.setParameter("componentId", componentId);
+    query.setParameter("moderated", false);
+    query.setFirstResult(page * elementsPerPage);
+    query.setMaxResults(elementsPerPage);
+    return query.getResultList();
   }
 
-  @SuppressWarnings("unchecked")
+  @Override
   public List<Message> listActivityMessages(String componentId, int size, OrderBy orderBy) {
-    Criteria criteria = getSession().createCriteria(Message.class);
-    criteria.add(Restrictions.eq("componentId", componentId));
-    criteria.add(Restrictions.eq("moderated", Boolean.TRUE));
-    criteria.addOrder(orderBy.getOrder());
-    criteria.setMaxResults(size);
-    return criteria.list();
+    TypedQuery<Message> query = getEntityManager().createQuery(
+        "from Message where componentId = :componentId and moderated = :moderated " + orderBy.
+        getOrderExpression(), Message.class);
+    query.setParameter("componentId", componentId);
+    query.setParameter("moderated", true);
+    query.setMaxResults(size);
+    return query.getResultList();
   }
 
-  public int listTotalNumberOfMessages(String componentId) {
-    Criteria criteria = getSession().createCriteria(Message.class);
-    criteria.add(Restrictions.eq("componentId", componentId));
-    criteria.setProjection(Projections.rowCount());
-    return ((Long) criteria.uniqueResult()).intValue();
+  @Override
+  public long listTotalNumberOfMessages(String componentId) {
+    TypedQuery<Long> query = getEntityManager().
+        createNamedQuery("countOfMessages", Long.class);
+    query.setParameter("componentId", componentId);
+    return query.getSingleResult();
   }
 
-  public int listTotalNumberOfDisplayableMessages(String componentId) {
-    Criteria criteria = getSession().createCriteria(Message.class);
-    criteria.add(Restrictions.eq("componentId", componentId));
-    criteria.add(Restrictions.eq("moderated", Boolean.TRUE));
-    criteria.setProjection(Projections.rowCount());
-    return ((Long) criteria.uniqueResult()).intValue();
+  @Override
+  public long listTotalNumberOfDisplayableMessages(String componentId) {
+    TypedQuery<Long> query = getEntityManager().createNamedQuery(
+        "countOfMessagesByModeration", Long.class);
+    query.setParameter("componentId", componentId);
+    query.setParameter("moderated", true);
+    return query.getSingleResult();
   }
 
-  public int listTotalNumberOfUnmoderatedMessages(String componentId) {
-    Criteria criteria = getSession().createCriteria(Message.class);
-    criteria.add(Restrictions.eq("componentId", componentId));
-    criteria.add(Restrictions.eq("moderated", Boolean.FALSE));
-    criteria.setProjection(Projections.rowCount());
-    return ((Long) criteria.uniqueResult()).intValue();
+  @Override
+  public long listTotalNumberOfUnmoderatedMessages(String componentId) {
+    TypedQuery<Long> query = getEntityManager().createNamedQuery(
+        "countOfMessagesByModeration", Long.class);
+    query.setParameter("componentId", componentId);
+    query.setParameter("moderated", false);
+    return query.getSingleResult();
   }
 
-  @SuppressWarnings("unchecked")
+  @Override
   public List<Activity> listActivity(String componentId) {
-    Criteria criteria = getSession().createCriteria(Message.class);
-    criteria.add(Restrictions.eq("componentId", componentId));
-    criteria.add(Restrictions.eq("moderated", Boolean.TRUE));
-    criteria.setProjection(Projections.projectionList().add(
-        Projections.rowCount(), "nb").add(Projections.groupProperty("year"),
-        "year").add(Projections.groupProperty("month"), "month"));
-    List result = criteria.list();
-    List<Activity> activities;
-    if (result != null && !result.isEmpty()) {
-      activities = new ArrayList<Activity>(result.size());
-      for (Object aResult : result) {
-        Object[] line = (Object[]) aResult;
-        Activity activity = new Activity();
-        activity.setNbMessages(((Long) line[0]).intValue());
-        activity.setYear((Integer) line[1]);
-        activity.setMonth((Integer) line[2]);
-        activities.add(activity);
-      }
-    } else {
-      activities = new ArrayList<Activity>();
-    }
-    return activities;
+    TypedQuery<Activity> query = getEntityManager().createNamedQuery("findActivitiesFromMessages",
+        Activity.class);
+    query.setParameter("componentId", componentId);
+    query.setParameter("moderated", true);
+    return query.getResultList();
   }
 
   protected void saveAttachmentFile(Attachment attachment) {
@@ -204,7 +209,7 @@ public class MessageDaoImpl extends HibernateDaoSupport implements MessageDao {
         }
       }
     } catch (UtilException e) {
-      e.printStackTrace();
+      Logger.getLogger(getClass().getSimpleName()).log(Level.WARNING, e.getMessage());
     }
   }
 
@@ -220,21 +225,25 @@ public class MessageDaoImpl extends HibernateDaoSupport implements MessageDao {
     }
   }
 
-  @SuppressWarnings("unchecked")
   protected Attachment findAlreadyExistingAttachment(final String md5Hash,
       final long size, final String fileName, final String attachmentId) {
-    Criteria criteria = getSession().createCriteria(Attachment.class);
-    criteria.add(Restrictions.eq("md5Signature", md5Hash));
-    criteria.add(Restrictions.eq("size", size));
-    criteria.add(Restrictions.eq("fileName", fileName));
-    if (attachmentId != null) {
-      criteria.add(Restrictions.not(Restrictions.eq("id", attachmentId)));
+    TypedQuery<Attachment> query;
+    if (StringUtil.isDefined(attachmentId)) {
+      query = getEntityManager().
+          createNamedQuery("findSomeAttachmentsExcludingOne", Attachment.class);
+      query.setParameter("id", attachmentId);
+    } else {
+      query = getEntityManager().createNamedQuery("findSomeAttachments", Attachment.class);
     }
-    List<Attachment> result = criteria.list();
-    if (result != null && !result.isEmpty()) {
-      return result.iterator().next();
-    }
-    return null;
-  }
+    query.setParameter("md5", md5Hash);
+    query.setParameter("size", size);
+    query.setParameter("fileName", fileName);
 
+    List<Attachment> attachments = query.getResultList();
+    Attachment result = null;
+    if (!attachments.isEmpty()) {
+      result = attachments.get(0);
+    }
+    return result;
+  }
 }

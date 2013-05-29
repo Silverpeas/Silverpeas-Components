@@ -38,13 +38,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.silverpeas.core.admin.OrganisationController;
+
 import com.silverpeas.gallery.control.ejb.GalleryBm;
-import com.silverpeas.gallery.control.ejb.GalleryBmHome;
 import com.silverpeas.gallery.model.AlbumDetail;
 import com.silverpeas.gallery.model.GalleryRuntimeException;
 import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.gallery.model.PhotoPK;
 import com.silverpeas.util.StringUtil;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -52,7 +54,6 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.model.NodePK;
-import org.silverpeas.core.admin.OrganisationController;
 
 /**
  * Class declaration
@@ -204,17 +205,7 @@ public class GalleryInWysiwygRouter extends HttpServlet {
   }
 
   private GalleryBm getGalleryBm() {
-    GalleryBm galleryBm = null;
-    try {
-      GalleryBmHome galleryBmHome = (GalleryBmHome) EJBUtilitaire
-          .getEJBObjectRef(JNDINames.GALLERYBM_EJBHOME, GalleryBmHome.class);
-      galleryBm = galleryBmHome.create();
-    } catch (Exception e) {
-      throw new GalleryRuntimeException(
-          "GalleryInWysiwygRouter.getGalleryBm()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
-    return galleryBm;
+    return EJBUtilitaire.getEJBObjectRef(JNDINames.GALLERYBM_EJBHOME, GalleryBm.class);
   }
 
   private OrganisationController getOrganisationController() {

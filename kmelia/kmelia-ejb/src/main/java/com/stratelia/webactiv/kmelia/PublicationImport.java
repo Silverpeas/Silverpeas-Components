@@ -29,8 +29,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.fileupload.FileItem;
-
 import org.silverpeas.search.SearchEngineFactory;
 import org.silverpeas.search.indexEngine.model.IndexManager;
 import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
@@ -51,12 +49,16 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBmEJB;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+
+import org.apache.commons.fileupload.FileItem;
 
 public class PublicationImport {
 
@@ -83,12 +85,10 @@ public class PublicationImport {
 
   public void importPublications(List<Map<String, String>> publiParamsList,
       List<Map<String, String>> formParamsList, String language, String xmlFormName,
-      String discrimatingParameterName, String userProfile)
-      throws RemoteException {
+      String discrimatingParameterName, String userProfile) {
     for (int i = 0; i < publiParamsList.size(); i++) {
-      importPublication(publiParamsList.get(i), formParamsList
-          .get(i), language, xmlFormName, discrimatingParameterName,
-          userProfile);
+      importPublication(publiParamsList.get(i), formParamsList.get(i), language, xmlFormName,
+          discrimatingParameterName, userProfile);
     }
   }
 
@@ -106,8 +106,7 @@ public class PublicationImport {
    * @throws RemoteException
    */
   public boolean importPublication(Map<String, String> publiParams, Map<String, String> formParams,
-      String language, String xmlFormName, String discrimatingParameterName, String userProfile)
-      throws RemoteException {
+      String language, String xmlFormName, String discrimatingParameterName, String userProfile) {
     String publicationToUpdateId = null;
     if (discrimatingParameterName != null && discrimatingParameterName.length() > 0) {
       String discrimatingParameterValue = formParams.get(discrimatingParameterName);
@@ -131,8 +130,7 @@ public class PublicationImport {
    * @throws RemoteException
    */
   public boolean importPublication(String publicationToUpdateId, Map<String, String> publiParams,
-      Map<String, String> formParams, String language, String xmlFormName, String userProfile)
-      throws RemoteException {
+      Map<String, String> formParams, String language, String xmlFormName, String userProfile) {
     PublicationDetail pubDetail = null;
     boolean resultStatus;
     PublicationPK pubPK;
@@ -320,13 +318,11 @@ public class PublicationImport {
    * @param pubDetail The publication detail.
    * @throws RemoteException
    */
-  private void updatePublication(PublicationDetail pubDetail, boolean forceUpdateDate)
-      throws RemoteException {
+  private void updatePublication(PublicationDetail pubDetail, boolean forceUpdateDate) {
     pubDetail.getPK().setSpace(spaceId);
     pubDetail.getPK().setComponentName(componentId);
     pubDetail.setUpdaterId(userId);
     pubDetail.setIndexOperation(IndexManager.NONE);
-
     kmeliaBm.updatePublication(pubDetail, forceUpdateDate);
   }
 
@@ -378,9 +374,9 @@ public class PublicationImport {
     return nodePK.getId();
   }
 
-  public Collection<String> getPublicationsSpecificValues(String componentId,
-      String xmlFormName, String fieldName) throws RemoteException {
-    PublicationBm publicationBm = kmeliaBm.getPublicationBm();
+  public Collection<String> getPublicationsSpecificValues(String componentId, String xmlFormName,
+      String fieldName) {
+    PublicationBm publicationBm = getPublicationBm();
     Collection<PublicationDetail> publications = publicationBm.getAllPublications(new PublicationPK(
         "useless", componentId));
     List<String> result = new ArrayList<String>();
@@ -403,8 +399,7 @@ public class PublicationImport {
     return result;
   }
 
-  public void draftInPublication(String xmlFormName, String fieldName,
-      String fieldValue) throws RemoteException {
+  public void draftInPublication(String xmlFormName, String fieldName, String fieldValue) {
     String publicationId = getPublicationId(xmlFormName, fieldName, fieldValue);
     if (publicationId != null) {
       PublicationPK publicationPK = new PublicationPK(publicationId, componentId);
@@ -413,10 +408,9 @@ public class PublicationImport {
   }
 
   public void updatePublicationEndDate(String xmlFormName, String fieldName, String fieldValue,
-      Date endDate) throws RemoteException {
+      Date endDate) {
     String publicationToUpdateId = getPublicationId(xmlFormName, fieldName, fieldValue);
-    PublicationPK publicationPK = new PublicationPK(publicationToUpdateId,
-        spaceId, componentId);
+    PublicationPK publicationPK = new PublicationPK(publicationToUpdateId, spaceId, componentId);
     PublicationDetail pubDetail = kmeliaBm.getPublicationDetail(publicationPK);
     Date publicationEndDate = pubDetail.getEndDate();
     if (publicationEndDate == null || publicationEndDate.after(endDate)) {
@@ -501,8 +495,12 @@ public class PublicationImport {
       pubDetail.setInfoId(infoId);
     }
   }
-  
+
   public void setIgnoreMissingFormFields(boolean ignore) {
     ignoreMissingFormFields = ignore;
+  }
+
+  private PublicationBm getPublicationBm() {
+    return EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBm.class);
   }
 }

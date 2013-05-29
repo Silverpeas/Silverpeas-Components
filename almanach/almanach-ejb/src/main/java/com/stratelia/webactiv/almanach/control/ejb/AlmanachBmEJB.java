@@ -5,11 +5,10 @@
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
@@ -21,11 +20,28 @@
  */
 package com.stratelia.webactiv.almanach.control.ejb;
 
+import java.sql.Connection;
+import java.util.*;
+import java.util.Date;
+
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+
+import net.fortuna.ical4j.model.Period;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.date.*;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.service.PdcClassificationService;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.almanach.AlmanachContentManager;
 import com.stratelia.webactiv.almanach.model.*;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
@@ -39,100 +55,30 @@ import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+
 import net.fortuna.ical4j.model.Calendar;
-import net.fortuna.ical4j.model.*;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.CalScale;
 import net.fortuna.ical4j.model.property.ExDate;
 import net.fortuna.ical4j.model.property.RRule;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
-import org.silverpeas.search.indexEngine.model.IndexEntryPK;
-
-import javax.ejb.CreateException;
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
-import java.rmi.RemoteException;
-import java.sql.Connection;
-import java.util.*;
-import java.util.Date;
 
 import static com.silverpeas.util.StringUtil.isDefined;
 import static com.stratelia.webactiv.util.DateUtil.*;
 
-public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
+import net.fortuna.ical4j.model.*;
+
+@Stateless(name = "Almanach", description =
+    "Stateless session bean to manage the almanach component.")
+@TransactionAttribute(TransactionAttributeType.SUPPORTS)
+public class AlmanachBmEJB implements AlmanachBm {
 
   private static final long serialVersionUID = -8559479482209447676L;
   private static final ResourceLocator settings = new ResourceLocator(
-      "com.stratelia.webactiv.almanach.settings.almanachSettings", "");
+      "org.silverpeas.almanach.settings.almanachSettings", "");
   private AlmanachContentManager almanachContentManager = null;
   private SilverpeasBeanDAO<Periodicity> eventPeriodicityDAO = null;
   private SilverpeasBeanDAO<PeriodicityException> periodicityExceptionDAO = null;
   private EventDAO eventDAO = new EventDAO();
-
-  /**
-   * Get the events of the month
-   *
-   * @author dlesimple
-   * @param pk
-   * @param date
-   * @param instanceIds array of instanceIds
-   * @return Collection of Events
-   */
-  @Override
-  public Collection<EventDetail> getMonthEvents(EventPK pk, Date date,
-      String[] instanceIds) {
-    SilverTrace.info("almanach", "AlmanachBmEJB.getMonthsEvents()",
-        "root.MSG_GEN_ENTER_METHOD");
-    try {
-      List<EventDetail> monthEvents = new ArrayList<EventDetail>();
-
-      String[] almanachIds = Arrays.copyOf(instanceIds, instanceIds.length + 1);
-      almanachIds[instanceIds.length] = pk.getInstanceId();
-
-      // getting events without periodicity
-      Collection<EventDetail> events = getEventDAO().findAllEventsInMonth(date, almanachIds);
-      List<EventDetail> periodicEvents = new ArrayList<EventDetail>();
-      for (EventDetail event : events) {
-        if (event.isPeriodic()) {
-          periodicEvents.add(event);
-        } else {
-          monthEvents.add(event);
-        }
-      }
-      if (!periodicEvents.isEmpty()) {
-        // transform event occurrences to events (!)
-        net.fortuna.ical4j.model.Calendar calendarAlmanach =
-            getICal4jCalendar(periodicEvents, null);
-        Collection<EventDetail> occurrences =
-            getListRecurrentEvent(calendarAlmanach, null, "", "useless", false);
-
-        // adding event occurrences to non periodic events
-        monthEvents.addAll(occurrences);
-      }
-
-      return monthEvents;
-    } catch (Exception e) {
-      throw new AlmanachRuntimeException("AlmanachBmEJB.getMonthEvents()",
-          SilverpeasRuntimeException.ERROR,
-          "almanach.EXE_GET_MONTH_EVENTS_FAIL", e);
-    }
-  }
-
-  /**
-   * Get the events of the month
-   *
-   * @author dlesimple
-   * @param pk
-   * @param date
-   * @return Collection of Events
-   */
-  @Override
-  public Collection<EventDetail> getMonthEvents(EventPK pk, Date date) {
-    return getMonthEvents(pk, date, null);
-  }
 
   /*
    * (non-Javadoc)
@@ -147,8 +93,7 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
       return events;
     } catch (Exception e) {
       throw new AlmanachRuntimeException("AlmanachBmEJB.getAllEvents()",
-          SilverpeasRuntimeException.ERROR, "almanach.EXE_GET_ALL_EVENTS_FAIL",
-          e);
+          SilverpeasRuntimeException.ERROR, "almanach.EXE_GET_ALL_EVENTS_FAIL", e);
     }
   }
 
@@ -819,18 +764,6 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
     }
   }
 
-  /**
-   * @return
-   */
-  private Connection getConnection() {
-    try {
-      Connection con = DBUtil.makeConnection(JNDINames.SILVERPEAS_DATASOURCE);
-      return con;
-    } catch (Exception e) {
-      throw new AlmanachRuntimeException("AlmanachBmEJB.getConnection()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
-    }
-  }
 
   /*
    * (non-Javadoc)
@@ -887,103 +820,26 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
    * @return
    */
   private OrganizationController getOrganizationController() {
-    OrganizationController orga = new OrganizationController();
-    return orga;
-  }
-
-  /**
-   * ejb methods
-   *
-   * @throws CreateException
-   */
-  public void ejbCreate() throws CreateException {
-    SilverTrace.info("almanach", "AlmanachBmEJB.ejbCreate()",
-        "root.MSG_GEN_ENTER_METHOD");
+    return new OrganizationController();
   }
 
   @Override
-  public void ejbRemove() throws javax.ejb.EJBException,
-      java.rmi.RemoteException {
-    SilverTrace.info("almanach", "AlmanachBmEJB.ejbRemove()",
-        "root.MSG_GEN_ENTER_METHOD");
-  }
-
-  @Override
-  public void ejbActivate() throws javax.ejb.EJBException,
-      java.rmi.RemoteException {
-    SilverTrace.info("almanach", "AlmanachBmEJB.ejbActivate()",
-        "root.MSG_GEN_ENTER_METHOD");
-  }
-
-  @Override
-  public void ejbPassivate() throws javax.ejb.EJBException,
-      java.rmi.RemoteException {
-    SilverTrace.info("almanach", "AlmanachBmEJB.ejbPassivate()",
-        "root.MSG_GEN_ENTER_METHOD");
-  }
-
-  @Override
-  public void setSessionContext(final SessionContext p1)
-      throws javax.ejb.EJBException, java.rmi.RemoteException {
-    SilverTrace.info("almanach", "AlmanachBmEJB.setSessionContext()",
-        "root.MSG_GEN_ENTER_METHOD");
-  }
-
-  @Override
-  public List<EventOccurrence> getEventOccurrencesInYear(java.util.Calendar year,
-      String... almanachIds) throws RemoteException {
+  public List<EventOccurrence> getEventOccurrencesInPeriod(org.silverpeas.date.Period period,
+      String... almanachIds) {
     try {
-      Collection<EventDetail> events = getEventDAO().findAllEventsInYear(year.getTime(),
-          almanachIds);
+      Collection<EventDetail> events = getEventDAO().findAllEventsInPeriod(period, almanachIds);
       EventOccurrenceGenerator occurrenceGenerator = EventOccurrenceGeneratorFactory.getFactory().
           getEventOccurrenceGenerator();
-      return occurrenceGenerator.generateOccurrencesInYear(year,
-          new ArrayList<EventDetail>(events));
+      return occurrenceGenerator
+          .generateOccurrencesInPeriod(period, new ArrayList<EventDetail>(events));
     } catch (Exception e) {
-      throw new AlmanachRuntimeException("AlmanachBmEJB.getEventOccurrencesInYear()",
-          SilverpeasRuntimeException.ERROR, "almanach.EXE_GET_ALL_EVENTS_FAIL",
-          e);
-    }
-
-  }
-
-  @Override
-  public List<EventOccurrence> getEventOccurrencesInMonth(java.util.Calendar month,
-      String... almanachIds) throws RemoteException {
-    try {
-      Collection<EventDetail> events = getEventDAO().findAllEventsInMonth(month.getTime(),
-          almanachIds);
-      EventOccurrenceGenerator occurrenceGenerator = EventOccurrenceGeneratorFactory.getFactory().
-          getEventOccurrenceGenerator();
-      return occurrenceGenerator.generateOccurrencesInMonth(month,
-          new ArrayList<EventDetail>(events));
-    } catch (Exception e) {
-      throw new AlmanachRuntimeException("AlmanachBmEJB.getEventOccurrencesInMonth()",
-          SilverpeasRuntimeException.ERROR, "almanach.EXE_GET_ALL_EVENTS_FAIL",
-          e);
-    }
-
-  }
-
-  @Override
-  public List<EventOccurrence> getEventOccurrencesInWeek(java.util.Calendar week,
-      String... almanachIds) throws RemoteException {
-    try {
-      Collection<EventDetail> events = getEventDAO().findAllEventsInWeek(week.getTime(),
-          almanachIds);
-      EventOccurrenceGenerator occurrenceGenerator = EventOccurrenceGeneratorFactory.getFactory().
-          getEventOccurrenceGenerator();
-      return occurrenceGenerator.generateOccurrencesInWeek(week,
-          new ArrayList<EventDetail>(events));
-    } catch (Exception e) {
-      throw new AlmanachRuntimeException("AlmanachBmEJB.getEventOccurrencesInWeek()",
-          SilverpeasRuntimeException.ERROR, "almanach.EXE_GET_ALL_EVENTS_FAIL",
-          e);
+      throw new AlmanachRuntimeException("AlmanachBmEJB.getEventOccurrencesInPeriod()",
+          SilverpeasRuntimeException.ERROR, "almanach.EXE_GET_ALL_EVENTS_FAIL", e);
     }
   }
 
   @Override
-  public List<EventOccurrence> getNextEventOccurrences(String... almanachIds) throws RemoteException {
+  public List<EventOccurrence> getNextEventOccurrences(String... almanachIds) {
     List<EventOccurrence> occurrences;
     try {
       com.silverpeas.calendar.Date today = today();

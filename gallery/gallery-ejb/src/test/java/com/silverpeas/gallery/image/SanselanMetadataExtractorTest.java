@@ -20,18 +20,21 @@
  */
 package com.silverpeas.gallery.image;
 
-import com.silverpeas.gallery.model.MetaData;
 import java.io.File;
 import java.util.Calendar;
 import java.util.List;
+
+import com.silverpeas.gallery.model.MetaData;
+import com.silverpeas.util.StringUtil;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import static com.silverpeas.util.PathTestUtil.*;
+import static com.silverpeas.util.PathTestUtil.SEPARATOR;
+import static com.silverpeas.util.PathTestUtil.TARGET_DIR;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
-import static com.silverpeas.gallery.image.AbstractImageMetadataExtractor.COMMA_SPLITTER;
 
 /**
  * @author ehugonnet
@@ -52,15 +55,15 @@ public class SanselanMetadataExtractorTest {
 
   @Test
   public void testLoadExtractor() {
-    List<IptcProperty> properties = extractor.defineImageIptcProperties(COMMA_SPLITTER.split(
-      "IPTC_8,IPTC_9,IPTC_10,IPTC_11,IPTC_12,IPTC_13,IPTC_14,IPTC_15,IPTC_16,IPTC_17,IPTC_18,"
-      + "IPTC_19,IPTC_20,IPTC_21,IPTC_22,IPTC_23,IPTC_24,IPTC_25,IPTC_26,IPTC_27,IPTC_28,IPTC_29,"
-      + "IPTC_30,IPTC_31"));
+    List<IptcProperty> properties = extractor.defineImageIptcProperties(StringUtil.splitString(
+        "IPTC_8,IPTC_9,IPTC_10,IPTC_11,IPTC_12,IPTC_13,IPTC_14,IPTC_15,IPTC_16,IPTC_17,IPTC_18,"
+        + "IPTC_19,IPTC_20,IPTC_21,IPTC_22,IPTC_23,IPTC_24,IPTC_25,IPTC_26,IPTC_27,IPTC_28,IPTC_29,"
+        + "IPTC_30,IPTC_31", ','));
     assertNotNull(properties);
     assertEquals(24, properties.size());
 
-    List<ExifProperty> exifProperties = extractor.defineImageProperties(COMMA_SPLITTER.split(
-      "METADATA_1,METADATA_2,METADATA_3,METADATA_4,METADATA_5,METADATA_6,METADATA_7"));
+    List<ExifProperty> exifProperties = extractor.defineImageProperties(StringUtil.splitString(
+        "METADATA_1,METADATA_2,METADATA_3,METADATA_4,METADATA_5,METADATA_6,METADATA_7", ','));
     assertNotNull(exifProperties);
     assertEquals(7, exifProperties.size());
   }
@@ -89,7 +92,6 @@ public class SanselanMetadataExtractorTest {
     assertEquals("Créateur", meta.getLabel());
     assertEquals("Nom du créateur : Tag_by_line", meta.getValue());
 
-
   }
 
   /**
@@ -101,8 +103,8 @@ public class SanselanMetadataExtractorTest {
     assertNotNull(metadata);
     for (MetaData metadonnee : metadata) {
       System.out.
-        println(metadonnee.getProperty() + " - " + metadonnee.getLabel() + ": " + metadonnee.
-        getValue());
+          println(metadonnee.getProperty() + " - " + metadonnee.getLabel() + ": " + metadonnee.
+          getValue());
     }
     assertEquals(10, metadata.size());
     MetaData meta = metadata.get(0);
@@ -177,7 +179,7 @@ public class SanselanMetadataExtractorTest {
     assertThat(meta.getProperty(), is("537"));
     assertThat(meta.getLabel(), is("Mots clef"));
     assertThat(meta.getValue(), is(
-      "Auberge des Dauphins /Architecture /Vue exterieure /Saou /Foret de Saou /"));
+        "Auberge des Dauphins /Architecture /Vue exterieure /Saou /Foret de Saou /"));
   }
 
   @Test
@@ -228,7 +230,7 @@ public class SanselanMetadataExtractorTest {
     assertEquals("(Windows) Sujet", meta.getLabel());
     assertEquals("l'objet EXIT", meta.getValue());
   }
-  
+
   /**
    * For <a href="https://www.silverpeas.org/redmine/issues/3021">Bug #3021</a>.
    */
@@ -242,8 +244,8 @@ public class SanselanMetadataExtractorTest {
     assertThat(meta.getProperty(), is("622"));
     assertThat(meta.getLabel(), is("(IPTC) Crédit"));
     assertThat(meta.getValue(), is("Conservation du patrimoine de la Drome"));
-    
-     assertThat(meta.getProperty(), is("634"));
+
+    assertThat(meta.getProperty(), is("634"));
     assertThat(meta.getLabel(), is("(IPTC) Crédit"));
     assertThat(meta.getValue(), is("Conservation du patrimoine de la Drome"));
 
@@ -269,6 +271,6 @@ public class SanselanMetadataExtractorTest {
     assertThat(meta.getProperty(), is("537"));
     assertThat(meta.getLabel(), is("Mots clef"));
     assertThat(meta.getValue(), is(
-      "Auberge des Dauphins /Architecture /Vue exterieure /Saou /Foret de Saou /"));
+        "Auberge des Dauphins /Architecture /Vue exterieure /Saou /Foret de Saou /"));
   }
 }

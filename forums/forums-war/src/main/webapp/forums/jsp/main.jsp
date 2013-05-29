@@ -80,9 +80,9 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
 %>
 <fmt:message key="confirmDeleteForum" var="removeForum" />
 <fmt:message key="confirmDeleteCategory" var="removeCategory" />
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <title>_________________/ Silverpeas - Corporate portal organizer \_________________/</title>
     <view:looknfeel />
     <script type="text/javascript" src="<c:url value='/forums/jsp/javaScript/forums.js' />"></script>
     <script type="text/javascript" src="<c:url value='/util/javaScript/animation.js' />"></script>
@@ -151,7 +151,7 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
       	  <view:areaOfOperationOfCreation/>
           <table width="100%" border="0" align="center" cellpadding="4" cellspacing="1" class="testTableau">
             <tr>
-              <th class="ArrayColumn" colspan="2" nowrap="nowrap"><fmt:message key="theme" /></td>
+              <td class="ArrayColumn" colspan="2" nowrap="nowrap"><fmt:message key="theme" /></td>
               <td class="ArrayColumn" nowrap="nowrap"><fmt:message key="forums.nbSubjects" /></td>
               <td class="ArrayColumn" nowrap="nowrap"><fmt:message key="forums.nbMessages" /></td>
               <td class="ArrayColumn" nowrap="nowrap"><fmt:message key="forums.lastMessage" /></td>

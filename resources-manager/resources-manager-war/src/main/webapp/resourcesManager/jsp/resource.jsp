@@ -35,11 +35,10 @@
 <% 
 // Recuperation des details de l'ulisateur
 	Category category = (Category)request.getAttribute("category");
-	String idcategory = category.getId();
+	Long idcategory = category.getId();
 	Resource maResource = (Resource)request.getAttribute("resource");
 	String provenance = (String)request.getAttribute("provenance");
-	String flag = (String)request.getAttribute("Profile");
-//	 recuperation des parametres du formulaire
+	// recuperation des parametres du formulaire
 	Form xmlForm = (Form) request.getAttribute("XMLForm");
 	DataRecord	xmlData = (DataRecord) request.getAttribute("XMLData");
 	PagesContext context = (PagesContext) request.getAttribute("context"); 
@@ -50,7 +49,7 @@
 	String name=maResource.getName();
 	String description=EncodeHelper.javaStringToHtmlParagraphe(maResource.getDescription());
 	boolean bookable=maResource.isBookable();
-	String resourceId=maResource.getId();
+	Long resourceId=maResource.getId();
 	Button cancelButton = null;
 	
 //creation des boutons Annuler
@@ -66,7 +65,7 @@
 	}
 	else if ("calendar".equals(provenance)){
 		// on vient de l'almanach
-		cancelButton = gef.getFormButton(resource.getString("resourcesManager.retourListeReservation"), "Calendar?objectView="+idcategory+"&resourceId="+resourceId,false);
+		cancelButton = gef.getFormButton(resource.getString("resourcesManager.retourListeReservation"), "Calendar?objectView="+objectView,false);
 		
 	}
 	else if ("reservation".equals(provenance)){
@@ -87,7 +86,7 @@ Board board = gef.getBoard();
 
 out.println(window.printBefore());
 
-if (showComments.booleanValue())
+if (showComments)
 {
 	tabbedPane.addTab(resource.getString("resourcesManager.resource"), "#", true);
 	tabbedPane.addTab(resource.getString("resourcesManager.commentaires"), "Comments?resourceId="+resourceId+"&provenance="+provenance, false);
@@ -157,15 +156,16 @@ buttonPane.addButton(cancelButton);
 	<%out.println(board.printAfter()); %>
 	
 	<br/>
-	<!-- AFFICHAGE du formulaire -->
-	  <%if (xmlForm != null){
- 			out.println(board.printBefore());	         
-         	xmlForm.display(out, context, xmlData);		
-			out.println(board.printAfter());
-	  }
-out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
-out.println(frame.printAfter());
-out.println(window.printAfter());
+<!-- AFFICHAGE du formulaire -->
+<%
+  if (xmlForm != null) {
+    out.println(board.printBefore());
+    xmlForm.display(out, context, xmlData);
+    out.println(board.printAfter());
+  }
+  out.println("<BR><center>" + buttonPane.print() + "</center><BR>");
+  out.println(frame.printAfter());
+  out.println(window.printAfter());
 %>
 </body>
 </html>

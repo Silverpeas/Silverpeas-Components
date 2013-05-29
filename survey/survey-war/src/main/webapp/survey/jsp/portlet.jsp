@@ -100,10 +100,11 @@ surveyScc.removeSessionSurveyUnderConstruction();
 surveyScc.removeSessionSurvey();
 surveyScc.removeSessionResponses();
 
-ResourceLocator message = new ResourceLocator("com.stratelia.webactiv.survey.multilang.surveyBundle", surveyScc.getLanguage());
+ResourceLocator message = new ResourceLocator("org.silverpeas.survey.multilang.surveyBundle", surveyScc.getLanguage());
 
 %>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
 <% out.println(gef.getLookStyleSheet()); %>

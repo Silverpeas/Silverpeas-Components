@@ -23,6 +23,7 @@
  */
 package org.silverpeas.resourcemanager.services;
 
+import com.silverpeas.annotation.Service;
 import org.silverpeas.resourcemanager.model.Reservation;
 import org.silverpeas.resourcemanager.model.ReservedResource;
 import org.silverpeas.resourcemanager.model.Resource;
@@ -30,45 +31,38 @@ import org.silverpeas.resourcemanager.model.ResourceStatus;
 import org.silverpeas.resourcemanager.repository.ReservationRepository;
 import org.silverpeas.resourcemanager.repository.ReservedResourceRepository;
 import org.silverpeas.resourcemanager.repository.ResourceRepository;
-import com.silverpeas.annotation.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
-import javax.inject.Named;
-import java.util.Date;
 import java.util.List;
 
 /**
  * @author ehugonnet
  */
-@Named
 @Service
 @Transactional
 public class ReservationService {
 
   @Inject
   private ReservationRepository repository;
+
   @Inject
   private ReservedResourceRepository reservedResourceRepository;
 
   @Inject
   private ResourceRepository resourceRepository;
 
-  public String createReservation(Reservation reservation, List<Long> resourceIds) {
-    reservation.setStatus(computeReservationStatus(reservation));
-    Date now = new Date();
-    reservation.setCreationDate(now);
-    reservation.setUpdateDate(now);
-    Reservation savedReservation = repository.save(reservation);
+  public void createReservation(Reservation reservation, List<Long> resourceIds) {
+    reservation.setStatus(ResourceStatus.STATUS_VALIDATE);
+    repository.save(reservation);
     for (Long resourceId : resourceIds) {
       ReservedResource reservedResource = new ReservedResource();
       reservedResource.setResourceId(resourceId);
-      reservedResource.setReservationId(savedReservation.getIntegerId());
+      reservedResource.setReservationId(reservation.getId());
       Resource resource = resourceRepository.findOne(resourceId);
       if (!resource.getManagers().isEmpty()) {
         if (resourceRepository
-            .getResourceValidator(resourceId, Long.parseLong(savedReservation.getUserId())) ==
-            null) {
+            .getResourceValidator(resourceId, Long.parseLong(reservation.getUserId())) == null) {
           reservedResource.setStatus(ResourceStatus.STATUS_FOR_VALIDATION);
         } else {
           reservedResource.setStatus(ResourceStatus.STATUS_VALIDATE);
@@ -78,37 +72,28 @@ public class ReservationService {
       }
       reservedResourceRepository.save(reservedResource);
     }
-    savedReservation = repository.findOne(savedReservation.getIntegerId());
-    savedReservation.setStatus(computeReservationStatus(savedReservation));
-    repository.save(savedReservation);
-    return savedReservation.getId();
+    reservation.setStatus(computeReservationStatus(reservation));
+    repository.save(reservation);
   }
 
   public String computeReservationStatus(Reservation reservation) {
-    boolean refused = false;
     boolean validated = true;
     String reservationStatus = ResourceStatus.STATUS_FOR_VALIDATION;
     List<ReservedResource> reservedResources = reservedResourceRepository.
-        findAllReservedResourcesForReservation(reservation.getIntegerId());
+        findAllReservedResourcesForReservation(reservation.getId());
     for (ReservedResource reservedResource : reservedResources) {
       String status = reservedResource.getStatus();
-      refused = false;
       if (ResourceStatus.STATUS_FOR_VALIDATION.equals(status)) {
-        reservationStatus = status;
         validated = false;
       }
       if (ResourceStatus.STATUS_REFUSED.equals(status)) {
-        refused = true;
-        validated = false;
+        return ResourceStatus.STATUS_REFUSED;
       }
     }
-    if (refused) {
-      reservationStatus = ResourceStatus.STATUS_REFUSED;
+    if (!validated) {
+      return ResourceStatus.STATUS_FOR_VALIDATION;
     }
-    if (validated) {
-      reservationStatus = ResourceStatus.STATUS_VALIDATE;
-    }
-    return reservationStatus;
+    return ResourceStatus.STATUS_VALIDATE;
   }
 
   public void updateReservation(Reservation reservation) {
@@ -136,18 +121,66 @@ public class ReservationService {
       String startPeriod, String endPeriod) {
     return repository.findAllReservationsForValidation(instanceId, userId, startPeriod, endPeriod);
   }
-  
-   public List<Reservation> findAllReservationsInRange(String instanceId, String startPeriod, String endPeriod) {
-    return repository.findAllReservationsInRange(instanceId, startPeriod, endPeriod);
-   }
-  
-  public List<Reservation> findAllReservationsForUserInRange(String instanceId, Integer userId,
+
+  /**
+   * Finds all reservations related to the given user on the given period.
+   * If user parameter (userId) is not defined, the reservations returned are not filtered by user.
+   * @param instanceId
+   * @param userId
+   * @param startPeriod
+   * @param endPeriod
+   * @return
+   */
+  public List<Reservation> findAllReservationsInRange(String instanceId, Integer userId,
       String startPeriod, String endPeriod) {
+    if (userId == null) {
+      return repository.findAllReservationsInRange(instanceId, startPeriod, endPeriod);
+    }
     return repository.findAllReservationsForUserInRange(instanceId, userId, startPeriod, endPeriod);
   }
 
-  public List<Reservation> findAllReservationsForCategoryInRange(Long categoryId,
-      String startPeriod, String endPeriod) {
-    return repository.findAllReservationsForCategoryInRange(categoryId, startPeriod, endPeriod);
+  /**
+   * Finds all reservations related to the given user on the given period and for which at least
+   * one
+   * resource of the given category is attached.
+   * If user parameter (userId) is not defined, the reservations returned are not filtered by user.
+   * @param instanceId
+   * @param userId
+   * @param categoryId
+   * @param startPeriod
+   * @param endPeriod
+   * @return
+   */
+  public List<Reservation> findAllReservationsForCategoryInRange(final String instanceId,
+      Integer userId, Long categoryId, String startPeriod, String endPeriod) {
+    if (userId == null) {
+      return repository
+          .findAllReservationsForCategoryInRange(instanceId, categoryId, startPeriod, endPeriod);
+    }
+    return repository
+        .findAllReservationsForUserAndCategoryInRange(instanceId, userId, categoryId, startPeriod,
+            endPeriod);
+  }
+
+  /**
+   * Finds all reservations related to the given user on the given period and for which the given
+   * resource is attached.
+   * If user parameter (userId) is not defined, the reservations returned are not filtered by user.
+   * @param instanceId
+   * @param userId
+   * @param resourceId
+   * @param startPeriod
+   * @param endPeriod
+   * @return
+   */
+  public List<Reservation> findAllReservationsForResourceInRange(final String instanceId,
+      Integer userId, Long resourceId, String startPeriod, String endPeriod) {
+    if (userId == null) {
+      return repository
+          .findAllReservationsForResourceInRange(instanceId, resourceId, startPeriod, endPeriod);
+    }
+    return repository
+        .findAllReservationsForUserAndResourceInRange(instanceId, userId, resourceId, startPeriod,
+            endPeriod);
   }
 }

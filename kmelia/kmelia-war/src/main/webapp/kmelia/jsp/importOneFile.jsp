@@ -24,7 +24,6 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
 <%@ page import="org.silverpeas.importExport.versioning.DocumentVersion"%>
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
