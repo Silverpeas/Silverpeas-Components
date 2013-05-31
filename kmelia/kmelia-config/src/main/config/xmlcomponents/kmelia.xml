@@ -355,64 +355,6 @@
       </help>
     </parameter>
     <parameter>
-      <name>versionUseFileRights</name>
-      <label>
-        <message lang="fr">Droits sur les fichiers</message>
-        <message lang="en">Rights on versioned attachments</message>
-        <message lang="de">Rechte auf versioniert Anhänge</message>
-      </label>
-      <order>12</order>
-      <mandatory>true</mandatory>
-      <value>3</value>
-      <options>
-        <option>
-          <name>
-            <message lang="fr">Rédacteurs et Lecteurs</message>
-            <message lang="en">Writers and Readers</message>
-            <message lang="de">Autoren und Leser</message>
-          </name>
-          <value>0</value>
-        </option>
-        <option>
-          <name>
-            <message lang="fr">Rédacteurs</message>
-            <message lang="en">Writers</message>
-            <message lang="de">Autoren</message>
-          </name>
-          <value>1</value>
-        </option>
-        <option>
-          <name>
-            <message lang="fr">Lecteurs</message>
-            <message lang="en">Readers</message>
-            <message lang="de">Leser</message>
-          </name>
-          <value>2</value>
-        </option>
-        <option>
-          <name>
-            <message lang="fr">Droits hérités</message>
-            <message lang="en">Inherited rights</message>
-            <message lang="de">Vererbte Rechte</message>
-          </name>
-          <value>3</value>
-        </option>
-      </options>
-      <type>select</type>
-      <updatable>creation</updatable>
-      <help>
-        <message lang="fr">Droits sur les fichiers versionnés: Rédacteurs et Lecteurs,
-          Rédacteurs seulement, Lecteurs seulement ou droits hérités de l'application.
-        </message>
-        <message lang="en">Access rights on the files with versions : Writers and readers,
-          Writers only, Readers only or rights inherited from the application.
-        </message>
-        <message lang="de">Zugriffsrechte auf die Dateien mit den Versionen: Autoren und Leser,
-          nur Autoren, nur Leser oder Rechte von der Komponente geerbt.
-        </message>
-      </help>
-    </parameter>
-    <parameter>
       <name>draft</name>
       <label>
         <message lang="fr">Mode brouillon</message>
