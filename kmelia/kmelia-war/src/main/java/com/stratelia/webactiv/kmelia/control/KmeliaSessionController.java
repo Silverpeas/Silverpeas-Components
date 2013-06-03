@@ -23,6 +23,7 @@
  */
 package com.stratelia.webactiv.kmelia.control;
 
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -3013,16 +3014,14 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
             pastePublication(pub, clipObject.isCutted(), folder.getNodePK(), null);
             pastedItems.add(pub.getPublicationDetail());
           } else if (clipObject.isDataFlavorSupported(NodeSelection.NodeDetailFlavor)) {
-            NodeDetail node = (NodeDetail) clipObject
-                .getTransferData(NodeSelection.NodeDetailFlavor);
-
+            NodeDetail node = (NodeDetail) clipObject.getTransferData(
+                NodeSelection.NodeDetailFlavor);
             // check if current topic is a subTopic of node
             boolean pasteAllowed = true;
             if (getComponentId().equals(node.getNodePK().getInstanceId())) {
               if (node.getNodePK().getId().equals(folder.getNodePK().getId())) {
                 pasteAllowed = false;
               }
-
               String nodePath = node.getPath() + node.getId() + "/";
               String currentPath = folder.getPath() + folder.getNodePK().getId() + "/";
               SilverTrace.info("kmelia", "KmeliaRequestRooter.paste()", "root.MSG_GEN_PARAM_VALUE",
@@ -3031,7 +3030,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
                 pasteAllowed = false;
               }
             }
-
             if (pasteAllowed) {
               NodeDetail newNode = pasteNode(node, folder, clipObject.isCutted());
               pastedItems.add(newNode);
@@ -3039,7 +3037,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
           }
         }
       }
-    } catch (Exception e) {
+    } catch (ClipboardException e) {
+      throw new KmeliaRuntimeException("KmeliaSessionController.paste()",
+          SilverpeasRuntimeException.ERROR, "kmelia.EX_PASTE_ERROR", e);
+    } catch (UnsupportedFlavorException e) {
+      throw new KmeliaRuntimeException("KmeliaSessionController.paste()",
+          SilverpeasRuntimeException.ERROR, "kmelia.EX_PASTE_ERROR", e);
+    } catch (RemoteException e) {
       throw new KmeliaRuntimeException("KmeliaSessionController.paste()",
           SilverpeasRuntimeException.ERROR, "kmelia.EX_PASTE_ERROR", e);
     }
@@ -3071,21 +3075,12 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
               AttachmentServiceFactory.getAttachmentService().moveDocument(document, toForeignPK);
             }
           } catch (org.silverpeas.attachment.AttachmentException e) {
-            SilverTrace.error("kmelia",
-                "KmeliaSessionController.pastePublication()",
+            SilverTrace.error("kmelia", "KmeliaSessionController.pastePublication()",
                 "root.MSG_GEN_PARAM_VALUE", "kmelia.CANT_MOVE_ATTACHMENTS", e);
           }
-
           // change images path in wysiwyg
-          try {
-            WysiwygController.wysiwygPlaceHaveChanged(fromNode.getNodePK().getInstanceId(),
-                "Node_" + fromNode.getNodePK().getId(), getComponentId(), "Node_"
-                + toNodePK.getId());
-          } catch (WysiwygException e) {
-            SilverTrace.error("kmelia", "KmeliaSessionController.pastePublication()",
-                "root.MSG_GEN_PARAM_VALUE", e);
-          }
-
+          WysiwygController.wysiwygPlaceHaveChanged(fromNode.getNodePK().getInstanceId(),
+              "Node_" + fromNode.getNodePK().getId(), getComponentId(), "Node_" + toNodePK.getId());
           // move publications of topics
           pastePublicationsOfTopic(fromNode.getNodePK(), toNodePK, true, null);
         }
@@ -4393,14 +4388,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       SilverTrace.error("kmelia", "KmeliaSessionController.pastePublication()",
           "root.MSG_GEN_PARAM_VALUE", "kmelia.CANT_MOVE_ATTACHMENTS", e);
     }
-    try {
-      // change images path in wysiwyg
-      WysiwygController.wysiwygPlaceHaveChanged(fromComponentId, publi.getPK().getId(),
-          getComponentId(), publi.getPK().getId());
-    } catch (WysiwygException e) {
-      SilverTrace.error("kmelia", "KmeliaSessionController.pastePublication()",
-          "root.MSG_GEN_PARAM_VALUE", e);
-    }
+    // change images path in wysiwyg
+    WysiwygController.wysiwygPlaceHaveChanged(fromComponentId, publi.getPK().getId(),
+        getComponentId(), publi.getPK().getId());
   }
 
   private void movePublicationDocuments(String fromComponentId, ForeignPK fromForeignPK,
