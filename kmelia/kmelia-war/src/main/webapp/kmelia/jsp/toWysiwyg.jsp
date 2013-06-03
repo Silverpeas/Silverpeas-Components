@@ -72,6 +72,7 @@ function closeWindows() {
     <input type="hidden" name="ContentLanguage" value="<%=contentLanguage%>">
     <input type="hidden" name="ReturnUrl" value="<%=returnURL%>">
     <input type="hidden" name="UserId" value="<%=kmeliaScc.getUserId()%>">
+    <input type="hidden" name="IndexIt" value="false"/>
 </form>
 
 <script>goToWysiwyg()</script>

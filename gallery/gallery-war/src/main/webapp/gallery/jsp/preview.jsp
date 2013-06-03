@@ -112,6 +112,8 @@
 <html>
 <head>
 <view:looknfeel/>
+<view:includePlugin name="popup"/>
+<view:includePlugin name="preview"/>
 <view:includePlugin name="wysiwyg"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script language="javascript">

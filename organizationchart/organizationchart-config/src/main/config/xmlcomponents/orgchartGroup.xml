@@ -99,13 +99,13 @@
       </label>
       <order>14</order>
       <mandatory>false</mandatory>
-      <value>Role(s) principal(ux)</value>
+      <value>Direction=Directrice;Direction=Directeur</value>
       <type>text</type>
       <size>30</size>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Attribut désignant le(s) role(s) des personnes à afficher avec le service principal</message>
-        <message lang="en">Attribute containing the role(s) of the main organization unit positions</message>
+        <message lang="fr">Role(s) à afficher pour le service principal (basé sur le titre des personnes)</message>
+        <message lang="en">Role(s) of the main organization unit</message>
       </help>
     </parameter>
     <parameter>
@@ -121,8 +121,8 @@
       <size>30</size>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Attribut désignant le(s) role(s) des personnes à afficher dans la case droite</message>
-        <message lang="en">Attribute name for the function to be placed in the right cell</message>
+        <message lang="fr">Rôle(s) à afficher dans la case droite</message>
+        <message lang="en">Role(s) to be placed in the right cell</message>
       </help>
     </parameter>
     <parameter>
@@ -138,8 +138,8 @@
       <size>30</size>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Attribut désignant le(s) role(s) des personnes à afficher dans la case gauche</message>
-        <message lang="en">Attribute name for the function to be placed in the left cell</message>
+        <message lang="fr">Rôle(s) à afficher dans la case gauche</message>
+        <message lang="en">Role(s) to be placed in the left cell</message>
       </help>
     </parameter>
     <parameter>
@@ -155,8 +155,8 @@
       <size>30</size>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Attribut désignant le(s) role(s) des personnes à afficher avec le service principal</message>
-        <message lang="en">Attribute name of the main unit positions</message>
+        <message lang="fr">Rôle(s) à afficher pour le service principal</message>
+        <message lang="en">Role(s) of the main organization unit</message>
       </help>
     </parameter>
     <parameter>
@@ -180,7 +180,7 @@
       <name>unitsChartOthersInfosKeys</name>
       <label>
         <message lang="fr">Champ(s) à afficher (vue services)</message>
-        <message lang="en">Fields to display (units view)</message>
+        <message lang="en">Field(s) to display (units view)</message>
       </label>
       <order>20</order>
       <mandatory>false</mandatory>

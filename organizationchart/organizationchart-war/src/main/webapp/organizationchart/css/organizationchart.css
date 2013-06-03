@@ -23,53 +23,108 @@
  */
 
 #chart {overflow: visible;}
+/* style generic for cellule */
 
+.cell0,
+.cell1,
+.cell2,
+.cell3,
+.cell4,
+.cell5 {
+	border-radius: 10px; 
+		-moz-border-radius: 10px; 
+		-webkit-border-radius: 10px; 
+	width: 100; 
+	position: absolute; 
+	z-index: 2
+}
 /*
-* style de la cellule centrale
+* style de la cellule centrale en bleu
 */
-.cell0 {border-style: solid; border-width: 1; -moz-border-radius: 10px; width: 100; background-color: #FFFFFF; color: #000000; position: absolute; z-index: 2}
+.cell0 {
+	border: 1px solid #56A3D9; 
+	background-color: #9fd6f9; 
+	color: #333; 
+}
 .cell0 table {width: 100%; height: 40}
-.cell0 td.cellName  {font-family: Arial; font-size: 13; text-align: center; color: #000000; font-weight: bold; padding-bottom: 5px;}
+.cell0 td.cellName  {font-family: Arial; font-size: 13; text-align: center; color: #333; font-weight: bold; padding-bottom: 5px;}
 .cell0 td.cellRole {font-family: Arial; font-size: 12; font-style: italic; text-align: center; color: #880088}
 .cell0 td.cellLinkLeft {font-family: Arial; font-size: 12; text-align: left; color: #666699; white-space: nowrap}
 .cell0 td.cellLinkRight {font-family: Arial; font-size: 12; text-align: right; color: #666699; white-space: nowrap}
 
+.cell0 table {width: 100%; height: 40}
+.cell0 td.cellName  {font-family: Arial; font-size: 13; text-align: center; color: #333; font-weight: bold; padding-bottom: 5px;}
+.cell0 td.cellRole {font-family: Arial; font-size: 12; font-style: italic; text-align: center; color: #880088}
+.cell0 td.cellLinkLeft {font-family: Arial; font-size: 12; text-align: left; color: #666699; white-space: nowrap}
+.cell0 td.cellLinkRight {font-family: Arial; font-size: 12; text-align: right; color: #666699; white-space: nowrap}
+
+
 /*
-* style cellule Unit
+* style cellule Unit en gris
 */
-.cell1 {border-style: solid; border-width: 1; -moz-border-radius: 10px; width: 100; background-color: #EDB8FF; color: #000000; position: absolute; z-index: 2}
+.cell1 {
+	border: 1px solid #ccc; 
+	background-color: #efefef; 
+	color: #2a2a2a; 
+		}
 .cell1 table {width: 100%; height: 40}
-.cell1 td.cellName  {font-family: Arial; font-size: 13; text-align: center; color: #000000}
-.cell1 td.cellName A {color: #0000FF; font-size: 13;}
+.cell1 td.cellName  {font-family: Arial; font-size: 13; text-align: center; color: #2a2a2a}
+.cell1 td.cellName a {color: #333; font-size: 13; text-decoration:underline;}
+.cell1 td.cellName a:hover {color: #56A3D9;}
 .cell1 td.cellRole {font-family: Arial; font-size: 12; font-style: italic; text-align: center; color: #8800AA}
 .cell1 td.cellLinkLeft {font-family: Arial; font-size: 12; text-align: left; color: #666699; white-space: nowrap}
 .cell1 td.cellLinkRight {font-family: Arial; font-size: 12; text-align: right; color: #666699; white-space: nowrap}
 
 /*
-* style cellule personnes
+* style cellule personnes en jaune info
 */
-.cell2 {border-style: solid; border-width: 1; -moz-border-radius: 10px; width: 100; background-color: #FFFFCC; color: #000000; position: absolute; z-index: 2}
+.cell2 {
+	border: 1px solid #f9e98e; 
+	background-color: #fbf7aa; 
+	color: #333; 
+}
 .cell2 table {width: 100%; height: 40}
 .cell2 td.cellName  {font-family: Arial; font-size: 13; text-align: center; color: #0000FF}
 .cell2 td.cellRole {font-family: Arial; font-size: 12; font-style: italic; text-align: center; color: #8800CC}
 .cell2 td.cellLinkLeft {font-family: Arial; font-size: 12; text-align: left; color: #666699; white-space: nowrap}
 .cell2 td.cellLinkRight {font-family: Arial; font-size: 12; text-align: right; color: #666699; white-space: nowrap}
-.innerUser {border-style: solid; border-width: 1; -moz-border-radius: 10px; width: 100; background-color: #FFFFCC; color: #000000; z-index: 2; margin-top: 5px; margin-bottom: 5px; width: 95%;}
+.innerUser {
+	border:1px solid #f9e98e;
+	border-radius:0px;
+		-moz-border-radius: 0px;
+		-webkit-border-radius: 0px;
+		width: 100; 
+		background-color: #FFFFCC; 
+		color: #333; 
+		z-index: 2; 
+		margin-top: 5px; 
+		margin-bottom: 5px; 
+		padding:5px 0;
+		width: 95%;
+		}
 
 /*
-* style bloc droite
+* style bloc droite en orange ...
 */
-.cell3 {border-style: solid; border-width: 1; -moz-border-radius: 10px; width: 100; background-color: #FFC963; color: #000000; position: absolute; z-index: 2}
+.cell3 {
+	background-color: #f9e98e; 
+	color: #333;
+	border:1px solid #F7DB8F;
+}
+
 .cell3 table {width: 100%; height: 40}
-.cell3 td.cellName  {font-family: Arial; font-size: 13; text-align: center; color: #0000FF}
+.cell3 td.cellName  {font-family: Arial; font-size: 13; text-align: center; color: #333}
 .cell3 td.cellRole {font-family: Arial; font-size: 12; font-style: italic; text-align: center; color: #8800EE}
 .cell3 td.cellLinkLeft {font-family: Arial; font-size: 12; text-align: left; color: #666699; white-space: nowrap}
 .cell3 td.cellLinkRight {font-family: Arial; font-size: 12; text-align: right; color: #666699; white-space: nowrap}
 
 /*
-* style bloc gauche
+* style bloc gauche en orange ...
 */
-.cell4 {border-style: solid; border-width: 1; -moz-border-radius: 10px; width: 100; background-color: #FFC963; color: #000000; position: absolute; z-index: 2}
+.cell4 {
+	background-color: #FFC963; 
+	color: #333;
+}
 .cell4 table {width: 100%; height: 40}
 .cell4 td.cellName  {font-family: Arial; font-size: 13; text-align: center; color: #0000FF}
 .cell4 td.cellRole {font-family: Arial; font-size: 12; font-style: italic; text-align: center; color: #8800EE}
@@ -77,24 +132,40 @@
 .cell4 td.cellLinkRight {font-family: Arial; font-size: 12; text-align: right; color: #666699; white-space: nowrap}
 
 /*
-* style categ personnel
+* style categ personnel en jaune
 */
-.cell5 {border-style: solid; border-width: 1; -moz-border-radius: 10px; width: 100; background-color: #CCFFFF; color: #000000; position: absolute; z-index: 2}
+.cell5 {
+	border: 1px solid #f9e98e; 
+	background-color: #fbf7aa; 
+	color: #333; 
+}
 .cell5 table {width: 100%; height: 40}
 .cell5 td.cellName  {font-family: Arial; font-size: 13; text-align: center; color: #0000FF}
 .cell5 td.cellRole {font-family: Arial; font-size: 12; font-style: italic; text-align: center; color: #8800EE}
 .cell5 td.cellLinkLeft {font-family: Arial; font-size: 12; text-align: left; color: #666699; white-space: nowrap}
 .cell5 td.cellLinkRight {font-family: Arial; font-size: 12; text-align: right; color: #666699; white-space: nowrap}
 
-.link0 {border-style: solid; border-width: 1; color: #663300 ; position: absolute; z-index: 1}
-.link1 {border-style: solid; border-width: 1; color: #663300 ; position: absolute; z-index: 1}
-.link2 {border-style: dotted; border-width: 1; color: #663300 ; position: absolute; z-index: 1}
+.link0 {
+		border: 1px solid #ccc; 
+		color: #ccc ; position: absolute; z-index: 1}
+.link1 {border: 1px solid #CCCCCC; 
+		color: #CCCCCC ; position: absolute; z-index: 1}
+.link2 {border: 1px solid #f9e98e; 
+		color: #f9e98e ; position: absolute; z-index: 1}
 
 .gotoParent {
-	background-image: url(/silverpeas/util/icons/arrow/arrowUp.gif);
+	background:transparent  url(http://localhost:8000/silverpeas/util/icons/arrow/arrowUpModal.png) center center no-repeat;
 	display: block;
 	width: 13px;
 	height: 13px;
 	text-indent: -2000px;
 	float: right;
+	border:1px solid #C9EAFF;
+	border-radius:3px;
+		-moz-border-radius:3px;
+		-webkit-border-radius:3px;
+	padding:3px;
 }
+.gotoParent:hover {
+	background-color:#56A3D9;
+} 

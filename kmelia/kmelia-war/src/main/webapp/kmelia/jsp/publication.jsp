@@ -588,7 +588,6 @@
 			          }
 			          try {
 			            out.flush();
-			            String pIndexIt = "0";
 			            String attProfile = kmeliaScc.getProfile();
 			            if (kmeliaScc.isVersionControlled(componentId)) {
 			              if (!isOwner) {
@@ -598,7 +597,7 @@
 			                  "/attachment/jsp/displayAttachedFiles.jsp?Id=" + id + "&ComponentId=" + componentId + "&Alias=" + alias + "&Context=attachment&AttachmentPosition=" + resources.
 			                  getSetting("attachmentPosition") + "&ShowIcon=" + showIcon + "&ShowTitle=" + showTitle + "&ShowFileSize=" + showFileSize + "&ShowDownloadEstimation=" + showDownloadEstimation + "&ShowInfo=" + showInfo +
 			                  "&Language=" + language + "&Profile=" + attProfile + "&CallbackUrl=" + URLManager.
-			                  getURL("useless", componentId) + "ViewPublication&IndexIt=" + pIndexIt + "&ShowMenuNotif=" + true).
+			                  getURL("useless", componentId) + "ViewPublication&IndexIt=" + indexIt + "&ShowMenuNotif=" + true).
 			                  include(request, response);
 			            } else {
 				              if (!attachmentsUpdatable) {
@@ -608,7 +607,7 @@
 			                  "/attachment/jsp/displayAttachedFiles.jsp?Id=" + id + "&ComponentId=" + componentId + "&Alias=" + alias + "&Context=attachment&AttachmentPosition=" + resources.
 			                  getSetting("attachmentPosition") + "&ShowIcon=" + showIcon + "&ShowTitle=" + showTitle + "&ShowFileSize=" + showFileSize + "&ShowDownloadEstimation=" + showDownloadEstimation + "&ShowInfo=" + showInfo +
 			                  "&Language=" + language + "&Profile=" + attProfile + "&CallbackUrl=" + URLManager.
-			                  getURL("useless", componentId) + "ViewPublication&IndexIt=" + pIndexIt + "&ShowMenuNotif=" + true).
+			                  getURL("useless", componentId) + "ViewPublication&IndexIt=" + indexIt + "&ShowMenuNotif=" + true).
 			                  include(request, response);
 			            }
 			          } catch (Exception e) {
