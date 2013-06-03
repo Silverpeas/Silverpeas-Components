@@ -20,18 +20,25 @@
  */
 package com.silverpeas.scheduleevent.control;
 
+import com.silverpeas.export.ExportException;
 import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.scheduleevent.notification.ScheduleEventUserNotification;
+import com.silverpeas.scheduleevent.service.CalendarEventEncoder;
 import com.silverpeas.scheduleevent.service.ScheduleEventService;
 import com.silverpeas.scheduleevent.service.ServicesFactory;
 import com.silverpeas.scheduleevent.service.model.ScheduleEventBean;
 import com.silverpeas.scheduleevent.service.model.ScheduleEventStatus;
 import com.silverpeas.scheduleevent.service.model.beans.Contributor;
+import com.silverpeas.scheduleevent.service.model.beans.DateOption;
 import com.silverpeas.scheduleevent.service.model.beans.Response;
 import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
 import com.silverpeas.scheduleevent.service.model.beans.ScheduleEventComparator;
+import com.silverpeas.scheduleevent.view.BestTimeVO;
+import com.silverpeas.scheduleevent.view.DateVO;
 import com.silverpeas.scheduleevent.view.OptionDateVO;
+import com.silverpeas.scheduleevent.view.ScheduleEventDetailVO;
 import com.silverpeas.scheduleevent.view.ScheduleEventVO;
+import com.silverpeas.scheduleevent.view.TimeVO;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -40,8 +47,12 @@ import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
+import com.silverpeas.calendar.CalendarEvent;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
+
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -53,6 +64,7 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
 
   private Selection sel = null;
   private ScheduleEvent currentScheduleEvent = null;
+  private static final String ICS_PREFIX = "scheduleevent";
 
   /**
    * Standard Session Controller Constructeur
@@ -359,5 +371,71 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
     result.setUserId(Integer.parseInt(getUserId()));
     result.setOptionId(dateId);
     return result;
+  }
+  
+  /**
+   * Converts the specified detail scheduleevent into a calendar event.
+   *
+   * @param scheduleevent detail.
+   * @return the calendar eventsS corresponding to the schedule event.
+   */
+  private List<CalendarEvent> asCalendarEvents(final ScheduleEvent event, final List<DateOption> listDateOption)
+      throws MalformedURLException {
+    CalendarEventEncoder encoder = new CalendarEventEncoder();
+    return encoder.encode(event, listDateOption);
+  }
+  
+  /**
+   * Exports the current ScheduleEvent in iCal format. The iCal file is generated into the temporary
+   * directory.
+   *
+   * @return the iCal file name into which is generated the current ScheduleEvent.
+   * @throws Exception 
+   * @throws IOException if an error occurs while creating or opening the file into which the export
+   * will be done. Such errors can be come from a forbidden write granting, and so on.
+   */
+  public String exportToICal(ScheduleEvent event) throws Exception{
+    
+    ScheduleEventDetailVO scheduleEventDetailVO = new ScheduleEventDetailVO(this, event);
+    BestTimeVO bestTimeVO = scheduleEventDetailVO.getBestTimes();
+    List<DateOption> listDateOption = new ArrayList<DateOption>();
+    if(bestTimeVO.isBestDateExists()) {
+      List<TimeVO> listTimeVO = bestTimeVO.getTimes();
+      for(TimeVO timeVO : listTimeVO) {
+        DateVO dateVO = timeVO.getDate();
+        Date day = dateVO.getDate();
+        DateOption dateOption = new DateOption();
+        dateOption.setDay(day);
+        //dateOption.setHour
+        listDateOption.add(dateOption);
+      }
+    }
+    
+    String icsFileName = ICS_PREFIX + ".ics";
+    String icsFilePath = FileRepositoryManager.getTemporaryPath() + icsFileName;
+    List<CalendarEvent> eventsToExport;
+    try {
+      eventsToExport = asCalendarEvents(event, listDateOption);
+    } catch (Exception ex) {
+      SilverTrace.error("scheduleevent", getClass().getSimpleName() + ".exportToICal()",
+          "root.MSG_GEN_PARAM_VALUE", ex);
+      throw new ExportException(ex.getMessage(), ex);
+    }
+    /*List<CalendarEvent> eventsToExport = new ArrayList<CalendarEvent>();
+    eventsToExport.add(calendarEvent);
+    ExporterFactory exporterFactory = ExporterFactory.getFactory();
+    Exporter<ExportableCalendar> iCalExporter = exporterFactory.getICalExporter();
+    FileWriter fileWriter = new FileWriter(icsFilePath);
+    try {
+      iCalExporter.export(withWriter(fileWriter), ExportableCalendar.with(eventsToExport));
+    } catch (ExportException ex) {
+      File fileToDelete = new File(icsFilePath);
+      if (fileToDelete.exists()) {
+        FileUtils.deleteQuietly(fileToDelete);
+      }
+      throw ex;
+    }*/
+
+    return icsFileName;
   }
 }

@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.silverpeas.export.ExportException;
 import com.silverpeas.export.NoDataToExportException;
 import com.silverpeas.scheduleevent.control.ScheduleEventSessionController;
+import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileServerUtils;
 
@@ -42,20 +43,27 @@ public class ScheduleEventExportRequestHandler implements ScheduleEventRequestHa
   @Override
   public String getDestination(String function, ScheduleEventSessionController scheduleeventSC,
       HttpServletRequest request) throws Exception {
-    try {
-      /*String icsFile = scheduleeventSC.exportToICal();
-      request.setAttribute("messageKey", "almanach.export.ical.success");
-      request.setAttribute("icsName", icsFile);
-      request.setAttribute("icsURL", FileServerUtils.getUrlToTempDir(icsFile));*/
-    } catch (NoDataToExportException ex) {
-      SilverTrace.info("scheduleevent", getClass().getSimpleName() + ".getDestination()",
-              "root.EX_NO_MESSAGE", ex.getMessage());
-      request.setAttribute("messageKey", "almanach.export.ical.empty");
-    } catch (ExportException ex) {
-      SilverTrace.error("scheduleevent", getClass().getSimpleName() + ".getDestination()",
-              "root.EX_NO_MESSAGE", ex.getMessage());
-      request.setAttribute("messageKey", "almanach.export.ical.failure");
+    
+    ScheduleEvent event = scheduleeventSC.getCurrentScheduleEvent();
+    if (event != null) {
+      try {
+        String icsFile = scheduleeventSC.exportToICal(event);
+        request.setAttribute("messageKey", "almanach.export.ical.success");
+        request.setAttribute("icsName", icsFile);
+        request.setAttribute("icsURL", FileServerUtils.getUrlToTempDir(icsFile));
+      } /*catch (NoDataToExportException ex) {
+        SilverTrace.info("scheduleevent", getClass().getSimpleName() + ".getDestination()",
+                "root.EX_NO_MESSAGE", ex.getMessage());
+        request.setAttribute("messageKey", "almanach.export.ical.empty");
+      }*/ catch (ExportException ex) {
+        SilverTrace.error("scheduleevent", getClass().getSimpleName() + ".getDestination()",
+                "root.EX_NO_MESSAGE", ex.getMessage());
+        request.setAttribute("messageKey", "scheduleevent.export.ical.failure");
+      }
+      return this.jspDestination;
     }
-    return jspDestination;
+    
+    // error page
+    throw new Exception("No current event ");
   }
 }
