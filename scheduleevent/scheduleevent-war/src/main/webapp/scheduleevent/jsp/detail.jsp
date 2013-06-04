@@ -83,6 +83,8 @@
 <c:set var="scheduleEventDetail" value="${requestScope.scheduleEventDetail}" />
 
 <c:set var="selectionTime" value="${scheduleEventDetail.bestTimes}" />
+
+<view:operationPane>
 <c:if test="${scheduleEventDetail.allowedToChange}">
 	<fmt:message key="scheduleevent.icons.delete" var="deleteIcon" bundle="${icons}" />
 	<fmt:message key="scheduleevent.icons.delete.alt" var="deleteIconAlt" />
@@ -96,19 +98,21 @@
 	</c:if>
 	<fmt:message key="scheduleevent.icons.users" var="usersIcon" bundle="${icons}" />
 	<fmt:message key="scheduleevent.icons.users.alt" var="usersIconAlt" />
-	<fmt:message key="scheduleevent.icons.export.alt" var="exportScheduleEventAlt" />
-	<fmt:message key="scheduleevent.icons.exportToICal" var="exportScheduleEventIconPath" bundle="${icons}" />
-	<view:operationPane>
 		<view:operation altText="${deleteIconAlt}" icon="${deleteIcon}" action="${'javascript:deleteScheduleEvent();'}" />
+		<view:operationSeparator/>
 		<view:operation altText="${modifyStateIconAlt}" icon="${modifyStateIcon}" action="${'javascript:modifyState();'}" />
+		<view:operationSeparator/>
 		<view:operation altText="${usersIconAlt}" icon="${usersIcon}" action="${'javascript:setUsers();'}" />
-		<c:if test="${scheduleEventDetail.closed}">
-		  <c:if test="${selectionTime.bestDateExists}">
-        <view:operation altText="${exportScheduleEventAlt}" icon="${exportScheduleEventIconPath}" action="${'javascript: exportICal();'}" />
-      </c:if>
-    </c:if>
-	</view:operationPane>
+		<view:operationSeparator/>
 </c:if>
+<c:if test="${scheduleEventDetail.closed}">
+  <c:if test="${selectionTime.bestDateExists}">
+    <fmt:message key="scheduleevent.icons.export.alt" var="exportScheduleEventAlt" />
+    <fmt:message key="scheduleevent.icons.exportToICal" var="exportScheduleEventIconPath" bundle="${icons}" />
+    <view:operation altText="${exportScheduleEventAlt}" icon="${exportScheduleEventIconPath}" action="${'javascript: exportICal();'}" />
+  </c:if>
+</c:if>
+</view:operationPane>
 
 <view:window>
 	<c:if test="${selectionTime.bestDateExists}"><div class="inlineMessage">
