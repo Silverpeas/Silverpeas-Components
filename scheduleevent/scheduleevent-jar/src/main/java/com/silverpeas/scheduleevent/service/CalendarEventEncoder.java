@@ -24,20 +24,24 @@
 package com.silverpeas.scheduleevent.service;
 
 import static com.silverpeas.calendar.CalendarEvent.anEventAt;
-import com.silverpeas.calendar.*;
+
+import com.silverpeas.calendar.CalendarEvent;
+import com.silverpeas.calendar.Datable;
 import com.silverpeas.scheduleevent.service.model.ScheduleEventStatus;
 import com.silverpeas.scheduleevent.service.model.beans.DateOption;
 import com.silverpeas.scheduleevent.service.model.beans.Response;
 import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
 
-import static com.silverpeas.util.StringUtil.isDefined;
-import org.silverpeas.wysiwyg.WysiwygException;
 import static com.stratelia.webactiv.util.DateUtil.asDatable;
 import com.stratelia.webactiv.util.ResourceLocator;
-import java.net.MalformedURLException;
-import java.net.URL;
+
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
-import java.util.*;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Set;
+import java.util.TimeZone;
 
 /**
  * An encoder of EventDetail instances to EventCalendar instances.
@@ -50,17 +54,32 @@ public class CalendarEventEncoder {
   private static ResourceLocator getSettings() {
     return settings;
   }
+  
+  /**
+   * Creates a Datable object from the specified date and time
+   *
+   * @param date the date (day in month in year).
+   * @param time : the hour 8 if morning, 14 if after meridian.
+   * @return a Datable object corresponding to the specified date and time.
+   */
+  private Datable<?> createDatable(final Date date, final int time) {
+    Calendar dateAndTime = GregorianCalendar.getInstance();
+    dateAndTime.setTime(date);
+    dateAndTime.set(Calendar.HOUR_OF_DAY, time);
+    dateAndTime.set(Calendar.MINUTE, 0);
+    Datable<?> datable = asDatable(dateAndTime.getTime(), true);
+    return datable;
+  }
 
   /**
-   * Encodes the specified scheduleevent detail into calendar events.
+   * Encodes the specified detailed scheduleevent with the specified dates into calendar events.
    *
    * @param scheduleevent detail.
+   * @param scheduleevent detail.
+   * @param list of dates.
    * @return the list of calendar event corresponding to the schedule event.
-   * @throws MalformedURLException if the URL of an event is invalid.
-   * @throws WysiwygException if an error occurs while fetching the WYSIWYG description of an event.
    */
-  public List<CalendarEvent> encode(final ScheduleEvent eventDetail, final List<DateOption> listDateOption)
-          throws MalformedURLException {
+  public List<CalendarEvent> encode(final ScheduleEvent eventDetail, final List<DateOption> listDateOption) {
     List<CalendarEvent> events = new ArrayList<CalendarEvent>();
     Set<Response> listResponse = eventDetail.getResponses();
     if(eventDetail.getStatus() == ScheduleEventStatus.CLOSED && listResponse.size() > 0) {
@@ -68,11 +87,11 @@ public class CalendarEventEncoder {
       for(DateOption eventDateOption : listDateOption) {
         Datable<?> startDate = createDatable(eventDateOption.getDay(), eventDateOption.getHour()).
             inTimeZone(timeZone);
-        int endTime = 12;
-        if(eventDateOption.getHour() == 8) {
-          endTime = 12;
-        } else if(eventDateOption.getHour() == 14) {
-          endTime = 18;
+        int endTime = DateOption.MORNING_END_HOUR;
+        if(eventDateOption.getHour() == DateOption.MORNING_BEGIN_HOUR) {
+          endTime = DateOption.MORNING_END_HOUR;
+        } else if(eventDateOption.getHour() == DateOption.AFTERNOON_BEGIN_HOUR) {
+          endTime = DateOption.AFTERNOON_END_HOUR;
         }
         Datable<?> endDate = createDatable(eventDateOption.getDay(), endTime).inTimeZone(timeZone);
       
@@ -80,29 +99,9 @@ public class CalendarEventEncoder {
                 endingAt(endDate).
                 withTitle(eventDetail.getTitle()).
                 withDescription(eventDetail.getDescription());
-        if (isDefined(eventDetail.getURL())) {
-          calendarEvent.withUrl(new URL(eventDetail.getURL()));
-        }
         events.add(calendarEvent); 
       }
     }
     return events;
-  }
-
-  /**
-   * Creates a Datable object from the specified date and time
-   *
-   * @param date the date (day in month in year).
-   * @param time : the hour 8 if morning, 14 if after meridian.
-   * returned datable is a Date.
-   * @return a Datable object corresponding to the specified date and time.
-   */
-  private Datable<?> createDatable(final Date date, final int time) {
-    Calendar dateAndTime = Calendar.getInstance();
-    dateAndTime.setTime(date);
-    dateAndTime.set(Calendar.HOUR_OF_DAY, time);
-    dateAndTime.set(Calendar.MINUTE, 0);
-    Datable<?> datable = asDatable(dateAndTime.getTime(), true);
-    return datable;
   }
 }

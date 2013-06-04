@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2009 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -82,6 +82,7 @@
 
 <c:set var="scheduleEventDetail" value="${requestScope.scheduleEventDetail}" />
 
+<c:set var="selectionTime" value="${scheduleEventDetail.bestTimes}" />
 <c:if test="${scheduleEventDetail.allowedToChange}">
 	<fmt:message key="scheduleevent.icons.delete" var="deleteIcon" bundle="${icons}" />
 	<fmt:message key="scheduleevent.icons.delete.alt" var="deleteIconAlt" />
@@ -101,12 +102,15 @@
 		<view:operation altText="${deleteIconAlt}" icon="${deleteIcon}" action="${'javascript:deleteScheduleEvent();'}" />
 		<view:operation altText="${modifyStateIconAlt}" icon="${modifyStateIcon}" action="${'javascript:modifyState();'}" />
 		<view:operation altText="${usersIconAlt}" icon="${usersIcon}" action="${'javascript:setUsers();'}" />
-    <view:operation altText="${exportScheduleEventAlt}" icon="${exportScheduleEventIconPath}" action="${'javascript: exportICal();'}" />
+		<c:if test="${scheduleEventDetail.closed}">
+		  <c:if test="${selectionTime.bestDateExists}">
+        <view:operation altText="${exportScheduleEventAlt}" icon="${exportScheduleEventIconPath}" action="${'javascript: exportICal();'}" />
+      </c:if>
+    </c:if>
 	</view:operationPane>
 </c:if>
 
 <view:window>
-	<c:set var="selectionTime" value="${scheduleEventDetail.bestTimes}" />
 	<c:if test="${selectionTime.bestDateExists}"><div class="inlineMessage">
 		<fmt:message key="${selectionTime.multilangLabel}">
 			<fmt:param value="${selectionTime.datesNumber}"/>

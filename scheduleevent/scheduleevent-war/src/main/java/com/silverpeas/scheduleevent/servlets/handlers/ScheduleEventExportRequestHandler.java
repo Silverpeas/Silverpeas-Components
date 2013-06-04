@@ -27,7 +27,6 @@ package com.silverpeas.scheduleevent.servlets.handlers;
 import javax.servlet.http.HttpServletRequest;
 
 import com.silverpeas.export.ExportException;
-import com.silverpeas.export.NoDataToExportException;
 import com.silverpeas.scheduleevent.control.ScheduleEventSessionController;
 import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -51,11 +50,7 @@ public class ScheduleEventExportRequestHandler implements ScheduleEventRequestHa
         request.setAttribute("messageKey", "almanach.export.ical.success");
         request.setAttribute("icsName", icsFile);
         request.setAttribute("icsURL", FileServerUtils.getUrlToTempDir(icsFile));
-      } /*catch (NoDataToExportException ex) {
-        SilverTrace.info("scheduleevent", getClass().getSimpleName() + ".getDestination()",
-                "root.EX_NO_MESSAGE", ex.getMessage());
-        request.setAttribute("messageKey", "almanach.export.ical.empty");
-      }*/ catch (ExportException ex) {
+      } catch (ExportException ex) {
         SilverTrace.error("scheduleevent", getClass().getSimpleName() + ".getDestination()",
                 "root.EX_NO_MESSAGE", ex.getMessage());
         request.setAttribute("messageKey", "scheduleevent.export.ical.failure");

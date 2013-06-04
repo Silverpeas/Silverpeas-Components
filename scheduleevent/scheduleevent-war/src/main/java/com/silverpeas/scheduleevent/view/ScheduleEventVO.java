@@ -13,8 +13,8 @@ import java.util.TreeSet;
 
 public class ScheduleEventVO implements ScheduleEventBean {
 
-  private static final int MORNING_HOUR = 8;
-  private static final int AFTERNOON_HOUR = 14;
+  public static final int MORNING_HOUR = 8;
+  public static final int AFTERNOON_HOUR = 14;
   private ScheduleEventBean event;
 
   public ScheduleEventVO(ScheduleEventBean current) {
