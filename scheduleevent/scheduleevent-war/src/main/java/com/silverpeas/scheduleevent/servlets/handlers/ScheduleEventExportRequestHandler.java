@@ -47,7 +47,7 @@ public class ScheduleEventExportRequestHandler implements ScheduleEventRequestHa
     if (event != null) {
       try {
         String icsFile = scheduleeventSC.exportToICal(event);
-        request.setAttribute("messageKey", "almanach.export.ical.success");
+        request.setAttribute("messageKey", "scheduleevent.export.ical.success");
         request.setAttribute("icsName", icsFile);
         request.setAttribute("icsURL", FileServerUtils.getUrlToTempDir(icsFile));
       } catch (ExportException ex) {

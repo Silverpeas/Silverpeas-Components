@@ -42,7 +42,11 @@
     <view:looknfeel />
   </head>
   <body>
-  	<view:browseBar clickable="false"/>
+    <fmt:message key="scheduleevent" var="scheduleEventTitle" />
+    <view:browseBar clickable="false">
+      <view:browseBarElt link="" label="${scheduleEventTitle}" />
+    </view:browseBar>
+ 
     <view:window>
       <view:frame>
       	<c:if test="${icsName ne null and fn:length(icsName) > 0}">
