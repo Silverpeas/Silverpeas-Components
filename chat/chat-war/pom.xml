@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.silverpeas.components</groupId>
     <artifactId>chat</artifactId>
-    <version>5.12</version>
+    <version>5.12.1-SNAPSHOT</version>
   </parent>
 
   <groupId>com.silverpeas.components.chat</groupId>
