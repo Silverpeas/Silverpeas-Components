@@ -954,11 +954,16 @@ public class AjaxPublicationsListServlet extends HttpServlet {
           oneFile = true;
         }
         String id = version.getPk().getId();
-        String title = version.getTitle() + " v" + version.getMajorVersion();
+        String logicalName = version.getFilename();
+        String title =  version.getTitle();
+        if (!StringUtil.isDefined(version.getTitle())) {
+          title =  logicalName;
+          logicalName = null; // do not display filename twice
+        }
+        title += " v" + version.getMajorVersion();
         String info = version.getDescription();
         String icon = FileRepositoryManager.getFileIcon(FilenameUtils.getExtension(document.
             getFilename()));
-        String logicalName = version.getFilename();
         String size = FileRepositoryManager.formatFileSize(version.getSize());
         String downloadTime = FileRepositoryManager.getFileDownloadTime(version.getSize());
         Date creationDate = version.getCreated();
@@ -1055,7 +1060,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       result.append(link).append("<img src=\"").append(icon).append(
           "\" border=\"0\" align=\"absmiddle\"/></a>&#160;</td>");
       result.append("<td valign=\"top\">").append(link);
-      if (title == null || title.length() == 0) {
+      if (!StringUtil.isDefined(title)) {
         result.append(logicalName);
       } else {
         result.append(title);
@@ -1073,15 +1078,16 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       result.append("<br/>");
 
       result.append("<i>");
-      if (StringUtil.isDefined(title) && !"no".equals(resources.getSetting("showTitle"))) {
+      if (StringUtil.isDefined(title) && StringUtil.isDefined(logicalName) &&
+          resources.getSetting("showTitle", true)) {
         result.append(logicalName).append(" / ");
       }
       // Add file size
-      if (!"no".equals(resources.getSetting("showFileSize"))) {
+      if (resources.getSetting("showFileSize", true)) {
         result.append(size);
       }
       // and download estimation
-      if (!"no".equals(resources.getSetting("showDownloadEstimation"))) {
+      if (resources.getSetting("showDownloadEstimation", false)) {
         result.append(" / ").append(downloadTime).append(" / ").append(
             resources.getOutputDate(creationDate));
       }
@@ -1102,7 +1108,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       result.append("</i>");
 
       // Add info
-      if (StringUtil.isDefined(info) && !"no".equals(resources.getSetting("showInfo"))) {
+      if (StringUtil.isDefined(info) && resources.getSetting("showInfo", true)) {
         result.append("<br/>").append(EncodeHelper.javaStringToHtmlParagraphe(info));
       }
       result.append("</td></tr>");
