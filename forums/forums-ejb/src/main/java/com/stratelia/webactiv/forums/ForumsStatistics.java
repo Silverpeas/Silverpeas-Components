@@ -18,25 +18,22 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
  ---*/
 package com.stratelia.webactiv.forums;
 
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.ejb.EJBException;
-
 import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
-
 import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsBM;
 import com.stratelia.webactiv.forums.models.Forum;
 import com.stratelia.webactiv.forums.models.ForumPK;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
+
+import javax.ejb.EJBException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class ForumsStatistics implements ComponentStatisticsInterface {
 
@@ -67,8 +64,7 @@ public class ForumsStatistics implements ComponentStatisticsInterface {
     return forumsBM;
   }
 
-  private List<Forum> getForums(String spaceId, String componentId)
-      throws RemoteException {
+  private List<Forum> getForums(String spaceId, String componentId) {
     return getForumsBM().getForums(new ForumPK(componentId, spaceId));
   }
 }

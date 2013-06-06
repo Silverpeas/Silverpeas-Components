@@ -171,11 +171,11 @@ public class OrganizationChartLdapServiceImpl extends AbstractOrganizationChartS
     }
   }
 
-  private OrganizationalUnit getParentOU(String ou) throws NamingException {
+  private OrganizationalUnit getParentOU(String ou) {
     SilverTrace.info("organizationchart",
-        "OrganizationChartLdapServiceImpl.getParentOU()", "root.MSG_GEN_ENTER_METHOD", "ou = " + ou);
+        "OrganizationChartLdapServiceImpl.getParentOU()", "root.MSG_GEN_ENTER_METHOD", "ou = "+ou);
 
-    String parentOu = ou.substring(ou.indexOf(",") + 1); //OU=DGA2,OU=DGS,OU=Ailleurs
+    String parentOu = ou.substring(ou.indexOf(",")+1); //OU=DGA2,OU=DGS,OU=Ailleurs
     String parentName = parentOu.substring(3, parentOu.indexOf(",")); // DGA2
 
     SilverTrace.info("organizationchart",

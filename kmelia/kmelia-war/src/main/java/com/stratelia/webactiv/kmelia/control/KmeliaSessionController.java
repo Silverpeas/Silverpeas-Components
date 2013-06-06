@@ -899,7 +899,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     return getKmeliaBm().getPublicationDetail(getPublicationPK(pubId));
   }
 
-  private Collection<Collection<NodeDetail>> getPathList(PublicationPK pk) throws RemoteException {
+  private Collection<Collection<NodeDetail>> getPathList(PublicationPK pk) {
     return getKmeliaBm().getPathList(pk);
   }
 
@@ -1106,7 +1106,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     }
   }
 
-  private void removeXMLContentOfPublication(PublicationPK pubPK) throws RemoteException {
+  private void removeXMLContentOfPublication(PublicationPK pubPK) {
     try {
       PublicationDetail pubDetail = getKmeliaBm().getPublicationDetail(pubPK);
       String infoId = pubDetail.getInfoId();
@@ -1756,8 +1756,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     refreshSessionPubliAndClone();
   }
 
-  private synchronized NotificationMetaData getAlertNotificationMetaData(String pubId)
-      throws RemoteException {
+  private synchronized NotificationMetaData getAlertNotificationMetaData(String pubId) {
     NotificationMetaData metaData = null;
     if (isKmaxMode) {
       metaData = getKmeliaBm().getAlertNotificationMetaData(getPublicationPK(pubId), null,
@@ -1771,7 +1770,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   private synchronized NotificationMetaData getAlertNotificationMetaData(String pubId,
-      String attachmentId) throws RemoteException {
+      String attachmentId) {
     NodePK nodePK = null;
     if (!isKmaxMode) {
       nodePK = getCurrentFolderPK();
@@ -3000,7 +2999,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     return paste(getNodeHeader(nodeId));
   }
 
-  private List<Object> paste(NodeDetail folder) throws ClipboardException, RemoteException {
+  private List<Object> paste(NodeDetail folder) throws ClipboardException {
     List<Object> pastedItems = new ArrayList<Object>();
     try {
       SilverTrace.info("kmelia", "KmeliaRequestRooter.paste()", "root.MSG_GEN_PARAM_VALUE",
@@ -3130,7 +3129,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   private void pastePublicationsOfTopic(NodePK fromPK, NodePK toPK, boolean isCutted,
-      List<NodePK> nodePKsToPaste) throws RemoteException {
+      List<NodePK> nodePKsToPaste) {
     Collection<PublicationDetail> publications = getPublicationBm().getDetailsByFatherPK(fromPK);
     CompletePublication completePubli = null;
     for (PublicationDetail publi : publications) {
@@ -3343,8 +3342,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       PublicationDetail publi, String fromId, String fromComponentId, ForeignPK fromForeignPK,
       PublicationPK fromPubPK, ForeignPK toForeignPK, PublicationPK toPubPK,
       String imagesSubDirectory, String thumbnailsSubDirectory, String toAbsolutePath,
-      String fromAbsolutePath) throws RemoteException, ThumbnailException,
-      PublicationTemplateException, PdcException, IOException {
+      String fromAbsolutePath) throws RemoteException, PublicationTemplateException, PdcException,
+      IOException {
     boolean indexIt = false;
     // move Vignette on disk
     int[] thumbnailSize = getThumbnailWidthAndHeight();

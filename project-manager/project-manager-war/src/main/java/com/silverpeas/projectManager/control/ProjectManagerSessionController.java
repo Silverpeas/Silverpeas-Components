@@ -814,7 +814,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
    * @return a list
    * @throws ParseException
    */
-  private List<MonthVO> getNbMonth(int nbMonth, Date curDate) throws ParseException {
+  private List<MonthVO> getNbMonth(int nbMonth, Date curDate) {
     // Result list decaration
     List<MonthVO> months = new ArrayList<MonthVO>();
     if (nbMonth <= 0) {

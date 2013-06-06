@@ -597,7 +597,7 @@ public class PhotoDAO {
    * @throws ParseException
    **/
   public static List<String> getAllPhotosIDbyUserid(Connection con, String userId) throws
-      SQLException, ParseException {
+      SQLException {
     List<String> listPhoto = new ArrayList<String>();
     String query =
         "(SELECT creationdate AS dateinformation, photoId,'new'as type FROM SC_Gallery_Photo  WHERE creatorid = ?) "
@@ -634,7 +634,7 @@ public class PhotoDAO {
    * @throws ParseException
    */
   public static List<SocialInformation> getAllPhotosIDbyUserid(Connection con,
-      String userId, Date begin, Date end) throws SQLException, ParseException {
+      String userId, Date begin, Date end) throws SQLException {
     List<SocialInformation> listPhoto = new ArrayList<SocialInformation>();
     String query =
         "(SELECT creationdate AS dateinformation, photoId, 'new' as type FROM SC_Gallery_Photo WHERE creatorid = ? and creationdate >= ? and creationdate <= ? ) "
@@ -675,7 +675,7 @@ public class PhotoDAO {
    * @throws ParseException
    */
   public static List<SocialInformation> getSocialInformationsListOfMyContacts(Connection con,
-      List<String> listOfuserId, List<String> availableComponent, Date begin, Date end) throws SQLException, ParseException {
+      List<String> listOfuserId, List<String> availableComponent, Date begin, Date end) throws SQLException {
     List<SocialInformation> listPhoto = new ArrayList<SocialInformation>();
     String query =
         "(SELECT creationdate AS dateinformation, photoId, 'new' as type FROM sc_gallery_photo"

@@ -667,8 +667,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
    * PublicationTemplateManager#getPublicationTemplate(instanceId, getParam("userTemplate",
    * instanceId))
    */
-  private UserTemplate getUserTemplate(String instanceId)
-      throws WhitePagesException {
+  private UserTemplate getUserTemplate(String instanceId) {
     ResourceLocator templateSettings = new ResourceLocator(
         "com.silverpeas.whitePages.settings.template", "");
     String templateDir = templateSettings.getString("templateDir");

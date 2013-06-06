@@ -23,15 +23,16 @@ package com.silverpeas.external.mailinglist.servlets;
 import com.silverpeas.mailinglist.service.ServicesFactory;
 import com.silverpeas.mailinglist.service.model.beans.Attachment;
 import com.silverpeas.mailinglist.service.model.beans.Message;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Iterator;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 public class AttachmentServlet extends HttpServlet implements MailingListRoutage {
 
@@ -67,8 +68,6 @@ public class AttachmentServlet extends HttpServlet implements MailingListRoutage
         while ((c = in.read(buffer)) != -1) {
           out.write(buffer, 0, c);
         }
-      } catch (IOException ioex) {
-        throw ioex;
       } finally {
         out.close();
         if (in != null) {
