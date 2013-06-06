@@ -264,8 +264,7 @@ public class BlogSessionController extends AbstractComponentSessionController {
     return AlertUser.getAlertUserURL();
   }
 
-  private synchronized NotificationMetaData getAlertNotificationMetaData(String postId)
-      throws RemoteException {
+  private synchronized NotificationMetaData getAlertNotificationMetaData(String postId) {
     return UserNotificationHelper.build(new BlogUserNotification(getComponentId(), getPost(postId),
         getUserDetail()));
   }

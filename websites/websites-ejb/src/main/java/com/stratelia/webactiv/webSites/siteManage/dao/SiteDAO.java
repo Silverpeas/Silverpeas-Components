@@ -69,7 +69,7 @@ public class SiteDAO {
   }
 
   /* DBConnection methods */
-  private Connection openConnection() throws SQLException, UtilException {
+  private Connection openConnection() throws UtilException {
     return DBUtil.makeConnection(JNDINames.BOOKMARK_DATASOURCE);
   }
 
@@ -495,7 +495,7 @@ public class SiteDAO {
    * @throws SQLException
    * @throws UtilException
    */
-  private String daoGetNextId() throws SQLException, UtilException {
+  private String daoGetNextId() throws UtilException {
 
     int nextid = DBUtil.getNextId(tableSiteName, "siteId");
 

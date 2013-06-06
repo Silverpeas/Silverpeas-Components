@@ -1205,8 +1205,7 @@ public class ProcessManagerRequestRouter
   static private FunctionHandler printProcessFramesetHandler = new SessionSafeFunctionHandler() {
     protected String computeDestination(String function,
         ProcessManagerSessionController session,
-        HttpServletRequest request, List<FileItem> items)
-        throws ProcessManagerException {
+        HttpServletRequest request, List<FileItem> items) {
       setSharedAttributes(session, request);
       return "/processManager/jsp/printProcessFrameset.jsp";
     }
@@ -1244,8 +1243,7 @@ public class ProcessManagerRequestRouter
   static private FunctionHandler printButtonsHandler = new SessionSafeFunctionHandler() {
     protected String computeDestination(String function,
         ProcessManagerSessionController session,
-        HttpServletRequest request, List<FileItem> items)
-        throws ProcessManagerException {
+        HttpServletRequest request, List<FileItem> items) {
       setSharedAttributes(session, request);
       return "/processManager/jsp/printButtons.jsp";
     }

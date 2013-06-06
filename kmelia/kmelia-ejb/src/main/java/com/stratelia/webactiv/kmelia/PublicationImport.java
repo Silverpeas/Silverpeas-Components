@@ -298,7 +298,7 @@ public class PublicationImport {
    * @return The id of the newly created publication.
    * @throws RemoteException
    */
-  private String createPublication(PublicationDetail pubDetail) throws RemoteException {
+  private String createPublication(PublicationDetail pubDetail) {
     pubDetail.getPK().setSpace(spaceId);
     pubDetail.getPK().setComponentName(componentId);
     pubDetail.setCreatorId(userId);
