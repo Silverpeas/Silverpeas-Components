@@ -547,8 +547,8 @@ public class ForumsSessionController extends AbstractComponentSessionController 
       int messageId) throws NotificationManagerException {
     List<String> subscribers = listAllSubscribers(parentId);
     if (!subscribers.isEmpty()) {
-      ResourceLocator resource = new ResourceLocator(
-          "org.silverpeas.forums.settings.forumsMails", getLanguage());
+      ResourceLocator resource =
+          new ResourceLocator("org.silverpeas.forums.settings.forumsMails", "");
       Map<String, String> values = new HashMap<String, String>();
       values.put("title", title);
       values.put("text", text);
@@ -576,8 +576,8 @@ public class ForumsSessionController extends AbstractComponentSessionController 
       int messageId, int forumId) throws NotificationManagerException {
     List<String> moderators = getModerators(forumId);
     if (moderators.size() > 0) {
-      ResourceLocator resource = new ResourceLocator(
-          "org.silverpeas.forums.settings.forumsMails", getLanguage());
+      ResourceLocator resource =
+          new ResourceLocator("org.silverpeas.forums.settings.forumsMails", "");
 
       Map<String, String> values = new HashMap<String, String>();
       values.put("title", title);
@@ -607,8 +607,8 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   public void sendNotificationAfterValidation(String title, String text, int parentId,
       int messageId, int forumId) throws NotificationManagerException {
-    ResourceLocator resource = new ResourceLocator(
-        "org.silverpeas.forums.settings.forumsMails", getLanguage());
+    ResourceLocator resource =
+        new ResourceLocator("org.silverpeas.forums.settings.forumsMails", "");
     // Preparation des donnees
     Message message = getMessage(messageId);
 
@@ -637,8 +637,8 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   public void sendNotificationRefused(String title, String text, int parentId,
       int messageId, int forumId, String motive) throws NotificationManagerException {
-    ResourceLocator resource = new ResourceLocator(
-        "org.silverpeas.forums.settings.forumsMails", getLanguage());
+    ResourceLocator resource =
+        new ResourceLocator("org.silverpeas.forums.settings.forumsMails", "");
     // Preparation des donnees
     Message message = getMessage(messageId);
     Map<String, String> values = new HashMap<String, String>();
@@ -688,7 +688,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   }
 
   public void deployMessage(int id) {
-    deployedMessages.add(Integer.valueOf(id));
+    deployedMessages.add(id);
   }
 
   public void undeployMessage(int id) {
@@ -696,7 +696,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
       Iterator<Integer> iter = deployedMessages.iterator();
       while (iter.hasNext()) {
         Integer value = iter.next();
-        if (value.intValue() == id) {
+        if (value == id) {
           iter.remove();
           return;
         }
@@ -706,7 +706,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   public boolean messageIsDeployed(int id) {
     for (Integer value : deployedMessages) {
-      if (value.intValue() == id) {
+      if (value == id) {
         return true;
       }
     }
@@ -749,7 +749,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     boolean result = getForumsBM().isModerator(userId, getForumPK(forumId));
     int parentId = getForumParentId(forumId);
     while ((!result) && (parentId != 0)) {
-      result = (result || getForumsBM().isModerator(userId, getForumPK(parentId)));
+      result = (getForumsBM().isModerator(userId, getForumPK(parentId)));
       parentId = getForumParentId(parentId);
     }
     return result;
@@ -1086,7 +1086,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
    * this method clasify content only when new forum is created. Check if a position has been
    * defined in header formulary then persist it
    *
-   * @param forumDetail the current ForumDetail
+   * @param forumPK the current ForumDetail
    */
   private void classifyContent(ForumPK forumPK) {
     List<PdcPosition> positions = this.getPositions();
