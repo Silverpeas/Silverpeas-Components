@@ -154,6 +154,7 @@ public class JSONServlet extends HttpServlet {
       if (statisticEnable && isRoot && canShowStats) {
         operations.put("statistics", true);
       }
+      operations.put("responsibles", !kmeliaSC.getUserDetail().isAnonymous());
     }
 
     return new JSONObject(operations);
