@@ -62,6 +62,10 @@ public class Forum implements Serializable {
     return id;
   }
 
+  public String getIdAsString() {
+    return String.valueOf(id);
+  }
+
   public void setId(int id) {
     this.id = id;
   }
@@ -92,6 +96,10 @@ public class Forum implements Serializable {
 
   public int getParentId() {
     return parentId;
+  }
+
+  public String getParentIdAsString() {
+    return String.valueOf(parentId);
   }
 
   public void setParentId(int parentId) {
@@ -128,6 +136,10 @@ public class Forum implements Serializable {
 
   public void setPk(ForumPK pk) {
     this.pk = pk;
+  }
+
+  public boolean isRoot() {
+    return parentId == 0;
   }
 
   @Override

@@ -33,9 +33,10 @@ import com.stratelia.webactiv.forums.models.Forum;
 import com.stratelia.webactiv.forums.url.ActionUrl;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane;
+
+import javax.servlet.jsp.JspWriter;
 import java.io.IOException;
 import java.util.Date;
-import javax.servlet.jsp.JspWriter;
 
 /**
  *
@@ -100,11 +101,34 @@ public class ForumListHelper {
       // 1ère colonne : état des messages (lus / non lus)
       out.print("<td class=\"ArrayCell\">");
 
-      if (!fsc.isExternal() || !reader) {
-        // rechercher si l'utilisateur a des messages non lus sur ce forum
-        boolean isNewMessage = fsc.isNewMessageByForum(fsc.getUserId(), forumId);
-        out.print(
-            "<img src=\"icons/" + (isNewMessage ? "newMessage" : "noNewMessage") + ".gif\"/>");
+      if (!fsc.isExternal()) {
+        out.print("<div style=\"display: table\">");
+        boolean isSubscriber = fsc.isForumSubscriber(forumId);
+        out.print("<div style=\"display: table-cell\" class=\"messageFooter\">");
+        out.print("<input name=\"checkbox\" type=\"checkbox\" ");
+        if (isSubscriber) {
+          out.print("checked ");
+        }
+        out.print("onclick=\"javascript:window.location.href='");
+        out.print(forum.isRoot() ? "main.jsp?action=" : "viewForum.jsp?action=");
+        out.print(isSubscriber ? 17 : 18);
+        out.print("&params=");
+        out.print(forum.getIdAsString());
+        out.print("&forumId=");
+        out.print(forum.getParentId());
+        out.print("'\"/>");
+        out.print("<span class=\"texteLabelForm\">");
+        out.print(fsc.getString("subscribeMessage"));
+        out.println("</span></div>");
+        if (!reader) {
+          // rechercher si l'utilisateur a des messages non lus sur ce forum
+          boolean isNewMessage = fsc.isNewMessageByForum(fsc.getUserId(), forumId);
+          out.print("<div style=\"display: table-cell\">");
+          out.print("<img src=\"icons/" +
+              (isNewMessage ? "newMessage" : "noNewMessage") + ".gif\"/>");
+          out.print("</div>");
+        }
+        out.println("</div>");
       }
 
       // Icone de deploiement

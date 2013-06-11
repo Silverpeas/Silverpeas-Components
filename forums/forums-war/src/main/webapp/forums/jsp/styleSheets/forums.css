@@ -305,8 +305,9 @@ input[type="radio"], input[type="checkbox"] {
   width: 46%;
 }
 
-.msgContent {
-  background-color : #f4f4f4
+div.msgContent {
+  border: 1px dotted #CECECE;
+  border-radius: 0;
 }
 
 #new-message #message legend,

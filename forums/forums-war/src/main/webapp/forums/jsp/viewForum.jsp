@@ -83,6 +83,7 @@
   <head>
     <title><c:out value="${currentForum.name}" /></title>
     <view:looknfeel />
+    <view:includePlugin name="notifier"/>
     <script type="text/javascript" src="<c:url value="/forums/jsp/javaScript/forums.js" />" ></script>
     <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js" />" ></script>
     <script type="text/javascript">
@@ -146,6 +147,9 @@
     </script>
   </head>
   <body id="forum" <%ForumHelper.addBodyOnload(out, fsc);%>>
+  <c:if test="${not empty requestScope.notySuccessMessage}">
+    <div style="display: none" class="notySuccess">${requestScope.notySuccessMessage}</div>
+  </c:if>
     <c:set var="viewForumPage">/Rforums/<c:out value="${componentId}" />/viewForum.jsp</c:set>
     <view:browseBar>
       <c:forEach items="${requestScope.parents}" var="ancestor">
@@ -257,11 +261,12 @@ ForumHelper.displayMessagesList(out, resource, userId, isAdmin, isModerator, isR
           <img src="icons/newMessage.gif" alt="<fmt:message key="forums.newMessageVisite" />" /> <fmt:message key="forums.newMessageVisite" />
         </c:if>
         <br/>
-        <center>
+        <div style="text-align: center;">
+          <fmt:message key="accueil" var="btnLabel"/>
           <view:buttonPane>
-            <view:button action="main.jsp" label="Retour" disabled="false" />
+            <view:button action="main.jsp" label="${btnLabel}" disabled="false" />
           </view:buttonPane>
-        </center>
+        </div>
       </view:frame>
     </view:window>
     <c:if test="${!isReader}">

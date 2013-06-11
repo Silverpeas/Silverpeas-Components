@@ -103,6 +103,8 @@ public void listFolders(JspWriter out, int rootId, int forumId, int parentId, St
     }
 }
 %>
+<c:set var="params" value="${param.params}"/>
+<c:set var="isUpdate" value="${param.action eq 2}"/>
 <%
     Collection<NodeDetail> allCategories = fsc.getAllCategories();
 
@@ -206,70 +208,31 @@ function isCorrectForm() {
   return result;
 }
 
-function moveUsers(button)
-{
-    var z = 0;
-    var indexArray = new Array();
-    if (button == ">")
-    {
-        var source = document.forumsForm.availableUsers;
-        var target = document.forumsForm.moderators;
-    }
-    else
-    {
-        var target = document.forumsForm.availableUsers;
-        var source = document.forumsForm.moderators;
-    }
-    var i;
-    for (i = 0; i < source.length; i++)
-    {
-        if (source.options[i].selected)
-        {
-            var selectedText = source.options[i].text;
-            var selectedValue = source.options[i].value;
-            target.options[target.length] = new Option(selectedText, selectedValue);
-            indexArray[z] = i;
-            z++;
-        }
-    }
-    for (i = source.length - 1; i >= 0; i--)
-    {
-        source.options[indexArray[i]] = null;
-    }
+function moveUsers(button) {
+  var z = 0;
+  var indexArray = [];
+  var $source;
+  var $target;
+  if (button == ">") {
+    $source = $(document.forumsForm.availableUsers);
+    $target = $(document.forumsForm.moderators);
+  } else {
+    $source = $(document.forumsForm.moderators);
+    $target = $(document.forumsForm.availableUsers);
+  }
+  $('option:selected', $source).detach().appendTo($target);
 }
 
-function moveAllUsers()
-{
-    var target = document.forumsForm.availableUsers;
-    var source = document.forumsForm.moderators;
-    var i;
-    for (i = 0; i < source.length; i++)
-    {
-        var selectedText = source.options[i].text;
-        var selectedValue = source.options[i].value;
-        target.options[target.length] = new Option(selectedText, selectedValue);
-    }
-    for (i = source.length - 1; i >= 0; i--)
-    {
-        source.options[i] = null;
-    }
+function moveAllUsers() {
+  var $source = $(document.forumsForm.availableUsers);
+  var $target = $(document.forumsForm.moderators);
+  $('option', $source).detach().appendTo($target);
 }
 
-function removeAllUsers()
-{
-    var source = document.forumsForm.availableUsers;
-    var target = document.forumsForm.moderators;
-    var i;
-    for (i = 0; i < source.length; i++)
-    {
-        var selectedText = source.options[i].text;
-        var selectedValue = source.options[i].value;
-        target.options[target.length] = new Option(selectedText, selectedValue);
-    }
-    for (i = source.length - 1; i >= 0; i--)
-    {
-        source.options[i] = null;
-    }
+function removeAllUsers() {
+  var $source = $(document.forumsForm.moderators);
+  var $target = $(document.forumsForm.availableUsers);
+  $('option:not(:disabled)', $source).detach().appendTo($target);
 }
 <%
     }
@@ -303,11 +266,11 @@ function removeAllUsers()
     out.println(frame.printBefore());
     if (isAdmin || isModerator)
     {
-        String formAction = ActionUrl.getUrl("main", (update ? 7 : 3), (forumId > 0 ? forumId : -1));
-        if (!update && forumId > 0) {
-          // case of the creation of a sub forum, stay in current forum
-          formAction = ActionUrl.getUrl("viewForum", (update ? 7 : 3), (forumId > 0 ? forumId : -1));
-        }
+      String formAction = ActionUrl.getUrl(((update ?  "updateForum" :  "createForum")), -1, forumId);
+      if (parentId > 0) {
+        // case of the creation of a sub forum, stay in current forum
+        backURL = ActionUrl.getUrl("viewForum", -1, parentId);
+      }
 %>
 
   <form name="forumsForm" action="<%=formAction%>" method="post">
@@ -397,58 +360,49 @@ function removeAllUsers()
   <legend><fmt:message key="forums.header.fieldset.moderation" /></legend>
   <table width="98%" cellpadding="0" cellspacing="0" border="0">
       <tr>
-          <td nowrap="nowrap" align="right"><span class="txtlibform"><fmt:message key="availableUsers" /> : </span>&nbsp;</td>
-          <td nowrap="nowrap" width="10%">&nbsp;</td>
-          <td nowrap="nowrap" align="left">&nbsp;<span class="txtlibform"><fmt:message key="moderators" /> : </span></td>
+        <td nowrap="nowrap" align="right">
+          <span class="txtlibform"><fmt:message key="availableUsers"/> : </span>&nbsp;</td>
+        <td nowrap="nowrap" width="10%">&nbsp;</td>
+        <td nowrap="nowrap" align="left">
+          &nbsp;<span class="txtlibform"><fmt:message key="moderators"/> : </span></td>
       </tr>
-      <tr>
-          <td nowrap align="right" valign="middle"><span class="selectNS">
-              <select name="availableUsers" multiple size="7"><%
-
-        UserDetail[] userDetails = fsc.listUsers();
-        UserDetail userDetail;
-        for (int i = 0; i < userDetails.length; i++)
-        {
-          userDetail = userDetails[i];
-            if (params == 0) { %>
-                <option value="<%=userDetail.getId()%>"><%=userDetail.getFirstName()%> <%=userDetail.getLastName()%></option>
-<%          } else if (!fsc.isModerator(userDetail.getId(), params)) { %>
-                <option value="<%=userDetail.getId()%>"><%=userDetail.getLastName()%> <%=userDetail.getFirstName()%></option>
-<%
-            }
-        }
-%>
-              </select></span>&nbsp;&nbsp;</td>
-            <td nowrap align="center" valign="middle">
-                <center>
-                    <table border="0" cellpadding="0" cellspacing="0" width="37">
-                        <tr>
-                            <td class="intfdcolor" width="37"><a href="javascript:moveUsers('>');"><img src="icons/bt_fleche-d.gif" width="37" height="24" border="0"/></a><br/>
-                            <a href="javascript:moveUsers('<');"><img src="icons/bt_fleche-g.gif" width="37" height="24" border="0"/></a><br/>
-                            <a href="javascript:removeAllUsers();"><img src="icons/bt_db-fleche-d.gif" width="37" height="24" border="0"/></a><br/>
-                            <a href="javascript:moveAllUsers();"><img src="icons/bt_db-fleche-g.gif" width="37" height="24" border="0"/></a></td>
-                        </tr>
-                    </table>
-                </center>
-            </td>
-            <td valign="middle" align="left">&nbsp;&nbsp;<span class="selectNS">
-                <select name="moderators" multiple size="7"><%
-    if (params != 0)
-    {
-      for (int i = 0; i < userDetails.length; i++)
-        {
-        userDetail = userDetails[i];
-            if (fsc.isModerator(userDetail.getId(), params)) {
-%>
-                        <option value="<%=userDetail.getId()%>"><%=userDetail.getFirstName()%> <%=userDetail.getLastName()%></option>
-<%
-            }
-        }
-    }
-%>
-                </select></span></td>
-        </tr>
-    </table>
+    <tr>
+      <td nowrap align="right" valign="middle"><span class="selectNS">
+        <c:set var="moderatorBean" value="<%=fsc.getModerators(forumId)%>"/>
+              <select name="availableUsers" multiple size="7">
+                <c:forEach var="moderator" items="<%=fsc.listUsers()%>">
+                  <c:if test="${params eq 0 or not moderatorBean.isModerator(moderator.id)}">
+                    <option value="${moderator.id}">${moderator.displayedName}</option>
+                  </c:if>
+                </c:forEach>
+              </select></span>&nbsp;&nbsp;
+      </td>
+      <td nowrap align="center" valign="middle">
+        <div style="text-align: center;">
+          <table border="0" cellpadding="0" cellspacing="0" width="37">
+            <tr>
+              <td class="intfdcolor" width="37">
+                <a href="javascript:moveUsers('>');"><img src="icons/bt_fleche-d.gif" width="37" height="24" border="0"/></a><br/>
+                <a href="javascript:moveUsers('<');"><img src="icons/bt_fleche-g.gif" width="37" height="24" border="0"/></a><br/>
+                <a href="javascript:moveAllUsers();"><img src="icons/bt_db-fleche-d.gif" width="37" height="24" border="0"/></a><br/>
+                <a href="javascript:removeAllUsers();"><img src="icons/bt_db-fleche-g.gif" width="37" height="24" border="0"/></a>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </td>
+      <td valign="middle" align="left">&nbsp;&nbsp;<span class="selectNS">
+        <select name="moderators" multiple size="7">
+          <c:if test="${params != 0}">
+            <c:forEach var="moderator" items="${moderatorBean.moderators}">
+              <option <c:if
+                          test="${!isUpdate or moderator.byInheritance}">disabled </c:if>value="${moderator.userId}">${moderator.user.displayedName}</option>
+            </c:forEach>
+          </c:if>
+        </select></span>
+      </td>
+    </tr>
+  </table>
 </fieldset>
 
 <% if (update) { %>

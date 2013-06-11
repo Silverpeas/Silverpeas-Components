@@ -119,7 +119,7 @@ public class ForumHelper {
         messageAuthor = resource.getString("inconnu");
       }
       int forumId = message.getForumId();
-      boolean isSubscriber = fsc.isSubscriber(messageId, userId);
+      boolean isSubscriber = fsc.isMessageSubscriber(messageId);
       int cellsCount = 0;
       String cellWidth = (simpleMode ? " width=\"15\"" : "");
       int lineHeight = ((fsc.isExternal() && reader) ? 16 : 24);

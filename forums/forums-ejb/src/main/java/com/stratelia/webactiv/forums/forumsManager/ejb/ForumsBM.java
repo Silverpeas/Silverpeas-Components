@@ -23,14 +23,17 @@ package com.stratelia.webactiv.forums.forumsManager.ejb;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.Local;
 
+import com.silverpeas.subscribe.constant.SubscriberType;
 import com.stratelia.webactiv.forums.models.Forum;
 import com.stratelia.webactiv.forums.models.ForumDetail;
 import com.stratelia.webactiv.forums.models.ForumPK;
 import com.stratelia.webactiv.forums.models.Message;
 import com.stratelia.webactiv.forums.models.MessagePK;
+import com.stratelia.webactiv.forums.models.Moderator;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 
@@ -62,6 +65,8 @@ public interface ForumsBM {
    * @
    */
   public ForumDetail getForumDetail(ForumPK forumPK);
+
+  public Collection<Forum> getForumRootList(String instanceId);
 
   public Collection<Forum> getForumsList(Collection<ForumPK> forumPKs);
 
@@ -132,7 +137,7 @@ public interface ForumsBM {
 
   public void removeAllModerators(ForumPK forumPK);
 
-  public List<String> getModerators(int forumId);
+  public List<Moderator> getModerators(int forumId);
 
   public void moveMessage(MessagePK messagePK, ForumPK forumPK);
 
@@ -140,11 +145,21 @@ public interface ForumsBM {
 
   public void unsubscribeMessage(MessagePK messagePK, String userId);
 
-  public void removeAllSubscribers(MessagePK messagePK);
+  public void subscribeForum(ForumPK forumPK, String userId);
 
-  public Collection<String> listAllSubscribers(MessagePK messagePK);
+  public void unsubscribeForum(ForumPK forumPK, String userId);
+
+  public Map<SubscriberType, Collection<String>> listAllSubscribers(MessagePK messagePK);
+
+  public Map<SubscriberType, Collection<String>> listAllSubscribers(ForumPK forumPK);
+
+  public Map<SubscriberType, Collection<String>> listAllSubscribers(String instanceId);
 
   public boolean isSubscriber(MessagePK messagePK, String userId);
+
+  public boolean isSubscriber(ForumPK forumPK, String userId);
+
+  public boolean isSubscriber(String instanceId, String userId);
 
   public void createIndex(ForumPK forumPK);
 

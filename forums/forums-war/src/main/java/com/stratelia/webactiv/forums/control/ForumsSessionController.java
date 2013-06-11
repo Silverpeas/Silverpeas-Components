@@ -20,45 +20,30 @@
  */
 package com.stratelia.webactiv.forums.control;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.ejb.EJBException;
-import javax.xml.bind.JAXBException;
-
-import org.silverpeas.upload.UploadedFile;
-
 import com.silverpeas.notation.ejb.NotationBm;
 import com.silverpeas.notation.ejb.NotationRuntimeException;
 import com.silverpeas.notation.model.Notation;
 import com.silverpeas.notation.model.NotationDetail;
 import com.silverpeas.notation.model.NotationPK;
+import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
+import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
-
-import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
-import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
-import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
-import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.CollectionUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.forums.bean.ForumModeratorBean;
 import com.stratelia.webactiv.forums.forumsException.ForumsException;
 import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsBM;
 import com.stratelia.webactiv.forums.models.Forum;
@@ -79,6 +64,20 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
+import org.silverpeas.components.forum.notification.ForumsForumSubscriptionUserNotification;
+import org.silverpeas.components.forum.notification.ForumsMessagePendingValidationUserNotification;
+import org.silverpeas.components.forum.notification.ForumsMessageSubscriptionUserNotification;
+import org.silverpeas.components.forum.notification.ForumsMessageValidationUserNotification;
+import org.silverpeas.upload.UploadedFile;
+
+import javax.ejb.EJBException;
+import javax.xml.bind.JAXBException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 import static com.stratelia.webactiv.SilverpeasRole.*;
@@ -92,7 +91,6 @@ import static com.stratelia.webactiv.forums.models.Message.*;
  */
 public class ForumsSessionController extends AbstractComponentSessionController {
 
-  public static final String MAIL_TYPE = "default";
   public static final String STAT_TYPE = "ForumMessage";
   /**
    * Le Business Manager
@@ -118,7 +116,6 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   private NotationBm notationBm = null;
   private boolean displayAllMessages = true;
   private boolean external = false;
-  private String mailType = MAIL_TYPE;
   private boolean resizeFrame = false;
   private List<PdcPosition> positions = null;
 
@@ -238,6 +235,9 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     int forumId = getForumsBM().createForum(forumPK, truncateTextField(forumName), truncateTextArea(
         forumDescription), forumCreator, forumParent, currentCategoryId, keywords);
 
+    // Send notification
+    sendForumNotification(getForumsBM().getForumDetail(getForumPK(forumId)));
+
     // Classify content here
     classifyContent(forumPK);
     return forumId;
@@ -263,6 +263,9 @@ public class ForumsSessionController extends AbstractComponentSessionController 
       String categoryId, String keywords) {
     getForumsBM().updateForum(getForumPK(forumId), truncateTextField(forumName),
         truncateTextArea(forumDescription), forumParent, categoryId, keywords);
+
+    // Send notification
+    sendForumNotification(getForumsBM().getForumDetail(getForumPK(forumId)));
   }
 
   /**
@@ -437,12 +440,11 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     String status = STATUS_FOR_VALIDATION;
 
     MessagePK messagePK = new MessagePK(getComponentId(), getSpaceId());
-    int messageId = 0;
+    int messageId;
 
     try {
-      if (!isValidationActive()
-          || (getNbModerator(forumId) == 0 || isModerator(getUserId(), forumId)
-          || admin.isInRole(getUserRoleLevel()))) {
+      if (!isValidationActive() || admin.isInRole(getUserRoleLevel()) ||
+          isModerator(getUserId(), forumId)) {
         status = STATUS_VALIDATE;
       }
       // creation du message dans la base
@@ -453,18 +455,12 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     }
 
     // Send notification to subscribers
-    try {
+    if (STATUS_VALIDATE.equals(status)) {
       // seulement si le message est valide
-      if (STATUS_VALIDATE.equals(status) && parentId != 0) {
-        sendNotification(title, text, parentId, messageId);
-      }
+      sendMessageNotification(getMessage(messageId));
+    } else {
       // envoie notification si demande de validation
-      if (STATUS_FOR_VALIDATION.equals(status)) {
-        sendNotificationToValidate(title, text, parentId, messageId, forumId);
-      }
-    } catch (Exception e) {
-      SilverTrace.warn("forums", "ForumsSessionController.createMessage()",
-          "forums.MSG_NOTIFY_USERS_FAILED", null, e);
+      sendMessageNotificationToValidate(getMessage(messageId));
     }
 
     // Attach uploaded files
@@ -479,22 +475,19 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     return messageId;
   }
 
-  public void updateMessage(int messageId, int parentId, String title,
-      String text) {
-    updateMessage(messageId, parentId, title, text, null);
+  public void updateMessage(int messageId, String title, String text) {
+    updateMessage(messageId, title, text, null);
   }
 
-  public void updateMessage(int messageId, int parentId, String title,
-      String text, String status) {
+  public void updateMessage(int messageId, String title, String text, String status) {
     MessagePK messagePK = getMessagePK(messageId);
     Message message = getMessage(messageId);
     String currentStatus = status;
     try {
       if (currentStatus == null) {
         currentStatus = STATUS_FOR_VALIDATION;
-        if (!isValidationActive() || (getNbModerator(message.getForumId()) == 0
-            || isModerator(getUserId(), message.getForumId())
-            || admin.isInRole(getUserRoleLevel()))) {
+        if (!isValidationActive() || admin.isInRole(getUserRoleLevel()) ||
+            isModerator(getUserId(), message.getForumId())) {
           currentStatus = STATUS_VALIDATE;
         }
       }
@@ -505,26 +498,17 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     }
 
     // Send notification to subscribers
-    try {
-      if (parentId != 0) {
-        sendNotification(title, text, parentId, messageId);
-      }
+    if (STATUS_VALIDATE.equals(currentStatus)) {
+      // seulement si le message est valide
+      sendMessageNotification(getMessage(messageId));
+    } else if (STATUS_FOR_VALIDATION.equals(currentStatus)) {
       // envoie notification si demande de validation
-      if (!status.equals(STATUS_VALIDATE)) {
-        sendNotificationToValidate(title, text, parentId, messageId, message.getForumId());
-      }
-    } catch (Exception e) {
-      SilverTrace.warn("forums", "ForumsSessionController.createMessage()",
-          "forums.MSG_NOTIFY_USERS_FAILED", null, e);
+      sendMessageNotificationToValidate(getMessage(messageId));
     }
   }
 
   public void updateMessageKeywords(int messageId, String keywords) {
     getForumsBM().updateMessageKeywords(getMessagePK(messageId), keywords);
-  }
-
-  public void setMailType(String mailType) {
-    this.mailType = mailType;
   }
 
   public void setResizeFrame(boolean resizeFrame) {
@@ -543,126 +527,29 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     return external;
   }
 
-  public void sendNotification(String title, String text, int parentId,
-      int messageId) throws NotificationManagerException {
-    List<String> subscribers = listAllSubscribers(parentId);
-    if (!subscribers.isEmpty()) {
-      ResourceLocator resource =
-          new ResourceLocator("org.silverpeas.forums.settings.forumsMails", "");
-      Map<String, String> values = new HashMap<String, String>();
-      values.put("title", title);
-      values.put("text", text);
-      values.put("originTitle", getMessageTitle(parentId));
-      values.put("componentId", getComponentId());
-      values.put("messageId", String.valueOf(messageId));
-      String mailSubject = StringUtil.format(resource.getString(mailType + ".subject"), values);
-      String mailBody = StringUtil.format(resource.getString(mailType + ".body"), values);
-      String url = StringUtil.format(resource.getString(mailType + ".link"), values);
-
-      // envoi des mails de notification
-      NotificationMetaData notifMetaData = new NotificationMetaData(
-          NotificationParameters.NORMAL, mailSubject, mailBody);
-      notifMetaData.setSender(getUserId());
-      for (String subscriberId : subscribers) {
-        notifMetaData.addUserRecipient(new UserRecipient(subscriberId));
-      }
-      notifMetaData.setSource(getSpaceLabel() + " - " + getComponentLabel());
-      notifMetaData.setLink(url);
-      getNotificationSender().notifyUser(notifMetaData);
-    }
+  private void sendForumNotification(ForumDetail forum) {
+    UserNotificationHelper
+        .buildAndSend(new ForumsForumSubscriptionUserNotification(forum));
   }
 
-  public void sendNotificationToValidate(String title, String text, int parentId,
-      int messageId, int forumId) throws NotificationManagerException {
-    List<String> moderators = getModerators(forumId);
-    if (moderators.size() > 0) {
-      ResourceLocator resource =
-          new ResourceLocator("org.silverpeas.forums.settings.forumsMails", "");
-
-      Map<String, String> values = new HashMap<String, String>();
-      values.put("title", title);
-      values.put("text", text);
-      values.put("originTitle", getMessageTitle(parentId));
-      values.put("componentId", getComponentId());
-      values.put("messageId", String.valueOf(messageId));
-
-      String mailSubject = StringUtil.format(resource.getString(mailType + ".subjectToValidate"),
-          values);
-      String mailBody = StringUtil.format(resource.getString(mailType + ".bodyToValidate"), values);
-      String url = StringUtil.format(resource.getString(mailType + ".link"), values);
-
-      // envoi des mails de notification
-      NotificationMetaData notifMetaData = new NotificationMetaData(
-          NotificationParameters.NORMAL, mailSubject, mailBody);
-      notifMetaData.setSender(getUserId());
-      for (String moderator : moderators) {
-        notifMetaData.addUserRecipient(new UserRecipient(moderator));
-      }
-      notifMetaData.setSource(getSpaceLabel() + " - " + getComponentLabel());
-      notifMetaData.setLink(url);
-
-      getNotificationSender().notifyUser(notifMetaData);
-    }
+  private void sendMessageNotification(Message message) {
+    UserNotificationHelper
+        .buildAndSend(new ForumsMessageSubscriptionUserNotification(message));
   }
 
-  public void sendNotificationAfterValidation(String title, String text, int parentId,
-      int messageId, int forumId) throws NotificationManagerException {
-    ResourceLocator resource =
-        new ResourceLocator("org.silverpeas.forums.settings.forumsMails", "");
-    // Preparation des donnees
-    Message message = getMessage(messageId);
-
-    Map<String, String> values = new HashMap<String, String>();
-    values.put("title", title);
-    values.put("text", text);
-    values.put("originTitle", getMessageTitle(parentId));
-    values.put("componentId", getComponentId());
-    values.put("messageId", String.valueOf(messageId));
-
-    String mailSubject = StringUtil.format(resource.getString(mailType + ".subjectValidation"),
-        values);
-    String mailBody = StringUtil.format(resource.getString(mailType + ".bodyValidation"), values);
-    String url = StringUtil.format(resource.getString(mailType + ".link"), values);
-
-    // envoi des mails de notification
-    NotificationMetaData notifMetaData = new NotificationMetaData(
-        NotificationParameters.NORMAL, mailSubject, mailBody);
-    notifMetaData.setSender(getUserId());
-    notifMetaData.addUserRecipient(new UserRecipient(message.getAuthor()));
-    notifMetaData.setSource(getSpaceLabel() + " - " + getComponentLabel());
-    notifMetaData.setLink(url);
-
-    getNotificationSender().notifyUser(notifMetaData);
+  private void sendMessageNotificationToValidate(Message message) {
+    UserNotificationHelper
+        .buildAndSend(new ForumsMessagePendingValidationUserNotification(message));
   }
 
-  public void sendNotificationRefused(String title, String text, int parentId,
-      int messageId, int forumId, String motive) throws NotificationManagerException {
-    ResourceLocator resource =
-        new ResourceLocator("org.silverpeas.forums.settings.forumsMails", "");
-    // Preparation des donnees
-    Message message = getMessage(messageId);
-    Map<String, String> values = new HashMap<String, String>();
-    values.put("title", title);
-    values.put("text", text);
-    values.put("originTitle", getMessageTitle(parentId));
-    values.put("componentId", getComponentId());
-    values.put("messageId", String.valueOf(messageId));
-    values.put("motive", motive);
+  private void sendMessageNotificationAfterValidation(Message message) {
+    UserNotificationHelper
+        .buildAndSend(new ForumsMessageValidationUserNotification(message, getUserId()));
+  }
 
-    String mailSubject =
-        StringUtil.format(resource.getString(mailType + ".subjectRefused"), values);
-    String mailBody = StringUtil.format(resource.getString(mailType + ".bodyRefused"), values);
-    String url = StringUtil.format(resource.getString(mailType + ".link"), values);
-
-    // envoi des mails de notification
-    NotificationMetaData notifMetaData = new NotificationMetaData(
-        NotificationParameters.NORMAL, mailSubject, mailBody);
-    notifMetaData.setSender(getUserId());
-    notifMetaData.addUserRecipient(new UserRecipient(message.getAuthor()));
-    notifMetaData.setSource(getSpaceLabel() + " - " + getComponentLabel());
-    notifMetaData.setLink(url);
-
-    getNotificationSender().notifyUser(notifMetaData);
+  private void sendMessageNotificationRefused(Message message, String motive) {
+    UserNotificationHelper.buildAndSend(
+        new ForumsMessageValidationUserNotification(message, getUserId(), motive));
   }
 
   /**
@@ -767,44 +654,58 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     getForumsBM().removeAllModerators(getForumPK(forumId));
   }
 
-  public List<String> getModerators(int forumId) {
-    return getForumsBM().getModerators(forumId);
-  }
-
-  public int getNbModerator(int forumId) {
-    return getModerators(forumId).size();
+  public ForumModeratorBean getModerators(int forumId) {
+    return ForumModeratorBean.from(forumId, getForumsBM().getModerators(forumId));
   }
 
   public void moveMessage(int messageId, int forumId) {
     getForumsBM().moveMessage(getMessagePK(messageId), getForumPK(forumId));
   }
 
-  public void subscribeMessage(int messageId, String userId) {
-    getForumsBM().subscribeMessage(getMessagePK(messageId), userId);
+  public Message subscribeMessage(int messageId) {
+    MessagePK messagePK = getMessagePK(messageId);
+    getForumsBM().subscribeMessage(messagePK, getUserId());
+    return getForumsBM().getMessage(messagePK);
   }
 
-  public void unsubscribeMessage(int messageId, String userId) {
-    getForumsBM().unsubscribeMessage(getMessagePK(messageId), userId);
+  public Message unsubscribeMessage(int messageId) {
+    MessagePK messagePK = getMessagePK(messageId);
+    getForumsBM().unsubscribeMessage(messagePK, getUserId());
+    return getForumsBM().getMessage(messagePK);
   }
 
-  public void removeAllSubscribers(int messageId) {
-    getForumsBM().removeAllSubscribers(getMessagePK(messageId));
+  public Forum subscribeForum(int forumId) {
+    ForumPK forumPK = getForumPK(forumId);
+    getForumsBM().subscribeForum(forumPK, getUserId());
+    return getForumsBM().getForum(forumPK);
   }
 
-  public boolean isSubscriber(int messageId, String userId) {
-    return getForumsBM().isSubscriber(getMessagePK(messageId), userId);
+  public Forum unsubscribeForum(int forumId) {
+    ForumPK forumPK = getForumPK(forumId);
+    getForumsBM().unsubscribeForum(forumPK, getUserId());
+    return getForumsBM().getForum(forumPK);
   }
 
-  public List<String> listAllSubscribers(int messageId) {
-    Collection<String> forumSubscribers = getForumsBM().listAllSubscribers(getMessagePK(messageId));
-    List<String> subscribers = new ArrayList<String>(forumSubscribers.size());
-    subscribers.addAll(forumSubscribers);
-    int parentId = getMessageParentId(messageId);
-    while (parentId != 0) {
-      subscribers.addAll(forumSubscribers);
-      parentId = getMessageParentId(parentId);
-    }
-    return subscribers;
+  public void subscribeComponent() {
+    SubscriptionServiceFactory.getFactory().getSubscribeService()
+        .subscribe(new ComponentSubscription(getUserId(), getComponentId()));
+  }
+
+  public void unsubscribeComponent() {
+    SubscriptionServiceFactory.getFactory().getSubscribeService()
+        .unsubscribe(new ComponentSubscription(getUserId(), getComponentId()));
+  }
+
+  public boolean isMessageSubscriber(int messageId) {
+    return getForumsBM().isSubscriber(getMessagePK(messageId), getUserId());
+  }
+
+  public boolean isForumSubscriber(int forumId) {
+    return getForumsBM().isSubscriber(getForumPK(forumId), getUserId());
+  }
+
+  public boolean isComponentSubscriber() {
+    return getForumsBM().isSubscriber(getComponentId(), getUserId());
   }
 
   public boolean isNewMessageByForum(String userId, int forumId) {
@@ -965,31 +866,22 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   public void validateMessage(int messageId) {
     Message message = getMessage(messageId);
-    updateMessage(messageId, message.getParentId(), message.getTitle(), message.getText(),
-        STATUS_VALIDATE);
-    try {
-      // envoie d'une notification au créateur du message
-      sendNotificationAfterValidation(message.getTitle(), message.getText(), message.getParentId(),
-          messageId, message.getForumId());
-      // envoie une notification aux abonnés
-      if (message.getStatus().equals(STATUS_VALIDATE) && message.getParentId() != 0) {
-        sendNotification(message.getTitle(), message.getText(), message.getParentId(), messageId);
-      }
-    } catch (NotificationManagerException e) {
-      throw new EJBException(e.getMessage(), e);
+    String statusBeforeUpdate = message.getStatus();
+    updateMessage(messageId, message.getTitle(), message.getText(), STATUS_VALIDATE);
+
+    // envoie d'une notification au créateur du message
+    sendMessageNotificationAfterValidation(message);
+    // envoie une notification aux abonnés si le message vient juste de passer à l'état validé
+    if (!STATUS_VALIDATE.equals(statusBeforeUpdate)) {
+      sendMessageNotification(message);
     }
   }
 
   public void refuseMessage(int messageId, String motive) {
     Message message = getMessage(messageId);
-    updateMessage(messageId, message.getParentId(), message.getTitle(), message.getText(),
-        STATUS_REFUSED);
-    try {
-      sendNotificationRefused(message.getTitle(), message.getText(), message.getParentId(),
-          messageId, message.getForumId(), motive);
-    } catch (NotificationManagerException e) {
-      throw new EJBException(e.getMessage(), e);
-    }
+    updateMessage(messageId, message.getTitle(), message.getText(), STATUS_REFUSED);
+
+    sendMessageNotificationRefused(message, motive);
   }
 
   public boolean isValidationActive() {

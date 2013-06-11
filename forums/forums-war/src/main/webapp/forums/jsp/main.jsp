@@ -41,13 +41,14 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
-<%@ page import="java.io.IOException"%>
 <%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="com.stratelia.webactiv.forums.control.ForumsSessionController"%>
+<%@ page import="com.stratelia.webactiv.forums.control.helpers.ForumActionHelper"%>
+<%@ page import="com.stratelia.webactiv.forums.control.helpers.ForumHelper"%>
+<%@ page import="com.stratelia.webactiv.forums.control.helpers.ForumListHelper"%>
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
-<%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail"%>
-<%@ page import="com.stratelia.webactiv.forums.control.helpers.*"%>
-<%@ page import="com.stratelia.webactiv.forums.control.ForumsSessionController"%>
+<%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail" %>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%
 ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
@@ -84,9 +85,19 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <view:looknfeel />
+    <view:includePlugin name="notifier"/>
     <script type="text/javascript" src="<c:url value='/forums/jsp/javaScript/forums.js' />"></script>
     <script type="text/javascript" src="<c:url value='/util/javaScript/animation.js' />"></script>
     <script type="text/javascript">
+
+      function subscribe() {
+        window.location.href = "main.jsp?action=20";
+      }
+
+      function unsubscribe() {
+        window.location.href = "main.jsp?action=19";
+      }
+
       function confirmDeleteForum(forumId)
       {
         if (confirm("<view:encodeJs string="${removeForum}"/>"))
@@ -115,9 +126,14 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
   </head>
 
   <body id="forum" <%ForumHelper.addBodyOnload(out, fsc);%>>
-    <view:browseBar />
-    <c:if test="${isAdmin || isUser}">
+  <c:if test="${not empty requestScope.notySuccessMessage}">
+    <div style="display: none" class="notySuccess">${requestScope.notySuccessMessage}</div>
+  </c:if>
+  <c:set var="isSubscriber" value="${sessionController.componentSubscriber}" />
+  <view:browseBar />
+    <c:if test="${isAdmin or isUser or !sessionController.external}">
       <view:operationPane>
+      <c:if test="${isAdmin or isUser}">
         <c:if test="${isAdmin && sessionController.pdcUsed}">
           <fmt:message key="PDCUtilization" var="pdcUtilisation" />
           <c:set var="pdcUtilisationOperation">javascript:onClick=openSPWindow('<c:url value="/RpdcUtilization/jsp/Main" >
@@ -144,6 +160,18 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
           <c:url var="addCategoryIconUrl" value="/util/icons/create-action/add-folder.png" />
           <view:operationOfCreation altText="${addCategoryAltText}" icon="${addCategoryIconUrl}" action="NewCategory" />
         </c:if>
+      </c:if>
+      <view:operationSeparator/>
+      <c:choose>
+        <c:when test="${isSubscriber}">
+          <fmt:message key="forums.unsubscribe" var="unsubscribeAltText" />
+          <view:operation altText="${unsubscribeAltText}" icon="" action="javascript:unsubscribe();" />
+        </c:when>
+        <c:otherwise>
+          <fmt:message key="forums.subscribe" var="subscribeAltText" />
+          <view:operation altText="${subscribeAltText}" icon="" action="javascript:subscribe();" />
+        </c:otherwise>
+      </c:choose>
       </view:operationPane>
     </c:if>
     <view:window>

@@ -23,20 +23,29 @@
  */
 package com.stratelia.webactiv.forums.instanciator;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-
-import org.silverpeas.attachment.SimpleDocumentInstanciator;
-
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.InstanciationException;
-
+import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsBM;
+import com.stratelia.webactiv.forums.models.Forum;
+import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.node.model.NodeDetail;
+import org.silverpeas.attachment.SimpleDocumentInstanciator;
+
+import javax.ejb.EJBException;
+import java.sql.Connection;
+import java.util.Collection;
 
 public class ForumsInstanciator extends SQLRequest implements ComponentsInstanciatorIntf {
+
+  /**
+   * Le Business Manager
+   */
+  private ForumsBM forumsBM;
 
   /** Creates new ForumsInstanciator */
   public ForumsInstanciator() {
@@ -64,48 +73,37 @@ public class ForumsInstanciator extends SQLRequest implements ComponentsInstanci
     SilverTrace.info("forums", "ForumsInstanciator.delete()", "forums.MSG_DELETE_WITH_SPACE",
         "spaceId : " + spaceId);
 
-    // read the property file which contains all SQL queries to delete rows
-    setDeleteQueries();
-    deleteDataOfInstance(con, componentId, "Subscription");
-    deleteDataOfInstance(con, componentId, "Rights");
-    deleteDataOfInstance(con, componentId, "Message");
-    deleteDataOfInstance(con, componentId, "Forum");
-    
+    // Forums
+    final Collection<Forum> forumRoots = getForumsBM().getForumRootList(componentId);
+    for (Forum forum : forumRoots) {
+      getForumsBM().deleteForum(forum.getPk());
+    }
+
+    // Categories
+    for (NodeDetail categoryId : getForumsBM().getAllCategories(componentId)) {
+      getForumsBM().deleteCategory(String.valueOf(categoryId.getId()), componentId);
+    }
+
+    // Unsubscribe component subscribers
+    SubscriptionServiceFactory.getFactory().getSubscribeService()
+        .unsubscribeByResource(ComponentSubscriptionResource.from(componentId));
+
     // delete all attachments (wysiwyg, files...)
     new SimpleDocumentInstanciator().delete(componentId);
   }
 
   /**
-   * Delete all data of one forum instance from the forum table.
-   * @param con (Connection) the connection to the data base
-   * @param componentId (String) the instance id of the Silverpeas component forum.
-   * @param suffixName (String) the suffixe of a Forum table
+   * Gets the instance of forum services.
+   * @return
    */
-  private void deleteDataOfInstance(Connection con, String componentId, String suffixName) throws
-      InstanciationException {
-    Statement stmt = null;
-    String deleteQuery = getDeleteQuery(componentId, suffixName);
-    try {
-      stmt = con.createStatement();
-      stmt.executeUpdate(deleteQuery);
-      stmt.close();
-    } catch (SQLException se) {
-      InstanciationException ie = new InstanciationException(
-          "ForumsInstanciator.deleteDataOfInstance()", SilverpeasException.ERROR,
-          "root.DELETING_DATA_OF_INSTANCE_FAILED",
-          "componentId = " + componentId + " deleteQuery = " + deleteQuery, se);
-      throw ie;
-    } finally {
+  protected ForumsBM getForumsBM() {
+    if (forumsBM == null) {
       try {
-        stmt.close();
-      } catch (SQLException exCloseStatement) {
-        InstanciationException ie = new InstanciationException(
-            "ForumsInstanciator.deleteDataOfInstance()", SilverpeasException.ERROR,
-            "root.EX_RESOURCE_CLOSE_FAILED",
-            "componentId = " + componentId + " deleteQuery = " + deleteQuery, exCloseStatement);
-        throw ie;
+        forumsBM = EJBUtilitaire.getEJBObjectRef(JNDINames.FORUMSBM_EJBHOME, ForumsBM.class);
+      } catch (Exception e) {
+        throw new EJBException(e.getMessage(), e);
       }
     }
-
+    return forumsBM;
   }
 }
