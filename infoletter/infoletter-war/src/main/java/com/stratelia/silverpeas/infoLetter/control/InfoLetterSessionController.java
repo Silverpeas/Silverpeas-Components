@@ -30,9 +30,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.activation.DataHandler;
@@ -776,6 +778,12 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       email = csvValue[0].getValueString();
       emails.add(email);
     }
+    
+    // suppression des doublons de la liste tout en gardant l'ordre
+    Set<String> setEmails = new LinkedHashSet<String>(emails);
+    emails.clear();
+    emails.addAll(setEmails);
+    
     dataInterface.setExternalsSuscribers(this.getCurrentLetter().getPK(), emails);
   }
 
