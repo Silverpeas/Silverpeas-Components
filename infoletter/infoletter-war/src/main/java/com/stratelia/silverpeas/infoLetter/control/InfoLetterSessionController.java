@@ -797,28 +797,22 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
    */
   public boolean exportCsvEmails() throws IOException, InfoLetterException {
     boolean exportOk = true;
-    FileOutputStream fileOutput =
-        new FileOutputStream(FileRepositoryManager.getTemporaryPath() + getCurrentLetter().
-        getName() + EXPORT_CSV_NAME);
+    File fileOutput =
+        new File(FileRepositoryManager.getTemporaryPath(), getComponentId() + EXPORT_CSV_NAME);
     try {
       List<String> emails = getExternalsSuscribers(getCurrentLetter().getPK());
 
       CSVWriter csvWriter = new CSVWriter(getLanguage());
-      csvWriter.initCSVFormat("org.silverpeas.infoLetter.settings.usersCSVFormat",
-          "User", ";");
+      csvWriter.initCSVFormat("org.silverpeas.infoLetter.settings.usersCSVFormat", "User", ";");
 
       for (String email : emails) {
-        fileOutput.write(email.getBytes());
-        fileOutput.write("\n".getBytes());
+        FileUtils.writeStringToFile(fileOutput, email+"\n", true);
       }
     } catch (Exception e) {
       exportOk = false;
       throw new InfoLetterException(
           "com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController",
           SilverpeasRuntimeException.ERROR, e.getMessage(), e);
-    } finally {
-      fileOutput.flush();
-      fileOutput.close();
     }
     return exportOk;
   }

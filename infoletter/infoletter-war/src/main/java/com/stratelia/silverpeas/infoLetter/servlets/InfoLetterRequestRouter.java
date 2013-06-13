@@ -537,7 +537,7 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         FileItem fileItem = FileUploadUtil.getFile(request);
         infoLetterSC.importCsvEmails(fileItem);
         destination = "importEmailsCsv.jsp?Result=OK";
-      } else if (function.startsWith("ExportEmailsCsv")) {
+      } else if (function.equals("ExportEmailsCsv")) {
         boolean exportOk = infoLetterSC.exportCsvEmails();
         request.setAttribute("ExportOk", Boolean.toString(exportOk));
         if (exportOk) {

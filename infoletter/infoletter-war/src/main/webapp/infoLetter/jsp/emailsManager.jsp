@@ -68,7 +68,7 @@
 
 	function displayEmailsCsvExport()
 	{
-	    url = "exportEmailsCsv.jsp";
+	    url = "ExportEmailsCsv";
 	    windowName = "exportFileWindow";
 	    windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars=1";
 			larg = "640";
