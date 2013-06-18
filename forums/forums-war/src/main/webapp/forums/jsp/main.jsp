@@ -184,15 +184,16 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
               <td class="ArrayColumn" nowrap="nowrap"><fmt:message key="forums.nbMessages" /></td>
               <td class="ArrayColumn" nowrap="nowrap"><fmt:message key="forums.lastMessage" /></td>
               <td class="ArrayColumn" nowrap="nowrap"><fmt:message key="forums.notation" /></td>
+              <td class="ArrayColumn" nowrap="nowrap" align="center"><fmt:message key="subscribeMessage" /></td>
               <c:if test="${isAdmin}">
                 <td class="ArrayColumn" nowrap="nowrap"><fmt:message key="operations" /></td>
               </c:if>
             </tr>
             <c:forEach var="category" items="${sessionController.allCategories}">
               <%
-                          NodeDetail category = (NodeDetail) pageContext.getAttribute("category");
-                          ForumListHelper.displayForumsList(out, resources, isAdmin, isModerator, isReader, forumId, "main", fsc,
-                              Integer.toString(category.getId()), category.getName(), category.getDescription());
+                NodeDetail category = (NodeDetail) pageContext.getAttribute("category");
+                ForumListHelper.displayForumsList(out, resources, isAdmin, isModerator, isReader, forumId, "main", fsc,
+                    Integer.toString(category.getId()), category.getName(), category.getDescription());
               %>
             </c:forEach>
             <%ForumListHelper.displayForumsList(out, resources, isAdmin, isModerator, isReader, forumId, "main", fsc, null, "", "");%>

@@ -96,8 +96,8 @@ public class ForumModeratorBean {
    * @param userId
    * @return
    */
-  public boolean isModerator(String userId) {
-    return specificModerators.contains(userId) || inheritedModerators.contains(userId);
+  public boolean isSpecificModerator(String userId) {
+    return specificModerators.contains(userId);
   }
 
   /**

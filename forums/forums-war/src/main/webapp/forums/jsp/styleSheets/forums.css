@@ -260,6 +260,7 @@ div.profilPhoto {
 }
 
 .messageFooter {
+  display: inline-block;
   background: url("../icons/notification-icon.png") no-repeat scroll 0 0 transparent;  
   padding:2px 0 0 4px;
 }

@@ -24,6 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="com.silverpeas.util.CollectionUtil" %>
 <%
     response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
     response.setHeader("Pragma", "no-cache"); //HTTP 1.0
@@ -234,6 +235,21 @@ function removeAllUsers() {
   var $target = $(document.forumsForm.availableUsers);
   $('option:not(:disabled)', $source).detach().appendTo($target);
 }
+
+$(document).ready(function() {
+  $("select[name='forumFolder']").change(function() {
+    var $categoryContainer = $("#categoryContainer");
+    var $categories = $("select[name='CategoryId']");
+    if (('' + $(this).val()) !== '0') {
+      $categories.attr('disabled', '');
+      $categoryContainer.hide();
+    } else {
+      $categories.removeAttr('disabled', '');
+      $categoryContainer.show();
+    }
+  });
+});
+
 <%
     }
 %>
@@ -288,30 +304,31 @@ function removeAllUsers() {
         <input type="text" name="forumName" size="50" maxlength="<%=DBUtil.getTextFieldLength()%>" <%if (update) {%>value="<%=EncodeHelper.javaStringToHtmlString(forum.getName())%>"<%}%> />&nbsp;<img src="<%=context%>/util/icons/mandatoryField.gif" width="5" height="5"/>
       </div>
     </div>
-    <% if (forumId == 0) { %>
+    <% if (CollectionUtil.isNotEmpty(allCategories)) { %>
     <!-- Display category list -->
-    <div class="field" id="categoryArea">
-      <label class="txtlibform" for="CategoryId"><fmt:message key="forums.category" /> :&nbsp;</label>
+    <div id="categoryContainer" class="field" id="categoryArea"<%=(parentId > 0 ? " style='display: none'" : "")%>>
+      <label class="txtlibform" for="CategoryId"><fmt:message key="forums.category"/>
+        :&nbsp;</label>
+
       <div class="champs">
         <select name="CategoryId">
-            <option value=""></option>
-<%
-      if (allCategories != null) {
-          for (NodeDetail currentCategory : allCategories) {
+          <option value=""></option>
+          <%
+            for (NodeDetail currentCategory : allCategories) {
               String currentCategoryId = currentCategory.getNodePK().getId();
-              String selected = ((categoryId != null && categoryId.equals(currentCategoryId))
-                  ? "selected" : "");
-%>
-            <option value=<%=currentCategoryId%> <%=selected%>><%=currentCategory.getName()%></option>
-<%
+              String selected =
+                  ((categoryId != null && categoryId.equals(currentCategoryId)) ? "selected" : "");
+          %>
+          <option value=<%=currentCategoryId%> <%=selected%>><%=currentCategory.getName()%>
+          </option>
+          <%
           }
-      }
-%>
-          </select>
+          %>
+        </select>
       </div>
     </div>
     <% } else { %>
-    	<input type="hidden" name="CategoryId" value="" />
+    <input type="hidden" name="CategoryId" value=""/>
     <% } %>
 
 <% if (fsc.isForumInsideForum()) { %>
@@ -371,7 +388,7 @@ function removeAllUsers() {
         <c:set var="moderatorBean" value="<%=fsc.getModerators(forumId)%>"/>
               <select name="availableUsers" multiple size="7">
                 <c:forEach var="moderator" items="<%=fsc.listUsers()%>">
-                  <c:if test="${params eq 0 or not moderatorBean.isModerator(moderator.id)}">
+                  <c:if test="${!isUpdate or not moderatorBean.isSpecificModerator(moderator.id)}">
                     <option value="${moderator.id}">${moderator.displayedName}</option>
                   </c:if>
                 </c:forEach>

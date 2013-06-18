@@ -197,25 +197,21 @@ public void scanForum(String spaceId, String componentId, Forum[] forums,
     ResourcesWrapper resources,JspWriter out, int currentPage, String call, boolean admin,
     boolean moderator, int currentForumId, int depth, ForumsSessionController fsc)
 {
-    for (int i = 0; i < forums.length; i++) 
-    {
-        Forum forum = forums[i];
-        int forumParent = forum.getParentId();
-        if (forumParent == currentForumId)
-        {
-            int forumId = forum.getId();
-            boolean hasChildren = hasChildren(forums, forumId);
-            boolean isDeployed = fsc.forumIsDeployed(forumId);
-            
-            displayForumLine(spaceId, componentId, forum, resources, out, currentPage, call, admin,
-                moderator, depth, hasChildren, isDeployed, fsc);
-            if (hasChildren && isDeployed)
-            {
-            	scanForum(spaceId, componentId, forums, resources, out, currentPage, call, admin,
-                    moderator, forumId, depth+1, fsc);
-            }
-        }
+  for (Forum forum : forums) {
+    int forumParent = forum.getParentId();
+    if (forumParent == currentForumId) {
+      int forumId = forum.getId();
+      boolean hasChildren = hasChildren(forums, forumId);
+      boolean isDeployed = fsc.forumIsDeployed(forumId);
+
+      displayForumLine(spaceId, componentId, forum, resources, out, currentPage, call, admin,
+          moderator, depth, hasChildren, isDeployed, fsc);
+      if (hasChildren && isDeployed) {
+        scanForum(spaceId, componentId, forums, resources, out, currentPage, call, admin, moderator,
+            forumId, depth + 1, fsc);
+      }
     }
+  }
 }
 
 public boolean hasChildren(Forum[] forums, int currentForumId)

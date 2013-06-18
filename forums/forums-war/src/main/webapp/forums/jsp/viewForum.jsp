@@ -74,6 +74,7 @@
     boolean isModerator = fsc.isModerator(userId, forumId);
     ForumActionHelper.actionManagement(request, isAdmin, isModerator, userId, resource, out, fsc);
 %>
+<c:set var="isModerator" value="<%=isModerator%>" />
 <c:set var="currentForum" value="${requestScope.currentForum}" />
 <c:set var="isActive"  value="${requestScope.currentForum.active}" />
 <c:set var="globalNote" value="${requestScope.notation.roundGlobalNote}" />
@@ -208,7 +209,8 @@
                     <td nowrap="nowrap" align="center"><fmt:message key="forums.nbMessages" /></td>
                     <td nowrap="nowrap" align="center"><fmt:message key="forums.lastMessage" /></td>
                     <td nowrap="nowrap" align="center"><fmt:message key="forums.notation" /></td>
-                    <c:if test="${isAdmin}">
+                    <td nowrap="nowrap" align="center"><fmt:message key="subscribeMessage" /></td>
+                    <c:if test="${isAdmin || isModerator}">
                       <td nowrap="nowrap" align="center"><fmt:message key="operations" /></td>
                     </c:if>
                   </tr>

@@ -92,6 +92,7 @@ public class Moderator {
     EqualsBuilder builder = new EqualsBuilder();
     builder.append(getUserId(), other.getUserId());
     builder.append(getForumId(), other.getForumId());
+    builder.append(isByInheritance(), other.isByInheritance());
     return builder.isEquals();
   }
 
@@ -100,6 +101,7 @@ public class Moderator {
     HashCodeBuilder builder = new HashCodeBuilder();
     builder.append(getUserId());
     builder.append(getForumId());
+    builder.append(isByInheritance());
     return builder.toHashCode();
   }
 }

@@ -782,9 +782,9 @@ public class ForumsBMEJB implements ForumsBM {
       int messageId = ForumsDAO.createMessage(con, title, authorId,
           creationDate, forumId, parentId, status);
       messagePK.setId(String.valueOf(messageId));
-      createIndex(messagePK);
       createTagCloud(messagePK, keywords);
       createWysiwyg(messagePK, content, authorId);
+      createIndex(messagePK);
       return messageId;
     } catch (SQLException e) {
       throw new ForumsRuntimeException("ForumsBmEJB.createMessage()",
@@ -800,10 +800,10 @@ public class ForumsBMEJB implements ForumsBM {
       String status) {
     Connection con = openConnection();
     try {
-      ForumsDAO.updateMessage(con, messagePK, title, status);
       deleteIndex(messagePK);
-      createIndex(messagePK);
+      ForumsDAO.updateMessage(con, messagePK, title, status);
       updateWysiwyg(messagePK, message, userId);
+      createIndex(messagePK);
     } catch (SQLException e) {
       throw new ForumsRuntimeException("ForumsBmEJB.updateMessage()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_CREATE_MESSAGE_FAILED", e);
@@ -1205,7 +1205,7 @@ public class ForumsBMEJB implements ForumsBM {
       indexEntry.setTitle(message.getTitle());
       indexEntry.setCreationDate(message.getDate());
       indexEntry.setCreationUser(message.getAuthor());
-      WysiwygController.index(componentId, messageId);
+      WysiwygController.addToIndex(indexEntry, new ForeignPK(messagePK), defaultLanguage);
       IndexEngineProxy.addIndexEntry(indexEntry);
     }
 
@@ -1316,7 +1316,7 @@ public class ForumsBMEJB implements ForumsBM {
       List<Forum> forums = getForumsByCategory(new ForumPK(instanceId, null), categoryId);
       for (Forum forum : forums) {
         ForumPK forumPK = new ForumPK(instanceId, forum.getIdAsString());
-        updateForum(forumPK, forum.getName(), forum.getDescription(), forum.getParentId(), "0",
+        updateForum(forumPK, forum.getName(), forum.getDescription(), forum.getParentId(), null,
             null, false);
       }
       // suppression de la categorie

@@ -28,7 +28,6 @@ import com.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.forums.control.ForumsSessionController;
-import com.stratelia.webactiv.forums.forumsException.ForumsException;
 import com.stratelia.webactiv.forums.models.Forum;
 import com.stratelia.webactiv.forums.url.ActionUrl;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -100,34 +99,11 @@ public class ForumListHelper {
       // 1ère colonne : état des messages (lus / non lus)
       out.print("<td class=\"ArrayCell\">");
 
-      if (!fsc.isExternal()) {
-        out.print("<div style=\"display: table\">");
-        boolean isSubscriber = fsc.isForumSubscriber(forumId);
-        out.print("<div style=\"display: table-cell\" class=\"messageFooter\">");
-        out.print("<input name=\"checkbox\" type=\"checkbox\" ");
-        if (isSubscriber) {
-          out.print("checked ");
-        }
-        out.print("onclick=\"javascript:window.location.href='");
-        out.print(forum.isRoot() ? "main.jsp?action=" : "viewForum.jsp?action=");
-        out.print(isSubscriber ? 17 : 18);
-        out.print("&params=");
-        out.print(forum.getIdAsString());
-        out.print("&forumId=");
-        out.print(forum.getParentId());
-        out.print("'\"/>");
-        out.print("<span class=\"texteLabelForm\">");
-        out.print(fsc.getString("subscribeMessage"));
-        out.println("</span></div>");
-        if (!reader) {
-          // rechercher si l'utilisateur a des messages non lus sur ce forum
-          boolean isNewMessage = fsc.isNewMessageByForum(fsc.getUserId(), forumId);
-          out.print("<div style=\"display: table-cell\">");
-          out.print("<img src=\"icons/" +
-              (isNewMessage ? "newMessage" : "noNewMessage") + ".gif\"/>");
-          out.print("</div>");
-        }
-        out.println("</div>");
+      if (!fsc.isExternal() || !reader) {
+        // rechercher si l'utilisateur a des messages non lus sur ce forum
+        boolean isNewMessage = fsc.isNewMessageByForum(fsc.getUserId(), forumId);
+        out.print("<img src=\"icons/" +
+            (isNewMessage ? "newMessage" : "noNewMessage") + ".gif\"/>");
       }
 
       // Icone de deploiement
@@ -189,7 +165,22 @@ public class ForumListHelper {
       }
       out.println("</span></td>");
 
-      // 7ème colonne : boutons d'admin
+      // 7ème colonne : abonnement
+      boolean isSubscriber = fsc.isForumSubscriber(forumId);
+      out.print("<td class=\"ArrayCell\" style=\"text-align: center\" title=\"" +
+          resources.getString("subscribeMessage") + "\"><span class=\"txtnote\">");
+      out.print("<div class=\"messageFooter\">");
+      out.print("<input name=\"checkbox\" type=\"checkbox\" ");
+      if (isSubscriber) {
+        out.print("checked ");
+      }
+      out.print("onclick=\"javascript:window.location.href='");
+      out.print(ActionUrl
+          .getUrl((forum.isRoot() ? "main" : "viewForum"), (isSubscriber ? 17 : 18), forum.getId(),
+              forum.getParentId()));
+      out.print("'\"/></div></span></td>");
+
+      // 8ème colonne : boutons d'admin
       if (admin || moderator) {
         out.print("<td class=\"ArrayCell\" nowrap>");
 
@@ -240,7 +231,7 @@ public class ForumListHelper {
 
       if (forums != null) {
         out.println("<tr>");
-        out.print("<td colspan=\"6\" class=\"titreCateg\">" + nom);
+        out.print("<td colspan=\"7\" class=\"titreCateg\">" + nom);
         if (description != null && description.length() > 0) {
           out.print(" - <i>" + description + "<i>");
         }
@@ -291,26 +282,25 @@ public class ForumListHelper {
     int[] forumIds = fsc.getForumSonsIds(currentForumId);
     for(int forumId : forumIds) {
       Forum forum = fsc.getForum(forumId);
-        displayForumLine(forum, resources, out, 0, call, admin, moderator, reader, 0, false, false, fsc);
+      displayForumLine(forum, resources, out, forum.getParentId(), call, admin, moderator, reader,
+          0, false, false, fsc);
     }
   }
 
   public static void scanForum(Forum[] forums, ResourcesWrapper resources, JspWriter out, int currentPage,
       String call, boolean admin, boolean moderator, boolean reader, int currentForumId, int depth,
       ForumsSessionController fsc) {
-    Forum forum;
-    for (int i = 0; i < forums.length; i++) {
-      forum = forums[i];
+    for (final Forum forum : forums) {
       int forumParent = forum.getParentId();
       if (forumParent == currentForumId) {
         int forumId = forum.getId();
         boolean hasChildren = hasChildren(forums, forumId);
         boolean isDeployed = fsc.forumIsDeployed(forumId);
-        displayForumLine(forum, resources, out, currentPage, call, admin, moderator, reader,
-            depth, hasChildren, isDeployed, fsc);
+        displayForumLine(forum, resources, out, currentPage, call, admin, moderator, reader, depth,
+            hasChildren, isDeployed, fsc);
         if (hasChildren && isDeployed) {
-          scanForum(forums, resources, out, currentPage, call, admin, moderator, reader,
-              forumId, depth + 1, fsc);
+          scanForum(forums, resources, out, currentPage, call, admin, moderator, reader, forumId,
+              depth + 1, fsc);
         }
       }
     }

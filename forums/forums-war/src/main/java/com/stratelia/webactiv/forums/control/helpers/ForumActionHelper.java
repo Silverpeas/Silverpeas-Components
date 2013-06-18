@@ -193,7 +193,7 @@ public class ForumActionHelper {
                 fsc.addModerator(forumId, moderator.trim());
               }
             }
-            String categoryId = request.getParameter("CategoryId").trim();
+            String categoryId = request.getParameter("CategoryId");
             fsc.updateForum(forumId, forumName, forumDescription, forumParent, categoryId,
                 keywords);
             break;
@@ -293,6 +293,7 @@ public class ForumActionHelper {
             int note = ForumHelper.getIntParameter(request, "note", -1);
             if (note > 0) {
               fsc.updateForumNotation(forumId, note);
+              request.setAttribute("notation", fsc.getForumNotation(forumId));
             }
             break;
           }
