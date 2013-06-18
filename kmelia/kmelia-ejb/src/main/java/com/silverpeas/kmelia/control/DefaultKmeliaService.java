@@ -68,8 +68,8 @@ public class DefaultKmeliaService implements KmeliaService {
 
   public static final String COMPONENT_NAME = "kmelia";
   private static final String MESSAGES_PATH = "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle";
-  private static final String SETTINGS_PATH =
-      "com.stratelia.webactiv.kmelia.settings.kmeliaSettings";
+  private static final String SETTINGS_PATH
+      = "com.stratelia.webactiv.kmelia.settings.kmeliaSettings";
   private static final ResourceLocator settings = new ResourceLocator(SETTINGS_PATH, "");
   @Inject
   private CommentUserNotificationService commentUserNotificationService;
@@ -153,7 +153,7 @@ public class DefaultKmeliaService implements KmeliaService {
           "root.MSG_GEN_PARAM_VALUE", "attachment name = " + attachment.getTitle());
       SimpleDocumentPK pk = AttachmentServiceFactory.getAttachmentService().copyDocument(attachment,
           target);
-      AttachmentServiceFactory.getAttachmentService().changeVersionState(pk);
+      AttachmentServiceFactory.getAttachmentService().changeVersionState(pk, "");
     }
   }
 
@@ -213,8 +213,8 @@ public class DefaultKmeliaService implements KmeliaService {
               in = new ByteArrayInputStream(buffer.toByteArray());
               lastVersion = AttachmentServiceFactory.getAttachmentService().
                   searchDocumentById(document.getPk(), currentLang).getLastPublicVersion();
-              newVersion =
-                  new SimpleDocument(newVersion.getPk(), to.getId(), lastVersion.getOrder(),
+              newVersion
+                  = new SimpleDocument(newVersion.getPk(), to.getId(), lastVersion.getOrder(),
                   false, lastVersion.getEditedBy(), new SimpleAttachment(lastVersion.getFilename(),
                   lastVersion.getLanguage(), lastVersion.getTitle(), lastVersion.getDescription(),
                   lastVersion.getSize(), lastVersion.getContentType(), userId, new Date(),
