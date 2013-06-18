@@ -24,6 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -31,10 +32,9 @@
 <%
 	browseBar.setPath(resource.getString("infoLetter.importEmailsCsv"));
 	
-	String result = (String) request.getParameter("Result");
+	String result = request.getParameter("Result");
 	boolean importOk = false;
-	if ("OK".equals(result))
-	{
+	if ("OK".equals(result)) {
 		importOk = true;
 		%>
 		<script language="javascript">
@@ -44,99 +44,74 @@
 	}
 %>
 
-<% out.println(gef.getLookStyleSheet()); %>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
-
-function SubmitWithVerif(verifParams)
-{
+function SubmitWithVerif(verifParams) {
     var csvFilefld = stripInitialWhitespace(document.csvFileForm.file_upload.value);
     var errorMsg = "";
 
-    if (verifParams)
-    {
+    if (verifParams) {
          if (isWhitespace(csvFilefld)) {
             errorMsg = "<% out.print(resource.getString("GML.thefield")+resource.getString("GML.csvFile")+resource.getString("CSV.isRequired")); %>";
          } else {
 			var ext = csvFilefld.substring(csvFilefld.length - 4);
-	        
     	    if (ext.toLowerCase() != ".csv") {
     			errorMsg = "<% out.print(resource.getString("GML.errorCsvFile")); %>";		
     		}
 		}
     }
-    if (errorMsg == "")
-    {
+    if (errorMsg == "") {
         document.csvFileForm.submit();
-    }
-    else
-    {
+    } else {
         window.alert(errorMsg);
     }
 }
-
 </script>
 </head>
 <body>
-
 <%
 out.println(window.printBefore());
-out.println(frame.printBefore());
 %>
-<center>
-<%
-out.println(board.printBefore());
-%>
+<view:frame>
+<view:board>
 <form name="csvFileForm" action="ImportEmailsCsv" method="post" enctype="multipart/form-data">
-    <table cellpadding="5" cellspacing="0" border="0" width="100%">
+    
 			<% if (importOk) { %>
-				<tr>
-					<td colspan="2" align="center">
-						<%=resource.getString("infoLetter.importEmailsCsvSucceed") %>
-					</td>
-				</tr>
+			<div class="inlineMessage-ok">
+				<%=resource.getString("infoLetter.importEmailsCsvSucceed") %>
+			</div>
 			<% } else { %>
-				<tr>
-					<td colspan="2">
+				<div class="inlineMessage">
 						<%=resource.getString("infoLetter.importEmailsCsvWarning") %>
-					</td>
-				</tr>
+				</div>
+	<table cellpadding="5" cellspacing="0" border="0" width="100%">
         <tr>			
-            <td valign="baseline" class="txtlibform">
-                <%=resource.getString("GML.csvFile") %> :
-            </td>
-            <td align="left" valign="baseline">
+            <td class="txtlibform"><%=resource.getString("GML.csvFile") %> :</td>
+            <td>
                 <input type="file" name="file_upload" size="50" maxlength="50" value=""/>&nbsp;<img border="0" src="<%=m_context%>/util/icons/mandatoryField.gif" width="5" height="5"/> 
             </td>
         </tr>
         <tr> 
-            <td colspan="2">(<img border="0" src="<%=m_context%>/util/icons/mandatoryField.gif" width="5" height="5"/> : <%=resource.getString("GML.requiredField")%>)</td>
+            <td colspan="2"><img border="0" src="<%=m_context%>/util/icons/mandatoryField.gif" width="5" height="5"/> : <%=resource.getString("GML.requiredField")%></td>
         </tr>
 		<% } %>
     </table>
-
-<%
-out.println(board.printAfter());
-%>
 </form>
-<br/>
+</view:board>
 		<%
 		  ButtonPane bouton = gef.getButtonPane();
-			if (importOk)
-			{
-				  bouton.addButton(gef.getFormButton(resource.getString("GML.close"), "javascript:window.close()", false));
-			}
-			else
-			{
+			if (importOk) {
+				bouton.addButton(gef.getFormButton(resource.getString("GML.close"), "javascript:window.close()", false));
+			} else {
 				bouton.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:SubmitWithVerif(true)", false));
 		      	bouton.addButton(gef.getFormButton(resource.getString("GML.cancel"), "javascript:window.close()", false));
 			}
 		  out.println(bouton.print());
 		%>
-</center>
+</view:frame>
 <%
-out.println(frame.printAfter());
 out.println(window.printAfter());
-	%>
+%>
 </body>
 </html>

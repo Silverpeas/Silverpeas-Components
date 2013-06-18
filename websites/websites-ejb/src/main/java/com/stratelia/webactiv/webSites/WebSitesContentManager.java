@@ -131,8 +131,7 @@ public class WebSitesContentManager implements java.io.Serializable, ContentInte
     }
   }
 
-  private boolean isVisible(SiteDetail siteDetail)
-      throws ContentManagerException {
+  private boolean isVisible(SiteDetail siteDetail) {
     return siteDetail.getState() == 1;
   }
 

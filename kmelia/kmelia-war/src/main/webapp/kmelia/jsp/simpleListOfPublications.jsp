@@ -96,6 +96,10 @@ function getCurrentNodeId() {
 	return "0";
 }
 
+function getCurrentUserId() {
+  return "<%=userId%>";
+}
+
 function getWebContext() {
 	return "<%=m_context%>";
 }

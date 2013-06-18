@@ -20,29 +20,6 @@
  */
 package com.stratelia.webactiv.kmelia.servlets;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.StringTokenizer;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.viewer.ViewerFactory;
-
 import com.silverpeas.delegatednews.model.DelegatedNews;
 import com.silverpeas.kmelia.KmeliaConstants;
 import com.silverpeas.kmelia.domain.TopicSearch;
@@ -55,7 +32,6 @@ import com.silverpeas.util.ImageUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
-
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -79,8 +55,28 @@ import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import com.stratelia.webactiv.util.viewGenerator.html.UserNameGenerator;
 import com.stratelia.webactiv.util.viewGenerator.html.board.Board;
 import com.stratelia.webactiv.util.viewGenerator.html.pagination.Pagination;
-
 import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.viewer.ViewerFactory;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
 
 import static com.stratelia.webactiv.SilverpeasRole.*;
 import static com.stratelia.webactiv.util.publication.model.PublicationDetail.*;
@@ -906,7 +902,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     return kmeliaScc.getString("kmelia.UnknownUser");
   }
 
-  private String displayImportance(int importance, ResourcesWrapper resources) throws IOException {
+  private String displayImportance(int importance, ResourcesWrapper resources) {
     int maxImportance = 5;
     String fullStar = resources.getIcon("kmelia.fullStar");
     String emptyStar = resources.getIcon("kmelia.emptyStar");
@@ -940,7 +936,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
   }
 
   private String displayVersioning(PublicationDetail pubDetail, ResourcesWrapper resources,
-      boolean linkAttachment, boolean alias) throws IOException {
+      boolean linkAttachment, boolean alias) {
     ForeignPK foreignPK = new ForeignPK(pubDetail.getPK());
     List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
         listDocumentsByForeignKey(foreignPK, null);
@@ -954,11 +950,16 @@ public class AjaxPublicationsListServlet extends HttpServlet {
           oneFile = true;
         }
         String id = version.getPk().getId();
-        String title = version.getTitle() + " v" + version.getMajorVersion();
+        String logicalName = version.getFilename();
+        String title =  version.getTitle();
+        if (!StringUtil.isDefined(version.getTitle())) {
+          title =  logicalName;
+          logicalName = null; // do not display filename twice
+        }
+        title += " v" + version.getMajorVersion();
         String info = version.getDescription();
         String icon = FileRepositoryManager.getFileIcon(FilenameUtils.getExtension(document.
             getFilename()));
-        String logicalName = version.getFilename();
         String size = FileRepositoryManager.formatFileSize(version.getSize());
         String downloadTime = FileRepositoryManager.getFileDownloadTime(version.getSize());
         Date creationDate = version.getCreated();
@@ -981,8 +982,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
   }
 
   private String displayAttachments(PublicationDetail pubDetail, String userId, String nodeId,
-      ResourcesWrapper resources, boolean linkAttachment, boolean alias, String language)
-      throws IOException {
+      ResourcesWrapper resources, boolean linkAttachment, boolean alias, String language) {
     SilverTrace.info("kmelia", "AjaxPublicationsListServlet.displayAttachments()",
         "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubDetail.getPK().getId());
     StringBuilder result = new StringBuilder();
@@ -1043,7 +1043,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
   private String displayFile(String url, String title, String info, String icon,
       String logicalName, String size, String downloadTime, Date creationDate, String permalink,
       ResourcesWrapper resources, boolean attachmentLink, boolean previewable, boolean viewable,
-      String id) throws IOException {
+      String id) {
     SilverTrace.info("kmelia", "AjaxPublicationsListServlet.displayFile()",
         "root.MSG_GEN_ENTER_METHOD");
     StringBuilder result = new StringBuilder(1024);
@@ -1055,7 +1055,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       result.append(link).append("<img src=\"").append(icon).append(
           "\" border=\"0\" align=\"absmiddle\"/></a>&#160;</td>");
       result.append("<td valign=\"top\">").append(link);
-      if (title == null || title.length() == 0) {
+      if (!StringUtil.isDefined(title)) {
         result.append(logicalName);
       } else {
         result.append(title);
@@ -1073,15 +1073,16 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       result.append("<br/>");
 
       result.append("<i>");
-      if (StringUtil.isDefined(title) && !"no".equals(resources.getSetting("showTitle"))) {
+      if (StringUtil.isDefined(title) && StringUtil.isDefined(logicalName) &&
+          resources.getSetting("showTitle", true)) {
         result.append(logicalName).append(" / ");
       }
       // Add file size
-      if (!"no".equals(resources.getSetting("showFileSize"))) {
+      if (resources.getSetting("showFileSize", true)) {
         result.append(size);
       }
       // and download estimation
-      if (!"no".equals(resources.getSetting("showDownloadEstimation"))) {
+      if (resources.getSetting("showDownloadEstimation", false)) {
         result.append(" / ").append(downloadTime).append(" / ").append(
             resources.getOutputDate(creationDate));
       }
@@ -1102,7 +1103,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       result.append("</i>");
 
       // Add info
-      if (StringUtil.isDefined(info) && !"no".equals(resources.getSetting("showInfo"))) {
+      if (StringUtil.isDefined(info) && resources.getSetting("showInfo", true)) {
         result.append("<br/>").append(EncodeHelper.javaStringToHtmlParagraphe(info));
       }
       result.append("</td></tr>");
@@ -1267,8 +1268,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     writer.write(board.printAfter());
   }
 
-  private String displayPublicationFullPath(KmeliaSessionController kmelia, PublicationDetail pub)
-      throws IOException {
+  private String displayPublicationFullPath(KmeliaSessionController kmelia, PublicationDetail pub) {
     // Get space and componentLabel of the publication (can be different from context)
     OrganisationController orga = kmelia.getOrganisationController();
     ComponentInstLight compoInstLight = orga.getComponentInstLight(pub.getInstanceId());
@@ -1287,8 +1287,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     return "";
   }
 
-  private File getThumbnail(PublicationDetail pubDetail, ResourceLocator publicationSettings) throws
-      ThumbnailException {
+  private File getThumbnail(PublicationDetail pubDetail, ResourceLocator publicationSettings) {
     if (StringUtil.isDefined(pubDetail.getImage())) {
       return new File(FileRepositoryManager.getAbsolutePath(pubDetail.getPK().getInstanceId())
           + publicationSettings.getString("imagesSubDirectory") + File.separatorChar

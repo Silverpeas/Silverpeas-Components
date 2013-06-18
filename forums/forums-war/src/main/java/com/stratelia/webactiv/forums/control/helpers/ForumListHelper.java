@@ -44,8 +44,7 @@ import java.util.Date;
  */
 public class ForumListHelper {
 
-  public static String navigationBar(int forumId, ResourceLocator resource, ForumsSessionController fsc)
-      throws ForumsException {
+  public static String navigationBar(int forumId, ResourceLocator resource, ForumsSessionController fsc) {
     boolean loop = false;
     String result = "";
     int currentId = forumId;
@@ -286,7 +285,7 @@ public class ForumListHelper {
     scanForum(forums, resources, out, currentForumId, call, admin, moderator, reader,
         currentForumId, 0, fsc);
   }
-  
+
   public static void displayChildForums(JspWriter out, ResourcesWrapper resources, boolean admin,
       boolean moderator, boolean reader, int currentForumId, String call, ForumsSessionController fsc) {
     int[] forumIds = fsc.getForumSonsIds(currentForumId);

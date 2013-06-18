@@ -746,7 +746,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
   }
 
   private synchronized NotificationMetaData getAlertNotificationMetaData(String surveyId)
-      throws RemoteException, SurveyException {
+      throws SurveyException {
     QuestionContainerPK pk = new QuestionContainerPK(surveyId);
     UserDetail curUser = getUserDetail();
     String senderName = curUser.getDisplayedName();

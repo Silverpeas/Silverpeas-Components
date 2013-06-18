@@ -193,6 +193,10 @@ function displayOperations(id) {
 			}, 'json');
 }
 
+function displayResponsibles() {
+  displayComponentResponsibles(getCurrentUserId(), getComponentId());
+}
+
 function initOperations(id, op) {
 	$("#menutoggle").css({'display':'block'});
 	
@@ -432,10 +436,25 @@ function initOperations(id, op) {
     menuEmpty = false;
   }
 
-	oMenu.render();
-	
-	if (menuEmpty) {
-		$("#menutoggle").css({'display':'none'});
+  if (!groupEmpty) {
+    groupIndex++;
+    groupEmpty = true;
+    menuEmpty = false;
+  }
+
+  if (op.responsibles) {
+    menuItem = new YAHOO.widget.MenuItem(getString('GML.component.responsibles'), {
+      classname: 'space-or-component-responsibles-operation',
+      url : "javascript:onclick=displayResponsibles()"
+    });
+    oMenu.addItem(menuItem, groupIndex);
+    groupEmpty = false;
+  }
+
+  oMenu.render();
+
+  if (menuEmpty) {
+    $("#menutoggle").css({'display':'none'});
 	}
 	if (menuBarEmpty) {
 		$('#menubar-creation-actions').css({'display':'none'});

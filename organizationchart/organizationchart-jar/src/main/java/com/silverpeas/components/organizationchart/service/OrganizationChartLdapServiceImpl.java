@@ -164,18 +164,18 @@ public class OrganizationChartLdapServiceImpl extends AbstractOrganizationChartS
     unit.setParentName(parentName);
 
     if (parentName != null) {
-      // there is a parent so define is path for return to top level ou
-      int indexStart = unit.getCompleteName().lastIndexOf(parentName);
+      // there is a parent so define is path for return to top level OU
+      int indexStart = unit.getCompleteName().indexOf(parentName);
       String parentOu = unit.getCompleteName().substring(indexStart - 3);
       unit.setParentOu(parentOu);
     }
   }
 
-  private OrganizationalUnit getParentOU(String ou) throws NamingException {
+  private OrganizationalUnit getParentOU(String ou) {
     SilverTrace.info("organizationchart",
-        "OrganizationChartLdapServiceImpl.getParentOU()", "root.MSG_GEN_ENTER_METHOD", "ou = " + ou);
+        "OrganizationChartLdapServiceImpl.getParentOU()", "root.MSG_GEN_ENTER_METHOD", "ou = "+ou);
 
-    String parentOu = ou.substring(ou.indexOf(",") + 1); //OU=DGA2,OU=DGS,OU=Ailleurs
+    String parentOu = ou.substring(ou.indexOf(",")+1); //OU=DGA2,OU=DGS,OU=Ailleurs
     String parentName = parentOu.substring(3, parentOu.indexOf(",")); // DGA2
 
     SilverTrace.info("organizationchart",

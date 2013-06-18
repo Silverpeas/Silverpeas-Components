@@ -23,7 +23,6 @@ package com.silverpeas.gallery.control.ejb;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -268,8 +267,8 @@ public class GalleryBmEJB implements GalleryBm {
       final File repository, final boolean watermark, final String watermarkHD,
       final String watermarkOther, final PhotoDataCreateDelegate delegate) {
     try {
-      final GalleryProcessManagement processManagement =
-          new GalleryProcessManagement(user, componentInstanceId);
+      final GalleryProcessManagement processManagement = new GalleryProcessManagement(user,
+          componentInstanceId);
       processManagement.addImportFromRepositoryProcesses(repository, delegate.getAlbumId(),
           watermark, watermarkHD, watermarkOther, delegate);
       processManagement.execute();
@@ -285,8 +284,8 @@ public class GalleryBmEJB implements GalleryBm {
       final PhotoDetail photo, final boolean watermark, final String watermarkHD,
       final String watermarkOther, final PhotoDataCreateDelegate delegate) {
     try {
-      final GalleryProcessManagement processManagement =
-          new GalleryProcessManagement(user, componentInstanceId);
+      final GalleryProcessManagement processManagement = new GalleryProcessManagement(user,
+          componentInstanceId);
       processManagement.addCreatePhotoProcesses(photo, delegate.getAlbumId(),
           delegate.getFileItem(), watermark, watermarkHD, watermarkOther, delegate);
       processManagement.execute();
@@ -302,8 +301,8 @@ public class GalleryBmEJB implements GalleryBm {
       final Collection<String> photoIds, final String albumId,
       final PhotoDataUpdateDelegate delegate) {
     try {
-      final GalleryProcessManagement processManagement =
-          new GalleryProcessManagement(user, componentInstanceId);
+      final GalleryProcessManagement processManagement = new GalleryProcessManagement(user,
+          componentInstanceId);
       for (final String photoId : photoIds) {
         processManagement.addUpdatePhotoProcesses(
             getPhoto(new PhotoPK(photoId, componentInstanceId)), false, null, null, delegate);
@@ -321,8 +320,8 @@ public class GalleryBmEJB implements GalleryBm {
       final PhotoDetail photo, final boolean watermark, final String watermarkHD,
       final String watermarkOther, final PhotoDataUpdateDelegate delegate) {
     try {
-      final GalleryProcessManagement processManagement =
-          new GalleryProcessManagement(user, componentInstanceId);
+      final GalleryProcessManagement processManagement = new GalleryProcessManagement(user,
+          componentInstanceId);
       processManagement.addUpdatePhotoProcesses(photo, watermark, watermarkHD, watermarkOther,
           delegate);
       processManagement.execute();
@@ -337,8 +336,8 @@ public class GalleryBmEJB implements GalleryBm {
   public void deletePhoto(final UserDetail user, final String componentInstanceId,
       final Collection<String> photoIds) {
     try {
-      final GalleryProcessManagement processManagement =
-          new GalleryProcessManagement(user, componentInstanceId);
+      final GalleryProcessManagement processManagement = new GalleryProcessManagement(user,
+          componentInstanceId);
       PhotoDetail photo;
       for (final String photoId : photoIds) {
         photo = new PhotoDetail();
@@ -475,8 +474,8 @@ public class GalleryBmEJB implements GalleryBm {
       if (path.size() > 0) {
         path.remove(path.size() - 1);
       }
-      htmlPath =
-          getSpacesPath(nodePK.getInstanceId()) + getComponentLabel(nodePK.getInstanceId()) + " > "
+      htmlPath = getSpacesPath(nodePK.getInstanceId()) + getComponentLabel(nodePK.getInstanceId())
+          + " > "
           + displayPath(path, 10);
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getHTMLNodePath()",
@@ -497,8 +496,8 @@ public class GalleryBmEJB implements GalleryBm {
   }
 
   private String getComponentLabel(final String componentId) {
-    final ComponentInstLight component =
-        getOrganizationController().getComponentInstLight(componentId);
+    final ComponentInstLight component = getOrganizationController().getComponentInstLight(
+        componentId);
     String componentLabel = "";
     if (component != null) {
       componentLabel = component.getLabel();
@@ -587,8 +586,8 @@ public class GalleryBmEJB implements GalleryBm {
       }
 
       if (photo.getImageName() != null) {
-        final ResourceLocator gallerySettings =
-            new ResourceLocator("org.silverpeas.gallery.settings.gallerySettings", "");
+        final ResourceLocator gallerySettings = new ResourceLocator(
+            "org.silverpeas.gallery.settings.gallerySettings", "");
         indexEntry.setThumbnail(photo.getImageName());
         indexEntry.setThumbnailMimeType(photo.getImageMimeType());
         indexEntry.setThumbnailDirectory(gallerySettings.getString("imagesSubDirectory") + photo.
@@ -621,18 +620,17 @@ public class GalleryBmEJB implements GalleryBm {
       }
 
       // indexation du contenu du formulaire XML
-      final String xmlFormName =
-          getOrganizationController().getComponentParameterValue(photo.getInstanceId(),
+      final String xmlFormName = getOrganizationController().getComponentParameterValue(photo
+          .getInstanceId(),
           "XMLFormName");
       SilverTrace.info("gallery", "GalleryBmEJB.createIndex()", "root.MSG_GEN_ENTER_METHOD",
           "xmlFormName = " + xmlFormName);
       if (StringUtil.isDefined(xmlFormName)) {
-        final String xmlFormShortName =
-            xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
+        final String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf("/") + 1,
+            xmlFormName.indexOf("."));
         PublicationTemplate pubTemplate;
         try {
-          pubTemplate =
-              PublicationTemplateManager.getInstance().getPublicationTemplate(
+          pubTemplate = PublicationTemplateManager.getInstance().getPublicationTemplate(
               photo.getInstanceId() + ":" + xmlFormShortName);
           final RecordSet set = pubTemplate.getRecordSet();
           set.indexRecord(photo.getPhotoPK().getId(), xmlFormShortName, indexEntry);
@@ -655,8 +653,8 @@ public class GalleryBmEJB implements GalleryBm {
     int silverObjectId = -1;
     PhotoDetail photoDetail = null;
     try {
-      silverObjectId =
-          getGalleryContentManager().getSilverObjectId(photoPK.getId(), photoPK.getInstanceId());
+      silverObjectId = getGalleryContentManager().getSilverObjectId(photoPK.getId(), photoPK
+          .getInstanceId());
 
       if (silverObjectId == -1) {
         photoDetail = getPhoto(photoPK);
@@ -845,9 +843,6 @@ public class GalleryBmEJB implements GalleryBm {
         photos.add(PhotoDAO.getPhoto(con, Integer.parseInt(id)));
       }
       return photos;
-    } catch (final ParseException e) {
-      throw new GalleryRuntimeException("GalleryBmEJB.getAllPhotobyUserid()",
-          SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
     } catch (final SQLException e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getAllPhotobyUserid()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
@@ -873,9 +868,6 @@ public class GalleryBmEJB implements GalleryBm {
     final Connection con = initCon();
     try {
       return PhotoDAO.getAllPhotosIDbyUserid(con, userId, begin, end);
-    } catch (final ParseException e) {
-      throw new GalleryRuntimeException("GalleryBmEJB.getAllPhotosUpdatebyUserid()",
-          SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
     } catch (final SQLException e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getAllPhotosUpdatebyUserid()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
@@ -902,9 +894,6 @@ public class GalleryBmEJB implements GalleryBm {
     try {
       return PhotoDAO.getSocialInformationsListOfMyContacts(con, listOfuserId, availableComponent,
           begin, end);
-    } catch (final ParseException e) {
-      throw new GalleryRuntimeException("GalleryBmEJB.getAllPhotosUpdatebyUserid()",
-          SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
     } catch (final SQLException e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getAllPhotosUpdatebyUserid()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);

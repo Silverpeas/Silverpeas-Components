@@ -40,6 +40,11 @@ out.println(gef.getLookStyleSheet());
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="javaScript/navigation.js"></script>
 <script type="text/javascript">
+
+function getCurrentUserId() {
+  return "<%=gef.getMainSessionController().getUserId()%>";
+}
+
 function getWebContext() {
 	return "<%=m_context%>";
 }
