@@ -20,27 +20,6 @@
  */
 package com.silverpeas.processManager.ejb;
 
-import java.io.ByteArrayInputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.attachment.model.UnlockContext;
-
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldTemplate;
@@ -64,11 +43,30 @@ import com.silverpeas.workflow.api.model.ProcessModel;
 import com.silverpeas.workflow.api.task.Task;
 import com.silverpeas.workflow.api.user.User;
 import com.silverpeas.workflow.engine.user.UserImpl;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.model.UnlockContext;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import java.io.ByteArrayInputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Stateless(name = "ProcessManager", description = "Stateless session bean to manage processes.")
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
@@ -141,12 +139,9 @@ public class ProcessManagerBmEJB implements ProcessManagerBm {
           processModel, userRole);
       PagesContext pagesContext = new PagesContext("creationForm", "0", getLanguage(), true,
           componentId, userId);
-
-      // Versioning in use ?
-      OrganizationController controller = new OrganizationController();
-      String paramVersion = controller.getComponentParameterValue(componentId, "versionControl");
-      boolean versioningUsed = (StringUtil.isDefined(paramVersion) && !("no").equalsIgnoreCase(
-          paramVersion));
+      boolean versioningUsed = StringUtil.getBooleanValue(
+          OrganisationControllerFactory.getOrganisationController().getComponentParameterValue(
+              componentId, "versionControl"));
       pagesContext.setVersioningUsed(versioningUsed);
 
       // 1 - Populate form data (save file on disk, populate file field)

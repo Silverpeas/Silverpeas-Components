@@ -23,6 +23,7 @@ package com.silverpeas.kmelia.importexport;
 import java.util.Date;
 
 import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import com.silverpeas.importExport.control.GEDImportExport;
 import com.silverpeas.importExport.model.ImportExportException;
@@ -32,7 +33,6 @@ import com.silverpeas.util.StringUtil;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ObjectType;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.kmelia.KmeliaException;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
@@ -53,9 +53,6 @@ import static com.stratelia.webactiv.util.publication.model.PublicationDetail.*;
  * @author sDevolder.
  */
 public class KmeliaImportExport extends GEDImportExport {
-
-  // Variables
-  private static OrganisationController org_Ctrl = new OrganizationController();
 
   /**
    * Constructeur public de la classe
@@ -104,22 +101,23 @@ public class KmeliaImportExport extends GEDImportExport {
   @Override
   protected String createPublicationIntoTopic(PublicationDetail pubDet_temp, NodePK topicPK,
       UserDetail userDetail) throws Exception {
-
+    OrganisationController orgnaisationController = OrganisationControllerFactory
+        .getOrganisationController();
     if (pubDet_temp.isStatusMustBeChecked()) {
       String profile = "writer";
-      if ("yes".equalsIgnoreCase(org_Ctrl.getComponentParameterValue(topicPK.getInstanceId(),
-          "rightsOnTopics"))) {
+      if ("yes".equalsIgnoreCase(orgnaisationController.getComponentParameterValue(topicPK
+          .getInstanceId(), "rightsOnTopics"))) {
         NodeDetail topic = getNodeBm().getHeader(topicPK);
         if (topic.haveRights()) {
-          profile = KmeliaHelper.getProfile(org_Ctrl.getUserProfiles(userDetail.getId(), topicPK
-              .getInstanceId(), topic.getRightsDependsOn(), ObjectType.NODE));
+          profile = KmeliaHelper.getProfile(orgnaisationController.getUserProfiles(userDetail
+              .getId(), topicPK.getInstanceId(), topic.getRightsDependsOn(), ObjectType.NODE));
         } else {
-          profile = KmeliaHelper.getProfile(org_Ctrl.getUserProfiles(userDetail.getId(), topicPK
-              .getInstanceId()));
+          profile = KmeliaHelper.getProfile(orgnaisationController.getUserProfiles(userDetail
+              .getId(), topicPK.getInstanceId()));
         }
       } else {
-        profile = KmeliaHelper.getProfile(org_Ctrl.getUserProfiles(userDetail.getId(), topicPK
-            .getInstanceId()));
+        profile = KmeliaHelper.getProfile(orgnaisationController.getUserProfiles(userDetail.getId(),
+            topicPK.getInstanceId()));
       }
       if ("publisher".equals(profile) || "admin".equals(profile)) {
         pubDet_temp.setStatus(VALID);
@@ -153,7 +151,6 @@ public class KmeliaImportExport extends GEDImportExport {
   @Override
   protected NodePK addSubTopicToTopic(NodeDetail nodeDetail, int topicId, UnitReport unitReport)
       throws ImportExportException {
-
     try {
       NodePK nodePk = nodeDetail.getNodePK();
       nodePk.setComponentName(getCurrentComponentId());
@@ -169,7 +166,6 @@ public class KmeliaImportExport extends GEDImportExport {
         SilverTrace.debug("importExport", "KmeliaImportExport.addSubTopicToTopic()",
             "root.EX_NO_MESSAGE", ex);
       }
-
       // S'il n'existe pas encore, on le crée et on le configure
       NodePK parentTopicPk = new NodePK(Integer.toString(topicId), getCurrentComponentId());
       NodePK newTopicPk = getKmeliaBm().addSubTopic(parentTopicPk, nodeDetail, "None");
@@ -208,9 +204,7 @@ public class KmeliaImportExport extends GEDImportExport {
   @Override
   protected NodePK addSubTopicToTopic(NodeDetail nodeDetail, int topicId,
       MassiveReport massiveReport) throws ImportExportException {
-
     NodePK nodePK = null;
-
     try {
       // On renvoie le topic déjà existant si c'est le cas
       nodePK = getNodeBm().getDetailByNameAndFatherId(new NodePK("unKnown", null,
@@ -219,7 +213,6 @@ public class KmeliaImportExport extends GEDImportExport {
       SilverTrace.info("importExport", "GEDImportExport.addSubTopicToTopic()",
           "root.EX_NO_MESSAGE", ex);
     }
-
     if (nodePK == null) {
       try {
         // Il n'y a pas de topic, on le crée
@@ -247,10 +240,7 @@ public class KmeliaImportExport extends GEDImportExport {
    */
   @Override
   public int getSilverObjectId(String id) throws Exception {
-    int silverObjectId = -1;
-    silverObjectId = getKmeliaBm()
-        .getSilverObjectId(new PublicationPK(id, getCurrentComponentId()));
-    return silverObjectId;
+    return getKmeliaBm().getSilverObjectId(new PublicationPK(id, getCurrentComponentId()));
   }
 
   @Override

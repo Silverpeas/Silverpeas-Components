@@ -23,19 +23,6 @@
  */
 package com.silverpeas.processManager;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.StringTokenizer;
-
-import javax.servlet.http.HttpServletRequest;
-
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.DataRecordUtil;
 import com.silverpeas.form.Field;
@@ -67,16 +54,7 @@ import com.silverpeas.workflow.api.instance.HistoryStep;
 import com.silverpeas.workflow.api.instance.ProcessInstance;
 import com.silverpeas.workflow.api.instance.Question;
 import com.silverpeas.workflow.api.instance.UpdatableProcessInstance;
-import com.silverpeas.workflow.api.model.Action;
-import com.silverpeas.workflow.api.model.Item;
-import com.silverpeas.workflow.api.model.Participant;
-import com.silverpeas.workflow.api.model.ProcessModel;
-import com.silverpeas.workflow.api.model.QualifiedUsers;
-import com.silverpeas.workflow.api.model.RelatedGroup;
-import com.silverpeas.workflow.api.model.RelatedUser;
-import com.silverpeas.workflow.api.model.Role;
-import com.silverpeas.workflow.api.model.State;
-import com.silverpeas.workflow.api.model.UserInRole;
+import com.silverpeas.workflow.api.model.*;
 import com.silverpeas.workflow.api.task.Task;
 import com.silverpeas.workflow.api.user.User;
 import com.silverpeas.workflow.api.user.UserInfo;
@@ -94,6 +72,18 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * The ProcessManager Session controller
@@ -357,7 +347,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
           "processManager.GET_PROCESS_FROM_TODO_FAILED", "externalTodoId : " + externalTodoId, e);
     }
   }
-  
+
   public boolean isUserAllowedOnActiveStates() {
     String[] states = currentProcessInstance.getActiveStates();
     if (states == null) {
@@ -1744,9 +1734,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   }
 
   public boolean isVersionControlled() {
-    String strVersionControlled = this.getComponentParameterValue("versionControl");
-    return ((strVersionControlled != null)
-        && !("").equals(strVersionControlled) && !("no").equals(strVersionControlled.toLowerCase()));
+    return StringUtil.getBooleanValue(getComponentParameterValue("versionControl"))        ;
   }
 
   public boolean isAttachmentTabEnable() {
@@ -1754,8 +1742,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     if (param == null) {
       return true;
     }
-    return param != null && !("").equals(param)
-        && !("no").equals(param.toLowerCase());
+    return param != null && !("").equals(param) && !("no").equals(param.toLowerCase());
   }
 
   public boolean isProcessIdVisible() {

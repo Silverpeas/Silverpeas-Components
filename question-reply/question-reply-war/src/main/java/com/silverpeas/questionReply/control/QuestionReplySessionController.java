@@ -998,13 +998,6 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     sb.append("</tr>\n");
   }
 
-  public boolean isVersionControlled() {
-    String strVersionControlled = this.getComponentParameterValue("versionControl");
-    return ((strVersionControlled != null)
-        && !("").equals(strVersionControlled) && !("no").equals(
-        strVersionControlled.toLowerCase()));
-  }
-
   private NodeBm getNodeBm() throws QuestionReplyException {
     NodeBm nodeBm;
     try {
