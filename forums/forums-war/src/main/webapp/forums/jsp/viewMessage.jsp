@@ -92,7 +92,7 @@
 
                 if ((messageTitle.length() > 0) && (messageText.length() > 0)) {
                     if (params == -1) {
-                      	Collection<UploadedFile> uploadedFiles = FileUploadManager.getUploadedFiles(request);
+                      	Collection<UploadedFile> uploadedFiles = FileUploadManager.getUploadedFiles(request, fsc.getUserDetail());
                         int result = fsc.createMessage(messageTitle, userId, forumId, parentId, messageText, null, uploadedFiles);
                         messageId = result;
                     } else {
@@ -217,7 +217,7 @@
       function init() {
         parentMessageId = <%=currentMessageId%>;
       }
-      
+
       function validateMessage() {
         if ($("#messageTitle").val() === "") {
           alert('<%=resource.getString("emptyMessageTitle")%>');
@@ -373,9 +373,9 @@
             <% } %>
             <a href="<%=ActionUrl.getUrl("viewMessage", (StringUtil.isDefined(call)? call : "viewForum"), 1, messageId, forumId, false, true)%>"><%=resource.getString(displayAllMessages ? "forums.displayCurrentMessage" : "forums.displayAllMessages")%></a>
             </p>
-            </div>  
+            </div>
         <% } %>
-    
+
        	<%
 
 
@@ -400,7 +400,7 @@
             String avatar = "/directory/jsp/icons/avatar.png";
             if(author != null) {
                avatar = author.getAvatar();
-            }              
+            }
             String text = currentMessage.getText();
             boolean isSubscriber = fsc.isSubscriber(currentId, userId);
             if (!authorNbMessages.containsKey(authorId)) {
@@ -432,7 +432,7 @@
                                 </div>
                                     <div class="messageContent">
                                       <div class="messageAttachment">
-                                        <% 
+                                        <%
                                       	out.flush();
                                         String profile = "user";
                                         if (userId.equals(authorId) || isAdmin || isModerator) {
@@ -457,14 +457,14 @@
                                           <c:param name="dnd" value="${'false'}" />
                                           <c:param name="notI18n" value="${'true'}" />
                                           <c:param name="CallbackUrl" value="${callBackUrl}" />
-                                        </c:import>                            
+                                        </c:import>
                                       </div>
                                       <%=text%>
-                                    </div>                                  
+                                    </div>
                                   <div class="messageFooter">
                                         <input name="checkbox" type="checkbox" <%if (isSubscriber) {%>checked<%}%>
                                                 onclick="javascript:window.location.href='viewMessage.jsp?action=<%=(isSubscriber ? 13 : 14)%>&params=<%=currentId%>&forumId=<%=forumId%>'"/>
-                                                <span class="texteLabelForm"><%=resource.getString("subscribeMessage")%></span>                                             
+                                                <span class="texteLabelForm"><%=resource.getString("subscribeMessage")%></span>
                                              <% if (forumActive) { %>
                                               <div class="messageActions">
                                               <% if ((isAdmin || isUser) && STATUS_VALIDATE.equals(status)) { %>
@@ -473,7 +473,7 @@
                                                 if (userId.equals(authorId) || isAdmin || isModerator) {
                                                   if (isModerator && STATUS_FOR_VALIDATION.equals(status)) {
                                             %>
-                                                    <a href="javascript:valideMessage(<%=currentId%>)"><img 
+                                                    <a href="javascript:valideMessage(<%=currentId%>)"><img
                                                         src="<%=context%>/util/icons/ok.gif" align="middle" border="0" alt="<%=resource.getString("valideMessage")%>" title="<%=resource.getString("valideMessage")%>"/></a>&nbsp;
                                                     <a href="javascript:refuseMessage(<%=currentId%>)"><img
                                                       src="<%=context%>/util/icons/wrong.gif" align="middle" border="0" alt="<%=resource.getString("refuseMessage")%>" title="<%=resource.getString("refuseMessage")%>"/></a>&nbsp;
@@ -482,7 +482,7 @@
                                                <a href="javascript:deleteMessage(<%=currentId%>, <%=parentId%>, true)"><img src="<%=context%>/util/icons/delete.gif" align="middle" border="0" alt="<%=resource.getString("deleteMessage")%>" title="<%=resource.getString("deleteMessage")%>"/></a>&nbsp;
                                             <% } %>
                                               </div>
-                                           <% } %>  
+                                           <% } %>
                                         </div>
                               </div>
                               <br clear="all"/>
@@ -497,7 +497,7 @@
 			              <input type="hidden" name="type" value="sendNotif" />
 			              <input type="hidden" name="forumId" value="<%=message.getForumId()%>"/>
                           <input type="hidden" name="parentId" value=""/>
-                          
+
                           <fieldset id="message" class="skinFieldset">
 							<legend><fmt:message key='message'/></legend>
 							<div class="fields">
@@ -521,9 +521,9 @@
 								</div>
 							</div>
 						  </fieldset>
-						  
+
 						  <view:fileUpload fieldset="true" jqueryFormSelector="form[name='forumsForm']" />
-						  
+
                         </form>
                         <br/>
 <%

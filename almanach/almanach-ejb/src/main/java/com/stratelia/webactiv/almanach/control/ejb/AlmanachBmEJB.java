@@ -20,30 +20,19 @@
  */
 package com.stratelia.webactiv.almanach.control.ejb;
 
-import java.sql.Connection;
-import java.util.*;
-import java.util.Date;
-
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-
-import net.fortuna.ical4j.model.Period;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.date.*;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
-import org.silverpeas.search.indexEngine.model.IndexEntryPK;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.service.PdcClassificationService;
-
+import com.silverpeas.util.CollectionUtil;
+import com.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.almanach.AlmanachContentManager;
-import com.stratelia.webactiv.almanach.model.*;
+import com.stratelia.webactiv.almanach.model.EventDAO;
+import com.stratelia.webactiv.almanach.model.EventDetail;
+import com.stratelia.webactiv.almanach.model.EventOccurrence;
+import com.stratelia.webactiv.almanach.model.EventPK;
+import com.stratelia.webactiv.almanach.model.Periodicity;
+import com.stratelia.webactiv.almanach.model.PeriodicityException;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
@@ -55,20 +44,44 @@ import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-
 import net.fortuna.ical4j.model.Calendar;
+import net.fortuna.ical4j.model.Component;
+import net.fortuna.ical4j.model.ComponentList;
+import net.fortuna.ical4j.model.DateList;
+import net.fortuna.ical4j.model.DateTime;
+import net.fortuna.ical4j.model.Period;
+import net.fortuna.ical4j.model.PeriodList;
+import net.fortuna.ical4j.model.Property;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.CalScale;
 import net.fortuna.ical4j.model.property.ExDate;
 import net.fortuna.ical4j.model.property.RRule;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+import org.silverpeas.upload.UploadedFile;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 import static com.silverpeas.util.StringUtil.isDefined;
 import static com.stratelia.webactiv.util.DateUtil.*;
 
-import net.fortuna.ical4j.model.*;
-
-@Stateless(name = "Almanach", description =
-    "Stateless session bean to manage the almanach component.")
+@Stateless(name = "Almanach", description
+    = "Stateless session bean to manage the almanach component.")
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class AlmanachBmEJB implements AlmanachBm {
 
@@ -146,15 +159,12 @@ public class AlmanachBmEJB implements AlmanachBm {
    */
   @Override
   public EventDetail getEventDetail(EventPK pk) {
-    SilverTrace.info("almanach", "AlmanachBmEJB.getEventDetail()",
-        "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace.info("almanach", "AlmanachBmEJB.getEventDetail()", "root.MSG_GEN_ENTER_METHOD");
     try {
-      EventDetail event = getEventDAO().findEventByPK(pk);
-      return event;
+      return getEventDAO().findEventByPK(pk);
     } catch (Exception e) {
       throw new AlmanachRuntimeException("AlmanachBmEJB.getEventDetail()",
-          SilverpeasRuntimeException.ERROR,
-          "almanach.EXE_GET_EVENT_DETAIL_FAIL", e);
+          SilverpeasRuntimeException.ERROR, "almanach.EXE_GET_EVENT_DETAIL_FAIL", e);
     }
   }
 
@@ -164,14 +174,14 @@ public class AlmanachBmEJB implements AlmanachBm {
    * addEvent(com.stratelia.webactiv.almanach.model.EventDetail)
    */
   @Override
-  public String addEvent(EventDetail event) {
-    return addEvent(event, PdcClassification.NONE_CLASSIFICATION);
+  public String addEvent(EventDetail event, Collection<UploadedFile> uploadedFiles) {
+    return addEvent(event, uploadedFiles, PdcClassification.NONE_CLASSIFICATION);
   }
 
   @Override
-  public String addEvent(EventDetail event, PdcClassification classification) {
-    SilverTrace.info("almanach", "AlmanachBmEJB.addEvent()",
-        "root.MSG_GEN_ENTER_METHOD");
+  public String addEvent(EventDetail event, Collection<UploadedFile> uploadedFiles,
+      PdcClassification classification) {
+    SilverTrace.info("almanach", "AlmanachBmEJB.addEvent()", "root.MSG_GEN_ENTER_METHOD");
     checkEventDates(event);
     Connection connection = null;
     try {
@@ -186,16 +196,23 @@ public class AlmanachBmEJB implements AlmanachBm {
         // Add the periodicity
         addPeriodicity(periodicity);
       }
-
-      createIndex(event);
       createSilverContent(connection, event, event.getCreatorId());
-
       if (!classification.isEmpty()) {
         PdcClassificationService service = PdcServiceFactory.getFactory().
             getPdcClassificationService();
         classification.ofContent(event.getId());
         service.classifyContent(event, classification);
       }
+      WysiwygController.createUnindexedFileAndAttachment(event.getDescription(event.getLanguage()),
+          event.getPK(), event.getDelegatorId(), event.getLanguage());
+      // Attach uploaded files
+      if (CollectionUtil.isNotEmpty(uploadedFiles)) {
+        for (UploadedFile uploadedFile : uploadedFiles) {
+          // Register attachment
+          uploadedFile.registerAttachment(event.getPK(), event.getLanguage(), false);
+        }
+      }
+      createIndex(event);
       return id;
     } catch (Exception e) {
       throw new AlmanachRuntimeException("AlmanachBmEJB.addEvent()",
@@ -304,26 +321,15 @@ public class AlmanachBmEJB implements AlmanachBm {
    * @param eventDetail
    * @return FullIndexEntry
    */
-  private FullIndexEntry updateIndexEntryWithWysiwygContent(
-      FullIndexEntry indexEntry, EventDetail eventDetail) {
+  private FullIndexEntry updateIndexEntryWithWysiwygContent(FullIndexEntry indexEntry,
+      EventDetail eventDetail) {
     EventPK eventPK = eventDetail.getPK();
-    SilverTrace.info("almanach",
-        "AlmanachBmEJB.updateIndexEntryWithWysiwygContent()",
-        "root.MSG_GEN_ENTER_METHOD", "indexEntry = " + indexEntry.toString()
-        + ", eventPK = " + eventPK.toString());
-    try {
-      if (eventPK != null) {
-        String wysiwygContent = WysiwygController.load(eventPK.getInstanceId(),
-            eventPK.getId(), eventDetail.getLanguage());
-        if (isDefined(wysiwygContent)) {
-          String wysiwygPath = WysiwygController.getWysiwygPath(eventPK.getInstanceId(), eventPK.
-              getId(), eventDetail.getLanguage());
-          indexEntry.addFileContent(wysiwygPath, null, "text/html", eventDetail.getLanguage());
-        }
-      }
-    } catch (Exception e) {
-      // No wysiwyg associated
+    if (eventPK != null) {
+      SilverTrace.info("almanach", "AlmanachBmEJB.updateIndexEntryWithWysiwygContent()",
+          "root.MSG_GEN_ENTER_METHOD", "indexEntry = " + indexEntry + ", eventPK = " + eventPK);
+      WysiwygController.addToIndex(indexEntry, new ForeignPK(eventPK), eventDetail.getLanguage());
     }
+
     return indexEntry;
   }
 
@@ -331,10 +337,9 @@ public class AlmanachBmEJB implements AlmanachBm {
    * @param eventPK
    */
   private void deleteIndex(EventPK eventPK) {
-    SilverTrace.info("almanach", "AlmanachBmEJB.deleteIndex()",
-        "almanach.MSG_GEN_ENTER_METHOD", "PK=" + eventPK.toString());
-    IndexEntryPK indexEntry = new IndexEntryPK(eventPK.getComponentName(),
-        "Event", eventPK.getId());
+    SilverTrace.info("almanach", "AlmanachBmEJB.deleteIndex()", "almanach.MSG_GEN_ENTER_METHOD",
+        "PK=" + eventPK.toString());
+    IndexEntryPK indexEntry = new IndexEntryPK(eventPK.getComponentName(), "Event", eventPK.getId());
     IndexEngineProxy.removeIndexEntry(indexEntry);
   }
 
@@ -523,8 +528,8 @@ public class AlmanachBmEJB implements AlmanachBm {
 
   public ExDate generateExceptionDate(Periodicity periodicity) {
     // Exceptions de périodicité
-    Collection<PeriodicityException> listException =
-        getListPeriodicityException(periodicity.getPK().getId());
+    Collection<PeriodicityException> listException = getListPeriodicityException(periodicity.getPK()
+        .getId());
     Iterator<PeriodicityException> itException = listException.iterator();
     PeriodicityException periodicityException;
     DateList dateList = new DateList();

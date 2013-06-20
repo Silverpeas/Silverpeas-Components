@@ -392,7 +392,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   public void initTemplate(String componentId, WAPrimaryKey letterPK, String userId) {
     try {
       String basicTemplate = "<body></body>";
-      WysiwygController.createFileAndAttachment(basicTemplate,
+      WysiwygController.createUnindexedFileAndAttachment(basicTemplate,
           new ForeignPK(InfoLetterPublication.TEMPLATE_ID + letterPK.getId(), componentId), userId,
           I18NHelper.defaultLanguage);
     } catch (Exception e) {

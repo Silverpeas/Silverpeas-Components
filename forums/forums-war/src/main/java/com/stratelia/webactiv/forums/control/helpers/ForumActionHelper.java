@@ -23,19 +23,17 @@
  */
 package com.stratelia.webactiv.forums.control.helpers;
 
-import java.io.IOException;
-import java.util.Collection;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.jsp.JspWriter;
-
-import org.silverpeas.upload.FileUploadManager;
-import org.silverpeas.upload.UploadedFile;
-
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.forums.control.ForumsSessionController;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.upload.FileUploadManager;
+import org.silverpeas.upload.UploadedFile;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.jsp.JspWriter;
+import java.io.IOException;
+import java.util.Collection;
 
 /**
  * @author ehugonnet
@@ -150,7 +148,8 @@ public class ForumActionHelper {
             String forumKeywords = request.getParameter("forumKeywords");
             String subscribe = request.getParameter("subscribeMessage");
             if (StringUtil.isDefined(messageTitle) && StringUtil.isDefined(messageText)) {
-              Collection<UploadedFile> uploadedFiles = FileUploadManager.getUploadedFiles(request);
+              Collection<UploadedFile> uploadedFiles = FileUploadManager.getUploadedFiles(request,
+                  fsc.getUserDetail());
               int result = fsc.createMessage(messageTitle, userId, forumId, parentId, messageText,
                   forumKeywords, uploadedFiles);
               if (subscribe == null) {
