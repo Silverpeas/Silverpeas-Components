@@ -61,7 +61,6 @@ public class KmeliaPublication implements SilverpeasContent {
   private static final OrganizationController organisationService = new OrganizationController();
   private PublicationDetail detail;
   private CompletePublication completeDetail;
-  private boolean versioned = false;
   private boolean alias = false;
   private final PublicationPK pk;
   private int rank;
@@ -112,16 +111,6 @@ public class KmeliaPublication implements SilverpeasContent {
   }
 
   /**
-   * Sets this publication as versionned.
-   *
-   * @return itself.
-   */
-  public KmeliaPublication versioned() {
-    this.versioned = true;
-    return this;
-  }
-
-  /**
    * Sets this Kmelia publication as an alias one.
    *
    * @return itself.
@@ -138,15 +127,6 @@ public class KmeliaPublication implements SilverpeasContent {
    */
   public boolean isAlias() {
     return this.alias;
-  }
-
-  /**
-   * Is this publication versionned?
-   *
-   * @return true if this publication is versionned, false otherwise.
-   */
-  public boolean isVersioned() {
-    return this.versioned;
   }
 
   /**
@@ -368,7 +348,7 @@ public class KmeliaPublication implements SilverpeasContent {
     return rank;
   }
 
-   private PdcBm getPdcBm() {
+  private PdcBm getPdcBm() {
     try {
       return EJBUtilitaire.getEJBObjectRef(JNDINames.PDCBM_EJBHOME, PdcBm.class);
     } catch (Exception e) {
