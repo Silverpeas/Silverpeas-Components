@@ -56,6 +56,7 @@ import org.silverpeas.component.kmelia.InstanceParameters;
 import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.wysiwyg.WysiwygException;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import com.silverpeas.comment.service.CommentService;
@@ -1350,8 +1351,7 @@ public class KmeliaBmEJB implements KmeliaBm {
         "root.MSG_GEN_ENTER_METHOD", "updateScope = " + updateScope);
     try {
       // if pubDetail is a clone
-      boolean isClone = isDefined(pubDetail.getCloneId()) && !"-1".equals(pubDetail.getCloneId())
-          && !isDefined(pubDetail.getCloneStatus());
+      boolean isClone = isClone(pubDetail);
       SilverTrace.info("kmelia", "KmeliaBmEJB.updatePublication()", "root.MSG_GEN_PARAM_VALUE",
           "This publication is clone ? " + isClone);
       if (isClone) {
@@ -1498,28 +1498,17 @@ public class KmeliaBmEJB implements KmeliaBm {
         startsWith("kmelia") || pubPK.getInstanceId().startsWith("toolbox")
         || pubPK.getInstanceId().startsWith("kmax"))) {
 
-     
-    PublicationDetail pubDetail = null;
-    try {
-      pubDetail = getPublicationDetail(pubPK);
-    } catch (Exception e) {
-      // publication no longer exists  do not throw exception because this method is called by JMS layer
-      // if exception is throw, JMS will attempt to execute it again and again...
-      SilverTrace.info("kmelia", "KmeliaBmEJB.externalElementsOfPublicationHaveChanged",
-          "kmelia.EX_IMPOSSIBLE_DOBTENIR_LA_PUBLICATION", "pubPK = " + pubPK.toString(), e);
-    }
-    // The treatment is stopped if publication is not found or if publication doesn't correspond
-    // with parameter of given publication pk. The second condition could happen, for now,
-    // with applications dealing with wysiwyg without using publication for their storage
-    // (infoletter for example).
-    if (pubDetail == null || (StringUtil.isDefined(pubPK.getInstanceId()) && !pubDetail.
-        getInstanceId().equals(pubPK.getInstanceId()))) {
-      return;
-    }
-    if (isDefined(userId)) {
-      pubDetail.setUpdaterId(userId);
-    }
-
+      PublicationDetail pubDetail = null;
+      try {
+        pubDetail = getPublicationDetail(pubPK);
+      } catch (Exception e) {
+        // publication no longer exists do not throw exception because this method is called by JMS
+        // layer
+        // if exception is throw, JMS will attempt to execute it again and again...
+        SilverTrace.info("kmelia", "KmeliaBmEJB.externalElementsOfPublicationHaveChanged",
+            "kmelia.EX_IMPOSSIBLE_DOBTENIR_LA_PUBLICATION", "pubPK = " + pubPK.toString(), e);
+      }
+      
       // The treatment is stopped if publication is not found or if publication doesn't correspond
       // with parameter of given publication pk. The second condition could happen, for now,
       // with applications dealing with wysiwyg without using publication for their storage
@@ -1528,6 +1517,12 @@ public class KmeliaBmEJB implements KmeliaBm {
           getInstanceId().equals(pubPK.getInstanceId()))) {
         return;
       }
+      
+      boolean clone = isClone(pubDetail);
+      if (clone) {
+        pubDetail.setIndexOperation(IndexManager.NONE);
+      }
+      
       if (isDefined(userId)) {
         pubDetail.setUpdaterId(userId);
       }
@@ -1543,13 +1538,20 @@ public class KmeliaBmEJB implements KmeliaBm {
           updatePublication(pubDetail, KmeliaHelper.PUBLICATION_CONTENT, false);
         } else {
           SilverTrace.warn("kmelia", "KmeliaBmEJB.externalElementsOfPublicationHaveChanged",
-              "kmelia.PROBLEM_DETECTED", "user " + userId + " is not allowed to update publication "
-              + pubDetail.getPK());
+              "kmelia.PROBLEM_DETECTED", "user " + userId +
+                  " is not allowed to update publication "
+                  + pubDetail.getPK());
         }
       }
+
       // index all attached files to taking into account visibility period
       indexExternalElementsOfPublication(pubDetail);
     }
+  }
+  
+  private boolean isClone(PublicationDetail publication) {
+    return isDefined(publication.getCloneId()) && !"-1".equals(publication.getCloneId()) &&
+        !isDefined(publication.getCloneStatus());
   }
 
   /**
@@ -2080,7 +2082,7 @@ public class KmeliaBmEJB implements KmeliaBm {
               "root.MSG_GEN_PARAM_VALUE", "Getting the publication");
           PublicationDetail publi = publicationBm.getDetail(pubPK);
           if (publi != null) {
-            boolean isClone = isDefined(publi.getCloneId()) && !isDefined(publi.getCloneStatus());
+            boolean isClone = isClone(publi);
             SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationFathers()",
                 "root.MSG_GEN_PARAM_VALUE", "This publication is clone ? " + isClone);
             if (isClone) {
@@ -2611,11 +2613,18 @@ public class KmeliaBmEJB implements KmeliaBm {
       boolean cloneWysiwyg = WysiwygController.haveGotWysiwyg(tempPK.getInstanceId(), cloneId,
           tempPubli.getPublicationDetail().getLanguage());
       if (cloneWysiwyg) {
+        try {
+          // delete wysiwyg contents of public version
+          WysiwygController.deleteWysiwygAttachmentsOnly("useless", pubPK.getInstanceId(), pubPK.getId());
+        } catch (WysiwygException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        // wysiwyg contents of work version become public version ones
         WysiwygController.copy(tempPK.getInstanceId(), cloneId, pubPK.getInstanceId(),
             pubPK.getId(), tempPubli.getPublicationDetail().getUpdaterId());
       }
-      // delete xml content
-      removeXMLContentOfPublication(tempPK);
+      
       // suppression du clone
       deletePublication(tempPK);
     }
