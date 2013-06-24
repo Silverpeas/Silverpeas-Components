@@ -20,45 +20,6 @@
  */
 package com.stratelia.webactiv.kmelia.control.ejb;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response.Status;
-
-import com.silverpeas.kmelia.notification.KmeliaNotifyPublicationUserNotification;
-import org.silverpeas.attachment.AttachmentException;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.HistorisedDocument;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.component.kmelia.InstanceParameters;
-import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.search.indexEngine.model.IndexManager;
-import org.silverpeas.wysiwyg.WysiwygException;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
 import com.silverpeas.form.DataRecord;
@@ -69,6 +30,7 @@ import com.silverpeas.formTemplate.dao.ModelDAO;
 import com.silverpeas.kmelia.notification.KmeliaDefermentPublicationUserNotification;
 import com.silverpeas.kmelia.notification.KmeliaDocumentSubscriptionPublicationUserNotification;
 import com.silverpeas.kmelia.notification.KmeliaModificationPublicationUserNotification;
+import com.silverpeas.kmelia.notification.KmeliaNotifyPublicationUserNotification;
 import com.silverpeas.kmelia.notification.KmeliaPendingValidationPublicationUserNotification;
 import com.silverpeas.kmelia.notification.KmeliaSubscriptionPublicationUserNotification;
 import com.silverpeas.kmelia.notification.KmeliaSupervisorPublicationUserNotification;
@@ -94,11 +56,11 @@ import com.silverpeas.thumbnail.ThumbnailException;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.thumbnail.service.ThumbnailServiceImpl;
+import com.silverpeas.util.CollectionUtil;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
-
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
@@ -142,8 +104,33 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.ValidationStep;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
-
 import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.attachment.AttachmentException;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.HistorisedDocument;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.component.kmelia.InstanceParameters;
+import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.wysiwyg.WysiwygException;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response.Status;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.util.*;
 
 import static com.silverpeas.util.StringUtil.*;
 import static com.stratelia.webactiv.util.JNDINames.SILVERPEAS_DATASOURCE;
@@ -459,7 +446,8 @@ public class KmeliaBmEJB implements KmeliaBm {
   /**
    * Alert all users, only publishers or nobody of the topic creation or update
    *
-   * @param pk the NodePK of the new sub topic
+   * @param nodePK the NodePK of the new sub topic
+   * @param fatherPK the NodePK of the parent topic
    * @param alertType alertType = "All"|"Publisher"|"None"
    * @see com.stratelia.webactiv.util.node.model.NodePK
    * @since 1.0
@@ -1174,7 +1162,7 @@ public class KmeliaBmEJB implements KmeliaBm {
       sendAlertToSupervisors(fatherPK, pubDetail);
 
       // alert subscribers
-      sendSubscriptionsNotification(pubDetail, false);
+      sendSubscriptionsNotification(pubDetail, false, false);
 
     } catch (Exception e) {
       throw new KmeliaRuntimeException(
@@ -1392,7 +1380,7 @@ public class KmeliaBmEJB implements KmeliaBm {
         }
       }
       // notification pour modification
-      sendSubscriptionsNotification(pubDetail, true);
+      sendSubscriptionsNotification(pubDetail, true, false);
 
       boolean isNewsManage = getBooleanValue(getOrganisationController().getComponentParameterValue(
           pubDetail.getPK().getInstanceId(), "isNewsManage"));
@@ -1482,7 +1470,7 @@ public class KmeliaBmEJB implements KmeliaBm {
       }
     }
     // send notifications like a creation
-    sendSubscriptionsNotification(pub, false);
+    sendSubscriptionsNotification(pub, false, false);
   }
 
   private void updatePublication(PublicationPK pubPK, int updateScope) {
@@ -1673,7 +1661,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     addPublicationToTopicWithoutNotifications(pubPK, fatherPK, isACreation);
     SilverTrace.info("kmelia", "KmeliaBmEJB.addPublicationToTopic()", "root.MSG_GEN_ENTER_METHOD");
     PublicationDetail pubDetail = getPublicationDetail(pubPK);
-    sendSubscriptionsNotification(pubDetail, false);
+    sendSubscriptionsNotification(pubDetail, false, false);
     SilverTrace.info("kmelia", "KmeliaBmEJB.addPublicationToTopic()", "root.MSG_GEN_EXIT_METHOD");
   }
 
@@ -1741,22 +1729,32 @@ public class KmeliaBmEJB implements KmeliaBm {
     return false;
   }
 
-  private NodePK sendSubscriptionsNotification(PublicationDetail pubDetail, boolean update) {
+  private NodePK sendSubscriptionsNotification(PublicationDetail pubDetail, boolean update,
+      final boolean sendOnlyToAliases) {
     NodePK oneFather = null;
     // We alert subscribers only if publication is Valid
     if (!pubDetail.haveGotClone() && pubDetail.isValid()) {
-      // topic subscriptions
+      // Topic subscriptions
       Collection<NodePK> fathers = getPublicationFathers(pubDetail.getPK());
-      if (fathers != null) {
+      if (!sendOnlyToAliases) {
         for (NodePK father : fathers) {
           oneFather = father;
-          sendSubscriptionsNotification(oneFather, pubDetail, update);
+          sendSubscriptionsNotification(father, pubDetail, update);
         }
       }
-      
-      // Subscriptions relative to aliases
-      sendAliasSubscriptions(pubDetail);
-      
+
+      // Subscriptions related to aliases
+      List<Alias> aliases = (List<Alias>) getAlias(pubDetail.getPK());
+      for (Alias alias : aliases) {
+        // Transform the current alias to a NodePK (even if Alias is extending NodePK) in the aim
+        // to execute the equals method of NodePK
+        if (!fathers.contains(new NodePK(alias.getId(), alias.getInstanceId()))) {
+          // Perform subscription notification sendings when the alias is not the one of the
+          // original publication
+          sendSubscriptionsNotification(alias, pubDetail, update);
+        }
+      }
+
       // PDC subscriptions
       try {
         int silverObjectId = getSilverObjectId(pubDetail.getPK());
@@ -1779,8 +1777,16 @@ public class KmeliaBmEJB implements KmeliaBm {
 
   private void sendSubscriptionsNotification(NodePK fatherPK, PublicationDetail pubDetail,
       boolean update) {
-    // send email alerts
+
+    // Save instance id of publication
+    String originalComponentId = pubDetail.getInstanceId();
+
+    // Change the instanceId (to make the right URL)
+    pubDetail.getPK().setComponentName(fatherPK.getInstanceId());
+
+    // Send email alerts
     try {
+
       // Computing the action
       final NotifAction action;
       if (update) {
@@ -1788,13 +1794,19 @@ public class KmeliaBmEJB implements KmeliaBm {
       } else {
         action = NotifAction.CREATE;
       }
+
       // Building and sending the notification
       UserNotificationHelper.buildAndSend(new KmeliaSubscriptionPublicationUserNotification(
           fatherPK, pubDetail, action));
+
     } catch (Exception e) {
       SilverTrace.warn("kmelia", "KmeliaBmEJB.sendSubscriptionsNotification()",
           "kmelia.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", "fatherId = "
           + fatherPK.getId() + ", pubId = " + pubDetail.getPK().getId(), e);
+    } finally {
+
+      //Restore original primary key
+      pubDetail.getPK().setComponentName(originalComponentId);
     }
   }
 
@@ -2069,7 +2081,7 @@ public class KmeliaBmEJB implements KmeliaBm {
         "root.MSG_GEN_ENTER_METHOD", "pubPK = " + pubPK.toString());
     try {
       Collection<NodePK> fathers = publicationBm.getAllFatherPK(pubPK);
-      if (fathers == null || fathers.isEmpty()) {
+      if (CollectionUtil.isEmpty(fathers)) {
         SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationFathers()",
             "root.MSG_GEN_PARAM_VALUE", "Following publication have got no fathers : pubPK = "
             + pubPK.toString());
@@ -2453,7 +2465,7 @@ public class KmeliaBmEJB implements KmeliaBm {
         indexExternalElementsOfPublication(currentPubDetail);
         // the publication has been validated
         // we must alert all subscribers of the different topics
-        NodePK oneFather = sendSubscriptionsNotification(currentPubDetail, false);
+        NodePK oneFather = sendSubscriptionsNotification(currentPubDetail, false, false);
 
         // we have to alert publication's creator
         sendValidationNotification(oneFather, currentPubDetail, null, userId);
@@ -2839,7 +2851,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     // Subscriptions and supervisors are supported by kmelia and filebox only
     if (!KmeliaHelper.isKmax(pubDetail.getInstanceId())) {
       // alert subscribers
-      sendSubscriptionsNotification(pubDetail, false);
+      sendSubscriptionsNotification(pubDetail, false, false);
 
       // alert supervisors
       if (topicPK != null) {
@@ -3950,21 +3962,7 @@ public class KmeliaBmEJB implements KmeliaBm {
 
     // Send subscriptions to aliases subscribers
     PublicationDetail pubDetail = getPublicationDetail(pubPK);
-    sendAliasSubscriptions(pubDetail);
-  }
-  
-  private void sendAliasSubscriptions(PublicationDetail pubDetail) {
-    if (pubDetail != null && pubDetail.isValid()) {
-      List<Alias> aliases = (List<Alias>) getAlias(pubDetail.getPK());
-      String originalComponentId = pubDetail.getPK().getInstanceId();
-      for (Alias a : aliases) {
-        pubDetail.getPK().setComponentName(a.getInstanceId()); // Change the instanceId to make the
-        // right URL
-        sendSubscriptionsNotification(new NodePK(a.getId(), a.getInstanceId()), pubDetail, false);
-      }
-      // restore original primary key
-      pubDetail.getPK().setComponentName(originalComponentId);
-    }
+    sendSubscriptionsNotification(pubDetail, StringUtil.isDefined(pubDetail.getUpdaterId()), true);
   }
 
   @Override
@@ -4151,7 +4149,7 @@ public class KmeliaBmEJB implements KmeliaBm {
   @Override
   public String clonePublication(CompletePublication refPubComplete, PublicationDetail pubDetail,
       String nextStatus) {
-    String cloneId = null;
+    String cloneId;
     try {
       // récupération de la publi de référence
       PublicationDetail refPub = refPubComplete.getPublicationDetail();
