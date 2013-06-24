@@ -40,6 +40,7 @@ import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventDeleteDateReq
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventDeleteRequestHandler;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventDescriptionNextRequestHandler;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventDetailRequestHandler;
+import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventExportRequestHandler;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventMainRequestHandler;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventModifyStateRequestHandler;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventOpenUserRequestHandler;
@@ -102,6 +103,8 @@ public class ScheduleEventRequestRouter extends
         new ScheduleEventConfirmUsersRequestHandler(true);
     ScheduleEventConfirmUsersRequestHandler modifyUsersRequestHandler =
         new ScheduleEventConfirmUsersRequestHandler(false);
+    ScheduleEventExportRequestHandler exportRequestHandler =
+        new ScheduleEventExportRequestHandler("exportIcalPopup.jsp");
 
     deleteRequestHandler.setForwardRequestHandler(mainRequestHandler);
     modifyStateRequestHandler.setForwardRequestHandler(mainRequestHandler);
@@ -127,6 +130,7 @@ public class ScheduleEventRequestRouter extends
     confirmRequestHandler.setForwardRequestHandler(mainRequestHandler);
 
     validResponseRequestHandler.setForwardRequestHandler(detailRequestHandler);
+    
 
     actions.put("Main", mainRequestHandler);
     actions.put("Detail", detailRequestHandler);
@@ -134,6 +138,7 @@ public class ScheduleEventRequestRouter extends
     actions.put("Add", addRequestHandler);
     actions.put("Delete", deleteRequestHandler);
     actions.put("ModifyState", modifyStateRequestHandler);
+    actions.put("ExportToICal", exportRequestHandler);
 
     actions.put("Cancel", cancelRequestHandler);
 

@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2009 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -38,6 +38,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel />
+<view:includePlugin name="popup"/>
 <c:url var="animationUrl" value="/util/javaScript/animation.js" />
 <c:url var="openUserPopupUrl" value="/Rscheduleevent/jsp/OpenUserPopup" />
 <c:url var="backPopupUrl" value="/Rscheduleevent/jsp/Detail" />
@@ -64,6 +65,13 @@
 	function valid() {
 		document.reponseForm.submit();
 	}
+
+  function exportICal() {
+    getHtmlAndDisplayInPopup('<c:url value="/Rscheduleevent/jsp/ExportToICal"/>', {
+      title : '${scheduleEventDetail.title}',
+      width : '500'
+    });
+  }
 </script>
 <link rel='stylesheet' type='text/css' href="<c:url value='/scheduleevent/jsp/styleSheets/scheduleevent.css'/>" />
 </head>
@@ -78,6 +86,9 @@
 
 <c:set var="scheduleEventDetail" value="${requestScope.scheduleEventDetail}" />
 
+<c:set var="selectionTime" value="${scheduleEventDetail.bestTimes}" />
+
+<view:operationPane>
 <c:if test="${scheduleEventDetail.allowedToChange}">
 	<fmt:message key="scheduleevent.icons.delete" var="deleteIcon" bundle="${icons}" />
 	<fmt:message key="scheduleevent.icons.delete.alt" var="deleteIconAlt" />
@@ -91,15 +102,21 @@
 	</c:if>
 	<fmt:message key="scheduleevent.icons.users" var="usersIcon" bundle="${icons}" />
 	<fmt:message key="scheduleevent.icons.users.alt" var="usersIconAlt" />
-	<view:operationPane>
 		<view:operation altText="${deleteIconAlt}" icon="${deleteIcon}" action="${'javascript:deleteScheduleEvent();'}" />
+		<view:operationSeparator/>
 		<view:operation altText="${modifyStateIconAlt}" icon="${modifyStateIcon}" action="${'javascript:modifyState();'}" />
+		<view:operationSeparator/>
 		<view:operation altText="${usersIconAlt}" icon="${usersIcon}" action="${'javascript:setUsers();'}" />
-	</view:operationPane>
+  <view:operationSeparator/>
 </c:if>
+<c:if test="${scheduleEventDetail.currentUserDefinedAsSubscriber and scheduleEventDetail.closed and selectionTime.bestDateExists}">
+  <fmt:message key="scheduleevent.icons.export.alt" var="exportScheduleEventAlt" />
+  <fmt:message key="scheduleevent.icons.exportToICal" var="exportScheduleEventIconPath" bundle="${icons}" />
+  <view:operation altText="${exportScheduleEventAlt}" icon="${exportScheduleEventIconPath}" action="${'javascript: exportICal();'}" />
+</c:if>
+</view:operationPane>
 
 <view:window>
-	<c:set var="selectionTime" value="${scheduleEventDetail.bestTimes}" />
 	<c:if test="${selectionTime.bestDateExists}"><div class="inlineMessage">
 		<fmt:message key="${selectionTime.multilangLabel}">
 			<fmt:param value="${selectionTime.datesNumber}"/>
