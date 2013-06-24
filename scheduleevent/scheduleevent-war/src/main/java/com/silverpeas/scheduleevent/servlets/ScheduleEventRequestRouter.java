@@ -104,7 +104,7 @@ public class ScheduleEventRequestRouter extends
     ScheduleEventConfirmUsersRequestHandler modifyUsersRequestHandler =
         new ScheduleEventConfirmUsersRequestHandler(false);
     ScheduleEventExportRequestHandler exportRequestHandler =
-        new ScheduleEventExportRequestHandler("exportIcal.jsp");
+        new ScheduleEventExportRequestHandler("exportIcalPopup.jsp");
 
     deleteRequestHandler.setForwardRequestHandler(mainRequestHandler);
     modifyStateRequestHandler.setForwardRequestHandler(mainRequestHandler);

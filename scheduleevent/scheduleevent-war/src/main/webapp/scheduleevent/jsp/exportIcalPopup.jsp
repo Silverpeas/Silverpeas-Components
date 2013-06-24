@@ -23,44 +23,27 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@ include file="check.jsp"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ include file="check.jsp" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
-<fmt:setLocale value="${sessionScope[sessionController].language}" />
-<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<fmt:setLocale value="${sessionScope[sessionController].language}"/>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
 <fmt:message var="status" key="${requestScope.messageKey}"/>
 <c:set var="icsName" value="${requestScope.icsName}"/>
 <c:set var="icsURL" value="${requestScope.icsURL}"/>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <view:looknfeel />
-  </head>
-  <body>
-    <fmt:message key="scheduleevent" var="scheduleEventTitle" />
-    <view:browseBar clickable="false">
-      <view:browseBarElt link="" label="${scheduleEventTitle}" />
-    </view:browseBar>
- 
-    <view:window>
-      <view:frame>
-      	<c:if test="${icsName ne null and fn:length(icsName) > 0}">
-      		<div class="inlineMessage-ok">
-      			<b><c:out value="${status}"/></b><br/><br/>
-      			<a href="<c:out value='${icsURL}'/>"><c:out value="${icsName}"/></a>
-      		</div>	
-      	</c:if>
-      	<c:if test="${icsName eq null or fn:length(icsName) == 0}">
-      		<div class="inlineMessage-nok">
-      			<b><c:out value="${status}"/></b>
-      		</div>	
-      	</c:if>
-      </view:frame>
-    </view:window>
-  </body>
-</html>
+<c:if test="${icsName ne null and fn:length(icsName) > 0}">
+  <div class="inlineMessage-ok">
+    <b><c:out value="${status}"/></b><br/><br/>
+    <a href="<c:out value='${icsURL}'/>"><c:out value="${icsName}"/></a>
+  </div>
+</c:if>
+<c:if test="${icsName eq null or fn:length(icsName) == 0}">
+  <div class="inlineMessage-nok">
+    <b><c:out value="${status}"/></b>
+  </div>
+</c:if>

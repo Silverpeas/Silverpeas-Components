@@ -432,7 +432,7 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
     //export iCal
     ExporterFactory exporterFactory = ExporterFactory.getFactory();
     Exporter<ExportableCalendar> iCalExporter = exporterFactory.getICalExporter();
-    String icsFileName = ICS_PREFIX + ".ics";
+    String icsFileName = ICS_PREFIX + getUserId() + ".ics";
     String icsFilePath = FileRepositoryManager.getTemporaryPath() + icsFileName;
     FileWriter fileWriter = new FileWriter(icsFilePath);
     try {

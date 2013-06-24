@@ -38,6 +38,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel />
+<view:includePlugin name="popup"/>
 <c:url var="animationUrl" value="/util/javaScript/animation.js" />
 <c:url var="openUserPopupUrl" value="/Rscheduleevent/jsp/OpenUserPopup" />
 <c:url var="backPopupUrl" value="/Rscheduleevent/jsp/Detail" />
@@ -64,9 +65,12 @@
 	function valid() {
 		document.reponseForm.submit();
 	}
-	
-	function exportICal() {
-    SP_openWindow('ExportToICal','iCalExport','500','230','scrollbars=no, noresize, alwaysRaised');
+
+  function exportICal() {
+    getHtmlAndDisplayInPopup('<c:url value="/Rscheduleevent/jsp/ExportToICal"/>', {
+      title : '${scheduleEventDetail.title}',
+      width : '500'
+    });
   }
 </script>
 <link rel='stylesheet' type='text/css' href="<c:url value='/scheduleevent/jsp/styleSheets/scheduleevent.css'/>" />
@@ -103,14 +107,12 @@
 		<view:operation altText="${modifyStateIconAlt}" icon="${modifyStateIcon}" action="${'javascript:modifyState();'}" />
 		<view:operationSeparator/>
 		<view:operation altText="${usersIconAlt}" icon="${usersIcon}" action="${'javascript:setUsers();'}" />
-		<view:operationSeparator/>
+  <view:operationSeparator/>
 </c:if>
-<c:if test="${scheduleEventDetail.closed}">
-  <c:if test="${selectionTime.bestDateExists}">
-    <fmt:message key="scheduleevent.icons.export.alt" var="exportScheduleEventAlt" />
-    <fmt:message key="scheduleevent.icons.exportToICal" var="exportScheduleEventIconPath" bundle="${icons}" />
-    <view:operation altText="${exportScheduleEventAlt}" icon="${exportScheduleEventIconPath}" action="${'javascript: exportICal();'}" />
-  </c:if>
+<c:if test="${scheduleEventDetail.currentUserDefinedAsSubscriber and scheduleEventDetail.closed and selectionTime.bestDateExists}">
+  <fmt:message key="scheduleevent.icons.export.alt" var="exportScheduleEventAlt" />
+  <fmt:message key="scheduleevent.icons.exportToICal" var="exportScheduleEventIconPath" bundle="${icons}" />
+  <view:operation altText="${exportScheduleEventAlt}" icon="${exportScheduleEventIconPath}" action="${'javascript: exportICal();'}" />
 </c:if>
 </view:operationPane>
 
