@@ -64,7 +64,7 @@ public class ScheduleEventUserNotification extends AbstractTemplateUserNotificat
 
   @Override
   protected String getBundleSubjectKey() {
-    return "scheduleEvent.notifSubject";
+    return "scheduleevent.notifSubject";
   }
 
   @Override
