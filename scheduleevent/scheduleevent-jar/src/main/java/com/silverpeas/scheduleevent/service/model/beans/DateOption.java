@@ -35,6 +35,11 @@ import javax.persistence.TemporalType;
 @Table(name = "sc_scheduleevent_options")
 public class DateOption implements Comparable<DateOption>, Serializable {
 
+  public static final int MORNING_BEGIN_HOUR = 8;
+  public static final int MORNING_END_HOUR = 12;
+  public static final int AFTERNOON_BEGIN_HOUR = 14;
+  public static final int AFTERNOON_END_HOUR = 18;
+  
   @Id
   private String id;
   @Column(name = "optionday")
