@@ -3482,8 +3482,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public void setAliases(List<Alias> aliases) throws RemoteException {
-    getKmeliaBm().setAlias(getSessionPublication().getDetail().getPK(),
-        aliases);
+    getKmeliaBm().setAlias(getSessionPublication().getDetail().getPK(), aliases);
   }
 
   public void setAliases(PublicationPK pubPK, List<Alias> aliases) throws RemoteException {
