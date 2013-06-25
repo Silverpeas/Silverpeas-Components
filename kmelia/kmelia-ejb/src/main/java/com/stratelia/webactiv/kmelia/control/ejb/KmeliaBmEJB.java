@@ -2778,8 +2778,8 @@ public class KmeliaBmEJB implements KmeliaBm {
   /**
    * This method is here to manage correctly transactional scope of EJB (conflict between EJB and
    * UserPreferences service)
-   * @param pubPK 
-   * @return 
+   * @param pubPK
+   * @return
    */
   @Override
   @TransactionAttribute(TransactionAttributeType.REQUIRED)
@@ -3973,7 +3973,7 @@ public class KmeliaBmEJB implements KmeliaBm {
       SimpleAttachment file = new SimpleAttachment(FileUtil.getFilename(filename),
           I18NHelper.defaultLanguage, filename, "", contents.length, FileUtil.getMimeType(filename),
           userId, creationDate, null);
-      boolean versioningActive = StringUtil.getBooleanValue(getOrganisationController().
+      boolean versioningActive = getBooleanValue(getOrganisationController().
           getComponentParameterValue(pubPK.getComponentName(), "versionControl"));
       SimpleDocument document;
       if (versioningActive) {

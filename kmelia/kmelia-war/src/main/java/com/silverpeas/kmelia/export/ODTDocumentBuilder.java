@@ -25,7 +25,6 @@ package com.silverpeas.kmelia.export;
 
 import java.io.File;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -66,7 +65,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.odftoolkit.odfdom.dom.element.text.TextAElement;
 import org.odftoolkit.simple.TextDocument;
 import org.odftoolkit.simple.meta.Meta;
-import org.odftoolkit.simple.table.Cell;
 import org.odftoolkit.simple.table.Row;
 import org.odftoolkit.simple.table.Table;
 import org.odftoolkit.simple.text.Paragraph;
@@ -347,58 +345,30 @@ public class ODTDocumentBuilder {
 
   private void buildAttachmentsSection(final TextDocument odtDocument,
       final KmeliaPublication publication) {
-    List<SimpleDocument> attachments = Collections.unmodifiableList(AttachmentServiceFactory.
-        getAttachmentService().listDocumentsByForeignKey(publication.getPk(), getLanguage()));
-    if (publication.isVersioned()) {
-      buildWithVersionedAttachments(attachments, in(odtDocument));
-    } else {
-      buildWithAttachments(attachments, in(odtDocument));
-    }
-  }
-
-  private void buildWithVersionedAttachments(final List<SimpleDocument> versionedAttachments,
-      final TextDocument odtDocument) {
-    if (versionedAttachments.isEmpty()) {
-      Section attachmentsSection = odtDocument.getSectionByName(SECTION_ATTACHMENTS);
-      attachmentsSection.remove();
-    } else {
-      Table attachmentsTable = odtDocument.getTableByName(LIST_OF_ATTACHMENTS);
-      updateTableForVersionedAttachments(attachmentsTable);
-      int i = 1;
-      for (SimpleDocument versionedAttachment : versionedAttachments) {
-        VersionedAttachmentHolder attachmentHolder = VersionedAttachmentHolder.hold(
-            versionedAttachment);
-        String creatorOrValidators = attachmentHolder.getCreatorOrValidatorsDisplayedName(
-            versionedAttachment);
-        String version = attachmentHolder.getVersionNumber(versionedAttachment);
-        String creationDate = dateToString(versionedAttachment.getUpdated(), getLanguage());
-        Row row = attachmentsTable.getRowByIndex(i++);
-        row.getCellByIndex(0).setStringValue(versionedAttachment.getFilename());
-        row.getCellByIndex(1).setStringValue(versionedAttachment.getTitle());
-        row.getCellByIndex(2).setStringValue(versionedAttachment.getDescription());
-        row.getCellByIndex(3).setStringValue(version);
-        row.getCellByIndex(4).setStringValue(creationDate);
-        row.getCellByIndex(5).setStringValue(creatorOrValidators);
-      }
-    }
-  }
-
-  private void buildWithAttachments(final List<SimpleDocument> attachments,
-      final TextDocument odtDocument) {
-    if (attachments.isEmpty()) {
-      Section attachmentsSection = odtDocument.getSectionByName(SECTION_ATTACHMENTS);
-      attachmentsSection.remove();
-    } else {
-      Table attachmentsTable = odtDocument.getTableByName(LIST_OF_ATTACHMENTS);
-      int i = 1;
-      for (SimpleDocument attachment : attachments) {
+    List<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService()
+        .listDocumentsByForeignKey(publication.getPk(), getLanguage());
+    boolean hasNoAttachmentToDisplay = true;
+    Table attachmentsTable = odtDocument.getTableByName(LIST_OF_ATTACHMENTS);
+    int i = 1;
+    for (SimpleDocument document : attachments) {
+      SimpleDocument attachment = document.getLastPublicVersion();
+      if (attachment != null) {
+        hasNoAttachmentToDisplay = false;
+        SimpleDocumentHolder attachmentHolder = SimpleDocumentHolder.hold(attachment);
         Row row = attachmentsTable.getRowByIndex(i++);
         row.getCellByIndex(0).setStringValue(attachment.getFilename());
         row.getCellByIndex(1).setStringValue(attachment.getTitle());
         row.getCellByIndex(2).setStringValue(attachment.getDescription());
         row.getCellByIndex(3).setStringValue(UnitUtil.formatMemSize(attachment.getSize()));
-        row.getCellByIndex(4).setStringValue(getOutputDate(attachment.getCreated(), getLanguage()));
+        row.getCellByIndex(4).setStringValue(attachmentHolder.getVersionNumber());
+        row.getCellByIndex(5)
+            .setStringValue(attachmentHolder.getLastModification(getLanguage()));
+        row.getCellByIndex(6).setStringValue(attachmentHolder.getAuthorFullName());
       }
+    }
+    if (hasNoAttachmentToDisplay) {
+      Section attachmentsSection = odtDocument.getSectionByName(SECTION_ATTACHMENTS);
+      attachmentsSection.remove();
     }
   }
 
@@ -417,9 +387,8 @@ public class ODTDocumentBuilder {
         }
         for (KmeliaPublication aLinkedPublication : linkedPublications) {
           PublicationDetail publicationDetail = aLinkedPublication.getDetail();
-          if (publicationDetail.getStatus() != null
-              && "Valid".equals(publicationDetail.getStatus())
-              && !publicationDetail.getPK().getId().equals(publication.getPk().getId())) {
+          if (publicationDetail.isValid() && !publicationDetail.getPK().getId().equals(publication
+              .getPk().getId())) {
             TextAElement hyperlink = new TextAElement(odtDocument.getContentDom());
             hyperlink.setXlinkHrefAttribute(aLinkedPublication.getURL());
             hyperlink.setXlinkTypeAttribute("simple");
@@ -485,17 +454,6 @@ public class ODTDocumentBuilder {
     }
   }
 
-  private void updateTableForVersionedAttachments(final Table attachmentsTable) {
-    Cell defaultCell = attachmentsTable.getCellByPosition(0, 0);
-    String cellStyle = defaultCell.getCellStyleName();
-    String textStyle = defaultCell.getParagraphByIndex(0, true).getStyleName();
-
-    attachmentsTable.getCellByPosition(3, 0).setStringValue("Version");
-    Cell newCell = attachmentsTable.appendColumn().getCellByIndex(0);
-    newCell.getOdfElement().setStyleName(cellStyle);
-    newCell.addParagraph("Validateur").getOdfElement().setStyleName(textStyle);
-  }
-
   private boolean isRightsOnTopicsEnabled(final String componentInstanceId) {
     return Boolean.valueOf(getOrganizationService().getComponentParameterValue(componentInstanceId,
         "rightsOnTopics"));
@@ -536,6 +494,7 @@ public class ODTDocumentBuilder {
           getLanguage());
     }
     return this.messages;
+
   }
 
   /**

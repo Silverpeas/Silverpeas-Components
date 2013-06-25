@@ -80,7 +80,6 @@ import com.silverpeas.form.record.GenericRecordSetManager;
 import com.silverpeas.form.record.IdentifiedRecordTemplate;
 import com.silverpeas.importExport.model.ImportExportException;
 import com.silverpeas.kmelia.SearchContext;
-import com.silverpeas.kmelia.control.KmeliaServiceFactory;
 import com.silverpeas.kmelia.domain.TopicSearch;
 import com.silverpeas.kmelia.export.ExportFileNameProducer;
 import com.silverpeas.kmelia.search.KmeliaSearchServiceFactory;
@@ -651,9 +650,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       try {
         KmeliaPublication publication = KmeliaPublication
             .aKmeliaPublicationWithPk(new PublicationPK(fromPubId, getComponentId()));
-        if (isVersionControlled()) {
-          publication.versioned();
-        }
         String fileName = getPublicationExportFileName(publication, getLanguage());
         document = new File(FileRepositoryManager.getTemporaryPath() + fileName + "." + inFormat.
             name());
@@ -1795,74 +1791,18 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public Map<String, String> pasteFiles(PublicationPK pubPKFrom, String pubId)
-      throws RemoteException, IOException {
+      throws IOException {
     Map<String, String> fileIds = new HashMap<String, String>();
     String componentId = pubPKFrom.getInstanceId();
-
-    boolean fromCompoVersion = StringUtil.getBooleanValue(getOrganisationController().
-        getComponentParameterValue(componentId, "versionControl"));
-
-    if (!fromCompoVersion && !isVersionControlled()) {
-      // attachments --> attachments
-      // paste attachments
-      List<SimpleDocument> origins = AttachmentServiceFactory.getAttachmentService().
-          listDocumentsByForeignKeyAndType(pubPKFrom, DocumentType.attachment, getLanguage());
-      for (SimpleDocument origin : origins) {
-        SimpleDocumentPK copyPk = AttachmentServiceFactory.getAttachmentService().copyDocument(
-            origin, new ForeignPK(pubId, getComponentId()));
-        fileIds.put(origin.getId(), copyPk.getId());
-      }
-    } else if (fromCompoVersion && !isVersionControlled()) {
-      // versioning --> attachments
-      // Last public versions becomes the new attachment
-      pasteDocumentsAsAttachments(pubPKFrom, pubId);
-    } else if (!fromCompoVersion && isVersionControlled()) {
-      // attachments --> versioning
-      // paste versioning documents
-      pasteAttachmentsAsDocuments(pubPKFrom, pubId);
-    } else {
-      // versioning --> versioning
-      // paste versioning documents
-      pasteDocuments(pubPKFrom, pubId);
+    List<SimpleDocument> origins = AttachmentServiceFactory.getAttachmentService().
+        listDocumentsByForeignKeyAndType(pubPKFrom, DocumentType.attachment, getLanguage());
+    for (SimpleDocument origin : origins) {
+      SimpleDocumentPK copyPk = AttachmentServiceFactory.getAttachmentService().copyDocument(
+          origin, new ForeignPK(pubId, getComponentId()));
+      fileIds.put(origin.getId(), copyPk.getId());
     }
 
     return fileIds;
-  }
-
-  /**
-   * Copy documents from a publication to another.
-   *
-   * @param pubPKFrom
-   * @param pubId
-   * @throws RemoteException
-   */
-  public void pasteDocuments(PublicationPK pubPKFrom, String pubId) throws RemoteException {
-    SilverTrace.info("kmelia", "KmeliaSessionController.pasteDocuments()",
-        "root.MSG_GEN_ENTER_METHOD", "pubPKFrom = " + pubPKFrom.toString() + ", pubId = " + pubId);
-    List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
-        listDocumentsByForeignKey(pubPKFrom, getCurrentLanguage());
-    SilverTrace.info("kmelia", "KmeliaSessionController.pasteDocuments()",
-        "root.MSG_GEN_PARAM_VALUE", documents.size() + " to paste");
-    if (documents.isEmpty()) {
-      return;
-    }
-    ForeignPK pubPK = new ForeignPK(pubId, getComponentId());
-    // paste each document
-    for (SimpleDocument original : documents) {
-      AttachmentServiceFactory.getAttachmentService().copyDocument(original, pubPK);
-    }
-  }
-
-  public void pasteDocumentsAsAttachments(PublicationPK pubPKFrom, String pubId) throws
-      RemoteException, IOException {
-    KmeliaServiceFactory.getFactory().getKmeliaService().pasteDocumentsAsAttachments(pubPKFrom,
-        new PublicationPK(pubId, getComponentId()), getLanguage(), getUserId());
-  }
-
-  public void pasteAttachmentsAsDocuments(PublicationPK pubPKFrom, String pubId)
-      throws RemoteException {
-    KmeliaServiceFactory.getFactory().getKmeliaService().pasteAttachmentsAsDocuments(pubPKFrom,
-        new PublicationPK(pubId, getComponentId()), getLanguage());
   }
 
   /**
@@ -2130,9 +2070,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public boolean isVersionControlled() {
-    String strVersionControlled = this.getComponentParameterValue("versionControl");
-    return ((strVersionControlled != null) && !("").equals(strVersionControlled) && !("no")
-        .equals(strVersionControlled.toLowerCase()));
+    return StringUtil.getBooleanValue(getComponentParameterValue("versionControl"));
   }
 
   public boolean isVersionControlled(String anotherComponentId) {
@@ -4398,41 +4336,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   private void movePublicationDocuments(String fromComponentId, ForeignPK fromForeignPK,
       ForeignPK toForeignPK, PublicationPK fromPubPK, PublicationDetail publi, boolean indexIt,
       PublicationPK toPubPK) throws IOException {
-    boolean fromCompoVersion = StringUtil.getBooleanValue(getOrganisationController().
-        getComponentParameterValue(fromComponentId, "versionControl"));
-
     List<SimpleDocument> docs = AttachmentServiceFactory.getAttachmentService().
         listDocumentsByForeignKeyAndType(fromForeignPK, DocumentType.attachment, getLanguage());
-
-    if (fromCompoVersion && isVersionControlled()) {
-      for (SimpleDocument doc : docs) {
-        AttachmentServiceFactory.getAttachmentService().moveDocument(doc, toForeignPK);
-      }
-    } else if (fromCompoVersion && !isVersionControlled()) {
-      // versioning --> attachments
-      // Last public versions becomes the new attachment
-      pasteDocumentsAsAttachments(fromPubPK, publi.getPK().getId());
-      if (indexIt) {
-        AttachmentServiceFactory.getAttachmentService().indexAllDocuments(toForeignPK, null, null);
-      }
-      // remove files
-      for (SimpleDocument doc : docs) {
-        AttachmentServiceFactory.getAttachmentService().deleteAttachment(doc);
-      }
-    } else if (!fromCompoVersion && isVersionControlled()) {
-      // Be careful, attachments have already moved !
-      pasteAttachmentsAsDocuments(toPubPK, publi.getPK().getId());
-      if (indexIt) {
-        AttachmentServiceFactory.getAttachmentService().indexAllDocuments(toForeignPK, null, null);
-      }
-      // remove files
-      for (SimpleDocument doc : docs) {
-        AttachmentServiceFactory.getAttachmentService().deleteAttachment(doc);
-      }
-    } else {
-      for (SimpleDocument doc : docs) {
-        AttachmentServiceFactory.getAttachmentService().moveDocument(doc, toForeignPK);
-      }
+    for (SimpleDocument doc : docs) {
+      AttachmentServiceFactory.getAttachmentService().moveDocument(doc, toForeignPK);
     }
   }
 
