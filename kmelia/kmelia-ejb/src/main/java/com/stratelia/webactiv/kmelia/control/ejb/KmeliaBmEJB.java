@@ -69,6 +69,7 @@ import com.silverpeas.formTemplate.dao.ModelDAO;
 import com.silverpeas.kmelia.notification.KmeliaDefermentPublicationUserNotification;
 import com.silverpeas.kmelia.notification.KmeliaDocumentSubscriptionPublicationUserNotification;
 import com.silverpeas.kmelia.notification.KmeliaModificationPublicationUserNotification;
+import com.silverpeas.kmelia.notification.KmeliaNotifyPublicationUserNotification;
 import com.silverpeas.kmelia.notification.KmeliaPendingValidationPublicationUserNotification;
 import com.silverpeas.kmelia.notification.KmeliaSubscriptionPublicationUserNotification;
 import com.silverpeas.kmelia.notification.KmeliaSupervisorPublicationUserNotification;
@@ -98,7 +99,6 @@ import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
-
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
@@ -142,8 +142,32 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.ValidationStep;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
-
 import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.attachment.AttachmentException;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.HistorisedDocument;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.component.kmelia.InstanceParameters;
+import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response.Status;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.util.*;
 
 import static com.silverpeas.util.StringUtil.*;
 import static com.stratelia.webactiv.util.JNDINames.SILVERPEAS_DATASOURCE;
@@ -1753,10 +1777,10 @@ public class KmeliaBmEJB implements KmeliaBm {
           sendSubscriptionsNotification(oneFather, pubDetail, update);
         }
       }
-      
+
       // Subscriptions relative to aliases
       sendAliasSubscriptions(pubDetail);
-      
+
       // PDC subscriptions
       try {
         int silverObjectId = getSilverObjectId(pubDetail.getPK());
@@ -2766,8 +2790,8 @@ public class KmeliaBmEJB implements KmeliaBm {
   /**
    * This method is here to manage correctly transactional scope of EJB (conflict between EJB and
    * UserPreferences service)
-   * @param pubPK 
-   * @return 
+   * @param pubPK
+   * @return
    */
   @Override
   @TransactionAttribute(TransactionAttributeType.REQUIRED)
@@ -3952,7 +3976,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     PublicationDetail pubDetail = getPublicationDetail(pubPK);
     sendAliasSubscriptions(pubDetail);
   }
-  
+
   private void sendAliasSubscriptions(PublicationDetail pubDetail) {
     if (pubDetail != null && pubDetail.isValid()) {
       List<Alias> aliases = (List<Alias>) getAlias(pubDetail.getPK());
@@ -3975,7 +3999,7 @@ public class KmeliaBmEJB implements KmeliaBm {
       SimpleAttachment file = new SimpleAttachment(FileUtil.getFilename(filename),
           I18NHelper.defaultLanguage, filename, "", contents.length, FileUtil.getMimeType(filename),
           userId, creationDate, null);
-      boolean versioningActive = StringUtil.getBooleanValue(getOrganisationController().
+      boolean versioningActive = getBooleanValue(getOrganisationController().
           getComponentParameterValue(pubPK.getComponentName(), "versionControl"));
       SimpleDocument document;
       if (versioningActive) {

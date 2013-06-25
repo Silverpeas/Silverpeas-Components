@@ -593,23 +593,17 @@
 			              if (!isOwner) {
 			                attProfile = "user";
 			              }
-			              getServletConfig().getServletContext().getRequestDispatcher(
-			                  "/attachment/jsp/displayAttachedFiles.jsp?Id=" + id + "&ComponentId=" + componentId + "&Alias=" + alias + "&Context=attachment&AttachmentPosition=" + resources.
-			                  getSetting("attachmentPosition") + "&ShowIcon=" + showIcon + "&ShowTitle=" + showTitle + "&ShowFileSize=" + showFileSize + "&ShowDownloadEstimation=" + showDownloadEstimation + "&ShowInfo=" + showInfo +
-			                  "&Language=" + language + "&Profile=" + attProfile + "&CallbackUrl=" + URLManager.
-			                  getURL("useless", componentId) + "ViewPublication&IndexIt=" + indexIt + "&ShowMenuNotif=" + true).
-			                  include(request, response);
 			            } else {
 				              if (!attachmentsUpdatable) {
 				                attProfile = "user";
 				              }
-			              getServletConfig().getServletContext().getRequestDispatcher(
-			                  "/attachment/jsp/displayAttachedFiles.jsp?Id=" + id + "&ComponentId=" + componentId + "&Alias=" + alias + "&Context=attachment&AttachmentPosition=" + resources.
-			                  getSetting("attachmentPosition") + "&ShowIcon=" + showIcon + "&ShowTitle=" + showTitle + "&ShowFileSize=" + showFileSize + "&ShowDownloadEstimation=" + showDownloadEstimation + "&ShowInfo=" + showInfo +
-			                  "&Language=" + language + "&Profile=" + attProfile + "&CallbackUrl=" + URLManager.
-			                  getURL("useless", componentId) + "ViewPublication&IndexIt=" + indexIt + "&ShowMenuNotif=" + true).
-			                  include(request, response);
 			            }
+                  getServletConfig().getServletContext().getRequestDispatcher(
+                      "/attachment/jsp/displayAttachedFiles.jsp?Id=" + id + "&ComponentId=" + componentId + "&Alias=" + alias + "&Context=attachment&AttachmentPosition=" + resources.
+                          getSetting("attachmentPosition") + "&ShowIcon=" + showIcon + "&ShowTitle=" + showTitle + "&ShowFileSize=" + showFileSize + "&ShowDownloadEstimation=" + showDownloadEstimation + "&ShowInfo=" + showInfo +
+                          "&Language=" + language + "&Profile=" + attProfile + "&CallbackUrl=" + URLManager.
+                          getURL("useless", componentId) + "ViewPublication&IndexIt=" + indexIt + "&ShowMenuNotif=" + true).
+                      include(request, response);
 			          } catch (Exception e) {
 			            throw new KmeliaException(
 			                "JSPpublicationManager.displayUserModelAndAttachmentsView()",
