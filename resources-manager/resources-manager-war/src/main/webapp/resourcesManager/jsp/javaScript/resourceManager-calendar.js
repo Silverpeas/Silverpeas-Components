@@ -180,7 +180,7 @@ function hideQTip(event) {
  * @param event
  * @param $event
  */
-function calendarEventRender(event, $event) {
+function calendarEventRenderV1(event, $event) {
   event.$event = $event;
   $event.qtip({
     content : {
@@ -228,7 +228,7 @@ function calendarEventRender(event, $event) {
  * @param event
  * @param $event
  */
-function calendarEventRenderV2(event, $event) {
+function calendarEventRender(event, $event) {
   event.$event = $event;
   $event.qtip({
     content : {
