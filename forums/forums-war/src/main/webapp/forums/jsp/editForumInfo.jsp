@@ -1,3 +1,4 @@
+<%@ page import="com.silverpeas.util.CollectionUtil" %>
 <%--
 
     Copyright (C) 2000 - 2012 Silverpeas
@@ -325,7 +326,7 @@ function removeAllUsers()
         <input type="text" name="forumName" size="50" maxlength="<%=DBUtil.getTextFieldLength()%>" <%if (update) {%>value="<%=EncodeHelper.javaStringToHtmlString(forum.getName())%>"<%}%> />&nbsp;<img src="<%=context%>/util/icons/mandatoryField.gif" width="5" height="5"/>
       </div>
     </div>
-    <% if (forumId == 0) { %>
+    <% if (CollectionUtil.isNotEmpty(allCategories)) { %>
     <!-- Display category list -->
     <div class="field" id="categoryArea">
       <label class="txtlibform" for="CategoryId"><fmt:message key="forums.category" /> :&nbsp;</label>
@@ -333,7 +334,6 @@ function removeAllUsers()
         <select name="CategoryId">
             <option value=""></option>
 <%
-      if (allCategories != null) {
           for (NodeDetail currentCategory : allCategories) {
               String currentCategoryId = currentCategory.getNodePK().getId();
               String selected = ((categoryId != null && categoryId.equals(currentCategoryId))
@@ -342,7 +342,6 @@ function removeAllUsers()
             <option value=<%=currentCategoryId%> <%=selected%>><%=currentCategory.getName()%></option>
 <%
           }
-      }
 %>
           </select>
       </div>
