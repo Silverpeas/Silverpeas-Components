@@ -20,18 +20,10 @@
  */
 package com.stratelia.webactiv.almanach.servlets;
 
-import java.util.Collection;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.silverpeas.upload.FileUploadManager;
-import org.silverpeas.upload.UploadedFile;
-
 import com.silverpeas.export.ExportException;
 import com.silverpeas.export.NoDataToExportException;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.util.StringUtil;
-
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
@@ -39,7 +31,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.almanach.control.AlmanachCalendarView;
 import com.stratelia.webactiv.almanach.control.AlmanachSessionController;
-import org.silverpeas.calendar.CalendarViewType;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.Periodicity;
 import com.stratelia.webactiv.util.DBUtil;
@@ -47,6 +38,12 @@ import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.calendar.CalendarViewType;
+import org.silverpeas.upload.FileUploadManager;
+import org.silverpeas.upload.UploadedFile;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Collection;
 
 import static com.silverpeas.util.StringUtil.isDefined;
 import static com.silverpeas.util.StringUtil.isInteger;
@@ -299,7 +296,8 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
         event.setPeriodicity(periodicity);
 
         // Ajoute l'événement
-        Collection<UploadedFile> uploadedFiles = FileUploadManager.getUploadedFiles(request);
+        Collection<UploadedFile> uploadedFiles = FileUploadManager.getUploadedFiles(request,
+            almanach.getUserDetail());
         String positions = request.getParameter("Positions");
         if (StringUtil.isDefined(positions)) {
           PdcClassificationEntity withClassification = PdcClassificationEntity.fromJSON(positions);

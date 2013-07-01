@@ -20,20 +20,6 @@
  */
 package com.silverpeas.questionReply.control;
 
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import org.silverpeas.wysiwyg.WysiwygException;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-
 import com.silverpeas.questionReply.QuestionReplyException;
 import com.silverpeas.questionReply.control.notification.SubscriptionNotifier;
 import com.silverpeas.questionReply.index.QuestionIndexer;
@@ -44,7 +30,6 @@ import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
-
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -60,6 +45,18 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
+import org.silverpeas.wysiwyg.WysiwygException;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Named("questionManager")
 public class SilverpeasQuestionManager implements QuestionManager {
@@ -978,7 +975,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
           reply.getPK().getInstanceId(), reply.getPK().getId(), reply.getCreatorId(),
           I18NHelper.defaultLanguage);
     } else {
-      WysiwygController.createFileAndAttachment(reply.readCurrentWysiwygContent(),
+      WysiwygController.createUnindexedFileAndAttachment(reply.readCurrentWysiwygContent(),
           reply.getPK(), reply.getCreatorId(), I18NHelper.defaultLanguage);
     }
   }
