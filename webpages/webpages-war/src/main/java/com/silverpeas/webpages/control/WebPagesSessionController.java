@@ -35,6 +35,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.service.ComponentSubscription;
+import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.webpages.model.WebPagesException;
@@ -43,6 +44,7 @@ import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
@@ -100,19 +102,16 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
    * @return vrai s'il existe un fichier wysiwyg pour l'instance de composant
    */
   public boolean haveGotWysiwygNotEmpty() {
-    if (WysiwygController.haveGotWysiwyg(getComponentId(), getComponentId(), I18NHelper.defaultLanguage)) {
-        String contenuWysiwyg = WysiwygController.load(
-            getComponentId(), getComponentId(), I18NHelper.defaultLanguage);
-        return StringUtil.isDefined(contenuWysiwyg);
-    }
-    return false;
+    return WysiwygController.haveGotWysiwyg(getComponentId(), getComponentId(),
+        I18NHelper.defaultLanguage);
   }
 
   public void index() throws WebPagesException {
     if (isXMLTemplateUsed()) {
       indexForm(null);
     } else {
-      WysiwygController.index(getComponentId(), getComponentId());
+      ForeignPK foreignPK = new ForeignPK(getComponentId(), getComponentId());
+      AttachmentServiceFactory.getAttachmentService().indexAllDocuments(foreignPK, null, null);
     }
   }
 
@@ -134,8 +133,8 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
   public boolean isSubscriber() {
     SilverTrace.info("webPages", "WebPagesSessionController.isSubscriber()",
             "root.MSG_GEN_ENTER_METHOD");
-    return getSubscribeBm()
-        .existsSubscription(new ComponentSubscription(getUserId(), getComponentId()));
+    return getSubscribeBm().existsSubscription(new ComponentSubscription(getUserId(),
+        getComponentId()));
   }
 
   private NodePK getNodePK() {

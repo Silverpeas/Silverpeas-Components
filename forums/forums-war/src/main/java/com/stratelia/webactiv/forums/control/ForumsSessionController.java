@@ -20,20 +20,6 @@
  */
 package com.stratelia.webactiv.forums.control;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.ejb.EJBException;
-import javax.xml.bind.JAXBException;
-
-import org.silverpeas.upload.UploadedFile;
-
 import com.silverpeas.notation.ejb.NotationBm;
 import com.silverpeas.notation.ejb.NotationRuntimeException;
 import com.silverpeas.notation.model.Notation;
@@ -47,7 +33,6 @@ import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
-
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -79,6 +64,18 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
+import org.silverpeas.upload.UploadedFile;
+
+import javax.ejb.EJBException;
+import javax.xml.bind.JAXBException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 import static com.stratelia.webactiv.SilverpeasRole.*;
@@ -451,6 +448,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     } catch (ForumsException e) {
       throw new EJBException(e.getMessage(), e);
     }
+    messagePK.setId(String.valueOf(messageId));
 
     // Send notification to subscribers
     try {
@@ -471,8 +469,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     if (com.silverpeas.util.CollectionUtil.isNotEmpty(uploadedFiles)) {
       for (UploadedFile uploadedFile : uploadedFiles) {
         // Register attachment
-        uploadedFile.registerAttachment(String.valueOf(messageId), getComponentId(),
-            getUserDetail(), I18NHelper.defaultLanguage, false);
+        uploadedFile.registerAttachment(messagePK, I18NHelper.defaultLanguage, false);
       }
     }
 

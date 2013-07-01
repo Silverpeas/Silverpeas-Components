@@ -26,6 +26,8 @@ import java.util.List;
 import javax.ejb.Local;
 
 import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.date.Period;
+import org.silverpeas.upload.UploadedFile;
 
 import com.silverpeas.pdc.model.PdcClassification;
 
@@ -35,7 +37,6 @@ import com.stratelia.webactiv.almanach.model.EventPK;
 import com.stratelia.webactiv.almanach.model.PeriodicityException;
 
 import net.fortuna.ical4j.model.Calendar;
-import org.silverpeas.date.Period;
 
 @Local
 public interface AlmanachBm {
@@ -81,19 +82,24 @@ public interface AlmanachBm {
   public Collection<EventDetail> getEvents(Collection<EventPK> pks);
 
   /**
-   * addEvent() add an event entry in the database
+   * addEvent() add an event entry in the database.
+   *
+   * @param event detail about the event to add in Silverpeas.
+   * @param uploadedFiles attached files.
+   * @return the unique identifier of the added event.
    */
-  public String addEvent(EventDetail event);
+  public String addEvent(EventDetail event, Collection<UploadedFile> uploadedFiles);
 
   /**
    * Adds the event in the almanach with the specified classification on the PdC.
    *
    * @param event detail about the event to add in Silverpeas.
+   * @param uploadedFiles attached files.
    * @param withClassification the classificationwith which the event will be classified on the PdC.
    * @return the unique identifier of the added event.
-   * @ if an error occurs while communicating with the remote business logic.
    */
-  public String addEvent(EventDetail event, PdcClassification withClassification);
+  public String addEvent(EventDetail event, Collection<UploadedFile> uploadedFiles,
+      PdcClassification withClassification);
 
   /**
    * updateEvent() update the event entry, specified by the pk, in the database

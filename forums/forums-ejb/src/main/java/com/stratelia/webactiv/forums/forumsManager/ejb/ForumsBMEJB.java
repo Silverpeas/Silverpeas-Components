@@ -50,6 +50,7 @@ import com.silverpeas.tagcloud.model.TagCloudUtil;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 
+import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.forums.ForumsContentManager;
 import com.stratelia.webactiv.forums.forumsException.ForumsRuntimeException;
@@ -61,6 +62,7 @@ import com.stratelia.webactiv.forums.models.MessagePK;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
@@ -74,6 +76,7 @@ import static com.silverpeas.util.i18n.I18NHelper.defaultLanguage;
 @Stateless(name = "Forums", description = "Stateless session EJB to manage forums.")
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class ForumsBMEJB implements ForumsBM {
+
   @EJB
   private TagCloudBm tagcloud;
   @EJB
@@ -335,7 +338,10 @@ public class ForumsBMEJB implements ForumsBM {
       forumsContentManager.deleteSilverContent(con, forumPK);
       deleteTagCloud(forumPK);
       deleteNotation(forumPK);
-    } catch (Exception e) {
+    } catch (ContentManagerException e) {
+      throw new ForumsRuntimeException("ForumsBmEJB.deleteForum()",
+          SilverpeasRuntimeException.ERROR, "forums.EXE_DELETE_FORUM_FAILED", e);
+    } catch (SQLException e) {
       throw new ForumsRuntimeException("ForumsBmEJB.deleteForum()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_DELETE_FORUM_FAILED", e);
     } finally {
@@ -369,7 +375,13 @@ public class ForumsBMEJB implements ForumsBM {
       forumsContentManager.createSilverContent(con, forumPK, forumCreator);
       createTagCloud(forumPK, keywords);
       return forumId;
-    } catch (Exception e) {
+    } catch (ContentManagerException e) {
+      throw new ForumsRuntimeException("ForumsBmEJB.createForum()",
+          SilverpeasRuntimeException.ERROR, "forums.EXE_CREATE_FORUM_FAILED", e);
+    } catch (UtilException e) {
+      throw new ForumsRuntimeException("ForumsBmEJB.createForum()",
+          SilverpeasRuntimeException.ERROR, "forums.EXE_CREATE_FORUM_FAILED", e);
+    } catch (SQLException e) {
       throw new ForumsRuntimeException("ForumsBmEJB.createForum()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_CREATE_FORUM_FAILED", e);
     } finally {
@@ -422,8 +434,7 @@ public class ForumsBMEJB implements ForumsBM {
       return ForumsDAO.getMessagesList(con, forumPK);
     } catch (SQLException e) {
       throw new ForumsRuntimeException("ForumsBmEJB.getMessagesList()",
-          SilverpeasRuntimeException.ERROR,
-          "forums.EXE_GET_FORUM_MESSAGE_LIST_FAILED", e);
+          SilverpeasRuntimeException.ERROR, "forums.EXE_GET_FORUM_MESSAGE_LIST_FAILED", e);
     } finally {
       DBUtil.close(con);
     }
@@ -749,9 +760,9 @@ public class ForumsBMEJB implements ForumsBM {
       int messageId = ForumsDAO.createMessage(con, title, authorId,
           creationDate, forumId, parentId, status);
       messagePK.setId(String.valueOf(messageId));
-      createIndex(messagePK);
       createTagCloud(messagePK, keywords);
       createWysiwyg(messagePK, content, authorId);
+      createIndex(messagePK);
       return messageId;
     } catch (SQLException e) {
       throw new ForumsRuntimeException("ForumsBmEJB.createMessage()",
@@ -766,10 +777,10 @@ public class ForumsBMEJB implements ForumsBM {
       String status) {
     Connection con = openConnection();
     try {
-      ForumsDAO.updateMessage(con, messagePK, title, status);
       deleteIndex(messagePK);
-      createIndex(messagePK);
+      ForumsDAO.updateMessage(con, messagePK, title, status);
       updateWysiwyg(messagePK, message, userId);
+      createIndex(messagePK);
     } catch (SQLException e) {
       throw new ForumsRuntimeException("ForumsBmEJB.updateMessage()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_CREATE_MESSAGE_FAILED", e);
@@ -1099,7 +1110,7 @@ public class ForumsBMEJB implements ForumsBM {
       indexEntry.setTitle(message.getTitle());
       indexEntry.setCreationDate(message.getDate());
       indexEntry.setCreationUser(message.getAuthor());
-      WysiwygController.index(componentId, messageId);
+      WysiwygController.addToIndex(indexEntry, new ForeignPK(messagePK), defaultLanguage);
       IndexEngineProxy.addIndexEntry(indexEntry);
     }
 
@@ -1285,14 +1296,14 @@ public class ForumsBMEJB implements ForumsBM {
    * @
    */
   private void createTagCloud(ForumPK forumPK, String keywords) {
-    TagCloud tagCloud =
-        new TagCloud(forumPK.getComponentName(), forumPK.getId(), TagCloud.TYPE_FORUM);
+    TagCloud tagCloud = new TagCloud(forumPK.getComponentName(), forumPK.getId(),
+        TagCloud.TYPE_FORUM);
     createTagCloud(tagCloud, keywords);
   }
 
   private void createTagCloud(MessagePK messagePK, String keywords) {
-    TagCloud tagCloud =
-        new TagCloud(messagePK.getComponentName(), messagePK.getId(), TagCloud.TYPE_MESSAGE);
+    TagCloud tagCloud = new TagCloud(messagePK.getComponentName(), messagePK.getId(),
+        TagCloud.TYPE_MESSAGE);
     createTagCloud(tagCloud, keywords);
   }
 
@@ -1369,7 +1380,6 @@ public class ForumsBMEJB implements ForumsBM {
     return sb.toString();
   }
 
-
   private void deleteNotation(ForumPK forumPK) {
     notation.deleteNotation(new NotationPK(forumPK.getId(), forumPK.getComponentName(),
         Notation.TYPE_FORUM));
@@ -1389,7 +1399,7 @@ public class ForumsBMEJB implements ForumsBM {
   }
 
   private void createWysiwyg(MessagePK messagePK, String text, String userId) {
-    WysiwygController.createFileAndAttachment(text, messagePK, userId, defaultLanguage);
+    WysiwygController.createUnindexedFileAndAttachment(text, messagePK, userId, defaultLanguage);
   }
 
   private void updateWysiwyg(MessagePK messagePK, String text, String userId) {
@@ -1399,14 +1409,14 @@ public class ForumsBMEJB implements ForumsBM {
       WysiwygController.updateFileAndAttachment(text, componentId, messageId, userId,
           defaultLanguage);
     } else {
-      WysiwygController.createFileAndAttachment(text, messagePK, userId, defaultLanguage);
+      WysiwygController.createUnindexedFileAndAttachment(text, messagePK, userId, defaultLanguage);
     }
   }
 
   private void deleteAllAttachments(MessagePK messagePK) {
     ForeignPK foreignKey = new ForeignPK(messagePK);
-    List<SimpleDocument> documents =
-        AttachmentServiceFactory.getAttachmentService().listAllDocumentsByForeignKey(foreignKey, null);
+    List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService()
+        .listAllDocumentsByForeignKey(foreignKey, null);
     for (SimpleDocument doc : documents) {
       AttachmentServiceFactory.getAttachmentService().deleteAttachment(doc);
     }

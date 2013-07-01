@@ -20,6 +20,29 @@
  */
 package com.stratelia.webactiv.almanach.control;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.calendar.CalendarViewType;
+import org.silverpeas.date.Period;
+import org.silverpeas.date.PeriodType;
+import org.silverpeas.upload.UploadedFile;
+import org.silverpeas.wysiwyg.WysiwygException;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
 import com.silverpeas.calendar.CalendarEvent;
 import com.silverpeas.export.ExportException;
 import com.silverpeas.export.Exporter;
@@ -28,9 +51,8 @@ import com.silverpeas.export.ical.ExportableCalendar;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
-import com.silverpeas.util.CollectionUtil;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
+
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -59,29 +81,8 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
-import org.apache.commons.io.FileUtils;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.calendar.CalendarViewType;
-import org.silverpeas.date.Period;
-import org.silverpeas.date.PeriodType;
-import org.silverpeas.upload.UploadedFile;
-import org.silverpeas.wysiwyg.WysiwygException;
-import org.silverpeas.wysiwyg.control.WysiwygController;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.apache.commons.io.FileUtils;
 
 import static com.silverpeas.export.ExportDescriptor.withWriter;
 import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
@@ -362,41 +363,31 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    * @throws WysiwygException if an error occurs while parsing the WYSIWYG content of the event.
    */
   public EventPK addEvent(EventDetail eventDetail, Collection<UploadedFile> uploadedFiles,
-      PdcClassificationEntity classification)
-      throws AlmanachBadParamException, AlmanachException, WysiwygException {
+      PdcClassificationEntity classification) throws AlmanachBadParamException, AlmanachException,
+      WysiwygException {
     SilverTrace.info("almanach", "AlmanachSessionController.addEvent()",
         "root.MSG_GEN_ENTER_METHOD");
     EventPK eventPK = new EventPK("", "useless", getComponentId());
-      eventDetail.setPK(eventPK);
-      eventDetail.setDelegatorId(getUserId());
+    eventDetail.setPK(eventPK);
+    eventDetail.setDelegatorId(getUserId());
 
-      PdcClassification withClassification = NONE_CLASSIFICATION;
-      if (!classification.isUndefined()) {
-        List<PdcPosition> pdcPositions = classification.getPdcPositions();
-        withClassification = aPdcClassificationOfContent(eventDetail.getId(), eventDetail.
-            getInstanceId()).withPositions(pdcPositions);
-      }
-      // Add the event
-      String eventId = getAlmanachBm().addEvent(eventDetail, withClassification);
-      eventPK.setId(eventId);
-      Date startDate = eventDetail.getStartDate();
-      // currentDay
-      if (startDate != null) {
-        setCurrentDay(startDate);
-      }
-      // Add the wysiwyg content
-      WysiwygController.createFileAndAttachment(eventDetail.getDescription(getLanguage()),
-          eventPK, getUserId(), getLanguage());
-      // Attach uploaded files
-      if (CollectionUtil.isNotEmpty(uploadedFiles)) {
-        for (UploadedFile uploadedFile : uploadedFiles) {
-          // Register attachment
-          uploadedFile.registerAttachment(eventId, getComponentId(), getUserDetail(),
-              I18NHelper.defaultLanguage, false);
-        }
-      }
-    SilverTrace.info("almanach", "AlmanachSessionController.addEvent()",
-        "root.MSG_GEN_EXIT_METHOD");
+    PdcClassification withClassification = NONE_CLASSIFICATION;
+    if (!classification.isUndefined()) {
+      List<PdcPosition> pdcPositions = classification.getPdcPositions();
+      withClassification = aPdcClassificationOfContent(eventDetail.getId(), eventDetail.
+          getInstanceId()).withPositions(pdcPositions);
+    }
+    // Add the event
+    String eventId = getAlmanachBm().addEvent(eventDetail, uploadedFiles, withClassification);
+    eventPK.setId(eventId);
+    Date startDate = eventDetail.getStartDate();
+    // currentDay
+    if (startDate != null) {
+      setCurrentDay(startDate);
+    }
+    // Add the wysiwyg content
+
+    SilverTrace.info("almanach", "AlmanachSessionController.addEvent()", "root.MSG_GEN_EXIT_METHOD");
     return eventPK;
   }
 
@@ -412,23 +403,23 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
       AlmanachException, WysiwygException {
     SilverTrace.info("almanach", "AlmanachSessionController.updateEvent()",
         "root.MSG_GEN_ENTER_METHOD");
-      eventDetail.getPK().setSpace(getSpaceId());
-      eventDetail.getPK().setComponentName(getComponentId());
-      // Update event
-      getAlmanachBm().updateEvent(eventDetail);
-      Date startDate = eventDetail.getStartDate();
-      // currentDay
-      if (startDate != null) {
-        setCurrentDay(startDate);
-      }
-      // Update the Wysiwyg if exists, create one otherwise
-      if (isDefined(eventDetail.getWysiwyg())) {
-        WysiwygController.updateFileAndAttachment(eventDetail.getDescription(getLanguage()),
-                getComponentId(), eventDetail.getId(), getUserId(), getLanguage());
-      } else {
-        WysiwygController.createFileAndAttachment(eventDetail.getDescription(getLanguage()),
-            eventDetail.getPK(), getUserId(),getLanguage());
-      }
+    eventDetail.getPK().setSpace(getSpaceId());
+    eventDetail.getPK().setComponentName(getComponentId());
+    // Update event
+    getAlmanachBm().updateEvent(eventDetail);
+    Date startDate = eventDetail.getStartDate();
+    // currentDay
+    if (startDate != null) {
+      setCurrentDay(startDate);
+    }
+    // Update the Wysiwyg if exists, create one otherwise
+    if (isDefined(eventDetail.getWysiwyg())) {
+      WysiwygController.updateFileAndAttachment(eventDetail.getDescription(getLanguage()),
+          getComponentId(), eventDetail.getId(), getUserId(), getLanguage());
+    } else {
+      WysiwygController.createFileAndAttachment(eventDetail.getDescription(getLanguage()),
+          eventDetail.getPK(), getUserId(), getLanguage());
+    }
     SilverTrace.info("almanach", "AlmanachSessionController.updateEvent()",
         "root.MSG_GEN_EXIT_METHOD");
   }
@@ -757,8 +748,8 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     String htmlPath = getAlmanachBm().getHTMLPath(eventPK);
 
     // création des messages ...
-    ResourceLocator message =
-        new ResourceLocator("org.silverpeas.almanach.multilang.almanach", "fr");
+    ResourceLocator message
+        = new ResourceLocator("org.silverpeas.almanach.multilang.almanach", "fr");
     ResourceLocator message_en = new ResourceLocator("org.silverpeas.almanach.multilang.almanach",
         "en");
 
@@ -813,10 +804,10 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
   @Override
   public void close() {
-      if (almanachBm != null) {
+    if (almanachBm != null) {
       almanachBm = null;
-      }
     }
+  }
 
   /**
    * Update event occurence (cas particulier de modification d'une occurence d'événement périodique)
@@ -853,7 +844,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    * found.
    */
   public AlmanachCalendarView getAlmanachCalendarView() throws AlmanachException,
-      AlmanachNoSuchFindEventException  {
+      AlmanachNoSuchFindEventException {
     AlmanachCalendarView view = null;
     switch (viewMode) {
       case YEARLY:
@@ -885,10 +876,10 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    * found.
    */
   public AlmanachCalendarView getYearlyAlmanachCalendarView() throws AlmanachException,
-      AlmanachNoSuchFindEventException  {
+      AlmanachNoSuchFindEventException {
     AlmanachDTO almanachDTO = getAlmanachDTO(isAgregationUsed());
-    AlmanachCalendarView view =
-        new AlmanachCalendarView(almanachDTO, currentDay.getTime(), YEARLY, getLanguage());
+    AlmanachCalendarView view = new AlmanachCalendarView(almanachDTO, currentDay.getTime(), YEARLY,
+        getLanguage());
     if (isWeekendNotVisible()) {
       view.unsetWeekendVisible();
     }
@@ -905,11 +896,11 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    * found.
    */
   public AlmanachCalendarView getMonthlyAlmanachCalendarView() throws AlmanachException,
-      AlmanachNoSuchFindEventException  {
+      AlmanachNoSuchFindEventException {
 
     AlmanachDTO almanachDTO = getAlmanachDTO(isAgregationUsed());
-    AlmanachCalendarView view =
-        new AlmanachCalendarView(almanachDTO, currentDay.getTime(), MONTHLY, getLanguage());
+    AlmanachCalendarView view = new AlmanachCalendarView(almanachDTO, currentDay.getTime(), MONTHLY,
+        getLanguage());
     if (isWeekendNotVisible()) {
       view.unsetWeekendVisible();
     }
@@ -929,8 +920,8 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
       AlmanachNoSuchFindEventException {
 
     AlmanachDTO almanachDTO = getAlmanachDTO(isAgregationUsed());
-    AlmanachCalendarView view =
-        new AlmanachCalendarView(almanachDTO, currentDay.getTime(), WEEKLY, getLanguage());
+    AlmanachCalendarView view = new AlmanachCalendarView(almanachDTO, currentDay.getTime(), WEEKLY,
+        getLanguage());
     if (isWeekendNotVisible()) {
       view.unsetWeekendVisible();
     }
@@ -951,8 +942,8 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   public AlmanachCalendarView getAlmanachCalendarViewOnTheNextEvents(boolean aggregated) throws
       AlmanachException, AlmanachNoSuchFindEventException {
     AlmanachDTO almanachDTO = getAlmanachDTO(aggregated);
-    AlmanachCalendarView view =
-        new AlmanachCalendarView(almanachDTO, currentDay.getTime(), NEXT_EVENTS, getLanguage());
+    AlmanachCalendarView view = new AlmanachCalendarView(almanachDTO, currentDay.getTime(),
+        NEXT_EVENTS, getLanguage());
 
     if (isWeekendNotVisible()) {
       view.unsetWeekendVisible();
@@ -1044,7 +1035,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
       AlmanachException {
     List<EventOccurrence> occurrencesInMonth = getAlmanachBm().
         getEventOccurrencesInPeriod(
-            Period.from(currentDay.getTime(), PeriodType.month, getLanguage()), almanachIds);
+        Period.from(currentDay.getTime(), PeriodType.month, getLanguage()), almanachIds);
     return DisplayableEventOccurrence.decorate(occurrencesInMonth);
   }
 
