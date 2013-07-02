@@ -66,7 +66,6 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAPrimaryKey;
@@ -405,22 +404,19 @@ public class DefaultClassifiedService implements ClassifiedService {
     List<ClassifiedDetail> classifieds = new ArrayList<ClassifiedDetail>();
     try {
       List<MatchingIndexEntry> result = SearchEngineFactory.getSearchEngine().search(query).getEntries();
-      // création des petites annonces à partir des resultats
+      //création des petites annonces à partir des resultats
       for (MatchingIndexEntry matchIndex : result) {
         if ("Classified".equals(matchIndex.getObjectType())) {
-          ClassifiedDetail classified = new ClassifiedDetail(Integer.valueOf(matchIndex.getObjectId()));
-          classified.setInstanceId(matchIndex.getComponent());
-          classified.setCreationDate(DateUtil.parse(matchIndex.getCreationDate()));
-          classified.setCreatorId(matchIndex.getCreationUser());
-          classified.setUpdateDate(DateUtil.parse(matchIndex.getLastModificationDate()));
-          classified.setTitle(matchIndex.getTitle());
-          classified.setDescription(matchIndex.getPreView());
-          SilverTrace.info("classifieds", "DefaultClassifiedService.search()",
-              "root.MSG_GEN_PARAM_VALUE", "classified = " + classified.getTitle());
-          classifieds.add(classified);
+          //ne retourne que les petites annonces valides
+          ClassifiedDetail classified = this.getContentById(matchIndex.getObjectId());
+          if(classified != null && ClassifiedDetail.VALID.equals(classified.getStatus())) {
+            classifieds.add(classified);
+            SilverTrace.info("classifieds", "DefaultClassifiedService.search()",
+                "root.MSG_GEN_PARAM_VALUE", "classified = " + classified.getTitle());
+          }
         }
       }
-      //TODO pour ordonner les petites annonces de la plus récente vers la plus ancienne
+      //ordonnancement des petites annonces de la plus récente vers la plus ancienne
       Collections.reverse(classifieds);
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException("DefaultClassifiedService.search()",
