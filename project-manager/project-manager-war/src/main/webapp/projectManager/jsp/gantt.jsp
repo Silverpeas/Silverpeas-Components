@@ -107,7 +107,7 @@ $(document).ready(function(){
  */
 function highlightResponsible() {
   // Tooltip over task in order to know the responsible
-  $('.task_wording a[href][title]').qtip({
+  $('a[href][title]', $('.task_wording')).qtip({
 	content: {
 		text: false // Use each elements title attribute
 	},
@@ -128,7 +128,7 @@ function getContext() {
   return "<c:out value="${ctxPath}" />";
 }
 // global javascript variable
-var listHolidays = new Array();
+var listHolidays = [];
 
 <c:forEach items="${requestScope['Holidays']}" var="holiday" varStatus="holidayIndex">
 listHolidays[<c:out value="${holidayIndex.index}" />] = '<fmt:formatDate value="${holiday}" pattern="yyyyMMdd"/>';

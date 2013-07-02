@@ -93,24 +93,8 @@ $(document).ready(function(){
   });
 
   // By suppling no content attribute, the library uses each elements title attribute by default
-  $('.task_wording a[href][title]').qtip({
-	content: {
-		text: false // Use each elements title attribute
-	},
-	style: {
-		tip: true,
-		classes: "qtip-shadow qtip-green"
-	},
-	position: {
-		adjust: {
-			method: "flip flip"
-		},
-		viewport: $(window)
-	}
-    });
-
   highlightResponsible();
-  
+
   $('#legendLabelId').click(function() {
     if ($('#legende').is(':visible')) {
         $('#legende').hide();
@@ -130,7 +114,7 @@ $(document).ready(function(){
  */
 function highlightResponsible() {
   // Tooltip over task in order to know the responsible
-  $('.task_wording a[href][title]').qtip({
+  $('a[href][title]',$('.task_wording')).qtip({
 	content: {
 		text: false // Use each elements title attribute
 	},
@@ -151,7 +135,7 @@ function getContext() {
   return "<c:out value="${ctxPath}" />";
 }
 // global javascript variable
-var listHolidays = new Array();
+var listHolidays = [];
 
 <c:forEach items="${requestScope['Holidays']}" var="holiday" varStatus="holidayIndex">
 listHolidays[<c:out value="${holidayIndex.index}" />] = '<fmt:formatDate value="${holiday}" pattern="yyyyMMdd"/>';

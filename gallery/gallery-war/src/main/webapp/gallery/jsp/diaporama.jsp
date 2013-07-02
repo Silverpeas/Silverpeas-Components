@@ -42,20 +42,14 @@
 <view:includePlugin name="popup"/>
 <view:includePlugin name="notifier"/>
 
-<link href="<view:componentUrl componentId=""/>/gallery/jsp/styleSheets/slider/themes/classic/galleria.classic.css" type="text/css" rel="stylesheet">
-<script src="<view:componentUrl componentId=""/>/gallery/jsp/javaScript/slider/galleria-1.2.9.min.js" type="text/javascript"></script>
-<script src="<view:componentUrl componentId=""/>/gallery/jsp/styleSheets/slider/themes/classic/galleria.classic.min.js" type="text/javascript"></script>
-<script src="<view:componentUrl componentId=""/>/gallery/jsp/javaScript/silverpeas-gallery-slider.js" type="text/javascript"></script>
+<link href="<c:url value="/gallery/jsp/styleSheets/slider/themes/classic/galleria.classic.css"/>" type="text/css" rel="stylesheet">
+<script src="<c:url value="/gallery/jsp/javaScript/slider/galleria-1.2.9.min.js"/>" type="text/javascript"></script>
+<script src="<c:url value="/gallery/jsp/styleSheets/slider/themes/classic/galleria.classic.min.js"/>" type="text/javascript"></script>
+<script src="<c:url value="/gallery/jsp/javaScript/silverpeas-gallery-slider.js"/>" type="text/javascript"></script>
 <script type="text/JavaScript">
   function startSlideshow(fromPhotoId) {
-    $.popup.showWaiting();
     nbPauses = -1;
-    var $slider = $('#gallerySlider');
-    if ($slider.size() == 0) {
-      $slider = $("<div>").attr("id", "gallerySlider");
-      $(document.body).append($slider);
-    }
-    $slider.gallerySlider('album', {
+    displayAlbumGallerySlider({
       componentInstanceId : '<c:out value="${componentInstanceId}" />',
       albumId : '<c:out value="${albumId}" />',
       fromPhotoId : fromPhotoId,

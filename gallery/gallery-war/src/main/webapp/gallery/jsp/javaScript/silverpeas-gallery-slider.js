@@ -179,60 +179,49 @@
     var data = __toGalleriaData(options, album, sliderOptions);
     $.extend(sliderOptions, {dataSource : data, show : sliderOptions.startSlide});
 
-    var firstDisplay = (!$this.data('galleria'));
-    if (firstDisplay) {
-      // The first start of the slider
-      var $playPauseButton = __buildButton($base, $this, 'playPause');
-      var $stopButton = __buildButton($base, $this, 'stop');
-      $base.append($playPauseButton);
-      $base.append($stopButton);
+    // The first start of the slider
+    var $playPauseButton = __buildButton($base, $this, 'playPause');
+    var $stopButton = __buildButton($base, $this, 'stop');
+    $base.append($playPauseButton);
+    $base.append($stopButton);
 
-      // Start Slider
-      Galleria.run($this, sliderOptions);
-      Galleria.ready(function() {
-        var $slider = this;
-        if (firstDisplay) {
-          firstDisplay = false;
-          __configureSlider($base, $slider, options);
-
-          // Popup
-          var settings = {
-            title : $.i18n.prop('gallery.diaporama'),
-            width : options.width,
-            height : options.height,
-            callbackOnClose : function() {
-              __onDialogClose($slider);
-            }
-          };
-
-          // Buttons
-          $base.popup('basic', settings);
-          __configureButtonPosition('playPause', $base, $playPauseButton, options);
-          __configureButtonPosition('stop', $base, $stopButton, options);
-          $.popup.hideWaiting();
-        }
-      });
-    } else {
-      var $slider = $this.data('galleria');
-      $.popup.hideWaiting();
-      $base.dialog("open");
-      $slider.load(data);
+    // Start Slider
+    Galleria.run($this, sliderOptions);
+    Galleria.ready(function() {
+      var $slider = this;
       __configureSlider($base, $slider, options);
-      $slider.show(sliderOptions.startSlide);
-    }
+
+      // Popup
+      var settings = {
+        title : $.i18n.prop('gallery.diaporama'),
+        width : options.width,
+        height : options.height,
+        callbackOnClose : function() {
+          __onDialogClose($(this), $slider);
+        }
+      };
+
+      // Buttons
+      $base.popup('basic', settings);
+      __configureButtonPosition('playPause', $base, $playPauseButton, options);
+      __configureButtonPosition('stop', $base, $stopButton, options);
+      $.popup.hideWaiting();
+    });
   }
 
   /**
    * Private function that centralizes treatments on the diaog close event.
    * @private
    */
-  function __onDialogClose($slider) {
-    $slider.unbind("play");
-    $slider.unbind("pause");
-    $slider.unbind("fullscreen_enter");
-    $slider.unbind("fullscreen_exit");
-    $slider.detachKeyboard();
-    $slider.pause();
+  function __onDialogClose($dialog, $slider) {
+    // Removing the DOM elements
+    $slider.destroy();
+    $slider.remove();
+    // Cleaning caches of galleria.io plug-in
+    __clearCaches();
+    // Removing the dialog elements
+    $dialog.dialog("destroy");
+    $dialog.remove();
   }
 
   /**
@@ -293,44 +282,27 @@
    * @private
    */
   function __buildDialogContainer($sliderContainer) {
-    var $base = $("#slideshow");
-    var $fullscreenSwitcher = $("#slideshow_fullscreenSwitcher");
-    if ($base.size() == 0) {
-      $base = $("<div>").attr('id', 'slideshow').css('display', 'block').css('border',
-              '0px').css('padding', '0px').css('margin', '0px auto').css('text-align',
-              'center').css('background-color', 'white');
-      $fullscreenSwitcher = $("<div>").attr('id', 'slideshow_fullscreenSwitcher').css('display',
-              'block').css('border', '0px').css('padding', '0px').css('margin',
-              '0px auto').css('text-align', 'center').css('background-color', 'white');
-      $(document.body).append($base);
-      $fullscreenSwitcher.append($sliderContainer);
-      $base.append($fullscreenSwitcher);
+    // Creating
+    var $base = $("<div>").css('display', 'block').css('border', '0px').css('padding',
+            '0px').css('margin', '0px auto').css('text-align', 'center').css('background-color',
+            'white');
+    $(document.body).append($base.append($sliderContainer));
 
-      // Fullscreen handling
-      $base.on('_toFullScreen', function(e, $slider) {
-        $base.dialog("option", "closeOnEscape", false);
-        // Hack for IE and fullscreen ...
-        if ($.browser.msie) {
-          $(document.body).append($sliderContainer);
-        }
-        // Entering fullscreen if not yet done
-        if (!$slider.isFullscreen()) {
-          $slider.enterFullscreen();
-        }
-      });
-      $base.on('_fromFullScreen', function(e, $slider) {
-        // Exiting fullscreen if not yet done
-        if ($slider.isFullscreen()) {
-          $slider.exitFullscreen();
-        }
-        // Hack for IE and fullscreen ...
-        if ($.browser.msie) {
-          $fullscreenSwitcher.append($sliderContainer);
-          $base.dialog('open');
-        }
-        $base.dialog("option", "closeOnEscape", true);
-      });
-    }
+    // Fullscreen handling
+    $base.on('_toFullScreen', function(e, $slider) {
+      $base.dialog("option", "closeOnEscape", false);
+      // Entering fullscreen if not yet done
+      if (!$slider.isFullscreen()) {
+        $slider.enterFullscreen();
+      }
+    });
+    $base.on('_fromFullScreen', function(e, $slider) {
+      // Exiting fullscreen if not yet done
+      if ($slider.isFullscreen()) {
+        $slider.exitFullscreen();
+      }
+      $base.dialog("option", "closeOnEscape", true);
+    });
     return $base;
   }
 
@@ -473,4 +445,39 @@
       $buttonContainer.show();
     }
   }
+
+  /**
+   * Clears the caches of galleria.io plug-in.
+   * @private
+   */
+  function __clearCaches() {
+
+    /*
+     * Current version of galleria.io plugin has problems with its destroy feature and the
+     * technic here is to reload plugin to perform a destroy
+     */
+
+    $.ajax({
+      url : webContext + "/gallery/jsp/javaScript/slider/galleria-1.2.9.min.js",
+      async : false,
+      dataType : "script"
+    });
+    $.ajax({
+      url : webContext + "/gallery/jsp/styleSheets/slider/themes/classic/galleria.classic.min.js",
+      async : false,
+      dataType : "script"
+    });
+  }
 })(jQuery);
+
+/*
+ HELPERS
+ */
+
+/*
+ * Display the slider of gallery component
+ */
+function displayAlbumGallerySlider(options) {
+  $.popup.showWaiting();
+  $("<div>").appendTo(document.body).gallerySlider('album', options);
+}

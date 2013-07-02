@@ -30,8 +30,8 @@
 
 var resourceStatusColor = {};
 resourceStatusColor.qtip2Class = [];
-resourceStatusColor.qtip2Class['R'] = 'qtip-plain';
-resourceStatusColor.qtip2Class['A'] = 'qtip-green';
+resourceStatusColor.qtip2Class['R'] = 'qtip-bootstrap';
+resourceStatusColor.qtip2Class['A'] = 'qtip-bootstrap';
 resourceStatusColor.qtip2Class['V'] = 'qtip-bootstrap';
 resourceStatusColor.qtip = [];
 resourceStatusColor.qtip['R'] = 'light';
