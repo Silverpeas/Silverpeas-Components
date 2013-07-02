@@ -41,7 +41,6 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAPrimaryKey;
@@ -276,7 +275,7 @@ public class DefaultClassifiedService implements ClassifiedService {
       Collection<ClassifiedDetail> listClassified = ClassifiedsDAO.getClassifiedsByUser(con,
           instanceId, userId);
       for (ClassifiedDetail classified : listClassified) {
-        //ajouter le nom du createur
+        // add the creator name
         classified.setCreatorName(orga.getUserDetail(classified.getCreatorId())
             .getDisplayedName());
       }
@@ -297,7 +296,7 @@ public class DefaultClassifiedService implements ClassifiedService {
       Collection<ClassifiedDetail> listClassified = ClassifiedsDAO.getClassifiedsWithStatus(con,
           instanceId, ClassifiedDetail.TO_VALIDATE, 0, -1);
       for (ClassifiedDetail classified : listClassified) {
-        //ajouter le nom du createur
+        //add the creator name
         classified.setCreatorName(orga.getUserDetail(classified.getCreatorId())
             .getDisplayedName());
       }
@@ -374,6 +373,7 @@ public class DefaultClassifiedService implements ClassifiedService {
     }
   }
 
+  @Override
   public void sendSubscriptionsNotification(final String field1, final String field2,
       final ClassifiedDetail classified) {
     try {
@@ -400,7 +400,6 @@ public class DefaultClassifiedService implements ClassifiedService {
           "DefaultClassifiedService.getAllClassifiedsToUnpublish()",
           SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_GET_CLASSIFIEDS", e);
     } finally {
-      // fermer la connexion
       closeConnection(con);
     }
   }
@@ -411,23 +410,19 @@ public class DefaultClassifiedService implements ClassifiedService {
     try {
       List<MatchingIndexEntry> result = SearchEngineFactory.getSearchEngine().search(query).
           getEntries();
-      // création des petites annonces à partir des resultats
+      //classified creation from the results
       for (MatchingIndexEntry matchIndex : result) {
         if ("Classified".equals(matchIndex.getObjectType())) {
-          ClassifiedDetail classified = new ClassifiedDetail(Integer.valueOf(matchIndex.
-              getObjectId()));
-          classified.setInstanceId(matchIndex.getComponent());
-          classified.setCreationDate(DateUtil.parse(matchIndex.getCreationDate()));
-          classified.setCreatorId(matchIndex.getCreationUser());
-          classified.setUpdateDate(DateUtil.parse(matchIndex.getLastModificationDate()));
-          classified.setTitle(matchIndex.getTitle());
-          classified.setDescription(matchIndex.getPreView());
-          SilverTrace.info("classifieds", "DefaultClassifiedService.search()",
-              "root.MSG_GEN_PARAM_VALUE", "classified = " + classified.getTitle());
-          classifieds.add(classified);
+          //ne retourne que les petites annonces valides
+          ClassifiedDetail classified = this.getContentById(matchIndex.getObjectId());
+          if (classified != null && ClassifiedDetail.VALID.equals(classified.getStatus())) {
+            classifieds.add(classified);
+            SilverTrace.info("classifieds", "DefaultClassifiedService.search()",
+                "root.MSG_GEN_PARAM_VALUE", "classified = " + classified.getTitle());
+          }
         }
       }
-      //TODO pour ordonner les petites annonces de la plus récente vers la plus ancienne
+      // sort the classifieds from the more newer to the older
       Collections.reverse(classifieds);
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException("DefaultClassifiedService.search()",
@@ -438,7 +433,7 @@ public class DefaultClassifiedService implements ClassifiedService {
 
   @Override
   public void indexClassifieds(String instanceId) {
-    // parcourir toutes les petites annonnces
+    // browse all the classifieds
     Collection<ClassifiedDetail> classifieds = getAllClassifieds(instanceId);
     if (classifieds != null) {
       PublicationTemplate template = getTemplate(instanceId);
@@ -466,7 +461,7 @@ public class DefaultClassifiedService implements ClassifiedService {
       indexEntry.setCreationUser(classified.getCreatorId());
       indexEntry.setLastModificationDate(classified.getUpdateDate());
 
-      // indexation du contenu du formulaire XML
+      // indexation of the XML form's content
       String xmlFormShortName = FilenameUtils.getBaseName(template.getFileName());
       try {
         RecordSet set = template.getRecordSet();
@@ -562,7 +557,6 @@ public class DefaultClassifiedService implements ClassifiedService {
       throw new ClassifiedsRuntimeException("DefaultClassifiedService.createSubscribe()",
           SilverpeasRuntimeException.ERROR, "classifieds.MSG_SUBSCRIBE_NOT_CREATE", e);
     } finally {
-      // fermer la connexion
       closeConnection(con);
     }
   }
@@ -576,7 +570,6 @@ public class DefaultClassifiedService implements ClassifiedService {
       throw new ClassifiedsRuntimeException("DefaultClassifiedService.deleteSubscribe()",
           SilverpeasRuntimeException.ERROR, "classifieds.MSG_SUBSCRIBE_NOT_DELETE", e);
     } finally {
-      // fermer la connexion
       closeConnection(con);
     }
   }
@@ -608,7 +601,6 @@ public class DefaultClassifiedService implements ClassifiedService {
       throw new ClassifiedsRuntimeException("DefaultClassifiedService.getSubscribesByUser()",
           SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_GET_SUBSCRIBES", e);
     } finally {
-      // fermer la connexion
       closeConnection(con);
     }
   }
@@ -622,7 +614,6 @@ public class DefaultClassifiedService implements ClassifiedService {
       throw new ClassifiedsRuntimeException("DefaultClassifiedService.getUsersBySubscribe()",
           SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_GET_SUBSCRIBES", e);
     } finally {
-      // fermer la connexion
       closeConnection(con);
     }
   }
@@ -635,7 +626,6 @@ public class DefaultClassifiedService implements ClassifiedService {
       throw new ClassifiedsRuntimeException("DefaultClassifiedService.getAllSubscribes()",
           SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_GET_SUBSCRIBES", e);
     } finally {
-      // fermer la connexion
       closeConnection(con);
     }
   }
@@ -664,16 +654,16 @@ public class DefaultClassifiedService implements ClassifiedService {
       for (ClassifiedDetail classified : listClassified) {
         String classifiedId = Integer.toString(classified.getClassifiedId());
 
-        //Ajout du nom du createur
+        // add the creator name
         classified.setCreatorName(orga.getUserDetail(classified.getCreatorId())
             .getDisplayedName());
 
-        //Ajout des champs de recherche
+        // add the search fields
         String xmlFormName =
             orga.getComponentParameterValue(classified.getInstanceId(), "XMLFormName");
         setClassification(classified, searchField1, searchField2, xmlFormName);
 
-        //Ajout des images
+        // add the images
         try {
           WAPrimaryKey classifiedForeignKey = new SimpleDocumentPK(classifiedId, classified.
               getInstanceId());
@@ -686,7 +676,7 @@ public class DefaultClassifiedService implements ClassifiedService {
         }
       }
 
-      // pour ordonner les petites annonces de la plus récente vers la plus ancienne
+      // sort the classifieds from the newer to the older
       Collections.reverse(listClassified);
 
       return listClassified;
@@ -698,9 +688,10 @@ public class DefaultClassifiedService implements ClassifiedService {
     }
   }
 
+  @Override
   public void setClassification(ClassifiedDetail classified, String searchField1,
       String searchField2, String xmlFormName) {
-    //Ajout des champs de recherche
+    // add of the search fields
     if (StringUtil.isDefined(xmlFormName)) {
       String xmlFormShortName =
           xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
@@ -737,7 +728,6 @@ public class DefaultClassifiedService implements ClassifiedService {
     try {
       con.close();
     } catch (SQLException e) {
-      // traitement des exceptions
       throw new ClassifiedsRuntimeException("DefaultClassifiedService.closeConnection()",
           SilverpeasException.ERROR, "root.EX_CONNECTION_CLOSE_FAILED", e);
     }
@@ -745,11 +735,9 @@ public class DefaultClassifiedService implements ClassifiedService {
 
   private Connection openConnection() {
     Connection con;
-    // initialisation de la connexion
     try {
       con = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
     } catch (UtilException e) {
-      // traitement des exceptions
       throw new ClassifiedsRuntimeException("DefaultClassifiedService.openConnection()",
           SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
     }
