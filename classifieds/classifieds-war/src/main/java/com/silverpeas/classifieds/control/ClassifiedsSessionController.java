@@ -232,13 +232,13 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
   /**
    * take out draft mode the classified corresponding to classified
    * @param classifiedId : String
-   * @param profile : String
+   * @param highestRole : ClassifiedsRole
    * @throws PublicationTemplateException
    * @throws FormException
    */
   public synchronized void draftOutClassified(String classifiedId, ClassifiedsRole highestRole)
           throws PublicationTemplateException, FormException {
-    getClassifiedService().draftOutClassified(classifiedId, highestRole.toString());
+    getClassifiedService().draftOutClassified(classifiedId, highestRole.toString(), isValidationEnabled());
     if (highestRole == ClassifiedsRole.MANAGER) {
       sendSubscriptionsNotification(classifiedId);
     }
@@ -301,7 +301,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
   /**
    * create classified
    * @param classified : classifiedDetail
-   * @param profile : String
+   * @param profile : ClassifiedsRole
    * @return classifiedId : String
    */
   public synchronized String createClassified(ClassifiedDetail classified, Collection<FileItem> listImage, ClassifiedsRole profile) {
@@ -359,10 +359,11 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
           if (classified.getStatus().equals(ClassifiedDetail.VALID)) {
             notify = true;
           }
-          if (!isAdmin && isValidationEnabled() && classified.getStatus().equals(
-                  ClassifiedDetail.VALID)) {
-            classified.setStatus(ClassifiedDetail.TO_VALIDATE);
-          }
+        }
+        
+        if (!isAdmin && isValidationEnabled() && classified.getStatus().equals(
+            ClassifiedDetail.VALID)) {
+          classified.setStatus(ClassifiedDetail.TO_VALIDATE);
         }
 
         // special case : status is UNPUBLISHED, user requested classified republication
