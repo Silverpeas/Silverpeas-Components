@@ -199,6 +199,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title><c:out value="${pageScope.title}" /></title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <view:looknfeel />
     <view:includePlugin name="wysiwyg"/>
     <view:includePlugin name="popup"/>

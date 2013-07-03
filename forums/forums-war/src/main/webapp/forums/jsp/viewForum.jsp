@@ -82,6 +82,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title><c:out value="${currentForum.name}" /></title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <view:looknfeel />
     <script type="text/javascript" src="<c:url value="/forums/jsp/javaScript/forums.js" />" ></script>
     <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js" />" ></script>
