@@ -83,6 +83,7 @@ boolean userCanManageTopics = rightsOnTopics.booleanValue() || "admin".equalsIgn
 <view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/browseBarComplete.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery-migrate-1.2.1.min.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.jstree.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.cookie.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/splitter.js"></script>

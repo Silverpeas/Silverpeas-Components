@@ -107,27 +107,20 @@ $(document).ready(function(){
  */
 function highlightResponsible() {
   // Tooltip over task in order to know the responsible
-  $('.task_wording a[href][title]').qtip({
-    content: {
-       text: false // Use each elements title attribute
-    }
-    ,style: {
-            border: {
-              width: 5,
-              radius: 5
-           },
-           padding: 7, 
-           textAlign: 'center',
-           tip: true, 
-           name: 'green' 
-        }
-    ,position: {
-      adjust: { screen: true }
-      /*corner: {
-         target: 'topMiddle',
-         tooltip: 'bottomMiddle'
-      }*/
-    }
+  $('a[href][title]', $('.task_wording')).qtip({
+	content: {
+		text: false // Use each elements title attribute
+	},
+	style: {
+		tip: true,
+		classes: "qtip-shadow qtip-green"
+	},
+	position: {
+		adjust: {
+			method: "flip flip"
+		},
+		viewport: $(window)
+	}
   });
 }
 
@@ -135,7 +128,7 @@ function getContext() {
   return "<c:out value="${ctxPath}" />";
 }
 // global javascript variable
-var listHolidays = new Array();
+var listHolidays = [];
 
 <c:forEach items="${requestScope['Holidays']}" var="holiday" varStatus="holidayIndex">
 listHolidays[<c:out value="${holidayIndex.index}" />] = '<fmt:formatDate value="${holiday}" pattern="yyyyMMdd"/>';
