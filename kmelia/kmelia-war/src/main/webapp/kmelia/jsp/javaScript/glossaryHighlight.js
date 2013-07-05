@@ -3,12 +3,19 @@
 $(document).ready(function() {
 	$('.highlight-silver').each(function(){
 		   $(this).qtip({
-			   content: { text: false // Use each elements title attribute
-			   },				   
-		       style: 'silverpeas',
-		       position: {
-		    	   adjust: { screen: true }
-			   }
+			content: {
+				text: false // Use each elements title attribute
+			},
+			style: {
+				tip: true,
+				classes: "qtip-shadow qtip-green"
+			},
+			position: {
+				adjust: {
+					method: "flip flip"
+				},
+				viewport: $(window)
+			}
 		   });
 		});
 });

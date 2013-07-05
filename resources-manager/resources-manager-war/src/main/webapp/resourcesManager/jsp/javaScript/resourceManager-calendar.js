@@ -30,8 +30,8 @@
 
 var resourceStatusColor = {};
 resourceStatusColor.qtip2Class = [];
-resourceStatusColor.qtip2Class['R'] = 'qtip-plain';
-resourceStatusColor.qtip2Class['A'] = 'qtip-green';
+resourceStatusColor.qtip2Class['R'] = 'qtip-bootstrap';
+resourceStatusColor.qtip2Class['A'] = 'qtip-bootstrap';
 resourceStatusColor.qtip2Class['V'] = 'qtip-bootstrap';
 resourceStatusColor.qtip = [];
 resourceStatusColor.qtip['R'] = 'light';
@@ -180,7 +180,7 @@ function hideQTip(event) {
  * @param event
  * @param $event
  */
-function calendarEventRender(event, $event) {
+function calendarEventRenderV1(event, $event) {
   event.$event = $event;
   $event.qtip({
     content : {
@@ -228,7 +228,7 @@ function calendarEventRender(event, $event) {
  * @param event
  * @param $event
  */
-function calendarEventRenderV2(event, $event) {
+function calendarEventRender(event, $event) {
   event.$event = $event;
   $event.qtip({
     content : {

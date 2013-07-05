@@ -453,6 +453,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     } catch (ForumsException e) {
       throw new EJBException(e.getMessage(), e);
     }
+    messagePK.setId(String.valueOf(messageId));
 
     // Send notification to subscribers
     if (STATUS_VALIDATE.equals(status)) {
@@ -467,8 +468,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     if (com.silverpeas.util.CollectionUtil.isNotEmpty(uploadedFiles)) {
       for (UploadedFile uploadedFile : uploadedFiles) {
         // Register attachment
-        uploadedFile.registerAttachment(String.valueOf(messageId), getComponentId(),
-            getUserDetail(), I18NHelper.defaultLanguage, false);
+        uploadedFile.registerAttachment(messagePK, I18NHelper.defaultLanguage, false);
       }
     }
 

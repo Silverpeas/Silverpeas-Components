@@ -206,7 +206,8 @@ public class ForumActionHelper {
             String forumKeywords = request.getParameter("forumKeywords");
             String subscribe = request.getParameter("subscribeMessage");
             if (StringUtil.isDefined(messageTitle) && StringUtil.isDefined(messageText)) {
-              Collection<UploadedFile> uploadedFiles = FileUploadManager.getUploadedFiles(request);
+              Collection<UploadedFile> uploadedFiles = FileUploadManager.getUploadedFiles(request,
+                  fsc.getUserDetail());
               int result = fsc.createMessage(messageTitle, userId, forumId, parentId, messageText,
                   forumKeywords, uploadedFiles);
               if (subscribe == null) {

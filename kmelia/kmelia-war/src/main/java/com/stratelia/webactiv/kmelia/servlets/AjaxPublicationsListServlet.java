@@ -81,7 +81,6 @@ import java.util.StringTokenizer;
 import static com.stratelia.webactiv.SilverpeasRole.*;
 import static com.stratelia.webactiv.util.publication.model.PublicationDetail.*;
 
-
 /**
  * @author ehugonnet
  */
@@ -137,8 +136,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         kmeliaSC.setSessionTopicToLink(currentTopicToLink);
       }
 
-      ResourcesWrapper resources =
-          new ResourcesWrapper(kmeliaSC.getMultilang(), kmeliaSC.getIcon(),
+      ResourcesWrapper resources = new ResourcesWrapper(kmeliaSC.getMultilang(), kmeliaSC.getIcon(),
           kmeliaSC.getSettings(), kmeliaSC.getLanguage());
 
       String index = req.getParameter("Index");
@@ -149,8 +147,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
       String selectedPublicationIds = req.getParameter("SelectedPubIds");
       String notSelectedPublicationIds = req.getParameter("NotSelectedPubIds");
-      List<String> selectedIds =
-          kmeliaSC.processSelectedPublicationIds(selectedPublicationIds, notSelectedPublicationIds);
+      List<String> selectedIds = kmeliaSC.processSelectedPublicationIds(selectedPublicationIds,
+          notSelectedPublicationIds);
       boolean toPortlet = StringUtil.getBooleanValue(sToPortlet);
       boolean searchInProgress = StringUtil.isDefined(query);
 
@@ -224,9 +222,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         writer.write("</tr>");
         writer.write("</table>");
         writer.write(board.printAfter());
-      } else if (NodePK.ROOT_NODE_ID.equals(kmeliaSC.getCurrentFolderId()) &&
-          kmeliaSC.getNbPublicationsOnRoot() != 0 && kmeliaSC.isTreeStructure() &&
-          !searchInProgress) {
+      } else if (NodePK.ROOT_NODE_ID.equals(kmeliaSC.getCurrentFolderId()) && kmeliaSC
+          .getNbPublicationsOnRoot() != 0 && kmeliaSC.isTreeStructure() && !searchInProgress) {
         displayLastPublications(kmeliaSC, resources, gef, writer);
       } else {
         if (publications != null) {
@@ -240,6 +237,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
   /**
    * Save current topic search inside persistence layer
+   *
    * @param componentId the component identifier
    * @param nodeId the node identifier
    * @param kmeliaSC the KmeliaSessionController
@@ -248,12 +246,12 @@ public class AjaxPublicationsListServlet extends HttpServlet {
   private void saveTopicSearch(String componentId, String nodeId, KmeliaSessionController kmeliaSC,
       String query) {
     //Check node value
-    if(!StringUtil.isDefined(nodeId)) {
+    if (!StringUtil.isDefined(nodeId)) {
       nodeId = kmeliaSC.getCurrentFolderId();
     }
-    TopicSearch newTS =
-        new TopicSearch(componentId, Integer.parseInt(nodeId), Integer.parseInt(kmeliaSC
-            .getUserId()), kmeliaSC.getLanguage(), query.toLowerCase(), new Date());
+    TopicSearch newTS = new TopicSearch(componentId, Integer.parseInt(nodeId), Integer.parseInt(
+        kmeliaSC
+        .getUserId()), kmeliaSC.getLanguage(), query.toLowerCase(), new Date());
     KmeliaSearchServiceFactory.getTopicSearchService().createTopicSearch(newTS);
   }
 
@@ -300,8 +298,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     fragmentSettings.showImportance = kmeliaScc.isFieldImportanceVisible();
     fragmentSettings.fileStorageShowExtraInfoPub = resources.getSetting(
         "fileStorageShowExtraInfoPub", false);
-    fragmentSettings.showTopicPathNameinSearchResult =
-        resources.getSetting("showTopicPathNameinSearchResult", true);
+    fragmentSettings.showTopicPathNameinSearchResult = resources.getSetting(
+        "showTopicPathNameinSearchResult", true);
     fragmentSettings.showDelegatedNewsInfo = kmeliaScc.isNewsManage() && !user.isInRole(profile);
     fragmentSettings.toSearch = toSearch;
 
@@ -453,8 +451,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         out.write(pagination.printIndex("doPagination"));
         out.write("</div>");
       }
-      displayFilePreviewJavascript(kmeliaScc.getComponentId(), kmeliaScc.isVersionControlled(), out);
-      displayFileViewJavascript(kmeliaScc.getComponentId(), kmeliaScc.isVersionControlled(), out);
+      displayFilePreviewJavascript(kmeliaScc.getComponentId(), out);
+      displayFileViewJavascript(kmeliaScc.getComponentId(), out);
       out.write(board.printAfter());
     } else if (showNoPublisMessage
         && (toSearch || kmeliaScc.getNbPublicationsOnRoot() != 0 || !currentTopicId.equals("0"))) {
@@ -481,15 +479,14 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     out.write("</form>");
   }
 
-  void displayFilePreviewJavascript(String componentId, boolean versioned, Writer out)
+  void displayFilePreviewJavascript(String componentId, Writer out)
       throws IOException {
     StringBuilder sb = new StringBuilder(50);
     sb.append("<script type=\"text/javascript\">");
     sb.append("function previewFile(target, attachmentId) {");
     sb.append("$(target).preview(\"previewAttachment\", {");
     sb.append("componentInstanceId: \"").append(componentId).append("\",");
-    sb.append("attachmentId: attachmentId,");
-    sb.append("versioned: ").append(versioned);
+    sb.append("attachmentId: attachmentId");
     sb.append("});");
     sb.append("return false;");
     sb.append("}");
@@ -497,15 +494,14 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     out.write(sb.toString());
   }
 
-  void displayFileViewJavascript(String componentId, boolean versioned, Writer out)
+  void displayFileViewJavascript(String componentId, Writer out)
       throws IOException {
     StringBuilder sb = new StringBuilder(50);
     sb.append("<script type=\"text/javascript\">");
     sb.append("function viewFile(target, attachmentId) {");
     sb.append("$(target).view(\"viewAttachment\", {");
     sb.append("componentInstanceId: \"").append(componentId).append("\",");
-    sb.append("attachmentId: attachmentId,");
-    sb.append("versioned: ").append(versioned);
+    sb.append("attachmentId: attachmentId");
     sb.append("});");
     sb.append("return false;");
     sb.append("}");
@@ -595,8 +591,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       template.setAttribute("form", pub.getFormValues(language));
     }
 
-    String fragment =
-        template.applyFileTemplateOnComponent("kmelia",
+    String fragment = template.applyFileTemplateOnComponent("kmelia",
         kmeliaScc.getCustomPublicationTemplateName());
     out.write(fragment);
   }
@@ -742,22 +737,18 @@ public class AjaxPublicationsListServlet extends HttpServlet {
   }
 
   String displayFiles(PublicationDetail pub, boolean linkAttachment, boolean seeAlso, String userId,
-      String topicId,
-      KmeliaSessionController kmeliaScc, ResourcesWrapper resources) throws IOException {
-    StringBuilder sb = new StringBuilder(20);
-    boolean displayFiles =
-        (KmeliaHelper.isToolbox(kmeliaScc.getComponentId()) || kmeliaScc.attachmentsInPubList())
-        && !seeAlso || linkAttachment;
+      String topicId, KmeliaSessionController kmeliaScc, ResourcesWrapper resources) throws
+      IOException {
+    StringBuilder sb = new StringBuilder(1024);
+    boolean displayFiles = (KmeliaHelper.isToolbox(kmeliaScc.getComponentId()) || kmeliaScc
+        .attachmentsInPubList()) && !seeAlso || linkAttachment;
     if (displayFiles) {
       sb.append("<span class=\"files\">");
       // Can be a shortcut. Must check attachment mode according to publication source.
       boolean alias = isAlias(kmeliaScc, pub);
-      if (kmeliaScc.isVersionControlled(pub.getPK().getInstanceId())) {
-        sb.append(displayVersioning(pub, resources, linkAttachment, alias));
-      } else {
-        sb.append(displayAttachments(pub, userId, topicId, resources, linkAttachment, alias,
-            kmeliaScc.getCurrentLanguage()));
-      }
+      sb.append(displayAttachments(pub, resources, linkAttachment, alias, kmeliaScc
+          .getCurrentLanguage()));
+
       sb.append("</span>");
     }
     return sb.toString();
@@ -776,8 +767,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       vignette_url = pub.getImage() + "&Size=133x100";
       out.write("<img src=\"" + vignette_url + "\" alt=\"\"/>&#160;");
     } else {
-      vignette_url =
-          FileServerUtils.getUrl(pub.getPK().
+      vignette_url = FileServerUtils.getUrl(pub.getPK().
           getComponentName(),
           "vignette", pub.getImage(), pub.getImageMimeType(),
           publicationSettings.getString("imagesSubDirectory"));
@@ -935,90 +925,49 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     return publicationsToLink;
   }
 
-  private String displayVersioning(PublicationDetail pubDetail, ResourcesWrapper resources,
-      boolean linkAttachment, boolean alias) {
+  private String displayAttachments(PublicationDetail pubDetail, ResourcesWrapper resources,
+      boolean linkAttachment, boolean alias, String language) {
     ForeignPK foreignPK = new ForeignPK(pubDetail.getPK());
     List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
-        listDocumentsByForeignKey(foreignPK, null);
-    StringBuilder result = new StringBuilder();
-    boolean oneFile = false;
+        listDocumentsByForeignKey(foreignPK, language);
+    StringBuilder result = new StringBuilder(documents.size() * 256);
+    boolean hasDisplayableAttachments = false;
     for (SimpleDocument document : documents) {
-      SimpleDocument version = document.getLastPublicVersion();
-      if (version != null) {
-        if (result.length() == 0) {
+      SimpleDocument attachment = document.getLastPublicVersion();
+      if (attachment != null) {
+        if (!hasDisplayableAttachments) {
           result.append("<table border=\"0\">");
-          oneFile = true;
+          hasDisplayableAttachments = true;
         }
-        String id = version.getPk().getId();
-        String logicalName = version.getFilename();
-        String title =  version.getTitle();
-        if (!StringUtil.isDefined(version.getTitle())) {
-          title =  logicalName;
+        String logicalName = attachment.getFilename();
+        String title = attachment.getTitle();
+        if (!StringUtil.isDefined(attachment.getTitle())) {
+          title = logicalName;
           logicalName = null; // do not display filename twice
         }
-        title += " v" + version.getMajorVersion();
-        String info = version.getDescription();
-        String icon = FileRepositoryManager.getFileIcon(FilenameUtils.getExtension(document.
+        if (attachment.isVersioned()) {
+          title += " v" + attachment.getMajorVersion();
+        }
+        String icon = FileRepositoryManager.getFileIcon(FilenameUtils.getExtension(attachment.
             getFilename()));
-        String size = FileRepositoryManager.formatFileSize(version.getSize());
-        String downloadTime = FileRepositoryManager.getFileDownloadTime(version.getSize());
-        Date creationDate = version.getCreated();
+        String size = FileRepositoryManager.formatFileSize(attachment.getSize());
+        String downloadTime = FileRepositoryManager.getFileDownloadTime(attachment.getSize());
         String permalink = URLManager.getSimpleURL(URLManager.URL_DOCUMENT, document.getId());
-        String url = FileServerUtils.getApplicationContext() + version.getAttachmentURL();
+        String url = FileServerUtils.getApplicationContext() + attachment.getAttachmentURL();
 
         if (alias) {
-          url = version.getAliasURL();
+          url = attachment.getAliasURL();
         }
-        boolean previewable = ViewerFactory.isPreviewable(version.getAttachmentPath());
-        boolean viewable = ViewerFactory.isViewable(version.getAttachmentPath());
-        result.append(displayFile(url, title, info, icon, logicalName, size, downloadTime,
-            creationDate, permalink, resources, linkAttachment, previewable, viewable, id));
+        boolean previewable = ViewerFactory.isPreviewable(attachment.getAttachmentPath());
+        boolean viewable = ViewerFactory.isViewable(attachment.getAttachmentPath());
+        result.append(displayFile(url, title, attachment.getDescription(), icon, logicalName, size,
+            downloadTime, attachment.getCreated(), permalink, resources, linkAttachment,
+            previewable, viewable, attachment.getPk().getId()));
       }
     }
-    if (oneFile) {
+    if (hasDisplayableAttachments) {
       result.append("</table>");
     }
-    return result.toString();
-  }
-
-  private String displayAttachments(PublicationDetail pubDetail, String userId, String nodeId,
-      ResourcesWrapper resources, boolean linkAttachment, boolean alias, String language) {
-    SilverTrace.info("kmelia", "AjaxPublicationsListServlet.displayAttachments()",
-        "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubDetail.getPK().getId());
-    StringBuilder result = new StringBuilder();
-
-    ForeignPK foreignKey = new ForeignPK(pubDetail.getPK().getId(), pubDetail.getPK().
-        getInstanceId());
-
-
-    List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
-        listDocumentsByForeignKey(foreignKey, null);
-    if (!documents.isEmpty()) {
-      result.append("<table border=\"0\">");
-      for (SimpleDocument document : documents) {
-        String url = FileServerUtils.getApplicationContext() + document.getAttachmentURL();
-        String title = document.getTitle();
-        String info = document.getDescription();
-        String icon = FileRepositoryManager.getFileIcon(FilenameUtils.getExtension(document.
-            getFilename()));
-        String logicalName = document.getFilename();
-        String id = document.getId();
-        String size = FileRepositoryManager.formatFileSize(document.getSize());
-        String downloadTime = FileRepositoryManager.getFileDownloadTime(document.getSize());
-        Date creationDate = document.getCreated();
-        String permalink = URLManager.getSimpleURL(URLManager.URL_FILE, id);
-        if (alias) {
-          url = FileServerUtils.getAliasURL(foreignKey.getInstanceId(), document.getFilename(), id);
-        }
-        boolean previewable = ViewerFactory.isPreviewable(document.getAttachmentPath());
-        boolean viewable = ViewerFactory.isViewable(document.getAttachmentPath());
-        result.append(displayFile(url, title, info, icon, logicalName, size, downloadTime,
-            creationDate, permalink, resources, linkAttachment, previewable, viewable, id));
-      }
-      result.append("</table>");
-    }
-    SilverTrace.info("kmelia", "JSPattachmentUtils.displayAttachments()",
-        "root.MSG_GEN_EXIT_METHOD", "result = " + result.toString());
     return result.toString();
   }
 
@@ -1073,8 +1022,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       result.append("<br/>");
 
       result.append("<i>");
-      if (StringUtil.isDefined(title) && StringUtil.isDefined(logicalName) &&
-          resources.getSetting("showTitle", true)) {
+      if (StringUtil.isDefined(title) && StringUtil.isDefined(logicalName) && resources.getSetting(
+          "showTitle", true)) {
         result.append(logicalName).append(" / ");
       }
       // Add file size
@@ -1273,8 +1222,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     OrganisationController orga = kmelia.getOrganisationController();
     ComponentInstLight compoInstLight = orga.getComponentInstLight(pub.getInstanceId());
     String componentLabel = compoInstLight.getLabel(kmelia.getCurrentLanguage());
-    String spaceLabel =
-        orga.getSpaceInstLightById(compoInstLight.getDomainFatherId()).getName(
+    String spaceLabel = orga.getSpaceInstLightById(compoInstLight.getDomainFatherId()).getName(
         kmelia.getCurrentLanguage());
     List<NodePK> nodesPK = (List<NodePK>) pub.getPublicationBm().getAllFatherPK(pub.getPK());
     if (nodesPK != null) {
