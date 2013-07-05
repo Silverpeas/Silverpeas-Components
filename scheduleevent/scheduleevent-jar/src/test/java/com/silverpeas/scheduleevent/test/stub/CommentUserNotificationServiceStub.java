@@ -26,7 +26,7 @@ package com.silverpeas.scheduleevent.test.stub;
 import com.silverpeas.SilverpeasComponentService;
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.comment.model.Comment;
-import com.silverpeas.comment.service.notification.CommentUserNotificationService;
+import com.silverpeas.comment.service.CommentUserNotificationService;
 import javax.inject.Named;
 
 /**

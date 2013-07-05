@@ -20,44 +20,6 @@
  */
 package com.stratelia.webactiv.kmelia.control.ejb;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response.Status;
-
-import org.silverpeas.attachment.AttachmentException;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.HistorisedDocument;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.component.kmelia.InstanceParameters;
-import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.search.indexEngine.model.IndexManager;
-import org.silverpeas.wysiwyg.WysiwygException;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
 import com.silverpeas.form.DataRecord;
@@ -99,7 +61,6 @@ import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
-
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
@@ -143,14 +104,52 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.ValidationStep;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
-
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response.Status;
 import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.attachment.AttachmentException;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.HistorisedDocument;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.component.kmelia.InstanceParameters;
+import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.wysiwyg.WysiwygException;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 
-import static com.silverpeas.util.StringUtil.*;
-import static com.stratelia.webactiv.util.JNDINames.SILVERPEAS_DATASOURCE;
-import static com.stratelia.webactiv.util.exception.SilverpeasRuntimeException.ERROR;
 import static org.silverpeas.attachment.AttachmentService.VERSION_MODE;
 import static org.silverpeas.core.admin.OrganisationControllerFactory.getOrganisationController;
+
+import static com.silverpeas.util.StringUtil.*;
+
+import static com.stratelia.webactiv.util.JNDINames.SILVERPEAS_DATASOURCE;
+import static com.stratelia.webactiv.util.exception.SilverpeasRuntimeException.ERROR;
 
 /**
  * This is the KMelia EJB-tier controller of the MVC. It is implemented as a session EJB. It
@@ -163,6 +162,9 @@ import static org.silverpeas.core.admin.OrganisationControllerFactory.getOrganis
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class KmeliaBmEJB implements KmeliaBm {
 
+  private static final String MESSAGES_PATH = "org.silverpeas.kmelia.multilang.kmeliaBundle";
+  private static final String SETTINGS_PATH = "org.silverpeas.kmelia.settings.kmeliaSettings";
+  private static final ResourceLocator settings = new ResourceLocator(SETTINGS_PATH, "");
   @EJB
   private NodeBm nodeBm;
   @EJB
@@ -191,13 +193,9 @@ public class KmeliaBmEJB implements KmeliaBm {
         return 0;
       }
       // lecture du properties
-      ResourceLocator settings = getSettings();
-      return Integer.parseInt(settings.getString("HomeNbPublications"));
+      ResourceLocator theSettings = getComponentSettings();
+      return Integer.parseInt(theSettings.getString("HomeNbPublications"));
     }
-  }
-
-  private ResourceLocator getSettings() {
-    return new ResourceLocator("org.silverpeas.kmelia.settings.kmeliaSettings", "fr");
   }
 
   private boolean isDraftModeUsed(String componentId) {
@@ -541,13 +539,13 @@ public class KmeliaBmEJB implements KmeliaBm {
       SilverTrace.info("kmelia", "KmeliaBmEJB.deleteTopic()", "root.MSG_GEN_PARAM_VALUE",
           "nodesToDelete = " + nodesToDelete);
 
-      Iterator<PublicationPK> itPub = null;
-      Collection<PublicationPK> pubsToCheck = null; // contains all PubPKs concerned by
+      Iterator<PublicationPK> itPub;
+      Collection<PublicationPK> pubsToCheck; // contains all PubPKs concerned by
       // the delete
-      NodePK oneNodeToDelete = null; // current node to delete
-      Collection<NodePK> pubFathers = null; // contains all fatherPKs to a given
+      NodePK oneNodeToDelete; // current node to delete
+      Collection<NodePK> pubFathers; // contains all fatherPKs to a given
       // publication
-      PublicationPK onePubToCheck = null; // current pub to check
+      PublicationPK onePubToCheck; // current pub to check
       Iterator<NodePK> itNode = nodesToDelete.iterator();
       List<Alias> aliases = new ArrayList<Alias>();
       while (itNode.hasNext()) {
@@ -609,7 +607,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     }
 
     if (subTopics != null && !subTopics.isEmpty()) {
-      int indexOfTopic = 0;
+      int indexOfTopic;
 
       if (fatherPK.isRoot() && !KmeliaHelper.isToolbox(subTopicPK.getInstanceId())) {
         // search the place of the basket
@@ -777,7 +775,7 @@ public class KmeliaBmEJB implements KmeliaBm {
           } else { // check if at least one descendant is available
             Iterator<NodeDetail> descendants = nodeBm.getDescendantDetails(node2Check).
                 iterator();
-            NodeDetail descendant = null;
+            NodeDetail descendant;
             boolean node2CheckAllowed = false;
             while (!node2CheckAllowed && descendants.hasNext()) {
               descendant = descendants.next();
@@ -846,8 +844,8 @@ public class KmeliaBmEJB implements KmeliaBm {
             checkVisibility = true;
           }
           statusSubQuery.append(
-              "sb_publication_publi.pubStatus IN ('Valid','ToValidate') OR (sb_publication_publi.pubStatus = 'Draft' AND sb_publication_publi.pubUpdaterId = '")
-              .append(userId).append("') ");
+              "sb_publication_publi.pubStatus IN ('Valid','ToValidate') OR (sb_publication_publi.pubStatus = 'Draft' AND sb_publication_publi.pubUpdaterId = '").
+              append(userId).append("') ");
         }
         statusSubQuery.append("OR sb_publication_publi.pubUpdaterId = '").append(userId).append(
             "')");
@@ -1031,8 +1029,8 @@ public class KmeliaBmEJB implements KmeliaBm {
     SilverTrace
         .info("kmelia", "KmeliaBmEJB.removeSubscriptionsByTopic()", "root.MSG_GEN_ENTER_METHOD");
     try {
-      Collection<SubscriptionResource> subscriptionResourcesToDelete
-          = new ArrayList<SubscriptionResource>();
+      Collection<SubscriptionResource> subscriptionResourcesToDelete =
+          new ArrayList<SubscriptionResource>();
       for (NodePK topicPK : topicPKsToDelete) {
         subscriptionResourcesToDelete.add(NodeSubscriptionResource.from(topicPK));
       }
@@ -1222,7 +1220,7 @@ public class KmeliaBmEJB implements KmeliaBm {
   }
 
   private String getProfile(String userId, NodePK nodePK) {
-    String profile = null;
+    String profile;
     OrganisationController orgCtrl = getOrganisationController();
     if (StringUtil.getBooleanValue(
         orgCtrl.getComponentParameterValue(nodePK.getInstanceId(), "rightsOnTopics"))) {
@@ -2349,8 +2347,8 @@ public class KmeliaBmEJB implements KmeliaBm {
       } else {
         // get admin and publishers of all nodes where publication is
         List<NodePK> nodePKs = (List<NodePK>) getPublicationFathers(pubPK);
-        NodePK nodePK = null;
-        NodeDetail node = null;
+        NodePK nodePK;
+        NodeDetail node;
         boolean oneNodeIsPublic = false;
         for (int n = 0; !oneNodeIsPublic && nodePKs != null && n < nodePKs.size(); n++) {
           nodePK = nodePKs.get(n);
@@ -2643,8 +2641,7 @@ public class KmeliaBmEJB implements KmeliaBm {
           WysiwygController.deleteWysiwygAttachmentsOnly("useless", pubPK.getInstanceId(), pubPK
               .getId());
         } catch (WysiwygException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
+          Logger.getLogger(getClass().getSimpleName()).log(Level.SEVERE, e.getMessage(), e);
         }
         // wysiwyg contents of work version become public version ones
         WysiwygController.copy(tempPK.getInstanceId(), cloneId, pubPK.getInstanceId(),
@@ -2999,7 +2996,7 @@ public class KmeliaBmEJB implements KmeliaBm {
       for (PublicationDetail pub : pubs) {
         try {
           pubPK = pub.getPK();
-          List<NodePK> pubFathers = null;
+          List<NodePK> pubFathers;
           // index only valid publications
           if (pub.getStatus() != null && pub.isValid()) {
             pubFathers = (List<NodePK>) publicationBm.getAllFatherPK(pubPK);
@@ -3150,7 +3147,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     SilverTrace.info("kmelia", "KmeliaBmEJB.getSilverObjectId()",
         "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubPK.getId());
     int silverObjectId = -1;
-    PublicationDetail pubDetail = null;
+    PublicationDetail pubDetail;
     try {
       silverObjectId = getKmeliaContentManager().getSilverObjectId(
           pubPK.getId(), pubPK.getInstanceId());
@@ -3481,14 +3478,14 @@ public class KmeliaBmEJB implements KmeliaBm {
 
     CoordinatePK coordinatePK = new CoordinatePK("useless", pkToDelete);
     List<String> fatherIds = new ArrayList<String>();
-    Collection<String> coordinateIds = null;
+    Collection<String> coordinateIds;
     // Delete the axis
     try {
       // delete publicationFathers
       if (getAxisHeaders(componentId).size() == 1) {
         coordinateIds = coordinatesBm.getCoordinateIdsByNodeId(coordinatePK, axisId);
         Iterator<String> coordinateIdsIt = coordinateIds.iterator();
-        String coordinateId = "";
+        String coordinateId;
         while (coordinateIdsIt.hasNext()) {
           coordinateId = coordinateIdsIt.next();
           fatherIds.add(coordinateId);
@@ -3517,7 +3514,7 @@ public class KmeliaBmEJB implements KmeliaBm {
   private void removeCoordinatesByPoints(List<NodePK> nodePKs, String componentId) {
     Iterator<NodePK> it = nodePKs.iterator();
     List<String> coordinatePoints = new ArrayList<String>();
-    String nodeId = "";
+    String nodeId;
     while (it.hasNext()) {
       nodeId = (it.next()).getId();
       coordinatePoints.add(nodeId);
@@ -3557,7 +3554,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     position.getNodePK().setComponentName(componentId);
     position.setCreationDate(DateUtil.today2SQLDate());
     position.setCreatorId(userId);
-    NodeDetail fatherDetail = null;
+    NodeDetail fatherDetail;
     NodePK componentPK = null;
 
     fatherDetail = getNodeHeader(fatherId, componentId);
@@ -3661,8 +3658,8 @@ public class KmeliaBmEJB implements KmeliaBm {
     Collection<String> coordinates = null;
     try {
       // Remove node "Toutes catégories" (level == 2) from combination
-      int nodeLevel = 0;
-      String axisValue = "";
+      int nodeLevel;
+      String axisValue;
       for (int i = 0; i < combination.size(); i++) {
         axisValue = combination.get(i);
         StringTokenizer st = new StringTokenizer(axisValue, "/");
@@ -3721,8 +3718,8 @@ public class KmeliaBmEJB implements KmeliaBm {
       rightNow.add(Calendar.DATE, 0 - nbDays);
       Date day = rightNow.getTime();
       Iterator<PublicationDetail> it = publications.iterator();
-      PublicationDetail pub = null;
-      Date dateToCompare = null;
+      PublicationDetail pub;
+      Date dateToCompare;
       while (it.hasNext()) {
         pub = it.next();
         if (pub.getBeginDate() != null) {
@@ -3768,7 +3765,7 @@ public class KmeliaBmEJB implements KmeliaBm {
   public KmeliaPublication getKmaxPublication(String pubId, String currentUserId) {
     SilverTrace.info("kmax", "KmeliaBmEjb.getKmaxCompletePublication()",
         "root.MSG_GEN_ENTER_METHOD");
-    PublicationPK pubPK = null;
+    PublicationPK pubPK;
     CompletePublication completePublication = null;
 
     try {
@@ -3813,7 +3810,7 @@ public class KmeliaBmEJB implements KmeliaBm {
         return;
       }
 
-      NodeDetail nodeDetail = null;
+      NodeDetail nodeDetail;
       // enrich combination by get ancestors
       Iterator<String> it = combination.iterator();
       List<CoordinatePoint> allnodes = new ArrayList<CoordinatePoint>();
@@ -4376,6 +4373,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     return children;
   }
 
+  @Override
   public Collection<NodeDetail> getFolderChildren(NodePK nodePK, String userId) {
     NodeDetail node = nodeBm.getDetail(nodePK);
     if (node.getNodePK().isRoot()) {
@@ -4474,7 +4472,7 @@ public class KmeliaBmEJB implements KmeliaBm {
   }
 
   private boolean isDraftVisibleWithCoWriting() {
-    return getSettings().getBoolean("draftVisibleWithCoWriting", false);
+    return getComponentSettings().getBoolean("draftVisibleWithCoWriting", false);
   }
 
   @Override
@@ -4559,6 +4557,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     return isPublisherOrAdmin;
   }
 
+  @Override
   public boolean isUserCanWrite(String componentId, String userId) {
     String profile = KmeliaHelper.getProfile(getUserRoles(componentId, userId));
     boolean userCanWrite = SilverpeasRole.admin.isInRole(profile) || SilverpeasRole.publisher
@@ -4597,14 +4596,14 @@ public class KmeliaBmEJB implements KmeliaBm {
     String instanceId = pk.getInstanceId();
     List<NodeDetail> nodes = new ArrayList<NodeDetail>(nodeBm.getPath(pk));
     Collections.reverse(nodes);
-    NodeDetail root = nodes.remove(0);
+    nodes.remove(0);
 
     List<NodeDetail> treeview = null;
     if (isNbItemsDisplayed(instanceId)) {
       treeview = getTreeview(getRootPK(instanceId), userId);
     }
 
-    root = getRoot(instanceId, userId, treeview);
+    NodeDetail root = getRoot(instanceId, userId, treeview);
 
     // set nb objects in nodes
     if (treeview != null) {
@@ -4689,5 +4688,20 @@ public class KmeliaBmEJB implements KmeliaBm {
       throw new KmeliaRuntimeException("KmeliaBmEJB.getAttachments()", ERROR,
           "kmelia.EX_IMPOSSIBLE_DOBTENIR_LE_WYSIWYG", e);
     }
+  }
+
+  @Override
+  public KmeliaPublication getContentById(String contentId) {
+    return getPublication(new PublicationPK(contentId));
+  }
+
+  @Override
+  public ResourceLocator getComponentSettings() {
+    return settings;
+  }
+
+  @Override
+  public ResourceLocator getComponentMessages(String language) {
+    return new ResourceLocator(MESSAGES_PATH, language);
   }
 }

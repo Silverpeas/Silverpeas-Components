@@ -20,19 +20,10 @@
  */
 package com.stratelia.webactiv.kmelia.control.ejb;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import javax.ejb.Local;
-
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-
+import com.silverpeas.SilverpeasComponentService;
 import com.silverpeas.form.importExport.XMLField;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.util.ForeignPK;
-
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
 import com.stratelia.webactiv.kmelia.model.TopicDetail;
@@ -46,6 +37,12 @@ import com.stratelia.webactiv.util.publication.model.Alias;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import javax.ejb.Local;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 /**
  * This is the KMelia EJB-tier controller of the MVC. It is implemented as a session EJB. It
@@ -55,7 +52,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
  * @author Nicolas Eysseric
  */
 @Local
-public interface KmeliaBm {
+public interface KmeliaBm extends SilverpeasComponentService<KmeliaPublication> {
 
   /**
    * Return the detail of a topic.
