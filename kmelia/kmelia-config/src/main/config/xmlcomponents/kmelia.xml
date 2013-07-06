@@ -347,7 +347,7 @@
       <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
-      <updatable>creation</updatable>
+      <updatable>always</updatable>
       <help>
         <message lang="fr">Permet de gérer les versions des fichiers joints. Ce paramêtre n'est modifiable qu'à la création de l'instance.</message>
         <message lang="en">Attachments are versioned. This parameter is defined on the creation of the application and can't be updated.</message>
