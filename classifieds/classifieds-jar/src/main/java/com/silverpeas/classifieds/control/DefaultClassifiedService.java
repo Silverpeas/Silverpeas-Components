@@ -23,29 +23,6 @@
  */
 package com.silverpeas.classifieds.control;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import org.apache.commons.io.FilenameUtils;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.search.SearchEngineFactory;
-
 import com.silverpeas.classifieds.dao.ClassifiedsDAO;
 import com.silverpeas.classifieds.model.ClassifiedDetail;
 import com.silverpeas.classifieds.model.ClassifiedsRuntimeException;
@@ -53,7 +30,7 @@ import com.silverpeas.classifieds.model.Subscribe;
 import com.silverpeas.classifieds.notification.ClassifiedSubscriptionUserNotification;
 import com.silverpeas.classifieds.notification.ClassifiedSupervisorUserNotification;
 import com.silverpeas.classifieds.notification.ClassifiedValidationUserNotification;
-import com.silverpeas.comment.service.notification.CommentUserNotificationService;
+import com.silverpeas.comment.service.CommentUserNotificationService;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.RecordSet;
@@ -63,8 +40,6 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
-import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
-import org.silverpeas.search.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.JNDINames;
@@ -73,9 +48,31 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import javax.inject.Named;
+import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.search.SearchEngineFactory;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
 
 /**
  * Services provided by the Classified Silverpeas component.
@@ -84,16 +81,17 @@ import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 public class DefaultClassifiedService implements ClassifiedService {
 
   public static final String COMPONENT_NAME = "classifieds";
-  private static final String MESSAGES_PATH = "com.silverpeas.classifieds.multilang.classifiedsBundle";
-  private static final String SETTINGS_PATH = "com.silverpeas.classifieds.settings.classifiedsSettings";
+  private static final String MESSAGES_PATH =
+      "com.silverpeas.classifieds.multilang.classifiedsBundle";
+  private static final String SETTINGS_PATH =
+      "com.silverpeas.classifieds.settings.classifiedsSettings";
   private static final ResourceLocator settings = new ResourceLocator(SETTINGS_PATH, "");
-
   @Inject
   private CommentUserNotificationService commentUserNotificationService;
 
   /**
-   * Initializes this service by registering itself among Silverpeas core services as interested
-   * by events.
+   * Initializes this service by registering itself among Silverpeas core services as interested by
+   * events.
    */
   @PostConstruct
   public void initialize() {
@@ -150,16 +148,16 @@ public class DefaultClassifiedService implements ClassifiedService {
       closeConnection(con);
     }
   }
-  
+
   @Override
   public void deleteClassified(String instanceId, String classifiedId) {
     deleteClassified(instanceId, classifiedId, getTemplate(instanceId));
   }
 
   private void deleteClassified(String instanceId, String classifiedId, PublicationTemplate template) {
-    
+
     ClassifiedDetail classified = getContentById(classifiedId);
-    
+
     // remove form content
     try {
       RecordSet set = template.getRecordSet();
@@ -168,12 +166,13 @@ public class DefaultClassifiedService implements ClassifiedService {
       throw new ClassifiedsRuntimeException("DefaultClassifiedService.deleteClassified()",
           SilverpeasRuntimeException.ERROR, "classifieds.CANT_DELETE_FORM_CONTENT", e);
     }
-    
+
     // remove attached files
     try {
       WAPrimaryKey classifiedForeignKey = new SimpleDocumentPK(classifiedId, instanceId);
-      List<SimpleDocument> images = AttachmentServiceFactory.getAttachmentService().listDocumentsByForeignKeyAndType(classifiedForeignKey, DocumentType.attachment, null);
-      for(SimpleDocument classifiedImage : images) {
+      List<SimpleDocument> images = AttachmentServiceFactory.getAttachmentService().
+          listDocumentsByForeignKeyAndType(classifiedForeignKey, DocumentType.attachment, null);
+      for (SimpleDocument classifiedImage : images) {
         //delete the picture file in the file server and database
         AttachmentServiceFactory.getAttachmentService().deleteAttachment(classifiedImage);
       }
@@ -181,7 +180,7 @@ public class DefaultClassifiedService implements ClassifiedService {
       throw new ClassifiedsRuntimeException("DefaultClassifiedService.deleteClassified()",
           SilverpeasRuntimeException.ERROR, "classifieds.MSG_CLASSIFIED_IMAGES_NOT_DELETE", e);
     }
-    
+
     // remove classified itself
     Connection con = openConnection();
     try {
@@ -192,7 +191,7 @@ public class DefaultClassifiedService implements ClassifiedService {
     } finally {
       closeConnection(con);
     }
-      
+
     // remove index
     deleteIndex(classified);
   }
@@ -274,11 +273,12 @@ public class DefaultClassifiedService implements ClassifiedService {
     Connection con = openConnection();
     try {
       OrganizationController orga = new OrganizationController();
-      Collection<ClassifiedDetail> listClassified =  ClassifiedsDAO.getClassifiedsByUser(con, instanceId, userId);
-      for(ClassifiedDetail classified : listClassified) {
+      Collection<ClassifiedDetail> listClassified = ClassifiedsDAO.getClassifiedsByUser(con,
+          instanceId, userId);
+      for (ClassifiedDetail classified : listClassified) {
         //ajouter le nom du createur
         classified.setCreatorName(orga.getUserDetail(classified.getCreatorId())
-            .getDisplayedName());     
+            .getDisplayedName());
       }
       return listClassified;
     } catch (Exception e) {
@@ -294,11 +294,12 @@ public class DefaultClassifiedService implements ClassifiedService {
     Connection con = openConnection();
     try {
       OrganizationController orga = new OrganizationController();
-      Collection<ClassifiedDetail> listClassified = ClassifiedsDAO.getClassifiedsWithStatus(con, instanceId, ClassifiedDetail.TO_VALIDATE, 0, -1);
-      for(ClassifiedDetail classified : listClassified) {
+      Collection<ClassifiedDetail> listClassified = ClassifiedsDAO.getClassifiedsWithStatus(con,
+          instanceId, ClassifiedDetail.TO_VALIDATE, 0, -1);
+      for (ClassifiedDetail classified : listClassified) {
         //ajouter le nom du createur
         classified.setCreatorName(orga.getUserDetail(classified.getCreatorId())
-            .getDisplayedName());     
+            .getDisplayedName());
       }
       return listClassified;
     } catch (Exception e) {
@@ -362,20 +363,23 @@ public class DefaultClassifiedService implements ClassifiedService {
       final String refusalMotive, final String userIdWhoRefuse) {
     try {
 
-      UserNotificationHelper.buildAndSend(new ClassifiedValidationUserNotification(classified, userIdWhoRefuse,
+      UserNotificationHelper.buildAndSend(new ClassifiedValidationUserNotification(classified,
+          userIdWhoRefuse,
           refusalMotive, userId));
 
     } catch (Exception e) {
       SilverTrace.warn("classifieds", "classifieds.sendValidationNotification()",
-          "classifieds.EX_ERR_ALERT_USERS", "userId = " + userId +
-              ", classified = " + classified.getClassifiedId(), e);
+          "classifieds.EX_ERR_ALERT_USERS", "userId = " + userId + ", classified = " + classified.
+          getClassifiedId(), e);
     }
   }
 
-  public void sendSubscriptionsNotification(final String field1, final String field2, final ClassifiedDetail classified) {
+  public void sendSubscriptionsNotification(final String field1, final String field2,
+      final ClassifiedDetail classified) {
     try {
 
-      UserNotificationHelper.buildAndSend(new ClassifiedSubscriptionUserNotification(classified, getUsersBySubscribe(
+      UserNotificationHelper.buildAndSend(new ClassifiedSubscriptionUserNotification(classified,
+          getUsersBySubscribe(
           field1, field2)));
 
     } catch (Exception e) {
@@ -392,7 +396,8 @@ public class DefaultClassifiedService implements ClassifiedService {
     try {
       return ClassifiedsDAO.getAllClassifiedsToUnpublish(con, nbDays, instanceId);
     } catch (Exception e) {
-      throw new ClassifiedsRuntimeException("DefaultClassifiedService.getAllClassifiedsToUnpublish()",
+      throw new ClassifiedsRuntimeException(
+          "DefaultClassifiedService.getAllClassifiedsToUnpublish()",
           SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_GET_CLASSIFIEDS", e);
     } finally {
       // fermer la connexion
@@ -404,11 +409,13 @@ public class DefaultClassifiedService implements ClassifiedService {
   public List<ClassifiedDetail> search(QueryDescription query) {
     List<ClassifiedDetail> classifieds = new ArrayList<ClassifiedDetail>();
     try {
-      List<MatchingIndexEntry> result = SearchEngineFactory.getSearchEngine().search(query).getEntries();
+      List<MatchingIndexEntry> result = SearchEngineFactory.getSearchEngine().search(query).
+          getEntries();
       // création des petites annonces à partir des resultats
       for (MatchingIndexEntry matchIndex : result) {
         if ("Classified".equals(matchIndex.getObjectType())) {
-          ClassifiedDetail classified = new ClassifiedDetail(Integer.valueOf(matchIndex.getObjectId()));
+          ClassifiedDetail classified = new ClassifiedDetail(Integer.valueOf(matchIndex.
+              getObjectId()));
           classified.setInstanceId(matchIndex.getComponent());
           classified.setCreationDate(DateUtil.parse(matchIndex.getCreationDate()));
           classified.setCreatorId(matchIndex.getCreationUser());
@@ -440,7 +447,7 @@ public class DefaultClassifiedService implements ClassifiedService {
       }
     }
   }
-  
+
   private void createIndex(ClassifiedDetail classified) {
     if (classified != null) {
       createIndex(classified, getTemplate(classified.getInstanceId()));
@@ -452,7 +459,7 @@ public class DefaultClassifiedService implements ClassifiedService {
     if (classified != null) {
       indexEntry =
           new FullIndexEntry(classified.getInstanceId(), "Classified", Integer.toString(classified
-              .getClassifiedId()));
+          .getClassifiedId()));
       indexEntry.setTitle(classified.getTitle());
       indexEntry.setPreView(classified.getDescription());
       indexEntry.setCreationDate(classified.getCreationDate());
@@ -473,7 +480,7 @@ public class DefaultClassifiedService implements ClassifiedService {
       IndexEngineProxy.addIndexEntry(indexEntry);
     }
   }
-  
+
   private PublicationTemplate getTemplate(String instanceId) {
     try {
       OrganisationController orga = new OrganizationController();
@@ -493,11 +500,12 @@ public class DefaultClassifiedService implements ClassifiedService {
   }
 
   public void deleteIndex(ClassifiedDetail classified) {
-    SilverTrace.info("classifieds", "DefaultClassifiedService.deleteIndex()", "root.MSG_GEN_ENTER_METHOD",
+    SilverTrace.info("classifieds", "DefaultClassifiedService.deleteIndex()",
+        "root.MSG_GEN_ENTER_METHOD",
         "ClassifiedId = " + classified.toString());
     IndexEntryPK indexEntry =
         new IndexEntryPK(classified.getInstanceId(), "Classified", Integer.toString(classified
-            .getClassifiedId()));
+        .getClassifiedId()));
     IndexEngineProxy.removeIndexEntry(indexEntry);
   }
 
@@ -525,8 +533,8 @@ public class DefaultClassifiedService implements ClassifiedService {
 
       } catch (Exception e) {
         SilverTrace.warn("classifieds", "classifieds.sendAlertToSupervisors()",
-            "classifieds.EX_ERR_ALERT_USERS", "userId = " +
-                classified.getCreatorId() + ", classified = " + classified.getClassifiedId(), e);
+            "classifieds.EX_ERR_ALERT_USERS", "userId = " + classified.getCreatorId()
+            + ", classified = " + classified.getClassifiedId(), e);
       }
     }
   }
@@ -578,8 +586,8 @@ public class DefaultClassifiedService implements ClassifiedService {
       Collection<Subscribe> subscriptions =
           getSubscribesByUser(subscribe.getInstanceId(), subscribe.getUserId());
       for (Subscribe sub : subscriptions) {
-        if (sub.getField1().equals(subscribe.getField1()) &&
-            sub.getField2().equals(subscribe.getField2())) {
+        if (sub.getField1().equals(subscribe.getField1()) && sub.getField2().equals(subscribe.
+            getField2())) {
           return false;
         }
       }
@@ -641,43 +649,46 @@ public class DefaultClassifiedService implements ClassifiedService {
       deleteSubscribe(subscribe.getSubscribeId());
     }
   }
-  
+
   @Override
-  public Collection<ClassifiedDetail> getAllValidClassifieds(String instanceId, 
-          Map<String, String> mapFields1, Map<String, String> mapFields2, 
-          String searchField1, String searchField2, 
-          int currentPage, int elementsPerPage) {
+  public Collection<ClassifiedDetail> getAllValidClassifieds(String instanceId,
+      Map<String, String> mapFields1, Map<String, String> mapFields2,
+      String searchField1, String searchField2,
+      int currentPage, int elementsPerPage) {
     Connection con = openConnection();
     try {
       OrganizationController orga = new OrganizationController();
-      List<ClassifiedDetail> listClassified = ClassifiedsDAO.getClassifiedsWithStatus(con, instanceId, ClassifiedDetail.VALID, currentPage, elementsPerPage);
-      
-      for(ClassifiedDetail classified : listClassified) {
+      List<ClassifiedDetail> listClassified = ClassifiedsDAO.getClassifiedsWithStatus(con,
+          instanceId, ClassifiedDetail.VALID, currentPage, elementsPerPage);
+
+      for (ClassifiedDetail classified : listClassified) {
         String classifiedId = Integer.toString(classified.getClassifiedId());
-        
+
         //Ajout du nom du createur
         classified.setCreatorName(orga.getUserDetail(classified.getCreatorId())
-            .getDisplayedName());   
-        
+            .getDisplayedName());
+
         //Ajout des champs de recherche
         String xmlFormName =
             orga.getComponentParameterValue(classified.getInstanceId(), "XMLFormName");
         setClassification(classified, searchField1, searchField2, xmlFormName);
-        
+
         //Ajout des images
         try {
-          WAPrimaryKey classifiedForeignKey = new SimpleDocumentPK(classifiedId, classified.getInstanceId());
-          List<SimpleDocument> listSimpleDocument = AttachmentServiceFactory.getAttachmentService().listDocumentsByForeignKeyAndType(classifiedForeignKey, DocumentType.attachment, null);
+          WAPrimaryKey classifiedForeignKey = new SimpleDocumentPK(classifiedId, classified.
+              getInstanceId());
+          List<SimpleDocument> listSimpleDocument = AttachmentServiceFactory.getAttachmentService().
+              listDocumentsByForeignKeyAndType(classifiedForeignKey, DocumentType.attachment, null);
           classified.setImages(listSimpleDocument);
         } catch (Exception e) {
           throw new ClassifiedsRuntimeException("DefaultClassifiedService.getAllValidClassifieds()",
               SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_GET_IMAGES", e);
         }
       }
-      
+
       // pour ordonner les petites annonces de la plus récente vers la plus ancienne
       Collections.reverse(listClassified);
-      
+
       return listClassified;
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException("DefaultClassifiedService.getAllValidClassifieds()",
@@ -686,8 +697,9 @@ public class DefaultClassifiedService implements ClassifiedService {
       closeConnection(con);
     }
   }
-  
-  public void setClassification(ClassifiedDetail classified, String searchField1, String searchField2, String xmlFormName) {
+
+  public void setClassification(ClassifiedDetail classified, String searchField1,
+      String searchField2, String xmlFormName) {
     //Ajout des champs de recherche
     if (StringUtil.isDefined(xmlFormName)) {
       String xmlFormShortName =
@@ -699,15 +711,15 @@ public class DefaultClassifiedService implements ClassifiedService {
           RecordSet recordSet = pubTemplate.getRecordSet();
           DataRecord data = recordSet.getRecord(classified.getId());
           Map<String, String> values = data.getValues("fr");
-          
+
           Field field1 = data.getField(searchField1);
           String searchValueId1 = field1.getValue();
           String searchValue1 = values.get(searchField1);
-          
+
           Field field2 = data.getField(searchField2);
           String searchValueId2 = field2.getValue();
           String searchValue2 = values.get(searchField2);
-          
+
           classified.setSearchValueId1(searchValueId1);
           classified.setSearchValueId2(searchValueId2);
           classified.setSearchValue1(searchValue1);
@@ -716,7 +728,7 @@ public class DefaultClassifiedService implements ClassifiedService {
       } catch (Exception e) {
         throw new ClassifiedsRuntimeException("DefaultClassifiedService.setClassification()",
             SilverpeasRuntimeException.ERROR,
-            "classifieds.MSG_ERR_GET_CLASSIFIED_TEMPLATE", "classifiedId = "+classified.getId(), e);
+            "classifieds.MSG_ERR_GET_CLASSIFIED_TEMPLATE", "classifiedId = " + classified.getId(), e);
       }
     }
   }
