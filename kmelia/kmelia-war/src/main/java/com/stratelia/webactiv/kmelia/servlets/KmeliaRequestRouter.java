@@ -90,6 +90,7 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAAttributeValuePair;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
@@ -1840,20 +1841,29 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     String physicalName = null;
     if (file != null) {
       String logicalName = file.getName().replace('\\', '/');
-      if (logicalName != null) {
+      if (StringUtil.isDefined(logicalName)) {
         logicalName = logicalName.substring(logicalName.lastIndexOf('/') + 1, logicalName.length());
         mimeType = FileUtil.getMimeType(logicalName);
         String type = FileRepositoryManager.getFileExtension(logicalName);
-        if (FileUtil.isImage(logicalName)) {
-          physicalName = String.valueOf(System.currentTimeMillis()) + '.' + type;
-          File dir = new File(FileRepositoryManager.getAbsolutePath(kmelia.getComponentId())
-              + kmelia.getPublicationSettings().getString("imagesSubDirectory"));
-          if (!dir.exists()) {
-            dir.mkdirs();
-          }
-          File target = new File(dir, physicalName);
-          file.write(target);
+        if (type != null && type.equalsIgnoreCase("jpeg")) {
+          type = "jpg";
         }
+
+        if (!"gif".equalsIgnoreCase(type) && !"jpg".equalsIgnoreCase(type) && !"png".
+            equalsIgnoreCase(type)) {
+          throw new ThumbnailRuntimeException("KmeliaRequestRouter.processVignette()",
+              SilverpeasRuntimeException.ERROR,
+              "thumbnail_EX_MSG_WRONG_TYPE_ERROR");
+        }
+        
+        physicalName = String.valueOf(System.currentTimeMillis()) + '.' + type;
+        File dir = new File(FileRepositoryManager.getAbsolutePath(kmelia.getComponentId())
+            + kmelia.getPublicationSettings().getString("imagesSubDirectory"));
+        if (!dir.exists()) {
+          dir.mkdirs();
+        }
+        File target = new File(dir, physicalName);
+        file.write(target);
       }
     }
 
@@ -1883,13 +1893,13 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           kmelia.getPublicationBm().createIndex(publication.getPK());
         }
       } catch (ThumbnailRuntimeException e) {
-        SilverTrace.error("Thumbnail", "ThumbnailRequestRouter.addThumbnail",
-            "root.MSG_GEN_PARAM_VALUE", e);
+        SilverTrace.error("thumbnail", "KmeliaRequestRouter.processVignette",
+            "thumbnail_MSG_UPDATE_THUMBNAIL_KO", e);
         try {
           ThumbnailController.deleteThumbnail(detail);
         } catch (Exception exp) {
-          SilverTrace.info("Thumbnail", "ThumbnailRequestRouter.addThumbnail - remove after error",
-              "root.MSG_GEN_PARAM_VALUE", exp);
+          SilverTrace.info("thumbnail", "KmeliaRequestRouter.processVignette",
+              "thumbnail_MSG_DELETE_THUMBNAIL_KO", exp);
         }
       }
     }
