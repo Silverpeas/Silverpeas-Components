@@ -196,14 +196,8 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
   }
   
   private void enrichClassified(ClassifiedDetail classified) {
-    ClassifiedDetail fromDB = getClassifiedService().getContentById(classified.getId());
-    if (fromDB != null) {
-      classified.setPrice(fromDB.getPrice());
-      classified.setCreationDate(fromDB.getCreationDate());
-      classified.setUpdateDate(fromDB.getUpdateDate());
       setImagesToClassified(classified);
       getClassifiedService().setClassification(classified, getSearchFields1(), getSearchFields2(), getXMLFormName());
-    }
   }
 
   /**
