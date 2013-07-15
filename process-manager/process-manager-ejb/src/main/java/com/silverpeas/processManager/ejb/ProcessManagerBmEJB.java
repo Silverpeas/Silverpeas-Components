@@ -20,6 +20,28 @@
  */
 package com.silverpeas.processManager.ejb;
 
+import java.io.ByteArrayInputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.model.UnlockContext;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldTemplate;
@@ -43,30 +65,13 @@ import com.silverpeas.workflow.api.model.ProcessModel;
 import com.silverpeas.workflow.api.task.Task;
 import com.silverpeas.workflow.api.user.User;
 import com.silverpeas.workflow.engine.user.UserImpl;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.attachment.model.UnlockContext;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import java.io.ByteArrayInputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import static org.silverpeas.attachment.AttachmentService.VERSION_MODE;
 
 @Stateless(name = "ProcessManager", description = "Stateless session bean to manage processes.")
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
@@ -103,12 +108,16 @@ public class ProcessManagerBmEJB implements ProcessManagerBm {
 
   /**
    * Create a process instance for a specific workflow component, by a specific user using one role
-   * of thoose defined in a given workflow definition. <p> Some information may be specified that
-   * will fill in the creation form of the new process instance. Such data should be placed into a
-   * map structure of key-value pairs where keys are the name of the intended fields of the creation
-   * form and values are strins (text fields), dates (date fields), colelctions of strings,
-   * collections of dates, or a single {@link FileContent} object. </p> <p> {@link FileContent} are
-   * used to pass in as an argument a complete file of binary data, loaded into memory. </p>
+   * of thoose defined in a given workflow definition.
+   * <p>
+   * Some information may be specified that will fill in the creation form of the new process
+   * instance. Such data should be placed into a map structure of key-value pairs where keys are the
+   * name of the intended fields of the creation form and values are strins (text fields), dates
+   * (date fields), colelctions of strings, collections of dates, or a single {@link FileContent}
+   * object. </p>
+   * <p>
+   * {@link FileContent} are used to pass in as an argument a complete file of binary data, loaded
+   * into memory. </p>
    *
    * @param componentId the ID of the component which defines the workflow (must be a workflow
    * component).
@@ -139,9 +148,8 @@ public class ProcessManagerBmEJB implements ProcessManagerBm {
           processModel, userRole);
       PagesContext pagesContext = new PagesContext("creationForm", "0", getLanguage(), true,
           componentId, userId);
-      boolean versioningUsed = StringUtil.getBooleanValue(
-          OrganisationControllerFactory.getOrganisationController().getComponentParameterValue(
-              componentId, "versionControl"));
+      boolean versioningUsed = StringUtil.getBooleanValue(OrganisationControllerFactory.
+          getOrganisationController().getComponentParameterValue(componentId, VERSION_MODE));
       pagesContext.setVersioningUsed(versioningUsed);
 
       // 1 - Populate form data (save file on disk, populate file field)

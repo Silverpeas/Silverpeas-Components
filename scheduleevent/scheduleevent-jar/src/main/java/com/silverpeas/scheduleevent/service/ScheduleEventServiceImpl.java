@@ -21,7 +21,7 @@
 package com.silverpeas.scheduleevent.service;
 
 import com.silverpeas.annotation.Service;
-import com.silverpeas.comment.service.notification.CommentUserNotificationService;
+import com.silverpeas.comment.service.CommentUserNotificationService;
 import com.silverpeas.scheduleevent.constant.ScheduleEventConstant;
 import com.silverpeas.scheduleevent.service.model.beans.Contributor;
 import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;

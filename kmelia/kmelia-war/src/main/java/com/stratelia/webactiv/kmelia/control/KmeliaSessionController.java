@@ -23,47 +23,6 @@
  */
 package com.stratelia.webactiv.kmelia.control;
 
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.component.kmelia.InstanceParameters;
-import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-import org.silverpeas.importExport.attachment.AttachmentImportExport;
-import org.silverpeas.importExport.versioning.VersioningImportExport;
-import org.silverpeas.search.SearchEngineFactory;
-import org.silverpeas.search.indexEngine.model.IndexManager;
-import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
-import org.silverpeas.search.searchEngine.model.QueryDescription;
-import org.silverpeas.subscription.SubscriptionContext;
-import org.silverpeas.util.GlobalContext;
-import org.silverpeas.wysiwyg.WysiwygException;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
@@ -107,7 +66,6 @@ import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
-
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.notificationManager.NotificationManager;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -178,15 +136,42 @@ import com.stratelia.webactiv.util.publication.model.PublicationSelection;
 import com.stratelia.webactiv.util.publication.model.ValidationStep;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
-
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.component.kmelia.InstanceParameters;
+import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.importExport.attachment.AttachmentImportExport;
+import org.silverpeas.importExport.versioning.VersioningImportExport;
+import org.silverpeas.search.SearchEngineFactory;
+import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
+import org.silverpeas.subscription.SubscriptionContext;
+import org.silverpeas.util.GlobalContext;
+import org.silverpeas.wysiwyg.WysiwygException;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
+import javax.xml.parsers.ParserConfigurationException;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.util.*;
 
 import static com.silverpeas.kmelia.export.KmeliaPublicationExporter.*;
 import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
+import static org.silverpeas.attachment.AttachmentService.VERSION_MODE;
 
 public class KmeliaSessionController extends AbstractComponentSessionController implements
     ExportFileNameProducer {
@@ -985,7 +970,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         if (getSessionClone().getId().equals(pubDetail.getId())) {
           // update the clone, clone stay in same status
           pubDetail.setStatusMustBeChecked(false);
-          
+
           // clone must not be indexed
           pubDetail.setIndexOperation(IndexManager.NONE);
 
@@ -2070,12 +2055,12 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public boolean isVersionControlled() {
-    return StringUtil.getBooleanValue(getComponentParameterValue("versionControl"));
+    return StringUtil.getBooleanValue(getComponentParameterValue(VERSION_MODE));
   }
 
   public boolean isVersionControlled(String anotherComponentId) {
     String strVersionControlled = getOrganisationController().getComponentParameterValue(
-        anotherComponentId, "versionControl");
+        anotherComponentId, VERSION_MODE);
     return StringUtil.getBooleanValue(strVersionControlled);
 
   }
