@@ -20,21 +20,19 @@
  */
 package com.silverpeas.dataWarning.control;
 
-import com.stratelia.silverpeas.peasCore.*;
-import com.stratelia.silverpeas.util.*;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-import com.stratelia.webactiv.util.viewGenerator.html.Encode;
-import com.stratelia.webactiv.util.*;
-import com.stratelia.webactiv.beans.admin.*;
-import java.util.*;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.silverpeas.dataWarning.DataWarningDBDriver;
 import com.silverpeas.dataWarning.DataWarningDBDrivers;
 import com.silverpeas.dataWarning.DataWarningException;
-import com.silverpeas.dataWarning.control.DataWarningEngine;
 import com.silverpeas.dataWarning.model.*;
-
+import com.silverpeas.util.EncodeHelper;
+import com.stratelia.silverpeas.peasCore.*;
 import com.stratelia.silverpeas.selection.Selection;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.silverpeas.util.*;
+import com.stratelia.webactiv.beans.admin.*;
+import com.stratelia.webactiv.util.*;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
+import java.util.*;
 
 public class DataWarningSessionController extends AbstractComponentSessionController {
 
@@ -172,8 +170,8 @@ public class DataWarningSessionController extends AbstractComponentSessionContro
   }
 
   public String buildOptions(ArrayList ar, String selectValue, String selectText, boolean bSorted) {
-    StringBuffer valret = new StringBuffer();
-    Properties elmt = null;
+    StringBuilder valret = new StringBuilder();
+    Properties elmt;
     String selected;
     ArrayList arToDisplay = ar;
     int i;
@@ -184,19 +182,17 @@ public class DataWarningSessionController extends AbstractComponentSessionContro
       } else {
         selected = "";
       }
-      valret.append("<option value=\"\" " + selected + ">" + Encode.javaStringToHtmlString(
-          selectText) + "</option>\n");
+      valret.append("<option value=\"\" ").append(selected).append(">").
+          append(EncodeHelper.javaStringToHtmlString(
+          selectText)).append("</option>\n");
     }
     if (bSorted) {
       Properties[] theList = (Properties[]) ar.toArray(new Properties[0]);
       Arrays.sort(theList, new Comparator() {
+        @Override
         public int compare(Object o1, Object o2) {
           return (((Properties) o1).getProperty("name")).toUpperCase().compareTo(((Properties) o2).
               getProperty("name").toUpperCase());
-        }
-
-        public boolean equals(Object o) {
-          return false;
         }
       });
       arToDisplay = new ArrayList(theList.length);
@@ -212,15 +208,17 @@ public class DataWarningSessionController extends AbstractComponentSessionContro
         } else {
           selected = "";
         }
-        valret.append("<option value=\"" + elmt.getProperty("id") + "\" " + selected + ">" + Encode.
-            javaStringToHtmlString(elmt.getProperty("name")) + "</option>\n");
+        valret.append("<option value=\"").append(elmt.getProperty("id")).append("\" ").
+            append(selected).append(">").
+            append(EncodeHelper.
+            javaStringToHtmlString(elmt.getProperty("name"))).append("</option>\n");
       }
     }
     return valret.toString();
   }
 
   public ArrayList getSelectedGroups(String[] selectedGroupsId) throws DataWarningException {
-    Group[] selectedGroups = null;
+    Group[] selectedGroups;
     Properties p;
     int i;
     ArrayList ar = new ArrayList();
@@ -259,9 +257,10 @@ public class DataWarningSessionController extends AbstractComponentSessionContro
     return getOrganisationController().getUserDetails(idUsers);
   }
 
-  public ArrayList<Properties> getSelectedUsersNames(String[] selectedUsersId) throws DataWarningException {
+  public ArrayList<Properties> getSelectedUsersNames(String[] selectedUsersId) throws
+      DataWarningException {
     ArrayList<Properties> ar = new ArrayList<Properties>();
-    UserDetail[] selectedUsers = null;
+    UserDetail[] selectedUsers;
 
     if (selectedUsersId != null && selectedUsersId.length > 0) {
       selectedUsers = getUserDetailList(selectedUsersId);
@@ -282,8 +281,9 @@ public class DataWarningSessionController extends AbstractComponentSessionContro
     return ar;
   }
 
-  public ArrayList<Properties> getSelectedGroupsNames(String[] selectedGroupsId) throws DataWarningException {
-    Group[] selectedGroups = null;
+  public ArrayList<Properties> getSelectedGroupsNames(String[] selectedGroupsId) throws
+      DataWarningException {
+    Group[] selectedGroups;
     ArrayList<Properties> ar = new ArrayList<Properties>();
 
     if (selectedGroupsId != null && selectedGroupsId.length > 0) {
