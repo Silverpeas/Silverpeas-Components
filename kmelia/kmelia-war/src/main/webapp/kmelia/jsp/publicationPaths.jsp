@@ -93,7 +93,7 @@ out.println(gef.getLookStyleSheet());
 		$('#accordion').accordion({   
 			clearStyle: false,  
 			autoHeight: false
-		}).bind("accordionchange", function(event, ui) {
+		}).bind("accordionactivate", function(event, ui) {
 			doSomething(ui.newHeader[0].id);
 		});
 	});
