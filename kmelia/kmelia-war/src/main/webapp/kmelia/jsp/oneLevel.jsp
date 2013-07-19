@@ -97,6 +97,30 @@ String httpServerBase = GeneralPropertiesManager.getString("httpServerBase", m_s
 </style>
 
 <script type="text/javascript">
+
+  <%--The below triggered function has to be defined as soon as possible in HTML code in order to
+  increase chances to perform the treatment when "menuRender" event is fired --%>
+  $(document).ready(function() {
+    $(document).bind('menuRendered', function(){
+
+      $.i18n.properties({
+        name: 'kmeliaBundle',
+        path: webContext + '/services/bundles/com/silverpeas/kmelia/multilang/',
+        language: '<%=language%>',
+        mode: 'map'
+      });
+
+      displayTopicContent(<%=id%>);
+
+      <% if (settings.getBoolean("DisplayDnDOnLoad", false)) { %>
+      showDnD();
+      <% } %>
+      <% if (displaySearch.booleanValue()) { %>
+      document.getElementById("topicQuery").focus();
+      <% } %>
+    });
+  });
+
 function topicGoTo(id) {
     closeWindows();
     displayTopicContent(id);
@@ -391,27 +415,6 @@ function getSubFolder(folder) {
 function getString(key) {
 	return $.i18n.prop(key)
 }
-</script>
-<script type="text/javascript">
-$(document).ready(function() {
-	
-	$.i18n.properties({
-        name: 'kmeliaBundle',
-        path: webContext + '/services/bundles/com/silverpeas/kmelia/multilang/',
-        language: '<%=language%>',
-        mode: 'map'
-    });
-
-	displayTopicContent(<%=id%>);
-
-	<% if (settings.getBoolean("DisplayDnDOnLoad", false)) { %>
-		showDnD();
-	<% } %>
-	<% if (displaySearch.booleanValue()) { %>
-		document.getElementById("topicQuery").focus();
-    <% } %>
-
-});
 </script>
 </div>
 <div id="visibleInvisible-message" style="display: none;">
