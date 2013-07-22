@@ -23,25 +23,6 @@
  */
 package com.stratelia.webactiv.kmelia.servlets;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URLEncoder;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.silverpeas.importExport.versioning.DocumentVersion;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
@@ -66,7 +47,6 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.ZipManager;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
-
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -101,17 +81,32 @@ import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
 import com.stratelia.webactiv.util.publication.model.Alias;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-
+import java.io.File;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.servlet.http.HttpServletRequest;
+import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.CharEncoding;
+import org.silverpeas.importExport.versioning.DocumentVersion;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 import org.xml.sax.SAXException;
 
 public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionController> {
 
   private static final long serialVersionUID = 1L;
-  private static final StatisticRequestHandler statisticRequestHandler
-      = new StatisticRequestHandler();
+  private static final StatisticRequestHandler statisticRequestHandler =
+      new StatisticRequestHandler();
 
   /**
    * This method creates a KmeliaSessionController instance
@@ -1845,25 +1840,20 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         logicalName = logicalName.substring(logicalName.lastIndexOf('/') + 1, logicalName.length());
         mimeType = FileUtil.getMimeType(logicalName);
         String type = FileRepositoryManager.getFileExtension(logicalName);
-        if (type != null && type.equalsIgnoreCase("jpeg")) {
-          type = "jpg";
-        }
-
-        if (!"gif".equalsIgnoreCase(type) && !"jpg".equalsIgnoreCase(type) && !"png".
-            equalsIgnoreCase(type)) {
+        if (FileUtil.isImage(logicalName)) {
+          physicalName = String.valueOf(System.currentTimeMillis()) + '.' + type;
+          File dir = new File(FileRepositoryManager.getAbsolutePath(kmelia.getComponentId())
+              + kmelia.getPublicationSettings().getString("imagesSubDirectory"));
+          if (!dir.exists()) {
+            dir.mkdirs();
+          }
+          File target = new File(dir, physicalName);
+          file.write(target);
+        } else {
           throw new ThumbnailRuntimeException("KmeliaRequestRouter.processVignette()",
               SilverpeasRuntimeException.ERROR,
               "thumbnail_EX_MSG_WRONG_TYPE_ERROR");
         }
-        
-        physicalName = String.valueOf(System.currentTimeMillis()) + '.' + type;
-        File dir = new File(FileRepositoryManager.getAbsolutePath(kmelia.getComponentId())
-            + kmelia.getPublicationSettings().getString("imagesSubDirectory"));
-        if (!dir.exists()) {
-          dir.mkdirs();
-        }
-        File target = new File(dir, physicalName);
-        file.write(target);
       }
     }
 
@@ -2103,8 +2093,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     String infoId = pubDetail.getInfoId();
     String pubId = pubDetail.getPK().getId();
     if (!StringUtil.isInteger(infoId)) {
-      PublicationTemplateImpl pubTemplate
-          = (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
+      PublicationTemplateImpl pubTemplate =
+          (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
           pubDetail.getPK().getInstanceId() + ":" + infoId);
 
       // RecordTemplate recordTemplate = pubTemplate.getRecordTemplate();
