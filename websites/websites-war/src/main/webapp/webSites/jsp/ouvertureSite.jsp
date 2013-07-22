@@ -67,8 +67,6 @@ String popup = (String) request.getParameter("Popup");
 <%
 out.println(gef.getLookStyleSheet());
 %>
-<!--CBO : UPDATE-->
-<!--<script type="text/javascript" src="<%/*iconsPath*/%>/util/javaScript/animation.js"></script>-->
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <Script language="JavaScript">
 function openSite(URL, popup) {

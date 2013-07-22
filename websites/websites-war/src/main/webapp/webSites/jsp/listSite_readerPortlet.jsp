@@ -115,35 +115,17 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%
 ResourceLocator settings;
-//CBO : REMOVE String language;
 String rootId = "0";
-//CBO : REMOVE String space;
 String action;
 String id;
 String name;
-//CBO : REMOVE String creationDate;
-//CBO : REMOVE String creatorName;
-//CBO : REMOVE String path;
-//CBO : REMOVE String fatherId;
-//CBO : REMOVE String childId;
-//CBO : REMOVE Collection subTopicList;
-//CBO : REMOVE Collection publicationList;
 String linkedPathString = "";
 String pathString = "";
 FolderDetail webSitesCurrentFolder = null;
 
 settings = new ResourceLocator("com.stratelia.webactiv.webSites.settings.webSiteSettings","fr");
 
-//CBO : REMOVE String iconsPath = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-
 //Icons
-//CBO : UPDATE
-/*
-String pxmag = iconsPath + "/util/icons/colorPix/1px.gif";
-String flea = iconsPath + "/util/icons/buletGrey.gif";
-String suggerer=iconsPath+"/util/icons/webSites_to_propose.gif";
-String redFlag = iconsPath+"/util/icons/urgent.gif";
-*/
 String pxmag = m_context + "/util/icons/colorPix/1px.gif";
 String flea = m_context + "/util/icons/buletGrey.gif";
 String suggerer=m_context+"/util/icons/webSites_to_propose.gif";
@@ -152,11 +134,7 @@ String redFlag = m_context+"/util/icons/urgent.gif";
 //R�cup�ration des param�tres
 action = (String) request.getParameter("Action");
 id = (String) request.getParameter("Id");
-//CBO : REMOVE childId = (String) request.getParameter("ChildId");
-//CBO : REMOVE language = (String) request.getParameter("Language");
-//CBO : REMOVE space = (String) request.getParameter("Space");
 
-//CBO : ADD
 webSitesCurrentFolder = (FolderDetail) request.getAttribute("CurrentFolder");
 
 //Mise a jour de l'espace
@@ -182,8 +160,6 @@ if (action == null) {
 out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="javaScript/spacesInURL.js"></script>
-<!--CBO : UPDATE-->
-<!--<script type="text/javascript" src="<%/*iconsPath*/%>/util/javaScript/animation.js"></script>-->
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script Language="JavaScript">
 
@@ -244,8 +220,6 @@ function goto_jsp(jsp, param)
 	/* SEARCH */
 	if (action.equals("Search")) {
 
-		//CBO : REMOVE webSitesCurrentFolder = scc.getFolder(id);
-		//CBO : REMOVE scc.setSessionTopic(webSitesCurrentFolder);
 		name = webSitesCurrentFolder.getNodeDetail().getName();
 		Collection pathC = webSitesCurrentFolder.getPath();
 		pathString = navigPath(pathC, false, 3);
@@ -261,11 +235,7 @@ function goto_jsp(jsp, param)
 
 		// La barre de naviagtion
 		BrowseBar browseBar = window.getBrowseBar();
-		//CBO : UPDATE
-		//browseBar.setDomainName(scc.getSpaceLabel());
 		browseBar.setDomainName(spaceLabel);
-		//CBO : UPDATE
-		//browseBar.setComponentName(scc.getComponentLabel(), "javascript:goto_jsp('Main','')");
 		browseBar.setComponentName(componentLabel, "javascript:goto_jsp('Main','')");
 		browseBar.setPath(linkedPathString);
 
@@ -349,8 +319,6 @@ function goto_jsp(jsp, param)
 					liste+="<td valign=\"top\"><img src=\""+redFlag+"\" border=\"0\" align=absmiddle></td>\n";
 				else
 					liste+="<td valign=\"top\">&nbsp;</td>\n";
-				//CBO : UPDATE
-				/*liste += "<td valign=\"top\" align=left nowrap>&#149;&nbsp;<a class=\"textePetitBold\" href=\"javascript:onClick=publicationGoTo('"+type+"', 'http://"+getMachine(request)+"/"+settings.getString("Context")+"/"+scc.getComponentId()+"/"+siteId+"/' , '"+Encode.javaStringToJsString(sitePage)+"')\">"+siteName+"</a></td><td align=left>\n";*/
 				liste += "<td valign=\"top\" align=left nowrap>&#149;&nbsp;<a class=\"textePetitBold\" href=\"javascript:onClick=publicationGoTo('"+type+"', 'http://"+getMachine(request)+"/"+settings.getString("Context")+"/"+componentId+"/"+siteId+"/' , '"+Encode.javaStringToJsString(sitePage)+"')\">"+siteName+"</a></td><td align=left>\n";
 
 				liste += listeIcones;
@@ -373,17 +341,6 @@ function goto_jsp(jsp, param)
 <FORM NAME="topicDetailForm" ACTION="listSite_reader.jsp" METHOD=POST >
   <input type="hidden" name="Action">
   <input type="hidden" name="Id" value="<%=id%>">
-  <!-- CBO : REMOVE -->
-  <!-- 
-  <input type="hidden" name="Path" value="<%=Encode.javaStringToHtmlString(pathString)%>">
-  <input type="hidden" name="ChildId">
-  <input type="hidden" name="nomSite">
-  <input type="hidden" name="description">
-  <input type="hidden" name="nomPage">
-  <input type="hidden" name="auteur">
-  <input type="hidden" name="date">
-  <input type="hidden" name="ListeIcones">
-	-->
 </FORM>
 
 </BODY>

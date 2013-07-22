@@ -56,7 +56,6 @@ String nameSite = (String) request.getParameter("nameSite");
 String path = (String) request.getParameter("path");
 String action = (String) request.getParameter("Action");
 String id = (String) request.getParameter("id");
-//CBO : REMOVE String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 
 //Icons
 String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
@@ -188,12 +187,8 @@ function sendData() {
 <%
     Window window = gef.getWindow();
     BrowseBar browseBar = window.getBrowseBar();
-    //CBO : UPDATE
-	//browseBar.setDomainName(scc.getSpaceLabel());
-	browseBar.setDomainName(spaceLabel);
-    //CBO : UPDATE
-	//browseBar.setComponentName(scc.getComponentLabel());
-	browseBar.setComponentName(componentLabel);
+    browseBar.setDomainName(spaceLabel);
+    browseBar.setComponentName(componentLabel);
     browseBar.setPath(resources.getString("NomPage"));
 
     //Le cadre

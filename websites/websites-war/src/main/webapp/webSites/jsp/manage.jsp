@@ -175,30 +175,6 @@ function openSPWindow(fonction, windowName){
 		operationPane.addOperation(pdcUtilizationSrc, resources.getString("GML.PDCParam"), "javascript:onClick=openSPWindow('"+m_context+"/RpdcUtilization/jsp/Main?ComponentId="+componentId+"','utilizationPdc1')");
 		operationPane.addLine();
 	}
-
-/*
-  operationPane.addOperation(bookmark, resources.getString("BookmarkSite"), "javascript:onClick=B_SPECIFIER_BOOK_ONCLICK();");
-  if (bookmarkMode) {
-  	operationPane.addOperation(bookmarkDelete, resources.getString("SupprimerSite"), "javascript:onClick=deleteWebSites('"+listeSites.size()+"')");
-  } else {
-		operationPane.addOperation(upload, resources.getString("UploadSite"), "javascript:onClick=B_SPECIFIER_UPLOAD_ONCLICK();");
-		operationPane.addOperation(create, resources.getString("DesignSite"), "javascript:onClick=B_SPECIFIER_DESIGN_ONCLICK();");
-		operationPane.addOperation(belpou, resources.getString("SupprimerSite"), "javascript:onClick=deleteWebSites('"+listeSites.size()+"')");
-	}
-	
-
-  //Les onglets
-  TabbedPane tabbedPane = gef.getTabbedPane();
-  tabbedPane.addTab(resources.getString("Consulter"), "listSite.jsp", false);
-  tabbedPane.addTab(resources.getString("Organiser"), "organize.jsp", false);
-  tabbedPane.addTab(resources.getString("GML.management"), "manage.jsp", true);
-
-  //Le cadre
-  Frame frame = gef.getFrame();
-
-  //Le tableau de tri
-  ArrayPane arrayPane = gef.getArrayPane("foldersList", "manage.jsp", request, session);
-*/
   operationPane.addOperationOfCreation(bookmark, resources.getString("BookmarkSite"), "javascript:onClick=B_SPECIFIER_BOOK_ONCLICK();");
   if (bookmarkMode) {
   	operationPane.addOperation(bookmarkDelete, resources.getString("SupprimerSite"), "javascript:onClick=deleteWebSites('"+listeSites.size()+"')");
@@ -211,7 +187,7 @@ function openSPWindow(fonction, windowName){
   out.println(window.printBefore());
   
   TabbedPane tabbedPane = gef.getTabbedPane();
-  tabbedPane.addTab(resources.getString("Consulter"), "listSite.jsp", false);
+  tabbedPane.addTab(resources.getString("Consulter"), "Main", false);
   tabbedPane.addTab(resources.getString("Organiser"), "organize.jsp", false);
   tabbedPane.addTab(resources.getString("GML.management"), "manage.jsp", true);
   
