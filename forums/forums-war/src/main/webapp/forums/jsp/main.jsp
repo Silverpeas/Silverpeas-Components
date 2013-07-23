@@ -32,6 +32,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags/silverpeas/util" %>
 <c:set var="componentId" value="${requestScope.componentId}" />
 <c:set var="sessionController" value="${requestScope.forumsSessionClientController}" />
 <c:set var="isReader" value="${sessionController.reader}" />
@@ -54,10 +55,6 @@
 ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
         "forumsSessionClientController");
     ResourcesWrapper resources = (ResourcesWrapper)request.getAttribute("resources");
-
-    ResourceLocator resource = new ResourceLocator(
-        "com.stratelia.webactiv.forums.multilang.forumsBundle", fsc.getLanguage());
-
     if (fsc == null)
     {
         // No forums session controller in the request -> security exception
@@ -67,6 +64,10 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
             .forward(request, response);
         return;
     }
+
+    ResourceLocator resource = new ResourceLocator(
+      "com.stratelia.webactiv.forums.multilang.forumsBundle", fsc.getLanguage());
+
     String userId = fsc.getUserId();
     boolean isAdmin = fsc.isAdmin();
     boolean isUser = fsc.isUser();
@@ -78,6 +79,8 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
     fsc.resetDisplayAllMessages();
 
     ForumActionHelper.actionManagement(request, isAdmin, isModerator, userId, resource, out, fsc);
+    boolean isForumSubscriberByInheritance =
+      (Boolean) request.getAttribute("isForumSubscriberByInheritance");
 %>
 <fmt:message key="confirmDeleteForum" var="removeForum" />
 <fmt:message key="confirmDeleteCategory" var="removeCategory" />
@@ -86,7 +89,6 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
   <head>
   	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <view:looknfeel />
-    <view:includePlugin name="notifier"/>
     <script type="text/javascript" src="<c:url value='/forums/jsp/javaScript/forums.js' />"></script>
     <script type="text/javascript" src="<c:url value='/util/javaScript/animation.js' />"></script>
     <script type="text/javascript">
@@ -127,9 +129,7 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
   </head>
 
   <body id="forum" <%ForumHelper.addBodyOnload(out, fsc);%>>
-  <c:if test="${not empty requestScope.notySuccessMessage}">
-    <div style="display: none" class="notySuccess">${requestScope.notySuccessMessage}</div>
-  </c:if>
+  <tags:displayNotification/>
   <c:set var="isSubscriber" value="${sessionController.componentSubscriber}" />
   <view:browseBar />
     <c:if test="${isAdmin or isUser or !sessionController.external}">
@@ -194,10 +194,10 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
               <%
                 NodeDetail category = (NodeDetail) pageContext.getAttribute("category");
                 ForumListHelper.displayForumsList(out, resources, isAdmin, isModerator, isReader, forumId, "main", fsc,
-                    Integer.toString(category.getId()), category.getName(), category.getDescription());
+                    Integer.toString(category.getId()), category.getName(), category.getDescription(), isForumSubscriberByInheritance);
               %>
             </c:forEach>
-            <%ForumListHelper.displayForumsList(out, resources, isAdmin, isModerator, isReader, forumId, "main", fsc, null, "", "");%>
+            <%ForumListHelper.displayForumsList(out, resources, isAdmin, isModerator, isReader, forumId, "main", fsc, null, "", "", isForumSubscriberByInheritance);%>
           </table>
           <c:if test="${sessionController.external || ! isReader}">
             <br />

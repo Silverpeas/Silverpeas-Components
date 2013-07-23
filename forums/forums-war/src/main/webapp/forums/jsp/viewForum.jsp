@@ -32,6 +32,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags/silverpeas/util" %>
 <c:set var="sessionController" value="${requestScope.forumsSessionClientController}" />
 <c:set var="componentId" value="${sessionController.componentId}" />
 <c:set var="isReader" value="${sessionController.reader}" />
@@ -41,22 +42,15 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
-<%@ page import="java.io.IOException"%>
-<%@ page import="com.silverpeas.util.EncodeHelper"%>
 <%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
-<%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail"%>
 <%@ page import="com.stratelia.webactiv.forums.control.helpers.*"%>
 <%@ page import="com.stratelia.webactiv.forums.control.ForumsSessionController"%>
-<%@ page import="com.stratelia.webactiv.forums.models.Forum"%>
-<%@ page import="com.stratelia.webactiv.forums.models.Message"%>
 <%
     ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
         "forumsSessionClientController");
     ResourcesWrapper resources = (ResourcesWrapper)request.getAttribute("resources");
-    ResourceLocator resource = new ResourceLocator(
-        "org.silverpeas.forums.multilang.forumsBundle", fsc.getLanguage());
     if (fsc == null) {
         // No forums session controller in the request -> security exception
         String sessionTimeout = GeneralPropertiesManager.getString("sessionTimeout");
@@ -64,6 +58,8 @@
             .forward(request, response);
         return;
     }
+    ResourceLocator resource = new ResourceLocator(
+      "org.silverpeas.forums.multilang.forumsBundle", fsc.getLanguage());
     String userId = fsc.getUserId();
     boolean isAdmin = fsc.isAdmin();
     boolean isUser = fsc.isUser();
@@ -73,6 +69,8 @@
 
     boolean isModerator = fsc.isModerator(userId, forumId);
     ForumActionHelper.actionManagement(request, isAdmin, isModerator, userId, resource, out, fsc);
+    boolean isForumSubscriberByInheritance =
+      (Boolean) request.getAttribute("isForumSubscriberByInheritance");
 %>
 <c:set var="isModerator" value="<%=isModerator%>" />
 <c:set var="currentForum" value="${requestScope.currentForum}" />
@@ -85,7 +83,6 @@
     <title><c:out value="${currentForum.name}" /></title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <view:looknfeel />
-    <view:includePlugin name="notifier"/>
     <script type="text/javascript" src="<c:url value="/forums/jsp/javaScript/forums.js" />" ></script>
     <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js" />" ></script>
     <script type="text/javascript">
@@ -149,9 +146,7 @@
     </script>
   </head>
   <body id="forum" <%ForumHelper.addBodyOnload(out, fsc);%>>
-  <c:if test="${not empty requestScope.notySuccessMessage}">
-    <div style="display: none" class="notySuccess">${requestScope.notySuccessMessage}</div>
-  </c:if>
+  <tags:displayNotification/>
     <c:set var="viewForumPage">/Rforums/<c:out value="${componentId}" />/viewForum.jsp</c:set>
     <view:browseBar>
       <c:forEach items="${requestScope.parents}" var="ancestor">
@@ -215,7 +210,7 @@
                       <td nowrap="nowrap" align="center"><fmt:message key="operations" /></td>
                     </c:if>
                   </tr>
-                  <%ForumListHelper.displayChildForums(out, resources, isAdmin, isModerator, isReader, forumId, "main", fsc);%>
+                  <%ForumListHelper.displayChildForums(out, resources, isAdmin, isModerator, isReader, forumId, "main", fsc, isForumSubscriberByInheritance);%>
                 </table>
               </td>
             </tr>
@@ -251,7 +246,7 @@
                         </tr><%
 fsc.deployAllMessages(forumId);
 ForumHelper.displayMessagesList(out, resource, userId, isAdmin, isModerator, isReader, true, forumId, false,
-"viewForum", fsc, resources);
+"viewForum", fsc, resources, isForumSubscriberByInheritance);
                         %>
                       </table>
                 </form>

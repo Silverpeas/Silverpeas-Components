@@ -72,9 +72,9 @@ public class ForumListHelper {
     return result;
   }
 
-  public static void displayForumLine(Forum forum, ResourcesWrapper resources, JspWriter out,
+  private static void displayForumLine(Forum forum, ResourcesWrapper resources, JspWriter out,
       int currentPage, String call, boolean admin, boolean moderator, boolean reader, int depth,
-      boolean hasChildren, boolean deployed, ForumsSessionController fsc) {
+      ForumsSessionController fsc, boolean isSubscriberByInheritance) {
     try {
       int forumId = forum.getId();
       String forumName = forum.getName();
@@ -171,8 +171,11 @@ public class ForumListHelper {
           resources.getString("subscribeMessage") + "\"><span class=\"txtnote\">");
       out.print("<div class=\"messageFooter\">");
       out.print("<input name=\"checkbox\" type=\"checkbox\" ");
-      if (isSubscriber) {
+      if (isSubscriber || isSubscriberByInheritance) {
         out.print("checked ");
+        if(!isSubscriber) {
+          out.print("disabled ");
+        }
       }
       out.print("onclick=\"javascript:window.location.href='");
       out.print(ActionUrl
@@ -224,8 +227,8 @@ public class ForumListHelper {
 
   public static void displayForumsList(JspWriter out, ResourcesWrapper resources, boolean admin,
       boolean moderator, boolean reader, int currentForumId, String call,
-      ForumsSessionController fsc,
-      String categoryId, String nom, String description) {
+      ForumsSessionController fsc, String categoryId, String nom, String description,
+      boolean isSubscriberByInheritance) {
     try {
       Forum[] forums = fsc.getForumsListByCategory(categoryId);
 
@@ -260,7 +263,7 @@ public class ForumListHelper {
         out.println("</tr>");
 
         scanForum(forums, resources, out, currentForumId, call, admin, moderator, reader,
-            currentForumId, 0, fsc);
+            currentForumId, 0, fsc, isSubscriberByInheritance);
       }
     } catch (IOException ioe) {
       SilverTrace.info("forums", "JSPforumsListManager.displayForumsList()",
@@ -268,95 +271,58 @@ public class ForumListHelper {
     }
   }
 
-  public static void displayForums(JspWriter out, ResourcesWrapper resources, boolean admin,
-      boolean moderator, boolean reader, int currentForumId, String call,
-      ForumsSessionController fsc,
-      String categoryId) {
-    Forum[] forums = fsc.getForumsListByCategory(categoryId);
-    scanForum(forums, resources, out, currentForumId, call, admin, moderator, reader,
-        currentForumId, 0, fsc);
-  }
-
   public static void displayChildForums(JspWriter out, ResourcesWrapper resources, boolean admin,
-      boolean moderator, boolean reader, int currentForumId, String call, ForumsSessionController fsc) {
+      boolean moderator, boolean reader, int currentForumId, String call,
+      ForumsSessionController fsc, boolean isSubscriberByInheritance) {
     int[] forumIds = fsc.getForumSonsIds(currentForumId);
     for(int forumId : forumIds) {
+
+      // Verifying subscription by inheritance
+      boolean isForumSubscriberByInheritance = isSubscriberByInheritance;
+      if (!isForumSubscriberByInheritance) {
+        isForumSubscriberByInheritance = fsc.isForumSubscriberByInheritance(forumId);
+      }
+
       Forum forum = fsc.getForum(forumId);
       displayForumLine(forum, resources, out, forum.getParentId(), call, admin, moderator, reader,
-          0, false, false, fsc);
+          0, fsc, isForumSubscriberByInheritance);
     }
   }
 
-  public static void scanForum(Forum[] forums, ResourcesWrapper resources, JspWriter out, int currentPage,
-      String call, boolean admin, boolean moderator, boolean reader, int currentForumId, int depth,
-      ForumsSessionController fsc) {
+  private static void scanForum(Forum[] forums, ResourcesWrapper resources, JspWriter out,
+      int currentPage, String call, boolean admin, boolean moderator, boolean reader,
+      int currentForumId, int depth, ForumsSessionController fsc,
+      boolean isSubscriberByInheritance) {
     for (final Forum forum : forums) {
       int forumParent = forum.getParentId();
       if (forumParent == currentForumId) {
         int forumId = forum.getId();
+
+        // Verifying subscription by inheritance
+        boolean isForumSubscriberByInheritance = isSubscriberByInheritance;
+        if (!isForumSubscriberByInheritance) {
+          isForumSubscriberByInheritance = fsc.isForumSubscriberByInheritance(forumId);
+        }
+
         boolean hasChildren = hasChildren(forums, forumId);
         boolean isDeployed = fsc.forumIsDeployed(forumId);
         displayForumLine(forum, resources, out, currentPage, call, admin, moderator, reader, depth,
-            hasChildren, isDeployed, fsc);
+            fsc, isForumSubscriberByInheritance);
         if (hasChildren && isDeployed) {
           scanForum(forums, resources, out, currentPage, call, admin, moderator, reader, forumId,
-              depth + 1, fsc);
+              depth + 1, fsc, isForumSubscriberByInheritance);
         }
       }
     }
   }
 
-  public static boolean hasChildren(Forum[] forums, int currentForumId) {
-    int i = 0;
-    while (i < forums.length) {
-      if (forums[i].getParentId() == currentForumId) {
+  private static boolean hasChildren(Forum[] forums, int currentForumId) {
+    for (Forum forum : forums) {
+      if (forum.getParentId() == currentForumId) {
         return true;
       }
-      i++;
     }
     return false;
-  }
-
-  public static void displayForumsAdminButtons(boolean moderator, OperationPane operationPane,
-      int currentFolderId, String call, ResourceLocator resource) {
-    operationPane.addOperation(ForumHelper.IMAGE_ADD_FORUM, resource.getString("newForum"),
-        ActionUrl.getUrl("editForumInfo", call, 1, currentFolderId, currentFolderId));
-  }
-
-  public static void displayForumsAdminButtonsMain(boolean moderator, OperationPane operationPane,
-      int currentFolderId, String call, ResourceLocator resource) {
-    operationPane.addOperation(ForumHelper.IMAGE_ADD_FORUM, resource.getString("newForum"),
-        ActionUrl.getUrl("editForumInfo", call, 1, currentFolderId, currentFolderId));
-    operationPane.addOperation(ForumHelper.IMAGE_ADD_CATEGORY, resource.getString("forums.addCategory"),
-        "NewCategory");
-  }
-
-  public static int[] displayForumNotation(JspWriter out, ResourcesWrapper resources, int forumId,
-      ForumsSessionController fsc, boolean reader) {
-    try {
-      NotationDetail notation = fsc.getForumNotation(forumId);
-      int globalNote = notation.getRoundGlobalNote();
-      int userNote = notation.getUserNote();
-      out.print("<span class=\"txtnote\">" + resources.getString("forums.forumNote") + " : ");
-      for (int i = 1; i <= 5; i++) {
-        out.print("<img");
-        if (!reader) {
-          out.print(" id=\"notationImg" + i + "\"");
-        }
-        out.print(" style=\"margin-bottom: 0px\" class=\"notation_" + (i <= globalNote ? "on" : "off")
-            + "\" src=\"" + ForumHelper.IMAGE_NOTATION_EMPTY + "\"/>");
-      }
-      out.print(" (" + notation.getNotesCount() + " " + resources.getString("forums.note"));
-      if (userNote > 0) {
-        out.print(" - " + resources.getString("forums.yourNote") + " : " + userNote);
-      }
-      out.println(")</span>");
-      return new int[]{globalNote, userNote};
-    } catch (IOException ioe) {
-      SilverTrace.info("forums", "JSPforumsListManager.displayForumNotation()",
-          "root.EX_NO_MESSAGE", null, ioe);
-      return new int[0];
-    }
   }
 
   private ForumListHelper() {

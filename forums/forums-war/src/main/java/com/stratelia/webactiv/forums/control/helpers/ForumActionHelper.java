@@ -32,6 +32,7 @@ import com.stratelia.webactiv.forums.models.Message;
 import com.stratelia.webactiv.util.ResourceLocator;
 import org.silverpeas.upload.FileUploadManager;
 import org.silverpeas.upload.UploadedFile;
+import org.silverpeas.util.NotifierUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspWriter;
@@ -245,25 +246,23 @@ public class ForumActionHelper {
           }
           case UNSUBSCRIBE_FORUMS: {
             fsc.unsubscribeComponent();
-            request.setAttribute("notySuccessMessage",
-                resource.getString("forums.unsubscribe.success", ""));
+            NotifierUtil.addSuccess(request, resource.getString("forums.unsubscribe.success", ""));
             break;
           }
           case SUBSCRIBE_FORUMS: {
             fsc.subscribeComponent();
-            request.setAttribute("notySuccessMessage",
-                resource.getString("forums.subscribe.success", ""));
+            NotifierUtil.addSuccess(request, resource.getString("forums.subscribe.success", ""));
             break;
           }
           case UNSUBSCRIBE_FORUM: {
             Forum forum = fsc.unsubscribeForum(params);
-            request.setAttribute("notySuccessMessage",
+            NotifierUtil.addSuccess(request,
                 resource.getStringWithParam("forums.forum.unsubscribe.success", forum.getName()));
             break;
           }
           case SUBSCRIBE_FORUM: {
             Forum forum = fsc.subscribeForum(params);
-            request.setAttribute("notySuccessMessage",
+            NotifierUtil.addSuccess(request,
                 resource.getStringWithParam("forums.forum.subscribe.success", forum.getName()));
             break;
           }
@@ -271,16 +270,16 @@ public class ForumActionHelper {
             Message message = fsc.unsubscribeMessage(params);
             String bundleKey = message.isSubject() ? "forums.subject.unsubscribe.success" :
                 "forums.message.unsubscribe.success";
-            request.setAttribute("notySuccessMessage",
-                resource.getStringWithParam(bundleKey, message.getTitle()));
+            NotifierUtil
+                .addSuccess(request, resource.getStringWithParam(bundleKey, message.getTitle()));
             break;
           }
           case SUBSCRIBE_THREAD: {
             Message message = fsc.subscribeMessage(params);
             String bundleKey = message.isSubject() ? "forums.subject.subscribe.success" :
                 "forums.message.subscribe.success";
-            request.setAttribute("notySuccessMessage",
-                resource.getStringWithParam(bundleKey, message.getTitle()));
+            NotifierUtil
+                .addSuccess(request, resource.getStringWithParam(bundleKey, message.getTitle()));
             break;
           }
           case UPDATE_MESSAGE: {
@@ -305,6 +304,15 @@ public class ForumActionHelper {
         SilverTrace.info("forums", "JSPforumsListActionManager", "root.EX_NO_MESSAGE", null, ioe);
       }
     }
+    if (!fsc.isComponentSubscriptionInfoDisplayed() && fsc.isComponentSubscriber()) {
+      NotifierUtil.addInfo(request, fsc.getString("forums.forum.subscribe.info"));
+      fsc.setComponentSubscriptionInfoDisplayed(true);
+    }
+
+    int forumId = ForumHelper.getIntParameter(request, "forumId", 0);
+    request.setAttribute("isForumSubscriberByInheritance",
+        ((forumId == 0) ? fsc.isComponentSubscriber() :
+            fsc.isForumSubscriberByInheritance(forumId)));
   }
 
   private ForumActionHelper() {

@@ -118,6 +118,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   private boolean external = false;
   private boolean resizeFrame = false;
   private List<PdcPosition> positions = null;
+  private boolean componentSubscriptionInfoDisplayed = false;
 
   // Constructeur
   public ForumsSessionController(MainSessionController mainSessionCtrl, ComponentContext context) {
@@ -694,14 +695,23 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   public void unsubscribeComponent() {
     SubscriptionServiceFactory.getFactory().getSubscribeService()
         .unsubscribe(new ComponentSubscription(getUserId(), getComponentId()));
+    setComponentSubscriptionInfoDisplayed(false);
   }
 
   public boolean isMessageSubscriber(int messageId) {
     return getForumsBM().isSubscriber(getMessagePK(messageId), getUserId());
   }
 
+  public boolean isMessageSubscriberByInheritance(int messageId) {
+    return getForumsBM().isSubscriberByInheritance(getMessagePK(messageId), getUserId());
+  }
+
   public boolean isForumSubscriber(int forumId) {
     return getForumsBM().isSubscriber(getForumPK(forumId), getUserId());
+  }
+
+  public boolean isForumSubscriberByInheritance(int forumId) {
+    return getForumsBM().isSubscriberByInheritance(getForumPK(forumId), getUserId());
   }
 
   public boolean isComponentSubscriber() {
@@ -1027,5 +1037,14 @@ public class ForumsSessionController extends AbstractComponentSessionController 
    */
   private void setPositions(List<PdcPosition> positions) {
     this.positions = positions;
+  }
+
+  public boolean isComponentSubscriptionInfoDisplayed() {
+    return componentSubscriptionInfoDisplayed;
+  }
+
+  public void setComponentSubscriptionInfoDisplayed(
+      final boolean componentSubscriptionInfoDisplayed) {
+    this.componentSubscriptionInfoDisplayed = componentSubscriptionInfoDisplayed;
   }
 }

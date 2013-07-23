@@ -1095,25 +1095,25 @@ public class ForumsBMEJB implements ForumsBM {
    */
   @Override
   public Map<SubscriberType, Collection<String>> listAllSubscribers(MessagePK messagePK) {
+    Message message = getMessage(messagePK);
 
     // Subsribers of the message
     Map<SubscriberType, Collection<String>> allSubscribers = SubscriptionUtil
-        .indexSubscriberIdsByType(SubscriptionServiceFactory.getFactory().getSubscribeService()
-            .getSubscribers(ForumMessageSubscriptionResource.from(messagePK)));
+        .indexSubscriberIdsByType(
+            getSubscribeBm().getSubscribers(ForumMessageSubscriptionResource.from(messagePK)));
 
     // Subscribers of parent forum messages if any
-    Message currentMessage = getMessage(messagePK);
-    while (currentMessage.getParentId() > 0) {
+    Message currentMessage = message;
+    while (!currentMessage.isSubject()) {
       currentMessage = getMessage(
           new MessagePK(messagePK.getInstanceId(), currentMessage.getParentIdAsString()));
-      SubscriptionUtil.indexSubscriberIdsByType(allSubscribers,
-          SubscriptionServiceFactory.getFactory().getSubscribeService()
-              .getSubscribers(ForumMessageSubscriptionResource.from(currentMessage.getPk())));
+      SubscriptionUtil.indexSubscriberIdsByType(allSubscribers, getSubscribeBm()
+          .getSubscribers(ForumMessageSubscriptionResource.from(currentMessage.getPk())));
     }
 
     // Subscribers on the attached forum and their fathers if any
     final ForumPK forumParent =
-        new ForumPK(messagePK.getInstanceId(), getMessage(messagePK).getForumIdAsString());
+        new ForumPK(messagePK.getInstanceId(), message.getForumIdAsString());
     SubscriptionUtil
         .mergeIndexedSubscriberIdsByType(allSubscribers, listAllSubscribers(forumParent));
 
@@ -1130,17 +1130,16 @@ public class ForumsBMEJB implements ForumsBM {
 
     // Subscribers of the forum
     Map<SubscriberType, Collection<String>> allSubscribers = SubscriptionUtil
-        .indexSubscriberIdsByType(SubscriptionServiceFactory.getFactory().getSubscribeService()
-            .getSubscribers(ForumSubscriptionResource.from(forumPK)));
+        .indexSubscriberIdsByType(
+            getSubscribeBm().getSubscribers(ForumSubscriptionResource.from(forumPK)));
 
     // Subscribers of parent forums if any
     Forum currentForum = getForum(forumPK);
-    while (currentForum.getParentId() > 0) {
+    while (!currentForum.isRoot()) {
       currentForum =
           getForum(new ForumPK(forumPK.getInstanceId(), currentForum.getParentIdAsString()));
       SubscriptionUtil.indexSubscriberIdsByType(allSubscribers,
-          SubscriptionServiceFactory.getFactory().getSubscribeService()
-              .getSubscribers(ForumSubscriptionResource.from(currentForum.getPk())));
+          getSubscribeBm().getSubscribers(ForumSubscriptionResource.from(currentForum.getPk())));
     }
 
     // Subscribers on component instance id
@@ -1159,8 +1158,7 @@ public class ForumsBMEJB implements ForumsBM {
   @Override
   public Map<SubscriberType, Collection<String>> listAllSubscribers(final String instanceId) {
     return SubscriptionUtil.indexSubscriberIdsByType(
-        SubscriptionServiceFactory.getFactory().getSubscribeService()
-            .getSubscribers(ComponentSubscriptionResource.from(instanceId)));
+        getSubscribeBm().getSubscribers(ComponentSubscriptionResource.from(instanceId)));
   }
 
   /**
@@ -1176,6 +1174,32 @@ public class ForumsBMEJB implements ForumsBM {
   }
 
   /**
+   * Indicates if the given user is subscribed by inheritance to the given forum message identifier.
+   * @param messagePK
+   * @param userId
+   * @return
+   */
+  @Override
+  public boolean isSubscriberByInheritance(final MessagePK messagePK, final String userId) {
+    Message message = getMessage(messagePK);
+
+    // Verify subscriptions on parent forum messages and theur fathers id any
+    Message currentMessage = message;
+    while (!currentMessage.isSubject()) {
+      currentMessage = getMessage(
+          new MessagePK(messagePK.getInstanceId(), currentMessage.getParentIdAsString()));
+      if (isSubscriber(currentMessage.getPk(), userId)) {
+        return true;
+      }
+    }
+
+    // Verify subscriptions on parent forum and their fathers if any
+    final ForumPK forumParent =
+        new ForumPK(messagePK.getInstanceId(), message.getForumIdAsString());
+    return isSubscriber(forumParent, userId) || isSubscriberByInheritance(forumParent, userId);
+  }
+
+  /**
    * Indicates if the given user has subscribed to the given forum identifier.
    * @param forumPK
    * @param userId
@@ -1185,6 +1209,29 @@ public class ForumsBMEJB implements ForumsBM {
   public boolean isSubscriber(final ForumPK forumPK, final String userId) {
     return getSubscribeBm()
         .isUserSubscribedToResource(userId, ForumSubscriptionResource.from(forumPK));
+  }
+
+  /**
+   * Indicates if the given user is subscribed by inheritance to the given forum identifier.
+   * @param forumPK
+   * @param userId
+   * @return
+   */
+  @Override
+  public boolean isSubscriberByInheritance(final ForumPK forumPK, final String userId) {
+
+    // Verify subscriptions on parent forums if any
+  Forum currentForum = getForum(forumPK);
+    while (!currentForum.isRoot()) {
+      currentForum =
+          getForum(new ForumPK(forumPK.getInstanceId(), currentForum.getParentIdAsString()));
+      if (isSubscriber(currentForum.getPk(), userId)) {
+        return true;
+      }
+    }
+
+    // Verify subscriptions on component
+    return isSubscriber(forumPK.getInstanceId(), userId);
   }
 
   /**
@@ -1267,7 +1314,7 @@ public class ForumsBMEJB implements ForumsBM {
    *
    * @return Connection la connection
    */
-  public Connection openConnection() {
+  protected Connection openConnection() {
     try {
       return DBUtil.makeConnection(JNDINames.FORUMS_DATASOURCE);
     } catch (com.stratelia.webactiv.util.exception.UtilException ue) {
@@ -1493,7 +1540,7 @@ public class ForumsBMEJB implements ForumsBM {
         Notation.TYPE_MESSAGE));
   }
 
-  private String getWysiwygContent(String componentId, String messageId) {
+  protected String getWysiwygContent(String componentId, String messageId) {
     String text = "";
     if (WysiwygController.haveGotWysiwyg(componentId, messageId, defaultLanguage)) {
       text = WysiwygController.load(componentId, messageId, defaultLanguage);
@@ -1529,7 +1576,7 @@ public class ForumsBMEJB implements ForumsBM {
    * Gets instance of centralized subscription services.
    * @return
    */
-  private SubscriptionService getSubscribeBm() {
+  protected SubscriptionService getSubscribeBm() {
     return SubscriptionServiceFactory.getFactory().getSubscribeService();
   }
 }

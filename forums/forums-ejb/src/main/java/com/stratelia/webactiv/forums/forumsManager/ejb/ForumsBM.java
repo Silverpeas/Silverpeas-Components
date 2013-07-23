@@ -157,7 +157,11 @@ public interface ForumsBM {
 
   public boolean isSubscriber(MessagePK messagePK, String userId);
 
+  public boolean isSubscriberByInheritance(MessagePK messagePK, String userId);
+
   public boolean isSubscriber(ForumPK forumPK, String userId);
+
+  public boolean isSubscriberByInheritance(ForumPK forumPK, String userId);
 
   public boolean isSubscriber(String instanceId, String userId);
 

@@ -34,6 +34,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags/silverpeas/util" %>
 <c:set var="sessionController" value="${requestScope.forumsSessionClientController}" />
 <c:set var="componentId" value="${sessionController.componentId}" />
 <c:set var="isReader" value="${sessionController.reader}" />
@@ -46,6 +47,7 @@
 <%@ page import="org.silverpeas.upload.UploadedFile"%>
 <%@ page import="java.util.HashMap"%>
 <%@ page import="java.util.Map"%>
+<%@ page import="org.silverpeas.util.NotifierUtil" %>
 <%@ include file="checkForums.jsp"%>
 <%
     int messageId = 0;
@@ -134,8 +136,8 @@
                 messageId = params;
                 bundleKey = message.isSubject() ? "forums.subject.unsubscribe.success" :
                     "forums.message.unsubscribe.success";
-                request.setAttribute("notySuccessMessage",
-                    resource.getStringWithParam(bundleKey, message.getTitle()));
+                NotifierUtil
+                  .addSuccess(request, resource.getStringWithParam(bundleKey, message.getTitle()));
                 break;
 
             case 14 :
@@ -143,8 +145,7 @@
                 messageId = params;
                 bundleKey = message.isSubject() ? "forums.subject.subscribe.success" :
                     "forums.message.subscribe.success";
-                request.setAttribute("notySuccessMessage",
-                    resource.getStringWithParam(bundleKey, message.getTitle()));
+                NotifierUtil.addSuccess(request, resource.getStringWithParam(bundleKey, message.getTitle()));
                 break;
 
             case 15 :
@@ -196,6 +197,9 @@
         pageContext.setAttribute("title", message.getTitle());
         Message[] messages = fsc.getMessagesList(folderId, currentMessageId);
         int messagesCount = messages.length;
+        boolean isMessageSubscriberByInheritance =
+          fsc.isMessageSubscriberByInheritance(currentMessageId);
+        boolean isAllMessageSubscriberByInheritance = isMessageSubscriberByInheritance;
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -310,9 +314,7 @@
     </script>
 </head>
 <body id="forum<%=forumId%>" class="forum" <%addBodyOnload(out, fsc);%>>
-<c:if test="${not empty requestScope.notySuccessMessage}">
-  <div style="display: none" class="notySuccess">${requestScope.notySuccessMessage}</div>
-</c:if>
+<tags:displayNotification/>
 <%
 
         Window window = graphicFactory.getWindow();
@@ -357,7 +359,10 @@
         forumNotes = ForumHelper.displayMessageNotation(out, resources, currentMessageId, fsc, isReader);
               %></div>
             <%
-                ForumHelper.displaySingleMessageList(out, resource, userId, isAdmin, isModerator, isReader, false, folderId, messageId, true, "viewForum", fsc, resources);
+              ForumHelper
+                  .displaySingleMessageList(out, resource, userId, isAdmin, isModerator, isReader,
+                      false, folderId, messageId, true, "viewForum", fsc, resources,
+                      isMessageSubscriberByInheritance);
                 %>
            <%
 
@@ -393,6 +398,7 @@
 
         Map<String, Integer> authorNbMessages = new HashMap<String, Integer>();
         int nbMessages;
+        isMessageSubscriberByInheritance = isAllMessageSubscriberByInheritance;
         for (int i = 0, n = messages.length; i < n; i++)  {
             Message currentMessage = messages[i];
             int currentId = currentMessage.getId();
@@ -410,6 +416,9 @@
             }
             String text = currentMessage.getText();
           boolean isSubscriber = fsc.isMessageSubscriber(currentId);
+          if (!isAllMessageSubscriberByInheritance) {
+            isMessageSubscriberByInheritance = fsc.isMessageSubscriberByInheritance(currentId);
+          }
           if (!authorNbMessages.containsKey(authorId)) {
               nbMessages = fsc.getAuthorNbMessages(authorId);
               authorNbMessages.put(authorId, nbMessages);
@@ -469,7 +478,8 @@
                                       <%=text%>
                                     </div>
                                   <div class="messageFooter">
-                                        <input name="checkbox" type="checkbox" <%if (isSubscriber) {%>checked<%}%>
+                                        <input name="checkbox" type="checkbox" <%if (isSubscriber || isMessageSubscriberByInheritance) {%>checked<%}%>
+                                               <%if (!isSubscriber && isMessageSubscriberByInheritance) {%> disabled <%}%>
                                                 onclick="javascript:window.location.href='viewMessage.jsp?action=<%=(isSubscriber ? 13 : 14)%>&params=<%=currentId%>&forumId=<%=forumId%>'"/>
                                                 <span class="texteLabelForm"><%=resource.getString("subscribeMessage")%></span>
                                              <% if (forumActive) { %>

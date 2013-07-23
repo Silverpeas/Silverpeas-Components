@@ -32,10 +32,11 @@ import com.stratelia.webactiv.forums.control.ForumsSessionController;
 import com.stratelia.webactiv.forums.models.Message;
 import com.stratelia.webactiv.forums.url.ActionUrl;
 import com.stratelia.webactiv.util.ResourceLocator;
-import java.io.IOException;
-import java.util.Date;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspWriter;
+import java.io.IOException;
+import java.util.Date;
 
 /**
  * @author ehugonnet
@@ -105,10 +106,11 @@ public class ForumHelper {
     }
   }
 
-  public static void displayMessageLine(Message message, JspWriter out, ResourceLocator resource,
+
+  private static void displayMessageLine(Message message, JspWriter out, ResourceLocator resource,
       String userId, boolean admin, boolean moderator, boolean reader, boolean view, int depth,
-      boolean hasChildren, boolean deployed, boolean forumActive, boolean simpleMode, String call,
-      ForumsSessionController fsc, ResourcesWrapper resources) {
+      boolean simpleMode, String call, ForumsSessionController fsc, ResourcesWrapper resources,
+      final boolean isSubscriberByInheritance) {
     try {
       int messageId = message.getId();
       String messageTitle = message.getTitle();
@@ -120,7 +122,6 @@ public class ForumHelper {
       }
       int forumId = message.getForumId();
       boolean isSubscriber = fsc.isMessageSubscriber(messageId);
-      int cellsCount = 0;
       String cellWidth = (simpleMode ? " width=\"15\"" : "");
       int lineHeight = ((fsc.isExternal() && reader) ? 16 : 24);
       // isAutorized : si l'utilisateur est autorisé à modifier le message
@@ -131,18 +132,22 @@ public class ForumHelper {
 
         // abonnement
         out.print("    <td" + cellWidth + ">");
-        if (isSubscriber) {
-          out.print("<a href=\"");
-          out.print(ActionUrl.getUrl(
-              (view ? "viewForum" : "viewMessage"), call, 13, messageId, forumId));
-          out.print("\"><img src=\"icons/abonn_message.gif\" border=\"0\" alt=\""
-              + resource.getString("unsubscribeMessage") + "\" title=\""
-              + resource.getString("unsubscribeMessage") + "\"></a>");
+        if (isSubscriber || isSubscriberByInheritance) {
+          out.print("<div class=\"messageFooter\">");
+          out.print("<input name=\"checkbox\" type=\"checkbox\" checked ");
+          if (!isSubscriber) {
+            out.print("disabled ");
+          } else {
+            out.print("title=\"" + resource.getString("unsubscribeMessage") + "\" ");
+          }
+          out.print("onclick=\"javascript:window.location.href='");
+          out.print(
+              ActionUrl.getUrl((view ? "viewForum" : "viewMessage"), call, 13, messageId, forumId));
+          out.print("'\"/></div>");
         } else {
           out.print("&nbsp;");
         }
         out.println("</td>");
-        cellsCount++;
 
         out.print("    <td" + cellWidth + ">");
 
@@ -154,7 +159,6 @@ public class ForumHelper {
         }
         out.println("</td>");
 
-        cellsCount++;
         // Titre du message
         out.print("    <td class=\"txtnote\">");
         out.print("<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">");
@@ -186,7 +190,6 @@ public class ForumHelper {
           out.println(" - " + resource.getString("refused"));
         }
         out.println("</span>");
-        cellsCount++;
 
         out.print("</a>");
         out.print("</td>");
@@ -215,19 +218,16 @@ public class ForumHelper {
             out.print("</a>");
           }
           out.println("</span></td>");
-          cellsCount++;
 
           // Nombres de réponses
           out.print("    <td align=\"center\"><span class=\"txtnote\">");
           out.print(fsc.getNbResponses(forumId, messageId));
           out.println("</span></td>");
-          cellsCount++;
 
           // Nombres de vues
           out.print("    <td align=\"center\"><span class=\"txtnote\">");
           out.print(fsc.getMessageStat(messageId));
           out.println("</span></td>");
-          cellsCount++;
 
           // Notation
           NotationDetail notation = fsc.getMessageNotation(messageId);
@@ -288,7 +288,6 @@ public class ForumHelper {
         }
 
         out.println("</td>");
-        cellsCount++;
       }
 
       out.println("  </tr>");
@@ -301,12 +300,13 @@ public class ForumHelper {
 
   public static void displayMessagesList(JspWriter out, ResourceLocator resource, String userId,
       boolean admin, boolean moderator, boolean reader, boolean view, int currentForumId,
-      boolean simpleMode, String call, ForumsSessionController fsc, ResourcesWrapper resources) {
+      boolean simpleMode, String call, ForumsSessionController fsc, ResourcesWrapper resources,
+      boolean isSubscriberByInheritance) {
     try {
       Message[] messages = fsc.getMessagesList(currentForumId);
       if (messages.length > 0) {
-        scanMessage(messages, out, resource, userId, currentForumId, admin, moderator, reader,
-            view, 0, 0, 0, simpleMode, call, fsc, resources);
+        scanMessage(messages, out, resource, userId, currentForumId, admin, moderator, reader, view,
+            0, 0, 0, simpleMode, call, fsc, resources, isSubscriberByInheritance);
       } else {
         int colspan = 6;
         if (admin || moderator) {
@@ -322,10 +322,9 @@ public class ForumHelper {
   }
 
   public static void displaySingleMessageList(JspWriter out, ResourceLocator resource,
-      String userId,
-      boolean admin, boolean moderator, boolean reader, boolean view, int currentForumId,
-      int messageId, boolean simpleMode, String call, ForumsSessionController fsc,
-      ResourcesWrapper resources) {
+      String userId, boolean admin, boolean moderator, boolean reader, boolean view,
+      int currentForumId, int messageId, boolean simpleMode, String call,
+      ForumsSessionController fsc, ResourcesWrapper resources, boolean isSubscriberByInheritance) {
     try {
       int parent = fsc.getMessageParentId(messageId);
       while (parent > 0) {
@@ -339,17 +338,18 @@ public class ForumHelper {
         out
             .println(
             "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\" class=\"principal-message\">");
-        displayOneMessage(messages, out, resource, userId, currentForumId, admin, moderator,
-            reader, view, messageId, 0, simpleMode, call, fsc, resources);
+
+        displayOneMessage(messages, out, resource, userId, admin, moderator, reader, view,
+            messageId, 0, simpleMode, call, fsc, resources, isSubscriberByInheritance);
         out.println("</table>");
 
         if (messagesCount > 1) {
           out.println("<div class=\"answer-message\" id=\"msgDiv\">");
-          out
-              .println(
-              "<table id=\"msgTable\" width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\">");
-          scanMessage(messages, out, resource, userId, currentForumId, admin, moderator,
-              reader, view, messageId, 1, -1, simpleMode, call, fsc, resources);
+          out.println("<table id=\"msgTable\" width=\"100%\" border=\"0\" cellspacing=\"0\" " +
+              "cellpadding" +
+              "=\"2\">");
+          scanMessage(messages, out, resource, userId, currentForumId, admin, moderator, reader,
+              view, messageId, 1, -1, simpleMode, call, fsc, resources, isSubscriberByInheritance);
           out.println("</table>");
           out.println("</div>");
         }
@@ -374,84 +374,58 @@ public class ForumHelper {
     }
   }
 
-  public static void scanMessage(Message[] messages, JspWriter out, ResourceLocator resource,
-      String userId,
-      int currentPage, boolean admin, boolean moderator, boolean reader, boolean view,
-      int currentMessageId, int depth, int maxDepth, boolean simpleMode, String call,
-      ForumsSessionController fsc, ResourcesWrapper resources) {
-    for (int i = 0; i < messages.length; i++) {
-      Message message = messages[i];
+  private static void scanMessage(Message[] messages, JspWriter out, ResourceLocator resource,
+      String userId, int currentPage, boolean admin, boolean moderator, boolean reader,
+      boolean view, int currentMessageId, int depth, int maxDepth, boolean simpleMode, String call,
+      ForumsSessionController fsc, ResourcesWrapper resources, boolean isSubscriberByInheritance) {
+    for (Message message : messages) {
       int parentId = message.getParentId();
       if (parentId == currentMessageId) {
         int messageId = message.getId();
+
+        // Verifying subscription by inheritance
+        boolean isMessageSubscriberByInheritance = isSubscriberByInheritance;
+        if (!isMessageSubscriberByInheritance) {
+          isMessageSubscriberByInheritance = fsc.isMessageSubscriberByInheritance(messageId);
+        }
+
+        displayMessageLine(message, out, resource, userId, admin, moderator, reader, view, depth,
+            simpleMode, call, fsc, resources, isMessageSubscriberByInheritance);
         boolean hasChildren = hasMessagesChildren(messages, messageId);
-        // boolean isDeployed = fsc.messageIsDeployed(messageId);
-        boolean isDeployed = true;
-        displayMessageLine(message, out, resource, userId, admin, moderator, reader, view,
-            depth, hasChildren, isDeployed, fsc.isForumActive(currentPage), simpleMode, call, fsc,
-            resources);
-        if (hasChildren && isDeployed && (maxDepth == -1 || depth < maxDepth)) {
-          scanMessage(messages, out, resource, userId, currentPage, admin, moderator, reader,
-              view, messageId, (depth + 1), maxDepth, simpleMode, call, fsc, resources);
+        if (hasChildren && (maxDepth == -1 || depth < maxDepth)) {
+          scanMessage(messages, out, resource, userId, currentPage, admin, moderator, reader, view,
+              messageId, (depth + 1), maxDepth, simpleMode, call, fsc, resources,
+              isMessageSubscriberByInheritance);
         }
       }
     }
   }
 
-  public static void deployAll(Message[] messages, ForumsSessionController fsc) {
-    for (int i = 0; i < messages.length; i++) {
-      fsc.deployMessage(messages[i].getId());
-    }
-  }
-
-  public static void displayOneMessage(Message[] messages, JspWriter out, ResourceLocator resource,
-      String userId, int currentPage, boolean admin, boolean moderator, boolean reader,
-      boolean view,
-      int currentMessageId, int depth, boolean simpleMode, String call,
-      ForumsSessionController fsc,
-      ResourcesWrapper resources) {
+  private static void displayOneMessage(Message[] messages, JspWriter out, ResourceLocator resource,
+      String userId, boolean admin, boolean moderator, boolean reader, boolean view,
+      int currentMessageId, int depth, boolean simpleMode, String call, ForumsSessionController fsc,
+      ResourcesWrapper resources, boolean isSubscriberByInheritance) {
     int i = 0;
     boolean loop = true;
     while ((i < messages.length) && loop) {
       Message message = messages[i];
       int messageId = message.getId();
       if (messageId == currentMessageId) {
-        boolean hasChildren = hasMessagesChildren(messages, messageId);
-        boolean isDeployed = fsc.messageIsDeployed(messageId);
-        displayMessageLine(message, out, resource, userId, admin, moderator, reader, view,
-            depth, hasChildren, isDeployed, fsc.isForumActive(currentPage), simpleMode, call, fsc,
-            resources);
+        displayMessageLine(message, out, resource, userId, admin, moderator, reader, view, depth,
+            simpleMode, call, fsc, resources, isSubscriberByInheritance);
         loop = false;
       }
       i++;
     }
   }
 
-  public static boolean hasMessagesChildren(Message[] messages, int messageId) {
-    int i = 0;
-    while (i < messages.length) {
-      if (messages[i].getParentId() == messageId) {
+  private static boolean hasMessagesChildren(Message[] messages, int messageId) {
+    for (Message message : messages) {
+      if (message.getParentId() == messageId) {
         return true;
       }
-      i++;
     }
     return false;
-  }
-
-  public static void displayMessagesAdminButtons(boolean moderator, int forumActive, JspWriter out,
-      int currentFolderId, String call, ResourceLocator resource) {
-    try {
-      if (forumActive == 1) {
-        out.print("<a href=\""
-            + ActionUrl.getUrl("editMessage", call, 1, currentFolderId, currentFolderId)
-            + "\"><img src=\"icons/fo_newmessage.gif\" width=\"25\" height=\"26\" "
-            + "border=\"0\" alt=\"" + resource.getString("newMessage") + "\" title=\""
-            + resource.getString("newMessage") + "\"></a>");
-      }
-    } catch (IOException ioe) {
-      SilverTrace.info("forums", "JSPmessagesListManager.displayMessagesAdminButtons()",
-          "root.EX_NO_MESSAGE", null, ioe);
-    }
   }
 
   public static int[] displayMessageNotation(JspWriter out, ResourcesWrapper resources,
@@ -478,8 +452,9 @@ public class ForumHelper {
       out.println(")</span>");
       return new int[] { globalNote, userNote };
     } catch (IOException ioe) {
-      SilverTrace.info("forums", "JSPforumsListManager.displayForumNotation()",
-          "root.EX_NO_MESSAGE", null, ioe);
+      SilverTrace
+          .info("forums", "JSPforumsListManager.displayMessageNotation()", "root.EX_NO_MESSAGE",
+              null, ioe);
       return new int[0];
     }
   }
