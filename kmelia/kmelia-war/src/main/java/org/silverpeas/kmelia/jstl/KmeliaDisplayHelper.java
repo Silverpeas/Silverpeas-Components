@@ -373,7 +373,7 @@ public class KmeliaDisplayHelper {
           }
           out.println("<tr>");
           out.print("<td><img alt=\"\" src=\"" + document_version.getDisplayIcon()
-              + "\" width=20>&nbsp;<A href=\"" + document_version.getAttachmentURL()
+              + "\" width=20>&nbsp;<A href=\"" + webContext+document_version.getAttachmentURL()
               + "\" target=\"_blank\">" + title + "</a>");
           if (document_version.isVersioned()) {
             out.println("&nbsp;(v" + document_version.getMajorVersion() + "." + document_version
