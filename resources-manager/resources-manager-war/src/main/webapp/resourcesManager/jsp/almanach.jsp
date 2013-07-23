@@ -46,6 +46,7 @@
 <c:set var="isResponsible" value="${requestScope.IsResponsible}"/>
 <c:set var="viewContext" value="${requestScope.viewContext}"/>
 <c:set var="componentInstanceId" value="${viewContext.componentInstanceId}"/>
+<c:set var="personalReservations" value="myReservation"/>
 <c:set var="allReservations" value="allReservations"/>
 <c:set var="categoryId" value="${viewContext.categoryId}"/>
 <c:set var="resourceId" value="${viewContext.resourceId}"/>
