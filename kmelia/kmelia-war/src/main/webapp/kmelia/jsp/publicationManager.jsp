@@ -456,6 +456,17 @@
         if (window.publicVersionsWindow != null)
           window.publicVersionsWindow.close();
       }
+      
+      function getExtension(filename) {
+    	  var indexPoint = filename.lastIndexOf(".");
+    	  // on verifie qu il existe une extension au nom du fichier
+    	  if (indexPoint != -1) {
+    	    // le fichier contient une extension. On recupere l extension
+    	    var ext = filename.substring(indexPoint + 1);
+    	    return ext;
+    	  }
+    	  return null;
+    	}
 
       function isCorrectForm() {
         var errorMsg = "";
@@ -532,16 +543,22 @@
                  if ($('#thumbnailFile').val() == '' && $('#thumbnail').attr("src") == 'null') {
                 	 errorMsg+=" - '<%=resources.getString("Thumbnail")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
                      errorNb++;
-                 }
-				 if($('#thumbnail').attr("src") == 'null'){
-					var logicalName = $('#thumbnailFile').val();
-					var type = logicalName.substring(logicalName.lastIndexOf(".") + 1, logicalName.length);
-                 	if (type != 'gif' && type != 'jpg' && type != 'jpeg' && type != 'png') {
-                 		errorMsg+=" - '<%=resources.getString("Thumbnail")%>' <%=resources.getString("kmelia.EX_MSG_WRONG_TYPE_ERROR")%>\n";
-                        errorNb++;
-                    }
-                 }
-
+                 } 
+             }
+             
+             if($('#thumbnailFile').val() != '') {
+            	 var logicalName = $('#thumbnailFile').val();
+            	 var extension = getExtension(logicalName);
+            	 if (extension == null) {
+            	 	errorMsg += " - '<%=resources.getString("Thumbnail")%>' <%=resources.getString("kmelia.EX_MSG_WRONG_TYPE_ERROR")%>\n";
+            	    errorNb++;
+				 } else {
+					extension = extension.toLowerCase();
+            	    if ( (extension != "gif") && (extension != "jpeg") && (extension != "jpg") && (extension != "png") ) {
+            	    	errorMsg += " - '<%=resources.getString("Thumbnail")%>' <%=resources.getString("kmelia.EX_MSG_WRONG_TYPE_ERROR")%>\n";
+            	        errorNb++;
+					}
+				}
              }
 
              <% if(!kmaxMode && "New".equals(action)) { %>

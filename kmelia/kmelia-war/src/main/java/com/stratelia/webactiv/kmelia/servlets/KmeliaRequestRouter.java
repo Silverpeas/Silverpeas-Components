@@ -23,25 +23,6 @@
  */
 package com.stratelia.webactiv.kmelia.servlets;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URLEncoder;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.silverpeas.importExport.versioning.DocumentVersion;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
@@ -66,7 +47,6 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.ZipManager;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
-
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -90,6 +70,7 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAAttributeValuePair;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
@@ -100,17 +81,32 @@ import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
 import com.stratelia.webactiv.util.publication.model.Alias;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-
+import java.io.File;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.servlet.http.HttpServletRequest;
+import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.CharEncoding;
+import org.silverpeas.importExport.versioning.DocumentVersion;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 import org.xml.sax.SAXException;
 
 public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionController> {
 
   private static final long serialVersionUID = 1L;
-  private static final StatisticRequestHandler statisticRequestHandler
-      = new StatisticRequestHandler();
+  private static final StatisticRequestHandler statisticRequestHandler =
+      new StatisticRequestHandler();
 
   /**
    * This method creates a KmeliaSessionController instance
@@ -1840,7 +1836,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     String physicalName = null;
     if (file != null) {
       String logicalName = file.getName().replace('\\', '/');
-      if (logicalName != null) {
+      if (StringUtil.isDefined(logicalName)) {
         logicalName = logicalName.substring(logicalName.lastIndexOf('/') + 1, logicalName.length());
         mimeType = FileUtil.getMimeType(logicalName);
         String type = FileRepositoryManager.getFileExtension(logicalName);
@@ -1853,6 +1849,10 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           }
           File target = new File(dir, physicalName);
           file.write(target);
+        } else {
+          throw new ThumbnailRuntimeException("KmeliaRequestRouter.processVignette()",
+              SilverpeasRuntimeException.ERROR,
+              "thumbnail_EX_MSG_WRONG_TYPE_ERROR");
         }
       }
     }
@@ -1883,13 +1883,13 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           kmelia.getPublicationBm().createIndex(publication.getPK());
         }
       } catch (ThumbnailRuntimeException e) {
-        SilverTrace.error("Thumbnail", "ThumbnailRequestRouter.addThumbnail",
-            "root.MSG_GEN_PARAM_VALUE", e);
+        SilverTrace.error("thumbnail", "KmeliaRequestRouter.processVignette",
+            "thumbnail_MSG_UPDATE_THUMBNAIL_KO", e);
         try {
           ThumbnailController.deleteThumbnail(detail);
         } catch (Exception exp) {
-          SilverTrace.info("Thumbnail", "ThumbnailRequestRouter.addThumbnail - remove after error",
-              "root.MSG_GEN_PARAM_VALUE", exp);
+          SilverTrace.info("thumbnail", "KmeliaRequestRouter.processVignette",
+              "thumbnail_MSG_DELETE_THUMBNAIL_KO", exp);
         }
       }
     }
@@ -2093,8 +2093,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     String infoId = pubDetail.getInfoId();
     String pubId = pubDetail.getPK().getId();
     if (!StringUtil.isInteger(infoId)) {
-      PublicationTemplateImpl pubTemplate
-          = (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
+      PublicationTemplateImpl pubTemplate =
+          (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
           pubDetail.getPK().getInstanceId() + ":" + infoId);
 
       // RecordTemplate recordTemplate = pubTemplate.getRecordTemplate();
