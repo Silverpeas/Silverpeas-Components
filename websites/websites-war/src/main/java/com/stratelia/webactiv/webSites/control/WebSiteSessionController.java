@@ -852,7 +852,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
       throws WebSitesException {
     try {
       String idPub = webSiteEjb.getIdPublication(getComponentId(),idSite);
-      webSiteEjb.updateClassification(new PublicationPK(idSite, getComponentId()), arrayTopic);
+      webSiteEjb.updateClassification(new PublicationPK(idPub, getComponentId()), arrayTopic);
     } catch (Exception re) {
       throw new WebSitesException("WebSiteSessionController.updateClassification",
           SilverpeasException.ERROR, "webSites.EX_PUBLICATION_UPDATE_FAILED", "site id =" + idSite,

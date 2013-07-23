@@ -363,6 +363,7 @@ public class WebSiteBmEJB implements WebSiteBm {
     SilverTrace.info("webSites", "WebSiteBmEJB.createPublication()",
         "root.MSG_GEN_PARAM_VALUE", "pubDetail = " + pubDetail);
     pubDetail.getPK().setComponentName(componentId);
+    pubDetail.setStatus(PublicationDetail.VALID);
     try {
       // create the publication
       PublicationPK pubPK = publicationBm.createPublication(pubDetail);
