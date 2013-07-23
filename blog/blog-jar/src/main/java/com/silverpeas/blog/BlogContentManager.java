@@ -27,9 +27,11 @@ import java.util.List;
 
 import com.silverpeas.blog.model.BlogRuntimeException;
 
+import com.stratelia.silverpeas.classifyEngine.ClassifyEngine;
 import com.stratelia.silverpeas.contentManager.ContentInterface;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
+import com.stratelia.silverpeas.contentManager.SilverContentVisibility;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
@@ -72,8 +74,18 @@ public class BlogContentManager implements ContentInterface, java.io.Serializabl
     } catch (Exception e) {
       throw new BlogRuntimeException("BlogContentManager.getSilverObjectId()",
           SilverpeasRuntimeException.ERROR,
-          "kmelia.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e);
+          "blog.EX_GET_CONTENT_PDC", e);
     }
+  }
+  
+  /**
+   * return true if the publication is in Valid status
+   *
+   * @param pubDetail the pubDetail
+   * @return boolean
+   */
+  private boolean isVisible(PublicationDetail pubDetail) {
+    return PublicationDetail.VALID.equals(pubDetail.getStatus());
   }
 
   /**
@@ -86,11 +98,13 @@ public class BlogContentManager implements ContentInterface, java.io.Serializabl
    */
   public int createSilverContent(Connection con, PublicationDetail pubDetail,
       String userId) throws ContentManagerException {
-    // SilverTrace.info("blog","BlogContentManager.createSilverContent()",
-    // "root.MSG_GEN_ENTER_METHOD",
-    // "SilverContentVisibility = "+scv.toString());
+    SilverContentVisibility scv = new SilverContentVisibility(pubDetail
+        .getBeginDate(), pubDetail.getEndDate(), isVisible(pubDetail)); 
+    SilverTrace.info("blog","BlogContentManager.createSilverContent()",
+     "root.MSG_GEN_ENTER_METHOD",
+     "SilverContentVisibility = "+scv.toString());
     return getContentManager().addSilverContent(con, pubDetail.getPK().getId(),
-        pubDetail.getPK().getComponentName(), userId);
+        pubDetail.getPK().getComponentName(), userId, scv);
   }
 
   /**
@@ -151,13 +165,64 @@ public class BlogContentManager implements ContentInterface, java.io.Serializabl
     }
     return headers;
   }
+  
+  /**
+   * update the visibility attributes of the content.
+   *
+   * @param SilverContentVisibility 
+   * @param pubDetail the pubDetail
+   * @param silverContentId
+   */
+  private void updateSilverContentVisibility(SilverContentVisibility scv,
+      PublicationDetail pubDetail, int silverContentId)
+      throws ContentManagerException {
+    if (silverContentId == -1) {
+      createSilverContent(null, pubDetail, pubDetail.getUpdaterId());
+    } else {
+      getContentManager().updateSilverContentVisibilityAttributes(scv,
+          pubDetail.getPK().getComponentName(), silverContentId);
+    }
+    ClassifyEngine.clearCache();
+  }
+
+  
+  /**
+   * update the visibility attributes of the content. Here, the type of content is a
+   * PublicationDetail
+   *
+   * @param pubDetail the content
+   * @param boolean is pubDetail visible
+   */
+  public void updateSilverContentVisibility(PublicationDetail pubDetail,
+      boolean isVisible) throws ContentManagerException {
+    int silverContentId = getContentManager().getSilverContentId(
+        pubDetail.getPK().getId(), pubDetail.getPK().getComponentName());
+    SilverContentVisibility scv = new SilverContentVisibility(pubDetail
+        .getBeginDate(), pubDetail.getEndDate(), isVisible);
+    SilverTrace.info("blog",
+        "BlogContentManager.updateSilverContentVisibility()",
+        "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = "
+        + scv.toString());
+    updateSilverContentVisibility(scv, pubDetail, silverContentId);
+  }
+  
+  /**
+   * update the visibility attributes of the content. Here, the type of content is a
+   * PublicationDetail
+   *
+   * @param pubDetail the content
+   */
+  public void updateSilverContentVisibility(PublicationDetail pubDetail)
+      throws ContentManagerException {
+    updateSilverContentVisibility(pubDetail, isVisible(pubDetail));
+  }
 
   private ContentManager getContentManager() {
     if (contentManager == null) {
       try {
         contentManager = new ContentManager();
       } catch (Exception e) {
-        SilverTrace.fatal("blog", "blogContentManager",
+        SilverTrace.fatal("blog", "BlogContentManager.getContentManager()",
             "root.EX_UNKNOWN_CONTENT_MANAGER", e);
       }
     }
@@ -171,7 +236,7 @@ public class BlogContentManager implements ContentInterface, java.io.Serializabl
             PublicationBm.class);
       } catch (Exception e) {
         throw new BlogRuntimeException("BlogContentManager.getPublicationBm()",
-            SilverpeasRuntimeException.ERROR, "blog.EX_IMPOSSIBLE_DE_FABRIQUER_PUBLICATIONBM_HOME",
+            SilverpeasRuntimeException.ERROR, "blog.EX_GET_PUBLICATIONBM_OBJECT",
             e);
       }
     }
