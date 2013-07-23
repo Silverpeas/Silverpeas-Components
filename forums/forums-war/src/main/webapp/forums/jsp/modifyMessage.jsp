@@ -112,7 +112,7 @@
                             </td>
                         </tr>
                     </table>
-                    </br>
+                    <br/>
                     <%
 
     String backUrl = ActionUrl.getUrl("viewMessage", "viewForum", 1, messageId, forumId);

@@ -20,6 +20,20 @@
  */
 package com.stratelia.webactiv.forums.forumsManager.ejb;
 
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.forums.forumsException.ForumsRuntimeException;
+import com.stratelia.webactiv.forums.models.Forum;
+import com.stratelia.webactiv.forums.models.ForumDetail;
+import com.stratelia.webactiv.forums.models.ForumPK;
+import com.stratelia.webactiv.forums.models.Message;
+import com.stratelia.webactiv.forums.models.MessagePK;
+import com.stratelia.webactiv.forums.models.Moderator;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import com.stratelia.webactiv.util.exception.UtilException;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -34,20 +48,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
-import com.silverpeas.util.StringUtil;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.forums.forumsException.ForumsRuntimeException;
-import com.stratelia.webactiv.forums.models.Forum;
-import com.stratelia.webactiv.forums.models.ForumDetail;
-import com.stratelia.webactiv.forums.models.ForumPK;
-import com.stratelia.webactiv.forums.models.Message;
-import com.stratelia.webactiv.forums.models.MessagePK;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.exception.UtilException;
 
 /**
  * Class managing database accesses for forums.
@@ -85,12 +85,6 @@ public class ForumsDAO {
       + ", " + MESSAGE_COLUMN_FORUM_ID + ", "
       + MESSAGE_COLUMN_MESSAGE_PARENT_ID + ", " + MESSAGE_COLUMN_MESSAGE_DATE + " , "
       + MESSAGE_COLUMN_STATUS;
-  // Subscriptions table.
-  private static final String SUBSCRIPTION_TABLE = "SC_Forums_Subscription";
-  private static final String SUBSCRIPTION_COLUMN_USER_ID = "userId";
-  private static final String SUBSCRIPTION_COLUMN_MESSAGE_ID = "messageId";
-  private static final String SUBSCRIPTION_COLUMNS = SUBSCRIPTION_COLUMN_USER_ID
-      + ", " + SUBSCRIPTION_COLUMN_MESSAGE_ID;
   // Rights table.
   private static final String RIGHTS_TABLE = "SC_Forums_Rights";
   private static final String RIGHTS_COLUMN_USER_ID = "userId";
@@ -137,11 +131,6 @@ public class ForumsDAO {
       + FORUM_COLUMNS + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
   private static final String QUERY_UPDATE_FORUM = "UPDATE sc_forums_forum SET forumName = ?, "
       + "forumDescription = ?, forumParent = ?, instanceId = ?, categoryId = ? WHERE forumId = ? ";
-  private static final String QUERY_DELETE_FORUM_SUBSCRIPTION = "DELETE FROM "
-      + SUBSCRIPTION_TABLE + " WHERE " + SUBSCRIPTION_COLUMN_MESSAGE_ID
-      + " IN (SELECT DISTINCT CAST(" + MESSAGE_COLUMN_MESSAGE_ID
-      + " AS VARCHAR(255))" + " FROM " + MESSAGE_TABLE + " WHERE "
-      + MESSAGE_COLUMN_FORUM_ID + " = ?)";
   private static final String QUERY_DELETE_FORUM_RIGHTS = "DELETE FROM "
       + RIGHTS_TABLE + " WHERE " + RIGHTS_COLUMN_FORUM_ID + " = ?";
   private static final String QUERY_DELETE_FORUM_MESSAGE = "DELETE FROM "
@@ -703,10 +692,7 @@ public class ForumsDAO {
     try {
       SilverTrace.info("forums", "ForumsDAO.deleteForum()",
           "root.MSG_GEN_PARAM_VALUE", "deleteQuery  = "
-          + QUERY_DELETE_FORUM_SUBSCRIPTION);
-      deleteStmt = con.prepareStatement(QUERY_DELETE_FORUM_SUBSCRIPTION);
-      deleteStmt.setInt(1, forumId);
-      deleteStmt.executeUpdate();
+          + QUERY_DELETE_FORUM_FORUM);
 
       deleteStmt = con.prepareStatement(QUERY_DELETE_FORUM_RIGHTS);
       deleteStmt.setString(1, sForumId);
@@ -1489,11 +1475,6 @@ public class ForumsDAO {
   }
   private static final String QUERY_DELETE_MESSAGE_MESSAGE = "DELETE FROM "
       + MESSAGE_TABLE + " WHERE " + MESSAGE_COLUMN_MESSAGE_ID + " = ?";
-  private static final String QUERY_DELETE_MESSAGE_SUBSCRIPTION = "DELETE FROM "
-      + SUBSCRIPTION_TABLE
-      + " WHERE "
-      + SUBSCRIPTION_COLUMN_MESSAGE_ID
-      + " = ?";
 
   /**
    * Deletes the message corresponding to the primary key.
@@ -1512,10 +1493,6 @@ public class ForumsDAO {
     try {
       deleteStmt = con.prepareStatement(QUERY_DELETE_MESSAGE_MESSAGE);
       deleteStmt.setInt(1, Integer.parseInt(messagePK.getId()));
-      deleteStmt.executeUpdate();
-
-      deleteStmt = con.prepareStatement(QUERY_DELETE_MESSAGE_SUBSCRIPTION);
-      deleteStmt.setString(1, messagePK.getId());
       deleteStmt.executeUpdate();
     } finally {
       DBUtil.close(deleteStmt);
@@ -1668,14 +1645,12 @@ public class ForumsDAO {
       + RIGHTS_COLUMNS + " FROM " + RIGHTS_TABLE + " WHERE "
       + RIGHTS_COLUMN_FORUM_ID + " = ?";
 
-  public static List<String> getModerators(Connection con, int forumId)
-      throws SQLException {
+  public static List<Moderator> getModerators(Connection con, int forumId) throws SQLException {
     SilverTrace.info("forums", "ForumsDAO.getModerators()",
         "root.MSG_GEN_PARAM_VALUE", "query  = "
         + QUERY_GET_MODERATORS);
 
-    List<String> moderators = new ArrayList<String>();
-    String userId = "";
+    List<Moderator> moderators = new ArrayList<Moderator>();
     PreparedStatement stmt = null;
     ResultSet rs = null;
     try {
@@ -1683,11 +1658,11 @@ public class ForumsDAO {
       stmt.setString(1, Integer.toString(forumId));
       rs = stmt.executeQuery();
       while (rs.next()) {
-        userId = rs.getString(RIGHTS_COLUMN_USER_ID);
-        moderators.add(userId);
+        moderators.add(Moderator.from(rs.getString(RIGHTS_COLUMN_USER_ID),
+            Integer.valueOf(rs.getString(RIGHTS_COLUMN_FORUM_ID))));
       }
     } finally {
-      DBUtil.close(stmt);
+      DBUtil.close(rs, stmt);
     }
     return moderators;
   }
@@ -1737,148 +1712,6 @@ public class ForumsDAO {
           messageId)));
     }
     return messagesIds;
-  }
-  private static final String QUERY_SUBSCRIBE_MESSAGE = "INSERT INTO "
-      + SUBSCRIPTION_TABLE + " (" + SUBSCRIPTION_COLUMNS + ")"
-      + " VALUES (?, ?)";
-
-  /**
-   * Adds to the user the subscription to the message corresponding to the primary key.
-   *
-   * @param con The connection to the database.
-   * @param messagePK The primary key of the message.
-   * @param userId The user's id.
-   * @throws SQLException An SQL exception.
-   */
-  public static void subscribeMessage(Connection con, MessagePK messagePK,
-      String userId) throws SQLException {
-    SilverTrace.info("forums", "ForumsDAO.subscribeMessage()",
-        "root.MSG_GEN_PARAM_VALUE", "insertQuery  = "
-        + QUERY_SUBSCRIBE_MESSAGE);
-
-    PreparedStatement insertStmt = null;
-    try {
-      insertStmt = con.prepareStatement(QUERY_SUBSCRIBE_MESSAGE);
-      insertStmt.setString(1, userId);
-      insertStmt.setString(2, messagePK.getId());
-      insertStmt.executeUpdate();
-    } finally {
-      DBUtil.close(insertStmt);
-    }
-  }
-  private static final String QUERY_UNSUBSCRIBE_MESSAGE = "DELETE FROM "
-      + SUBSCRIPTION_TABLE + " WHERE " + SUBSCRIPTION_COLUMN_USER_ID + " = ?"
-      + " AND " + SUBSCRIPTION_COLUMN_MESSAGE_ID + " = ?";
-
-  /**
-   * Removes from the user the subscription to the message corresponding to the primary key.
-   *
-   * @param con The connection to the database.
-   * @param messagePK The primary key of the message.
-   * @param userId The user's id.
-   * @throws SQLException An SQL exception.
-   */
-  public static void unsubscribeMessage(Connection con, MessagePK messagePK,
-      String userId) throws SQLException {
-    SilverTrace.info("forums", "ForumsDAO.unsubscribeMessage()",
-        "root.MSG_GEN_PARAM_VALUE", "deleteQuery  = "
-        + QUERY_UNSUBSCRIBE_MESSAGE);
-
-    PreparedStatement deleteStmt = null;
-    try {
-      deleteStmt = con.prepareStatement(QUERY_UNSUBSCRIBE_MESSAGE);
-      deleteStmt.setString(1, userId);
-      deleteStmt.setString(2, messagePK.getId());
-      deleteStmt.executeUpdate();
-    } finally {
-      DBUtil.close(deleteStmt);
-    }
-  }
-  private static final String QUERY_REMOVE_ALL_SUBSCRIBERS = "DELETE FROM "
-      + SUBSCRIPTION_TABLE + " WHERE " + SUBSCRIPTION_COLUMN_MESSAGE_ID
-      + " = ?";
-
-  /**
-   * Removes from all users the subscription to the message corresponding to the primary key.
-   *
-   * @param con The connection to the database.
-   * @param messagePK The primary key of the message.
-   * @throws SQLException An SQL exception.
-   */
-  public static void removeAllSubscribers(Connection con, MessagePK messagePK)
-      throws SQLException {
-    SilverTrace.info("forums", "ForumsDAO.removeAllSubscribers()",
-        "root.MSG_GEN_PARAM_VALUE", "deleteQuery  = "
-        + QUERY_REMOVE_ALL_SUBSCRIBERS);
-
-    PreparedStatement deleteStmt = null;
-    try {
-      deleteStmt = con.prepareStatement(QUERY_REMOVE_ALL_SUBSCRIBERS);
-      deleteStmt.setString(1, messagePK.getId());
-      deleteStmt.executeUpdate();
-    } finally {
-      DBUtil.close(deleteStmt);
-    }
-  }
-  private static final String QUERY_LIST_ALL_SUBSCRIBERS = "SELECT "
-      + SUBSCRIPTION_COLUMN_USER_ID + " FROM " + SUBSCRIPTION_TABLE + " WHERE "
-      + SUBSCRIPTION_COLUMN_MESSAGE_ID + " = ?";
-
-  /**
-   * @param con The connection to the database.
-   * @param messagePK The primary key of the message.
-   * @return The list of ids of users who subscribe to the message corresponding to the primary key.
-   * @throws SQLException An SQL exception.
-   */
-  public static Collection<String> listAllSubscribers(Connection con, MessagePK messagePK)
-      throws SQLException {
-    SilverTrace.info("forums", "ForumsDAO.listAllSubscribers()",
-        "root.MSG_GEN_PARAM_VALUE", "selectQuery  = "
-        + QUERY_LIST_ALL_SUBSCRIBERS);
-
-    List<String> userIds = new ArrayList<String>();
-    PreparedStatement selectStmt = null;
-    ResultSet rs = null;
-    try {
-      selectStmt = con.prepareStatement(QUERY_LIST_ALL_SUBSCRIBERS);
-      selectStmt.setString(1, messagePK.getId());
-      rs = selectStmt.executeQuery();
-      while (rs.next()) {
-        userIds.add(rs.getString(SUBSCRIPTION_COLUMN_USER_ID));
-      }
-    } finally {
-      DBUtil.close(rs, selectStmt);
-    }
-    return userIds;
-  }
-  private static final String QUERY_IS_SUBSCRIBER = "SELECT "
-      + SUBSCRIPTION_COLUMN_USER_ID + " FROM " + SUBSCRIPTION_TABLE + " WHERE "
-      + SUBSCRIPTION_COLUMN_MESSAGE_ID + " = ?" + " AND "
-      + SUBSCRIPTION_COLUMN_USER_ID + " = ?";
-
-  /**
-   * @param con The connection to the database.
-   * @param messagePK The primary key of the message.
-   * @param userId The user's id.
-   * @return True if the user has subscribed to the message corresponding to the primary key.
-   * @throws SQLException An SQL exception.
-   */
-  public static boolean isSubscriber(Connection con, MessagePK messagePK,
-      String userId) throws SQLException {
-    SilverTrace.info("forums", "ForumsDAO.isSubscriber()",
-        "root.MSG_GEN_PARAM_VALUE", "selectQuery  = " + QUERY_IS_SUBSCRIBER);
-
-    PreparedStatement selectStmt = null;
-    ResultSet rs = null;
-    try {
-      selectStmt = con.prepareStatement(QUERY_IS_SUBSCRIBER);
-      selectStmt.setString(1, messagePK.getId());
-      selectStmt.setString(2, userId);
-      rs = selectStmt.executeQuery();
-      return (rs.next());
-    } finally {
-      DBUtil.close(rs, selectStmt);
-    }
   }
 
   /**

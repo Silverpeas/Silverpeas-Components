@@ -260,6 +260,7 @@ div.profilPhoto {
 }
 
 .messageFooter {
+  display: inline-block;
   background: url("../icons/notification-icon.png") no-repeat scroll 0 0 transparent;  
   padding:2px 0 0 4px;
 }
@@ -305,8 +306,9 @@ input[type="radio"], input[type="checkbox"] {
   width: 46%;
 }
 
-.msgContent {
-  background-color : #f4f4f4
+div.msgContent {
+  border: 1px dotted #CECECE;
+  border-radius: 0;
 }
 
 #new-message #message legend,
