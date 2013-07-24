@@ -122,13 +122,6 @@ String rootId = "0";
 String action;
 String id;
 String name;
-//CBO : REMOVE String creationDate;
-//CBO : REMOVE String creatorName;
-//CBO : REMOVE String path;
-//CBO : REMOVE String fatherId;
-//CBO : REMOVE String childId;
-//CBO : REMOVE Collection subTopicList;
-//CBO : REMOVE Collection publicationList;
 String linkedPathString = "";
 String pathString = "";
 FolderDetail webSitesCurrentFolder = null;
@@ -136,16 +129,8 @@ Collection listeSites = null;
 
 settings = new ResourceLocator("com.stratelia.webactiv.webSites.settings.webSiteSettings","fr");
 
-//CBO : REMOVE String iconsPath = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 
 //Icons
-//CBO : UPDATE
-/*
-String pxmag = iconsPath + "/util/icons/colorPix/1px.gif";
-String flea = iconsPath + "/util/icons/buletGrey.gif";
-String suggerer=iconsPath+"/util/icons/webSites_to_propose.gif";
-String redFlag = iconsPath+"/util/icons/urgent.gif";
-*/
 String pxmag = m_context + "/util/icons/colorPix/1px.gif";
 String flea = m_context + "/util/icons/buletGrey.gif";
 String suggerer=m_context+"/util/icons/webSites_to_propose.gif";
@@ -154,7 +139,6 @@ String redFlag = m_context+"/util/icons/urgent.gif";
 //R�cup�ration des param�tres
 action = (String) request.getParameter("Action");
 id = (String) request.getParameter("Id");
-//CBO : REMOVE childId = (String) request.getParameter("ChildId");
 
 String suggestionName	= (String) request.getAttribute("SuggestionName");
 String suggestionUrl	= (String) request.getAttribute("SuggestionUrl");
@@ -164,7 +148,6 @@ if (suggestionName != null)
 	suggestionSent	= true;
 }
 
-//CBO : ADD
 webSitesCurrentFolder = (FolderDetail) request.getAttribute("CurrentFolder");
 
 //Mise a jour de l'espace
@@ -198,16 +181,12 @@ out.println(gef.getLookStyleSheet());
 		action = "Search";
 	}
 	if (action.equals("Search")) {
-		//CBO : REMOVE webSitesCurrentFolder = scc.getFolder(id);
-		//CBO : REMOVE scc.setSessionTopic(webSitesCurrentFolder);
 		name = webSitesCurrentFolder.getNodeDetail().getName();
 		listeSites = webSitesCurrentFolder.getPublicationDetails();
 	}
 %>
       
 <script type="text/javascript" src="javaScript/spacesInURL.js"></script>
-<!--CBO : UPDATE-->
-<!--<script type="text/javascript" src="<%/*iconsPath*/%>/util/javaScript/animation.js"></script>-->
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script Language="JavaScript">
 
@@ -226,8 +205,6 @@ function publicationGoToUniqueSite(){
 		String siteId = site.getVersion();
 		String sitePage = site.getContent();
 		SiteDetail siteDetail = scc.getWebSite(siteId);
-		//CBO : UPDATE
-		/*out.println("publicationGoTo('" + siteDetail.getPopup() + "', '" + siteDetail.getType() + "', 'http://"+getMachine(request)+"/"+settings.getString("Context")+"/"+scc.getComponentId()+"/"+siteId+"/' , '"+Encode.javaStringToJsString(sitePage)+"')");*/
 		out.println("publicationGoTo('" + siteDetail.getPopup() + "', '" + siteDetail.getType() + "', 'http://"+getMachine(request)+"/"+settings.getString("Context")+"/"+componentId+"/"+siteId+"/' , '"+Encode.javaStringToJsString(sitePage)+"')");
 	}
 %>
@@ -398,8 +375,6 @@ function openSuggestionConfirmation() { //v2.0
 			else
 				liste+="<td valign=\"top\">&nbsp;</td>\n";
 			SiteDetail siteDetail = scc.getWebSite(siteId);
-			//CBO : UPDATE
-			/*liste += "<td valign=\"top\" align=left nowrap>&#149;&nbsp;<a class=\"textePetitBold\" href=\"javascript:onClick=publicationGoTo('" + siteDetail.getPopup() + "', '" + siteDetail.getType() + "', 'http://"+getMachine(request)+"/"+settings.getString("Context")+"/"+scc.getComponentId()+"/"+siteId+"/' , '"+Encode.javaStringToJsString(sitePage)+"')\">"+siteName+"</a></td><td align=left>\n";*/
 			liste += "<td valign=\"top\" align=left nowrap>&#149;&nbsp;<a class=\"textePetitBold\" href=\"javascript:onClick=publicationGoTo('" + siteDetail.getPopup() + "', '" + siteDetail.getType() + "', 'http://"+getMachine(request)+"/"+settings.getString("Context")+"/"+componentId+"/"+siteId+"/' , '"+Encode.javaStringToJsString(sitePage)+"')\">"+siteName+"</a></td><td align=left>\n";
 			liste += listeIcones;
 			liste += "</td></tr><tr><td class=intfdcolor51>&nbsp;</td><td colspan=2 width=\"100%\" class=intfdcolor51><span class=\"txtnote\">"+siteDescription+"</span></td></tr><tr><td colspan=3><img src=\""+pxmag+"\" height=3 width=200></td>\n";
@@ -422,18 +397,6 @@ function openSuggestionConfirmation() { //v2.0
 <FORM NAME="topicDetailForm" action="listSite_reader.jsp" METHOD=POST >
   <input type="hidden" name="Action">
   <input type="hidden" name="Id" value="<%=id%>">
-  <!-- CBO : REMOVE -->
-  <!-- 
-  <input type="hidden" name="Path" value="<%=Encode.javaStringToHtmlString(pathString)%>">
-  <input type="hidden" name="ChildId">
-  <input type="hidden" name="nomSite">
-  <input type="hidden" name="description">
-  <input type="hidden" name="nomPage">
-  <input type="hidden" name="auteur">
-  <input type="hidden" name="date">
-  <input type="hidden" name="ListeIcones">
-  <input type="hidden" name="SiteId">
-  -->
   <input type="hidden" name="SitePage">
 </FORM>
 

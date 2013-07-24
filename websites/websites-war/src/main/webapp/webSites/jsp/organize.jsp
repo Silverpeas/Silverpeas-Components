@@ -367,7 +367,7 @@ function pubUp(pubId) {
 
 		//Les onglets
 		TabbedPane tabbedPane = gef.getTabbedPane();
-		tabbedPane.addTab(resources.getString("Consulter"), "listSite.jsp", false);
+		tabbedPane.addTab(resources.getString("Consulter"), "Main", false);
 		tabbedPane.addTab(resources.getString("Organiser"), "organize.jsp", true);
 		tabbedPane.addTab(resources.getString("GML.management"), "manage.jsp", false);
 		

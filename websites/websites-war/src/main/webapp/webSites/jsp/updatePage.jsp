@@ -68,8 +68,6 @@ if (name != null) {
     if (index != -1)
         type = name.substring(index + 1);
 }
-    
-//CBO : REMOVE String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 
 //Icons
 String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
@@ -196,12 +194,8 @@ function sendData(type) {
 <%
     Window window = gef.getWindow();
     BrowseBar browseBar = window.getBrowseBar();
-    //CBO : UPDATE
-	//browseBar.setDomainName(scc.getSpaceLabel());
-	browseBar.setDomainName(spaceLabel);
-    //CBO : UPDATE
-//browseBar.setComponentName(scc.getComponentLabel());
-browseBar.setComponentName(componentLabel);
+    browseBar.setDomainName(spaceLabel);
+	browseBar.setComponentName(componentLabel);
     browseBar.setPath(resources.getString("PageUpdateTitle"));
     
     //Le cadre

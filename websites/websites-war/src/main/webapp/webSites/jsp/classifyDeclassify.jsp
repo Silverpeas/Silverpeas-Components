@@ -231,10 +231,8 @@ function publicationGoTo(type, theURL, nom){
 
 <%
 
-	//CBO : REMOVE Collection listeSites = scc.getAllWebSite();
 	SilverTrace.info("websites", "JSPclassifyDeclassify", "root.MSG_GEN_PARAM_VALUE",
 					 "taille de l'array site  = "+listeSites.size());
-	//CBO : REMOVE webSitesCurrentFolder = scc.getSessionTopic();
 	Collection listeSitesPublies = webSitesCurrentFolder.getPublicationDetails();
 	SilverTrace.info("websites", "JSPclassifyDeclassify", "root.MSG_GEN_PARAM_VALUE",
 					 "taille de la liste des sites publiés  = "+listeSitesPublies.size());
@@ -355,8 +353,6 @@ function publicationGoTo(type, theURL, nom){
 			liste += "<tr>\n";
 			liste += "<td valign=\"top\" width=\"5%\"><input type=\"checkbox\" name=\"declassSite\" value=\""+pubId+"\"></td>\n";
 
-			//CBO : UPDATE
-			/*liste += "<td valign=\"top\"><a class=\"textePetitBold\" href=\"javascript:onClick=publicationGoTo('"+type+"', 'http://"+getMachine(request)+"/"+settings.getString("Context")+"/"+scc.getComponentId()+"/"+siteId+"/' , '"+Encode.javaStringToJsString(sitePage)+"')\">"+siteName+"</a><br>\n";*/
 			liste += "<td valign=\"top\"><a class=\"textePetitBold\" href=\"javascript:onClick=publicationGoTo('"+type+"', 'http://"+getMachine(request)+"/"+settings.getString("Context")+"/"+componentId+"/"+siteId+"/' , '"+Encode.javaStringToJsString(sitePage)+"')\">"+siteName+"</a><br>\n";
 
 			liste += "<span class=\"txtnote\">"+siteDescription+"</span><br><br></td>\n";
