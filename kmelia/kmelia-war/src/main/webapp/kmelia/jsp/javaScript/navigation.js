@@ -568,7 +568,7 @@ function displayTopicInformation(id) {
 					var desc = topic.attr["description"];
 					var date = $.datepicker.formatDate(getDateFormat(), new Date(topic.attr["creationDate"]));;
 					var creator = topic.attr["creator"].fullName;
-					$("#footer").html(getString('kmelia.topic.info')+creator+' - '+date+' - <a id="topicPermalink" href="#"><img src="'+icons["permalink"]+'"/></a>');
+					$("#footer").html(getString('kmelia.topic.info')+' '+creator+' - '+date+' - <a id="topicPermalink" href="#"><img src="'+icons["permalink"]+'"/></a>');
 					$("#footer #topicPermalink").attr("href", getWebContext()+"/Topic/"+id+"?ComponentId="+getComponentId());
 					setCurrentTopicName(name);
 					setCurrentTopicDescription(desc);
