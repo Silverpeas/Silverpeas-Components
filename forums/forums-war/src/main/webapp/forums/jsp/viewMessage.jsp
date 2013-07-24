@@ -23,8 +23,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="org.silverpeas.upload.UploadedFile"%>
-<%@page import="org.silverpeas.upload.FileUploadManager"%>
+<%@page import="com.stratelia.webactiv.forums.control.helpers.ForumHelper"%>
+<%@page import="com.stratelia.webactiv.forums.control.helpers.ForumListHelper"%>
 <%
     response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
     response.setHeader("Pragma", "no-cache"); //HTTP 1.0
@@ -34,6 +34,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags/silverpeas/util" %>
 <c:set var="sessionController" value="${requestScope.forumsSessionClientController}" />
 <c:set var="componentId" value="${sessionController.componentId}" />
 <c:set var="isReader" value="${sessionController.reader}" />
@@ -42,11 +43,11 @@
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
-<%@ page import="java.util.Map"%>
+<%@ page import="org.silverpeas.upload.FileUploadManager"%>
+<%@ page import="org.silverpeas.upload.UploadedFile"%>
 <%@ page import="java.util.HashMap"%>
-<%@ page import="com.stratelia.webactiv.forums.control.helpers.ForumHelper"%>
-<%@ page import="com.stratelia.webactiv.forums.control.helpers.ForumListHelper"%>
-<%@ page import="java.util.Hashtable"%>
+<%@ page import="java.util.Map"%>
+<%@ page import="org.silverpeas.util.NotifierUtil" %>
 <%@ include file="checkForums.jsp"%>
 <%
     int messageId = 0;
@@ -56,14 +57,11 @@
     int action = getIntParameter(request, "action", 1);
     int params = getIntParameter(request, "params");
     int currentMessageId = -1;
-    String nbModeratorsString = (String) request.getAttribute("NbModerators");
-    int nbModerators = 0;
-    if (StringUtil.isDefined(nbModeratorsString)) {
-      nbModerators = Integer.parseInt(nbModeratorsString);
-    }
     boolean scrollToMessage = false;
     boolean displayAllMessages = true;
     try {
+        Message message;
+        String bundleKey;
         switch (action) {
             case 1 :
                 // Affichage de la liste
@@ -98,14 +96,14 @@
                     } else {
                         // Modification
                         messageId = params;
-                        fsc.updateMessage(messageId, parentId, messageTitle, messageText);
+                        fsc.updateMessage(messageId, messageTitle, messageText);
                     }
                     if (subscribe == null) {
                         subscribe = "0";
                     } else {
                         subscribe = "1";
                         if (messageId != 0) {
-                            fsc.subscribeMessage(messageId, userId);
+                            fsc.subscribeMessage(messageId);
                         }
                     }
                     if (parentId > 0) {
@@ -134,13 +132,20 @@
                 break;
 
             case 13 :
-                fsc.unsubscribeMessage(params, userId);
+                message = fsc.unsubscribeMessage(params);
                 messageId = params;
+                bundleKey = message.isSubject() ? "forums.subject.unsubscribe.success" :
+                    "forums.message.unsubscribe.success";
+                NotifierUtil
+                  .addSuccess(request, resource.getStringWithParam(bundleKey, message.getTitle()));
                 break;
 
             case 14 :
-                fsc.subscribeMessage(params, userId);
+                message = fsc.subscribeMessage(params);
                 messageId = params;
+                bundleKey = message.isSubject() ? "forums.subject.subscribe.success" :
+                    "forums.message.subscribe.success";
+                NotifierUtil.addSuccess(request, resource.getStringWithParam(bundleKey, message.getTitle()));
                 break;
 
             case 15 :
@@ -192,9 +197,11 @@
         pageContext.setAttribute("title", message.getTitle());
         Message[] messages = fsc.getMessagesList(folderId, currentMessageId);
         int messagesCount = messages.length;
+        boolean isMessageSubscriberByInheritance =
+          fsc.isMessageSubscriberByInheritance(currentMessageId);
+        boolean isAllMessageSubscriberByInheritance = isMessageSubscriberByInheritance;
 %>
 
-<%@page import="java.util.List"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -203,8 +210,8 @@
     <view:looknfeel />
     <view:includePlugin name="wysiwyg"/>
     <view:includePlugin name="popup"/>
-	<view:includePlugin name="notifier"/>
-	<link type="text/css" href="<c:url value='/util/styleSheets/fieldset.css'/>" rel="stylesheet" />
+    <view:includePlugin name="notifier"/>
+    <link type="text/css" href="<c:url value='/util/styleSheets/fieldset.css'/>" rel="stylesheet" />
     <script type="text/javascript" src="<c:url value='/util/javaScript/checkForm.js'/>" ></script>
     <script type="text/javascript" src="<c:url value='/forums/jsp/javaScript/forums.js'/>" ></script>
     <script type="text/javascript" src="<c:url value='/forums/jsp/javaScript/viewMessage.js'/>" ></script>
@@ -225,7 +232,7 @@
         } else if (!isTextFilled()) {
           alert('<%=resource.getString("emptyMessageText")%>');
         } else {
-          document.forumsForm.submit();
+          $(document.forumsForm).submit();
         }
       }
 
@@ -307,6 +314,7 @@
     </script>
 </head>
 <body id="forum<%=forumId%>" class="forum" <%addBodyOnload(out, fsc);%>>
+<tags:displayNotification/>
 <%
 
         Window window = graphicFactory.getWindow();
@@ -351,7 +359,10 @@
         forumNotes = ForumHelper.displayMessageNotation(out, resources, currentMessageId, fsc, isReader);
               %></div>
             <%
-                ForumHelper.displaySingleMessageList(out, resource, userId, isAdmin, isModerator, isReader, false, folderId, messageId, true, "viewForum", fsc, resources);
+              ForumHelper
+                  .displaySingleMessageList(out, resource, userId, isAdmin, isModerator, isReader,
+                      false, folderId, messageId, true, "viewForum", fsc, resources,
+                      isMessageSubscriberByInheritance);
                 %>
            <%
 
@@ -387,6 +398,7 @@
 
         Map<String, Integer> authorNbMessages = new HashMap<String, Integer>();
         int nbMessages;
+        isMessageSubscriberByInheritance = isAllMessageSubscriberByInheritance;
         for (int i = 0, n = messages.length; i < n; i++)  {
             Message currentMessage = messages[i];
             int currentId = currentMessage.getId();
@@ -403,8 +415,11 @@
                avatar = author.getAvatar();
             }
             String text = currentMessage.getText();
-            boolean isSubscriber = fsc.isSubscriber(currentId, userId);
-            if (!authorNbMessages.containsKey(authorId)) {
+          boolean isSubscriber = fsc.isMessageSubscriber(currentId);
+          if (!isAllMessageSubscriberByInheritance) {
+            isMessageSubscriberByInheritance = fsc.isMessageSubscriberByInheritance(currentId);
+          }
+          if (!authorNbMessages.containsKey(authorId)) {
               nbMessages = fsc.getAuthorNbMessages(authorId);
               authorNbMessages.put(authorId, nbMessages);
             }
@@ -463,7 +478,8 @@
                                       <%=text%>
                                     </div>
                                   <div class="messageFooter">
-                                        <input name="checkbox" type="checkbox" <%if (isSubscriber) {%>checked<%}%>
+                                        <input name="checkbox" type="checkbox" <%if (isSubscriber || isMessageSubscriberByInheritance) {%>checked<%}%>
+                                               <%if (!isSubscriber && isMessageSubscriberByInheritance) {%> disabled <%}%>
                                                 onclick="javascript:window.location.href='viewMessage.jsp?action=<%=(isSubscriber ? 13 : 14)%>&params=<%=currentId%>&forumId=<%=forumId%>'"/>
                                                 <span class="texteLabelForm"><%=resource.getString("subscribeMessage")%></span>
                                              <% if (forumActive) { %>
@@ -540,13 +556,11 @@
         }
 %>
     <br />
-    <div id="backButton">
-<%
-        ButtonPane backButtonPane = graphicFactory.getButtonPane();
-        backButtonPane.addButton(graphicFactory.getFormButton("Retour", backURL, false));
-        backButtonPane.setHorizontalPosition();
-        out.println(backButtonPane.print());
-%>
+    <div id="backButton" style="text-align: center;">
+      <fmt:message key="GML.back" var="btnLabel"/>
+      <view:buttonPane>
+        <view:button action="<%=backURL%>" label="${btnLabel}" disabled="false" />
+      </view:buttonPane>
     </div>
 <%
         out.println(frame.printAfter());
@@ -554,7 +568,7 @@
     }
 %>
 <% if (!isReader && forumNotes.length > 0) { %>
-<form name="notationForm" action="viewMessage" method="post">
+<form name="notationForm" action="viewMessage" method="post" style="height: 0">
   <input name="call" type="hidden" value="viewForum"/>
   <input name="action" type="hidden" value="15"/>
   <input name="forumId" type="hidden" value="<%=forumId%>"/>

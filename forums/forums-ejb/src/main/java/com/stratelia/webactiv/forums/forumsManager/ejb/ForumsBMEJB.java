@@ -20,36 +20,20 @@
  */
 package com.stratelia.webactiv.forums.forumsManager.ejb;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
-import org.silverpeas.search.indexEngine.model.IndexEntryPK;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-
 import com.silverpeas.notation.ejb.NotationBm;
 import com.silverpeas.notation.model.Notation;
 import com.silverpeas.notation.model.NotationPK;
+import com.silverpeas.subscribe.SubscriptionService;
+import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.subscribe.constant.SubscriberType;
+import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
+import com.silverpeas.subscribe.util.SubscriptionUtil;
 import com.silverpeas.tagcloud.ejb.TagCloudBm;
 import com.silverpeas.tagcloud.model.TagCloud;
 import com.silverpeas.tagcloud.model.TagCloudPK;
 import com.silverpeas.tagcloud.model.TagCloudUtil;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
-
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.forums.ForumsContentManager;
@@ -59,6 +43,7 @@ import com.stratelia.webactiv.forums.models.ForumDetail;
 import com.stratelia.webactiv.forums.models.ForumPK;
 import com.stratelia.webactiv.forums.models.Message;
 import com.stratelia.webactiv.forums.models.MessagePK;
+import com.stratelia.webactiv.forums.models.Moderator;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
@@ -66,6 +51,29 @@ import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.components.forum.subscription.ForumMessageSubscription;
+import org.silverpeas.components.forum.subscription.ForumMessageSubscriptionResource;
+import org.silverpeas.components.forum.subscription.ForumSubscription;
+import org.silverpeas.components.forum.subscription.ForumSubscriptionResource;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import static com.silverpeas.util.i18n.I18NHelper.defaultLanguage;
 
@@ -110,6 +118,21 @@ public class ForumsBMEJB implements ForumsBM {
     } finally {
       DBUtil.close(con);
     }
+  }
+
+  /**
+   * Gets all forums of an instanceId that have not parent forum.
+   * @param instanceId
+   * @return
+   */
+  @Override
+  public Collection<Forum> getForumRootList(final String instanceId) {
+    Collection<String> forumRootIds = getForumSonsIds(new ForumPK(instanceId, "0"));
+    Collection<Forum> forumRoots = new ArrayList<Forum>();
+    for (String forumRootId : forumRootIds) {
+      forumRoots.add(getForum(new ForumPK(instanceId, forumRootId)));
+    }
+    return forumRoots;
   }
 
   @Override
@@ -325,6 +348,10 @@ public class ForumsBMEJB implements ForumsBM {
     }
     Connection con = openConnection();
     try {
+
+      // Deleting subscriptions
+      getSubscribeBm().unsubscribeByResource(ForumSubscriptionResource.from(forumPK));
+
       // Recuperation des ids de messages
       List<String> messagesIds = getMessagesIds(forumPK);
       // Suppression du forum et de ses messages
@@ -363,6 +390,7 @@ public class ForumsBMEJB implements ForumsBM {
    * @author frageade
    * @since 02 Octobre 2000
    */
+  @TransactionAttribute(TransactionAttributeType.REQUIRED)
   @Override
   public int createForum(ForumPK forumPK, String forumName, String forumDescription,
       String forumCreator, int forumParent, String categoryId, String keywords) {
@@ -564,6 +592,7 @@ public class ForumsBMEJB implements ForumsBM {
     return messages;
   }
 
+  @Override
   public Message getLastMessage(ForumPK forumPK, int messageParentId, String status) {
     Connection con = openConnection();
     try {
@@ -583,6 +612,7 @@ public class ForumsBMEJB implements ForumsBM {
     }
   }
 
+  @Override
   public Message getLastMessage(ForumPK forumPK, List<String> messageParentIds, String status) {
     Connection con = openConnection();
     try {
@@ -598,21 +628,21 @@ public class ForumsBMEJB implements ForumsBM {
   /**
    * Retourne vrai s'il y a des messages non lus sur ce forum depuis la dernière visite
    *
-   * @param forumId l'id du forum
    * @param userId l'id de l'utilisateur
-   * @return String la date de la dernière visite
-   * @author sfariello
-   * @since
+   * @param forumPK l'id du forum
+   * @param  status le status (validé, en attente, ...)
+   * @return
    */
+  @Override
   public boolean isNewMessageByForum(String userId, ForumPK forumPK, String status) {
     // liste de tous les sujets du forum
     List<String> messagesIds = getSubjectsIds(forumPK);
     int messageParentId;
-    for (int i = 0, n = messagesIds.size(); i < n; i++) {
+    for (String messagesId : messagesIds) {
       // pour ce message on recherche la date de la dernière visite
-      messageParentId = Integer.parseInt((String) messagesIds.get(i));
-      SilverTrace.info("forums", "ForumsBMEJB.isNewMessageByForum()",
-          "root.MSG_GEN_PARAM_VALUE", "messageParentId = " + messageParentId);
+      messageParentId = Integer.parseInt(messagesId);
+      SilverTrace.info("forums", "ForumsBMEJB.isNewMessageByForum()", "root.MSG_GEN_PARAM_VALUE",
+          "messageParentId = " + messageParentId);
       if (isNewMessage(userId, forumPK, messageParentId, status)) {
         return true;
       }
@@ -620,6 +650,7 @@ public class ForumsBMEJB implements ForumsBM {
     return false;
   }
 
+  @Override
   public boolean isNewMessage(String userId, ForumPK forumPK,
       int messageParentId, String status) {
     Connection con = openConnection();
@@ -640,13 +671,10 @@ public class ForumsBMEJB implements ForumsBM {
       // date de la dernière visite pour un message
       Date dateLastVisit = ForumsDAO.getLastVisit(con, userId, messagesIds);
 
-      if (dateLastMessageBySubject == null
-          || dateLastVisit == null
-          || (dateLastMessageBySubject != null && dateLastVisit != null && dateLastVisit
-          .before(dateLastMessageBySubject))) {
+      if (dateLastMessageBySubject == null || dateLastVisit == null ||
+          dateLastVisit.before(dateLastMessageBySubject)) {
         // la date de dernière visite de ce message est antérieure à la date du
-        // dernier
-        // message, il y a donc des réponses non lues pour ce message
+        // dernier message, il y a donc des réponses non lues pour ce message
         return true;
       }
     } catch (Exception e) {
@@ -666,6 +694,7 @@ public class ForumsBMEJB implements ForumsBM {
    * @author sfariello
    * @since
    */
+  @Override
   public void setLastVisit(String userId, int messageId) {
     Connection con = openConnection();
     try {
@@ -681,7 +710,7 @@ public class ForumsBMEJB implements ForumsBM {
   /**
    * Recupere les infos d'un message
    *
-   * @param MessagePK la primary key du message
+   * @param messagePK la primary key du message
    * @return Vector la liste des champs du message
    * @author frageade
    * @since 04 Octobre 2000
@@ -698,11 +727,14 @@ public class ForumsBMEJB implements ForumsBM {
     }
   }
 
+  @Override
   public Message getMessage(MessagePK messagePK) {
     Connection con = openConnection();
     try {
       Message message = ForumsDAO.getMessage(con, messagePK);
-      message.setText(getWysiwygContent(messagePK.getInstanceId(), messagePK.getId()));
+      if (message != null) {
+        message.setText(getWysiwygContent(messagePK.getInstanceId(), messagePK.getId()));
+      }
       return message;
     } catch (SQLException e) {
       throw new ForumsRuntimeException("ForumsBmEJB.getMessage()",
@@ -752,6 +784,7 @@ public class ForumsBMEJB implements ForumsBM {
    * @param status the message status
    * @return l'id du nouveau
    */
+  @TransactionAttribute(TransactionAttributeType.REQUIRED)
   @Override
   public int createMessage(MessagePK messagePK, String title, String authorId, Date creationDate,
       int forumId, int parentId, String content, String keywords, String status) {
@@ -772,6 +805,7 @@ public class ForumsBMEJB implements ForumsBM {
     }
   }
 
+  @TransactionAttribute(TransactionAttributeType.REQUIRED)
   @Override
   public void updateMessage(MessagePK messagePK, String title, String message, String userId,
       String status) {
@@ -818,6 +852,10 @@ public class ForumsBMEJB implements ForumsBM {
           deleteMessage(new MessagePK(messagePK.getComponentName(), child));
         }
       }
+
+      // Deleting subscriptions
+      getSubscribeBm().unsubscribeByResource(ForumMessageSubscriptionResource.from(messagePK));
+
       ForumsDAO.deleteMessage(con, messagePK);
       deleteIndex(messagePK);
       deleteTagCloud(messagePK);
@@ -882,6 +920,7 @@ public class ForumsBMEJB implements ForumsBM {
    * @param userId
    * @see
    */
+  @Override
   public void removeModerator(ForumPK forumPK, String userId) {
     Connection con = openConnection();
     try {
@@ -914,10 +953,19 @@ public class ForumsBMEJB implements ForumsBM {
   }
 
   @Override
-  public List<String> getModerators(int forumId) {
+  public List<Moderator> getModerators(int forumId) {
     Connection con = openConnection();
     try {
-      return ForumsDAO.getModerators(con, forumId);
+      List<Moderator> moderators = ForumsDAO.getModerators(con, forumId);
+      int parentId = getForumParentId(forumId);
+      while (parentId > 0) {
+        for (Moderator moderatorByInheritance : ForumsDAO.getModerators(con, parentId)) {
+          moderatorByInheritance.setByInheritance(true);
+          moderators.add(moderatorByInheritance);
+        }
+        parentId = getForumParentId(parentId);
+      }
+      return moderators;
     } catch (SQLException e) {
       throw new ForumsRuntimeException("ForumsBmEJB.getModerators()",
           SilverpeasRuntimeException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
@@ -956,7 +1004,7 @@ public class ForumsBMEJB implements ForumsBM {
   /**
    * Liste tous les sous-messages d'un message
    *
-   * @param MessagePK la primary key du message pere
+   * @param messagePK la primary key du message pere
    * @return Vector liste des ids fils
    * @author frageade
    * @since 11 Octobre 2000
@@ -976,7 +1024,7 @@ public class ForumsBMEJB implements ForumsBM {
   /**
    * Liste tous les sous-messages d'un message récursivement
    *
-   * @param MessagePK la primary key du message pere
+   * @param messagePK la primary key du message pere
    * @return Vector liste des ids fils
    * @author frageade
    * @since 11 Octobre 2000
@@ -994,103 +1042,208 @@ public class ForumsBMEJB implements ForumsBM {
   }
 
   /**
-   * Method declaration
-   *
+   * Subscribe the given user to the given forum message.
    * @param messagePK
    * @param userId
    * @see
    */
+  @TransactionAttribute(TransactionAttributeType.REQUIRED)
   @Override
   public void subscribeMessage(MessagePK messagePK, String userId) {
-    Connection con = openConnection();
-    try {
-      ForumsDAO.subscribeMessage(con, messagePK, userId);
-    } catch (SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.subscribeMessage()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_SUBSCEIBE_MESSAGE_FAILED", e);
-    } finally {
-      DBUtil.close(con);
-    }
+    getSubscribeBm().subscribe(new ForumMessageSubscription(userId, messagePK));
   }
 
   /**
-   * Method declaration
-   *
+   * Unsubscribe the given user to the given forum message.
    * @param messagePK
    * @param userId
    * @see
    */
+  @TransactionAttribute(TransactionAttributeType.REQUIRED)
   @Override
   public void unsubscribeMessage(MessagePK messagePK, String userId) {
-    Connection con = openConnection();
-    try {
-      ForumsDAO.unsubscribeMessage(con, messagePK, userId);
-    } catch (SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.unsubscribeMessage()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_UNSUBSCRIBE_MESSAGE_FAILED", e);
-    } finally {
-      DBUtil.close(con);
-    }
+    getSubscribeBm().unsubscribe(new ForumMessageSubscription(userId, messagePK));
   }
 
   /**
-   * Method declaration
-   *
-   * @param messagePK
-   * @see
+   * Subscribe the given user to the given forum.
+   * @param forumPK
+   * @param userId
    */
+  @TransactionAttribute(TransactionAttributeType.REQUIRED)
   @Override
-  public void removeAllSubscribers(MessagePK messagePK) {
-    Connection con = openConnection();
-    try {
-      ForumsDAO.removeAllSubscribers(con, messagePK);
-    } catch (SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.removeAllSubscribers()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_DELETE_ALL_SUSCRIBER_FAILED", e);
-    } finally {
-      DBUtil.close(con);
-    }
+  public void subscribeForum(final ForumPK forumPK, final String userId) {
+    getSubscribeBm().subscribe(new ForumSubscription(userId, forumPK));
   }
 
   /**
-   * Method declaration
-   *
+   * Unsubscribe the given user to the given forum.
+   * @param forumPK
+   * @param userId
+   */
+  @TransactionAttribute(TransactionAttributeType.REQUIRED)
+  @Override
+  public void unsubscribeForum(final ForumPK forumPK, final String userId) {
+    getSubscribeBm().unsubscribe(new ForumSubscription(userId, forumPK));
+  }
+
+  /**
+   * Gets the list of subscribers related to the given forum message primary key.
    * @param messagePK
    * @return
    * @see
    */
   @Override
-  public Collection<String> listAllSubscribers(MessagePK messagePK) {
-    Connection con = openConnection();
-    try {
-      return ForumsDAO.listAllSubscribers(con, messagePK);
-    } catch (SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.listAllSubscribers()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_LIST_ALL_SUSCRIBER_FAILED", e);
-    } finally {
-      DBUtil.close(con);
+  public Map<SubscriberType, Collection<String>> listAllSubscribers(MessagePK messagePK) {
+    Message message = getMessage(messagePK);
+
+    // Subsribers of the message
+    Map<SubscriberType, Collection<String>> allSubscribers = SubscriptionUtil
+        .indexSubscriberIdsByType(
+            getSubscribeBm().getSubscribers(ForumMessageSubscriptionResource.from(messagePK)));
+
+    // Subscribers of parent forum messages if any
+    Message currentMessage = message;
+    while (!currentMessage.isSubject()) {
+      currentMessage = getMessage(
+          new MessagePK(messagePK.getInstanceId(), currentMessage.getParentIdAsString()));
+      SubscriptionUtil.indexSubscriberIdsByType(allSubscribers, getSubscribeBm()
+          .getSubscribers(ForumMessageSubscriptionResource.from(currentMessage.getPk())));
     }
+
+    // Subscribers on the attached forum and their fathers if any
+    final ForumPK forumParent =
+        new ForumPK(messagePK.getInstanceId(), message.getForumIdAsString());
+    SubscriptionUtil
+        .mergeIndexedSubscriberIdsByType(allSubscribers, listAllSubscribers(forumParent));
+
+    return allSubscribers;
   }
 
   /**
-   * Method declaration
-   *
+   * Gets the list of subscribers related to the given forum primary key.
+   * @param forumPK
+   * @return
+   */
+  @Override
+  public Map<SubscriberType, Collection<String>> listAllSubscribers(final ForumPK forumPK) {
+
+    // Subscribers of the forum
+    Map<SubscriberType, Collection<String>> allSubscribers = SubscriptionUtil
+        .indexSubscriberIdsByType(
+            getSubscribeBm().getSubscribers(ForumSubscriptionResource.from(forumPK)));
+
+    // Subscribers of parent forums if any
+    Forum currentForum = getForum(forumPK);
+    while (!currentForum.isRoot()) {
+      currentForum =
+          getForum(new ForumPK(forumPK.getInstanceId(), currentForum.getParentIdAsString()));
+      SubscriptionUtil.indexSubscriberIdsByType(allSubscribers,
+          getSubscribeBm().getSubscribers(ForumSubscriptionResource.from(currentForum.getPk())));
+    }
+
+    // Subscribers on component instance id
+    SubscriptionUtil.mergeIndexedSubscriberIdsByType(allSubscribers,
+        listAllSubscribers(forumPK.getInstanceId()));
+
+    return allSubscribers;
+  }
+
+  /**
+   * Gets the list of subscribers to the given component instance identifier.
+   * This kind of subscribers come from WEB-Service subscriptions (/services/subscribe/{instanceId})
+   * @param instanceId
+   * @return
+   */
+  @Override
+  public Map<SubscriberType, Collection<String>> listAllSubscribers(final String instanceId) {
+    return SubscriptionUtil.indexSubscriberIdsByType(
+        getSubscribeBm().getSubscribers(ComponentSubscriptionResource.from(instanceId)));
+  }
+
+  /**
+   * Indicates if the given user has subscribed to the given forum message identifier.
    * @param messagePK
    * @param userId
    * @return
-   * @see
    */
   @Override
   public boolean isSubscriber(MessagePK messagePK, String userId) {
-    Connection con = openConnection();
-    try {
-      return ForumsDAO.isSubscriber(con, messagePK, userId);
-    } catch (SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.isSubscriber()",
-          SilverpeasRuntimeException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
-    } finally {
-      DBUtil.close(con);
+    return getSubscribeBm()
+        .isUserSubscribedToResource(userId, ForumMessageSubscriptionResource.from(messagePK));
+  }
+
+  /**
+   * Indicates if the given user is subscribed by inheritance to the given forum message identifier.
+   * @param messagePK
+   * @param userId
+   * @return
+   */
+  @Override
+  public boolean isSubscriberByInheritance(final MessagePK messagePK, final String userId) {
+    Message message = getMessage(messagePK);
+
+    // Verify subscriptions on parent forum messages and theur fathers id any
+    Message currentMessage = message;
+    while (!currentMessage.isSubject()) {
+      currentMessage = getMessage(
+          new MessagePK(messagePK.getInstanceId(), currentMessage.getParentIdAsString()));
+      if (isSubscriber(currentMessage.getPk(), userId)) {
+        return true;
+      }
     }
+
+    // Verify subscriptions on parent forum and their fathers if any
+    final ForumPK forumParent =
+        new ForumPK(messagePK.getInstanceId(), message.getForumIdAsString());
+    return isSubscriber(forumParent, userId) || isSubscriberByInheritance(forumParent, userId);
+  }
+
+  /**
+   * Indicates if the given user has subscribed to the given forum identifier.
+   * @param forumPK
+   * @param userId
+   * @return
+   */
+  @Override
+  public boolean isSubscriber(final ForumPK forumPK, final String userId) {
+    return getSubscribeBm()
+        .isUserSubscribedToResource(userId, ForumSubscriptionResource.from(forumPK));
+  }
+
+  /**
+   * Indicates if the given user is subscribed by inheritance to the given forum identifier.
+   * @param forumPK
+   * @param userId
+   * @return
+   */
+  @Override
+  public boolean isSubscriberByInheritance(final ForumPK forumPK, final String userId) {
+
+    // Verify subscriptions on parent forums if any
+  Forum currentForum = getForum(forumPK);
+    while (!currentForum.isRoot()) {
+      currentForum =
+          getForum(new ForumPK(forumPK.getInstanceId(), currentForum.getParentIdAsString()));
+      if (isSubscriber(currentForum.getPk(), userId)) {
+        return true;
+      }
+    }
+
+    // Verify subscriptions on component
+    return isSubscriber(forumPK.getInstanceId(), userId);
+  }
+
+  /**
+   * Indicates if the given user has subscribed to the given component instance identifier.
+   * @param instanceId
+   * @param userId
+   * @return
+   */
+  @Override
+  public boolean isSubscriber(final String instanceId, final String userId) {
+    return getSubscribeBm()
+        .isUserSubscribedToResource(userId, ComponentSubscriptionResource.from(instanceId));
   }
 
   /**
@@ -1123,8 +1276,8 @@ public class ForumsBMEJB implements ForumsBM {
    * @see
    */
   private void deleteIndex(MessagePK messagePK) {
-    IndexEngineProxy.removeIndexEntry(new IndexEntryPK(messagePK.getComponentName(), "Message",
-        messagePK.getId()));
+    IndexEngineProxy.removeIndexEntry(
+        new IndexEntryPK(messagePK.getComponentName(), "Message", messagePK.getId()));
   }
 
   /**
@@ -1161,7 +1314,7 @@ public class ForumsBMEJB implements ForumsBM {
    *
    * @return Connection la connection
    */
-  public Connection openConnection() {
+  protected Connection openConnection() {
     try {
       return DBUtil.makeConnection(JNDINames.FORUMS_DATASOURCE);
     } catch (com.stratelia.webactiv.util.exception.UtilException ue) {
@@ -1194,6 +1347,7 @@ public class ForumsBMEJB implements ForumsBM {
     return silverObjectId;
   }
 
+  @TransactionAttribute(TransactionAttributeType.REQUIRED)
   @Override
   public String createCategory(NodeDetail category) {
     try {
@@ -1205,24 +1359,22 @@ public class ForumsBMEJB implements ForumsBM {
     }
   }
 
+  @TransactionAttribute(TransactionAttributeType.REQUIRED)
   @Override
   public void updateCategory(NodeDetail category) {
     SilverTrace.info("forums", "ForumsBMEJB.updateCategory", "", "category = " + category.getName());
     node.setDetail(category);
   }
 
+  @TransactionAttribute(TransactionAttributeType.REQUIRED)
   @Override
   public void deleteCategory(String categoryId, String instanceId) {
     try {
       // pour cette categorie, rechercher les forums et mettre '0' dans la categorie
       List<Forum> forums = getForumsByCategory(new ForumPK(instanceId, null), categoryId);
-      Forum forum;
-      int forumId;
-      for (int i = 0, n = forums.size(); i < n; i++) {
-        forum = forums.get(i);
-        forumId = forum.getId();
-        ForumPK forumPK = new ForumPK(instanceId, String.valueOf(forumId));
-        updateForum(forumPK, forum.getName(), forum.getDescription(), forum.getParentId(), "0",
+      for (Forum forum : forums) {
+        ForumPK forumPK = new ForumPK(instanceId, forum.getIdAsString());
+        updateForum(forumPK, forum.getName(), forum.getDescription(), forum.getParentId(), null,
             null, false);
       }
       // suppression de la categorie
@@ -1292,7 +1444,7 @@ public class ForumsBMEJB implements ForumsBM {
   /**
    * Create the tagclouds corresponding to the forum detail.
    *
-   * @param forumDetail The detail of the forum.
+   * @param forumPK theprimary key of the forum.
    * @
    */
   private void createTagCloud(ForumPK forumPK, String keywords) {
@@ -1326,8 +1478,7 @@ public class ForumsBMEJB implements ForumsBM {
   /**
    * Delete the tagclouds corresponding to the publication key.
    *
-   * @param pubPK The primary key of the publication.
-   * @
+   * @param forumPK The primary key of the forum.
    */
   private void deleteTagCloud(ForumPK forumPK) {
     tagcloud.deleteTagCloud(new TagCloudPK(forumPK.getId(), forumPK.getComponentName()),
@@ -1342,8 +1493,7 @@ public class ForumsBMEJB implements ForumsBM {
   /**
    * Update the tagclouds corresponding to the publication detail.
    *
-   * @param forumDetail The detail of the forum.
-   * @
+   * @param forumPK the primary key of the forum.
    */
   private void updateTagCloud(ForumPK forumPK, String keywords) {
     deleteTagCloud(forumPK);
@@ -1390,7 +1540,7 @@ public class ForumsBMEJB implements ForumsBM {
         Notation.TYPE_MESSAGE));
   }
 
-  private String getWysiwygContent(String componentId, String messageId) {
+  protected String getWysiwygContent(String componentId, String messageId) {
     String text = "";
     if (WysiwygController.haveGotWysiwyg(componentId, messageId, defaultLanguage)) {
       text = WysiwygController.load(componentId, messageId, defaultLanguage);
@@ -1420,5 +1570,13 @@ public class ForumsBMEJB implements ForumsBM {
     for (SimpleDocument doc : documents) {
       AttachmentServiceFactory.getAttachmentService().deleteAttachment(doc);
     }
+  }
+
+  /**
+   * Gets instance of centralized subscription services.
+   * @return
+   */
+  protected SubscriptionService getSubscribeBm() {
+    return SubscriptionServiceFactory.getFactory().getSubscribeService();
   }
 }
