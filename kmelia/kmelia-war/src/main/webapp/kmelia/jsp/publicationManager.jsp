@@ -476,6 +476,8 @@
         var endDate = document.pubForm.EndDate.value;
         var beginHour = document.pubForm.BeginHour.value;
         var endHour = document.pubForm.EndHour.value;
+        var beginDateOK = true;
+        
         if (isWhitespace(title)) {
           errorMsg+=" - '<%=resources.getString("PubTitre")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
           errorNb++;
