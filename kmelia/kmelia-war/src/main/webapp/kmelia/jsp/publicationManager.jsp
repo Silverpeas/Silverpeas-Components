@@ -472,12 +472,7 @@
         var errorMsg = "";
         var errorNb = 0;
         var title = stripInitialWhitespace(document.pubForm.Name.value);
-        var beginDate = document.pubForm.BeginDate.value;
-        var endDate = document.pubForm.EndDate.value;
-        var beginHour = document.pubForm.BeginHour.value;
-        var endHour = document.pubForm.EndHour.value;
-        var beginDateOK = true;
-        
+
         if (isWhitespace(title)) {
           errorMsg+=" - '<%=resources.getString("PubTitre")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
           errorNb++;
@@ -504,93 +499,62 @@
             errorNb++;
           }
       <% }%>
-             if (!isWhitespace(beginDate)) {
-            	if (!isDateOK(beginDate, '<%=kmeliaScc.getLanguage()%>')) {
-	                 errorMsg+=" - '<%=resources.getString("PubDateDebut")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
-    	             errorNb++;
-        	         beginDateOK = false;
-               	}
-             }
-             if (!checkHour(beginHour))
-             {
-               errorMsg+=" - '<%=resources.getString("ToHour")%>' <%=resources.getString("GML.MustContainsCorrectHour")%>\n";
-               errorNb++;
-             }
-             if (!isWhitespace(endDate)) {
-            	 if (!isDateOK(endDate, '<%=kmeliaScc.getLanguage()%>')) {
-                	errorMsg+=" - '<%=resources.getString("PubDateFin")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
-                 	errorNb++;
-               	} else {
-                	if (!isWhitespace(beginDate) && !isWhitespace(endDate)) {
-              			if (beginDateOK && !isDate1AfterDate2(endDate, beginDate, '<%=kmeliaScc.getLanguage()%>')) {
-                    		errorMsg+=" - '<%=resources.getString("PubDateFin")%>' <%=resources.getString("GML.MustContainsPostOrEqualDateTo")%> "+beginDate+"\n";
-                    		errorNb++;
-                  		}
-                	} else {
-                  		if (isWhitespace(beginDate) && !isWhitespace(endDate)) {
-                			if (!isFuture(endDate, '<%=kmeliaScc.getLanguage()%>')) {
-                      			errorMsg+=" - '<%=resources.getString("PubDateFin")%>' <%=resources.getString("GML.MustContainsPostDate")%>\n";
-                      			errorNb++;
-                    		}
-                  		}
-                	}
-               }
-             }
-             if (!checkHour(endHour))
-             {
-               errorMsg+=" - '<%=resources.getString("ToHour")%>' <%=resources.getString("GML.MustContainsCorrectHour")%>\n";
-               errorNb++;
-             }
-             if (<%=isThumbnailMandatory%>) {
-                 if ($('#thumbnailFile').val() == '' && $('#thumbnail').attr("src") == 'null') {
-                	 errorMsg+=" - '<%=resources.getString("Thumbnail")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
-                     errorNb++;
-                 } 
-             }
-             
-             if($('#thumbnailFile').val() != '') {
-            	 var logicalName = $('#thumbnailFile').val();
-            	 var extension = getExtension(logicalName);
-            	 if (extension == null) {
-            	 	errorMsg += " - '<%=resources.getString("Thumbnail")%>' <%=resources.getString("kmelia.EX_MSG_WRONG_TYPE_ERROR")%>\n";
-            	    errorNb++;
-				 } else {
-					extension = extension.toLowerCase();
-            	    if ( (extension != "gif") && (extension != "jpeg") && (extension != "jpg") && (extension != "png") ) {
-            	    	errorMsg += " - '<%=resources.getString("Thumbnail")%>' <%=resources.getString("kmelia.EX_MSG_WRONG_TYPE_ERROR")%>\n";
-            	        errorNb++;
-					}
-				}
-             }
 
-             <% if(!kmaxMode && "New".equals(action)) { %>
-             	<view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>
-             <% } %>
+        var beginDate = {dateId : 'beginDate', hourId : 'beginHour'};
+        var endDate = {dateId : 'endDate', hourId : 'endHour', defaultHour : '23:59'};
+        var dateErrors = isPeriodEndingInFuture(beginDate, endDate);
+        $(dateErrors).each(function(index, error) {
+          errorMsg += " - " + error.message + "\n";
+          errorNb++;
+        });
 
-             switch(errorNb) {
-               case 0 :
-                 result = true;
-             break;
-               case 1 :
-                 errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
-                 window.alert(errorMsg);
-                 result = false;
-             break    ;
-               default :
-                 errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
-                 window.alert(errorMsg);
-                 result = false;
-                 break;
-               }
-               return result;
-             }
+        if (<%=isThumbnailMandatory%>) {
+          if ($('#thumbnailFile').val() == '' && $('#thumbnail').attr("src") == 'null') {
+            errorMsg += " - '<%=resources.getString("Thumbnail")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
+            errorNb++;
+          }
+        }
+
+        if ($('#thumbnailFile').val() != '') {
+          var logicalName = $('#thumbnailFile').val();
+          var extension = getExtension(logicalName);
+          if (extension == null) {
+            errorMsg += " - '<%=resources.getString("Thumbnail")%>' <%=resources.getString("kmelia.EX_MSG_WRONG_TYPE_ERROR")%>\n";
+            errorNb++;
+          } else {
+            extension = extension.toLowerCase();
+            if ((extension != "gif") && (extension != "jpeg") && (extension != "jpg") &&
+                (extension != "png")) {
+              errorMsg += " - '<%=resources.getString("Thumbnail")%>' <%=resources.getString("kmelia.EX_MSG_WRONG_TYPE_ERROR")%>\n";
+              errorNb++;
+            }
+          }
+        }
+
+        <% if(!kmaxMode && "New".equals(action)) { %>
+        <view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>
+        <% } %>
+
+        var result = false;
+        switch (errorNb) {
+          case 0 :
+            result = true;
+            break;
+          case 1 :
+            errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
+            window.alert(errorMsg);
+            break;
+          default :
+            errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
+            window.alert(errorMsg);
+            break;
+        }
+        return result;
+      }
 
       <%
         if (pubDetail != null) {
-          String lang = "";
-          Iterator codes = pubDetail.getTranslations().keySet().iterator();
-          while (codes.hasNext()) {
-            lang = (String) codes.next();
+          for(final String lang : pubDetail.getTranslations().keySet()){
             out.println("var name_" + lang + " = \"" + EncodeHelper.javaStringToJsString(pubDetail.getName(lang)) + "\";\n");
             out.println("var desc_" + lang + " = \"" + EncodeHelper.javaStringToJsString(pubDetail.getDescription(lang)) + "\";\n");
             out.println("var keys_" + lang + " = \"" + EncodeHelper.javaStringToJsString(pubDetail.getKeywords(lang)) + "\";\n");
