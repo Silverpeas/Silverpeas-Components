@@ -20,22 +20,13 @@
  */
 package com.stratelia.webactiv.kmelia;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.io.FileUtils;
-import org.silverpeas.importExport.attachment.AttachmentDetail;
-import org.silverpeas.importExport.attachment.AttachmentsType;
-
 import com.silverpeas.importExport.control.ImportSettings;
 import com.silverpeas.importExport.control.MassiveDocumentImport;
 import com.silverpeas.importExport.control.PublicationsTypeManager;
 import com.silverpeas.importExport.model.ImportExportException;
 import com.silverpeas.importExport.model.PublicationType;
 import com.silverpeas.importExport.model.PublicationsType;
+import com.silverpeas.importExport.report.ImportReportManager;
 import com.silverpeas.importExport.report.MassiveReport;
 import com.silverpeas.node.importexport.NodePositionType;
 import com.silverpeas.node.importexport.NodePositionsType;
@@ -45,6 +36,14 @@ import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import org.apache.commons.io.FileUtils;
+import org.silverpeas.importExport.attachment.AttachmentDetail;
+import org.silverpeas.importExport.attachment.AttachmentsType;
 
 /**
  * Class for unit and massive import
@@ -73,7 +72,7 @@ public class FileImport {
    * Import a single file for a unique publication
    *
    * @return ArrayList of PublicationDetail
-   * @throws ImportExportException 
+   * @throws ImportExportException
    */
   public List<PublicationDetail> importFile(boolean draft) throws ImportExportException {
     MassiveDocumentImport massiveImporter = new MassiveDocumentImport();
@@ -90,21 +89,22 @@ public class FileImport {
   public List<PublicationDetail> importFiles(boolean draft) {
     SilverTrace.info("kmelia", "FileImport.importFiles()", "root.MSG_GEN_ENTER_METHOD");
     List<PublicationDetail> publicationDetails = new ArrayList<PublicationDetail>();
+    ImportReportManager reportManager = new ImportReportManager();
     try {
-      PublicationsTypeManager typeMgr = new PublicationsTypeManager();      
-      
+      PublicationsTypeManager typeMgr = new PublicationsTypeManager();
+
       ImportSettings settings = getImportSettings(fileUploaded.getParent(), draft);
-      
+
       PublicationsType publicationsType = new PublicationsType();
       PublicationType publication = new PublicationType();
       PublicationDetail pubDetail = getPublicationDetail(fileUploaded, settings);
       publication.setPublicationDetail(pubDetail);
-      
+
       String tempFolderPath = unzipUploadedFile();
       Collection<File> filesExtracted = FileUtils.listFiles(new File(tempFolderPath), null, true);
       SilverTrace.info("kmelia", "FileImport.importFiles()", "root.MSG_GEN_PARAM_VALUE",
           "nb filesExtracted = " + filesExtracted.size());
-      
+
       // set files to attach to publication
       AttachmentsType attachmentsType = new AttachmentsType();
       List<AttachmentDetail> attachments = new ArrayList<AttachmentDetail>();
@@ -116,7 +116,7 @@ public class FileImport {
       }
       attachmentsType.setListAttachmentDetail(attachments);
       publication.setAttachmentsType(attachmentsType);
-      
+
       // set folder where to create publication
       NodePositionsType nodesType = new NodePositionsType();
       List<NodePositionType> nodes = new ArrayList<NodePositionType>();
@@ -125,14 +125,14 @@ public class FileImport {
       nodes.add(node);
       nodesType.setListNodePositionType(nodes);
       publication.setNodePositionsType(nodesType);
-      
+
       List<PublicationType> publications = new ArrayList<PublicationType>();
       publications.add(publication);
       publicationsType.setListPublicationType(publications);
-    
+
       // import files and create publication
-      typeMgr.processImport(publicationsType, settings);
-      
+      typeMgr.processImport(publicationsType, settings, reportManager);
+
       FileFolderManager.deleteFolder(tempFolderPath);
       if (pubDetail != null) {
         publicationDetails.add(pubDetail);
@@ -140,6 +140,7 @@ public class FileImport {
     } catch (Exception e) {
       SilverTrace.warn("kmelia", "FileImport.importFiles()", "root.EX_LOAD_ATTACHMENT_FAILED", e);
     }
+    reportManager.reportImportEnd();
     SilverTrace.info("kmelia", "FileImport.importFiles()", "root.MSG_GEN_EXIT_METHOD");
     return publicationDetails;
   }
@@ -190,19 +191,19 @@ public class FileImport {
    */
   private PublicationDetail getPublicationDetail(File file, ImportSettings settings) {
     SilverTrace.info("kmelia", "FileImport.getPublicationDetail()",
-        "root.MSG_GEN_PARAM_VALUE", "fileName = " + file.getName() +
-        " filepath=" + file.getAbsolutePath());
+        "root.MSG_GEN_PARAM_VALUE", "fileName = " + file.getName() + " filepath=" + file.
+        getAbsolutePath());
     String pubName = settings.getPublicationName(file.getName());
     PublicationDetail publicationDetail =
         new PublicationDetail(null, pubName, "", new Date(), new Date(), null,
-            kmeliaScc.getUserDetail().getId(), "1", null, "", "", null, "", "");
+        kmeliaScc.getUserDetail().getId(), "1", null, "", "", null, "", "");
     return publicationDetail;
   }
-  
+
   private ImportSettings getImportSettings(String path, boolean draft) {
     ImportSettings settings =
         new ImportSettings(path, kmeliaScc.getUserDetail(), kmeliaScc.getComponentId(),
-            kmeliaScc.getCurrentFolderId(), draft, true, ImportSettings.FROM_MANUAL);
+        kmeliaScc.getCurrentFolderId(), draft, true, ImportSettings.FROM_MANUAL);
     settings.setVersioningUsed(kmeliaScc.isVersionControlled());
     settings.setVersionType(versionType);
     return settings;
