@@ -203,13 +203,6 @@ function openSPWindow(fonction, windowName){
 
 		Window window = gef.getWindow();
 
-    String bestRole = (String) request.getAttribute("BestRole");
-    OperationPane operationPane = window.getOperationPane();
-    if ("Admin".equals(bestRole) && scc.isPdcUsed()) {
-      String pdcUtilizationSrc  = m_context + "/pdcPeas/jsp/icons/pdcPeas_paramPdc.gif";
-      operationPane.addOperation(pdcUtilizationSrc, resources.getString("GML.PDCParam"), "javascript:onClick=openSPWindow('"+m_context+"/RpdcUtilization/jsp/Main?ComponentId=" + scc.getComponentId() + "','utilizationPdc1')");
-      operationPane.addLine();
-    }
 		BrowseBar browseBar = window.getBrowseBar();
 		browseBar.setDomainName(spaceLabel);
 		browseBar.setComponentName(componentLabel, "Main");

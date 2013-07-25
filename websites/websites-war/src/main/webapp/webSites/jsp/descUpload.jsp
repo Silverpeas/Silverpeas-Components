@@ -387,7 +387,6 @@ function B_VALIDER_ONCLICK(nbthemes, nbicones) {
   <input type="hidden" name="Action">
 </form>
 
-<!-- CBO : UPDATE -->
 <form name="descriptionSite" action="EffectiveUploadSiteZip" method="post" enctype="multipart/form-data">
   <input type="hidden" name="ListeIcones"/>
   <input type="hidden" name="ListeTopics"/>

@@ -79,12 +79,8 @@ out.println(gef.getLookStyleSheet());
 	Window window = gef.getWindow();
 
 	BrowseBar browseBar = window.getBrowseBar();
-    //CBO : UPDATE
-	//browseBar.setDomainName(scc.getSpaceLabel());
-	browseBar.setDomainName(spaceLabel);
-	//CBO : UPDATE
-//browseBar.setComponentName(scc.getComponentLabel());
-browseBar.setComponentName(componentLabel);
+    browseBar.setDomainName(spaceLabel);
+	browseBar.setComponentName(componentLabel);
 	browseBar.setExtraInformation(resources.getString("SuggestionLink"));
 
 	//Le cadre
