@@ -501,7 +501,7 @@
       <% }%>
 
         var beginDate = {dateId : 'beginDate', hourId : 'beginHour'};
-        var endDate = {dateId : 'endDate', hourId : 'endHour', defaultHour : '23:59'};
+        var endDate = {dateId : 'endDate', hourId : 'endHour', defaultDateHour : '23:59'};
         var dateErrors = isPeriodEndingInFuture(beginDate, endDate);
         $(dateErrors).each(function(index, error) {
           errorMsg += " - " + error.message + "\n";
