@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.silverpeas.components</groupId>
     <artifactId>resources-manager</artifactId>
-    <version>5.12.3</version>
+    <version>5.12.4-SNAPSHOT</version>
   </parent>
 
   <groupId>com.silverpeas.components.resources-manager</groupId>
