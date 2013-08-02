@@ -368,6 +368,12 @@ public class AjaxPublicationsListServlet extends HttpServlet {
               pubColor = "gray";
               pubState = resources.getString("PubStateDraft");
             }
+          } else if (pub.getStatus() != null && pub.isRefused()) {
+            if (admin.isInRole(profile) || publisher.isInRole(profile)
+                || currentUserId.equals(currentUser.getId())) {
+              pubColor = "red";
+              pubState = resources.getString("PublicationRefused");
+            }
           } else {
             if (admin.isInRole(profile) || publisher.isInRole(profile)
                 || currentUserId.equals(pub.getUpdaterId())
