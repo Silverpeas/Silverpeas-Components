@@ -20,29 +20,6 @@
  */
 package com.stratelia.webactiv.kmelia.servlets;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.StringTokenizer;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.viewer.ViewerFactory;
-
 import com.silverpeas.delegatednews.model.DelegatedNews;
 import com.silverpeas.kmelia.KmeliaConstants;
 import com.silverpeas.kmelia.domain.TopicSearch;
@@ -55,7 +32,6 @@ import com.silverpeas.util.ImageUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
-
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -79,12 +55,30 @@ import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import com.stratelia.webactiv.util.viewGenerator.html.UserNameGenerator;
 import com.stratelia.webactiv.util.viewGenerator.html.board.Board;
 import com.stratelia.webactiv.util.viewGenerator.html.pagination.Pagination;
-
+import java.io.File;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.viewer.ViewerFactory;
 
 import static com.stratelia.webactiv.SilverpeasRole.*;
 import static com.stratelia.webactiv.util.publication.model.PublicationDetail.*;
-
 
 /**
  * @author ehugonnet
@@ -228,9 +222,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         writer.write("</tr>");
         writer.write("</table>");
         writer.write(board.printAfter());
-      } else if (NodePK.ROOT_NODE_ID.equals(kmeliaSC.getCurrentFolderId()) &&
-          kmeliaSC.getNbPublicationsOnRoot() != 0 && kmeliaSC.isTreeStructure() &&
-          !searchInProgress) {
+      } else if (NodePK.ROOT_NODE_ID.equals(kmeliaSC.getCurrentFolderId()) && kmeliaSC.
+          getNbPublicationsOnRoot() != 0 && kmeliaSC.isTreeStructure() && !searchInProgress) {
         displayLastPublications(kmeliaSC, resources, gef, writer);
       } else {
         if (publications != null) {
@@ -244,6 +237,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
   /**
    * Save current topic search inside persistence layer
+   *
    * @param componentId the component identifier
    * @param nodeId the node identifier
    * @param kmeliaSC the KmeliaSessionController
@@ -252,12 +246,12 @@ public class AjaxPublicationsListServlet extends HttpServlet {
   private void saveTopicSearch(String componentId, String nodeId, KmeliaSessionController kmeliaSC,
       String query) {
     //Check node value
-    if(!StringUtil.isDefined(nodeId)) {
+    if (!StringUtil.isDefined(nodeId)) {
       nodeId = kmeliaSC.getCurrentFolderId();
     }
     TopicSearch newTS =
         new TopicSearch(componentId, Integer.parseInt(nodeId), Integer.parseInt(kmeliaSC
-            .getUserId()), kmeliaSC.getLanguage(), query.toLowerCase(), new Date());
+        .getUserId()), kmeliaSC.getLanguage(), query.toLowerCase(), new Date());
     KmeliaSearchServiceFactory.getTopicSearchService().createTopicSearch(newTS);
   }
 
@@ -955,9 +949,9 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         }
         String id = version.getPk().getId();
         String logicalName = version.getFilename();
-        String title =  version.getTitle();
+        String title = version.getTitle();
         if (!StringUtil.isDefined(version.getTitle())) {
-          title =  logicalName;
+          title = logicalName;
           logicalName = null; // do not display filename twice
         }
         title += " v" + version.getMajorVersion();
@@ -1060,10 +1054,10 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       result.append(link).append("<img src=\"").append(icon).append(
           "\" border=\"0\" align=\"absmiddle\"/></a>&#160;</td>");
       result.append("<td valign=\"top\">").append(link);
-      if (!StringUtil.isDefined(title)) {
-        result.append(logicalName);
-      } else {
-        result.append(title);
+      boolean showTitle = resources.getSetting("showTitle", true);
+      String fileTitle = (StringUtil.isDefined(title) ? title : logicalName);
+      if (StringUtil.isDefined(fileTitle) && showTitle) {
+        result.append(fileTitle);
       }
       result.append("</a>");
 
@@ -1078,8 +1072,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       result.append("<br/>");
 
       result.append("<i>");
-      if (StringUtil.isDefined(title) && StringUtil.isDefined(logicalName) &&
-          resources.getSetting("showTitle", true)) {
+      if (StringUtil.isDefined(logicalName) && (!logicalName.equals(fileTitle) || !showTitle)) {
         result.append(logicalName).append(" / ");
       }
       // Add file size
