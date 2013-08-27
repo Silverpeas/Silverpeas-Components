@@ -111,6 +111,7 @@ public class FileImport {
       for (File file : filesExtracted) {
         AttachmentDetail attachment = new AttachmentDetail();
         attachment.setPhysicalName(file.getAbsolutePath());
+        attachment.setSize(file.length());
         attachment.setAuthor(kmeliaScc.getUserId());
         attachments.add(attachment);
       }
