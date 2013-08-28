@@ -71,6 +71,7 @@
     margin-right: 0.5em;
     width:24%;
 	position:relative;
+	border:0;
 } 
 
 #subTopics ul li a { 
