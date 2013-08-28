@@ -238,7 +238,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    */
   public synchronized void draftOutClassified(String classifiedId, ClassifiedsRole highestRole)
           throws PublicationTemplateException, FormException {
-    getClassifiedService().draftOutClassified(classifiedId, highestRole.toString(), isValidationEnabled());
+    getClassifiedService().draftOutClassified(classifiedId, highestRole.getName(), isValidationEnabled());
     if (highestRole == ClassifiedsRole.MANAGER) {
       sendSubscriptionsNotification(classifiedId);
     }
