@@ -269,8 +269,8 @@ public class ClassifiedsDAO {
     String query = "select * from SC_Classifieds_Classifieds where instanceId = ? and status = ? " +
                   " order by CASE WHEN validatedate IS NULL THEN " +
                   " CASE WHEN updatedate IS NULL THEN creationdate ELSE updatedate END "+ 
-                  " ELSE validatedate END, "+
-                  " validatedate, updatedate, creationdate";
+                  " ELSE validatedate END DESC, "+
+                  " validatedate DESC, updatedate DESC, creationdate DESC";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     
