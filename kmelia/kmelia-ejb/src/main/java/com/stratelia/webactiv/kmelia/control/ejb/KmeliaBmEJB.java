@@ -104,6 +104,8 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.ValidationStep;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
+import com.stratelia.webactiv.util.statistic.model.HistoryObjectDetail;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -2975,6 +2977,51 @@ public class KmeliaBmEJB implements KmeliaBm {
     }
     SilverTrace.info("kmelia", "KmeliaBmEJB.deleteAllReadingControlsByPublication()",
         "root.MSG_GEN_EXIT_METHOD");
+  }
+  
+  public List<HistoryObjectDetail> getLastAccess(PublicationPK pk, NodePK nodePK, String excludedUserId) {
+    
+    Collection<HistoryObjectDetail> allAccess =
+        statisticBm.getHistoryByAction(new ForeignPK(pk), 1, "Publication");
+    List<String> userIds = getUserIdsOfFolder(nodePK);
+    List<String> readerIds = new ArrayList<String>();
+
+    List<HistoryObjectDetail> lastAccess = new ArrayList<HistoryObjectDetail>();
+
+    for (HistoryObjectDetail access : allAccess) {
+      if ((!StringUtil.isDefined(excludedUserId) || !excludedUserId.equals(access.getUserId())) &&
+          (userIds == null || userIds.contains(access.getUserId())) &&
+          !readerIds.contains(access.getUserId())) {
+        readerIds.add(access.getUserId());
+        lastAccess.add(access);
+      }
+    }
+
+    return lastAccess;
+  }
+  
+  @Override
+  public List<String> getUserIdsOfFolder(NodePK pk) {
+    if (!isRightsOnTopicsEnabled(pk.getInstanceId())) {
+      return null;
+    }
+
+    NodeDetail node = getNodeHeader(pk);
+
+    // check if we have to take care of topic's rights
+    if (node != null && node.haveRights()) {
+      int rightsDependsOn = node.getRightsDependsOn();
+      List<String> profileNames = new ArrayList<String>(4);
+      profileNames.add(KmeliaHelper.ROLE_ADMIN);
+      profileNames.add(KmeliaHelper.ROLE_PUBLISHER);
+      profileNames.add(KmeliaHelper.ROLE_WRITER);
+      profileNames.add(KmeliaHelper.ROLE_READER);
+      String[] userIds = getOrganisationController().getUsersIdsByRoleNames(pk.getInstanceId(),
+          Integer.toString(rightsDependsOn), ObjectType.NODE, profileNames);
+      return Arrays.asList(userIds);
+    } else {
+      return null;
+    }
   }
 
   @Override

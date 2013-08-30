@@ -37,6 +37,8 @@ import com.stratelia.webactiv.util.publication.model.Alias;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import com.stratelia.webactiv.util.statistic.model.HistoryObjectDetail;
+
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -758,4 +760,8 @@ public interface KmeliaBm extends SilverpeasComponentService<KmeliaPublication> 
   public String getUserTopicProfile(NodePK pk, String userId);
 
   public List<String> deletePublications(List<String> ids, NodePK nodePK, String userId);
+  
+  public List<String> getUserIdsOfFolder(NodePK pk);
+  
+  public List<HistoryObjectDetail> getLastAccess(PublicationPK pk, NodePK nodePK, String excludedUserId);
 }
