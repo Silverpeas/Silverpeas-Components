@@ -678,6 +678,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
             request.setAttribute("DelegatedNews", kmelia.getDelegatedNews(id));
             request.setAttribute("IsBasket", NodePK.BIN_NODE_ID.equals(kmelia.getCurrentFolderId()));
           }
+          
+          request.setAttribute("LastAccess", kmelia.getLastAccess(kmeliaPublication.getPk()));
 
           destination = rootDestination + "publication.jsp";
         }

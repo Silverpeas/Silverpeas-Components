@@ -135,6 +135,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.PublicationSelection;
 import com.stratelia.webactiv.util.publication.model.ValidationStep;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
+import com.stratelia.webactiv.util.statistic.model.HistoryObjectDetail;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
@@ -676,26 +677,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public List<String> getUserIdsOfTopic() throws RemoteException {
-    if (!isRightsOnTopicsEnabled()) {
-      return null;
-    }
-
-    NodeDetail node = getNodeHeader(getCurrentFolderId());
-
-    // check if we have to take care of topic's rights
-    if (node != null && node.haveRights()) {
-      int rightsDependsOn = node.getRightsDependsOn();
-      List<String> profileNames = new ArrayList<String>(4);
-      profileNames.add(KmeliaHelper.ROLE_ADMIN);
-      profileNames.add(KmeliaHelper.ROLE_PUBLISHER);
-      profileNames.add(KmeliaHelper.ROLE_WRITER);
-      profileNames.add(KmeliaHelper.ROLE_READER);
-      String[] userIds = getOrganisationController().getUsersIdsByRoleNames(getComponentId(),
-          Integer.toString(rightsDependsOn), ObjectType.NODE, profileNames);
-      return Arrays.asList(userIds);
-    } else {
-      return null;
-    }
+    return getKmeliaBm().getUserIdsOfFolder(getCurrentFolderPK());
   }
 
   public boolean isCurrentTopicAvailable() throws RemoteException {
@@ -1886,7 +1868,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public NodePK getCurrentFolderPK() {
-    return new NodePK(getCurrentFolderId(), getSpaceId(), getComponentId());
+    return new NodePK(getCurrentFolderId(), getComponentId());
   }
 
   public NodeDetail getCurrentFolder() throws RemoteException {
@@ -4335,5 +4317,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     subscriptionContext
         .initializeFromNode(NodeSubscriptionResource.from(getCurrentFolderPK()), nodePath);
     return subscriptionContext.getDestinationUrl();
+  }
+  
+  public List<HistoryObjectDetail> getLastAccess(PublicationPK pk) {
+    return getKmeliaBm().getLastAccess(pk, getCurrentFolderPK(), getUserId());
   }
 }

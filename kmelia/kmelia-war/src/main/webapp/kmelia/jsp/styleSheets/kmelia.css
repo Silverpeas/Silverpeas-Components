@@ -814,3 +814,49 @@ a.button.refuse span {
 	color: blue;
 	text-decoration: underline;
 }
+
+/* Last access */
+#preview #lastReader h4 {
+    background:transparent url("/silverpeas/util/icons/groupe.gif") right top no-repeat  ;
+    height: 16px;
+}
+#preview #lastReaderList {
+	list-style-type:none;
+	padding:17px 10px;
+	margin:0;
+}
+
+#preview #lastReaderList li {
+	width:50%;
+	float:left;
+	position:relative;
+	padding:0;
+	margin:0 0 8px;
+	height:40px;
+}
+
+#preview .bgDegradeGris #lastReaderList .profilPhoto {
+	left:0;
+    right:auto;
+    top:0px;
+	background-color:#FFF;
+}
+
+#preview #lastReaderList li span.consultationDate,
+#preview #lastReaderList li span.userToZoom {
+	display:block;
+	padding-left:40px;
+	padding-right: 5px;
+}
+
+#preview #lastReaderList li span.consultationDate {
+	color:#727272;
+}
+
+#preview #readingControlLink {
+	color:#444;
+	display:block;
+	text-align:right;
+	padding:17px 10px;
+	text-decoration:underline;
+}
