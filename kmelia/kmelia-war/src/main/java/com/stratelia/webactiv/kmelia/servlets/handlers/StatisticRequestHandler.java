@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -45,7 +45,6 @@ import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
-import com.stratelia.webactiv.kmelia.model.TopicDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.node.model.NodePK;
@@ -162,7 +161,7 @@ public class StatisticRequestHandler {
       KmeliaSessionController kmelia) {
 
     String m_context =
-        GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+        GeneralPropertiesManager.getString("ApplicationURL");
     PairObject[] hostPath = new PairObject[1];
     hostPath[0] = new PairObject(kmelia.getString("kmelia.SelectValidator"), "");
 

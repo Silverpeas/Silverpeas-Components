@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -9,7 +9,7 @@
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
  * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
  * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -20,77 +20,35 @@
  */
 package com.silverpeas.mailinglist.model;
 
-import com.silverpeas.mailinglist.AbstractSilverpeasDatasourceSpringContextTests;
+import com.silverpeas.mailinglist.AbstractMailingListTest;
 import com.silverpeas.mailinglist.service.ServicesFactory;
 import com.silverpeas.mailinglist.service.model.beans.InternalUser;
 import com.silverpeas.mailinglist.service.model.beans.MailingList;
-import org.dbunit.database.IDatabaseConnection;
+import java.io.IOException;
 import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
-import org.dbunit.operation.DatabaseOperation;
-import org.jvnet.mock_javamail.Mailbox;
-
-import java.io.IOException;
-import java.sql.SQLException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.test.context.ContextConfiguration;
+import org.jvnet.mock_javamail.Mailbox;
+
 import static org.junit.Assert.*;
 
-@ContextConfiguration(locations = {"/spring-checker.xml", "/spring-notification.xml",
-  "/spring-hibernate.xml", "/spring-datasource.xml"})
-public class TestCheckSender extends AbstractSilverpeasDatasourceSpringContextTests {
+public class TestCheckSender extends AbstractMailingListTest {
 
   private static final String ArchivageNotModeratedOpen_ID = "101";
   private static final String ArchivageNotModeratedClosed_ID = "102";
 
   @After
-  @Override
   public void onTearDown() throws Exception {
-    super.onTearDown();
     Mailbox.clearAll();
-    IDatabaseConnection connection = null;
-    try {
-      connection = getConnection();
-      DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    } finally {
-      if (connection != null) {
-        try {
-          connection.getConnection().close();
-        } catch (SQLException e) {
-          e.printStackTrace();
-        }
-      }
-    }
-    super.onTearDown();
   }
 
   @Before
-  @Override
   public void onSetUp() {
-    super.onSetUp();
     Mailbox.clearAll();
-    IDatabaseConnection connection = null;
-    try {
-      connection = getConnection();
-      DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
-      DatabaseOperation.CLEAN_INSERT.execute(connection, getDataSet());
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    } finally {
-      if (connection != null) {
-        try {
-          connection.getConnection().close();
-        } catch (SQLException e) {
-          e.printStackTrace();
-        }
-      }
-    }
   }
 
   @Override
@@ -103,7 +61,7 @@ public class TestCheckSender extends AbstractSilverpeasDatasourceSpringContextTe
   @Test
   public void testArchivageNotModeratedOpen() {
     String email = "maggie.simpson@silverpeas.com";
-    MailingList list = ServicesFactory.getMailingListService().findMailingList(
+    MailingList list = ServicesFactory.getFactory().getMailingListService().findMailingList(
         ArchivageNotModeratedOpen_ID);
     assertNotNull(list);
     assertFalse(list.isModerated());
@@ -134,7 +92,7 @@ public class TestCheckSender extends AbstractSilverpeasDatasourceSpringContextTe
   public void testArchivageNotModeratedClosed() {
     String email = "lisa.simpson@silverpeas.com";
     String spammer = "joe.theplumber@spam.com";
-    MailingList list = ServicesFactory.getMailingListService().findMailingList(
+    MailingList list = ServicesFactory.getFactory().getMailingListService().findMailingList(
         ArchivageNotModeratedClosed_ID);
     assertNotNull(list);
     assertFalse(list.isModerated());
@@ -161,5 +119,12 @@ public class TestCheckSender extends AbstractSilverpeasDatasourceSpringContextTe
     assertTrue(list.isEmailAuthorized(email));
     assertFalse(component.checkSender(spammer));
     assertFalse(list.isEmailAuthorized(spammer));
+  }
+
+  @Override
+  protected String[] getContextConfigurations() {
+    return new String[]{"/spring-checker.xml", "/spring-notification.xml",
+      "/spring-mailinglist-services-factory.xml", "/spring-mailinglist-dao.xml",
+      "/spring-mailinglist-embbed-datasource.xml"};
   }
 }

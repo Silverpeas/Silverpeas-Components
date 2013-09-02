@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,13 +26,20 @@ package com.silverpeas.classifieds.model;
 import com.silverpeas.SilverpeasContent;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import java.util.ArrayList;
+import org.silverpeas.core.admin.OrganisationController;
 import java.util.Date;
+import java.util.List;
+
+import org.silverpeas.attachment.model.SimpleDocument;
 
 public class ClassifiedDetail implements SilverpeasContent {
   private static final long serialVersionUID = -355125879163002184L;
 
   private String title;
   private int classifiedId;
+  private String description;
+  private Integer price = new Integer(0);
   private String instanceId;
   private String creatorId;
   private String creatorName;
@@ -43,13 +50,18 @@ public class ClassifiedDetail implements SilverpeasContent {
   private String validatorId;
   private String validatorName;
   private Date validateDate;
+  private String searchValueId1;
+  private String searchValueId2;
+  private String searchValue1;
+  private String searchValue2;
+  private List<SimpleDocument> images = new ArrayList<SimpleDocument>();
 
   public static final String DRAFT = "Draft";
   public static final String VALID = "Valid";
   public static final String TO_VALIDATE = "ToValidate";
   public static final String REFUSED = "Unvalidate";
   public static final String UNPUBLISHED = "Unpublished";
-  
+
   public static final String TYPE = "Classified";
 
   public ClassifiedDetail() {
@@ -59,8 +71,9 @@ public class ClassifiedDetail implements SilverpeasContent {
     this.classifiedId = classifiedId;
   }
 
-  public ClassifiedDetail(String title) {
+  public ClassifiedDetail(String title, String description) {
     this.title = title;
+    this.description = description;
   }
 
   @Override
@@ -74,7 +87,19 @@ public class ClassifiedDetail implements SilverpeasContent {
 
   @Override
   public String getDescription() {
-    return "";
+    return this.description;
+  }
+  
+  public void setDescription(String description) {
+    this.description = description;
+  }
+  
+  public Integer getPrice() {
+    return this.price;
+  }
+  
+  public void setPrice(Integer price) {
+    this.price = price;
   }
 
   public int getClassifiedId() {
@@ -168,7 +193,7 @@ public class ClassifiedDetail implements SilverpeasContent {
 
   @Override
   public UserDetail getCreator() {
-    OrganizationController controller = new OrganizationController();
+    OrganisationController controller = new OrganizationController();
     return controller.getUserDetail(creatorId);
   }
 
@@ -186,7 +211,7 @@ public class ClassifiedDetail implements SilverpeasContent {
   public String getContributionType() {
     return TYPE;
   }
-  
+
   /**
    * The type of this resource
    * @return the same value returned by getContributionType()
@@ -199,4 +224,45 @@ public class ClassifiedDetail implements SilverpeasContent {
   public String getSilverpeasContentId() {
     return "";
   }
+  
+  public String getSearchValueId1() {
+    return this.searchValueId1;
+  }
+
+  public void setSearchValueId1(String searchValueId1) {
+    this.searchValueId1 = searchValueId1;
+  }
+  
+  public String getSearchValueId2() {
+    return this.searchValueId2;
+  }
+  
+  public void setSearchValueId2(String searchValueId2) {
+    this.searchValueId2 = searchValueId2;
+  }
+  
+  public String getSearchValue1() {
+    return this.searchValue1;
+  }
+  
+  public void setSearchValue1(String searchValue1) {
+    this.searchValue1 = searchValue1;
+  }
+  
+  public String getSearchValue2() {
+    return this.searchValue2;
+  }
+  
+  public void setSearchValue2(String searchValue2) {
+    this.searchValue2 = searchValue2;
+  }
+
+  public List<SimpleDocument> getImages() {
+    return images;
+  }
+
+  public void setImages(List<SimpleDocument> images) {
+    this.images = images;
+  }
+  
 }

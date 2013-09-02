@@ -1,27 +1,36 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.ecyrd.jspwiki.providers;
+
+import com.ecyrd.jspwiki.*;
+import com.silverpeas.util.ForeignPK;
+import com.silverpeas.wiki.control.WikiException;
+import com.silverpeas.wiki.control.WikiMultiInstanceManager;
+import com.silverpeas.wiki.control.WikiPageDAO;
+import com.silverpeas.wiki.control.model.PageDetail;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import org.apache.commons.io.IOUtils;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -31,7 +40,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -40,61 +48,22 @@ import java.util.List;
 import java.util.Properties;
 import java.util.TreeSet;
 
-import javax.ejb.CreateException;
-
-import com.ecyrd.jspwiki.FileUtil;
-import com.ecyrd.jspwiki.InternalWikiException;
-import com.ecyrd.jspwiki.NoRequiredPropertyException;
-import com.ecyrd.jspwiki.QueryItem;
-import com.ecyrd.jspwiki.SearchMatcher;
-import com.ecyrd.jspwiki.SearchResult;
-import com.ecyrd.jspwiki.SearchResultComparator;
-import com.ecyrd.jspwiki.WikiEngine;
-import com.ecyrd.jspwiki.WikiPage;
-import com.ecyrd.jspwiki.WikiProvider;
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.wiki.control.WikiException;
-import com.silverpeas.wiki.control.WikiMultiInstanceManager;
-import com.silverpeas.wiki.control.WikiPageDAO;
-import com.silverpeas.wiki.control.model.PageDetail;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.versioning.ejb.VersioningBm;
-import com.stratelia.silverpeas.versioning.ejb.VersioningBmHome;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.UtilException;
 
 /**
  * @author Ludovic Bertin
  */
 public class WikiVersioningFileProvider extends AbstractFileProvider implements VersioningProvider {
-  private VersioningBm versioningBm = null;
 
   public static final String PAGEDIR = "OLD";
-
   public static final String PROPERTYFILE = "page.properties";
-
   public static final String ID = "ID";
-
   private CachedProperties m_cachedProperties;
-
   private WikiPageDAO pageDAO = new WikiPageDAO();
 
-  public void initialize(WikiEngine engine, Properties properties)
-      throws NoRequiredPropertyException, IOException {
+  @Override
+  public void initialize(WikiEngine engine, Properties properties) throws
+      NoRequiredPropertyException, IOException {
     super.initialize(engine, properties);
-  }
-
-  private VersioningBm getVersioningBm() throws UtilException, RemoteException,
-      CreateException {
-    if (versioningBm == null) {
-      VersioningBmHome versioningBmHome = (VersioningBmHome) EJBUtilitaire
-          .getEJBObjectRef(JNDINames.VERSIONING_EJBHOME, VersioningBmHome.class);
-      versioningBm = versioningBmHome.create();
-
-    }
-    return versioningBm;
   }
 
   /**
@@ -112,9 +81,10 @@ public class WikiVersioningFileProvider extends AbstractFileProvider implements 
 
   /**
    * Goes through the repository and decides which version is the newest one in that directory.
+   *
    * @return Latest version number in the repository, or -1, if there is no page in the repository.
    */
-  private int findLatestVersion(String page) throws ProviderException {
+  private int findLatestVersion(String page) {
     int version = -1;
 
     try {
@@ -122,7 +92,6 @@ public class WikiVersioningFileProvider extends AbstractFileProvider implements 
 
       for (Iterator i = props.keySet().iterator(); i.hasNext();) {
         String key = (String) i.next();
-
         if (key.endsWith(".author")) {
           int cutpoint = key.indexOf('.');
           if (cutpoint > 0) {
@@ -130,7 +99,6 @@ public class WikiVersioningFileProvider extends AbstractFileProvider implements 
 
             try {
               int res = Integer.parseInt(pageNum);
-
               if (res > version) {
                 version = res;
               }
@@ -140,11 +108,9 @@ public class WikiVersioningFileProvider extends AbstractFileProvider implements 
         }
       }
     } catch (IOException e) {
-      SilverTrace.error("wiki",
-          "WikiVersioningFileProvider.findLatestVersion()",
+      SilverTrace.error("wiki", "WikiVersioningFileProvider.findLatestVersion()",
           "wiki.EX_FIND_PAGE", e);
     }
-
     return version;
   }
 
@@ -195,8 +161,9 @@ public class WikiVersioningFileProvider extends AbstractFileProvider implements 
 
         return props;
       } finally {
-        if (in != null)
+        if (in != null) {
           in.close();
+        }
       }
     }
 
@@ -218,13 +185,15 @@ public class WikiVersioningFileProvider extends AbstractFileProvider implements 
       properties.store(out, " JSPWiki page properties for " + page
           + ". DO NOT MODIFY!");
     } finally {
-      if (out != null)
+      if (out != null) {
         out.close();
+      }
     }
   }
 
   /**
    * Figures out the real version number of the page and also checks for its existence.
+   *
    * @throws NoSuchVersionException if there is no such version.
    */
   private int realVersion(String page, int requestedVersion)
@@ -261,8 +230,9 @@ public class WikiVersioningFileProvider extends AbstractFileProvider implements 
 
     File pageFile = new File(dir, "" + version + FILE_EXT);
 
-    if (!pageFile.exists())
+    if (!pageFile.exists()) {
       throw new NoSuchVersionException("Version " + version + "does not exist.");
+    }
 
     return readFile(pageFile);
   }
@@ -284,8 +254,9 @@ public class WikiVersioningFileProvider extends AbstractFileProvider implements 
           throw new ProviderException("I/O error: " + e.getMessage());
         } finally {
           try {
-            if (in != null)
+            if (in != null) {
               in.close();
+            }
           } catch (Exception e) {
             SilverTrace.fatal("wiki", "WikiVersioningFileProvider.readFile()",
                 "wiki.EX_CLOSING_FAIL", e);
@@ -376,10 +347,12 @@ public class WikiVersioningFileProvider extends AbstractFileProvider implements 
           //
           versionNumber++;
         } finally {
-          if (out != null)
+          if (out != null) {
             out.close();
-          if (in != null)
+          }
+          if (in != null) {
             in.close();
+          }
         }
       }
 
@@ -473,8 +446,9 @@ public class WikiVersioningFileProvider extends AbstractFileProvider implements 
         }
 
         String changenote = props.getProperty(realVersion + ".changenote");
-        if (changenote != null)
+        if (changenote != null) {
           p.setAttribute(WikiPage.CHANGENOTE, changenote);
+        }
 
         String pageId = props.getProperty(realVersion + ".id");
         p.setAttribute(WikiVersioningFileProvider.ID, pageId);
@@ -518,14 +492,18 @@ public class WikiVersioningFileProvider extends AbstractFileProvider implements 
   /**
    * Removes the relevant page directory under "OLD" -directory as well, but does not remove any
    * extra subdirectories from it. It will only touch those files that it thinks to be WikiPages.
+   *
+   * @param page
+   * @throws ProviderException
    */
   // FIXME: Should log errors.
+  @Override
   public void deletePage(String page) throws ProviderException {
     super.deletePage(page);
     int pageId = -1;
+    String componentId = WikiMultiInstanceManager.getComponentId();
     try {
-      PageDetail currentPage = pageDAO.getPage(page, WikiMultiInstanceManager
-          .getComponentId());
+      PageDetail currentPage = pageDAO.getPage(page, componentId);
       if (currentPage != null) {
         pageId = currentPage.getId();
         pageDAO.deletePage(page, WikiMultiInstanceManager.getComponentId());
@@ -540,8 +518,11 @@ public class WikiVersioningFileProvider extends AbstractFileProvider implements 
      * Delete versioning information relative to the deleted page
      */
     try {
-      getVersioningBm().deleteDocumentsByForeignPK(
-          new ForeignPK(String.valueOf(pageId)));
+      List<SimpleDocument> docs = AttachmentServiceFactory.getAttachmentService().
+          listDocumentsByForeignKey(new ForeignPK(String.valueOf(pageId), componentId), null);
+      for (SimpleDocument doc : docs) {
+        AttachmentServiceFactory.getAttachmentService().deleteAttachment(doc);
+      }
     } catch (Exception e) {
       SilverTrace.error("wiki", "WikiVersioningFileProvider.deletePage()",
           "wiki.EX_DELETE_PAGE_FAILED", e);
@@ -552,29 +533,24 @@ public class WikiVersioningFileProvider extends AbstractFileProvider implements 
 
     if (dir.exists() && dir.isDirectory()) {
       File[] files = dir.listFiles(new WikiFileFilter());
-
-      for (int i = 0; i < files.length; i++) {
-        files[i].delete();
+      for (File file : files) {
+        file.delete();
       }
-
       File propfile = new File(dir, PROPERTYFILE);
-
       if (propfile.exists()) {
         propfile.delete();
       }
-
       dir.delete();
     }
   }
 
+  @Override
   public void deleteVersion(String page, int version) throws ProviderException {
     File dir = findOldPageDir(page);
-
     int latest = findLatestVersion(page);
 
     if (version == WikiPageProvider.LATEST_VERSION || version == latest
-        || (version == 1 && latest == -1)) {
-      //
+        || (version == 1 && latest == -1)) {      //
       // Delete the properties
       //
       try {
@@ -586,7 +562,6 @@ public class WikiVersioningFileProvider extends AbstractFileProvider implements 
             "wiki.EX_MODIFY_PROPERTIES", e);
         throw new ProviderException("Could not modify page properties");
       }
-
       // We can let the FileSystemProvider take care
       // of the actual deletion
       super.deleteVersion(page, WikiPageProvider.LATEST_VERSION);
@@ -616,31 +591,17 @@ public class WikiVersioningFileProvider extends AbstractFileProvider implements 
           pageFile.setLastModified(previousFile.lastModified());
         }
       } catch (IOException e) {
-        SilverTrace
-            .fatal(
-            "wiki",
-            "WikiVersioningFileProvider.deleteVersion()",
-            "root.EXCEPTION",
-            "Something wrong with the page directory - you may have just lost data!",
-            e);
+        SilverTrace.fatal("wiki", "WikiVersioningFileProvider.deleteVersion()", "root.EXCEPTION",
+            "Something wrong with the page directory - you may have just lost data!", e);
       } finally {
-        try {
-          if (in != null)
-            in.close();
-          if (out != null)
-            out.close();
-        } catch (IOException ex) {
-          SilverTrace.error("wiki",
-              "WikiVersioningFileProvider.deleteVersion()",
-              "wiki.EX_CLOSING_FAILED", ex);
-        }
+        IOUtils.closeQuietly(in);
+        IOUtils.closeQuietly(out);
       }
 
       return;
     }
 
     File pageFile = new File(dir, "" + version + FILE_EXT);
-
     if (pageFile.exists()) {
       if (!pageFile.delete()) {
         SilverTrace.error("wiki", "WikiVersioningFileProvider.deleteVersion()",
@@ -652,88 +613,83 @@ public class WikiVersioningFileProvider extends AbstractFileProvider implements 
   }
 
   // FIXME: This is kinda slow, we should need to do this only once.
+  @Override
   public Collection<?> getAllPages() throws ProviderException {
     Collection<?> pages = internalGetAllPages();
     Collection<WikiPage> returnedPages = new ArrayList<WikiPage>();
 
     for (Iterator i = pages.iterator(); i.hasNext();) {
       WikiPage page = (WikiPage) i.next();
-
       WikiPage info = getPageInfo(page.getName(), WikiProvider.LATEST_VERSION);
-
       returnedPages.add(info);
     }
 
     return returnedPages;
   }
 
+  @Override
   public String getProviderInfo() {
     return "";
   }
 
+  @Override
   public void movePage(String from, String to) throws ProviderException {
     // Rename in database
     try {
       pageDAO.renamePage(from, to, WikiMultiInstanceManager.getComponentId());
     } catch (WikiException e) {
-      SilverTrace.error("wiki", "WikiVersioningFileProvider.movePage()",
-          "wiki.EX_MOVE_PAGE", e);
+      SilverTrace.error("wiki", "WikiVersioningFileProvider.movePage()", "wiki.EX_MOVE_PAGE", e);
       throw new ProviderException("Could not move page");
     }
 
     // Move the file itself
     File fromFile = findPage(from);
     File toFile = findPage(to);
-
     fromFile.renameTo(toFile);
-
     // Move any old versions
     File fromOldDir = findOldPageDir(from);
     File toOldDir = findOldPageDir(to);
-
     fromOldDir.renameTo(toOldDir);
   }
 
   private static class CachedProperties {
+
     String m_page;
-
     Properties m_props;
-
     long m_lastModified;
   }
 
+  @Override
   String getPageDirectory() {
     String componentId = WikiMultiInstanceManager.getComponentId();
-
     if (componentId == null) {
       return super.getPageDirectory();
-    } else
+    } else {
       return FileRepositoryManager.getAbsolutePath(componentId);
+    }
   }
 
   /**
    * Finds a Wiki page from the page repository.
+   *
+   * @param page
+   * @return
    */
+  @Override
   protected File findPage(String page) {
     return new File(getPageDirectory(), mangleName(page) + FILE_EXT);
   }
 
   public Collection<?> internalGetAllPages() throws ProviderException {
     List<WikiPage> set = new ArrayList<WikiPage>();
-
     File wikipagedir = new File(getPageDirectory());
-
     File[] wikipages = wikipagedir.listFiles(new WikiFileFilter());
-
     if (wikipages == null) {
-      SilverTrace.error("wiki",
-          "WikiVersioningFileProvider.internalGetAllPages()",
-          "wiki.GET_ALL_PAGES_FAILED", "Wikipages directory '"
-          + getPageDirectory() + "' does not exist! Please check "
-          + PROP_PAGEDIR + " in jspwiki.properties.");
+      SilverTrace.error("wiki", "WikiVersioningFileProvider.internalGetAllPages()",
+          "wiki.GET_ALL_PAGES_FAILED", "Wikipages directory '" + getPageDirectory()
+          + "' does not exist! Please check " + PROP_PAGEDIR + " in jspwiki.properties.");
       throw new InternalWikiException("Page directory does not exist");
     }
-
     for (int i = 0; i < wikipages.length; i++) {
       String wikiname = wikipages[i].getName();
       int cutpoint = wikiname.lastIndexOf(FILE_EXT);
@@ -744,35 +700,30 @@ public class WikiVersioningFileProvider extends AbstractFileProvider implements 
       if (page == null) {
         // This should not really happen.
         // FIXME: Should we throw an exception here?
-        SilverTrace
-            .error(
-            "wiki",
-            "WikiVersioningFileProvider.internalGetAllPages()",
-            "wiki.GET_ALL_PAGES_FAILED",
-            "Page "
-            + wikiname
+        SilverTrace.error("wiki", "WikiVersioningFileProvider.internalGetAllPages()",
+            "wiki.GET_ALL_PAGES_FAILED", "Page " + wikiname
             + " was found in directory listing, but could not be located individually.");
         continue;
       }
-
       set.add(page);
     }
-
     return set;
   }
 
+  @Override
   public int getPageCount() {
     File wikipagedir = new File(getPageDirectory());
-
     File[] wikipages = wikipagedir.listFiles(new WikiFileFilter());
-
     return wikipages.length;
   }
 
   /**
    * Iterates through all WikiPages, matches them against the given query, and returns a Collection
    * of SearchResult objects.
+   * @param query
+   * @return
    */
+  @Override
   public Collection findPages(QueryItem[] query) {
     File wikipagedir = new File(getPageDirectory());
     TreeSet res = new TreeSet(new SearchResultComparator());
@@ -782,9 +733,6 @@ public class WikiVersioningFileProvider extends AbstractFileProvider implements 
 
     for (int i = 0; i < wikipages.length; i++) {
       FileInputStream input = null;
-
-      // log.debug("Searching page "+wikipages[i].getPath() );
-
       String filename = wikipages[i].getName();
       int cutpoint = filename.lastIndexOf(FILE_EXT);
       String wikiname = filename.substring(0, cutpoint);
@@ -803,14 +751,13 @@ public class WikiVersioningFileProvider extends AbstractFileProvider implements 
             "wiki.EX_FIND_PAGES_FAILED", "Failed to read " + filename, e);
       } finally {
         try {
-          if (input != null)
+          if (input != null) {
             input.close();
+          }
         } catch (IOException e) {
         } // It's fine to fail silently.
       }
     }
-
     return res;
   }
-
 }

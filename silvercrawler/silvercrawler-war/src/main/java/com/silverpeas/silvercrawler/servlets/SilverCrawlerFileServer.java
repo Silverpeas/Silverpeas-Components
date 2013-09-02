@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,9 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
----*/
-
 package com.silverpeas.silvercrawler.servlets;
 
 import java.io.BufferedInputStream;
@@ -55,12 +52,11 @@ import com.stratelia.webactiv.util.ResourceLocator;
  */
 public class SilverCrawlerFileServer extends HttpServlet {
 
-  // HttpSession session;
-  // PrintWriter out;
+  private static final long serialVersionUID = 4892517833096053490L;
 
   public static String getUrl(String logicalName, String physicalName,
       String mimeType, String userId, String componentId) {
-    return FileServerUtils.getUrl(logicalName, physicalName, mimeType, userId,
+    return FileServerUtils.getUrl(physicalName, mimeType, userId,
         componentId);
   }
 
@@ -102,17 +98,13 @@ public class SilverCrawlerFileServer extends HttpServlet {
       SilverTrace.warn("silverCrawler", "FileServer.doPost()",
           "root.MSG_GEN_SESSION_TIMEOUT", "NewSessionId="
               + session.getId()
-              + GeneralPropertiesManager.getGeneralResourceLocator().getString(
-                  "ApplicationURL")
-              + GeneralPropertiesManager.getGeneralResourceLocator().getString(
-                  "sessionTimeout"));
-      res.sendRedirect(GeneralPropertiesManager.getGeneralResourceLocator()
-          .getString("ApplicationURL")
-          + GeneralPropertiesManager.getGeneralResourceLocator().getString(
-              "sessionTimeout"));
+              + GeneralPropertiesManager.getString("ApplicationURL")
+              + GeneralPropertiesManager.getString("sessionTimeout"));
+      res.sendRedirect(GeneralPropertiesManager.getString("ApplicationURL")
+          + GeneralPropertiesManager.getString("sessionTimeout"));
     }
 
-    String rootPath = mainSessionCtrl.getOrganizationController()
+    String rootPath = mainSessionCtrl.getOrganisationController()
         .getComponentParameterValue(componentId, "directory");
     String separator = rootPath.substring(0, 1);
     if (rootPath.endsWith(separator))
@@ -152,7 +144,7 @@ public class SilverCrawlerFileServer extends HttpServlet {
 
   private boolean isUserAllowed(MainSessionController controller,
       String componentId) {
-    return controller.getOrganizationController().isComponentAvailable(
+    return controller.getOrganisationController().isComponentAvailable(
         componentId, controller.getUserId());
   }
 

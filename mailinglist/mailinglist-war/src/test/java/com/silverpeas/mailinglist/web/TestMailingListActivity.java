@@ -1,36 +1,24 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.mailinglist.web;
-
-import java.sql.SQLException;
-
-import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
-import org.dbunit.operation.DatabaseOperation;
 
 import com.meterware.httpunit.ClientProperties;
 import com.meterware.httpunit.HttpUnitOptions;
@@ -39,19 +27,27 @@ import com.meterware.httpunit.WebForm;
 import com.meterware.httpunit.WebLink;
 import com.meterware.httpunit.WebResponse;
 import com.meterware.httpunit.WebTable;
-import com.silverpeas.mailinglist.AbstractSilverpeasDatasourceSpringContextTests;
-import org.junit.After;
+import com.silverpeas.mailinglist.AbstractMailingListTest;
+import org.dbunit.dataset.IDataSet;
+import org.dbunit.dataset.ReplacementDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.test.context.ContextConfiguration;
 
 import static org.junit.Assert.*;
 
-@ContextConfiguration(locations = {"/spring-checker.xml", "/spring-notification.xml",
-        "/spring-hibernate.xml", "/spring-datasource.xml" })
-public class TestMailingListActivity extends AbstractSilverpeasDatasourceSpringContextTests {
+public class TestMailingListActivity extends AbstractMailingListTest {
 
   private static String MESSAGE_BASE = "destination/activity/message/";
+
+  @Before
+  public void onSetUp() {
+    HttpUnitOptions.setExceptionsThrownOnErrorStatus(true);
+    HttpUnitOptions.setExceptionsThrownOnScriptError(false);
+    HttpUnitOptions.setScriptingEnabled(true);
+    ClientProperties.getDefaultProperties().setAcceptCookies(true);
+    ClientProperties.getDefaultProperties().setAutoRedirect(true);
+  }
 
   @Test
   public void testSimpleUser() throws Exception {
@@ -133,9 +129,9 @@ public class TestMailingListActivity extends AbstractSilverpeasDatasourceSpringC
         tableMessages.getCellAsText(2, 0));
     assertEquals(
         "Bonjour famille Simpson, j\'espère que vous allez bien. Ici "
-            + "tout se passe bien et Krusty est très sympathique. Surtout depuis que "
-            + "Tahiti Bob est retourné en prison. Je dois remplacer l\'homme canon "
-            + "dans ...", tableMessages.getCellAsText(3, 0));
+        + "tout se passe bien et Krusty est très sympathique. Surtout depuis que "
+        + "Tahiti Bob est retourné en prison. Je dois remplacer l\'homme canon "
+        + "dans ...", tableMessages.getCellAsText(3, 0));
     assertEquals(MESSAGE_BASE + 3,
         tableMessages.getTableCell(3, 0).getLinks()[0].getURLString());
     assertEquals("Simple database message 4", tableMessages.getCellAsText(4, 0));
@@ -145,9 +141,9 @@ public class TestMailingListActivity extends AbstractSilverpeasDatasourceSpringC
         tableMessages.getCellAsText(5, 0));
     assertEquals(
         "Bonjour famille Simpson, j\'espère que vous allez bien. Ici "
-            + "tout se passe bien et Krusty est très sympathique. Surtout depuis que "
-            + "Tahiti Bob est retourné en prison. Je dois remplacer l\'homme canon "
-            + "dans ...", tableMessages.getCellAsText(6, 0));
+        + "tout se passe bien et Krusty est très sympathique. Surtout depuis que "
+        + "Tahiti Bob est retourné en prison. Je dois remplacer l\'homme canon "
+        + "dans ...", tableMessages.getCellAsText(6, 0));
     assertEquals(MESSAGE_BASE + 4,
         tableMessages.getTableCell(6, 0).getLinks()[0].getURLString());
     assertEquals("Simple database message 1", tableMessages.getCellAsText(7, 0));
@@ -157,9 +153,9 @@ public class TestMailingListActivity extends AbstractSilverpeasDatasourceSpringC
         tableMessages.getCellAsText(8, 0));
     assertEquals(
         "Bonjour famille Simpson, j\'espère que vous allez bien. Ici "
-            + "tout se passe bien et Krusty est très sympathique. Surtout depuis que "
-            + "Tahiti Bob est retourné en prison. Je dois remplacer l\'homme canon "
-            + "dans ...", tableMessages.getCellAsText(9, 0));
+        + "tout se passe bien et Krusty est très sympathique. Surtout depuis que "
+        + "Tahiti Bob est retourné en prison. Je dois remplacer l\'homme canon "
+        + "dans ...", tableMessages.getCellAsText(9, 0));
     assertEquals(MESSAGE_BASE + 1,
         tableMessages.getTableCell(9, 0).getLinks()[0].getURLString());
     assertEquals("Simple database message 11", tableMessages.getCellAsText(10,
@@ -170,9 +166,9 @@ public class TestMailingListActivity extends AbstractSilverpeasDatasourceSpringC
         tableMessages.getCellAsText(11, 0));
     assertEquals(
         "Bonjour famille Simpson, j\'espère que vous allez bien. Ici "
-            + "tout se passe bien et Krusty est très sympathique. Surtout depuis que "
-            + "Tahiti Bob est retourné en prison. Je dois remplacer l\'homme canon "
-            + "dans ...", tableMessages.getCellAsText(12, 0));
+        + "tout se passe bien et Krusty est très sympathique. Surtout depuis que "
+        + "Tahiti Bob est retourné en prison. Je dois remplacer l\'homme canon "
+        + "dans ...", tableMessages.getCellAsText(12, 0));
     assertEquals(MESSAGE_BASE + 11, tableMessages.getTableCell(12, 0)
         .getLinks()[0].getURLString());
     WebTable tableTabbedPane = activityPage.getTableWithID("tabbedPane");
@@ -265,9 +261,9 @@ public class TestMailingListActivity extends AbstractSilverpeasDatasourceSpringC
         tableMessages.getCellAsText(2, 0));
     assertEquals(
         "Bonjour famille Simpson, j\'espère que vous allez bien. Ici "
-            + "tout se passe bien et Krusty est très sympathique. Surtout depuis que "
-            + "Tahiti Bob est retourné en prison. Je dois remplacer l\'homme canon "
-            + "dans ...", tableMessages.getCellAsText(3, 0));
+        + "tout se passe bien et Krusty est très sympathique. Surtout depuis que "
+        + "Tahiti Bob est retourné en prison. Je dois remplacer l\'homme canon "
+        + "dans ...", tableMessages.getCellAsText(3, 0));
     assertEquals(MESSAGE_BASE + 3,
         tableMessages.getTableCell(3, 0).getLinks()[0].getURLString());
     assertEquals("Simple database message 4", tableMessages.getCellAsText(4, 0));
@@ -277,9 +273,9 @@ public class TestMailingListActivity extends AbstractSilverpeasDatasourceSpringC
         tableMessages.getCellAsText(5, 0));
     assertEquals(
         "Bonjour famille Simpson, j\'espère que vous allez bien. Ici "
-            + "tout se passe bien et Krusty est très sympathique. Surtout depuis que "
-            + "Tahiti Bob est retourné en prison. Je dois remplacer l\'homme canon "
-            + "dans ...", tableMessages.getCellAsText(6, 0));
+        + "tout se passe bien et Krusty est très sympathique. Surtout depuis que "
+        + "Tahiti Bob est retourné en prison. Je dois remplacer l\'homme canon "
+        + "dans ...", tableMessages.getCellAsText(6, 0));
     assertEquals(MESSAGE_BASE + 4,
         tableMessages.getTableCell(6, 0).getLinks()[0].getURLString());
     assertEquals("Simple database message 1", tableMessages.getCellAsText(7, 0));
@@ -289,9 +285,9 @@ public class TestMailingListActivity extends AbstractSilverpeasDatasourceSpringC
         tableMessages.getCellAsText(8, 0));
     assertEquals(
         "Bonjour famille Simpson, j\'espère que vous allez bien. Ici "
-            + "tout se passe bien et Krusty est très sympathique. Surtout depuis que "
-            + "Tahiti Bob est retourné en prison. Je dois remplacer l\'homme canon "
-            + "dans ...", tableMessages.getCellAsText(9, 0));
+        + "tout se passe bien et Krusty est très sympathique. Surtout depuis que "
+        + "Tahiti Bob est retourné en prison. Je dois remplacer l\'homme canon "
+        + "dans ...", tableMessages.getCellAsText(9, 0));
     assertEquals(MESSAGE_BASE + 1,
         tableMessages.getTableCell(9, 0).getLinks()[0].getURLString());
     assertEquals("Simple database message 11", tableMessages.getCellAsText(10,
@@ -302,9 +298,9 @@ public class TestMailingListActivity extends AbstractSilverpeasDatasourceSpringC
         tableMessages.getCellAsText(11, 0));
     assertEquals(
         "Bonjour famille Simpson, j\'espère que vous allez bien. Ici "
-            + "tout se passe bien et Krusty est très sympathique. Surtout depuis que "
-            + "Tahiti Bob est retourné en prison. Je dois remplacer l\'homme canon "
-            + "dans ...", tableMessages.getCellAsText(12, 0));
+        + "tout se passe bien et Krusty est très sympathique. Surtout depuis que "
+        + "Tahiti Bob est retourné en prison. Je dois remplacer l\'homme canon "
+        + "dans ...", tableMessages.getCellAsText(12, 0));
     assertEquals(MESSAGE_BASE + 11, tableMessages.getTableCell(12, 0)
         .getLinks()[0].getURLString());
     WebTable tableTabbedPane = activityPage.getTableWithID("tabbedPane");
@@ -320,60 +316,20 @@ public class TestMailingListActivity extends AbstractSilverpeasDatasourceSpringC
   protected String buildUrl(String path) {
     return "http://localhost:8000/" + path;
   }
-  
+
   @Override
   protected IDataSet getDataSet() throws Exception {
-    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(
+    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(
         TestMailingListActivity.class
-            .getResourceAsStream("test-mailinglist-messages-dataset.xml")));
+        .getResourceAsStream("test-mailinglist-messages-dataset.xml")));
     dataSet.addReplacementObject("[NULL]", null);
     return dataSet;
   }
 
-  @Before
   @Override
-  public void onSetUp() {
-    super.onSetUp();
-    HttpUnitOptions.setExceptionsThrownOnErrorStatus(true);
-    HttpUnitOptions.setExceptionsThrownOnScriptError(false);
-    HttpUnitOptions.setScriptingEnabled(true);
-    ClientProperties.getDefaultProperties().setAcceptCookies(true);
-    ClientProperties.getDefaultProperties().setAutoRedirect(true);
-    IDatabaseConnection connection = null;
-    try {
-      connection = getConnection();
-      DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
-      DatabaseOperation.CLEAN_INSERT.execute(connection, getDataSet());
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    } finally {
-      if (connection != null) {
-        try {
-          connection.getConnection().close();
-        } catch (SQLException e) {
-          e.printStackTrace();
-        }
-      }
-    }
+  protected String[] getContextConfigurations() {
+    return new String[]{"/spring-checker.xml", "/spring-notification.xml",
+      "/spring-mailinglist-services-factory.xml", "/spring-mailinglist-dao.xml",
+      "/spring-mailinglist-embbed-datasource.xml"};
   }
-
-  @After
-  public void onTearDown() {
-    IDatabaseConnection connection = null;
-    try {
-      connection = getConnection();
-      DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    } finally {
-      if (connection != null) {
-        try {
-          connection.getConnection().close();
-        } catch (SQLException e) {
-          e.printStackTrace();
-        }
-      }
-    }
-  }
-
 }

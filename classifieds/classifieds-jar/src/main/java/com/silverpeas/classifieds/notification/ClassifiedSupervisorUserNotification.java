@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -32,6 +32,7 @@ import java.util.List;
 import com.silverpeas.classifieds.model.ClassifiedDetail;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganisationController;
 
 /**
  * @author Yohann Chastagnier
@@ -45,7 +46,7 @@ public class ClassifiedSupervisorUserNotification extends AbstractClassifiedUser
   @Override
   protected Collection<String> getUserIdsToNotify() {
     final List<String> roles = Collections.singletonList("admin");
-    final OrganizationController orga = new OrganizationController();
+    final OrganisationController orga = new OrganizationController();
     return new ArrayList<String>(Arrays.asList(orga.getUsersIdsByRoleNames(getComponentInstanceId(), roles)));
   }
 

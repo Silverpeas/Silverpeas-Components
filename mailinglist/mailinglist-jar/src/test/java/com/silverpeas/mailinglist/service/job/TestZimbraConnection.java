@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -9,7 +9,7 @@
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
  * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
  * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -20,36 +20,42 @@
  */
 package com.silverpeas.mailinglist.service.job;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;
-
 import javax.mail.FetchProfile;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Store;
+import org.apache.commons.io.IOUtils;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 
-import junit.framework.TestCase;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
-public class TestZimbraConnection extends TestCase {
+@Ignore
+public class TestZimbraConnection {
 
   Properties props;
 
-  @Override
-  protected void setUp() throws Exception {
-    super.setUp();
+  @Before
+  public void setUp() throws Exception {
     props = new Properties();
-    props.load(this.getClass().getResourceAsStream(
-        "/org/silverpeas/mailinglist/service/job/notification_zimbra.properties"));
+    InputStream in = this.getClass().getResourceAsStream(
+        "/org/silverpeas/mailinglist/service/job/notification_zimbra.properties");
+    try {
+      props.load(in);
+    } finally {
+      IOUtils.closeQuietly(in);
+    }
   }
 
+  @Test
   public void testOpenImapConnection() {
     URL url = this.getClass().getClassLoader().getResource("truststore.jks");
     String path = url.getPath();
-    System.out.println(path);
     System.setProperty("javax.net.ssl.trustStore", path);
     System.setProperty("javax.net.ssl.trustStorePassword", "changeit");
     Store mailAccount = null;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,19 +23,24 @@
  */
 package com.stratelia.webactiv.almanach.model;
 
-import java.util.Collection;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Date;
 import com.stratelia.webactiv.almanach.BaseAlmanachTest;
-import java.util.Calendar;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
+import org.silverpeas.date.Period;
+import org.silverpeas.date.PeriodType;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+
+import static com.stratelia.webactiv.almanach.model.EventDetailBuilder.anEventDetailOfId;
+import static com.stratelia.webactiv.almanach.model.EventDetailMatcher.theEventDetail;
+import static com.stratelia.webactiv.util.DateUtil.date2SQLDate;
 import static org.hamcrest.Matchers.*;
-import static com.stratelia.webactiv.almanach.model.EventDetailBuilder.*;
-import static com.stratelia.webactiv.almanach.model.EventDetailMatcher.*;
-import static com.stratelia.webactiv.util.DateUtil.*;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit tests on the DAO of event details.
@@ -60,8 +65,8 @@ public class EventDAOTest extends BaseAlmanachTest {
   @Test
   public void fetchEventsDefinedInAYear() throws Exception {
     Date year = dateToUseInTests();
-    List<EventDetail> events = new ArrayList<EventDetail>(eventDAO.findAllEventsInYear(year,
-            almanachIds));
+    List<EventDetail> events = new ArrayList<EventDetail>(
+        eventDAO.findAllEventsInPeriod(Period.from(year, PeriodType.year, "en"), almanachIds));
     assertThat(events.size(), is(4));
     assertThat(events.get(0), is(theEventDetail(anEventDetailOfId("1000").build())));
     assertThat(events.get(1), is(theEventDetail(anEventDetailOfId("1001").build())));
@@ -72,8 +77,8 @@ public class EventDAOTest extends BaseAlmanachTest {
   @Test
   public void fetchEventsDefinedInAYearForAGivenAlmanach() throws Exception {
     Date year = dateToUseInTests();
-    List<EventDetail> events = new ArrayList<EventDetail>(eventDAO.findAllEventsInYear(year,
-            almanachIds[0]));
+    List<EventDetail> events = new ArrayList<EventDetail>(
+        eventDAO.findAllEventsInPeriod(Period.from(year, PeriodType.year, "en"), almanachIds[0]));
     assertThat(events.size(), is(1));
     assertThat(events.get(0), is(theEventDetail(anEventDetailOfId("1000").build())));
   }
@@ -82,24 +87,24 @@ public class EventDAOTest extends BaseAlmanachTest {
   public void fetchEventsForAYearWithoutAnyEvents() throws Exception {
     Calendar year = Calendar.getInstance();
     year.add(Calendar.YEAR, 10);
-    List<EventDetail> events = new ArrayList<EventDetail>(eventDAO.findAllEventsInYear(
-            year.getTime(),
-            almanachIds));
+    List<EventDetail> events = new ArrayList<EventDetail>(eventDAO
+        .findAllEventsInPeriod(Period.from(year.getTime(), PeriodType.year, "en"), almanachIds));
     assertThat(events.isEmpty(), is(true));
   }
 
   @Test
   public void fetchEventsDefinedInAYearForEmptyAlmanach() throws Exception {
     Date year = dateToUseInTests();
-    List<EventDetail> events = new ArrayList<EventDetail>(eventDAO.findAllEventsInYear(year, "0"));
+    List<EventDetail> events = new ArrayList<EventDetail>(
+        eventDAO.findAllEventsInPeriod(Period.from(year, PeriodType.year, "en"), "0"));
     assertThat(events.isEmpty(), is(true));
   }
 
   @Test
   public void fetchEventsDefinedInAMonth() throws Exception {
     Date month = dateToUseInTests();
-    List<EventDetail> events = new ArrayList<EventDetail>(eventDAO.findAllEventsInMonth(month,
-            almanachIds));
+    List<EventDetail> events = new ArrayList<EventDetail>(
+        eventDAO.findAllEventsInPeriod(Period.from(month, PeriodType.month, "en"), almanachIds));
     assertThat(events.size(), is(4));
     assertThat(events.get(0), is(theEventDetail(anEventDetailOfId("1000").build())));
     assertThat(events.get(1), is(theEventDetail(anEventDetailOfId("1001").build())));
@@ -110,8 +115,8 @@ public class EventDAOTest extends BaseAlmanachTest {
   @Test
   public void fetchEventsDefinedInAMonthForAGivenAlmanach() throws Exception {
     Date month = dateToUseInTests();
-    List<EventDetail> events = new ArrayList<EventDetail>(eventDAO.findAllEventsInMonth(month,
-            almanachIds[0]));
+    List<EventDetail> events = new ArrayList<EventDetail>(
+        eventDAO.findAllEventsInPeriod(Period.from(month, PeriodType.month, "en"), almanachIds[0]));
     assertThat(events.size(), is(1));
     assertThat(events.get(0), is(theEventDetail(anEventDetailOfId("1000").build())));
   }
@@ -122,38 +127,40 @@ public class EventDAOTest extends BaseAlmanachTest {
     month.setTime(dateToUseInTests());
     month.add(Calendar.YEAR, 1);
     month.set(Calendar.MONTH, Calendar.MAY);
-    List<EventDetail> events = new ArrayList<EventDetail>(eventDAO.findAllEventsInMonth(month.
-            getTime(), almanachIds));
+    List<EventDetail> events = new ArrayList<EventDetail>(eventDAO
+        .findAllEventsInPeriod(Period.from(month.getTime(), PeriodType.month, "en"), almanachIds));
     assertThat(events.isEmpty(), is(true));
   }
 
   @Test
   public void fetchEventsDefinedInAMonthForEmptyAlmanach() throws Exception {
     Date month = dateToUseInTests();
-    List<EventDetail> events = new ArrayList<EventDetail>(eventDAO.findAllEventsInMonth(month, "0"));
+    List<EventDetail> events = new ArrayList<EventDetail>(
+        eventDAO.findAllEventsInPeriod(Period.from(month, PeriodType.month, "en"), "0"));
     assertThat(events.isEmpty(), is(true));
   }
 
   @Test
   public void fetchEventsForAWeekWithoutAnyEvents() throws Exception {
     Date week = getDate(2012, 2, 12);
-    List<EventDetail> events = new ArrayList<EventDetail>(eventDAO.findAllEventsInWeek(week,
-            almanachIds));
+    List<EventDetail> events = new ArrayList<EventDetail>(
+        eventDAO.findAllEventsInPeriod(Period.from(week, PeriodType.week, "en"), almanachIds));
     assertThat(events.isEmpty(), is(true));
   }
 
   @Test
   public void fetchEventsDefinedInAWeekForEmptyAlmanach() throws Exception {
     Date week = dateToUseInTests();
-    List<EventDetail> events = new ArrayList<EventDetail>(eventDAO.findAllEventsInWeek(week, "0"));
+    List<EventDetail> events = new ArrayList<EventDetail>(
+        eventDAO.findAllEventsInPeriod(Period.from(week, PeriodType.week, "en"), "0"));
     assertThat(events.isEmpty(), is(true));
   }
 
   @Test
   public void fetchEventsDefinedInAWeek() throws Exception {
     Date week = dateToUseInTests();
-    List<EventDetail> events = new ArrayList<EventDetail>(eventDAO.findAllEventsInWeek(week,
-            almanachIds));
+    List<EventDetail> events = new ArrayList<EventDetail>(
+        eventDAO.findAllEventsInPeriod(Period.from(week, PeriodType.week, "en"), almanachIds));
     assertThat(events.size(), is(3));
     assertThat(events.get(0), is(theEventDetail(anEventDetailOfId("1000").build())));
     assertThat(events.get(1), is(theEventDetail(anEventDetailOfId("1001").build())));
@@ -163,8 +170,8 @@ public class EventDAOTest extends BaseAlmanachTest {
   @Test
   public void fetchEventsDefinedInAWeekForAGivenAlmanach() throws Exception {
     Date week = dateToUseInTests();
-    List<EventDetail> events = new ArrayList<EventDetail>(eventDAO.findAllEventsInWeek(week,
-            almanachIds[0]));
+    List<EventDetail> events = new ArrayList<EventDetail>(
+        eventDAO.findAllEventsInPeriod(Period.from(week, PeriodType.week, "en"), almanachIds[0]));
     assertThat(events.size(), is(1));
     assertThat(events.get(0), is(theEventDetail(anEventDetailOfId("1000").build())));
   }

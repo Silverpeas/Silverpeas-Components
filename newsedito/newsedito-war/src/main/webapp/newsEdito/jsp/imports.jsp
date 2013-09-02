@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -32,13 +32,10 @@
 <%@ page import="java.net.URLEncoder"%>
 <%@ page import="java.util.*, java.io.File"%>
 
-<%@ page import="java.util.*"%>
 <%@ page import="java.lang.*"%>
-<%@ page import="java.io.IOException"%> 
 <%@ page import="java.beans.*"%>
 <%@ page import="javax.ejb.*,java.sql.SQLException,javax.naming.*,javax.rmi.PortableRemoteObject"%>
 <%@ page import="com.stratelia.webactiv.util.*"%>
-<%@ page import="com.stratelia.webactiv.servlets.FileServer"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.*"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.*"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.*"%>
@@ -63,11 +60,10 @@
 <%@ page import="com.stratelia.webactiv.newsEdito.control.*"%>
 <%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail"%>
 <%@ page import="com.stratelia.webactiv.util.publication.model.PublicationDetail"%>
-<%@ page import="com.stratelia.webactiv.newsEdito.control.*"%>
 <%@ page import="com.stratelia.webactiv.util.publication.model.*"%>
 <%@ page import="com.stratelia.webactiv.util.publication.info.model.*"%>
-<%@ page import="com.stratelia.silverpeas.wysiwyg.control.WysiwygController"%>
-<%@ page import="com.stratelia.silverpeas.wysiwyg.WysiwygException"%>
+<%@ page import="org.silverpeas.wysiwyg.control.WysiwygController"%>
+<%@ page import="org.silverpeas.wysiwyg.WysiwygException"%>
 <%@ page import="com.silverpeas.util.StringUtil"%>
 
 <%@ page import="com.stratelia.webactiv.newsEdito.NewsEditoException"%>

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,6 +29,7 @@ import java.io.Serializable;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.core.admin.OrganisationController;
 
 /**
  * Class declaration
@@ -38,7 +39,7 @@ public class CrmPK extends WAPrimaryKey implements Serializable {
 
   private static final long serialVersionUID = 135542061633931139L;
 
-  protected static OrganizationController organizationController = new OrganizationController();
+  protected static OrganisationController organizationController = new OrganizationController();
 
   public CrmPK(String id, String componentId) {
     super(id);

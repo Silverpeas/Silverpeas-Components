@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -79,7 +79,7 @@
 
 <div id="subscription-adding" style="display: none">
 	<br/>
-	<FORM Name="SubscriptionForm" action="AddSubscription" Method="POST" ENCTYPE="multipart/form-data">
+	<form name="SubscriptionForm" action="AddSubscription" method="post" enctype="multipart/form-data">
 	<c:if test="${not empty formSearch}">
 		<table border="0" width="100%" align="center">
 			<!-- AFFICHAGE du formulaire -->
@@ -101,5 +101,5 @@
 		</table>
 		<br/>
 	</c:if>
-	</FORM>
+	</form>
 </div>

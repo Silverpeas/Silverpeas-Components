@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -62,7 +62,7 @@ if(request.getAttribute("Main") != null){
 }
 boolean isAdmin = false;
 if(request.getAttribute("isAdmin") != null){
-  isAdmin = ((Boolean)request.getAttribute("isAdmin")).booleanValue();
+  isAdmin = (Boolean)request.getAttribute("isAdmin");
 }
 if(isAdmin){
 %>
@@ -154,15 +154,14 @@ function dynamicSearchLaunch(){
 </head>
 <body id="whitePages">
 <%
-List cards = (List)request.getAttribute("cards");
+List<Card> cards = (List<Card>)request.getAttribute("cards");
 
 browseBar.setDomainName(spaceLabel);
 browseBar.setPath(resource.getString("whitePages.usersList"));
 
 if(isAdmin){
+  	operationPane.addOperation(pdcUtilizationSrc, resource.getString("GML.PDCParam"), "javascript:onClick=openSPWindow('"+m_context+"/RpdcUtilization/jsp/Main?ComponentId="+scc.getComponentId()+"','utilizationPdc1')");
 	operationPane.addOperation(resource.getIcon("whitePages.defineSearch"), resource.getString("whitePages.definesearchfields"), "javascript:onClick=defineSearchFields()");
-	operationPane.addLine();
-	operationPane.addOperation(pdcUtilizationSrc, resource.getString("GML.PDCParam"), "javascript:onClick=openSPWindow('"+m_context+"/RpdcUtilization/jsp/Main?ComponentId="+scc.getComponentId()+"','utilizationPdc1')");
 	operationPane.addLine();
 	operationPane.addOperationOfCreation(resource.getIcon("whitePages.newCard"), resource.getString("whitePages.op.createUser"), "javascript:onClick=B_CREATE_ONCLICK();");
 	if(cards != null && cards.size() > 0){
@@ -179,7 +178,7 @@ if(main){
 out.println(window.printBefore());
 out.println(frame.printBefore());
 
-SortedSet searchFields = (SortedSet) request.getAttribute("searchFields");
+SortedSet<SearchField> searchFields = (SortedSet<SearchField>) request.getAttribute("searchFields");
 List primaryPdcFields = (List)request.getAttribute("primaryPdcFields");
 List secondaryPdcFields = (List)request.getAttribute("secondaryPdcFields");
 boolean searchDone = StringUtil.getBooleanValue((String)request.getAttribute("searchDone"));
@@ -197,26 +196,20 @@ if(!main){
         <input type="text" id="query" value="<%=queryValue%>" size="60" name="query" class="ac_input champTexte"/>
         <p class="txtexform"><fmt:message key="whitePages.keywordssample"/></p>
     </div>
-<%
-if (primaryPdcFields != null && !primaryPdcFields.isEmpty()) {   
-%>
+<% if (primaryPdcFields != null && !primaryPdcFields.isEmpty()) { %>
 <div id="primaryAxe" class="arbre">
     <img title="Axe primaire" alt="primaire" src="<%=m_context%>/pdcPeas/jsp/icons/primary.gif"/>
 <%
 	out.println(WhitePagesHtmlTools.generateHtmlForPdc(primaryPdcFields, language, request));
 %> 
     </div> 	
-<%
-}
-if (secondaryPdcFields != null && !secondaryPdcFields.isEmpty()) {   
-%>
-<a href="#" id="link_secondaryAxe" 
-                			title="<fmt:message key="whitePages.secondary"/>" 
-                            class="linkMore">
-              		<fmt:message key="whitePages.secondary"/>
+<% } %>
+<% if (secondaryPdcFields != null && !secondaryPdcFields.isEmpty()) { %>
+<a href="#" id="link_secondaryAxe" title="<fmt:message key="whitePages.secondary"/>" class="linkMore">
+    <fmt:message key="whitePages.secondary"/>
 </a>
 
-<div  id="secondaryAxe" class="arbre">
+<div id="secondaryAxe" class="arbre">
 <img title="<fmt:message key="whitePages.secondary" />" alt="<fmt:message key="whitePages.secondary" />" src="<%=m_context%>/pdcPeas/jsp/icons/secondary.gif"/> 	
 <%
 	out.println(WhitePagesHtmlTools.generateHtmlForPdc(secondaryPdcFields, language, request));
@@ -235,10 +228,8 @@ if (searchFields != null && !searchFields.isEmpty()) {
 <div id="additionalElements" class="arbre">
   <img title="<fmt:message key="whitePages.suppl"/>" alt="<fmt:message key="whitePages.suppl"/>" src="<%=m_context%>/whitePages/jsp/icons/contactCard.gif"/> 
 <%
-	Iterator i = searchFields.iterator();
-	while (i.hasNext()) {
-		SearchField searchField = (SearchField) i.next();
-		String fieldName = searchField.getFieldId().substring(4,searchField.getFieldId().length());
+	for (SearchField searchField : searchFields) {
+		String fieldName = searchField.getLabel();
 		String fieldId = searchField.getFieldId();
 		String fieldValue = request.getAttribute(fieldId) != null ?  (String)request.getAttribute(fieldId) : "";
 %>
@@ -250,9 +241,7 @@ if (searchFields != null && !searchFields.isEmpty()) {
   }
 %>
 </div> 
-<%	
-}
-%>
+<% } %>
 <div id="btnValidSearch">
   <table cellspacing="0" cellpadding="0" border="0">
       <tbody><tr>
@@ -265,31 +254,25 @@ if (searchFields != null && !searchFields.isEmpty()) {
 </form>
 </div> 	
 </div>
-<%
-}
-%>
+<% } %>
+<% if(isAdmin) { %>
 <view:areaOfOperationOfCreation/>
+<% } %>
 <div class="listinUsers">
 <form name="liste_card" action="">
   <ol class="message_list aff_colonnes">
 <%
-if(cards != null && cards.size() > 0){
-  Iterator iterCards = cards.iterator();
-  while(iterCards.hasNext()){
-    Card card = (Card)iterCards.next();
+if(cards != null && !cards.isEmpty()){
+  for (Card card : cards) {
     UserRecord userRecord = card.readUserRecord();
 	String lastName = userRecord.getField("LastName").getValue(language);
 	String firstName = userRecord.getField("FirstName").getValue(language);
 	String email = userRecord.getField("Mail").getValue(language);
 %>
            <li class="intfdcolor">
-           <%
-           if(isAdmin){
-           %>
+           <% if(isAdmin){ %>
            		 <input type="checkbox" value="<%=card.getPK().getId()%>" name="checkedCard" class="check" />
-           <%
-           }
-           %>
+           <% } %>
                  <div class="profilPhoto">
                    	<a href="javascript:consult(<%=card.getPK().getId()%>)">
                    	<img class="defaultAvatar" alt="viewUser" src="<%=m_context + userRecord.getUserDetail().getAvatar()%>"/>
@@ -299,24 +282,20 @@ if(cards != null && cards.size() > 0){
                    <ul>
                      <li class="userName"><a href="javascript:consult(<%=card.getPK().getId()%>)"><%=lastName%>&nbsp;<%=firstName%></a></li>
                      <li class="infoConnection">
-                     <%if(userRecord.isConnected()){%>
+                     <% if(userRecord.isConnected()) { %>
                        	<img alt="connected" src="<%=m_context%>/util/icons/online.gif" />
-                     <%}else{%>
+                     <% } else { %>
                      	<img alt="deconnected" src="<%=m_context%>/util/icons/offline.gif" />
-                     <%}%>
+                     <% } %>
                      </li>
                      <li class="infoVisibility">
                      <%
                      if (card.getHideStatus() == 1) {// hide card
                      %>
                      	<img title="Masque" alt="Masque" src="<%=m_context%>/util/icons/masque.gif" />
-                     <%
-                     }else{
-                     %>
+                     <% } else { %>
                      	<img title="Visible" alt="Visible" src="<%=m_context%>/util/icons/visible.gif" />
-                     <%
-                     }
-                     %>
+                     <% } %>
                      </li>
                      <li class="userMail">
                      	<a href="#" class="notification" rel="<%=card.getUserId()%>,<%=lastName + " " + firstName%>"><%=email%></a>
@@ -331,12 +310,10 @@ if(cards != null && cards.size() > 0){
   } 
 }else if(searchDone){
 %>
-<li class="intfdcolor">
+<div class="inlineMessage">
 	<fmt:message key="whitePages.nosearchresults"/>
-</li>
-<%
-}
-%>
+</div>
+<% } %>
 		</ol>
 	</form>
 </div>

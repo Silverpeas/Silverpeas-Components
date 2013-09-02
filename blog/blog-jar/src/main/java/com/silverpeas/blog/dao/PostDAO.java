@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -32,6 +32,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import com.stratelia.webactiv.util.DBUtil;
 
@@ -128,33 +129,10 @@ public class PostDAO {
     return pubId;
   }
 
-  public static Collection<String> getLastEvents(Connection con, String instanceId, int nbReturned)
-      throws SQLException {
-    // récupérer les "nbReturned" derniers posts par date d'évènement
-    ArrayList<String> listEvents = new ArrayList<String>();
-    String query = "select pubId from SC_Blog_Post where instanceId = ? order by dateEvent DESC";
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    try {
-      prepStmt = con.prepareStatement(query);
-      prepStmt.setString(1, instanceId);
-      rs = prepStmt.executeQuery();
-      while (rs.next() && nbReturned > 0) {
-        nbReturned = nbReturned - 1;
-        String pubId = "" + rs.getInt("pubId");
-        listEvents.add(pubId);
-      }
-    } finally {
-      // fermeture
-      DBUtil.close(rs, prepStmt);
-    }
-    return listEvents;
-  }
-
   public static Collection<String> getAllEvents(Connection con, String instanceId)
       throws SQLException {
     // récupérer les derniers posts par date d'évènement
-    ArrayList listEvents = new ArrayList<String>();
+    List<String> listEvents = new ArrayList<String>();
     String query = "select pubId from SC_Blog_Post where instanceId = ? order by dateEvent DESC";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -163,7 +141,7 @@ public class PostDAO {
       prepStmt.setString(1, instanceId);
       rs = prepStmt.executeQuery();
       while (rs.next()) {
-        String pubId = "" + rs.getInt("pubId");
+        String pubId = String.valueOf(rs.getInt("pubId"));
         listEvents.add(pubId);
       }
     } finally {

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -9,7 +9,7 @@
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
  * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
  * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -20,7 +20,6 @@
  */
 package org.silverpeas.resourcesmanager.servlets;
 
-import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
 import java.io.IOException;
@@ -33,7 +32,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.silverpeas.resourcemanager.model.Resource;
+import org.silverpeas.resourcemanager.util.ResourceUtil;
 import org.silverpeas.resourcesmanager.control.ResourcesManagerSessionController;
+import org.silverpeas.servlet.ServletRequestWrapper;
 
 public class AjaxResourcesManagerServlet extends HttpServlet {
 
@@ -54,8 +55,10 @@ public class AjaxResourcesManagerServlet extends HttpServlet {
             getAttribute("Silverpeas_" + "ResourcesManager" + "_" + componentId);
 
     if (sessionController != null) {
+      ServletRequestWrapper requestWrapper =
+          new ServletRequestWrapper(req, sessionController.getLanguage());
       try {
-        String reservationId = req.getParameter("reservationId");
+        Long reservationId = requestWrapper.getParameterAsLong("reservationId");
         SilverTrace.info("resourcesManager", "AjaxResourcesManagerServlet",
                 "root.MSG_GEN_PARAM_VALUE", "reservationId=" + reservationId);
         String beginDate = req.getParameter("beginDate");
@@ -63,48 +66,35 @@ public class AjaxResourcesManagerServlet extends HttpServlet {
         String endDate = req.getParameter("endDate");
         String endHour = req.getParameter("endHour");
 
-        List<Resource> listResourceEverReserved = sessionController.getResourcesofReservation(
-                reservationId);
-        String listResource = "";
-        for (int i = 0; i < listResourceEverReserved.size(); i++) {
-          Resource myResource = listResourceEverReserved.get(i);
-          String idResource = myResource.getId();
-          if (i == 0) {
-            listResource = idResource;
-          } else {
-            listResource = listResource + "," + idResource;
+        List<Resource> listResourceEverReserved =
+            sessionController.getResourcesofReservation(reservationId);
+        Date dateDebut = DateUtil.stringToDate(beginDate, beginHour, requestWrapper.getLanguage());
+        Date dateFin = DateUtil.stringToDate(endDate, endHour, requestWrapper.getLanguage());
+        List<Resource> listResources = sessionController
+            .verifyUnavailableResources(ResourceUtil.toIdList(listResourceEverReserved), dateDebut,
+                dateFin, reservationId);
+        StringBuilder resourceNames = new StringBuilder();
+        for (Resource resource : listResources) {
+          if (resourceNames.length() > 0) {
+            resourceNames.append(",");
           }
+          resourceNames.append(resource.getName());
         }
-        String currentLang = sessionController.getLanguage();
-        Date dateDebut = DateUtil.stringToDate(beginDate, beginHour, currentLang);
-        Date dateFin = DateUtil.stringToDate(endDate, endHour, currentLang);
-        List<Resource> listResources = sessionController.getResourcesProblemDate(listResource,
-                dateDebut, dateFin, reservationId);
-        String listResourceName = "";
-        for (int i = 0; i < listResources.size(); i++) {
-          Resource myResource = listResources.get(i);
-          String resourceName = myResource.getName();
-          if (i == 0) {
-            listResourceName = resourceName;
-          } else {
-            listResourceName = listResourceName + "," + resourceName;
-          }
+
+        SilverTrace
+            .info("resourcesManager", "AjaxResourcesManagerServlet", "root.MSG_GEN_PARAM_VALUE",
+                " avant concaténation listResourceName= " + resourceNames);
+        if (resourceNames.length() > 0) {
+          resourceNames
+              .insert(0, sessionController.getString("resourcesManager.resourceUnReservable"));
         }
 
         SilverTrace.info("resourcesManager", "AjaxResourcesManagerServlet",
-                "root.MSG_GEN_PARAM_VALUE",
-                " avant concaténation listResourceName= " + listResourceName);
-        if (StringUtil.isDefined(listResourceName)) {
-          listResourceName = sessionController.getString("resourcesManager.resourceUnReservable")
-                  + listResourceName;
-        }
-
-        SilverTrace.info("resourcesManager", "AjaxResourcesManagerServlet",
-                "root.MSG_GEN_PARAM_VALUE", "listResourceName= " + listResourceName);
+                "root.MSG_GEN_PARAM_VALUE", "listResourceName= " + resourceNames.toString());
         res.setHeader("charset", "UTF-8");
 
         Writer writer = res.getWriter();
-        writer.write(listResourceName);
+        writer.write(resourceNames.toString());
       } catch (Exception e) {
         // TODO: handle exception
       }

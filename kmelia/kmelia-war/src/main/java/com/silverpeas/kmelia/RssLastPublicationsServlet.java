@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -45,6 +45,7 @@ import de.nava.informa.core.ItemIF;
 import de.nava.informa.exporters.RSS_2_0_Exporter;
 import de.nava.informa.impl.basic.Channel;
 import de.nava.informa.impl.basic.Item;
+import org.silverpeas.core.admin.OrganisationController;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -64,7 +65,7 @@ public class RssLastPublicationsServlet extends HttpServlet {
   public static final String PASSWORD_PARAM = "password";
   public static final String LOGIN_PARAM = "login";
   private static final SilverpeasWebUtil util = new SilverpeasWebUtil();
-  private static final OrganizationController orga = new OrganizationController();
+  private static final OrganisationController orga = new OrganizationController();
   private static final AdminController adminController = new AdminController(null);
   private static final ResourceLocator settings = new ResourceLocator(
       "com.stratelia.webactiv.kmelia.settings.kmeliaSettings", "");

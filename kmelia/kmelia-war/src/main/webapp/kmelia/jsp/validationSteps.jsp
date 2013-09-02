@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,11 +25,11 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
+<%@page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
 <%@ include file="checkKmelia.jsp" %>
-<%@ include file="tabManager.jsp.inc" %>
 
 <%
-//R�cup�ration des param�tres
+//Recuperation des parametres
 PublicationDetail 	publication 		= (PublicationDetail) request.getAttribute("Publication");
 String 				linkedPathString 	= (String) request.getAttribute("LinkedPathString");
 String				currentLang 		= (String) request.getAttribute("Language");
@@ -73,15 +73,15 @@ function pubForceValidate() {
 	
 	out.println(window.printBefore());
 	  
-	displayAllOperations(pubId, kmeliaScc, gef, "ViewValidationSteps", resources, out, kmaxMode);
+	KmeliaDisplayHelper.displayAllOperations(pubId, kmeliaScc, gef, "ViewValidationSteps",
+        resources, out, kmaxMode);
 	  
 	out.println(frame.printBefore());
 	
-	if ("admin".equals(profile))
-	{
+	if ("admin".equals(profile)) {
 		Board boardHelp = gef.getBoard();
 		
-		Button validButton = (Button) gef.getFormButton(resources.getString("kmelia.ForceValidation"), "javaScript:pubForceValidate();", false);
+		Button validButton = gef.getFormButton(resources.getString("kmelia.ForceValidation"), "javaScript:pubForceValidate();", false);
 		
 		out.println(boardHelp.printBefore());
 		out.println("<center>");

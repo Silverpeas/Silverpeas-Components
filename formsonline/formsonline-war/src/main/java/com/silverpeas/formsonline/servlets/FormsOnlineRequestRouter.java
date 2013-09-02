@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -32,7 +32,6 @@ import com.silverpeas.formsonline.control.FormsOnlineSessionController;
 import com.silverpeas.formsonline.control.TitleHelper;
 import com.silverpeas.formsonline.model.FormDetail;
 import com.silverpeas.formsonline.model.FormInstance;
-import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
@@ -101,13 +100,11 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
       else if (function.equals("CreateForm")) {
         FormDetail form = new FormDetail();
         form.setCreatorId(formsOnlineSC.getUserId());
-        List<PublicationTemplate> templates = getPublicationTemplateManager()
-            .getPublicationTemplates();
 
         formsOnlineSC.setCurrentForm(form);
 
         request.setAttribute("currentForm", form);
-        request.setAttribute("availableTemplates", templates);
+        request.setAttribute("availableTemplates", formsOnlineSC.getTemplates());
 
         destination = "editForm.jsp";
       }
@@ -141,10 +138,8 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
           return getDestination("Main", formsOnlineSC, request);
         }
 
-        List<PublicationTemplate> templates = getPublicationTemplateManager()
-            .getPublicationTemplates();
         request.setAttribute("currentForm", form);
-        request.setAttribute("availableTemplates", templates);
+        request.setAttribute("availableTemplates", formsOnlineSC.getTemplates());
 
         destination = "editForm.jsp";
       }

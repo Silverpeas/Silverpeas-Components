@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,14 +23,15 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.kmelia.SearchContext"%>
+<%@page import="org.silverpeas.component.kmelia.KmeliaPublicationHelper"%>
+<%@page import="com.stratelia.webactiv.SilverpeasRole"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="checkKmelia.jsp" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@page import="com.silverpeas.util.EncodeHelper"%>
-<%@page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBarElement"%>
 
 <c:url var="mandatoryFieldUrl" value="/util/icons/mandatoryField.gif"/>
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
@@ -46,6 +47,13 @@ boolean	isGuest			= ((Boolean) request.getAttribute("IsGuest")).booleanValue();
 boolean displayNBPublis = ((Boolean) request.getAttribute("DisplayNBPublis")).booleanValue();
 Boolean rightsOnTopics  = (Boolean) request.getAttribute("RightsOnTopicsEnabled");
 Boolean displaySearch	= (Boolean) request.getAttribute("DisplaySearch");
+int		currentPageIndex = (Integer) request.getAttribute("PageIndex");
+
+SearchContext searchContext = (SearchContext) request.getAttribute("SearchContext");
+String query = "";
+if (searchContext != null) {
+  query = searchContext.getQuery();
+}
 
 String		pubIdToHighlight	= (String) request.getAttribute("PubIdToHighlight"); //used when we have found publication from search (only toolbox)
 
@@ -63,9 +71,7 @@ String sRequestURL = request.getRequestURL().toString();
 String m_sAbsolute = sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().length());
 
 String userId = kmeliaScc.getUserId();
-
-ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
-String httpServerBase = generalSettings.getString("httpServerBase", m_sAbsolute);
+String httpServerBase = GeneralPropertiesManager.getString("httpServerBase", m_sAbsolute);
 
 boolean userCanManageRoot = "admin".equalsIgnoreCase(profile);
 boolean userCanManageTopics = rightsOnTopics.booleanValue() || "admin".equalsIgnoreCase(profile) || kmeliaScc.isTopicManagementDelegated();
@@ -77,6 +83,7 @@ boolean userCanManageTopics = rightsOnTopics.booleanValue() || "admin".equalsIgn
 <view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/browseBarComplete.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery-migrate-1.2.1.min.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.jstree.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.cookie.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/splitter.js"></script>
@@ -85,51 +92,13 @@ boolean userCanManageTopics = rightsOnTopics.booleanValue() || "admin".equalsIgn
 <script type="text/javascript" src="<c:url value="/util/javaScript/checkForm.js" />"></script>
 
 <view:includePlugin name="userZoom"/>
+<view:includePlugin name="popup"/>
+<view:includePlugin name="preview"/>
+<view:includePlugin name="notifier"/>
 
 <script type="text/javascript" src="javaScript/navigation.js"></script>
 <script type="text/javascript" src="javaScript/searchInTopic.js"></script>
 <script type="text/javascript" src="javaScript/publications.js"></script>
-
-<style type="text/css" >
-#treeDiv1 {
-	/*width: 20%;*/
-	width: 250px;
-	height : 500px;
-	float: left;
-	padding-right: 5px; /*do not forget to change end minus if this value change !*/
-	overflow: hidden;
-	border: 1px solid #F2F2F2;
-}
-#rightSide {
-	float: left;
-	/*margin-left: 30px;*/
-	/*height: 100%;*/
-	/*width: 675px;*/
-	overflow: hidden;
-	/*border: 1px solid blue;*/
-}
-
-#footer {
-	text-align: center;
-}
-
-.jstree .Invisible a {
-	color: #BBBBBB;
-}
-
-#splitter {
-	height: 800px;
-	width: 100%;
-	border: 0px solid #aaa;
-}
-#splitter #treeDiv1 {
-	overflow: auto;
-}
-.vsplitbar {
-	width: 5px;
-	background: #DEDEDE;
-}
-</style>
 <script type="text/javascript">
 function topicGoTo(id) {
     closeWindows();
@@ -149,6 +118,10 @@ function showDnD() {
 	<% } %>
 }
 
+function getCurrentUserId() {
+  return "<%=userId%>";
+}
+
 function getWebContext() {
 	return "<%=m_context%>";
 }
@@ -158,7 +131,7 @@ function getComponentId() {
 }
 
 function getComponentLabel() {
-	return "<%=componentLabel%>";
+	return "<%=EncodeHelper.javaStringToJsString(componentLabel)%>";
 }
 
 function getLanguage() {
@@ -173,52 +146,9 @@ function getTranslation() {
 	return "<%=translation%>";
 }
 
-var labels = new Object();
-labels["ConfirmDeleteTopic"] = "<%=EncodeHelper.javaStringToJsString(resources.getString("ConfirmDeleteTopic"))%>";
-labels["ConfirmFlushTrashBean"] = "<%=EncodeHelper.javaStringToJsString(kmeliaScc.getString("ConfirmFlushTrashBean"))%>";
-labels["ToValidate"] = "<%=EncodeHelper.javaStringToJsString(resources.getString("ToValidate"))%>";
-labels["topic.info"] = "<%=EncodeHelper.javaStringToJsString(resources.getString("kmelia.topic.info"))%>";
-
-labels["operation.admin"] = "<%=resources.getString("GML.operations.setupComponent")%>";
-labels["operation.pdc"] = "<%=resources.getString("GML.PDCParam")%>";
-labels["operation.templates"] = "<%=resources.getString("kmelia.ModelUsed")%>";
-labels["operation.exportTopic"] = "<%=resources.getString("kmelia.ExportTopic")%>";
-labels["operation.exportComponent"] = "<%=resources.getString("kmelia.ExportComponent")%>";
-labels["operation.exportPDF"] = "<%=resources.getString("kmelia.ExportPDF")%>";
-labels["operation.addTopic"] = "<%=resources.getString("CreerSousTheme")%>";
-labels["operation.updateTopic"] = "<%=resources.getString("ModifierSousTheme")%>";
-labels["operation.deleteTopic"] = "<%=resources.getString("SupprimerSousTheme")%>";
-labels["operation.sortTopics"] = "<%=resources.getString("kmelia.SortTopics")%>";
-labels["operation.copy"] = "<%=resources.getString("GML.copy")%>";
-labels["operation.cut"] = "<%=resources.getString("GML.cut")%>";
-labels["operation.paste"] = "<%=resources.getString("GML.paste")%>";
-labels["operation.visible2invisible"] = "<%=resources.getString("TopicVisible2Invisible")%>";
-labels["operation.invisible2visible"] = "<%=resources.getString("TopicInvisible2Visible")%>";
-labels["operation.wysiwygTopic"] = "<%=resources.getString("TopicWysiwyg")%>";
-labels["operation.addPubli"] = "<%=resources.getString("PubCreer")%>";
-labels["operation.wizard"] = "<%=resources.getString("kmelia.Wizard")%>";
-labels["operation.importFile"] = "<%=resources.getString("kmelia.ImportFile")%>";
-labels["operation.importFiles"] = "<%=resources.getString("kmelia.ImportFiles")%>";
-labels["operation.sortPublis"] = "<%=resources.getString("kmelia.OrderPublications")%>";
-labels["operation.updateChain"] = "<%=resources.getString("kmelia.updateByChain")%>";
-labels["operation.subscribe"] = "<%=resources.getString("SubscriptionsAdd")%>";
-labels["operation.favorites"] = "<%=resources.getString("FavoritesAdd1")%> <%=resources.getString("FavoritesAdd2")%>";
-labels["operation.emptyTrash"] = "<%=resources.getString("EmptyBasket")%>";
-labels["operation.predefinedPdcPositions"] = "<%=resources.getString("GML.PDCPredefinePositions")%>";
-labels["operation.exportSelection"] = "<%=resources.getString("kmelia.operation.exportSelection")%>";
-labels["operation.shareTopic"] = "<%=resources.getString("kmelia.operation.shareTopic")%>";
-labels["operation.statistics"] = "<fmt:message key="kmelia.operation.statistics"/>";
-
-labels["js.topicTitle"] = "<fmt:message key="TopicTitle"/>";
-labels["js.mustBeFilled"] = "<fmt:message key="GML.MustBeFilled"/>";
-labels["js.contains"] = "<fmt:message key="GML.ThisFormContains"/>";
-labels["js.error"] = "<fmt:message key="GML.error"/>";
-labels["js.errors"] = "<fmt:message key="GML.errors"/>";
-
-labels["js.status.visible2invisible"] = "<fmt:message key="TopicVisible2InvisibleRecursive"/>";
-labels["js.status.invisible2visible"] = "<fmt:message key="TopicInvisible2VisibleRecursive"/>";
-
-labels["js.i18n.remove"] = "<fmt:message key="GML.translationRemove"/>";
+function getToValidateFolderId() {
+	return "<%=KmeliaHelper.SPECIALFOLDER_TOVALIDATE%>";
+}
 
 var icons = new Object();
 icons["permalink"] = "<%=resources.getIcon("kmelia.link")%>";
@@ -233,6 +163,10 @@ icons["operation.favorites"] = "<%=resources.getIcon("kmelia.operation.favorites
 var params = new Object();
 params["rightsOnTopic"] = <%=rightsOnTopics.booleanValue()%>;
 params["i18n"] = <%=I18NHelper.isI18N%>;
+params["nbPublisDisplayed"] = <%=displayNBPublis%>;
+
+var searchInProgress = <%=searchContext != null%>;
+var searchFolderId = "<%=id%>";
 </script>
 </head>
 <body id="kmelia" onunload="closeWindows()" class="yui-skin-sam">
@@ -257,7 +191,7 @@ params["i18n"] = <%=I18NHelper.isI18N%>;
 						<div id="searchZone">
 							<view:board>
 								<table id="searchLine">
-									<tr><td><div id="searchLabel"><%=resources.getString("kmelia.SearchInTopics") %></div>&nbsp;<input type="text" id="topicQuery" size="50" onkeydown="checkSubmitToSearch(event)"/></td><td><%=searchButton.print() %></td></tr>
+									<tr><td><div id="searchLabel"><%=resources.getString("kmelia.SearchInTopics") %></div>&nbsp;<input type="text" id="topicQuery" size="50" value="<%=query %>" onkeydown="checkSubmitToSearch(event)"/></td><td><%=searchButton.print() %></td></tr>
 								</table>
 							</view:board>
 						</div>
@@ -317,7 +251,7 @@ params["i18n"] = <%=I18NHelper.isI18N%>;
 
 <form name="pubForm" action="ViewPublication" method="post">
 	<input type="hidden" name="PubId"/>
-	<input type="hidden" name="CheckPath"/>
+	<input type="hidden" id="CheckPath" name="CheckPath"/>
 </form>
 
 <form name="fupload" action="fileUpload.jsp" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
@@ -332,16 +266,59 @@ function getComponentPermalink() {
 }
 
 function deleteNode(nodeId, nodeLabel) {
-	if(window.confirm("<%=kmeliaScc.getString("ConfirmDeleteTopic")%> '" + nodeLabel + "' ?")) {
-		$.get('<%=m_context%>/KmeliaAJAXServlet', { Id:nodeId,ComponentId:'<%=componentId%>',Action:'Delete'},
-				function(data){
-					if ((data - 0) == data && data.length > 0) {
-						$("#treeDiv1").jstree("delete_node", "#"+nodeId);
-					} else {
-						alert(data);
-					}
-				}, 'text');
+	// removing nb items displayed in nodeLabel
+	if (params["nbPublisDisplayed"]) {
+		var idx = nodeLabel.lastIndexOf('(');
+		if (idx > 1) {
+			nodeLabel = nodeLabel.substring(0, idx-1);
+		}
 	}
+	deleteFolder(nodeId, nodeLabel);
+}
+
+function getNodeTitle(nodeId) {
+	var nodeTitle = getTreeview().get_text("#"+nodeId);
+	var idx = nodeTitle.lastIndexOf('(');
+	if (idx > 1) {
+		nodeTitle = nodeTitle.substring(0, idx-1);
+	}
+	return nodeTitle;
+}
+
+function getNbPublis(nodeId) {
+	var nodeLabel = getTreeview().get_text("#"+nodeId);
+	var idx = nodeLabel.lastIndexOf('(');
+	var nbPublis = nodeLabel.substring(idx+1, nodeLabel.length-1);
+	return eval(nbPublis);
+}
+
+function addNbPublis(nodeId, nb) {
+	var previousNbPublis = getNbPublis(nodeId);
+	var nodeTitle = getNodeTitle(nodeId);
+	var nbPublis = eval(previousNbPublis+nb);
+	getTreeview().rename_node("#"+nodeId, nodeTitle+" ("+nbPublis+")");
+}
+
+function nodeDeleted(nodeId) {
+	if (params["nbPublisDisplayed"]) {
+		// change nb publications on each parent of deleted node (except root)
+		var nbPublisRemoved = getNbPublis(nodeId);
+		var path = getTreeview().get_path("#"+nodeId, true);
+		for (i=0; i<path.length; i++) {
+			var elementId = path[i];
+			if (elementId != "0" && elementId != nodeId) {
+				addNbPublis(elementId, 0-nbPublisRemoved);
+			}
+		}
+		// add nb of removed publis in bin
+		addNbPublis("1", nbPublisRemoved);
+	}
+	getTreeview().delete_node("#"+nodeId);
+}
+
+function resetNbPublis(nodeId) {
+	var nodeTitle = getNodeTitle(nodeId);
+	getTreeview().rename_node("#"+nodeId, nodeTitle+" (0)");
 }
 
 function emptyTrash() {
@@ -351,7 +328,13 @@ function emptyTrash() {
 				function(data){
 					$.closeProgressMessage();
 					if (data == "ok") {
-						getTreeview().rename_node("#1", "<%=resources.getString("kmelia.basket")%> (0)");
+						if (params["nbPublisDisplayed"]) {
+							// remove nb publis to root
+							var nbPublisDeleted = getNbPublis("1");
+							addNbPublis("0", 0-nbPublisDeleted);
+							// set nb publis on bin to 0
+							resetNbPublis("1");
+						}
 						displayTopicContent("1");
 					} else {
 						alert(data);
@@ -381,7 +364,7 @@ function changeCurrentTopicStatus() {
 	changeStatus(getCurrentNodeId(), node.attr("status"));
 }
 
-function updateUIStatus(nodeId, newStatus) {
+function updateUIStatus(nodeId, newStatus, recursive) {
 	// updating data stored in treeview
 	var node = getTreeview()._get_node("#"+nodeId);
 	node.attr("status", newStatus);
@@ -389,6 +372,17 @@ function updateUIStatus(nodeId, newStatus) {
 	//changing label style according to topic's new status
 	node.removeClass("Visible Invisible");
 	node.addClass(newStatus);
+	
+	// 
+	if (recursive == "1") {
+		var children = getTreeview()._get_children("#"+nodeId);
+		for (var i=0; i<children.length; i++) {
+			try {
+				updateUIStatus(children[i].id, newStatus, recursive);
+			} catch (e) {
+			}
+		}
+	}
 	
 	if (nodeId == getCurrentNodeId()) {
 		// refreshing operations of current folder
@@ -398,18 +392,25 @@ function updateUIStatus(nodeId, newStatus) {
 
 function displayTopicContent(id) {
 	
+	if (id != searchFolderId) {
+		// search session is over
+		searchInProgress = false;
+	}
+	
 	setCurrentNodeId(id);
 	
-	clearSearchQuery();
+	if (!searchInProgress) {
+		clearSearchQuery();
+	}
 
-	if (id == "tovalidate" || id == "1") {
+	if (id == getToValidateFolderId() || id == "1") {
 		$("#DnD").css({'display':'none'}); //hide dropzone
 		$("#footer").css({'visibility':'hidden'}); //hide footer
 		$("#searchZone").css({'display':'none'}); //hide search
 
-		if (id == "tovalidate")	{
+		if (id == getToValidateFolderId())	{
 			hideOperations();
-			displayPublicationsToValidate();
+			displayPublications(id);
 
 			//update breadcrumb
             removeBreadCrumbElements();
@@ -420,7 +421,11 @@ function displayTopicContent(id) {
 			displayPath(id);
 		}
 	} else {
-		displayPublications(id);
+		if (searchInProgress) {
+			doPagination(<%=currentPageIndex%>);
+		} else {
+			displayPublications(id);
+		}
 		displayPath(id);
 		displayOperations(id);
 		$("#searchZone").css({'display':'block'});
@@ -473,7 +478,7 @@ function customMenu(node) {
 	if (params["rightsOnTopic"]) {
 		userRole = node.attr("role");
 	}
-	if (nodeType == "tovalidate") {
+	if (nodeType == getToValidateFolderId()) {
     	return false;
     } else if (nodeType == "bin") {
     	var binItems = {
@@ -505,8 +510,8 @@ function customMenu(node) {
         					if (params["i18n"]) {
         						storeTranslations(topic.translations);
         					} else {
-        						$("#addOrUpdateNode #topicName").val(name);
-								$("#addOrUpdateNode #topicDescription").val(desc);
+        						$("#addOrUpdateNode #folderName").val(name);
+								$("#addOrUpdateNode #folderDescription").val(desc);
         					}
         					topicUpdate(topic.attr["id"]);
         				});
@@ -651,15 +656,121 @@ function spreadNbItems(children) {
 	if (children) {
 		for(var i = 0; i < children.length; i++) {
 			var child = children[i];
+			child.attr['title'] = child.attr['description'];
+			<% if (kmeliaScc.isOrientedWebContent()) { %>
+				child.attr['class'] = child.attr['status'];
+			<% } %>
 			if (child.attr['nbItems']) {
 				child.data = child.data + " ("+child.attr['nbItems']+")";
-				<% if (kmeliaScc.isOrientedWebContent()) { %>
-					child.attr['class'] = child.attr['status'];
-				<% } %>
 				spreadNbItems(child.children);
 			}
 		}
 	}
+}
+
+function getUserProfile(id) {
+	var componentId = getComponentId();
+	var result = "";
+    $.ajax({
+      url: getWebContext()+'/KmeliaAJAXServlet',
+      data : {Id:id,Action:'GetProfile',ComponentId:componentId},
+      type : 'GET',
+      dataType : 'text',
+      cache : false,
+      async : false,
+      success : function(data, status, jqXHR) {
+        result = data;
+      },
+      error : function(jqXHR, textStatus, errorThrown) {
+        alert(errorThrown);
+      }
+    });
+    return result;
+}
+
+function publicationMovedInError(id, data) {
+	var pubName = getPublicationName(id);
+  notyError("<%=resources.getString("kmelia.drag.publication.error1")%>" + pubName + "<%=resources.getString("kmelia.drag.publication.error2")%>" + "<br/><br/>" + data);
+}
+
+function getPublicationName(id) {
+	return $("#pubList #pub-"+id).html();
+}
+
+function extractPublicationId(id) {
+	return id.substring(4, id.length);
+}
+
+function publicationMovedSuccessfully(id, targetId) {
+	var pubName = getPublicationName(id);
+  notySuccess("<%=resources.getString("kmelia.drag.publication.success1")%>" + pubName + "<%=resources.getString("kmelia.drag.publication.success2")%>");
+
+	if (params["nbPublisDisplayed"]) {
+		// add one publi to target node and its parents
+		var path = getTreeview().get_path("#"+targetId, true);
+		for (i=0; i<path.length; i++) {
+			var elementId = path[i];
+			if (elementId != "0") {
+				addNbPublis(elementId, 1);
+			}
+		}
+		
+		// remove one publi to current node and its parents
+		var path = getTreeview().get_path("#"+getCurrentNodeId(), true);
+		for (i=0; i<path.length; i++) {
+			var elementId = path[i];
+			if (elementId != "0") {
+				addNbPublis(elementId, -1);
+			}
+		}
+	}
+	
+	try {
+		// remove one publi to publications header
+		var previousNb = $("#pubsHeader #pubsCounter span").html();
+		if (previousNb == 1) {
+			$("#pubsHeader #pubsCounter").html("<%=resources.getString("GML.publications")%>");
+			$("#pubsHeader #pubsSort").hide();
+			$("#pubList ul").html("<%=resources.getString("PubAucune")%>")
+		} else {
+			$("#pubsHeader #pubsCounter span").html(eval(previousNb-1));
+		}
+	} catch (e) {
+		
+	}
+	
+	// remove publication from publications list
+	$("#pubList #pub-"+id).closest("li").fadeOut('500', function() {
+		$(this).remove();
+	});
+}
+
+function publicationsRemovedSuccessfully(nb) {
+	if (params["nbPublisDisplayed"]) {
+		if (getCurrentNodeId() == "1") {
+			// publications are definitively removed
+			// remove nb publis from trash and root folders
+			addNbPublis("1", 0-eval(nb));
+			addNbPublis("0", 0-eval(nb));
+		} else {
+			// publications goes to trash
+			// remove nb publi to current node and its parents except root
+			var path = getTreeview().get_path("#"+getCurrentNodeId(), true);
+			for (i=0; i<path.length; i++) {
+				var elementId = path[i];
+				if (elementId != "0") {
+					addNbPublis(elementId, 0-eval(nb));
+				}
+			}
+			
+			// add nb publi to trash
+			addNbPublis("1", eval(nb));
+		}
+	}
+}
+
+function getString(key) {
+	return $.i18n.prop(key)
 }
 
 $(document).ready(
@@ -677,7 +788,8 @@ $(document).ready(
     	},
     	"ui" :{
             "select_limit" : 1,
-          	"initially_select" : "#<%=id%>"
+          	"initially_select" : "#<%=id%>",
+          	"select_prev_on_delete" : false
         },
     	"json_data" : { 
 			"ajax" : {
@@ -697,13 +809,13 @@ $(document).ready(
 						} else {
 							if (n.data) {
 								// this is the root
-								n.data = "<%=componentLabel%>";
+								n.data = "<%=EncodeHelper.javaStringToJsString(componentLabel)%>";
 								if (n.attr['nbItems']) {
 									n.data = n.data + " ("+n.attr['nbItems']+")";
-									<% if (kmeliaScc.isOrientedWebContent()) { %>
-										n.attr['class'] = n.attr['status'];
-									<% } %>
 								}
+								<% if (kmeliaScc.isOrientedWebContent()) { %>
+									n.attr['class'] = n.attr['status'];
+								<% } %>
 								spreadNbItems(n.children);
 							}
 						}
@@ -725,10 +837,7 @@ $(document).ready(
 			"types" : {
 				// The `root` node 
 				"root" : {
-					"valid_children" : [ "bin", "tovalidate" ],
-					/*"icon" : {
-						"image" : "/static/v.1.0pre/_demo/root.png"
-					},*/
+					"valid_children" : [ "bin", getToValidateFolderId() ],
 					// those prevent the functions with the same name to be used on `root` nodes
 					// internally the `before` event is used
 					"start_drag" : false,
@@ -751,13 +860,22 @@ $(document).ready(
 					"remove" : false
 				},
 				// The `to validate` node
-				"tovalidate" : {
+				"<%=KmeliaHelper.SPECIALFOLDER_TOVALIDATE%>" : {
 					// can have files and folders inside, but NOT other `drive` nodes
 					"valid_children" : "none",
 					"icon" : {
 						"image" : "<%=m_context%>/util/icons/ok_alpha.gif"
 					},
 					// those prevent the functions with the same name to be used on `tovalidate` nodes
+					// internally the `before` event is used
+					"start_drag" : false,
+					"move_node" : false,
+					"delete_node" : false,
+					"remove" : false
+				},
+				"folder" : {
+					"valid_children" : [ "folder" ],
+					// those prevent the functions with the same name to be used on `root` nodes
 					// internally the `before` event is used
 					"start_drag" : false,
 					"move_node" : false,
@@ -775,15 +893,68 @@ $(document).ready(
 			"show_at_node" : false,
 			"items" : customMenu
 		},
+		"dnd" : {
+			"drop_finish" : function () {
+				alert("drop_finish");
+			},
+			"drag_check" : function (data) {
+				var targetId = data.r.attr("id");
+				var targetType = data.r.attr("rel");
+				if (targetId == getCurrentNodeId()) {
+					return false;
+				} else if (targetType == getToValidateFolderId()) {
+					return false;
+				} else if (targetType == "root") {
+					if (<%=KmeliaPublicationHelper.isPublicationsOnRootAllowed(componentId)%>) {
+						var profile = getUserProfile(targetId);
+						//writeInConsole("drag_check : current user is "+profile+" in root");
+						if (profile != "<%=SilverpeasRole.user.toString()%>") {
+							return { 
+								after : false, 
+								before : false, 
+								inside : true 
+							};
+						}
+					}
+				} else if (targetId != "treeDiv1"){
+					var profile = getUserProfile(targetId);
+					//writeInConsole("drag_check : current user is "+profile+" in folder #"+targetId);
+					if (profile != "<%=SilverpeasRole.user.toString()%>") {
+						return { 
+							after : false, 
+							before : false, 
+							inside : true 
+						};
+					}
+				}
+				return false;
+			},
+			"drag_finish" : function (data) {
+				var pubId = extractPublicationId(data.o.id);
+				var targetId = data.r.attr("id");
+				
+				// store new parent of publication
+				movePublication(pubId, getCurrentNodeId(), targetId);
+			}
+		},
 		// the `plugins` array allows you to configure the active plugins on this instance
-		"plugins" : ["themes","json_data","ui","types","crrm","contextmenu"]
+		"plugins" : ["themes","json_data","ui","types","crrm","contextmenu","dnd"]
     });	
 		
 	$("#splitter").splitter({
 		splitVertical: true,
-		sizeLeft: true,
+		minLeft: 50, sizeLeft: 300, minRight: 250, 
+		anchorToWindow: true,
+		resizeToWidth: false,
 		accessKey: 'I'
 	});
+	
+	$.i18n.properties({
+        name: 'kmeliaBundle',
+        path: webContext + '/services/bundles/com/silverpeas/kmelia/multilang/',
+        language: '<%=language%>',
+        mode: 'map'
+    });
 	
 	<% if (displaySearch.booleanValue()) { %>
 		document.getElementById("topicQuery").focus();
@@ -802,6 +973,10 @@ $(document).ready(
 
 </script>
 </div>
+<div id="visibleInvisible-message" style="display: none;">
+	<p>
+	</p>
+</div>
 <div id="rightClick-message" title="<%=resources.getString("kmelia.help.rightclick.title") %>" style="display: none;">
 	<p>
 		<%=resources.getStringWithParam("kmelia.help.rightclick.content", componentLabel) %>
@@ -817,14 +992,14 @@ $(document).ready(
               <input type="hidden" id="<%=I18NHelper.HTMLHiddenRemovedTranslationMode %>" name="<%=I18NHelper.HTMLHiddenRemovedTranslationMode %>" value="false"/>
               <tr>
                 <td class="txtlibform"><fmt:message key="TopicTitle"/> :</td>
-                <td><input type="text" name="Name" id="topicName" size="60" maxlength="60"/>
+                <td><input type="text" name="Name" id="folderName" size="60" maxlength="60"/>
                 <input type="hidden" name="ParentId" id="parentId"/>
                 <input type="hidden" name="ChildId" id="topicId"/>&nbsp;<img border="0" src="<c:out value="${mandatoryFieldUrl}" />" width="5" height="5"/></td>
               </tr>
                 
               <tr>
                 <td class="txtlibform"><fmt:message key="TopicDescription" /> :</td>
-                <td><input type="text" name="Description" id="topicDescription" size="60" maxlength="200"/></td>
+                <td><input type="text" name="Description" id="folderDescription" size="60" maxlength="200"/></td>
               </tr>
                 
               <% if (kmeliaScc.isNotificationAllowed()) { %>

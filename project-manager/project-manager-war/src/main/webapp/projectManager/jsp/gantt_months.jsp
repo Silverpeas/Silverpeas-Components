@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -93,31 +93,8 @@ $(document).ready(function(){
   });
 
   // By suppling no content attribute, the library uses each elements title attribute by default
-  $('.task_wording a[href][title]').qtip({
-    content: {
-       text: false // Use each elements title attribute
-    }
-    ,style: {
-            border: {
-              width: 5,
-              radius: 5
-           },
-           padding: 7, 
-           textAlign: 'center',
-           tip: true, 
-           name: 'green' 
-        }
-    ,position: {
-      adjust: { screen: true }
-      /*corner: {
-         target: 'topMiddle',
-         tooltip: 'bottomMiddle'
-      }*/
-    }
-  });
-
   highlightResponsible();
-  
+
   $('#legendLabelId').click(function() {
     if ($('#legende').is(':visible')) {
         $('#legende').hide();
@@ -137,35 +114,28 @@ $(document).ready(function(){
  */
 function highlightResponsible() {
   // Tooltip over task in order to know the responsible
-  $('.task_wording a[href][title]').qtip({
-    content: {
-       text: false // Use each elements title attribute
-    }
-    ,style: {
-            border: {
-              width: 5,
-              radius: 5
-           },
-           padding: 7, 
-           textAlign: 'center',
-           tip: true, 
-           name: 'green' 
-        }
-    ,position: {
-      adjust: { screen: true }
-      /*corner: {
-         target: 'topMiddle',
-         tooltip: 'bottomMiddle'
-      }*/
-    }
-  });
+  $('a[href][title]',$('.task_wording')).qtip({
+	content: {
+		text: false // Use each elements title attribute
+	},
+	style: {
+		tip: true,
+		classes: "qtip-shadow qtip-green"
+	},
+	position: {
+		adjust: {
+			method: "flip flip"
+		},
+		viewport: $(window)
+	}
+    });
 }
 
 function getContext() {
   return "<c:out value="${ctxPath}" />";
 }
 // global javascript variable
-var listHolidays = new Array();
+var listHolidays = [];
 
 <c:forEach items="${requestScope['Holidays']}" var="holiday" varStatus="holidayIndex">
 listHolidays[<c:out value="${holidayIndex.index}" />] = '<fmt:formatDate value="${holiday}" pattern="yyyyMMdd"/>';

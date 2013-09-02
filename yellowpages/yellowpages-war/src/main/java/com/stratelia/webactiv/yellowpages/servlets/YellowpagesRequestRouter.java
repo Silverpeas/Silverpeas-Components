@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -51,7 +51,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 public class YellowpagesRequestRouter extends ComponentRequestRouter<YellowpagesSessionController> {
@@ -185,7 +184,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
       } else if (function.equals("ViewUserFull")) {
         String id = request.getParameter("Id");
 
-        UserFull user = scc.getOrganizationController().getUserFull(id);
+        UserFull user = scc.getOrganisationController().getUserFull(id);
 
         request.setAttribute("UserFull", user);
         destination = "/yellowpages/jsp/userFull.jsp";
@@ -249,9 +248,9 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
         destination = "/yellowpages/jsp/printContactList.jsp";
       } else if (function.startsWith("contactManager")) {
 
-        String action = (String) request.getParameter("Action");
-        String contactId = (String) request.getParameter("ContactId");
-        String topicId = (String) request.getParameter("TopicId");
+        String action = request.getParameter("Action");
+        String contactId = request.getParameter("ContactId");
+        String topicId = request.getParameter("TopicId");
 
         if ("ViewContactInTopic".equals(action)) {
           request.setAttribute("TopicId", topicId);
@@ -311,23 +310,15 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
         scc.setGroupSelected();
         destination = getDestination("topicManager", scc, request);
       } else if (function.equals("ModelUsed")) {
-        try {
-          List<PublicationTemplate> templates =
-              getPublicationTemplateManager().getPublicationTemplates();
-          request.setAttribute("XMLForms", templates);
-        } catch (Exception e) {
-          SilverTrace.info("yellowPages",
-              "YellowPagesRequestRouter.getDestination(ModelUsed)",
-              "root.MSG_GEN_PARAM_VALUE", "", e);
-        }
-
+        request.setAttribute("XMLForms", scc.getForms());
+        
         Collection<String> modelUsed = scc.getModelUsed();
         request.setAttribute("ModelUsed", modelUsed);
 
         destination = rootDestination + "modelUsedList.jsp";
       } else if (function.equals("DeleteContact")) {
         // Delete contact
-        String contactId = (String) request.getParameter("ContactId");
+        String contactId = request.getParameter("ContactId");
         scc.deleteContact(contactId);
 
         // Back to topic
@@ -352,24 +343,15 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
 
         if ("ModelChoice".equals(action)) {
           List<PublicationTemplate> listTemplates = new ArrayList<PublicationTemplate>();
-          ArrayList<String> usedTemplates = new ArrayList<String>(scc.getModelUsed());
-          try {
-            List<PublicationTemplate> allTemplates = getPublicationTemplateManager()
-                .getPublicationTemplates();
-            PublicationTemplate xmlForm;
-            Iterator<PublicationTemplate> iterator = allTemplates.iterator();
-            while (iterator.hasNext()) {
-              xmlForm = (PublicationTemplate) iterator.next();
-              if (usedTemplates.contains(xmlForm.getFileName())) {
-                listTemplates.add(xmlForm);
-              }
+          List<String> usedTemplates = new ArrayList<String>(scc.getModelUsed());
+          
+          List<PublicationTemplate> allTemplates = scc.getForms();
+          for (PublicationTemplate xmlForm : allTemplates) {
+            if (usedTemplates.contains(xmlForm.getFileName())) {
+              listTemplates.add(xmlForm);
             }
-            request.setAttribute("XMLForms", listTemplates);
-          } catch (Exception e) {
-            SilverTrace.info("yellowpages",
-                "YellowpagesRequestRouter.getDestination(modelManager)",
-                "root.MSG_GEN_PARAM_VALUE", "", e);
           }
+          request.setAttribute("XMLForms", listTemplates);
 
           if ((modelId == null || "".equals(modelId)) && contactId != null) {
             NodeDetail topic = scc.getSubTopicDetail(contactId);

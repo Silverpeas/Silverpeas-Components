@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,18 +25,18 @@ package com.stratelia.silverpeas.infoLetter;
 
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.InstanciationException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-
 import com.stratelia.silverpeas.infoLetter.control.ServiceFactory;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetter;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetterDataInterface;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
+import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class InfoLetterInstanciator extends SQLRequest implements ComponentsInstanciatorIntf {
 
@@ -49,7 +49,7 @@ public class InfoLetterInstanciator extends SQLRequest implements ComponentsInst
   public void create(Connection con, String spaceId, String componentId, String userId) throws
       InstanciationException {
     InfoLetterDataInterface dataInterface = ServiceFactory.getInfoLetterData();
-    InfoLetter il = dataInterface.createDefaultLetter(spaceId, componentId);
+    InfoLetter il = dataInterface.createDefaultLetter(componentId);
     FullIndexEntry indexEntry = new FullIndexEntry(componentId, "Lettre", il.getPK().getId());
     indexEntry.setTitle(il.getName());
     IndexEngineProxy.addIndexEntry(indexEntry);
@@ -62,8 +62,6 @@ public class InfoLetterInstanciator extends SQLRequest implements ComponentsInst
     deleteDataOfInstance(con, componentId, "ILLETTERS");
     deleteDataOfInstance(con, componentId, "ILPUBS");
     deleteDataOfInstance(con, componentId, "ILEXTS");
-    deleteDataOfInstance(con, componentId, "ILINTS");
-    deleteDataOfInstance(con, componentId, "ILPUBS");
   }
 
   /**
@@ -79,17 +77,11 @@ public class InfoLetterInstanciator extends SQLRequest implements ComponentsInst
     try {
       stmt = con.createStatement();
       stmt.executeUpdate(deleteQuery);
-      stmt.close();
     } catch (SQLException se) {
       throw new InstanciationException("InfoLetterInstanciator.deleteDataOfInstance()",
           SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", se);
     } finally {
-      try {
-        stmt.close();
-      } catch (SQLException exCloseStatement) {
-        SilverTrace.error("infoLetter", "InfoLetterInstanciator.deleteDataOfInstance()",
-            "root.EX_RESOURCE_CLOSE_FAILED", "", exCloseStatement);
-      }
+      DBUtil.close(stmt);
     }
   }
 }

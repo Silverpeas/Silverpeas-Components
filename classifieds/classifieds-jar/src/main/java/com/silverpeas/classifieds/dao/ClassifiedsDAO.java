@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -60,9 +60,9 @@ public class ClassifiedsDAO {
       id = new Integer(newId).toString();
       // création de la requete
       String query =
-          "insert into SC_Classifieds_Classifieds (classifiedId, instanceId, title, creatorId, creationDate, "
+          "insert into SC_Classifieds_Classifieds (classifiedId, instanceId, title, description, price, creatorId, creationDate, "
               + "updateDate, status, validatorId, validateDate) "
-              + "values (?,?,?,?,?,?,?,?,?)";
+              + "values (?,?,?,?,?,?,?,?,?,?,?)";
       // initialisation des paramètres
       prepStmt = con.prepareStatement(query);
       initParam(prepStmt, newId, classified);
@@ -73,6 +73,7 @@ public class ClassifiedsDAO {
     }
     return id;
   }
+  
 
   /**
    * update a classified
@@ -86,25 +87,27 @@ public class ClassifiedsDAO {
     try {
       // création de la requete
       String query =
-          "update SC_Classifieds_Classifieds set title = ? , status = ?  , updateDate = ? , validatorId = ? , validateDate = ? "
+          "update SC_Classifieds_Classifieds set title = ? , description = ? , price = ? , status = ?  , updateDate = ? , validatorId = ? , validateDate = ? "
               +
               " where classifiedId = ? ";
       // initialisation des paramètres
       prepStmt = con.prepareStatement(query);
       prepStmt.setString(1, classified.getTitle());
-      prepStmt.setString(2, classified.getStatus());
+      prepStmt.setString(2, classified.getDescription());
+      prepStmt.setInt(3, classified.getPrice());
+      prepStmt.setString(4, classified.getStatus());
       if (classified.getUpdateDate() != null) {
-        prepStmt.setString(3, Long.toString((classified.getUpdateDate()).getTime()));
-      } else {
-        prepStmt.setString(3, null);
-      }
-      prepStmt.setString(4, classified.getValidatorId());
-      if (classified.getValidateDate() != null) {
-        prepStmt.setString(5, Long.toString((classified.getValidateDate()).getTime()));
+        prepStmt.setString(5, Long.toString((classified.getUpdateDate()).getTime()));
       } else {
         prepStmt.setString(5, null);
       }
-      prepStmt.setInt(6, new Integer(classified.getClassifiedId()).intValue());
+      prepStmt.setString(6, classified.getValidatorId());
+      if (classified.getValidateDate() != null) {
+        prepStmt.setString(7, Long.toString((classified.getValidateDate()).getTime()));
+      } else {
+        prepStmt.setString(7, null);
+      }
+      prepStmt.setInt(8, new Integer(classified.getClassifiedId()).intValue());
       prepStmt.executeUpdate();
     } finally {
       // fermeture
@@ -257,23 +260,39 @@ public class ClassifiedsDAO {
    * @param con : Connection
    * @param instanceId : String
    * @param status : status
-   * @return a collection of ClassifiedDetail
+   * @return a list of ClassifiedDetail
    * @throws SQLException
    */
-  public static Collection<ClassifiedDetail> getClassifiedsWithStatus(Connection con,
-      String instanceId, String status) throws SQLException {
-    ArrayList<ClassifiedDetail> listClassifieds = new ArrayList<ClassifiedDetail>();
-    String query = "select * from SC_Classifieds_Classifieds where instanceId = ? and status = ? ";
+  public static List<ClassifiedDetail> getClassifiedsWithStatus(Connection con,
+      String instanceId, String status, int currentPage, int elementsPerPage) throws SQLException {
+    List<ClassifiedDetail> listClassifieds = new ArrayList<ClassifiedDetail>();
+    String query = "select * from SC_Classifieds_Classifieds where instanceId = ? and status = ? " +
+                  " order by CASE WHEN validatedate IS NULL THEN " +
+                  " CASE WHEN updatedate IS NULL THEN creationdate ELSE updatedate END "+ 
+                  " ELSE validatedate END, "+
+                  " validatedate, updatedate, creationdate";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
+    
+    int firstIndexResult = currentPage * elementsPerPage;
+    int lastIndexResult = firstIndexResult + elementsPerPage - 1;
+    boolean displayAllElements = false;
+    if(elementsPerPage == -1) {
+      displayAllElements = true;
+    }
+    
     try {
       prepStmt = con.prepareStatement(query);
       prepStmt.setString(1, instanceId);
       prepStmt.setString(2, status);
       rs = prepStmt.executeQuery();
+      int index = 0;
       while (rs.next()) {
-        ClassifiedDetail classified = recupClassified(rs);
-        listClassifieds.add(classified);
+        if(displayAllElements || (index >= firstIndexResult && index <= lastIndexResult)) {
+          ClassifiedDetail classified = recupClassified(rs);
+          listClassifieds.add(classified);
+        }
+        index ++;
       }
     } finally {
       // fermeture
@@ -485,6 +504,11 @@ public class ClassifiedsDAO {
     int classifiedId = rs.getInt("classifiedId");
     String instanceId = rs.getString("instanceId");
     String title = rs.getString("title");
+    String description = rs.getString("description");
+    Integer price = new Integer(0);
+    if(rs.getString("price") != null) {
+      price = new Integer(rs.getString("price"));
+    }
     String creatorId = rs.getString("creatorId");
     Date creationDate = new Date(Long.parseLong(rs.getString("creationDate")));
     Date updateDate = null;
@@ -500,6 +524,8 @@ public class ClassifiedsDAO {
     classified.setClassifiedId(classifiedId);
     classified.setInstanceId(instanceId);
     classified.setTitle(title);
+    classified.setDescription(description);
+    classified.setPrice(price);
     classified.setCreatorId(creatorId);
     classified.setCreationDate(creationDate);
     classified.setUpdateDate(updateDate);
@@ -522,19 +548,21 @@ public class ClassifiedsDAO {
     prepStmt.setInt(1, new Integer(classifiedId).intValue());
     prepStmt.setString(2, classified.getInstanceId());
     prepStmt.setString(3, classified.getTitle());
-    prepStmt.setString(4, classified.getCreatorId());
-    prepStmt.setString(5, Long.toString((classified.getCreationDate()).getTime()));
+    prepStmt.setString(4, classified.getDescription());
+    prepStmt.setInt(5, classified.getPrice());
+    prepStmt.setString(6, classified.getCreatorId());
+    prepStmt.setString(7, Long.toString((classified.getCreationDate()).getTime()));
     if (classified.getUpdateDate() != null) {
-      prepStmt.setString(6, Long.toString((classified.getUpdateDate()).getTime()));
+      prepStmt.setString(8, Long.toString((classified.getUpdateDate()).getTime()));
     } else {
-      prepStmt.setString(6, null);
+      prepStmt.setString(8, null);
     }
-    prepStmt.setString(7, classified.getStatus());
-    prepStmt.setString(8, classified.getValidatorId());
+    prepStmt.setString(9, classified.getStatus());
+    prepStmt.setString(10, classified.getValidatorId());
     if (classified.getValidateDate() != null) {
-      prepStmt.setString(9, Long.toString((classified.getValidateDate()).getTime()));
+      prepStmt.setString(11, Long.toString((classified.getValidateDate()).getTime()));
     } else {
-      prepStmt.setString(9, null);
+      prepStmt.setString(11, null);
     }
   }
 
@@ -576,6 +604,14 @@ public class ClassifiedsDAO {
     prepStmt.setString(5, subscribe.getField2());
   }
 
+  /**
+   * get the unpublished classified
+   * @param con : Connection
+   * @param instanceId : String
+   * @param userId : String
+   * @return a collection of ClassifiedDetail
+   * @throws SQLException
+   */
   public static Collection<ClassifiedDetail> getUnpublishedClassifieds(Connection con,
       String instanceId, String userId)
       throws SQLException {
@@ -599,5 +635,4 @@ public class ClassifiedsDAO {
     }
     return listClassifieds;
   }
-
 }

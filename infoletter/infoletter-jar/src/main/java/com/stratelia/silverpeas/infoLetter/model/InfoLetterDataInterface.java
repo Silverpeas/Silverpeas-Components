@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,8 +26,13 @@ package com.stratelia.silverpeas.infoLetter.model;
 import java.sql.Connection;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+
+import com.silverpeas.subscribe.constant.SubscriberType;
 
 import com.stratelia.silverpeas.infoLetter.InfoLetterException;
+import com.stratelia.webactiv.beans.admin.Group;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 
 /**
@@ -50,12 +55,6 @@ public interface InfoLetterDataInterface {
    * @param il the information letter to create
    */
   public void createInfoLetter(InfoLetter il);
-
-  /**
-   * Delete information letter
-   * @param pk the information letter primary key to delete
-   */
-  public void deleteInfoLetter(WAPrimaryKey pk);
 
   /**
    * Update information letter
@@ -98,12 +97,6 @@ public interface InfoLetterDataInterface {
   public void updateInfoLetterPublication(InfoLetterPublicationPdC ilp);
 
   /**
-   * Validate information letter publication
-   * @param ilp the information letter publication to validate
-   */
-  public void validateInfoLetterPublication(InfoLetterPublication ilp);
-
-  /**
    * Retrieve an information letter from his primary key
    * @param letterPK the letter primary key
    * @return the infirmation letter
@@ -119,24 +112,25 @@ public interface InfoLetterDataInterface {
 
   /**
    * Create a default Info Letter when instanciated
-   * @param spaceId the space identifier
+   *
    * @param componentId the component identifier
    * @return a default Info Letter
    */
-  public InfoLetter createDefaultLetter(String spaceId, String componentId);
+  public InfoLetter createDefaultLetter(String componentId);
 
   /**
-   * @param letterPK the information letter primary key
-   * @return the list of internal subscribers link to the Information Letter given in parameter
+   * @param componentId componentId component instance id
+   * @return map of subscriber ids indexed by type of subscriber
    */
-  public InternalSubscribers getInternalSuscribers(WAPrimaryKey letterPK);
+  public Map<SubscriberType, Collection<String>> getInternalSuscribers(String componentId);
 
   /**
    * Update internal user subscribers list
-   * @param letterPK the information letter identifier (primary key)
-   * @param internalSubscribers the InternalSubscribers which contains users and groups of users
+   * @param componentId componentId component instance id
+   * @param users
+   * @param groups
    */
-  public void setInternalSuscribers(WAPrimaryKey letterPK, InternalSubscribers internalSubscribers);
+  public void setInternalSuscribers(String componentId, UserDetail[] users, Group[] groups);
 
   // Recuperation de la liste des emails externes
   public Collection<String> getExternalsSuscribers(WAPrimaryKey letterPK);
@@ -149,18 +143,20 @@ public interface InfoLetterDataInterface {
   public void setExternalsSuscribers(WAPrimaryKey letterPK, Collection<String> emails);
 
   // abonnement ou desabonnement d'un utilisateur interne
-  public void toggleSuscriber(String userId, WAPrimaryKey letterPK, boolean flag);
+  public void toggleSuscriber(String userId, String componentId, boolean isUserSubscribing);
 
   /**
    * Check if use is an internal subscriber of the information letter
+   *
+   *
    * @param userId the user identifier
-   * @param letterPK the letter primary key
+   * @param componentId
    * @return true if user is a subscriber, false else if
    */
-  public boolean isSuscriber(String userId, WAPrimaryKey letterPK);
+  public boolean isUserSuscribed(String userId, String componentId);
 
   // initialisation du template
-  public void initTemplate(String spaceId, String componentId, WAPrimaryKey letterPK);
+  public void initTemplate(String componentId, WAPrimaryKey letterPK, String userId);
 
   public int getSilverObjectId(String pubId, String componentId);
 }

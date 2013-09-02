@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -127,50 +127,41 @@ public void listFolders(JspWriter out, String userId, boolean admin, int rootId,
     String folderName = EncodeHelper.javaStringToHtmlString(
         fsc.getForumName(folderId > 0 ? folderId : forumId));
 %>
-<html>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title></title>
     <view:looknfeel />
     <view:includePlugin name="wysiwyg"/>
+    <view:includePlugin name="popup"/>
+	<view:includePlugin name="notifier"/>
+	<link type="text/css" href="<c:url value='/util/styleSheets/fieldset.css'/>" rel="stylesheet" />
     <script type="text/javascript" src="<%=context%>/util/javaScript/checkForm.js"></script>
     <script type="text/javascript" src="<%=context%>/forums/jsp/javaScript/forums.js"></script>
     <script type="text/javascript">
-<%
-  if (move) {
-%>
-function validateMessage()
-{
+<% if (move) { %>
+function validateMessage() {
     document.forms["forumsForm"].submit();
 }
-<%
-  } else {
-%>
+<% } else { %>
 function init() {
 	<view:wysiwyg replace="messageText" language="<%=fsc.getLanguage()%>" width="600" height="300" toolbar="forums"/>
     document.forms["forumsForm"].elements["messageTitle"].focus();
 }
 
-function validateMessage()
-{
-    if (document.forms["forumsForm"].elements["messageTitle"].value == "")
-    {
+function validateMessage() {
+    if (document.forms["forumsForm"].elements["messageTitle"].value == "") {
         alert('<%=resource.getString("emptyMessageTitle")%>');
-    }
-    else if (!isTextFilled())
-    {
+    } else if (!isTextFilled()) {
         alert('<%=resource.getString("emptyMessageText")%>');
-    }
-    else
-    {
+    } else {
         document.forms["forumsForm"].submit();
     }
 }
-<%
-  }
-%>
-    </script>
+<% } %>
+</script>
 </head>
-
 <body <%addBodyOnload(out, fsc, (move ? "" : "init();"));%>>
 <%
     Window window = graphicFactory.getWindow();
@@ -183,101 +174,97 @@ function validateMessage()
     out.println(window.printBefore());
     Frame frame=graphicFactory.getFrame();
     out.println(frame.printBefore());
-
-    String formAction = ActionUrl.getUrl(
-    	(reqForum > 0 ? "viewForum" : "main"), (move ? 12 : 8), (reqForum > 0 ? reqForum : -1));
+    
+    String formAction = ActionUrl.getUrl((reqForum > 0 ? "viewForum" : "main"), (move ? 12 : 8), (reqForum > 0 ? reqForum : -1));
 %>
-    <center>
-        <form name="forumsForm" action="<%=formAction%>" method="post">
-        <table class="intfdcolor4" border="0" cellpadding="0" cellspacing="0" width="98%">
-            <tr align="center">
-                <td valign="top" align="center"><%
 
-    if (move)
-    {
+<% if (move) {
         String messageTitle = fsc.getMessageTitle(messageId);%>
+        
+        <view:board>
+    	<form name="forumsForm" action="<%=formAction%>" method="post">
 
-
-                    <input type="hidden" name="messageId" value="<%=messageId%>">
-                    <table border="0" cellspacing="0" cellpadding="5" width="100%" class="contourintfdcolor" align="center">
-                        <tr align="center">
-                            <td class="intfdcolor4" align="left"><span class="txttitrecol"><%=resource.getString("forum")%>
-                                :&nbsp;</span><span class="txtnote"><%=folderName%></span></td>
-                        </tr>
-                        <tr align="center">
-                            <td align="left"><span class="txttitrecol"><%=resource.getString("message")%>
-                                :&nbsp;</span><span class="txtnote"><%=messageTitle%></span></td>
-                        </tr>
-                        <tr align="center">
-                            <td align="left"><span class="selectNS">
-                                <select name="messageNewFolder">
-                                    <option selected value="<%=reqForum%>"><%=resource.getString("selectMessageFolder")%></option>
-                                    <option value="<%=reqForum%>">---------------------------------------------------------</option><%
-
-        if (isAdmin && allowMessagesInRoot)
-        {
-%>
-                                    <option <%if (parentId == 0) {%>selected <%}%>value="0"><%=resource.getString("racine")%></option><%
-
-        }
-        listFolders(out, userId, isAdmin, 0, reqForum, "", resource, fsc);
-%>
-                                </select></span>
-                            </td>
-                        </tr>
-                    </table><%
-
-    }
-    else
-    {
-%>
-                    <input type="hidden" name="forumId" value="<%=String.valueOf(folderId)%>"><%
-
-        if (reply)
-        {
-%>
-                    <input type="hidden" name="parentId" value="<%=parentId%>"><%
-
-        }
-%>
-
-                    <table border="0" cellspacing="0" cellpadding="5" class="contourintfdcolor" width="100%">
-                        <tr>
-                            <td valign="top"><span class="txtlibform"><%=resource.getString("messageTitle")%> :</span></td>
-                            <td valign="top"><input type="text" name="messageTitle" size="88" maxlength="<%=DBUtil.getTextFieldLength()%>">&nbsp;<img src="<%=context%>/util/icons/mandatoryField.gif" width="5" height="5"/></td>
-                        </tr>
-                        <tr>
-                            <td valign="top"><span class="txtlibform"><%=resource.getString("messageText")%> : </span></td>
-                            <td valign="top"><font size=1><textarea name="messageText" id="messageText"></textarea></font>&nbsp;<img src="<%=context%>/util/icons/mandatoryField.gif" width="5" height="5"/></td>
-                        </tr>
-                        <tr>
-                            <td valign="top"><span class="txtlibform"><%=resource.getString("forumKeywords")%> : </span></td>
-                            <td valign="top"><input type="text" name="forumKeywords" size="50" value=""/></td>
-                        </tr>
-                        <tr>
-                            <td valign="top"><span class="txtlibform"><%=resource.getString("subscribeMessage")%> :</span></td>
-                            <td valign="top"><input type="checkbox" name="subscribeMessage"></td>
-                        </tr>
-                        <tr><td></td><td>(<img src="<%=context%>/util/icons/mandatoryField.gif" width="5" height="5" />&nbsp;=&nbsp;<fmt:message key="reqchamps" />)</td></tr>
-                    </table>
-<%
-    }
-%>
-                </td>
+		<input type="hidden" name="messageId" value="<%=messageId%>"/>
+        <table border="0" cellspacing="0" cellpadding="5" width="100%">
+        	<tr>
+            	<td class="txtlibform"><%=resource.getString("forum")%>:</td><td><%=folderName%></td>
+			</tr>
+            <tr>
+            	<td class="txtlibform"><%=resource.getString("message")%>:</td><td><%=messageTitle%></td>
             </tr>
-        </table>
-        </form>
-    </center><br/>
-      <center>
+            <tr>
+            	<td class="txtlibform"><%=resource.getString("selectMessageFolder")%></td>
+            	<td>
+					<select name="messageNewFolder">
+                    	<option selected value="<%=reqForum%>"><%=resource.getString("selectMessageFolder")%></option>
+                        <option value="<%=reqForum%>">---------------------------------------------------------</option>
+		               	<% if (isAdmin && allowMessagesInRoot) { %>
+		               		<option <%if (parentId == 0) {%>selected <%}%>value="0"><%=resource.getString("racine")%></option>
+		               	<% } %>
+		               	<%
+        					listFolders(out, userId, isAdmin, 0, reqForum, "", resource, fsc);
+						%>
+                    </select>
+				</td>
+			</tr>
+		</table>
+		</form>
+		</view:board>
+<% } else { %>
+	<div id="new-message">
+	<form name="forumsForm" action="<%=formAction%>" method="post">
+	<input type="hidden" name="forumId" value="<%=String.valueOf(folderId)%>"/>
+	
+	<% if (reply) { %>
+		<input type="hidden" name="parentId" value="<%=parentId%>"/>
+	<% } %>
+	
+	<fieldset id="message" class="skinFieldset">
+		<legend><fmt:message key='message'/></legend>
+		<div class="fields">
+			<div class="field" id="messageTitleArea">
+				<label for="messageTitle" class="txtlibform"><fmt:message key='messageTitle'/></label>
+				<div class="champs">
+					<input type="text" id="messageTitle" name="messageTitle" size="88" maxlength="<%=DBUtil.getTextFieldLength()%>"/>&nbsp;<img src="<%=context%>/util/icons/mandatoryField.gif" width="5" height="5"/>
+				</div>
+			</div>
+			<div class="field" id="messageTextArea">
+				<label for="messageText" class="txtlibform"><fmt:message key='messageText'/></label>
+				<div class="champs">
+					<textarea name="messageText" id="messageText"></textarea>&nbsp;<img src="<%=context%>/util/icons/mandatoryField.gif" width="5" height="5"/>
+				</div>
+			</div>
+			<div class="field" id="messageKeywordsArea">
+				<label for="forumKeywords" class="txtlibform"><fmt:message key='forumKeywords'/></label>
+				<div class="champs">
+					<input type="text" id="forumKeywords" name="forumKeywords" size="50" value=""/>
+				</div>
+			</div>
+			<div class="field" id="messageSubscriptionArea">
+				<label for="subscribeMessage" class="txtlibform"><fmt:message key='subscribeMessage'/></label>
+				<div class="champs">
+					<input type="checkbox" id="subscribeMessage" name="subscribeMessage"/>
+				</div>
+			</div>
+		</div>
+	</fieldset>
+	
+	<view:fileUpload fieldset="true" jqueryFormSelector="form[name='forumsForm']" />
+	
+	<div class="legend">
+		<img alt="obligatoire" src="<%=context%>/util/icons/mandatoryField.gif" width="5" height="5"/> : <fmt:message key='GML.requiredField'/>
+	</div>
+	</form>
+	</div>
+<% } %>
+    <br/>
         <fmt:message key="valider" var="validate"/>
         <fmt:message key="annuler" var="cancel"/>
           <view:buttonPane>
             <view:button action="javascript:validateMessage();" label="${validate}" disabled="false" />
             <view:button action="${pageScope.backURL}" label="${cancel}" disabled="false" />
           </view:buttonPane>
-        </center>
-    <br><%
-
+<%
     out.println(frame.printAfter());
     out.println(window.printAfter());
 %>

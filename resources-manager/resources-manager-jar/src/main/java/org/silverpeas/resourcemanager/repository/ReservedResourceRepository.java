@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -42,8 +42,8 @@ public interface ReservedResourceRepository extends
   @Query("SELECT DISTINCT reservedResource FROM ReservedResource reservedResource " +
   "WHERE reservedResource.reservation.id != :currentReservationId AND reservedResource.status != 'R'" +
   "AND reservedResource.resource.id IN :futureReservedResourceIds " +
-  "AND (( reservedResource.reservation.endDate > :startPeriod AND  reservedResource.reservation.beginDate <= :startPeriod)" +
-  "OR ( reservedResource.reservation.endDate >= :endPeriod  AND  reservedResource.reservation.beginDate < :endPeriod))")
+  "AND reservedResource.reservation.beginDate < :endPeriod " +
+  "AND reservedResource.reservation.endDate > :startPeriod ")
   public List<ReservedResource> findAllReservedResourcesWithProblem(
       @Param("currentReservationId") Long currentReservationId,
       @Param("futureReservedResourceIds") List<Long> futureReservedResourceIds,

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -53,7 +53,7 @@ public class AjaxServlet extends HttpServlet {
     HttpSession session = req.getSession(true);
     String componentId = req.getParameter("ComponentId");
     KmeliaSessionController kmeliaSC =
-        (KmeliaSessionController) session.getAttribute("Silverpeas_" + "kmelia" + "_" + componentId);
+        (KmeliaSessionController) session.getAttribute("Silverpeas_kmelia_" + componentId);
     if (kmeliaSC == null) {
       kmeliaSC = createSessionController(session, componentId);
     }
@@ -80,7 +80,7 @@ public class AjaxServlet extends HttpServlet {
         MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     if (msc != null) {
       ComponentContext componentContext = msc.createComponentContext(null, componentId);
-      if (msc.getOrganizationController().isComponentAvailable(componentId, msc.getUserId())) {
+      if (msc.getOrganisationController().isComponentAvailable(componentId, msc.getUserId())) {
         return new KmeliaSessionController(msc, componentContext);
       }
     }

@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,8 +24,8 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="org.silverpeas.importExport.versioning.DocumentVersion"%>
 
-<%@ page import="com.stratelia.silverpeas.versioning.model.DocumentVersion"%>
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
@@ -61,13 +61,13 @@ function validateForm() {
 			alert("<%=resources.getString("kmelia.FileNotZip")%>");
 		} else {
 			formValid = true;
-		}			
+		}
 	} else if (fileName != "") {
 		formValid = true;
-	}			
+	}
 	if (formValid) {
 		$.progressMessage();
-		document.frm_import.submit();	
+		document.frm_import.submit();
 	}
 }
 </script>
@@ -84,7 +84,7 @@ function validateForm() {
 <view:board>
 <form name="frm_import" action="ImportFilesUpload" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
 <input type="hidden" name="topicId" value="<%=topicId%>"/>
-  
+
 	<table cellpadding="5" cellspacing="0" width="100%">
     <tr align="center">
 	    <td class="txtlibform"><%=resources.getString("kmelia.ImportModeMassifTitre")%>&nbsp;</td>
@@ -131,7 +131,7 @@ function validateForm() {
     out.println("<br/></div>");
 %>
 </view:frame>
-<%	
+<%
 	out.println(window.printAfter());
 %>
 <view:progressMessage/>

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,8 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
- ---*/
 
 /**
  * To generate an archive into a pdf file
@@ -36,18 +34,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 
-import com.lowagie.text.Chapter;
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
-import com.lowagie.text.Font;
-import com.lowagie.text.HeaderFooter;
-import com.lowagie.text.Image;
-import com.lowagie.text.PageSize;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.Phrase;
-import com.lowagie.text.Section;
-import com.lowagie.text.pdf.PdfWriter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.newsEdito.NewsEditoException;
 import com.stratelia.webactiv.util.DateUtil;
@@ -60,52 +46,19 @@ import com.stratelia.webactiv.util.publication.info.model.InfoTextDetail;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
-/*
- * CVS Informations
- *
- * $Id: PdfGenerator.java,v 1.6 2007/06/14 08:40:52 neysseri Exp $
- *
- * $Log: PdfGenerator.java,v $
- * Revision 1.6  2007/06/14 08:40:52  neysseri
- * no message
- *
- * Revision 1.5.6.1  2007/06/14 08:22:03  neysseri
- * no message
- *
- * Revision 1.5  2005/09/30 14:19:21  neysseri
- * Centralisation de la gestion des dates
- *
- * Revision 1.4  2004/09/28 09:25:37  neysseri
- * Utilisation de la bibliothèque iText au lieu de Libraries/lowagie + nettoyage sources
- *
- * Revision 1.3  2003/07/22 08:53:06  tleroi
- * *** empty log message ***
- *
- * Revision 1.2  2002/12/18 17:32:24  cbonin
- * 1) Report OCISI : Il n'y a pas de verification javascript sur le format de l'image uploadée
- * 2) on ne verifie pas toutes les extensions d'images possibles
- * 3) NullPointer qd on clique 2 fois sur l'onglet Publication
- * 4) Un publieur n'a pas d'onglet Publication
- * 5) Un gestionnaire ne peut pas copier un article (pas d'icone)
- *
- * Revision 1.1.1.1  2002/11/27 08:54:00  cbonin
- * no message
- *
- * Revision 1.4.38.2  2002/10/31 09:03:42  cbonin
- * Bug path de fichiers & répertoires
- *
- * Revision 1.4.38.1  2002/10/09 15:48:10  scotte
- * Corrections bug Solaris
- *
- * Revision 1.4  2002/01/08 12:00:32  santonio
- * SilverTrace & SilverException
- *
- */
+import com.lowagie.text.Chapter;
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
+import com.lowagie.text.Font;
+import com.lowagie.text.HeaderFooter;
+import com.lowagie.text.Image;
+import com.lowagie.text.PageSize;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.Phrase;
+import com.lowagie.text.Section;
+import com.lowagie.text.pdf.PdfWriter;
 
-/**
- * Class declaration
- * @author
- */
 public class PdfGenerator {
 
   static private String imagePath = null;
@@ -116,7 +69,7 @@ public class PdfGenerator {
    */
   public static void initRessources() {
     ResourceLocator pubSettings = new ResourceLocator(
-        "com.stratelia.webactiv.util.publication.publicationSettings", "");
+        "org.silverpeas.util.publication.publicationSettings", "");
 
     imagePath = pubSettings.getString("imagesSubDirectory");
   }

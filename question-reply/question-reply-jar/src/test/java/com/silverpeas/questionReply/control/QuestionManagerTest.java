@@ -1,45 +1,46 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.questionReply.control;
 
-import com.google.common.collect.Lists;
-import static org.hamcrest.Matchers.*;
-import static org.hamcrest.MatcherAssert.*;
-import org.mockito.Mockito;
-import com.silverpeas.components.model.AbstractTestDao;
-import com.silverpeas.questionReply.model.Question;
-import com.silverpeas.questionReply.model.QuestionMatcher;
-import com.silverpeas.questionReply.model.Reply;
-import com.silverpeas.questionReply.model.ReplyMatcher;
-import com.stratelia.silverpeas.contentManager.ContentManager;
-import com.stratelia.webactiv.persistence.IdPK;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
+import com.silverpeas.components.model.AbstractTestDao;
+import com.silverpeas.questionReply.model.Question;
+import com.silverpeas.questionReply.model.QuestionMatcher;
+import com.silverpeas.questionReply.model.Reply;
+import com.silverpeas.questionReply.model.ReplyMatcher;
+import com.silverpeas.util.CollectionUtil;
+
+import com.stratelia.silverpeas.contentManager.ContentManager;
+import com.stratelia.webactiv.persistence.IdPK;
+
+import org.mockito.Mockito;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 /**
  *
@@ -62,134 +63,8 @@ public class QuestionManagerTest extends AbstractTestDao {
   }
 
   /**
-   * Test of createQuestion method, of class QuestionManager.
-   */
-  /*
-  public void testCreateQuestion() throws Exception {
-  System.out.println("createQuestion");
-  QuestionManager instance = QuestionManager.getInstance();
-  Question question = new Question("5", INSTANCE_ID);
-  assertEquals(1, getConnection().getRowCount(question._getTableName()));
-  question.setTitle(RandomGenerator.getRandomString());
-  long expResult = 0L;
-  long result = instance.createQuestion(question);
-  assertEquals(expResult, result);
-  assertEquals(2, getConnection().getRowCount(question._getTableName()));
-  }*/
-  /**
-   * Test of deleteQuestionIndex method, of class QuestionManager.
-   */
-  /*
-  public void testDeleteQuestionIndex() {
-  System.out.println("deleteQuestionIndex");
-  Question question = null;
-  QuestionManager instance = null;
-  instance.deleteQuestionIndex(question);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }
-   */
-  /**
-   * Test of createReply method, of class QuestionManager.
-   */
-  /*
-  public void testCreateReply() throws Exception {
-  System.out.println("createReply");
-  Reply reply = null;
-  Question question = null;
-  QuestionManager instance = null;
-  long expResult = 0L;
-  long result = instance.createReply(reply, question);
-  assertEquals(expResult, result);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
-  /**
-   * Test of createReplyIndex method, of class QuestionManager.
-   */
-  /*
-  public void testCreateReplyIndex() {
-  System.out.println("createReplyIndex");
-  Reply reply = null;
-  QuestionManager instance = null;
-  instance.createReplyIndex(reply);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
-  /**
-   * Test of deleteReplyIndex method, of class QuestionManager.
-   */
-  /*
-  public void testDeleteReplyIndex() {
-  System.out.println("deleteReplyIndex");
-  Reply reply = null;
-  QuestionManager instance = null;
-  instance.deleteReplyIndex(reply);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
-  /**
-   * Test of closeQuestions method, of class QuestionManager.
-   */
-  /*
-  public void testCloseQuestions() throws Exception {
-  System.out.println("closeQuestions");
-  Collection questionIds = null;
-  QuestionManager instance = null;
-  instance.closeQuestions(questionIds);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
-  /**
-   * Test of openQuestions method, of class QuestionManager.
-   */
-  /*
-  public void testOpenQuestions() throws Exception {
-  System.out.println("openQuestions");
-  Collection questionIds = null;
-  QuestionManager instance = null;
-  instance.openQuestions(questionIds);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
-  /**
-   * Test of updateQuestionRecipients method, of class QuestionManager.
-   */
-  /*
-  public void testUpdateQuestionRecipients() throws Exception {
-  System.out.println("updateQuestionRecipients");
-  Question question = null;
-  QuestionManager instance = null;
-  instance.updateQuestionRecipients(question);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
-  /**
-   * Test of updateQuestionRepliesPublicStatus method, of class QuestionManager.
-   */
-  /*
-  public void testUpdateQuestionRepliesPublicStatus() throws Exception {
-  System.out.println("updateQuestionRepliesPublicStatus");
-  Collection questionIds = null;
-  QuestionManager instance = null;
-  instance.updateQuestionRepliesPublicStatus(questionIds);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
-  /**
-   * Test of updateQuestionRepliesPrivateStatus method, of class QuestionManager.
-   */
-  /*
-  public void testUpdateQuestionRepliesPrivateStatus() throws Exception {
-  System.out.println("updateQuestionRepliesPrivateStatus");
-  Collection questionIds = null;
-  QuestionManager instance = null;
-  instance.updateQuestionRepliesPrivateStatus(questionIds);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
-  /**
    * Test of updateRepliesPublicStatus method, of class QuestionManager.
+   *
    * @throws Exception
    */
   public void testUpdateRepliesPublicStatusShouldDeleteQuestionWithNoResponse() throws Exception {
@@ -221,6 +96,7 @@ public class QuestionManagerTest extends AbstractTestDao {
 
   /**
    * Test of updateRepliesPublicStatus method, of class QuestionManager.
+   *
    * @throws Exception
    */
   public void testUpdateRepliesPublicStatusShouldHaveNoEffectsOnPrivateReplies() throws Exception {
@@ -251,6 +127,7 @@ public class QuestionManagerTest extends AbstractTestDao {
 
   /**
    * Test of updateRepliesPublicStatus method, of class QuestionManager.
+   *
    * @throws Exception
    */
   public void testUpdateRepliesPublicStatus() throws Exception {
@@ -273,7 +150,7 @@ public class QuestionManagerTest extends AbstractTestDao {
     question2.setTitle("Oh Marlène");
     assertThat(question, is(notNullValue()));
     assertThat(question, QuestionMatcher.matches(question2));
-    manager.updateRepliesPublicStatus(Lists.asList(201L, new Long[]{202L}), question);
+    manager.updateRepliesPublicStatus(CollectionUtil.asList(201L, 202L), question);
     question = manager.getQuestionAndReplies(101L);
     assertThat(question, is(notNullValue()));
     question2.setPublicReplyNumber(0);
@@ -301,53 +178,54 @@ public class QuestionManagerTest extends AbstractTestDao {
    * Test of updateRepliesPrivateStatus method, of class QuestionManager.
    */
   /*
-  public void testUpdateRepliesPrivateStatus() throws Exception {
-  System.out.println("updateRepliesPrivateStatus");
-  Collection replyIds = null;
-  Question question = null;
-  QuestionManager instance = null;
-  instance.updateRepliesPrivateStatus(replyIds, question);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+   public void testUpdateRepliesPrivateStatus() throws Exception {
+   System.out.println("updateRepliesPrivateStatus");
+   Collection replyIds = null;
+   Question question = null;
+   QuestionManager instance = null;
+   instance.updateRepliesPrivateStatus(replyIds, question);
+   // TODO review the generated test code and remove the default call to fail.
+   fail("The test case is a prototype.");
+   }*/
   /**
    * Test of updateQuestion method, of class QuestionManager.
    */
   /*
-  public void testUpdateQuestion() throws Exception {
-  System.out.println("updateQuestion");
-  Question question = null;
-  QuestionManager instance = null;
-  instance.updateQuestion(question);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+   public void testUpdateQuestion() throws Exception {
+   System.out.println("updateQuestion");
+   Question question = null;
+   QuestionManager instance = null;
+   instance.updateQuestion(question);
+   // TODO review the generated test code and remove the default call to fail.
+   fail("The test case is a prototype.");
+   }*/
   /**
    * Test of updateReply method, of class QuestionManager.
    */
   /*
-  public void testUpdateReply() throws Exception {
-  System.out.println("updateReply");
-  Reply reply = null;
-  QuestionManager instance = null;
-  instance.updateReply(reply);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+   public void testUpdateReply() throws Exception {
+   System.out.println("updateReply");
+   Reply reply = null;
+   QuestionManager instance = null;
+   instance.updateReply(reply);
+   // TODO review the generated test code and remove the default call to fail.
+   fail("The test case is a prototype.");
+   }*/
   /**
    * Test of deleteQuestionAndReplies method, of class QuestionManager.
    */
   /*
-  public void testDeleteQuestionAndReplies() throws Exception {
-  System.out.println("deleteQuestionAndReplies");
-  Collection questionIds = null;
-  QuestionManager instance = null;
-  instance.deleteQuestionAndReplies(questionIds);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+   public void testDeleteQuestionAndReplies() throws Exception {
+   System.out.println("deleteQuestionAndReplies");
+   Collection questionIds = null;
+   QuestionManager instance = null;
+   instance.deleteQuestionAndReplies(questionIds);
+   // TODO review the generated test code and remove the default call to fail.
+   fail("The test case is a prototype.");
+   }*/
   /**
    * Test of getQuestion method, of class QuestionManager.
+   *
    * @throws Exception
    */
   public void testGetSimpleQuestion() throws Exception {
@@ -373,6 +251,7 @@ public class QuestionManagerTest extends AbstractTestDao {
 
   /**
    * Test of getQuestion method, of class QuestionManager.
+   *
    * @throws Exception
    */
   public void testGetWrongQuestion() throws Exception {
@@ -385,130 +264,130 @@ public class QuestionManagerTest extends AbstractTestDao {
    * Test of getQuestionAndReplies method, of class QuestionManager.
    */
   /*
-  public void testGetQuestionAndReplies() throws Exception {
-  System.out.println("getQuestionAndReplies");
-  long questionId = 0L;
-  QuestionManager instance = null;
-  Question expResult = null;
-  Question result = instance.getQuestionAndReplies(questionId);
-  assertEquals(expResult, result);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+   public void testGetQuestionAndReplies() throws Exception {
+   System.out.println("getQuestionAndReplies");
+   long questionId = 0L;
+   QuestionManager instance = null;
+   Question expResult = null;
+   Question result = instance.getQuestionAndReplies(questionId);
+   assertEquals(expResult, result);
+   // TODO review the generated test code and remove the default call to fail.
+   fail("The test case is a prototype.");
+   }*/
   /**
    * Test of getQuestionsByIds method, of class QuestionManager.
    */
   /*
-  public void testGetQuestionsByIds() throws Exception {
-  System.out.println("getQuestionsByIds");
-  ArrayList ids = null;
-  QuestionManager instance = null;
-  Collection expResult = null;
-  Collection result = instance.getQuestionsByIds(ids);
-  assertEquals(expResult, result);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+   public void testGetQuestionsByIds() throws Exception {
+   System.out.println("getQuestionsByIds");
+   ArrayList ids = null;
+   QuestionManager instance = null;
+   Collection expResult = null;
+   Collection result = instance.getQuestionsByIds(ids);
+   assertEquals(expResult, result);
+   // TODO review the generated test code and remove the default call to fail.
+   fail("The test case is a prototype.");
+   }*/
   /**
    * Test of getQuestionReplies method, of class QuestionManager.
    */
   /*
-  public void testGetQuestionReplies() throws Exception {
-  System.out.println("getQuestionReplies");
-  long questionId = 0L;
-  QuestionManager instance = null;
-  Collection expResult = null;
-  Collection result = instance.getQuestionReplies(questionId);
-  assertEquals(expResult, result);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+   public void testGetQuestionReplies() throws Exception {
+   System.out.println("getQuestionReplies");
+   long questionId = 0L;
+   QuestionManager instance = null;
+   Collection expResult = null;
+   Collection result = instance.getQuestionReplies(questionId);
+   assertEquals(expResult, result);
+   // TODO review the generated test code and remove the default call to fail.
+   fail("The test case is a prototype.");
+   }*/
   /**
    * Test of getQuestionPublicReplies method, of class QuestionManager.
    */
   /*
-  public void testGetQuestionPublicReplies() throws Exception {
-  System.out.println("getQuestionPublicReplies");
-  long questionId = 0L;
-  QuestionManager instance = null;
-  Collection expResult = null;
-  Collection result = instance.getQuestionPublicReplies(questionId);
-  assertEquals(expResult, result);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+   public void testGetQuestionPublicReplies() throws Exception {
+   System.out.println("getQuestionPublicReplies");
+   long questionId = 0L;
+   QuestionManager instance = null;
+   Collection expResult = null;
+   Collection result = instance.getQuestionPublicReplies(questionId);
+   assertEquals(expResult, result);
+   // TODO review the generated test code and remove the default call to fail.
+   fail("The test case is a prototype.");
+   }*/
   /**
    * Test of getQuestionPrivateReplies method, of class QuestionManager.
    */
   /*
-  public void testGetQuestionPrivateReplies() throws Exception {
-  System.out.println("getQuestionPrivateReplies");
-  long questionId = 0L;
-  QuestionManager instance = null;
-  Collection expResult = null;
-  Collection result = instance.getQuestionPrivateReplies(questionId);
-  assertEquals(expResult, result);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+   public void testGetQuestionPrivateReplies() throws Exception {
+   System.out.println("getQuestionPrivateReplies");
+   long questionId = 0L;
+   QuestionManager instance = null;
+   Collection expResult = null;
+   Collection result = instance.getQuestionPrivateReplies(questionId);
+   assertEquals(expResult, result);
+   // TODO review the generated test code and remove the default call to fail.
+   fail("The test case is a prototype.");
+   }*/
   /**
    * Test of getQuestionRecipients method, of class QuestionManager.
    */
   /*
-  public void testGetQuestionRecipients() throws Exception {
-  System.out.println("getQuestionRecipients");
-  long questionId = 0L;
-  QuestionManager instance = null;
-  Collection expResult = null;
-  Collection result = instance.getQuestionRecipients(questionId);
-  assertEquals(expResult, result);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+   public void testGetQuestionRecipients() throws Exception {
+   System.out.println("getQuestionRecipients");
+   long questionId = 0L;
+   QuestionManager instance = null;
+   Collection expResult = null;
+   Collection result = instance.getQuestionRecipients(questionId);
+   assertEquals(expResult, result);
+   // TODO review the generated test code and remove the default call to fail.
+   fail("The test case is a prototype.");
+   }*/
   /**
    * Test of getReply method, of class QuestionManager.
    */
   /*
-  public void testGetReply() throws Exception {
-  System.out.println("getReply");
-  long replyId = 0L;
-  QuestionManager instance = null;
-  Reply expResult = null;
-  Reply result = instance.getReply(replyId);
-  assertEquals(expResult, result);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+   public void testGetReply() throws Exception {
+   System.out.println("getReply");
+   long replyId = 0L;
+   QuestionManager instance = null;
+   Reply expResult = null;
+   Reply result = instance.getReply(replyId);
+   assertEquals(expResult, result);
+   // TODO review the generated test code and remove the default call to fail.
+   fail("The test case is a prototype.");
+   }*/
   /**
    * Test of getSendQuestions method, of class QuestionManager.
    */
   /*
-  public void testGetSendQuestions() throws Exception {
-  System.out.println("getSendQuestions");
-  String userId = "";
-  String instanceId = "";
-  QuestionManager instance = null;
-  Collection expResult = null;
-  Collection result = instance.getSendQuestions(userId, instanceId);
-  assertEquals(expResult, result);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+   public void testGetSendQuestions() throws Exception {
+   System.out.println("getSendQuestions");
+   String userId = "";
+   String instanceId = "";
+   QuestionManager instance = null;
+   Collection expResult = null;
+   Collection result = instance.getSendQuestions(userId, instanceId);
+   assertEquals(expResult, result);
+   // TODO review the generated test code and remove the default call to fail.
+   fail("The test case is a prototype.");
+   }*/
   /**
    * Test of getReceiveQuestions method, of class QuestionManager.
    */
   /*
-  public void testGetReceiveQuestions() throws Exception {
-  System.out.println("getReceiveQuestions");
-  String userId = "";
-  String instanceId = "";
-  QuestionManager instance = null;
-  Collection expResult = null;
-  Collection result = instance.getReceiveQuestions(userId, instanceId);
-  assertEquals(expResult, result);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+   public void testGetReceiveQuestions() throws Exception {
+   System.out.println("getReceiveQuestions");
+   String userId = "";
+   String instanceId = "";
+   QuestionManager instance = null;
+   Collection expResult = null;
+   Collection result = instance.getReceiveQuestions(userId, instanceId);
+   assertEquals(expResult, result);
+   // TODO review the generated test code and remove the default call to fail.
+   fail("The test case is a prototype.");
+   }*/
   /**
    * Test of getQuestions method, of class QuestionManager.
    */
@@ -565,6 +444,7 @@ public class QuestionManagerTest extends AbstractTestDao {
 
   /**
    * Test of getAllQuestions method, of class QuestionManager.
+   *
    * @throws Exception
    */
   public void testGetAllQuestions() throws Exception {
@@ -657,6 +537,7 @@ public class QuestionManagerTest extends AbstractTestDao {
 
   /**
    * Test of getAllQuestionsByCategory method, of class QuestionManager.
+   *
    * @throws Exception
    */
   public void testGetAllQuestionsByCategory() throws Exception {
@@ -674,7 +555,8 @@ public class QuestionManagerTest extends AbstractTestDao {
     question2.setReplyNumber(2);
     question2.setStatus(1);
     question2.setTitle("Oh Marlène");
-    List<Question> questions = QuestionManagerFactory.getQuestionManager().getAllQuestionsByCategory(
+    List<Question> questions = QuestionManagerFactory.getQuestionManager()
+        .getAllQuestionsByCategory(
         instanceId, categoryId);
     assertThat(questions, is(notNullValue()));
     assertThat(questions, hasSize(1));
@@ -683,6 +565,7 @@ public class QuestionManagerTest extends AbstractTestDao {
 
   /**
    * Test of getPublicQuestions method, of class QuestionManager.
+   *
    * @throws Exception
    */
   public void testGetPublicQuestions() throws Exception {
@@ -706,38 +589,13 @@ public class QuestionManagerTest extends AbstractTestDao {
     assertThat(questions.get(0), QuestionMatcher.matches(question1));
   }
 
-  /**
-   * Test of createQuestionReply method, of class QuestionManager.
-   */
-  /*
-  public void testCreateQuestionReply() throws Exception {
-  System.out.println("createQuestionReply");
-  Question question = null;
-  Reply reply = null;
-  QuestionManager instance = null;
-  long expResult = 0L;
-  long result = instance.createQuestionReply(question, reply);
-  assertEquals(expResult, result);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
-  /**
-   * Test of isSortable method, of class QuestionManager.
-   * @return
-   */
-  /*
-  public void testIsSortable() {
-  System.out.println("isSortable");
-  String instanceId = "";
-  QuestionManager instance = null;
-  boolean expResult = false;
-  boolean result = instance.isSortable(instanceId);
-  assertEquals(expResult, result);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
   @Override
   protected String getDatasetFileName() {
     return "question-reply-dataset.xml";
+  }
+
+  @Override
+  protected String getTableCreationFileName() {
+    return "create-database.sql";
   }
 }

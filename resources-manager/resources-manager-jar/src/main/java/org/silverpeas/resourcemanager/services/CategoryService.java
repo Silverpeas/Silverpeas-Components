@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,16 +23,14 @@
  */
 package org.silverpeas.resourcemanager.services;
 
+import com.silverpeas.annotation.Service;
 import org.silverpeas.resourcemanager.model.Category;
 import org.silverpeas.resourcemanager.repository.CategoryRepository;
-import com.silverpeas.annotation.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import java.util.List;
 
-@Named
 @Service
 @Transactional
 public class CategoryService {
@@ -40,9 +38,8 @@ public class CategoryService {
   CategoryRepository repository;
 
 
-  public String createCategory(Category category) {
-    Category savedCategory = repository.saveAndFlush(category);
-    return savedCategory.getId();
+  public void createCategory(Category category) {
+    repository.saveAndFlush(category);
   }
 
   public void updateCategory(Category category) {
@@ -53,11 +50,11 @@ public class CategoryService {
     return repository.findCategoriesByInstanceId(instanceId);
   }
 
-  public Category getCategory(String id) {
-    return repository.findOne(Long.parseLong(id));
+  public Category getCategory(Long id) {
+    return repository.findOne(id);
   }
 
-  public void deleteCategory(String id) {
-    repository.delete(Long.parseLong(id));
+  public void deleteCategory(Long id) {
+    repository.delete(id);
   }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -9,7 +9,7 @@
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
  * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
  * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -74,7 +74,7 @@ public class FileFolder extends Object implements java.io.Serializable {
    * @see
    */
   public FileFolder(String rootPath, String path) {
-    new FileFolder(rootPath, path, false, "");
+    this(rootPath, path, false, "");
   }
 
   public boolean isWritable() {
@@ -82,6 +82,7 @@ public class FileFolder extends Object implements java.io.Serializable {
   }
 
   public FileFolder(String rootPath, String path, boolean isAdmin, String componentId) {
+	this.path = path;
     files = new ArrayList<FileDetail>(0);
     folders = new ArrayList<FileDetail>(0);
 
@@ -135,11 +136,11 @@ public class FileFolder extends Object implements java.io.Serializable {
             }
 
             if (childFile.isDirectory()) {
-              folders.add(new FileDetail(childFile.getName(), childFile.getPath(), childFile.length(),
+              folders.add(new FileDetail(childFile.getName(), childFile.getPath(), null, childFile.length(),
                       true, isIndexed));
             } else {
               String childPath = childFile.getPath().substring(rootPath.length() + 1);
-              files.add(new FileDetail(childFile.getName(), childPath, childFile.length(), false,
+              files.add(new FileDetail(childFile.getName(), childPath, childFile.getPath(), childFile.length(), false,
                       isIndexed));
             }
           }

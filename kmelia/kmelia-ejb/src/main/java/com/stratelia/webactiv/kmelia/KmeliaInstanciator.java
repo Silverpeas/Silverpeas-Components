@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,21 +25,19 @@ package com.stratelia.webactiv.kmelia;
 
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.InstanciationException;
-import com.silverpeas.comment.CommentInstanciator;
 import com.silverpeas.comment.service.CommentServiceFactory;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
-import com.silverpeas.versioning.VersioningInstanciator;
+import com.silverpeas.thumbnail.ThumbnailInstanciator;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
 import com.stratelia.webactiv.calendar.backbone.TodoBackboneAccess;
 import com.stratelia.webactiv.node.NodeInstanciator;
 import com.stratelia.webactiv.publication.PublicationInstanciator;
 import com.stratelia.webactiv.util.DateUtil;
-import com.silverpeas.thumbnail.ThumbnailInstanciator;
+import org.silverpeas.attachment.SimpleDocumentInstanciator;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 /**
  * @author nesseric
@@ -75,8 +73,6 @@ public class KmeliaInstanciator extends SQLRequest implements ComponentsInstanci
     todoBBA.removeEntriesByInstanceId(componentId);
     NodeInstanciator node = new NodeInstanciator("com.stratelia.webactiv.kmelia");
     node.delete(con, spaceId, componentId, userId);
-    VersioningInstanciator version = new VersioningInstanciator();
-    version.delete(con, spaceId, componentId, userId);
     ThumbnailInstanciator thumbnail = new ThumbnailInstanciator();
     thumbnail.delete(con, spaceId, componentId, userId);
     // delete all comments related to the component instance id (also any indexes)

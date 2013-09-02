@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,23 +24,25 @@
 package com.silverpeas.silvercrawler.servlets;
 
 import com.silverpeas.session.SessionInfo;
+import com.silverpeas.session.SessionManagement;
+import com.silverpeas.session.SessionManagementFactory;
 import com.silverpeas.silvercrawler.control.SilverCrawlerSessionController;
 import com.silverpeas.silvercrawler.control.UploadItem;
 import com.silverpeas.silvercrawler.control.UploadReport;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
-import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
+import org.apache.commons.fileupload.FileItem;
+
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.fileupload.FileItem;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Class declaration
@@ -83,11 +85,11 @@ public class DragAndDrop extends HttpServlet {
       String instanceId = request.getParameter("ComponentId");
       String ignoreFolders = request.getParameter("IgnoreFolders");
 
-      SessionInfo session = SessionManager.getInstance().getSessionInfo(sessionId);
+      SessionManagementFactory factory = SessionManagementFactory.getFactory();
+      SessionManagement sessionManagement = factory.getSessionManagement();
+      SessionInfo session = sessionManagement.getSessionInfo(sessionId);
+
       SilverCrawlerSessionController sessionController = session.getAttribute("Silverpeas_SilverCrawler_"+instanceId);
-
-
-      String userId = sessionController.getUserId();
 
       // build report
       UploadReport report = sessionController.getLastUploadReport();
@@ -164,7 +166,7 @@ public class DragAndDrop extends HttpServlet {
     }
 
     catch (Exception e) {
-      SilverTrace.debug("importExportPeas", "FileUploader.doPost", "root.MSG_GEN_PARAM_VALUE", e);
+      SilverTrace.debug("importExportPeas", "Drop.doPost", "root.MSG_GEN_PARAM_VALUE", e);
       res.getOutputStream().println("ERROR");
       return;
     }

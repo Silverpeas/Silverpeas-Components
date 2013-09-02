@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.silverpeas.components</groupId>
     <artifactId>hyperlink</artifactId>
-    <version>5.11-SNAPSHOT</version>
+    <version>5.13-SNAPSHOT</version>
   </parent>
 
   <groupId>com.silverpeas.components.hyperlink</groupId>
@@ -14,10 +14,20 @@
 
   <dependencies>
     <dependency>
+      <groupId>com.silverpeas.components.hyperlink</groupId>
+      <artifactId>hyperlink-jar</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>com.silverpeas.core</groupId>
       <artifactId>web-core</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>jstl</artifactId>
     </dependency>
     <dependency>
       <groupId>com.silverpeas.core</groupId>

@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -37,7 +37,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 /**
  * @author Yohann Chastagnier
  */
-public class KmeliaSupervisorPublicationUserNotification extends KmeliaSubscriptionPublicationUserNotification {
+public class KmeliaSupervisorPublicationUserNotification extends AbstractKmeliaPublicationUserNotification {
 
   public KmeliaSupervisorPublicationUserNotification(final NodePK nodePK, final PublicationDetail resource) {
     super(nodePK, resource, NotifAction.CREATE);
@@ -57,7 +57,7 @@ public class KmeliaSupervisorPublicationUserNotification extends KmeliaSubscript
   protected Collection<String> getUserIdsToNotify() {
     final List<String> roles = Collections.singletonList("supervisor");
     final List<String> supervisors =
-        new ArrayList<String>(Arrays.asList(getOrganizationController().getUsersIdsByRoleNames(
+        new ArrayList<String>(Arrays.asList(getOrganisationController().getUsersIdsByRoleNames(
             getResource().getPK().getInstanceId(), roles)));
     SilverTrace.debug("kmelia", "KmeliaSupervisorPublicationNotification.getUserIdToNotify()",
         "root.MSG_GEN_PARAM_VALUE", supervisors.size() + " users in role supervisor !");

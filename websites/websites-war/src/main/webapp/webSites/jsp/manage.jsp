@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -31,40 +31,12 @@ response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
-<%@ page import="javax.servlet.*"%>
-<%@ page import="javax.servlet.http.*"%>
-<%@ page import="javax.servlet.jsp.*"%>
-<%@ page import="java.io.PrintWriter"%>
-<%@ page import="java.io.IOException"%>
-<%@ page import="java.io.FileInputStream"%>
-<%@ page import="java.io.ObjectInputStream"%>
-<%@ page import="java.util.Vector"%>
-<%@ page import="java.beans.*"%>
-
-<%@ page import="java.util.*"%>
 <%@ page import="java.lang.*"%>
-<%@ page import="javax.ejb.*,java.sql.SQLException,javax.naming.*,javax.rmi.PortableRemoteObject"%>
-
 <%@ page import="com.stratelia.webactiv.util.*"%>
-
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayPane"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayLine"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayColumn"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayCellText"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.iconPanes.IconPane"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.icons.Icon"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.navigationList.NavigationList"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
-<%@ page import="com.stratelia.webactiv.webSites.siteManage.model.SiteDetail"%>
 <%@ page import="com.stratelia.webactiv.util.publication.model.*"%>
 <%@ page import="com.stratelia.webactiv.util.publication.info.model.*"%>
 <%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail"%>
 
-<%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ include file="checkScc.jsp" %>
@@ -98,6 +70,7 @@ Collection listeSites = (Collection) request.getAttribute("ListSites");
 <view:looknfeel />
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
+
 function URLENCODE(URL){
     URL = escape(URL);
     URL = URL.replace(/\+/g, "%2B");
@@ -186,46 +159,45 @@ function openSPWindow(fonction, windowName){
 
 <%
 
-	ArrayList arraySites = new ArrayList(listeSites);
-    SilverTrace.info("websites", "JSPmanage", "root.MSG_GEN_PARAM_VALUE", "taille de l'arraySites= "+arraySites.size());
+  ArrayList arraySites = new ArrayList(listeSites);
+  SilverTrace.info("websites", "JSPmanage", "root.MSG_GEN_PARAM_VALUE", "taille de l'arraySites= "+arraySites.size());
 
-    Window window = gef.getWindow();
-    String bodyPart="";
-    BrowseBar browseBar = window.getBrowseBar();
-    browseBar.setDomainName(spaceLabel);
+  Window window = gef.getWindow();
+  String bodyPart="";
+  BrowseBar browseBar = window.getBrowseBar();
+  browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "manage.jsp");
 
-    //Les operations
-    OperationPane operationPane = window.getOperationPane();
+  //Les operations
+  OperationPane operationPane = window.getOperationPane();
 
 	if (scc.isPdcUsed() && "Admin".equals(role)) {
 		operationPane.addOperation(pdcUtilizationSrc, resources.getString("GML.PDCParam"), "javascript:onClick=openSPWindow('"+m_context+"/RpdcUtilization/jsp/Main?ComponentId="+componentId+"','utilizationPdc1')");
 		operationPane.addLine();
 	}
-
-    operationPane.addOperationOfCreation(bookmark, resources.getString("BookmarkSite"), "javascript:onClick=B_SPECIFIER_BOOK_ONCLICK();");
-    if (bookmarkMode) {
-    	operationPane.addOperation(bookmarkDelete, resources.getString("SupprimerSite"), "javascript:onClick=deleteWebSites('"+listeSites.size()+"')");
-    } else {
+  operationPane.addOperationOfCreation(bookmark, resources.getString("BookmarkSite"), "javascript:onClick=B_SPECIFIER_BOOK_ONCLICK();");
+  if (bookmarkMode) {
+  	operationPane.addOperation(bookmarkDelete, resources.getString("SupprimerSite"), "javascript:onClick=deleteWebSites('"+listeSites.size()+"')");
+  } else {
 		operationPane.addOperationOfCreation(upload, resources.getString("UploadSite"), "javascript:onClick=B_SPECIFIER_UPLOAD_ONCLICK();");
 		operationPane.addOperationOfCreation(create, resources.getString("DesignSite"), "javascript:onClick=B_SPECIFIER_DESIGN_ONCLICK();");
 		operationPane.addOperation(belpou, resources.getString("SupprimerSite"), "javascript:onClick=deleteWebSites('"+listeSites.size()+"')");
 	}
 	
-    out.println(window.printBefore());
-    
-    TabbedPane tabbedPane = gef.getTabbedPane();
-    tabbedPane.addTab(resources.getString("Consulter"), "listSite.jsp", false);
-    tabbedPane.addTab(resources.getString("Organiser"), "organize.jsp", false);
-    tabbedPane.addTab(resources.getString("GML.management"), "manage.jsp", true);
-    
-    out.println(tabbedPane.print());
+  out.println(window.printBefore());
+  
+  TabbedPane tabbedPane = gef.getTabbedPane();
+  tabbedPane.addTab(resources.getString("Consulter"), "Main", false);
+  tabbedPane.addTab(resources.getString("Organiser"), "organize.jsp", false);
+  tabbedPane.addTab(resources.getString("GML.management"), "manage.jsp", true);
+  
+  out.println(tabbedPane.print());
 %>
 <view:frame>
 <view:areaOfOperationOfCreation/>
 <%
-    //Le tableau de tri
-    ArrayPane arrayPane = gef.getArrayPane("foldersList", "manage.jsp", request, session);
+  //Le tableau de tri
+  ArrayPane arrayPane = gef.getArrayPane("foldersList", "manage.jsp", request, session);
 	arrayPane.setVisibleLineNumber(10);
 	arrayPane.setTitle(resources.getString("ListeSites"));
 	arrayPane.addArrayColumn(resources.getString("GML.name"));

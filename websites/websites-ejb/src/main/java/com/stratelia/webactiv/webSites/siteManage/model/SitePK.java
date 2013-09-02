@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -30,15 +30,15 @@
 
 package com.stratelia.webactiv.webSites.siteManage.model;
 
-/** 
+/**
  *
  * @author  cbonin
- * @version 
+ * @version
  */
 
-import java.io.Serializable;
-
 import com.stratelia.webactiv.util.WAPrimaryKey;
+
+import java.io.Serializable;
 
 public class SitePK extends WAPrimaryKey implements Serializable {
 
@@ -48,8 +48,8 @@ public class SitePK extends WAPrimaryKey implements Serializable {
     super(id);
   }
 
-  public SitePK(String id, String space, String componentName) {
-    super(id, space, componentName);
+  public SitePK(String id, String componentName) {
+    super(id, componentName);
   }
 
   public SitePK(String id, WAPrimaryKey pk) {

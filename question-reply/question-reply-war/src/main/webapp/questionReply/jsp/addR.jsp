@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,55 +24,60 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
-<%@ page import="java.util.*"%>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
+<fmt:setLocale value="{sessionScope.SilverSessionController.favoriteLanguage}" />
 
 <%@ include file="checkQuestionReply.jsp" %>
 <%
 	Reply reply = (Reply) request.getAttribute("reply");
 	boolean usedPrivateReplies = (Boolean) request.getAttribute("UsedPrivateReplies");
 %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<c:set var="usedPrivateReplies" value="${requestScope['UsedPrivateReplies']}"/>
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
+<link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
 <view:looknfeel />
 <link rel="stylesheet" type="text/css" href="css/question-reply-css.jsp" />
 <view:includePlugin name="wysiwyg"/>
 <script type="text/javascript">
 <!--
 function isCorrectForm() {
-     	var errorMsg = "";
-     	var errorNb = 0;
+  var errorMsg = "";
+  var errorNb = 0;
 
-	var title = document.forms[0].title.value;
+	var title = $("#title").val();
 
 	if (isWhitespace(title)) {
-           errorMsg+="  - '<%=resource.getString("GML.name")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
-           errorNb++;
-    }
+    errorMsg+="  - '<%=resource.getString("GML.name")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
+    errorNb++;
+  }
 
-     switch(errorNb)
-     {
-        case 0 :
-            result = true;
-            break;
-        case 1 :
-            errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-        default :
-            errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-     }
-     return result;
+  switch(errorNb)
+  {
+    case 0 :
+      result = true;
+      break;
+    case 1 :
+      errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
+      window.alert(errorMsg);
+      result = false;
+      break;
+    default :
+      errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
+      window.alert(errorMsg);
+      result = false;
+      break;
+  }
+  return result;
 
 }
 function save() {
@@ -93,50 +98,67 @@ $(document).ready(function() {
 	browseBar.setExtraInformation(resource.getString("questionReply.reponse"));
 
 	tabbedPane.addTab(resource.getString("GML.head"), "#", true, false);
-    tabbedPane.addTab(resource.getString("GML.attachments"), "#", false);
+  tabbedPane.addTab(resource.getString("GML.attachments"), "#", false);
 
 	out.println(window.printBefore());
 	out.println(tabbedPane.print());
- 	out.println(frame.printBefore());
- 	out.println(board.printBefore());
 %>
 
 <form method="post" name="myForm" action="<%=routerUrl%>EffectiveCreateR">
-<table cellpadding="5" width="100%">
-	<tr>
-		<td class="txtlibform"><%=resource.getString("questionReply.reponse")%> :</td>
-		<td><input type="text" name="title" size="120" maxlength="100" value="" />&nbsp;<img alt="<%=resource.getString("GML.requiredField")%>" src="<%=resource.getIcon("questionReply.mandatory")%>" width="5" height="5" /></td>
-	</tr>
-	<tr valign="top">
-		<td class="txtlibform"><%=resource.getString("GML.description")%> :</td>
-		<td><textarea cols="120" rows="5" name="content" id="content"></textarea></td>
-	</tr>
-	<% if (usedPrivateReplies) { %>
-		<tr>
-			<td class="txtlibform"><%=resource.getString("questionReply.Rprivee")%> :</td>
-			<td><input type="radio" name="publicReply" value="0" checked /></td>
-		</tr>
-		<tr>
-			<td class="txtlibform"><%=resource.getString("questionReply.Rpublique")%> :</td>
-			<td><input type="radio" name="publicReply" value="1" /></td>
-		</tr>
-	<% } else { %>
-		<tr><td><input type="hidden" name="publicReply" value="1" /></td></tr>
-	<% } %>
-	<tr>
-		<td colspan=2><span class="txt">(<img alt="<%=resource.getString("GML.requiredField")%>" src="<%=resource.getIcon("questionReply.mandatory")%>" width="5" height="5" /> : <%=resource.getString("GML.requiredField")%>)</span></td>
-	</tr>
-</table>
+
+<fieldset id="answerFieldset" class="skinFieldset">
+  <legend><fmt:message key="questionReply.fieldset.answer" /></legend>
+  <div class="fields">
+
+    <div class="field" id="answerArea">
+      <label class="txtlibform" for="title"><fmt:message key="questionReply.reponse" /> </label>
+      <div class="champs">
+        <input type="text" name="title" size="100" id="title" maxlength="100" value="" />
+        &nbsp;<img alt="<%=resource.getString("GML.requiredField")%>" src="<%=resource.getIcon("questionReply.mandatory")%>" width="5" height="5" />
+      </div>
+    </div>
+
+    <div class="field" id="contentArea">
+      <label class="txtlibform" for="content"><fmt:message key="GML.description" /> </label>
+      <div class="champs">
+        <textarea name="content" id="content" cols="120" rows="5" ></textarea>
+      </div>
+    </div>
+
+<c:choose>
+  <c:when test="${usedPrivateReplies}">
+    <div class="field" id="privateArea">
+      <label class="txtlibform" for="private"><fmt:message key="questionReply.Rprivee" /> </label>
+      <div class="champs">
+        <input type="radio" name="publicReply" value="0" checked />
+      </div>
+    </div>
+    <div class="field" id="publicArea">
+      <label class="txtlibform" for="public"><fmt:message key="questionReply.Rpublique" /> </label>
+      <div class="champs">
+        <input type="radio" name="publicReply" value="1" />
+      </div>
+    </div>
+  </c:when>
+  <c:otherwise>
+    <input type="hidden" name="publicReply" value="1" />
+  </c:otherwise>
+</c:choose>
+
+  </div>
+</fieldset>
+
+<div class="legend">
+  <fmt:message key="GML.requiredField" /> : <img src="<%=m_context%>/util/icons/mandatoryField.gif" width="5" height="5" />
+</div>
+
 </form>
-<% out.println(board.printAfter()); %>
 <br/>
 <%
-    ButtonPane buttonPane = gef.getButtonPane();
-    buttonPane.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:save();", false));
-    buttonPane.addButton(gef.getFormButton(resource.getString("GML.cancel"), "ConsultQuestionQuery", false));
-    out.println(buttonPane.print());
-
-    out.println(frame.printAfter());
+  ButtonPane buttonPane = gef.getButtonPane();
+  buttonPane.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:save();", false));
+  buttonPane.addButton(gef.getFormButton(resource.getString("GML.cancel"), "ConsultQuestionQuery", false));
+  out.println(buttonPane.print());
 	out.println(window.printAfter());
 %>
 </body>

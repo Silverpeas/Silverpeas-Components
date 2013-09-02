@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,13 +24,13 @@
 
 package com.silverpeas.crm.model;
 
-import java.util.Vector;
-
 import com.stratelia.webactiv.persistence.SilverpeasBean;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.util.WAPrimaryKey;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+
+import java.util.List;
 
 /**
  *
@@ -63,7 +63,6 @@ public class CrmContact extends SilverpeasBean implements Comparable<Object> {
   /** contact actif */
   private String active;
 
-  // Constructeurs
 
   /**
    * Constructeur sans parametres
@@ -80,12 +79,15 @@ public class CrmContact extends SilverpeasBean implements Comparable<Object> {
   }
 
   /**
-   * @param WAPrimaryKey pk
-   * @param String title
-   * @param String description
-   * @param String parutionDate
-   * @param int publicationState
-   * @param String letterId
+   *
+   * @param pk
+   * @param name
+   * @param functionContact
+   * @param tel
+   * @param email
+   * @param address
+   * @param active
+   * @param crmId
    */
   public CrmContact(WAPrimaryKey pk, String name, String functionContact, String tel, String email,
       String address, String active, int crmId) {
@@ -166,13 +168,15 @@ public class CrmContact extends SilverpeasBean implements Comparable<Object> {
     this.crmId = crmId;
   }
 
-  public Vector<AttachmentDetail> getAttachments() {
-    return AttachmentController.searchAttachmentByPKAndContext(new CrmPK("CONTACT_" +
-        getPK().getId(), getInstanceId()), "Images");
+  public List<SimpleDocument> getAttachments() {
+    return AttachmentServiceFactory.getAttachmentService().listDocumentsByForeignKey(
+        new CrmPK("CONTACT_" + getPK().getId(), getInstanceId()), null);
   }
 
   public void deleteAttachments() {
-    AttachmentController.deleteAttachment(getAttachments());
+    for(SimpleDocument document : getAttachments()) {
+      AttachmentServiceFactory.getAttachmentService().deleteAttachment(document);
+    }
   }
 
   public int _getConnectionType() {
@@ -180,8 +184,9 @@ public class CrmContact extends SilverpeasBean implements Comparable<Object> {
   }
 
   public int compareTo(Object obj) {
-    if (!(obj instanceof Crm))
+    if (!(obj instanceof Crm))  {
       return 0;
+    }
     return (String.valueOf(getPK().getId())).compareTo(String.valueOf(((Crm) obj).getPK().getId()));
   }
 

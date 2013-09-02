@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -99,7 +99,7 @@ if (action.equals("SendQuizzHeader")) {
 		nbAnswersNeeded = "0";
   } */
 
-    QuestionContainerHeader quizzHeader = new QuestionContainerHeader(null, title, description,notice, null, null, beginDate, endDate, false, 0, Integer.parseInt(nbQuestions), Integer.parseInt(nbAnswersMax), Integer.parseInt(nbAnswersNeeded),0);
+    QuestionContainerHeader quizzHeader = new QuestionContainerHeader(null, title, description,notice, null, null, beginDate, endDate, false, 0, Integer.parseInt(nbQuestions), Integer.parseInt(nbAnswersMax), Integer.parseInt(nbAnswersNeeded),0, QuestionContainerHeader.IMMEDIATE_RESULTS, QuestionContainerHeader.TWICE_DISPLAY_RESULTS);
     quizzScc.updateQuizzHeader(quizzHeader, quizzId);
 %>
 <jsp:forward page="<%=quizzScc.getComponentUrl()+\"Main.jsp\"%>"/>

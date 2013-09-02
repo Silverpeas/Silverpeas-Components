@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,15 +23,21 @@
  */
 package com.stratelia.webactiv.forums.control.helpers;
 
-import java.io.IOException;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.jsp.JspWriter;
-
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.forums.control.ForumsSessionController;
+import com.stratelia.webactiv.forums.forumsException.ForumsException;
+import com.stratelia.webactiv.forums.models.Forum;
+import com.stratelia.webactiv.forums.models.Message;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.upload.FileUploadManager;
+import org.silverpeas.upload.UploadedFile;
+import org.silverpeas.util.NotifierUtil;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.jsp.JspWriter;
+import java.io.IOException;
+import java.util.Collection;
 
 /**
  * @author ehugonnet
@@ -54,14 +60,69 @@ public class ForumActionHelper {
   public static final int SUBSCRIBE_THREAD = 14;
   public static final int UPDATE_MESSAGE = 15;
   public static final int EVALUATE_FORUM = 16;
+  public static final int UNSUBSCRIBE_FORUM = 17;
+  public static final int SUBSCRIBE_FORUM = 18;
+  public static final int UNSUBSCRIBE_FORUMS = 19;
+  public static final int SUBSCRIBE_FORUMS = 20;
 
+  /**
+   * Handles the invocation of the create or update forum action
+   * @param request
+   * @param fsc
+   * @throws ForumsException
+   */
+  public static void createForumAction(HttpServletRequest request, ForumsSessionController fsc)
+      throws ForumsException {
+    actionManagement(CREATE_FORUM, -1, request, fsc.isAdmin(), true, fsc.getUserId(),
+        fsc.getMultilang(), null, fsc);
+  }
+
+  /**
+   * Handles the invocation of the create or update forum action
+   * @param request
+   * @param fsc
+   * @throws ForumsException
+   */
+  public static void updateForumAction(HttpServletRequest request, ForumsSessionController fsc)
+      throws ForumsException {
+    actionManagement(UPDATE_FORUM, -1, request, fsc.isAdmin(), true, fsc.getUserId(),
+        fsc.getMultilang(), null, fsc);
+  }
+
+  /**
+   * Method invoked from JSP (yes, this is bad ... this has to change)
+   * @param request
+   * @param isAdmin
+   * @param isModerator
+   * @param userId
+   * @param resource
+   * @param out
+   * @param fsc
+   */
   public static void actionManagement(HttpServletRequest request, boolean isAdmin,
       boolean isModerator, String userId, ResourceLocator resource, JspWriter out,
       ForumsSessionController fsc) {
     int action = ForumHelper.getIntParameter(request, "action");
-    if (action != -1) {
-      int params = ForumHelper.getIntParameter(request, "params");
+    int params = ForumHelper.getIntParameter(request, "params");
+    actionManagement(action, params, request, isAdmin, isModerator, userId, resource, out, fsc);
+  }
 
+  /**
+   * Centralization of different action treatments.
+   * @param action
+   * @param params
+   * @param request
+   * @param isAdmin
+   * @param isModerator
+   * @param userId
+   * @param resource
+   * @param out
+   * @param fsc
+   */
+  private static void actionManagement(int action, int params, HttpServletRequest request,
+      boolean isAdmin, boolean isModerator, String userId, ResourceLocator resource, JspWriter out,
+      ForumsSessionController fsc) {
+    if (action != -1) {
       try {
         switch (action) {
           case DEPLOY_FORUM: {
@@ -81,17 +142,21 @@ public class ForumActionHelper {
             String keywords = request.getParameter("forumKeywords").trim();
             String positions = request.getParameter("Positions");
             fsc.setForumPositions(positions);
-            int forumId = fsc.createForum(forumName, forumDescription, userId, forumParent,
-                categoryId, keywords);
+            int forumId =
+                fsc.createForum(forumName, forumDescription, userId, forumParent, categoryId,
+                    keywords);
             if (forumModerators != null) {
               for (String moderator : forumModerators) {
                 fsc.addModerator(forumId, moderator.trim());
               }
             }
+            request.setAttribute("nbChildrens", fsc.getForumSonsNb(forumParent));
             break;
           }
           case DELETE_FORUM: {
             fsc.deleteForum(params);
+            int forumId = ForumHelper.getIntParameter(request, "forumId");
+            request.setAttribute("nbChildrens", fsc.getForumSonsNb(forumId));
             break;
           }
           case LOCK_FORUM: {
@@ -129,10 +194,9 @@ public class ForumActionHelper {
                 fsc.addModerator(forumId, moderator.trim());
               }
             }
-            String categoryId = request.getParameter("CategoryId").trim();
-            fsc
-                .updateForum(forumId, forumName, forumDescription, forumParent, categoryId,
-                    keywords);
+            String categoryId = request.getParameter("CategoryId");
+            fsc.updateForum(forumId, forumName, forumDescription, forumParent, categoryId,
+                keywords);
             break;
           }
           case CREATE_MESSAGE: {
@@ -143,14 +207,16 @@ public class ForumActionHelper {
             String forumKeywords = request.getParameter("forumKeywords");
             String subscribe = request.getParameter("subscribeMessage");
             if (StringUtil.isDefined(messageTitle) && StringUtil.isDefined(messageText)) {
+              Collection<UploadedFile> uploadedFiles = FileUploadManager.getUploadedFiles(request,
+                  fsc.getUserDetail());
               int result = fsc.createMessage(messageTitle, userId, forumId, parentId, messageText,
-                  forumKeywords);
+                  forumKeywords, uploadedFiles);
               if (subscribe == null) {
                 subscribe = "0";
               } else {
                 subscribe = "1";
                 if (result != 0) {
-                  fsc.subscribeMessage(result, userId);
+                  fsc.subscribeMessage(result);
                 }
               }
               if (parentId > 0) {
@@ -178,12 +244,42 @@ public class ForumActionHelper {
             fsc.moveMessage(messageId, folderId);
             break;
           }
+          case UNSUBSCRIBE_FORUMS: {
+            fsc.unsubscribeComponent();
+            NotifierUtil.addSuccess(request, resource.getString("forums.unsubscribe.success", ""));
+            break;
+          }
+          case SUBSCRIBE_FORUMS: {
+            fsc.subscribeComponent();
+            NotifierUtil.addSuccess(request, resource.getString("forums.subscribe.success", ""));
+            break;
+          }
+          case UNSUBSCRIBE_FORUM: {
+            Forum forum = fsc.unsubscribeForum(params);
+            NotifierUtil.addSuccess(request,
+                resource.getStringWithParam("forums.forum.unsubscribe.success", forum.getName()));
+            break;
+          }
+          case SUBSCRIBE_FORUM: {
+            Forum forum = fsc.subscribeForum(params);
+            NotifierUtil.addSuccess(request,
+                resource.getStringWithParam("forums.forum.subscribe.success", forum.getName()));
+            break;
+          }
           case UNSUBSCRIBE_THREAD: {
-            fsc.unsubscribeMessage(params, userId);
+            Message message = fsc.unsubscribeMessage(params);
+            String bundleKey = message.isSubject() ? "forums.subject.unsubscribe.success" :
+                "forums.message.unsubscribe.success";
+            NotifierUtil
+                .addSuccess(request, resource.getStringWithParam(bundleKey, message.getTitle()));
             break;
           }
           case SUBSCRIBE_THREAD: {
-            fsc.subscribeMessage(params, userId);
+            Message message = fsc.subscribeMessage(params);
+            String bundleKey = message.isSubject() ? "forums.subject.subscribe.success" :
+                "forums.message.subscribe.success";
+            NotifierUtil
+                .addSuccess(request, resource.getStringWithParam(bundleKey, message.getTitle()));
             break;
           }
           case UPDATE_MESSAGE: {
@@ -197,18 +293,26 @@ public class ForumActionHelper {
             int note = ForumHelper.getIntParameter(request, "note", -1);
             if (note > 0) {
               fsc.updateForumNotation(forumId, note);
+              request.setAttribute("notation", fsc.getForumNotation(forumId));
             }
             break;
           }
         }
       } catch (NumberFormatException nfe) {
-        SilverTrace.info(
-            "forums", "JSPforumsListActionManager", "root.EX_NO_MESSAGE", null, nfe);
+        SilverTrace.info("forums", "JSPforumsListActionManager", "root.EX_NO_MESSAGE", null, nfe);
       } catch (IOException ioe) {
-        SilverTrace.info(
-            "forums", "JSPforumsListActionManager", "root.EX_NO_MESSAGE", null, ioe);
+        SilverTrace.info("forums", "JSPforumsListActionManager", "root.EX_NO_MESSAGE", null, ioe);
       }
     }
+    if (!fsc.isComponentSubscriptionInfoDisplayed() && fsc.isComponentSubscriber()) {
+      NotifierUtil.addInfo(request, fsc.getString("forums.forum.subscribe.info"));
+      fsc.setComponentSubscriptionInfoDisplayed(true);
+    }
+
+    int forumId = ForumHelper.getIntParameter(request, "forumId", 0);
+    request.setAttribute("isForumSubscriberByInheritance",
+        ((forumId == 0) ? fsc.isComponentSubscriber() :
+            fsc.isForumSubscriberByInheritance(forumId)));
   }
 
   private ForumActionHelper() {

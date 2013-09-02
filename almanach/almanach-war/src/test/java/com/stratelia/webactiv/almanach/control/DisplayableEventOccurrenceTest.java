@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -38,6 +38,8 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import static org.junit.Assert.*;
 import static com.stratelia.webactiv.almanach.model.EventOccurrence.*;
 
@@ -46,12 +48,13 @@ import static com.stratelia.webactiv.almanach.model.EventOccurrence.*;
  * The tests are on the JSON encoding of the DTO.
  */
 public class DisplayableEventOccurrenceTest {
-
+private static ApplicationContext context;
   public DisplayableEventOccurrenceTest() {
   }
 
   @BeforeClass
   public static void setUpClass() throws Exception {
+    context = new ClassPathXmlApplicationContext("spring-almanach.xml");
   }
 
   @AfterClass

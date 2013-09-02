@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -47,10 +47,10 @@
 
 <%
 	String sURI 			= request.getRequestURI();
-	String sRequestURL 		= HttpUtils.getRequestURL(request).toString();
+	String sRequestURL 		= request.getRequestURL().toString();
 	String m_sAbsolute 		= sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().length());
 
-	String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL"); 
+	String m_context = GeneralPropertiesManager.getString("ApplicationURL");
 	String nameTitle = "";
 	String description = "";
 	String url = "";
@@ -81,7 +81,7 @@ function reallyClose() {
 
 function doConsult(){
     document.newsForm.Action.value = "Consult";
-    document.newsForm.submit();	
+    document.newsForm.submit();
 
 }
 function pdfGeneration()
@@ -106,7 +106,7 @@ function viewArchiveStatistic(fatherId)
 
 
 <%
-	
+
 	if (flag.equals("admin"))
 	{
 %>
@@ -132,8 +132,8 @@ function selectTitle(titleId)
     document.titleForm.Action.value = "SelectTitle";
     document.titleForm.TitleId.value = titleId;
     document.titleForm.submit();
-	
-	
+
+
 }
 function selectPublication(publicationId)
 {
@@ -142,8 +142,8 @@ function selectPublication(publicationId)
     document.publicationForm.action = "publication";
     document.publicationForm.PublicationId.value = publicationId;
     document.publicationForm.submit();
-	
-	
+
+
 }
 
 function viewFavorits()
@@ -157,7 +157,7 @@ function viewFavorits()
     document.titleForm.submit();
 }  */
 
-function addFavorite(m_sAbsolute,m_context,name,description,url) 
+function addFavorite(m_sAbsolute,m_context,name,description,url)
 	{
   		urlWindow = m_sAbsolute + m_context + "/RmyLinksPeas/jsp/CreateLinkFromComponent?Name="+name+"&Description="+description+"&Url="+url+"&Visible=true";
 	    windowName = "favoritWindow";
@@ -178,10 +178,10 @@ function addFavorite(m_sAbsolute,m_context,name,description,url)
 
 <%
 	String toPrint = null;
-	
+
 	if (action == null)
     	action = "Consult";
-  	
+
   	if (action.equals("Consult")){
   		news.selectFirstOnLineArchive();
   	}
@@ -201,15 +201,15 @@ function addFavorite(m_sAbsolute,m_context,name,description,url)
   	else if (action.equals("AddFavorit")) {
     	toPrint = showAddFavorit(out, news);
     	action = "Consult";
-  	}    
+  	}
   	else if (action.equals("RemoveFavorit")) {
     	String favoritId = (String) request.getParameter("FavoritId");
     	news.removeFavorit(favoritId);
-    	action = "Consult";    	
+    	action = "Consult";
   	}
-	
-		
- 	
+
+
+
 %>
 
 <%@ include file="init.jsp.inc" %>
@@ -217,32 +217,32 @@ function addFavorite(m_sAbsolute,m_context,name,description,url)
 <%
 	Window window = gef.getWindow();
 	String bodyPart="";
-	
+
 	// La barre de navigation
 	BrowseBar browseBar = window.getBrowseBar();
 	browseBar.setComponentName(news.getComponentLabel(),"newsEdito.jsp");
-	browseBar.setDomainName(news.getComponentLabel());		  
+	browseBar.setDomainName(news.getComponentLabel());
 	browseBar.setPath(navigationString);
-	
-	
+
+
 	// l'operationpane
 	OperationPane operationPane = window.getOperationPane();
-	
+
 
 	if ((detailLevel > 0)&&(flag.equals("publisher") || flag.equals("admin")&& archiveDetail !=null)) {
 
-		operationPane.addOperation(settings.getString("statisticIcon"), 
-		news.getString("statistiquesDuJournalX") + " " + Encode.javaStringToHtmlString(archiveDetail.getName()), 
+		operationPane.addOperation(settings.getString("statisticIcon"),
+		news.getString("statistiquesDuJournalX") + " " + Encode.javaStringToHtmlString(archiveDetail.getName()),
 							"javascript:onClick=viewArchiveStatistic('" + archiveDetail.getNodePK().getId() + "')");
  	}
 
 
 	if (detailLevel > 0)
 		operationPane.addOperation(settings.getString("pdfIcon"), news.getString("genererPdf"), "javascript:onClick=pdfGeneration()");
-	
+
 	if (detailLevel == 2) {
 		NodeDetail node = news.getTitleDetail();
-       	nameTitle = news.getSpaceLabel() + " > " + news.getComponentLabel() + " > " +node.getName();	
+       	nameTitle = news.getSpaceLabel() + " > " + news.getComponentLabel() + " > " +node.getName();
        	description = node.getDescription();
        	url = node.getLink();
 
@@ -251,18 +251,18 @@ function addFavorite(m_sAbsolute,m_context,name,description,url)
 
 	//if (detailLevel > 0)
 		//operationPane.addOperation(settings.getString("favoriteIcon"), news.getString("mesTitresFavoris"),"javascript:onClick=viewFavorits()");
-	
-	if (detailLevel == 2) {							
+
+	if (detailLevel == 2) {
 	operationPane.addOperation(settings.getString("copyIcon"),news.getString("copierPublications"),"javascript:onClick=copyPublications()");
 	}
-	
+
 	//Les onglets
     TabbedPane tabbedPane = gef.getTabbedPane();
 	tabbedPane.addTab(consultationTP, "javaScript:doConsult()", true);
-    
+
     if (flag.equals("publisher") || flag.equals("admin"))
     	tabbedPane.addTab(organisationTP, "javaScript:doOrganize()", false);
-	
+
 	if (flag.equals("admin"))
 		tabbedPane.addTab(inLineSettingTP, "javaScript:doSetInLine()", false);
 
@@ -285,13 +285,13 @@ function addFavorite(m_sAbsolute,m_context,name,description,url)
   </tr>
   <%}%>
   <tr>
-    <td width="25%" valign="top"> 
-	<%@ include file="navigationDisplaying.jsp.inc" %>   
-    
+    <td width="25%" valign="top">
+	<%@ include file="navigationDisplaying.jsp.inc" %>
+
     </td>
-    <td valign="top"> 
-    <% 
-		
+    <td valign="top">
+    <%
+
 
 	switch(detailLevel)
 	{
@@ -303,13 +303,13 @@ function addFavorite(m_sAbsolute,m_context,name,description,url)
 		case 1 :
 		{
 			Collection editoList = null;
-	
+
 	     	try {
 	    		editoList = news.getArchivePublicationDetails();
 	    	}
 	   	catch	(NewsEditoException e) {
 			SilverTrace.error("NewsEdito", "newsEdito_JSP", "NewsEdito.EX_PROBLEM_TO_GET_ARCHIVE",e);
-		}   
+		}
 
        		if (editoList!=null)
        			displayEditorial(out,editoList,archiveDetail.getModelId(),news,true,"selectPublication","headline","healineBody");
@@ -323,25 +323,25 @@ function addFavorite(m_sAbsolute,m_context,name,description,url)
    			}
 	   		catch	(NewsEditoException e) {
 				SilverTrace.error("NewsEdito", "publishNews_JSP", "NewsEdito.EX_PROBLEM_TO_GET_PUBLI_TITLE",e);
-			}   
+			}
 
            	if (pubList!=null)
-           		displayPublicationList(out,pubList,news,false,true,"selectPublication","headline","healineBody");		
+           		displayPublicationList(out,pubList,news,false,true,"selectPublication","headline","healineBody");
  		}
 		break;
 		case 3 :
 		{
 			CompletePublication pubComplete = news.getCompletePublication();
 			displayPublication(out, news, pubComplete, settings) ;
-			if (WysiwygController.haveGotWysiwyg(pubComplete.getPublicationDetail().getPK().getSpace(), pubComplete.getPublicationDetail().getPK().getComponentName(), pubComplete.getPublicationDetail().getPK().getId())) {
+			if (WysiwygController.haveGotWysiwygToDisplay(pubComplete.getPublicationDetail().getPK().getComponentName(), pubComplete.getPublicationDetail().getPK().getId(), pubComplete.getPublicationDetail().getLanguage())) {
 				out.flush();
-				displayViewWysiwyg(news.getPublicationId(), news.getSpaceId(), news.getComponentId(), request, response);
+				displayViewWysiwyg(news.getPublicationId(), pubComplete.getPublicationDetail().getLanguage(), news.getComponentId(), request, response);
 			}
 		}
 		break;
 
-	
-	}      
+
+	}
        %>
 
       <p>&nbsp;</p>

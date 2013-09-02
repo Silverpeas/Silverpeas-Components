@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -39,22 +39,21 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title><%=resource.getString("GML.popupTitle")%></title>
-<link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
+<title><fmt:message key="GML.popupTitle" /></title>
+<link type="text/css" href='<c:url value="/util/styleSheets/fieldset.css" />' rel="stylesheet" />
 <view:looknfeel />
 <%
 String parution = (String) request.getAttribute("parution");
 %>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<script type="text/javascript" src='<c:url value="/util/javaScript/animation.js" />' ></script>
+<script type="text/javascript" src='<c:url value="/util/javaScript/checkForm.js" />' ></script>
 <script type="text/javascript">
-function call_wysiwyg (){
+function call_wysiwyg () {
 	document.toWysiwyg.submit();
 }
 
-function goValidate (){
-	if (window.confirm("<%= resource.getString("infoLetter.sendLetter")%>"))
-	{
+function goValidate () {
+	if (window.confirm('<fmt:message key="infoLetter.sendLetter" />')) {
 		$.progressMessage();
 		document.validateParution.submit();
 	}
@@ -74,7 +73,7 @@ function goTemplate (){
 
 function submitForm() {
   if (isCorrectForm()) {
-    <view:pdcPositions setIn="document.changeParutionHeaders.Positions.value"/>;          
+    <view:pdcPositions setIn="document.changeParutionHeaders.Positions.value"/>;
     document.changeParutionHeaders.action = "ChangeParutionHeaders";
     document.changeParutionHeaders.submit();
   }
@@ -91,12 +90,12 @@ function isCorrectForm() {
     errorMsg+="  - <fmt:message key="GML.theField"/> '<fmt:message key="GML.description"/>' <fmt:message key="ContainsTooLargeText"/> <%=DBUtil.getTextAreaLength()%> <fmt:message key="Characters"/>\n";
     errorNb++;
   }
-  
+
   if (isWhitespace(stripInitialWhitespace(document.changeParutionHeaders.title.value))) {
     errorMsg+="  - <fmt:message key="GML.theField"/> '<fmt:message key="infoLetter.name"/>' <fmt:message key="GML.MustBeFilled"/>\n";
     errorNb++;
   }
-    
+
   <view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>
 
   switch(errorNb) {
@@ -114,7 +113,7 @@ function isCorrectForm() {
       result = false;
       break;
   }
-  return result;  
+  return result;
 }
 
 function cancelForm() {
@@ -138,20 +137,20 @@ function sendLetterToManager (){
 
 // Impossible de valider une parution non creee
 if (StringUtil.isDefined(parution)) {
-	operationPane.addOperation(resource.getIcon("infoLetter.sendLetterToManager"), resource.getString("infoLetter.sendLetterToManager"), "javascript:sendLetterToManager();");	
+	operationPane.addOperation(resource.getIcon("infoLetter.sendLetterToManager"), resource.getString("infoLetter.sendLetterToManager"), "javascript:sendLetterToManager();");
 	operationPane.addLine();
 	operationPane.addOperation(resource.getIcon("infoLetter.validLetter"), resource.getString("infoLetter.validLetter"), "javascript:goValidate();");
 	operationPane.addLine();
-	operationPane.addOperation(resource.getIcon("infoLetter.asTemplate"), 
+	operationPane.addOperation(resource.getIcon("infoLetter.asTemplate"),
 	resource.getString("infoLetter.saveTemplate"), "javascript:goTemplate();");
 }
 
 
 	out.println(window.printBefore());
- 
+
 	//Instanciation du cadre avec le view generator
   TabbedPane tabbedPane = gef.getTabbedPane();
-  tabbedPane.addTab(resource.getString("infoLetter.headerLetter"),"#",true);  
+  tabbedPane.addTab(resource.getString("infoLetter.headerLetter"),"#",true);
 
 // Impossible d'aller sur le WYSIWYG tant que les headers n'ont pas ete valides
 if ("".equals(parution)) {
@@ -180,21 +179,21 @@ out.println(frame.printBefore());
 
 <fieldset id="infoFieldset" class="skinFieldset">
   <legend><fmt:message key="infoletter.header.fieldset.info" /></legend>
-  
+
   <!-- SAISIE DU FORUM -->
   <div class="fields">
     <!-- Info letter title -->
     <div class="field" id="titleArea">
-      <label class="txtlibform" for="titleName"><fmt:message key="infoLetter.name" /> :&nbsp;</label>
+      <label class="txtlibform" for="title"><fmt:message key="infoLetter.name" /> :&nbsp;</label>
       <div class="champs">
-        <input type="text" name="title" size="50" maxlength="<%=DBUtil.getTextFieldLength()%>" value="<%= (String) request.getAttribute("title") %>" />&nbsp;<img src="${mandatoryIconUrl}" width="5" height="5"/>
+        <input type="text" id="title" name="title" size="50" maxlength="<%=DBUtil.getTextFieldLength()%>" value="<%= (String) request.getAttribute("title") %>" />&nbsp;<img src="${mandatoryIconUrl}" width="5" height="5"/>
       </div>
     </div>
     <!-- Info letter description  -->
     <div class="field" id="descriptionArea">
       <label class="txtlibform" for="description"><fmt:message key="GML.description" /> :&nbsp;</label>
       <div class="champs">
-        <textarea name="description" cols="60" rows="6"><%= (String) request.getAttribute("description") %></textarea>
+        <textarea id="description" name="description" cols="60" rows="6"><%= (String) request.getAttribute("description") %></textarea>
       </div>
     </div>
   </div>
@@ -202,14 +201,14 @@ out.println(frame.printBefore());
 
 </form>
 <form name="toWysiwyg" action="../../wysiwyg/jsp/htmlEditor.jsp" method="post">
-    <input type="hidden" name="SpaceId" value="<%= (String) request.getAttribute("SpaceId") %>"/>
-    <input type="hidden" name="SpaceName" value="<%= (String) request.getAttribute("SpaceName") %>"/>
-    <input type="hidden" name="ComponentId" value="<%= (String) request.getAttribute("ComponentId") %>"/>
-    <input type="hidden" name="ComponentName" value="<%= (String) request.getAttribute("ComponentName") %>"/>
-    <input type="hidden" name="BrowseInfo" value="<%= (String) request.getAttribute("BrowseInfo") %>"/> 
-    <input type="hidden" name="ObjectId" value="<%= (String) request.getAttribute("ObjectId") %>"/>
-    <input type="hidden" name="Language" value="<%= (String) request.getAttribute("Language") %>"/>
-    <input type="hidden" name="ReturnUrl" value="<%= (String) request.getAttribute("ReturnUrl") %>"/>
+    <input type="hidden" name="SpaceId" value='<c:out value="${requestScope.SpaceId}" />' />
+    <input type="hidden" name="SpaceName" value='<c:out value="${requestScope.SpaceName}" />' />
+    <input type="hidden" name="ComponentId" value='<c:out value="${requestScope.ComponentId}" />' />
+    <input type="hidden" name="ComponentName" value='<c:out value="${requestScope.ComponentName}" />' />
+    <input type="hidden" name="BrowseInfo" value='<c:out value="${requestScope.BrowseInfo}" />' />
+    <input type="hidden" name="ObjectId" value='<c:out value="${requestScope.ObjectId}" />'/>
+    <input type="hidden" name="Language" value='<c:out value="${requestScope.Language}" />' />
+    <input type="hidden" name="ReturnUrl" value='<c:out value="${requestScope.ReturnUrl}" />' />
 </form>
 <c:if test="${empty parution}">
   <view:pdcNewContentClassification componentId="<%=ils.getComponentId()%>" />
@@ -228,17 +227,17 @@ out.println(frame.printBefore());
     buttonPane.addButton(gef.getFormButton(resource.getString("GML.cancel"), "javascript:cancelForm();", false));
     out.println(buttonPane.print());
 %>
-<form name="validateParution" action="ValidateParution" method="post">			
+<form name="validateParution" action="ValidateParution" method="post">
 	<input type="hidden" name="parution" value="<%= parution %>"/>
 </form>
-<form name="viewParution" action="Preview" method="post">			
+<form name="viewParution" action="Preview" method="post">
 	<input type="hidden" name="parution" value="<%= parution %>"/>
   <input type="hidden" name="ReturnUrl" value="ParutionHeaders"/>
 </form>
-<form name="attachedFiles" action="FilesEdit" method="post">			
+<form name="attachedFiles" action="FilesEdit" method="GET">
 	<input type="hidden" name="parution" value="<%= parution %>"/>
 </form>
-<form name="template" action="UpdateTemplateFromHeaders" method="post">			
+<form name="template" action="UpdateTemplateFromHeaders" method="post">
 	<input type="hidden" name="parution" value="<%= parution %>"/>
 </form>
 <%

@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.silverpeas.components</groupId>
     <artifactId>formsonline</artifactId>
-    <version>5.11-SNAPSHOT</version>
+    <version>5.13-SNAPSHOT</version>
   </parent>
 	
   <groupId>com.silverpeas.components.formsonline</groupId>
@@ -17,7 +17,6 @@
       <groupId>com.silverpeas.core</groupId>
       <artifactId>lib-core</artifactId>
       <version>${core.version}</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
@@ -30,12 +29,6 @@
       <groupId>com.silverpeas.core</groupId>
       <artifactId>test-core</artifactId>
       <version>${core.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.10</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

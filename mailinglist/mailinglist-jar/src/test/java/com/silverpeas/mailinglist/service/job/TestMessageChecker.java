@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -9,7 +9,7 @@
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
  * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
  * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -20,7 +20,12 @@
  */
 package com.silverpeas.mailinglist.service.job;
 
-import static com.silverpeas.mailinglist.PathTestUtil.*;
+import com.silverpeas.mailinglist.service.event.MessageEvent;
+import com.silverpeas.mailinglist.service.event.MessageListener;
+import com.silverpeas.mailinglist.service.model.beans.Attachment;
+import com.silverpeas.mailinglist.service.model.beans.Message;
+import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import java.io.*;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -28,74 +33,74 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
+import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Part;
 import javax.mail.Transport;
-import javax.mail.Message.RecipientType;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-
-import org.jvnet.mock_javamail.Mailbox;
-
-import com.silverpeas.mailinglist.service.event.MessageEvent;
-import com.silverpeas.mailinglist.service.event.MessageListener;
-import com.silverpeas.mailinglist.service.model.beans.Attachment;
-import com.silverpeas.mailinglist.service.model.beans.Message;
-import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-import java.io.*;
-import javax.inject.Inject;
+import org.apache.commons.io.IOUtils;
 import org.junit.After;
-import org.junit.runner.RunWith;
-import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.jvnet.mock_javamail.Mailbox;
+import org.silverpeas.util.Charsets;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/spring-checker.xml", "/spring-notification.xml",
-  "/spring-fake-services.xml"})
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+
+import static com.silverpeas.mailinglist.PathTestUtil.BUILD_PATH;
+import static com.silverpeas.mailinglist.PathTestUtil.SEPARATOR;
+
 public class TestMessageChecker {
 
-  @Inject
   MessageChecker messageChecker;
-  private static int ATT_SIZE = 85922;
-  private static final String attachmentPath = BUILD_PATH + SEPARATOR +
-      "uploads" + SEPARATOR + "componentId" + SEPARATOR + "{0}" + SEPARATOR + "lemonde.html";
+  private static int ATT_SIZE = 84954;
+  private static final String attachmentPath = BUILD_PATH + SEPARATOR + "uploads" + SEPARATOR
+      + "componentId" + SEPARATOR + "{0}" + SEPARATOR + "lemonde.html";
   private static final String textEmailContent =
-      "Bonjour famille Simpson, j'espère que vous allez bien. " +
-      "Ici tout se passe bien et Krusty est très sympathique. Surtout " +
-      "depuis que Tahiti Bob est retourné en prison. Je dois remplacer" +
-      "l'homme canon dans la prochaine émission.\r\nBart";
-  private static final String htmlEmailSummary = "Politique Recherchez depuis sur Le Monde.fr A " +
-      "la Une Le Desk Vidéos International *Elections américaines Europe Politique " +
-      "*Municipales & Cantonales 2008 Société Carnet Economie Médias Météo Rendez-vou";
+      "Bonjour famille Simpson, j'espère que vous allez bien. "
+      + "Ici tout se passe bien et Krusty est très sympathique. Surtout "
+      + "depuis que Tahiti Bob est retourné en prison. Je dois remplacer"
+      + "l'homme canon dans la prochaine émission.\r\nBart";
+  private static final String htmlEmailSummary = "Politique Recherchez depuis sur Le Monde.fr A "
+      + "la Une Le Desk Vidéos International *Elections américaines Europe Politique "
+      + "*Municipales & Cantonales 2008 Société Carnet Economie Médias Météo Rendez-vou";
+  private static ConfigurableApplicationContext context;
+
+  @BeforeClass
+  public static void bootstrapTestsContext() {
+    context = new ClassPathXmlApplicationContext("/spring-checker.xml", "/spring-notification.xml",
+        "/spring-fake-services.xml");
+  }
+
+  @AfterClass
+  public static void shutdownTestsContext() {
+    context.close();
+  }
+
+  @Before
+  public void setUpTest() throws Exception {
+    messageChecker = context.getBean(MessageChecker.class);
+  }
+
+  @After
+  public void tearDownTest() {
+    Mailbox.clearAll();
+    FileFolderManager.deleteFolder(BUILD_PATH + File.separatorChar + "uploads", false);
+  }
 
   protected String loadHtml() throws IOException {
-    StringWriter buffer = null;
-    BufferedReader reader = null;
-    try {
-      buffer = new StringWriter();
-      reader = new BufferedReader(new InputStreamReader(
-          TestMessageChecker.class.getResourceAsStream("lemonde.html"), "UTF-8"));
-      String line;
-      while ((line = reader.readLine()) != null) {
-        buffer.write(line);
-      }
-      return buffer.toString();
-    } finally {
-      if (reader != null) {
-        reader.close();
-      }
-      if (buffer != null) {
-        buffer.close();
-      }
-    }
+    return IOUtils.toString(new InputStreamReader(
+        TestMessageChecker.class.getResourceAsStream("lemonde.html"), Charsets.UTF_8));
   }
 
   @Test
@@ -138,10 +143,10 @@ public class TestMessageChecker {
     listenersByEmail.put("bart.simpson@silverpeas.com", mockListener1);
     listenersByEmail.put("ned.flanders@silverpeas.com", mockListener2);
     List<String> allRecipients = Arrays.asList(new String[]{
-          "lisa.simpson@silverpeas.com", "marge.simpson@silverpeas.com",
-          "homer.simpson@silverpeas.com", "Bart.Simpson@silverpeas.com",
-          "krusty.theklown@silverpeas.com", "ned.flanders@silverpeas.com",
-          "ted.flanders@silverpeas.com"});
+      "lisa.simpson@silverpeas.com", "marge.simpson@silverpeas.com",
+      "homer.simpson@silverpeas.com", "Bart.Simpson@silverpeas.com",
+      "krusty.theklown@silverpeas.com", "ned.flanders@silverpeas.com",
+      "ted.flanders@silverpeas.com"});
     Set<MessageListener> recipients = messageChecker.getRecipientMailingLists(allRecipients,
         listenersByEmail);
     assertNotNull(recipients);
@@ -383,11 +388,5 @@ public class TestMessageChecker {
     assertNotNull(event.getMessages());
     assertEquals(0, event.getMessages().size());
     verify(mockListener1, atLeastOnce()).checkSender("bart.simpson@silverpeas.com");
-  }
-
-  @After
-  public void onTearDown() {
-    Mailbox.clearAll();
-    FileFolderManager.deleteFolder(BUILD_PATH + File.separatorChar + "uploads", false);
   }
 }

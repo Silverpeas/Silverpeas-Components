@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,6 +23,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.classifieds.control.SearchContext"%>
+<%@page import="com.stratelia.webactiv.util.viewGenerator.html.pagination.Pagination"%>
+<%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@page import="org.silverpeas.attachment.model.SimpleDocument"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@page import="com.silverpeas.form.Form"%>
@@ -32,13 +36,12 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator"
-	prefix="view"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%
-  response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
-			response.setHeader("Pragma", "no-cache"); //HTTP 1.0
-			response.setDateHeader("Expires", -1); //prevents caching at the proxy server
+  	response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
+	response.setHeader("Pragma", "no-cache"); //HTTP 1.0
+	response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 
 <c:set var="language" value="${requestScope.resources.language}"/>
@@ -47,33 +50,29 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
-<c:set var="browseContext" value="${requestScope.browseContext}" />
-<c:set var="componentLabel" value="${browseContext[1]}" />
-
 <c:set var="classifieds" value="${requestScope.Classifieds}" />
-<c:set var="formSearch" value="${requestScope.Form}" />
-<c:set var="data" value="${requestScope.Data}" />
+<c:set var="searchContext" value="${requestScope.SearchContext}" />
 <c:set var="instanceId" value="${requestScope.InstanceId}" />
 <c:set var="nbTotal" value="${requestScope.NbTotal}" />
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<%
+Pagination pagination = (Pagination) request.getAttribute("Pagination");
+%>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel />
-<script type="text/javascript" src="${pageContext.request.contextPath}/util/javaScript/animation.js"></script>
-<script type="text/javascript" src="${pageContext.request.contextPath}/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
-	var classifiedWindow = window;
+function sendData() {
+	document.searchForm.submit();
+}
 
-	function openSPWindow(fonction, windowName) {
-		pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600',
-				'400', 'scrollbars=yes, resizable, alwaysRaised');
-	}
-
-	function sendData() {
-		document.classifiedForm.submit();
-	}
+function viewClassifieds(fieldNumber, fieldValue) {
+	var id = $("#searchForm select").get(fieldNumber).id;
+	$("#searchForm #"+id+" option[value='"+fieldValue+"']").attr('selected','selected');
+	sendData();
+}
 </script>
 </head>
 <body id="classifieds">
@@ -84,69 +83,100 @@
 
 	<view:window>
 		<view:frame>
-			<br />
-			<form name="classifiedForm" action="SearchClassifieds" method="post" enctype="multipart/form-data">
-				<c:if test="${not empty formSearch}">
+			<form id="searchForm" name="searchForm" action="SearchClassifieds" method="post" enctype="multipart/form-data">
 					
 						<div id="search">
 							<!-- AFFICHAGE du formulaire -->
 							<view:board>
+								<div align="center">
 								<%
 								String language = (String) pageContext.getAttribute("language");
 								String instanceId = (String) pageContext.getAttribute("instanceId");
-								Form formSearch = (Form) pageContext.getAttribute("formSearch");
-								DataRecord data = (DataRecord) pageContext.getAttribute("data");
+								SearchContext searchContext = (SearchContext) pageContext.getAttribute("searchContext");
+								Form formSearch = searchContext.getForm();
 
 								PagesContext context = new PagesContext("myForm", "0", language, false, instanceId, null, null);
-							    context.setIgnoreDefaultValues(true);
-							    context.setUseMandatory(false);
-							    context.setBorderPrinted(false);
-								formSearch.display(out, context, data);
+								context.setIgnoreDefaultValues(true);
+								context.setUseMandatory(false);
+								context.setBorderPrinted(false);
+								formSearch.display(out, context, searchContext.getData());
 								%>
+								</div>
 								<br/>
-								<div class="center">
 								<view:buttonPane>
 									<fmt:message var="searchLabel" key="classifieds.searchButton">
 										<fmt:param value="${nbTotal}" />
 									</fmt:message>
-									<view:button label="${searchLabel}"
-										action="javascript:onClick=sendData();" />
+									<view:button label="${searchLabel}" action="javascript:onclick=sendData();" />
 								</view:buttonPane>
-								</div>
 							</view:board>
 						</div>
 					
-				</c:if>
 			</form>
 			<br />
 
 			<view:board>
 				
 					<c:if test="${not empty classifieds}">
-						<ul class="list_result_classifieds">
-						<c:forEach items="${classifieds}" var="classified">
-							<li>
-								<a class="title_result_classifieds" href="ViewClassified?ClassifiedId=${classified.classifiedId}">${classified.title}</a>
-								<span class="creatorName_result_classifieds">${classified.creatorName}</span><span class="sep_creatorName_result_classifieds"> - </span>
-								<c:if test="${not empty classified.updateDate}">
-									<span class="date_result_classifieds updateDate"><view:formatDateTime value="${classified.updateDate}" language="${language}"/></span>
-								</c:if>
-								<c:if test="${empty classified.updateDate}">
-									<span class="date_result_classifieds creationDate"><view:formatDateTime value="${classified.creationDate}" language="${language}"/></span>
-								</c:if>
-							</li>
-						</c:forEach>
-						</ul>
+						<ul id="classifieds_rich_list">
+			              <c:forEach items="${classifieds}" var="classified"
+			                varStatus="loopStatus">
+			                <!-- <li onclick="location.href='ViewClassified?ClassifiedId=${classified.classifiedId}'"> -->
+			                <li>
+			                  <c:if test="${not empty classified.images}">
+					                <div class="classified_thumb">
+					                <c:forEach var="image" items="${classified.images}" begin="0" end="0">
+					                <%
+					                SimpleDocument simpleDocument = (SimpleDocument) pageContext.getAttribute("image");
+					                String url = URLManager.getApplicationURL() +  simpleDocument.getAttachmentURL();
+					                %>
+					                  <a href="#"><img src="<%=url%>"/></a>
+					                </c:forEach>
+					                </div>
+			                  </c:if>
+			                  
+			                  <div class="classified_info">
+			                   <h4><a href="ViewClassified?ClassifiedId=${classified.classifiedId}">${classified.title}</a></h4>
+			                   <div class="classified_type">
+			                    <a href="javascript:viewClassifieds(0, '${classified.searchValueId1}');">${classified.searchValue1}</a> 
+			                    <a href="javascript:viewClassifieds(1, '${classified.searchValueId2}');">${classified.searchValue2}</a>
+			                   </div>
+			                  </div>
+			                    
+			                  <c:if test="${classified.price > 0}">
+			                    <div class="classified_price">
+			                      ${classified.price} &euro;
+			                    </div>
+			                  </c:if>
+			                  
+			                  <div class="classified_creationInfo">
+			                    <c:if test="${not empty classified.validateDate}">
+			                       <view:formatDateTime value="${classified.validateDate}" language="${language}"/>
+			                    </c:if>
+			                    <c:if test="${empty classified.validateDate}">
+			                      <c:if test="${not empty classified.updateDate}">
+			                         <view:formatDateTime value="${classified.updateDate}" language="${language}"/>
+			                      </c:if>
+			                      <c:if test="${empty classified.updateDate}">
+			                         <view:formatDateTime value="${classified.creationDate}" language="${language}"/>
+			                      </c:if>
+			                    </c:if>
+			                  </div>
+			                </li>
+			              </c:forEach>
+			          </ul>
 					</c:if>
 					<c:if test="${empty classifieds}">
 						<p class="message_noResult">
-								<fmt:message key="classifieds.noResult" />
+							<fmt:message key="classifieds.noResult" />
 						</p>
 					</c:if>
 			
 			</view:board>
+			
+			<% out.println(pagination.printIndex()); %>
+			
 		</view:frame>
 	</view:window>
-
 </body>
 </html>

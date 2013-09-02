@@ -1,6 +1,7 @@
+<%@ page import="org.silverpeas.util.URLUtils" %>
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -36,7 +37,7 @@
 	boolean isVersionControlled = false;
 	if (versionning.equals("1"))
 		isVersionControlled = true;
-	
+
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel,"listProcess");
 	browseBar.setPath(process.getTitle(currentRole, language));
@@ -75,10 +76,8 @@
 <%
 
 String url = URLManager.getNewComponentURL(spaceId, componentId)+"attachmentManager";
-
-if (isVersionControlled)
-	getServletConfig().getServletContext().getRequestDispatcher("/versioningPeas/jsp/documents.jsp?Id="+URLEncoder.encode(process.getInstanceId())+"&SpaceId="+URLEncoder.encode(spaceId)+"&ComponentId="+URLEncoder.encode(componentId)+"&Context=Images"+"&Url="+URLEncoder.encode(url)+"&SL="+URLEncoder.encode(spaceLabel)+"&CL="+URLEncoder.encode(componentLabel)).include(request, response);
-else getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/editAttFiles.jsp?Id="+URLEncoder.encode(process.getInstanceId())+"&SpaceId="+URLEncoder.encode(spaceId)+"&ComponentId="+URLEncoder.encode(componentId)+"&Context=Images"+"&Url="+URLEncoder.encode(url)).include(request, response);
+getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/editAttachedFiles.jsp?Id="+
+    URLUtils.encodeQueryNameOrValue(process.getInstanceId())+"&SpaceId="+URLUtils.encodeQueryNameOrValue(spaceId)+"&ComponentId="URLUtils.encodeQueryNameOrValue(componentId)+"&Context=attachment"+"&Url="+URLUtils.encodeQueryNameOrValue(url)).include(request, response);
 
 %>
 </CENTER>

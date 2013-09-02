@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,25 +23,11 @@
  */
 package com.stratelia.webactiv.almanach.servlets;
 
-import com.silverpeas.calendar.CalendarEvent;
-import com.silverpeas.export.Exporter;
-import com.silverpeas.export.ExporterFactory;
-import com.silverpeas.export.ical.ExportableCalendar;
-import com.stratelia.webactiv.almanach.control.CalendarEventEncoder;
-import com.stratelia.webactiv.almanach.control.ejb.AlmanachBm;
-import com.stratelia.webactiv.almanach.control.ejb.AlmanachBmHome;
-import com.stratelia.webactiv.almanach.control.ejb.AlmanachException;
-import com.stratelia.webactiv.almanach.model.EventDetail;
-import com.stratelia.webactiv.almanach.model.EventPK;
-import com.stratelia.webactiv.beans.admin.AdminController;
-import com.stratelia.webactiv.beans.admin.UserFull;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.UtilException;
 import java.io.StringWriter;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.ejb.CreateException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -50,9 +36,26 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
+
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
-import static com.silverpeas.export.ExportDescriptor.*;
+import com.silverpeas.calendar.CalendarEvent;
+import com.silverpeas.export.Exporter;
+import com.silverpeas.export.ExporterFactory;
+import com.silverpeas.export.ical.ExportableCalendar;
+
+import com.stratelia.webactiv.almanach.control.CalendarEventEncoder;
+import com.stratelia.webactiv.almanach.control.ejb.AlmanachBm;
+import com.stratelia.webactiv.almanach.control.ejb.AlmanachException;
+import com.stratelia.webactiv.almanach.model.EventDetail;
+import com.stratelia.webactiv.almanach.model.EventPK;
+import com.stratelia.webactiv.beans.admin.AdminController;
+import com.stratelia.webactiv.beans.admin.UserFull;
+import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.exception.UtilException;
+
+import static com.silverpeas.export.ExportDescriptor.withWriter;
 
 /**
  * A producer of an ICS resource from a given almanach.
@@ -70,12 +73,12 @@ public class AlmanachICSProducer {
   private String password;
 
   /**
-   * Gets the almanach content specified by its identifier in the ICS format.
-   * The credence parameters of the user tempting to access the almanach are passed as query
-   * parameters in the almanach URL.
-   * If the user has not enough right to acccess the almanach, then a 403 error is returned
-   * (access denied). If the almanach getting failed, then a 503 error is returned (service
+   * Gets the almanach content specified by its identifier in the ICS format. The credence
+   * parameters of the user tempting to access the almanach are passed as query parameters in the
+   * almanach URL. If the user has not enough right to acccess the almanach, then a 403 error is
+   * returned (access denied). If the almanach getting failed, then a 503 error is returned (service
    * unavailable).
+   *
    * @param almanachId the unique identifier of the almanach to get.
    * @return the iCal almanach representation
    */
@@ -110,6 +113,7 @@ public class AlmanachICSProducer {
 
   /**
    * Gets all events of the underlying almanach.
+   *
    * @param almanachId
    * @return a list with the details of the events registered in the almanach.
    * @throws AlmanachException if an error occurs while getting the list of events.
@@ -120,8 +124,8 @@ public class AlmanachICSProducer {
   public List<EventDetail> getAllEvents(final String almanachId) throws AlmanachException,
       RemoteException, UtilException, CreateException {
     EventPK pk = new EventPK("", null, almanachId);
-    AlmanachBm almanachBm = ((AlmanachBmHome) EJBUtilitaire.getEJBObjectRef(
-        JNDINames.ALMANACHBM_EJBHOME, AlmanachBmHome.class)).create();
+    AlmanachBm almanachBm = EJBUtilitaire.getEJBObjectRef(JNDINames.ALMANACHBM_EJBHOME,
+        AlmanachBm.class);
     return new ArrayList<EventDetail>(almanachBm.getAllEvents(pk));
   }
 }

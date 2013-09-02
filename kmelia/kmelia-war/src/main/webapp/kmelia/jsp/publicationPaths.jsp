@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,6 +27,7 @@
 
 <%@ page import="com.stratelia.webactiv.util.publication.model.Alias" %>
 <%@ page import="com.stratelia.webactiv.kmelia.model.Treeview" %>
+<%@page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
@@ -34,7 +35,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
 <%@ include file="checkKmelia.jsp" %>
-<%@ include file="tabManager.jsp.inc" %>
 
 <%
 String 				wizard				= (String) request.getAttribute("Wizard");
@@ -93,7 +93,7 @@ out.println(gef.getLookStyleSheet());
 		$('#accordion').accordion({   
 			clearStyle: false,  
 			autoHeight: false
-		}).bind("accordionchange", function(event, ui) {
+		}).bind("accordionactivate", function(event, ui) {
 			doSomething(ui.newHeader[0].id);
 		});
 	});
@@ -158,25 +158,25 @@ function getObjects(selected) {
 </script>
 </head>
 <body>
-<% 		
-        Window window = gef.getWindow();
-        Frame frame = gef.getFrame();
+  <%
+    Window window = gef.getWindow();
+    Frame frame = gef.getFrame();
 
-        BrowseBar browseBar = window.getBrowseBar();
-        
-        browseBar.setDomainName(spaceLabel);
-        browseBar.setComponentName(componentLabel, "javascript:onClick=topicGoTo('0')");
-        browseBar.setPath(linkedPathString);
-		browseBar.setExtraInformation(pubName);
+    BrowseBar browseBar = window.getBrowseBar();
 
-        out.println(window.printBefore());
+    browseBar.setDomainName(spaceLabel);
+      browseBar.setComponentName(componentLabel, "javascript:onClick=topicGoTo('0')");
+      browseBar.setPath(linkedPathString);
+      browseBar.setExtraInformation(pubName);
 
-        displayAllOperations(id, kmeliaScc, gef, "ViewPath", resources, out);
-        
-        out.println(frame.printBefore());
-        if ("finish".equals(wizard)) {
-    		//  cadre d'aide
-    %>
+    out.println(window.printBefore());
+
+    KmeliaDisplayHelper.displayAllOperations(id, kmeliaScc, gef, "ViewPath", resources, out);
+
+  out.println(frame.printBefore());
+    if ("finish".equals(wizard)) {
+      //  cadre d'aide
+  %>
     		<div class="inlineMessage">
 				<img border="0" src="<%=resources.getIcon("kmelia.info") %>"/>
 				<%=resources.getString("kmelia.HelpPubPath") %>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright (C) 2000 - 2011 Silverpeas This program is free software:
+<!-- Copyright (C) 2000 - 2012 Silverpeas This program is free software:
 	you can redistribute it and/or modify it under the terms of the GNU Affero
 	General Public License as published by the Free Software Foundation, either
 	version 3 of the License, or (at your option) any later version. As a special
@@ -7,7 +7,7 @@
 	redistribute this Program in connection with Free/Libre Open Source Software
 	("FLOSS") applications as described in Silverpeas's FLOSS exception. You
 	should have recieved a copy of the text describing the FLOSS exception, and
-	it is also available here: "http://repository.silverpeas.com/legal/licensing"
+	it is also available here: "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 	This program is distributed in the hope that it will be useful, but WITHOUT
 	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 	FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
@@ -24,10 +24,10 @@
   </label>
   <description>
     <message lang="fr">L'application permet d'exposer via l'interface web de la plate-forme,
-		le contenu de n'importe quel répertoire de votre SI. Doté d'un moteur de recherche performant, 
+		le contenu de n'importe quel répertoire de votre SI. Doté d'un moteur de recherche performant,
 		l'utilisateur peut également naviguer dans ce répertoire. Par défaut en lecture seule, l'application peut aussi autoriser l'écriture.
     </message>
-    <message lang="en">This application crawls files and directories on a server filesystem indexing them so 
+    <message lang="en">This application crawls files and directories on a server filesystem indexing them so
     that users can browse thoses files and search for them with the search engine.
     </message>
 		<message lang="de">Die Komponente SilverCrawler erlaubt es den Benutzern, Dateien direkt auf
@@ -218,6 +218,44 @@
 				<message lang="fr">Nombre maximum de fichiers qui seront affichés par page.</message>
 				<message lang="en">Maximum number of files displayed per page.</message>
 				<message lang="de">Maximale Anzahl der Dateien die pro Seite angezeigt werden</message>
+			</help>
+		</parameter>
+		<parameter>
+			<name>allowAccessByLAN</name>
+			<label>
+				<message lang="fr">Autorise l'accès au chemin physique</message>
+				<message lang="en">Allow access to physical path</message>
+				<message lang="de">Allow access to physical path</message>
+			</label>
+			<order>9</order>
+			<mandatory>false</mandatory>
+			<value>no</value>
+			<type>checkbox</type>
+			<size>5</size>
+			<updatable>hidden</updatable>
+			<help>
+				<message lang="fr">Les publieurs pourront ouvrir et modifier directement le fichier</message>
+				<message lang="en">Publishers will be able to open and directly modify files</message>
+				<message lang="de">Publishers will be able to open and directly modify files</message>
+			</help>
+		</parameter>
+		<parameter>
+			<name>LANMasks</name>
+			<label>
+				<message lang="fr">Range IP du sous réseau au format CIDR</message>
+				<message lang="en">LAN subnetwork rangeIP in CIDR notation</message>
+				<message lang="de">LAN subnetwork rangeIP in CIDR notation</message>
+			</label>
+			<order>10</order>
+			<mandatory>false</mandatory>
+			<value></value>
+			<type>text</type>
+			<size>15</size>
+			<updatable>hidden</updatable>
+			<help>
+				<message lang="fr">Exemple : 192.168.0.255/24, 192.168.1.255/24 - autorise toutes les adresses IP commencant par 192.168.0. et 192.168.1.</message>
+				<message lang="en">Sample : 192.168.0.255/24, 192.168.1.255/24  - Allow all IP addresses starting with 192.168.0. and 192.168.1.</message>
+				<message lang="de">Sample : 192.168.0.255/24, 192.168.1.255/24  - Allow all IP addresses starting with 192.168.0. and 192.168.1.</message>
 			</help>
 		</parameter>
 	</parameters>

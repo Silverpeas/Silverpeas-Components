@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,7 +26,6 @@
 <%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="java.util.*"%>
 <%@ page import="com.stratelia.silverpeas.containerManager.*"%>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
@@ -88,7 +87,7 @@ function deleteConfirm(replyId) {
 	out.println(window.printBefore());    
 
 	boolean updateQ = true;
-	// le demandeur ne peut pas modifier les questions qui ne sont pas � lui ou qui n'ont pas de r�ponses
+	// le demandeur ne peut pas modifier les questions qui ne sont pas a lui ou qui n'ont pas de reponses
 	if (profil.equals("publisher") && !question.getCreatorId().equals(userId))
 		updateQ = false;
 	else if (profil.equals("publisher"))
@@ -129,7 +128,7 @@ function deleteConfirm(replyId) {
 </view:board>
 <view:areaOfOperationOfCreation/>
 <% 
-// affichage des r�ponses
+// affichage des reponses
 	while(it.hasNext()) {
 		Reply reply = (Reply) it.next();
 		String titleR = EncodeHelper.javaStringToHtmlString(reply.getTitle());

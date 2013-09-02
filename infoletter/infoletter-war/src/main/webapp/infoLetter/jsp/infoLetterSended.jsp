@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -30,19 +30,22 @@ response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 <%@ include file="check.jsp" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
+<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title><%=resource.getString("GML.popupTitle")%></title>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<title><fmt:message key="GML.popupTitle" /></title>
+<view:looknfeel />
 </head>
 
 <%
-	String hostSpaceName = (String) request.getAttribute("SpaceName");
-	String hostComponentName = (String) request.getAttribute("ComponentName");
   String[] emailErrors = (String[])request.getAttribute("EmailErrors");
 	String returnUrl = "Accueil";
   if (request.getAttribute("ReturnUrl") != null) {
@@ -51,14 +54,11 @@ out.println(gef.getLookStyleSheet());
 %>
 
 <body>
-
-<%
-	out.println(window.printBefore());
-	out.println(frame.printBefore());
-%>
-
+    <view:window>
+    <view:frame>
 <div class="inlineMessage">
-<%=EncodeHelper.javaStringToHtmlString(resource.getString("infoLetter.sended"))%>
+  <fmt:message var="messageSent" key="infoLetter.sended"/>
+  <view:encodeJs string="${messageSent}"/>
 </div>
 <br clear="all"/>
 <% if (emailErrors.length > 0) { %>
@@ -72,12 +72,11 @@ out.println(gef.getLookStyleSheet());
 	</div>
 <% } %>
 <br clear="all"/>
-<%		
+<%
 	ButtonPane buttonPane = gef.getButtonPane();
 	buttonPane.addButton(gef.getFormButton(resource.getString("GML.ok"), returnUrl, false));
 	out.println("<center>"+buttonPane.print()+"</center>");
-	out.println(frame.printAfter());
-	out.println(window.printAfter());
-%>
+%>      </view:frame>
+    </view:window>
 </body>
 </html>

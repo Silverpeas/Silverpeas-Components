@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,24 +28,22 @@
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
-<% 
-AlbumDetail root 			= (AlbumDetail) request.getAttribute("root");
-String 		profile 		= (String) request.getAttribute("Profile");
-String 		userId 			= (String) request.getAttribute("UserId");
-List 		photos			= (List) request.getAttribute("Photos");
-boolean		isPdcUsed		= ((Boolean) request.getAttribute("IsUsePdc")).booleanValue();
-boolean 	isPrivateSearch	= ((Boolean) request.getAttribute("IsPrivateSearch")).booleanValue();
-boolean 	isBasket	 	= ((Boolean) request.getAttribute("IsBasket")).booleanValue();
-boolean 	isOrder		 	= ((Boolean) request.getAttribute("IsOrder")).booleanValue();
-boolean 	isGuest		 	= ((Boolean) request.getAttribute("IsGuest")).booleanValue();
-List<AlbumDetail> albums    = (List<AlbumDetail>) request.getAttribute("Albums");
+<%
+  String profile = (String) request.getAttribute("Profile");
+  List photos = (List) request.getAttribute("Photos");
+  boolean isPdcUsed = (Boolean) request.getAttribute("IsUsePdc");
+  boolean isPrivateSearch = (Boolean) request.getAttribute("IsPrivateSearch");
+  boolean isBasket = (Boolean) request.getAttribute("IsBasket");
+  boolean isOrder = (Boolean) request.getAttribute("IsOrder");
+  boolean isGuest = (Boolean) request.getAttribute("IsGuest");
+  List<AlbumDetail> albums = (List<AlbumDetail>) request.getAttribute("Albums");
 
-// parametrage pour l'affichage des dernieres photos telechargees
-int nbAffiche 	= 0;
-int nbParLigne 	= 5;
-int nbTotal 	= 15;
+  // parametrage pour l'affichage des dernieres photos telechargees
+  int nbAffiche = 0;
+  int nbParLigne = 5;
+  int nbTotal = 15;
 
-session.setAttribute("Silverpeas_Album_ComponentId", componentId);
+  session.setAttribute("Silverpeas_Album_ComponentId", componentId);
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -55,13 +53,13 @@ session.setAttribute("Silverpeas_Album_ComponentId", componentId);
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.cookie.js"></script>
 <script type="text/javascript">
-  
+
 	  $(document).ready(function(){
 		  <%if ( "admin".equals(profile)) { %>
 		    showAlbumsHelp();
-		    
+
 		    $("#albumList").sortable({opacity: 0.4, cursor: 'move'});
-			  
+
 			  $('#albumList').bind('sortupdate', function(event, ui) {
 				     var reg=new RegExp("album", "g");
 				     var data = $('#albumList').sortable('serialize');
@@ -78,7 +76,7 @@ session.setAttribute("Silverpeas_Album_ComponentId", componentId);
 				    });
 		  <%} %>
 	  });
-  
+
 	  var albumsHelpAlreadyShown = false;
 
 	  function showAlbumsHelp() {
@@ -103,7 +101,7 @@ session.setAttribute("Silverpeas_Album_ComponentId", componentId);
 		    });
 		  }
 		}
-	  
+
   function sortAlbums(orderedList)
   {
     $.get('<%=m_context%>/Album', { orderedList:orderedList,Action:'Sort'},
@@ -119,9 +117,11 @@ session.setAttribute("Silverpeas_Album_ComponentId", componentId);
       reloadIncludingPage();
     }
   }
-  
-  function clipboardPaste() {     
-	  top.IdleFrame.document.location.replace('../..<%=URLManager.getURL(URLManager.CMP_CLIPBOARD)%>paste?compR=RGallery&SpaceFrom=<%=spaceId%>&ComponentFrom=<%=componentId%>&JSPPage=<%=response.encodeURL(URLEncoder.encode("GoToCurrentAlbum"))%>&TargetFrame=MyMain&message=REFRESH');
+
+  function clipboardPaste() {
+    $.progressMessage();
+    document.albumForm.action = "paste";
+    document.albumForm.submit();
 	}
 
 var albumWindow = window;
@@ -130,8 +130,8 @@ var askWindow = window;
 function openSPWindow(fonction, windowName){
 	pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600', '400','scrollbars=yes, resizable, alwaysRaised');
 }
-	
-function deleteConfirm(id,nom) 
+
+function deleteConfirm(id,nom)
 {
 	if(window.confirm("<%=resource.getString("gallery.confirmDeleteAlbum")%> '" + nom + "' ?"))
 	{
@@ -152,7 +152,7 @@ function askPhoto()
     askWindow = SP_openWindow("AskPhoto", windowName, larg, haut, windowParams);
 }
 
-function sendData() 
+function sendData()
 {
     var query = stripInitialWhitespace(document.searchForm.SearchKeyWord.value);
 	if (!isWhitespace(query) && query != "*") {
@@ -168,11 +168,11 @@ function sendData()
 <%
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "Main");
-	
+
 	// affichage de la gestion du plan de classement (seulement pour les administrateurs)
 	if ( "admin".equals(profile))
 	{
-		if (isPdcUsed) 
+		if (isPdcUsed)
 		{
 			operationPane.addOperation(resource.getIcon("gallery.pdcUtilizationSrc"), resource.getString("GML.PDCParam"), "javascript:onClick=openSPWindow('"+m_context+"/RpdcUtilization/jsp/Main?ComponentId="+componentId+"','utilizationPdc1')");
 			operationPane.addLine();
@@ -182,7 +182,7 @@ function sendData()
 	{
 		operationPane.addOperationOfCreation(resource.getIcon("gallery.addAlbum"),resource.getString("gallery.ajoutAlbum"), "javaScript:openGalleryEditor()");
 		operationPane.addLine();
-		
+
 		//visualisation des photos non visibles par les lecteurs
 		operationPane.addOperation(resource.getIcon("gallery.viewNotVisible"),resource.getString("gallery.viewNotVisible"),"ViewNotVisible");
 		operationPane.addLine();
@@ -201,7 +201,7 @@ function sendData()
 			operationPane.addOperation(resource.getIcon("gallery.viewOrderList"),resource.getString("gallery.viewOrderList"), "OrderViewList");
 		}
 	}
-	
+
 	if (!"admin".equals(profile) && !isGuest)
 	{
 		// demande de photo aupres du gestionnaire
@@ -209,23 +209,23 @@ function sendData()
 		operationPane.addLine();
 	}
 
-	
+
 	if ("admin".equals(profile))
 	{
        	operationPane.addOperation(resource.getIcon("gallery.paste"), resource.getString("GML.paste"), "javascript:onClick=clipboardPaste()");
        	operationPane.addLine();
 	}
-	
+
 	// derniers resultat de la recherche
 	if (isPrivateSearch)
 	{
     	operationPane.addOperation(resource.getIcon("gallery.lastResult"), resource.getString("gallery.lastResult"), "LastResult");
 	}
-	
+
 	out.println(window.printBefore());
     out.println(frame.printBefore());
-    
-    
+
+
 	if (isPrivateSearch)
 	{
 		 // affichage de la zone de recherche
@@ -259,7 +259,7 @@ function sendData()
     %>
     <br/>
   <% } %>
-   
+
   <div id="subTopics">
   <view:areaOfOperationOfCreation/>
   <ul id="albumList">
@@ -269,7 +269,7 @@ function sendData()
     Icon albumIcon = icon.addIcon();
     albumIcon.setProperties(resource.getIcon("gallery.gallerySmall"), "");
     icon.setSpacing("30px");
-      
+
     int id = unAlbum.getId();
     String nom = unAlbum.getName();
     String link = "";
@@ -293,13 +293,13 @@ function sendData()
 </ul>
 </div>
 <br/>
-<%  
+<%
            // afficher les dernieres photos telechargees
            // ------------------------------------------
-             
+
            Board board = gef.getBoard();
 	out.println(board.printBefore());
-	
+
 	// affichage de l'entete
 	%>
 		<table width="100%" border="0" cellspacing="0" cellpadding="0" align=center>
@@ -314,48 +314,42 @@ function sendData()
 	if (photos != null)
 	{
 		String	vignette_url 	= null;
-		String 	altTitle 		= ""; 
 		int		nbPhotos	 	= photos.size();
 
-		if (nbPhotos>0) 
+		if (nbPhotos>0)
 		{
 			PhotoDetail photo;
 			String idP;
 			Iterator itP = photos.iterator();
-	
-			while (itP.hasNext() && nbTotal != 0) 
+
+			while (itP.hasNext() && nbTotal != 0)
 			{
 				// affichage de la photo
 				out.println("<tr><td colspan=\""+nbParLigne+"\">&nbsp;</td></tr>");
 				out.println("<tr>");
 				while (itP.hasNext() && nbAffiche < nbParLigne)
-				{			
+				{
 					photo 		= (PhotoDetail) itP.next();
-					altTitle 	= "";
-					if (photo != null)
-					{
+					if (photo != null) {
 						idP = photo.getPhotoPK().getId();
 						String nomRep = resource.getSetting("imagesSubDirectory") + idP;
 						String name = photo.getImageName();
-						if (name != null)
-						{
-							String type = name.substring(name.lastIndexOf(".") + 1, name.length());
-							name = photo.getId() + "_133x100.jpg";
-							vignette_url = FileServerUtils.getUrl(spaceId, componentId, name, photo.getImageMimeType(), nomRep);
-							if ("bmp".equalsIgnoreCase(type))
-								vignette_url = m_context+"/gallery/jsp/icons/notAvailable_"+resource.getLanguage()+"_133x100.jpg";
-																
-							altTitle = EncodeHelper.javaStringToHtmlString(photo.getTitle());
-							if (photo.getDescription() != null && photo.getDescription().length() > 0)
-								altTitle += " : "+EncodeHelper.javaStringToHtmlString(photo.getDescription());
+						String altTitle = EncodeHelper.javaStringToHtmlString(photo.getTitle());
+						if (StringUtil.isDefined(photo.getDescription())) {
+							altTitle += " : "+EncodeHelper.javaStringToHtmlString(photo.getDescription());
 						}
-						else
-						{
+						if (name != null) {
+							name = photo.getId() + "_133x100.jpg";
+							vignette_url = FileServerUtils.getUrl(componentId, name, photo.getImageMimeType(), nomRep);
+							if (!photo.isPreviewable()) {
+								vignette_url = m_context+"/gallery/jsp/icons/notAvailable_"+resource.getLanguage()+"_133x100.jpg";
+							}
+						} else {
 							vignette_url = m_context+"/gallery/jsp/icons/notAvailable_"+resource.getLanguage()+"_133x100.jpg";
 						}
-						nbTotal 	= nbTotal - 1 ;	
+						nbTotal 	= nbTotal - 1 ;
 						nbAffiche 	= nbAffiche + 1;
-						
+
 						// on affiche encore sur la meme ligne
 						%>
 							<td valign="middle" align="center">
@@ -392,12 +386,12 @@ function sendData()
 	}
 	%>
 		</table>
-        
+
     <%@include file="albumManager.jsp" %>
 	<%
-		
+
   	out.println(board.printAfter());
-	
+
   	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -9,7 +9,7 @@
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
  * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
  * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -20,22 +20,20 @@
  */
 package com.silverpeas.gallery.image;
 
-import static com.silverpeas.gallery.image.ImageMetadataExtractor.COMMA_SPLITTER;
-import static com.silverpeas.util.PathTestUtil.SEPARATOR;
-import static com.silverpeas.util.PathTestUtil.TARGET_DIR;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-
 import java.io.File;
 import java.util.Calendar;
 import java.util.List;
 
+import com.silverpeas.gallery.model.MetaData;
+import com.silverpeas.util.StringUtil;
+
 import org.junit.Before;
 import org.junit.Test;
 
-import com.silverpeas.gallery.model.MetaData;
+import static com.silverpeas.util.PathTestUtil.SEPARATOR;
+import static com.silverpeas.util.PathTestUtil.TARGET_DIR;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.*;
 
 /**
  *
@@ -46,11 +44,11 @@ public class MetadataExtractorTest {
   private ImageMetadataExtractor extractor;
   private final File koala = new File(TARGET_DIR + "test-classes" + SEPARATOR + "Koala.jpg");
   private final File sunset = new File(
-    TARGET_DIR + "test-classes" + SEPARATOR + "Coucher de soleil.jpg");
+      TARGET_DIR + "test-classes" + SEPARATOR + "Coucher de soleil.jpg");
   private final File dauphins = new File(
-    TARGET_DIR + "test-classes" + SEPARATOR + "Dauphins-100.jpg");
+      TARGET_DIR + "test-classes" + SEPARATOR + "Dauphins-100.jpg");
   private final File chefsUtf8 = new File(
-    TARGET_DIR + "test-classes" + SEPARATOR + "31605rc_utf-8.jpg");
+      TARGET_DIR + "test-classes" + SEPARATOR + "31605rc_utf-8.jpg");
   private final File pingouin = new File(TARGET_DIR + "test-classes" + SEPARATOR + "pingouin.jpg");
 
   @Before
@@ -60,15 +58,15 @@ public class MetadataExtractorTest {
 
   @Test
   public void testLoadExtractor() {
-    List<IptcProperty> properties = extractor.defineImageIptcProperties(
-      COMMA_SPLITTER.split("IPTC_8,IPTC_9,IPTC_10,IPTC_11,IPTC_12,"
-      + "IPTC_13,IPTC_14,IPTC_15,IPTC_16,IPTC_17,IPTC_18,IPTC_19,IPTC_20,IPTC_21,IPTC_22,"
-      + "IPTC_23,IPTC_24,IPTC_25,IPTC_26,IPTC_27,IPTC_28,IPTC_29,IPTC_30,IPTC_31"));
+    List<IptcProperty> properties = extractor.defineImageIptcProperties(StringUtil.splitString(
+        "IPTC_8,IPTC_9,IPTC_10,IPTC_11,IPTC_12,IPTC_13,IPTC_14,IPTC_15,IPTC_16,IPTC_17,IPTC_18,"
+        + "IPTC_19,IPTC_20,IPTC_21,IPTC_22,IPTC_23,IPTC_24,IPTC_25,IPTC_26,IPTC_27,IPTC_28,IPTC_29,"
+        + "IPTC_30,IPTC_31", ','));
     assertNotNull(properties);
     assertEquals(24, properties.size());
 
-    List<ExifProperty> exifProperties = extractor.defineImageProperties(COMMA_SPLITTER.split(
-      "METADATA_1,METADATA_2,METADATA_3,METADATA_4,METADATA_5,METADATA_6,METADATA_7"));
+    List<ExifProperty> exifProperties = extractor.defineImageProperties(StringUtil.splitString(
+        "METADATA_1,METADATA_2,METADATA_3,METADATA_4,METADATA_5,METADATA_6,METADATA_7", ','));
     assertNotNull(exifProperties);
     assertEquals(7, exifProperties.size());
   }
@@ -134,7 +132,7 @@ public class MetadataExtractorTest {
     assertThat(meta.getProperty(), is("537"));
     assertThat(meta.getLabel(), is("Mots clef"));
     assertThat(meta.getValue(), is(
-      "Auberge des Dauphins / Architecture / Vue exterieure / Saou / Foret de Saou /"));
+        "Auberge des Dauphins / Architecture / Vue exterieure / Saou / Foret de Saou /"));
   }
 
   @Test
@@ -181,7 +179,6 @@ public class MetadataExtractorTest {
 
   }
 
- 
   @Test
   public void testExtractImageWithNoMetadata() throws Exception {
     List<MetaData> metadata = extractor.extractImageExifMetaData(pingouin);
@@ -217,9 +214,9 @@ public class MetadataExtractorTest {
     assertThat(meta.getProperty(), is("632"));
     assertThat(meta.getLabel(), is("Légende"));
     assertThat(meta.getValue(),
-      is("Salon de l'Agriculture . Durant le salon les cuisiniers Drômois "
-      + "ont réalisés en direct et fait déguster des plats dont les recettes étaient distribuées "
-      + "aux visiteurs"));
+        is("Salon de l'Agriculture . Durant le salon les cuisiniers Drômois "
+        + "ont réalisés en direct et fait déguster des plats dont les recettes étaient distribuées "
+        + "aux visiteurs"));
     meta = metadata.get(4);
     assertThat(meta.getProperty(), is("602"));
     assertThat(meta.getLabel(), is("Ville"));

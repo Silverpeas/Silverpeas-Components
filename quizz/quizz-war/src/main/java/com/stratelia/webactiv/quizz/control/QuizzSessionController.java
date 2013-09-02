@@ -1,38 +1,26 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-/*
- * QuizzSessionController.java
- * 
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.quizz.control;
 
-import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
-
 import java.io.File;
-import java.rmi.RemoteException;
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,13 +30,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import javax.ejb.CreateException;
 import javax.ejb.EJBException;
-import javax.ejb.RemoveException;
-import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.bind.JAXBException;
+
+import org.silverpeas.core.admin.OrganisationController;
 
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
@@ -56,14 +43,15 @@ import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.clipboard.ClipboardException;
 import com.silverpeas.util.clipboard.ClipboardSelection;
+
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.quizz.QuizzException;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -73,7 +61,6 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.answer.model.Answer;
 import com.stratelia.webactiv.util.question.model.Question;
 import com.stratelia.webactiv.util.questionContainer.control.QuestionContainerBm;
-import com.stratelia.webactiv.util.questionContainer.control.QuestionContainerBmHome;
 import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerDetail;
 import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerHeader;
 import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerPK;
@@ -82,11 +69,10 @@ import com.stratelia.webactiv.util.questionResult.model.QuestionResult;
 import com.stratelia.webactiv.util.score.control.ScoreBm;
 import com.stratelia.webactiv.util.score.model.ScoreDetail;
 
-/**
- * @author dle&sco
- * @version
- */
+import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
+
 public class QuizzSessionController extends AbstractComponentSessionController {
+
   private QuestionContainerBm questionContainerBm = null;
   private ResourceLocator settings = null;
   private ScoreBm scoreBm = null;
@@ -94,10 +80,12 @@ public class QuizzSessionController extends AbstractComponentSessionController {
   private boolean isAllowedTopScores = false;
   private List<PdcPosition> positions = null;
 
-  /** Creates new sessionClientController */
+  /**
+   * Creates new sessionClientController
+   */
   public QuizzSessionController(MainSessionController mainSessionCtrl,
       ComponentContext context) {
-    super(mainSessionCtrl, context, "com.stratelia.webactiv.quizz.multilang.quizz");
+    super(mainSessionCtrl, context, "org.silverpeas.quizz.multilang.quizz");
     setQuestionContainerBm();
     String nbTop = getSettings().getString("nbTopScores");
     String isAllowedTop = getSettings().getString("isAllowedTopScores");
@@ -128,11 +116,8 @@ public class QuizzSessionController extends AbstractComponentSessionController {
   private void setQuestionContainerBm() {
     if (questionContainerBm == null) {
       try {
-        QuestionContainerBmHome questionContainerBmHome = (QuestionContainerBmHome) EJBUtilitaire
-            .getEJBObjectRef(JNDINames.QUESTIONCONTAINERBM_EJBHOME,
-                QuestionContainerBmHome.class);
-
-        this.questionContainerBm = questionContainerBmHome.create();
+        this.questionContainerBm = EJBUtilitaire.getEJBObjectRef(
+            JNDINames.QUESTIONCONTAINERBM_EJBHOME, QuestionContainerBm.class);
       } catch (Exception e) {
         throw new EJBException(e.getMessage(), e);
       }
@@ -141,29 +126,28 @@ public class QuizzSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
+  @Override
   public ResourceLocator getSettings() {
     if (settings == null) {
       try {
         String langue = getLanguage();
-        settings = new ResourceLocator("com.stratelia.webactiv.quizz.quizzSettings", langue);
+        settings = new ResourceLocator("org.silverpeas.quizz.quizzSettings", langue);
       } catch (Exception e) {
         if (settings == null) {
-          settings = new ResourceLocator("com.stratelia.webactiv.quizz.quizzSettings", "fr");
+          settings = new ResourceLocator("org.silverpeas.quizz.quizzSettings", "fr");
         }
       }
     }
     return settings;
   }
 
-  public UserDetail getUserDetail(String userId) {
-    return getOrganizationController().getUserDetail(userId);
-  }
-
   /**
    * Method declaration
+   *
    * @return
    * @throws CreateException
    * @throws NamingException
@@ -186,6 +170,7 @@ public class QuizzSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
+   *
    * @return
    * @throws CreateException
    * @throws NamingException
@@ -208,6 +193,7 @@ public class QuizzSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
+   *
    * @param id
    * @return
    * @throws CreateException
@@ -232,6 +218,7 @@ public class QuizzSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
+   *
    * @param quizzDetail
    * @throws QizzException
    * @see
@@ -269,6 +256,7 @@ public class QuizzSessionController extends AbstractComponentSessionController {
   /**
    * this method classify content only when new quiz is created Check if a position has been defined
    * in header form then persist it
+   *
    * @param quizDetail the current quiz QuestionContainerDetail
    * @param qcPK the QuestionContainerPK with content identifier
    */
@@ -276,11 +264,11 @@ public class QuizzSessionController extends AbstractComponentSessionController {
     List<PdcPosition> positions = this.getPositions();
     if (positions != null && !positions.isEmpty()) {
       PdcClassification classification =
-             aPdcClassificationOfContent(qcPK.getId(), qcPK.getInstanceId()).withPositions(
-                 this.getPositions());
+          aPdcClassificationOfContent(qcPK.getId(), qcPK.getInstanceId()).withPositions(
+          this.getPositions());
       if (!classification.isEmpty()) {
         PdcClassificationService service =
-               PdcServiceFactory.getFactory().getPdcClassificationService();
+            PdcServiceFactory.getFactory().getPdcClassificationService();
         classification.ofContent(qcPK.getId());
         service.classifyContent(quizDetail, classification);
       }
@@ -289,6 +277,7 @@ public class QuizzSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
+   *
    * @param quizzId
    * @param reply
    * @throws QuizzException
@@ -307,6 +296,7 @@ public class QuizzSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
+   *
    * @param quizzId
    * @return
    * @throws CreateException
@@ -326,6 +316,7 @@ public class QuizzSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
+   *
    * @param quizzId
    * @throws CreateException
    * @throws NamingException
@@ -345,6 +336,7 @@ public class QuizzSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
+   *
    * @param quizzId
    * @return
    * @throws CreateException
@@ -364,6 +356,7 @@ public class QuizzSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
+   *
    * @param quizzId
    * @return
    * @throws CreateException
@@ -383,6 +376,7 @@ public class QuizzSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
+   *
    * @return
    * @throws CreateException
    * @throws NamingException
@@ -401,6 +395,7 @@ public class QuizzSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
+   *
    * @return
    * @throws CreateException
    * @throws NamingException
@@ -419,6 +414,7 @@ public class QuizzSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
+   *
    * @param quizzId
    * @return
    * @throws CreateException
@@ -438,6 +434,7 @@ public class QuizzSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
+   *
    * @param quizzId
    * @return
    * @throws CreateException
@@ -457,6 +454,7 @@ public class QuizzSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
+   *
    * @param quizzId
    * @return
    * @throws CreateException
@@ -478,6 +476,7 @@ public class QuizzSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
+   *
    * @param quizzId
    * @param getUserId ()
    * @param participationId
@@ -503,6 +502,7 @@ public class QuizzSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
+   *
    * @param quizzId
    * @param participationId
    * @return
@@ -518,7 +518,7 @@ public class QuizzSessionController extends AbstractComponentSessionController {
     try {
       questionContainerDetail =
           questionContainerBm.getQuestionContainerByParticipationId(qcPK, getUserId(),
-              participationId);
+          participationId);
     } catch (Exception e) {
       throw new QuizzException(
           "QuizzSessionController.getQuestionContainerForCurrentUserByParticipationId",
@@ -529,6 +529,7 @@ public class QuizzSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
+   *
    * @param quizzId
    * @param getUserId ()
    * @return
@@ -551,6 +552,7 @@ public class QuizzSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
+   *
    * @param quizzId
    * @param getUserId ()
    * @param participationId
@@ -567,7 +569,7 @@ public class QuizzSessionController extends AbstractComponentSessionController {
     try {
       scoreDetail =
           questionContainerBm.getUserScoreByFatherIdAndParticipationId(qcPK, userId,
-              participationId);
+          participationId);
     } catch (Exception e) {
       throw new QuizzException("QuizzSessionController.getUserScoreByFatherIdAndParticipationId",
           QuizzException.ERROR, "Quizz.EX_PROBLEM_TO_OBTAIN_SCORE", e);
@@ -577,6 +579,7 @@ public class QuizzSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
+   *
    * @param quizzId
    * @param participationId
    * @return
@@ -592,7 +595,7 @@ public class QuizzSessionController extends AbstractComponentSessionController {
     try {
       scoreDetail =
           questionContainerBm.getUserScoreByFatherIdAndParticipationId(qcPK, getUserId(),
-              participationId);
+          participationId);
     } catch (Exception e) {
       throw new QuizzException(
           "QuizzSessionController.getCurrentUserScoreByFatherIdAndParticipationId",
@@ -603,6 +606,7 @@ public class QuizzSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
+   *
    * @param scoreDetail
    * @throws CreateException
    * @throws NamingException
@@ -622,6 +626,7 @@ public class QuizzSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
+   *
    * @param quizzHeader
    * @param quizzId
    * @throws CreateException
@@ -643,6 +648,7 @@ public class QuizzSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
+   *
    * @param questions
    * @param quizzId
    * @throws CreateException
@@ -663,7 +669,7 @@ public class QuizzSessionController extends AbstractComponentSessionController {
 
   public List<ComponentInstLight> getGalleries() {
     List<ComponentInstLight> galleries = null;
-    OrganizationController orgaController = new OrganizationController();
+    OrganisationController orgaController = new OrganizationController();
     String[] compoIds = orgaController.getCompoId("gallery");
     for (int c = 0; c < compoIds.length; c++) {
       if ("yes".equalsIgnoreCase(orgaController.getComponentParameterValue("gallery" + compoIds[c],
@@ -679,14 +685,10 @@ public class QuizzSessionController extends AbstractComponentSessionController {
   }
 
   public boolean isPdcUsed() {
-    String value = getComponentParameterValue("usePdc");
-    if (value != null) {
-      return "yes".equals(value.toLowerCase());
-    }
-    return false;
+    return "yes".equalsIgnoreCase(getComponentParameterValue("usePdc"));
   }
 
-  public void copySurvey(String quizzId) throws RemoteException, QuizzException {
+  public void copySurvey(String quizzId) throws ClipboardException, QuizzException {
     QuestionContainerDetail quizz = getQuizzDetail(quizzId);
     QuestionContainerSelection questionContainerSelect = new QuestionContainerSelection(quizz);
     getClipboardObjects().add((ClipboardSelection) questionContainerSelect);
@@ -694,14 +696,12 @@ public class QuizzSessionController extends AbstractComponentSessionController {
 
   public void paste() throws Exception {
     Collection<ClipboardSelection> clipObjects = getClipboardSelectedObjects();
-    Iterator<ClipboardSelection> clipObjectIterator = clipObjects.iterator();
-    while (clipObjectIterator.hasNext()) {
-      ClipboardSelection clipObject = (ClipboardSelection) clipObjectIterator.next();
+    for (ClipboardSelection clipObject : clipObjects) {
       if (clipObject != null) {
-        if (clipObject
-            .isDataFlavorSupported(QuestionContainerSelection.QuestionContainerDetailFlavor)) {
-          QuestionContainerDetail quizz = (QuestionContainerDetail) clipObject
-              .getTransferData(QuestionContainerSelection.QuestionContainerDetailFlavor);
+        if (clipObject.isDataFlavorSupported(
+            QuestionContainerSelection.QuestionContainerDetailFlavor)) {
+          QuestionContainerDetail quizz = (QuestionContainerDetail) clipObject.getTransferData(
+              QuestionContainerSelection.QuestionContainerDetailFlavor);
           pasteQuizz(quizz);
         }
       }
@@ -749,8 +749,7 @@ public class QuizzSessionController extends AbstractComponentSessionController {
                 absolutePath + srvSettings.getString("imagesSubDirectory") + File.separator;
             FileRepositoryManager.copyFile(dir + physicalName, dir + newPhysicalName);
             SilverTrace.debug("Quizz", "QuizzSessionController.pasteQuizz()", "root.MSG_PAST",
-                    " same component : from = " + dir + physicalName + " to = " + dir +
-                        newPhysicalName);
+                " same component : from = " + dir + physicalName + " to = " + dir + newPhysicalName);
           } else {
             // in other component
             String fromAbsolutePath =
@@ -762,8 +761,8 @@ public class QuizzSessionController extends AbstractComponentSessionController {
                 toAbsolutePath + srvSettings.getString("imagesSubDirectory") + File.separator;
             FileRepositoryManager.copyFile(fromDir + physicalName, toDir + newPhysicalName);
             SilverTrace.debug("Quizz", "QuizzSessionController.pasteQuizz()", "root.MSG_PAST",
-                " other component : from = " + fromDir + physicalName + " to = " + toDir +
-                    newPhysicalName);
+                " other component : from = " + fromDir + physicalName + " to = " + toDir
+                + newPhysicalName);
           }
           // update answer
           answer.setImage(newPhysicalName);
@@ -793,8 +792,8 @@ public class QuizzSessionController extends AbstractComponentSessionController {
       quizz = getQuizzDetail(quizzId);
       return questionContainerBm.exportCSV(quizz, true);
     } catch (Exception e) {
-      SilverTrace.error("quizzSession", "QuizzSessionController.exportQuizzCSV", "quizzId=" +
-          quizzId, e);
+      SilverTrace.error("quizzSession", "QuizzSessionController.exportQuizzCSV", "quizzId="
+          + quizzId, e);
     }
     return null;
   }
@@ -806,23 +805,11 @@ public class QuizzSessionController extends AbstractComponentSessionController {
   }
 
   public void close() {
-    try {
-      if (questionContainerBm != null) {
-        questionContainerBm.remove();
-      }
-    } catch (RemoteException e) {
-      SilverTrace.error("quizzSession", "QuizzSessionController.close", "", e);
-    } catch (RemoveException e) {
-      SilverTrace.error("quizzSession", "QuizzSessionController.close", "", e);
+    if (questionContainerBm != null) {
+      questionContainerBm = null;
     }
-    try {
-      if (scoreBm != null) {
-        scoreBm.remove();
-      }
-    } catch (RemoteException e) {
-      SilverTrace.error("quizzSession", "QuizzSessionController.close", "", e);
-    } catch (RemoveException e) {
-      SilverTrace.error("quizzSession", "QuizzSessionController.close", "", e);
+    if (scoreBm != null) {
+      scoreBm = null;
     }
   }
 
@@ -852,8 +839,8 @@ public class QuizzSessionController extends AbstractComponentSessionController {
 
       QuestionContainerHeader questionContainerHeader =
           new QuestionContainerHeader(null, title, description, notice, null, null, beginDate,
-              endDate, false, 0, Integer.parseInt(nbQuestions), Integer.parseInt(nbAnswersMax),
-              Integer.parseInt(nbAnswersNeeded), 0);
+          endDate, false, 0, Integer.parseInt(nbQuestions), Integer.parseInt(nbAnswersMax),
+          Integer.parseInt(nbAnswersNeeded), 0, QuestionContainerHeader.IMMEDIATE_RESULTS, QuestionContainerHeader.TWICE_DISPLAY_RESULTS);
       HttpSession session = request.getSession();
       QuestionContainerDetail questionContainerDetail = new QuestionContainerDetail();
       questionContainerDetail.setHeader(questionContainerHeader);
@@ -866,6 +853,7 @@ public class QuizzSessionController extends AbstractComponentSessionController {
 
   /**
    * Set new survey positions (axis classification) from JSON string
+   *
    * @param positions: the JSON string positions
    */
   public void setQuizPositionsFromJSON(String positions) {
@@ -899,5 +887,4 @@ public class QuizzSessionController extends AbstractComponentSessionController {
   public void setPositions(List<PdcPosition> positions) {
     this.positions = positions;
   }
-
 }

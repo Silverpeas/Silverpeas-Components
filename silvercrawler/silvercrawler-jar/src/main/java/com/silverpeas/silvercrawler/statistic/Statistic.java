@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -40,6 +40,7 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
+import org.silverpeas.core.admin.OrganisationController;
 
 public class Statistic {
   private final static String historyTableName = "SC_SilverCrawler_Statistic";
@@ -133,7 +134,7 @@ public class Statistic {
         "root.MSG_GEN_ENTER_METHOD");
     Collection<HistoryDetail> list = getHistoryByAction(path, componentId);
 
-    OrganizationController orga = new OrganizationController();
+    OrganisationController orga = new OrganizationController();
     Collection<HistoryByUser> statByUser = new ArrayList<HistoryByUser>();
 
     Iterator<HistoryDetail> it = list.iterator();

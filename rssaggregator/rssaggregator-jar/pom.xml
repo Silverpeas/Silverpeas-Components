@@ -4,9 +4,9 @@
   <parent>
     <groupId>com.silverpeas.components</groupId>
     <artifactId>rssaggregator</artifactId>
-    <version>5.11-SNAPSHOT</version>
+    <version>5.13-SNAPSHOT</version>
   </parent>
-	
+
   <groupId>com.silverpeas.components.rssaggregator</groupId>
   <artifactId>rssaggregator-jar</artifactId>
   <packaging>jar</packaging>
@@ -14,16 +14,15 @@
   <dependencies>
     <dependency>
       <groupId>com.silverpeas.core</groupId>
+      <artifactId>lib-core</artifactId>
+      <version>${core.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.silverpeas.core</groupId>
       <artifactId>test-core</artifactId>
       <version>${core.version}</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>com.silverpeas.core</groupId>
-      <artifactId>ws-test-core</artifactId>
-      <version>${core.version}</version>
-      <scope>test</scope>
-    </dependency>    
   </dependencies>
   <build>
     <testResources>

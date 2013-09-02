@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -61,8 +61,6 @@ String fatherId = (String) request.getParameter("Id");
 String path = (String) request.getParameter("Path");
 String name = (String) request.getParameter("Name"); //ancien nom
 String action = (String) request.getParameter("Action");
-
-//CBO : REMOVE String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 
 //Icons
 String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
@@ -161,12 +159,8 @@ function sendData() {
 <%
     Window window = gef.getWindow();
     BrowseBar browseBar = window.getBrowseBar();
-    //CBO : UPDATE
-	//browseBar.setDomainName(scc.getSpaceLabel());
-	browseBar.setDomainName(spaceLabel);
-    //CBO : UPDATE
-//browseBar.setComponentName(scc.getComponentLabel());
-browseBar.setComponentName(componentLabel);
+    browseBar.setDomainName(spaceLabel);
+    browseBar.setComponentName(componentLabel);
     browseBar.setPath(resources.getString("RepUpdateTitle"));
     
     //Le cadre

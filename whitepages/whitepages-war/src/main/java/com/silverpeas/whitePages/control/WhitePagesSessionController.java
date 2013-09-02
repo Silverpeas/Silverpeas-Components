@@ -1,45 +1,45 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.whitePages.control;
 
 import com.silverpeas.form.DataRecord;
+import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.pdc.model.PdcClassification;
-import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.session.SessionInfo;
+import com.silverpeas.session.SessionManagement;
+import com.silverpeas.session.SessionManagementFactory;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.silverpeas.whitePages.WhitePagesException;
 import com.silverpeas.whitePages.model.Card;
 import com.silverpeas.whitePages.model.SearchField;
+import com.silverpeas.whitePages.model.SearchFieldsType;
 import com.silverpeas.whitePages.model.WhitePagesCard;
 import com.silverpeas.whitePages.record.UserRecord;
 import com.silverpeas.whitePages.record.UserTemplate;
@@ -64,11 +64,13 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
-import org.silverpeas.search.indexEngine.model.FieldDescription;
 import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.JAXBException;
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.search.indexEngine.model.FieldDescription;
+
+import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
 public class WhitePagesSessionController extends AbstractComponentSessionController {
 
@@ -97,10 +99,12 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
   private String returnURL = "";
   private ContainerContext containerContext;
   private Card notifiedUserCard;
-  private final static ResourceLocator whitePagesSettings = new ResourceLocator(
-          "com.silverpeas.whitePages.settings.settings", "");
   private PdcBm pdcBm = null;
   private static DomainDriverManager m_DDManager = new DomainDriverManager();
+
+  public boolean isAdmin() {
+    return Boolean.valueOf(getUserRoleLevel().equals("admin"));
+  }
 
   /*
    * Recherche une fiche Retourne currentCard si son id est le même que celui de la fiche recherchée
@@ -117,9 +121,9 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
   public Card getCard(long userCardId) throws WhitePagesException {
     try {
       if ((currentCard == null) || (currentCard.getPK() == null)
-              || (currentCard.getPK().getId() == null)
-              || (currentCard.getPK().getId().equals(""))
-              || (new Long(currentCard.getPK().getId()).longValue() != userCardId)) {
+          || (currentCard.getPK().getId() == null)
+          || (currentCard.getPK().getId().equals(""))
+          || (new Long(currentCard.getPK().getId()).longValue() != userCardId)) {
         Card card = getCardManager().getCard(userCardId);
 
         if (card == null) {
@@ -127,7 +131,8 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
         }
 
         if (card.getInstanceId().equals(getComponentId())) {
-          card.writeReadOnly(false);
+          // user can update card if he is admin or if it's his own card
+          card.writeReadOnly(!isAdmin() && !getUserId().equals(card.getUserId()));
           card.writeCardUpdateForm(getCardTemplate().getUpdateForm());
         }
 
@@ -141,7 +146,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
           return null;
         }
         DataRecord cardRecord = template.getRecordSet().getRecord(
-                new Long(userCardId).toString());
+            new Long(userCardId).toString());
         if (cardRecord == null) {
           cardRecord = template.getRecordSet().getEmptyRecord();
         }
@@ -157,11 +162,11 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
       return currentCard;
     } catch (PublicationTemplateException e) {
       throw new WhitePagesException("WhitePagesSessionController.getCard",
-              SilverpeasException.ERROR,
-              "whitePages.EX_CANT_GET_PUBLICATIONTEMPLATE", "", e);
+          SilverpeasException.ERROR,
+          "whitePages.EX_CANT_GET_PUBLICATIONTEMPLATE", "", e);
     } catch (FormException e) {
       throw new WhitePagesException("WhitePagesSessionController.getCard",
-              SilverpeasException.ERROR, "whitePages.EX_CANT_GET_RECORD", "", e);
+          SilverpeasException.ERROR, "whitePages.EX_CANT_GET_RECORD", "", e);
     }
   }
 
@@ -179,14 +184,14 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
   public Card getCardReadOnly(long userCardId) throws WhitePagesException {
     try {
       if ((currentCard == null) || (currentCard.getPK() == null)
-              || (currentCard.getPK().getId() == null)
-              || (currentCard.getPK().getId().equals(""))
-              || (new Long(currentCard.getPK().getId()).longValue() != userCardId)) {
+          || (currentCard.getPK().getId() == null)
+          || (currentCard.getPK().getId().equals(""))
+          || (new Long(currentCard.getPK().getId()).longValue() != userCardId)) {
         Card card = getCardManager().getCard(userCardId);
         PublicationTemplate template = getTemplate(card.getInstanceId());
         UserTemplate templateUser = getUserTemplate(card.getInstanceId());
         DataRecord cardRecord = template.getRecordSet().getRecord(
-                new Long(userCardId).toString());
+            new Long(userCardId).toString());
         UserRecord userRecord = templateUser.getRecord(card.getUserId());
         if (userRecord.getUserDetail() == null) {
           Collection<String> cards = new ArrayList<String>();
@@ -210,13 +215,13 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
 
     } catch (PublicationTemplateException e) {
       throw new WhitePagesException(
-              "WhitePagesSessionController.getCardReadOnly",
-              SilverpeasException.ERROR,
-              "whitePages.EX_CANT_GET_PUBLICATIONTEMPLATE", "", e);
+          "WhitePagesSessionController.getCardReadOnly",
+          SilverpeasException.ERROR,
+          "whitePages.EX_CANT_GET_PUBLICATIONTEMPLATE", "", e);
     } catch (FormException e) {
       throw new WhitePagesException(
-              "WhitePagesSessionController.getCardReadOnly",
-              SilverpeasException.ERROR, "whitePages.EX_CANT_GET_RECORD", "", e);
+          "WhitePagesSessionController.getCardReadOnly",
+          SilverpeasException.ERROR, "whitePages.EX_CANT_GET_RECORD", "", e);
     }
 
   }
@@ -232,7 +237,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
   public Card getUserCard(String userId) throws WhitePagesException {
     Card card = null;
     Collection<WhitePagesCard> userCards = getWhitePagesCards(userId);
-    Iterator<WhitePagesCard> it = null;
+    Iterator<WhitePagesCard> it;
     if (userCards != null) {
       it = userCards.iterator();
       if (it.hasNext()) {
@@ -250,11 +255,11 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
    * @param userId id d'un user
    */
   private Collection<WhitePagesCard> getHomeWhitePagesCards(String userId)
-          throws WhitePagesException {
+      throws WhitePagesException {
     if (currentCard == null || !currentCard.getUserId().equals(userId)
-            || getCurrentUserCards().isEmpty()) {
+        || getCurrentUserCards().isEmpty()) {
       Collection<WhitePagesCard> cards = getCardManager().getHomeUserCards(userId,
-              getUserInstanceIds(), getComponentId());
+          getUserInstanceIds(), getComponentId());
       Collections.sort((List) cards);
       setCurrentUserCards(cards);
     }
@@ -268,11 +273,11 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
    * @param userId id d'un user
    */
   private Collection<WhitePagesCard> getWhitePagesCards(String userId)
-          throws WhitePagesException {
+      throws WhitePagesException {
     if (currentCard == null || !currentCard.getUserId().equals(userId)
-            || getCurrentUserCards().isEmpty()) {
+        || getCurrentUserCards().isEmpty()) {
       Collection<WhitePagesCard> cards = getCardManager().getUserCards(userId,
-              getUserInstanceIds());
+          getUserInstanceIds());
       Collections.sort((List) cards);
       setCurrentUserCards(cards);
     }
@@ -298,7 +303,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
     setCurrentUserCards(new ArrayList<WhitePagesCard>());
     getWhitePagesCards(userDetail.getId());
     ((ArrayList<WhitePagesCard>) getCurrentUserCards()).add(0, new WhitePagesCard(
-            "Fiche en cours de création"));
+        "Fiche en cours de création"));
     return getCurrentCreateCard();
   }
 
@@ -310,20 +315,20 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
   public Card setCardRecord() throws WhitePagesException {
     try {
       getCurrentCreateCard().writeCardUpdateForm(
-              getCardTemplate().getUpdateForm());
+          getCardTemplate().getUpdateForm());
       getCurrentCreateCard().writeCardRecord(
-              getCardTemplate().getRecordSet().getEmptyRecord());
+          getCardTemplate().getRecordSet().getEmptyRecord());
       getCurrentCreateCard().writeCardViewForm(getCardTemplate().getViewForm());
       return getCurrentCreateCard();
     } catch (PublicationTemplateException e) {
       throw new WhitePagesException(
-              "WhitePagesSessionController.setCardRecord",
-              SilverpeasException.ERROR,
-              "whitePages.EX_CANT_GET_PUBLICATIONTEMPLATE", "", e);
+          "WhitePagesSessionController.setCardRecord",
+          SilverpeasException.ERROR,
+          "whitePages.EX_CANT_GET_PUBLICATIONTEMPLATE", "", e);
     } catch (FormException e) {
       throw new WhitePagesException(
-              "WhitePagesSessionController.setCardRecord",
-              SilverpeasException.ERROR, "whitePages.EX_CANT_GET_RECORD", "", e);
+          "WhitePagesSessionController.setCardRecord",
+          SilverpeasException.ERROR, "whitePages.EX_CANT_GET_RECORD", "", e);
     }
   }
 
@@ -331,27 +336,27 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
    * Rempli le DataRecord de la fiche courante en cours de création à partir de la request
    */
   public void createCard(HttpServletRequest request)
-          throws WhitePagesException, JAXBException {
-    
+      throws WhitePagesException, JAXBException {
+
     List<FileItem> items = FileUploadUtil.parseRequest(request);
-    
+
     // get PDC classification
     String positions = FileUploadUtil.getParameter(items, "Positions");
     PdcClassification withClassification = null;
-    PdcClassificationEntity classification = PdcClassificationEntity.undefinedClassification();
+    PdcClassificationEntity classification;
     if (StringUtil.isDefined(positions)) {
       classification = PdcClassificationEntity.fromJSON(positions);
-      
+
       List<PdcPosition> pdcPositions = classification.getPdcPositions();
       withClassification = aPdcClassificationOfContent(getCurrentCard().getPK().getId(),
-              getComponentId()).withPositions(pdcPositions);
+          getComponentId()).withPositions(pdcPositions);
     }
-    
+
     /*
      * Stores card, identity and data record.
      */
     insertCard(withClassification);
-    
+
     // update form
     try {
       PagesContext pageContext = new PagesContext("", getLanguage());
@@ -359,18 +364,18 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
       pageContext.setObjectId(getCurrentCard().getPK().getId());
       pageContext.setUserId(getUserId());
       getCardTemplate().getUpdateForm().update(items,
-              getCurrentCreateCard().readCardRecord(), pageContext);
+          getCurrentCreateCard().readCardRecord(), pageContext);
     } catch (PublicationTemplateException e) {
       throw new WhitePagesException(
-              "WhitePagesSessionController.setCardRecord",
-              SilverpeasException.ERROR,
-              "whitePages.EX_CANT_GET_PUBLICATIONTEMPLATE", "", e);
+          "WhitePagesSessionController.setCardRecord",
+          SilverpeasException.ERROR,
+          "whitePages.EX_CANT_GET_PUBLICATIONTEMPLATE", "", e);
     } catch (Exception e) {
       throw new WhitePagesException(
-              "WhitePagesSessionController.setCardRecord",
-              SilverpeasException.ERROR, "whitePages.EX_CANT_GET_RECORD", "", e);
+          "WhitePagesSessionController.setCardRecord",
+          SilverpeasException.ERROR, "whitePages.EX_CANT_GET_RECORD", "", e);
     }
-    
+
     // save form
     saveCard();
   }
@@ -379,7 +384,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
    * Rempli le DataRecord de la fiche courante à partir de la request
    */
   public void updateCardRecord(HttpServletRequest request)
-          throws WhitePagesException {
+      throws WhitePagesException {
     try {
       List<FileItem> items = FileUploadUtil.parseRequest(request);
       PagesContext pageContext = new PagesContext("", getLanguage());
@@ -387,16 +392,16 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
       pageContext.setObjectId(getCurrentCard().getPK().getId());
       pageContext.setUserId(getUserId());
       getCardTemplate().getUpdateForm().update(items,
-              getCurrentCard().readCardRecord(), pageContext);
+          getCurrentCard().readCardRecord(), pageContext);
     } catch (PublicationTemplateException e) {
       throw new WhitePagesException(
-              "WhitePagesSessionController.updateCardRecord",
-              SilverpeasException.ERROR,
-              "whitePages.EX_CANT_GET_PUBLICATIONTEMPLATE", "", e);
+          "WhitePagesSessionController.updateCardRecord",
+          SilverpeasException.ERROR,
+          "whitePages.EX_CANT_GET_PUBLICATIONTEMPLATE", "", e);
     } catch (Exception e) {
       throw new WhitePagesException(
-              "WhitePagesSessionController.updateCardRecord",
-              SilverpeasException.ERROR, "whitePages.EX_CANT_GET_RECORD", "", e);
+          "WhitePagesSessionController.updateCardRecord",
+          SilverpeasException.ERROR, "whitePages.EX_CANT_GET_RECORD", "", e);
     }
 
   }
@@ -410,22 +415,22 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
   private void insertCard(PdcClassification classification) throws WhitePagesException {
     try {
       String userCardId = Long.toString(getCardManager().create(
-              getCurrentCreateCard(), getUserId(), classification));
+          getCurrentCreateCard(), getUserId(), classification));
       getCurrentCreateCard().readCardRecord().setId(userCardId);
       getCardTemplate().getRecordSet().save(
-              getCurrentCreateCard().readCardRecord());
+          getCurrentCreateCard().readCardRecord());
       setCurrentUserCards(new ArrayList<WhitePagesCard>());
       SilverTrace.spy("whitePages", "WhitePagesSessionController.insertCard",
-              getSpaceId(), getComponentId(), userCardId, getUserDetail().getId(),
-              SilverTrace.SPY_ACTION_CREATE);
+          getSpaceId(), getComponentId(), userCardId, getUserDetail().getId(),
+          SilverTrace.SPY_ACTION_CREATE);
 
     } catch (PublicationTemplateException e) {
       throw new WhitePagesException("WhitePagesSessionController.insertCard",
-              SilverpeasException.ERROR,
-              "whitePages.EX_CANT_GET_PUBLICATIONTEMPLATE", "", e);
+          SilverpeasException.ERROR,
+          "whitePages.EX_CANT_GET_PUBLICATIONTEMPLATE", "", e);
     } catch (FormException e) {
       throw new WhitePagesException("WhitePagesSessionController.insertCard",
-              SilverpeasException.ERROR, "whitePages.EX_CANT_GET_RECORD", "", e);
+          SilverpeasException.ERROR, "whitePages.EX_CANT_GET_RECORD", "", e);
     }
 
   }
@@ -440,15 +445,15 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
       getCardTemplate().getRecordSet().save(getCurrentCard().readCardRecord());
       getCardManager().indexCard(getCurrentCard());
       SilverTrace.spy("whitePages", "WhitePagesSessionController.saveCard",
-              getSpaceId(), getComponentId(), getCurrentCard().getPK().getId(),
-              getUserDetail().getId(), SilverTrace.SPY_ACTION_UPDATE);
+          getSpaceId(), getComponentId(), getCurrentCard().getPK().getId(),
+          getUserDetail().getId(), SilverTrace.SPY_ACTION_UPDATE);
     } catch (PublicationTemplateException e) {
       throw new WhitePagesException("WhitePagesSessionController.saveCard",
-              SilverpeasException.ERROR,
-              "whitePages.EX_CANT_GET_PUBLICATIONTEMPLATE", "", e);
+          SilverpeasException.ERROR,
+          "whitePages.EX_CANT_GET_PUBLICATIONTEMPLATE", "", e);
     } catch (FormException e) {
       throw new WhitePagesException("WhitePagesSessionController.saveCard",
-              SilverpeasException.ERROR, "whitePages.EX_CANT_GET_RECORD", "", e);
+          SilverpeasException.ERROR, "whitePages.EX_CANT_GET_RECORD", "", e);
     }
 
   }
@@ -472,7 +477,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
 
   public void indexVisibleCards() throws WhitePagesException {
     Collection<Card> visibleCards = setUserRecordsAndCardRecords(getCardManager().getVisibleCards(
-            getComponentId()));
+        getComponentId()));
     for (Card card : visibleCards) {
       getCardManager().indexCard(card);
     }
@@ -482,7 +487,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
    * Affecte les UserRecord à chaque Card d'une liste
    */
   private Collection<Card> setUserRecords(Collection<Card> cards)
-          throws WhitePagesException {
+      throws WhitePagesException {
     List<Card> listCards = new ArrayList<Card>();
     try {
       if (cards != null) {
@@ -502,9 +507,23 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
       }
     } catch (WhitePagesException e) {
       throw new WhitePagesException(
-              "WhitePagesSessionController.setUserRecords",
-              SilverpeasException.ERROR, "whitePages.EX_CANT_GET_RECORD", "", e);
+          "WhitePagesSessionController.setUserRecords",
+          SilverpeasException.ERROR, "whitePages.EX_CANT_GET_RECORD", "", e);
     }
+
+    Collections.sort(listCards, new Comparator<Card>() {
+      @Override
+      public int compare(Card o1, Card o2) {
+        int result = o1.readUserRecord().getUserDetail().getLastName().compareTo(
+            o2.readUserRecord().getUserDetail().getLastName());
+        if (result == 0) {
+          result = o1.readUserRecord().getUserDetail().getFirstName().compareTo(o2.readUserRecord().
+              getUserDetail().getFirstName());
+        }
+        return result;
+      }
+    });
+
     return listCards;
   }
 
@@ -512,13 +531,13 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
    * Affecte les UserRecord & CardRecord à chaque Card d'une liste
    */
   private Collection<Card> setUserRecordsAndCardRecords(Collection<Card> cards)
-          throws WhitePagesException {
+      throws WhitePagesException {
     List<Card> listCards = new ArrayList<Card>();
     try {
       if (cards != null) {
         PublicationTemplate template = getTemplate(getComponentId());
-        DataRecord cardRecord = null;
-        String idCard = null;
+        DataRecord cardRecord;
+        String idCard;
         for (Card card : cards) {
           idCard = card.getPK().getId();
           if (getUserTemplate().getRecord(card.getUserId()).getUserDetail() == null) {
@@ -540,13 +559,13 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
       }
     } catch (PublicationTemplateException e) {
       throw new WhitePagesException(
-              "WhitePagesSessionController.setUserRecordsAndCardRecords",
-              SilverpeasException.ERROR,
-              "whitePages.EX_CANT_GET_PUBLICATIONTEMPLATE", "", e);
+          "WhitePagesSessionController.setUserRecordsAndCardRecords",
+          SilverpeasException.ERROR,
+          "whitePages.EX_CANT_GET_PUBLICATIONTEMPLATE", "", e);
     } catch (FormException e) {
       throw new WhitePagesException(
-              "WhitePagesSessionController.setUserRecordsAndCardRecords",
-              SilverpeasException.ERROR, "whitePages.EX_CANT_GET_RECORD", "", e);
+          "WhitePagesSessionController.setUserRecordsAndCardRecords",
+          SilverpeasException.ERROR, "whitePages.EX_CANT_GET_RECORD", "", e);
     }
     return listCards;
   }
@@ -563,18 +582,18 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
           DataRecord data = getCardTemplate().getRecordSet().getRecord(userCardId);
           getCardTemplate().getRecordSet().delete(data);
           SilverTrace.spy("whitePages", "WhitePagesSessionController.delete",
-                  getSpaceId(), getComponentId(), userCardId, getUserDetail().getId(),
-                  SilverTrace.SPY_ACTION_DELETE);
+              getSpaceId(), getComponentId(), userCardId, getUserDetail().getId(),
+              SilverTrace.SPY_ACTION_DELETE);
         }
         getCardManager().delete(userCardIds);
       }
     } catch (PublicationTemplateException e) {
       throw new WhitePagesException("WhitePagesSessionController.delete",
-              SilverpeasException.ERROR,
-              "whitePages.EX_CANT_GET_PUBLICATIONTEMPLATE", "", e);
+          SilverpeasException.ERROR,
+          "whitePages.EX_CANT_GET_PUBLICATIONTEMPLATE", "", e);
     } catch (FormException e) {
       throw new WhitePagesException("WhitePagesSessionController.delete",
-              SilverpeasException.ERROR, "whitePages.EX_CANT_GET_RECORD", "", e);
+          SilverpeasException.ERROR, "whitePages.EX_CANT_GET_RECORD", "", e);
     }
 
   }
@@ -632,14 +651,14 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
    * instanceId))
    */
   private PublicationTemplate getTemplate(String instanceId)
-          throws WhitePagesException {
+      throws WhitePagesException {
     try {
       return PublicationTemplateManager.getInstance().getPublicationTemplate(instanceId,
-              getParam("cardTemplate", instanceId));
+          getParam("cardTemplate", instanceId));
     } catch (PublicationTemplateException e) {
       throw new WhitePagesException("WhitePagesSessionController.getTemplate",
-              SilverpeasException.ERROR,
-              "whitePages.EX_CANT_GET_PUBLICATIONTEMPLATE", "", e);
+          SilverpeasException.ERROR,
+          "whitePages.EX_CANT_GET_PUBLICATIONTEMPLATE", "", e);
     }
   }
 
@@ -648,14 +667,13 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
    * PublicationTemplateManager#getPublicationTemplate(instanceId, getParam("userTemplate",
    * instanceId))
    */
-  private UserTemplate getUserTemplate(String instanceId)
-          throws WhitePagesException {
+  private UserTemplate getUserTemplate(String instanceId) {
     ResourceLocator templateSettings = new ResourceLocator(
-            "com.silverpeas.whitePages.settings.template", "");
+        "com.silverpeas.whitePages.settings.template", "");
     String templateDir = templateSettings.getString("templateDir");
     return new UserTemplate(templateDir.replace('\\', '/') + "/"
-            + getParam("userTemplate", instanceId).replace('\\', '/'),
-            getLanguage());
+        + getParam("userTemplate", instanceId).replace('\\', '/'),
+        getLanguage());
   }
 
   /*
@@ -663,15 +681,15 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
    */
   public String initUserPanel() {
     String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-            "ApplicationURL");
+        "ApplicationURL");
     String hostSpaceName = getSpaceLabel();
     PairObject hostComponentName = new PairObject(getComponentLabel(),
-            m_context + "/RwhitePages/" + getComponentId() + "/Main");
+        m_context + "/RwhitePages/" + getComponentId() + "/Main");
     PairObject[] hostPath = new PairObject[1];
     hostPath[0] = new PairObject(getString("whitePages.usersList"),
-            "/RwhitePages/" + getComponentId() + "/Main");
+        "/RwhitePages/" + getComponentId() + "/Main");
     String hostUrl = m_context + "/RwhitePages/" + getComponentId()
-            + "/createIdentity";
+        + "/createIdentity";
 
     Selection sel = getSelection();
     sel.resetAll();
@@ -698,7 +716,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
     UserDetail user = null;
     String selUser = getSelection().getFirstSelectedElement();
     if (StringUtil.isDefined(selUser)) {
-      user = getOrganizationController().getUserDetail(selUser);
+      user = getOrganisationController().getUserDetail(selUser);
     }
     return user;
   }
@@ -744,19 +762,19 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
     try {
       if (cardTemplate == null) {
         cardTemplate = PublicationTemplateManager.getInstance().getPublicationTemplate(
-                getComponentId(), getParam("cardTemplate"));
+            getComponentId(), getParam("cardTemplate"));
       }
       return cardTemplate;
     } catch (PublicationTemplateException e) {
       throw new WhitePagesException(
-              "WhitePagesSessionController.getCardTemplate",
-              SilverpeasException.ERROR,
-              "whitePages.EX_CANT_GET_PUBLICATIONTEMPLATE", "", e);
+          "WhitePagesSessionController.getCardTemplate",
+          SilverpeasException.ERROR,
+          "whitePages.EX_CANT_GET_PUBLICATIONTEMPLATE", "", e);
     }
   }
 
   public void setHostParameters(String hostSpaceName, String hostComponentName,
-          String hostUrl, String hostPath) {
+      String hostUrl, String hostPath) {
     hostParameters = new String[4];
     hostParameters[0] = hostComponentName;
     hostParameters[1] = hostUrl;
@@ -783,7 +801,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
     }
     if (hostParameters[3] == null) {
       hostParameters[3] = getString("whitePages.usersList") + " > "
-              + getString("whitePages.consultCard");
+          + getString("whitePages.consultCard");
     }
     return hostParameters;
   }
@@ -791,8 +809,8 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
   private Collection<String> getUserInstanceIds() {
     if (userInstanceIds == null) {
       userInstanceIds = new ArrayList<String>();
-      CompoSpace[] instances = getOrganizationController().getCompoForUser(
-              getUserId(), "whitePages");
+      CompoSpace[] instances = getOrganisationController().getCompoForUser(
+          getUserId(), "whitePages");
       for (int i = 0; i < instances.length; i++) {
         userInstanceIds.add(instances[i].getComponentId());
       }
@@ -803,10 +821,10 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
   private UserTemplate getUserTemplate() {
     if (userTemplate == null) {
       ResourceLocator templateSettings = new ResourceLocator(
-              "com.silverpeas.whitePages.settings.template", "");
+          "com.silverpeas.whitePages.settings.template", "");
       String templateDir = templateSettings.getString("templateDir");
       this.userTemplate = new UserTemplate(templateDir.replace('\\', '/') + "/"
-              + getParam("userTemplate").replace('\\', '/'), getLanguage());
+          + getParam("userTemplate").replace('\\', '/'), getLanguage());
     }
     return this.userTemplate;
   }
@@ -816,9 +834,10 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
   }
 
   /*-------------- Methodes de la classe ------------------*/
-  public WhitePagesSessionController(MainSessionController mainSessionCtrl,
-          ComponentContext context, String multilangBaseName, String iconBaseName) {
-    super(mainSessionCtrl, context, multilangBaseName, iconBaseName);
+  public WhitePagesSessionController(MainSessionController mainSessionCtrl, ComponentContext context) {
+    super(mainSessionCtrl, context, "com.silverpeas.whitePages.multilang.whitePagesBundle",
+        "com.silverpeas.whitePages.settings.whitePagesIcons",
+        "com.silverpeas.whitePages.settings.settings");
     if (context == null) {
       setComponentRootName(URLManager.CMP_WHITEPAGESPEAS);
     }
@@ -831,11 +850,11 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
       try {
         ContentManager contentManager = new ContentManager();
         contentId = ""
-                + contentManager.getSilverContentId(currentCard.getPK().getId(),
-                currentCard.getInstanceId());
+            + contentManager.getSilverContentId(currentCard.getPK().getId(),
+            currentCard.getInstanceId());
       } catch (ContentManagerException ignored) {
         SilverTrace.error("whitePages", "WhitePagesSessionController",
-                "whitePages.EX_UNKNOWN_CONTENT_MANAGER", ignored);
+            "whitePages.EX_UNKNOWN_CONTENT_MANAGER", ignored);
         contentId = null;
       }
     }
@@ -865,18 +884,18 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
   }
 
   public void sendNotification(String message)
-          throws NotificationManagerException {
+      throws NotificationManagerException {
     NotificationMetaData notifMetaData = new NotificationMetaData();
     notifMetaData.addUserRecipient(new UserRecipient(notifiedUserCard.getUserId()));
     notifMetaData.setAnswerAllowed(false);
     notifMetaData.setComponentId(getComponentId());
     notifMetaData.setContent(message);
     notifMetaData.setDate(new Date());
-    notifMetaData.setSender(whitePagesSettings.getString("whitePages.genericUserId"));
+    notifMetaData.setSender(getSettings().getString("whitePages.genericUserId"));
     notifMetaData.setTitle(getString("whitePages.notificationTitle"));
 
     String link = URLManager.getURL(null, getComponentId())
-            + "consultIdentity?userCardId=" + notifiedUserCard.getPK().getId();
+        + "consultIdentity?userCardId=" + notifiedUserCard.getPK().getId();
     notifMetaData.setLink(link);
 
     NotificationSender sender = new NotificationSender(getComponentId());
@@ -884,7 +903,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
   }
 
   public boolean isCardClassifiedOnPdc() throws WhitePagesException,
-          ContentManagerException, PdcException {
+      ContentManagerException, PdcException {
     Card card = getUserCard(getUserId());
     return getCardManager().isPublicationClassifiedOnPDC(card);
   }
@@ -904,31 +923,36 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
 
     // pour recupèrer le domainId auquel rattaché l'annuaire
     String domainId = getComponentParameterValue("domainId");
-    if (domainId != null && domainId.length() > 0) {
+    if (StringUtil.isDefined(domainId)) {
       try {
         domainIdReturn = Integer.parseInt(domainId);
       } catch (NumberFormatException nexp) {
         SilverTrace.error("whitePages", "WhitePagesSessionController",
-                "whitePages.EX_UNKNOWN_DOMAIN_ID", nexp);
+            "whitePages.EX_UNKNOWN_DOMAIN_ID", nexp);
       }
     }
     return domainIdReturn;
 
   }
 
-  public List<String> getAllXmlFieldsForSearch() throws WhitePagesException,
-          PublicationTemplateException {
-    List<String> xmlFields = new ArrayList<String>();
+  public List<FieldTemplate> getAllXmlFieldsForSearch() throws WhitePagesException,
+      PublicationTemplateException {
     PublicationTemplate template = getTemplate(getComponentId());
     RecordTemplate recordTemplate = template.getRecordTemplate();
-    xmlFields = Arrays.asList(recordTemplate.getFieldNames());
-    return xmlFields;
+    try {
+      FieldTemplate[] fields = recordTemplate.getFieldTemplates();
+      return Arrays.asList(fields);
+    } catch (FormException e) {
+      SilverTrace.error("whitePages", "WhitePagesSessionController.getAllXmlFieldsForSearch",
+          "whitePages.CANT_GET_XML_FIELDS", e);
+    }
+    return new ArrayList<FieldTemplate>();
   }
 
   public List<SearchAxis> getUsedAxisList(SearchContext searchContext, String axisType) throws
-          PdcException {
+      PdcException {
     List<SearchAxis> searchAxis = getPdcBm().getPertinentAxisByInstanceId(searchContext, axisType,
-            getComponentId());
+        getComponentId());
     if (searchAxis != null && !searchAxis.isEmpty()) {
       for (SearchAxis axis : searchAxis) {
         axis.setValues(getPdcBm().getDaughters(Integer.toString(axis.getAxisId()), "0"));
@@ -937,20 +961,69 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
     return searchAxis;
   }
 
-  public List<String> getLdapAttributesList() throws Exception {
-    DomainDriver domainDriver = m_DDManager.getDomainDriver(getDomainId());
-    return domainDriver.getUserAttributes();
+  public List<SearchField> getLdapAttributesList() throws Exception {
+    Map<String, String> properties = getDomainProperties();
+    List<SearchField> fields = new ArrayList<SearchField>();
+    for (String property : properties.keySet()) {
+      SearchField field = new SearchField();
+      field.setFieldId(SearchFieldsType.LDAP.getLabelType() + property);
+      field.setLabel(properties.get(property));
+      fields.add(field);
+    }
+    return fields;
+  }
+
+  private Map<String, String> getDomainProperties() throws Exception {
+    return m_DDManager.getDomainDriver(getDomainId()).getPropertiesLabels(getLanguage());
   }
 
   public void confirmFieldsChoice(String[] fields) throws UtilException {
-    ServicesFactory.getWhitePagesService().createSearchFields(fields, getComponentId());
+    ServicesFactory.getFactory().getWhitePagesService().createSearchFields(fields, getComponentId());
   }
 
-  public SortedSet<SearchField> getSearchFields() throws UtilException {
-    return ServicesFactory.getWhitePagesService().getSearchFields(getComponentId());
+  public SortedSet<SearchField> getSearchFields() throws UtilException, WhitePagesException {
+    SortedSet<SearchField> fields =
+        ServicesFactory.getFactory().getWhitePagesService().getSearchFields(getComponentId());
+    if (!fields.isEmpty()) {
+      PublicationTemplate template = null;
+      Map<String, String> domainProperties = null;
+      try {
+        RecordTemplate recordTemplate = null;
+        for (SearchField field : fields) {
+          if (field.getFieldId().startsWith(SearchFieldsType.XML.getLabelType())) {
+            if (template == null) {
+              template = getTemplate(getComponentId());
+              recordTemplate = template.getRecordTemplate();
+            }
+            field.setLabel(recordTemplate.getFieldTemplate(field.getFieldName()).getLabel(
+                getLanguage()));
+          } else if (field.getFieldId().startsWith(SearchFieldsType.LDAP.getLabelType())) {
+            if (domainProperties == null) {
+              domainProperties = getDomainProperties();
+            }
+            field.setLabel(domainProperties.get(field.getFieldName()));
+          } else if (field.getFieldId().startsWith(SearchFieldsType.USER.getLabelType())) {
+            if (field.getFieldName().equals("name")) {
+              field.setLabel(GeneralPropertiesManager.getGeneralMultilang(getLanguage()).getString(
+                  "GML.lastName"));
+            } else if (field.getFieldName().equals("surname")) {
+              field.setLabel(GeneralPropertiesManager.getGeneralMultilang(getLanguage()).getString(
+                  "GML.surname"));
+            } else if (field.getFieldName().equals("email")) {
+              field.setLabel(GeneralPropertiesManager.getGeneralMultilang(getLanguage()).getString(
+                  "GML.eMail"));
+            }
+          }
+        }
+      } catch (Exception e) {
+        SilverTrace.error("whitePages", "WhitePagesSessionController.getSearchFields",
+            "whitePages.CANT_GET_XML_FIELDS", e);
+      }
+    }
+    return fields;
   }
 
-  public Set<String> getSearchFieldIds() throws UtilException {
+  public Set<String> getSearchFieldIds() throws UtilException, WhitePagesException {
     Set<String> ids = new HashSet<String>();
     SortedSet<SearchField> searchFields = getSearchFields();
     if (searchFields != null && !searchFields.isEmpty()) {
@@ -962,19 +1035,20 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
   }
 
   public List<Card> getSearchResult(String query, SearchContext pdcContext,
-          Hashtable<String, String> xmlFields, List<FieldDescription> fieldsQuery) {
+      Map<String, String> xmlFields, List<FieldDescription> fieldsQuery) {
     List<Card> cards = new ArrayList<Card>();
     Collection<GlobalSilverContent> contents = null;
 
     try {
       PublicationTemplate template = getTemplate(getComponentId());
       String xmlTemplate = template.getName();
-      contents = ServicesFactory.getMixedSearchService().search(getSpaceId(), getComponentId(),
-              getUserId(), query,
-              pdcContext, xmlFields, xmlTemplate, fieldsQuery, getLanguage());
+      contents = ServicesFactory.getFactory().getMixedSearchService().search(getSpaceId(),
+          getComponentId(),
+          getUserId(), query,
+          pdcContext, xmlFields, xmlTemplate, fieldsQuery, getLanguage());
     } catch (Exception e) {
       SilverTrace.info("whitePages", "WhitePagesSessionController.getSearchResult",
-              "whitePages.EX_SEARCH_GETRESULT", e);
+          "whitePages.EX_SEARCH_GETRESULT", e);
     }
 
     if (contents != null) {
@@ -995,8 +1069,9 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
           for (Card card : cards) {
             UserRecord userRecord = card.readUserRecord();
             if (userRecord != null) {
-              Collection<SessionInfo> sessionInfos = SessionManager.getInstance().
-                      getConnectedUsersList();
+              SessionManagementFactory factory = SessionManagementFactory.getFactory();
+              SessionManagement sessionManagement = factory.getSessionManagement();
+              Collection<SessionInfo> sessionInfos = sessionManagement.getConnectedUsersList();
               for (SessionInfo varSi : sessionInfos) {
                 if (varSi.getUserDetail().equals(userRecord.getUserDetail())) {
                   userRecord.setConnected(true);
@@ -1009,7 +1084,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
 
       } catch (Exception e) {
         SilverTrace.info("whitePages", "WhitePagesSessionController.getSearchResult",
-                "whitePages.EX_SEARCH_GETCARDS", e);
+            "whitePages.EX_SEARCH_GETCARDS", e);
       }
     }
     return cards;
@@ -1044,30 +1119,6 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
           }
         }
       }
-      
-//      Iterator<ClassifyPosition> iter = listOfPositions.iterator();
-//      while (iter.hasNext()) {
-//        List<Value> pathValues = null;
-//        ClassifyPosition position = iter.next();
-//        List<ClassifyValue> values = position.getValues();
-//        for (ClassifyValue value : values) {
-//          pathValues = value.getFullPath();
-//          if (pathValues != null && !pathValues.isEmpty()) {
-//            List<ClassifyValue> valuesForPrincipal = null;
-//            Value term = pathValues.get(0);
-//            String principal = term.getName(getLanguage());
-//            if (result.get(principal) != null) {
-//              valuesForPrincipal = result.get(principal);
-//              valuesForPrincipal.add(value);
-//              result.put(principal, valuesForPrincipal);
-//            } else {
-//              valuesForPrincipal = new ArrayList<ClassifyValue>();
-//              valuesForPrincipal.add(value);
-//              result.put(principal, valuesForPrincipal);
-//            }
-//          }
-//        }
-//      }
     }
     return result;
 

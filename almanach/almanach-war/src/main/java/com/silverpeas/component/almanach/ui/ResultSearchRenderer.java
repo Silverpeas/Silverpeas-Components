@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,7 +23,6 @@
  */
 package com.silverpeas.component.almanach.ui;
 
-import java.rmi.RemoteException;
 import java.util.Properties;
 
 import javax.inject.Inject;
@@ -37,6 +36,7 @@ import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
+
 import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
@@ -65,7 +65,7 @@ public class ResultSearchRenderer extends AbstractResultDisplayer implements Res
    */
   static {
     ResourceLocator settings =
-        new ResourceLocator("com.stratelia.webactiv.almanach.settings.almanachSettings", "");
+        new ResourceLocator("org.silverpeas.almanach.settings.almanachSettings", "");
     templateConfig.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, settings
         .getString("templatePath"));
     templateConfig.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, settings
@@ -88,7 +88,7 @@ public class ResultSearchRenderer extends AbstractResultDisplayer implements Res
     EventDetail event = null;
     try {
       event = getAlmanachBm().getEventDetail(eventPK);
-    } catch (RemoteException e) {
+    } catch (Exception e) {
       SilverTrace.warn("almanach", ResultSearchRenderer.class.getName() + ".getResultContent",
           "Unable to load event " + eventPK.getId() + " from EJB", e);
     }

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -31,7 +31,6 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
 import javax.servlet.http.HttpServletRequest;
 
 public class ClassifiedsRequestRouter extends ComponentRequestRouter<ClassifiedsSessionController> {
@@ -92,18 +91,25 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter<Classifieds
     SilverTrace.debug("classifieds", "classifiedsRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "Profile=" + highestRole);
 
-    // Delegate to specific Handler
-    FunctionHandler handler = HandlerProvider.getHandler(function);
-    if (handler != null) {
-      destination = handler.computeDestination(classifiedsSC, request);
-    } else {
-      destination = rootDest + function;
+    try {
+      // Delegate to specific Handler
+      FunctionHandler handler = HandlerProvider.getHandler(function);
+      if (handler != null) {
+        destination = handler.computeDestination(classifiedsSC, request);
+      } else {
+        destination = rootDest + function;
+      }
+    } catch (Exception e) {
+      request.setAttribute("javax.servlet.jsp.jspException", e);
+      return "/admin/jsp/errorpageMain.jsp";
     }
 
     SilverTrace.info("classifieds", "classifiedsRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
     return destination;
   }
+  
+ 
 
   private boolean isAnonymousAccess(HttpServletRequest request) {
     LookHelper lookHelper = (LookHelper) request.getSession().getAttribute(LookHelper.SESSION_ATT);

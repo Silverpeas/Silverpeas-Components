@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -13,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -71,7 +71,7 @@
         <message lang="de">Herausgeber</message>
       </label>
       <help>
-        <message lang="fr">Les publieurs créent des votes</message>
+        <message lang="fr">Les publieurs gèrent les votes</message>
         <message lang="en">Publishers create votes</message>
         <message lang="de">Herausgeber</message>
       </help>
@@ -121,7 +121,7 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Les participations à tous les votes créées au sein de cette instance seront anonymes.</message>
+        <message lang="fr">Les participations à tous les votes créés au sein de cette instance seront anonymes.</message>
         <message lang="en">Entries in all polls created in this instance will be anonymous.</message>
         <message lang="de">Einträge in allen Abstimmungen dieser Instanz, bleiben anonym.</message>
       </help>

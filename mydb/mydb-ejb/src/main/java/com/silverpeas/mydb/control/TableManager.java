@@ -1,33 +1,30 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.mydb.control;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import com.silverpeas.mydb.data.datatype.DataType;
 import com.silverpeas.mydb.data.datatype.DataTypeList;
@@ -40,19 +37,20 @@ import com.silverpeas.mydb.data.key.ForeignKeys;
 import com.silverpeas.mydb.data.key.PrimaryKey;
 import com.silverpeas.mydb.data.key.UnicityKey;
 import com.silverpeas.mydb.data.key.UnicityKeys;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 
 /**
  * Manager used to create or modify a database table, not its content but its description. For the
  * moment, only creation mode is managed.
+ *
  * @author Antoine HEDIN
  */
 public class TableManager {
 
   public static final int MODE_CREATION = 0;
   public static final int MODE_UPDATE = 1;
-
   private int mode;
   private String originPage;
   private DbTable table;
@@ -130,6 +128,7 @@ public class TableManager {
 
   /**
    * Updates the primary key. Forces the corresponding table's columns to be not nullable.
+   *
    * @param newPrimaryKey The reference primary key.
    */
   public void updatePrimaryKey(PrimaryKey newPrimaryKey) {
@@ -140,6 +139,7 @@ public class TableManager {
   /**
    * Updates the column corresponding to the column and the index given as parameters. Updates the
    * keys which reference it.
+   *
    * @param column The reference column.
    * @param index The index of the column to update.
    */
@@ -164,6 +164,7 @@ public class TableManager {
 
   /**
    * Removes from the table the column corresponding to the index.
+   *
    * @param index The index of the column to delete.
    */
   public void removeColumn(int index) {
@@ -175,6 +176,7 @@ public class TableManager {
 
   /**
    * Checks if the current table's name is valid. Fills the error label if an error is detected.
+   *
    * @param tableNames The other tables names.
    * @param resources The resources wrapper.
    * @return True if the current table's name is valid.
@@ -200,6 +202,7 @@ public class TableManager {
   /**
    * Checks if the column is valid. Fills the error label if an error is detected. The following
    * characteristics of the columns are checked : name, data type, default value.
+   *
    * @param column The column to check.
    * @param resources The resources wrapper.
    * @param exceptedIndex The index of the column (to avoid comparing the column with itself).
@@ -243,9 +246,9 @@ public class TableManager {
       Method method = null;
       try {
         if (!clazz.getPackage().getName().equals("java.sql")) {
-          constructor = clazz.getConstructor(new Class[] { String.class });
+          constructor = clazz.getConstructor(new Class[]{String.class});
         } else {
-          method = clazz.getMethod("parse", new Class[] { String.class });
+          method = clazz.getMethod("parse", new Class[]{String.class});
         }
       } catch (Exception e) {
         SilverTrace.warn("myDB", "TableManager.isValidColumnDefaultValue()",
@@ -254,9 +257,9 @@ public class TableManager {
       }
       try {
         if (constructor != null) {
-          constructor.newInstance(new String[] { defaultValue });
+          constructor.newInstance(defaultValue);
         } else if (method != null) {
-          method.invoke(null, new String[] { defaultValue });
+          method.invoke(null, defaultValue);
         }
       } catch (Exception e) {
         errorLabel = resources.getString("ErrorColumnDefaultValue");
@@ -271,6 +274,7 @@ public class TableManager {
    * - the name has to be valorized.<br>
    * - it has to be different from the database keywords.<br>
    * - it must not be the same of an other column or key of the table.
+   *
    * @param object The object (column or key) to check.
    * @param resources The resources wrapper.
    * @param index The index of the object (to avoid comparing the object with itself).
@@ -309,20 +313,20 @@ public class TableManager {
       return false;
     }
 
-    String nameUpperCase = name.toUpperCase();
+    String nameUpperCase = name.toUpperCase(Locale.getDefault());
 
     // Database keywords.
     if (keywords.contains(nameUpperCase)) {
-      errorLabel = MessageFormat.format(resources.getString(errorLabelPrefix
-          + "NameKeyword"), new String[] { nameUpperCase });
+      errorLabel = MessageFormat.format(resources.getString(errorLabelPrefix + "NameKeyword"),
+          nameUpperCase);
       return false;
     }
 
     // Columns.
     String[] columnsNames = table.getColumnsNames();
     for (int i = 0, n = columnsNames.length; i < n; i++) {
-      if (i != exceptedColumnIndex
-          && nameUpperCase.equals(columnsNames[i].toUpperCase())) {
+      if (i != exceptedColumnIndex && nameUpperCase.equals(columnsNames[i].toUpperCase(Locale.
+          getDefault())))  {
         errorLabel = resources.getString("ErrorColumnNameExisting");
         return false;
       }
@@ -432,6 +436,7 @@ public class TableManager {
   /**
    * Updates a column consecutively to an error detected in a foreign key which references it. The
    * type or the size of the column is so modified to correspond to the description of the key.
+   *
    * @param name the column's name.
    * @param errorType The error type.
    * @param value The new value, corresponding to the new type or size of the column.
@@ -456,10 +461,11 @@ public class TableManager {
    * Each line of the returned table contains informations concerning a column of the table : - the
    * name of the column - the names of the keys which would be modified if the column is removed -
    * the names of the keys which would be removed if the column is removed
-   * @return A list of the links which exist between the columns of the table and its different keys.
-   * This list is used to propose warning messages to the user when he decides to delete a column,
-   * to inform him about the consequences of deleting a column on table's keys (modification or
-   * deletion of them).
+   *
+   * @return A list of the links which exist between the columns of the table and its different
+   * keys. This list is used to propose warning messages to the user when he decides to delete a
+   * column, to inform him about the consequences of deleting a column on table's keys (modification
+   * or deletion of them).
    */
   public String[][] getKeysImpacts() {
     String[] columnsNames = table.getColumnsNames();
@@ -516,5 +522,4 @@ public class TableManager {
 
     return result;
   }
-
 }

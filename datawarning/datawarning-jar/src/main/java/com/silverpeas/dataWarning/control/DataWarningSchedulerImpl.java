@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -38,6 +38,7 @@ import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.core.admin.OrganisationController;
 
 public class DataWarningSchedulerImpl implements SchedulerEventListener {
 
@@ -54,7 +55,7 @@ public class DataWarningSchedulerImpl implements SchedulerEventListener {
           "com.silverpeas.dataWarning.multilang.dataWarning", "");
 
   public DataWarningSchedulerImpl(String compoId) {
-    OrganizationController oc = new OrganizationController();
+    OrganisationController oc = new OrganizationController();
     this.instanceId = compoId;
     this.jobName = DATAWARNING_JOB_NAME + instanceId;
     HashSet hs = new HashSet();
@@ -142,7 +143,7 @@ public class DataWarningSchedulerImpl implements SchedulerEventListener {
             getErrorFullText());
     if (!dwr.hasError()) {
       try {
-        OrganizationController oc = new OrganizationController();
+        OrganisationController oc = new OrganizationController();
         StringBuilder msgForManager = new StringBuilder();
         DataWarningQueryResult dwqr = dwr.getQueryResult();
         String descriptionRequete = dwr.getDataQuery().getDescription();

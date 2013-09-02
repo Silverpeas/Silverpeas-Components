@@ -33,5 +33,24 @@
   forumdescription="forum fermé par modérateur"
   forumcreationdate="2004/03/26" forumclosedate="2010/10/10" forumcreator="10"
   forumactive="0" forumparent="0" forummodes="[NULL]" forumlocklevel="2" instanceid="forums100"
-  categoryid="[NULL]" />  
+  categoryid="[NULL]"/>
+
+  <!-- Forum Racine -->
+  <!-- Sujet Forum racine -->
+  <!-- ... Re : Sujet Forum racine -->
+  <!-- ...... Re : Re : Sujet Forum racine -->
+  <sc_forums_message messageid="10" messagetitle="Sujet Forum racine" messageauthor='26' forumid="1"
+                     messageparentid="0" messagedate="2013-06-17 19:05:27" status="V"/>
+  <sc_forums_message messageid="11" messagetitle="Re : Sujet Forum racine" messageauthor='26'
+                     forumid="1" messageparentid="10" messagedate="2013-06-17 19:05:27" status="V"/>
+  <sc_forums_message messageid="12" messagetitle="Re : Re : Sujet Forum racine" messageauthor='26'
+                     forumid="1" messageparentid="11" messagedate="2013-06-17 19:05:27" status="V"/>
+  <!-- Forum Père -->
+  <!-- Sujet Forum Père -->
+  <sc_forums_message messageid="20" messagetitle="Sujet Forum Père" messageauthor='26' forumid="2"
+                     messageparentid="0" messagedate="2013-06-17 19:05:27" status="V"/>
+  <!-- Forum Fils -->
+  <!-- Sujet Forum Fils -->
+  <sc_forums_message messageid="30" messagetitle="Sujet Forum Fils" messageauthor='26' forumid="3"
+                     messageparentid="0" messagedate="2013-06-17 19:05:27" status="V"/>
 </dataset>

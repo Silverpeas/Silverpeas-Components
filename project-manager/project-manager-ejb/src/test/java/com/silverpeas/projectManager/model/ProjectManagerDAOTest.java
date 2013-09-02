@@ -599,4 +599,9 @@ public class ProjectManagerDAOTest extends AbstractTestDao {
     assertEquals("Raf should be the same", expected.getRaf(), result.getRaf(), 0.01d);
     assertEquals("Statut should be the same", expected.getStatut(), result.getStatut());
   }
+
+  @Override
+  protected String getTableCreationFileName() {
+    return "create-database.sql";
+  }
 }

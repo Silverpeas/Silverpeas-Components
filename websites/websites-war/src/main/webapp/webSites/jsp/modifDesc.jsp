@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -31,92 +31,69 @@ response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
-<%@ page import="java.util.Collection"%>
-<%@ page import="java.util.Iterator"%>
-<%@ page import="java.util.ArrayList"%>
-<%@ page import="javax.naming.Context"%>
-<%@ page import="javax.naming.InitialContext"%>
-<%@ page import="javax.rmi.PortableRemoteObject"%>
-<%@ page import="com.stratelia.webactiv.webSites.siteManage.model.SiteDetail"%>
-<%@ page import="com.stratelia.webactiv.webSites.siteManage.model.IconDetail"%>
+
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayPane"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayLine"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayColumn"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayCellText"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.iconPanes.IconPane"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.icons.Icon"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.navigationList.NavigationList"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPane"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.board.Board"%>
-<%@ page import="com.stratelia.webactiv.webSites.control.WebSiteSessionController"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
-<%@ page import="javax.servlet.*"%>
-<%@ page import="javax.servlet.http.*"%>
-<%@ page import="javax.servlet.jsp.*"%>
-<%@ page import="java.io.PrintWriter"%>
-<%@ page import="java.io.IOException"%>
-<%@ page import="java.io.FileInputStream"%>
-<%@ page import="java.io.ObjectInputStream"%>
-<%@ page import="java.util.Vector"%>
-<%@ page import="java.beans.*"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@ page import="java.util.Date"%>
+
 <%@ page import="com.stratelia.webactiv.util.DBUtil"%>
 <%@ page import="com.stratelia.webactiv.webSites.siteManage.model.FolderDetail"%>
 <%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail"%>
 <%@ page import="com.stratelia.webactiv.util.node.model.NodePK"%>
 <%@ page import="com.stratelia.webactiv.util.DateUtil"%>
 
-<%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
-
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-
 <%@ include file="util.jsp" %>
 <%@ include file="checkScc.jsp" %>
 
+
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+
+<c:set var="recupParam" value="${requestScope['RecupParam']}" />
+
+<c:set var="siteDetail" value="${requestScope['Site']}" />
+<c:set var="curWebSiteId" value="${requestScope['Id']}" />
+<c:if test="${empty curWebSiteId and not empty siteDetail}">
+  <c:set var="curWebSiteId" value="${siteDetail.sitePK.id}" />
+</c:if>
 <%!
 
-    /**
-    * appartient
-    */
-    private boolean appartient(IconDetail iconDetail, Collection c) {
-          boolean ok = false;
+/**
+ * appartient
+ */
+private boolean appartient(IconDetail iconDetail, Collection c) {
+      boolean ok = false;
 
-          String theId = iconDetail.getIconPK().getId();
+      String theId = iconDetail.getIconPK().getId();
 
-          Iterator i = c.iterator();
-          while(i.hasNext() && !ok) {
-              IconDetail icon = (IconDetail) i.next();
-              String id = icon.getIconPK().getId();
-              if (theId.equals(id))
-                ok = true;
+      Iterator i = c.iterator();
+      while(i.hasNext() && !ok) {
+          IconDetail icon = (IconDetail) i.next();
+          String id = icon.getIconPK().getId();
+          if (theId.equals(id))
+            ok = true;
+      }
+      return ok;
+}
+
+/**
+ * appartientId
+ */
+private boolean appartientId(IconDetail iconDetail, Collection c) {
+      boolean ok = false;
+
+      String theId = iconDetail.getIconPK().getId();
+
+      Iterator i = c.iterator();
+      while(i.hasNext() && !ok) {
+          String id = (String) i.next();
+          if (theId.equals(id)) {
+            ok = true;
           }
-          return ok;
-    }
-
-    /**
-    * appartientId
-    */
-    private boolean appartientId(IconDetail iconDetail, Collection c) {
-          boolean ok = false;
-
-          String theId = iconDetail.getIconPK().getId();
-
-          Iterator i = c.iterator();
-          while(i.hasNext() && !ok) {
-              String id = (String) i.next();
-              if (theId.equals(id))
-                ok = true;
-          }
-          return ok;
-    }
+      }
+      return ok;
+}
 
     /**
     * isPublishedInTopic
@@ -124,19 +101,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
    private boolean isPublishedInTopic(WebSiteSessionController scc, String idSite, String idNode) throws Exception {
         // est ce que l'id Site est publie dans l'id Node
 
-		//CBO : UPDATE
-        /*Collection coll = scc.getAllPublication(idSite);
-        Iterator i = coll.iterator();
-
-        while(i.hasNext()) {
-              String idPub = (String) i.next(); // idPub
-              FolderDetail folder = scc.getPublicationFather(idPub);
-              if (idNode.equals(folder.getNodeDetail().getNodePK().getId()))
-                  return true;
-        }
-        return false;*/
 		String idPub = scc.getIdPublication(idSite);
-		//CBO : FIN UPDATE
 
 		Collection listFatherPK = scc.getAllFatherPK(idPub);
 		Iterator i = listFatherPK.iterator();
@@ -168,18 +133,19 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
         ArrayLine arrayLine = arrayPane.addArrayLine();
         arrayLine.addArrayCellText(espace+rootFolder.getNodeDetail().getName());
 
-        if (isPublishedInTopic(scc, idSite, rootFolder.getNodeDetail().getNodePK().getId()))
+        if (isPublishedInTopic(scc, idSite, rootFolder.getNodeDetail().getNodePK().getId())) {
             arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"topic\" value=\""+rootFolder.getNodeDetail().getNodePK().getId()+"\" checked>");
-        else arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"topic\" value=\""+rootFolder.getNodeDetail().getNodePK().getId()+"\">");
-
+        } else { 
+          arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"topic\" value=\""+rootFolder.getNodeDetail().getNodePK().getId()+"\">");
+        }
 
         resultat = arrayPane.print();
 
-        Collection subThemes = rootFolder.getNodeDetail().getChildrenDetails();
+        Collection<NodeDetail> subThemes = rootFolder.getNodeDetail().getChildrenDetails();
         if (subThemes != null) {
-            Iterator coll = subThemes.iterator();
+            Iterator<NodeDetail> coll = subThemes.iterator();
             while (coll.hasNext()) {
-                  NodeDetail theme = (NodeDetail) coll.next();
+                  NodeDetail theme = coll.next();
                   String idTheme = theme.getNodePK().getId();
                   resultat = afficheArbo(idSite, arrayPane, idTheme, scc, N);
             }
@@ -196,9 +162,9 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
             FolderDetail rootFolder = scc.getFolder(idNode);
             N++;
 
-            Collection subThemes = rootFolder.getNodeDetail().getChildrenDetails();
+            Collection<NodeDetail> subThemes = rootFolder.getNodeDetail().getChildrenDetails();
             if (subThemes != null) {
-                Iterator coll = subThemes.iterator();
+                Iterator<NodeDetail> coll = subThemes.iterator();
                 while (coll.hasNext()) {
                       NodeDetail theme = (NodeDetail) coll.next();
                       String idTheme = theme.getNodePK().getId();
@@ -212,22 +178,17 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 
 <%
-	//CBO : REMOVE String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 	String mandatoryField=m_context+"/util/icons/mandatoryField.gif";
 
 	String id = request.getParameter("Id");
 	String currentPath = request.getParameter("path"); /* = null ou rempli si type= design */
 	String type = request.getParameter("type"); // null  ou design
 
-	//CBO : UPDATE
-	//SiteDetail site = scc.getWebSite(id);
 	SiteDetail site = (SiteDetail) request.getAttribute("Site");
 
-	//CBO : ADD
 	Collection listIcons = (Collection) request.getAttribute("ListIcons");
 	Collection allIcons = (Collection) request.getAttribute("AllIcons");
-	//CBO : FIN ADD
-
+	
 	String recupParam = request.getParameter("RecupParam"); //=null ou oui
 	String nom;
 	String description;
@@ -237,11 +198,17 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 	if (recupParam != null) {//=oui
 		nom = request.getParameter("Nom");
-		if (nom == null) nom = "";
+		if (nom == null) {
+		  nom = "";
+		}
 		description = request.getParameter("Description");
-		if (description == null) description = "";
+		if (description == null) {
+		  description = "";
+		}
 		lapage = request.getParameter("Page");
-		if (lapage == null) lapage = "";
+		if (lapage == null) {
+		  lapage = "";
+		}
 		String listeIcones = request.getParameter("ListeIcones");
 		int i = 0;
 		int begin = 0;
@@ -250,8 +217,9 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 			end = listeIcones.indexOf(',', begin);
 			while(end != -1) {
 				String num = listeIcones.substring(begin, end);
-				if (num.equals("0"))
+				if (num.equals("0")) {
 					refChecked = true;
+				}
 				icones.add(num);
 				begin = end + 1;
 				end = listeIcones.indexOf(',', begin);
@@ -260,23 +228,14 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	} else { //recup BD
 		nom = site.getName();
 		description = site.getDescription();
-		if (description == null)
-			description = "";
+		if (description == null) {
+      description = "";
+    }
 
-		//CBO : UPDATE
-		//lapage = site.getPage();
 		lapage = site.getContent();
-
-
-		//CBO : REMOVE Collection ic = scc.getIcons(id);
-
-		//CBO : UPDATE
-		//icones = new ArrayList(ic);
 		icones = new ArrayList(listIcons);
 
 		//site de reference ou pas
-		//CBO : UPDATE
-		//Iterator i = ic.iterator();
 		Iterator i = listIcons.iterator();
 		while (i.hasNext()) {
 			IconDetail icon = (IconDetail) i.next();
@@ -289,157 +248,152 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 	Collection collectionRep = affichageChemin(scc, currentPath);
 	String infoPath = displayPath(collectionRep, true, 3, "design.jsp?Action=view&path=", nom);
-
-
 %>
 
-<HTML>
-<HEAD>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><fmt:message key="GML.popupTitle"/></title>
+<link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
 <view:looknfeel/>
-<TITLE><%=resources.getString("GML.popupTitle")%></TITLE>
-<Script language="JavaScript">
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<script type="text/javascript">
 
 function isCorrectName(nom) {
-
-    if (nom.indexOf("\"")>-1) {
-        return false;
-    }
-    return true;
-
+  if (nom.indexOf("\"")>-1) {
+    return false;
+  }
+  return true;
 }
 
 /************************************************************************************/
 
 function isCorrectURL(nom) {
-
-    if (nom.indexOf("\"")>-1 || nom.indexOf("'")>-1) {
-        return false;
-    }
-    return true;
-
+  if (nom.indexOf("\"")>-1 || nom.indexOf("'")>-1) {
+    return false;
+  }
+  return true;
 }
 
 /************************************************************************************/
 
 
 function isCorrect(nom) {
-
-    if (nom.indexOf("\\")>-1 || nom.indexOf("/")>-1 || nom.indexOf(":")>-1 ||
-        nom.indexOf("*")>-1 || nom.indexOf("?")>-1 || nom.indexOf("\"")>-1 ||
-        nom.indexOf("<")>-1 || nom.indexOf(">")>-1 || nom.indexOf("|")>-1 ||
-        nom.indexOf("&")>-1 || nom.indexOf(";")>-1 || nom.indexOf("+")>-1 ||
-        nom.indexOf("%")>-1 || nom.indexOf("#")>-1 || nom.indexOf("'")>-1 ||
-        nom.indexOf("�")>-1 || nom.indexOf("�")>-1 || nom.indexOf("�")>-1 ||
-        nom.indexOf("�")>-1 || nom.indexOf("�")>-1 || nom.indexOf("^")>-1 ||
-        nom.indexOf("�")>-1 || nom.indexOf("�")>-1 || /*nom.indexOf("�")>-1 ||*/
-        nom.indexOf("�")>-1 || nom.indexOf("�")>-1 || nom.indexOf("�")>-1 ||
-        nom.indexOf("�")>-1) {
-        return false;
-    }
-
-    return true;
-
+  if (nom.indexOf("\\")>-1 || nom.indexOf("/")>-1 || nom.indexOf(":")>-1 ||
+      nom.indexOf("*")>-1 || nom.indexOf("?")>-1 || nom.indexOf("\"")>-1 ||
+      nom.indexOf("<")>-1 || nom.indexOf(">")>-1 || nom.indexOf("|")>-1 ||
+      nom.indexOf("&")>-1 || nom.indexOf(";")>-1 || nom.indexOf("+")>-1 ||
+      nom.indexOf("%")>-1 || nom.indexOf("#")>-1 || nom.indexOf("'")>-1 ||
+      nom.indexOf("�")>-1 || nom.indexOf("�")>-1 || nom.indexOf("�")>-1 ||
+      nom.indexOf("�")>-1 || nom.indexOf("�")>-1 || nom.indexOf("^")>-1 ||
+      nom.indexOf("�")>-1 || nom.indexOf("�")>-1 || /*nom.indexOf("�")>-1 ||*/
+      nom.indexOf("�")>-1 || nom.indexOf("�")>-1 || nom.indexOf("�")>-1 ||
+      nom.indexOf("�")>-1) {
+    return false;
+  }
+  return true;
 }
 
 /************************************************************************************/
 
 function isCorrectForm(type) {
-     var errorMsg = "";
-     var errorNb = 0;
-     var nomSite = stripInitialWhitespace(document.descriptionSite.nomSite.value);
-     var description = document.descriptionSite.description;
-     var nomPage = stripInitialWhitespace(document.descriptionSite.nomPage.value);
-
-
-     if (isWhitespace(nomSite)) {
-       errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.name")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
-       errorNb++;
-     }
-
-     if (type != 1) { //upload et design
-        if (! isCorrectName(nomSite)) {
-            errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.name")%>' <%=resources.getString("MustNotContainSpecialChar")%>\n<%=Encode.javaStringToJsString(resources.getString("Char4"))%>\n";
-            errorNb++;
-        }
-     }
-
-     if (! isValidTextArea(description)) {
-       errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.description")%>' <%=resources.getString("ContainsTooLargeText")+resources.getString("NbMaxTextArea")+resources.getString("Characters")%>\n";
-       errorNb++;
-     }
-
-     if (isWhitespace(nomPage)) {
-           if (type == 1) {
-            errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("URL")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
-            errorNb++;
-            }
-        else {
-            errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("NomPagePrincipale")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
-            errorNb++;
-            }
-     }
-
-     if (type == 1) {
-        if (! isCorrectURL(nomPage)) {
-            errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("URL")%>' <%=Encode.javaStringToJsString(resources.getString("MustNotContainSpecialChar"))%>\n<%=Encode.javaStringToJsString(resources.getString("Char1"))%>";
-            errorNb++;
-        }
-      }
-      else {
-         if (! isCorrect(nomPage)) {
-            errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("NomPagePrincipale")%>' <%=Encode.javaStringToJsString(resources.getString("MustNotContainSpecialChar"))%>\n<%=Encode.javaStringToJsString(resources.getString("Char5"))%>\n";
-            errorNb++;
+  var errorMsg = "";
+  var errorNb = 0;
+  var nomSite = stripInitialWhitespace(document.descriptionSite.nomSite.value);
+  var description = document.descriptionSite.description;
+  var nomPage = stripInitialWhitespace(document.descriptionSite.nomPage.value);
+  
+  
+  if (isWhitespace(nomSite)) {
+    errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.name")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
+    errorNb++;
+  }
+  
+  if (type != 1) { //upload et design
+    if (! isCorrectName(nomSite)) {
+        errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.name")%>' <%=resources.getString("MustNotContainSpecialChar")%>\n<%=EncodeHelper.javaStringToJsString(resources.getString("Char4"))%>\n";
+        errorNb++;
     }
-     }
+  }
+  
+  if (! isValidTextArea(description)) {
+    errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.description")%>' <%=resources.getString("ContainsTooLargeText")+resources.getString("NbMaxTextArea")+resources.getString("Characters")%>\n";
+    errorNb++;
+  }
+  
+  if (isWhitespace(nomPage)) {
+    if (type == 1) {
+        errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("URL")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
+        errorNb++;
+    } else {
+        errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("NomPagePrincipale")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
+        errorNb++;
+    }
+  }
+  
+  if (type == 1) {
+    if (! isCorrectURL(nomPage)) {
+      errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("URL")%>' <%=EncodeHelper.javaStringToJsString(resources.getString("MustNotContainSpecialChar"))%>\n<%=EncodeHelper.javaStringToJsString(resources.getString("Char1"))%>";
+      errorNb++;
+    }
+  } else {
+    if (! isCorrect(nomPage)) {
+      errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("NomPagePrincipale")%>' <%=EncodeHelper.javaStringToJsString(resources.getString("MustNotContainSpecialChar"))%>\n<%=EncodeHelper.javaStringToJsString(resources.getString("Char5"))%>\n";
+      errorNb++;
+    }
+  }
 
-     switch(errorNb)
-     {
-        case 0 :
-            result = true;
-            break;
-        case 1 :
-            errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-        default :
-            errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-     }
-     return result;
+     <view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>
+     
+  switch(errorNb)
+  {
+    case 0 :
+        result = true;
+        break;
+    case 1 :
+        errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
+        window.alert(errorMsg);
+        result = false;
+        break;
+    default :
+        errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
+        window.alert(errorMsg);
+        result = false;
+        break;
+  }
+  return result;
 }
 
 /**************************************************************************************/
 
 function B_VALIDER_ONCLICK(nbthemes, nbicones, type) {
-    if (isCorrectForm(type)) {
+  if (isCorrectForm(type)) {
 		f = "";
-		if (document.descriptionSite.radio[0].checked)
+		if (document.descriptionSite.radio[0].checked) {
 			f += "0,";
-
+		}
 		for (i=0; i<nbicones; i++) {
-		  if (document.descriptionSite.icon[i].checked)
+		  if (document.descriptionSite.icon[i].checked) {
 			  f += document.descriptionSite.icon[i].value + ",";
+		  }
 		}
 		document.descriptionSite.ListeIcones.value = f;
 
 		f = "";
 		if (nbthemes == 1) {
-			if (document.descriptionSite.topic.checked)
+			if (document.descriptionSite.topic.checked) {
 				f += document.descriptionSite.topic.value + ",";
-		}
-		else {
+			}
+		} else {
 			for (i=0; i<nbthemes; i++) {
-			  if (document.descriptionSite.topic[i].checked)
+			  if (document.descriptionSite.topic[i].checked) {
 				  f += document.descriptionSite.topic[i].value + ",";
+			  }
 			}
 		}
 		document.descriptionSite.ListeTopics.value = f;
 		document.descriptionSite.submit();
-    }
+  }
 }
 
 
@@ -450,12 +404,9 @@ function B_VALIDER_ONCLICK(nbthemes, nbicones, type) {
         document.descriptionSite.submit();
     }
 
-</Script>
-
-</HEAD>
-
-<BODY bgcolor="white" topmargin="5" leftmargin="5" onload="document.descriptionSite.nomSite.focus()">
-
+</script>
+</head>
+<body class="websites"  onload="document.descriptionSite.nomSite.focus()">
 <%
 	String theAction = "";
 	if (type == null) { //pour sites bookmark
@@ -464,171 +415,131 @@ function B_VALIDER_ONCLICK(nbthemes, nbicones, type) {
 		theAction = "design.jsp";
 	}
 
-    Window window = gef.getWindow();
-    BrowseBar browseBar = window.getBrowseBar();
-    //CBO : UPDATE
-	//browseBar.setDomainName(scc.getSpaceLabel());
-	browseBar.setDomainName(spaceLabel);
-	//CBO : UPDATE
-    //browseBar.setComponentName(scc.getComponentLabel(), "manage.jsp?Action=view");
-	browseBar.setComponentName(componentLabel, "manage.jsp?Action=view");
-    if (site.getType() == 1) { //bookmark
-        browseBar.setPath(resources.getString("ModificationSite"));
-    }
+  Window window = gef.getWindow();
+  BrowseBar browseBar = window.getBrowseBar();
+  browseBar.setDomainName(spaceLabel);
+  browseBar.setComponentName(componentLabel, "manage.jsp?Action=view");
+  if (site.getType() == 1) { //bookmark
+    browseBar.setPath(resources.getString("ModificationSite"));
+  } else { //autres sites
+    browseBar.setPath(infoPath+" - "+resources.getString("ModificationSite"));
+  }
 
-    else { //autres sites
-        browseBar.setPath(infoPath+" - "+resources.getString("ModificationSite"));
-    }
-
-    //Le cadre
-    Frame frame = gef.getFrame();
-
-	//Le board
-	Board board = gef.getBoard();
-
-   //D�but code
-    out.println(window.printBefore());
-
-	if (scc.isPdcUsed()) {
-		TabbedPane tabbedPane = gef.getTabbedPane();
-		tabbedPane.addTab(resources.getString("GML.description"), "#", true, false);
-		tabbedPane.addTab(resources.getString("GML.PDC"), "pdcPositions.jsp?Action=ViewPdcPositions&Id="+id, false, true);
-		out.println(tabbedPane.print());
-	}
-    out.println(frame.printBefore());
-	out.print(board.printBefore());
+  Frame frame = gef.getFrame();
+ 
+  out.println(window.printBefore());
+  out.println(frame.printBefore());
 
 	String creationDate = resources.getOutputDate(site.getCreationDate());
 
 	int popup = site.getPopup();
 %>
+<form name="descriptionSite" action="<%=theAction%>" method="post">
+  <input type="hidden" name="Action" value="updateDescription"/>
+  <input type="hidden" name="Id" value="<%=id%>"/>
+  <input type="hidden" name="path" value="<%=currentPath%>"/>
+  <input type="hidden" name="ListeIcones"/>
+  <input type="hidden" name="ListeTopics"/>
+  <input type="hidden" name="etat" value="<%=String.valueOf(site.getState())%>" />
 
-            <TABLE ALIGN=CENTER CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%" CLASS=intfdcolor4>
-			<FORM NAME="descriptionSite" ACTION="<%=theAction%>" METHOD="POST">
-			<input type="hidden" name="Action" value="updateDescription">
-			<input type="hidden" name="Id" value="<%=id%>">
-			<input type="hidden" name="path" value="<%=currentPath%>">
-			<input type="hidden" name="ListeIcones">
-			<input type="hidden" name="ListeTopics">
-			<input type="hidden" name="etat" value="<%=String.valueOf(site.getState())%>">
+<fieldset id="infoFieldset" class="skinFieldset">
+  <legend><fmt:message key="websites.header.fieldset.info" /></legend>
+  <!-- Website info form -->
+  <div class="fields">
+    <!-- Website name -->
+    <div class="field" id="nomSiteArea">
+      <label class="txtlibform" for="nomSite"><fmt:message key="GML.name" /> </label>
+      <div class="champs">
+        <input type="text" name="nomSite" size="50" maxlength="<%=DBUtil.getTextFieldLength()%>" value="<%=EncodeHelper.javaStringToHtmlString(nom)%>"/>&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"/>
+      </div>
+    </div>
+    <div class="field" id="descriptionArea">
+      <label class="txtlibform" for="description"><fmt:message key="GML.description" /> </label>
+      <div class="champs">
+        <textarea name="description" id="description" rows="4" cols="60"><%=description%></textarea>
+      </div>
+    </div>
+    <div class="field" id="nomPageArea">
+      <label class="txtlibform" for="nomPage"><fmt:message key="NomPagePrincipale" /> </label>
+      <div class="champs">
+        <input type="text" name="nomPage" size="50" maxlength="<%=DBUtil.getTextFieldLength()%>" value="<%=EncodeHelper.javaStringToHtmlString(lapage)%>" />&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"/>
+      </div>
+    </div>
+    <div class="field" id="publisherArea">
+      <label class="txtlibform" for="publisher"><fmt:message key="GML.publisher" /> </label>
+      <div class="champs"><view:username userId="<%=site.getCreatorId()%>"/></div>
+    </div>
+    <div class="field" id="dateArea">
+      <label class="txtlibform" for="date"><fmt:message key="GML.date" /> </label>
+      <div class="champs"><%=creationDate%></div>
+    </div>
+    
+  </div>
+</fieldset>      
 
-                <tr>
-                    <td class="intfdcolor4"><span class="txtlibform"><%=" "+resources.getString("GML.name")%> : </span></td>
-                    <td class="intfdcolor4"><input type="text" name="nomSite" size="60" maxlength="<%=DBUtil.getTextFieldLength()%>" value="<%=Encode.javaStringToHtmlString(nom)%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td>
-                </tr>
-                <tr>
-                    <td class="intfdcolor4" valign=top><span class="txtlibform"><%=resources.getString("GML.description")%> : </span></td>
-                    <td class="intfdcolor4"><textarea rows="6" name="description" cols="60"><%=description%></textarea></td>
-                </tr>
-                <tr>
-<% if (site.getType() == 1) { %>
-                    <td class="intfdcolor4"><span class="txtlibform"><%=" "+resources.getString("URL")+" (ex : www.lesite.com)"%> : </span></td>
-<% } else { %>
-                    <td class="intfdcolor4"><span class="txtlibform"><%=" "+resources.getString("NomPagePrincipale")%> : </span></td>
-<% } %>
-                    <td class="intfdcolor4"><input type="text" name="nomPage" size="60" maxlength="<%=DBUtil.getTextFieldLength()%>" value="<%=Encode.javaStringToHtmlString(lapage)%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td>
-                </tr>
-
-                <tr>
-                	<td class="intfdcolor4"><span class="txtlibform"><%=resources.getString("GML.publisher")%> : </span></td>
-                    <td class="intfdcolor4"><view:username userId="<%=site.getCreatorId()%>"/></td>
-                </tr>
-                <tr>
-                    <td class="intfdcolor4"><span class="txtlibform"><%=resources.getString("GML.date")%> : </span></td>
-                    <td class="intfdcolor4"><%=creationDate%></td>
-                </tr>
-                <tr>
-
-            <td class="intfdcolor4"><span class="txtlibform"><%=resources.getString("Reference")%> :
-               </span></td>
-
-              <%
-               if (refChecked) {%>
-                        <td class="intfdcolor4"><input type="radio" name="radio"
-
-                                            value="" checked>&nbsp;<%=resources.getString("GML.yes")%>&nbsp;&nbsp;
-                                        <input type="radio" name="radio"
-
-                                            value="">&nbsp;<%=resources.getString("GML.no")%></td>
-          <%}
-
-          else {%>
-
-                            <td class="intfdcolor4"><input type="radio" name="radio"
-
-                                            value="">&nbsp;<%=resources.getString("GML.yes")%>&nbsp;&nbsp;
-                                        <input type="radio" name="radio"
-
-                                            value="" checked>&nbsp;<%=resources.getString("GML.no")%></td>
+<fieldset id="specificationsFieldset" class="skinFieldset">
+  <legend><fmt:message key="websites.header.fieldset.specifications" /></legend>
+  <div class="fields">
+    <div class="field" id="radioArea">
+      <label class="txtlibform" for="radio"><fmt:message key="Reference" /> </label>
+      <div class="champs">
+        <input type="radio" name="radio" value="" <%=refChecked?"checked='checked'":""%>/>&nbsp;<fmt:message key="GML.yes" />&nbsp;&nbsp;
+        <input type="radio" name="radio" value="" <%=refChecked?"":"checked='checked'"%>/>&nbsp;<fmt:message key="GML.no" />
+      </div>
+    </div>
+    <div class="field" id="popupArea">
+      <label class="txtlibform" for="popup"><fmt:message key="OuvrirPopup" /> </label>
+      <div class="champs">
+        <input type="checkbox" name="popup" <%=(popup == 1)?"checked":"" %>/>
+      </div>
+    </div>
+    <div class="field" id="iconArea">
+      <label class="txtlibform" for="popup"><fmt:message key="IconesAssociees" /> </label>
+      <div class="champs">
 
 
-          <%}%>
-
-                </tr>
-
-                <tr>
-               			<td class="intfdcolor4"><span class="txtlibform"><%=resources.getString("OuvrirPopup")%> : </span></td>
-
-               			<% 	String openPopup = "";
-                        	if (popup == 1)
-								openPopup = "checked";
-						%>
-                        <td class="intfdcolor4"><input type="checkbox" name="popup" <%=openPopup%>></td>
-               </tr>
-
-                   <tr>
-                        <td class="intfdcolor4" valign=top><span class="txtlibform"><%=resources.getString("IconesAssociees")%> : </span></td>
-                        <td class="intfdcolor4">
 <%
 
-                                                //CBO : REMOVE Collection c = scc.getAllIcons();
+Iterator<IconDetail> iconIterator = allIcons.iterator();
 
-												//CBO : UPDATE
-                                                //Iterator i = c.iterator();
-												Iterator i = allIcons.iterator();
+iconIterator.next(); // on saute la premiere icone (site important)
 
-                                                i.next(); // on saute la premiere icone (site important)
-
-                                                while (i.hasNext()) {
-                                                    IconDetail icon = (IconDetail) i.next();
-                                                    if (recupParam != null) {//=oui
-                                                        if (appartientId(icon, icones))
-                                                            out.println("<input type=\"checkbox\" name=\"icon\" value = \""+icon.getIconPK().getId()+"\" checked>&nbsp;");
-                                                        else out.println("<input type=\"checkbox\" name=\"icon\" value = \""+icon.getIconPK().getId()+"\">&nbsp;");
-                                                    }
-                                                    else {
-                                                        if (appartient(icon, icones))
-                                                            out.println("<input type=\"checkbox\" name=\"icon\" value = \""+icon.getIconPK().getId()+"\" checked>&nbsp;");
-                                                        else out.println("<input type=\"checkbox\" name=\"icon\" value = \""+icon.getIconPK().getId()+"\">&nbsp;");
-                                                    }
-
-                                                    out.println("<img src=\""+icon.getAddress()+"\" alt=\""+resources.getString(icon.getDescription())+"\" align=absmiddle title=\""+resources.getString(icon.getDescription())+"\">&nbsp;&nbsp;");
-                                                    out.println(resources.getString(icon.getName())+"<BR>");
-                                                }
+while (iconIterator.hasNext()) {
+  IconDetail icon = (IconDetail) iconIterator.next();
+  out.println("<div class=\"specification-tag\">");
+  if (recupParam != null) {//=oui
+      if (appartientId(icon, icones)) {
+          out.println("<input type=\"checkbox\" name=\"icon\" value = \""+icon.getIconPK().getId()+"\" checked>&nbsp;");
+      } else {
+        out.println("<input type=\"checkbox\" name=\"icon\" value = \""+icon.getIconPK().getId()+"\">&nbsp;");
+      }
+  } else {
+      if (appartient(icon, icones)) {
+        out.println("<input type=\"checkbox\" name=\"icon\" value = \""+icon.getIconPK().getId()+"\" checked>&nbsp;");
+      }
+      else {
+        out.println("<input type=\"checkbox\" name=\"icon\" value = \""+icon.getIconPK().getId()+"\">&nbsp;");
+      }
+  }
+    out.println("<img src=\""+icon.getAddress()+"\" alt=\""+resources.getString(icon.getDescription())+"\" align=absmiddle title=\""+resources.getString(icon.getDescription())+"\">&nbsp;&nbsp;");
+    out.println(resources.getString(icon.getName()));
+    out.println("</div>");
+}
 %>
-                                                </td>
+      </div>
+    </div>
+  </div>
+</fieldset>
 
-                </tr>
+<% if (type == null) { %>
+<fieldset id="foldersFieldset" class="skinFieldset">
+  <legend><fmt:message key="websites.header.fieldset.folders" /></legend>
 
-                                <tr>
-
-            <td height="10" colspan="2" class="intfdcolor4">(<img border="0" src="<%=mandatoryField%>" width="5" height="5">
-              : <%=resources.getString("GML.requiredField")%>)</td>
-                 </tr>
 <%
-		if (type != null) {
-			out.println("</FORM>");
-		}
-%>
-            </table>
-<%
-
-if (type == null) {
-    //Recupere la liste des themes ou le site est deja publie
-
-    ArrayPane arrayPane = gef.getArrayPane("siteList", "", request, session);
-    arrayPane.setVisibleLineNumber(1000);
-    //D�finition des colonnes du tableau
+  //Recupere la liste des themes ou le site est deja publie
+  ArrayPane arrayPane = gef.getArrayPane("siteList", "", request, session);
+  arrayPane.setVisibleLineNumber(1000);
+  //Definition des colonnes du tableau
 	ArrayColumn arrayColumnTopic = arrayPane.addArrayColumn(resources.getString("NomThemes"));
 	arrayColumnTopic.setSortable(false);
 	ArrayColumn arrayColumnPub = arrayPane.addArrayColumn(resources.getString("GML.publish"));
@@ -637,35 +548,41 @@ if (type == null) {
 	String resultat = afficheArbo(site.getSitePK().getId(), arrayPane, "0", scc, 0);
 
 	out.println(resultat);
-	out.println("</FORM>");
-}
+%>
+</fieldset>
+<% } %>
 
-	//fin du code
-	out.print(board.printAfter());
+<view:pdcClassification componentId="<%=scc.getComponentId()%>" contentId="${curWebSiteId}" editable="true" />
+
+<div class="legend">
+  <fmt:message key="GML.requiredField" /> : <img src="<%=mandatoryField%>" width="5" height="5" />
+</div>
+
+</form>
+
+<%
 	out.println(frame.printMiddle());
 
-	//CBO : UPDATE
-	//int size = c.size() - 1;
 	int size = allIcons.size() - 1;
 
 	ButtonPane buttonPane = gef.getButtonPane();
 	Button validerButton = null;
 	if (type == null) {
-		  validerButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK("+nbThemes("0", scc, 0)+", "+size+", '"+site.getType()+"');", false);
-	}
-	else
-		validerButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK(0, "+size+", '"+site.getType()+"');", false);
+		validerButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK("+nbThemes("0", scc, 0)+", "+size+", '"+site.getType()+"');", false);
+	} else {
+    	validerButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK(0, "+size+", '"+site.getType()+"');", false);
+  	}
 
-	Button annulerButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=B_ANNULER_ONCLICK();", false);
+	Button annulerButton = gef.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=B_ANNULER_ONCLICK();", false);
 	buttonPane.addButton(validerButton);
 	buttonPane.addButton(annulerButton);
 	buttonPane.setHorizontalPosition();
 
-	out.println("<br><center>"+buttonPane.print()+"</center><br>");
+	out.println("<br/><center>"+buttonPane.print()+"</center>");
 
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
 
 %>
-</BODY>
-</HTML>
+</body>
+</html>

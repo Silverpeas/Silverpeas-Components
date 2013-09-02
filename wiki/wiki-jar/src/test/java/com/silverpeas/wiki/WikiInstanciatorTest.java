@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -65,18 +65,6 @@ public class WikiInstanciatorTest extends AbstractTestDao {
   public void setUp() throws Exception {
     super.setUp();
     folder.create();
-    Properties props = new Properties();
-    props.load(this.getClass().getClassLoader().getResourceAsStream(
-        "jndi.properties"));
-    String jndiBaseDir = props.getProperty(Context.PROVIDER_URL).substring(8);
-    props = new Properties();
-    props.load(this.getClass().getClassLoader().getResourceAsStream(
-        "jdbc.properties"));
-    String jndiPath = props.getProperty("jndi.name", "");
-    File jndiDir = new File(jndiBaseDir + File.separatorChar + jndiPath.substring(0, jndiPath.
-        lastIndexOf('/')));
-    jndiDir.mkdirs();
-    super.setUp();
   }
 
   @Override
@@ -112,5 +100,10 @@ public class WikiInstanciatorTest extends AbstractTestDao {
     assertNotNull(uncompressedFiles.size());
     assertEquals(29, uncompressedFiles.size());
 
+  }
+
+  @Override
+  protected String getTableCreationFileName() {
+    return "create-database.sql";
   }
 }

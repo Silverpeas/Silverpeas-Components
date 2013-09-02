@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -9,7 +9,7 @@
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
  * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
  * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -22,7 +22,11 @@ package com.silverpeas.mailinglist.jms;
 
 import com.mockrunner.mock.jms.JMSMockObjectFactory;
 import com.mockrunner.mock.jms.MockQueue;
-
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.jms.Queue;
 import javax.jms.QueueConnectionFactory;
 import javax.jms.TextMessage;
@@ -31,16 +35,11 @@ import javax.naming.Context;
 import javax.naming.Name;
 import javax.naming.Reference;
 import javax.naming.spi.ObjectFactory;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class MockObjectFactory implements ObjectFactory {
 
   private final static JMSMockObjectFactory factory = new JMSMockObjectFactory();
-  private final static Map<String, Queue> queues = new HashMap<String, Queue>(10);
+  private final static Map<String, Queue> queues = new ConcurrentHashMap<String, Queue>(10);
 
   public synchronized static void clearAll() {
     Set<String> keys = queues.keySet();

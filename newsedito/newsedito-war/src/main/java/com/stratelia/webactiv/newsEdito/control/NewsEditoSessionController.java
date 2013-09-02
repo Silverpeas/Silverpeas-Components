@@ -1,25 +1,22 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.newsEdito.control;
 
@@ -30,9 +27,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.ejb.EJBException;
-import javax.ejb.RemoveException;
-
-import org.apache.commons.fileupload.FileItem;
 
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
@@ -46,6 +40,7 @@ import com.silverpeas.thumbnail.service.ThumbnailService;
 import com.silverpeas.thumbnail.service.ThumbnailServiceImpl;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
+
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -58,13 +53,10 @@ import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.favorit.control.FavoritBm;
-import com.stratelia.webactiv.util.favorit.control.FavoritBmHome;
 import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
 import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
 import com.stratelia.webactiv.util.publication.info.model.ModelPK;
@@ -72,69 +64,16 @@ import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
-import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
 import com.stratelia.webactiv.util.statistic.model.StatisticResultDetail;
 
-/*
- * CVS Informations
- *
- * $Id$
- *
- * $Log: NewsEditoSessionController.java,v $
- * Revision 1.9.4.1  2009/06/03 15:08:58  sfariello
- * Remplacer formulaires BdD par formulaires XML
- *
- * Revision 1.9  2008/07/11 14:05:29  ehugonnet
- * Suppression méthode non utilisée
- *
- * Revision 1.8  2007/06/25 09:10:52  sfariello
- * no message
- *
- * Revision 1.7  2007/06/14 08:40:52  neysseri
- * no message
- *
- * Revision 1.6.6.2  2007/06/14 08:22:03  neysseri
- * no message
- *
- * Revision 1.6.6.1  2007/05/24 15:33:56  sfariello
- * no message
- *
- * Revision 1.6  2005/09/30 14:19:21  neysseri
- * Centralisation de la gestion des dates
- *
- * Revision 1.5  2005/04/14 18:30:48  neysseri
- * no message
- *
- * Revision 1.4  2004/10/05 13:21:54  dlesimple
- * Couper/Coller composant
- *
- * Revision 1.3  2004/09/28 09:25:37  neysseri
- * Utilisation de la bibliothèque iText au lieu de Libraries/lowagie + nettoyage sources
- *
- * Revision 1.2  2003/12/05 15:01:54  svuillet
- * no message
- *
- * Revision 1.1.1.1  2002/08/06 14:47:57  nchaix
- * no message
- *
- * Revision 1.1  2002/01/18 09:07:24  lbertin
- * Stabilisation lot 2 : Request routers et sessioncontrollers
- *
- * Revision 1.10  2002/01/08 12:00:32  santonio
- * SilverTrace & SilverException
- *
- */
+import org.apache.commons.fileupload.FileItem;
 
-/**
- * Class declaration
- * @author
- */
 public class NewsEditoSessionController extends AbstractComponentSessionController {
+
   private String archiveId = null;
   private String titleId = null;
   private String publicationId = null;
   private boolean isConsulting = true;
-
   private final static String root = "0";
   // private final static java.text.SimpleDateFormat formatter = new
   // java.text.SimpleDateFormat("yyyy/MM/dd");
@@ -145,29 +84,25 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
   private FavoritBm favoritBm;
   private StatisticBm statisticBm;
   private ThumbnailService thumbnailService = null;
-
   private ResourceLocator settings;
 
   /**
    * Constructor declaration
+   *
    * @see
    */
-  public NewsEditoSessionController(MainSessionController mainSessionCtrl,
-      ComponentContext context) {
-    super(mainSessionCtrl, context,
-        "com.stratelia.webactiv.newsEdito.multilang.newsEditoBundle");
+  public NewsEditoSessionController(MainSessionController mainSessionCtrl, ComponentContext context) {
+    super(mainSessionCtrl, context, "org.silverpeas.newsEdito.multilang.newsEditoBundle");
     SilverTrace.info("NewsEdito", "NewsEditoSessionControl.constructor",
         "NewsEdito.MSG_ENTRY_METHOD");
 
     try {
-      nodeBm = ((NodeBmHome) EJBUtilitaire.getEJBObjectRef(
-          JNDINames.NODEBM_EJBHOME, NodeBmHome.class)).create();
-      publicationBm = ((PublicationBmHome) EJBUtilitaire.getEJBObjectRef(
-          JNDINames.PUBLICATIONBM_EJBHOME, PublicationBmHome.class)).create();
-      favoritBm = ((FavoritBmHome) EJBUtilitaire.getEJBObjectRef(
-          JNDINames.FAVORITBM_EJBHOME, FavoritBmHome.class)).create();
-      statisticBm = ((StatisticBmHome) EJBUtilitaire.getEJBObjectRef(
-          JNDINames.STATISTICBM_EJBHOME, StatisticBmHome.class)).create();
+      nodeBm = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
+      publicationBm = EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
+          PublicationBm.class);
+      favoritBm = EJBUtilitaire.getEJBObjectRef(JNDINames.FAVORITBM_EJBHOME, FavoritBm.class);
+      statisticBm = EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticBm.class);
+
     } catch (Exception e) {
       throw new EJBException("NewsEditoSessionControl() : Exception : " + e);
     }
@@ -175,38 +110,31 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
+  @Override
   public ResourceLocator getSettings() {
     if (settings == null) {
-      settings = new ResourceLocator(
-          "com.stratelia.webactiv.newsEdito.settings.newsEditoSettings", "");
+      settings = new ResourceLocator("org.silverpeas.newsEdito.settings.newsEditoSettings", "");
     }
     return settings;
   }
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
   public UserDetail[] getUserList() {
-    return getOrganizationController().getAllUsers();
+    return getOrganisationController().getAllUsers();
   }
 
   /**
    * Method declaration
-   * @param userId
-   * @return
-   * @see
-   */
-  public UserDetail getUserDetail(String userId) {
-    return getOrganizationController().getUserDetail(userId);
-  }
-
-  /**
-   * Method declaration
+   *
    * @return
    * @see
    */
@@ -216,6 +144,7 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
 
   /**
    * Method declaration
+   *
    * @param archiveId
    * @see
    */
@@ -226,6 +155,7 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -235,6 +165,7 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
 
   /**
    * Method declaration
+   *
    * @param titleId
    * @see
    */
@@ -245,6 +176,7 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -254,6 +186,7 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
 
   /**
    * Method declaration
+   *
    * @param publicationId
    * @see
    */
@@ -263,6 +196,7 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
 
   /**
    * Method declaration
+   *
    * @param pubId
    * @see
    */
@@ -306,6 +240,7 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
 
   /**
    * Method declaration
+   *
    * @param nodeId
    * @see
    */
@@ -434,6 +369,7 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
 
   /**
    * Method declaration
+   *
    * @param fatherId
    * @return
    * @throws NewsEditoException
@@ -442,10 +378,12 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
   public Collection<StatisticResultDetail> getArchiveUsage(String fatherId)
       throws NewsEditoException {
     try {
-      if (fatherId == null)
+      if (fatherId == null) {
         fatherId = root;
-      if (fatherId.length() == 0)
+      }
+      if (fatherId.length() == 0) {
         fatherId = root;
+      }
 
       Collection<StatisticResultDetail> statList = new ArrayList<StatisticResultDetail>();
 
@@ -479,8 +417,9 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
         // créer le StatisticResultDetail
         StatisticResultDetail statDetail = new StatisticResultDetail(pk,
             Integer.toString(accessByNode));
-        if (statDetail != null)
+        if (statDetail != null) {
           statDetail.setDetail(nodeDetail);
+        }
 
         statList.add(statDetail);
       }
@@ -592,6 +531,7 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
 
   /**
    * Method declaration
+   *
    * @param name
    * @param description
    * @return
@@ -632,6 +572,7 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
 
   /**
    * Method declaration
+   *
    * @param name
    * @param description
    * @throws NewsEditoException
@@ -667,6 +608,7 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
 
   /**
    * Method declaration
+   *
    * @param name
    * @param description
    * @param imageName
@@ -689,22 +631,22 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
 
       detail.setName(name);
       detail.setDescription(description);
-      	publicationBm.setDetail(detail);
-      	// update de l'image
-      	ThumbnailDetail thumbDetail = new ThumbnailDetail(
-      		  getComponentId(),
-      		  Integer.valueOf(getPublicationId()),
-  			  ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
-        	thumbDetail.setOriginalFileName(imageName);
-        	thumbDetail.setMimeType(mimeType);
+      publicationBm.setDetail(detail);
+      // update de l'image
+      ThumbnailDetail thumbDetail = new ThumbnailDetail(
+          getComponentId(),
+          Integer.valueOf(getPublicationId()),
+          ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
+      thumbDetail.setOriginalFileName(imageName);
+      thumbDetail.setMimeType(mimeType);
 
-        	if(getThumbnailService().getCompleteThumbnail(thumbDetail) != null){
-        		// case update
-        		getThumbnailService().updateThumbnail(thumbDetail);
-        	}else{
-        		// case create
-        		getThumbnailService().createThumbnail(thumbDetail);
-        	}
+      if (getThumbnailService().getCompleteThumbnail(thumbDetail) != null) {
+        // case update
+        getThumbnailService().updateThumbnail(thumbDetail);
+      } else {
+        // case create
+        getThumbnailService().createThumbnail(thumbDetail);
+      }
     } catch (Exception e) {
       throw new NewsEditoException("NewsEditoSessionControl.updatePublication",
           NewsEditoException.WARNING, "NewsEdito.EX_PROBLEM_TO_UPDATE_PUBLI", e);
@@ -712,13 +654,15 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
   }
 
   public ThumbnailService getThumbnailService() {
-	    if (thumbnailService == null)
-	    	thumbnailService = new ThumbnailServiceImpl();
-	    return thumbnailService;
-	  }
-  
+    if (thumbnailService == null) {
+      thumbnailService = new ThumbnailServiceImpl();
+    }
+    return thumbnailService;
+  }
+
   /**
    * Method declaration
+   *
    * @param pubId
    * @throws NewsEditoException
    * @see
@@ -737,6 +681,7 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
 
   /**
    * Method declaration
+   *
    * @param publicationId
    * @return
    * @throws NewsEditoException
@@ -815,6 +760,7 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
 
   /**
    * Method declaration
+   *
    * @param id
    * @return
    * @throws NewsEditoException
@@ -846,6 +792,7 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
 
   /**
    * Method declaration
+   *
    * @return
    * @throws NewsEditoException
    * @see
@@ -854,8 +801,7 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
     SilverTrace.info("NewsEdito", "NewsEditoSessionControl.getAllModels",
         "NewsEdito.MSG_ENTRY_METHOD");
     try {
-      return publicationBm.getAllModelsDetail(/* pubPK */
-      );
+      return publicationBm.getAllModelsDetail(/* pubPK */);
     } catch (Exception e) {
       throw new NewsEditoException("NewsEditoSessionControl.getAllModels",
           NewsEditoException.WARNING, "NewsEdito.EX_PROBLEM_TO_RETURN_MODELS",
@@ -865,6 +811,7 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
 
   /**
    * Method declaration
+   *
    * @param modelId
    * @throws NewsEditoException
    * @see
@@ -898,7 +845,7 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
 
       String xmlFormShortName = null;
       PublicationTemplateManager publicationTemplateManager =
-              PublicationTemplateManager.getInstance();
+          PublicationTemplateManager.getInstance();
       if (!StringUtil.isDefined(xmlFormName)) {
         xmlFormShortName = pubDetail.getInfoId();
         xmlFormName = null;
@@ -975,6 +922,7 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
 
   /**
    * Method declaration
+   *
    * @param infos
    * @throws NewsEditoException
    * @see
@@ -1112,6 +1060,7 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
 
   /**
    * Method declaration
+   *
    * @param fatherId
    * @param name
    * @param description
@@ -1196,7 +1145,6 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
   /**
    * updateTitle() Update a Node
    */
-
   public void updateTitle(String nodeId, String name, String description,
       String model, String status) throws NewsEditoException {
     SilverTrace.info("NewsEdito", "NewsEditoSessionControl.updateTitle",
@@ -1278,6 +1226,7 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
 
   /**
    * Method declaration
+   *
    * @param pubList
    * @return
    * @throws NewsEditoException
@@ -1329,50 +1278,23 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
     isConsulting = val;
   }
 
+  @Override
   public void close() {
-    try {
-      if (favoritBm != null)
-        favoritBm.remove();
-    } catch (RemoteException e) {
-      SilverTrace.error("newsEditoSession", "NewsEditoSessionController.close",
-          "", e);
-    } catch (RemoveException e) {
-      SilverTrace.error("newsEditoSession", "NewsEditoSessionController.close",
-          "", e);
+    if (favoritBm != null) {
+      favoritBm = null;
     }
-    try {
-      if (nodeBm != null)
-        nodeBm.remove();
-    } catch (RemoteException e) {
-      SilverTrace.error("newsEditoSession", "NewsEditoSessionController.close",
-          "", e);
-    } catch (RemoveException e) {
-      SilverTrace.error("newsEditoSession", "NewsEditoSessionController.close",
-          "", e);
+    if (nodeBm != null) {
+      nodeBm = null;
     }
-    try {
-      if (publicationBm != null)
-        publicationBm.remove();
-    } catch (RemoteException e) {
-      SilverTrace.error("newsEditoSession", "NewsEditoSessionController.close",
-          "", e);
-    } catch (RemoveException e) {
-      SilverTrace.error("newsEditoSession", "NewsEditoSessionController.close",
-          "", e);
+    if (publicationBm != null) {
+      publicationBm = null;
     }
-    try {
-      if (statisticBm != null)
-        statisticBm.remove();
-    } catch (RemoteException e) {
-      SilverTrace.error("newsEditoSession", "NewsEditoSessionController.close",
-          "", e);
-    } catch (RemoveException e) {
-      SilverTrace.error("newsEditoSession", "NewsEditoSessionController.close",
-          "", e);
+    if (statisticBm != null) {
+      statisticBm = null;
     }
   }
 
-  public void index() throws RemoteException, NewsEditoException {
+  public void index() throws NewsEditoException {
     // recuperation des archives
     Collection<NodeDetail> archives = getArchiveList();
     NodeDetail archive = null;

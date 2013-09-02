@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.silverpeas.components</groupId>
     <artifactId>delegatednews</artifactId>
-    <version>5.11-SNAPSHOT</version>
+    <version>5.13-SNAPSHOT</version>
   </parent>
 
   <groupId>com.silverpeas.components.delegatednews</groupId>
@@ -26,6 +26,10 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>jstl</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.silverpeas.core</groupId>
       <artifactId>lib-core</artifactId>
       <version>${core.version}</version>
@@ -34,8 +38,21 @@
     <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
       <artifactId>publication</artifactId>
+      <classifier>client</classifier>
       <version>${core.version}</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.silverpeas.core</groupId>
+      <artifactId>test-core</artifactId>
+      <version>${core.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.silverpeas.core</groupId>
+      <artifactId>ws-test-core</artifactId>
+      <version>${core.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 

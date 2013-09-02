@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,27 +24,19 @@
 
 package com.silverpeas.components.organizationchart.service;
 
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import javax.naming.Context;
-
 import com.silverpeas.components.organizationchart.model.OrganizationalRole;
-import com.silverpeas.util.StringUtil;
 
 public class OrganizationChartConfiguration {
-  Hashtable<String, String> env = null;
 
-  private String ldapRoot = null;
-  private String ldapClassPerson = null;
-  private String ldapClassUnit = null;
-  private String ldapAttUnit = null;
-  private String ldapAttName = null;
-  private String ldapAttTitle = null; // champ LDAP du titre
-  private String ldapAttDesc = null; // champ ldap de la description
-  private String ldapAttAccount = null; // champ ldap de l'identifiant de compte Silverpeas
-  private String ldapAttCSSClass = null;
+  private String root = null;
+  
+  private String attUnit = null;
+  private String attName = null;
+  private String attTitle = null; // champ LDAP du titre
+  private String attDesc = null; // champ ldap de la description
 
   private List<OrganizationalRole> unitsChartCentralLabel = null;
   private List<OrganizationalRole> unitsChartRightLabel = null;
@@ -54,187 +46,78 @@ public class OrganizationChartConfiguration {
   private List<OrganizationalRole> personnsChartCategoriesLabel = null;
   private Map<String, String> unitsChartOthersInfosKeys = null;
   private Map<String, String> personnsChartOthersInfosKeys = null;
-  private String ldapAttActif = null;
-  private String domainId = null;
 
   public OrganizationChartConfiguration() {
-    this.env = new Hashtable<String, String>();
-    env.put(Context.REFERRAL, "ignore");
-  }
-
-  /**
-   * @return the env
-   */
-  public Hashtable<String, String> getEnv() {
-    return env;
-  }
-
-  /**
-   * @param env the env to set
-   */
-  public void setEnv(Hashtable<String, String> env) {
-    this.env = env;
-  }
-
-  /**
-   * @return the domainId
-   */
-  public String getDomainId() {
-    return domainId;
-  }
-
-  /**
-   * @param domainId the domainId to set
-   */
-  public void setDomainId(String domainId) {
-    this.domainId = domainId;
-  }
-
-  /**
-   * @param serverURL the serverURL to set
-   */
-  public void setServerURL(String serverURL) {
-    env.put(Context.PROVIDER_URL, serverURL);
-  }
-
-  /**
-   * @param initialContextFactory the initialContextFactory to set
-   */
-  public void setInitialContextFactory(String initialContextFactory) {
-    this.env.put(Context.INITIAL_CONTEXT_FACTORY, initialContextFactory);
-  }
-
-  /**
-   * @param authenticationMode the authenticationMode to set
-   */
-  public void setAuthenticationMode(String authenticationMode) {
-    env.put(Context.SECURITY_AUTHENTICATION, authenticationMode);
-  }
-
-  /**
-   * @param principal the principal to set
-   */
-  public void setPrincipal(String principal) {
-    env.put(Context.SECURITY_PRINCIPAL, principal);
-  }
-
-  /**
-   * @param credentials the credentials to set
-   */
-  public void setCredentials(String credentials) {
-    env.put(Context.SECURITY_CREDENTIALS, credentials);
   }
 
   /**
    * @return the ldapRoot
    */
-  public String getLdapRoot() {
-    return ldapRoot;
+  public String getRoot() {
+    return root;
   }
 
   /**
    * @param ldapRoot the ldapRoot to set
    */
-  public void setLdapRoot(String ldapRoot) {
-    this.ldapRoot = ldapRoot;
+  public void setRoot(String root) {
+    this.root = root;
   }
-
-  /**
-   * @return the ldapClassPerson
-   */
-  public String getLdapClassPerson() {
-    return ldapClassPerson;
-  }
-
-  /**
-   * @param ldapClassPerson the ldapClassPerson to set
-   */
-  public void setLdapClassPerson(String ldapClassPerson) {
-    this.ldapClassPerson = ldapClassPerson;
-  }
-
-  /**
-   * @return the ldapClassUnit
-   */
-  public String getLdapClassUnit() {
-    return ldapClassUnit;
-  }
-
-  /**
-   * @param ldapClassUnit the ldapClassUnit to set
-   */
-  public void setLdapClassUnit(String ldapClassUnit) {
-    this.ldapClassUnit = ldapClassUnit;
-  }
-
+  
   /**
    * @return the ldapAttUnit
    */
-  public String getLdapAttUnit() {
-    return ldapAttUnit;
+  public String getAttUnit() {
+    return attUnit;
   }
 
   /**
    * @param ldapAttUnit the ldapAttUnit to set
    */
-  public void setLdapAttUnit(String ldapAttUnit) {
-    this.ldapAttUnit = ldapAttUnit;
+  public void setAttUnit(String attUnit) {
+    this.attUnit = attUnit;
   }
 
   /**
    * @return the ldapAttName
    */
-  public String getLdapAttName() {
-    return ldapAttName;
+  public String getAttName() {
+    return attName;
   }
 
   /**
    * @param ldapAttName the ldapAttName to set
    */
-  public void setLdapAttName(String ldapAttName) {
-    this.ldapAttName = ldapAttName;
+  public void setAttName(String attName) {
+    this.attName = attName;
   }
 
   /**
    * @return the ldapAttTitle
    */
-  public String getLdapAttTitle() {
-    return ldapAttTitle;
+  public String getAttTitle() {
+    return attTitle;
   }
 
   /**
    * @param ldapAttTitle the ldapAttTitle to set
    */
-  public void setLdapAttTitle(String ldapAttTitle) {
-    this.ldapAttTitle = ldapAttTitle;
+  public void setAttTitle(String attTitle) {
+    this.attTitle = attTitle;
   }
 
   /**
    * @return the ldapAttDesc
    */
-  public String getLdapAttDesc() {
-    return ldapAttDesc;
+  public String getAttDesc() {
+    return attDesc;
   }
 
   /**
    * @param ldapAttDesc the ldapAttDesc to set
    */
-  public void setLdapAttDesc(String ldapAttDesc) {
-    this.ldapAttDesc = ldapAttDesc;
-  }
-
-  /**
-   * @return the ldapAttAccount
-   */
-  public String getLdapAttAccount() {
-    return ldapAttAccount;
-  }
-
-  /**
-   * @param ldapAttAccount the ldapAttAccount to set
-   */
-  public void setLdapAttAccount(String ldapAttAccount) {
-    this.ldapAttAccount = ldapAttAccount;
+  public void setAttDesc(String attDesc) {
+    this.attDesc = attDesc;
   }
 
   /**
@@ -333,28 +216,6 @@ public class OrganizationChartConfiguration {
    */
   public void setPersonnsChartOthersInfosKeys(Map<String, String> personnsChartOthersInfosKeys) {
     this.personnsChartOthersInfosKeys = personnsChartOthersInfosKeys;
-  }
-
-  /**
-   * @return the ldapAttActif
-   */
-  public String getLdapAttActif() {
-    return ldapAttActif;
-  }
-
-  /**
-   * @param ldapAttActif the ldapAttActif to set
-   */
-  public void setLdapAttActif(String ldapAttActif) {
-    this.ldapAttActif = StringUtil.isDefined(ldapAttActif) ? ldapAttActif : null;
-  }
-
-  public void setLdapAttCSSClass(String ldapAttCSSClass) {
-    this.ldapAttCSSClass = StringUtil.isDefined(ldapAttCSSClass) ? ldapAttCSSClass : null;
-  }
-
-  public String getLdapAttCSSClass() {
-    return ldapAttCSSClass;
   }
   
 }

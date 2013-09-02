@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -9,7 +9,7 @@
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
  * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
  * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -20,27 +20,34 @@
  */
 package com.silverpeas.mailinglist.service.notification;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-
 import com.silverpeas.mailinglist.service.model.beans.Message;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+
 public class TestNotificationFormatter {
 
-  private ApplicationContext applicationContext;
+  private static ConfigurableApplicationContext applicationContext;
 
-  @Before
-  public void loadContext() {
-    applicationContext = new ClassPathXmlApplicationContext("spring-checker.xml",
-        "spring-notification.xml", "spring-hibernate.xml", "spring-datasource.xml");
+  @BeforeClass
+  public static void loadContext() {
+    applicationContext = new ClassPathXmlApplicationContext("/spring-checker.xml",
+        "/spring-notification.xml", "/spring-mailinglist-services.xml",
+        "/spring-mailinglist-dao.xml", "/spring-mailinglist-embbed-datasource.xml");
+  }
+
+  @AfterClass
+  public static void unloadContext() {
+    applicationContext.close();
   }
 
   protected NotificationFormatter getFormatter() {
-    return (NotificationFormatter) this.applicationContext.getBean("notificationFormatter");
+    return applicationContext.getBean(NotificationFormatter.class);
   }
 
   @Test
@@ -65,19 +72,17 @@ public class TestNotificationFormatter {
   public void testFormatMessage() {
     Message message = new Message();
     message.setBody("Hello World");
-    message.setId("id");
     message.setComponentId("componentId");
     NotificationFormatter formatter = getFormatter();
     String result = formatter.formatMessage(message, "", false);
     assertThat(result, is("<html><head/><body><p>[null]</p><a href=\"/Rmailinglist/"
-        + "componentId/message/id\">Cliquez ici</a></body></html>"));
+        + "componentId/message/" + message.getId() + "\">Cliquez ici</a></body></html>"));
   }
 
   @Test
   public void testFormatModerationMessage() {
     Message message = new Message();
     message.setBody("Hello World");
-    message.setId("id");
     message.setTitle("title");
     message.setComponentId("componentId");
     NotificationFormatter formatter = getFormatter();
@@ -91,7 +96,6 @@ public class TestNotificationFormatter {
   public void testPrepareModerationUrl() {
     Message message = new Message();
     message.setTitle("Hello World");
-    message.setId("id");
     message.setComponentId("componentId");
     NotificationFormatter formatter = getFormatter();
     String result = formatter.prepareUrl(message, true);
@@ -102,10 +106,9 @@ public class TestNotificationFormatter {
   public void testPrepareUrl() {
     Message message = new Message();
     message.setTitle("Hello World");
-    message.setId("id");
     message.setComponentId("componentId");
     NotificationFormatter formatter = getFormatter();
     String result = formatter.prepareUrl(message, false);
-    assertThat(result, is("/Rmailinglist/componentId/message/id"));
+    assertThat(result, is("/Rmailinglist/componentId/message/" + message.getId()));
   }
 }

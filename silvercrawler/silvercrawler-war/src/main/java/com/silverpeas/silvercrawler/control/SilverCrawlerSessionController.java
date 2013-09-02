@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -9,7 +9,7 @@
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
  * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
  * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -21,13 +21,7 @@
 package com.silverpeas.silvercrawler.control;
 
 import com.silverpeas.admin.components.Parameter;
-import com.silverpeas.silvercrawler.model.FileDetail;
-import com.silverpeas.silvercrawler.model.FileFolder;
-import com.silverpeas.silvercrawler.model.SilverCrawlerFileUploadException;
-import com.silverpeas.silvercrawler.model.SilverCrawlerFolderCreationException;
-import com.silverpeas.silvercrawler.model.SilverCrawlerFolderRenameException;
-import com.silverpeas.silvercrawler.model.SilverCrawlerForbiddenActionException;
-import com.silverpeas.silvercrawler.model.SilverCrawlerRuntimeException;
+import com.silverpeas.silvercrawler.model.*;
 import com.silverpeas.silvercrawler.statistic.HistoryByUser;
 import com.silverpeas.silvercrawler.statistic.HistoryDetail;
 import com.silverpeas.silvercrawler.statistic.Statistic;
@@ -42,30 +36,23 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
-import org.silverpeas.search.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-import org.silverpeas.search.indexEngine.model.IndexEntryPK;
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.StringTokenizer;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.search.SearchEngineFactory;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 import org.silverpeas.search.indexEngine.model.RepositoryIndexer;
+import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class SilverCrawlerSessionController extends AbstractComponentSessionController {
 
@@ -437,7 +424,7 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
         SilverTrace.info("silverCrawler", "SilverCrawlerSessionController.getResultSearch()",
           "root.MSG_GEN_PARAM_VALUE", "result =" + result.size());
 
-        
+        FileDetail file = null;
         for (MatchingIndexEntry matchIndex : result) {
           String type = matchIndex.getObjectType();
           String path = matchIndex.getObjectId();
@@ -447,14 +434,17 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
           if (fileOnServer.exists()) {
             // Récupération des objects indéxés
             // Modification du chemin absolu pour masquer le contexte
+            String absolutePath = path;
             path = path.substring(rootPath.length() + 1);
             if ("LinkedFile".equals(type)) {//File
-              FileDetail file = new FileDetail(matchIndex.getTitle(), path, fileOnServer.length(), false);
+              file =
+                  new FileDetail(matchIndex.getTitle(), path, absolutePath, fileOnServer.length(),
+                      false);
               docs.add(file);
               SilverTrace.info("silverCrawler", "SilverCrawlerSessionController.getResultSearch()",
                 "root.MSG_GEN_PARAM_VALUE", "fichier = " + path);
             } else if ("LinkedDir".equals(type)) {//Directory
-              FileDetail file = new FileDetail(matchIndex.getTitle(), path, 0, true);
+              file = new FileDetail(matchIndex.getTitle(), path, absolutePath, 0, true);
               docs.add(file);
               SilverTrace.info("silverCrawler", "SilverCrawlerSessionController.getResultSearch()",
                 "root.MSG_GEN_PARAM_VALUE", "répertoire = " + path);
@@ -706,8 +696,6 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
     String oldPath = getFullPath(folderName);
     File oldFile = new File(oldPath);
     oldFile.renameTo(newFile);
-
-
   }
 
   private boolean containsWeirdCharacters(String newName) {
@@ -766,15 +754,8 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
 
   public void saveFile(FileItem fileItem, boolean replaceFile)
     throws SilverCrawlerFileUploadException {
-    String name = fileItem.getName();
-    if (name != null) {
-
-      // extract file name
-      if (!FileUtil.isWindows()) {
-        name = name.replace('\\', File.separatorChar);
-      }
-      name = name.substring(name.lastIndexOf(File.separator) + 1, name.length());
-
+    String name = FileUtil.getFilename(fileItem.getName());
+    if (StringUtil.isDefined(name)) {
       // compute full path
       String fullPath = getFullPath(name);
       File newFile = new File(fullPath);
@@ -887,5 +868,43 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
       lastReport = null;
     }
 
+  }
+  
+  public boolean checkUserLANAccess(String remoteIPAdress) {
+
+    // Step 1 - Checks user profile
+    String[] profiles = getUserRoles();
+    String bestProfile = ProfileHelper.getBestProfile(profiles);
+    if ((!bestProfile.equals("admin"))
+        && (!bestProfile.equals("publisher"))) {
+      SilverTrace.debug("silverCrawler",
+          "SilverCrawlerSessionController.checkUserLANAccess()",
+          "root.MSG_GEN_PARAM_VALUE",
+          "user is only reader => no LAN access");
+      return false;
+    }
+
+    // Step 2 - Checks component parameter value
+    boolean allowAccessByLAN = StringUtil
+        .getBooleanValue(getComponentParameterValue("allowAccessByLAN"));
+    SilverTrace.debug("silverCrawler",
+        "SilverCrawlerSessionController.checkUserLANAccess()",
+        "root.MSG_GEN_PARAM_VALUE", "allowAccessByLAN = "
+            + allowAccessByLAN);
+    if (!allowAccessByLAN) {
+      return false;
+    }
+
+    // Step 3 - Test remoteIPAddress over LAN subnetwork masks
+    String subnetworkMasks = getComponentParameterValue("LANMasks");
+    boolean ipElligible = IPMaskHelper.isIPElligible(remoteIPAdress,
+        subnetworkMasks);
+    SilverTrace.debug("silverCrawler",
+        "SilverCrawlerSessionController.checkUserLANAccess()",
+        "root.MSG_GEN_PARAM_VALUE", "remoteIP = " + remoteIPAdress
+            + ", masks = " + subnetworkMasks + ", elligible :"
+            + ipElligible);
+
+    return ipElligible;
   }
 }

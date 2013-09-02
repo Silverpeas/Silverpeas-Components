@@ -1,32 +1,25 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.kmelia.stats;
 
-import static com.stratelia.webactiv.util.JNDINames.NODEBM_EJBHOME;
-import static com.stratelia.webactiv.util.exception.SilverpeasRuntimeException.ERROR;
-
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -36,6 +29,7 @@ import javax.inject.Named;
 
 import com.silverpeas.kmelia.model.StatisticActivityVO;
 import com.silverpeas.kmelia.model.StatsFilterVO;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminException;
@@ -48,23 +42,20 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
-import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
+
+import static com.stratelia.webactiv.util.JNDINames.NODEBM_EJBHOME;
+import static com.stratelia.webactiv.util.exception.SilverpeasRuntimeException.ERROR;
 
 @Named("statisticService")
 public class StatisticServiceImpl implements StatisticService {
 
-  /**
-   * TODO inject all the statistics manager there like statistic
-   */
   private PublicationBm publicationBm;
   private NodeBm nodeBm;
   private StatisticBm statisticBm;
@@ -72,7 +63,6 @@ public class StatisticServiceImpl implements StatisticService {
   /*
    * @Inject private KmeliaBm kmeliaBm;
    */
-
   @Override
   public Integer getNbConsultedPublication(StatsFilterVO statFilter) {
     if (statFilter != null) {
@@ -105,21 +95,19 @@ public class StatisticServiceImpl implements StatisticService {
         List<String> userIds = getListUserIdsFromGroup(groupId);
         try {
           // Retrieve the number of publication
-          nbPubli =
-              getStatisticBm().getCountByPeriodAndUser(publiPKs, "Publication",
-                  statFilter.getStartDate(), statFilter.getEndDate(), userIds);
+          nbPubli = getStatisticBm().getCountByPeriodAndUser(publiPKs, "Publication",
+              statFilter.getStartDate(), statFilter.getEndDate(), userIds);
 
-        } catch (RemoteException e) {
+        } catch (Exception e) {
           SilverTrace.error("kmelia", getClass().getSimpleName() + ".getNbConsultedPublication",
               "Error when counting number of access (getCountByPeriodAndUser)", e);
         }
 
       } else {
         try {
-          nbPubli =
-              getStatisticBm().getCountByPeriod(publiPKs, 1, "Publication",
-                  statFilter.getStartDate(), statFilter.getEndDate());
-        } catch (RemoteException e) {
+          nbPubli = getStatisticBm().getCountByPeriod(publiPKs, 1, "Publication",
+              statFilter.getStartDate(), statFilter.getEndDate());
+        } catch (Exception e) {
           SilverTrace.error("kmelia", getClass().getSimpleName() + ".getNbConsultedPublication",
               "Error when counting number of access (getCountByPeriod)", e);
         }
@@ -172,21 +160,16 @@ public class StatisticServiceImpl implements StatisticService {
         new NodePK(Integer.toString(statFilter.getTopicId()), statFilter.getInstanceId());
     Collection<PublicationDetail> validPubli = null;
     List<PublicationDetail> publis = new ArrayList<PublicationDetail>();
-    try {
-      List<NodeDetail> nodes = getNodeBm().getSubTree(fatherPK);
-      if (nodes != null) {
-        ArrayList<String> fatherIds = new ArrayList<String>();
-        for (NodeDetail node : nodes) {
-          fatherIds.add(Integer.toString(node.getId()));
-        }
-        validPubli =
-            getPublicationBm().getDetailsByFatherIdsAndStatus(fatherIds,
-                new PublicationPK("", statFilter.getInstanceId()), null, "Valid");
-        publis.addAll(validPubli);
+    List<NodeDetail> nodes = getNodeBm().getSubTree(fatherPK);
+    if (nodes != null) {
+      ArrayList<String> fatherIds = new ArrayList<String>();
+      for (NodeDetail node : nodes) {
+        fatherIds.add(Integer.toString(node.getId()));
       }
-    } catch (RemoteException e) {
-      SilverTrace.error("kmelia", getClass().getSimpleName() + ".getStatisticActivityByPeriod",
-          "Error when loading the list of Node publications", e);
+      validPubli =
+          getPublicationBm().getDetailsByFatherIdsAndStatus(fatherIds,
+          new PublicationPK("", statFilter.getInstanceId()), null, "Valid");
+      publis.addAll(validPubli);
     }
     return publis;
   }
@@ -210,8 +193,8 @@ public class StatisticServiceImpl implements StatisticService {
       if (!userIds.isEmpty()) {
         for (PublicationDetail publi : publis) {
           for (String userId : userIds) {
-            if (isPubliActivityInsideTimeInterval(startTime, endTime, publi, isCreate, isUpdate) &&
-                isUserRelatedWithPubli(publi, userId)) {
+            if (isPubliActivityInsideTimeInterval(startTime, endTime, publi, isCreate, isUpdate)
+                && isUserRelatedWithPubli(publi, userId)) {
               nbPubli++;
             }
           }
@@ -251,22 +234,20 @@ public class StatisticServiceImpl implements StatisticService {
       PublicationDetail publi, boolean isCreate, boolean isUpdate) {
     Date createDate = publi.getCreationDate();
     Date updateDate = publi.getUpdateDate();
-    return (isCreate &&
-        (createDate.after(startTime) || createDate.equals(startTime)) && createDate.before(endTime)) ||
-        (isUpdate && (updateDate.after(startTime) || updateDate.equals(startTime)) && updateDate
-            .before(endTime));
+    return (isCreate && (createDate.after(startTime) || createDate.equals(startTime)) && createDate.
+        before(endTime)) || (isUpdate && (updateDate.after(startTime) || updateDate.
+        equals(startTime)) && updateDate
+        .before(endTime));
   }
 
   private PublicationBm getPublicationBm() {
     if (publicationBm == null) {
       try {
-        PublicationBmHome publicationBmHome = EJBUtilitaire.getEJBObjectRef(
-            JNDINames.PUBLICATIONBM_EJBHOME, PublicationBmHome.class);
-        this.publicationBm = publicationBmHome.create();
+        publicationBm = EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
+            PublicationBm.class);
       } catch (Exception e) {
         throw new KmeliaRuntimeException("KmeliaSecurity.getPublicationBm()",
-            SilverpeasRuntimeException.ERROR,
-            "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_PUBLICATIONBM_HOME",
+            SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_PUBLICATIONBM_HOME",
             e);
       }
     }
@@ -276,8 +257,7 @@ public class StatisticServiceImpl implements StatisticService {
   private NodeBm getNodeBm() {
     if (nodeBm == null) {
       try {
-        NodeBmHome nodeBmHome = EJBUtilitaire.getEJBObjectRef(NODEBM_EJBHOME, NodeBmHome.class);
-        this.nodeBm = nodeBmHome.create();
+        nodeBm = EJBUtilitaire.getEJBObjectRef(NODEBM_EJBHOME, NodeBm.class);
       } catch (Exception e) {
         throw new KmeliaRuntimeException("KmeliaBmEJB.getNodeBm()", ERROR,
             "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_NODEBM_HOME", e);
@@ -289,11 +269,8 @@ public class StatisticServiceImpl implements StatisticService {
   private StatisticBm getStatisticBm() {
     if (statisticBm == null) {
       try {
-        StatisticBmHome statisticHome =
-            EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME,
-                StatisticBmHome.class);
-        this.statisticBm = statisticHome.create();
-        return statisticBm;
+        statisticBm = EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME,
+            StatisticBm.class);
       } catch (Exception e) {
         throw new StatisticRuntimeException("PdcSearchSessionController.getStatisticBm()",
             SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
@@ -367,7 +344,7 @@ public class StatisticServiceImpl implements StatisticService {
       try {
         return getStatisticBm().getDistinctCountByPeriodUser(publiPKs, 1, "Publication",
             statFilter.getStartDate(), statFilter.getEndDate(), userIds);
-      } catch (RemoteException e) {
+      } catch (Exception e) {
         SilverTrace.error("kmelia", getClass().getSimpleName() + ".getNumberOfDifferentConsu...",
             "Error when computing distinct access to publication", e);
       }
@@ -375,12 +352,11 @@ public class StatisticServiceImpl implements StatisticService {
       try {
         return getStatisticBm().getDistinctCountByPeriod(publiPKs, 1, "Publication",
             statFilter.getStartDate(), statFilter.getEndDate());
-      } catch (RemoteException e) {
+      } catch (Exception e) {
         SilverTrace.error("kmelia", getClass().getSimpleName() + ".getNumberOfDifferentConsu...",
             "Error when computing distinct access to publication", e);
       }
     }
     return nbPubli;
   }
-
 }

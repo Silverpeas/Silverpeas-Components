@@ -188,9 +188,9 @@
           // page is now ready, initialize the calendar...
 
           var currentDay = new Date();
+          currentDay.setDate(${currentDay.dayOfMonth});
           currentDay.setFullYear(${currentDay.year});
           currentDay.setMonth(${currentDay.month});
-          currentDay.setDate(${currentDay.dayOfMonth});
 
         // page is now ready, initialize the calendar...
         <c:if test='${not calendarView.viewType.nextEventsView}'>
@@ -204,6 +204,21 @@
             onevent: function(event) {
               var eventDate = $.fullCalendar.formatDate(event.start, "yyyy/MM/dd");
               clickEvent(event.id, eventDate, event.instanceId);
+            }
+          });
+
+          $(window).keydown(function(e){
+            var keyCode = eval(e.keyCode);
+            if (37 == keyCode || keyCode == 39) {
+              e.preventDefault();
+              if (37 == keyCode) {
+                // Previous
+                previousView();
+              } else if (39 == keyCode) {
+                // Next
+                nextView();
+              }
+              return false;
             }
           });
         </c:if>

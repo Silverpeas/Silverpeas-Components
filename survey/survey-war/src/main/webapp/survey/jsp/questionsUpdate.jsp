@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -66,12 +66,13 @@ String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getStrin
 //Icons
 String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
 
-ResourceLocator settings = new ResourceLocator("com.stratelia.webactiv.survey.surveySettings", surveyScc.getLanguage());
+ResourceLocator settings = new ResourceLocator("org.silverpeas.survey.surveySettings", surveyScc.getLanguage());
 
 QuestionContainerDetail survey = null;
 
 %>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel />
 <script type="text/javascript">
@@ -98,7 +99,7 @@ function deleteQuestion(questionId) {
 $(document).ready(function(){
   // Your code here
   $( "#dialog:ui-dialog" ).dialog("destroy");
-  
+
   $( "#modalDialogContentDivId" ).dialog({
     resizable: false,
     height:140,
@@ -121,8 +122,6 @@ $(document).ready(function(){
 <%
   List<Question> questionsV = surveyScc.getSessionQuestions();
   surveyId = surveyScc.getSessionSurveyId();
-
-  Window window = gef.getWindow();
 %>
 <%-- //TODO add the operation Pane only if there is no question (depends on vote or survey) --%>
 <view:operationPane>
@@ -137,7 +136,7 @@ $(document).ready(function(){
 </view:browseBar>
 
 <view:window>
-<%          
+<%
 
 TabbedPane tabbedPane = gef.getTabbedPane();
 tabbedPane.addTab(resources.getString("GML.head"), "surveyUpdate.jsp?Action=UpdateSurveyHeader&SurveyId="+surveyId, "UpdateSurveyHeader".equals(action), true);
@@ -147,8 +146,6 @@ if (surveyScc.isPollingStationMode()) {
 }
 tabbedPane.addTab(surveyTabPanelLabel, "questionsUpdate.jsp?Action=UpdateQuestions&SurveyId="+surveyId, "UpdateQuestions".equals(action), false);
 out.println(tabbedPane.print());
-
-//out.println(displayQuestionsUpdateView(surveyScc, questionsV, gef, m_context, settings, resources));
 
 String questionUpSrc = "icons/arrowUp.gif";
 String questionDownSrc = "icons/arrowDown.gif";
@@ -171,7 +168,7 @@ try
     </div><br clear="all"/>
   </c:when>
 </c:choose>
-    
+
     <center>
     <%
     if (questionsV != null && questionsV.size() > 0)
@@ -269,7 +266,7 @@ try
         	                      	}
         	                      	else
         	                      	{
-                                        url = FileServerUtils.getUrl(surveyScc.getSpaceId(), surveyScc.getComponentId(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
+                                        url = FileServerUtils.getUrl(surveyScc.getComponentId(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
                                     }
                                     out.println("<tr><td width=\"40px\" align=\"center\"><input type=\""+inputType+"\" name=\"answer_"+i+"\" value=\"\" checked></td><td align=\"left\">"+EncodeHelper.javaStringToHtmlString(answer.getLabel())+"<br>");
                                     out.println("<img src=\""+url+"\" border=\"0\"></td><td>");
@@ -301,7 +298,7 @@ try
 } catch( Exception e){
     throw new SurveyException("SurveyUtils_JSP.displayQuestionsUpdateView",SurveyException.WARNING,"Survey.EX_CANNOT_DISPLAY_UPDATEVIEW",e);
 }
-          
+
 %>
     <!-- questionCreatorBis.jsp -->
     <form name="questionForm" action="manageQuestions.jsp" method="post" enctype="multipart/form-data">

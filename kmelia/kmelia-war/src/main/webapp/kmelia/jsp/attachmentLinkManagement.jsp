@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -38,7 +38,7 @@
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
-<%@ page import="com.stratelia.silverpeas.wysiwyg.control.WysiwygController"%>
+<%@ page import="org.silverpeas.wysiwyg.control.WysiwygController"%>
 <%@page import="java.util.List"%>
 <%@page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@page import="com.silverpeas.treeMenu.process.TreeHandler"%>
@@ -51,7 +51,7 @@ GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("Sessio
 String language = (String) session.getAttribute("WYSIWYG_Language");
 String userId = (String) session.getAttribute("WYSIWYG_UserId");
 ResourceLocator message = new ResourceLocator(
-					"com.stratelia.silverpeas.wysiwyg.multilang.wysiwygBundle",
+					"org.silverpeas.wysiwyg.multilang.wysiwygBundle",
 					language);
 String contextName = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 %>

@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,13 +23,7 @@
  */
 package org.silverpeas.resourcemanager.services;
 
-import org.silverpeas.resourcemanager.model.ResourceStatus;
 import com.stratelia.webactiv.util.DBUtil;
-import edu.emory.mathcs.backport.java.util.Arrays;
-import java.util.List;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.sql.DataSource;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.ReplacementDataSet;
@@ -40,12 +34,20 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.resourcemanager.model.ReservedResource;
+import org.silverpeas.resourcemanager.model.ResourceStatus;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
-import static org.junit.Assert.*;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.sql.DataSource;
+import java.util.Arrays;
+import java.util.List;
+
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 
 /**
  *
@@ -143,7 +145,7 @@ public class ReservedResourceServiceTest {
   @Test
   public void testFindAllReservedResourcesWithProblem() {
     int currentReservationId = -1;
-    List<Long> futureReservedResourceIds = Arrays.asList(new Long[]{1L, 2L, 3L, 5L, 8L});
+    List<Long> futureReservedResourceIds = Arrays.asList(1L, 2L, 3L, 5L, 8L);
     String startPeriod = "1320134400000";
     String endPeriod = "1320163200000";
     List<ReservedResource> result = service.findAllReservedResourcesWithProblem(currentReservationId,

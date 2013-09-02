@@ -106,18 +106,6 @@ function validatePublicationClassification(s)
     SP_openWindow(getWebContext()+'/Rkmelia/' + componentId + '/validateClassification?' + s, "Validation", '600', '400','scrollbars=yes, resizable, alwaysRaised');
 }
 
-function displayPublicationsToValidate()
-{
-	//display publications to validate
-	var ieFix = new Date().getTime();
-	var componentId = getComponentId();
-	$.get(getWebContext()+'/RAjaxPublicationsListServlet', {ComponentId:componentId,ToValidate:1,IEFix:ieFix},
-			function(data){
-				$('#pubList').html(data);
-				activateUserZoom();
-			},"html");
-}
-
 function closeWindows() {	
 	if(!subscriptionWindow.closed && subscriptionWindow.name=="subscriptionWindow") {
 		subscriptionWindow.close();
@@ -205,6 +193,10 @@ function displayOperations(id) {
 			}, 'json');
 }
 
+function displayResponsibles() {
+  displayComponentResponsibles(getCurrentUserId(), getComponentId());
+}
+
 function initOperations(id, op) {
 	$("#menutoggle").css({'display':'block'});
 	
@@ -218,47 +210,53 @@ function initOperations(id, op) {
 	var menuBarEmpty = true;
 	
 	if (op.emptyTrash) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.emptyTrash"], {url: "javascript:onClick=emptyTrash()"});
+		menuItem = new YAHOO.widget.MenuItem(getString('EmptyBasket'), {url: "javascript:onClick=emptyTrash()"});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
 	
 	if (op.admin) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.admin"], {url: getWebContext()+"/RjobStartPagePeas/jsp/SetupComponent?ComponentId="+getComponentId()});
+		menuItem = new YAHOO.widget.MenuItem(getString('GML.operations.setupComponent'), {url: getWebContext()+"/RjobStartPagePeas/jsp/SetupComponent?ComponentId="+getComponentId()});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
 	
 	if (op.pdc) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.pdc"], {url: "javascript:onClick=openSPWindow('"+getWebContext()+"/RpdcUtilization/jsp/Main?ComponentId="+getComponentId()+"','utilizationPdc1')"});
+		menuItem = new YAHOO.widget.MenuItem(getString('GML.PDCParam'), {url: "javascript:onClick=openSPWindow('"+getWebContext()+"/RpdcUtilization/jsp/Main?ComponentId="+getComponentId()+"','utilizationPdc1')"});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
     
     if (op.predefinedPdcPositions) {
-        menuItem = new YAHOO.widget.MenuItem(labels["operation.predefinedPdcPositions"], {url: "javascript:onClick=openPredefinedPdCClassification("+id+")"});
+        menuItem = new YAHOO.widget.MenuItem(getString('GML.PDCPredefinePositions'), {url: "javascript:onClick=openPredefinedPdCClassification("+id+")"});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
     }
 	
 	if (op.templates) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.templates"], {url: "ModelUsed"});
+		menuItem = new YAHOO.widget.MenuItem(getString('kmelia.ModelUsed'), {url: "ModelUsed"});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
+
+  if (op.manageSubscriptions) {
+    menuItem = new YAHOO.widget.MenuItem(getString('GML.manageSubscriptions'), {url: "ManageSubscriptions"});
+    oMenu.addItem(menuItem, groupIndex);
+    groupEmpty = false;
+  }
 	
 	if (op.exporting) {
 		if (id == "0") {
-			menuItem = new YAHOO.widget.MenuItem(labels["operation.exportComponent"], {url: "javascript:onClick=exportTopic()"});
+			menuItem = new YAHOO.widget.MenuItem(getString('kmelia.ExportComponent'), {url: "javascript:onClick=exportTopic()"});
 		} else {
-			menuItem = new YAHOO.widget.MenuItem(labels["operation.exportTopic"], {url: "javascript:onClick=exportTopic()"});
+			menuItem = new YAHOO.widget.MenuItem(getString('kmelia.ExportTopic'), {url: "javascript:onClick=exportTopic()"});
 		}
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
 	
 	if (op.exportPDF) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.exportPDF"], {url: "javascript:openExportPDFPopup()"});
+		menuItem = new YAHOO.widget.MenuItem(getString('kmelia.ExportPDF'), {url: "javascript:openExportPDFPopup()"});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
@@ -270,7 +268,7 @@ function initOperations(id, op) {
 	}
 	
 	if (op.addTopic) {
-		var label = labels["operation.addTopic"];
+		var label = getString('CreerSousTheme');
 		var url = "javascript:onclick=addNodeToCurrentNode()";
 		menuItem = new YAHOO.widget.MenuItem(label, {url: url});
 		oMenu.addItem(menuItem, groupIndex);
@@ -279,47 +277,47 @@ function initOperations(id, op) {
 		menuBarEmpty = false;
 	}
 	if (op.updateTopic) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.updateTopic"], {url: "javascript:onclick=updateCurrentNode()"});
+		menuItem = new YAHOO.widget.MenuItem(getString('ModifierSousTheme'), {url: "javascript:onclick=updateCurrentNode()"});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
 	if (op.deleteTopic) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.deleteTopic"], {url: "javascript:onclick=deleteCurrentNode()"});
+		menuItem = new YAHOO.widget.MenuItem(getString('SupprimerSousTheme'), {url: "javascript:onclick=deleteCurrentNode()"});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
 	if (op.sortSubTopics) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.sortTopics"], {url: "javascript:onclick=sortSubTopics()"});
+		menuItem = new YAHOO.widget.MenuItem(getString('kmelia.SortTopics'), {url: "javascript:onclick=sortSubTopics()"});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
 	if (op.copyTopic) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.copy"], {url: "javascript:onclick=copyCurrentNode()"});
+		menuItem = new YAHOO.widget.MenuItem(getString('GML.copy'), {url: "javascript:onclick=copyCurrentNode()"});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
 	if (op.cutTopic) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.cut"], {url: "javascript:onclick=cutCurrentNode()"});
+		menuItem = new YAHOO.widget.MenuItem(getString('GML.cut'), {url: "javascript:onclick=cutCurrentNode()"});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
 	if (op.hideTopic) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.visible2invisible"], {url: "javascript:onclick=changeCurrentTopicStatus()"});
+		menuItem = new YAHOO.widget.MenuItem(getString('TopicVisible2Invisible'), {url: "javascript:onclick=changeCurrentTopicStatus()"});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
 	if (op.showTopic) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.invisible2visible"], {url: "javascript:onclick=changeCurrentTopicStatus()"});
+		menuItem = new YAHOO.widget.MenuItem(getString('TopicInvisible2Visible'), {url: "javascript:onclick=changeCurrentTopicStatus()"});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
 	if (op.wysiwygTopic) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.wysiwygTopic"], {url: "javascript:onclick=updateCurrentTopicWysiwyg()"});
+		menuItem = new YAHOO.widget.MenuItem(getString('TopicWysiwyg'), {url: "javascript:onclick=updateCurrentTopicWysiwyg()"});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
 	if (op.shareTopic) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.shareTopic"], {url: "javascript:onclick=shareCurrentTopic()"});
+		menuItem = new YAHOO.widget.MenuItem(getString('kmelia.operation.shareTopic'), {url: "javascript:onclick=shareCurrentTopic()"});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
@@ -331,7 +329,7 @@ function initOperations(id, op) {
 	}
 	
 	if (op.addPubli) {
-		var label = labels["operation.addPubli"];
+		var label = getString('PubCreer');
 		var url = "NewPublication";
 		menuItem = new YAHOO.widget.MenuItem(label, {url: url});
 		oMenu.addItem(menuItem, groupIndex);
@@ -340,7 +338,7 @@ function initOperations(id, op) {
 		menuBarEmpty = false;
 	}
 	if (op.wizard) {
-		var label = labels["operation.wizard"];
+		var label = getString('kmelia.Wizard');
 		var url = "WizardStart";
 		menuItem = new YAHOO.widget.MenuItem(label, {url: url});
 		oMenu.addItem(menuItem, groupIndex);
@@ -349,7 +347,7 @@ function initOperations(id, op) {
 		menuBarEmpty = false;
 	}
 	if (op.importFile) {
-		var label = labels["operation.importFile"];
+		var label = getString('kmelia.ImportFile');
 		var url = "javascript:onclick=importFile()";
 		menuItem = new YAHOO.widget.MenuItem(label, {url: url});
 		oMenu.addItem(menuItem, groupIndex);
@@ -358,7 +356,7 @@ function initOperations(id, op) {
 		menuBarEmpty = false;
 	}
 	if (op.importFiles) {
-		var label = labels["operation.importFiles"];
+		var label = getString('kmelia.ImportFiles');
 		var url = "javascript:onclick=importFiles()";
 		menuItem = new YAHOO.widget.MenuItem(label, {url: url});
 		oMenu.addItem(menuItem, groupIndex);
@@ -367,17 +365,32 @@ function initOperations(id, op) {
 		menuBarEmpty = false;
 	}
 	if (op.sortPublications) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.sortPublis"], {url: "ToOrderPublications"});
+		menuItem = new YAHOO.widget.MenuItem(getString('kmelia.OrderPublications'), {url: "ToOrderPublications"});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
 	if (op.updateChain) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.updateChain"], {url: "javascript:onclick=updateChain()"});
+		menuItem = new YAHOO.widget.MenuItem(getString('kmelia.updateByChain'), {url: "javascript:onclick=updateChain()"});
+		oMenu.addItem(menuItem, groupIndex);
+		groupEmpty = false;
+	}
+	if (op.copyPublications) {
+		menuItem = new YAHOO.widget.MenuItem(getString('kmelia.operation.copyPublications'), {url: "javascript:onclick=copyPublications()"});
+		oMenu.addItem(menuItem, groupIndex);
+		groupEmpty = false;
+	}
+	if (op.cutPublications) {
+		menuItem = new YAHOO.widget.MenuItem(getString('kmelia.operation.cutPublications'), {url: "javascript:onclick=cutPublications()"});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
 	if (op.paste) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.paste"], {url: "javascript:onclick=pasteFromOperations()"});
+		menuItem = new YAHOO.widget.MenuItem(getString('GML.paste'), {url: "javascript:onclick=pasteFromOperations()"});
+		oMenu.addItem(menuItem, groupIndex);
+		groupEmpty = false;
+	}
+	if (op.deletePublications) {
+		menuItem = new YAHOO.widget.MenuItem(getString('kmelia.operation.deletePublications'), {url: "javascript:onclick=deletePublications()"});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
@@ -389,13 +402,13 @@ function initOperations(id, op) {
 	}
 	
 	if (op.exportSelection) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.exportSelection"], {url: "javascript:onclick=exportPublications()"});
+		menuItem = new YAHOO.widget.MenuItem(getString('kmelia.operation.exportSelection'), {url: "javascript:onclick=exportPublications()"});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
 	
 	if (op.subscriptions) {
-		var label = labels["operation.subscribe"];
+		var label = getString('SubscriptionsAdd');
 		var url = "javascript:onclick=addSubscription()";
 		menuItem = new YAHOO.widget.MenuItem(label, {url: url});
 		oMenu.addItem(menuItem, groupIndex);
@@ -403,7 +416,7 @@ function initOperations(id, op) {
 		//addCreationItem(url, icons["operation.subscribe"], label);
 	}
 	if (op.favorites) {
-		var label = labels["operation.favorites"];
+		var label = getString('FavoritesAdd1') + ' ' + getString('FavoritesAdd2');
 		var url = "javascript:onclick=addCurrentNodeAsFavorite()";
 		menuItem = new YAHOO.widget.MenuItem(label, {url: url});
 		oMenu.addItem(menuItem, groupIndex);
@@ -418,15 +431,30 @@ function initOperations(id, op) {
   }
   
   if (op.statistics) {
-    menuItem = new YAHOO.widget.MenuItem(labels["operation.statistics"], {url: "javascript:onclick=showStats()"});
+    menuItem = new YAHOO.widget.MenuItem(getString('kmelia.operation.statistics'), {url: "javascript:onclick=showStats()"});
     oMenu.addItem(menuItem, groupIndex);
     menuEmpty = false;
   }
 
-	oMenu.render();
-	
-	if (menuEmpty) {
-		$("#menutoggle").css({'display':'none'});
+  if (!groupEmpty) {
+    groupIndex++;
+    groupEmpty = true;
+    menuEmpty = false;
+  }
+
+  if (op.responsibles) {
+    menuItem = new YAHOO.widget.MenuItem(getString('GML.component.responsibles'), {
+      classname: 'space-or-component-responsibles-operation',
+      url : "javascript:onclick=displayResponsibles()"
+    });
+    oMenu.addItem(menuItem, groupIndex);
+    groupEmpty = false;
+  }
+
+  oMenu.render();
+
+  if (menuEmpty) {
+    $("#menutoggle").css({'display':'none'});
 	}
 	if (menuBarEmpty) {
 		$('#menubar-creation-actions').css({'display':'none'});
@@ -474,12 +502,12 @@ function setCurrentTopicStatus(status) {
 
 function setCurrentTopicName(name) {
 	currentTopicName = name;
-	$("#addOrUpdateNode #topicName").val(name);
+	$("#addOrUpdateNode #folderName").val(name);
 }
 
 function setCurrentTopicDescription(desc) {
 	currentTopicDescription = desc;
-	$("#addOrUpdateNode #topicDescription").val(desc);
+	$("#addOrUpdateNode #folderDescription").val(desc);
 }
 function setCurrentTopicTranslations(trans) {
 	currentTopicTranslations = trans;
@@ -493,7 +521,7 @@ function storeTranslations(trans) {
 	if (translations != null && translations.length > 1) {
 		//display delete operation
 		if ($("#deleteTranslation").length == 0){
-			var img = '<img src="' + getWebContext() + '/util/icons/delete.gif" title="'+labels["js.i18n.remove"]+'" alt="'+labels["js.i18n.remove"]+'"/>';
+			var img = '<img src="' + getWebContext() + '/util/icons/delete.gif" title="'+getString('GML.translationRemove')+'" alt="'+getString('GML.translationRemove')+'"/>';
 			$("&nbsp;<a id=\"deleteTranslation\" href=\"javascript:document.getElementById('<%=I18NHelper.HTMLHiddenRemovedTranslationMode%>').value='true';document.topicForm.submit();\">"+img+"</a>").insertAfter(select);
 		}
 	} else {
@@ -510,15 +538,15 @@ function showTranslation(lang) {
 	while (!found && i<translations.length) {
 		if (translations[i].language == lang) {
 			found = true;
-			$("#addOrUpdateNode #topicName").val(translations[i].name);
-			$("#addOrUpdateNode #topicDescription").val(translations[i].description);
+			$("#addOrUpdateNode #folderName").val(translations[i].name);
+			$("#addOrUpdateNode #folderDescription").val(translations[i].description);
 			$('select[name="I18NLanguage"] option:selected').val(translations[i].language+"_"+translations[i].id);
 		}
 		i++;
 	}
 	if (!found) {
-		$("#addOrUpdateNode #topicName").val("");
-		$("#addOrUpdateNode #topicDescription").val("");
+		$("#addOrUpdateNode #folderName").val("");
+		$("#addOrUpdateNode #folderDescription").val("");
 	}
 }
 
@@ -532,7 +560,7 @@ function getDateFormat() {
 }
 
 function displayTopicInformation(id) {
-	if (id != "0" && id != "1" && id != "tovalidate") {
+	if (id != "0" && id != "1" && id != getToValidateFolderId()) {
 		$("#footer").css({'visibility':'visible'});
 		var url = getWebContext()+"/services/folders/"+getComponentId()+"/"+id;
 		$.getJSON(url, function(topic){
@@ -540,7 +568,7 @@ function displayTopicInformation(id) {
 					var desc = topic.attr["description"];
 					var date = $.datepicker.formatDate(getDateFormat(), new Date(topic.attr["creationDate"]));;
 					var creator = topic.attr["creator"].fullName;
-					$("#footer").html(labels["topic.info"]+creator+' - '+date+' - <a id="topicPermalink" href="#"><img src="'+icons["permalink"]+'"/></a>');
+					$("#footer").html(getString('kmelia.topic.info')+' '+creator+' - '+date+' - <a id="topicPermalink" href="#"><img src="'+icons["permalink"]+'"/></a>');
 					$("#footer #topicPermalink").attr("href", getWebContext()+"/Topic/"+id+"?ComponentId="+getComponentId());
 					setCurrentTopicName(name);
 					setCurrentTopicDescription(desc);
@@ -555,13 +583,27 @@ function displayTopicInformation(id) {
 	}
 }
 
-function deleteNode(nodeId, nodeLabel) {
-	if(window.confirm(labels["ConfirmDeleteTopic"]+ " '" + nodeLabel + "' ?")) {
+function writeInConsole(text) {
+    if (typeof console !== 'undefined') {
+        console.log(text);    
+    } else {
+        alert(text);    
+    }
+}
+
+function deleteFolder(nodeId, nodeLabel) {
+	if(window.confirm(getString('ConfirmDeleteTopic')+ " '" + nodeLabel + "' ?")) {
 		var componentId = getComponentId();
 		var url = getWebContext()+'/KmeliaAJAXServlet';
 		$.get(url, { Id:nodeId,ComponentId:componentId,Action:'Delete'},
 				function(data){
 					if ((data - 0) == data && data.length > 0) {
+						// fires event
+						try {
+							nodeDeleted(nodeId);
+						} catch (e) {
+							writeInConsole(e);
+						}
 						// go to parent node
 						displayTopicContent(data);
 					} else {
@@ -572,7 +614,7 @@ function deleteNode(nodeId, nodeLabel) {
 }
 
 function deleteCurrentNode() {
-	deleteNode(getCurrentNodeId(), currentTopicName);
+	deleteFolder(getCurrentNodeId(), currentTopicName);
 }
 
 function sortSubTopics() {
@@ -595,8 +637,8 @@ function topicAdd(topicId, isLinked) {
 		location.href = url;
 	} else {
 		document.topicForm.action = "AddTopic";
-		$("#addOrUpdateNode #topicName").val("");
-		$("#addOrUpdateNode #topicDescription").val("");
+		$("#addOrUpdateNode #folderName").val("");
+		$("#addOrUpdateNode #folderDescription").val("");
 		$("#addOrUpdateNode #parentId").val(topicId);
 		translations = null;
 		//remove delete operation
@@ -620,7 +662,7 @@ function topicAdd(topicId, isLinked) {
 		$("#addOrUpdateNode").dialog({
 			modal: true,
 			resizable: false,
-			title: labels["operation.addTopic"],
+			title: getString('CreerSousTheme'),
 			width: 600,
 			buttons: {
 				"OK": function() {
@@ -638,8 +680,8 @@ function updateCurrentNode() {
 	if (params["i18n"]) {
 		storeTranslations(currentTopicTranslations);
 	} else {
-		$("#addOrUpdateNode #topicName").val(currentTopicName);
-		$("#addOrUpdateNode #topicDescription").val(currentTopicDescription);
+		$("#addOrUpdateNode #folderName").val(currentTopicName);
+		$("#addOrUpdateNode #folderDescription").val(currentTopicDescription);
 	}
 	topicUpdate(getCurrentNodeId());
 }
@@ -655,7 +697,7 @@ function topicUpdate(id) {
 		
 		// display path of parent
 		var url = getWebContext()+"/services/folders/"+getComponentId()+"/"+id+"/path?lang="+getTranslation()+"&IEFix="+new Date().getTime();
-	    $.getJSON(sUrl, function(data){
+	    $.getJSON(url, function(data){
 	    	//remove topic breadcrumb
 	    	$("#addOrUpdateNode #path").html("");
 	    	$(data).each(function(i, topic) {
@@ -675,7 +717,7 @@ function topicUpdate(id) {
 		$("#addOrUpdateNode").dialog({
 			modal: true,
 			resizable: false,
-			title: labels["operation.updateTopic"],
+			title: getString('ModifierSousTheme'),
 			width: 600,
 			buttons: {
 				"OK": function() {
@@ -694,7 +736,7 @@ function submitTopic() {
     var errorNb = 0;
     var title = stripInitialWhitespace(document.topicForm.Name.value);
     if (isWhitespace(title)) {
-      errorMsg+="  - '"+labels["js.topicTitle"]+"' "+labels["js.mustBeFilled"]+"\n";
+      errorMsg+="  - '"+getString('TopicTitle')+"' "+getString('GML.MustBeFilled')+"\n";
       errorNb++;
     }
     switch(errorNb) {
@@ -702,12 +744,12 @@ function submitTopic() {
         result = true;
         break;
       case 1 :
-        errorMsg = labels["js.contains"]+" 1 "+labels["js.error"]+" : \n" + errorMsg;
+        errorMsg = getString('GML.ThisFormContains')+" 1 "+getString('GML.error')+" : \n" + errorMsg;
         window.alert(errorMsg);
         result = false;
         break;
       default :
-        errorMsg = labels["js.contains"]+" " + errorNb + " "+labels["js.errors"]+" :\n" + errorMsg;
+        errorMsg = getString('GML.ThisFormContains')+" " + errorNb + " "+getString('GML.errors')+" :\n" + errorMsg;
         window.alert(errorMsg);
         result = false;
         break;
@@ -718,7 +760,7 @@ function submitTopic() {
 }
 
 function emptyTrash() {
-	if(window.confirm(labels["ConfirmFlushTrashBean"]))	{
+	if(window.confirm(getString('ConfirmFlushTrashBean'))) {
 		$.progressMessage();
 		var componentId = getComponentId();
 		var url = getWebContext()+'/KmeliaAJAXServlet';
@@ -819,20 +861,18 @@ function fileUpload() {
 }
 
 function doPagination(index) {
-	var paramToValidate = "0";
-	if (getCurrentNodeId() == "tovalidate") {
-		paramToValidate = "1";
-	}
 	var topicQuery = getSearchQuery();
 	var ieFix = new Date().getTime();
 	var componentId = getComponentId();
 	var selectedPublicationIds = getSelectedPublicationIds();
 	var notSelectedPublicationIds = getNotSelectedPublicationIds();
 	var url = getWebContext()+'/RAjaxPublicationsListServlet';
-	$.get(url, {Index:index,ComponentId:componentId,ToValidate:paramToValidate,Query:topicQuery,SelectedPubIds:selectedPublicationIds,NotSelectedPubIds:notSelectedPublicationIds,IEFix:ieFix},
+	$.get(url, {Index:index,ComponentId:componentId,Query:topicQuery,SelectedPubIds:selectedPublicationIds,NotSelectedPubIds:notSelectedPublicationIds,IEFix:ieFix},
 							function(data){
 								$('#pubList').html(data);
 								activateUserZoom();
+								showPublicationCheckedBoxes();
+								location.href = "#pubList";
 							},"html");
 }
 
@@ -852,53 +892,63 @@ function changeStatus(nodeId, currentStatus) {
 		newStatus = "Invisible";
 	}
 
+	var title = getString('TopicVisible2Invisible');
 	if (newStatus == 'Invisible') {
-		question = labels["js.status.visible2invisible"];
+		$("#visibleInvisible-message p").html(getString('TopicVisible2InvisibleRecursive'));
 	} else {
-		question = labels["js.status.invisible2visible"];
+		$("#visibleInvisible-message p").html(getString('TopicInvisible2VisibleRecursive'));
+		title = getString('TopicInvisible2Visible');
 	}
+	
+	$( "#visibleInvisible-message" ).dialog({
+		modal: true,
+		resizable: false,
+		width: 400,
+		title: title,
+		buttons: [ {
+					text: getString('GML.yes'),
+					click: function() {
+						_updateTopicStatus(nodeId, newStatus, '1');
+						$( this ).dialog( "close" ); }
+				}, {
+					text: getString('kmelia.folder.onlythisfolder'),
+					click: function() {
+						_updateTopicStatus(nodeId, newStatus, '0');
+						$( this ).dialog( "close" ); }
+				}, {
+					text: getString('GML.cancel'),
+					click: function() {
+						$( this ).dialog( "close" ); }
+				}]
+	});	
+}
 
-	var recursive = "0";
-	if(window.confirm(question)){
-		recursive = "1";
-	}
-
-	$.get(getWebContext()+'/KmeliaAJAXServlet', {ComponentId:getComponentId(),Action:'UpdateTopicStatus',Id:nodeId,Status:newStatus,Recursive:recursive},
+function _updateTopicStatus(nodeId, status, recursive) {
+	$.get(getWebContext()+'/KmeliaAJAXServlet', {ComponentId:getComponentId(),Action:'UpdateTopicStatus',Id:nodeId,Status:status,Recursive:recursive},
 			function(data){
 				if (data == "ok") {
-					updateUIStatus(nodeId, newStatus);
+					updateUIStatus(nodeId, status, recursive);
 				} else {
 					alert(data);
 				}
 			}, 'text');
 }
 
-function getWidth() {
-	  var myWidth = 0;
-	  if( typeof( window.innerWidth ) == 'number' ) {
-	    //Non-IE
-	    myWidth = window.innerWidth;
-	  } else if( document.documentElement && document.documentElement.clientWidth ) {
-	    //IE 6+ in 'standards compliant mode'
-	    myWidth = document.documentElement.clientWidth;
-	  } else if( document.body && document.body.clientWidth ) {
-	    //IE 4 compatible
-	    myWidth = document.body.clientWidth;
-	  }
-	  return myWidth;
-}
-
-function getHeight() {
-	  var myHeight = 0;
-	  if( typeof( window.innerHeight ) == 'number' ) {
-	    //Non-IE
-	    myHeight = window.innerHeight;
-	  } else if( document.documentElement && document.documentElement.clientHeight) {
-	    //IE 6+ in 'standards compliant mode'
-	    myHeight = document.documentElement.clientHeight;
-	  } else if( document.body && document.body.clientHeight) {
-	    //IE 4 compatible
-	    myHeight = document.body.clientHeight;
-	  }
-	  return (myHeight -20);
+function movePublication(id, sourceId, targetId) {
+	var componentId = getComponentId();
+	var url = getWebContext()+'/KmeliaAJAXServlet';
+	$.get(url, { Id:id,SourceNodeId:sourceId,TargetNodeId:targetId,ComponentId:componentId,Action:'MovePublication'},
+			function(data){
+				//data = "erreur en votre faveur zlekfj kjf kjh kjsdh fkjshdjfkhsdjkhf fjkshd kjfhsd kjfhsdkjhf"
+				if (data == "ok") {
+					// fires event
+					try {
+						publicationMovedSuccessfully(id, targetId);
+					} catch (e) {
+						writeInConsole(e);
+					}
+				} else {
+					publicationMovedInError(id, data);
+				}
+			}, 'text');
 }

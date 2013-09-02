@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,15 +24,16 @@
 
 --%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ include file="checkKmelia.jsp" %>
-<%@ include file="tabManager.jsp.inc" %>
+<%@page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
+<%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="com.silverpeas.publicationTemplate.*"%>
+<%@ page import="com.silverpeas.form.*"%>
 
 <%@taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
-<%@ page import="com.silverpeas.publicationTemplate.*"%>
-<%@ page import="com.silverpeas.form.*"%>
 
 <%
       Form formUpdate = (Form) request.getAttribute("Form");
@@ -64,6 +65,7 @@
       }
       context.setBorderPrinted(false);
       context.setContentLanguage(currentLang);
+      context.setRequest(request);
 
       String linkedPathString = kmeliaScc.getSessionPath();
 
@@ -151,12 +153,15 @@
           out.println(window.printBefore());
 
           if ("progress".equals(wizard)) {
-            displayWizardOperations(wizardRow, pubId, kmeliaScc, gef, "ModelUpdateView", resources, out, kmaxMode);
+            KmeliaDisplayHelper.displayWizardOperations(wizardRow, pubId, kmeliaScc, gef,
+                  "ModelUpdateView", resources, out, kmaxMode);
           } else {
             if (isOwner) {
-              displayAllOperations(pubId, kmeliaScc, gef, "ModelUpdateView", resources, out, kmaxMode);
+              KmeliaDisplayHelper.displayAllOperations(pubId, kmeliaScc, gef, "ModelUpdateView",
+                    resources, out, kmaxMode);
             } else {
-              displayUserOperations(pubId, kmeliaScc, gef, "ModelUpdateView", resources, out, kmaxMode);
+              KmeliaDisplayHelper.displayUserOperations(pubId, kmeliaScc, gef, "ModelUpdateView",
+                    resources, out, kmaxMode);
             }
           }
 

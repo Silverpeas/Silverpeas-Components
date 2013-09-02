@@ -1,85 +1,70 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.mailinglist.service;
-
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 
 import com.silverpeas.mailinglist.service.job.MessageChecker;
 import com.silverpeas.mailinglist.service.model.MailingListService;
 import com.silverpeas.mailinglist.service.model.MessageService;
 import com.silverpeas.mailinglist.service.notification.NotificationFormatter;
 import com.silverpeas.mailinglist.service.notification.NotificationHelper;
+import javax.inject.Inject;
 
-public class ServicesFactory implements ApplicationContextAware {
-  public static final String MAILING_LIST_SERVICE = "mailingListService";
-  public static final String MESSAGE_SERVICE = "messageService";
-  public static final String MESSAGE_CHECKER = "messageChecker";
-  public static final String NOTIFICATION_HELPER = "notificationHelper";
-  public static final String NOTIFICATION_FORMATTER = "notificationFormatter";
+public class ServicesFactory {
 
-  private ApplicationContext context;
-  private static ServicesFactory instance;
+  private static ServicesFactory instance = new ServicesFactory();
+  @Inject
+  private MailingListService mailingListService;
+  @Inject
+  private MessageService messageService;
+  @Inject
+  private MessageChecker messageChecker;
+  @Inject
+  private NotificationHelper notificationHelper;
+  @Inject
+  private NotificationFormatter notificationFormatter;
 
   private ServicesFactory() {
   }
 
-  public void setApplicationContext(ApplicationContext context)
-      throws BeansException {
-    this.context = context;
+  public static ServicesFactory getFactory() {
+    return instance;
   }
 
-  public static ServicesFactory getInstance() {
-    synchronized (ServicesFactory.class) {
-      if (ServicesFactory.instance == null) {
-        ServicesFactory.instance = new ServicesFactory();
-      }
-    }
-    return ServicesFactory.instance;
+  public MailingListService getMailingListService() {
+    return mailingListService;
   }
 
-  public static MailingListService getMailingListService() {
-    return (MailingListService) getInstance().context
-        .getBean(MAILING_LIST_SERVICE);
+  public MessageService getMessageService() {
+    return messageService;
   }
 
-  public static MessageService getMessageService() {
-    return (MessageService) getInstance().context.getBean(MESSAGE_SERVICE);
+  public MessageChecker getMessageChecker() {
+    return messageChecker;
   }
 
-  public static MessageChecker getMessageChecker() {
-    return (MessageChecker) getInstance().context.getBean(MESSAGE_CHECKER);
+  public NotificationHelper getNotificationHelper() {
+    return notificationHelper;
   }
 
-  public static NotificationHelper getNotificationHelper() {
-    return (NotificationHelper) getInstance().context.getBean(NOTIFICATION_HELPER);
+  public NotificationFormatter getNotificationFormatter() {
+    return notificationFormatter;
   }
-
-  public static NotificationFormatter getNotificationFormatter() {
-    return (NotificationFormatter) getInstance().context.getBean(NOTIFICATION_FORMATTER);
-  }
-
 }

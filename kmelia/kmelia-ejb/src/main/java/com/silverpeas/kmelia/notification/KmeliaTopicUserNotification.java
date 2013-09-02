@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -88,7 +88,7 @@ public class KmeliaTopicUserNotification extends AbstractKmeliaUserNotification<
     final String[] users;
     if (!haveRights) {
       if ("All".equals(alertType)) {
-        final UserDetail[] userDetails = getOrganizationController().getAllUsers(getComponentInstanceId());
+        final UserDetail[] userDetails = getOrganisationController().getAllUsers(getComponentInstanceId());
         if (userDetails != null) {
           users = new String[userDetails.length];
           int i = 0;
@@ -104,7 +104,7 @@ public class KmeliaTopicUserNotification extends AbstractKmeliaUserNotification<
         profileNames.add("admin");
         profileNames.add("publisher");
         profileNames.add("writer");
-        users = getOrganizationController().getUsersIdsByRoleNames(getComponentInstanceId(), profileNames);
+        users = getOrganisationController().getUsersIdsByRoleNames(getComponentInstanceId(), profileNames);
       } else {
         users = null;
       }
@@ -117,11 +117,11 @@ public class KmeliaTopicUserNotification extends AbstractKmeliaUserNotification<
       if (alertType.equals("All")) {
         profileNames.add("user");
         users =
-            getOrganizationController().getUsersIdsByRoleNames(getComponentInstanceId(),
+            getOrganisationController().getUsersIdsByRoleNames(getComponentInstanceId(),
                 String.valueOf(rightsDependOn), ObjectType.NODE, profileNames);
       } else if (alertType.equals("Publisher")) {
         users =
-            getOrganizationController().getUsersIdsByRoleNames(getComponentInstanceId(),
+            getOrganisationController().getUsersIdsByRoleNames(getComponentInstanceId(),
                 String.valueOf(rightsDependOn), ObjectType.NODE, profileNames);
       } else {
         users = null;

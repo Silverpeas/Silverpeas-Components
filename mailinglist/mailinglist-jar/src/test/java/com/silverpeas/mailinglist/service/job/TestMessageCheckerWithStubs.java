@@ -1,36 +1,34 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.mailinglist.service.job;
 
+import com.silverpeas.mailinglist.service.event.MessageEvent;
+import com.silverpeas.mailinglist.service.model.beans.Attachment;
+import com.silverpeas.mailinglist.service.model.beans.Message;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.text.MessageFormat;
 import java.util.Date;
-
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
@@ -40,41 +38,41 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-
 import org.apache.commons.lang3.CharEncoding;
 import org.junit.After;
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.jvnet.mock_javamail.Mailbox;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import com.silverpeas.mailinglist.service.event.MessageEvent;
-import com.silverpeas.mailinglist.service.model.beans.Attachment;
-import com.silverpeas.mailinglist.service.model.beans.Message;
-
-import static com.silverpeas.mailinglist.PathTestUtil.BUILD_PATH;
-import static com.silverpeas.mailinglist.PathTestUtil.SEPARATOR;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
+import static com.silverpeas.mailinglist.PathTestUtil.BUILD_PATH;
+import static com.silverpeas.mailinglist.PathTestUtil.SEPARATOR;
+
 public class TestMessageCheckerWithStubs {
 
-  private static final String theSimpsonsAttachmentPath = BUILD_PATH + SEPARATOR + "uploads" + SEPARATOR +
-      "thesimpsons@silverpeas.com" + SEPARATOR + "{0}" + SEPARATOR +
-      "lemonde.html";
+  private static final String theSimpsonsAttachmentPath = BUILD_PATH + SEPARATOR + "uploads"
+      + SEPARATOR + "thesimpsons@silverpeas.com" + SEPARATOR + "{0}" + SEPARATOR + "lemonde.html";
   private static final String textEmailContent =
-      "Bonjour famille Simpson, j'espère que vous allez bien. " +
-      "Ici tout se passe bien et Krusty est très sympathique. Surtout " +
-      "depuis que Tahiti Bob est retourné en prison. Je dois remplacer" +
-      "l'homme canon dans la prochaine émission.\r\nBart";
-  
-  private ApplicationContext applicationContext;
+      "Bonjour famille Simpson, j'espère que vous allez bien. "
+      + "Ici tout se passe bien et Krusty est très sympathique. Surtout "
+      + "depuis que Tahiti Bob est retourné en prison. Je dois remplacer"
+      + "l'homme canon dans la prochaine émission.\r\nBart";
+  private static ConfigurableApplicationContext applicationContext;
 
-  @Before
-  public void loadContext() {
-    applicationContext = new ClassPathXmlApplicationContext("spring-checker.xml",
-          "spring-notification.xml", "spring-fake-services.xml");
+  @BeforeClass
+  public static void loadContext() {
+    applicationContext = new ClassPathXmlApplicationContext("/spring-checker.xml",
+        "/spring-notification.xml", "/spring-fake-services.xml");
+  }
+
+  @AfterClass
+  public static void unloadContext() {
+    applicationContext.close();
   }
 
   protected String loadHtml() throws IOException {
@@ -169,11 +167,11 @@ public class TestMessageCheckerWithStubs {
     assertThat(message.getBody(), is(textEmailContent));
     assertThat(message.getSummary(), is(textEmailContent.substring(0, 200)));
     assertThat(message.getSentDate().getTime(), is(sentDate1.getTime()));
-    assertThat(message.getAttachmentsSize() , greaterThan(0L));
+    assertThat(message.getAttachmentsSize(), greaterThan(0L));
     assertThat(message.getAttachments(), hasSize(1));
     String path = MessageFormat.format(theSimpsonsAttachmentPath,
         new Object[]{messageChecker.getMailProcessor().replaceSpecialChars(
-          message.getMessageId())});
+      message.getMessageId())});
     Attachment attached = message.getAttachments().iterator().next();
     assertThat(attached.getPath(), is(path));
     assertThat(message.getComponentId(), is("thesimpsons@silverpeas.com"));
@@ -185,7 +183,7 @@ public class TestMessageCheckerWithStubs {
     assertThat(message.getSummary(), is(textEmailContent.substring(0, 200)));
     assertThat(message.getAttachmentsSize(), is(0L));
     assertThat(message.getAttachments(), hasSize(0));
-    assertThat(message.getComponentId(),is("thesimpsons@silverpeas.com"));
+    assertThat(message.getComponentId(), is("thesimpsons@silverpeas.com"));
     assertThat(message.getSentDate().getTime(), is(sentDate2.getTime()));
   }
 
@@ -195,6 +193,6 @@ public class TestMessageCheckerWithStubs {
 
   @After
   public void cleaAll() {
-    Mailbox.clearAll();    
+    Mailbox.clearAll();
   }
 }

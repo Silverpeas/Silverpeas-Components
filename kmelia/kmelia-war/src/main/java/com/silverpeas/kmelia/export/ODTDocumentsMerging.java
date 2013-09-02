@@ -1,23 +1,23 @@
 /*
- * Copyright (C) 2000 - 2011 Silverpeas
- * 
+ * Copyright (C) 2000 - 2012 Silverpeas
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
- * 
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -48,13 +48,13 @@ import static com.silverpeas.util.StringUtil.*;
 /**
  * A decorator of an OpenDocument text document. It decorates an ODT document by adding document
  * merging capabilities to it.
- * 
+ *
  * With the content of the document to merge, the merging operation imports only the text and
  * paragraph styles; styles on tables, lists, and others elements aren't imported, so it is the
  * styles defined in the document source that are applied on theses elements of the imported content.
- * 
+ *
  * The merger is smart enough to rename the imported text and paragraph styles in order to avoid
- * conflicts with eponymous styles defined in the document source, and to take new 
+ * conflicts with eponymous styles defined in the document source, and to take new
  * document layout definitions from the document to merge.
  */
 class ODTDocumentsMerging extends TextDocument {
@@ -111,7 +111,7 @@ class ODTDocumentsMerging extends TextDocument {
   }
 
   /**
-   * Merges the specified document into the wrapped one. The content is merge at the specified 
+   * Merges the specified document into the wrapped one. The content is merge at the specified
    * text section.
    * @param document the document to merge.
    * @param section the name of the section at which the imported document as to be inserted.
@@ -185,7 +185,7 @@ class ODTDocumentsMerging extends TextDocument {
   /**
    * Imports the text content of the specified document and appends it at the specified location of
    * this document.
-   * 
+   *
    * During the import of the text content, the external images referenced in the text of the
    * specified document are embedded into this document.
    * @param document the document to import.
@@ -206,7 +206,7 @@ class ODTDocumentsMerging extends TextDocument {
 
   /**
    * Renames the specified styles and then imports them in the specified location of this document.
-   * 
+   *
    * The styles are renamed by prefixing them with the terms as defined by the
    * MERGE_STYLE_NAME_PREFIX constant.
    * @param styles the styles to import.
@@ -276,7 +276,7 @@ class ODTDocumentsMerging extends TextDocument {
    * @param imageNodes a list of XML nodes mapping each of them an image.
    * @throws URISyntaxException if the URI defining an image is malformed.
    */
-  private void embedImages(final NodeList imageNodes) throws URISyntaxException {
+  private void embedImages(final NodeList imageNodes) {
     for (int i = 0; i < imageNodes.getLength(); i++) {
       Node imageNode = imageNodes.item(i);
       Node hrefNode = imageNode.getAttributes().getNamedItem(

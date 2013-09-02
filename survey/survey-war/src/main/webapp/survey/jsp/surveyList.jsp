@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -51,8 +51,10 @@
 
 <c:set var="isPolling" value="${requestScope['PollingStationMode']}" />
 <fmt:message var="surveyConfirmUpdateLabel" key="survey.confirmUpdateSurvey" />
+<fmt:message var="surveyConfirmDeleteLabel" key="ConfirmDeleteSurvey" />
 <c:if test="${isPolling}">
   <fmt:message var="surveyConfirmUpdateLabel" key="survey.confirmUpdatePoll"/>
+  <fmt:message var="surveyConfirmDeleteLabel" key="ConfirmDeletePollingStation"/>
 </c:if>
 
 <%!String lockSrc = "";
@@ -385,7 +387,7 @@ function createPollingStation() {
 	}
 
 function deleteSurvey(surveyId, name) {
-  if(window.confirm("<%=EncodeHelper.javaStringToJsString(resources.getString("ConfirmDeleteSurvey"))%> '" + name + "' ?")){
+  if(window.confirm("<view:encodeJs string="${surveyConfirmDeleteLabel}" /> '" + name + "' ?")){
       document.surveysForm.Action.value = "DeleteSurvey";
       document.surveysForm.SurveyId.value = surveyId;
       document.surveysForm.submit();
@@ -420,9 +422,11 @@ function openSPWindow(fonction, windowName){
   browseBar.setDomainName(surveyScc.getSpaceLabel());
   browseBar.setComponentName(surveyScc.getComponentLabel(), "surveyList.jsp");
 
-  if (profile.equals("admin") || profile.equals("publisher")) {
+  if (SilverpeasRole.admin.toString().equals(profile) || 
+    SilverpeasRole.publisher.toString().equals(profile)) {
     OperationPane operationPane = window.getOperationPane();
-    if (profile.equals("admin") && surveyScc.isPdcUsed()) {
+    if (SilverpeasRole.admin.toString().equals(profile) &&
+        surveyScc.isPdcUsed()) {
       operationPane.addOperation(pdcUtilizationSrc, resources.getString("GML.PDC"),
           "javascript:openSPWindow('" + m_context + "/RpdcUtilization/jsp/Main?ComponentId=" +
           surveyScc.getComponentId() + "','utilizationPdc1')");
@@ -440,7 +444,9 @@ function openSPWindow(fonction, windowName){
   }
   
   out.println(window.printBefore());
-
+%>
+<view:areaOfOperationOfCreation/>
+<%
   int view = surveyScc.getViewType();
   Collection<QuestionContainerHeader> surveys = surveyScc.getSurveys();
 
@@ -458,11 +464,11 @@ function openSPWindow(fonction, windowName){
   out.println(tabbedPane.print());
 %>
 <view:frame>
-<view:areaOfOperationOfCreation/>
-<center><table cellpadding="0" cellspacing="0" border="0" width="98%"><tr><td>
+<table cellpadding="0" cellspacing="0" border="0" width="98%"><tr><td>
 <%
   ArrayPane arrayPane = null;
-  if (profile.equals("admin") || profile.equals("publisher")) {
+  if (SilverpeasRole.admin.toString().equals(profile) || 
+        SilverpeasRole.publisher.toString().equals(profile)) {
     arrayPane =
         buildSurveyArrayToAdmin(gef, surveyScc, view, surveys, resources, request, session, pollingStationMode);
   } else {
@@ -471,7 +477,7 @@ function openSPWindow(fonction, windowName){
   }
   out.println(arrayPane.print());
 %>
-</td></tr></table></center>
+</td></tr></table>
 </view:frame>
 <%
   out.println(window.printAfter());

@@ -1,54 +1,52 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.almanach.model;
 
-import com.stratelia.silverpeas.contentManager.ContentManagerException;
-import com.silverpeas.SilverpeasContent;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import java.util.Collection;
-import com.stratelia.webactiv.almanach.control.ejb.AlmanachRuntimeException;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.almanach.control.ejb.AlmanachBmHome;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
 import java.io.Serializable;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
-
-import com.silverpeas.util.i18n.AbstractI18NBean;
-import com.stratelia.silverpeas.contentManager.SilverContentInterface;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.wysiwyg.WysiwygException;
-import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
-import com.stratelia.webactiv.almanach.AlmanachContentManager;
-import com.stratelia.webactiv.almanach.control.ejb.AlmanachBm;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
+import com.silverpeas.SilverpeasContent;
+import com.silverpeas.util.i18n.AbstractI18NBean;
+
+import com.stratelia.silverpeas.contentManager.ContentManagerException;
+import com.stratelia.silverpeas.contentManager.SilverContentInterface;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.webactiv.almanach.AlmanachContentManager;
+import com.stratelia.webactiv.almanach.control.ejb.AlmanachBm;
+import com.stratelia.webactiv.almanach.control.ejb.AlmanachRuntimeException;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+
 import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.TimeZone;
 import net.fortuna.ical4j.model.TimeZoneRegistry;
@@ -58,14 +56,14 @@ import net.fortuna.ical4j.model.property.Description;
 import net.fortuna.ical4j.model.property.ExDate;
 import net.fortuna.ical4j.model.property.Uid;
 
-import static com.silverpeas.util.StringUtil.*;
+import static com.silverpeas.util.StringUtil.isDefined;
 
 public class EventDetail extends AbstractI18NBean implements
-        SilverContentInterface, Serializable, SilverpeasContent {
+    SilverContentInterface, Serializable, SilverpeasContent {
 
   private static final long serialVersionUID = 9077018265272108291L;
   public static ResourceLocator almanachSettings =
-          new ResourceLocator("com.stratelia.webactiv.almanach.settings.almanachSettings", "");
+      new ResourceLocator("org.silverpeas.almanach.settings.almanachSettings", "");
   private static final String TYPE = "Event";
   private String _name = null;
   private EventPK _pk = null;
@@ -87,7 +85,7 @@ public class EventDetail extends AbstractI18NBean implements
   }
 
   public void setPlace(String place) {
-    this.place = (place == null?"":place);
+    this.place = (place == null ? "" : place);
   }
 
   public EventDetail() {
@@ -105,6 +103,7 @@ public class EventDetail extends AbstractI18NBean implements
 
   /**
    * Is this event periodic?
+   *
    * @return true if the event is recurrent, false otherwise.
    */
   public boolean isPeriodic() {
@@ -129,7 +128,7 @@ public class EventDetail extends AbstractI18NBean implements
   }
 
   public void setNameDescription(String name) {
-    _name = (name != null ? name:"");
+    _name = (name != null ? name : "");
   }
 
   public String getDelegatorId() {
@@ -178,6 +177,7 @@ public class EventDetail extends AbstractI18NBean implements
 
   /**
    * Sets the date at which this event ends. The end date cannot be null.
+   *
    * @param date end date of this event.
    */
   public void setEndDate(Date date) {
@@ -197,7 +197,7 @@ public class EventDetail extends AbstractI18NBean implements
   }
 
   public void setTitle(String title) {
-    _title = (title == null ? "":title);
+    _title = (title == null ? "" : title);
   }
 
   @Override
@@ -231,7 +231,7 @@ public class EventDetail extends AbstractI18NBean implements
   }
 
   public void setIconUrl(String iconUrl) {
-    this._iconUrl = (iconUrl == null ? "":iconUrl);
+    this._iconUrl = (iconUrl == null ? "" : iconUrl);
   }
 
   @Override
@@ -269,7 +269,7 @@ public class EventDetail extends AbstractI18NBean implements
   }
 
   public void setEventUrl(String eventUrl) {
-    this.eventUrl = (eventUrl == null ? "":eventUrl);
+    this.eventUrl = (eventUrl == null ? "" : eventUrl);
   }
 
   public String getPermalink() {
@@ -295,23 +295,19 @@ public class EventDetail extends AbstractI18NBean implements
     return null;
   }
 
-  public String getWysiwyg() throws WysiwygException {
-    String wysiwygContent = null;
-    wysiwygContent = WysiwygController.loadFileAndAttachment(
-            getPK().getSpace(), getPK().getComponentName(), getPK().getId());
-    return wysiwygContent;
+  public String getWysiwyg() {
+    return WysiwygController.load(getPK().getComponentName(), getPK().getId(), getLanguage());
   }
 
-  public Collection<AttachmentDetail> getAttachments() {
+  public Collection<SimpleDocument> getAttachments() {
     try {
-      AlmanachBm almanachService = ((AlmanachBmHome) EJBUtilitaire.getEJBObjectRef(
-              JNDINames.ALMANACHBM_EJBHOME, AlmanachBmHome.class)).create();
+      AlmanachBm almanachService = EJBUtilitaire.getEJBObjectRef(JNDINames.ALMANACHBM_EJBHOME,
+          AlmanachBm.class);
       return almanachService.getAttachments(getPK());
     } catch (Exception ex) {
       Logger.getLogger(EventDetail.class.getName()).log(Level.SEVERE, null, ex);
       throw new AlmanachRuntimeException("EventDetail.getAttachments()",
-              SilverpeasRuntimeException.ERROR,
-              "almanach.EX_IMPOSSIBLE_DOBTENIR_LES_FICHIERSJOINTS", ex);
+          SilverpeasRuntimeException.ERROR, "almanach.EX_IMPOSSIBLE_DOBTENIR_LES_FICHIERSJOINTS", ex);
     }
   }
 
@@ -364,6 +360,7 @@ public class EventDetail extends AbstractI18NBean implements
 
   /**
    * Gets the time zone in which this event is defined.
+   *
    * @return the time zone in which the event occur.
    */
   public TimeZone getTimeZone() {
@@ -433,7 +430,7 @@ public class EventDetail extends AbstractI18NBean implements
     }
     return this.silverObjectId;
   }
-  
+
   protected void setSilverpeasContentId(String contentId) {
     this.silverObjectId = contentId;
   }

@@ -1,39 +1,33 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.external.mailinglist.servlets;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
 
 import com.silverpeas.mailinglist.service.ServicesFactory;
 import com.silverpeas.mailinglist.service.model.beans.Attachment;
 import com.silverpeas.mailinglist.service.model.beans.MailingList;
 import com.silverpeas.mailinglist.service.model.beans.Message;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import java.util.ArrayList;
+import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 
 public class MessageProcessor implements MailingListRoutage {
 
@@ -123,22 +117,22 @@ public class MessageProcessor implements MailingListRoutage {
   }
 
   protected static Message findMessage(String id) {
-    return ServicesFactory.getMessageService().getMessage(id);
+    return ServicesFactory.getFactory().getMessageService().getMessage(id);
   }
 
   protected static void deleteMessage(String id) {
-    ServicesFactory.getMessageService().deleteMessage(id);
+    ServicesFactory.getFactory().getMessageService().deleteMessage(id);
   }
 
   protected static void moderateMessage(String id) {
-    ServicesFactory.getMessageService().moderateMessage(id);
-    Message message = ServicesFactory.getMessageService().getMessage(id);
-    MailingList list = ServicesFactory.getMailingListService().findMailingList(
+    ServicesFactory servicesFactory = ServicesFactory.getFactory();
+    servicesFactory.getMessageService().moderateMessage(id);
+    Message message = servicesFactory.getMessageService().getMessage(id);
+    MailingList list = servicesFactory.getMailingListService().findMailingList(
         message.getComponentId());
     try {
-      ServicesFactory.getNotificationHelper().notify(message, list);
+      servicesFactory.getNotificationHelper().notify(message, list);
     } catch (Exception e) {
-      e.printStackTrace();
       SilverTrace.error("mailingList", "MailSender.sendMail",
           "mailinglist.external.notification.send", e);
     }

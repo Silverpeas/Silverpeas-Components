@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -46,11 +46,11 @@
   boolean linkDownload = ((Boolean) request.getAttribute("ViewLinkDownload")).booleanValue();
   boolean isBasket = ((Boolean) request.getAttribute("IsBasket")).booleanValue();
   boolean isPrivateSearch = ((Boolean) request.getAttribute("IsPrivateSearch")).booleanValue();
-    
+
   // paramètres du formulaire
   Form xmlForm = (Form) request.getAttribute("XMLForm");
   DataRecord xmlData = (DataRecord) request.getAttribute("XMLData");
-    
+
   // déclaration des variables :
   String nomRep = resource.getSetting("imagesSubDirectory") + photo.getPhotoPK().getId();
   String name = "";
@@ -58,9 +58,8 @@
     name = photo.getImageName();
   }
   String namePreview = photo.getId() + "_" + sizeParam + ".jpg";
-  //String 		namePreview			= photo.getId() + "_preview.jpg";
   String nameVignette = photo.getId() + "_266x150.jpg";
-  String preview_url = FileServerUtils.getUrl(null, componentId, namePreview,
+  String preview_url = FileServerUtils.getUrl(componentId, namePreview,
       photo.getImageMimeType(), nomRep);
   String title = photo.getTitle();
   String description = photo.getDescription();
@@ -73,12 +72,12 @@
   int height = photo.getSizeH();
   int width = photo.getSizeL();
   String photoId = new Integer(photo.getPhotoPK().getId()).toString();
-  String lien = FileServerUtils.getUrl(spaceId, componentId, URLEncoder.encode(name, "UTF-8"), photo.
+  String lien = FileServerUtils.getUrl(componentId, URLEncoder.encode(name, "UTF-8"), photo.
       getImageMimeType(), nomRep);
   String lienWatermark = "";
-  String lienPreview = FileServerUtils.getUrl(spaceId, componentId, namePreview, photo.
+  String lienPreview = FileServerUtils.getUrl(componentId, namePreview, photo.
       getImageMimeType(), nomRep);
-  String lienVignette = FileServerUtils.getUrl(spaceId, componentId, nameVignette, photo.
+  String lienVignette = FileServerUtils.getUrl(componentId, nameVignette, photo.
       getImageMimeType(), nomRep);
   boolean debut = rang.intValue() == 0;
   boolean fin = rang.intValue() == albumSize.intValue() - 1;
@@ -93,19 +92,19 @@
   String keyWord = photo.getKeyWord();
   String beginDate = resource.getOutputDate(photo.getBeginDate());
   String endDate = resource.getOutputDate(photo.getEndDate());
-    
+
   // si le paramètre watermark est actif, récupérer l'image avec le watermark
   if (watermark) {
     // image avec le watermarkOther pour le téléchargement
     File fileWatermark = new File(FileRepositoryManager.getAbsolutePath(componentId) + nomRep + File.separator + photo.
         getId() + "_watermark.jpg");
-          
+
     if (fileWatermark.exists()) {
-      lienWatermark = FileServerUtils.getUrl(spaceId, componentId, photo.getId() + "_watermark.jpg", photo.
+      lienWatermark = FileServerUtils.getUrl(componentId, photo.getId() + "_watermark.jpg", photo.
           getImageMimeType(), nomRep);
     }
   }
-    
+
   Board board = gef.getBoard();
 %>
 
@@ -113,13 +112,15 @@
 <html>
 <head>
 <view:looknfeel/>
+<view:includePlugin name="popup"/>
+<view:includePlugin name="preview"/>
 <view:includePlugin name="wysiwyg"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script language="javascript">
 
 var notifyWindow = window;
 
-function deleteConfirm(id,nom) 
+function deleteConfirm(id,nom)
 {
 	if(window.confirm("<%=resource.getString("gallery.confirmDeletePhoto")%> '"+nom+"' ?"))
 	{
@@ -128,7 +129,7 @@ function deleteConfirm(id,nom)
 	}
 }
 
-function goToNotify(url) 
+function goToNotify(url)
 {
 	windowName = "notifyWindow";
 	larg = "740";
@@ -142,24 +143,44 @@ function goToNotify(url)
 	function clipboardCopy() {
 	    top.IdleFrame.location.href = '../..<%=gallerySC.getComponentUrl()%>copy?Object=Image&Id=<%=photo.getId()%>';
 	}
-	
+
 	function clipboardCut() {
 	    top.IdleFrame.location.href = '../..<%=gallerySC.getComponentUrl()%>cut?Object=Image&Id=<%=photo.getId()%>';
 	}
 
+  $(window).keydown(function(e){
+    var keyCode = eval(e.keyCode);
+    if (37 == keyCode || keyCode == 39) {
+      e.preventDefault();
+      var button;
+      if (37 == keyCode) {
+        // Previous
+        button = $('#previousButton').get(0);
+      } else if (39 == keyCode) {
+        // Next
+        button = $('#nextButton').get(0);
+      }
+      if (button) {
+        button.click();
+      }
+      return true;
+    }
+  });
+
 </script>
+<%@include file="diaporama.jsp" %>
 </head>
 <body class="yui-skin-sam">
   <%
     browseBar.setDomainName(spaceLabel);
     browseBar.setComponentName(componentLabel, "Main");
     displayPath(path, browseBar);
-      
+
     String url = "ToAlertUser?PhotoId=" + photoId;
     operationPane.addOperation(resource.getIcon("gallery.alert"), resource.getString("GML.notify"),
         "javaScript:onClick=goToNotify('" + url + "')");
     operationPane.addLine();
-      
+
     if (updateAllowed) {
       operationPane.addOperation(resource.getIcon("gallery.deletePhoto"), resource.getString(
           "gallery.deletePhoto"), "javaScript:deleteConfirm('" + photoId + "','" + EncodeHelper.
@@ -175,23 +196,23 @@ function goToNotify(url)
     if (albumSize.intValue() > 1) {
       // diaporama
       operationPane.addOperation(resource.getIcon("gallery.startDiaporama"), resource.getString(
-          "gallery.diaporama"), "StartDiaporama");
+          "gallery.diaporama"), "javascript:startSlideshow('"+photoId+"')");
     }
-      
+
     if ("user".equals(profile) && isBasket) {
       operationPane.addLine();
       // ajouter la photo au panier
       operationPane.addOperation(resource.getIcon("gallery.addPhotoToBasket"), resource.getString(
           "gallery.addPhotoToBasket"), "BasketAddPhoto?PhotoId=" + photoId);
     }
-      
+
     if (isPrivateSearch) {
       // derniers résultat de la recherche
       operationPane.addLine();
       operationPane.addOperation(resource.getIcon("gallery.lastResult"), resource.getString(
           "gallery.lastResult"), "LastResult");
     }
-      
+
     TabbedPane tabbedPane = gef.getTabbedPane();
     tabbedPane.addTab(resource.getString("gallery.photo"), "#", true, false);
     if (updateAllowed) {
@@ -209,7 +230,7 @@ function goToNotify(url)
         tabbedPane.addTab(resource.getString("GML.PDC"), "PdcPositions?PhotoId=" + photoId, false);
       }
     }
-      
+
     out.println(window.printBefore());
     out.println(tabbedPane.print());
     out.println(frame.printBefore());
@@ -223,7 +244,7 @@ function goToNotify(url)
 				<tr>
 					<td align="center" width="25">
 						<%	if ( !debut ) { %>
-							<a href="PreviousPhoto"><img src="/silverpeas/util/viewGenerator/icons/arrows/arrowLeft.gif" align="middle" border="0" alt="<%=resource.getString("gallery.previous")%>" title="<%=resource.getString("gallery.previous")%>"/></a>
+							<a id="previousButton" href="PreviousPhoto"><img src="/silverpeas/util/viewGenerator/icons/arrows/arrowLeft.gif" align="middle" border="0" alt="<%=resource.getString("gallery.previous")%>" title="<%=resource.getString("gallery.previous")%>"/></a>
 						<% } else { %>
 							&nbsp;
 						<% } %>
@@ -233,7 +254,7 @@ function goToNotify(url)
 					</td>
 					<td align="center" width="25">
 						<% if ( !fin ) { %>
-							<a href="NextPhoto"><img src="/silverpeas/util/viewGenerator/icons/arrows/arrowRight.gif" align="middle" border="0" alt="<%=resource.getString("gallery.next")%>" title="<%=resource.getString("gallery.next")%>"/></a>
+							<a id="nextButton" href="NextPhoto"><img src="/silverpeas/util/viewGenerator/icons/arrows/arrowRight.gif" align="middle" border="0" alt="<%=resource.getString("gallery.next")%>" title="<%=resource.getString("gallery.next")%>"/></a>
 						<% } else { %>
 							&nbsp;
 						<% } %>
@@ -244,22 +265,24 @@ function goToNotify(url)
 	</tr>
 	<tr>
 		<!-- AFFICHAGE de la preview de la photo -->
-      	<td> 
+      	<td>
 			<%
-				String type = name.substring(name.lastIndexOf(".") + 1, name.length());
-				if ("bmp".equalsIgnoreCase(type))
+				if (!photo.isPreviewable()) {
 					preview_url = m_context+"/gallery/jsp/icons/notAvailable_"+resource.getLanguage()+"_" + sizeParam + ".jpg";
+				}
 				if ( preview_url != null )
 				{
 					%>
 					<table border="0" width="10" align="center" cellspacing="1" cellpadding="0" class="fondPhoto"><tr><td align="center">
 						<table cellspacing="1" cellpadding="5" border="0" class="cadrePhoto"><tr><td bgcolor="#FFFFFF">
-							<center><img src="<%=preview_url%>"/></center>
+              <center>
+                <img src="<%=preview_url%>" onclick="javascript:startSlideshow('<%=photo.getPhotoPK().getId()%>')" style="cursor: pointer"/>
+              </center>
 						</td></tr></table>
 					</td></tr></table>
 					<%
 				}
-			%>        
+			%>
 		</td>
 	</tr>
 	</table>
@@ -274,35 +297,35 @@ function goToNotify(url)
 						<td class="txtlibform" nowrap="nowrap"><%=resource.getString("gallery.permalink")%> :</td>
 						<td><a href="<%=link%>" ><img src=<%=resource.getIcon("gallery.link")%> border="0" alt='<%=resource.getString("gallery.CopyPhotoLink")%>' title='<%=resource.getString("gallery.CopyPhotoLink")%>'/></a></td>
 					</tr>
-				<%	}	
+				<%	}
 				if ( title != null && !title.equals(name)) {	%>
 					<tr align="left">
 						<td class="txtlibform" nowrap="nowrap"><%=resource.getString("GML.title")%> :</td>
 						<td><%=title%></td>
 					</tr>
-				<%	}	
+				<%	}
 				if ( description != null && !description.equals("") ) {	%>
 					<tr align="left">
 						<td class="txtlibform" nowrap="nowrap"><%=resource.getString("GML.description")%> :</td>
 						<td><%=description%></td>
 					</tr>
-				<%	}	
-						if (linkDownload || photo.isDownloadable()) 
+				<%	}
+						if (linkDownload || photo.isDownloadable())
 						{ %>
 						<tr align="left">
 							<td class="txtlibform" nowrap="nowrap"><%=resource.getString("gallery.originale")%> :</td>
 							<td><a href="<%=lien%>" target=_blank><%=EncodeHelper.javaStringToHtmlString(resource.getString("gallery.telecharger"))%></a></td>
 						</tr>
-						
+
 						<% if (!lienWatermark.equals(""))
 							{%>
 						<tr align="left">
 							<td class="txtlibform" nowrap="nowrap"><%=resource.getString("gallery.originaleWatermark")%> :</td>
 							<td><a href="<%=lienWatermark%>" target=_blank><%=EncodeHelper.javaStringToHtmlString(resource.getString("gallery.telecharger"))%></a></td>
 						</tr>
-						<% } 
+						<% }
 						} %>
-						
+
 						<% if (photo.isDownload() && (photo.getBeginDownloadDate() != null || photo.getEndDownloadDate() != null)) { %>
 						<tr align="left">
 							<td class="txtlibform" nowrap="nowrap"><%=resource.getString("gallery.beginDownloadDate")%> :</td>
@@ -322,8 +345,8 @@ function goToNotify(url)
 						<% } %>
 						</td>
 					</tr>
-				<% 	}  %>			
-				<% 
+				<% 	}  %>
+				<%
 				if ( name != null ) {	%>
 					<tr align="left">
 						<td class="txtlibform" nowrap="nowrap"><%=resource.getString("gallery.nomFic")%> :</td>
@@ -335,7 +358,7 @@ function goToNotify(url)
 						<td class="txtlibform" nowrap="nowrap"><%=resource.getString("gallery.poids")%> :</td>
 						<td><%=FileRepositoryManager.formatFileSize(size)%></td>
 					</tr>
-				<%	}	
+				<%	}
 				if ( height != 0 ) {	%>
 					<tr align="left">
 						<td class="txtlibform" nowrap="nowrap"><%=resource.getString("gallery.taille")%> :</td>
@@ -357,15 +380,15 @@ function goToNotify(url)
 						<td class="txtlibform" nowrap="nowrap"><%=resource.getString("gallery.updateDate")%> :</td>
 						<td><%=updateDate%>&nbsp;<span class="txtlibform"><%=resource.getString("gallery.par")%></span>&nbsp;<%=updateName%></td>
 					</tr>
-				<%	} 
-				if ( keyWord != null && !keyWord.equals("") ) 
+				<%	}
+				if ( keyWord != null && !keyWord.equals("") )
 				{ %>
 					<tr align="left">
 					<td class="txtlibform" nowrap="nowrap"><%=resource.getString("gallery.keyWord")%> :</td>
 					<td>
 					<%
 					StringTokenizer st = new StringTokenizer(keyWord);
-					while (st.hasMoreTokens()) 
+					while (st.hasMoreTokens())
 					{
 						String searchKeyWord = st.nextToken();
 						%>
@@ -375,7 +398,7 @@ function goToNotify(url)
 				<% } %>
 				</table>
 				<%=board.printAfter()%>
-							
+
 				<%
 				// AFFICHAGE des métadonnées
 				if (metaDataKeys != null && !metaDataKeys.isEmpty()) {
@@ -402,11 +425,11 @@ function goToNotify(url)
 					out.println(board.printAfter());
 					out.println("</table>");
 				}
-				
+
 				if (xmlForm != null) {
 				%>
 					<br/>
-									
+
 					<%=board.printBefore()%>
 					<table align="left" border="0" width="50%">
 					<!-- AFFICHAGE du formulaire -->
@@ -419,21 +442,21 @@ function goToNotify(url)
                                 xmlContext.setObjectId(photoId);
                                 xmlContext.setBorderPrinted(false);
                                 xmlContext.setIgnoreDefaultValues(true);
-                                  
+
                                 xmlForm.display(out, xmlContext, xmlData);
                               %>
-							</td>	
+							</td>
 						</tr>
 					</table>
 					<%=board.printAfter()%>
-				<% } %>	
+				<% } %>
 		</td>
 	</tr>
 </table>
 </form>
-<% 
+<%
   	out.println(frame.printAfter());
 	out.println(window.printAfter());
-%>	
+%>
 </body>
 </html>

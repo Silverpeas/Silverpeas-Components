@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -31,33 +31,12 @@ response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
-<%@ page import="javax.servlet.*"%>
-<%@ page import="javax.servlet.http.*"%>
-<%@ page import="javax.servlet.jsp.*"%>
-<%@ page import="java.io.PrintWriter"%>
-<%@ page import="java.io.IOException"%>
-<%@ page import="java.io.FileInputStream"%>
-<%@ page import="java.io.ObjectInputStream"%>
-<%@ page import="java.util.Vector"%>
-<%@ page import="java.beans.*"%>
-
 <%@ page import="java.util.*"%>
 <%@ page import="java.lang.*"%>
-<%@ page import="javax.ejb.*,java.sql.SQLException,javax.naming.*,javax.rmi.PortableRemoteObject"%>
 
 <%@ page import="com.stratelia.webactiv.util.*"%>
 
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.iconPanes.IconPane"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.icons.Icon"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.navigationList.NavigationList"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.navigationList.Link"%>
 <%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail"%>
 <%@ page import="com.stratelia.webactiv.util.node.model.NodePK"%>
 <%@ page import="com.stratelia.webactiv.util.publication.model.*"%>
@@ -100,35 +79,17 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%
 
 ResourceLocator settings;
-//CBO : REMOVE String language;
 String rootId = "0";
-//CBO : REMOVE String space;
 String action;
 String id;
 String name;
-//CBO : REMOVE String creationDate;
-//CBO : REMOVE String creatorName;
-//CBO : REMOVE String path;
-//CBO : REMOVE String fatherId;
-//CBO : REMOVE String childId;
-//CBO : REMOVE Collection subTopicList;
-//CBO : REMOVE Collection publicationList;
 String linkedPathString = "";
 String pathString = "";
 FolderDetail webSitesCurrentFolder = null;
 
 settings = new ResourceLocator("com.stratelia.webactiv.webSites.settings.webSiteSettings","fr");
 
-//CBO : REMOVE String iconsPath = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 
-//Icons
-//CBO : UPDATE
-/*
-String pxmag = iconsPath + "/util/icons/colorPix/1px.gif";
-String flea = iconsPath + "/util/icons/buletGrey.gif";
-String suggerer=iconsPath+"/util/icons/webSites_to_propose.gif";
-String redFlag = iconsPath+"/util/icons/urgent.gif";
-*/
 String pxmag = m_context + "/util/icons/colorPix/1px.gif";
 String flea = m_context + "/util/icons/buletGrey.gif";
 String suggerer=m_context+"/util/icons/create-action/add-bookmark.png";
@@ -136,17 +97,13 @@ String redFlag = m_context+"/util/icons/urgent.gif";
 
 String bodyPart="";
 
-//R�cup�ration des param�tres
+// Retrieve parameter
 action = (String) request.getParameter("Action");
 id = (String) request.getParameter("Id");
-//CBO : REMOVE childId = (String) request.getParameter("ChildId");
-//CBO : REMOVE language = (String) request.getParameter("Language");
-//CBO : REMOVE space = (String) request.getParameter("Space");
 
-//CBO : ADD
 webSitesCurrentFolder = (FolderDetail) request.getAttribute("CurrentFolder");
 
-//Mise a jour de l'espace
+// Update space
 if (action == null) {
     SilverTrace.info("websites", "JSPlisteSite", "root.MSG_GEN_PARAM_VALUE", "action NULL");
     id = rootId;
@@ -158,23 +115,20 @@ if (action == null) {
 
 <!-- listSite -->
 
-<HTML>
-<HEAD>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
 
-<TITLE><%=resources.getString("GML.popupTitle")%></TITLE>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<title><%=resources.getString("GML.popupTitle")%></title>
+<view:looknfeel />
 <script type="text/javascript" src="javaScript/spacesInURL.js"></script>
-<!--CBO : UPDATE-->
-<!--<script type="text/javascript" src="<%/*iconsPath*/%>/util/javaScript/animation.js"></script>-->
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script Language="JavaScript">
+<script type="text/javascript">
 
 function topicGoTo(id) {
 	document.topicDetailForm.Action.value = "Search";
-    document.topicDetailForm.Id.value = id;
-    document.topicDetailForm.submit();
+  document.topicDetailForm.Id.value = id;
+  document.topicDetailForm.submit();
 }
 
 /*********************************************************************/
@@ -200,9 +154,9 @@ function publicationGoTo(popup, type, theURL, nom){
 		document.topicDetailForm.SitePage.value = theURL;
 		document.topicDetailForm.submit();
 	}
-	else 
+	else {
 		site = window.open(theURL,winName,windowParams);
-
+	}
 }
 
 /*********************************************************************/
@@ -215,10 +169,16 @@ function openDictionnary() { //v2.0
 	 windowParams = "scrollbars=yes, resizable, alwaysRaised";
 	 dico = SP_openWindow(theURL, winName, larg, haut, windowParams);
 }
-</Script>
 
-</HEAD>
-<BODY>
+
+function openSPWindow(fonction, windowName){
+  pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600', '400','scrollbars=yes, resizable, alwaysRaised');
+}
+
+</script>
+
+</head>
+<body>
 <%
 
 	//Traitement = View, Search, Add, Update, Delete, Classify, Declassify
@@ -228,14 +188,9 @@ function openDictionnary() { //v2.0
 	}
 
 	SilverTrace.info("websites", "JSPlisteSite", "root.MSG_GEN_PARAM_VALUE", "action = "+action);
-
-	/* SEARCH */
 	if (action.equals("Search")) {
 
 		SilverTrace.info("websites", "JSPlisteSite", "root.MSG_GEN_PARAM_VALUE", "action = Search");
-
-		//CBO : REMOVE webSitesCurrentFolder = scc.getFolder(id);
-		//CBO : REMOVE scc.setSessionTopic(webSitesCurrentFolder);
 		name = webSitesCurrentFolder.getNodeDetail().getName();
 		Collection pathC = webSitesCurrentFolder.getPath();
 		pathString = navigPath(pathC, false, 3);
@@ -248,82 +203,76 @@ function openDictionnary() { //v2.0
 
 		Window window = gef.getWindow();
 
-		// La barre de naviagtion
 		BrowseBar browseBar = window.getBrowseBar();
-		//CBO : UPDATE
-		//browseBar.setDomainName(scc.getSpaceLabel());
 		browseBar.setDomainName(spaceLabel);
-		//CBO : UPDATE
-		//browseBar.setComponentName(scc.getComponentLabel(), "listSite.jsp");
 		browseBar.setComponentName(componentLabel, "Main");
 		browseBar.setPath(linkedPathString);
 
-        //Les onglets
-        TabbedPane tabbedPane = gef.getTabbedPane();
-		//CBO : UPDATE
-        //tabbedPane.addTab(resources.getString("Consulter"), "listSite.jsp", true);
+    //Les onglets
+    TabbedPane tabbedPane = gef.getTabbedPane();
 		tabbedPane.addTab(resources.getString("Consulter"), "Main", true);
 		tabbedPane.addTab(resources.getString("Organiser"), "organize.jsp", false);
-        tabbedPane.addTab(resources.getString("GML.management"), "manage.jsp", false);
+    tabbedPane.addTab(resources.getString("GML.management"), "manage.jsp", false);
 
-        bodyPart+=tabbedPane.print();
+    bodyPart+=tabbedPane.print();
 
 
 		//Le cadre
 		Frame frame = gef.getFrame();
 
-		// Cr�ation de la liste de navigation
+		// Creation de la liste de navigation
 		NavigationList navList = gef.getNavigationList();
-        navList.setTitle("");
-        Iterator i = subThemes.iterator();
-        Iterator iteratorNbTool = nbToolByFolder.iterator();
-        String themeName = "";
-        String themeDescription = "";
-        String themeId = "";
-        String nbPub = "?";
+    navList.setTitle("");
+    Iterator i = subThemes.iterator();
+    Iterator iteratorNbTool = nbToolByFolder.iterator();
+    String themeName = "";
+    String themeDescription = "";
+    String themeId = "";
+    String nbPub = "?";
 
-        while (i.hasNext()) {
+    while (i.hasNext()) {
 			ArrayList listSubDirectory = new ArrayList();
-            NodeDetail theme = (NodeDetail) i.next();
-            themeName = theme.getName();
-            themeDescription = theme.getDescription();
-            themeId = theme.getNodePK().getId();
-            FolderDetail folder = scc.getFolder(themeId);
-            Collection subItem = folder.getNodeDetail().getChildrenDetails();
-            Iterator j = subItem.iterator();
-            while (j.hasNext()) {
+      NodeDetail theme = (NodeDetail) i.next();
+      themeName = theme.getName();
+      themeDescription = theme.getDescription();
+      themeId = theme.getNodePK().getId();
+      FolderDetail folder = scc.getFolder(themeId);
+      Collection subItem = folder.getNodeDetail().getChildrenDetails();
+      Iterator j = subItem.iterator();
+      while (j.hasNext()) {
 				NodeDetail subtheme = (NodeDetail) j.next();
 				Link l = new Link(subtheme.getName(), "listSite.jsp?Action=Search&Id="+subtheme.getNodePK().getId());
 				listSubDirectory.add(l);
 			}
             /* ecriture des lignes du tableau */
-            if (iteratorNbTool.hasNext())
+      if (iteratorNbTool.hasNext()) {
 				nbPub = ((Integer) iteratorNbTool.next()).toString();
-
+      }
 			//Ajout d'une ligne
 			navList.addItemSubItem(themeName, "listSite.jsp?Action=Search&Id="+themeId, new Integer(nbPub).intValue() ,listSubDirectory);
 		}
 
 		if (subThemes.size() > 0)
 		{
-			//R�cup�ration du tableau dans le haut du cadre
+			//Recuperation du tableau dans le haut du cadre
 			frame.addTop(navList.print());
 		}
 
-		//Liste des sites du th�me courant
+		//Liste des sites du theme courant
 		String liste = "";
 
 		if (listeSites.size() > 0) {
 			liste += "<TABLE CELLPADDING=3 CELLSPACING=0 ALIGN=CENTER BORDER=0 WIDTH=\"98%\"><tr><td>\n";
-			//R�cup des sites
+			//Recup des sites
 			Iterator j = listeSites.iterator();
 			while (j.hasNext()) {
 				PublicationDetail site = (PublicationDetail) j.next();
 				String siteId = site.getVersion();
 				String siteName = site.getName();
-				String siteDescription = Encode.javaStringToHtmlParagraphe(site.getDescription());
-				if (siteDescription == null)
+				String siteDescription = EncodeHelper.javaStringToHtmlParagraphe(site.getDescription());
+				if (siteDescription == null) {
 					siteDescription = "";
+				}
 				String sitePage = site.getContent();
 				String type = new Integer(site.getImportance()).toString();
 				liste += "<tr>\n";
@@ -350,10 +299,7 @@ function openDictionnary() { //v2.0
 					liste+="<td valign=\"top\">&nbsp;</td>\n";
 
 				SiteDetail siteDetail = scc.getWebSite(siteId);
-
-				//CBO : UPDATE
-				/*liste += "<td valign=\"top\" align=left nowrap>&#149;&nbsp;<a class=\"textePetitBold\" href=\"javascript:onClick=publicationGoTo('" + siteDetail.getPopup() + "', '"+type+"', 'http://"+getMachine(request)+"/"+settings.getString("Context")+"/"+scc.getComponentId()+"/"+siteId+"/' , '"+Encode.javaStringToJsString(sitePage)+"')\">"+siteName+"</a></td><td align=left>\n";*/
-				liste += "<td valign=\"top\" align=left nowrap>&#149;&nbsp;<a class=\"textePetitBold\" href=\"javascript:onClick=publicationGoTo('" + siteDetail.getPopup() + "', '"+type+"', 'http://"+getMachine(request)+"/"+settings.getString("Context")+"/"+componentId+"/"+siteId+"/' , '"+Encode.javaStringToJsString(sitePage)+"')\">"+siteName+"</a></td><td align=left>\n";
+			liste += "<td valign=\"top\" align=left nowrap>&#149;&nbsp;<a class=\"textePetitBold\" href=\"javascript:onClick=publicationGoTo('" + siteDetail.getPopup() + "', '"+type+"', 'http://"+getMachine(request)+"/"+settings.getString("Context")+"/"+componentId+"/"+siteId+"/' , '"+EncodeHelper.javaStringToJsString(sitePage)+"')\">"+siteName+"</a></td><td align=left>\n";
 
 				liste += listeIcones;
 				liste += "</td></tr><tr><td class=intfdcolor51>&nbsp;</td><td colspan=2 width=\"100%\" class=intfdcolor51><span class=\"txtnote\">"+siteDescription+"</span></td></tr><tr><td colspan=3><img src=\""+pxmag+"\" height=3 width=200></td>\n";
@@ -363,7 +309,7 @@ function openDictionnary() { //v2.0
 			liste = "<TABLE CELLPADDING=0 CELLSPACING=0 ALIGN=CENTER BORDER=0 WIDTH=\"98%\" class=intfdcolor4><tr><td><table border=0 cellspacing=0 cellpadding=5  WIDTH=\"100%\" class=contourintfdcolor><tr><td><BR><center>"+resources.getString("NoLinkAvailable")+"</center><BR></td></tr></table></td></tr></table>";
 		}
 
-		//R�cup�ration de la liste des sites dans le cadre
+		//Recuperation de la liste des sites dans le cadre
 		frame.addBottom(liste);
 
 		//On crache le HTML ;o)
@@ -373,22 +319,11 @@ function openDictionnary() { //v2.0
 	}
 %>
 
-<FORM NAME="topicDetailForm" ACTION="listSite.jsp" METHOD=POST >
-  <input type="hidden" name="Action">
-  <input type="hidden" name="Id" value="<%=id%>">
-  <!-- CBO : REMOVE -->
-  <!-- 
-  <input type="hidden" name="Path" value="<%=Encode.javaStringToHtmlString(pathString)%>">
-  <input type="hidden" name="ChildId">
-  <input type="hidden" name="nomSite">
-  <input type="hidden" name="description">
-  <input type="hidden" name="nomPage">
-  <input type="hidden" name="auteur">
-  <input type="hidden" name="date">
-  <input type="hidden" name="ListeIcones">
-  -->
-  <input type="hidden" name="SitePage">
-</FORM>
+<form name="topicDetailForm" action="listSite.jsp" method="post">
+  <input type="hidden" name="Action"/>
+  <input type="hidden" name="Id" value="<%=id%>" />
+  <input type="hidden" name="SitePage"/>
+</form>
 
-</BODY>
-</HTML>
+</body>
+</html>

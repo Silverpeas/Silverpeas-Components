@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,7 +29,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@page import="com.silverpeas.util.EncodeHelper"%>
+<%@page import="com.silverpeas.kmelia.SearchContext"%>
 
 <c:url var="mandatoryFieldUrl" value="/util/icons/mandatoryField.gif"/>
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
@@ -40,8 +40,16 @@ String		rootId				= "0";
 
 String 	profile			= (String) request.getAttribute("Profile");
 String  translation 	= (String) request.getAttribute("Language");
+boolean displayNBPublis = ((Boolean) request.getAttribute("DisplayNBPublis")).booleanValue();
 Boolean rightsOnTopics  = (Boolean) request.getAttribute("RightsOnTopicsEnabled");
 Boolean displaySearch	= (Boolean) request.getAttribute("DisplaySearch");
+int		currentPageIndex = (Integer) request.getAttribute("PageIndex");
+
+SearchContext searchContext = (SearchContext) request.getAttribute("SearchContext");
+String query = "";
+if (searchContext != null) {
+  query = searchContext.getQuery();
+}
 
 String id 		= (String) request.getAttribute("CurrentFolderId");
 
@@ -61,8 +69,7 @@ String m_sAbsolute = sRequestURL.substring(0, sRequestURL.length() - request.get
 
 String userId = kmeliaScc.getUserId();
 
-ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
-String httpServerBase = generalSettings.getString("httpServerBase", m_sAbsolute);
+String httpServerBase = GeneralPropertiesManager.getString("httpServerBase", m_sAbsolute);
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -76,6 +83,9 @@ String httpServerBase = generalSettings.getString("httpServerBase", m_sAbsolute)
 <script type="text/javascript" src="<c:url value="/util/javaScript/checkForm.js" />"></script>
 <view:includePlugin name="userZoom"/>
 <view:includePlugin name="datepicker" />
+<view:includePlugin name="popup"/>
+<view:includePlugin name="preview"/>
+<view:includePlugin name="notifier"/>
 <script type="text/javascript" src="javaScript/navigation.js"></script>
 <script type="text/javascript" src="javaScript/searchInTopic.js"></script>
 <script type="text/javascript" src="javaScript/publications.js"></script>
@@ -87,6 +97,30 @@ String httpServerBase = generalSettings.getString("httpServerBase", m_sAbsolute)
 </style>
 
 <script type="text/javascript">
+
+  <%--The below triggered function has to be defined as soon as possible in HTML code in order to
+  increase chances to perform the treatment when "menuRender" event is fired --%>
+  $(document).ready(function() {
+    $(document).bind('menuRendered', function(){
+
+      $.i18n.properties({
+        name: 'kmeliaBundle',
+        path: webContext + '/services/bundles/com/silverpeas/kmelia/multilang/',
+        language: '<%=language%>',
+        mode: 'map'
+      });
+
+      displayTopicContent(<%=id%>);
+
+      <% if (settings.getBoolean("DisplayDnDOnLoad", false)) { %>
+      showDnD();
+      <% } %>
+      <% if (displaySearch.booleanValue()) { %>
+      document.getElementById("topicQuery").focus();
+      <% } %>
+    });
+  });
+
 function topicGoTo(id) {
     closeWindows();
     displayTopicContent(id);
@@ -94,13 +128,17 @@ function topicGoTo(id) {
 
 function showDnD() {
 	<%
-	ResourceLocator uploadSettings = new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings", "");
+	ResourceLocator uploadSettings = new ResourceLocator("org.silverpeas.util.uploads.uploadSettings", "");
 	String maximumFileSize = uploadSettings.getString("MaximumFileSize", "10000000");
 	if (profile.equals("publisher") || profile.equals("writer")) { %>
 		showHideDragDrop('<%=httpServerBase+m_context%>/RImportDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&IgnoreFolders=1&SessionId=<%=session.getId()%>','<%=httpServerBase + m_context%>/upload/ModeNormal_<%=language%>.html','<%=httpServerBase+m_context%>/RImportDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&IgnoreFolders=1&Draft=1&SessionId=<%=session.getId()%>','<%=httpServerBase + m_context%>/upload/ModeDraft_<%=language%>.html','<%=resources.getString("GML.applet.dnd.alt")%>','<%=maximumFileSize%>','<%=m_context%>','<%=resources.getString("GML.DragNDropExpand")%>','<%=resources.getString("GML.DragNDropCollapse")%>');
 	<% } else { %>
 		showHideDragDrop('<%=httpServerBase+m_context%>/RImportDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&SessionId=<%=session.getId()%>','<%=httpServerBase + m_context%>/upload/ModeNormal_<%=language%>.html','<%=httpServerBase+m_context%>/RImportDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&Draft=1&SessionId=<%=session.getId()%>','<%=httpServerBase + m_context%>/upload/ModeDraft_<%=language%>.html','<%=resources.getString("GML.applet.dnd.alt")%>','<%=maximumFileSize%>','<%=m_context%>','<%=resources.getString("GML.DragNDropExpand")%>','<%=resources.getString("GML.DragNDropCollapse")%>');
 	<% } %>
+}
+
+function getCurrentUserId() {
+  return "<%=userId%>";
 }
 
 function getWebContext() {
@@ -112,7 +150,7 @@ function getComponentId() {
 }
 
 function getComponentLabel() {
-	return "<%=componentLabel%>";
+	return "<%=EncodeHelper.javaStringToJsString(componentLabel)%>";
 }
 
 function getLanguage() {
@@ -125,6 +163,10 @@ function getPubIdToHighlight() {
 
 function getTranslation() {
 	return "<%=translation%>";
+}
+
+function getToValidateFolderId() {
+	return "<%=KmeliaHelper.SPECIALFOLDER_TOVALIDATE%>";
 }
 </script>
 </head>
@@ -149,7 +191,7 @@ function getTranslation() {
 						<div id="searchZone">
 						<view:board>
 						<table id="searchLine">
-						<tr><td><div id="searchLabel"><%=resources.getString("kmelia.SearchInTopics") %></div>&nbsp;<input type="text" id="topicQuery" size="50" onkeydown="checkSubmitToSearch(event)"/></td><td><%=searchButton.print() %></td></tr>
+						<tr><td><div id="searchLabel"><%=resources.getString("kmelia.SearchInTopics") %></div>&nbsp;<input type="text" id="topicQuery" size="50" value="<%=query%>" onkeydown="checkSubmitToSearch(event)"/></td><td><%=searchButton.print() %></td></tr>
 						</table>
 						</view:board>
 						</div>
@@ -212,7 +254,7 @@ function getTranslation() {
 
 <form name="pubForm" action="ViewPublication" method="post">
 	<input type="hidden" name="PubId"/>
-	<input type="hidden" name="CheckPath"/>
+	<input type="hidden" id="CheckPath" name="CheckPath"/>
 </form>
 
 <form name="fupload" action="fileUpload.jsp" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
@@ -222,53 +264,6 @@ function getTranslation() {
 <form name="updateChain" action="UpdateChainInit">
 </form>
 <script type="text/javascript">
-var labels = new Object();
-labels["ConfirmDeleteTopic"] = "<%=EncodeHelper.javaStringToJsString(resources.getString("ConfirmDeleteTopic"))%>";
-labels["ConfirmFlushTrashBean"] = "<%=EncodeHelper.javaStringToJsString(kmeliaScc.getString("ConfirmFlushTrashBean"))%>";
-labels["ToValidate"] = "<%=EncodeHelper.javaStringToJsString(resources.getString("ToValidate"))%>";
-labels["topic.info"] = "<%=EncodeHelper.javaStringToJsString(resources.getString("kmelia.topic.info"))%>";
-
-labels["operation.admin"] = "<%=resources.getString("GML.operations.setupComponent")%>";
-labels["operation.pdc"] = "<%=resources.getString("GML.PDCParam")%>";
-labels["operation.templates"] = "<%=resources.getString("kmelia.ModelUsed")%>";
-labels["operation.exportTopic"] = "<%=resources.getString("kmelia.ExportTopic")%>";
-labels["operation.exportComponent"] = "<%=resources.getString("kmelia.ExportComponent")%>";
-labels["operation.exportPDF"] = "<%=resources.getString("kmelia.ExportPDF")%>";
-labels["operation.addTopic"] = "<%=resources.getString("CreerSousTheme")%>";
-labels["operation.updateTopic"] = "<%=resources.getString("ModifierSousTheme")%>";
-labels["operation.deleteTopic"] = "<%=resources.getString("SupprimerSousTheme")%>";
-labels["operation.sortTopics"] = "<%=resources.getString("kmelia.SortTopics")%>";
-labels["operation.copy"] = "<%=resources.getString("GML.copy")%>";
-labels["operation.cut"] = "<%=resources.getString("GML.cut")%>";
-labels["operation.paste"] = "<%=resources.getString("GML.paste")%>";
-labels["operation.visible2invisible"] = "<%=resources.getString("TopicVisible2Invisible")%>";
-labels["operation.invisible2visible"] = "<%=resources.getString("TopicInvisible2Visible")%>";
-labels["operation.wysiwygTopic"] = "<%=resources.getString("TopicWysiwyg")%>";
-labels["operation.addPubli"] = "<%=resources.getString("PubCreer")%>";
-labels["operation.wizard"] = "<%=resources.getString("kmelia.Wizard")%>";
-labels["operation.importFile"] = "<%=resources.getString("kmelia.ImportFile")%>";
-labels["operation.importFiles"] = "<%=resources.getString("kmelia.ImportFiles")%>";
-labels["operation.sortPublis"] = "<%=resources.getString("kmelia.OrderPublications")%>";
-labels["operation.updateChain"] = "<%=resources.getString("kmelia.updateByChain")%>";
-labels["operation.subscribe"] = "<%=resources.getString("SubscriptionsAdd")%>";
-labels["operation.favorites"] = "<%=resources.getString("FavoritesAdd1")%> <%=resources.getString("FavoritesAdd2")%>";
-labels["operation.emptyTrash"] = "<%=resources.getString("EmptyBasket")%>";
-labels["operation.predefinedPdcPositions"] = "<%=resources.getString("GML.PDCPredefinePositions")%>";
-labels["operation.exportSelection"] = "<%=resources.getString("kmelia.operation.exportSelection")%>";
-labels["operation.shareTopic"] = "<%=resources.getString("kmelia.operation.shareTopic")%>";
-labels["operation.statistics"] = "<fmt:message key="kmelia.operation.statistics"/>";
-
-labels["js.topicTitle"] = "<fmt:message key="TopicTitle"/>";
-labels["js.mustBeFilled"] = "<fmt:message key="GML.MustBeFilled"/>";
-labels["js.contains"] = "<fmt:message key="GML.ThisFormContains"/>";
-labels["js.error"] = "<fmt:message key="GML.error"/>";
-labels["js.errors"] = "<fmt:message key="GML.errors"/>";
-
-labels["js.status.visible2invisible"] = "<fmt:message key="TopicVisible2InvisibleRecursive"/>";
-labels["js.status.invisible2visible"] = "<fmt:message key="TopicInvisible2VisibleRecursive"/>";
-
-labels["js.i18n.remove"] = "<fmt:message key="GML.translationRemove"/>";
-
 var icons = new Object();
 icons["permalink"] = "<%=resources.getIcon("kmelia.link")%>";
 icons["operation.addTopic"] = "<%=resources.getIcon("kmelia.operation.addTopic")%>";
@@ -282,6 +277,10 @@ icons["operation.favorites"] = "<%=resources.getIcon("kmelia.operation.favorites
 var params = new Object();
 params["rightsOnTopic"] = <%=rightsOnTopics.booleanValue()%>;
 params["i18n"] = <%=I18NHelper.isI18N%>;
+params["nbPublisDisplayed"] = <%=displayNBPublis%>;
+
+var searchInProgress = <%=searchContext != null%>;
+var searchFolderId = "<%=id%>";
 
 function getComponentPermalink() {
 	return "<%=URLManager.getSimpleURL(URLManager.URL_COMPONENT, componentId)%>";
@@ -305,29 +304,41 @@ function updateUIStatus(nodeId, newStatus) {
 }
 
 function displayTopicContent(id) {
-	clearSearchQuery();
+	if (id != searchFolderId) {
+		// search session is over
+		searchInProgress = false;
+	}
+	
+	if (!searchInProgress) {
+		clearSearchQuery();
+	}
+	
 	setCurrentNodeId(id);
 
-	if (id == "tovalidate" || id == "1") {
+	if (id == getToValidateFolderId() || id == "1") {
 		$("#DnD").css({'display':'none'}); //hide dropzone
 		$("#footer").css({'visibility':'hidden'}); //hide footer
 		$("#searchZone").css({'display':'none'}); //hide search
 		$("#subTopics").empty();
 
-		if (id == "tovalidate")	{
+		if (id == getToValidateFolderId())	{
 			hideOperations();
-			displayPublicationsToValidate();
+			displayPublications(id);
 
 			//update breadcrumb
             removeBreadCrumbElements();
-            addBreadCrumbElement("#", labels["ToValidate"]);
+            addBreadCrumbElement("#", "<%=resources.getString("ToValidate")%>");
 		} else {
 			displayPublications(id);
 			displayPath(id);
 			displayOperations(id);
 		}
 	} else {
-		displayPublications(id);
+		if (searchInProgress) {
+			doPagination(<%=currentPageIndex%>);
+		} else {
+			displayPublications(id);
+		}
 		displayPath(id);
 		displayOperations(id);
 		$("#searchZone").css({'display':'block'});
@@ -339,31 +350,39 @@ function displayTopicContent(id) {
 
 	//display topic rich description
 	displayTopicDescription(id);
+	
+	// location.href = location.href + "#pubList";
 }
 	
 function displaySubTopics(id) {
 	var sUrl = "<%=m_context%>/services/folders/<%=componentId%>/"+id+"/children?lang="+getTranslation();
-	$.getJSON(sUrl, function(data){
-		$("#subTopics").empty();
-		$("#subTopics").append("<ul>");
-		var basket = "";
-		var tovalidate = "";
-		$.each(data, function(i, folder) {
-				var folderId = folder.attr["id"];
-				if (folderId == "1") {
-					basket = getSubFolder(folder);
-				} else if (folderId == "tovalidate") {
-					tovalidate = getSubFolder(folder);
-				} else if (folderId != "2") {
-					$("#subTopics ul").append(getSubFolder(folder));
-				}
-		});
-		if (id == "0") {
-			$("#subTopics ul").append(tovalidate);
-			$("#subTopics ul").append(basket);
+	$.ajax(sUrl, {
+		 type: 'GET', 
+		 dataType : 'json',
+		 async : false,
+		 cache : false,
+		 success : function(data){
+			$("#subTopics").empty();
+			$("#subTopics").append("<ul>");
+			var basket = "";
+			var tovalidate = "";
+			$.each(data, function(i, folder) {
+					var folderId = folder.attr["id"];
+					if (folderId == "1") {
+						basket = getSubFolder(folder);
+					} else if (folderId == getToValidateFolderId()) {
+						tovalidate = getSubFolder(folder);
+					} else if (folderId != "2") {
+						$("#subTopics ul").append(getSubFolder(folder));
+					}
+			});
+			if (id == "0") {
+				$("#subTopics ul").append(tovalidate);
+				$("#subTopics ul").append(basket);
+			}
+			$("#subTopics").append("</ul>");
+			$("#subTopics").append("<br clear=\"all\">");
 		}
-		$("#subTopics").append("</ul>");
-		$("#subTopics").append("<br clear=\"all\">");
 	});
 }
 
@@ -374,14 +393,14 @@ function getSubFolder(folder) {
 	var desc = folder.attr["description"];
 	var str = '<li id="topic_'+id+'">';
 	str += '<a href="#" onclick="topicGoTo(\''+id+'\')" ';
-	if (id == "tovalidate") {
+	if (id == getToValidateFolderId()) {
 		str += 'class="toValidate"';
 	} else if (id == "1") {
 		str += 'class="trash"';
 	}
 	str += '>';
 	str += '<strong>'+name+' ';
-	if (nbItems != -1) {
+	if (typeof(nbItems) != "undefined") {
 		str += '<span>'+nbItems+'</span>';
 	}
 	str += '</strong>';
@@ -392,21 +411,15 @@ function getSubFolder(folder) {
 	str += '</li>';
 	return str;
 }
+
+function getString(key) {
+	return $.i18n.prop(key)
+}
 </script>
-<script type="text/javascript">
-$(document).ready(function() {
-
-	displayTopicContent(<%=id%>);
-
-	<% if (settings.getBoolean("DisplayDnDOnLoad", false)) { %>
-		showDnD();
-	<% } %>
-	<% if (displaySearch.booleanValue()) { %>
-		document.getElementById("topicQuery").focus();
-    <% } %>
-
-});
-</script>
+</div>
+<div id="visibleInvisible-message" style="display: none;">
+	<p>
+	</p>
 </div>
 <div id="addOrUpdateNode" style="display: none;">
 	<form name="topicForm" action="AddTopic" method="post">
@@ -418,14 +431,14 @@ $(document).ready(function() {
          <input type="hidden" id="<%=I18NHelper.HTMLHiddenRemovedTranslationMode %>" name="<%=I18NHelper.HTMLHiddenRemovedTranslationMode %>" value="false"/>
          <tr>
            <td class="txtlibform"><fmt:message key="TopicTitle"/> :</td>
-           <td><input type="text" name="Name" id="topicName" size="60" maxlength="60"/>
+           <td><input type="text" name="Name" id="folderName" size="60" maxlength="60"/>
            <input type="hidden" name="ParentId" id="parentId"/>
            <input type="hidden" name="ChildId" id="topicId"/>&nbsp;<img border="0" src="<c:out value="${mandatoryFieldUrl}" />" width="5" height="5"/></td>
          </tr>
            
          <tr>
            <td class="txtlibform"><fmt:message key="TopicDescription" /> :</td>
-           <td><input type="text" name="Description" id="topicDescription" size="60" maxlength="200"/></td>
+           <td><input type="text" name="Description" id="folderDescription" size="60" maxlength="200"/></td>
          </tr>
            
          <% if (kmeliaScc.isNotificationAllowed()) { %>

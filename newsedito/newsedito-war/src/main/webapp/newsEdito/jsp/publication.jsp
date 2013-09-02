@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -38,7 +38,7 @@ void showRemovePublication(JspWriter out, NewsEditoSessionController news, Resou
 		news.removePublication(news.getPublicationId());
 	}
 	catch(NewsEditoException e){
-		throw new NewsEditoException("publicationEdit_JSP.displayEditInfoModel",NewsEditoException.WARNING,"NewsEdito.EX_CANNOT_SHOW_PUBLI_DELETED",e);			
+		throw new NewsEditoException("publicationEdit_JSP.displayEditInfoModel",NewsEditoException.WARNING,"NewsEdito.EX_CANNOT_SHOW_PUBLI_DELETED",e);
 	}
 		out.println("<BODY onLoad=gotoTitle('"+news.getTitleId() +"')>");
 		out.println("</BODY>");
@@ -50,7 +50,7 @@ void showRemovePublication(JspWriter out, NewsEditoSessionController news, Resou
 <%
 	if (action == null)
     	action = "View";
-  
+
   	if (action.equals("SelectPublication"))
 	{
 		String   publicationId = (String) request.getParameter("PublicationId");
@@ -61,7 +61,7 @@ void showRemovePublication(JspWriter out, NewsEditoSessionController news, Resou
 %>
 <%@ include file="init.jsp.inc" %>
 <%
-	String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL"); 
+	String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 %>
 <HTML>
 <HEAD>
@@ -70,7 +70,7 @@ void showRemovePublication(JspWriter out, NewsEditoSessionController news, Resou
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <Script language="JavaScript">
 
-function viewPublication() 
+function viewPublication()
 {
     document.publicationForm.Action.value = "View";
     document.publicationForm.submit();
@@ -134,8 +134,8 @@ function selectTitle(titleId)
     document.manageArticlesForm.Action.value = "SelectTitle";
     document.manageArticlesForm.TitleId.value = titleId;
     document.manageArticlesForm.submit();
-	
-	
+
+
 }
 function addEditorialPicture()
 {
@@ -144,7 +144,7 @@ function addEditorialPicture()
 
 function doConsult(){
     document.newsForm.Action.value = "Consult";
-    document.newsForm.submit();	
+    document.newsForm.submit();
 
 }
 function doOrganize(){
@@ -159,7 +159,7 @@ function doSetInLine(){
 </HEAD>
 
 <%
-  
+
   if (action.equals("RemovePublication")) {
     showRemovePublication(out, news, settings);
   }
@@ -188,10 +188,10 @@ function doSetInLine(){
 	//Les onglets
     TabbedPane tabbedPane = gef.getTabbedPane();
 	tabbedPane.addTab(consultationTP, "javaScript:doConsult()", false);
-    
+
     if (flag.equals("publisher") || flag.equals("admin"))
     	tabbedPane.addTab(organisationTP, "javaScript:doOrganize()", true);
-	
+
 	if (flag.equals("admin"))
 		tabbedPane.addTab(inLineSettingTP, "javaScript:doSetInLine()", false);
 
@@ -203,22 +203,22 @@ function doSetInLine(){
 	//operationPane.addLine();
 
 
-  if ( (flag.equals("publisher") && news.getUserId().equals(pubComplete.getPublicationDetail().getCreatorId()) && !archiveDetail.getStatus().equals("onLine") ) 
+  if ( (flag.equals("publisher") && news.getUserId().equals(pubComplete.getPublicationDetail().getCreatorId()) && !archiveDetail.getStatus().equals("onLine") )
 		 || flag.equals("admin")) {
-			operationPane.addOperation(settings.getString("updatePublicationIcon"), 
-				news.getString("modifierPub"), 
+			operationPane.addOperation(settings.getString("updatePublicationIcon"),
+				news.getString("modifierPub"),
 				"javascript:onClick=updatePublication()"
 			);
-			operationPane.addOperation(settings.getString("deletePublicationIcon"), 
-				news.getString("supprimerPub"), 
+			operationPane.addOperation(settings.getString("deletePublicationIcon"),
+				news.getString("supprimerPub"),
 				"javascript:onClick=publicationDeleteConfirm('" + Encode.javaStringToHtmlString(Encode.javaStringToJsString(pubComplete.getPublicationDetail().getName())) + "')"
 			);
-			operationPane.addOperation(settings.getString("selectPublicationModelIcon"), 
-				news.getString("selectionnerModelePub"), 
+			operationPane.addOperation(settings.getString("selectPublicationModelIcon"),
+				news.getString("selectionnerModelePub"),
 				"javascript:onClick=selectPublicationModel()"
 			);
-			operationPane.addOperation(settings.getString("addSmallPic"), 
-				choisirImageEditorialOP, 
+			operationPane.addOperation(settings.getString("addSmallPic"),
+				choisirImageEditorialOP,
 				"javascript:onClick=addEditorialPicture()"
 			);
 	}
@@ -231,14 +231,14 @@ function doSetInLine(){
 
 <TABLE CELLPADDING=5 CELLSPACING=2 BORDER=0 WIDTH="98%"><TR><TD NOWRAP>
 <%
-	// wysiwyg        
+	// wysiwyg
 	displayPublication(out, news, pubComplete,true, settings);
-	if (WysiwygController.haveGotWysiwyg(pubComplete.getPublicationDetail().getPK().getSpace(), pubComplete.getPublicationDetail().getPK().getComponentName(), pubComplete.getPublicationDetail().getPK().getId())) 
+	if (WysiwygController.haveGotWysiwygToDisplay(pubComplete.getPublicationDetail().getPK().getComponentName(), pubComplete.getPublicationDetail().getPK().getId(), pubComplete.getPublicationDetail().getLanguage()))
 	{
 		out.flush();
-		displayViewWysiwyg(news.getPublicationId(), news.getSpaceId(), news.getComponentId(), request, response);
+		displayViewWysiwyg(news.getPublicationId(), pubComplete.getPublicationDetail().getLanguage(), news.getComponentId(), request, response);
 	}
-	
+
 	// formulaire XML
 	if (StringUtil.isDefined(pubComplete.getInfoDetail().getPK().getId()))
 	{
@@ -251,11 +251,11 @@ function doSetInLine(){
 			xmlContext.setObjectId(pubComplete.getPublicationDetail().getPK().getId());
 			xmlContext.setBorderPrinted(false);
 			xmlContext.setContentLanguage(news.getLanguage());
-			
+
 	    	xmlForm.display(out, xmlContext, xmlData);
 		}
 	}
-		
+
 %>
 </TD></TR></TABLE>
 
@@ -270,7 +270,7 @@ function doSetInLine(){
     <%
   }
   else
-    out.println("Error : unknown action = " + action); 
+    out.println("Error : unknown action = " + action);
 %>
 
   <input type="hidden" name="Action">

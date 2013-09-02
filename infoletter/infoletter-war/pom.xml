@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.silverpeas.components</groupId>
     <artifactId>infoletter</artifactId>
-    <version>5.11-SNAPSHOT</version>
+    <version>5.13-SNAPSHOT</version>
   </parent>
 
   <groupId>com.silverpeas.components.infoletter</groupId>
@@ -14,6 +14,16 @@
 
   <dependencies>
     <dependency>
+      <groupId>com.silverpeas.core</groupId>
+      <artifactId>web-core</artifactId>
+      <version>${core.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>jstl</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.silverpeas.components.infoletter</groupId>
       <artifactId>infoletter-jar</artifactId>
       <version>${project.version}</version>
@@ -21,14 +31,15 @@
     </dependency>
     <dependency>
       <groupId>com.silverpeas.core</groupId>
-      <artifactId>web-core</artifactId>
+      <artifactId>lib-core</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.silverpeas.core</groupId>
-      <artifactId>lib-core</artifactId>
+      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <artifactId>node</artifactId>
       <version>${core.version}</version>
+      <classifier>client</classifier>
       <scope>provided</scope>
     </dependency>
     <dependency>

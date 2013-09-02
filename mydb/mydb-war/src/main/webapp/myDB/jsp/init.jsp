@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -38,7 +38,7 @@
 %><%@ page import="com.silverpeas.form.PagesContext"
 %><%@ page import="com.silverpeas.form.Util"
 %><%@ page import="com.silverpeas.mydb.MyDBConstants"
-%><%@ page import="com.silverpeas.mydb.control.DriverManager"
+%><%@ page import="org.silverpeas.mydb.control.DriverManager"
 %><%@ page import="com.silverpeas.mydb.control.MyDBSessionController"
 %><%@ page import="com.silverpeas.mydb.control.TableManager"
 %><%@ page import="com.silverpeas.mydb.data.datatype.DataType"
@@ -81,7 +81,7 @@
 	MyDBSessionController myDBSC = (MyDBSessionController)request.getAttribute("MyDB");
 	ResourcesWrapper resource = (ResourcesWrapper)request.getAttribute("resources");
 	String userRoleLevel = (String)request.getAttribute("userRoleLevel");
-	String applicationURL = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+	String applicationURL = GeneralPropertiesManager.getString("ApplicationURL");
 	
 	GraphicElementFactory gef = (GraphicElementFactory)session.getAttribute("SessionGraphicElementFactory");
 	Window window = gef.getWindow();

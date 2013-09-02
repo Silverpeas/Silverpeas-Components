@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -13,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,25 +25,15 @@
 
 -->
 <dataset>
-
-
   <st_domain id="0" name="local" description="Domaine local" propfilename="com.stratelia.silverpeas.domains.domainSP"
     classname="com.silverpeas.domains.silverpeasdriver.SilverpeasDomainDriver" authenticationserver="autDomainSP"
     thetimestamp="0" silverpeasserverurl="http://localhost:8000" />
-  <st_domain id="-1" name="internal" description="Do not remove - Used by Silverpeas engine" propfilename="-"
-    classname="-" authenticationserver="-" thetimestamp="0" silverpeasserverurl="''" />
-
   <domainsp_user id="0" lastname="Administrateur" login="SilverAdmin" password="SPJmYbTN83aEs"
     passwordvalid="Y" />
-
-  <st_user id="0" domainid="0" specificid="0" firstname="[NULL]" lastname="Administrateur" email="[NULL]" login="SilverAdmin" accesslevel="A" />
-
-  <st_notifdefaultaddress />
-  
+  <st_user id="0" domainid="0" specificid="0" firstname="[NULL]" lastname="Administrateur" email="[NULL]" login="SilverAdmin" accesslevel="A" state='VALID' stateSaveDate='2012-01-01 00:00:00 0' />
   <st_space id="3" name="MGI Coutier" description="''" createdby="0" firstpagetype="1" firstpageextraparam="indicateurs16"
     ordernum="2" createtime="1194276699849" updatetime="1205750893265" removetime="" spacestatus="" updatedby="0" lang="fr"
     isinheritanceblocked="0" look="" />
-
   <st_spaceuserrole id="2" spaceid="3" name="" rolename="admin" description="" isinherited="0" />
   <st_spaceuserrole id="3" spaceid="3" name="Manager d'espace" rolename="Manager" description=""
     isinherited="0" />
@@ -55,7 +45,6 @@
     lang="fr" description="Gestion d'une liste de diffusion" ordernum="5" />
 
   <sc_mailinglist_list id="600" version="0" componentid="100" />
-
   <sc_mailinglist_message id="700" version="0" componentid="100" title="Simple Message"
     attachmentsSize="0"
     summary="Bonjour famille Simpson, j'espère que vous allez bien. Ici tout se passe bien et Krusty est très sympathique. Surtout depuis que Tahiti Bob est retourné en prison. Je dois remplacer l'homme canon dans"
@@ -106,17 +95,17 @@
     value="thesimpsons@silverpeas.com" />
 
   <st_user id="200" domainid="0" specificid="200" firstname="bart" lastname="simpson" email="bart.simpson@silverpeas.com"
-    login="bsimpson" accesslevel="U" />
+    login="bsimpson" accesslevel="U" state='VALID' stateSaveDate='2012-01-01 00:00:00 0' />
   <st_user id="201" domainid="0" specificid="201" firstname="lisa" lastname="simpson" email="lisa.simpson@silverpeas.com"
-    login="lsimpson" accesslevel="U" />
+    login="lsimpson" accesslevel="U" state='VALID' stateSaveDate='2012-01-01 00:00:00 0' />
   <st_user id="202" domainid="0" specificid="202" firstname="homer" lastname="simpson" email="homer.simpson@silverpeas.com"
-    login="hsimpson" accesslevel="U" />
+    login="hsimpson" accesslevel="U" state='VALID' stateSaveDate='2012-01-01 00:00:00 0' />
   <st_user id="203" domainid="0" specificid="203" firstname="marge" lastname="simpson" email="marge.simpson@silverpeas.com"
-    login="msimpson" accesslevel="U" />
+    login="msimpson" accesslevel="U" state='VALID' stateSaveDate='2012-01-01 00:00:00 0' />
   <st_user id="204" domainid="0" specificid="204" firstname="maggie" lastname="simpson" email="maggie.simpson@silverpeas.com"
-    login="magsimpson" accesslevel="U" />
+    login="magsimpson" accesslevel="U" state='VALID' stateSaveDate='2012-01-01 00:00:00 0' />
   <st_user id="205" domainid="0" specificid="205" firstname="krusty" lastname="theklown" email="krusty.theklown@silverpeas.com"
-    login="ktheklown" accesslevel="U" />
+    login="ktheklown" accesslevel="U" state='VALID' stateSaveDate='2012-01-01 00:00:00 0' />
 
   <st_userrole id="300" instanceid="100" rolename="admin" name="Gestionnaire" />
   <st_userrole id="301" instanceid="100" rolename="moderator" name="Modérateur" />
@@ -129,4 +118,7 @@
   <!-- lisa & maggie subscribers -->
   <st_userrole_user_rel userroleid="302" userid="201" />
   <st_userrole_user_rel userroleid="302" userid="204" />
+  
+  
+  <st_notifchannel id="1" name="SMTP" description="For test purpose only" couldBeAdded="Y" fromAvailable="E" subjectAvailable="Y" />
 </dataset>

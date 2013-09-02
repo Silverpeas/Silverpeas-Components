@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,8 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
-<%@ page import="com.stratelia.silverpeas.versioning.model.DocumentVersion"%>
+<%@ page import="org.silverpeas.importExport.versioning.DocumentVersion"%>
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
@@ -58,10 +57,10 @@ function validateForm() {
 	fileName = document.frm_import.file_name.value;
 	if (fileName != "") {
 		formValid = true;
-	}			
+	}
 	if (formValid) {
 		$.progressMessage();
-		document.frm_import.submit();	
+		document.frm_import.submit();
 	}
 }
 </script>
@@ -71,7 +70,7 @@ function validateForm() {
   Window window = gef.getWindow();
   BrowseBar browseBar = window.getBrowseBar();
   browseBar.setPath(resources.getString("kmelia.ImportFile"));
-	
+
   Frame frame = gef.getFrame();
 
   out.println(window.printBefore());

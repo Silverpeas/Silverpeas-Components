@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -390,7 +390,7 @@ public class MyDBRequestRouter extends ComponentRequestRouter<MyDBSessionControl
    * @throws MyDBException
    */
   private String getUpdateTableColumnDestination(HttpServletRequest request,
-      MyDBSessionController myDBSC) throws MyDBException {
+      MyDBSessionController myDBSC) {
     String command = request.getParameter("command");
     TableManager tableManager = myDBSC.getTableManager();
     if (command.equals("displayColumn")) {
@@ -452,9 +452,8 @@ public class MyDBRequestRouter extends ComponentRequestRouter<MyDBSessionControl
    * @throws MyDBException
    */
   @SuppressWarnings("unchecked")
-  private String getUpdateTablePrimaryKeyDestination(
-      HttpServletRequest request, MyDBSessionController myDBSC)
-      throws MyDBException {
+  private String getUpdateTablePrimaryKeyDestination(HttpServletRequest request,
+      MyDBSessionController myDBSC) {
     String command = request.getParameter("command");
     TableManager tableManager = myDBSC.getTableManager();
     if (command.equals("displayPK")) {
@@ -487,9 +486,8 @@ public class MyDBRequestRouter extends ComponentRequestRouter<MyDBSessionControl
    * @throws MyDBException
    */
   @SuppressWarnings("unchecked")
-  private String getUpdateTableUnicityKeyDestination(
-      HttpServletRequest request, MyDBSessionController myDBSC)
-      throws MyDBException {
+  private String getUpdateTableUnicityKeyDestination(HttpServletRequest request,
+      MyDBSessionController myDBSC) {
     String command = request.getParameter("command");
     TableManager tableManager = myDBSC.getTableManager();
     if (command.equals("displayUK")) {
@@ -526,9 +524,8 @@ public class MyDBRequestRouter extends ComponentRequestRouter<MyDBSessionControl
    * @return The destination corresponding to the current foreign key operation.
    * @throws MyDBException
    */
-  private String getUpdateTableForeignKeyDestination(
-      HttpServletRequest request, MyDBSessionController myDBSC)
-      throws MyDBException {
+  private String getUpdateTableForeignKeyDestination(HttpServletRequest request,
+      MyDBSessionController myDBSC) {
     String command = request.getParameter("command");
     TableManager tableManager = myDBSC.getTableManager();
     if (command.equals("displayFK")) {

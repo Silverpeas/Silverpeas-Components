@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -100,9 +100,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     /**
     * affichageErreur
     */
-	//CBO : UPDATE
-   /*public void  affichageErreur(JspWriter out, WebSiteSessionController scc, String infoPath, 
-                String mess, GraphicElementFactory gef) throws IOException {*/
 	public void  affichageErreur(JspWriter out, WebSiteSessionController scc, String infoPath, 
                 String mess, GraphicElementFactory gef, String spaceLabel, String componentLabel) throws IOException {
    
@@ -110,11 +107,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     
     // La barre de naviagtion
     BrowseBar browseBar = laFenetre.getBrowseBar();
-    //CBO : UPDATE
-	//browseBar.setDomainName(scc.getSpaceLabel());
-	browseBar.setDomainName(spaceLabel);
-	//CBO : UPDATE
-    //browseBar.setComponentName(scc.getComponentLabel(), "manage.jsp?Action=view");
+    browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "manage.jsp?Action=view");
     browseBar.setPath("<a href= \"manage.jsp?Action=view\"></a>"+infoPath);
     out.println(laFenetre.printBefore());
@@ -154,8 +147,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     }
     else if (resultat.equals("pbAjoutFile")) {
         debutAffichage(out, "", action, currentPath, nomPage, nameSite, gef, id, resources);
-		//CBO : UPDATE
-        //affichageErreur(out, scc, infoPath, resources.getString("ErreurPbAjoutFichier"), gef);
 		affichageErreur(out, scc, infoPath, resources.getString("ErreurPbAjoutFichier"), gef, spaceLabel, componentLabel);
     }
 %>

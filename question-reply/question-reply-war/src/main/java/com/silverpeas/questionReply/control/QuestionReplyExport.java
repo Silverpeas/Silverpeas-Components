@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,14 +23,18 @@
  */
 package com.silverpeas.questionReply.control;
 
-import com.silverpeas.attachment.importExport.AttachmentImportExport;
+import org.silverpeas.importExport.attachment.AttachmentImportExport;
 import com.silverpeas.questionReply.QuestionReplyException;
 import com.silverpeas.questionReply.model.Question;
 import com.silverpeas.questionReply.model.Reply;
 import com.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import org.silverpeas.importExport.attachment.AttachmentDetail;
+import org.silverpeas.util.UnitUtil;
+
 import java.io.File;
 import java.text.ParseException;
 import java.util.Collection;
@@ -44,10 +48,12 @@ public class QuestionReplyExport {
 
   private File file;
   private ResourcesWrapper resource;
+  private UserDetail currentUser;
 
-  public QuestionReplyExport(ResourcesWrapper resource, File file) {
+  public QuestionReplyExport(UserDetail currentUser, ResourcesWrapper resource, File file) {
     this.file = file;
     this.resource = resource;
+    this.currentUser = currentUser;
   }
 
   public void exportQuestion(Question question, StringBuilder sb, QuestionReplySessionController scc)
@@ -156,7 +162,7 @@ public class QuestionReplyExport {
           "root.EX_CANT_GET_ATTACHMENTS", ex);
     }
 
-    if (attachments != null && attachments.size() > 0) {
+    if (attachments != null && ! attachments.isEmpty()) {
       // les fichiers joints : création du lien dans la page
       sb.append("<td valign=\"top\" align=\"left\">\n");
       sb.append("<a name=\"attachments\"></a>\n");
@@ -207,16 +213,16 @@ public class QuestionReplyExport {
     sb.append("</a>\n");
     sb.append("</nobr>\n");
     sb.append("<br>\n");
-    sb.append(attachment.getAttachmentFileSize(attachment.getLanguage())).append("  ");
-    sb.append(attachment.getAttachmentDownloadEstimation(attachment.getLanguage()));
+    sb.append(UnitUtil.formatMemSize(attachment.getSize())).append("  ");
+    sb.append(FileRepositoryManager.formatFileUploadTime(attachment.getSize()));
     sb.append("</td>\n");
     sb.append("</tr>\n");
   }
-  
+
   public boolean  isReplyVisible(Question question, Reply reply, QuestionReplySessionController scc) {
     return isReplyVisible(question, reply, scc.getUserRole(), scc.getUserId()) ;
   }
-  
+
   public static boolean isReplyVisible(Question question, Reply reply, SilverpeasRole role, String userId) {
     boolean isPrivate = reply.getPublicReply() == 0;
     boolean isPublisherQuestion = true;

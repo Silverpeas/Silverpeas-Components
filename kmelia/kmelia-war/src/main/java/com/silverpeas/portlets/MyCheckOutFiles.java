@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,48 +24,31 @@
 
 package com.silverpeas.portlets;
 
-import java.io.IOException;
-import java.util.Iterator;
-
-import javax.portlet.GenericPortlet;
-import javax.portlet.PortletException;
-import javax.portlet.PortletRequestDispatcher;
-import javax.portlet.PortletSession;
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
-
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.versioning.ejb.VersioningBm;
-import com.stratelia.silverpeas.versioning.ejb.VersioningBmHome;
-import com.stratelia.silverpeas.versioning.model.Document;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.attachment.control.AttachmentBmImpl;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+
+import javax.portlet.*;
+import java.io.IOException;
+import java.util.Iterator;
 
 public class MyCheckOutFiles extends GenericPortlet implements FormNames {
 
   public void doView(RenderRequest request, RenderResponse response)
       throws PortletException, IOException {
     PortletSession session = request.getPortletSession();
-    MainSessionController m_MainSessionCtrl = (MainSessionController) session
-        .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT,
-        PortletSession.APPLICATION_SCOPE);
+    MainSessionController controller = (MainSessionController) session.getAttribute
+        (MainSessionController.MAIN_SESSION_CONTROLLER_ATT, PortletSession.APPLICATION_SCOPE);
 
-    Iterator<AttachmentDetail> attachments = null;
-    Iterator<Document> documents = null;
+    Iterator<SimpleDocument> attachments = null;
     try {
-      attachments = (new AttachmentBmImpl()).getAttachmentsByWorkerId(
-          m_MainSessionCtrl.getUserId()).iterator();
-      documents = getVersioningBm().getAllFilesReserved(
-          Integer.parseInt(m_MainSessionCtrl.getUserId())).iterator();
+      attachments = AttachmentServiceFactory.getAttachmentService().listDocumentsLockedByUser
+          (controller.getUserId(), controller.getFavoriteLanguage()).iterator();
     } catch (Exception e) {
       SilverTrace.error("portlet", "MyCheckOutFiles", "portlet.ERROR", e);
     }
-
-    request.setAttribute("Documents", documents);
     request.setAttribute("Attachments", attachments);
 
     include(request, response, "portlet.jsp");
@@ -80,13 +63,6 @@ public class MyCheckOutFiles extends GenericPortlet implements FormNames {
   public void doHelp(RenderRequest request, RenderResponse response)
       throws PortletException {
     include(request, response, "help.jsp");
-  }
-
-  private VersioningBm getVersioningBm() throws Exception {
-    VersioningBmHome vbmHome = EJBUtilitaire
-        .getEJBObjectRef(JNDINames.VERSIONING_EJBHOME, VersioningBmHome.class);
-    VersioningBm vbm = vbmHome.create();
-    return vbm;
   }
 
   /** Include a page. */
