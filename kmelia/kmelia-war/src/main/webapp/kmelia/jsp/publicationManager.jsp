@@ -515,7 +515,7 @@
           }
         }
 
-        if ($('#thumbnailFile').val() != '') {
+        if ($('#thumbnailFile').length && $('#thumbnailFile').val() != '') {
           var logicalName = $('#thumbnailFile').val();
           var extension = getExtension(logicalName);
           if (extension == null) {
@@ -523,8 +523,7 @@
             errorNb++;
           } else {
             extension = extension.toLowerCase();
-            if ((extension != "gif") && (extension != "jpeg") && (extension != "jpg") &&
-                (extension != "png")) {
+            if ((extension != "gif") && (extension != "jpeg") && (extension != "jpg") && (extension != "png")) {
               errorMsg += " - '<%=resources.getString("Thumbnail")%>' <%=resources.getString("kmelia.EX_MSG_WRONG_TYPE_ERROR")%>\n";
               errorNb++;
             }
