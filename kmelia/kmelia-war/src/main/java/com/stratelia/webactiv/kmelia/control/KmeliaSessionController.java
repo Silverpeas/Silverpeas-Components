@@ -26,6 +26,7 @@ package com.stratelia.webactiv.kmelia.control;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
+import com.silverpeas.component.kmelia.KmeliaCopyDetail;
 import com.silverpeas.converter.DocumentFormat;
 import com.silverpeas.delegatednews.model.DelegatedNews;
 import com.silverpeas.delegatednews.service.DelegatedNewsService;
@@ -34,7 +35,6 @@ import com.silverpeas.export.ExportDescriptor;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
-import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
 import com.silverpeas.form.record.GenericRecordSetManager;
 import com.silverpeas.form.record.IdentifiedRecordTemplate;
 import com.silverpeas.importExport.model.ImportExportException;
@@ -139,7 +139,6 @@ import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -919,26 +918,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     SilverTrace.info("kmelia", "KmeliaSessionController.createPublication(pubDetail)",
         "Kmelia.MSG_ENTRY_METHOD");
     SilverTrace.spy("kmelia", "KmeliaSessionController.createPublication(pubDetail)", getSpaceId(),
-        getComponentId(), result, getUserDetail().getId(), SilverTrace.SPY_ACTION_CREATE);
-    return result;
-  }
-
-  private String createPublicationIntoTopic(PublicationDetail pubDetail, String fatherId)
-      throws RemoteException {
-    pubDetail.getPK().setSpace(getSpaceId());
-    pubDetail.getPK().setComponentName(getComponentId());
-    pubDetail.setCreatorId(getUserId());
-    pubDetail.setCreationDate(new Date());
-
-    if (KmeliaHelper.ROLE_WRITER.equals(getUserTopicProfile(fatherId))) {
-      // in case of writers, status of new publication must be processed
-      pubDetail.setStatus(null);
-    }
-
-    String result = getKmeliaBm().createPublicationIntoTopic(pubDetail, getNodePK(fatherId));
-    SilverTrace.spy("kmelia",
-        "KmeliaSessionController.createPublicationIntoTopic(pubDetail, fatherId)",
-        getSpaceId(),
         getComponentId(), result, getUserDetail().getId(), SilverTrace.SPY_ACTION_CREATE);
     return result;
   }
@@ -1775,21 +1754,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     return KmeliaHelper.isIndexable(pubDetail);
   }
 
-  public Map<String, String> pasteFiles(PublicationPK pubPKFrom, String pubId)
-      throws IOException {
-    Map<String, String> fileIds = new HashMap<String, String>();
-    String componentId = pubPKFrom.getInstanceId();
-    List<SimpleDocument> origins = AttachmentServiceFactory.getAttachmentService().
-        listDocumentsByForeignKeyAndType(pubPKFrom, DocumentType.attachment, getLanguage());
-    for (SimpleDocument origin : origins) {
-      SimpleDocumentPK copyPk = AttachmentServiceFactory.getAttachmentService().copyDocument(
-          origin, new ForeignPK(pubId, getComponentId()));
-      fileIds.put(origin.getId(), copyPk.getId());
-    }
-
-    return fileIds;
-  }
-
   /**
    * adds links between specified publication and other publications contained in links parameter
    *
@@ -2152,15 +2116,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         getId(), getCurrentLanguage())) || !isInteger(getSessionPublication()
         .getCompleteDetail().
         getPublicationDetail().getInfoId()));
-  }
-
-  public void pastePdcPositions(PublicationPK fromPK, String toPubId) throws RemoteException,
-      PdcException {
-    int fromSilverObjectId = getKmeliaBm().getSilverObjectId(fromPK);
-    int toSilverObjectId = getKmeliaBm().getSilverObjectId(getPublicationPK(toPubId));
-
-    getPdcBm().copyPositions(fromSilverObjectId, fromPK.getInstanceId(), toSilverObjectId,
-        getComponentId());
   }
 
   public boolean isPDCClassifyingMandatory() {
@@ -2937,7 +2892,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
           if (clipObject.isDataFlavorSupported(PublicationSelection.CompletePublicationFlavor)) {
             CompletePublication pub = (CompletePublication) clipObject.getTransferData(
                 PublicationSelection.CompletePublicationFlavor);
-            pastePublication(pub, clipObject.isCutted(), folder.getNodePK(), null);
+            if (clipObject.isCutted()) {
+              movePublication(pub, folder.getNodePK());
+            } else {
+              getKmeliaBm().copyPublication(pub.getPublicationDetail(), folder.getNodePK(), getUserId());
+            }
             pastedItems.add(pub.getPublicationDetail());
           } else if (clipObject.isDataFlavorSupported(NodeSelection.NodeDetailFlavor)) {
             NodeDetail node = (NodeDetail) clipObject.getTransferData(
@@ -2957,8 +2916,17 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
               }
             }
             if (pasteAllowed) {
-              NodeDetail newNode = pasteNode(node, folder, clipObject.isCutted());
-              pastedItems.add(newNode);
+              if (clipObject.isCutted()) {
+                // move node
+                moveNode(node, folder);
+              } else {
+                // copy node
+                KmeliaCopyDetail copyDetail = new KmeliaCopyDetail(getUserId());
+                copyDetail.setFromNodePK(node.getNodePK());
+                copyDetail.setToNodePK(folder.getNodePK());
+                getKmeliaBm().copyNode(copyDetail);
+              }
+              pastedItems.add(node);
             }
           }
         }
@@ -2977,103 +2945,55 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     return pastedItems;
   }
 
-  private NodeDetail pasteNode(NodeDetail nodeToPaste, NodeDetail father, boolean isCutted)
-      throws RemoteException {
+  private NodeDetail moveNode(NodeDetail nodeToPaste, NodeDetail father) throws RemoteException {
     NodePK nodeToPastePK = nodeToPaste.getNodePK();
 
     List<NodeDetail> treeToPaste = getNodeBm().getSubTree(nodeToPastePK);
 
-    if (isCutted) {
-      // move node and subtree
-      getNodeBm().moveNode(nodeToPastePK, father.getNodePK());
-      for (NodeDetail fromNode : treeToPaste) {
-        if (fromNode != null) {
-          NodePK toNodePK = getNodePK(fromNode.getNodePK().getId());
+    // move node and subtree
+    getNodeBm().moveNode(nodeToPastePK, father.getNodePK());
+    for (NodeDetail fromNode : treeToPaste) {
+      if (fromNode != null) {
+        NodePK toNodePK = getNodePK(fromNode.getNodePK().getId());
 
-          // remove rights
-          deleteTopicRoles(fromNode);
-          try {
-            NodePK fromForeignPK = fromNode.getNodePK();
-            List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
-                listAllDocumentsByForeignKey(fromForeignPK, getLanguage());
-            ForeignPK toForeignPK = new ForeignPK(toNodePK.getId(), getComponentId());
-            for (SimpleDocument document : documents) {
-              AttachmentServiceFactory.getAttachmentService().moveDocument(document, toForeignPK);
-            }
-          } catch (org.silverpeas.attachment.AttachmentException e) {
-            SilverTrace.error("kmelia", "KmeliaSessionController.pastePublication()",
-                "root.MSG_GEN_PARAM_VALUE", "kmelia.CANT_MOVE_ATTACHMENTS", e);
+        // remove rights
+        deleteTopicRoles(fromNode);
+        try {
+          NodePK fromForeignPK = fromNode.getNodePK();
+          List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
+              listAllDocumentsByForeignKey(fromForeignPK, getLanguage());
+          ForeignPK toForeignPK = new ForeignPK(toNodePK.getId(), getComponentId());
+          for (SimpleDocument document : documents) {
+            AttachmentServiceFactory.getAttachmentService().moveDocument(document, toForeignPK);
           }
-          // change images path in wysiwyg
-          WysiwygController.wysiwygPlaceHaveChanged(fromNode.getNodePK().getInstanceId(),
-              "Node_" + fromNode.getNodePK().getId(), getComponentId(), "Node_" + toNodePK.getId());
-          // move publications of topics
-          pastePublicationsOfTopic(fromNode.getNodePK(), toNodePK, true, null);
+        } catch (org.silverpeas.attachment.AttachmentException e) {
+          SilverTrace.error("kmelia", "KmeliaSessionController.pastePublication()",
+              "root.MSG_GEN_PARAM_VALUE", "kmelia.CANT_MOVE_ATTACHMENTS", e);
         }
+        // change images path in wysiwyg
+        WysiwygController.wysiwygPlaceHaveChanged(fromNode.getNodePK().getInstanceId(),
+            "Node_" + fromNode.getNodePK().getId(), getComponentId(), "Node_" + toNodePK.getId());
+        // move publications of topics
+        movePublicationsOfTopic(fromNode.getNodePK(), toNodePK);
       }
-      return nodeToPaste;
-    } else {
-      // paste topic
-      NodePK nodePK = new NodePK("unknown", getComponentId());
-      NodeDetail node = new NodeDetail();
-      node.setNodePK(nodePK);
-      node.setCreatorId(getUserId());
-      node.setName(nodeToPaste.getName());
-      node.setDescription(nodeToPaste.getDescription());
-      node.setTranslations(nodeToPaste.getTranslations());
-      node.setRightsDependsOn(father.getRightsDependsOn());
-      node.setCreationDate(DateUtil.today2SQLDate());
-      node.setStatus(nodeToPaste.getStatus());
-      nodePK = getNodeBm().createNode(node, father);
-
-      // paste wysiwyg attached to node
-      WysiwygController.copy(nodeToPastePK.getInstanceId(), "Node_" + nodeToPastePK.getId(),
-          getComponentId(), "Node_" + nodePK.getId(), getUserId());
-
-      List<NodePK> nodeIdsToPaste = new ArrayList<NodePK>();
-      for (NodeDetail oneNodeToPaste : treeToPaste) {
-        if (oneNodeToPaste != null) {
-          nodeIdsToPaste.add(oneNodeToPaste.getNodePK());
-        }
-      }
-
-      // paste publications of topics
-      pastePublicationsOfTopic(nodeToPastePK, nodePK, false, nodeIdsToPaste);
-
-      // paste subtopics
-      node = getNodeBm().getHeader(nodePK);
-      Collection<NodeDetail> subtopics = getNodeBm().getDetail(nodeToPastePK).getChildrenDetails();
-      Iterator<NodeDetail> itSubTopics = subtopics.iterator();
-      NodeDetail subTopic = null;
-      while (itSubTopics != null && itSubTopics.hasNext()) {
-        subTopic = itSubTopics.next();
-        if (subTopic != null) {
-          pasteNode(subTopic, node, isCutted);
-        }
-      }
-      return node;
     }
+    
+    return getNodeHeader(nodeToPastePK.getId());
   }
 
-  private void pastePublicationsOfTopic(NodePK fromPK, NodePK toPK, boolean isCutted,
-      List<NodePK> nodePKsToPaste) {
+  private void movePublicationsOfTopic(NodePK fromPK, NodePK toPK) {
     Collection<PublicationDetail> publications = getPublicationBm().getDetailsByFatherPK(fromPK);
     CompletePublication completePubli = null;
     for (PublicationDetail publi : publications) {
       completePubli = getPublicationBm().getCompletePublication(publi.getPK());
-      pastePublication(completePubli, isCutted, toPK, nodePKsToPaste);
+      movePublication(completePubli, toPK);
     }
   }
 
-  private void pastePublication(CompletePublication completePub, boolean isCutted, NodePK nodePK,
-      List<NodePK> nodePKsToPaste) {
+  private void movePublication(CompletePublication completePub, NodePK nodePK) {
     try {
       NodePK currentNodePK = nodePK;
       PublicationDetail publi = completePub.getPublicationDetail();
-      if (!isCutted) {
-        publi.setCloneId(null);
-        publi.setCloneStatus("");
-      }
       String fromId = publi.getPK().getId();
       String fromComponentId = publi.getPK().getInstanceId();
 
@@ -3093,143 +3013,18 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         currentNodePK = getCurrentFolderPK();
       }
 
-      if (isCutted) {
-        if (fromComponentId.equals(getComponentId())) {
-          getKmeliaBm().movePublicationInSameApplication(publi, currentNodePK, getUserId());
-        } else {
-          movePublication(completePub, currentNodePK, publi, fromId, fromComponentId,
-              fromForeignPK, fromPubPK, toForeignPK, toPubPK, imagesSubDirectory,
-              thumbnailsSubDirectory, toAbsolutePath, fromAbsolutePath);
-        }
+      if (fromComponentId.equals(getComponentId())) {
+        getKmeliaBm().movePublicationInSameApplication(publi, currentNodePK, getUserId());
       } else {
-        // paste the publicationDetail
-        publi.setUpdaterId(getUserId()); // ignore initial parameters
-
-        String id = createPublicationIntoTopic(publi, currentNodePK.getId());
-        List<NodePK> fatherPKs = (List<NodePK>) getPublicationBm().getAllFatherPK(publi.getPK());
-        if (nodePKsToPaste != null) {
-          fatherPKs.removeAll(nodePKsToPaste);
-        }
-        // paste vignette
-        ThumbnailDetail vignette = ThumbnailController.getCompleteThumbnail(new ThumbnailDetail(
-            fromComponentId,
-            Integer.parseInt(fromId),
-            ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE));
-        if (vignette != null) {
-          pasteThumbnail(publi, thumbnailsSubDirectory, toAbsolutePath, fromAbsolutePath, id,
-              vignette);
-        }
-        // update id cause new publication is created
-        toPubPK.setId(id);
-        // Paste positions on Pdc
-        pastePdcPositions(fromPubPK, id);
-        // paste wysiwyg
-        WysiwygController.copy(fromComponentId, fromId, getComponentId(), id, getUserId());
-        Map<String, String> fileIds = pasteFiles(fromPubPK, id);
-
-        // eventually, paste the model content
-        if (completePub.getModelDetail() != null && completePub.getInfoDetail() != null) {
-          // Paste images of model
-          if (completePub.getInfoDetail().getInfoImageList() != null) {
-            for (InfoImageDetail attachment : completePub.getInfoDetail().getInfoImageList()) {
-              String from = fromAbsolutePath + imagesSubDirectory + File.separatorChar
-                  + attachment.getPhysicalName();
-              String type = FilenameUtils.getExtension(attachment.getPhysicalName());
-              String newName = String.valueOf(System.currentTimeMillis()) + "." + type;
-              attachment.setPhysicalName(newName);
-              String to = toAbsolutePath + imagesSubDirectory + File.separatorChar + newName;
-              FileRepositoryManager.copyFile(from, to);
-            }
-          }
-
-          // Paste model content
-          getKmeliaBm().createInfoModelDetail(toPubPK, completePub.getModelDetail().getId(),
-              completePub.getInfoDetail());
-        } else {
-          String infoId = publi.getInfoId();
-          if (infoId != null && !"0".equals(infoId)) {
-            // Content = XMLForm
-            // register xmlForm to publication
-            String xmlFormShortName = infoId;
-            getPublicationTemplateManager().addDynamicPublicationTemplate(getComponentId() + ":"
-                + xmlFormShortName, xmlFormShortName + ".xml");
-
-            // Paste images
-            List< SimpleDocument> images = AttachmentServiceFactory.getAttachmentService()
-                .listDocumentsByForeignKeyAndType(fromPubPK, DocumentType.form, getLanguage());
-            for (SimpleDocument image : images) {
-              SimpleDocumentPK copyPk = AttachmentServiceFactory.getAttachmentService()
-                  .copyDocument(image, toForeignPK);
-              fileIds.put(image.getId(), copyPk.getId());
-            }
-            // Paste wysiwyg fields content
-            WysiwygFCKFieldDisplayer wysiwygField = new WysiwygFCKFieldDisplayer();
-            wysiwygField.cloneContents(fromComponentId, fromId, getComponentId(), id);
-
-            // get xmlContent to paste
-            PublicationTemplate pubTemplateFrom = getPublicationTemplateManager().
-                getPublicationTemplate(fromComponentId + ":" + xmlFormShortName);
-            IdentifiedRecordTemplate recordTemplateFrom = (IdentifiedRecordTemplate) pubTemplateFrom
-                .getRecordSet().getRecordTemplate();
-            PublicationTemplate pubTemplate = getPublicationTemplateManager().
-                getPublicationTemplate(getComponentId() + ":" + xmlFormShortName);
-            IdentifiedRecordTemplate recordTemplate = (IdentifiedRecordTemplate) pubTemplate.
-                getRecordSet().getRecordTemplate();
-            // paste xml content
-            GenericRecordSetManager.getInstance().cloneRecord(recordTemplateFrom, fromId,
-                recordTemplate, id, fileIds);
-          }
-        }
-
-        // force the update
-        PublicationDetail newPubli = getPublicationDetail(id);
-        newPubli.setStatusMustBeChecked(false);
-        getKmeliaBm().updatePublication(newPubli);
+        movePublication(completePub, currentNodePK, publi, fromId, fromComponentId,
+            fromForeignPK, fromPubPK, toForeignPK, toPubPK, imagesSubDirectory,
+            thumbnailsSubDirectory, toAbsolutePath, fromAbsolutePath);
       }
+      
     } catch (Exception ex) {
       SilverTrace.error("kmelia", getClass().getSimpleName() + ".pastePublication()",
           "root.EX_NO_MESSAGE", ex);
     }
-  }
-
-  private void pasteThumbnail(PublicationDetail publi, String thumbnailsSubDirectory,
-      String toAbsolutePath, String fromAbsolutePath, String id, ThumbnailDetail vignette)
-      throws IOException, ThumbnailException {
-    ThumbnailDetail thumbDetail = new ThumbnailDetail(publi.getPK().getInstanceId(),
-        Integer.valueOf(
-        id), ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
-
-    if (vignette.getOriginalFileName().startsWith("/")) {
-      thumbDetail.setOriginalFileName(vignette.getOriginalFileName());
-      thumbDetail.setMimeType(vignette.getMimeType());
-    } else {
-      String from = fromAbsolutePath + thumbnailsSubDirectory + File.separatorChar
-          + vignette.getOriginalFileName();
-
-      String type = FilenameUtils.getExtension(vignette.getOriginalFileName());
-      String newOriginalImage = String.valueOf(System.currentTimeMillis()) + "." + type;
-
-      String to = toAbsolutePath + thumbnailsSubDirectory + File.separatorChar + newOriginalImage;
-      FileRepositoryManager.copyFile(from, to);
-      thumbDetail.setOriginalFileName(newOriginalImage);
-
-      // then copy thumnbnail image if exists
-      if (vignette.getCropFileName() != null) {
-        from = fromAbsolutePath + thumbnailsSubDirectory + File.separatorChar + vignette.
-            getCropFileName();
-        type = FilenameUtils.getExtension(vignette.getCropFileName());
-        String newThumbnailImage = String.valueOf(System.currentTimeMillis()) + "." + type;
-        to = toAbsolutePath + thumbnailsSubDirectory + File.separatorChar + newThumbnailImage;
-        FileRepositoryManager.copyFile(from, to);
-        thumbDetail.setCropFileName(newThumbnailImage);
-      }
-      thumbDetail.setMimeType(type);
-      thumbDetail.setXLength(vignette.getXLength());
-      thumbDetail.setYLength(vignette.getYLength());
-      thumbDetail.setXStart(vignette.getXStart());
-      thumbDetail.setYStart(vignette.getYStart());
-    }
-    getThumbnailService().createThumbnail(thumbDetail);
   }
 
   /**

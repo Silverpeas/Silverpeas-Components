@@ -20,12 +20,65 @@
  */
 package com.stratelia.webactiv.kmelia.control.ejb;
 
+import static com.silverpeas.util.StringUtil.getBooleanValue;
+import static com.silverpeas.util.StringUtil.isDefined;
+import static com.silverpeas.util.StringUtil.isInteger;
+import static com.stratelia.webactiv.util.JNDINames.SILVERPEAS_DATASOURCE;
+import static com.stratelia.webactiv.util.exception.SilverpeasRuntimeException.ERROR;
+import static org.silverpeas.attachment.AttachmentService.VERSION_MODE;
+import static org.silverpeas.core.admin.OrganisationControllerFactory.getOrganisationController;
+
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response.Status;
+
+import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.attachment.AttachmentException;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.HistorisedDocument;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.component.kmelia.InstanceParameters;
+import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.wysiwyg.WysiwygException;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
+import com.silverpeas.component.kmelia.KmeliaCopyDetail;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
+import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
 import com.silverpeas.form.importExport.XMLField;
+import com.silverpeas.form.record.GenericRecordSetManager;
+import com.silverpeas.form.record.IdentifiedRecordTemplate;
 import com.silverpeas.formTemplate.dao.ModelDAO;
 import com.silverpeas.kmelia.notification.KmeliaDefermentPublicationUserNotification;
 import com.silverpeas.kmelia.notification.KmeliaDocumentSubscriptionPublicationUserNotification;
@@ -63,12 +116,15 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
+import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
+import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ObjectType;
+import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.calendar.backbone.TodoBackboneAccess;
 import com.stratelia.webactiv.calendar.backbone.TodoDetail;
@@ -104,52 +160,6 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.ValidationStep;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response.Status;
-import org.apache.commons.io.FilenameUtils;
-import org.silverpeas.attachment.AttachmentException;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.HistorisedDocument;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.component.kmelia.InstanceParameters;
-import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.search.indexEngine.model.IndexManager;
-import org.silverpeas.wysiwyg.WysiwygException;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-
-import static org.silverpeas.attachment.AttachmentService.VERSION_MODE;
-import static org.silverpeas.core.admin.OrganisationControllerFactory.getOrganisationController;
-
-import static com.silverpeas.util.StringUtil.*;
-
-import static com.stratelia.webactiv.util.JNDINames.SILVERPEAS_DATASOURCE;
-import static com.stratelia.webactiv.util.exception.SilverpeasRuntimeException.ERROR;
 
 /**
  * This is the KMelia EJB-tier controller of the MVC. It is implemented as a session EJB. It
@@ -1153,7 +1163,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     PdcClassificationService classifier = PdcServiceFactory.getFactory().
         getPdcClassificationService();
     PdcClassification predefinedClassification = classifier.findAPreDefinedClassification(fatherPK
-        .getId(), pubDetail.getInstanceId());
+        .getId(), fatherPK.getInstanceId());
     return createPublicationIntoTopic(pubDetail, fatherPK, predefinedClassification);
   }
 
@@ -3471,7 +3481,6 @@ public class KmeliaBmEJB implements KmeliaBm {
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public void deleteAxis(String axisId, String componentId) {
     NodePK pkToDelete = new NodePK(axisId, componentId);
     PublicationPK pubPK = new PublicationPK("useless");
@@ -4704,4 +4713,230 @@ public class KmeliaBmEJB implements KmeliaBm {
   public ResourceLocator getComponentMessages(String language) {
     return new ResourceLocator(MESSAGES_PATH, language);
   }
+  
+  public NodeDetail copyNode(KmeliaCopyDetail copyDetail) {
+    HashMap<Integer, Integer> oldAndNewIds = new HashMap<Integer, Integer>();
+    return copyNode(copyDetail, oldAndNewIds);
+  }
+  
+  private NodeDetail copyNode(KmeliaCopyDetail copyDetail, HashMap<Integer, Integer> oldAndNewIds) {
+    NodePK nodePKToCopy = copyDetail.getFromNodePK();
+    NodePK targetPK = copyDetail.getToNodePK();
+    String userId = copyDetail.getUserId();
+    SilverTrace.debug("kmelia", "KmeliaBmEJB.copyNode()", "root.MSG_GEN_ENTER_METHOD", "from = " +
+        nodePKToCopy.toString() + ", to = " + targetPK.toString());
+    NodeDetail nodeToCopy = nodeBm.getDetail(nodePKToCopy);
+    NodeDetail father = getNodeHeader(targetPK);
+    
+    // paste topic
+    NodePK nodePK = new NodePK("unknown", targetPK);
+    NodeDetail node = new NodeDetail();
+    node.setNodePK(nodePK);
+    node.setCreatorId(userId);
+    node.setName(nodeToCopy.getName());
+    node.setDescription(nodeToCopy.getDescription());
+    node.setTranslations(nodeToCopy.getTranslations());
+    node.setRightsDependsOn(father.getRightsDependsOn());
+    node.setCreationDate(DateUtil.today2SQLDate());
+    node.setStatus(nodeToCopy.getStatus());
+    nodePK = nodeBm.createNode(node, father);
+    
+    // duplicate rights
+    if (copyDetail.isNodeRightsMustBeCopied()) {
+      oldAndNewIds.put(Integer.parseInt(nodePKToCopy.getId()), Integer.parseInt(nodePK.getId()));
+      if (nodeToCopy.haveRights()) {
+        if (nodeToCopy.haveLocalRights()) {
+          node.setRightsDependsOn(Integer.parseInt(nodePK.getId()));
+        } else {
+          int oldRightsDependsOn = nodeToCopy.getRightsDependsOn();
+          Integer newRightsDependsOn = oldAndNewIds.get(Integer.valueOf(oldRightsDependsOn));
+          node.setRightsDependsOn(newRightsDependsOn);
+        }
+        nodeBm.updateRightsDependency(node);
+      }
+      // Set topic rights if necessary
+      if (nodeToCopy.haveLocalRights()) {
+        AdminController admin = new AdminController(userId);
+        List<ProfileInst> topicProfiles =
+            admin.getProfilesByObject(nodeToCopy.getNodePK().getId(), ObjectType.NODE.getCode(),
+                nodeToCopy.getNodePK().getInstanceId());
+        for (ProfileInst nodeToPasteProfile : topicProfiles) {
+          if (nodeToPasteProfile != null) {
+            ProfileInst nodeProfileInst = (ProfileInst) nodeToPasteProfile.clone();
+            nodeProfileInst.setId("-1");
+            nodeProfileInst.setComponentFatherId(nodePK.getInstanceId());
+            nodeProfileInst.setObjectId(Integer.parseInt(nodePK.getId()));
+            nodeProfileInst.setObjectFatherId(father.getId());
+            // Add the profile
+            admin.addProfileInst(nodeProfileInst, userId);
+          }
+        }
+      }
+    }
+
+    // paste wysiwyg attached to node
+    WysiwygController.copy(nodePKToCopy.getInstanceId(), "Node_" + nodePKToCopy.getId(),
+        nodePK.getInstanceId(), "Node_" + nodePK.getId(), userId);
+
+    // paste publications of topics
+    KmeliaCopyDetail folderContentCopy = new KmeliaCopyDetail(copyDetail);
+    folderContentCopy.setFromNodePK(nodePKToCopy);
+    folderContentCopy.setToNodePK(nodePK);
+    
+    if (copyDetail.isPublicationHeaderMustBeCopied()) {
+      copyPublications(folderContentCopy);
+    }
+
+    // paste subtopics
+    Collection<NodeDetail> subtopics = nodeToCopy.getChildrenDetails();
+    for (NodeDetail subTopic : subtopics) {
+      if (subTopic != null) {
+        folderContentCopy.setFromNodePK(subTopic.getNodePK());
+        copyNode(folderContentCopy, oldAndNewIds);
+      }
+    }
+    return node;
+  }
+  
+  @Override
+  public void copyPublications(KmeliaCopyDetail copyDetail) {
+    Collection<PublicationDetail> publications = publicationBm.getDetailsByFatherPK(copyDetail.getFromNodePK());
+    for (PublicationDetail publi : publications) {
+      copyPublication(publi, copyDetail);
+    }
+  }
+
+  @Override
+  public PublicationPK copyPublication(PublicationDetail publi, NodePK nodePK, String userId) {
+    KmeliaCopyDetail copyDetail = new KmeliaCopyDetail(userId);
+    copyDetail.setToNodePK(nodePK);
+    return copyPublication(publi, copyDetail);
+  }
+  
+  private PublicationPK copyPublication(PublicationDetail publi, KmeliaCopyDetail copyDetail) {
+    NodePK nodePK = copyDetail.getToNodePK();
+    String userId = copyDetail.getUserId();
+    try {
+      publi.setCloneId(null);
+      publi.setCloneStatus("");
+      String fromId = publi.getPK().getId();
+      String fromComponentId = publi.getPK().getInstanceId();
+
+      ForeignPK fromForeignPK = new ForeignPK(publi.getPK().getId(), fromComponentId);
+      PublicationPK fromPubPK = new PublicationPK(publi.getPK().getId(), fromComponentId);
+
+      ForeignPK toForeignPK = new ForeignPK("unknown", nodePK);
+      PublicationPK toPubPK = new PublicationPK("unknown", nodePK);
+      String toComponentId = nodePK.getInstanceId();
+
+      publi.setUpdaterId(userId); // ignore initial parameters
+      publi.setPk(toPubPK);
+      
+      if (KmeliaHelper.ROLE_WRITER.equals(getUserTopicProfile(nodePK, userId))) {
+        // in case of writers, status of new publication must be processed
+        publi.setStatus(null);
+      }
+      
+      if (!copyDetail.isPublicationContentMustBeCopied()) {
+        publi.setInfoId(null);
+      }
+
+      String id = createPublicationIntoTopic(publi, nodePK);
+      // update id cause new publication is created
+      toPubPK.setId(id);
+      toForeignPK.setId(id);
+      
+      SilverTrace.spy("kmelia", "KmeliaBmEJB.copyPublication", "unknown", nodePK.getInstanceId(),
+          id, userId, SilverTrace.SPY_ACTION_CREATE);
+      
+      // paste vignette
+      ThumbnailController.copyThumbnail(fromForeignPK, toForeignPK);
+      
+      // Paste positions on Pdc
+      if (copyDetail.isPublicationPositionsMustBeCopied()) {
+        copyPdcPositions(fromPubPK, toPubPK);
+      }
+      
+      if (copyDetail.isPublicationContentMustBeCopied()) {
+        // paste wysiwyg
+        WysiwygController.copy(fromComponentId, fromId, toPubPK.getInstanceId(), id, userId);
+      }
+      
+      Map<String, String> fileIds = new HashMap<String, String>();
+      if (copyDetail.isPublicationFilesMustBeCopied()) {
+        fileIds = copyFiles(fromPubPK, toPubPK);
+      }
+      
+      if (copyDetail.isPublicationContentMustBeCopied()) {
+        String infoId = publi.getInfoId();
+        if (infoId != null && !"0".equals(infoId)) {
+          // Content = XMLForm
+          // register xmlForm to publication
+          String xmlFormShortName = infoId;
+          PublicationTemplateManager publicationTemplateManager = PublicationTemplateManager.getInstance();
+          publicationTemplateManager.addDynamicPublicationTemplate(toComponentId + ":"
+              + xmlFormShortName, xmlFormShortName + ".xml");
+    
+          // Paste images
+          List< SimpleDocument> images = AttachmentServiceFactory.getAttachmentService()
+              .listDocumentsByForeignKeyAndType(fromPubPK, DocumentType.form, null);
+          for (SimpleDocument image : images) {
+            SimpleDocumentPK copyPk = AttachmentServiceFactory.getAttachmentService()
+                .copyDocument(image, toForeignPK);
+            fileIds.put(image.getId(), copyPk.getId());
+          }
+          // Paste wysiwyg fields content
+          WysiwygFCKFieldDisplayer wysiwygField = new WysiwygFCKFieldDisplayer();
+          wysiwygField.cloneContents(fromComponentId, fromId, toPubPK.getInstanceId(), id);
+    
+          // get xmlContent to paste
+          PublicationTemplate pubTemplateFrom = publicationTemplateManager.
+              getPublicationTemplate(fromComponentId + ":" + xmlFormShortName);
+          IdentifiedRecordTemplate recordTemplateFrom = (IdentifiedRecordTemplate) pubTemplateFrom
+              .getRecordSet().getRecordTemplate();
+          PublicationTemplate pubTemplate = publicationTemplateManager.
+              getPublicationTemplate(toComponentId + ":" + xmlFormShortName);
+          IdentifiedRecordTemplate recordTemplate = (IdentifiedRecordTemplate) pubTemplate.
+              getRecordSet().getRecordTemplate();
+          // paste xml content
+          GenericRecordSetManager.getInstance().cloneRecord(recordTemplateFrom, fromId,
+              recordTemplate, id, fileIds);
+        }
+      }
+  
+      // force the update
+      PublicationDetail newPubli = getPublicationDetail(toPubPK);
+      newPubli.setStatusMustBeChecked(false);
+      updatePublication(newPubli);
+
+      return newPubli.getPK();
+    } catch (Exception ex) {
+      SilverTrace.error("kmelia", getClass().getSimpleName() + ".pastePublication()",
+          "root.EX_NO_MESSAGE", ex);
+    }
+    return null;
+  }
+  
+  private Map<String, String> copyFiles(PublicationPK fromPK, PublicationPK toPK)
+      throws IOException {
+    Map<String, String> fileIds = new HashMap<String, String>();
+    List<SimpleDocument> origins = AttachmentServiceFactory.getAttachmentService().
+        listDocumentsByForeignKeyAndType(fromPK, DocumentType.attachment, null);
+    for (SimpleDocument origin : origins) {
+      SimpleDocumentPK copyPk = AttachmentServiceFactory.getAttachmentService().copyDocument(
+          origin, new ForeignPK(toPK));
+      fileIds.put(origin.getId(), copyPk.getId());
+    }
+    return fileIds;
+  }
+  
+  private void copyPdcPositions(PublicationPK fromPK, PublicationPK toPK) throws RemoteException,
+      PdcException {
+    int fromSilverObjectId = getSilverObjectId(fromPK);
+    int toSilverObjectId = getSilverObjectId(toPK);
+
+    new PdcBmImpl().copyPositions(fromSilverObjectId, fromPK.getInstanceId(), toSilverObjectId,
+        toPK.getInstanceId());
+  }
+
 }

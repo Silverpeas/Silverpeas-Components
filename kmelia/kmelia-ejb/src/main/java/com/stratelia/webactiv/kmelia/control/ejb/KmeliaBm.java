@@ -21,6 +21,7 @@
 package com.stratelia.webactiv.kmelia.control.ejb;
 
 import com.silverpeas.SilverpeasComponentService;
+import com.silverpeas.component.kmelia.KmeliaCopyDetail;
 import com.silverpeas.form.importExport.XMLField;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.util.ForeignPK;
@@ -758,4 +759,10 @@ public interface KmeliaBm extends SilverpeasComponentService<KmeliaPublication> 
   public String getUserTopicProfile(NodePK pk, String userId);
 
   public List<String> deletePublications(List<String> ids, NodePK nodePK, String userId);
+  
+  public NodeDetail copyNode(KmeliaCopyDetail copyDetail);
+  
+  public void copyPublications(KmeliaCopyDetail copyDetail);
+  
+  public PublicationPK copyPublication(PublicationDetail publi, NodePK nodePK, String userId);
 }
