@@ -63,7 +63,7 @@ function openSPWindow(fonction, windowName){
 }
 
 function exportTopic() {
-	exportComponentWindow = SP_openWindow("exportTopic.jsp?TopicId="+getCurrentNodeId(),"exportComponentWindow",700,250,"scrollbars=yes, resizable=yes");
+	exportComponentWindow = SP_openWindow("ExportTopic?TopicId="+getCurrentNodeId(),"exportComponentWindow",700,350,"scrollbars=yes, resizable=yes");
 }
 
 function openSPWindow(fonction, windowName){

@@ -190,14 +190,12 @@ function init()
 			},"html");
 }
 
-function exportComponent()
-{
-	exportComponentWindow = SP_openWindow("exportTopic.jsp","exportComponentWindow",700,250,"scrollbars=yes, resizable=yes");
+function exportComponent() {
+	exportComponentWindow = SP_openWindow("ExportTopic","exportComponentWindow",700,250,"scrollbars=yes, resizable=yes");
 }
 
-function exportPublications()
-{
-	exportComponentWindow = SP_openWindow("exportTopic.jsp?TopicId=dummy","exportComponentWindow",700,250,"scrollbars=yes, resizable=yes");
+function exportPublications() {
+	exportComponentWindow = SP_openWindow("ExportTopic?TopicId=dummy","exportComponentWindow",700,250,"scrollbars=yes, resizable=yes");
 }
 -->
 </script>
