@@ -44,7 +44,6 @@ import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.MimeTypes;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.ZipManager;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -1911,6 +1910,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     boolean draftMode = false;
     String logicalName = "";
     String message = "";
+    boolean error = false;
 
     String tempFolderName = "";
     String tempFolderPath = "";
@@ -1986,22 +1986,33 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           fileItem.write(fileUploaded);
 
           // Is a real file ?
-          if (fileSize > 0L) {
+          ResourceLocator uploadSettings = new ResourceLocator("org.silverpeas.util.uploads.uploadSettings", "");
+          long maximumFileSize = uploadSettings.getLong("MaximumFileSize", 10485760);
+          if (fileSize <= 0L) {
+            // File access failed
+            message = attachmentResourceLocator.getString("liaisonInaccessible");
+            error = true;
+          } else if (!isMassiveMode && fileSize > maximumFileSize) {
+            long maximumFileSizeMo = maximumFileSize / 1048576;
+            message = attachmentResourceLocator.getString("attachment.dialog.errorFileSize")+ " " +
+                attachmentResourceLocator.getString("attachment.dialog.maximumFileSize")+" ("+maximumFileSizeMo+" Mo)";
+            error = true;
+          } else {
             SilverTrace.debug("kmelia", "KmeliaRequestRouter.processFormUpload()",
                 "root.MSG_GEN_PARAM_VALUE", "fileUploaded = " + fileUploaded
                 + " fileSize=" + fileSize + " fileType=" + fileType
                 + " importMode=" + importMode + " draftMode=" + draftMode);
-            int nbFiles = 1;
-            // Compute nbFiles only in unitary Import mode
-            if (!KmeliaSessionController.UNITARY_IMPORT_MODE.equals(importMode)
-                && fileUploaded.getName().toLowerCase().endsWith(".zip")) {
-              nbFiles = ZipManager.getNbFiles(fileUploaded);
-            }
 
             // Import !!
             List<PublicationDetail> publicationDetails = kmeliaScc.importFile(fileUploaded,
                 fileType, topicId, importMode, draftMode, versionType);
             long processDuration = new Date().getTime() - processStart;
+            
+            // Compute nbFiles imported (only in unitary Import mode)
+            int nbFiles = 0;
+            for (PublicationDetail pubDetail : publicationDetails) {
+                nbFiles += pubDetail.getAttachments().size();
+            }
 
             // Title for popup report
             String importModeTitle = "";
@@ -2027,30 +2038,32 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
             request.setAttribute("Context", URLManager.getApplicationURL());
 
             destination = routeDestination + "reportImportFiles.jsp";
-            String componentId = publicationDetails.get(0).getComponentInstanceId();
+            String componentId = kmeliaScc.getComponentId();
             if (kmeliaScc.isDefaultClassificationModifiable(topicId, componentId)) {
               destination = routeDestination + "validateImportedFilesClassification.jsp";
             }
-          } else {
-            // File access failed
-            message = attachmentResourceLocator.getString("liaisonInaccessible");
-            request.setAttribute("Message", message);
-            request.setAttribute("TopicId", topicId);
-            destination = routeDestination + "importOneFile.jsp";
-            if (isMassiveMode) {
-              destination = routeDestination + "importMultiFiles.jsp";
-            }
           }
+          
+          // Delete temp folder
           FileFolderManager.deleteFolder(tempFolderPath);
+          
         } else {
           // the field did not contain a file
-          request.setAttribute("Message", attachmentResourceLocator
-              .getString("liaisonInaccessible"));
-          request.setAttribute("TopicId", topicId);
-          destination = routeDestination + "importOneFile.jsp";
-          if (isMassiveMode) {
-            destination = routeDestination + "importMultiFiles.jsp";
-          }
+          message = attachmentResourceLocator.getString("liaisonInaccessible");
+          error = true;
+        }
+      } else {
+        // the field did not contain a file
+        message = attachmentResourceLocator.getString("liaisonInaccessible");
+        error = true;
+      }
+      
+      if(error) {
+        request.setAttribute("Message", message);
+        request.setAttribute("TopicId", topicId);
+        destination = routeDestination + "importOneFile.jsp";
+        if (isMassiveMode) {
+          destination = routeDestination + "importMultiFiles.jsp";
         }
       }
     } catch (Exception e) {
