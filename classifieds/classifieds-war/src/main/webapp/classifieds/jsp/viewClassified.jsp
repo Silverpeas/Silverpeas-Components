@@ -205,7 +205,7 @@ String m_context = GeneralPropertiesManager.getString("ApplicationURL");
 				action="javascript:deleteConfirm('${classified.classifiedId}');"
 				altText="${deleteOp}" icon="${deleteIcon}" />
 
-			<c:if test="${isDraftEnabled}">
+			<c:if test="${userId == creatorId and isDraftEnabled}">
 				<view:operationSeparator />
 				<c:choose>
 					<c:when test="${'Draft' == classified.status}">

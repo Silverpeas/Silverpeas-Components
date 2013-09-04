@@ -100,7 +100,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.importExport.versioning.DocumentVersion;
 import org.silverpeas.wysiwyg.control.WysiwygController;
-import org.xml.sax.SAXException;
 
 public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionController> {
 
@@ -1141,32 +1140,29 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         request.setAttribute("NbLinks", Integer.toString(nb));
 
         destination = rootDestination + "publicationLinksManager.jsp?Action=Add&Id=" + topicId;
-      } else if (function.equals("ExportComponent")) {
-        if (kmaxMode) {
-          destination = getDestination("KmaxExportComponent", kmelia, request);
-        } else {
-          // build an exploitable list by importExportPeas
-          List<WAAttributeValuePair> publicationsIds = kmelia.getAllVisiblePublications();
-          request.setAttribute("selectedResultsWa", publicationsIds);
-          request.setAttribute("RootId", "0");
-          // Go to importExportPeas
-          destination = "/RimportExportPeas/jsp/ExportItems";
-        }
       } else if (function.equals("ExportTopic")) {
+        String topicId = request.getParameter("TopicId");
+        boolean exportFullApp = !StringUtil.isDefined(topicId) || NodePK.ROOT_NODE_ID.equals(topicId);
         if (kmaxMode) {
-          destination = getDestination("KmaxExportPublications", kmelia, request);
+          if (exportFullApp) {
+            destination = getDestination("KmaxExportComponent", kmelia, request);
+          } else {
+            destination = getDestination("KmaxExportPublications", kmelia, request);
+          }
         } else {
-          // récupération du topicId
-          String topicId = request.getParameter("TopicId");
           // build an exploitable list by importExportPeas
-          SilverTrace.info("kmelia", "KmeliaSessionController.getAllVisiblePublicationsByTopic()",
+          SilverTrace.info("kmelia", "KmeliaRequestRouter.ExportTopic",
               "root.MSG_PARAM_VALUE", "topicId =" + topicId);
-          List<WAAttributeValuePair> publicationsIds = kmelia.getAllVisiblePublicationsByTopic(
-              topicId);
+          List<WAAttributeValuePair> publicationsIds = null;
+          if (exportFullApp) {
+            publicationsIds = kmelia.getAllVisiblePublications();
+          } else {
+            publicationsIds = kmelia.getAllVisiblePublicationsByTopic(topicId);
+          }
           request.setAttribute("selectedResultsWa", publicationsIds);
           request.setAttribute("RootId", topicId);
           // Go to importExportPeas
-          destination = "/RimportExportPeas/jsp/ExportItems";
+          destination = "/RimportExportPeas/jsp/SelectExportMode";
         }
       } else if (function.equals("ExportPublications")) {
         String selectedIds = request.getParameter("SelectedIds");
