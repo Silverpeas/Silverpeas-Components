@@ -75,10 +75,9 @@ import com.silverpeas.component.kmelia.KmeliaCopyDetail;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
-import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
+import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.importExport.XMLField;
-import com.silverpeas.form.record.GenericRecordSetManager;
-import com.silverpeas.form.record.IdentifiedRecordTemplate;
+import com.silverpeas.form.record.GenericRecordSet;
 import com.silverpeas.formTemplate.dao.ModelDAO;
 import com.silverpeas.kmelia.notification.KmeliaDefermentPublicationUserNotification;
 import com.silverpeas.kmelia.notification.KmeliaDocumentSubscriptionPublicationUserNotification;
@@ -1432,6 +1431,18 @@ public class KmeliaBmEJB implements KmeliaBm {
         getEndDate() != null && !pubDetail.getEndDate().equals(old.getEndDate())));
     return beginVisibilityPeriodUpdated || endVisibilityPeriodUpdated;
   }
+  
+  @Override
+  public void movePublication(PublicationPK pubPK, NodePK to, String userId) {
+    PublicationDetail pub = getPublicationDetail(pubPK);
+    if (pub != null) {
+      if (pubPK.getInstanceId().equals(to.getInstanceId())) {
+        movePublicationInSameApplication(pub, to, userId);
+      } else {
+        movePublicationInAnotherApplication(pub, to, userId);
+      }
+    }
+  }
 
   @Override
   public void movePublicationInSameApplication(PublicationPK pubPK, NodePK from, NodePK to,
@@ -1464,10 +1475,112 @@ public class KmeliaBmEJB implements KmeliaBm {
     }
   }
 
+  /**
+   * Move a publication to another component. Moving in this order : <ul>
+   * <li>moving the metadata</li>
+   * <li>moving the thumbnail</li>
+   * <li>moving the content</li>
+   * <li>moving the wysiwyg</li>
+   * <li>moving the images linked to the wysiwyg</li>
+   * <li>moving the xml form content (files and images)</li>
+   * <li>moving attachments</li>
+   * <li>moving the pdc poistion</li>
+   * <li>moving the statistics</li>
+   * </ul>
+   */
   @Override
   public void movePublicationInAnotherApplication(PublicationDetail pub, NodePK to, String userId) {
-    publicationBm.movePublication(pub.getPK(), to, false);
-    processPublicationAfterMove(pub, to, userId);
+
+    try {
+      ForeignPK fromForeignPK = new ForeignPK(pub.getPK());
+      String fromComponentId = pub.getInstanceId();
+      ForeignPK toPubliForeignPK = new ForeignPK(pub.getId(), to);
+      
+      // remove index relative to publication
+      unIndexExternalElementsOfPublication(pub.getPK());
+
+      // move thumbnail
+      ThumbnailController.moveThumbnail(fromForeignPK, toPubliForeignPK);
+
+      try {
+        // move additional files
+        List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
+            listDocumentsByForeignKeyAndType(fromForeignPK, DocumentType.image, null);
+        documents.addAll(AttachmentServiceFactory.getAttachmentService().
+            listDocumentsByForeignKeyAndType(fromForeignPK, DocumentType.wysiwyg, null));
+        for (SimpleDocument doc : documents) {
+          AttachmentServiceFactory.getAttachmentService().moveDocument(doc, toPubliForeignPK);
+        }
+      } catch (org.silverpeas.attachment.AttachmentException e) {
+        SilverTrace.error("kmelia", "KmeliaBmEJB.movePublicationInAnotherApplication()",
+            "root.MSG_GEN_PARAM_VALUE", "kmelia.CANT_MOVE_ATTACHMENTS", e);
+      }
+
+      // change images path in wysiwyg
+      WysiwygController.wysiwygPlaceHaveChanged(fromForeignPK.getInstanceId(), pub.getPK().getId(),
+          to.getInstanceId(), pub.getPK().getId());
+
+      // move regular files
+      List<SimpleDocument> docs = AttachmentServiceFactory.getAttachmentService().
+          listDocumentsByForeignKeyAndType(fromForeignPK, DocumentType.attachment, null);
+      for (SimpleDocument doc : docs) {
+        AttachmentServiceFactory.getAttachmentService().moveDocument(doc, toPubliForeignPK);
+      }
+
+      // move form content
+      String infoId = pub.getInfoId();
+      if (infoId != null && !"0".equals(infoId)) {
+        // register content to component
+        PublicationTemplateManager templateManager = PublicationTemplateManager.getInstance();
+        GenericRecordSet toRecordSet = templateManager.addDynamicPublicationTemplate(to.getInstanceId() + ":"
+            + pub.getInfoId(), pub.getInfoId() + ".xml");
+        RecordTemplate toRecordTemplate = toRecordSet.getRecordTemplate();
+        
+        // get xmlContent to move
+        PublicationTemplate pubTemplateFrom = templateManager.
+            getPublicationTemplate(fromComponentId + ":" + pub.getInfoId());
+
+        RecordSet set = pubTemplateFrom.getRecordSet();
+        set.move(fromForeignPK, toPubliForeignPK, toRecordTemplate);
+      }
+
+      // move comments
+      getCommentService().moveComments(PublicationDetail.getResourceType(), fromForeignPK,
+          toPubliForeignPK);
+
+      // move pdc positions
+      com.stratelia.silverpeas.pdc.control.PdcBm pdcBmImpl = new PdcBmImpl();
+      // Careful! positions must be moved according to taxonomy restrictions of target application
+      int fromSilverObjectId = getSilverObjectId(pub.getPK());
+      // get positions of cutted publication
+      List<ClassifyPosition> positions = pdcBmImpl.
+          getPositions(fromSilverObjectId, fromComponentId);
+
+      // delete taxonomy data relative to moved publication
+      deleteSilverContent(pub.getPK());
+
+      // move statistics
+      statisticBm.moveStat(toPubliForeignPK, 1, "Publication");
+
+      // move publication itself
+      publicationBm.movePublication(pub.getPK(), to, false);
+      pub.getPK().setComponentName(to.getInstanceId());
+      
+      processPublicationAfterMove(pub, to, userId);
+
+      // index moved publication
+      if (KmeliaHelper.isIndexable(pub)) {
+        indexPublication(pub);
+      }
+
+      // reference pasted publication on taxonomy service
+      int toSilverObjectId = getSilverObjectId(pub.getPK());
+      // add original positions to pasted publication
+      pdcBmImpl.addPositions(positions, toSilverObjectId, to.getInstanceId());
+    } catch (Exception e) {
+      throw new KmeliaRuntimeException("KmeliaBmEJB.movePublication()",
+          ERROR, "kmelia.EX_CANT_MOVE_PUBLICATION_INTO_ANOTHER_APP", e);
+    }
   }
 
   private void processPublicationAfterMove(PublicationDetail pub, NodePK to, String userId) {
@@ -4714,6 +4827,65 @@ public class KmeliaBmEJB implements KmeliaBm {
     return new ResourceLocator(MESSAGES_PATH, language);
   }
   
+  @Override
+  public NodeDetail moveNode(NodePK nodePK, NodePK to, String userId) {
+    
+    List<NodeDetail> treeToPaste = nodeBm.getSubTree(nodePK);
+
+    // move node and subtree
+    nodeBm.moveNode(nodePK, to);
+    
+    AdminController admin = new AdminController(userId);
+    for (NodeDetail fromNode : treeToPaste) {
+      if (fromNode != null) {
+        NodePK toNodePK = new NodePK(fromNode.getNodePK().getId(), to);
+
+        // remove rights
+        if (fromNode.haveLocalRights()) {
+          List<ProfileInst> profiles =
+              admin.getProfilesByObject(fromNode.getNodePK().getId(), ObjectType.NODE.getCode(),
+                  fromNode.getNodePK().getInstanceId());
+          if (profiles != null) {
+            for (ProfileInst profile : profiles) {
+              if (profile != null && StringUtil.isDefined(profile.getId())) {
+                admin.deleteProfileInst(profile.getId());
+              }
+            }
+          }
+        }
+                
+        try {
+          NodePK fromForeignPK = fromNode.getNodePK();
+          List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
+              listAllDocumentsByForeignKey(fromForeignPK, null);
+          ForeignPK toForeignPK = new ForeignPK(toNodePK.getId(), to);
+          for (SimpleDocument document : documents) {
+            AttachmentServiceFactory.getAttachmentService().moveDocument(document, toForeignPK);
+          }
+        } catch (org.silverpeas.attachment.AttachmentException e) {
+          SilverTrace.error("kmelia", "KmeliaSessionController.pastePublication()",
+              "root.MSG_GEN_PARAM_VALUE", "kmelia.CANT_MOVE_ATTACHMENTS", e);
+        }
+        // change images path in wysiwyg
+        WysiwygController.wysiwygPlaceHaveChanged(fromNode.getNodePK().getInstanceId(),
+            "Node_" + fromNode.getNodePK().getId(), to.getInstanceId(), "Node_" + toNodePK.getId());
+        
+        // move publications of topics
+        movePublicationsOfTopic(fromNode.getNodePK(), toNodePK, userId);
+      }
+    }
+    
+    nodePK.setComponentName(to.getInstanceId());
+    return getNodeHeader(nodePK);
+  }
+  
+  private void movePublicationsOfTopic(NodePK fromPK, NodePK toPK, String userId) {
+    Collection<PublicationDetail> publications = publicationBm.getDetailsByFatherPK(fromPK);
+    for (PublicationDetail publi : publications) {
+      movePublication(publi.getPK(), toPK, userId);
+    }
+  }
+  
   public NodeDetail copyNode(KmeliaCopyDetail copyDetail) {
     HashMap<Integer, Integer> oldAndNewIds = new HashMap<Integer, Integer>();
     return copyNode(copyDetail, oldAndNewIds);
@@ -4857,14 +5029,14 @@ public class KmeliaBmEJB implements KmeliaBm {
         copyPdcPositions(fromPubPK, toPubPK);
       }
       
+      Map<String, String> fileIds = new HashMap<String, String>();
       if (copyDetail.isPublicationContentMustBeCopied()) {
         // paste wysiwyg
-        WysiwygController.copy(fromComponentId, fromId, toPubPK.getInstanceId(), id, userId);
+        fileIds = WysiwygController.copy(fromComponentId, fromId, toPubPK.getInstanceId(), id, userId);
       }
       
-      Map<String, String> fileIds = new HashMap<String, String>();
       if (copyDetail.isPublicationFilesMustBeCopied()) {
-        fileIds = copyFiles(fromPubPK, toPubPK);
+        fileIds.putAll(copyFiles(fromPubPK, toPubPK));
       }
       
       if (copyDetail.isPublicationContentMustBeCopied()) {
@@ -4874,33 +5046,14 @@ public class KmeliaBmEJB implements KmeliaBm {
           // register xmlForm to publication
           String xmlFormShortName = infoId;
           PublicationTemplateManager publicationTemplateManager = PublicationTemplateManager.getInstance();
-          publicationTemplateManager.addDynamicPublicationTemplate(toComponentId + ":"
+          GenericRecordSet toRecordset = publicationTemplateManager.addDynamicPublicationTemplate(toComponentId + ":"
               + xmlFormShortName, xmlFormShortName + ".xml");
-    
-          // Paste images
-          List< SimpleDocument> images = AttachmentServiceFactory.getAttachmentService()
-              .listDocumentsByForeignKeyAndType(fromPubPK, DocumentType.form, null);
-          for (SimpleDocument image : images) {
-            SimpleDocumentPK copyPk = AttachmentServiceFactory.getAttachmentService()
-                .copyDocument(image, toForeignPK);
-            fileIds.put(image.getId(), copyPk.getId());
-          }
-          // Paste wysiwyg fields content
-          WysiwygFCKFieldDisplayer wysiwygField = new WysiwygFCKFieldDisplayer();
-          wysiwygField.cloneContents(fromComponentId, fromId, toPubPK.getInstanceId(), id);
-    
-          // get xmlContent to paste
-          PublicationTemplate pubTemplateFrom = publicationTemplateManager.
-              getPublicationTemplate(fromComponentId + ":" + xmlFormShortName);
-          IdentifiedRecordTemplate recordTemplateFrom = (IdentifiedRecordTemplate) pubTemplateFrom
-              .getRecordSet().getRecordTemplate();
-          PublicationTemplate pubTemplate = publicationTemplateManager.
-              getPublicationTemplate(toComponentId + ":" + xmlFormShortName);
-          IdentifiedRecordTemplate recordTemplate = (IdentifiedRecordTemplate) pubTemplate.
-              getRecordSet().getRecordTemplate();
-          // paste xml content
-          GenericRecordSetManager.getInstance().cloneRecord(recordTemplateFrom, fromId,
-              recordTemplate, id, fileIds);
+          
+          PublicationTemplate pubTemplate = publicationTemplateManager.getPublicationTemplate(fromComponentId
+              + ":" + xmlFormShortName);
+          RecordSet set = pubTemplate.getRecordSet();
+          
+          set.copy(fromForeignPK, toForeignPK, toRecordset.getRecordTemplate(), fileIds);
         }
       }
   

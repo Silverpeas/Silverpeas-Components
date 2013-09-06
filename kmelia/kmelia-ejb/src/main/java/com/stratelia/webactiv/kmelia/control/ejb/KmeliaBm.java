@@ -446,6 +446,8 @@ public interface KmeliaBm extends SilverpeasComponentService<KmeliaPublication> 
   public void draftInPublication(PublicationPK pubPK);
 
   public void draftInPublication(PublicationPK pubPK, String userId);
+  
+  public void movePublication(PublicationPK pubPK, NodePK to, String userId);
 
   public void movePublicationInSameApplication(PublicationPK pubPK, NodePK from, NodePK to,
       String userId);
@@ -765,4 +767,6 @@ public interface KmeliaBm extends SilverpeasComponentService<KmeliaPublication> 
   public void copyPublications(KmeliaCopyDetail copyDetail);
   
   public PublicationPK copyPublication(PublicationDetail publi, NodePK nodePK, String userId);
+  
+  public NodeDetail moveNode(NodePK nodePK, NodePK to, String userId);
 }
