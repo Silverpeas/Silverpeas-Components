@@ -34,6 +34,7 @@
 <%@page import="com.stratelia.webactiv.util.FileServerUtils" %>
 <%@page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
 <%@page import="org.silverpeas.util.URLUtils"%>
+<%@page import="com.stratelia.webactiv.kmelia.model.KmeliaPublication" %>
 
 <%@include file="checkKmelia.jsp" %>
 <%@include file="publicationsList.jsp.inc" %>
@@ -41,21 +42,11 @@
 
 
 <%!  //Icons
-  String folderSrc;
-  String publicationSrc;
-  String pubValidateSrc;
-  String pubUnvalidateSrc;
-  String fullStarSrc;
-  String emptyStarSrc;
   String mandatorySrc;
   String deleteSrc;
-  String seeAlsoSrc;
-  String seeAlsoDeleteSrc;
   String alertSrc;
   String deletePubliSrc;
   String clipboardCopySrc;
-  String hLineSrc;
-  String pdfSrc;
   String pubDraftInSrc;
   String pubDraftOutSrc;
   String inDraftSrc;
@@ -91,16 +82,13 @@
 
     String nextAction = "";
 
-    ResourceLocator publicationSettings = new ResourceLocator("org.silverpeas.util.publication.publicationSettings", kmeliaScc.getLanguage());
+    ResourceLocator publicationSettings = new ResourceLocator("org.silverpeas.util.publication.publicationSettings", resources.getLanguage());
 
-    KmeliaPublication kmeliaPublication = null;
+    KmeliaPublication kmeliaPublication = (KmeliaPublication) request.getAttribute("Publication");
     UserDetail ownerDetail = null;
     UserDetail updater = null;
 
-    CompletePublication pubComplete = null;
     PublicationDetail pubDetail = null;
-    InfoDetail infos = null;
-    ModelDetail model = null;
 
     String language = kmeliaScc.getCurrentLanguage();
 
@@ -124,21 +112,11 @@
     SilverTrace.info("kmelia", "JSPdesign", "root.MSG_GEN_PARAM_VALUE", "ACTION pubManager = " + action);
 
     //Icons
-    folderSrc = m_context + "/util/icons/component/kmeliaSmall.gif";
-    publicationSrc = m_context + "/util/icons/publication.gif";
-    pubValidateSrc = m_context + "/util/icons/publicationValidate.gif";
-    pubUnvalidateSrc = m_context + "/util/icons/publicationUnvalidate.gif";
-    fullStarSrc = m_context + "/util/icons/starFilled.gif";
-    emptyStarSrc = m_context + "/util/icons/starEmpty.gif";
     mandatorySrc = m_context + "/util/icons/mandatoryField.gif";
     deleteSrc = m_context + "/util/icons/delete.gif";
-    seeAlsoSrc = "icons/linkedAdd.gif";
-    seeAlsoDeleteSrc = "icons/linkedDel.gif";
     alertSrc = m_context + "/util/icons/alert.gif";
     deletePubliSrc = m_context + "/util/icons/publicationDelete.gif";
     clipboardCopySrc = m_context + "/util/icons/copy.gif";
-    pdfSrc = m_context + "/util/icons/publication_to_pdf.gif";
-    hLineSrc = m_context + "/util/icons/colorPix/1px.gif";
     pubDraftInSrc = m_context + "/util/icons/publicationDraftIn.gif";
     pubDraftOutSrc = m_context + "/util/icons/publicationDraftOut.gif";
     inDraftSrc = m_context + "/util/icons/masque.gif";
@@ -173,16 +151,9 @@
 //Action = View, New, Add, UpdateView, Update, Delete, LinkAuthorView, SameSubjectView ou SameTopicView
     if (action.equals("UpdateView") || action.equals("ValidateView")) {
 
-      //Recuperation des parametres de la publication
-      kmeliaPublication = kmeliaScc.getPublication(id);
-
-      if (kmeliaScc.getSessionClone() != null) {
-        kmeliaPublication = kmeliaScc.getSessionClone();
-        id = kmeliaPublication.getId();
-      }
-
-      pubComplete = kmeliaPublication.getCompleteDetail();
-      pubDetail = pubComplete.getPublicationDetail();
+      id = kmeliaPublication.getId();
+      
+      pubDetail = kmeliaPublication.getDetail();
       pubName = pubDetail.getName(language);
       if (pubDetail.getImage() != null) {
         if (pubDetail.getImage().startsWith("/")) {
@@ -303,7 +274,7 @@
       tempId = "-1";
 
       nextAction = "AddPublication";
-}
+	}
 
     validateButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendPublicationDataToRouter('" + nextAction + "');", false);
 
@@ -319,10 +290,10 @@
 		objectId =  pubDetail.getPK().getId();
 	}
 
-	String backUrl = httpServerBase + URLManager.getApplicationURL() + "/Rkmelia/" + componentId + "/publicationManager.jsp?Action=UpdateView&PubId=" + objectId;
+	String backUrl = httpServerBase + URLManager.getApplicationURL() + URLManager.getURL("kmelia", null, componentId) + "ToUpdatePublicationHeader";
 
 	String standardParamaters = "&ComponentId=" + componentId + "&ObjectId=" + objectId
-        + "&BackUrl=" + URLUtils.encodePathParamValue(backUrl) + "&ObjectType="
+        + "&BackUrl=" + URLEncoder.encode(backUrl) + "&ObjectType="
         + ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE;
 
 	int[] thumbnailSize = kmeliaScc.getThumbnailWidthAndHeight();
@@ -749,7 +720,7 @@
 <%        }
   %>
   <div id="header">
-  <form name="pubForm" action="publicationManager.jsp" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
+  <form name="pubForm" action="#" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
   	<input type="hidden" name="Action"/>
     <input type="hidden" name="Positions"/>
   	<input type="hidden" name="PubId" value="<%=id%>"/>

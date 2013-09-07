@@ -181,7 +181,7 @@ public class KmeliaDisplayHelper {
     if (invisibleTabs.indexOf(KmeliaSessionController.TAB_HEADER) == -1) {
       i++;
       tabbedPane.addTab(kmeliaScc.getString("Header") + decoration, routerUrl
-          + "publicationManager.jsp?Action=UpdateView&PubId=" + sureId, "UpdateView".equals(action)
+          + "ToUpdatePublicationHeader", "UpdateView".equals(action)
           || "New".equals(action) || "KmaxModifyPublication".equals(action), enabled, row);
     }
     if (invisibleTabs.indexOf(KmeliaSessionController.TAB_CONTENT) == -1) {
@@ -342,7 +342,7 @@ public class KmeliaDisplayHelper {
 
     TabbedPane tabbedPane = gef.getTabbedPane();
     if (invisibleTabs.indexOf(KmeliaSessionController.TAB_HEADER) == -1) {
-      tabbedPane.addTab(kmeliaScc.getString("Header"), "publicationManager.jsp?Action=View", action
+      tabbedPane.addTab(kmeliaScc.getString("Header"), "#", action
           .equals("View") || action.equals("UpdateView") || action.equals("New"), false);
     }
     out.println(tabbedPane.print());

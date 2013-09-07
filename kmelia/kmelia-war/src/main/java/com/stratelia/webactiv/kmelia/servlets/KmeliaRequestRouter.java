@@ -368,29 +368,18 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
               "root.MSG_GEN_PARAM_VALUE", "Document Not Found = " + e.getMessage(), e);
           destination = getDocumentNotFoundDestination(kmelia, request);
         }
-      } else if (function.startsWith("publicationManager")) {
-        String id = request.getParameter("PubId");
-        if (StringUtil.isDefined(id)) {
-          request.setAttribute("PubId", id);
-        }
+      } else if ("ToUpdatePublicationHeader".equals(function)) {
+        request.setAttribute("Action", "UpdateView");
+        request.setAttribute("TaxonomyOK", kmelia.isPublicationTaxonomyOK());
+        request.setAttribute("ValidatorsOK", kmelia.isPublicationValidatorsOK());
+        request.setAttribute("Publication", kmelia.getSessionPubliOrClone());
+        
+        destination = getDestination("publicationManager.jsp", kmelia, request);
+      } else if ("publicationManager.jsp".equals(function)) {
+        
         request.setAttribute("Wizard", kmelia.getWizard());
-        List<NodeDetail> path = kmelia.getTopicPath(kmelia.getCurrentFolderId());
-        request.setAttribute("Path", path);
+        request.setAttribute("Path", kmelia.getTopicPath(kmelia.getCurrentFolderId()));
         request.setAttribute("Profile", kmelia.getProfile());
-        String action = (String) request.getAttribute("Action");
-        if (!StringUtil.isDefined(action)) {
-          action = "UpdateView";
-          request.setAttribute("Action", action);
-        }
-
-        if ("UpdateView".equals(action)) {
-          request.setAttribute("TaxonomyOK", kmelia.isPublicationTaxonomyOK());
-          request.setAttribute("ValidatorsOK", kmelia.isPublicationValidatorsOK());
-        } else {
-          // case of creation
-          request.setAttribute("TaxonomyOK", true);
-          request.setAttribute("ValidatorsOK", true);
-        }
 
         destination = rootDestination + "publicationManager.jsp";
         // thumbnail error for front explication
@@ -1001,7 +990,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         destination = "/RimportExportPeas/jsp/ExportPDF";
       } else if (function.equals("NewPublication")) {
         request.setAttribute("Action", "New");
-        destination = getDestination("publicationManager", kmelia, request);
+        request.setAttribute("TaxonomyOK", true);
+        request.setAttribute("ValidatorsOK", true);
+        destination = getDestination("publicationManager.jsp", kmelia, request);
       } else if (function.equals("ManageSubscriptions")) {
         destination = kmelia.manageSubscriptions();
       } else if (function.equals("AddPublication")) {
@@ -2577,5 +2568,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       pks.add(new ForeignPK(oneId, instanceId));
     }
     return pks;
+  }
+  
+  private void setAttributesToPublicationHeader(KmeliaSessionController kmelia, HttpServletRequest request) {
+    
   }
 }
