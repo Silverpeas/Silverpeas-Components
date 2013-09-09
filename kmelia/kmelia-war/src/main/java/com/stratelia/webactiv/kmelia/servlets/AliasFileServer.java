@@ -48,6 +48,7 @@ import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.model.Alias;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 /**
@@ -77,7 +78,7 @@ public class AliasFileServer extends HttpServlet {
     if (mainSessionCtrl != null) {
       userId = mainSessionCtrl.getUserId();
     }
-    String contextComponentId = req.getParameter("ComponentId");
+
     WAPrimaryKey foreignKey = null;
 
     String attachmentId = req.getParameter("AttachmentId");
@@ -96,9 +97,7 @@ public class AliasFileServer extends HttpServlet {
     }
 
     if (foreignKey != null) {
-      String fileComponentId = foreignKey.getInstanceId();
-      String filePublicationId = foreignKey.getId();
-      PublicationPK pubPK = new PublicationPK(filePublicationId, fileComponentId);
+      PublicationPK pubPK = new PublicationPK(foreignKey.getId(), foreignKey.getInstanceId());
       List<Alias> aliases = (List<Alias>) getPublicationBm().getAlias(pubPK);
 
       // check if user have rights to see alias files
@@ -106,16 +105,18 @@ public class AliasFileServer extends HttpServlet {
       KmeliaSecurity security = new KmeliaSecurity();
       for (int a = 0; !rightsOK && a < aliases.size(); a++) {
         Alias alias = aliases.get(a);
-        if (!contextComponentId.equals(alias.getInstanceId())) {
+        if (!foreignKey.getInstanceId().equals(alias.getInstanceId())) {
           // it's an alias
           // Check if user is allowed to see topic's content
           rightsOK = security.isAccessAuthorized(alias.getInstanceId(), userId, alias.getId(),
-              "Node");
+              KmeliaSecurity.NODE_TYPE);
         }
       }
 
       if (rightsOK) {
         response.setContentType(attachment.getContentType());
+        response.setHeader("Content-Disposition", "inline; filename=\"" + attachment.getFilename() +
+            '"');
         response.setHeader("Content-Length", String.valueOf(attachment.getSize()));
         display(response, attachment.getAttachmentPath());
       }
@@ -130,24 +131,21 @@ public class AliasFileServer extends HttpServlet {
    * this String is null that an exception had been catched the html document generated is empty !!
    * also, we display a warning html page
    */
-  private void display(HttpServletResponse res, String htmlFilePath) throws IOException {
-    BufferedInputStream input = new BufferedInputStream(new FileInputStream(htmlFilePath));
-    OutputStream out = res.getOutputStream();
+  private void display(HttpServletResponse res, String filePath) throws IOException {
+    File file = new File(filePath);
     SilverTrace.info("kmelia", "AliasFileServer.display()",
-        "root.MSG_GEN_ENTER_METHOD", " htmlFilePath " + htmlFilePath);
+        "root.MSG_GEN_ENTER_METHOD", "filePath = " + filePath);
     try {
-      int read = input.read();
-      if (read == -1) {
+      if (!file.exists()) {
         displayWarningHtmlCode(res);
       } else {
-        IOUtils.copy(input, out);
+        FileUtils.copyFile(file, res.getOutputStream());
+        res.getOutputStream().flush();
       }
     } catch (Exception e) {
       SilverTrace.warn("kmelia", "AliasFileServer.doPost",
-          "root.EX_CANT_READ_FILE", "file name=" + htmlFilePath);
+          "root.EX_CANT_READ_FILE", "filePath = " + filePath);
       displayWarningHtmlCode(res);
-    } finally {
-      IOUtils.closeQuietly(input);
     }
   }
 
@@ -165,12 +163,7 @@ public class AliasFileServer extends HttpServlet {
       SilverTrace.warn("kmelia", "AliasFileServer.displayWarningHtmlCode",
           "root.EX_CANT_READ_FILE", "warning properties");
     } finally {
-      try {
-        IOUtils.closeQuietly(in);
-      } catch (Exception e) {
-        SilverTrace.warn("kmelia", "AliasFileServer.displayHtmlCode",
-            "root.EX_CANT_READ_FILE", "close failed");
-      }
+      IOUtils.closeQuietly(in);
     }
   }
 
