@@ -369,12 +369,17 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         }
       } else if ("ToUpdatePublicationHeader".equals(function)) {
         request.setAttribute("Action", "UpdateView");
-        request.setAttribute("TaxonomyOK", kmelia.isPublicationTaxonomyOK());
-        request.setAttribute("ValidatorsOK", kmelia.isPublicationValidatorsOK());
-        request.setAttribute("Publication", kmelia.getSessionPubliOrClone());
-        
         destination = getDestination("publicationManager.jsp", kmelia, request);
       } else if ("publicationManager.jsp".equals(function)) {
+        String action = (String) request.getAttribute("Action");
+        if ("UpdateView".equals(action)) {
+          request.setAttribute("TaxonomyOK", kmelia.isPublicationTaxonomyOK());
+          request.setAttribute("ValidatorsOK", kmelia.isPublicationValidatorsOK());
+          request.setAttribute("Publication", kmelia.getSessionPubliOrClone());
+        } else if ("New".equals(action)) {
+          request.setAttribute("TaxonomyOK", true);
+          request.setAttribute("ValidatorsOK", true);
+        }
         
         request.setAttribute("Wizard", kmelia.getWizard());
         request.setAttribute("Path", kmelia.getTopicPath(kmelia.getCurrentFolderId()));
@@ -586,8 +591,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           id = kmeliaPublication.getDetail().getPK().getId();
         }
         if (toolboxMode) {
-          request.setAttribute("PubId", id);
-          destination = getDestination("publicationManager.jsp", kmelia, request);
+          destination = getDestination("ToUpdatePublicationHeader", kmelia, request);
         } else {
           List<String> publicationLanguages = kmelia.getPublicationLanguages(); // languages of
           // publication
@@ -877,13 +881,11 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           // draft have generate a clone
           destination = getDestination("ViewClone", kmelia, request);
         } else {
-          String pubId = kmelia.getSessionPubliOrClone().getDetail().getPK().getId();
           String from = request.getParameter("From");
           if (StringUtil.isDefined(from)) {
             destination = getDestination(from, kmelia, request);
           } else {
-            request.setAttribute("PubId", pubId);
-            destination = getDestination("publicationManager.jsp", kmelia, request);
+            destination = getDestination("ToUpdatePublicationHeader", kmelia, request);
           }
         }
       } else if (function.equals("DraftOut")) {
@@ -989,8 +991,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         destination = "/RimportExportPeas/jsp/ExportPDF";
       } else if (function.equals("NewPublication")) {
         request.setAttribute("Action", "New");
-        request.setAttribute("TaxonomyOK", true);
-        request.setAttribute("ValidatorsOK", true);
         destination = getDestination("publicationManager.jsp", kmelia, request);
       } else if (function.equals("ManageSubscriptions")) {
         destination = kmelia.manageSubscriptions();
@@ -1054,15 +1054,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         }
       } else if (function.equals("SelectValidator")) {
         destination = kmelia.initUPToSelectValidator("");
-      } else if (function.equals("Comments")) {
-        String id = request.getParameter("PubId");
-        String flag = kmelia.getProfile();
-        if (!kmaxMode) {
-          processPath(kmelia, id);
-        }
-        // paramètre du wizard
-        request.setAttribute("Wizard", kmelia.getWizard());
-        destination = rootDestination + "comments.jsp?PubId=" + id + "&Profile=" + flag;
       } else if (function.equals("PublicationPaths")) {
         // paramètre du wizard
         request.setAttribute("Wizard", kmelia.getWizard());
