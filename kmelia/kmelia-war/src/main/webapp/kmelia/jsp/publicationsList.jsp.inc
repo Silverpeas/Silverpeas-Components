@@ -49,16 +49,16 @@
 <%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%!
 
-String displayImportance(int importance, int maxImportance, String fullStar, String emptyStar, JspWriter out) throws IOException {
+String displayImportance(int importance, int maxImportance, ResourcesWrapper resources, JspWriter out) throws IOException {
   String stars = "";
 
   //display full Stars
   for (int i=0; i<importance; i++) {
-    stars += "<img src=\""+fullStar+"\" valign=\"absmiddle\">";
+    stars += "<img src=\""+resources.getIcon("kmelia.fullStar")+"\" valign=\"absmiddle\">";
   }
   //display empty stars
   for (int i=importance+1; i<=5; i++) {
-    stars += "<img src=\""+emptyStar+"\" valign=\"absmiddle\">";
+    stars += "<img src=\""+resources.getIcon("kmelia.emptyStar")+"\" valign=\"absmiddle\">";
   }
   return stars;
 }
@@ -83,100 +83,6 @@ String getUserName(KmeliaPublication kmeliaPub, KmeliaSessionController kmeliaSc
 	return userName;
 }
 
-void displayLastPublications(Collection pubs, boolean subtopicsExist, String path, String publicationLabel, KmeliaSessionController kmeliaScc, ResourceLocator settings, ResourcesWrapper resources, JspWriter out) throws IOException {
-
-	boolean				displayLinks = URLManager.displayUniversalLinks();
-    PublicationDetail 	pub;
-    KmeliaPublication 	kmeliaPub;
-    UserDetail 			user;
-    String				language = kmeliaScc.getCurrentLanguage();
-
-    Iterator iterator = pubs.iterator();
-
-if (subtopicsExist)
-    out.println("<BR><BR>");
-
-out.println("<table border=\"0\" width=\"98%\" align=\"center\">");
-    out.println("<tr>");
-          out.println("<td width=\"40\" align=\"left\"><img src=\""+publicationSrc+"\" border=0></td>");
-          out.println("<td align=\"left\" width=\"100%\"><b>"+publicationLabel+"</b></td>");
-          out.println("</tr>");
-          if (iterator.hasNext()) {
-            out.println("<tr><td colspan=\"2\">&nbsp;</td></tr>");
-            out.println("<!-- Publications Header End -->");
-            out.println("<tr><td colspan=\"2\"><table border=\"0\" width=\"100%\">");
-            int j=1;
-            int nbCol = new Integer(settings.getString("HomeNbCols")).intValue();
-			if (pubs.size() < nbCol)
-				nbCol = pubs.size();
-            String width = new Integer(100/nbCol).toString();
-            boolean endRaw = false;
-            String		linkIcon		= resources.getIcon("kmelia.link");
-            String		shortcut = null;
-            while (iterator.hasNext()) {
-              if (j==1) {
-                out.println("<tr>\n");
-                out.println("<td valign=\"top\">&nbsp;</td>\n");
-                        endRaw = false;
-              }
-              if (j<=nbCol){
-                kmeliaPub = (KmeliaPublication) iterator.next();
-                pub = kmeliaPub.getDetail();
-                user = kmeliaPub.getCreator();
-
-                if (!pub.getPK().getInstanceId().equals(kmeliaScc.getComponentId()))
-					shortcut = " ("+resources.getString("kmelia.Shortcut")+")";
-				else
-					shortcut = "";
-
-                out.println("<!-- Publication Body -->");
-                out.println("<td valign=\"top\" width=\"100\">&#149; </td>");
-                out.println("<td valign=\"top\" width=\""+width+"%\">");
-                out.println("<p><b><a href=\"javascript:onClick=publicationGoToFromMain('"+pub.getPK().getId()+"')\">"+Encode.javaStringToHtmlString(pub.getName(language))+"</a>"+shortcut+"</b><br/>");
-
-                if (kmeliaScc.showUserNameInList())
-                	out.println(getUserName(kmeliaPub, kmeliaScc)+" - ");
-                out.println(resources.getOutputDate(pub.getUpdateDate()));
-                if (displayLinks)
-				{
-					String link = URLManager.getSimpleURL(URLManager.URL_PUBLI, pub.getPK().getId());
-					out.println(" - <a href=\""+link+"\"><img src=\""+linkIcon+"\" border=\"0\" align=\"absmiddle\" alt=\""+resources.getString("kmelia.CopyPublicationLink")+"\" title=\""+resources.getString("kmelia.CopyPublicationLink")+"\"></a>");
-				}
-                out.println("<br>");
-                out.println(Encode.javaStringToHtmlParagraphe(pub.getDescription(language))+"<BR><BR></p>");
-                out.println("</td>");
-                out.println("<!-- Publication Body End -->");
-                j++;
-              }
-              if (j>nbCol) {
-                out.println("\t</tr>");
-                endRaw=true;
-                j=1;
-              }
-            }
-            if (!endRaw) {
-                    int nbTd = nbCol-j+1;
-                    int k=1;
-                    while (k<=nbTd) {
-                            out.println("<td colspan=\"3\" valign=\"top\">&nbsp;</td>\n");
-                            k++;
-                    }
-                    out.println("</tr>\n");
-            }
-            out.println("</td></tr></table>");
-          } // End if
-          else {
-              out.println("<tr>");
-              out.println("<td>&nbsp;</td>");
-              out.println("<td>"+kmeliaScc.getString("PubAucune")+"</td>");
-              out.println("</tr>");
-          }
-          out.println("</td>");
-          out.println("</tr>");
-out.println("</table>");
-//ICI fin
-}
-
 void displaySameSubjectPublications(Collection pubs, String publicationLabel, KmeliaSessionController kmeliaScc, String currentPubId, boolean checkboxAllowed, ResourcesWrapper resources, JspWriter out) throws IOException {
 
     PublicationDetail 	pub;
@@ -195,7 +101,7 @@ void displaySameSubjectPublications(Collection pubs, String publicationLabel, Km
           out.println("<!-- Publications Header -->");
           out.println("<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">");
             out.println("<tr>");
-                out.println("<td width=\"40\"><img src=\""+publicationSrc+"\" border=0></td>");
+                out.println("<td width=\"40\"><img src=\""+resources.getIcon("kmelia.publication")+"\" border=0></td>");
                 out.println("<td align=\"left\" width=\"100%\"><b>"+publicationLabel+"</b></td>");
             out.println("</tr>");
           if (iterator.hasNext()) {
@@ -216,7 +122,7 @@ void displaySameSubjectPublications(Collection pubs, String publicationLabel, Km
 						out.print("<a href=\""+URLManager.getSimpleURL(URLManager.URL_PUBLI, pub.getPK().getId(), pub.getPK().getInstanceId())+"\"><b>"+Encode.javaStringToHtmlString(pub.getName(language))+"</b></a>");
 						out.print("&nbsp;</td><td width=\"100%\">");
 						if (showImportance)
-							out.print(displayImportance(new Integer(pub.getImportance()).intValue(), 5, fullStarSrc, emptyStarSrc, out));
+							out.print(displayImportance(new Integer(pub.getImportance()).intValue(), 5, resources, out));
 						else
 							out.print("&nbsp;");
 						out.println("</td>");
@@ -260,7 +166,7 @@ void displaySearchResults(List<MatchingIndexEntry> pubs, String publicationLabel
       out.println("<!-- Publications Header -->");
           out.println("<table width=\"98%\" align=center border=\"0\" cellspacing=\"0\" cellpadding=\"0\">");
             out.println("<tr>");
-                out.println("<td width=\"80\"><img src=\""+publicationSrc+"\" border=0></td>");
+                out.println("<td width=\"80\"><img src=\""+resources.getIcon("kmelia.publication")+"\" border=0></td>");
                 out.println("<td align=\"left\"><b>"+publicationLabel+"</b></td>");
           if (pubs!=null && !pubs.isEmpty()) {
                 out.println("<td align=\"right\" valign=\"middle\">");

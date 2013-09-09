@@ -2099,7 +2099,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     String pubId = getSessionPublication().getDetail().getPK().getId();
 
     AlertUser sel = getAlertUser();
-    // Initialisation de AlertUser
     sel.resetAll();
     sel.setHostSpaceName(getSpaceLabel()); // set nom de l'espace pour browsebar
     sel.setHostComponentId(getComponentId()); // set id du composant pour appel selectionPeas (extra
@@ -2113,6 +2112,17 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     sel.setNotificationMetaData(getAlertNotificationMetaData(pubId)); // set NotificationMetaData
     // contenant les informations à notifier fin initialisation de AlertUser
     // l'url de nav vers alertUserPeas et demandée à AlertUser et retournée
+    
+    SelectionUsersGroups sug = new SelectionUsersGroups();
+    sug.setComponentId(getComponentId());
+    if (!isKmaxMode && isRightsOnTopicsEnabled()) {
+      NodeDetail node = getNodeHeader(getCurrentFolderId());
+      if (node.haveRights()) {
+        sug.setObjectId(ObjectType.NODE.getCode() + node.getRightsDependsOn());
+      }
+    }
+    sel.setSelectionUsersGroups(sug);
+    
     return AlertUser.getAlertUserURL();
   }
 
