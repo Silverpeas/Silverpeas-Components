@@ -486,7 +486,7 @@
           }
         }
 
-        if ($('#thumbnailFile').val() != '') {
+        if ($('#thumbnailFile').length && $('#thumbnailFile').val() != '') {
           var logicalName = $('#thumbnailFile').val();
           var extension = getExtension(logicalName);
           if (extension == null) {
