@@ -31,12 +31,12 @@
 
   <groupId>com.silverpeas</groupId>
   <artifactId>components</artifactId>
-  <version>5.11.4-SNAPSHOT</version>
+  <version>5.11.5-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Silverpeas Components</name>
 
   <properties>
-    <core.version>5.11.4-SNAPSHOT</core.version>
+    <core.version>5.11.5-SNAPSHOT</core.version>
   </properties>
 
   <dependencies>
