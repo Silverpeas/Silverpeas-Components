@@ -254,7 +254,7 @@ function init() {
 			</fieldset>
 			
 			<% if (!kmeliaScc.isKmaxMode) { %>
-				<view:pdcNewContentClassification componentId="<%= componentId %>" nodeId="<%= kmeliaScc.getSessionTopic().getNodePK().getId() %>"/>
+				<view:pdcNewContentClassification componentId="<%= componentId %>" nodeId="<%= kmeliaScc.getCurrentFolderId() %>"/>
 			<% } %>
 			
 			<div class="legend">
