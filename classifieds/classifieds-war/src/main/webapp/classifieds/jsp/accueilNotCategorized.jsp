@@ -35,6 +35,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 
 <c:set var="language" value="${requestScope.resources.language}"/>
 
@@ -188,8 +189,12 @@ function viewClassifieds(fieldNumber, fieldValue) {
                   <div class="classified_info">
                    <h4><a href="ViewClassified?ClassifiedId=${classified.classifiedId}">${classified.title}</a></h4>
                    <div class="classified_type">
-                    <a href="javascript:viewClassifieds(0, '${classified.searchValueId1}');">${classified.searchValue1}</a> 
-                    <a href="javascript:viewClassifieds(1, '${classified.searchValueId2}');">${classified.searchValue2}</a>
+                   	<c:if test="${silfn:isDefined(classified.searchValue1)}">
+                    	<a href="javascript:viewClassifieds(0, '${classified.searchValueId1}');">${classified.searchValue1}</a>
+                    </c:if> 
+                    <c:if test="${silfn:isDefined(classified.searchValue2)}">
+                    	<a href="javascript:viewClassifieds(1, '${classified.searchValueId2}');">${classified.searchValue2}</a>
+                    </c:if>
                    </div>
                   </div>
                     
