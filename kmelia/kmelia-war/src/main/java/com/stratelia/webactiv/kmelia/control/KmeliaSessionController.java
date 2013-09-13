@@ -1847,7 +1847,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     return new NodePK(getCurrentFolderId(), getSpaceId(), getComponentId());
   }
 
-  public NodeDetail getCurrentFolder() throws RemoteException {
+  public NodeDetail getCurrentFolder() {
     return getNodeHeader(getCurrentFolderId());
   }
 
@@ -2371,7 +2371,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     return getKmeliaBm().addAxis(axis, getComponentId());
   }
 
-  public synchronized NodeDetail getNodeHeader(String id) throws RemoteException {
+  public synchronized NodeDetail getNodeHeader(String id) {
     return getKmeliaBm().getNodeHeader(id, getComponentId());
   }
 
@@ -3512,75 +3512,28 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     List<KmeliaPublication> userPublications = new ArrayList<KmeliaPublication>();
     QueryDescription queryDescription = new QueryDescription(query);
     queryDescription.setSearchingUser(getUserId());
-    String[] componentIds = getOrganisationController().getComponentIdsForUser(getUserId(),
-        getComponentName());
-    for (String componentId : componentIds) {
-      queryDescription.addComponent(componentId);
-    }
+    queryDescription.setRequestedFolder(getCurrentFolder().getFullPath());
+    queryDescription.addComponent(getComponentId());
 
     try {
 
       List<MatchingIndexEntry> results = SearchEngineFactory.getSearchEngine().search(
           queryDescription).getEntries();
-      PublicationDetail pubDetail = new PublicationDetail();
-      pubDetail.setPk(new PublicationPK("unknown"));
-      KmeliaPublication publication = KmeliaPublication.aKmeliaPublicationFromDetail(pubDetail);
-
-      // get visible publications in the topic and sub-topics
-      List<WAAttributeValuePair> pubsInPath = getAllVisiblePublicationsByTopic(getCurrentFolderId());
-
-      // Store all descendant topicIds of this topic
-      List<NodePK> nodeIDs = new ArrayList<NodePK>();
-
-      // Get current topic too
-      nodeIDs.add(getCurrentFolderPK());
-      Collection<NodePK> nodePKs = getNodeBm().getDescendantPKs(getCurrentFolderPK());
-      nodeIDs.addAll(nodePKs);
 
       List<String> pubIds = new ArrayList<String>();
       KmeliaSecurity security = new KmeliaSecurity();
       security.enableCache();
       for (MatchingIndexEntry result : results) {
-        try {
-          if ("Publication".equals(result.getObjectType())) {
-            pubDetail.getPK().setId(result.getObjectId());
-
-            PublicationPK pubPK = new PublicationPK(result.getObjectId(), result.getComponent());
-            Collection<Alias> pubAliases = getKmeliaBm().getAlias(pubPK);
-
-            // Add the alias which have a link to the targets topics
-            for (Alias alias : pubAliases) {
-              if (!alias.getInstanceId().equals(pubPK.getInstanceId())) {
-                if (nodeIDs.contains(new NodePK(alias.getId(), alias.getInstanceId()))) {
-                  if (!pubIds.contains(pubDetail.getId())) {
-                    pubIds.add(pubDetail.getId());
-                  }
-                }
-              }
-            }
-
-            // Add the publications
-            WAAttributeValuePair pubWAFound = new WAAttributeValuePair(pubDetail.getId(), result
-                .getComponent());
-            int index = pubsInPath.indexOf(pubWAFound);
-            if (index != -1) {
-              // Add only if not yet in the returned results
-              if (!pubIds.contains(pubDetail.getId())) {
-                // return publication if user can consult it only (check rights on folder)
-                if (security.isObjectAvailable(getComponentId(), getUserId(), pubDetail.getPK()
-                    .getId(), "Publication")) {
-                  pubIds.add(pubDetail.getId());
-                }
-              }
-            }
+        if ("Publication".equals(result.getObjectType())) {
+          // Add the publications
+          // return publication if user can consult it only (check rights on folder)
+          if (security.isObjectAvailable(getComponentId(), getUserId(), result.getObjectId(), "Publication")) {
+            pubIds.add(result.getObjectId());
           }
-        } catch (Exception e) {
-          SilverTrace.error("kmelia", "KmeliaSessionController.search",
-              "kmelia.ERROR_PROCESSING_POTENTIAL_RESULT", "pubId = " + result.getObjectId());
         }
       }
       for (String pubId : pubIds) {
-        publication = KmeliaPublication.aKmeliaPublicationFromDetail(getPublicationDetail(pubId));
+        KmeliaPublication publication = KmeliaPublication.aKmeliaPublicationFromDetail(getPublicationDetail(pubId));
         userPublications.add(publication);
       }
     } catch (Exception pe) {
