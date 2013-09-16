@@ -28,6 +28,7 @@ import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
+import com.silverpeas.importExport.report.ImportReport;
 import com.silverpeas.kmelia.KmeliaConstants;
 import com.silverpeas.kmelia.SearchContext;
 import com.silverpeas.kmelia.updatechainhelpers.UpdateChainHelper;
@@ -1964,16 +1965,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           fileItem.write(fileUploaded);
 
           // Is a real file ?
-          ResourceLocator uploadSettings = new ResourceLocator("org.silverpeas.util.uploads.uploadSettings", "");
-          long maximumFileSize = uploadSettings.getLong("MaximumFileSize", 10485760);
           if (fileSize <= 0L) {
             // File access failed
             message = attachmentResourceLocator.getString("liaisonInaccessible");
-            error = true;
-          } else if (!isMassiveMode && fileSize > maximumFileSize) {
-            long maximumFileSizeMo = maximumFileSize / 1048576;
-            message = attachmentResourceLocator.getString("attachment.dialog.errorFileSize")+ " " +
-                attachmentResourceLocator.getString("attachment.dialog.maximumFileSize")+" ("+maximumFileSizeMo+" Mo)";
             error = true;
           } else {
             SilverTrace.debug("kmelia", "KmeliaRequestRouter.processFormUpload()",
@@ -1982,15 +1976,15 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
                 + " importMode=" + importMode + " draftMode=" + draftMode);
 
             // Import !!
-            List<PublicationDetail> publicationDetails = kmeliaScc.importFile(fileUploaded,
+            ImportReport importReport = kmeliaScc.importFile(fileUploaded,
                 fileType, topicId, importMode, draftMode, versionType);
             long processDuration = new Date().getTime() - processStart;
             
-            // Compute nbFiles imported (only in unitary Import mode)
-            int nbFiles = 0;
-            for (PublicationDetail pubDetail : publicationDetails) {
-                nbFiles += pubDetail.getAttachments().size();
-            }
+            // Compute nbPublication created
+            int nbPublication = kmeliaScc.getNbPublicationImported(importReport);
+                
+            // nbFiles imported (only in unitary Import mode)
+            int nbFiles = importReport.getNbFilesProcessed();
 
             // Title for popup report
             String importModeTitle = "";
@@ -2001,12 +1995,18 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
             }
             SilverTrace.debug("kmelia", "KmeliaRequestRouter.processFormUpload()",
                 "root.MSG_GEN_PARAM_VALUE", "nbFiles = " + nbFiles
-                + " publicationDetails=" + publicationDetails
+                + " nbPublication=" + nbPublication
                 + " ProcessDuration=" + processDuration + " ImportMode="
                 + importMode + " Draftmode=" + draftMode + " Title="
                 + importModeTitle);
-
-            request.setAttribute("PublicationsDetails", publicationDetails);
+            
+            message = kmeliaScc.getErrorMessageImportation(importReport, importMode);
+            
+            if(message != null && importMode.equals(KmeliaSessionController.UNITARY_IMPORT_MODE)) {
+              error = true;
+            }
+            
+            request.setAttribute("NbPublication", nbPublication);
             request.setAttribute("NbFiles", nbFiles);
             request.setAttribute("ProcessDuration", FileRepositoryManager.formatFileUploadTime(
                 processDuration));
@@ -2014,11 +2014,17 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
             request.setAttribute("DraftMode", draftMode);
             request.setAttribute("Title", importModeTitle);
             request.setAttribute("Context", URLManager.getApplicationURL());
+            request.setAttribute("Message", message);
 
             destination = routeDestination + "reportImportFiles.jsp";
+            
             String componentId = kmeliaScc.getComponentId();
             if (kmeliaScc.isDefaultClassificationModifiable(topicId, componentId)) {
-              destination = routeDestination + "validateImportedFilesClassification.jsp";
+              List<PublicationDetail> publicationDetails = kmeliaScc.getListPublicationImported(importReport, importMode);
+              if(publicationDetails.size()>0) {
+                request.setAttribute("PublicationsDetails", publicationDetails);
+                destination = routeDestination + "validateImportedFilesClassification.jsp";
+              }
             }
           }
           
