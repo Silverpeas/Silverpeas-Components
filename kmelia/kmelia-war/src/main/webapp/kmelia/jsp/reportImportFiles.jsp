@@ -36,15 +36,13 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%
 //R�cup�ration des param�tres
 
-	ArrayList publicationsDetails = (ArrayList) request.getAttribute("PublicationsDetails");
-	int nbPublicationsCreated = 0;
-	if (publicationsDetails != null)
-		nbPublicationsCreated = publicationsDetails.size();
+	int nbPublication = ((Integer) request.getAttribute("NbPublication")).intValue();
 	int nbFiles = ((Integer) request.getAttribute("NbFiles")).intValue();
 	String processDuration = (String) request.getAttribute("ProcessDuration");
 	String importMode = (String) request.getAttribute("ImportMode");
 	boolean draftMode = ((Boolean) request.getAttribute("DraftMode")).booleanValue();
 	String title = (String) request.getAttribute("Title");
+	String message = (String) request.getAttribute("Message") ;
 	
 //Icons
 	Button closeButton = (Button) gef.getFormButton(resources.getString("GML.close"), "javascript:onClick=refreshWindow();", false);
@@ -79,7 +77,16 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
   out.println(window.printBefore());
   out.println(frame.printBefore());
   out.println(board.printBefore());
+
+  if(message != null && message.length() > 0) {
 %>
+	<div class="inlineMessage-nok">
+		<c:out><%=message%></c:out>
+	</div>
+<%
+  }
+%>
+        
   <TABLE CELLPADDING=5 WIDTH="100%">
 	    <tr align="center">
 		    <td class="txtlibform" colspan="2"><%=title%>&nbsp;</td>
@@ -91,7 +98,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 		    <td width="60%"><%=kmeliaScc.getString("kmelia.NbFiles")%></td><td align="left"><%=nbFiles%></td>
 		</tr>
 	    <tr align="left">
-		    <td><%=kmeliaScc.getString("kmelia.NbPublications")%></td><td><%=nbPublicationsCreated%></td>
+		    <td><%=kmeliaScc.getString("kmelia.NbPublications")%></td><td><%=nbPublication%></td>
 		</tr>
 	    <tr align="left">
 		    <td><%=kmeliaScc.getString("kmelia.ProcessDuration")%></td><td><%=processDuration%></td>
