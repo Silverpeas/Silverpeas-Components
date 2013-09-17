@@ -43,8 +43,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ include file="util.jsp" %>
 
 <%
-ResourceLocator settings = new ResourceLocator("com.stratelia.webactiv.webSites.settings.webSiteSettings", "fr");
-
 String role 		= (String) request.getAttribute("BestRole");
 
 //Icons
@@ -233,7 +231,7 @@ function openSPWindow(fonction, windowName){
 			arrayLine.addArrayCellLink(nom, "javascript:onClick=updateDescription('"+theId+"')");
 		}
 		else {//site interne
-			arrayLine.addArrayCellLink(nom, "javascript:onClick=designSite('"+doubleAntiSlash(settings.getString("uploadsPath")+componentId+"/"+theId)+"', '"+theId+"')");
+			arrayLine.addArrayCellLink(nom, "javascript:onClick=designSite('"+componentId+"/"+theId+"', '"+theId+"')");
 		}
 
 		//desc
