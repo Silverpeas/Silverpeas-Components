@@ -204,6 +204,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
         destination = sitePage;
       } else if (function.startsWith("ToWysiwyg")) {
         String path = request.getParameter("path");
+        scc.checkPath(path);
         String name = request.getParameter("name");
         String nameSite = request.getParameter("nameSite");
         String id = request.getParameter("id");
@@ -229,6 +230,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
             "root.MSG_GEN_PARAM_VALUE", "destination = " + destination);
       } else if (function.startsWith("FromWysiwyg")) {
         String path = request.getParameter("path");
+        scc.checkPath(path);
         String id = request.getParameter("id");
 
         SiteDetail site = scc.getWebSite(id);

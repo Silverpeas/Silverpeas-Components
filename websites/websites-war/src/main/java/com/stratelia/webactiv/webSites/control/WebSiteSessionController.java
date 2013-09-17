@@ -879,11 +879,15 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     }
   }
 
-  private String getFullPath(String relativePath) throws WebSitesException {
-    if (relativePath.contains("..")) {
-      throw new WebSitesException(getClass().getSimpleName() + ".getFullPath",
-          SilverpeasException.ERROR, "webSites.EX_FILE_ACCESS_FORBIDDEN");
+  public void checkPath(String path) throws WebSitesException {
+    if (path.contains("..")) {
+      throw new WebSitesException(getClass().getSimpleName() + ".checkPath",
+          SilverpeasException.ERROR, "peasCore.RESOURCE_ACCESS_FORBIDDEN");
     }
+  }
+
+  private String getFullPath(String relativePath) throws WebSitesException {
+    checkPath(relativePath);
     return getWebSiteRepositoryPath() + relativePath;
   }
 
