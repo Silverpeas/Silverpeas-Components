@@ -23,47 +23,6 @@
  */
 package com.stratelia.webactiv.kmelia.control;
 
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.component.kmelia.InstanceParameters;
-import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-import org.silverpeas.importExport.attachment.AttachmentImportExport;
-import org.silverpeas.importExport.versioning.VersioningImportExport;
-import org.silverpeas.search.SearchEngineFactory;
-import org.silverpeas.search.indexEngine.model.IndexManager;
-import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
-import org.silverpeas.search.searchEngine.model.QueryDescription;
-import org.silverpeas.subscription.SubscriptionContext;
-import org.silverpeas.util.GlobalContext;
-import org.silverpeas.wysiwyg.WysiwygException;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
@@ -112,7 +71,6 @@ import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
-
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.notificationManager.NotificationManager;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -184,11 +142,48 @@ import com.stratelia.webactiv.util.publication.model.PublicationSelection;
 import com.stratelia.webactiv.util.publication.model.ValidationStep;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
-
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
+import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.component.kmelia.InstanceParameters;
+import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.importExport.attachment.AttachmentImportExport;
+import org.silverpeas.importExport.versioning.VersioningImportExport;
+import org.silverpeas.search.SearchEngineFactory;
+import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
+import org.silverpeas.subscription.SubscriptionContext;
+import org.silverpeas.util.GlobalContext;
+import org.silverpeas.wysiwyg.WysiwygException;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import static com.silverpeas.kmelia.export.KmeliaPublicationExporter.*;
 import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
@@ -994,7 +989,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         if (getSessionClone().getId().equals(pubDetail.getId())) {
           // update the clone, clone stay in same status
           pubDetail.setStatusMustBeChecked(false);
-          
+
           // clone must not be indexed
           pubDetail.setIndexOperation(IndexManager.NONE);
 
@@ -1190,8 +1185,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public synchronized void updateInfoDetail(String pubId, InfoDetail infos) throws RemoteException {
-    String currentPubId = pubId;
-    currentPubId = getSessionPubliOrClone().getDetail().getPK().getId();
+    String currentPubId = getSessionPubliOrClone().getDetail().getPK().getId();
     if (isCloneNeeded()) {
       currentPubId = clonePublication();
     }
@@ -1767,7 +1761,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   private synchronized NotificationMetaData getAlertNotificationMetaData(String pubId)
       throws RemoteException {
-    NotificationMetaData metaData = null;
+    NotificationMetaData metaData;
     if (isKmaxMode) {
       metaData = getKmeliaBm().getAlertNotificationMetaData(getPublicationPK(pubId), null,
           getUserDetail().getDisplayedName());
@@ -2117,7 +2111,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     sel.setNotificationMetaData(getAlertNotificationMetaData(pubId)); // set NotificationMetaData
     // contenant les informations à notifier fin initialisation de AlertUser
     // l'url de nav vers alertUserPeas et demandée à AlertUser et retournée
-    
+
     SelectionUsersGroups sug = new SelectionUsersGroups();
     sug.setComponentId(getComponentId());
     if (!isKmaxMode && isRightsOnTopicsEnabled()) {
@@ -2127,7 +2121,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       }
     }
     sel.setSelectionUsersGroups(sug);
-    
+
     return AlertUser.getAlertUserURL();
   }
 
@@ -2353,13 +2347,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         && FileUtil.isArchive(fileUploaded.getName())) {
       importReport = fileImport.importFilesMultiPubli(draft);
     }
-    
+
     //print a log file of the report
     ResourceLocator multilang = new ResourceLocator(
         "org.silverpeas.importExportPeas.multilang.importExportPeasBundle", "fr");
     ResourcesWrapper resource = new ResourcesWrapper(multilang, "fr");
     fileImport.writeImportToLog(importReport, resource);
-    
+
     return importReport;
   }
 
@@ -2487,11 +2481,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
           getLanguage());
       Enumeration<String> keys = timeSettings.getKeys();
       List<Integer> orderKeys = new ArrayList<Integer>();
-      Integer key = null;
-      String keyStr = "";
       while (keys.hasMoreElements()) {
-        keyStr = keys.nextElement();
-        key = new Integer(keyStr);
+        String keyStr = keys.nextElement();
+        Integer key = new Integer(keyStr);
         orderKeys.add(key);
       }
       Collections.sort(orderKeys);
@@ -2634,10 +2626,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    */
   private List<String> convertStringCombination2List(String axisValuesStr) {
     List<String> combination = new ArrayList<String>();
-    String axisValue = "";
     StringTokenizer st = new StringTokenizer(axisValuesStr, ",");
     while (st.hasMoreTokens()) {
-      axisValue = st.nextToken();
+      String axisValue = st.nextToken();
       combination.add(axisValue);
     }
     return combination;
@@ -2656,13 +2647,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   private String getNearPublication(int direction) {
-    String pubId = "";
-
     // rechercher le rang de la publication précédente
     int rangNext = rang + direction;
 
     KmeliaPublication pub = getSessionPublicationsList().get(rangNext);
-    pubId = pub.getDetail().getId();
+    String pubId = pub.getDetail().getId();
 
     // on est sur la précédente, mettre à jour le rang avec la publication courante
     rang = rangNext;
@@ -2910,10 +2899,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   public List<Group> groupIds2Groups(List<String> groupIds) {
     List<Group> res = new ArrayList<Group>();
-    Group theGroup = null;
-
     for (int nI = 0; groupIds != null && nI < groupIds.size(); nI++) {
-      theGroup = getAdmin().getGroupById(groupIds.get(nI));
+      Group theGroup = getAdmin().getGroupById(groupIds.get(nI));
       if (theGroup != null) {
         res.add(theGroup);
       }
@@ -3144,9 +3131,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       node = getNodeBm().getHeader(nodePK);
       Collection<NodeDetail> subtopics = getNodeBm().getDetail(nodeToPastePK).getChildrenDetails();
       Iterator<NodeDetail> itSubTopics = subtopics.iterator();
-      NodeDetail subTopic = null;
       while (itSubTopics != null && itSubTopics.hasNext()) {
-        subTopic = itSubTopics.next();
+        NodeDetail subTopic = itSubTopics.next();
         if (subTopic != null) {
           pasteNode(subTopic, node, isCutted);
         }
@@ -3158,9 +3144,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   private void pastePublicationsOfTopic(NodePK fromPK, NodePK toPK, boolean isCutted,
       List<NodePK> nodePKsToPaste) throws RemoteException {
     Collection<PublicationDetail> publications = getPublicationBm().getDetailsByFatherPK(fromPK);
-    CompletePublication completePubli = null;
     for (PublicationDetail publi : publications) {
-      completePubli = getPublicationBm().getCompletePublication(publi.getPK());
+      CompletePublication completePubli = getPublicationBm().getCompletePublication(publi.getPK());
       pastePublication(completePubli, isCutted, toPK, nodePKsToPaste);
     }
   }
@@ -3530,9 +3515,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    * @throws RemoteException
    */
   public List<Treeview> getComponents(List<Alias> aliases) throws RemoteException {
-    List<String> instanceIds = new ArrayList<String>();
     List<Treeview> result = new ArrayList<Treeview>();
-    String instanceId = null;
     List<NodeDetail> tree = null;
     NodePK root = new NodePK(NodePK.ROOT_NODE_ID);
 
@@ -3542,14 +3525,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       String[] componentIds = getOrganisationController().getAvailCompoIdsAtRoot(
           space.getFullId(), getUserId());
       for (String componentId : componentIds) {
-        instanceId = componentId;
+        String instanceId = componentId;
 
         if (instanceId.startsWith("kmelia")) {
           String[] profiles = getOrganisationController().getUserProfiles(getUserId(), instanceId);
           String bestProfile = KmeliaHelper.getProfile(profiles);
           if (SilverpeasRole.admin.isInRole(bestProfile) || SilverpeasRole.publisher.isInRole(
               bestProfile) || instanceId.equals(getComponentId())) {
-            instanceIds.add(instanceId);
             root.setComponentName(instanceId);
 
             if (instanceId.equals(getComponentId())) {
@@ -4022,7 +4004,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
           queryDescription).getEntries();
       PublicationDetail pubDetail = new PublicationDetail();
       pubDetail.setPk(new PublicationPK("unknown"));
-      KmeliaPublication publication = KmeliaPublication.aKmeliaPublicationFromDetail(pubDetail);
 
       // get visible publications in the topic and sub-topics
       List<WAAttributeValuePair> pubsInPath = getAllVisiblePublicationsByTopic(getCurrentFolderId());
@@ -4078,7 +4059,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         }
       }
       for (String pubId : pubIds) {
-        publication = KmeliaPublication.aKmeliaPublicationFromDetail(getPublicationDetail(pubId));
+        KmeliaPublication publication = KmeliaPublication.aKmeliaPublicationFromDetail(
+            getPublicationDetail(pubId));
         userPublications.add(publication);
       }
     } catch (Exception pe) {
@@ -4087,8 +4069,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     }
 
     // store "in session" current search context
-    SearchContext searchContext = new SearchContext(query);
-    setSearchContext(searchContext);
+    SearchContext aSearchContext = new SearchContext(query);
+    setSearchContext(aSearchContext);
 
     // store results and keep search results order
     setSessionPublicationsList(userPublications, false);
@@ -4116,8 +4098,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public List<PublicationTemplate> getForms() {
     List<PublicationTemplate> templates = new ArrayList<PublicationTemplate>();
     try {
-      GlobalContext context = new GlobalContext(getSpaceId(), getComponentId());
-      templates = getPublicationTemplateManager().getPublicationTemplates(context);
+      GlobalContext aContext = new GlobalContext(getSpaceId(), getComponentId());
+      templates = getPublicationTemplateManager().getPublicationTemplates(aContext);
     } catch (PublicationTemplateException e) {
       SilverTrace.error("kmelia", "KmeliaSessionController.getForms()", "root.CANT_GET_FORMS", e);
     }
@@ -4306,7 +4288,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   public List<String> processSelectedPublicationIds(String selectedPublicationIds,
       String notSelectedPublicationIds) {
-    StringTokenizer tokenizer = null;
+    StringTokenizer tokenizer;
     if (selectedPublicationIds != null) {
       tokenizer = new StringTokenizer(selectedPublicationIds, ",");
       while (tokenizer.hasMoreTokens()) {
@@ -4350,7 +4332,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public List<KmeliaPublication> getPublicationsOfCurrentFolder() throws RemoteException {
-    List<KmeliaPublication> publications = null;
+    List<KmeliaPublication> publications;
     if (!KmeliaHelper.SPECIALFOLDER_TOVALIDATE.equalsIgnoreCase(currentFolderId)) {
       publications = getKmeliaBm().getPublicationsOfFolder(new NodePK(currentFolderId,
           getComponentId()),
@@ -4467,7 +4449,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         .initializeFromNode(NodeSubscriptionResource.from(getCurrentFolderPK()), nodePath);
     return subscriptionContext.getDestinationUrl();
   }
-  
+
   /**
    * @param importReport
    * @return the number of publications created
@@ -4480,7 +4462,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     }
     return nbPublication;
   }
-  
+
   /**
    * @param importReport
    * @param importMode
@@ -4492,98 +4474,93 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         "org.silverpeas.util.attachment.multilang.attachment",
         this.getLanguage());
     ComponentReport componentRpt = importReport.getListComponentReport().get(0);
-    
+
     //Unitary mode
     if (UNITARY_IMPORT_MODE.equals(importMode)) {
       MassiveReport massiveReport = componentRpt.getListMassiveReports().get(0);
       UnitReport unitReport = massiveReport.getListUnitReports().get(0);
-      if(unitReport.getError() == UnitReport.ERROR_NO_ERROR) {
+      if (unitReport.getError() == UnitReport.ERROR_NO_ERROR) {
         return null;
-      } else if(unitReport.getError() == UnitReport.ERROR_FILE_SIZE_EXCEEDS_LIMIT) {
-        ResourceLocator uploadSettings = new ResourceLocator("org.silverpeas.util.uploads.uploadSettings", "");
-        long maximumFileSize = uploadSettings.getLong("MaximumFileSize", 10485760);
-        long maximumFileSizeMo = maximumFileSize / 1048576;
-        message = attachmentResourceLocator.getString("attachment.dialog.errorFileSize")+ " " +
-            attachmentResourceLocator.getString("attachment.dialog.maximumFileSize")+" ("+maximumFileSizeMo+" Mo)";
+      } else if (unitReport.getError() == UnitReport.ERROR_FILE_SIZE_EXCEEDS_LIMIT) {
+        message = getMaxSizeErrorMessage(attachmentResourceLocator);
       } else {
         message = attachmentResourceLocator.getString("liaisonInaccessible");
       }
-    } 
-    
-    //Massive mode, one publication
+    } //Massive mode, one publication
     else if (MASSIVE_IMPORT_MODE_ONE_PUBLICATION.equals(importMode)) {
       UnitReport unitReport = componentRpt.getListUnitReports().get(0);
-      if(unitReport.getError() == UnitReport.ERROR_NO_ERROR) {
+      if (unitReport.getError() == UnitReport.ERROR_NO_ERROR) {
         return null;
-      } else if(unitReport.getError() == UnitReport.ERROR_FILE_SIZE_EXCEEDS_LIMIT) {
-        ResourceLocator uploadSettings = new ResourceLocator("org.silverpeas.util.uploads.uploadSettings", "");
-        long maximumFileSize = uploadSettings.getLong("MaximumFileSize", 10485760);
-        long maximumFileSizeMo = maximumFileSize / 1048576;
-        message = attachmentResourceLocator.getString("attachment.dialog.errorAtLeastOneFileSize")+ " " +
-            attachmentResourceLocator.getString("attachment.dialog.maximumFileSize")+" ("+maximumFileSizeMo+" Mo)";
+      } else if (unitReport.getError() == UnitReport.ERROR_FILE_SIZE_EXCEEDS_LIMIT) {
+        message = getMaxSizeErrorMessage(attachmentResourceLocator);
       } else {
         message = attachmentResourceLocator.getString("liaisonInaccessible");
       }
-      
-    //Massive mode, several publications
+
+      //Massive mode, several publications
     } else if (MASSIVE_IMPORT_MODE_MULTI_PUBLICATIONS.equals(importMode)) {
       MassiveReport massiveReport = componentRpt.getListMassiveReports().get(0);
-      for(UnitReport unitReport : massiveReport.getListUnitReports()) {
-        if(unitReport.getError() == UnitReport.ERROR_FILE_SIZE_EXCEEDS_LIMIT) {
-          ResourceLocator uploadSettings = new ResourceLocator("org.silverpeas.util.uploads.uploadSettings", "");
-          long maximumFileSize = uploadSettings.getLong("MaximumFileSize", 10485760);
-          long maximumFileSizeMo = maximumFileSize / 1048576;
-          return attachmentResourceLocator.getString("attachment.dialog.errorAtLeastOneFileSize")+ " " +
-              attachmentResourceLocator.getString("attachment.dialog.maximumFileSize")+" ("+maximumFileSizeMo+" Mo)";
-        } else if(unitReport.getError() != UnitReport.ERROR_NO_ERROR){
+      for (UnitReport unitReport : massiveReport.getListUnitReports()) {
+        if (unitReport.getError() == UnitReport.ERROR_FILE_SIZE_EXCEEDS_LIMIT) {
+          message = getMaxSizeErrorMessage(attachmentResourceLocator);
+        } else if (unitReport.getError() != UnitReport.ERROR_NO_ERROR) {
           return attachmentResourceLocator.getString("liaisonInaccessible");
         }
       }
     }
     return message;
   }
-  
+
   /**
    * @param importReport
    * @param importMode
    * @return a list of publication
-   * @throws RemoteException 
+   * @throws RemoteException
    */
-  public List<PublicationDetail> getListPublicationImported(ImportReport importReport, String importMode) throws RemoteException {
+  public List<PublicationDetail> getListPublicationImported(ImportReport importReport,
+      String importMode) throws RemoteException {
     List<PublicationDetail> listPublicationDetail = new ArrayList<PublicationDetail>();
     ComponentReport componentRpt = importReport.getListComponentReport().get(0);
-    
-  //Unitary mode
+
+    //Unitary mode
     if (UNITARY_IMPORT_MODE.equals(importMode)) {
       MassiveReport massiveReport = componentRpt.getListMassiveReports().get(0);
       UnitReport unitReport = massiveReport.getListUnitReports().get(0);
-      if(unitReport.getStatus() == UnitReport.STATUS_PUBLICATION_CREATED) {
+      if (unitReport.getStatus() == UnitReport.STATUS_PUBLICATION_CREATED) {
         String idPubli = unitReport.getLabel();
         PublicationDetail publicationDetail = this.getPublicationDetail(idPubli);
         listPublicationDetail.add(publicationDetail);
       }
-    } 
-    
-  //Massive mode, one publication
+    } //Massive mode, one publication
     else if (MASSIVE_IMPORT_MODE_ONE_PUBLICATION.equals(importMode)) {
       UnitReport unitReport = componentRpt.getListUnitReports().get(0);
-      if(unitReport.getStatus() == UnitReport.STATUS_PUBLICATION_CREATED) {
+      if (unitReport.getStatus() == UnitReport.STATUS_PUBLICATION_CREATED) {
         String idPubli = unitReport.getLabel();
         PublicationDetail publicationDetail = this.getPublicationDetail(idPubli);
         listPublicationDetail.add(publicationDetail);
       }
-      
-    //Massive mode, several publications
+
+      //Massive mode, several publications
     } else if (MASSIVE_IMPORT_MODE_MULTI_PUBLICATIONS.equals(importMode)) {
       MassiveReport massiveReport = componentRpt.getListMassiveReports().get(0);
-      for(UnitReport unitReport : massiveReport.getListUnitReports()) {
-        if(unitReport.getStatus() == UnitReport.STATUS_PUBLICATION_CREATED) {
+      for (UnitReport unitReport : massiveReport.getListUnitReports()) {
+        if (unitReport.getStatus() == UnitReport.STATUS_PUBLICATION_CREATED) {
           String idPubli = unitReport.getLabel();
           PublicationDetail publicationDetail = this.getPublicationDetail(idPubli);
           listPublicationDetail.add(publicationDetail);
-        } 
+        }
       }
     }
     return listPublicationDetail;
+  }
+
+  private String getMaxSizeErrorMessage(ResourceLocator messages) {
+    ResourceLocator uploadSettings = new ResourceLocator(
+        "org.silverpeas.util.uploads.uploadSettings", "");
+    double maximumFileSize = uploadSettings.getLong("MaximumFileSize", 10485760);
+    double maximumFileSizeMo = maximumFileSize / 1048576.0d;
+    return messages.getString("attachment.dialog.errorAtLeastOneFileSize")
+        + " " + messages.getString("attachment.dialog.maximumFileSize") + " ("
+        + maximumFileSizeMo + " Mo)";
   }
 }
