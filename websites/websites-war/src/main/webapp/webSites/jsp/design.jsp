@@ -52,7 +52,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ include file="checkScc.jsp" %>
 
 <%
-
 	String addFolder=m_context+"/util/icons/create-action/add-folder.png";
   String addPage=m_context+"/util/icons/webSites_page_to_add.gif";
   String addPic=m_context+"/util/icons/create-action/download-website.png";
@@ -87,11 +86,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	if(theSearch != null && theSearch == Boolean.FALSE) {
 		searchOk = false;
 	}
-
-  if (currentPath != null) {
-	  currentPath = doubleAntiSlash(currentPath);
-  }
-
 
   SilverTrace.info("webSites", "JSPdesign", "root.MSG_GEN_PARAM_VALUE", "ACTION = "+action);
 
@@ -268,7 +262,10 @@ function pageRedesign(path, name, namesite) {
           window.uploadFileWindow.close();
       if (window.pageAddWindow != null)
           window.pageAddWindow.close();
-      location.href="ToWysiwyg?path="+URLENCODE(path)+"&name="+URLENCODE(name)+"&nameSite="+URLENCODE(namesite)+"&id=<%=id%>";
+      if (path.indexOf('..') >= 0)
+        alert("<%= resources.getString("GML.error.AccessForbidden") %>");
+      else
+        location.href="ToWysiwyg?path="+URLENCODE(path)+"&name="+URLENCODE(name)+"&nameSite="+URLENCODE(namesite)+"&id=<%=id%>";
 }
 
 /**********************************************/
