@@ -79,6 +79,10 @@ import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
 import com.silverpeas.form.record.GenericRecordSetManager;
 import com.silverpeas.form.record.IdentifiedRecordTemplate;
 import com.silverpeas.importExport.model.ImportExportException;
+import com.silverpeas.importExport.report.ComponentReport;
+import com.silverpeas.importExport.report.ImportReport;
+import com.silverpeas.importExport.report.MassiveReport;
+import com.silverpeas.importExport.report.UnitReport;
 import com.silverpeas.kmelia.SearchContext;
 import com.silverpeas.kmelia.control.KmeliaServiceFactory;
 import com.silverpeas.kmelia.domain.TopicSearch;
@@ -124,6 +128,7 @@ import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
+import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
@@ -2099,7 +2104,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     String pubId = getSessionPublication().getDetail().getPK().getId();
 
     AlertUser sel = getAlertUser();
-    // Initialisation de AlertUser
     sel.resetAll();
     sel.setHostSpaceName(getSpaceLabel()); // set nom de l'espace pour browsebar
     sel.setHostComponentId(getComponentId()); // set id du composant pour appel selectionPeas (extra
@@ -2113,6 +2117,17 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     sel.setNotificationMetaData(getAlertNotificationMetaData(pubId)); // set NotificationMetaData
     // contenant les informations à notifier fin initialisation de AlertUser
     // l'url de nav vers alertUserPeas et demandée à AlertUser et retournée
+    
+    SelectionUsersGroups sug = new SelectionUsersGroups();
+    sug.setComponentId(getComponentId());
+    if (!isKmaxMode && isRightsOnTopicsEnabled()) {
+      NodeDetail node = getNodeHeader(getCurrentFolderId());
+      if (node.haveRights()) {
+        sug.setObjectId(ObjectType.NODE.getCode() + node.getRightsDependsOn());
+      }
+    }
+    sel.setSelectionUsersGroups(sug);
+    
     return AlertUser.getAlertUserURL();
   }
 
@@ -2312,16 +2327,16 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    * @param importMode
    * @param draftMode
    * @param versionType
-   * @return list of publications imported
+   * @return a report of the import
    * @throws ImportExportException
    */
-  public List<PublicationDetail> importFile(File fileUploaded, String fileType, String topicId,
+  public ImportReport importFile(File fileUploaded, String fileType, String topicId,
       String importMode, boolean draftMode, int versionType) throws ImportExportException {
     SilverTrace.debug("kmelia", "KmeliaSessionController.importFile()",
         "root.MSG_GEN_ENTER_METHOD", "fileUploaded = " + fileUploaded.getAbsolutePath()
         + " fileType=" + fileType + " importMode=" + importMode + " draftMode=" + draftMode
         + " versionType=" + versionType);
-    List<PublicationDetail> publicationDetails = null;
+    ImportReport importReport = null;
     FileImport fileImport = new FileImport(this, fileUploaded);
     boolean draft = draftMode;
     if (isDraftEnabled() && isPDCClassifyingMandatory()) {
@@ -2330,15 +2345,22 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     }
     fileImport.setVersionType(versionType);
     if (UNITARY_IMPORT_MODE.equals(importMode)) {
-      publicationDetails = fileImport.importFile(draft);
+      importReport = fileImport.importFile(draft);
     } else if (MASSIVE_IMPORT_MODE_ONE_PUBLICATION.equals(importMode)
         && FileUtil.isArchive(fileUploaded.getName())) {
-      publicationDetails = fileImport.importFiles(draft);
+      importReport = fileImport.importFiles(draft);
     } else if (MASSIVE_IMPORT_MODE_MULTI_PUBLICATIONS.equals(importMode)
         && FileUtil.isArchive(fileUploaded.getName())) {
-      publicationDetails = fileImport.importFilesMultiPubli(draft);
+      importReport = fileImport.importFilesMultiPubli(draft);
     }
-    return publicationDetails;
+    
+    //print a log file of the report
+    ResourceLocator multilang = new ResourceLocator(
+        "org.silverpeas.importExportPeas.multilang.importExportPeasBundle", "fr");
+    ResourcesWrapper resource = new ResourcesWrapper(multilang, "fr");
+    fileImport.writeImportToLog(importReport, resource);
+    
+    return importReport;
   }
 
   private PublicationPK getPublicationPK(String id) {
@@ -4444,5 +4466,124 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     subscriptionContext
         .initializeFromNode(NodeSubscriptionResource.from(getCurrentFolderPK()), nodePath);
     return subscriptionContext.getDestinationUrl();
+  }
+  
+  /**
+   * @param importReport
+   * @return the number of publications created
+   */
+  public int getNbPublicationImported(ImportReport importReport) {
+    int nbPublication = 0;
+    List<ComponentReport> listComponentReport = importReport.getListComponentReport();
+    for (ComponentReport componentRpt : listComponentReport) {
+      nbPublication += componentRpt.getNbPublicationsCreated();
+    }
+    return nbPublication;
+  }
+  
+  /**
+   * @param importReport
+   * @param importMode
+   * @return an error message or null
+   */
+  public String getErrorMessageImportation(ImportReport importReport, String importMode) {
+    String message = null;
+    ResourceLocator attachmentResourceLocator = new ResourceLocator(
+        "org.silverpeas.util.attachment.multilang.attachment",
+        this.getLanguage());
+    ComponentReport componentRpt = importReport.getListComponentReport().get(0);
+    
+    //Unitary mode
+    if (UNITARY_IMPORT_MODE.equals(importMode)) {
+      MassiveReport massiveReport = componentRpt.getListMassiveReports().get(0);
+      UnitReport unitReport = massiveReport.getListUnitReports().get(0);
+      if(unitReport.getError() == UnitReport.ERROR_NO_ERROR) {
+        return null;
+      } else if(unitReport.getError() == UnitReport.ERROR_FILE_SIZE_EXCEEDS_LIMIT) {
+        ResourceLocator uploadSettings = new ResourceLocator("org.silverpeas.util.uploads.uploadSettings", "");
+        long maximumFileSize = uploadSettings.getLong("MaximumFileSize", 10485760);
+        long maximumFileSizeMo = maximumFileSize / 1048576;
+        message = attachmentResourceLocator.getString("attachment.dialog.errorFileSize")+ " " +
+            attachmentResourceLocator.getString("attachment.dialog.maximumFileSize")+" ("+maximumFileSizeMo+" Mo)";
+      } else {
+        message = attachmentResourceLocator.getString("liaisonInaccessible");
+      }
+    } 
+    
+    //Massive mode, one publication
+    else if (MASSIVE_IMPORT_MODE_ONE_PUBLICATION.equals(importMode)) {
+      UnitReport unitReport = componentRpt.getListUnitReports().get(0);
+      if(unitReport.getError() == UnitReport.ERROR_NO_ERROR) {
+        return null;
+      } else if(unitReport.getError() == UnitReport.ERROR_FILE_SIZE_EXCEEDS_LIMIT) {
+        ResourceLocator uploadSettings = new ResourceLocator("org.silverpeas.util.uploads.uploadSettings", "");
+        long maximumFileSize = uploadSettings.getLong("MaximumFileSize", 10485760);
+        long maximumFileSizeMo = maximumFileSize / 1048576;
+        message = attachmentResourceLocator.getString("attachment.dialog.errorAtLeastOneFileSize")+ " " +
+            attachmentResourceLocator.getString("attachment.dialog.maximumFileSize")+" ("+maximumFileSizeMo+" Mo)";
+      } else {
+        message = attachmentResourceLocator.getString("liaisonInaccessible");
+      }
+      
+    //Massive mode, several publications
+    } else if (MASSIVE_IMPORT_MODE_MULTI_PUBLICATIONS.equals(importMode)) {
+      MassiveReport massiveReport = componentRpt.getListMassiveReports().get(0);
+      for(UnitReport unitReport : massiveReport.getListUnitReports()) {
+        if(unitReport.getError() == UnitReport.ERROR_FILE_SIZE_EXCEEDS_LIMIT) {
+          ResourceLocator uploadSettings = new ResourceLocator("org.silverpeas.util.uploads.uploadSettings", "");
+          long maximumFileSize = uploadSettings.getLong("MaximumFileSize", 10485760);
+          long maximumFileSizeMo = maximumFileSize / 1048576;
+          return attachmentResourceLocator.getString("attachment.dialog.errorAtLeastOneFileSize")+ " " +
+              attachmentResourceLocator.getString("attachment.dialog.maximumFileSize")+" ("+maximumFileSizeMo+" Mo)";
+        } else if(unitReport.getError() != UnitReport.ERROR_NO_ERROR){
+          return attachmentResourceLocator.getString("liaisonInaccessible");
+        }
+      }
+    }
+    return message;
+  }
+  
+  /**
+   * @param importReport
+   * @param importMode
+   * @return a list of publication
+   * @throws RemoteException 
+   */
+  public List<PublicationDetail> getListPublicationImported(ImportReport importReport, String importMode) throws RemoteException {
+    List<PublicationDetail> listPublicationDetail = new ArrayList<PublicationDetail>();
+    ComponentReport componentRpt = importReport.getListComponentReport().get(0);
+    
+  //Unitary mode
+    if (UNITARY_IMPORT_MODE.equals(importMode)) {
+      MassiveReport massiveReport = componentRpt.getListMassiveReports().get(0);
+      UnitReport unitReport = massiveReport.getListUnitReports().get(0);
+      if(unitReport.getStatus() == UnitReport.STATUS_PUBLICATION_CREATED) {
+        String idPubli = unitReport.getLabel();
+        PublicationDetail publicationDetail = this.getPublicationDetail(idPubli);
+        listPublicationDetail.add(publicationDetail);
+      }
+    } 
+    
+  //Massive mode, one publication
+    else if (MASSIVE_IMPORT_MODE_ONE_PUBLICATION.equals(importMode)) {
+      UnitReport unitReport = componentRpt.getListUnitReports().get(0);
+      if(unitReport.getStatus() == UnitReport.STATUS_PUBLICATION_CREATED) {
+        String idPubli = unitReport.getLabel();
+        PublicationDetail publicationDetail = this.getPublicationDetail(idPubli);
+        listPublicationDetail.add(publicationDetail);
+      }
+      
+    //Massive mode, several publications
+    } else if (MASSIVE_IMPORT_MODE_MULTI_PUBLICATIONS.equals(importMode)) {
+      MassiveReport massiveReport = componentRpt.getListMassiveReports().get(0);
+      for(UnitReport unitReport : massiveReport.getListUnitReports()) {
+        if(unitReport.getStatus() == UnitReport.STATUS_PUBLICATION_CREATED) {
+          String idPubli = unitReport.getLabel();
+          PublicationDetail publicationDetail = this.getPublicationDetail(idPubli);
+          listPublicationDetail.add(publicationDetail);
+        } 
+      }
+    }
+    return listPublicationDetail;
   }
 }

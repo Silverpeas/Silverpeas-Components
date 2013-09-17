@@ -28,6 +28,7 @@ import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
+import com.silverpeas.importExport.report.ImportReport;
 import com.silverpeas.kmelia.KmeliaConstants;
 import com.silverpeas.kmelia.SearchContext;
 import com.silverpeas.kmelia.updatechainhelpers.UpdateChainHelper;
@@ -367,29 +368,23 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
               "root.MSG_GEN_PARAM_VALUE", "Document Not Found = " + e.getMessage(), e);
           destination = getDocumentNotFoundDestination(kmelia, request);
         }
-      } else if (function.startsWith("publicationManager")) {
-        String id = request.getParameter("PubId");
-        if (StringUtil.isDefined(id)) {
-          request.setAttribute("PubId", id);
-        }
-        request.setAttribute("Wizard", kmelia.getWizard());
-        List<NodeDetail> path = kmelia.getTopicPath(kmelia.getCurrentFolderId());
-        request.setAttribute("Path", path);
-        request.setAttribute("Profile", kmelia.getProfile());
+      } else if ("ToUpdatePublicationHeader".equals(function)) {
+        request.setAttribute("Action", "UpdateView");
+        destination = getDestination("publicationManager.jsp", kmelia, request);
+      } else if ("publicationManager.jsp".equals(function)) {
         String action = (String) request.getAttribute("Action");
-        if (!StringUtil.isDefined(action)) {
-          action = "UpdateView";
-          request.setAttribute("Action", action);
-        }
-
         if ("UpdateView".equals(action)) {
           request.setAttribute("TaxonomyOK", kmelia.isPublicationTaxonomyOK());
           request.setAttribute("ValidatorsOK", kmelia.isPublicationValidatorsOK());
-        } else {
-          // case of creation
+          request.setAttribute("Publication", kmelia.getSessionPubliOrClone());
+        } else if ("New".equals(action)) {
           request.setAttribute("TaxonomyOK", true);
           request.setAttribute("ValidatorsOK", true);
         }
+        
+        request.setAttribute("Wizard", kmelia.getWizard());
+        request.setAttribute("Path", kmelia.getTopicPath(kmelia.getCurrentFolderId()));
+        request.setAttribute("Profile", kmelia.getProfile());
 
         destination = rootDestination + "publicationManager.jsp";
         // thumbnail error for front explication
@@ -597,8 +592,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           id = kmeliaPublication.getDetail().getPK().getId();
         }
         if (toolboxMode) {
-          request.setAttribute("PubId", id);
-          destination = getDestination("publicationManager.jsp", kmelia, request);
+          destination = getDestination("ToUpdatePublicationHeader", kmelia, request);
         } else {
           List<String> publicationLanguages = kmelia.getPublicationLanguages(); // languages of
           // publication
@@ -888,13 +882,11 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           // draft have generate a clone
           destination = getDestination("ViewClone", kmelia, request);
         } else {
-          String pubId = kmelia.getSessionPubliOrClone().getDetail().getPK().getId();
           String from = request.getParameter("From");
           if (StringUtil.isDefined(from)) {
             destination = getDestination(from, kmelia, request);
           } else {
-            request.setAttribute("PubId", pubId);
-            destination = getDestination("publicationManager.jsp", kmelia, request);
+            destination = getDestination("ToUpdatePublicationHeader", kmelia, request);
           }
         }
       } else if (function.equals("DraftOut")) {
@@ -1000,7 +992,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         destination = "/RimportExportPeas/jsp/ExportPDF";
       } else if (function.equals("NewPublication")) {
         request.setAttribute("Action", "New");
-        destination = getDestination("publicationManager", kmelia, request);
+        destination = getDestination("publicationManager.jsp", kmelia, request);
       } else if (function.equals("ManageSubscriptions")) {
         destination = kmelia.manageSubscriptions();
       } else if (function.equals("AddPublication")) {
@@ -1063,15 +1055,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         }
       } else if (function.equals("SelectValidator")) {
         destination = kmelia.initUPToSelectValidator("");
-      } else if (function.equals("Comments")) {
-        String id = request.getParameter("PubId");
-        String flag = kmelia.getProfile();
-        if (!kmaxMode) {
-          processPath(kmelia, id);
-        }
-        // paramètre du wizard
-        request.setAttribute("Wizard", kmelia.getWizard());
-        destination = rootDestination + "comments.jsp?PubId=" + id + "&Profile=" + flag;
       } else if (function.equals("PublicationPaths")) {
         // paramètre du wizard
         request.setAttribute("Wizard", kmelia.getWizard());
@@ -1986,16 +1969,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           fileItem.write(fileUploaded);
 
           // Is a real file ?
-          ResourceLocator uploadSettings = new ResourceLocator("org.silverpeas.util.uploads.uploadSettings", "");
-          long maximumFileSize = uploadSettings.getLong("MaximumFileSize", 10485760);
           if (fileSize <= 0L) {
             // File access failed
             message = attachmentResourceLocator.getString("liaisonInaccessible");
-            error = true;
-          } else if (!isMassiveMode && fileSize > maximumFileSize) {
-            long maximumFileSizeMo = maximumFileSize / 1048576;
-            message = attachmentResourceLocator.getString("attachment.dialog.errorFileSize")+ " " +
-                attachmentResourceLocator.getString("attachment.dialog.maximumFileSize")+" ("+maximumFileSizeMo+" Mo)";
             error = true;
           } else {
             SilverTrace.debug("kmelia", "KmeliaRequestRouter.processFormUpload()",
@@ -2004,15 +1980,15 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
                 + " importMode=" + importMode + " draftMode=" + draftMode);
 
             // Import !!
-            List<PublicationDetail> publicationDetails = kmeliaScc.importFile(fileUploaded,
+            ImportReport importReport = kmeliaScc.importFile(fileUploaded,
                 fileType, topicId, importMode, draftMode, versionType);
             long processDuration = new Date().getTime() - processStart;
             
-            // Compute nbFiles imported (only in unitary Import mode)
-            int nbFiles = 0;
-            for (PublicationDetail pubDetail : publicationDetails) {
-                nbFiles += pubDetail.getAttachments().size();
-            }
+            // Compute nbPublication created
+            int nbPublication = kmeliaScc.getNbPublicationImported(importReport);
+                
+            // nbFiles imported (only in unitary Import mode)
+            int nbFiles = importReport.getNbFilesProcessed();
 
             // Title for popup report
             String importModeTitle = "";
@@ -2023,12 +1999,18 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
             }
             SilverTrace.debug("kmelia", "KmeliaRequestRouter.processFormUpload()",
                 "root.MSG_GEN_PARAM_VALUE", "nbFiles = " + nbFiles
-                + " publicationDetails=" + publicationDetails
+                + " nbPublication=" + nbPublication
                 + " ProcessDuration=" + processDuration + " ImportMode="
                 + importMode + " Draftmode=" + draftMode + " Title="
                 + importModeTitle);
-
-            request.setAttribute("PublicationsDetails", publicationDetails);
+            
+            message = kmeliaScc.getErrorMessageImportation(importReport, importMode);
+            
+            if(message != null && importMode.equals(KmeliaSessionController.UNITARY_IMPORT_MODE)) {
+              error = true;
+            }
+            
+            request.setAttribute("NbPublication", nbPublication);
             request.setAttribute("NbFiles", nbFiles);
             request.setAttribute("ProcessDuration", FileRepositoryManager.formatFileUploadTime(
                 processDuration));
@@ -2036,11 +2018,17 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
             request.setAttribute("DraftMode", draftMode);
             request.setAttribute("Title", importModeTitle);
             request.setAttribute("Context", URLManager.getApplicationURL());
+            request.setAttribute("Message", message);
 
             destination = routeDestination + "reportImportFiles.jsp";
+            
             String componentId = kmeliaScc.getComponentId();
             if (kmeliaScc.isDefaultClassificationModifiable(topicId, componentId)) {
-              destination = routeDestination + "validateImportedFilesClassification.jsp";
+              List<PublicationDetail> publicationDetails = kmeliaScc.getListPublicationImported(importReport, importMode);
+              if(publicationDetails.size()>0) {
+                request.setAttribute("PublicationsDetails", publicationDetails);
+                destination = routeDestination + "validateImportedFilesClassification.jsp";
+              }
             }
           }
           
@@ -2590,5 +2578,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       pks.add(new ForeignPK(oneId, instanceId));
     }
     return pks;
+  }
+  
+  private void setAttributesToPublicationHeader(KmeliaSessionController kmelia, HttpServletRequest request) {
+    
   }
 }
