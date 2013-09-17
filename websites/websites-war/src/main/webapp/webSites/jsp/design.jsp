@@ -262,7 +262,10 @@ function pageRedesign(path, name, namesite) {
           window.uploadFileWindow.close();
       if (window.pageAddWindow != null)
           window.pageAddWindow.close();
-      location.href="ToWysiwyg?path="+URLENCODE(path)+"&name="+URLENCODE(name)+"&nameSite="+URLENCODE(namesite)+"&id=<%=id%>";
+      if (path.indexOf('..') >= 0)
+        alert("<%= resources.getString("GML.error.AccessForbidden") %>");
+      else
+        location.href="ToWysiwyg?path="+URLENCODE(path)+"&name="+URLENCODE(name)+"&nameSite="+URLENCODE(namesite)+"&id=<%=id%>";
 }
 
 /**********************************************/
