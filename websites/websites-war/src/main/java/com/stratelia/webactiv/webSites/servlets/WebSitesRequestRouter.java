@@ -1013,6 +1013,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
         List<FileItem> items = FileUploadUtil.parseRequest(request);
 
         String thePath = FileUploadUtil.getParameter(items, "path");
+        scc.checkPath(thePath);
         FileItem item = FileUploadUtil.getFile(items);
         if (item != null) {
           String fileName = FileUploadUtil.getFileName(item);
