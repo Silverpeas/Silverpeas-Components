@@ -1752,8 +1752,6 @@ public class KmeliaBmEJB implements KmeliaBm {
       // add link between this publication and the basket topic
       publicationBm.addFather(pubPK, new NodePK("1", pubPK));
 
-      publicationBm.deleteIndex(pubPK);
-
       // remove all the todos attached to the publication
       removeAllTodosForPublication(pubPK);
 
@@ -4076,23 +4074,8 @@ public class KmeliaBmEJB implements KmeliaBm {
 
   @Override
   public void setAlias(PublicationPK pubPK, List<Alias> alias) {
-    List<Alias> oldAliases = (List<Alias>) getAlias(pubPK);
-    List<Alias> newAliases = new ArrayList<Alias>(alias.size());
-    List<Alias> remAliases = new ArrayList<Alias>(oldAliases.size());
-    // Compute the remove list
-    for (Alias a : oldAliases) {
-      if (!alias.contains(a)) {
-        remAliases.add(a);
-      }
-    }
-    // Compute the add and stay list
-    for (Alias a : alias) {
-      if (!oldAliases.contains(a)) {
-        newAliases.add(a);
-      }
-    }
-    publicationBm.addAlias(pubPK, newAliases);
-    publicationBm.removeAlias(pubPK, remAliases);
+    
+    publicationBm.setAlias(pubPK, alias);
 
     // Send subscriptions to aliases subscribers
     PublicationDetail pubDetail = getPublicationDetail(pubPK);
