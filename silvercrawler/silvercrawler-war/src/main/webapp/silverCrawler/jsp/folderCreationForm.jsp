@@ -24,45 +24,29 @@
 
 --%>
 
-<%@ include file="check.jsp"%>
+<%@ include file="check.jsp" %>
 
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator"
-	prefix="view"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
-<c:set var="componentId" value="${requestScope.componentId}" />
-<c:set var="sessionController">Silverpeas_SilverCrawler_<c:out
-		value="${componentId}" />
-</c:set>
-<fmt:setLocale value="${sessionScope[sessionController].language}" />
-<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
-<view:setBundle bundle="${requestScope.resources.iconsBundle}"
-	var="icons" />
+<fmt:setLocale value="${requestScope.resources.language}"/>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title><fmt:message key="silverCrawler.createFolder" /></title>
-</head>
-<body>
+<form id="createForm" name="createForm" method="POST" action="#" accept-charset="utf-8">
+  <table id="renameTable" width="100%" cellspacing="2" cellpadding="2"
+         border="0">
 
-<form id="createForm" name="createForm" method="POST" action="CreateFolder" accept-charset="utf-8">
-		<table id="renameTable" width="100%" cellspacing="2" cellpadding="2"
-			border="0">
+    <c:if test="${not empty errorMessage}">
+      <tr>
+        <td colspan="2">${errorMessage}</td>
+      </tr>
+    </c:if>
 
-			<c:if test="${not empty errorMessage}">
-				<tr>
-					<td colspan="2">${errorMessage}</td>
-				</tr>
-			</c:if>
-
-			<tr>
-				<td><fmt:message key="silverCrawler.newName" /></td>
-				<td><input type="text" name="newName" id="newName"></td>
-			</tr>
-		</table>
+    <tr>
+      <td><fmt:message key="silverCrawler.newName"/></td>
+      <td><input type="text" name="newName" id="newName"></td>
+    </tr>
+  </table>
 </form>
-
-</body>
-</html>

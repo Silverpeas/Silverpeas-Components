@@ -19,7 +19,7 @@ public class RenameFileFormHandler extends FunctionHandler {
       throws Exception {
 
     // Retrieves folder's name to be removed
-    String fileName = (String) request.getParameter("fileName");
+    String fileName = request.getParameter("oldName");
 
     // Is User has admin or publisher profile
     String userHisghestRole = getUserHighestRole(sessionController);
@@ -36,5 +36,4 @@ public class RenameFileFormHandler extends FunctionHandler {
     // returns page to redirect to
     return "fileRenameForm.jsp";
   }
-
 }
