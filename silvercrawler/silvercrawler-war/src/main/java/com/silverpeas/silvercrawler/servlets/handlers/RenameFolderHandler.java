@@ -17,8 +17,8 @@ public class RenameFolderHandler extends FunctionHandler {
       throws Exception {
 
     // Retrieves parameters
-    String folderName = (String) request.getParameter("folderName");
-    String newName = (String) request.getParameter("newName");
+    String folderName = request.getParameter("oldName");
+    String newName = request.getParameter("newName");
 
     // Is User has admin profile
     String userHisghestRole = getUserHighestRole(sessionController);

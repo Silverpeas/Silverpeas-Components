@@ -17,7 +17,7 @@ public class CreateFolderHandler extends FunctionHandler {
       throws Exception {
 
     // Retrieves parameters
-    String newName = (String) request.getParameter("newName");
+    String newName = request.getParameter("newName");
 
     // Is User has admin profile
     String userHisghestRole = getUserHighestRole(sessionController);

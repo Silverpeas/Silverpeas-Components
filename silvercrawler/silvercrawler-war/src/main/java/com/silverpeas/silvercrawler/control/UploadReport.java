@@ -1,21 +1,23 @@
 package com.silverpeas.silvercrawler.control;
 
+import com.stratelia.webactiv.util.ResourceLocator;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * This class is the result of a dragNDrop of folders and path in SilverCrawler.
  * @author Ludovic Bertin
  */
 public class UploadReport {
-  String repositoryPath = null;
+  File repositoryPath = null;
   List<UploadItem> items = new ArrayList<UploadItem>();
   boolean conflictous = false;
   boolean failed = false;
   String language = null;
-  ResourceLocator resources = new ResourceLocator("com.silverpeas.silvercrawler.multilang.silverCrawlerBundle", language);
+  ResourceLocator resources =
+      new ResourceLocator("com.silverpeas.silvercrawler.multilang.silverCrawlerBundle", language);
   public int nbCopied = 0;
   public int nbIgnored = 0;
   public int nbReplaced = 0;
@@ -51,11 +53,11 @@ public class UploadReport {
     this.conflictous = conflictous;
   }
 
-  public String getRepositoryPath() {
+  public File getRepositoryPath() {
     return repositoryPath;
   }
 
-  public void setRepositoryPath(String repositoryPath) {
+  public void setRepositoryPath(File repositoryPath) {
     this.repositoryPath = repositoryPath;
   }
 
@@ -72,10 +74,13 @@ public class UploadReport {
     StringBuffer errorMessage = new StringBuffer();
 
     if (failed) {
-      errorMessage.append(resources.getString("silverCrawler.followingErrorsOccured")).append(" :<br/><br/>");
+      errorMessage.append(resources.getString("silverCrawler.followingErrorsOccured"))
+          .append(" :<br/><br/>");
       for (UploadItem item : items) {
         if (item.isCopyFailed()) {
-          errorMessage.append(resources.getString("silverCrawler.copyFailed")).append(" : ").append(item.getFileName()).append(" - ").append(item.getCopyFailedException().getMessage()).append("<br/>");
+          errorMessage.append(resources.getString("silverCrawler.copyFailed")).append(" : ")
+              .append(item.getRelativePath().getPath()).append(" - ")
+              .append(item.getCopyFailedException().getMessage()).append("<br/>");
         }
       }
     }
@@ -86,10 +91,14 @@ public class UploadReport {
     StringBuffer successMessage = new StringBuffer();
 
     if (!failed) {
-      successMessage.append(resources.getString("silverCrawler.dragNDropSucceeded")).append(" :<br/><br/>");
-      successMessage.append(nbCopied).append(" ").append(resources.getString("silverCrawler.filesCopied")).append("<br/>");
-      successMessage.append(nbReplaced).append(" ").append(resources.getString("silverCrawler.filesReplaced")).append("<br/>");
-      successMessage.append(nbIgnored).append(" ").append(resources.getString("silverCrawler.filesIgnored")).append("<br/>");
+      successMessage.append(resources.getString("silverCrawler.dragNDropSucceeded"))
+          .append(" :<br/><br/>");
+      successMessage.append(nbCopied).append(" ")
+          .append(resources.getString("silverCrawler.filesCopied")).append("<br/>");
+      successMessage.append(nbReplaced).append(" ")
+          .append(resources.getString("silverCrawler.filesReplaced")).append("<br/>");
+      successMessage.append(nbIgnored).append(" ")
+          .append(resources.getString("silverCrawler.filesIgnored")).append("<br/>");
     }
     return successMessage.toString();
   }

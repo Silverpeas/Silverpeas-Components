@@ -24,49 +24,33 @@
 
 --%>
 
-<%@ include file="check.jsp"%>
+<%@ include file="check.jsp" %>
 
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator"
-	prefix="view"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
-<c:set var="componentId" value="${requestScope.componentId}" />
-<c:set var="sessionController">Silverpeas_SilverCrawler_<c:out
-		value="${componentId}" />
-</c:set>
-<fmt:setLocale value="${sessionScope[sessionController].language}" />
-<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
-<view:setBundle bundle="${requestScope.resources.iconsBundle}"
-	var="icons" />
-
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title><fmt:message key="silverCrawler.createFolder" /></title>
-</head>
-<body>
+<fmt:setLocale value="${requestScope.resources.language}"/>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
 <form id="fileUploadForm" name="fileUploadForm" method="POST" action="UploadFile" enctype="multipart/form-data">
-		<table width="100%" cellspacing="2" cellpadding="2"
-			border="0">
+  <table width="100%" cellspacing="2" cellpadding="2" border="0">
 
-			<c:if test="${not empty errorMessage}">
-				<tr>
-					<td colspan="2">${errorMessage}</td>
-				</tr>
-			</c:if>
+    <c:if test="${not empty errorMessage}">
+      <tr>
+        <td colspan="2">${errorMessage}</td>
+      </tr>
+    </c:if>
 
-			<tr>
-				<td><fmt:message key="silverCrawler.fileName" /></td>
-				<td><input type="file" name="newFile" id="newFile"></td>
-			</tr>
+    <tr>
+      <td><fmt:message key="silverCrawler.fileName"/></td>
+      <td><input type="file" name="newFile" id="newFile"></td>
+    </tr>
 
-			<tr>
-				<td colspan="2"><input type="checkbox" name="replaceExistingFile" value="Y"> <fmt:message key="silverCrawler.replaceExistingFile" /></td>
-			</tr>
-		</table>
+    <tr>
+      <td colspan="2"><input type="checkbox" name="replaceExistingFile" value="Y">
+        <fmt:message key="silverCrawler.replaceExistingFile"/></td>
+    </tr>
+  </table>
 </form>
-
-</body>
-</html>

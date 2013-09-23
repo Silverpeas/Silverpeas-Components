@@ -292,7 +292,8 @@ if (nav || (!nav && !isRootPath))
 		    
 		    fileName = fileDetail.getName();
 		
-		    ArrayCellLink cellLink = arrayLine.addArrayCellLink(Encode.javaStringToHtmlString(fileDetail.getName()), fileDetail.getFileURL(userId, componentId));
+		    ArrayCellLink cellLink = arrayLine.addArrayCellLink(Encode.javaStringToHtmlString(fileDetail.getName()), fileDetail.getFileURL(
+            componentId));
 		    cellLink.setTarget("_blank");
 		    
 		    ArrayCellText cellSize = arrayLine.addArrayCellText(fileDetail.getFileSize());

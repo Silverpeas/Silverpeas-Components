@@ -17,8 +17,8 @@ public class RenameFileHandler extends FunctionHandler {
       throws Exception {
 
     // Retrieves parameters
-    String fileName = (String) request.getParameter("fileName");
-    String newName = (String) request.getParameter("newName");
+    String fileName = request.getParameter("oldName");
+    String newName = request.getParameter("newName");
 
     // Is User has admin or publisher profile
     String userHisghestRole = getUserHighestRole(sessionController);

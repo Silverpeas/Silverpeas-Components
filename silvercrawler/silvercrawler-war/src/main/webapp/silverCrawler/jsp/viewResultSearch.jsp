@@ -224,7 +224,8 @@ out.println("<br>");
 			    fileName = fileDetail.getName();
 			    filePath = fileDetail.getPath();
 			    
-			    ArrayCellLink cellLink = arrayLine.addArrayCellLink(EncodeHelper.javaStringToHtmlString(fileDetail.getName()), fileDetail.getFileURL(userId, componentId));
+			    ArrayCellLink cellLink = arrayLine.addArrayCellLink(EncodeHelper.javaStringToHtmlString(fileDetail.getName()), fileDetail.getFileURL(
+              componentId));
 			    cellLink.setTarget("_blank");
 			    
 			    ArrayCellText cellSize = arrayLine.addArrayCellText(fileDetail.getFileSize());

@@ -22,18 +22,20 @@ package com.silverpeas.silvercrawler.model;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.search.indexEngine.IndexFileManager;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.silverpeas.search.indexEngine.IndexFileManager;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Class declaration
- *
  * @author
  */
 public class FileFolder extends Object implements java.io.Serializable {
@@ -69,7 +71,6 @@ public class FileFolder extends Object implements java.io.Serializable {
 
   /**
    * Constructor declaration
-   *
    * @param path
    * @see
    */
@@ -82,17 +83,17 @@ public class FileFolder extends Object implements java.io.Serializable {
   }
 
   public FileFolder(String rootPath, String path, boolean isAdmin, String componentId) {
-	this.path = path;
+    this.path = path;
     files = new ArrayList<FileDetail>(0);
     folders = new ArrayList<FileDetail>(0);
 
     try {
       SilverTrace.debug("silverCrawler", "FileFolder.FileFolder()", "root.MSG_GEN_PARAM_VALUE",
-              "Starting constructor for FileFolder. Path = " + path);
+          "Starting constructor for FileFolder. Path = " + path);
       File f = new File(path);
 
       SilverTrace.debug("silverCrawler", "FileFolder.FileFolder()", "root.MSG_GEN_PARAM_VALUE",
-              "isExists " + f.exists() + " isFile=" + f.isFile());
+          "isExists " + f.exists() + " isFile=" + f.isFile());
 
       writable = f.canWrite();
 
@@ -106,16 +107,17 @@ public class FileFolder extends Object implements java.io.Serializable {
 
         if (isAdmin) {
           // ouverture de l'index
-          Directory indexPath = FSDirectory.open(new File(IndexFileManager.getAbsoluteIndexPath("",
-                  componentId)));
+          Directory indexPath =
+              FSDirectory.open(new File(IndexFileManager.getAbsoluteIndexPath("", componentId)));
           if (IndexReader.indexExists(indexPath)) {
             reader = IndexReader.open(indexPath);
           }
         }
         if (children != null && children.length > 0) {
           for (File childFile : children) {
-            SilverTrace.debug("silverCrawler", "FileFolder.FileFolder()",
-                    "root.MSG_GEN_PARAM_VALUE", "Name = " + childFile.getName());
+            SilverTrace
+                .debug("silverCrawler", "FileFolder.FileFolder()", "root.MSG_GEN_PARAM_VALUE",
+                    "Name = " + childFile.getName());
             isIndexed = false;
             if (isAdmin) {
               // rechercher si le répertoire (ou le fichier) est indexé
@@ -125,9 +127,10 @@ public class FileFolder extends Object implements java.io.Serializable {
               } else {
                 pathIndex = pathIndex + "LinkedFile" + "|";
               }
-              pathIndex = pathIndex + childFile.getPath();
-              SilverTrace.debug("silverCrawler", "FileFolder.FileFolder()",
-                      "root.MSG_GEN_PARAM_VALUE", "pathIndex = " + pathIndex);
+              pathIndex = pathIndex + FilenameUtils.separatorsToUnix(childFile.getPath());
+              SilverTrace
+                  .debug("silverCrawler", "FileFolder.FileFolder()", "root.MSG_GEN_PARAM_VALUE",
+                      "pathIndex = " + pathIndex);
 
               Term term = new Term("key", pathIndex);
               if (reader != null && reader.docFreq(term) == 1) {
@@ -136,12 +139,14 @@ public class FileFolder extends Object implements java.io.Serializable {
             }
 
             if (childFile.isDirectory()) {
-              folders.add(new FileDetail(childFile.getName(), childFile.getPath(), null, childFile.length(),
+              folders.add(
+                  new FileDetail(childFile.getName(), childFile.getPath(), null, childFile.length(),
                       true, isIndexed));
             } else {
-              String childPath = childFile.getPath().substring(rootPath.length() + 1);
-              files.add(new FileDetail(childFile.getName(), childPath, childFile.getPath(), childFile.length(), false,
-                      isIndexed));
+              String childPath =
+                  FileUtils.getFile(childFile.getPath().substring(rootPath.length())).getPath();
+              files.add(new FileDetail(childFile.getName(), childPath, childFile.getPath(),
+                  childFile.length(), false, isIndexed));
             }
           }
         }
@@ -153,13 +158,12 @@ public class FileFolder extends Object implements java.io.Serializable {
       }
     } catch (Exception e) {
       throw new SilverCrawlerRuntimeException("FileFolder.FileFolder()",
-              SilverpeasRuntimeException.ERROR, "silverCrawler.IMPOSSIBLE_DACCEDER_AU_REPERTOIRE", e);
+          SilverpeasRuntimeException.ERROR, "silverCrawler.IMPOSSIBLE_DACCEDER_AU_REPERTOIRE", e);
     }
   }
 
   /**
    * Method declaration
-   *
    * @return
    * @see
    */
@@ -169,7 +173,6 @@ public class FileFolder extends Object implements java.io.Serializable {
 
   /**
    * Method declaration
-   *
    * @return
    * @see
    */
@@ -179,7 +182,6 @@ public class FileFolder extends Object implements java.io.Serializable {
 
   /**
    * Method declaration
-   *
    * @return
    * @see
    */
@@ -189,7 +191,6 @@ public class FileFolder extends Object implements java.io.Serializable {
 
   /**
    * Method declaration
-   *
    * @return
    * @see
    */

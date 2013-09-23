@@ -24,11 +24,10 @@
 package com.silverpeas.silvercrawler.model;
 
 import com.silverpeas.silvercrawler.util.FileServerUtils;
-import com.silverpeas.util.FileUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 
-public class FileDetail extends Object implements java.io.Serializable {
-  
+public class FileDetail implements java.io.Serializable {
+
   private static final long serialVersionUID = 4697608390797941792L;
   private String name;
   private String path;
@@ -55,10 +54,6 @@ public class FileDetail extends Object implements java.io.Serializable {
     this.isIndexed = isIndexed;
   }
 
-  public String getFileDownloadEstimation() {
-    return FileRepositoryManager.getFileDownloadTime(size);
-  }
-
   public String getFileSize() {
     return FileRepositoryManager.formatFileSize(size);
   }
@@ -68,9 +63,8 @@ public class FileDetail extends Object implements java.io.Serializable {
     return FileRepositoryManager.getFileIcon(fileType);
   }
 
-  public String getFileURL(String userId, String componentId) {
-    return FileServerUtils.getUrl(name, path, getMimeType(), userId,
-        componentId);
+  public String getFileURL(String componentId) {
+    return FileServerUtils.getSilverCrawlerUrl(name, path, componentId);
   }
 
   public boolean isIsDirectory() {
@@ -79,10 +73,6 @@ public class FileDetail extends Object implements java.io.Serializable {
 
   public String getName() {
     return name;
-  }
-
-  public String getMimeType() {
-    return FileUtil.getMimeType(name);
   }
 
   public String getPath() {
