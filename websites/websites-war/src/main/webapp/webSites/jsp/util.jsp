@@ -55,6 +55,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%!
 
+  ResourceLocator settings = new ResourceLocator("com.stratelia.webactiv.webSites.settings.webSiteSettings", "fr");
+  
   /* getMachine */
   public String getMachine(HttpServletRequest request) {
     ResourceLocator settings = new ResourceLocator("com.stratelia.webactiv.webSites.settings.webSiteSettings","fr");
@@ -233,7 +235,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
       /* collection[0] = c:\\j2sdk\\public_html\\WAwebSiteUploads\\webSite17\\3 : toujours */
       /* collection[1] = c:\\j2sdk\\public_html\\WAwebSiteUploads\\webSite17\\3\\rep1 */
       /* collection[1] = c:\\j2sdk\\public_html\\WAwebSiteUploads\\webSite17\\3\\rep1\\rep11 */
-
+      
       ArrayList liste = new ArrayList();
       boolean ok = true;
       String deb;
