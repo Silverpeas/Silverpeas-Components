@@ -79,9 +79,10 @@ public interface ClassifiedService extends SilverpeasComponentService<Classified
    * take out draft mode the classified corresponding to classified
    * @param classifiedId : String
    * @param profile : String
+   * @param isValidationEnabled : boolean
    * @
    */
-  public void draftOutClassified(String classifiedId, String profile) ;
+  public void draftOutClassified(String classifiedId, String profile, boolean isValidationEnabled) ;
 
   /**
    * get all classifieds for an instance corresponding to instanceId

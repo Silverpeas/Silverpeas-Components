@@ -20,28 +20,43 @@
  */
 package com.stratelia.webactiv.kmelia;
 
+import static java.io.File.separator;
+import static org.silverpeas.util.Charsets.UTF_8;
+
 import com.silverpeas.importExport.control.ImportSettings;
 import com.silverpeas.importExport.control.MassiveDocumentImport;
 import com.silverpeas.importExport.control.PublicationsTypeManager;
 import com.silverpeas.importExport.model.ImportExportException;
 import com.silverpeas.importExport.model.PublicationType;
 import com.silverpeas.importExport.model.PublicationsType;
+import com.silverpeas.importExport.report.ImportReport;
 import com.silverpeas.importExport.report.ImportReportManager;
 import com.silverpeas.importExport.report.MassiveReport;
 import com.silverpeas.node.importexport.NodePositionType;
 import com.silverpeas.node.importexport.NodePositionsType;
+import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ZipManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
 import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.silverpeas.importExport.attachment.AttachmentDetail;
 import org.silverpeas.importExport.attachment.AttachmentsType;
 
@@ -51,6 +66,9 @@ import org.silverpeas.importExport.attachment.AttachmentsType;
  * @author dlesimple
  */
 public class FileImport {
+  
+  private static final ResourceLocator settings = new ResourceLocator(
+      "org.silverpeas.importExport.settings.mapping", "");
 
   /**
    * Private or Public (ie DocumentVersion)
@@ -71,10 +89,10 @@ public class FileImport {
   /**
    * Import a single file for a unique publication
    *
-   * @return ArrayList of PublicationDetail
+   * @return a report of the import
    * @throws ImportExportException
    */
-  public List<PublicationDetail> importFile(boolean draft) throws ImportExportException {
+  public ImportReport importFile(boolean draft) throws ImportExportException {
     MassiveDocumentImport massiveImporter = new MassiveDocumentImport();
     ImportSettings settings = getImportSettings(fileUploaded.getParent(), draft);
 
@@ -84,9 +102,9 @@ public class FileImport {
   /**
    * Import a zip file for a unique publication with attachments
    *
-   * @return ArrayList of PublicationsDetails
+   * @return a report of the import
    */
-  public List<PublicationDetail> importFiles(boolean draft) {
+  public ImportReport importFiles(boolean draft) {
     SilverTrace.info("kmelia", "FileImport.importFiles()", "root.MSG_GEN_ENTER_METHOD");
     List<PublicationDetail> publicationDetails = new ArrayList<PublicationDetail>();
     ImportReportManager reportManager = new ImportReportManager();
@@ -111,6 +129,7 @@ public class FileImport {
       for (File file : filesExtracted) {
         AttachmentDetail attachment = new AttachmentDetail();
         attachment.setPhysicalName(file.getAbsolutePath());
+        attachment.setSize(file.length());
         attachment.setAuthor(kmeliaScc.getUserId());
         attachments.add(attachment);
       }
@@ -142,7 +161,7 @@ public class FileImport {
     }
     reportManager.reportImportEnd();
     SilverTrace.info("kmelia", "FileImport.importFiles()", "root.MSG_GEN_EXIT_METHOD");
-    return publicationDetails;
+    return reportManager.getImportReport();
   }
 
   private String unzipUploadedFile() {
@@ -165,22 +184,50 @@ public class FileImport {
   /**
    * Import a zip file for a publication per file in zip
    *
-   * @return List of PublicationsDetail
+   * @return a report of the import
    */
-  public List<PublicationDetail> importFilesMultiPubli(boolean draft) {
+  public ImportReport importFilesMultiPubli(boolean draft) {
     SilverTrace.info("kmelia", "FileImport.importFilesMultiPubli()", "root.MSG_GEN_ENTER_METHOD");
-    List<PublicationDetail> publicationDetails = new ArrayList<PublicationDetail>();
+    ImportReport importReport = null;
     try {
       String tempFolderPath = unzipUploadedFile();
       MassiveDocumentImport massiveImporter = new MassiveDocumentImport();
       ImportSettings settings = getImportSettings(tempFolderPath, draft);
-      publicationDetails = massiveImporter.importDocuments(settings, new MassiveReport());
+      importReport = massiveImporter.importDocuments(settings, new MassiveReport());
     } catch (Exception e) {
       SilverTrace.warn("kmelia", "FileImport.importFilesMultiPubli()",
           "root.EX_LOAD_ATTACHMENT_FAILED", e);
     }
     SilverTrace.info("kmelia", "FileImport.importFilesMultiPubli()", "root.MSG_GEN_EXIT_METHOD");
-    return publicationDetails;
+    return importReport;
+  }
+  
+  /**
+   * Write import report into a log file
+   *
+   */
+  public void writeImportToLog(ImportReport importReport, ResourcesWrapper resource) {
+    if (importReport != null) {
+      String reportLogFile = settings.getString("importExportLogFile");
+      ResourceBundle resources = FileUtil.loadBundle(
+          "com.stratelia.silverpeas.silvertrace.settings.silverTrace", new Locale("", ""));
+      String reportLogPath = resources.getString("ErrorDir");
+      File file = new File(reportLogPath + separator + reportLogFile);
+      Writer fileWriter = null;
+      try {
+        if (!file.exists()) {
+          file.createNewFile();
+        }
+        fileWriter = new OutputStreamWriter(new FileOutputStream(file.getPath(), true), UTF_8);
+        fileWriter.write(importReport.writeToLog(resource));
+      } catch (IOException ex) {
+        SilverTrace.error("kmelia", "FileImport.writeImportToLog()",
+            "root.EX_CANT_WRITE_FILE",
+            ex);
+      } finally {
+        IOUtils.closeQuietly(fileWriter);
+      }
+    }
   }
 
   /**

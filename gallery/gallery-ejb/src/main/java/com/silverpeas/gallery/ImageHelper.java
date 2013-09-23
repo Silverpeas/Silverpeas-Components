@@ -20,25 +20,6 @@
  */
 package com.silverpeas.gallery;
 
-import java.awt.Font;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.List;
-
-import javax.imageio.ImageIO;
-
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-
-import org.silverpeas.process.io.file.FileBasePath;
-import org.silverpeas.process.io.file.FileHandler;
-import org.silverpeas.process.io.file.HandledFile;
-import org.silverpeas.util.ImageLoader;
-
 import com.silverpeas.gallery.image.DrewImageMetadataExtractor;
 import com.silverpeas.gallery.image.ImageMetadataException;
 import com.silverpeas.gallery.image.ImageMetadataExtractor;
@@ -52,10 +33,25 @@ import com.silverpeas.gallery.processing.Watermarker;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.List;
+import javax.imageio.ImageIO;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.silverpeas.process.io.file.FileBasePath;
+import org.silverpeas.process.io.file.FileHandler;
+import org.silverpeas.process.io.file.HandledFile;
+import org.silverpeas.util.ImageLoader;
 
 public class ImageHelper {
 
@@ -169,7 +165,6 @@ public class ImageHelper {
     }
   }
 
-
   private static void createImage(final String name, final HandledFile handledImageFile,
       final PhotoDetail photo, final boolean watermark, final String watermarkHD,
       final String watermarkOther) throws Exception {
@@ -219,13 +214,18 @@ public class ImageHelper {
       final HandledFile handledFile = fileHandler.getHandledFile(BASE_PATH, photo.getInstanceId(),
           settings.getString("imagesSubDirectory") + photoId, name);
       if (handledFile.exists()) {
-        final ImageMetadataExtractor extractor = new DrewImageMetadataExtractor(photo.
-            getInstanceId());
-        for (final MetaData meta : extractor.extractImageExifMetaData(handledFile.getFile(), lang)) {
-          photo.addMetaData(meta);
-        }
-        for (final MetaData meta : extractor.extractImageIptcMetaData(handledFile.getFile(), lang)) {
-          photo.addMetaData(meta);
+        try {
+          final ImageMetadataExtractor extractor = new DrewImageMetadataExtractor(photo.
+              getInstanceId());
+          for (final MetaData meta : extractor.extractImageExifMetaData(handledFile.getFile(), lang)) {
+            photo.addMetaData(meta);
+          }
+          for (final MetaData meta : extractor.extractImageIptcMetaData(handledFile.getFile(), lang)) {
+            photo.addMetaData(meta);
+          }
+        } catch (UnsupportedEncodingException e) {
+          SilverTrace.error("gallery", "ImageHelper.computeWatermarkText", "root.MSG_BAD_ENCODING",
+              "Bad metadata encoding in image " + photo.getTitle() + ": " + e.getMessage());
         }
       }
     }
@@ -432,35 +432,41 @@ public class ImageHelper {
     if (ImageType.isIPTCCompliant(type) && watermark) {
       final ImageMetadataExtractor extractor =
           new DrewImageMetadataExtractor(photo.getInstanceId());
-      final List<MetaData> iptcMetadata = extractor.extractImageIptcMetaData(image.getFile());
-      final BufferedImage bufferedImage = ImageLoader.loadImage(image.getFile());
-      if (StringUtil.isDefined(watermarkHD)) {
-        // création d'un duplicata de l'image originale avec intégration du
-        // watermark
-        final String value = getWatermarkValue(watermarkHD, iptcMetadata);
-        if (value != null) {
-          nameAuthor = value;
-        }
-        if (!nameAuthor.isEmpty()) {
-          OutputStream watermarkStream = null;
-          try {
-            watermarkStream =
-                image.getParentHandledFile().getHandledFile(photo.getId() + "_watermark.jpg")
-                .openOutputStream();
-            createWatermark(watermarkStream, nameAuthor, bufferedImage, percentSize);
-          } finally {
-            IOUtils.closeQuietly(watermarkStream);
+      final List<MetaData> iptcMetadata;
+      try {
+        iptcMetadata = extractor.extractImageIptcMetaData(image.getFile());
+        final BufferedImage bufferedImage = ImageLoader.loadImage(image.getFile());
+        if (StringUtil.isDefined(watermarkHD)) {
+          // création d'un duplicata de l'image originale avec intégration du
+          // watermark
+          final String value = getWatermarkValue(watermarkHD, iptcMetadata);
+          if (value != null) {
+            nameAuthor = value;
+          }
+          if (!nameAuthor.isEmpty()) {
+            OutputStream watermarkStream = null;
+            try {
+              watermarkStream =
+                  image.getParentHandledFile().getHandledFile(photo.getId() + "_watermark.jpg")
+                  .openOutputStream();
+              createWatermark(watermarkStream, nameAuthor, bufferedImage, percentSize);
+            } finally {
+              IOUtils.closeQuietly(watermarkStream);
+            }
           }
         }
-      }
-      if (StringUtil.isDefined(watermarkOther)) {
-        final String value = getWatermarkValue(watermarkOther, iptcMetadata);
-        if (value != null) {
-          nameAuthor = value;
+        if (StringUtil.isDefined(watermarkOther)) {
+          final String value = getWatermarkValue(watermarkOther, iptcMetadata);
+          if (value != null) {
+            nameAuthor = value;
+          }
+          if (!nameAuthor.isEmpty()) {
+            nameForWatermark = nameAuthor;
+          }
         }
-        if (!nameAuthor.isEmpty()) {
-          nameForWatermark = nameAuthor;
-        }
+      } catch (UnsupportedEncodingException e) {
+        SilverTrace.error("gallery", "ImageHelper.computeWatermarkText", "root.MSG_BAD_ENCODING",
+            "Bad metadata encoding in image " + image.getFile().getPath() + ": " + e.getMessage());
       }
     }
     return nameForWatermark;

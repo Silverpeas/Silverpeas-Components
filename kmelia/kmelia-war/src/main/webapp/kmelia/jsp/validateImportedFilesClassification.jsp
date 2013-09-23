@@ -42,6 +42,9 @@
 <fmt:message key="GML.validate" var="done"/>
 <fmt:message key="kmelia.publiClassification" var="classification"/>
 <c:set var="importedPublications" value="${requestScope['PublicationsDetails']}"/>
+<c:set var="nbPublication" value="${requestScope['NbPublication']}"/>
+<c:set var="nbFiles" value="${requestScope['NbFiles']}"/>
+<c:set var="message" value="${requestScope['Message']}"/>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
@@ -406,18 +409,31 @@
     <view:browseBar clickable="false" path="${classification}"/>
     <view:window browseBarVisible="true">
       <view:frame>
-        <div class="inlineMessage">
-          <c:choose>
-            <c:when test="${fn:length(importedPublications) > 1}">
-              <fmt:message key="kmelia.importedPublicationCount">
-                <fmt:param value="${fn:length(importedPublications)}"/>
-              </fmt:message>
-            </c:when>
-            <c:otherwise>
-              <fmt:message key="kmelia.oneImportedPublicationCount"/>
-            </c:otherwise>
-          </c:choose>
-        </div>
+		<c:choose>
+          <c:when test="${message == null}">
+            <div class="inlineMessage">
+			  <c:choose>
+                <c:when test="${fn:length(importedPublications) > 1}">
+                  <fmt:message key="kmelia.importedPublicationCount">
+                    <fmt:param value="${fn:length(importedPublications)}"/>
+                  </fmt:message>
+				</c:when>
+				<c:otherwise>
+				  <fmt:message key="kmelia.oneImportedPublicationCount"/>
+				</c:otherwise>
+              </c:choose>
+			</div>
+          </c:when>
+          <c:otherwise>
+            <div class="inlineMessage-nok">
+			  <c:out value="${message}"/><br/>
+			  <fmt:message key="kmelia.NbFiles"/> <c:out value="${nbFiles}"/><br/>
+			  <fmt:message key="kmelia.NbPublications"/> <c:out value="${nbPublication}"/><br/>
+			</div>
+          </c:otherwise>
+        </c:choose>
+          
+        
         <br clear="all"/>
         <div id="header">
 

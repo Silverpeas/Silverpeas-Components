@@ -21,21 +21,15 @@
 package com.silverpeas.component.kmelia;
 
 import java.rmi.RemoteException;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import com.silverpeas.admin.components.ComponentPasteInterface;
 import com.silverpeas.admin.components.PasteDetail;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AdminController;
-import com.stratelia.webactiv.beans.admin.ObjectType;
-import com.stratelia.webactiv.beans.admin.ProfileInst;
+import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
-import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
@@ -45,106 +39,41 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 
 public class KmeliaPaste implements ComponentPasteInterface {
 
-  private AdminController m_AdminCtrl = null;
-  String fromComponentId;
-  String toComponentId;
-  String userId;
-
   public KmeliaPaste() {
   }
 
   @Override
   public void paste(PasteDetail pasteDetail) throws RemoteException {
     SilverTrace.debug("kmelia", "KmeliaPaste.paste()", "root.MSG_GEN_ENTER_METHOD");
-    fromComponentId = pasteDetail.getFromComponentId();
-    toComponentId = pasteDetail.getToComponentId();
-    userId = pasteDetail.getUserId();
-
-    // Get root node Detail
-    NodeDetail father = getNodeBm().getDetail(getNodePK(NodePK.ROOT_NODE_ID, toComponentId));
-
-    // Get level 1 nodes
-    NodePK rootPK = getNodePK(NodePK.ROOT_NODE_ID, fromComponentId);
+    String fromComponentId = pasteDetail.getFromComponentId();
+    String toComponentId = pasteDetail.getToComponentId();
+    
+    KmeliaCopyDetail copyDetail = new KmeliaCopyDetail(pasteDetail);
+    copyDetail.addOption(KmeliaCopyDetail.NODE_RIGHTS, "true");
+    
+    NodePK rootPK = new NodePK(NodePK.ROOT_NODE_ID, fromComponentId);
+    NodePK targetPK = new NodePK(NodePK.ROOT_NODE_ID, toComponentId);
+    
+    // copy publications on root
+    copyDetail.setFromNodePK(rootPK);
+    copyDetail.setToNodePK(targetPK);
+    getKmeliaBm().copyPublications(copyDetail);
+    
+    // copy Wysiwyg of root
+    WysiwygController.copy(fromComponentId, "Node_" + NodePK.ROOT_NODE_ID,
+        toComponentId, "Node_" + NodePK.ROOT_NODE_ID, pasteDetail.getUserId());
+    
+    // copy first level of nodes
     List<NodeDetail> firstLevelNodes = getNodeBm().getHeadersByLevel(rootPK, 2);
-    HashMap<Integer, Integer> oldAndNewIds = new HashMap<Integer, Integer>();
     for (NodeDetail nodeToPaste : firstLevelNodes) {
       if (nodeToPaste.getId() > 2) {
         // Don't take unbalanced and basket nodes
-        pasteNode(nodeToPaste, father, oldAndNewIds);
+        copyDetail.setFromNodePK(nodeToPaste.getNodePK());
+        copyDetail.setToNodePK(targetPK);
+        getKmeliaBm().copyNode(copyDetail);
       }
     }
     SilverTrace.debug("kmelia", "KmeliaPaste.paste()", "root.MSG_GEN_EXIT_METHOD");
-  }
-
-  /**
-   * Paste Topic
-   *
-   * @param nodeToPaste
-   * @param father
-   * @param isCutted
-   * @throws RemoteException
-   */
-  private void pasteNode(NodeDetail nodeToPaste, NodeDetail father,
-      HashMap<Integer, Integer> oldAndNewIds) throws RemoteException {
-    SilverTrace.debug("kmelia", "KmeliaPaste.pasteNode()", "root.MSG_GEN_ENTER_METHOD");
-    NodePK nodeToPastePK = nodeToPaste.getNodePK();
-
-    // paste topic
-    NodePK nodePK = new NodePK("unknown", toComponentId);
-    NodeDetail node = new NodeDetail();
-    node.setNodePK(nodePK);
-    node.setCreatorId(userId);
-    node.setName(nodeToPaste.getName());
-    node.setDescription(nodeToPaste.getDescription());
-    node.setTranslations(nodeToPaste.getTranslations());
-    node.setCreationDate(DateUtil.today2SQLDate());
-    node.setStatus(nodeToPaste.getStatus());
-    nodePK = getNodeBm().createNode(node, father);
-    oldAndNewIds.put(Integer.parseInt(nodeToPastePK.getId()), Integer.parseInt(nodePK.getId()));
-    if (nodeToPaste.haveRights()) {
-      if (nodeToPaste.haveLocalRights()) {
-        node.setRightsDependsOn(Integer.parseInt(nodePK.getId()));
-      } else {
-        int oldRightsDependsOn = nodeToPaste.getRightsDependsOn();
-        Integer newRightsDependsOn = oldAndNewIds.get(Integer.valueOf(oldRightsDependsOn));
-        node.setRightsDependsOn(newRightsDependsOn);
-      }
-      getNodeBm().updateRightsDependency(node);
-    }
-    // Set topic rights if necessary
-    if (nodeToPaste.haveLocalRights()) {
-      List<ProfileInst> topicProfiles = getTopicProfiles(nodeToPaste.getNodePK().getId());
-      for (ProfileInst nodeToPasteProfile : topicProfiles) {
-        if (nodeToPasteProfile != null) {
-          ProfileInst nodeProfileInst = (ProfileInst) nodeToPasteProfile.clone();
-          nodeProfileInst.setId("-1");
-          nodeProfileInst.setComponentFatherId(toComponentId);
-          nodeProfileInst.setObjectId(Integer.parseInt(nodePK.getId()));
-          nodeProfileInst.setObjectFatherId(father.getId());
-          // Add the profile
-          m_AdminCtrl.addProfileInst(nodeProfileInst, userId);
-        }
-      }
-    }
-
-    // paste wysiwyg attached to node
-    WysiwygController.copy(nodeToPastePK.getInstanceId(), "Node_" + nodeToPastePK.getId(),
-        toComponentId, "Node_" + nodePK.getId(), userId);
-    // paste subtopics
-    node = getNodeBm().getHeader(nodePK);
-    Collection<NodeDetail> subtopics = getNodeBm().getDetail(nodeToPastePK).getChildrenDetails();
-    for (NodeDetail subTopic : subtopics) {
-      if (subTopic != null) {
-        pasteNode(subTopic, node, oldAndNewIds);
-      }
-    }
-    SilverTrace.debug("kmelia", "KmeliaPaste.pasteNode()", "root.MSG_GEN_EXIT_METHOD");
-  }
-
-  private List<ProfileInst> getTopicProfiles(String topicId) {
-    SilverTrace.debug("kmelia", "KmeliaPaste.getTopicProfiles()", "root.MSG_GEN_ENTER_METHOD");
-
-    return getAdmin().getProfilesByObject(topicId, ObjectType.NODE.getCode(), fromComponentId);
   }
 
   private NodeBm getNodeBm() {
@@ -155,16 +84,9 @@ public class KmeliaPaste implements ComponentPasteInterface {
           "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_NODEBM_HOME", e);
     }
   }
-
-  private NodePK getNodePK(String id, String componentId) {
-    return new NodePK(id, componentId);
+  
+  private KmeliaBm getKmeliaBm() {
+    return EJBUtilitaire.getEJBObjectRef(JNDINames.KMELIABM_EJBHOME, KmeliaBm.class);
   }
 
-  private AdminController getAdmin() {
-    if (m_AdminCtrl == null) {
-      m_AdminCtrl = new AdminController(userId);
-    }
-
-    return m_AdminCtrl;
-  }
 }

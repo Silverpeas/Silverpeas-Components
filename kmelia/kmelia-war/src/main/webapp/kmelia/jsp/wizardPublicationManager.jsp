@@ -202,7 +202,7 @@ function init() {
 	<br clear="all"/>
 	
 	<div id="header">
-		<form name="pubForm" action="publicationManager.jsp" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
+		<form name="pubForm" action="#" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
 			<input type="hidden" name="Positions"/>
 			<input type="hidden" name="Position" value="View"/>
 			<input type="hidden" name="Action" value="<%=action%>"/>
@@ -254,7 +254,7 @@ function init() {
 			</fieldset>
 			
 			<% if (!kmeliaScc.isKmaxMode) { %>
-				<view:pdcNewContentClassification componentId="<%= componentId %>" nodeId="<%= kmeliaScc.getSessionTopic().getNodePK().getId() %>"/>
+				<view:pdcNewContentClassification componentId="<%= componentId %>" nodeId="<%= kmeliaScc.getCurrentFolderId() %>"/>
 			<% } %>
 			
 			<div class="legend">

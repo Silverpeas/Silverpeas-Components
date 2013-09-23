@@ -413,7 +413,7 @@ public class DefaultClassifiedService implements ClassifiedService {
       //classified creation from the results
       for (MatchingIndexEntry matchIndex : result) {
         if ("Classified".equals(matchIndex.getObjectType())) {
-          //ne retourne que les petites annonces valides
+          //return only valid classifieds
           ClassifiedDetail classified = this.getContentById(matchIndex.getObjectId());
           if (classified != null && ClassifiedDetail.VALID.equals(classified.getStatus())) {
             classifieds.add(classified);
@@ -505,13 +505,14 @@ public class DefaultClassifiedService implements ClassifiedService {
   }
 
   @Override
-  public void draftOutClassified(String classifiedId, String profile) {
+  public void draftOutClassified(String classifiedId, String profile, boolean isValidationEnabled) {
     ClassifiedDetail classified = getContentById(classifiedId);
     String status = classified.getStatus();
     if (status.equals(ClassifiedDetail.DRAFT)) {
-      status = ClassifiedDetail.TO_VALIDATE;
-      if ("admin".equals(profile)) {
+      if("admin".equals(profile) || !isValidationEnabled) {
         status = ClassifiedDetail.VALID;
+      } else {
+        status = ClassifiedDetail.TO_VALIDATE;
       }
       classified.setStatus(status);
       sendAlertToSupervisors(classified);
@@ -675,10 +676,6 @@ public class DefaultClassifiedService implements ClassifiedService {
               SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_GET_IMAGES", e);
         }
       }
-
-      // sort the classifieds from the newer to the older
-      Collections.reverse(listClassified);
-
       return listClassified;
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException("DefaultClassifiedService.getAllValidClassifieds()",
