@@ -3313,8 +3313,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       }
       // copy files
       new AttachmentImportExport().getAttachments(pubPK, subDirPath, "useless", null);
-      new VersioningImportExport(getUserDetail()).
-          exportDocuments(pubPK, subDirPath, "useless", null);
+      
       String zipFileName = FileRepositoryManager.getTemporaryPath() + fileName + ".zip";
       // zip PDF and files
       ZipManager.compressPathToZip(subDirPath, zipFileName);
