@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.stratelia.webactiv.util.statistic.model.HistoryObjectDetail"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -47,7 +48,6 @@
 <%@page import="org.silverpeas.component.kmelia.KmeliaPublicationHelper"%>
 
 <%
-  ResourceLocator uploadSettings = new ResourceLocator("org.silverpeas.util.uploads.uploadSettings", resources.getLanguage());
   ResourceLocator publicationSettings = new ResourceLocator("org.silverpeas.util.publication.publicationSettings", resources.getLanguage());
 
   //Recuperation des parametres
@@ -65,13 +65,13 @@
   boolean userCanValidate = (Boolean) request.getAttribute("UserCanValidate");
   ValidationStep validation = (ValidationStep) request.getAttribute("ValidationStep");
   int validationType = ((Integer) request.getAttribute("ValidationType")).intValue();
-  boolean isWriterApproval = ((Boolean) request.getAttribute("WriterApproval")).booleanValue();
-  boolean notificationAllowed = ((Boolean) request.getAttribute("NotificationAllowed")).booleanValue();
-  boolean attachmentsEnabled = ((Boolean) request.getAttribute("AttachmentsEnabled")).booleanValue();
+  boolean isWriterApproval = (Boolean) request.getAttribute("WriterApproval");
+  boolean notificationAllowed = (Boolean) request.getAttribute("NotificationAllowed");
+  boolean attachmentsEnabled = (Boolean) request.getAttribute("AttachmentsEnabled");
   boolean draftOutTaxonomyOK = (Boolean) request.getAttribute("TaxonomyOK");
   boolean draftOutValidatorsOK = (Boolean) request.getAttribute("ValidatorsOK");
   int searchScope = (Integer) request.getAttribute("SearchScope");
-  boolean isNewsManage = ((Boolean) request.getAttribute("NewsManage")).booleanValue();
+  boolean isNewsManage = (Boolean) request.getAttribute("NewsManage");
   DelegatedNews delegatedNews = null;
   boolean isBasket = false;
   if (isNewsManage) {
@@ -82,6 +82,8 @@
   if (kmeliaScc.isIndexable(kmeliaPublication.getDetail())) {
     indexIt = "1";
   }
+  
+  List<HistoryObjectDetail> lastAccess = (List<HistoryObjectDetail>) request.getAttribute("LastAccess");
 
   if (action == null) {
     action = "View";
@@ -682,6 +684,31 @@
 					        </p>
 				            <% }%>
 					</div>
+					<!-- consultation -->
+                    <div id="lastReader" class="bgDegradeGris">
+                   		<div class="bgDegradeGris header">
+                        	<h4 class="clean"><%=resources.getString("kmelia.publication.lastvisitors") %></h4>
+                      	</div>
+                      	<% if (lastAccess.isEmpty()) { %>
+                      		<div class="paragraphe"><%=resources.getString("kmelia.publication.lastvisitors.none") %></div>
+                      	<% } else { %>
+	                      	<ul id="lastReaderList">
+	                      	<%
+	                      		for (int i=0; i<lastAccess.size() && i<4; i++) {
+									HistoryObjectDetail access = lastAccess.get(i);
+							%>
+									<li>
+	                          			<div class="profilPhoto"><img src="<%=URLManager.getApplicationURL() %><%=UserDetail.getById(access.getUserId()).getAvatar() %>" alt="" class="defaultAvatar"/></div>
+	                              		<view:username userId="<%=access.getUserId() %>" /> <span class="consultationDate"><%=resources.getString("kmelia.publication.lastvisitors.on") %> <%=resources.getOutputDate(access.getDate()) %></span>
+	                          		</li>
+							<% } %>
+                      		</ul>
+                      	<% } %>
+                      	<% if (isOwner && kmeliaScc.getInvisibleTabs().indexOf(KmeliaSessionController.TAB_READER_LIST) == -1) { %>
+                      	<a id="readingControlLink" href="ReadingControl">&gt;&gt; <%=resources.getString("PubGererControlesLecture") %></a>
+                      	<% } %>
+                    </div>
+                    <!-- /consultation -->
                     <%
                     /*********************************************************************************************************************/
         /** Affichage de la classification de la publication sur le PdC														**/
