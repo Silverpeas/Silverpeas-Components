@@ -165,8 +165,10 @@ public class OrganizationChartLdapServiceImpl extends AbstractOrganizationChartS
 
     if (parentName != null) {
       // there is a parent so define is path for return to top level OU
-      int indexStart = unit.getCompleteName().indexOf(parentName);
-      String parentOu = unit.getCompleteName().substring(indexStart - 3);
+      int indexStart =
+          unit.getCompleteName().toUpperCase()
+              .indexOf(ou.toUpperCase() + "=" + parentName.toUpperCase());
+      String parentOu = unit.getCompleteName().substring(indexStart);
       unit.setParentOu(parentOu);
     }
   }
