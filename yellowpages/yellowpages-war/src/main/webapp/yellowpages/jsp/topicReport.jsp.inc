@@ -14,7 +14,7 @@ String displayPath(YellowpagesSessionController Scc, Collection path, boolean li
             if ((i <= beforeAfter) || (i + beforeAfter >= nbItemInPath - 1)){
 				nodeName = EncodeHelper.javaStringToHtmlString(nodeInPath.getName());
 				bundleName = Scc.getString(nodeName);
-				// Vérifie que le nom n'est pas Corbeille
+				// Vï¿½rifie que le nom n'est pas Corbeille
 				if (bundleName != null){
 					nodeName = bundleName;
 				}
@@ -107,7 +107,7 @@ TopicDetail displayTopicsToAdmin(YellowpagesSessionController yellowpagesScc, St
 		                folder.setProperties(resources.getIcon("yellowpages.folder"), "", link);
 	                	
 	                	Icon expleIcon1 = actionPane.addIcon();
-						expleIcon1.setProperties(resources.getIcon("yellowpages.update"), yellowpagesScc.getString("ModifierSousTheme")+" '"+Encode.javaStringToHtmlString(childName)+"'", "javascript:onClick=topicUpdate('"+childId+"')");
+						expleIcon1.setProperties(resources.getIcon("yellowpages.update"), yellowpagesScc.getString("ModifierSousTheme")+" '"+Encode.javaStringToHtmlString(childName)+"'", "javascript:onClick=toAddOrUpdateFolder('ToUpdateFolder', '"+childId+"')");
 						Icon expleIcon2 = actionPane.addIcon();
 						expleIcon2.setProperties(resources.getIcon("yellowpages.delete"),  yellowpagesScc.getString("SupprimerSousTheme")+" '"+Encode.javaStringToHtmlString(childName)+"'", "javascript:onClick=topicDeleteConfirm('"+childId+"', '"+Encode.javaStringToHtmlString(Encode.javaStringToJsString(childName))+"')");
 	                }
@@ -172,21 +172,5 @@ TopicDetail displaySimpleTopicsToUsers(YellowpagesSessionController yellowpagesS
     }
         out.println("</select>");
         return null;
-}
-
-NodePK addTopic(YellowpagesSessionController yellowpagesScc, String name, String description, JspWriter out) throws Exception {
-	TopicDetail CurrentTopic=yellowpagesScc.getCurrentTopic();
-   	NodeDetail topic = new NodeDetail("X",name,description,null,null,CurrentTopic.getNodeDetail().getPath(),new Integer(CurrentTopic.getNodeDetail().getLevel()+1).toString(),"X");
-    return yellowpagesScc.addSubTopic(topic);
-}
-
-NodePK updateTopic(YellowpagesSessionController yellowpagesScc, String id, String name, String description, String modelId, JspWriter out) throws Exception {        
-	TopicDetail CurrentTopic=yellowpagesScc.getCurrentTopic();
-    NodeDetail topic = new NodeDetail(id,name,description,null,null,CurrentTopic.getNodeDetail().getPath()+"/",CurrentTopic.getNodeDetail().getLevel()+1,"X",modelId, null,null);
-    return yellowpagesScc.updateTopicHeader(topic);
-}
-
-void removeTopic(YellowpagesSessionController yellowpagesScc, String id, JspWriter out) throws Exception  {
-    yellowpagesScc.deleteTopic(id);
 }
 %>

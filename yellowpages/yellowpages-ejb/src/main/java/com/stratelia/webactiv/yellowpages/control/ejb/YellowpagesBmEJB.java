@@ -28,7 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.ejb.EJB;
-import javax.ejb.Stateless;
+import javax.ejb.Stateful;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 
@@ -72,8 +72,8 @@ import com.stratelia.webactiv.yellowpages.model.YellowpagesRuntimeException;
  *
  * @author Nicolas Eysseric
  */
-@Stateless(name = "Yellowpages", description =
-    "Stateless session bean to manage the yellow pages component.")
+@Stateful(name = "Yellowpages", description =
+    "Stateful session bean to manage the yellow pages component.")
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class YellowpagesBmEJB implements YellowpagesBm {
 
