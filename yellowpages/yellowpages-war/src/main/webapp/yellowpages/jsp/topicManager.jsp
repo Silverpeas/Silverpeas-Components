@@ -1,3 +1,4 @@
+<%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="com.stratelia.webactiv.yellowpages.control.DisplayContactsHelper" %>
 <%--
 
@@ -31,6 +32,7 @@ response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkYellowpages.jsp" %>
 <%@ include file="topicReport.jsp.inc" %>
@@ -38,29 +40,16 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <% 
 String rootId = Integer.toString(ROOT_TOPIC);
 
-String name = "";
-String description = "";
-String modelId = "";
 Collection path = null;
-String fatherId = "";
-Collection subTopicList = null;
-Collection contactList = null;
 String linkedPathString = "";
-String pathString = "";
-String topicName = "";
-boolean updateFailed = false;
 
 //Recuperation des parametres
-String action = request.getParameter("Action");
 String id = request.getParameter("Id");
-String contactId = request.getParameter("ContactId");
-String childId = request.getParameter("ChildId");
 String profile = request.getParameter("Profile");
 
 //Mise a jour de l'espace
 TopicDetail currentTopic = null;
-if (!StringUtil.isDefined(action) || id == null) {
-    action = "Search";
+if (!StringUtil.isDefined(id)) {
     currentTopic = yellowpagesScc.getCurrentTopic();
     if (currentTopic != null) {
 		id = currentTopic.getNodePK().getId();
@@ -75,18 +64,16 @@ if (!StringUtil.isDefined(action) || id == null) {
 <head>
 <view:looknfeel />
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+<script type="text/javascript" src="<c:url value="/util/javaScript/checkForm.js" />"></script>
 <script type="text/javascript" src="javaScript/spacesInURL.js"></script>
+<view:includePlugin name="popup"/>
 <script type="text/javascript">
-var topicAddWindow = window;
-var topicUpdateWindow = window;
 var contactWindow = window;
 var userAddWindow = window;
 var importCSVWindow = window;
 
-function topicGoTo(id) 
-{
+function topicGoTo(id) {
 	closeWindows();	
-    document.topicDetailForm.Action.value = "Search";
     document.topicDetailForm.Id.value = id;
     document.topicDetailForm.submit();
 }
@@ -102,32 +89,36 @@ function simpleTopicGoToSelected() {
 }
 
 <% if (profile.equals("admin")) { %>
-function topicAdd(fatherId) {
-    path = document.topicDetailForm.Path.value;
-    url = "addTopic.jsp?Id="+fatherId+"&Path="+breakSpace(path)+"&Action=View";
-    windowName = "topicAddWindow";
-    windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars=yes";
-    if (!topicAddWindow.closed && topicAddWindow.name == "topicAddWindow")
-        topicAddWindow.close();
-    topicAddWindow = SP_openWindow( url, windowName, '750' , '400' , windowParams); 
-}
-
-function topicUpdate(id) {
-    path = document.topicDetailForm.Path.value;
-    document.topicDetailForm.ChildId.value = id;
-    url = "updateTopic.jsp?ChildId="+id+"&Path="+breakSpace(path);
-    windowName = "topicUpdateWindow";
-    windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars=yes";
-    if (!topicUpdateWindow.closed && topicUpdateWindow.name == "topicUpdateWindow")
-        topicUpdateWindow.close();
-
-    topicUpdateWindow = SP_openWindow( url, windowName, '750' , '400' , windowParams);
+function isCorrectForm() {
+   var errorMsg = "";
+   var errorNb = 0;
+   var title = stripInitialWhitespace(window.document.AddAndUpdateFolderForm.Name.value);
+   if (isWhitespace(title)) {
+     errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=yellowpagesScc.getString("TopicTitle")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
+     errorNb++; 
+   }
+   switch(errorNb) {
+      case 0 :
+          result = true;
+          break;
+      case 1 :
+          errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
+          window.alert(errorMsg);
+          result = false;
+          break;
+      default :
+          errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
+          window.alert(errorMsg);
+          result = false;
+          break;
+   }
+   return result;
 }
 
 function topicDeleteConfirm(childId, name) {
     if(window.confirm("<%=yellowpagesScc.getString("ConfirmDeleteTopic")%> '" + name + "' ?")){
-          document.topicDetailForm.Action.value = "Delete";
-          document.topicDetailForm.ChildId.value = childId;
+          document.topicDetailForm.action = "DeleteFolder";
+          document.topicDetailForm.ToDeleteId.value = childId;
           document.topicDetailForm.submit();
     }
 }
@@ -144,12 +135,7 @@ function groupDeleteConfirm(childId, name) {
 }
 <% } %>
 
-function closeWindows()
-{
-		if (!topicAddWindow.closed && topicAddWindow.name == "topicAddWindow")
-        topicAddWindow.close();
-    if (!topicUpdateWindow.closed && topicUpdateWindow.name == "topicUpdateWindow")
-        topicUpdateWindow.close();
+function closeWindows() {
     if (!userAddWindow.closed && userAddWindow.name == "userAddWindow")
         userAddWindow.close();
     if (!contactWindow.closed && contactWindow.name == "contactWindow")
@@ -201,53 +187,45 @@ function contactDeleteConfirm(id) {
     }
 }
 
-function errorUpdate() {
-	alert("<%=resources.getString("ContactAddToTopic3")%>");
-}
-
 function consult() {
     closeWindows();
 	location.href = "Main.jsp";
 }
 
-</script>
-</head>
-<%
-if ("Add".equals(action)) {
-    name = request.getParameter("Name");
-    description = request.getParameter("Description");
-    NodePK newNodePK = addTopic(yellowpagesScc, name, description, out);
-    if (newNodePK.getId().equals("-1")) {
-		updateFailed = true;    
-    } 
-    action = "Search";
-} else if ("Update".equals(action)) {
-    childId = request.getParameter("ChildId");
-    topicName = request.getParameter("Name");
-    description = request.getParameter("Description");
-    modelId = request.getParameter("ModelId");
-    NodePK updatedNodePK = updateTopic(yellowpagesScc, childId, topicName, description, modelId, out);
-    if (updatedNodePK.getId().equals("-1")) {
-		updateFailed = true;
-} 
-    action = "Search";
-} else if ("Delete".equals(action)) {
-    childId = request.getParameter("ChildId");
-    removeTopic(yellowpagesScc, childId, out);
-    action = "Search";
+function toAddOrUpdateFolder(action, id) {
+	$.ajax({
+		url: webContext+'<%=URLManager.getURL("yellowpages", null, componentId)%>'+action+'?Id='+id,
+		async: false,
+		type: "GET",
+		dataType: "html",
+		success: function(data) {
+			  $('#folderDialog').html(data);
+			  if (action == 'ToUpdateFolder') {
+			  	$('#folderDialog').attr('title', '<%=EncodeHelper.javaStringToJsString(resources.getString("TopicUpdateTitle"))%>');
+			  } else {
+				$('#folderDialog').attr('title', '<%=EncodeHelper.javaStringToJsString(resources.getString("TopicCreationTitle"))%>');
+			  }
+			}
+		});
+	
+	$('#folderDialog').popup('validation', {
+	    callback : function() {
+	      if (isCorrectForm()) {
+			  window.document.AddAndUpdateFolderForm.submit();
+		  }
+	      return true;
+	    }
+	});
 }
 
-
-if ("Search".equals(action)) {
-%>
+</script>
+</head>
     <body>
     <form name="topicDetailForm" action="topicManager.jsp" method="post">
 <%
     currentTopic = yellowpagesScc.getTopic(id);
     yellowpagesScc.setCurrentTopic(currentTopic);
-    name = currentTopic.getNodeDetail().getName();
     path = currentTopic.getPath();
-    pathString = displayPath(yellowpagesScc,path, false, 3);
     linkedPathString = displayPath(yellowpagesScc, path, true, 3);
     yellowpagesScc.setPath(linkedPathString);
 
@@ -263,7 +241,7 @@ if ("Search".equals(action)) {
 		if (!id.equals(TRASHCAN_ID)){
 			operationPane.addOperation(resources.getIcon("yellowpages.modelUsed"), resources.getString("yellowpages.ModelUsed"), "ModelUsed");
 			operationPane.addLine();
-			operationPane.addOperationOfCreation(resources.getIcon("yellowpages.folderAdd"), resources.getString("CreerSousTheme"), "javascript:onClick=topicAdd('"+id+"')");
+			operationPane.addOperationOfCreation(resources.getIcon("yellowpages.folderAdd"), resources.getString("CreerSousTheme"), "javascript:onClick=toAddOrUpdateFolder('ToAddFolder')");
 			operationPane.addOperationOfCreation(resources.getIcon("yellowpages.groupAdd"), resources.getString("GroupAdd"), "javascript:onClick=addGroup()");
 			operationPane.addLine();
 		}
@@ -300,7 +278,7 @@ if ("Search".equals(action)) {
             displayTopicsToUsers(yellowpagesScc, id, "<br>", profile, gef, pageContext, request, session, resources, out);
     }
 
-	out.println("<br>");
+	out.println("<br/>");
     
     if (!id.equals(TRASHCAN_ID))
     	DisplayContactsHelper.displayContactsAdmin(resources.getIcon("yellowpages.contact"), yellowpagesScc,profile,currentTopic.getContactDetails(), (currentTopic.getNodeDetail().getChildrenNumber() > 0), resources.getIcon("yellowpages.contactDelete"), gef, request, session, resources, out);
@@ -312,9 +290,8 @@ if ("Search".equals(action)) {
     out.println(window.printAfter());
 %>
 
-<input type="hidden" name="Action"/><input type="hidden" name="Id" value="<%=id%>"/>
-<input type="hidden" name="Path" value="<%=EncodeHelper.javaStringToHtmlString(pathString)%>"/><input type="hidden" name="ChildId"/>
-<input type="hidden" name="Name"/><input type="hidden" name="Description"/><input type="hidden" name="ModelId"/>
+<input type="hidden" name="Id" value="<%=id%>"/>
+<input type="hidden" name="ToDeleteId" value=""/>
 </form>
 
 <form name="contactForm" action="contactManager.jsp" target="contactWindow" method="post">
@@ -329,17 +306,8 @@ if ("Search".equals(action)) {
 </form>
 <form name="refreshList" action="topicManager"></form>
 
+<div id="folderDialog" style="display:none" title="">
+</div>
+
 </body>
-<%
-	if (updateFailed)
-	{
-		%>
-		<SCRIPT LANGUAGE="JavaScript">
-		<!--
-			errorUpdate();
-		//-->
-		</SCRIPT>
-		<%
-	}
-} //End if action = search %>
 </html>
