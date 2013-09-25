@@ -236,79 +236,66 @@ public class CardManager {
     return cards;
   }
 
-  @SuppressWarnings("unchecked")
   public Collection<WhitePagesCard> getUserCards(String userId, Collection<String> instanceIds)
       throws WhitePagesException {
     String where = " userId = '" + userId + "' and hideStatus = 0";
-    Collection<WhitePagesCard> wpcards = new ArrayList<WhitePagesCard>();
     if (instanceIds != null) {
       Iterator<String> it = instanceIds.iterator();
       if (it.hasNext()) {
         where += " and instanceId IN (";
         String id = it.next();
         where += "'" + id + "'";
-        while (it.hasNext()) {
-          id = (String) it.next();
-          where += ", '" + id + "'";
+        for (String appId : instanceIds) {
+          where += ", '" + appId + "'";
         }
         where += ")";
-        try {
-          IdPK pk = new IdPK();
-          SilverpeasBeanDAO dao =
-              SilverpeasBeanDAOFactory.getDAO("com.silverpeas.whitePages.model.Card");
-          Collection<Card> cards = dao.findByWhereClause(pk, where);
-          if (cards != null) {
-            for (Card card : cards) {
-              wpcards.add(new WhitePagesCard(new Long(card.getPK().getId())
-                  .longValue(), card.getInstanceId()));
-            }
-          }
-        } catch (PersistenceException e) {
-          throw new WhitePagesException("CardManager.getUserCards",
-              SilverpeasException.ERROR, "whitePages.EX_CANT_GET_USERCARDS",
-              "", e);
-        }
+        return getWhitePagesCards(where);
       }
 
     }
-    return wpcards;
+    return new ArrayList<WhitePagesCard>();
   }
 
-  @SuppressWarnings("unchecked")
   public Collection<WhitePagesCard> getHomeUserCards(String userId, Collection<String> instanceIds,
       String instanceId) throws WhitePagesException {
     String where = " userId = '" + userId + "' and ((instanceId = '"
         + instanceId + "') or (hideStatus = 0";
-    Collection<WhitePagesCard> wpcards = new ArrayList<WhitePagesCard>();
-    if (instanceIds != null) {
+    if (instanceIds != null && !instanceIds.isEmpty()) {
       Iterator<String> it = instanceIds.iterator();
       if (it.hasNext()) {
         where += " and instanceId IN (";
         String id = it.next();
         where += "'" + id + "'";
-        while (it.hasNext()) {
-          id = (String) it.next();
-          where += ", '" + id + "'";
+        for (String appId : instanceIds) {
+          where += ", '" + appId + "'";
         }
         where += ")))";
-        try {
-          IdPK pk = new IdPK();
-          SilverpeasBeanDAO dao =
-              SilverpeasBeanDAOFactory.getDAO("com.silverpeas.whitePages.model.Card");
-          Collection<Card> cards = dao.findByWhereClause(pk, where);
-          if (cards != null) {
-            for (Card card : cards) {
-              wpcards.add(new WhitePagesCard(new Long(card.getPK().getId())
-                  .longValue(), card.getInstanceId()));
-            }
-          }
-        } catch (PersistenceException e) {
-          throw new WhitePagesException("CardManager.getHomeUserCards",
-              SilverpeasException.ERROR, "whitePages.EX_CANT_GET_USERCARDS",
-              "", e);
-        }
+        return getWhitePagesCards(where);
       }
 
+    }
+    return new ArrayList<WhitePagesCard>();
+  }
+  
+  @SuppressWarnings("unchecked")
+  private Collection<WhitePagesCard> getWhitePagesCards(String whereClause)
+      throws WhitePagesException {
+    Collection<WhitePagesCard> wpcards = new ArrayList<WhitePagesCard>();
+    try {
+      IdPK pk = new IdPK();
+      SilverpeasBeanDAO dao =
+          SilverpeasBeanDAOFactory.getDAO("com.silverpeas.whitePages.model.Card");
+      Collection<Card> cards = dao.findByWhereClause(pk, whereClause);
+      if (cards != null) {
+        for (Card card : cards) {
+          wpcards.add(new WhitePagesCard(Long.parseLong(card.getPK().getId()), card
+              .getInstanceId()));
+        }
+      }
+    } catch (PersistenceException e) {
+      throw new WhitePagesException("CardManager.getWhitePagesCards",
+          SilverpeasException.ERROR, "whitePages.EX_CANT_GET_USERCARDS",
+          "", e);
     }
     return wpcards;
   }
