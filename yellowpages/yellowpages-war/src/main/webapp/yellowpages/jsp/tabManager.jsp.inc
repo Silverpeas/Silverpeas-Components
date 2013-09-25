@@ -20,20 +20,6 @@ void displayJavascriptAndFormToOperations(JspWriter out) throws IOException {
 out.println("</SCRIPT>");
 }
 
-void displayAllOperations(ResourcesWrapper resources, String id, GraphicElementFactory gef, String action, JspWriter out) throws IOException {
-    displayJavascriptAndFormToOperations(out);
-
-    boolean enabled = false;
-    if ((id !=null)&&(id.length()>0)) {
-        enabled = true;
-	}
-
-    TabbedPane tabbedPane = gef.getTabbedPane();
-    tabbedPane.addTab(resources.getString("GML.description"), "updateTopic.jsp?ChildId="+id+"&Path=", action.equals("ViewDesc"),enabled);
-    tabbedPane.addTab(resources.getString("Model"), "javaScript:onClick=goToOperationWithEnctypeForm('modelManager.jsp', '"+id+"', 'ModelChoice')", action.equals("ViewModel") || action.equals("NewModel") || action.equals("ModelChoice"), enabled);
-    out.println(tabbedPane.print());
-}
-
 void displayContactOperations(ResourcesWrapper resources, String id, GraphicElementFactory gef, String action, JspWriter out, boolean useModel) throws IOException {
     displayJavascriptAndFormToOperations(out);
     boolean enabled = false;
