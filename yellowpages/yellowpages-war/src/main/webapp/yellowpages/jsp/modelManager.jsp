@@ -64,42 +64,6 @@
 <%@ include file="tabManager.jsp.inc" %>
 <%@ include file="topicReport.jsp.inc" %>
 <%@ include file="modelUtils.jsp.inc" %>
-<%!
-String alertSrc;
-
-void displayModelsList(YellowpagesSessionController yellowpagesScc, String selectedModel, ArrayList listTemplate, JspWriter out)  throws IOException, Exception {
-	out.println("<TABLE border=0 cellPadding=1 cellSpacing=1 >");
-	out.println("<FORM Name=\"models\" >");
-
-	if (selectedModel == null || "".equals(selectedModel)) {
-		out.println("<tr><td><input type=radio name=radiobutton value=\"\" checked onClick=previewModel(\"0\")>"+"<a href=javascript:onClick=previewModel(\"0\"); class=txtlibform>"+ yellowpagesScc.getString("Nomodel")+"</a></td>");
-	}
-	else {
-		out.println("<tr><td><input type=radio name=radiobutton value=\"\" onClick=previewModel(\"0\")>"+"<a href=javascript:onClick=previewModel(\"0\"); class=txtlibform>"+ yellowpagesScc.getString("Nomodel")+"</a></td>");
-	}
-	out.println("<td class=field>&nbsp;</td></tr>");
-
-	if (listTemplate != null)
-	{
-		PublicationTemplate xmlForm;
-		int nb = 0;
-    out.println("<TR>");
-		for(int i = 0;i<listTemplate.size();i++)
-		{
-			xmlForm = (PublicationTemplate) listTemplate.get(i);
-      if (nb != 0 && nb%3==0)
-	      out.println("</TR><TR>");
-      nb++;
-      String checked = "";
-			if (selectedModel != null && selectedModel.equals(xmlForm.getFileName()))
-				checked = "checked";
-			out.println("<tr><td><input onClick=\"previewModel('"+xmlForm.getFileName()+"')\"" + checked +" type=\"radio\" name=\"radiobutton\" value=\""+ xmlForm.getFileName() +"\"><a href=javascript:onClick=previewModel(\""+xmlForm.getFileName()+"\"); class=txtlibform alt=\""+Encode.javaStringToHtmlString(xmlForm.getDescription())+"\" title=\""+Encode.javaStringToHtmlString(xmlForm.getDescription())+"\">");
-			out.println("<IMG SRC=\"" + xmlForm.getThumbnail() + "\" border=0 alt=\"" + xmlForm.getDescription() +"\">" + xmlForm.getName()+ " </a></td>");
-		}
-	}
-	out.println("</TABLE></FORM>");
-}
-%>
 
 <%
 String contactId = (String) request.getAttribute("ContactId");
@@ -108,11 +72,9 @@ String action = (String) request.getAttribute("Action");
 
 String linkedPathString = yellowpagesScc.getPath();
 
-ResourceLocator contactSettings = new ResourceLocator("com.stratelia.webactiv.contact.contactSettings", "fr");
-
-Button cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=reallyClose();", false);
-Button validateButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=goToModel()", false);
-Button sendNewButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendModelData('Add')", false);
+Button cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=reallyClose();", false);
+Button validateButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=goToModel()", false);
+Button sendNewButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendModelData('Add')", false);
 
 %>
 <script language="Javascript">
@@ -214,149 +176,9 @@ function reallyClose()
     %>
     <BODY onload="reallyClose()">
     </BODY>
-    <%
-    
-    
-} else if (action.equals("UpdateTopicModel")) {
-    String name = "";
-    String description = "";
-    NodeDetail subTopicDetail = yellowpagesScc.getSubTopicDetail(contactId);
-    if (subTopicDetail != null) {
-        name = subTopicDetail.getName();
-        description = subTopicDetail.getDescription();
-    }
-
-    %>
-    <script language="javascript">
-    <!--
-            window.opener.document.topicDetailForm.Action.value = "Update";
-            window.opener.document.topicDetailForm.ChildId.value = '<%=contactId%>';
-            window.opener.document.topicDetailForm.Name.value = '<%=Encode.javaStringToJsString(name)%>';
-            window.opener.document.topicDetailForm.Description.value = '<%=Encode.javaStringToJsString(description)%>';
-            window.opener.document.topicDetailForm.ModelId.value = '<%=modelId%>';
-            window.opener.document.topicDetailForm.submit();
-            window.close();
-    //-->
-    </script>
-    <%  
-} 
-
-if (action.equals("ModelChoice")) { 
-
-	ArrayList listTemplate = (ArrayList) request.getAttribute("XMLForms");
-		
-	Form formUpdate    = (Form) request.getAttribute("Form");
-	DataRecord data    = (DataRecord) request.getAttribute("Data"); 
-	PagesContext context = (PagesContext) request.getAttribute("PagesContext"); 
-    
-	%>
-	<HTML>
-	<HEAD>
-	<view:looknfeel/>
-	<view:includePlugin name="wysiwyg"/>
-	<script language="javaScript">
-	    function previewModel(id)
-	    {
-			document.modelForm.Action.value = "ModelChoice";
-			document.modelForm.action = "modelManager.jsp";
-			document.modelForm.ModelId.value = id;
-			document.modelForm.submit();
-	    }
-	    
-	    function sendData() {
-			if (document.models.radiobutton.length == 1)
-			{
-				document.modelForm.Action.value = "UpdateTopicModel";
-				document.modelForm.action = "modelManager.jsp";
-				document.modelForm.ModelId.value = document.models.radiobutton.value;
-				document.modelForm.submit();
-			}
-			else
-			{
-				for (i=0;i<document.models.radiobutton.length;i++)
-				{
-					if (document.models.radiobutton[i].checked==true)
-					{
-						document.modelForm.Action.value = "UpdateTopicModel";
-						document.modelForm.action = "modelManager.jsp";
-						document.modelForm.ModelId.value = document.models.radiobutton[i].value;
-						document.modelForm.submit();
-						return;
-					}
-				}
-			}
-	    }
-	
-	    function goToModel() {
-	        document.modelForm.submit();
-	    } 
-	
-		function topicGoTo(id) {
-			document.topicDetailForm.Action.value = "Search";
-			document.topicDetailForm.Id.value = id;
-			document.topicDetailForm.submit();
-		}
-	
-		function reallyClose()
-		{
-		  window.opener.document.topicDetailForm.Action.value = "Search";
-		  window.opener.document.topicDetailForm.submit();
-		  window.close();
-		}
-	</script>
-	</HEAD>
-	<BODY class="yui-skin-sam">
-	<% 
-	    Window window = gef.getWindow();
-	    Frame frame = gef.getFrame();
-			Board board = gef.getBoard();
-			
-	    BrowseBar browseBar = window.getBrowseBar();
-	    browseBar.setDomainName(spaceLabel);
-			browseBar.setComponentName(componentLabel);
-			browseBar.setPath(resources.getString("ModelChoiceTitle"));
-			
-		  out.println(window.printBefore());
-		  displayAllOperations(resources, contactId, gef, action, out);
-		  out.println(frame.printBefore());
-		  out.println(board.printBefore());
+    <%   
+}
 %>
-	
-		<TABLE border=0 width="98%">
-			<TR>
-				<TD><% displayModelsList(yellowpagesScc, modelId, listTemplate, out); %></td> 
-				<TD width="70%" valign="top">
-					<% if (modelId != null && ! "".equals(modelId)) { %>
-					<TABLE border="0" cellPadding="0" cellSpacing="0" class="contourbleufondblanc" width="100%" height="100">
-						<TR><TD><%formUpdate.display(out, context, data);%></td></tr>
-					</table>
-				 	<% } %>
-				</TD>
-			</TR>
-		</TABLE>
-	
-	<FORM NAME="modelForm" ACTION="modelManager.jsp" METHOD="POST" ENCTYPE="multipart/form-data">
-	<input type="hidden" name="ModelId" value="<%=modelId%>">
-	<input type="hidden" name="ContactId" value="<%=contactId%>">
-	<input type="hidden" name="Action">
-	</FORM>
-	<FORM NAME="topicDetailForm" ACTION="topicManager.jsp" METHOD=POST >
-	  <input type="hidden" name="Action">
-	  <input type="hidden" name="Id" value="">
-	</FORM>
-	<%
-		validateButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData()", false);
-	    ButtonPane buttonPane = gef.getButtonPane();
-	    buttonPane.addButton(validateButton);
-	    buttonPane.addButton(cancelButton);
-	    out.println(board.printAfter());
-	    out.println("<br><CENTER>"+buttonPane.print()+"</CENTER><br>");
-	    out.println(frame.printAfter());
-	%>
-	</BODY>
-	</HTML>
-<% } 
-%>
-<FORM NAME="topicAddLink" ACTION="TopicLink.jsp" METHOD=POST >
-<input type=hidden name=ContactId value="<%=contactId%>">
-</FORM>
+<form name="topicAddLink" action="TopicLink.jsp" method="post">
+<input type=hidden name=ContactId value="<%=contactId%>"/>
+</form>
