@@ -77,7 +77,6 @@ import com.stratelia.webactiv.yellowpages.model.YellowpagesRuntimeException;
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class YellowpagesBmEJB implements YellowpagesBm {
 
-  private static final long serialVersionUID = 1L;
   private TopicDetail currentTopic;
   private UserCompleteContact currentContact;
   private String componentId = null;
@@ -1223,9 +1222,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
     try {
       Collection<ContactDetail> contacts = contactBm.getContacts(contactPKs);
       if (contacts != null) {
-        Iterator<ContactDetail> it = contacts.iterator();
-        while (it.hasNext()) {
-          ContactDetail contactDetail = it.next();
+        for (final ContactDetail contactDetail : contacts) {
           if (contactDetail.getUserId() != null) // contact de type user Silverpeas
           {
             try {
@@ -1241,8 +1238,8 @@ public class YellowpagesBmEJB implements YellowpagesBm {
               }
             } catch (Exception e) {
               SilverTrace.warn("yellowpages", "YellowpagesBmEJB.getContacts()",
-                  "yellowpages.EX_GET_USER_DETAIL_FAILED", "contactDetail.getUserId() = "
-                  + contactDetail.getUserId(), e);
+                  "yellowpages.EX_GET_USER_DETAIL_FAILED",
+                  "contactDetail.getUserId() = " + contactDetail.getUserId(), e);
             }
           } else {
             contactDetailsR.add(contactDetail);

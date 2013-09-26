@@ -142,24 +142,16 @@ function closeWindows() {
         contactWindow.close(); 
 }
 
-function contactAdd(){
+function contactAdd() {
     closeWindows();
     windowName = "contactWindow";
     windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars=yes";
-    contactWindow = SP_openWindow( "", windowName, '600' , '400' , windowParams);
+    contactWindow = SP_openWindow( "", windowName, '600' , '430' , windowParams);
     document.contactForm.Action.value = "New";
     document.contactForm.submit();
 }
-function userAdd(){
-    closeWindows();
-    url = "addUser.jsp";
-    windowName = "userAddWindow";
-    windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
-    userAddWindow = SP_openWindow( url, windowName, '600' , '400' , windowParams);
-}
 
-function addGroup()
-{
+function addGroup() {
     closeWindows();
     url = "ToChooseGroup";
     windowName = "userAddWindow";
@@ -167,7 +159,7 @@ function addGroup()
     userAddWindow = SP_openWindow(url, windowName, '750' , '600' , windowParams);
 }
 
-function contactGoTo(id){
+function contactGoTo(id) {
     closeWindows();
     windowName = "contactWindow";
     windowParams = "directories=0,menubar=0,toolbar=0,height=400,width=600,alwaysRaised,scrollbars=yes";
@@ -290,6 +282,7 @@ function toAddOrUpdateFolder(action, id) {
     out.println(window.printAfter());
 %>
 
+<input type="hidden" name="Action"/>
 <input type="hidden" name="Id" value="<%=id%>"/>
 <input type="hidden" name="ToDeleteId" value=""/>
 </form>
