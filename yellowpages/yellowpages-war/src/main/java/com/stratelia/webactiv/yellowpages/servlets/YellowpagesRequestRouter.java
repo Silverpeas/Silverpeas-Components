@@ -58,6 +58,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
    */
   private static final long serialVersionUID = 1L;
 
+  @Override
   public YellowpagesSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new YellowpagesSessionController(mainSessionCtrl, componentContext);
@@ -67,6 +68,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
    * This method has to be implemented in the component request rooter class. returns the session
    * control bean name to be put in the request object ex : for almanach, returns "almanach"
    */
+  @Override
   public String getSessionControlBeanName() {
     return "yellowpagesScc";
   }
@@ -80,6 +82,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
+  @Override
   public String getDestination(String function, YellowpagesSessionController scc,
       HttpServletRequest request) {
     SilverTrace.info("yellowpages", "YellowpagesRequestRooter.getDestination()",
@@ -103,8 +106,8 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
         String id = request.getParameter("Id");
         String action = request.getParameter("Action");
 
-        TopicDetail currentTopic = null;
-        Collection<ContactFatherDetail> contacts = null;
+        TopicDetail currentTopic;
+        Collection<ContactFatherDetail> contacts;
         if (id == null || (id != null && !id.startsWith("group_"))) {
           String rootId = "0";
           if (id == null) {
@@ -153,7 +156,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
         }
 
         request.setAttribute("Contacts", contacts);
-        request.setAttribute("PortletMode", new Boolean(scc.isPortletMode()));
+        request.setAttribute("PortletMode", scc.isPortletMode());
 
         scc.setCurrentContacts(contacts);
 
@@ -186,9 +189,9 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
       } else if (function.equals("ViewUserFull")) {
         String id = request.getParameter("Id");
 
-        UserFull user = scc.getOrganisationController().getUserFull(id);
+        UserFull theUser = scc.getOrganisationController().getUserFull(id);
 
-        request.setAttribute("UserFull", user);
+        request.setAttribute("UserFull", theUser);
         destination = "/yellowpages/jsp/userFull.jsp";
       } else if (function.startsWith("searchResult")) {
         scc.setPortletMode(false);
@@ -209,7 +212,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
           request.setAttribute("Contacts", scc.getListContactFather(
               listContact, true));
           request.setAttribute("CurrentTopic", currentTopic);
-          request.setAttribute("PortletMode", new Boolean(scc.isPortletMode()));
+          request.setAttribute("PortletMode", scc.isPortletMode());
 
           destination = "/yellowpages/jsp/annuaire.jsp?Action=SearchResults&Profile="
               + flag;
@@ -234,7 +237,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
 
         request.setAttribute("Contacts", searchResults);
         request.setAttribute("CurrentTopic", currentTopic);
-        request.setAttribute("PortletMode", new Boolean(scc.isPortletMode()));
+        request.setAttribute("PortletMode", scc.isPortletMode());
         request.setAttribute("TypeSearch", typeSearch);
         request.setAttribute("SearchCriteria", searchCriteria);
 
@@ -342,7 +345,6 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
           File file = new File(FileRepositoryManager.getTemporaryPath() + csvFilename);
           request.setAttribute("CSVFileSize", Long.valueOf(file.length()));
           request.setAttribute("CSVFileURL", FileServerUtils.getUrlToTempDir(csvFilename));
-          file = null;
         }
         return "/yellowpages/jsp/downloadCSV.jsp";
       } else if ("ToImportCSV".equals(function)) {
@@ -530,8 +532,8 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
       request.setAttribute("Form", form);
       request.setAttribute("Data", data);
     } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      SilverTrace.
+          error("yellowpages", getClass().getSimpleName() + ".setForm()", "root.NO_EX_MESSAGE", e);
     }
   }
 
@@ -562,8 +564,8 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
       formUpdate.update(items, data, context);
       recordSet.save(data);
     } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      SilverTrace.
+          error("yellowpages", getClass().getSimpleName() + ".setForm()", "root.NO_EX_MESSAGE", e);
     }
   }
 }

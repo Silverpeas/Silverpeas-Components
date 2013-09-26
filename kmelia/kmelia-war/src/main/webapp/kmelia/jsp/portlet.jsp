@@ -71,7 +71,7 @@ function publicationGoToFromMain(id){
 }
 
 function sortGoTo(selectedIndex) {
-	if (selectedIndex != 0 && selectedIndex != 1) {
+	if (selectedIndex !== 0 && selectedIndex !== 1) {
 		var sort = document.publicationsForm.sortBy[selectedIndex].value;
 		var ieFix = new Date().getTime();
 		$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Index:0,Sort:sort,ComponentId:'<%=componentId%>',IEFix:ieFix},

@@ -511,7 +511,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
        return r;
   }
 
-  String displayQuestionsUpdateView(SurveySessionController surveyScc, Vector questions, GraphicElementFactory gef, String m_context, ResourceLocator settings, ResourcesWrapper resources) throws SurveyException
+  String displayQuestionsUpdateView(SurveySessionController surveyScc, List questions, GraphicElementFactory gef, String m_context, ResourceLocator settings, ResourcesWrapper resources) throws SurveyException
   {
         String questionUpSrc = "icons/arrowUp.gif";
         String questionDownSrc = "icons/arrowDown.gif";
@@ -1126,7 +1126,7 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
                 Collection users = new ArrayList();
                 r += "<tr><td colspan=\"2\"><table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"1\">";
                 r+= " <thead> <tr class=\"questionResults-top\"> <th class=\"questionResults-vide\"></th>";
-                Hashtable answerValues = new Hashtable();
+                Map answerValues = new HashMap();
                 int rang = 0;
                 while (itA.hasNext())
                 {

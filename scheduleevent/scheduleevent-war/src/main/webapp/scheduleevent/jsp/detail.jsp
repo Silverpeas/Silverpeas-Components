@@ -122,7 +122,7 @@
 				<tbody>
 					<tr>
 						<td class="txtlibform">${titleLabel}&nbsp;:</td>
-						<td colspan="3">${scheduleEventDetail.title}</td>
+            <td colspan="3"><c:out value="${scheduleEventDetail.title}"/></td>
 					</tr>
 					<c:if test="${not empty scheduleEventDetail.description}">
 						<tr>
@@ -155,10 +155,10 @@
 					<tr class="questionResults-top"><td class="hideTime">&nbsp;</td></tr>
 					<c:if test="${scheduleEventDetail.currentUserDefinedAsSubscriber}">
 						<c:set var="currentUser" value="${scheduleEventDetail.currentUser}" />
-						<tr class="${currentUser.htmlClassAttribute}"><td class="displayUserName">${currentUser.name}</td></tr>
+						<tr class="${currentUser.htmlClassAttribute}"><td class="displayUserName"><c:out value="${currentUser.name}"/></td></tr>
 					</c:if>
 					<c:forEach var="subscriber" items="${scheduleEventDetail.otherSubscribers}">
-						<tr><td class="displayUserName">${subscriber.name}</td></tr>
+						<tr><td class="displayUserName"><c:out value="${subscriber.name}"/></td></tr>
 					</c:forEach>
 					<tr class="resultVote"><td>&nbsp;</td></tr>
 					</thead>

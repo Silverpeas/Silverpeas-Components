@@ -166,7 +166,7 @@ function getToValidateFolderId() {
 }
 </script>
 </head>
-<body id="kmelia" onunload="closeWindows()">
+<body id="kmelia" onunload="closeWindows();">
 <div id="<%=componentId %>" class="<%=profile%>">
 <%
 	Window window = gef.getWindow();
@@ -187,7 +187,7 @@ function getToValidateFolderId() {
 						<div id="searchZone">
 						<view:board>
 						<table id="searchLine">
-						<tr><td><div id="searchLabel"><%=resources.getString("kmelia.SearchInTopics") %></div>&nbsp;<input type="text" id="topicQuery" size="50" value="<%=query%>" onkeydown="checkSubmitToSearch(event)"/></td><td><%=searchButton.print() %></td></tr>
+						<tr><td><div id="searchLabel"><%=resources.getString("kmelia.SearchInTopics") %></div>&nbsp;<input type="text" id="topicQuery" size="50" value="<%=query%>" onkeydown="checkSubmitToSearch(event);"/></td><td><%=searchButton.print() %></td></tr>
 						</table>
 						</view:board>
 						</div>
@@ -215,7 +215,7 @@ function getToValidateFolderId() {
 								appletDisplayed = true;
 						%>
 								<td>
-									<div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding:0px; width:100%"><img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/></div>
+									<div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; padding:0px; width:100%"><img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/></div>
 								</td>
 						<% } %>
 						<% if (kmeliaScc.isDraftEnabled()) {
@@ -223,7 +223,7 @@ function getToValidateFolderId() {
 								out.println("<td width=\"5%\">&nbsp;</td>");
 							%>
 							<td>
-								<div id="DragAndDropDraft" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding:0px width:100%"><img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/></div>
+								<div id="DragAndDropDraft" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; padding:0px; width:100%"><img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/></div>
 							</td>
 						<% } %>
 						</tr></table>
@@ -300,7 +300,7 @@ function updateUIStatus(nodeId, newStatus) {
 }
 
 function displayTopicContent(id) {
-	if (id != searchFolderId) {
+	if (id !== searchFolderId) {
 		// search session is over
 		searchInProgress = false;
 	}
@@ -311,13 +311,13 @@ function displayTopicContent(id) {
 	
 	setCurrentNodeId(id);
 
-	if (id == getToValidateFolderId() || id == "1") {
+	if (id === getToValidateFolderId() || id === "1") {
 		$("#DnD").css({'display':'none'}); //hide dropzone
 		$("#footer").css({'visibility':'hidden'}); //hide footer
 		$("#searchZone").css({'display':'none'}); //hide search
 		$("#subTopics").empty();
 
-		if (id == getToValidateFolderId())	{
+		if (id === getToValidateFolderId())	{
 			hideOperations();
 			displayPublications(id);
 
@@ -364,15 +364,15 @@ function displaySubTopics(id) {
 			var tovalidate = "";
 			$.each(data, function(i, folder) {
 					var folderId = folder.attr["id"];
-					if (folderId == "1") {
+					if (folderId === "1") {
 						basket = getSubFolder(folder);
-					} else if (folderId == getToValidateFolderId()) {
+					} else if (folderId === getToValidateFolderId()) {
 						tovalidate = getSubFolder(folder);
-					} else if (folderId != "2") {
+					} else if (folderId !== "2") {
 						$("#subTopics ul").append(getSubFolder(folder));
 					}
 			});
-			if (id == "0") {
+			if (id === "0") {
 				$("#subTopics ul").append(tovalidate);
 				$("#subTopics ul").append(basket);
 			}
@@ -389,18 +389,18 @@ function getSubFolder(folder) {
 	var desc = folder.attr["description"];
 	var str = '<li id="topic_'+id+'">';
 	str += '<a href="#" onclick="topicGoTo(\''+id+'\')" ';
-	if (id == getToValidateFolderId()) {
+	if (id === getToValidateFolderId()) {
 		str += 'class="toValidate"';
-	} else if (id == "1") {
+	} else if (id === "1") {
 		str += 'class="trash"';
 	}
 	str += '>';
 	str += '<strong>'+name+' ';
-	if (typeof(nbItems) != "undefined") {
+	if (typeof(nbItems) !== "undefined") {
 		str += '<span>'+nbItems+'</span>';
 	}
 	str += '</strong>';
-	if (typeof(desc) != "undefined" && desc.length > 0) {
+	if (typeof(desc) !== "undefined" && desc.length > 0) {
 		str += '<span title="'+desc+'">'+desc+'</span>';
 	}
 	str += '</a>';
@@ -409,7 +409,7 @@ function getSubFolder(folder) {
 }
 
 function getString(key) {
-	return $.i18n.prop(key)
+	return $.i18n.prop(key);
 }
 </script>
 </div>
