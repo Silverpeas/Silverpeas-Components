@@ -162,11 +162,11 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   }
 
   public synchronized void setPrefixTableName(String prefixTableName) {
-    kscEjb.setPrefixTableName(prefixTableName);
+    getKSCEJB().setPrefixTableName(prefixTableName);
   }
 
   public synchronized void setSpaceId(String prefixTableName) {
-    kscEjb.setPrefixTableName(prefixTableName);
+    getKSCEJB().setPrefixTableName(prefixTableName);
   }
 
   /**
@@ -174,7 +174,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
    * @throws java.rmi.RemoteException
    */
   public synchronized void setComponentId(String componentId) {
-    kscEjb.setComponentId(componentId);
+    getKSCEJB().setComponentId(componentId);
   }
 
   /**
@@ -190,7 +190,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
    * @
    */
   public synchronized void setCurrentUser(UserDetail user) {
-    kscEjb.setActor(user);
+    getKSCEJB().setActor(user);
   }
 
   private String getFlag(String[] profiles) {
@@ -251,7 +251,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   }
 
   public synchronized TopicDetail getTopic(String id) {
-    return kscEjb.goTo(id);
+    return getKSCEJB().goTo(id);
   }
 
   public GroupDetail getGroup(String groupId) {
@@ -312,38 +312,38 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   }
 
   public synchronized List<NodeDetail> getTree() {
-    return kscEjb.getTree();
+    return getKSCEJB().getTree();
   }
 
   public synchronized NodePK updateTopicHeader(NodeDetail nd) {
     SilverTrace.info("yellowpages",
         "YellowpagesSessionController.updateTopicHeader()",
         "root.MSG_GEN_PARAM_VALUE", "id = " + nd.getNodePK().getId());
-    return kscEjb.updateTopic(nd);
+    return getKSCEJB().updateTopic(nd);
   }
 
   public synchronized NodeDetail getSubTopicDetail(String subTopicId) {
-    return kscEjb.getSubTopicDetail(subTopicId);
+    return getKSCEJB().getSubTopicDetail(subTopicId);
   }
 
   public synchronized NodePK addSubTopic(NodeDetail nd) {
-    return kscEjb.addSubTopic(nd);
+    return getKSCEJB().addSubTopic(nd);
   }
 
   public synchronized void deleteTopic(String topicId) {
     SilverTrace.info("yellowpages", "YellowpagesSessionController.deleteTopic()",
         "root.MSG_GEN_PARAM_VALUE", "topicId = " + topicId);
 
-    kscEjb.deleteTopic(topicId);
+    getKSCEJB().deleteTopic(topicId);
     resetCurrentFullCompleteUsers();
   }
 
   public synchronized void emptyBasketByUserId() {
-    kscEjb.emptyBasketByUserId();
+    getKSCEJB().emptyBasketByUserId();
   }
 
   public synchronized void emptyPublisherDZ() {
-    kscEjb.emptyDZByUserId();
+    getKSCEJB().emptyDZByUserId();
   }
 
   /**
@@ -359,7 +359,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
    * @return
    */
   public synchronized ContactDetail getContactDetail(String contactId) {
-    return kscEjb.getContactDetail(contactId);
+    return getKSCEJB().getContactDetail(contactId);
   }
 
   private synchronized void resetCurrentFullCompleteUsers() {
@@ -402,7 +402,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   }
 
   public synchronized Collection<ContactFatherDetail> getAllContactDetails(NodePK fatherPK) {
-    Collection<ContactFatherDetail> contacts = kscEjb.getAllContactDetails(fatherPK);
+    Collection<ContactFatherDetail> contacts = getKSCEJB().getAllContactDetails(fatherPK);
     if (contacts != null) {
       // get users of groups contained in subtree
       List<NodeDetail> tree = getNodeBm().getSubTree(
@@ -418,17 +418,17 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   }
 
   public synchronized List<Collection<NodeDetail>> getPathList(String contactId) {
-    return kscEjb.getPathList(contactId);
+    return getKSCEJB().getPathList(contactId);
   }
 
   public synchronized String createContact(ContactDetail contactDetail) {
-    String contactId = kscEjb.createContact(contactDetail);
+    String contactId = getKSCEJB().createContact(contactDetail);
     resetCurrentFullCompleteUsers();
     return contactId;
   }
 
   public synchronized void updateContact(ContactDetail contactDetail) {
-    kscEjb.updateContact(contactDetail);
+    getKSCEJB().updateContact(contactDetail);
     resetCurrentFullCompleteUsers();
   }
 
@@ -449,42 +449,42 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
       recordSet.delete(data);
     }
     // delete contact
-    kscEjb.deleteContact(contactId);
+    getKSCEJB().deleteContact(contactId);
     resetCurrentFullCompleteUsers();
   }
 
   public synchronized void addContactToTopic(String contactId, String fatherId) {
-    kscEjb.addContactToTopic(contactId, fatherId);
+    getKSCEJB().addContactToTopic(contactId, fatherId);
     resetCurrentFullCompleteUsers();
   }
 
   public synchronized void deleteContactFromTopic(String contactId, String fatherId) {
-    kscEjb.deleteContactFromTopic(contactId, fatherId);
+    getKSCEJB().deleteContactFromTopic(contactId, fatherId);
   }
 
   public synchronized void createInfoModel(String contactId, String modelId) {
-    kscEjb.createInfoModel(contactId, modelId);
+    getKSCEJB().createInfoModel(contactId, modelId);
     resetCurrentFullCompleteUsers();
   }
 
   public synchronized UserCompleteContact getCompleteContact(String contactId) {
-    return kscEjb.getCompleteContact(contactId);
+    return getKSCEJB().getCompleteContact(contactId);
   }
 
   public synchronized UserCompleteContact getCompleteContactInNode(String contactId, String nodeId) {
-    return kscEjb.getCompleteContactInNode(contactId, nodeId);
+    return getKSCEJB().getCompleteContactInNode(contactId, nodeId);
   }
 
   public synchronized TopicDetail getContactFather(String contactId) {
-    return kscEjb.getContactFather(contactId);
+    return getKSCEJB().getContactFather(contactId);
   }
 
   public synchronized Collection<NodePK> getContactFathers(String contactId) {
-    return kscEjb.getContactFathers(contactId);
+    return getKSCEJB().getContactFathers(contactId);
   }
 
   public synchronized void deleteContactFathers(String contactId) {
-    Collection<NodePK> fathers = kscEjb.getContactFathers(contactId);
+    Collection<NodePK> fathers = getKSCEJB().getContactFathers(contactId);
     if (fathers != null) {
       Iterator<NodePK> it = fathers.iterator();
       while (it.hasNext()) {
@@ -496,11 +496,11 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   }
 
   public synchronized boolean isDescendant(String descId, String nodeId) {
-    return kscEjb.isDescendant(descId, nodeId);
+    return getKSCEJB().isDescendant(descId, nodeId);
   }
 
   public synchronized Collection<UserContact> getContacts(Collection<String> targetIds) {
-    return kscEjb.getContacts(targetIds);
+    return getKSCEJB().getContacts(targetIds);
   }
 
   /**
@@ -547,7 +547,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
    * ***********************************************************************************
    */
   /**
-   * Param�tre le userPannel => tous les users, s�lection d'un seul user
+   * Param?tre le userPannel => tous les users, s?lection d'un seul user
    *
    * @param
    * @return
@@ -583,7 +583,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   }
 
   /**
-   * Met en session le contact s�lectionn� via le userPanel
+   * Met en session le contact s?lectionn? via le userPanel
    *
    * @param
    * @throws
@@ -654,7 +654,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   public List<ContactFatherDetail> getAllUsers(String nodeId) {
     List<ContactFatherDetail> users = new ArrayList<ContactFatherDetail>();
 
-    List<String> groupIds = kscEjb.getGroupIds(nodeId);
+    List<String> groupIds = getKSCEJB().getGroupIds(nodeId);
 
     String groupId = null;
     for (String groupId1 : groupIds) {
@@ -668,7 +668,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   public List<UserDetail> getAllUserDetails(String nodeId) {
     List<UserDetail> users = new ArrayList<UserDetail>();
 
-    List<String> groupIds = kscEjb.getGroupIds(nodeId);
+    List<String> groupIds = getKSCEJB().getGroupIds(nodeId);
 
     String groupId = null;
     for (String groupId1 : groupIds) {
@@ -741,11 +741,11 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   public void addGroup(String groupId) {
     SilverTrace.info("yellowpages", "YellowpagesSessionController.addGroup()",
         "root.MSG_GEN_ENTER_METHOD", "groupId = " + groupId);
-    kscEjb.addGroup(groupId);
+    getKSCEJB().addGroup(groupId);
   }
 
   public void removeGroup(String groupId) {
-    kscEjb.removeGroup(groupId);
+    getKSCEJB().removeGroup(groupId);
     resetCurrentFullCompleteUsers();
   }
 
@@ -996,17 +996,17 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
       // 2 - Look for contacts
       List<ContactDetail> contacts = new ArrayList<ContactDetail>();
       if ("LastName".equals(typeSearch)) {
-        contacts = (List<ContactDetail>) kscEjb.getContactDetailsByLastName(new ContactPK(
+        contacts = (List<ContactDetail>) getKSCEJB().getContactDetailsByLastName(new ContactPK(
             "useless", "useless", getComponentId()), nom);
       } else if ("FirstName".equals(typeSearch)) {
-        contacts = (List<ContactDetail>) kscEjb.getContactDetailsByLastNameAndFirstName(
+        contacts = (List<ContactDetail>) getKSCEJB().getContactDetailsByLastNameAndFirstName(
             new ContactPK("useless", "useless", getComponentId()), nom, prenom);
       } else if ("LastNameFirstName".equals(typeSearch)) {
         if (prenom == null) {// nom ou prenom
-          contacts = (List<ContactDetail>) kscEjb.getContactDetailsByLastNameOrFirstName(
+          contacts = (List<ContactDetail>) getKSCEJB().getContactDetailsByLastNameOrFirstName(
               new ContactPK("useless", "useless", getComponentId()), nom);
         } else {// nom et prenom
-          contacts = (List<ContactDetail>) kscEjb.getContactDetailsByLastNameAndFirstName(
+          contacts = (List<ContactDetail>) getKSCEJB().getContactDetailsByLastNameAndFirstName(
               new ContactPK("useless", "useless", getComponentId()), nom,
               prenom);
         }

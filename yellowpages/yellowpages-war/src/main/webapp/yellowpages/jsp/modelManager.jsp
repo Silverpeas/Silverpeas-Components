@@ -76,22 +76,6 @@ Button cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "java
 Button validateButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=goToModel()", false);
 Button sendNewButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendModelData('Add')", false);
 
-%>
-<script language="Javascript">
-<!--
-function topicAddGoTo() {
-    document.topicAddLink.submit();
-}
-//-->
-function reallyClose()
-{
-  window.opener.document.topicDetailForm.Action.value = "Search";
-  window.opener.document.topicDetailForm.submit();
-  window.close();
-}
-
-</script>
-<%
 if (action.equals("NewModel")) {
 
 	Form formUpdate    = (Form) request.getAttribute("Form");
@@ -105,6 +89,11 @@ if (action.equals("NewModel")) {
 <view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script language="javascript">
+
+function topicAddGoTo() {
+  document.topicAddLink.submit();
+}
+
 function sendModelData(operation) {
 	document.modelForm.Action.value = operation;
     document.modelForm.submit();
@@ -175,6 +164,17 @@ function reallyClose()
 } else if (action.equals("Add")) {
     %>
     <BODY onload="reallyClose()">
+    <script>
+      <!--
+      function reallyClose()
+      {
+        window.opener.document.topicDetailForm.Action.value = "Search";
+        window.opener.document.topicDetailForm.submit();
+        window.close();
+      }
+      reallyClose();
+      //-->
+    </script>
     </BODY>
     <%   
 }

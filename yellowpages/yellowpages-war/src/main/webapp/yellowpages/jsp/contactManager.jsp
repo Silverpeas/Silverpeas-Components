@@ -65,17 +65,6 @@ void displayUserView(GraphicElementFactory gef, CompleteContact contactComplete,
 
 %>
 
-<SCRIPT LANGUAGE="JavaScript">
-<!--
-function reallyClose()
-{
-  window.opener.document.topicDetailForm.Action.value = "Search";
-  window.opener.document.topicDetailForm.submit();
-  window.close();
-}
-//-->
-</SCRIPT>
-
 <%
 
   String firstName = "";
@@ -120,7 +109,7 @@ String Path = yellowpagesScc.getPath();
 Button cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=reallyClose();", false);
 Button validateButton = null;
 
-if (action.equals("Delete") == false) {
+if (!action.equals("Delete")) {
 %>
 
 <%@page import="com.silverpeas.util.StringUtil"%>
@@ -129,6 +118,11 @@ if (action.equals("Delete") == false) {
 <head>
 <title><%=resources.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
+<style type="text/css">
+  .contactData td {
+    text-align: left;
+  }
+</style>
 <view:includePlugin name="wysiwyg"/>
 <view:includePlugin name="popup"/>
 <view:includePlugin name="preview"/>
@@ -136,6 +130,12 @@ if (action.equals("Delete") == false) {
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
+function reallyClose() {
+  window.opener.document.topicDetailForm.Action.value = "Search";
+  window.opener.document.topicDetailForm.submit();
+  window.close();
+}
+
 function contactDeleteConfirm(id) {
     if(window.confirm("<%=yellowpagesScc.getString("ConfirmDeleteContact")%> ?")){
           document.contactForm.Action.value = "Delete";
@@ -202,9 +202,9 @@ function isCorrectForm() {
 
 function init()
 {
-	<% if (!action.equals("SelectUser")) { %>
-				document.contactForm.LastName.focus();
-	<%	} %>
+  <% if (!"SelectUser".equals(action)) { %>
+  document.contactForm.LastName.focus();
+  <% } %>
 }
 
 function selectUser()
@@ -216,8 +216,29 @@ function selectUser()
 function autoSubmit(){
 	document.enctypeForm.submit();
 }
+
+$(document).ready(function() {
+  <%
+    if ("Add".equals(action)) {
+      if (yellowpagesScc.useForm()) {
+        out.println("autoSubmit();");
+      } else {
+        out.println("reallyClose();");
+      }
+    } else if ("Update".equals(action)) {
+      out.println("reallyClose();");
+    } else if ("New".equals(action) || "UpdateView".equals(action)) {
+      if (action.equals("New")) {
+        out.println("init();");
+      } else {
+        out.println("document.contactForm.LastName.focus();");
+      }
+    }
+  %>
+});
 </script>
 </head>
+<body>
 <% } // fin action != Delete
 
 
@@ -240,34 +261,28 @@ if (action.equals("Add")) {
 	newContactId = yellowpagesScc.createContact(contactDetail);
     userContactComplete = yellowpagesScc.getCompleteContact(newContactId);
     yellowpagesScc.setCurrentContact(userContactComplete);
-
-
-	if (yellowpagesScc.useForm())
-	{
-		%><body onload = "autoSubmit()"><%
-	}
-	else
-	{
-		%><body onload = "reallyClose()"><%
-   }
 }
 
 
 /* Update */
 else if (action.equals("Update")) {
-      //Mise a jour du contact
+      // Récupération des informations renseignées
       firstName = request.getParameter("FirstName");
       lastName = request.getParameter("LastName");
       email = request.getParameter("Email");
       phone = request.getParameter("Phone");
       fax = request.getParameter("Fax");
       userId = request.getParameter("UserId");
-      if (!userId.equals("")) {
-        contactDetail = new ContactDetail(id, firstName, lastName, email, phone, fax, userId, null,
-              null);
-      } else {
-        contactDetail = new ContactDetail(id, firstName, lastName, email, phone, fax, null, null,
-              null);
+      // Récupération du contact
+      contactDetail = yellowpagesScc.getContactDetail(id);
+      // Mise a jour du contact
+      contactDetail.setFirstName(firstName);
+      contactDetail.setLastName(lastName);
+      contactDetail.setEmail(email);
+      contactDetail.setPhone(phone);
+      contactDetail.setFax(fax);
+      if (StringUtil.isDefined(userId)) {
+        contactDetail.setUserId(userId);
       }
       yellowpagesScc.updateContact(contactDetail);
       userContactComplete = yellowpagesScc.getCompleteContact(id);
@@ -391,21 +406,8 @@ OperationPane operationPane = window.getOperationPane();
 Board board = gef.getBoard();
 Frame frame = gef.getFrame();
 
-/* Update */
-if (action.equals("Update"))
-	out.println("<body onload = \"reallyClose()\">");
-
 /* New || UpdateView */
-else if (action.equals("New") || action.equals("UpdateView")) {
-	/* New */
-	if (action.equals("New")) {
-		out.println("<body onload=\"init()\">");
-	}
-
-	/* UpdateView */
-	else {
-		out.println("<body onload=\"document.contactForm.LastName.focus();\">");
-	}
+if (action.equals("New") || action.equals("UpdateView")) {
 
 	/* New */
 	if (action.equals("New"))
@@ -432,11 +434,11 @@ else if (action.equals("New") || action.equals("UpdateView")) {
 <view:frame>
 <view:areaOfOperationOfCreation/>
 <view:board>
-<center>
+<div style="text-align: center;">
 <form name="contactForm" action="contactManager.jsp" method="post">
 <table cellpadding="0" cellspacing="2" border="0" width="98%">
     <tr><td nowrap="nowrap">
-            <table cellpadding="5" cellspacing="0" border="0" width="100%">
+            <table class="contactData" cellpadding="5" cellspacing="0" border="0" width="100%">
 <% if ((userId != null) && (!userId.equals(""))) { %>
   <tr><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.name")%>&nbsp;:</td>
       <td><input type="text" name="LastName" value="<%=EncodeHelper.javaStringToHtmlString(lastName)%>" size="60" maxlength="60" readonly="readonly"/>&nbsp;<img border="0" src="<%=resources.getIcon("yellowpages.mandatory")%>" width="5" height="5"/></td></tr>
@@ -465,7 +467,7 @@ else if (action.equals("New") || action.equals("UpdateView")) {
   <input type="hidden" name="Action"/><input type="hidden" name="ContactId" value="<%=id%>"/>
 	<input type="hidden" name="UserId" value="<%=EncodeHelper.javaStringToHtmlString(userId)%>"/>
   </form>
-</center>
+</div>
 </view:board>
 <br/>
   <%

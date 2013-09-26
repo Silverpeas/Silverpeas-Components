@@ -80,16 +80,6 @@ private String afficheArbo(ArrayPane arrayPane, String idNode, YellowpagesSessio
     return resultat;
 }
 %>
-<script>
-<!--
-function reallyClose()
-{
-  window.opener.document.topicDetailForm.Action.value = "Search";
-  window.opener.document.topicDetailForm.submit();
-  window.close();
-}
-//-->
-</script>
 
 <% 
 TopicDetail CurrentTopic = yellowpagesScc.getCurrentTopic();
@@ -113,7 +103,18 @@ if ((action != null) && (action.equals("SendTopic")))
     yellowpagesScc.addContactToTopic(contactId, idTopic);
     }
     %>
-    <BODY onLoad="reallyClose()">
+    <BODY>
+    <script>
+      <!--
+      function reallyClose()
+      {
+        window.opener.document.topicDetailForm.Action.value = "Search";
+        window.opener.document.topicDetailForm.submit();
+        window.close();
+      }
+      reallyClose();
+      //-->
+    </script>
     </BODY>
     <%
 }
