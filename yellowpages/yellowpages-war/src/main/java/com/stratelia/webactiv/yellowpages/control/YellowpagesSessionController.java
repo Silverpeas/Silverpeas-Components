@@ -28,11 +28,13 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.util.GlobalContext;
 
 import com.silverpeas.form.AbstractForm;
@@ -51,7 +53,6 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.csv.CSVReader;
 import com.silverpeas.util.csv.Variant;
-
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -87,8 +88,6 @@ import com.stratelia.webactiv.yellowpages.model.TopicDetail;
 import com.stratelia.webactiv.yellowpages.model.UserCompleteContact;
 import com.stratelia.webactiv.yellowpages.model.UserContact;
 import com.stratelia.webactiv.yellowpages.model.YellowpagesRuntimeException;
-
-import org.apache.commons.fileupload.FileItem;
 
 public class YellowpagesSessionController extends AbstractComponentSessionController {
 
@@ -132,49 +131,10 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
 
   private void initEJB() {
     // 1 - Remove all data store by this SessionController (includes EJB)
-    kscEjb = null;
     removeSessionTopic();
     removeSessionPublication();
     removeSessionPath();
     removeSessionOwner();
-
-    // 2 - Init EJB used by this SessionController
-    try {
-      setYellowpagesBm();
-      setPrefixTableName(getSpaceId());
-      setCurrentUser(getUserDetail());
-      setComponentId(getComponentId());
-    } catch (Exception e) {
-      throw new YellowpagesRuntimeException("YellowpagesSessionController.initEJB()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
-  }
-
-  private void setYellowpagesBm() {
-    if (kscEjb == null) {
-      try {
-        kscEjb = EJBUtilitaire.getEJBObjectRef(JNDINames.YELLOWPAGESBM_EJBHOME, YellowpagesBm.class);
-      } catch (Exception e) {
-        throw new YellowpagesRuntimeException("YellowpagesSessionController.setYellowpagesBm()",
-            SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-      }
-    }
-  }
-
-  public synchronized void setPrefixTableName(String prefixTableName) {
-    getKSCEJB().setPrefixTableName(prefixTableName);
-  }
-
-  public synchronized void setSpaceId(String prefixTableName) {
-    getKSCEJB().setPrefixTableName(prefixTableName);
-  }
-
-  /**
-   * @param componentId
-   * @throws java.rmi.RemoteException
-   */
-  public synchronized void setComponentId(String componentId) {
-    getKSCEJB().setComponentId(componentId);
   }
 
   /**
@@ -184,15 +144,6 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   /**
    * *********************************************************************************************
    */
-  /**
-   *
-   * @param user
-   * @
-   */
-  public synchronized void setCurrentUser(UserDetail user) {
-    getKSCEJB().setActor(user);
-  }
-
   private String getFlag(String[] profiles) {
     String flag = SilverpeasRole.user.toString();
     for (String profile1 : profiles) {
@@ -247,11 +198,23 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   }
 
   public synchronized YellowpagesBm getKSCEJB() {
-    return kscEjb;
+    return EJBUtilitaire.getEJBObjectRef(JNDINames.YELLOWPAGESBM_EJBHOME, YellowpagesBm.class);
   }
 
   public synchronized TopicDetail getTopic(String id) {
-    return getKSCEJB().goTo(id);
+    TopicDetail topic = getKSCEJB().goTo(getNodePK(id), getUserId());
+    List<NodeDetail> path = (List<NodeDetail>) getNodeBm().getAnotherPath(getNodePK(id));
+    Collections.reverse(path);
+    topic.setPath(path);
+    return topic;
+  }
+  
+  private NodePK getNodePK(String id) {
+    return new NodePK(id, getComponentId());
+  }
+  
+  private ContactPK getContactPK(String id) {
+    return new ContactPK(id, null, getComponentId());
   }
 
   public GroupDetail getGroup(String groupId) {
@@ -312,38 +275,38 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   }
 
   public synchronized List<NodeDetail> getTree() {
-    return getKSCEJB().getTree();
+    return getKSCEJB().getTree(getComponentId());
   }
 
   public synchronized NodePK updateTopicHeader(NodeDetail nd) {
     SilverTrace.info("yellowpages",
         "YellowpagesSessionController.updateTopicHeader()",
         "root.MSG_GEN_PARAM_VALUE", "id = " + nd.getNodePK().getId());
+    nd.setFatherPK(getCurrentTopic().getNodePK());
+    nd.getNodePK().setComponentName(getComponentId());
     return getKSCEJB().updateTopic(nd);
   }
 
   public synchronized NodeDetail getSubTopicDetail(String subTopicId) {
-    return getKSCEJB().getSubTopicDetail(subTopicId);
+    return getKSCEJB().getSubTopicDetail(getNodePK(subTopicId));
   }
 
   public synchronized NodePK addSubTopic(NodeDetail nd) {
-    return getKSCEJB().addSubTopic(nd);
+    nd.getNodePK().setComponentName(getComponentId());
+    nd.setCreatorId(getUserId());
+    return getKSCEJB().addToTopic(getCurrentTopic().getNodeDetail(), nd);
   }
 
   public synchronized void deleteTopic(String topicId) {
     SilverTrace.info("yellowpages", "YellowpagesSessionController.deleteTopic()",
         "root.MSG_GEN_PARAM_VALUE", "topicId = " + topicId);
 
-    getKSCEJB().deleteTopic(topicId);
+    getKSCEJB().deleteTopic(getNodePK(topicId));
     resetCurrentFullCompleteUsers();
   }
 
-  public synchronized void emptyBasketByUserId() {
-    getKSCEJB().emptyBasketByUserId();
-  }
-
   public synchronized void emptyPublisherDZ() {
-    getKSCEJB().emptyDZByUserId();
+    getKSCEJB().emptyDZByUserId(getComponentId(), getUserId());
   }
 
   /**
@@ -359,7 +322,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
    * @return
    */
   public synchronized ContactDetail getContactDetail(String contactId) {
-    return getKSCEJB().getContactDetail(contactId);
+    return getKSCEJB().getContactDetail(getContactPK(contactId));
   }
 
   private synchronized void resetCurrentFullCompleteUsers() {
@@ -418,16 +381,18 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   }
 
   public synchronized List<Collection<NodeDetail>> getPathList(String contactId) {
-    return getKSCEJB().getPathList(contactId);
+    return getKSCEJB().getPathList(getContactPK(contactId));
   }
 
   public synchronized String createContact(ContactDetail contactDetail) {
-    String contactId = getKSCEJB().createContact(contactDetail);
+    contactDetail.setCreatorId(getUserId());
+    String contactId = getKSCEJB().createContact(contactDetail, getCurrentTopic().getNodePK());
     resetCurrentFullCompleteUsers();
     return contactId;
   }
 
   public synchronized void updateContact(ContactDetail contactDetail) {
+    contactDetail.getPK().setComponentName(getComponentId());
     getKSCEJB().updateContact(contactDetail);
     resetCurrentFullCompleteUsers();
   }
@@ -449,42 +414,39 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
       recordSet.delete(data);
     }
     // delete contact
-    getKSCEJB().deleteContact(contactId);
+    getKSCEJB().deleteContact(getContactPK(contactId), getCurrentTopic().getNodePK());
     resetCurrentFullCompleteUsers();
   }
 
   public synchronized void addContactToTopic(String contactId, String fatherId) {
-    getKSCEJB().addContactToTopic(contactId, fatherId);
+    getKSCEJB().addContactToTopic(getContactPK(contactId), fatherId);
     resetCurrentFullCompleteUsers();
   }
 
   public synchronized void deleteContactFromTopic(String contactId, String fatherId) {
-    getKSCEJB().deleteContactFromTopic(contactId, fatherId);
+    getKSCEJB().deleteContactFromTopic(getContactPK(contactId), fatherId);
   }
 
   public synchronized void createInfoModel(String contactId, String modelId) {
-    getKSCEJB().createInfoModel(contactId, modelId);
+    getKSCEJB().createInfoModel(getContactPK(contactId), modelId);
     resetCurrentFullCompleteUsers();
   }
 
   public synchronized UserCompleteContact getCompleteContact(String contactId) {
-    return getKSCEJB().getCompleteContact(contactId);
+    return getKSCEJB().getCompleteContactInNode(getContactPK(contactId),
+        getCurrentTopic().getNodePK().getId());
   }
 
   public synchronized UserCompleteContact getCompleteContactInNode(String contactId, String nodeId) {
-    return getKSCEJB().getCompleteContactInNode(contactId, nodeId);
-  }
-
-  public synchronized TopicDetail getContactFather(String contactId) {
-    return getKSCEJB().getContactFather(contactId);
+    return getKSCEJB().getCompleteContactInNode(getContactPK(contactId), nodeId);
   }
 
   public synchronized Collection<NodePK> getContactFathers(String contactId) {
-    return getKSCEJB().getContactFathers(contactId);
+    return getKSCEJB().getContactFathers(getContactPK(contactId));
   }
 
   public synchronized void deleteContactFathers(String contactId) {
-    Collection<NodePK> fathers = getKSCEJB().getContactFathers(contactId);
+    Collection<NodePK> fathers = getKSCEJB().getContactFathers(getContactPK(contactId));
     if (fathers != null) {
       Iterator<NodePK> it = fathers.iterator();
       while (it.hasNext()) {
@@ -495,12 +457,8 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     resetCurrentFullCompleteUsers();
   }
 
-  public synchronized boolean isDescendant(String descId, String nodeId) {
-    return getKSCEJB().isDescendant(descId, nodeId);
-  }
-
   public synchronized Collection<UserContact> getContacts(Collection<String> targetIds) {
-    return getKSCEJB().getContacts(targetIds);
+    return getKSCEJB().getContacts(targetIds, getComponentId());
   }
 
   /**
@@ -547,7 +505,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
    * ***********************************************************************************
    */
   /**
-   * Param?tre le userPannel => tous les users, s?lection d'un seul user
+   * Param�tre le userPannel => tous les users, s�lection d'un seul user
    *
    * @param
    * @return
@@ -583,7 +541,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   }
 
   /**
-   * Met en session le contact s?lectionn? via le userPanel
+   * Met en session le contact s�lectionn� via le userPanel
    *
    * @param
    * @throws
@@ -654,7 +612,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   public List<ContactFatherDetail> getAllUsers(String nodeId) {
     List<ContactFatherDetail> users = new ArrayList<ContactFatherDetail>();
 
-    List<String> groupIds = getKSCEJB().getGroupIds(nodeId);
+    List<String> groupIds = getKSCEJB().getGroupIds(getNodePK(nodeId));
 
     String groupId = null;
     for (String groupId1 : groupIds) {
@@ -668,7 +626,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   public List<UserDetail> getAllUserDetails(String nodeId) {
     List<UserDetail> users = new ArrayList<UserDetail>();
 
-    List<String> groupIds = getKSCEJB().getGroupIds(nodeId);
+    List<String> groupIds = getKSCEJB().getGroupIds(getNodePK(nodeId));
 
     String groupId = null;
     for (String groupId1 : groupIds) {
@@ -741,11 +699,11 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   public void addGroup(String groupId) {
     SilverTrace.info("yellowpages", "YellowpagesSessionController.addGroup()",
         "root.MSG_GEN_ENTER_METHOD", "groupId = " + groupId);
-    getKSCEJB().addGroup(groupId);
+    getKSCEJB().addGroup(groupId, getCurrentTopic().getNodePK());
   }
 
   public void removeGroup(String groupId) {
-    getKSCEJB().removeGroup(groupId);
+    getKSCEJB().removeGroup(groupId, getCurrentTopic().getNodePK());
     resetCurrentFullCompleteUsers();
   }
 
