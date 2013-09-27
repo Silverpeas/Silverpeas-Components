@@ -25,7 +25,6 @@ import java.util.List;
 
 import javax.ejb.Local;
 
-import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.contact.model.ContactDetail;
 import com.stratelia.webactiv.util.contact.model.ContactFatherDetail;
 import com.stratelia.webactiv.util.contact.model.ContactPK;
@@ -39,24 +38,6 @@ import com.stratelia.webactiv.yellowpages.model.UserContact;
 public interface YellowpagesBm {
 
   /**
-   * Set the space Id where the user is logged on
-   *
-   * @param prefixTableName the space name
-   * @since 1.0
-   */
-  public void setPrefixTableName(String prefixTableName);
-
-  public void setComponentId(String componentId);
-
-  /**
-   * Set the current User ActorDetail
-   *
-   * @param userDetail the UserDetail of the current User
-   * @since 1.0
-   */
-  public void setActor(UserDetail userDetail);
-
-  /**
    * Return a the detail of a topic
    *
    * @param id the id of the topic
@@ -64,15 +45,15 @@ public interface YellowpagesBm {
    * @see com.stratelia.webactiv.yellowpages.model.TopicDetail
    * @since 1.0
    */
-  public TopicDetail goTo(String id);
+  public TopicDetail goTo(NodePK pk, String userId);
 
-  public List<NodeDetail> getTree();
+  public List<NodeDetail> getTree(String instanceId);
 
   /**
    * Add a subtopic to a topic - If a subtopic of same name already exists a NodePK with id=-1 is
    * returned else the new topic NodePK
    *
-   * @param fatherId the topic Id of the future father
+   * @param father the father
    * @param subTopic the NodeDetail of the new sub topic
    * @return If a subtopic of same name already exists a NodePK with id=-1 is returned else the new
    * topic NodePK
@@ -80,22 +61,7 @@ public interface YellowpagesBm {
    * @see com.stratelia.webactiv.util.node.model.NodePK
    * @since 1.0
    */
-  public NodePK addToTopic(String id, NodeDetail subtopic);
-
-  /**
-   * Add a subtopic to currentTopic and alert users - If a subtopic of same name already exists a
-   * NodePK with id=-1 is returned else the new topic NodePK
-   *
-   * @param subTopic the NodeDetail of the new sub topic
-   * @param alertType Alert all users, only publishers or nobody of the topic creation alertType =
-   * "All"|"Publisher"|"None"
-   * @return If a subtopic of same name already exists a NodePK with id=-1 is returned else the new
-   * topic NodePK
-   * @see com.stratelia.webactiv.util.node.model.NodeDetail
-   * @see com.stratelia.webactiv.util.node.model.NodePK
-   * @since 1.0
-   */
-  public NodePK addSubTopic(NodeDetail subtopic);
+  public NodePK addToTopic(NodeDetail father, NodeDetail subtopic);
 
   /**
    * Update a subtopic to currentTopic and alert users - If a subtopic of same name already exists a
@@ -120,7 +86,7 @@ public interface YellowpagesBm {
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @since 1.0
    */
-  public NodeDetail getSubTopicDetail(String subTopicId);
+  public NodeDetail getSubTopicDetail(NodePK pk);
 
   /**
    * Delete a topic and all descendants. Delete all links between descendants and contacts. This
@@ -130,11 +96,9 @@ public interface YellowpagesBm {
    * @param topicId the id of the topic to delete
    * @since 1.0
    */
-  public void deleteTopic(String topicId);
+  public void deleteTopic(NodePK pkToDelete);
 
-  public void emptyDZByUserId();
-
-  public void emptyBasketByUserId();
+  public void emptyDZByUserId(String instanceId, String userId);
 
   /**
    * Return the detail of a contact (only the Header)
@@ -144,7 +108,7 @@ public interface YellowpagesBm {
    * @see com.stratelia.webactiv.util.contact.model.ContactDetail
    * @since 1.0
    */
-  public ContactDetail getContactDetail(String pubId);
+  public ContactDetail getContactDetail(ContactPK pk);
 
   /**
    * Return list of all path to this contact - it's a Collection of NodeDetail collection
@@ -154,7 +118,7 @@ public interface YellowpagesBm {
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @since 1.0
    */
-  public List<Collection<NodeDetail>> getPathList(String pubId);
+  public List<Collection<NodeDetail>> getPathList(ContactPK contactPK);
 
   /**
    * Create a new Contact (only the header - parameters) to the current Topic
@@ -164,7 +128,7 @@ public interface YellowpagesBm {
    * @see com.stratelia.webactiv.util.contact.model.ContactDetail
    * @since 1.0
    */
-  public String createContact(ContactDetail pubDetail);
+  public String createContact(ContactDetail contactDetail, NodePK nodePK);
 
   /**
    * Update a contact (only the header - parameters)
@@ -184,7 +148,7 @@ public interface YellowpagesBm {
    * @see com.stratelia.webactiv.yellowpages.model.TopicDetail
    * @since 1.0
    */
-  public void deleteContact(String pubId);
+  public void deleteContact(ContactPK contactPK, NodePK nodePK);
 
   /**
    * Add a contact to a topic and send email alerts to topic subscribers
@@ -193,7 +157,7 @@ public interface YellowpagesBm {
    * @param fatherId the id of the topic
    * @since 1.0
    */
-  public void addContactToTopic(String pubId, String fatherId);
+  public void addContactToTopic(ContactPK contactPK, String fatherId);
 
   /**
    * Delete a path between contact and topic
@@ -202,7 +166,7 @@ public interface YellowpagesBm {
    * @param fatherId the id of the topic
    * @since 1.0
    */
-  public void deleteContactFromTopic(String pubId, String fatherId);
+  public void deleteContactFromTopic(ContactPK contactPK, String fatherId);
 
   /**
    * Create model info attached to a contact
@@ -211,17 +175,7 @@ public interface YellowpagesBm {
    * @param modelId the id of the selected model
    * @since 1.0
    */
-  public void createInfoModel(String pubId, String modelId);
-
-  /**
-   * Return all info of a contact and add a reading statistic
-   *
-   * @param pubId the id of a contact
-   * @return a CompleteContact
-   * @see com.stratelia.webactiv.util.contact.model.CompleteContact
-   * @since 1.0
-   */
-  public UserCompleteContact getCompleteContact(String pubId);
+  public void createInfoModel(ContactPK contactPK, String modelId);
 
   /**
    * Return all info of a contact and add a reading statistic
@@ -231,10 +185,7 @@ public interface YellowpagesBm {
    * @return a CompleteContact
    * @see com.stratelia.webactiv.util.contact.model.CompleteContact
    */
-  public UserCompleteContact getCompleteContactInNode(String ContactId,
-      String nodeId);
-
-  public TopicDetail getContactFather(String pubId);
+  public UserCompleteContact getCompleteContactInNode(ContactPK contactPK, String nodeId);
 
   /**
    * Return a collection of ContactDetail throught a collection of contact ids
@@ -244,7 +195,7 @@ public interface YellowpagesBm {
    * @see com.stratelia.webactiv.util.contact.model.ContactDetail
    * @since 1.0
    */
-  public Collection<UserContact> getContacts(Collection<String> contactIds);
+  public Collection<UserContact> getContacts(Collection<String> contactIds, String instanceId);
 
   public Collection<ContactDetail> getContactDetailsByLastName(ContactPK pk, String query);
 
@@ -254,17 +205,15 @@ public interface YellowpagesBm {
   public Collection<ContactDetail> getContactDetailsByLastNameAndFirstName(ContactPK pk,
       String lastName, String firstName);
 
-  public Collection<NodePK> getContactFathers(String pubId);
+  public Collection<NodePK> getContactFathers(ContactPK contactPK);
 
   public Collection<ContactFatherDetail> getAllContactDetails(NodePK nodePK);
 
-  public boolean isDescendant(String descId, String nodeId);
+  public List<String> getGroupIds(NodePK pk);
 
-  public List<String> getGroupIds(String nodeId);
+  public void addGroup(String groupId, NodePK nodePK);
 
-  public void addGroup(String groupId);
-
-  public void removeGroup(String groupId);
+  public void removeGroup(String groupId, NodePK nodePK);
 
   public void addModelUsed(String[] models, String instanceId);
 
