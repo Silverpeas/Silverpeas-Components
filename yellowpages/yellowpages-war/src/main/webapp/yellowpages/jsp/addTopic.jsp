@@ -75,7 +75,7 @@ if (node != null) {
                 	</tr>
                 <% } %>
                 <tr> 
-                    <td colspan="2"><img border="0" src="<%=resources.getIcon("yellowpages.mandatory")%>" width="5" height="5"/>: <%=resources.getString("GML.requiredField")%></td>
+                    <td colspan="2"><img border="0" src="<%=resources.getIcon("yellowpages.mandatory")%>" width="5" height="5"/> : <%=resources.getString("GML.requiredField")%></td>
                 </tr>
             </table>
 </form>

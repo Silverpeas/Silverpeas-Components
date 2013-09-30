@@ -23,6 +23,16 @@
  */
 package com.stratelia.webactiv.yellowpages.servlets;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.FilenameUtils;
+
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.PagesContext;
@@ -45,13 +55,7 @@ import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.yellowpages.control.YellowpagesSessionController;
 import com.stratelia.webactiv.yellowpages.model.GroupDetail;
 import com.stratelia.webactiv.yellowpages.model.TopicDetail;
-import org.apache.commons.fileupload.FileItem;
-
-import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import com.stratelia.webactiv.yellowpages.model.UserCompleteContact;
 
 public class YellowpagesRequestRouter extends ComponentRequestRouter<YellowpagesSessionController> {
 
@@ -175,7 +179,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
         request.setAttribute("GroupPath", scc.getGroupPath());
         destination = "/yellowpages/jsp/groupManager.jsp";
       } else if (function.equals("RemoveGroup")) {
-        String id = request.getParameter("Id");
+        String id = request.getParameter("ToDeleteId");
         id = id.substring(id.indexOf("_") + 1, id.length()); // remove "group_"
 
         scc.removeGroup(id);
@@ -289,63 +293,19 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
         request.setAttribute("CurrentTopic", currentTopic);
 
         destination = "/yellowpages/jsp/printContactList.jsp";
-      } else if (function.startsWith("contactManager")) {
-
-        String action = request.getParameter("Action");
-        String contactId = request.getParameter("ContactId");
-        String topicId = request.getParameter("TopicId");
-
-        if ("ViewContactInTopic".equals(action)) {
-          request.setAttribute("TopicId", topicId);
-          String modelId = scc.getTopic(topicId).getNodeDetail().getModelId();
-
-          if (StringUtil.isDefined(modelId) && modelId.endsWith(".xml")) {
-            String xmlFormName = modelId;
-            String xmlFormShortName = xmlFormName.substring(xmlFormName
-                .indexOf("/") + 1, xmlFormName.indexOf("."));
-            // création du PublicationTemplate
-            getPublicationTemplateManager().addDynamicPublicationTemplate(scc
-                .getComponentId()
-                + ":" + xmlFormShortName, xmlFormName);
-            PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) getPublicationTemplateManager()
-                    .getPublicationTemplate(scc.getComponentId() + ":" + xmlFormShortName, xmlFormName);
-
-            // création du formulaire et du DataRecord
-            Form formView = pubTemplate.getViewForm();
-            RecordSet recordSet = pubTemplate.getRecordSet();
-            DataRecord data = recordSet.getRecord(contactId);
-            if (data == null) {
-              data = recordSet.getEmptyRecord();
-              data.setId(contactId);// id contact
-            }
-
-            // appel de la jsp avec les paramètres
-            request.setAttribute("Form", formView);
-            request.setAttribute("Data", data);
-
-            PagesContext context = new PagesContext("modelForm", "0", scc
-                .getLanguage(), false, scc.getComponentId(), scc.getUserId());
-            context.setBorderPrinted(false);
-            context.setObjectId(contactId);
-            request.setAttribute("PagesContext", context);
-          }
-        }
-
-        request.setAttribute("ContactId", contactId);
+      } else if (function.startsWith("Contact")) {
         request.setAttribute("Profile", flag);
-        request.setAttribute("Action", action);
-
-        destination = "/yellowpages/jsp/contactManager.jsp";
+        destination = manageContact(function, request, scc);
       } else if (function.startsWith("http")) {
         destination = function;
-      } else if (function.startsWith("selectUser")) {
+      } else if (function.equals("selectUser")) {
         // initialisation du userPanel avec les participants
         destination = scc.initUserPanel();
       } else if (function.startsWith("saveUser")) {
         // retour du userPanel
         scc.setContactUserSelected();
-        request.setAttribute("Action", "SaveUser");
-        destination = "/yellowpages/jsp/contactManager.jsp";
+        request.setAttribute("Profile", flag);
+        destination = manageContact("ContactNewFromUser", request, scc);
       } else if (function.equals("ToChooseGroup")) {
         destination = scc.initGroupPanel();
       } else if (function.equals("AddGroup")) {
@@ -373,91 +333,6 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
           scc.addModelUsed(models);
         }
         destination = getDestination("topicManager", scc, request);
-      } else if (function.startsWith("modelManager")) {
-        // récupération des données saisies dans le formulaire
-        List<FileItem> items = FileUploadUtil.parseRequest(request);
-
-        String action = FileUploadUtil.getParameter(items, "Action", "");
-        String contactId = FileUploadUtil.getParameter(items, "ContactId", "");
-        String modelId = FileUploadUtil.getParameter(items, "ModelId", ""); // Id Node de
-        // rubrique ou
-        // Id de
-        // contact
-
-        if ("NewModel".equals(action)) {
-
-          if (!StringUtil.isDefined(modelId) && contactId != null) {
-            modelId = scc.getCurrentTopic().getNodeDetail().getModelId();
-          }
-
-          if (StringUtil.isDefined(modelId) && modelId.endsWith(".xml")) {
-            String xmlFormName = modelId;
-            String xmlFormShortName = xmlFormName.substring(xmlFormName
-                .indexOf("/") + 1, xmlFormName.indexOf("."));
-            // création du PublicationTemplate
-            getPublicationTemplateManager().addDynamicPublicationTemplate(scc
-                .getComponentId()
-                + ":" + xmlFormShortName, xmlFormName);
-            PublicationTemplateImpl pubTemplate =
-                (PublicationTemplateImpl) getPublicationTemplateManager()
-                    .getPublicationTemplate(scc.getComponentId() + ":"
-                        + xmlFormShortName, xmlFormName);
-
-            // création du formulaire et du DataRecord
-            Form formUpdate = pubTemplate.getUpdateForm();
-            RecordSet recordSet = pubTemplate.getRecordSet();
-            DataRecord data = recordSet.getRecord(contactId);
-            if (data == null) {
-              data = recordSet.getEmptyRecord();
-              data.setId(contactId);// id contact
-            }
-
-            // appel de la jsp avec les paramètres
-            request.setAttribute("Form", formUpdate);
-            request.setAttribute("Data", data);
-
-            PagesContext context = new PagesContext("modelForm", "0", scc
-                .getLanguage(), false, scc.getComponentId(), scc.getUserId());
-            context.setBorderPrinted(false);
-            context.setObjectId(contactId);
-            request.setAttribute("PagesContext", context);
-          }
-        } else if ("Add".equals(action)) { // met à jour le choix de formulaire
-          // XML
-          if (StringUtil.isDefined(modelId)) {
-            String xmlFormName = modelId;
-            String xmlFormShortName = xmlFormName.substring(xmlFormName
-                .indexOf("/") + 1, xmlFormName.indexOf("."));
-
-            // récupération des données du formulaire (via le DataRecord)
-            PublicationTemplate pubTemplate = getPublicationTemplateManager()
-                .getPublicationTemplate(scc.getComponentId() + ":"
-                    + xmlFormShortName);
-            Form formUpdate = pubTemplate.getUpdateForm();
-            RecordSet recordSet = pubTemplate.getRecordSet();
-            DataRecord data = recordSet.getRecord(contactId);
-            if (data == null) {
-              data = recordSet.getEmptyRecord();
-              data.setId(contactId);// id contact
-            }
-
-            // sauvegarde des données du formulaire
-            PagesContext context = new PagesContext("modelForm", "0", scc
-                .getLanguage(), false, scc.getComponentId(), scc.getUserId());
-            context.setObjectId(contactId);
-            formUpdate.update(items, data, context);
-            recordSet.save(data);
-
-            // sauvegarde du contact et du model
-            scc.createInfoModel(contactId, modelId);
-
-          }
-        }
-
-        request.setAttribute("ContactId", contactId);
-        request.setAttribute("ModelId", modelId);
-        request.setAttribute("Action", action);
-        destination = "/yellowpages/jsp/modelManager.jsp";
       } else if (function.equals("DeleteBasketContent")) {
         scc.deleteBasketContent();
         // Back to topic
@@ -513,6 +388,178 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
       }
     }
     request.setAttribute("XMLForms", listTemplates);
+  }
+  
+  private String manageContact(String function, HttpServletRequest request, YellowpagesSessionController ysc) {
+    if ("ContactView".equals(function)) {
+      String contactId = request.getParameter("ContactId");
+      String topicId = request.getParameter("TopicId");
+      
+      UserCompleteContact contact;
+      if (StringUtil.isDefined(topicId)) {
+        contact = ysc.getCompleteContactInNode(contactId, topicId);
+      } else {
+        topicId = ysc.getCurrentTopic().getNodePK().getId();
+        contact = ysc.getCompleteContact(contactId);
+      }
+      ysc.setCurrentContact(contact);
+      request.setAttribute("Contact", contact);
+      request.setAttribute("TopicId", topicId);
+      
+      String modelId = ysc.getSubTopicDetail(topicId).getModelId();
+      if (StringUtil.isDefined(modelId) && modelId.endsWith(".xml")) {
+        setForm(contactId, modelId, true, request, ysc);
+      }
+      return "/yellowpages/jsp/contact.jsp";
+    } else if ("ContactNew".equals(function)) {
+      String modelId = ysc.getCurrentTopic().getNodeDetail().getModelId();
+      if (StringUtil.isDefined(modelId)) {
+        setForm(null, modelId, false, request, ysc);
+      }
+      return "/yellowpages/jsp/contactManager.jsp";
+    } else if ("ContactNewFromUser".equals(function)) {
+      request.setAttribute("Contact", ysc.getCurrentContact());
+      String modelId = ysc.getCurrentTopic().getNodeDetail().getModelId();
+      if (StringUtil.isDefined(modelId)) {
+        setForm(null, modelId, false, request, ysc);
+      }
+      return "/yellowpages/jsp/contactManager.jsp";
+    } else if ("ContactUpdate".equals(function)) {
+      String contactId = request.getParameter("ContactId");
+      String topicId = request.getParameter("TopicId");
+      
+      UserCompleteContact contact;
+      if (StringUtil.isDefined(topicId)) {
+        contact = ysc.getCompleteContactInNode(contactId, topicId);
+      } else {
+        topicId = ysc.getCurrentTopic().getNodePK().getId();
+        contact = ysc.getCompleteContact(contactId);
+      }
+      ysc.setCurrentContact(contact);
+      request.setAttribute("Contact", contact);
+      
+      String modelId = ysc.getSubTopicDetail(topicId).getModelId();
+      if (StringUtil.isDefined(modelId) && modelId.endsWith(".xml")) {
+        setForm(contactId, modelId, false, request, ysc);
+      }
+      
+      return "/yellowpages/jsp/contactManager.jsp";
+    } else if ("ContactSave".equals(function)) {
+      List<FileItem> items = FileUploadUtil.parseRequest(request);
+      String modelId = ysc.getCurrentTopic().getNodeDetail().getModelId();
+      String contactId = FileUploadUtil.getParameter(items, "ContactId");
+      if (StringUtil.isInteger(contactId)) {
+        // update an existing contact
+        ContactDetail contact = request2ContactDetail(items);
+        contact.getPK().setId(contactId);
+        ysc.updateContact(contact);
+      } else {
+        // create a new contact
+        ContactDetail contact = request2ContactDetail(items);
+        contactId = ysc.createContact(contact);
+      }
+      ysc.setCurrentContact(ysc.getCompleteContact(contactId));
+      if (StringUtil.isDefined(modelId) && modelId.endsWith(".xml")) {
+        saveForm(contactId, modelId, items, ysc);
+        ysc.createInfoModel(contactId, modelId);
+      }
+      return getDestination("topicManager", ysc, request);
+    } else if ("ContactSetFolders".equals(function)) {
+      String listeTopics = request.getParameter("ListeTopics");
+      String contactId = request.getParameter("ContactId");
+      ysc.deleteContactFathers(contactId);
+      String[] ids = StringUtil.splitByWholeSeparator(listeTopics, ",");
+      for (String id : ids) {
+        ysc.addContactToTopic(contactId, id);
+      }
+      return getDestination("topicManager", ysc, request);
+    }
+    
+    return "";
+  }
+  
+  private ContactDetail request2ContactDetail(List<FileItem> items) {
+    String firstName = FileUploadUtil.getParameter(items, "FirstName");
+    String lastName = FileUploadUtil.getParameter(items, "LastName");
+    String email = FileUploadUtil.getParameter(items, "Email");
+    String phone = FileUploadUtil.getParameter(items, "Phone");
+    String fax = FileUploadUtil.getParameter(items, "Fax");
+    String userId = FileUploadUtil.getParameter(items, "UserId");
+
+    ContactDetail contact = new ContactDetail("X", firstName, lastName, email, phone, fax, null, null, null);
+    if (StringUtil.isDefined(userId)) {
+      contact.setUserId(userId);
+    }
+    
+    return contact;
+  }
+  
+  private void setForm(String contactId, String modelId, boolean view, HttpServletRequest request, YellowpagesSessionController ysc) {
+    try {
+      String xmlFormName = modelId;
+      String xmlFormShortName = FilenameUtils.getBaseName(xmlFormName);
+      // création du PublicationTemplate
+      String key = ysc.getComponentId() + ":" + xmlFormShortName;
+      PublicationTemplateManager templateManager = getPublicationTemplateManager();
+      templateManager.addDynamicPublicationTemplate(key, xmlFormName);
+      PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) templateManager.getPublicationTemplate(key, xmlFormName);
+
+      // création du formulaire et du DataRecord
+      Form form;
+      if (view) {
+        form = pubTemplate.getViewForm();
+      } else {
+        form = pubTemplate.getUpdateForm();
+      }
+      RecordSet recordSet = pubTemplate.getRecordSet();
+      DataRecord data = recordSet.getRecord(contactId);
+      if (data == null) {
+        data = recordSet.getEmptyRecord();
+        data.setId(contactId);// id contact
+      }
+
+      PagesContext context =
+          new PagesContext("modelForm", "0", ysc.getLanguage(), false, ysc.getComponentId(),
+              ysc.getUserId());
+      context.setBorderPrinted(false);
+      context.setObjectId(contactId);
+      
+      request.setAttribute("PagesContext", context);
+      request.setAttribute("Form", form);
+      request.setAttribute("Data", data);
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
+  
+  private void saveForm(String contactId, String modelId, List<FileItem> items, YellowpagesSessionController ysc) {
+    try {
+      String xmlFormName = modelId;
+      String xmlFormShortName = FilenameUtils.getBaseName(xmlFormName);
+      // création du PublicationTemplate
+      String key = ysc.getComponentId() + ":" + xmlFormShortName;
+      PublicationTemplateManager templateManager = getPublicationTemplateManager();
+      templateManager.addDynamicPublicationTemplate(key, xmlFormName);
+      PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) templateManager.getPublicationTemplate(key, xmlFormName);
+
+      Form formUpdate = pubTemplate.getUpdateForm();
+      RecordSet recordSet = pubTemplate.getRecordSet();
+      DataRecord data = recordSet.getRecord(contactId);
+      if (data == null) {
+        data = recordSet.getEmptyRecord();
+        data.setId(contactId);// id contact
+      }
+
+      // sauvegarde des données du formulaire
+      PagesContext context = new PagesContext("modelForm", "0", ysc.getLanguage(), false, ysc.getComponentId(), ysc.getUserId());
+      context.setObjectId(contactId);
+      formUpdate.update(items, data, context);
+      recordSet.save(data);
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
   }
 
 }
