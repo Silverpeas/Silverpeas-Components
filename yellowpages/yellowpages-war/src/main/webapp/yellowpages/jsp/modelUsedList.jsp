@@ -25,7 +25,6 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="checkYellowpages.jsp" %>
-<%@ include file="tabManager.jsp.inc" %>
 
 <%
 Collection			xmlForms	= (List) request.getAttribute("XMLForms");
