@@ -3815,7 +3815,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       if (!StringUtil.isDefined(currentId)) {
         currentId = getCurrentFolderId();
       }
-      return WysiwygController.load(getComponentId(), "Node_" + currentId, getLanguage());
+      return WysiwygController.load(getComponentId(), "Node_" + currentId, getCurrentLanguage());
     }
     return "";
   }
