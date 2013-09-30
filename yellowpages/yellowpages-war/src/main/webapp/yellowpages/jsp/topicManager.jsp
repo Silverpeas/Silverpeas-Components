@@ -68,7 +68,6 @@ if (!StringUtil.isDefined(id)) {
 <script type="text/javascript" src="javaScript/spacesInURL.js"></script>
 <view:includePlugin name="popup"/>
 <script type="text/javascript">
-var contactWindow = window;
 var userAddWindow = window;
 var importCSVWindow = window;
 
@@ -130,7 +129,7 @@ function deleteBasketContent()
 
 function groupDeleteConfirm(childId, name) {
     if(window.confirm("<%=resources.getString("ConfirmDeleteTopic")%> '" + name + "' ?")){
-   		location.href = "RemoveGroup?Id="+childId;
+   		location.href = "RemoveGroup?ToDeleteId="+childId;
     }
 }
 <% } %>
@@ -138,17 +137,10 @@ function groupDeleteConfirm(childId, name) {
 function closeWindows() {
     if (!userAddWindow.closed && userAddWindow.name == "userAddWindow")
         userAddWindow.close();
-    if (!contactWindow.closed && contactWindow.name == "contactWindow")
-        contactWindow.close(); 
 }
 
 function contactAdd() {
-    closeWindows();
-    windowName = "contactWindow";
-    windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars=yes";
-    contactWindow = SP_openWindow( "", windowName, '600' , '430' , windowParams);
-    document.contactForm.Action.value = "New";
-    document.contactForm.submit();
+	location.href = "ContactNew";
 }
 
 function addGroup() {
@@ -160,15 +152,7 @@ function addGroup() {
 }
 
 function contactGoTo(id) {
-    closeWindows();
-    windowName = "contactWindow";
-    windowParams = "directories=0,menubar=0,toolbar=0,height=400,width=600,alwaysRaised,scrollbars=yes";
-    if (!contactWindow.closed && contactWindow.name == "contactWindow")
-        contactWindow.close();
-    contactWindow = SP_openWindow( "", windowName, '600' , '400' , windowParams);
-    document.contactForm.Action.value = "View";
-    document.contactForm.ContactId.value = id;
-    document.contactForm.submit();
+	location.href = "ContactUpdate?ContactId="+id;
 }
 
 function contactDeleteConfirm(id) {
@@ -285,11 +269,6 @@ function toAddOrUpdateFolder(action, id) {
 <input type="hidden" name="Action"/>
 <input type="hidden" name="Id" value="<%=id%>"/>
 <input type="hidden" name="ToDeleteId" value=""/>
-</form>
-
-<form name="contactForm" action="contactManager.jsp" target="contactWindow" method="post">
-<input type="hidden" name="Action"/>
-<input type="hidden" name="ContactId"/>
 </form>
 
 <form name="contactDeleteForm" action="topicManager.jsp" method="post">

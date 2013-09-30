@@ -134,43 +134,4 @@ TopicDetail displayTopicsToAdmin(YellowpagesSessionController yellowpagesScc, St
 TopicDetail displayTopicsToUsers(YellowpagesSessionController yellowpagesScc, String id, String separator,String profile,GraphicElementFactory gef, PageContext pageContext, javax.servlet.ServletRequest request, javax.servlet.http.HttpSession session, ResourcesWrapper resources, JspWriter out) throws IOException, Exception {
       return displayTopicsToAdmin(yellowpagesScc, id, separator, gef, pageContext, request, session, resources, out, false);
 }
-
-TopicDetail displaySimpleTopicsToUsers(YellowpagesSessionController yellowpagesScc, String id, JspWriter out) throws IOException, Exception  {
-      TopicDetail CurrentTopic = yellowpagesScc.getTopic(id);
-      NodeDetail nodeDetail = CurrentTopic.getNodeDetail();
-      String nodeName = Encode.javaStringToHtmlString(nodeDetail.getName());
-
-        out.println("<select name=\"selectSimpleTopic\" onChange=\"simpleTopicGoToSelected()\">");
-        out.println("<option value=\""+nodeDetail.getNodePK().getId()+"\" selected>"+nodeName+"</option>");
-    if (nodeDetail.getChildrenNumber() > 0 ) {
-        boolean peer = true;
-        NodeDetail node = null;
-        String childId;
-        String childName;
-        int nbContact;
-        Collection nodes = (Collection) nodeDetail.getChildrenDetails();
-        Iterator iteratorN = nodes.iterator();
-        Collection nbContactByTopic = CurrentTopic.getNbContactByTopic();
-        Iterator iteratorNbContact = nbContactByTopic.iterator();
-        while (iteratorN.hasNext()) {
-            node = (NodeDetail) iteratorN.next();
-            nbContact = -1;
-            if (iteratorNbContact.hasNext())
-                nbContact = ((Integer) iteratorNbContact.next()).intValue();
-            childId = node.getNodePK().getId(); 
-            childName = node.getName();
-            switch (new Integer(childId).intValue()){
-              case 1 : //Basket -- Do not display the basket in the list
-                    break;
-              case 2 : //DZ -- Do Not display the DZ in the list
-                    break;
-              default : //Others
-                out.println("<option value=\""+childId+"\">&nbsp;-&nbsp;"+Encode.javaStringToHtmlString(childName)+"</option>");
-                    break;
-            } //fin du switch
-          } //fin du while   
-    }
-        out.println("</select>");
-        return null;
-}
 %>

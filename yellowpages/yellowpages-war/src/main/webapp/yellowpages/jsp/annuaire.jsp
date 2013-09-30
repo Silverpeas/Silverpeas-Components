@@ -137,29 +137,18 @@ function search()
 function contactGoToUserInTopic(id,topic){
     windowName = "contactWindow";
     windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised, scrollbars=yes, resizable=yes";
-    width = <%=(resources.getSetting("popupWidth") == null)
-					? "600"
-					: resources.getSetting("popupWidth")%>;
-    height = <%=(resources.getSetting("popupHeight") == null)
-					? "480"
-					: resources.getSetting("popupHeight")%>;
-    contactWindow = SP_openWindow("", windowName, width, height, windowParams);
-    document.contactForm.Action.value = "ViewContactInTopic";
-    document.contactForm.ContactId.value = id;
-    document.contactForm.TopicId.value = topic;
-    document.contactForm.submit();
+    width = <%=resources.getSetting("popupWidth", 600)%>;
+    height = <%=resources.getSetting("popupHeight", 480)%>;
+	url = "ContactView?ContactId="+id+"&TopicId="+topic;
+    contactWindow = SP_openWindow(url, windowName, width, height, windowParams);
 }
 
 function goToUser(id){
     closeWindows();
     windowName = "contactWindow";
     windowParams = "directories=0,menubar=0,toolbar=0,height=400,width=600,alwaysRaised,scrollbars=yes";
-    width = <%=(resources.getSetting("popupWidth") == null)
-					? "600"
-					: resources.getSetting("popupWidth")%>;
-    height = <%=(resources.getSetting("popupHeight") == null)
-					? "480"
-					: resources.getSetting("popupHeight")%>;
+    width = <%=resources.getSetting("popupWidth", 600)%>;
+    height = <%=resources.getSetting("popupHeight", 480)%>;
     contactWindow = SP_openWindow("ViewUserFull?Id="+id, windowName, width, height, windowParams);
 }
 

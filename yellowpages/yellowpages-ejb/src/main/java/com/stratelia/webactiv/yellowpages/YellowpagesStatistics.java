@@ -132,13 +132,9 @@ public class YellowpagesStatistics implements ComponentStatisticsInterface {
         c.add(contact);
       }
     } else {
-      getYellowpagesBm().setActor(myOrga.getUserDetail("0"));
-      getYellowpagesBm().setPrefixTableName(spaceId);
-      getYellowpagesBm().setComponentId(componentId);
-
       TopicDetail topic;
       try {
-        topic = getYellowpagesBm().goTo(topicId);
+        topic = getYellowpagesBm().goTo(new NodePK(topicId, componentId), "0");
         if (topic != null) {
           c.addAll(topic.getContactDetails());
         }
