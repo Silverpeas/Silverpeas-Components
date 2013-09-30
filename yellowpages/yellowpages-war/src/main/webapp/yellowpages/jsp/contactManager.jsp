@@ -143,7 +143,11 @@ function topicAddGoTo() {
 }
 
 function sendContactData() {
+    <% if (formUpdate != null) { %>
     if (isCorrectAppForm() && isCorrectForm()) {
+    <% } else { %>
+    if (isCorrectAppForm()) {
+    <% } %>
          document.contactForm.submit();
      }
 }
