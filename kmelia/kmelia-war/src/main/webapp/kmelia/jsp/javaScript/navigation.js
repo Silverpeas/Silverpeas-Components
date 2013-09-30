@@ -63,7 +63,7 @@ function openSPWindow(fonction, windowName) {
 }
 
 function exportTopic() {
-  exportComponentWindow = SP_openWindow("ExportTopic?TopicId="+getCurrentNodeId(), "exportComponentWindow", 700, 350, "scrollbars=yes, resizable=yes");
+  exportComponentWindow = SP_openWindow("ExportTopic?TopicId=" + getCurrentNodeId(), "exportComponentWindow", 700, 350, "scrollbars=yes, resizable=yes");
 }
 
 function openSPWindow(fonction, windowName) {
@@ -436,7 +436,6 @@ function initOperations(id, op) {
     menuEmpty = false;
   }
 
-<<<<<<< HEAD
   if (!groupEmpty) {
     groupIndex++;
     groupEmpty = true;
@@ -446,7 +445,7 @@ function initOperations(id, op) {
   if (op.responsibles) {
     menuItem = new YAHOO.widget.MenuItem(getString('GML.component.responsibles'), {
       classname: 'space-or-component-responsibles-operation',
-      url : "javascript:onclick=displayResponsibles()"
+      url: "javascript:onclick=displayResponsibles()"
     });
     oMenu.addItem(menuItem, groupIndex);
     groupEmpty = false;
@@ -455,21 +454,11 @@ function initOperations(id, op) {
   oMenu.render();
 
   if (menuEmpty) {
-    $("#menutoggle").css({'display':'none'});
-	}
-	if (menuBarEmpty) {
-		$('#menubar-creation-actions').css({'display':'none'});
-	}
-=======
-  oMenu.render();
-
-  if (menuEmpty) {
     $("#menutoggle").css({'display': 'none'});
   }
   if (menuBarEmpty) {
     $('#menubar-creation-actions').css({'display': 'none'});
   }
->>>>>>> 0b5acad... bug #4719 :  Fix some XSS flaws. The aim is to encode for HTML inputs coming from a user at rendering time.
 }
 
 function addCreationItem(url, icon, label) {
