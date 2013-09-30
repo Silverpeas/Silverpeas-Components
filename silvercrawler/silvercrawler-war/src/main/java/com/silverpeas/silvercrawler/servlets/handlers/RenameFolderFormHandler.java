@@ -19,7 +19,7 @@ public class RenameFolderFormHandler extends FunctionHandler {
       throws Exception {
 
     // Retrieves folder's name to be removed
-    String folderName = (String) request.getParameter("folderName");
+    String folderName = request.getParameter("oldName");
 
     // Is User has admin profile
     String userHisghestRole = getUserHighestRole(sessionController);
@@ -36,5 +36,4 @@ public class RenameFolderFormHandler extends FunctionHandler {
     // returns page to redirect to
     return "folderRenameForm.jsp";
   }
-
 }

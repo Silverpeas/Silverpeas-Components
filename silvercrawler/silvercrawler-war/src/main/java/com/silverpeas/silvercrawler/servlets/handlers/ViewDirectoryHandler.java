@@ -34,7 +34,7 @@ public class ViewDirectoryHandler extends FunctionHandler {
     request.setAttribute("Folder", currentFolder);
     request.setAttribute("Path", sessionController.getPath());
     request.setAttribute("IsDownload", sessionController.isDownload());
-    request.setAttribute("IsRootPath", new Boolean(sessionController.isRootPath()));
+    request.setAttribute("IsRootPath", sessionController.isRootPath());
     request.setAttribute("IsAllowedNav", sessionController.isAllowedNav());
     request.setAttribute("RootPath", sessionController.getRootPath());
     request.setAttribute("isReadWriteActivated", sessionController.isReadWriteActivated());
