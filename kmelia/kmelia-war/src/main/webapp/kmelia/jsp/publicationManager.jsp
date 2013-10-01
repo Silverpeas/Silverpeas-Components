@@ -195,7 +195,7 @@
       }
 
       name = pubDetail.getName(language);
-      description = pubDetail.getDescription(language);
+      description = StringUtil.defaultIfBlank(pubDetail.getDescription(language), "");
       creationDate = resources.getOutputDate(pubDetail.getCreationDate());
       if (pubDetail.getBeginDate() != null) {
         beginDate = resources.getInputDate(pubDetail.getBeginDate());
@@ -223,7 +223,7 @@
       }
       version = pubDetail.getVersion();
       importance = Integer.toString(pubDetail.getImportance());
-      keywords = pubDetail.getKeywords(language);
+      keywords = StringUtil.defaultIfBlank(pubDetail.getKeywords(language), "");
       content = pubDetail.getContent();
       status = pubDetail.getStatus();
       if (beginDate == null || beginDate.length() == 0) {
@@ -244,7 +244,7 @@
         endHour = "";
       }
 
-      author = pubDetail.getAuthor();
+      author = StringUtil.defaultIfBlank(pubDetail.getAuthor(), "");
       targetValidatorId = pubDetail.getTargetValidatorId();
 
       if (StringUtil.isDefined(targetValidatorId)) {
