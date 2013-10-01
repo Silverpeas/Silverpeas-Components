@@ -20,23 +20,6 @@
  */
 package com.stratelia.webactiv.yellowpages.control;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.util.GlobalContext;
-
 import com.silverpeas.form.AbstractForm;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
@@ -88,6 +71,21 @@ import com.stratelia.webactiv.yellowpages.model.TopicDetail;
 import com.stratelia.webactiv.yellowpages.model.UserCompleteContact;
 import com.stratelia.webactiv.yellowpages.model.UserContact;
 import com.stratelia.webactiv.yellowpages.model.YellowpagesRuntimeException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.util.GlobalContext;
 
 public class YellowpagesSessionController extends AbstractComponentSessionController {
 
@@ -203,16 +201,16 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
 
   public TopicDetail getTopic(String id) {
     TopicDetail topic = getKSCEJB().goTo(getNodePK(id), getUserId());
-    List<NodeDetail> path = (List<NodeDetail>) getNodeBm().getAnotherPath(getNodePK(id));
-    Collections.reverse(path);
-    topic.setPath(path);
+    List<NodeDetail> thePath = (List<NodeDetail>) getNodeBm().getAnotherPath(getNodePK(id));
+    Collections.reverse(thePath);
+    topic.setPath(thePath);
     return topic;
   }
-  
+
   private NodePK getNodePK(String id) {
     return new NodePK(id, getComponentId());
   }
-  
+
   private ContactPK getContactPK(String id) {
     return new ContactPK(id, null, getComponentId());
   }
@@ -223,8 +221,8 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
 
     // add sub groups
     Group[] subGroups = getOrganisationController().getAllSubGroups(groupId);
-    Group subGroup = null;
-    GroupDetail subGroupDetail = null;
+    Group subGroup;
+    GroupDetail subGroupDetail;
     for (Group subGroup1 : subGroups) {
       subGroup = subGroup1;
       subGroupDetail = new GroupDetail(subGroup);
@@ -235,8 +233,8 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
 
     // add users
     String[] userIds = group.getUserIds();
-    String userId = null;
-    UserDetail user = null;
+    String userId;
+    UserDetail user;
     for (String userId1 : userIds) {
       userId = userId1;
       user = getOrganisationController().getUserDetail(userId);
@@ -348,7 +346,8 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
             listUserFull.add(userFull);
           }
         } else {// contacts annuaire interne et externe
-          UserCompleteContact userComplete = getCompleteContactInNode(contact.getContactDetail().getPK().getId(),
+          UserCompleteContact userComplete = getCompleteContactInNode(contact.getContactDetail().
+              getPK().getId(),
               contact.getNodeId());
           listUserComplete.add(userComplete);
         }
@@ -612,9 +611,8 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
 
     List<String> groupIds = getKSCEJB().getGroupIds(getNodePK(nodeId));
 
-    String groupId = null;
     for (String groupId1 : groupIds) {
-      groupId = groupId1;
+      String groupId = groupId1;
       users.addAll(getAllUsersOfGroup(groupId));
     }
 
@@ -626,9 +624,8 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
 
     List<String> groupIds = getKSCEJB().getGroupIds(getNodePK(nodeId));
 
-    String groupId = null;
     for (String groupId1 : groupIds) {
-      groupId = groupId1;
+      String groupId = groupId1;
 
       UserDetail[] userDetails = getOrganisationController().getAllUsersOfGroup(groupId);
 
@@ -644,9 +641,8 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     GroupDetail groupDetail = getGroup(groupId);
     UserDetail[] userDetails = getOrganisationController().getFiltredDirectUsers(groupId, "");
 
-    UserDetail userDetail = null;
     for (UserDetail userDetail1 : userDetails) {
-      userDetail = userDetail1;
+      UserDetail userDetail = userDetail1;
       ContactFatherDetail contactFather = getContactFatherDetail(userDetail.getId(), groupDetail);
       if (contactFather != null) {
         users.add(contactFather);
@@ -913,7 +909,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
 
         UserDetail[] temp = new UserDetail[users.length + usersFirstName.length];
 
-        int i = 0;
+        int i;
         for (i = 0; i < users.length; i++) {
           temp[i] = users[i];
         }
@@ -933,7 +929,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
       ContactFatherDetail contactFather;
       ContactDetail contact;
       String userId;
-      UserDetail userDetail = null;
+      UserDetail userDetail;
       while (iterator.hasNext()) {
         contactFather = iterator.next();
         contact = contactFather.getContactDetail();
@@ -1123,7 +1119,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   public List<String> getArrayHeaders() {
     List<String> arrayHeaders = new ArrayList<String>();
     List<String> properties = getProperties();
-    String nameHeader = "";
+    String nameHeader;
     for (String nameProperty : properties) {
       if (nameProperty.startsWith("domain.")) {
         // on recherche une propriété du domaine
@@ -1143,17 +1139,17 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   }
 
   public String exportAsCSV() {
-    List<StringBuffer> csvRows = exportAllDataAsCSV();
+    List<StringBuilder> csvRows = exportAllDataAsCSV();
 
     return writeCSVFile(csvRows);
   }
 
-  private List<StringBuffer> exportAllDataAsCSV() {
+  private List<StringBuilder> exportAllDataAsCSV() {
     Collection<ContactFatherDetail> contacts =
         getAllContactDetails(currentTopic.getNodePK());
 
-    StringBuffer csvRow = new StringBuffer();
-    List<StringBuffer> csvRows = new ArrayList<StringBuffer>();
+    StringBuilder csvRow = new StringBuilder();
+    List<StringBuilder> csvRows = new ArrayList<StringBuilder>();
 
     // Can't export all columns because data are heterogenous
     csvRow = getCSVCols();
@@ -1162,7 +1158,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     for (ContactFatherDetail contactFatherDetail : contacts) {
       ContactDetail contact = contactFatherDetail.getContactDetail();
       if (contact != null) {
-        csvRow = new StringBuffer();
+        csvRow = new StringBuilder();
         addCSVValue(csvRow, contact.getLastName());
         addCSVValue(csvRow, contact.getFirstName());
         addCSVValue(csvRow, contact.getEmail());
@@ -1238,8 +1234,8 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     return csvRows;
   }
 
-  private StringBuffer getCSVCols() {
-    StringBuffer csvRow = new StringBuffer();
+  private StringBuilder getCSVCols() {
+    StringBuilder csvRow = new StringBuilder();
     addCSVValue(csvRow, getString("yellowpages.column.lastname"));
     addCSVValue(csvRow, getString("yellowpages.column.firstname"));
     addCSVValue(csvRow, getString("yellowpages.column.email"));
@@ -1248,7 +1244,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     return csvRow;
   }
 
-  private void addCSVValue(StringBuffer row, String value) {
+  private void addCSVValue(StringBuilder row, String value) {
     row.append("\"");
     if (value != null) {
       row.append(value.replaceAll("\"", "\"\""));
@@ -1256,22 +1252,21 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     row.append("\"").append(",");
   }
 
-  private String writeCSVFile(List<StringBuffer> csvRows) {
+  private String writeCSVFile(List<StringBuilder> csvRows) {
     FileOutputStream fileOutput = null;
     String csvFilename = new Date().getTime() + ".csv";
     try {
       fileOutput = new FileOutputStream(FileRepositoryManager.getTemporaryPath()
           + csvFilename);
 
-      StringBuffer csvRow;
-      for (StringBuffer csvRow1 : csvRows) {
+      StringBuilder csvRow;
+      for (StringBuilder csvRow1 : csvRows) {
         csvRow = csvRow1;
         fileOutput.write(csvRow.toString().getBytes());
         fileOutput.write("\n".getBytes());
       }
     } catch (Exception e) {
       csvFilename = null;
-      e.printStackTrace();
     } finally {
       if (fileOutput != null) {
         try {
@@ -1279,7 +1274,6 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
           fileOutput.close();
         } catch (IOException e) {
           csvFilename = null;
-          e.printStackTrace();
         }
       }
     }
@@ -1296,8 +1290,8 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
    */
   public ImportReport importCSV(FileItem filePart, String modelId) throws YellowpagesException {
     SilverTrace.info("yellowpages", "YellowpagesSessionController.importCSV()",
-      "root.MSG_GEN_ENTER_METHOD");
-    
+        "root.MSG_GEN_ENTER_METHOD");
+
     ImportReport report = new ImportReport();
     try {
       InputStream is = filePart.getInputStream();
@@ -1305,13 +1299,13 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
       csvReader.setColumnNumberControlEnabled(false);
       csvReader.setExtraColumnsControlEnabled(false);
       csvReader.initCSVFormat("org.silverpeas.yellowpages.settings.yellowpagesSettings",
-        "User", ",");
+          "User", ",");
 
       try {
         Variant[][] csvHeaderValues = csvReader.parseStream(is);
 
         int nbColumns = csvReader.getM_nbCols() + csvReader.getM_specificNbCols();
-        
+
         // load optional template
         PublicationTemplate pubTemplate = null;
         String xmlFormShortName = null;
@@ -1320,12 +1314,12 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
             xmlFormShortName = modelId.substring(modelId.indexOf("/") + 1, modelId.indexOf("."));
             pubTemplate =
                 getPublicationTemplateManager().getPublicationTemplate(
-                    getComponentId() + ":" + xmlFormShortName);
+                getComponentId() + ":" + xmlFormShortName);
           }
         } catch (PublicationTemplateException e) {
           SilverTrace.error("yellowpages",
               "YellowpagesSessionController.importCSV", "yellowpages.EX_CSV_FILE", e);
-            report.addError(e.getExtraInfos());
+          report.addError(e.getExtraInfos());
         }
 
         int currentLine = 1;
@@ -1338,8 +1332,8 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
           }
           // Header columns (lastName, firstName, email, phone, fax)
           ContactDetail contactDetail =
-            new ContactDetail("X", CSVRow[1], CSVRow[0], CSVRow[2], CSVRow[3], CSVRow[4], null,
-            null, null);
+              new ContactDetail("X", CSVRow[1], CSVRow[0], CSVRow[2], CSVRow[3], CSVRow[4], null,
+              null, null);
 
           try {
             String contactId = createContact(contactDetail);
@@ -1376,16 +1370,16 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
             }
             nbContactsAdded++;
           } catch (Exception re) {
-            report.addError("Erreur à la ligne #"+currentLine);
+            report.addError("Erreur à la ligne #" + currentLine);
             SilverTrace.error("yellowpages",
-              "YellowpagesSessionController.importCSV", "yellowpages.EX_CSV_FILE", re);
+                "YellowpagesSessionController.importCSV", "yellowpages.EX_CSV_FILE", re);
           }
           currentLine++;
         }
         report.setNbAdded(nbContactsAdded);
       } catch (UtilTrappedException ute) {
         SilverTrace.error("yellowpages",
-          "YellowpagesSessionController.importCSV", "yellowpages.EX_CSV_FILE", ute);
+            "YellowpagesSessionController.importCSV", "yellowpages.EX_CSV_FILE", ute);
         report.addError(ute.getExtraInfos());
       }
     } catch (IOException e) {
@@ -1432,8 +1426,8 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   public List<PublicationTemplate> getForms() {
     List<PublicationTemplate> templates = new ArrayList<PublicationTemplate>();
     try {
-      GlobalContext context = new GlobalContext(getSpaceId(), getComponentId());
-      templates = getPublicationTemplateManager().getPublicationTemplates(context);
+      GlobalContext theContext = new GlobalContext(getSpaceId(), getComponentId());
+      templates = getPublicationTemplateManager().getPublicationTemplates(theContext);
     } catch (PublicationTemplateException e) {
       SilverTrace.error("yellowpages", "YellowpagesSessionController.getForms()",
           "root.CANT_GET_FORMS", e);

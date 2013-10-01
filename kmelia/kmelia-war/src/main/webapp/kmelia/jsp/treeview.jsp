@@ -131,7 +131,8 @@ function getComponentId() {
 }
 
 function getComponentLabel() {
-	return "<%=EncodeHelper.javaStringToJsString(componentLabel)%>";
+	return "<%=EncodeHelper.javaStringToJsString(EncodeHelper.javaStringToHtmlString(
+      componentLabel))%>";
 }
 
 function getLanguage() {
@@ -214,7 +215,7 @@ var searchFolderId = "<%=id%>";
 								appletDisplayed = true;
 						%>
 								<td>
-									<div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding:0px; width:100%" valign="top"><img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/></div>
+									<div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; padding:0px; width:100%" valign="top"><img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/></div>
 								</td>
 						<% } %>
 						<% if (kmeliaScc.isDraftEnabled()) {
@@ -222,7 +223,7 @@ var searchFolderId = "<%=id%>";
 								out.println("<td width=\"5%\">&nbsp;</td>");
 							%>
 							<td>
-								<div id="DragAndDropDraft" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding:0px width:100%" valign="top"><img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/></div>
+								<div id="DragAndDropDraft" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; padding:0px; width:100%" valign="top"><img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/></div>
 							</td>
 						<% } %>
 						</tr></table>
@@ -979,7 +980,7 @@ $(document).ready(
 </div>
 <div id="rightClick-message" title="<%=resources.getString("kmelia.help.rightclick.title") %>" style="display: none;">
 	<p>
-		<%=resources.getStringWithParam("kmelia.help.rightclick.content", componentLabel) %>
+    <%=resources.getStringWithParam("kmelia.help.rightclick.content", EncodeHelper.javaStringToHtmlString(componentLabel)) %>
 	</p>
 </div>
 <div id="addOrUpdateNode" style="display: none;">

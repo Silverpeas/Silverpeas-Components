@@ -121,7 +121,7 @@ out.println(gef.getLookStyleSheet());
 	browseBar.setDomainName(kmeliaScc.getSpaceLabel());
 	browseBar.setComponentName(kmeliaScc.getComponentLabel(), "KmaxMain");
 	String pubName = kmeliaScc.getSessionPublication().getDetail().getName(currentLang);
-	browseBar.setExtraInformation(EncodeHelper.javaStringToHtmlString(pubName));
+	browseBar.setExtraInformation(pubName);
 	String id = kmeliaScc.getSessionPublication().getDetail().getId();
 	browseBar.setI18N(action, currentLang);
 	

@@ -544,7 +544,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     template.setAttribute("publication", pub);
     template.setAttribute("link", "javascript:onClick=publicationGoTo('" + pub.getId() + "')");
     template.setAttribute("name", name);
-    template.setAttribute("description", EncodeHelper.javaStringToHtmlParagraphe(description));
+    template.setAttribute("description", EncodeHelper.convertWhiteSpacesForHTMLDisplay(description));
     template.setAttribute("showDescription",
         StringUtil.isDefined(description) && !description.equals(name));
     template.setAttribute("importance", displayImportance(pub.getImportance(), resources));
@@ -720,7 +720,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     if (StringUtil.isDefined(description) && !description.equals(name)) {
       out.write("<div class=\"line3\">");
       out.write("<span class=\"description\">");
-      out.write(EncodeHelper.javaStringToHtmlParagraphe(description));
+      out.write(EncodeHelper.convertWhiteSpacesForHTMLDisplay(description));
       out.write("</span>");
       out.write("</div>");
     }
@@ -1170,7 +1170,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
           writer.write("<td valign=\"top\" width=\"" + width + "%\">");
           writer.write("<p><b><a href=\"javascript:onClick=publicationGoToFromMain('"
               + pub.getPK().
-              getId() + "')\">" + EncodeHelper.javaStringToHtmlString(pub.getName(language))
+              getId() + "')\">" + pub.getName(language)
               + "</a>" + shortcut + "</b><br/>");
 
           if (kmeliaScc.showUserNameInList()) {
@@ -1185,7 +1185,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
                 "kmelia.CopyPublicationLink") + "\"></a>");
           }
           writer.write("<br/>");
-          writer.write(EncodeHelper.javaStringToHtmlParagraphe(pub.getDescription(language)));
+          writer.write(EncodeHelper.convertWhiteSpacesForHTMLDisplay(pub.getDescription(language)));
           writer.write("</p>");
           writer.write("</td>");
           writer.write("<!-- Publication Body End -->");

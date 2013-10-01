@@ -20,23 +20,6 @@
  */
 package com.stratelia.webactiv.quizz.control;
 
-import java.io.File;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
-
-import javax.ejb.EJBException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.xml.bind.JAXBException;
-
-import org.silverpeas.core.admin.OrganisationController;
-
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
@@ -45,7 +28,6 @@ import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.clipboard.ClipboardException;
 import com.silverpeas.util.clipboard.ClipboardSelection;
-
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -68,10 +50,23 @@ import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerSele
 import com.stratelia.webactiv.util.questionResult.model.QuestionResult;
 import com.stratelia.webactiv.util.score.control.ScoreBm;
 import com.stratelia.webactiv.util.score.model.ScoreDetail;
+import java.io.File;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import javax.ejb.EJBException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.xml.bind.JAXBException;
+import org.silverpeas.core.admin.OrganisationController;
 
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
-public class QuizzSessionController extends AbstractComponentSessionController {
+public final class QuizzSessionController extends AbstractComponentSessionController {
 
   private QuestionContainerBm questionContainerBm = null;
   private ResourceLocator settings = null;
@@ -261,8 +256,8 @@ public class QuizzSessionController extends AbstractComponentSessionController {
    * @param qcPK the QuestionContainerPK with content identifier
    */
   private void classifyContent(QuestionContainerDetail quizDetail, QuestionContainerPK qcPK) {
-    List<PdcPosition> positions = this.getPositions();
-    if (positions != null && !positions.isEmpty()) {
+    List<PdcPosition> thePositions = this.getPositions();
+    if (thePositions != null && !thePositions.isEmpty()) {
       PdcClassification classification =
           aPdcClassificationOfContent(qcPK.getId(), qcPK.getInstanceId()).withPositions(
           this.getPositions());
@@ -283,7 +278,7 @@ public class QuizzSessionController extends AbstractComponentSessionController {
    * @throws QuizzException
    * @see
    */
-  public void recordReply(String quizzId, Hashtable<String, Vector<String>> reply)
+  public void recordReply(String quizzId, Map<String, List<String>> reply)
       throws QuizzException {
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(), getComponentId());
@@ -710,7 +705,7 @@ public class QuizzSessionController extends AbstractComponentSessionController {
   }
 
   private void pasteQuizz(QuestionContainerDetail quizz) throws Exception {
-    String componentId = "";
+    String componentId;
     if (quizz.getHeader().getInstanceId().equals(getComponentId())) {
       // in the same component
       componentId = quizz.getHeader().getInstanceId();
@@ -787,7 +782,7 @@ public class QuizzSessionController extends AbstractComponentSessionController {
   }
 
   public String exportQuizzCSV(String quizzId) {
-    QuestionContainerDetail quizz = null;
+    QuestionContainerDetail quizz;
     try {
       quizz = getQuizzDetail(quizzId);
       return questionContainerBm.exportCSV(quizz, true);
@@ -804,6 +799,7 @@ public class QuizzSessionController extends AbstractComponentSessionController {
     return nbParticipations < quizz.getHeader().getNbMaxParticipations();
   }
 
+  @Override
   public void close() {
     if (questionContainerBm != null) {
       questionContainerBm = null;
@@ -840,14 +836,15 @@ public class QuizzSessionController extends AbstractComponentSessionController {
       QuestionContainerHeader questionContainerHeader =
           new QuestionContainerHeader(null, title, description, notice, null, null, beginDate,
           endDate, false, 0, Integer.parseInt(nbQuestions), Integer.parseInt(nbAnswersMax),
-          Integer.parseInt(nbAnswersNeeded), 0, QuestionContainerHeader.IMMEDIATE_RESULTS, QuestionContainerHeader.TWICE_DISPLAY_RESULTS);
+          Integer.parseInt(nbAnswersNeeded), 0, QuestionContainerHeader.IMMEDIATE_RESULTS,
+          QuestionContainerHeader.TWICE_DISPLAY_RESULTS);
       HttpSession session = request.getSession();
       QuestionContainerDetail questionContainerDetail = new QuestionContainerDetail();
       questionContainerDetail.setHeader(questionContainerHeader);
       session.setAttribute("quizzUnderConstruction", questionContainerDetail);
       // create the positions of the new quiz on the PdC
-      String positions = request.getParameter("Positions");
-      setQuizPositionsFromJSON(positions);
+      String thePositions = request.getParameter("Positions");
+      setQuizPositionsFromJSON(thePositions);
     }
   }
 
