@@ -55,7 +55,7 @@
 		PublicationDetail pub = (PublicationDetail) infosI.next();
 		ArrayLine line = arrayPane.addArrayLine();
 
-		st = "<b>"+pub.getName()+"</b>";
+		st = "<b>"+EncodeHelper.javaStringToHtmlString(pub.getName())+"</b>";
 		if (pub.getWysiwyg() != null && !"".equals(pub.getWysiwyg()))
     	description = pub.getWysiwyg();
 		else if (pub.getDescription() != null && !pub.getDescription().equals(""))

@@ -241,7 +241,6 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
   }
 
   public void save() {
-
     // add last info for a complete save
     currentScheduleEvent.setAuthor(Integer.parseInt(getUserId()));
     currentScheduleEvent.setStatus(ScheduleEventStatus.OPEN);

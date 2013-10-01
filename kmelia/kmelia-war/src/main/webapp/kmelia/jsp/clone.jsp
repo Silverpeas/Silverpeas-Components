@@ -364,7 +364,7 @@ $(function() {
 	        /*********************************************************************************************************************/
 	        out.print("<h2 class=\"publiName\">");
 
-	        out.print(EncodeHelper.javaStringToHtmlString(pubDetail.getName()));
+	        out.print(pubDetail.getName());
 
 	     	if (!"user".equals(profile)) {
 	          if (pubDetail.isValidationRequired()) {

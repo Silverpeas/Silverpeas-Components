@@ -148,16 +148,16 @@
     int nbQuestions = new Integer((String) request.getParameter("NbQuestions")).intValue();
     String comment = (String) request.getParameter("Comment");
     String isAnonymousComment = (String) request.getParameter("anonymousComment");
-    Hashtable hash = surveyScc.getSessionResponses();
+    Map<String, List<String>> hash = surveyScc.getSessionResponses();
     if (hash == null)
-      hash = new Hashtable();
+      hash = new HashMap<String, List<String>>();
 
     boolean iAC = false;
     if (isAnonymousComment != null && isAnonymousComment.equals("1"))
       iAC = true;
 
     for (int i = 1; i <= nbQuestions; i++) {
-      Vector v = new Vector(5, 2);
+      List<String> answers = new ArrayList(5);
       String[] selectedAnswers = (String[]) request.getParameterValues("answer_" + i);
       if (selectedAnswers != null) {
         String questionId =
@@ -165,11 +165,11 @@
                 selectedAnswers[0].length());
         for (int j = 0; j < selectedAnswers.length; j++) {
           String answerId = selectedAnswers[j].substring(0, selectedAnswers[j].indexOf(","));
-          v.add(answerId);
+          answers.add(answerId);
         }
         String openedAnswer = (String) request.getParameter("openedAnswer_" + i);
-        v.add("OA" + openedAnswer);
-        hash.put(questionId, v);
+        answers.add("OA" + openedAnswer);
+        hash.put(questionId, answers);
       }
     }
     surveyScc.recordReply(surveyId, hash, comment, iAC);
@@ -191,12 +191,12 @@
 
   if (action.equals("RecordQuestionsResponses")) {
     int nbQuestions = new Integer((String) request.getParameter("NbQuestions")).intValue();
-    Hashtable hash = surveyScc.getSessionResponses();
+    Map<String, List<String>> hash = surveyScc.getSessionResponses();
     if (hash == null)
-      hash = new Hashtable();
+      hash = new HashMap<String, List<String>>();
 
     for (int i = 1; i <= nbQuestions; i++) {
-      Vector v = new Vector(5, 2);
+      List<String> answers = new ArrayList<String>(5);
       String[] selectedAnswers = (String[]) request.getParameterValues("answer_" + i);
       if (selectedAnswers != null) {
         String questionId =
@@ -204,11 +204,11 @@
                 selectedAnswers[0].length());
         for (int j = 0; j < selectedAnswers.length; j++) {
           String answerId = selectedAnswers[j].substring(0, selectedAnswers[j].indexOf(","));
-          v.add(answerId);
+          answers.add(answerId);
         }
         String openedAnswer = (String) request.getParameter("openedAnswer_" + i);
-        v.add("OA" + openedAnswer);
-        hash.put(questionId, v);
+        answers.add("OA" + openedAnswer);
+        hash.put(questionId, answers);
       }
     }
     surveyScc.setSessionResponses(hash);
@@ -217,26 +217,26 @@
 
   if (action.equals("SubmitSurvey")) {
     QuestionContainerDetail surveyDetail = surveyScc.getSessionSurveyUnderConstruction();
-    //Vector 2 Collection
-    List questionsV = surveyScc.getSessionQuestions();
-    ArrayList q = new ArrayList();
+    //list 2 Collection
+    List<Question> questionsV = surveyScc.getSessionQuestions();
+    List<Question> q = new ArrayList<Question>();
     for (int j = 0; j < questionsV.size(); j++) {
-      q.add((Question) questionsV.get(j));
+      q.add(questionsV.get(j));
     }
     surveyDetail.setQuestions(q);
     surveyScc.createSurvey(surveyDetail);
     surveyScc.removeSessionSurveyUnderConstruction();
 %>
-<jsp:forward page="<%=surveyScc.getComponentUrl()+\"Main.jsp\"%>" />
+<jsp:forward page='<%=surveyScc.getComponentUrl()+"Main.jsp"%>' />
 <%
   return;
   } else if (action.equals("SubmitAndUpdateSurvey")) {
     QuestionContainerDetail surveyDetail = surveyScc.getSessionSurveyUnderConstruction();
-    //Vector 2 Collection
-    List questionsV = surveyScc.getSessionQuestions();
-    ArrayList q = new ArrayList();
+    //list 2 Collection
+    List<Question> questionsV = surveyScc.getSessionQuestions();
+    ArrayList<Question> q = new ArrayList<Question>();
     for (int j = 0; j < questionsV.size(); j++) {
-      q.add((Question) questionsV.get(j));
+      q.add(questionsV.get(j));
     }
     surveyDetail.setQuestions(q);
     surveyId = surveyScc.createSurvey(surveyDetail).getId();
