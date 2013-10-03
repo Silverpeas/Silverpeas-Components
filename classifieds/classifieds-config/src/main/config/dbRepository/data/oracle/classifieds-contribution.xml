@@ -62,7 +62,7 @@
 
   <upgrade version="003">
     <create_table>
-      <file name="mssql\classifieds\up003\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+      <file name="oracle\classifieds\up003\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
     </create_table>
   </upgrade>
 
