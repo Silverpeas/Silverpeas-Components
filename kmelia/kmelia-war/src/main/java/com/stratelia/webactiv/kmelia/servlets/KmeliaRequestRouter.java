@@ -913,7 +913,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
             + topic.getName() + " > " + kmelia.getString("TopicWysiwyg"), CharEncoding.UTF_8);
 
         destination += "&ObjectId=Node_" + subTopicId;
-        destination += "&Language=fr";
+        destination += "&Language="+kmelia.getLanguage();
+        destination += "&ContentLanguage="+kmelia.getCurrentLanguage();
         destination += "&ReturnUrl=" + URLEncoder.encode(URLManager.getApplicationURL()
             + URLManager.getURL(kmelia.getSpaceId(), kmelia.getComponentId())
             + "FromTopicWysiwyg?Action=Search&Id=" + topicId + "&ChildId=" + subTopicId
