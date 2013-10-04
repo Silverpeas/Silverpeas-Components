@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas <p/> This program is free software: you can redistribute
+ * Copyright (C) 2000 - 2013 Silverpeas <p/> This program is free software: you can redistribute
  * it and/or modify it under the terms of the GNU Affero General Public License as published by the
  * Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version. <p/> As a special exception to the terms and conditions of version 3.0 of the GPL, you
