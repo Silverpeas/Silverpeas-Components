@@ -31,7 +31,7 @@
 
   <groupId>com.silverpeas</groupId>
   <artifactId>components</artifactId>
-  <version>5.13</version>
+  <version>5.13.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Silverpeas Components</name>
 
