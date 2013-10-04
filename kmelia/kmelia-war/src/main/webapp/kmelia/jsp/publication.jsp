@@ -705,7 +705,9 @@
                       		</ul>
                       	<% } %>
                       	<% if (isOwner && kmeliaScc.getInvisibleTabs().indexOf(KmeliaSessionController.TAB_READER_LIST) == -1) { %>
-                      	<a id="readingControlLink" href="ReadingControl">&gt;&gt; <%=resources.getString("PubGererControlesLecture") %></a>
+                      		<a id="readingControlLink" href="ReadingControl">&gt;&gt; <%=resources.getString("PubGererControlesLecture") %></a>
+                      	<% } else { %>
+                      		<br clear="all" />
                       	<% } %>
                     </div>
                     <!-- /consultation -->
