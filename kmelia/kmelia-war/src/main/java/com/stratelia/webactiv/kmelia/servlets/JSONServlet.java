@@ -107,7 +107,7 @@ public class JSONServlet extends HttpServlet {
       operations.put("predefinedPdcPositions", kmeliaSC.isPdcUsed() && isAdmin);
       operations.put("templates", kmeliaSC.isContentEnabled() && isAdmin);
       operations.put("exporting", kmeliaSC.isExportComponentAllowed()
-              && kmeliaSC.isExportZipAllowed() && isAdmin);
+              && kmeliaSC.isExportZipAllowed() && (isAdmin || kmeliaSC.isExportAllowedToUsers()));
       operations.put("exportPDF", kmeliaSC.isExportComponentAllowed()
               && kmeliaSC.isExportPdfAllowed() && (isAdmin || isPublisher));
 
