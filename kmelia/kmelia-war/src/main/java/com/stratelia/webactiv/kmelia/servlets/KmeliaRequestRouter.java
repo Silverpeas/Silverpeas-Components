@@ -81,6 +81,8 @@ import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
 import com.stratelia.webactiv.util.publication.model.Alias;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.stratelia.webactiv.util.publication.model.PublicationPK;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -966,15 +968,16 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       } else if (function.equals("DeleteSeeAlso")) {
         String[] pubIds = request.getParameterValues("PubIds");
 
-        List<ForeignPK> infoLinks = new ArrayList<ForeignPK>();
-        StringTokenizer tokens;
-        for (String pubId : pubIds) {
-          tokens = new StringTokenizer(pubId, "/");
-          infoLinks.add(new ForeignPK(tokens.nextToken(), tokens.nextToken()));
-        }
-
-        if (infoLinks.size() > 0) {
-          kmelia.deleteInfoLinks(kmelia.getSessionPublication().getId(), infoLinks);
+        if (pubIds != null) {
+          List<ForeignPK> infoLinks = new ArrayList<ForeignPK>();
+          for (String pubId : pubIds) {
+            StringTokenizer tokens = new StringTokenizer(pubId, "/");
+            infoLinks.add(new ForeignPK(tokens.nextToken(), tokens.nextToken()));
+          }
+  
+          if (!infoLinks.isEmpty()) {
+            kmelia.deleteInfoLinks(kmelia.getSessionPublication().getId(), infoLinks);
+          }
         }
 
         destination = getDestination("SeeAlso", kmelia, request);
@@ -990,7 +993,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         List<WAAttributeValuePair> publicationsIds = kmelia
             .getAllVisiblePublicationsByTopic(topicId);
         request.setAttribute("selectedResultsWa", publicationsIds);
-        request.setAttribute("RootId", topicId);
+        request.setAttribute("RootPK", new NodePK(topicId, kmelia.getComponentId()));
         // Go to importExportPeas
         destination = "/RimportExportPeas/jsp/ExportPDF";
       } else if (function.equals("NewPublication")) {
@@ -1146,21 +1149,23 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
             publicationsIds = kmelia.getAllVisiblePublicationsByTopic(topicId);
           }
           request.setAttribute("selectedResultsWa", publicationsIds);
-          request.setAttribute("RootId", topicId);
+          request.setAttribute("RootPK", new NodePK(topicId, kmelia.getComponentId()));
           // Go to importExportPeas
           destination = "/RimportExportPeas/jsp/SelectExportMode";
         }
       } else if (function.equals("ExportPublications")) {
         String selectedIds = request.getParameter("SelectedIds");
         String notSelectedIds = request.getParameter("NotSelectedIds");
-        List<String> ids = kmelia.processSelectedPublicationIds(selectedIds, notSelectedIds);
+        List<PublicationPK> pks = kmelia.processSelectedPublicationIds(selectedIds, notSelectedIds);
 
         List<WAAttributeValuePair> publicationIds = new ArrayList<WAAttributeValuePair>();
-        for (String id : ids) {
-          publicationIds.add(new WAAttributeValuePair(id, kmelia.getComponentId()));
+        for (PublicationPK pk : pks) {
+          publicationIds.add(new WAAttributeValuePair(pk.getId(), pk.getInstanceId()));
         }
         request.setAttribute("selectedResultsWa", publicationIds);
-        kmelia.resetSelectedPublicationIds();
+        request.setAttribute("RootPK",
+            new NodePK(kmelia.getCurrentFolderId(), kmelia.getComponentId()));
+        kmelia.resetSelectedPublicationPKs();
         // Go to importExportPeas
         destination = "/RimportExportPeas/jsp/SelectExportMode";
       } else if (function.equals("ToPubliContent")) {
