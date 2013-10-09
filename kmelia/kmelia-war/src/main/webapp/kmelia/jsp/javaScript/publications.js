@@ -35,7 +35,8 @@ function getSelectedPublicationIds() {
 	var selectedIds = "";
 	 $("input:checked[name=C1]").each(function() {
 		 var id = $(this).val();
-		 selectedIds += id.split("/", 1)[0];
+		 selectedIds += id;
+		 //selectedIds += id.split("/", 1)[0];
 		 selectedIds += ",";
 	});
 	if (selectedIds.length > 0) {
