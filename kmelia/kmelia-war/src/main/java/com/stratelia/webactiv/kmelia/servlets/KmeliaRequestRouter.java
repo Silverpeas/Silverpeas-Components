@@ -611,7 +611,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           Collection<ForeignPK> links = kmeliaPublication.getCompleteDetail().getLinkList();
           HashSet<String> linkedList = new HashSet<String>(links.size());
           for (ForeignPK link : links) {
-            linkedList.add(link.getId() + "/" + link.getInstanceId());
+            linkedList.add(link.getId() + "-" + link.getInstanceId());
           }
           // put into session the current list of selected publications (see also)
           request.getSession().setAttribute(KmeliaConstants.PUB_TO_LINK_SESSION_KEY, linkedList);
@@ -971,7 +971,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         if (pubIds != null) {
           List<ForeignPK> infoLinks = new ArrayList<ForeignPK>();
           for (String pubId : pubIds) {
-            StringTokenizer tokens = new StringTokenizer(pubId, "/");
+            StringTokenizer tokens = new StringTokenizer(pubId, "-");
             infoLinks.add(new ForeignPK(tokens.nextToken(), tokens.nextToken()));
           }
   
