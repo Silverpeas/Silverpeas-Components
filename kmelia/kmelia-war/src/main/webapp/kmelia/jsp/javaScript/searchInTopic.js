@@ -8,7 +8,6 @@ function searchInTopic() {
 				function(data){
 					$.closeProgressMessage();
 					$('#pubList').html(data);
-					$('input#CheckPath').val('true');
 				},"html");
 	}
 	return;
@@ -33,7 +32,6 @@ function clearSearchQuery() {
   try {
     if (document.getElementById("topicQuery") != null) {
       $("#topicQuery").val("");
-      $('input#CheckPath').val('false');
     }
   } catch (e) {
   }
