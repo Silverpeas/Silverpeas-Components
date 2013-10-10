@@ -27,6 +27,7 @@
 	height: 500px; 
 	width: 730px;
 }
+
 .firstTd {
 	height: 300px; 
 	width: 250px; 
@@ -36,11 +37,7 @@
 	border-width:1; 
 	border-style:solid
 }
-.secondTd {
-	border-color:grey; 
-	border-width:1; 
-	border-style:solid
-}
+
 .treeDivDisplay {
 	height: 158px; 
 	width: 220px; 

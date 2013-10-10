@@ -39,12 +39,11 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <% 
 String pubId = kmeliaScc.getSessionPublication().getDetail().getPK().getId();
 String pubComponentId = kmeliaScc.getSessionPublication().getDetail().getPK().getComponentName();
-Button closeButton = (Button) gef.getFormButton(resources.getString("GML.close"), "javaScript:closeAndReturn('"+pubId+"');", false);
-Button linkButton = (Button) gef.getFormButton(resources.getString("GML.linkTo"), "javaScript:linkTo();", false);
+Button closeButton = gef.getFormButton(resources.getString("GML.close"), "javaScript:window.close();", false);
+Button linkButton = gef.getFormButton(resources.getString("GML.linkTo"), "javaScript:linkTo();", false);
 String closeWindow="";
 if(request.getAttribute("NbLinks")!=null){
   closeWindow ="onload=\"closeAndReturn('"+pubId+"');\"";
-  
 }
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
@@ -52,7 +51,6 @@ if(request.getAttribute("NbLinks")!=null){
 <head>
 <title><%=resources.getString("GML.popupTitle")%></title>
 <view:looknfeel />
-<link rel="stylesheet" type="text/css" href="<%=m_context %>/kmelia/jsp/styleSheets/kmelia.css">
 <style type="text/css">
 #pubList .selection input {
 	display: block;

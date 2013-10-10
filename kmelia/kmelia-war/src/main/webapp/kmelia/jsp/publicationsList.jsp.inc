@@ -117,7 +117,7 @@ void displaySameSubjectPublications(Collection pubs, String publicationLabel, Km
                         out.print("<td valign=\"top\" colspan=\"2\">");
                       	out.print("<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr valign=\"middle\">");
                       	if (checkboxAllowed)
-                      		out.print("<td align=\"center\"><input type=\"checkbox\" name=\"PubIds\" value=\""+pub.getPK().getId()+"/"+pub.getPK().getInstanceId()+"\"></td>");
+                      		out.print("<td align=\"center\"><input type=\"checkbox\" name=\"PubIds\" value=\""+pub.getPK().getId()+"-"+pub.getPK().getInstanceId()+"\"></td>");
 						out.print("<td width=\"1\">&#149;&nbsp;</td><td nowrap>");
 						out.print("<a href=\""+URLManager.getSimpleURL(URLManager.URL_PUBLI, pub.getPK().getId(), pub.getPK().getInstanceId())+"\"><b>"+pub.getName(language)+"</b></a>");
 						out.print("&nbsp;</td><td width=\"100%\">");
