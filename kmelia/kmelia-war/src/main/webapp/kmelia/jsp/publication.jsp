@@ -440,6 +440,12 @@
         } else {
           browseBar.setComponentName(componentLabel, "Main");
         }
+        if (searchScope == SearchContext.LOCAL) { 
+          	if (StringUtil.isDefined(linkedPathString)) {
+          		linkedPathString += " > ";
+          	}
+          	linkedPathString += "<a href=\"GoBackToResults\">"+resources.getString("kmelia.publication.breadcrumb.results")+"</a>";
+        }
         browseBar.setPath(linkedPathString);
         browseBar.setExtraInformation(pubName);
         browseBar.setI18N(languages, contentLanguage);
