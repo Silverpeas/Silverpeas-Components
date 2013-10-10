@@ -126,7 +126,7 @@ out.println(gef.getLookStyleSheet());
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 function seeAlsoDeleteConfirm() {
-	if (document.seeAlsoForm.PubIds != null){
+	if (document.seeAlsoForm.PubIds != null && $("input[type='checkbox']").is(":checked")){
 	    if(window.confirm("<%=kmeliaScc.getString("kmelia.ConfirmDeleteSeeAlso")%>")){
 	    	document.seeAlsoForm.PubId.value = "<%=id%>";
 			document.seeAlsoForm.Action = "<%=routerUrl%>DeleteSeeAlso";

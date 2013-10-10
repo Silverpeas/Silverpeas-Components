@@ -35,7 +35,7 @@ function getSelectedPublicationIds() {
 	var selectedIds = "";
 	 $("input:checked[name=C1]").each(function() {
 		 var id = $(this).val();
-		 selectedIds += id.split("/", 1)[0];
+		 selectedIds += id;
 		 selectedIds += ",";
 	});
 	if (selectedIds.length > 0) {
@@ -48,7 +48,7 @@ function getNotSelectedPublicationIds() {
 	var notSelectedIds = "";
 	 $("input:not(:checked)[name=C1]").each(function() {
 		 var id = $(this).val();
-		 notSelectedIds += id.split("/", 1)[0];
+		 notSelectedIds += id;
 		 notSelectedIds += ",";
 	});
 	if (notSelectedIds.length > 0) {
