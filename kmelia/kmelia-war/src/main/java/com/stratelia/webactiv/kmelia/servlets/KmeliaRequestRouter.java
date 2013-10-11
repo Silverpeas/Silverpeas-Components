@@ -82,7 +82,6 @@ import com.stratelia.webactiv.util.publication.model.Alias;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -673,7 +672,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
             request.setAttribute("DelegatedNews", kmelia.getDelegatedNews(id));
             request.setAttribute("IsBasket", NodePK.BIN_NODE_ID.equals(kmelia.getCurrentFolderId()));
           }
-          
+
           request.setAttribute("LastAccess", kmelia.getLastAccess(kmeliaPublication.getPk()));
 
           destination = rootDestination + "publication.jsp";
@@ -915,8 +914,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
             + topic.getName() + " > " + kmelia.getString("TopicWysiwyg"), CharEncoding.UTF_8);
 
         destination += "&ObjectId=Node_" + subTopicId;
-        destination += "&Language="+kmelia.getLanguage();
-        destination += "&ContentLanguage="+kmelia.getCurrentLanguage();
+        destination += "&Language=" + kmelia.getLanguage();
+        destination += "&ContentLanguage=" + kmelia.getCurrentLanguage();
         destination += "&ReturnUrl=" + URLEncoder.encode(URLManager.getApplicationURL()
             + URLManager.getURL(kmelia.getSpaceId(), kmelia.getComponentId())
             + "FromTopicWysiwyg?Action=Search&Id=" + topicId + "&ChildId=" + subTopicId
@@ -951,7 +950,12 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         request.setAttribute("Action", action);
 
         // check if requested publication is an alias
+        String pubId = request.getParameter("PubId");
         KmeliaPublication kmeliaPublication = kmelia.getSessionPublication();
+        if (StringUtil.isDefined(pubId)) {
+          kmeliaPublication = kmelia.getPublication(pubId);
+          kmelia.setSessionPublication(kmeliaPublication);
+        }
         checkAlias(kmelia, kmeliaPublication);
 
         if (kmeliaPublication.isAlias()) {
@@ -974,7 +978,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
             StringTokenizer tokens = new StringTokenizer(pubId, "-");
             infoLinks.add(new ForeignPK(tokens.nextToken(), tokens.nextToken()));
           }
-  
+
           if (!infoLinks.isEmpty()) {
             kmelia.deleteInfoLinks(kmelia.getSessionPublication().getId(), infoLinks);
           }
@@ -1131,7 +1135,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         destination = rootDestination + "publicationLinksManager.jsp?Action=Add&Id=" + topicId;
       } else if (function.equals("ExportTopic")) {
         String topicId = request.getParameter("TopicId");
-        boolean exportFullApp = !StringUtil.isDefined(topicId) || NodePK.ROOT_NODE_ID.equals(topicId);
+        boolean exportFullApp = !StringUtil.isDefined(topicId) || NodePK.ROOT_NODE_ID.
+            equals(topicId);
         if (kmaxMode) {
           if (exportFullApp) {
             destination = getDestination("KmaxExportComponent", kmelia, request);

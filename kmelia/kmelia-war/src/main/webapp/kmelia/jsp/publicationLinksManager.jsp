@@ -39,7 +39,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <% 
 String pubId = kmeliaScc.getSessionPublication().getDetail().getPK().getId();
 String pubComponentId = kmeliaScc.getSessionPublication().getDetail().getPK().getComponentName();
-Button closeButton = gef.getFormButton(resources.getString("GML.close"), "javaScript:window.close();", false);
+Button closeButton = gef.getFormButton(resources.getString("GML.close"), "javaScript:closeAndReturn('"+pubId+"');", false);
 Button linkButton = gef.getFormButton(resources.getString("GML.linkTo"), "javaScript:linkTo();", false);
 String closeWindow="";
 if(request.getAttribute("NbLinks")!=null){
