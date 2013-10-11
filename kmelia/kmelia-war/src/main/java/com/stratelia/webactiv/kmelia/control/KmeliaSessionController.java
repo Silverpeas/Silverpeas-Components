@@ -175,10 +175,11 @@ import org.silverpeas.util.GlobalContext;
 import org.silverpeas.wysiwyg.WysiwygException;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
+import static org.silverpeas.attachment.AttachmentService.VERSION_MODE;
+
 import static com.silverpeas.kmelia.export.KmeliaPublicationExporter.*;
 import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
-import static org.silverpeas.attachment.AttachmentService.VERSION_MODE;
 
 public class KmeliaSessionController extends AbstractComponentSessionController implements
     ExportFileNameProducer {
@@ -483,7 +484,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public boolean isExportComponentAllowed() {
     return StringUtil.getBooleanValue(getSettings().getString("exportComponentAllowed"));
   }
-  
+
   public boolean isExportAllowedToUsers() {
     return getSettings().getBoolean("export.allowed.users", false);
   }
@@ -1036,7 +1037,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     resetSelectedPublicationPKs();
     return removed;
   }
-  
+
   private List<String> getLocalSelectedPublicationIds() {
     List<String> ids = new ArrayList<String>();
     for (PublicationPK pubPK : getSelectedPublicationPKs()) {
@@ -1226,7 +1227,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public synchronized KmeliaPublication getPublication(String pubId,
-      boolean processIndex) throws RemoteException {
+      boolean processIndex) {
     PublicationPK pubPK = getPublicationPK(pubId);
     // get publication
     KmeliaPublication publication = getKmeliaBm().getPublication(pubPK);
@@ -2833,7 +2834,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     addClipboardSelection(pubSelect);
   }
 
-  private void copyPublications(List<PublicationPK> pubPKs) throws ClipboardException, RemoteException {
+  private void copyPublications(List<PublicationPK> pubPKs) throws ClipboardException,
+      RemoteException {
     for (PublicationPK pubPK : pubPKs) {
       if (pubPK != null) {
         copyPublication(pubPK.getId());
@@ -2856,7 +2858,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     addClipboardSelection(pubSelect);
   }
 
-  private void cutPublications(List<PublicationPK> pubPKs) throws ClipboardException, RemoteException {
+  private void cutPublications(List<PublicationPK> pubPKs) throws ClipboardException,
+      RemoteException {
     for (PublicationPK pubPK : pubPKs) {
       if (pubPK != null && pubPK.getInstanceId().equals(getComponentId())) {
         cutPublication(pubPK.getId());
@@ -2907,7 +2910,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
             if (clipObject.isCutted()) {
               movePublication(pub.getPublicationDetail().getPK(), folder.getNodePK());
             } else {
-              getKmeliaBm().copyPublication(pub.getPublicationDetail(), folder.getNodePK(), getUserId());
+              getKmeliaBm().copyPublication(pub.getPublicationDetail(), folder.getNodePK(),
+                  getUserId());
             }
             pastedItems.add(pub.getPublicationDetail());
           } else if (clipObject.isDataFlavorSupported(NodeSelection.NodeDetailFlavor)) {
@@ -2961,7 +2965,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         // Ajoute au thème courant
         currentNodePK = getCurrentFolderPK();
       }
-      
+
       getKmeliaBm().movePublication(pubPK, currentNodePK, getUserId());
     } catch (Exception ex) {
       SilverTrace.error("kmelia", getClass().getSimpleName() + ".pastePublication()",
@@ -3305,7 +3309,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       }
       // copy files
       new AttachmentImportExport().getAttachments(pubPK, subDirPath, "useless", null);
-      
+
       String zipFileName = FileRepositoryManager.getTemporaryPath() + fileName + ".zip";
       // zip PDF and files
       ZipManager.compressPathToZip(subDirPath, zipFileName);
@@ -3531,7 +3535,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         if ("Publication".equals(result.getObjectType())) {
           // Add the publications
           // return publication if user can consult it only (check rights on folder)
-          if (security.isObjectAvailable(getComponentId(), getUserId(), result.getObjectId(), "Publication")) {
+          if (security.isObjectAvailable(getComponentId(), getUserId(), result.getObjectId(),
+              "Publication")) {
             pubIds.add(result.getObjectId());
           }
         }
@@ -3842,7 +3847,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public SearchContext getSearchContext() {
     return searchContext;
   }
-  
+
   public String manageSubscriptions() {
     SubscriptionContext subscriptionContext = getSubscriptionContext();
     List<NodeDetail> nodePath = getTopicPath(getCurrentFolderId());
@@ -3965,7 +3970,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         + " " + messages.getString("attachment.dialog.maximumFileSize") + " ("
         + maximumFileSizeMo + " Mo)";
   }
-  
+
   public List<HistoryObjectDetail> getLastAccess(PublicationPK pk) {
     return getKmeliaBm().getLastAccess(pk, getCurrentFolderPK(), getUserId());
   }
