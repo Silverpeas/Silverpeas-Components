@@ -657,7 +657,7 @@ function spreadNbItems(children) {
 				child.attr['class'] = child.attr['status'];
 			<% } %>
 			if (child.attr['nbItems']) {
-				child.data = child.data + " ("+child.attr['nbItems']+")";
+				child.data = child.data + " ( "+child.attr['nbItems']+")";
 				spreadNbItems(child.children);
 			}
 		}
@@ -780,6 +780,7 @@ $(document).ready(
     	})
     	.jstree({
     	"core" : {
+        html_titles: true
     			//"load_open" : true
     	},
     	"ui" :{
@@ -805,7 +806,7 @@ $(document).ready(
 						} else {
 							if (n.data) {
 								// this is the root
-								n.data = "<%=EncodeHelper.javaStringToJsString(componentLabel)%>";
+								n.data = "<%=EncodeHelper.javaStringToHtmlString(componentLabel)%>";
 								if (n.attr['nbItems']) {
 									n.data = n.data + " ("+n.attr['nbItems']+")";
 								}
