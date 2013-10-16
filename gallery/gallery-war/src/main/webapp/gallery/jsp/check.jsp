@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -56,7 +56,6 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.board.Board"%>
 
 <%@ page import="com.stratelia.webactiv.util.node.control.NodeBm"%>
-<%@ page import="com.stratelia.webactiv.util.node.control.NodeBmHome"%>
 <%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail"%>
 <%@ page import="com.stratelia.webactiv.util.node.model.NodePK"%>
 <%@ page import="com.silverpeas.util.StringUtil"%>
@@ -127,8 +126,8 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 
 <%
 	GallerySessionController gallerySC = (GallerySessionController) request.getAttribute("gallerySC");
-	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
-	String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+	String m_context = URLManager.getApplicationURL();
 	ResourcesWrapper resource = (ResourcesWrapper)request.getAttribute("resources");
 	Window window = gef.getWindow();
 	BrowseBar browseBar = window.getBrowseBar();

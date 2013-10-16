@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -30,15 +30,15 @@
 
 package com.stratelia.webactiv.webSites.siteManage.model;
 
-/** 
+/**
  *
  * @author  cbonin
- * @version 
+ * @version
  */
 
-import java.io.Serializable;
-
 import com.stratelia.webactiv.util.WAPrimaryKey;
+
+import java.io.Serializable;
 
 public class SitePK extends WAPrimaryKey implements Serializable {
 
@@ -48,8 +48,8 @@ public class SitePK extends WAPrimaryKey implements Serializable {
     super(id);
   }
 
-  public SitePK(String id, String space, String componentName) {
-    super(id, space, componentName);
+  public SitePK(String id, String componentName) {
+    super(id, componentName);
   }
 
   public SitePK(String id, WAPrimaryKey pk) {

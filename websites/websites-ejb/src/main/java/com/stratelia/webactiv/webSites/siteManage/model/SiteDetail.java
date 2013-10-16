@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,11 +23,7 @@
  */
 package com.stratelia.webactiv.webSites.siteManage.model;
 
-/** 
- * 
- * @author  cbonin
- * @version 
- */
+
 import java.text.ParseException;
 import java.util.Date;
 
@@ -43,7 +39,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 public class SiteDetail extends PublicationDetail {
   private static final long serialVersionUID = 1435448496246944796L;
   /*-------------- Attributs ------------------*/
-  private SitePK sitePk = new SitePK("", "", "");
+  private SitePK sitePk = new SitePK("", "");
   private int type; /*
                      * page interne creee (0) ou externe (1) ou page interne uploadee (2)
                      */
@@ -80,7 +76,7 @@ public class SiteDetail extends PublicationDetail {
       }
       this.setCreationDate(theCreationDate);
     }
-    SitePK sitePK = new SitePK(idSite, null, applicationId);
+    SitePK sitePK = new SitePK(idSite, applicationId);
     init(sitePK, type, state, popup);
   }
 
@@ -91,7 +87,7 @@ public class SiteDetail extends PublicationDetail {
   }
 
   public void setSitePK(SitePK val) {
-    sitePk = new SitePK(val.getId(), val.getSpace(), val.getComponentName());
+    sitePk = new SitePK(val.getId(), val.getComponentName());
   }
 
   public int getType() {
@@ -114,10 +110,12 @@ public class SiteDetail extends PublicationDetail {
     return "searchResult?Type=Site&Id=" + getId();
   }
 
+  @Override
   public String getId() {
     return getSitePK().getId();
   }
 
+  @Override
   public String getInstanceId() {
     return getSitePK().getComponentName();
   }
@@ -149,6 +147,7 @@ public class SiteDetail extends PublicationDetail {
   /**
    * toString
    */
+  @Override
   public String toString() {
     return sitePk.getId() + "|" + this.getName() + "|" + this.getDescription()
         + "|" + this.getContent() + "|" + "|" + type + "|"

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -27,29 +27,20 @@
 
 <web-app>
   <display-name>Forums War</display-name>
-  <filter>
-    <filter-name>ExternalAccessFilter</filter-name>
-    <filter-class>com.stratelia.webactiv.filter.ExternalAccessFilter</filter-class>
-  </filter>
-  <filter-mapping>
-    <filter-name>ExternalAccessFilter</filter-name>
-    <url-pattern>/Rforums/*</url-pattern>
-  </filter-mapping>
-  
   <servlet>
     <display-name>ForumsRequestRouter</display-name>
     <servlet-name>ForumsRequestRouter</servlet-name>
-    <servlet-class>com.stratelia.webactiv.servlets.ForumsRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.servlets.ForumsRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <display-name>ForumsRssServlet</display-name>
     <servlet-name>ForumsRssServlet</servlet-name>
-    <servlet-class>com.stratelia.webactiv.servlets.ForumsRssServlet</servlet-class>
+    <servlet-class>org.silverpeas.servlets.ForumsRssServlet</servlet-class>
   </servlet>
   <servlet>
     <display-name>GoToMessage</display-name>
     <servlet-name>GoToMessage</servlet-name>
-    <servlet-class>com.stratelia.webactiv.servlets.GoToMessage</servlet-class>
+    <servlet-class>org.silverpeas.servlets.GoToMessage</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>ForumsRequestRouter</servlet-name>
@@ -64,4 +55,3 @@
     <url-pattern>/ForumsMessage/*</url-pattern>
   </servlet-mapping>
 </web-app>
-

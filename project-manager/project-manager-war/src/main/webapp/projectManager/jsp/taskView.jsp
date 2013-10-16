@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -206,7 +206,7 @@ out.println(tabbedPane.print());
 <td valign="top">
 	<% 
 	    out.flush();
-	  	getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachments.jsp?Id="+task.getId()+"&ComponentId="+componentId).include(request, response);
+	  	getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachedFiles.jsp?Id="+task.getId()+"&ComponentId="+componentId).include(request, response);
 	%>
 </td>
 </tr></table>

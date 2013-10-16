@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -40,6 +40,7 @@ import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.admin.OrganisationController;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -201,7 +202,7 @@ public class SimpleCrmDataManager implements CrmDataManager {
   // Creation de la lettre par defaut a l'instanciation
   @Override
   public Crm createDefaultCrm(String spaceId, String componentId) {
-    OrganizationController oc = new OrganizationController();
+    OrganisationController oc = new OrganizationController();
     ComponentInst ci = oc.getComponentInst(componentId);
     Crm crm = new Crm();
     SilverTrace.debug("crm", "SimpleCrmDataManager.createCrm()",

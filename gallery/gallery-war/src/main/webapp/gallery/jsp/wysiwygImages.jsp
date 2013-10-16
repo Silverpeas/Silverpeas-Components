@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -23,7 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="com.silverpeas.gallery.ImageType"%>
+<%@page import="com.silverpeas.util.StringUtil"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.Iterator"%>
 <%@ page import="java.util.List"%>
@@ -83,14 +83,12 @@ if (photos != null) {
           String name = "";
           String url = "";
           if (photo.getImageName() != null && !photo.getImageName().equals("")) {
-            name = photo.getImageName();
-            String type = name.substring(name.lastIndexOf(".") + 1, name.length());
             url = m_context + "/GalleryInWysiwyg/dummy?ImageId=" + idP + "&ComponentId=" + photo.
                 getPhotoPK().getInstanceId();
             name = photo.getId() + "_133x100.jpg";
             vignette_url = m_context + "/GalleryInWysiwyg/dummy?ImageId=" + idP + "&ComponentId=" + photo.
                 getPhotoPK().getInstanceId() + "&Size=133x100";
-            if (!ImageType.isPreviewable(name)) {
+            if (!photo.isPreviewable()) {
               vignette_url = m_context + "/gallery/jsp/icons/notAvailable_" + "fr" + "_133x100.jpg";
             }
           }
@@ -98,7 +96,7 @@ if (photos != null) {
           nbAffiche = nbAffiche + 1;
             
           String altTitle = EncodeHelper.javaStringToHtmlString(photo.getTitle());
-          if (photo.getDescription() != null && photo.getDescription().length() > 0) {
+          if (StringUtil.isDefined(photo.getDescription())) {
             altTitle += " : " + EncodeHelper.javaStringToHtmlString(photo.getDescription());
           }
             

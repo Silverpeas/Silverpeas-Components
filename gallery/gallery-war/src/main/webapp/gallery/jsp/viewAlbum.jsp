@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -24,7 +24,6 @@
 
 --%>
 
-<%@page import="com.silverpeas.gallery.ImageType"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
@@ -593,11 +592,10 @@
                 altTitle += " : " + EncodeHelper.javaStringToHtmlString(photo.getDescription());
               }
               if (name != null) {
-                String type = name.substring(name.lastIndexOf(".") + 1, name.length());
                 name = photo.getId() + extension;
-                vignette_url = FileServerUtils.getUrl(spaceId, componentId, name, photo.
+                vignette_url = FileServerUtils.getUrl(componentId, name, photo.
                         getImageMimeType(), nomRep);
-                if (!ImageType.isPreviewable(name)) {
+                if (!photo.isPreviewable()) {
                   vignette_url = m_context + "/gallery/jsp/icons/notAvailable_" + resource.
                           getLanguage() + extension;
                 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -27,7 +27,7 @@ import static com.silverpeas.calendar.CalendarEvent.anEventAt;
 import static com.silverpeas.calendar.CalendarEventRecurrence.every;
 import com.silverpeas.calendar.*;
 import static com.silverpeas.util.StringUtil.isDefined;
-import com.stratelia.silverpeas.wysiwyg.WysiwygException;
+import org.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.webactiv.almanach.control.ejb.AlmanachRuntimeException;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.Periodicity;

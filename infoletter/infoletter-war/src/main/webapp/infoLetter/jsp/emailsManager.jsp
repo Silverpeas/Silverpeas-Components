@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -68,7 +68,7 @@
 
 	function displayEmailsCsvExport()
 	{
-	    url = "exportEmailsCsv.jsp";
+	    url = "ExportEmailsCsv";
 	    windowName = "exportFileWindow";
 	    windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars=1";
 			larg = "640";

@@ -1,34 +1,24 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.whitePages.control;
-
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 
 import com.silverpeas.whitePages.WhitePagesException;
 import com.silverpeas.whitePages.model.Card;
@@ -40,15 +30,23 @@ import com.stratelia.silverpeas.contentManager.SilverContentVisibility;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * The whitePages implementation of ContentInterface.
  */
 public class WhitePagesContentManager implements ContentInterface {
-  /** Find all the SilverContent with the given SilverContentId */
+
+  /**
+   * Find all the SilverContent with the given SilverContentId
+   */
   public List getSilverContentById(List<Integer> ids, String peasId, String userId,
       List<String> userRoles) {
-      return getHeaders(makeIdArray(ids), peasId);
+    return getHeaders(makeIdArray(ids), peasId);
   }
 
   private ArrayList<String> makeIdArray(List<Integer> idList) {
@@ -105,6 +103,7 @@ public class WhitePagesContentManager implements ContentInterface {
 
   /**
    * add a new content. It is registered to contentManager service
+   *
    * @param con a Connection
    * @param pubDetail the content to register
    * @param userId the creator of the content
@@ -124,6 +123,7 @@ public class WhitePagesContentManager implements ContentInterface {
   /**
    * update the visibility attributes of the content. Here, the type of content is a
    * PublicationDetail
+   *
    * @param pubDetail the content
    * @param silverObjectId the unique identifier of the content
    */
@@ -143,6 +143,7 @@ public class WhitePagesContentManager implements ContentInterface {
 
   /**
    * delete a content. It is registered to contentManager service
+   *
    * @param con a Connection
    * @param pubPK the identifiant of the content to unregister
    */
@@ -173,6 +174,5 @@ public class WhitePagesContentManager implements ContentInterface {
     }
     return contentManager;
   }
-
   private ContentManager contentManager = null;
 }

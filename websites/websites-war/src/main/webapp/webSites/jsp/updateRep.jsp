@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -61,8 +61,6 @@ String fatherId = (String) request.getParameter("Id");
 String path = (String) request.getParameter("Path");
 String name = (String) request.getParameter("Name"); //ancien nom
 String action = (String) request.getParameter("Action");
-
-//CBO : REMOVE String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 
 //Icons
 String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
@@ -161,12 +159,8 @@ function sendData() {
 <%
     Window window = gef.getWindow();
     BrowseBar browseBar = window.getBrowseBar();
-    //CBO : UPDATE
-	//browseBar.setDomainName(scc.getSpaceLabel());
-	browseBar.setDomainName(spaceLabel);
-    //CBO : UPDATE
-//browseBar.setComponentName(scc.getComponentLabel());
-browseBar.setComponentName(componentLabel);
+    browseBar.setDomainName(spaceLabel);
+    browseBar.setComponentName(componentLabel);
     browseBar.setPath(resources.getString("RepUpdateTitle"));
     
     //Le cadre

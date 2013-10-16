@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -25,8 +25,8 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
+<%@page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
 <%@ include file="checkKmelia.jsp" %>
-<%@ include file="tabManager.jsp.inc" %>
 
 <%
 Collection 			dbForms		= (Collection) request.getAttribute("DBForms");
@@ -108,13 +108,16 @@ function closeWindows() {
     out.println(window.printBefore());
 
     if ("progress".equals(wizard)) {
-    	displayWizardOperations(wizardRow, pubId, kmeliaScc, gef, "ModelChoice", resources, out, kmaxMode);
+    	KmeliaDisplayHelper.displayWizardOperations(wizardRow, pubId, kmeliaScc, gef,
+            "ModelChoice", resources, out, kmaxMode);
     }
     else {
 	    if (isOwner) {
-	        displayAllOperations(pubId, kmeliaScc, gef, "ModelChoice", resources, out, kmaxMode);
+	        KmeliaDisplayHelper.displayAllOperations(pubId, kmeliaScc, gef, "ModelChoice",
+                resources, out, kmaxMode);
 	    } else {
-	        displayUserOperations(pubId, kmeliaScc, gef, "ModelChoice", resources, out, kmaxMode);
+	        KmeliaDisplayHelper.displayUserOperations(pubId, kmeliaScc, gef, "ModelChoice",
+                resources, out, kmaxMode);
 	    }
     }
     out.println(frame.printBefore());

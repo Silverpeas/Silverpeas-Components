@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -35,7 +35,7 @@
   font-size: 10px; color: #000000 ;
 }
 
-.txtnote:hover { 
+a.txtnote:hover { 
   font-size: 10px; color: #666699 ; 
 }
 
@@ -83,10 +83,11 @@
 
 #msgDiv {
   position: static;
-  height: 120px;
+  max-height: 120px;
   width: 100%;
   overflow-x: hidden;
-  overflow-y: auto
+  overflow-y: auto;
+  margin-bottom:15px;
 }
 
 .msgLine {
@@ -98,34 +99,35 @@
 }
 
 #responseTable {
-  display: none
+  display: none;
+  margin-top:1em;
 }
 
 .notation_on {
   background-image:url(../icons/starFilled.gif);
   background-position:center;
   background-repeat:no-repeat;
-  width: 13px;
-  height: 11px;
-  border: 0px
+  width: 18px;
+  height: 17px;
+  border: 0px;
 }
 
 .notation_off {
   background-image:url(../icons/starEmpty.gif);
   background-position:center;
   background-repeat:no-repeat;
-  width: 13px;
-  height: 11px;
-  border: 0px
-}
-
-.notationLine {
-  height: 20px;
-  vertical-align: top
+  width: 18px;
+  height: 17px;
+  border: 0px;
 }
 
 #notationImg1, #notationImg2, #notationImg3, #notationImg4, #notationImg5 {
-  cursor: pointer
+  cursor: pointer;
+}
+
+.ArrayCell .txtnote {
+  min-width:108px;
+  display:block;
 }
 
 .message_A {
@@ -136,95 +138,146 @@
   color: gray
 }
 
-.contourintfdcolor{
+.sousNavBulle {
+  margin:0 0 50px;
+  float:none;
+  width:auto;
+}
+
+.sousNavBulle span.grise {
+  background-color: #EAEAEA;
+  border: 1px solid #CECECE;
+  color: #AFAFAF;
+  font-size: 11px;
+  line-height: 220%;
+  margin-right: 3px;
+  padding: 2px 4px;
+  text-decoration: none;
+}
+
+table.contourintfdcolor,
+div.contourintfdcolor#msgDiv {
+  background-color: #FFF;
   position:relative;
   margin-bottom: 10px;
   height:auto;
-  width:100%;
+  margin:0 2% 1em;
+  width:96%
 }
 
-
-.user {
-  width:13%;
-  float:left;
-  clear: both;
-  border-right:1px solid #CCC;
-  overflow:hidden;
-}
-.message {
-  width:86%;
-  float:right;
+div.contourintfdcolor#msgDiv {
+  width:94%
 }
 
-
-.profilPhoto {
-  border:1px solid #CCCCCC;
-  float:left;
-  margin:7px;
-  overflow:hidden;
-  max-width:87px;
-  width: 80%;
-}
-.profilPhoto img {
-  width:100%;
+.notationLine {
+  padding: 0 10px;
+  text-align:right;
 }
 
-.userName ,  .nbMessage, .userName a, .nbMessage a{
-  font-size:11px;
-  color:#000;
-  font-weight:bold;
-}
-.nbMessage, .nbMessage a{
-  color:#666666;
-  font-size:10px;
+div.contourintfdcolor{
+  background-color: #F0F0F0;
+  border: 1px solid #CECECE;
+  border-radius: 10px 10px 10px 10px;
+  margin: 70px 2% 0;
+  padding: 10px 10px 5px 10px;
+  position: relative;
 }
 
-.info ul {
+.contourintfdcolor .info .userName{
+  background: url("../../../util/icons/commentStartBubble.gif") no-repeat scroll 50px bottom transparent;
+  color: #111111;
+  font-size: 8pt;
+  height: 44px;
+  left: 80px;
   margin: 0;
   padding: 0;
-}
-
-.info ul li {
-  display:list-item;
-  list-style-type:none;
-  width:100%;
-}
-
-.info ul { 
-  padding:10px 0px 4px 5px; 
-  float:left;
-  color:#909090; font-size:11px;
-  width:60%;
-}
-
-.info ul a:hover {
-  color:#000
-}
-
-.messageFooter {
-  position:absolute;
-  bottom: 10px;
-  right: 0px;
-  width: 86%;
-}
-
-* html .messageFooter {
-	width: 100%;
-}
-
-.messageFooter input {
-	border:0;
-	}
-
-.messageHeader img {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: -44px;
+}
+
+.contourintfdcolor .info .nbMessage{
+  background: url("../icons/shape.png") no-repeat scroll 0 0 transparent;  
+  color: #FFF;
+  font-size: 16px;
+  font-weight: 100;
+  height: 38px;
+  left: 33px;
+  line-height: 37px;
+  margin: 0;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  text-align: center;
+  top: -62px;
+  width: 43px;
+}
+
+.contourintfdcolor .info ul{
+  list-style-type:none;
+  padding:0;
+  margin:0;
+}
+
+div.profilPhoto img {
+  height: auto;
+  width: 50px;
+}
+
+div.profilPhoto {
+  background-color: #FFFFFF;
+  border: 1px solid #CECECE;
+  left: -1em;
+  padding: 1px;
+  position: absolute;
+  top: -50px;
+}
+
+.messageHeader .txtnav{
+  color:#333;
+  position:absolute;
+  top:11px;
+  left:60px
+}
+
+.messageHeader .txtnote {
+  left:80px;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  top: -30px;
+}
+
+.messageHeader img{
+  position:absolute;
+  top:-30px;
+  right:11px;
 }
 
 .messageActions {
-  float:right;
-  margin-right: 10px;
+  position:absolute;
+  top:11px;
+  right:20px;
+}
+
+.messageFooter {
+  display: inline-block;
+  background: url("../icons/notification-icon.png") no-repeat scroll 0 0 transparent;  
+  padding:2px 0 0 4px;
+}
+
+.messageFooter .texteLabelForm {
+  color:#5785c7
+}
+
+input[type="radio"], input[type="checkbox"] {
+  background-color:transparent
+}
+
+.messageAttachment .attachments {
+  display: inline;
+  float: right;
+  margin-left: 10px;
+  /*overflow: hidden;*/
 }
 
 #creation-page .classification .legende {
@@ -251,4 +304,20 @@
 #infoFieldset #categoryArea select,
 #infoFieldset #keywordsArea input  {
   width: 46%;
+}
+
+div.msgContent {
+  border: 1px dotted #CECECE;
+  border-radius: 0;
+}
+
+#new-message #message legend,
+#responseTable #message legend {
+  background:transparent url(../../../util/icons/talk2user.gif) 11px 0px no-repeat;
+}
+
+#new-message #message .field,
+#responseTable #message .field {
+  width:98%;
+  clear:both;
 }

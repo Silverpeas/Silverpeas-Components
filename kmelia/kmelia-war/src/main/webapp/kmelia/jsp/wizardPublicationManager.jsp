@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -33,7 +33,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ include file="checkKmelia.jsp" %>
 <%@ include file="topicReport.jsp.inc" %>
-<%@ include file="tabManager.jsp.inc" %>
 
 <%@taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
@@ -181,24 +180,20 @@ function init() {
 </script>
 </head>
 <body class="publicationManager" onload="init()">
-<% 
-        Window window = gef.getWindow();
-        Frame frame = gef.getFrame();
-        Board board = gef.getBoard();
-        
-        BrowseBar browseBar = window.getBrowseBar();
-        browseBar.setDomainName(kmeliaScc.getSpaceLabel());
-        browseBar.setComponentName(kmeliaScc.getComponentLabel(), "javascript:onClick=topicGoTo('0')");
-        browseBar.setPath(linkedPathString);
-		browseBar.setExtraInformation(pubName);
-        
-        out.println(window.printBefore());
-        
-        displayWizardOperations(wizardRow, id, kmeliaScc, gef, action, resources, out, kmaxMode);
-        
-        out.println(frame.printBefore());
-        
-%>
+  <%
+    Window window = gef.getWindow();
+    Frame frame = gef.getFrame();
+    Board board = gef.getBoard();
+    BrowseBar browseBar = window.getBrowseBar();
+    browseBar.setDomainName(kmeliaScc.getSpaceLabel());
+    browseBar.setComponentName(kmeliaScc.getComponentLabel(), "javascript:onClick=topicGoTo('0')");
+    browseBar.setPath(linkedPathString);
+    browseBar.setExtraInformation(pubName);
+    out.println(window.printBefore());
+    KmeliaDisplayHelper.displayWizardOperations(wizardRow, id, kmeliaScc, gef, action, resources,
+        out, kmaxMode);
+    out.println(frame.printBefore());
+  %>
 	<!-- cadre d'aide -->
 	<div class="inlineMessage">
 		<img border="0" src="<%=resources.getIcon("kmelia.info") %>"/>
@@ -207,7 +202,7 @@ function init() {
 	<br clear="all"/>
 	
 	<div id="header">
-		<form name="pubForm" action="publicationManager.jsp" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
+		<form name="pubForm" action="#" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
 			<input type="hidden" name="Positions"/>
 			<input type="hidden" name="Position" value="View"/>
 			<input type="hidden" name="Action" value="<%=action%>"/>
@@ -259,7 +254,7 @@ function init() {
 			</fieldset>
 			
 			<% if (!kmeliaScc.isKmaxMode) { %>
-				<view:pdcNewContentClassification componentId="<%= componentId %>" nodeId="<%= kmeliaScc.getSessionTopic().getNodePK().getId() %>"/>
+				<view:pdcNewContentClassification componentId="<%= componentId %>" nodeId="<%= kmeliaScc.getCurrentFolderId() %>"/>
 			<% } %>
 			
 			<div class="legend">

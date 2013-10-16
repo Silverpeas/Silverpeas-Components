@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -52,7 +52,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ include file="checkScc.jsp" %>
 
 <%
-
 	String addFolder=m_context+"/util/icons/create-action/add-folder.png";
   String addPage=m_context+"/util/icons/webSites_page_to_add.gif";
   String addPic=m_context+"/util/icons/create-action/download-website.png";
@@ -88,13 +87,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 		searchOk = false;
 	}
 
-  if (currentPath != null) {
-	  currentPath = doubleAntiSlash(currentPath);
-  }
-
-
   SilverTrace.info("webSites", "JSPdesign", "root.MSG_GEN_PARAM_VALUE", "ACTION = "+action);
-  
+
  	UserDetail user = scc.getUserDetail(auteur);
  	if (user != null) {
   	auteur = user.getDisplayedName();
@@ -207,9 +201,6 @@ function uploadFile(path) {
     if (window.pageAddWindow != null)
         window.pageAddWindow.close();
 
-    <% //CBO : REMOVE session.putValue("thePath", currentPath);
-       //CBO : REMOVE session.putValue("prems", "premiere fois");%>
-
     url = "uploadFile.jsp?path="+URLENCODE(path);
     windowName = "uploadFileWindow";
     windowParams = "directories=0,menubar=0,toolbar=0,height=200,width=700,alwaysRaised";
@@ -271,8 +262,10 @@ function pageRedesign(path, name, namesite) {
           window.uploadFileWindow.close();
       if (window.pageAddWindow != null)
           window.pageAddWindow.close();
-  //DLE
-      location.href="ToWysiwyg?path="+URLENCODE(path)+"&name="+URLENCODE(name)+"&nameSite="+URLENCODE(namesite)+"&id=<%=id%>";
+      if (path.indexOf('..') >= 0)
+        alert("<%= resources.getString("GML.error.AccessForbidden") %>");
+      else
+        location.href="ToWysiwyg?path="+URLENCODE(path)+"&name="+URLENCODE(name)+"&nameSite="+URLENCODE(namesite)+"&id=<%=id%>";
 }
 
 /**********************************************/
@@ -334,14 +327,9 @@ function deletePage(id, path, name) {
 	Window window = gef.getWindow();
 	String bodyPart="";
 
-	// La barre de naviagtion
 	BrowseBar browseBar = window.getBrowseBar();
-    //CBO : UPDATE
-	//browseBar.setDomainName(scc.getSpaceLabel());
 	browseBar.setDomainName(spaceLabel);
-	//CBO : UPDATE
-	//browseBar.setComponentName(scc.getComponentLabel(), "manage.jsp?Action=view");
-	browseBar.setComponentName(componentLabel, "manage.jsp?Action=view");
+  browseBar.setComponentName(componentLabel, "manage.jsp?Action=view");
 	browseBar.setPath("<a href= \"manage.jsp?Action=view\"></a>"+infoPath);
 
 	//Le cadre

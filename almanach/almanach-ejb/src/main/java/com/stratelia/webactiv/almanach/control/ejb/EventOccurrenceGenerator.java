@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -26,6 +26,8 @@ package com.stratelia.webactiv.almanach.control.ejb;
 import com.silverpeas.calendar.Date;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.EventOccurrence;
+import org.silverpeas.date.Period;
+
 import java.util.Calendar;
 import java.util.List;
 
@@ -33,38 +35,20 @@ import java.util.List;
  * Generator of occurrences of one or more events in a given window in time.
  */
 public interface EventOccurrenceGenerator {
-  
-  /**
-   * Generates the occurrences of the specified events in the specified year.
-   * @param year the year in which occurrences of events occur.
-   * @param events the events for which the occurrences have to be generated.
-   * @return a list of occurrences occuring in the specified year.
-   */
-  List<EventOccurrence> generateOccurrencesInYear(final Calendar year,
-      final List<EventDetail> events);
 
   /**
-   * Generates the occurrences of the specified events in the specified month.
-   * @param month the month in which occurrences of events occur.
+   * Generates the occurrences of events that occur in the specified period.
+   * @param period the period in which occurrences of events occur.
    * @param events the events for which the occurrences have to be generated.
-   * @return a list of occurrences occuring in the specified month.
+   * @return a list of occurrences occuring in the specified period
    */
-  List<EventOccurrence> generateOccurrencesInMonth(final Calendar month,
-      final List<EventDetail> events);
-
-  /**
-   * Generates the occurrences of events that occur in the specified week.
-   * @param week the week in which occurrences of events occur.
-   * @param events the events for which the occurrences have to be generated.
-   * @return a list of occurrences occuring in the specified week
-   */
-  List<EventOccurrence> generateOccurrencesInWeek(final Calendar week,
+  List<EventOccurrence> generateOccurrencesInPeriod(final Period period,
       final List<EventDetail> events);
   
   /**
    * Generates the occurrences of the specified events that occur between the two specified dates.
-   * @param date the inclusive date from which the event occurrences occur.
-   * @param date the date to which the event occurrences occur.
+   * @param startDate the inclusive date from which the event occurrences occur.
+   * @param endDate the date to which the event occurrences occur.
    * @param events the events for which the occurrences have to be generated.
    * @return a list of occurrences occuring from the specified date.
    */

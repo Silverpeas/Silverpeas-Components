@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,23 +24,27 @@
 package com.silverpeas.silvercrawler.servlets;
 
 import com.silverpeas.session.SessionInfo;
+import com.silverpeas.session.SessionManagement;
+import com.silverpeas.session.SessionManagementFactory;
 import com.silverpeas.silvercrawler.control.SilverCrawlerSessionController;
 import com.silverpeas.silvercrawler.control.UploadItem;
 import com.silverpeas.silvercrawler.control.UploadReport;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
-import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.fileupload.FileItem;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Class declaration
@@ -55,8 +59,7 @@ public class DragAndDrop extends HttpServlet {
     try {
       super.init(config);
     } catch (ServletException se) {
-      SilverTrace.fatal("silverCrawler", "DragAndDrop.init",
-          "peasUtil.CANNOT_ACCESS_SUPERCLASS");
+      SilverTrace.fatal("silverCrawler", "DragAndDrop.init", "peasUtil.CANNOT_ACCESS_SUPERCLASS");
     }
 
 
@@ -83,8 +86,12 @@ public class DragAndDrop extends HttpServlet {
       String instanceId = request.getParameter("ComponentId");
       String ignoreFolders = request.getParameter("IgnoreFolders");
 
-      SessionInfo session = SessionManager.getInstance().getSessionInfo(sessionId);
-      SilverCrawlerSessionController sessionController = session.getAttribute("Silverpeas_SilverCrawler_"+instanceId);
+      SessionManagementFactory factory = SessionManagementFactory.getFactory();
+      SessionManagement sessionManagement = factory.getSessionManagement();
+      SessionInfo session = sessionManagement.getSessionInfo(sessionId);
+
+      SilverCrawlerSessionController sessionController =
+          session.getAttribute("Silverpeas_SilverCrawler_" + instanceId);
 
       // build report
       UploadReport report = sessionController.getLastUploadReport();
@@ -94,9 +101,10 @@ public class DragAndDrop extends HttpServlet {
       }
 
       // if first part of upload, needs to generate temporary path
-      String savePath = report.getRepositoryPath();
-      if (savePath == null) {
-        savePath = FileRepositoryManager.getTemporaryPath() + "tmpupload" + File.separator + "SilverWrawler_" + System.currentTimeMillis() + File.separator;
+      File savePath = report.getRepositoryPath();
+      if (report.getRepositoryPath() == null) {
+        savePath = FileUtils.getFile(FileRepositoryManager.getTemporaryPath(), "tmpupload",
+            ("SilverWrawler_" + System.currentTimeMillis()));
         report.setRepositoryPath(savePath);
       }
 
@@ -105,63 +113,43 @@ public class DragAndDrop extends HttpServlet {
       for (FileItem item : items) {
         if (!item.isFormField()) {
           String fileUploadId = item.getFieldName().substring(4);
-          String parentPath = FileUploadUtil.getParameter(items, "relpathinfo" + fileUploadId, null);
-          String fileName = FileUploadUtil.getFileName(item);
+          String unixParentPath = FilenameUtils.separatorsToUnix(
+              FileUploadUtil.getParameter(items, "relpathinfo" + fileUploadId, null));
+          File parentPath = FileUtils.getFile(unixParentPath);
 
           // if ignoreFolder is activated, no folders are permitted
-          if ( (StringUtil.isDefined(parentPath)) && ("1".equals(ignoreFolders)) ) {
+          if (StringUtil.isDefined(parentPath.getName()) &&
+              StringUtil.getBooleanValue(ignoreFolders)) {
             report.setFailed(true);
             report.setForbiddenFolderDetected(true);
             break;
           }
 
-          if (StringUtil.isDefined(parentPath)) {
-            if (parentPath.endsWith(":\\")) { // special case for file on root of disk
-              parentPath = parentPath.substring(0, parentPath.indexOf(':') + 1);
-            }
-          }
+          // Get the file path and name
+          File fileName = FileUtils.getFile(parentPath, FileUploadUtil.getFileName(item));
 
-          SilverTrace.info("importExportPeas", "Drop.doPost",
-              "root.MSG_GEN_PARAM_VALUE", "fileName = " + fileName);
+          // Logging the name of the file
+          SilverTrace.info("importExportPeas", "Drop.doPost", "root.MSG_GEN_PARAM_VALUE",
+              "fileName = " + fileName.getName());
 
-          if (fileName != null) {
-            if (fileName.indexOf(File.separatorChar) >= 0) {
-              fileName = fileName.substring(fileName.lastIndexOf(File.separatorChar));
-              parentPath = parentPath + File.separatorChar +
-                      fileName.substring(0, fileName.lastIndexOf(File.separatorChar));
-            }
-            SilverTrace.info("importExportPeas", "Drop.doPost",
-                "root.MSG_GEN_PARAM_VALUE", "fileName on Unix = " + fileName);
-          }
+          // Registering in the temporary location
+          File fileToSave = FileUtils.getFile(savePath, fileName.getPath());
+          fileToSave.getParentFile().mkdirs();
+          item.write(fileToSave);
 
-          if (!"1".equals(ignoreFolders)) {
-            fileName = File.separatorChar + parentPath + File.separatorChar + fileName;
-          }
-
-          if (!"".equals(savePath)) {
-            File f = new File(savePath + fileName);
-            File parent = f.getParentFile();
-            if (!parent.exists()) {
-              parent.mkdirs();
-            }
-            item.write(f);
-
-            // save info into report
-            UploadItem uploadItem = new UploadItem();
-            uploadItem.setFileName(fileName);
-            uploadItem.setParentPath(parentPath);
-            report.addItem(uploadItem);
-          }
+          // Save info into report
+          UploadItem uploadItem = new UploadItem();
+          uploadItem.setFileName(fileName.getName());
+          uploadItem.setParentRelativePath(fileName.getParentFile());
+          report.addItem(uploadItem);
         } else {
-          SilverTrace.info("importExportPeas", "Drop.doPost", "root.MSG_GEN_PARAM_VALUE", "item = "
-              + item.getFieldName() + " - " + item.getString());
+          SilverTrace.info("importExportPeas", "Drop.doPost", "root.MSG_GEN_PARAM_VALUE",
+              "item = " + item.getFieldName() + " - " + item.getString());
         }
       }
 
-    }
-
-    catch (Exception e) {
-      SilverTrace.debug("importExportPeas", "FileUploader.doPost", "root.MSG_GEN_PARAM_VALUE", e);
+    } catch (Exception e) {
+      SilverTrace.debug("importExportPeas", "Drop.doPost", "root.MSG_GEN_PARAM_VALUE", e);
       res.getOutputStream().println("ERROR");
       return;
     }

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,13 +24,14 @@
 
 package com.silverpeas.components.organizationchart.servlets;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.silverpeas.components.organizationchart.control.OrganizationChartSessionController;
+
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
-import javax.servlet.http.HttpServletRequest;
 
 public class OrganizationChartRequestRouter extends ComponentRequestRouter<OrganizationChartSessionController> {
 
@@ -40,6 +41,7 @@ public class OrganizationChartRequestRouter extends ComponentRequestRouter<Organ
    * This method has to be implemented in the component request rooter class. returns the session
    * control bean name to be put in the request object ex : for almanach, returns "almanach"
    */
+  @Override
   public String getSessionControlBeanName() {
     return "OrganizationChart";
   }
@@ -51,6 +53,7 @@ public class OrganizationChartRequestRouter extends ComponentRequestRouter<Organ
    * @return
    * @see
    */
+  @Override
   public OrganizationChartSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new OrganizationChartSessionController(mainSessionCtrl, componentContext);
@@ -64,30 +67,27 @@ public class OrganizationChartRequestRouter extends ComponentRequestRouter<Organ
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
+  @Override
   public String getDestination(String function, OrganizationChartSessionController orgaSC,
       HttpServletRequest request) {
 
     SilverTrace.info("organizationchart", "OrganizationChartRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "User=" + orgaSC.getUserId() + " Function=" + function);
 
-    String destination = "";
+    String destination;
 
     try {
       if (function.startsWith("Main")) {
-        destination = OrganizationChartProcessor.processOrganizationChart(
-            request, orgaSC);
+        destination = OrganizationChartProcessor.processOrganizationChart(request, orgaSC);
       } else if (function.startsWith("Details")) {
-        destination =
-            OrganizationChartProcessor.processSilverpeasUser(request, orgaSC);
+        destination = OrganizationChartProcessor.processSilverpeasUser(request, orgaSC);
       } else {// affichage de l'organigramme
-        destination = OrganizationChartProcessor.processOrganizationChart(
-            request, orgaSC);
+        destination = OrganizationChartProcessor.processOrganizationChart(request, orgaSC);
       }
     } catch (Exception e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpageMain.jsp";
     }
-
     SilverTrace.info("organizationchart", "OrganizationChartRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
     return destination;

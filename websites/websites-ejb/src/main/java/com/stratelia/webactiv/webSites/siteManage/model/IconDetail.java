@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -21,13 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*
- * IconDetail.java
- *
- * Created on 19 avril 2001, 09:12
- */
-
 package com.stratelia.webactiv.webSites.siteManage.model;
 
 /** 
@@ -45,7 +38,7 @@ public class IconDetail implements Serializable {
    */
   private static final long serialVersionUID = -6326569229864803541L;
   /*-------------- Attributs ------------------*/
-  private SitePK iconPk = new SitePK("", "", "");
+  private SitePK iconPk = new SitePK("", "");
   private String name;
   private String description;
   private String address;
@@ -57,7 +50,7 @@ public class IconDetail implements Serializable {
   }
 
   public void setIconPK(SitePK val) {
-    iconPk = new SitePK(val.getId(), val.getSpace(), val.getComponentName());
+    iconPk = new SitePK(val.getId(), val.getComponentName());
   }
 
   // name
@@ -116,6 +109,7 @@ public class IconDetail implements Serializable {
   /**
    * toString
    */
+  @Override
   public String toString() {
     return iconPk + "|" + name + "|" + description + "|" + address;
   }

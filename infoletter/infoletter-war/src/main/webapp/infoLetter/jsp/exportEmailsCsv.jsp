@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -33,60 +33,45 @@
 <view:looknfeel/>
 </head>
 <body>
-<form name="exportForm" action="ExportEmailsCsv" method="post">
-</form>
 <%
 	String statusMessage = "";
-	boolean exportOk = false;
 	String emailCsvFileName = "";
 	String urlEmailCsv = "";
 	
-	if (StringUtil.isDefined((String) request.getAttribute("ExportOk")))
-	{
-		exportOk = new Boolean((String) request.getAttribute("ExportOk")).booleanValue();
-		if (exportOk)
-		{
+		boolean exportOk = new Boolean((String) request.getAttribute("ExportOk")).booleanValue();
+		if (exportOk) {
 			 statusMessage = resource.getString("GML.ExportSucceeded");
 			 emailCsvFileName = (String) request.getAttribute("EmailCsvName");
 			 urlEmailCsv = FileServerUtils.getUrlToTempDir(emailCsvFileName);
-		 }
-		else
+		} else {
 			 statusMessage = resource.getString("GML.ExportFailed");
-	}
-	else
-	{ %>
-		<script type="text/javascript">
-			$.progressMessage();
-			document.exportForm.submit();
-		</script>
-	<%	}
-%>
+		}
 	  
-<%
 	out.println(window.printBefore());
-  out.println(frame.printBefore());
-  out.println(board.printBefore());
 %>
+<view:frame>
+<view:board>
 
 <% if (exportOk) { %>
-	<center>
 	<table width="100%" cellpadding="2" cellspacing="2" border="0">
 		<tr>
-			<td align="center"><span class="txtlibform"><%=statusMessage%></span></td>
+			<td class="txtlibform"><%=statusMessage%></td>
 	    </tr>
 	    <tr>
-	    	<td align="center"><a href="<%=urlEmailCsv%>"><%=emailCsvFileName%></a></td>
+	    	<td><a href="<%=urlEmailCsv%>"><%=emailCsvFileName%></a></td>
 	    </tr>
-	 </table>
-	 </center>
+	</table>
 <% } %>
+</view:board>
+<center>
 <%
-	out.println(board.printAfter());
 	Button button = gef.getFormButton(resource.getString("GML.close"), "javascript:window.close()", false);
-	out.print("<br/>"+button.print());
-	out.println(frame.printAfter());
+	out.print(button.print());
+%>
+</center>
+</view:frame>
+<%
 	out.println(window.printAfter());
 %>
-<view:progressMessage/>
 </body>
 </html>

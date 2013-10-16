@@ -1,46 +1,24 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.quickinfo.servlets;
-
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.clipboard.ClipboardSelection;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.wysiwyg.WysiwygException;
-import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
-import com.stratelia.webactiv.quickinfo.control.QuickInfoSessionController;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import com.stratelia.webactiv.util.publication.model.PublicationSelection;
-
-import javax.ejb.CreateException;
-import javax.servlet.http.HttpServletRequest;
 
 import java.rmi.RemoteException;
 import java.text.ParseException;
@@ -50,7 +28,29 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 
+import javax.ejb.CreateException;
+import javax.servlet.http.HttpServletRequest;
+
+import org.silverpeas.wysiwyg.WysiwygException;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.clipboard.ClipboardSelection;
+import com.silverpeas.util.i18n.I18NHelper;
+
+import com.stratelia.silverpeas.peasCore.ComponentContext;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.quickinfo.control.QuickInfoSessionController;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.stratelia.webactiv.util.publication.model.PublicationSelection;
+
 public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSessionController> {
+
   private static final long serialVersionUID = 2256481728385587395L;
 
   @Override
@@ -58,6 +58,7 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
     return "quickinfo";
   }
 
+  @Override
   public QuickInfoSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new QuickInfoSessionController(mainSessionCtrl, componentContext);
@@ -66,12 +67,14 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param quickInfo The component Session Control, build and initialised.
    * @param request The entering request. The request rooter need it to get parameters
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
+  @Override
   public String getDestination(String function, QuickInfoSessionController quickInfo,
       HttpServletRequest request) {
     String destination = null;
@@ -83,7 +86,7 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
     try {
       if (function.startsWith("Main") || function.startsWith("quickInfoUser")
           || function.startsWith("quickInfoPublisher")) {
-        Collection<PublicationDetail> infos = null;
+        Collection<PublicationDetail> infos;
         if ("publisher".equals(flag)) {
           infos = quickInfo.getQuickInfos();
           request.setAttribute("infos", infos);
@@ -96,7 +99,7 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
         } else {
           infos = quickInfo.getVisibleQuickInfos();
           if (infos == null) {
-            infos = new ArrayList<PublicationDetail>();
+            infos = new ArrayList<PublicationDetail>(0);
           }
           Iterator<PublicationDetail> iterator = infos.iterator();
           request.setAttribute("infos", iterator);
@@ -106,7 +109,7 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
         Collection<PublicationDetail> infos = null;
         infos = quickInfo.getVisibleQuickInfos();
         if (infos == null) {
-          infos = new ArrayList<PublicationDetail>();
+          infos = new ArrayList<PublicationDetail>(0);
         }
         Iterator<PublicationDetail> iterator = infos.iterator();
         request.setAttribute("infos", iterator);
@@ -114,7 +117,6 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
       } else if (function.startsWith("quickInfoEdit") || function.startsWith("searchResult")) {
         if ("publisher".equals(flag) || "admin".equals(flag)) {
           String action = request.getParameter("Action");
-          PublicationDetail quickInfoDetail = null;
           if (action == null) {
             if (!function.startsWith("searchResult")) {
               action = "Add";
@@ -122,17 +124,13 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
               action = "Edit";
             }
           }
-
           if ("Edit".equals(action)) {
             String id = request.getParameter("Id");
             request.setAttribute("Id", id);
             quickInfo.setPageId(QuickInfoSessionController.PAGE_HEADER);
-
-            quickInfoDetail = quickInfo.getDetail(id);
-
+            PublicationDetail quickInfoDetail = quickInfo.getDetail(id);
             request.setAttribute("info", quickInfoDetail);
             destination = "/quickinfo/jsp/quickInfoEdit.jsp";
-
           } else if ("Add".equals(action)) {
             request.setAttribute("info", null);
             destination = "/quickinfo/jsp/quickInfoEdit.jsp";
@@ -148,21 +146,20 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
           destination = getDestination("quickInfoUser", quickInfo, request);
         } else {
           destination =
-              GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+              GeneralPropertiesManager.getString("sessionTimeout");
         }
       } else if (function.startsWith("multicopy")) {
         try {
-          String paramName, Id;
           PublicationDetail pubDetail;
           PublicationSelection pubSelect;
           @SuppressWarnings("unchecked")
           Enumeration<String> parameters = request.getParameterNames();
           while (parameters.hasMoreElements()) {
-            paramName = (String) parameters.nextElement();
+            String paramName = parameters.nextElement();
             if (paramName.startsWith("selectItem")) {
-              Id = request.getParameter(paramName);
-              if (Id != null) {
-                pubDetail = quickInfo.getDetail(Id);
+              String id = request.getParameter(paramName);
+              if (id != null) {
+                pubDetail = quickInfo.getDetail(id);
                 pubSelect = new PublicationSelection(pubDetail);
                 quickInfo.addClipboardSelection((ClipboardSelection) pubSelect);
               }
@@ -205,13 +202,13 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
             ClipboardSelection clipObject = clipObjectIterator.next();
             if ((clipObject != null)
                 && (clipObject
-                    .isDataFlavorSupported(PublicationSelection.PublicationDetailFlavor))) {
+                .isDataFlavorSupported(PublicationSelection.PublicationDetailFlavor))) {
               PublicationDetail pubDetail;
               pubDetail = (PublicationDetail) clipObject
                   .getTransferData(PublicationSelection.PublicationDetailFlavor);
 
-              String description = WysiwygController.load(pubDetail.getPK().getInstanceId(), pubDetail.getPK().getId(), null);
-
+              String description = WysiwygController.load(pubDetail.getPK().getInstanceId(),
+                  pubDetail.getPK().getId(), I18NHelper.defaultLanguage);
               quickInfo.add(pubDetail.getName(), description, pubDetail.getBeginDate(),
                   pubDetail.getEndDate(), null);
             }
@@ -223,8 +220,9 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
               "quickinfo.PASTE_ERROR", e);
         }
         destination = URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null) + "Idle.jsp";
-      } else
+      } else {
         destination = "/quickinfo/jsp/" + function;
+      }
     } catch (Exception e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpage.jsp";
@@ -236,6 +234,7 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
 
   /**
    * This method retrieve all the request parameters before creating or updating a quick info
+   *
    * @param quickInfo the QuickInfoSessionController
    * @param request the HttpServletRequest
    * @param action a string representation of an action

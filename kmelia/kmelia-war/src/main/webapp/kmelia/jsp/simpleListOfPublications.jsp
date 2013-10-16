@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -30,6 +30,7 @@
 
 <%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page import="com.stratelia.webactiv.SilverpeasRole"%>
+<%@page import="com.silverpeas.kmelia.SearchContext"%>
 
 <%
 String id = "0";
@@ -42,7 +43,14 @@ String 	profile			= (String) request.getAttribute("Profile");
 String  translation 	= (String) request.getAttribute("Language");
 boolean	isGuest			= (Boolean) request.getAttribute("IsGuest");
 Boolean displaySearch	= (Boolean) request.getAttribute("DisplaySearch");
-boolean updateChain		= ((Boolean) request.getAttribute("HaveDescriptor")).booleanValue();
+boolean updateChain		= (Boolean) request.getAttribute("HaveDescriptor");
+int		currentPageIndex = (Integer) request.getAttribute("PageIndex");
+
+SearchContext searchContext = (SearchContext) request.getAttribute("SearchContext");
+String query = "";
+if (searchContext != null) {
+  query = searchContext.getQuery();
+}
 
 String		pubIdToHighlight	= (String) request.getAttribute("PubIdToHighlight"); //used when we have found publication from search (only toolbox)
 
@@ -88,6 +96,10 @@ function getCurrentNodeId() {
 	return "0";
 }
 
+function getCurrentUserId() {
+  return "<%=userId%>";
+}
+
 function getWebContext() {
 	return "<%=m_context%>";
 }
@@ -98,7 +110,7 @@ function getComponentId() {
 
 function showDnD() {
 	<%
-	ResourceLocator uploadSettings = new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings", "");
+	ResourceLocator uploadSettings = new ResourceLocator("org.silverpeas.util.uploads.uploadSettings", "");
 	String maximumFileSize = uploadSettings.getString("MaximumFileSize", "10000000");
 	%>
 	showHideDragDrop('<%=URLManager.getFullApplicationURL(request)%>/RImportDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&IgnoreFolders=1&SessionId=<%=session.getId()%>','<%=URLManager.getFullApplicationURL(request)%>/upload/ModeNormal_<%=language%>.html','<%=URLManager.getFullApplicationURL(request)%>/RImportDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&IgnoreFolders=1&Draft=1&SessionId=<%=session.getId()%>','<%=URLManager.getFullApplicationURL(request)%>/upload/ModeDraft_<%=language%>.html','<%=resources.getString("GML.applet.dnd.alt")%>','<%=maximumFileSize%>','<%=m_context%>','<%=resources.getString("GML.DragNDropExpand")%>','<%=resources.getString("GML.DragNDropCollapse")%>');
@@ -140,8 +152,14 @@ function pasteFromOperations() {
 			}, 'text');
 }
 
+var searchInProgress = <%=searchContext != null%>;
+
 $(document).ready(function() {
-	displayPublications("<%=id%>");
+	if (searchInProgress) {
+		doPagination(<%=currentPageIndex%>);
+	} else {
+		displayPublications("<%=id%>");
+	}
 	displayTopicDescription("0");
 });
 </script>
@@ -166,6 +184,9 @@ $(document).ready(function() {
           	if (kmeliaScc.isWysiwygOnTopicsEnabled()) {
 				operationPane.addOperation("useless", kmeliaScc.getString("TopicWysiwyg"), "javascript:onClick=topicWysiwyg('"+id+"')");
 			}
+          if (SilverpeasRole.admin.isInRole(profile)) {
+            operationPane.addOperation("useless", resources.getString("GML.manageSubscriptions"), "ManageSubscriptions");
+          }
           	if (kmeliaScc.isExportComponentAllowed() && kmeliaScc.isExportZipAllowed()) {
 	        	operationPane.addOperation("useless", kmeliaScc.getString("kmelia.ExportComponent"), "javascript:onClick=exportTopic()");
           	}
@@ -181,10 +202,10 @@ $(document).ready(function() {
 	      		operationPane.addOperationOfCreation(resources.getIcon("kmelia.wizard"), resources.getString("kmelia.Wizard"), "WizardStart");
 	        }
 	        if (kmeliaScc.isImportFileAllowed()) {
-	      		operationPane.addOperationOfCreation("useless", kmeliaScc.getString("kmelia.ImportFile"), "javascript:onClick=importFile()");
+	      		operationPane.addOperationOfCreation(resources.getIcon("kmelia.operation.importFile"), kmeliaScc.getString("kmelia.ImportFile"), "javascript:onClick=importFile()");
 	        }
 	        if (kmeliaScc.isImportFilesAllowed()) {
-	        	operationPane.addOperationOfCreation("useless", kmeliaScc.getString("kmelia.ImportFiles"), "javascript:onClick=importFiles()");
+	        	operationPane.addOperationOfCreation(resources.getIcon("kmelia.operation.importFiles"), kmeliaScc.getString("kmelia.ImportFiles"), "javascript:onClick=importFiles()");
 	        }
 	        if (updateChain) {
 	        	operationPane.addOperation(resources.getIcon("kmelia.updateByChain"), kmeliaScc.getString("kmelia.updateByChain"), "javascript:onClick=updateChain()");
@@ -219,7 +240,7 @@ $(document).ready(function() {
 						<div id="searchZone">
 						<view:board>
 						<table id="searchLine">
-						<tr><td><div id="searchLabel"><%=resources.getString("kmelia.SearchInTopics") %></div>&nbsp;<input type="text" id="topicQuery" size="50" onkeydown="checkSubmitToSearch(event)"/></td><td><%=searchButton.print() %></td></tr>
+						<tr><td><div id="searchLabel"><%=resources.getString("kmelia.SearchInTopics") %></div>&nbsp;<input type="text" id="topicQuery" size="50" value="<%=query%>" onkeydown="checkSubmitToSearch(event)"/></td><td><%=searchButton.print() %></td></tr>
 						</table>
 						</view:board>
 						</div>
@@ -279,7 +300,6 @@ $(document).ready(function() {
 
 <form name="pubForm" action="ViewPublication" method="post">
 	<input type="hidden" name="PubId"/>
-	<input type="hidden" name="CheckPath" value="1"/>
 </form>
 
 <form name="fupload" action="fileUpload.jsp" method="post" enctype="multipart/form-data" accept-charset="UTF-8">

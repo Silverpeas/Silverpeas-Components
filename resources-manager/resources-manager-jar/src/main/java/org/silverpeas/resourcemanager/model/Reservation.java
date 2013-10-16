@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -21,24 +21,19 @@
 package org.silverpeas.resourcemanager.model;
 
 import com.silverpeas.util.StringUtil;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
+import javax.persistence.*;
 import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.TableGenerator;
-import javax.persistence.Transient;
 
 @Entity
 @Table(name = "sc_resources_reservation")
 public class Reservation implements ResourceStatus {
 
-  private static final long serialVersionUID = -1410243488372828193L;
   @Id
   @TableGenerator(name = "UNIQUE_ID_GEN", table = "uniqueId", pkColumnName = "tablename",
-  valueColumnName = "maxId", pkColumnValue = "sc_resources_reservation", allocationSize=1)
+      valueColumnName = "maxId", pkColumnValue = "sc_resources_reservation", allocationSize = 1)
   @GeneratedValue(strategy = GenerationType.TABLE, generator = "UNIQUE_ID_GEN")
   private Long id;
   @Column(name = "evenement", length = 128, nullable = false)
@@ -63,6 +58,18 @@ public class Reservation implements ResourceStatus {
   private String status;
   @Transient
   private String userName;
+
+  @PrePersist
+  public void beforePersist() {
+    Date now = new Date();
+    setCreationDate(now);
+    setUpdateDate(now);
+  }
+
+  @PreUpdate
+  public void beforeUpdate() {
+    setUpdateDate(new Date());
+  }
 
   public String getUserName() {
     return userName;
@@ -89,18 +96,16 @@ public class Reservation implements ResourceStatus {
     }
   }
 
-  public String getId() {
-    return String.valueOf(id);
-  }
-
-  public Long getIntegerId() {
+  public Long getId() {
     return id;
   }
 
-  public final void setId(String id) {
-    if (StringUtil.isLong(id)) {
-      this.id = Long.parseLong(id);
-    }
+  public final void setId(Long id) {
+    this.id = id;
+  }
+
+  public String getIdAsString() {
+    return String.valueOf(id);
   }
 
   public String getInstanceId() {
@@ -121,9 +126,7 @@ public class Reservation implements ResourceStatus {
   }
 
   public void setUpdateDate(Date updateDate) {
-    if (updateDate != null) {
-      this.updateDate = String.valueOf(updateDate.getTime());
-    }
+    this.updateDate = String.valueOf(updateDate.getTime());
   }
 
   public String getUserId() {
@@ -201,8 +204,7 @@ public class Reservation implements ResourceStatus {
   public Reservation() {
   }
 
-  public Reservation(String event, Date beginDate, Date endDate,
-      String reason, String place) {
+  public Reservation(String event, Date beginDate, Date endDate, String reason, String place) {
     this.event = event;
     setBeginDate(beginDate);
     setEndDate(endDate);
@@ -210,9 +212,8 @@ public class Reservation implements ResourceStatus {
     this.place = place;
   }
 
-  public Reservation(String id, String event, Date beginDate,
-      Date endDate, String reason, String place, String userId,
-      Date creationDate, Date updateDate, String instanceId) {
+  public Reservation(Long id, String event, Date beginDate, Date endDate, String reason,
+      String place, String userId, Date creationDate, Date updateDate, String instanceId) {
     setId(id);
     this.event = event;
     setBeginDate(beginDate);
@@ -225,9 +226,9 @@ public class Reservation implements ResourceStatus {
     this.instanceId = instanceId;
   }
 
-  public Reservation(String id, String event, Date beginDate,
-      Date endDate, String reason, String place, String userId,
-      Date creationDate, Date updateDate, String instanceId, String status) {
+  public Reservation(Long id, String event, Date beginDate, Date endDate, String reason,
+      String place, String userId, Date creationDate, Date updateDate, String instanceId,
+      String status) {
     setId(id);
     this.event = event;
     setBeginDate(beginDate);
@@ -239,13 +240,6 @@ public class Reservation implements ResourceStatus {
     setUpdateDate(updateDate);
     this.instanceId = instanceId;
     this.status = status;
-  }
-  
-  public void merge(Reservation reservation) {
-    this.beginDate = reservation.beginDate;
-    this.creationDate = reservation.creationDate;
-    this.endDate = reservation.endDate;
-    this.event = reservation.event;
   }
 
   @Override
@@ -265,56 +259,30 @@ public class Reservation implements ResourceStatus {
       return false;
     }
     final Reservation other = (Reservation) obj;
-    if ((this.id == null) ? (other.id != null) : !this.id.equals(other.id)) {
-      return false;
-    }
-    if ((this.event == null) ? (other.event != null) : !this.event.equals(other.event)) {
-      return false;
-    }
-    if (this.beginDate != other.beginDate && (this.beginDate == null || !this.beginDate.equals(
-        other.beginDate))) {
-      return false;
-    }
-    if (this.endDate != other.endDate && (this.endDate == null || !this.endDate.equals(other.endDate))) {
-      return false;
-    }
-    if ((this.reason == null) ? (other.reason != null) : !this.reason.equals(other.reason)) {
-      return false;
-    }
-    if ((this.place == null) ? (other.place != null) : !this.place.equals(other.place)) {
-      return false;
-    }
-    if (this.userId != (other.userId)) {
-      return false;
-    }
-    if (this.creationDate != other.creationDate && (this.creationDate == null || !this.creationDate.
-        equals(other.creationDate))) {
-      return false;
-    }
-    if (this.updateDate != other.updateDate && (this.updateDate == null || !this.updateDate.equals(
-        other.updateDate))) {
-      return false;
-    }
-    return !((this.instanceId == null) ? (other.instanceId != null) : !this.instanceId.equals(
-        other.instanceId));
+    EqualsBuilder matcher = new EqualsBuilder();
+    matcher.append(getId(), other.getId());
+    matcher.append(getEvent(), other.getEvent());
+    matcher.append(getBeginDate(), other.getBeginDate());
+    matcher.append(getEndDate(), other.getEndDate());
+    matcher.append(getReason(), other.getReason());
+    matcher.append(getPlace(), other.getPlace());
+    matcher.append(getUserId(), other.getUserId());
+    matcher.append(getInstanceId(), other.getInstanceId());
+    return matcher.isEquals();
   }
 
   @Override
   public int hashCode() {
-    int hash = 3;
-    hash = 97 * hash + (this.id != null ? this.id.hashCode() : 0);
-    hash = 97 * hash + (this.event != null ? this.event.hashCode() : 0);
-    hash = 97 * hash + (this.beginDate != null ? this.beginDate.hashCode() : 0);
-    hash = 97 * hash + (this.endDate != null ? this.endDate.hashCode() : 0);
-    hash = 97 * hash + (this.reason != null ? this.reason.hashCode() : 0);
-    hash = 97 * hash + (this.place != null ? this.place.hashCode() : 0);
-    hash = 97 * hash + this.userId;
-    hash = 97 * hash + (this.creationDate != null ? this.creationDate.hashCode() : 0);
-    hash = 97 * hash + (this.updateDate != null ? this.updateDate.hashCode() : 0);
-    hash = 97 * hash + (this.instanceId != null ? this.instanceId.hashCode() : 0);
-    hash = 97 * hash + (this.status != null ? this.status.hashCode() : 0);
-    hash = 97 * hash + (this.userName != null ? this.userName.hashCode() : 0);
-    return hash;
+    HashCodeBuilder hash = new HashCodeBuilder();
+    hash.append(getId());
+    hash.append(getEvent());
+    hash.append(getBeginDate());
+    hash.append(getEndDate());
+    hash.append(getReason());
+    hash.append(getPlace());
+    hash.append(getUserId());
+    hash.append(getInstanceId());
+    return hash.toHashCode();
   }
 
   public boolean isValidated() {

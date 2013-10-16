@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -24,29 +24,26 @@
 
 --%>
 
-<%@page import="com.silverpeas.gallery.ImageType"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 <%
-AlbumDetail root 			= (AlbumDetail) request.getAttribute("root");
-String 		profile 		= (String) request.getAttribute("Profile");
-String 		userId 			= (String) request.getAttribute("UserId");
-List 		photos			= (List) request.getAttribute("Photos");
-boolean		isPdcUsed		= ((Boolean) request.getAttribute("IsUsePdc")).booleanValue();
-boolean 	isPrivateSearch	= ((Boolean) request.getAttribute("IsPrivateSearch")).booleanValue();
-boolean 	isBasket	 	= ((Boolean) request.getAttribute("IsBasket")).booleanValue();
-boolean 	isOrder		 	= ((Boolean) request.getAttribute("IsOrder")).booleanValue();
-boolean 	isGuest		 	= ((Boolean) request.getAttribute("IsGuest")).booleanValue();
-List<AlbumDetail> albums    = (List<AlbumDetail>) request.getAttribute("Albums");
+  String profile = (String) request.getAttribute("Profile");
+  List photos = (List) request.getAttribute("Photos");
+  boolean isPdcUsed = (Boolean) request.getAttribute("IsUsePdc");
+  boolean isPrivateSearch = (Boolean) request.getAttribute("IsPrivateSearch");
+  boolean isBasket = (Boolean) request.getAttribute("IsBasket");
+  boolean isOrder = (Boolean) request.getAttribute("IsOrder");
+  boolean isGuest = (Boolean) request.getAttribute("IsGuest");
+  List<AlbumDetail> albums = (List<AlbumDetail>) request.getAttribute("Albums");
 
-// parametrage pour l'affichage des dernieres photos telechargees
-int nbAffiche 	= 0;
-int nbParLigne 	= 5;
-int nbTotal 	= 15;
+  // parametrage pour l'affichage des dernieres photos telechargees
+  int nbAffiche = 0;
+  int nbParLigne = 5;
+  int nbTotal = 15;
 
-session.setAttribute("Silverpeas_Album_ComponentId", componentId);
+  session.setAttribute("Silverpeas_Album_ComponentId", componentId);
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -342,10 +339,9 @@ function sendData()
 							altTitle += " : "+EncodeHelper.javaStringToHtmlString(photo.getDescription());
 						}
 						if (name != null) {
-							String type = name.substring(name.lastIndexOf(".") + 1, name.length());
 							name = photo.getId() + "_133x100.jpg";
-							vignette_url = FileServerUtils.getUrl(spaceId, componentId, name, photo.getImageMimeType(), nomRep);
-							if (!ImageType.isPreviewable(name)) {
+							vignette_url = FileServerUtils.getUrl(componentId, name, photo.getImageMimeType(), nomRep);
+							if (!photo.isPreviewable()) {
 								vignette_url = m_context+"/gallery/jsp/icons/notAvailable_"+resource.getLanguage()+"_133x100.jpg";
 							}
 						} else {

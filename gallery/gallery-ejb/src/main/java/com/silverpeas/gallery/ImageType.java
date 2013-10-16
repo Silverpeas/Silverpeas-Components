@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -46,28 +46,29 @@ enum ImageType {
     return ERROR;
   }
 
-
   public static boolean isImage(String name) {
     ImageType type = findType(FileRepositoryManager.getFileExtension(name));
     return type.isValid();
   }
 
-  public static boolean isValidExtension(String name) {
+  /**
+   * @param name the image name to check
+   * @return true if image is readable by ImageIo
+   * @see http://docs.oracle.com/javase/6/docs/api/javax/imageio/package-summary.html
+   */
+  public static boolean isReadable(String name) {
     ImageType type = findType(FileRepositoryManager.getFileExtension(name));
-    return type.isJpeg() || type == TIF|| type == TIFF || type == PNG;
+    return type == GIF || type == JPEG || type == JPG || type == PNG || type == BMP;
   }
   
   public static boolean isPreviewable(String name) {
-    ImageType type = findType(FileRepositoryManager.getFileExtension(name));
-    return type.isJpeg();
+    return isReadable(name);
   }
 
-  public static boolean isJpeg(String type) {
-    return findType(type).isJpeg();
-  }
-
-  protected boolean isJpeg() {
-    return this == GIF || this == JPEG || this == JPG;
+  public static boolean isIPTCCompliant(String type) {
+    ImageType imageType = findType(type);
+    return imageType == GIF || imageType == JPEG || imageType == JPG || imageType == TIF ||
+        imageType == TIFF;
   }
 
   protected boolean isValid() {

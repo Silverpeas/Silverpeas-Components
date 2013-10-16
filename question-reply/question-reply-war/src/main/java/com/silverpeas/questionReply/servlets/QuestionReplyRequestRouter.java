@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -26,6 +26,7 @@ import com.silverpeas.questionReply.model.Category;
 import com.silverpeas.questionReply.model.Question;
 import com.silverpeas.questionReply.model.Reply;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.containerManager.ContainerContext;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -139,8 +140,10 @@ public class QuestionReplyRequestRouter extends
         request.setAttribute("Flag", flag);
         request.setAttribute("UserId", scc.getUserId());
         request.setAttribute("Categories", scc.getAllCategories());
-        request.setAttribute("userAlreadySubscribed", SubscriptionServiceFactory.getFactory().
-            getSubscribeService().isSubscribedToComponent(scc.getUserId(), scc.getComponentId()));
+        request.setAttribute("userAlreadySubscribed",
+            SubscriptionServiceFactory.getFactory().getSubscribeService().existsSubscription(
+                new ComponentSubscription(scc.getUserId(), scc.getComponentId())));
+        request.setAttribute("PDCUsed", scc.isPDCUsed());
         if (request.getAttribute("QuestionId") != null) {
           Question question =
               scc.getQuestion(Long.parseLong((String) request.getAttribute("QuestionId")));
@@ -160,7 +163,7 @@ public class QuestionReplyRequestRouter extends
         }
         destination = getDestination("Main", scc, request);
       } else if ("DeleteQuestions".equals(function)) {
-        if (admin == role || publisher == role) {
+        if (admin == role || writer == role) {
           String[] checkQuestions = request.getParameterValues("checkedQuestion");
           if (checkQuestions != null) {
             List<Long> listToDelete = new ArrayList<Long>(checkQuestions.length);
@@ -354,9 +357,11 @@ public class QuestionReplyRequestRouter extends
             0);
         // Get classification positions
         String positions = request.getParameter("Positions");
-        long id = scc.saveNewFAQ();
-        scc.classifyQuestionReply(id, positions);
-        scc.getQuestion(id);
+        long questionId = scc.saveNewFAQ();
+        String id = Long.toString(questionId);
+        scc.classifyQuestionReply(questionId, positions);
+        scc.getQuestion(questionId);
+        request.setAttribute("QuestionId", id);
         request.setAttribute("contentId", scc.getCurrentQuestionContentId());
         destination = getDestination("Main", scc, request);
       } else if (function.equals("CreateQQuery")) {

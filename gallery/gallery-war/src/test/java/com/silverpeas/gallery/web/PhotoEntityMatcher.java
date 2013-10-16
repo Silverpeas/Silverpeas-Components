@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -54,14 +54,18 @@ public class PhotoEntityMatcher extends BaseMatcher<PhotoEntity> {
     if (item instanceof PhotoEntity) {
       final PhotoEntity actual = (PhotoEntity) item;
       final EqualsBuilder matcher = new EqualsBuilder();
-      matcher.appendSuper(actual.getURI().toString()
-                                .endsWith("/gallery/componentName5/albums/3/photos/7"));
+      matcher.appendSuper(
+          actual.getURI().toString().endsWith("/gallery/componentName5/albums/3/photos/7"));
       matcher.appendSuper(
           actual.getParentURI().toString().endsWith("/gallery/componentName5/albums/3"));
       matcher.append("photo", actual.getType());
       matcher.append(expected.getId(), actual.getId());
       matcher.append(expected.getTitle(), actual.getTitle());
       matcher.append(expected.getDescription(), actual.getDescription());
+      matcher.appendSuper(actual.getPreviewUrl()
+          .endsWith("/gallery/componentName5/albums/3/photos/7/previewContent"));
+      matcher.appendSuper(
+          actual.getUrl().endsWith("/gallery/componentName5/albums/3/photos/7/content"));
       match = matcher.isEquals();
     }
     return match;

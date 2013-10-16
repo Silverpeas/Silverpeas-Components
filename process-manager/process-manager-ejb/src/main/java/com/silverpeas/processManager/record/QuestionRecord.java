@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,6 +23,9 @@
  */
 
 package com.silverpeas.processManager.record;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
@@ -112,5 +115,10 @@ public class QuestionRecord implements DataRecord {
   }
 
   public void setLanguage(String language) {
+  }
+
+  @Override
+  public Map<String, String> getValues(String language) {
+    return new HashMap<String, String>();
   }
 }

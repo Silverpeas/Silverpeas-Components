@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -52,14 +52,16 @@
       <c:set var="creationDate"><%= resources.getOutputDate(new Date()) %></c:set>
   </c:otherwise>
 </c:choose> 
-<html>
-  <head>
-    <title>_________________/ Silverpeas - Corporate portal organizer \_________________/</title>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title></title>
 <view:looknfeel />
-  <script type="text/javascript" src="<%=context%>/util/javaScript/animation.js"></script>
-  <script type="text/javascript" src="<%=context%>/util/javaScript/checkForm.js"></script>
-  <script type="text/javascript" src="<%=context%>/forums/jsp/javaScript/forums.js"></script>
-  <script type="text/javascript">
+<script type="text/javascript" src="<%=context%>/util/javaScript/animation.js"></script>
+<script type="text/javascript" src="<%=context%>/util/javaScript/checkForm.js"></script>
+<script type="text/javascript" src="<%=context%>/forums/jsp/javaScript/forums.js"></script>
+<script type="text/javascript">
 // fonctions de controle des zones du formulaire avant validation
 function sendData(creation)
 {
@@ -96,7 +98,7 @@ function isCorrectForm()
   </script>
 </head>
 
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5" <%addBodyOnload(out, fsc, "document.categoryForm.Name.focus();");%>>
+<body <%addBodyOnload(out, fsc, "document.categoryForm.Name.focus();");%>>
   <c:choose>
   <c:when test="${'CreateCategory' eq action}">
     <fmt:message var="barLabel" key="forums.addCategory" />
@@ -117,25 +119,25 @@ function isCorrectForm()
     <table cellpadding="5" width="100%">
       <tr>
         <td class="txtlibform"><fmt:message key="GML.title" /> :</td>
-        <td><input type="text" name="Name" size="60" maxlength="150" value="<c:out value="${name}" />">
-          <img src="<%=resources.getIcon("forums.obligatoire")%>" width="5" height="5" border="0">
+        <td><input type="text" name="Name" size="60" maxlength="150" value="<c:out value="${name}" />"/>
+          <img src="<%=resources.getIcon("forums.obligatoire")%>" width="5" height="5" border="0"/>
         </td>
       </tr>
       <tr>
         <td class="txtlibform"><fmt:message key="GML.description" /> :</td>
-        <td><input type="text" name="Description" size="60" maxlength="150" value="<c:out value="${description}" />" ></td>
+        <td><input type="text" name="Description" size="60" maxlength="150" value="<c:out value="${description}" />"/></td>
       </tr>
       <tr>
         <td class="txtlibform"><fmt:message key="forums.creationDate" /> :</td>
-        <td><c:out value="${creationDate}" />&nbsp;<span class="txtlibform"></td>
+        <td><c:out value="${creationDate}" /></td>
       </tr>
       <tr>
-        <td colspan="2">( <img border="0" src="<%=resources.getIcon("forums.obligatoire")%>" width="5" height="5"> : Obligatoire )</td>
+        <td colspan="2"><img border="0" src="<%=resources.getIcon("forums.obligatoire")%>" width="5" height="5"/> : <fmt:message key="GML.mandatory" /></td>
       </tr>
     </table>
   </form>
+  </view:board>
     <br/>
-      <center>
         <fmt:message var="validateLabel" key="GML.validate" />
         <fmt:message var="cancelLabel" key="GML.cancel" />
         <c:set var="validateAction">javascript:onclick=sendData(<c:out value="${'CreateCategory' eq action}" />)</c:set>
@@ -143,9 +145,6 @@ function isCorrectForm()
           <view:button label="${validateLabel}" action="${validateAction}"/>
           <view:button label="${cancelLabel}" action="Main"/>
         </view:buttonPane>
-      </center>
-      <br>   
-    </view:board>
   </view:frame>
 </view:window>
 </body>

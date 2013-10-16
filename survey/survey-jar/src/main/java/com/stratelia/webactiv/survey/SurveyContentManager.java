@@ -1,30 +1,25 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.survey;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -38,7 +33,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.questionContainer.control.QuestionContainerBm;
-import com.stratelia.webactiv.util.questionContainer.control.QuestionContainerBmHome;
 import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerHeader;
 import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerPK;
 
@@ -52,13 +46,16 @@ public class SurveyContentManager implements ContentInterface {
 
   /**
    * Find all the SilverContent with the given list of SilverContentId
+   *
    * @param ids list of silverContentId to retrieve
    * @param peasId the id of the instance
    * @param userId the id of the user who wants to retrieve silverContent
    * @param userRoles the roles of the user
    * @return a List of SilverContent
    */
-  public List getSilverContentById(List<Integer> ids, String peasId, String userId, List<String> userRoles) {
+  @Override
+  public List getSilverContentById(List<Integer> ids, String peasId, String userId,
+      List<String> userRoles) {
     if (getContentManager() == null) {
       return new ArrayList<SilverContentInterface>();
     }
@@ -66,9 +63,9 @@ public class SurveyContentManager implements ContentInterface {
     return getHeaders(makePKArray(ids, peasId));
   }
 
-
   /**
    * return a list of silverContentId according to a list of publicationPK
+   *
    * @param idList a list of silverContentId
    * @param instanceId the id of the instance
    * @return a list of publicationPK
@@ -96,23 +93,21 @@ public class SurveyContentManager implements ContentInterface {
 
   /**
    * return a list of silverContent according to a list of publicationPK
+   *
    * @param ids a list of publicationPK
    * @return a list of publicationDetail
    */
   private List<QuestionContainerHeader> getHeaders(List<QuestionContainerPK> pks) {
-    List<QuestionContainerHeader> headers = new ArrayList<QuestionContainerHeader>();
-    try {
-      Collection<QuestionContainerHeader> questionContainerHeaders = getQuestionContainerBm()
-          .getQuestionContainerHeaders((ArrayList) pks);
-      for (QuestionContainerHeader qC : questionContainerHeaders) {
-        qC.setIconUrl("surveySmall.gif");
-        if (qC.getPK().getInstanceId().startsWith("pollingStation")) {
-          qC.setIconUrl("pollingStationSmall.gif");
-        }
-        headers.add(qC);
+    Collection<QuestionContainerHeader> questionContainerHeaders = getQuestionContainerBm()
+        .getQuestionContainerHeaders(pks);
+    List<QuestionContainerHeader> headers = new ArrayList<QuestionContainerHeader>(
+        questionContainerHeaders.size());
+    for (QuestionContainerHeader qC : questionContainerHeaders) {
+      qC.setIconUrl("surveySmall.gif");
+      if (qC.getPK().getInstanceId().startsWith("pollingStation")) {
+        qC.setIconUrl("pollingStationSmall.gif");
       }
-    } catch (RemoteException e) {
-      // skip unknown and ill formed id.
+      headers.add(qC);
     }
     return headers;
   }
@@ -122,7 +117,7 @@ public class SurveyContentManager implements ContentInterface {
       try {
         contentManager = new ContentManager();
       } catch (Exception e) {
-        SilverTrace.fatal("survey", "SurveyContentManager.getContentManager()",
+        SilverTrace.fatal("Survey", "SurveyContentManager.getContentManager()",
             "root.EX_UNKNOWN_CONTENT_MANAGER", e);
       }
     }
@@ -132,17 +127,13 @@ public class SurveyContentManager implements ContentInterface {
   private QuestionContainerBm getQuestionContainerBm() {
     if (currentQuestionContainerBm == null) {
       try {
-        QuestionContainerBmHome questionContainerBmHome = (QuestionContainerBmHome) EJBUtilitaire
-            .getEJBObjectRef(JNDINames.QUESTIONCONTAINERBM_EJBHOME,
-            QuestionContainerBmHome.class);
-        currentQuestionContainerBm = questionContainerBmHome.create();
+        currentQuestionContainerBm = EJBUtilitaire.getEJBObjectRef(
+            JNDINames.QUESTIONCONTAINERBM_EJBHOME, QuestionContainerBm.class);
       } catch (Exception e) {
-        SilverTrace.fatal("survey",
-            "SurveyContentManager.getQuestionContainerBm()",
+        SilverTrace.fatal("survey", "SurveyContentManager.getQuestionContainerBm()",
             "root.EX_UNKNOWN_CONTENT_MANAGER", e);
       }
     }
     return currentQuestionContainerBm;
   }
-
 }

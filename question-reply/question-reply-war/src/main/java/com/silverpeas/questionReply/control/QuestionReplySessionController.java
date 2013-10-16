@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -20,9 +20,6 @@
  */
 package com.silverpeas.questionReply.control;
 
-import static com.google.common.base.Charsets.UTF_8;
-import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -32,12 +29,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
-import org.apache.commons.io.IOUtils;
+import org.silverpeas.core.admin.OrganisationController;
 
 import com.silverpeas.importExport.report.ExportReport;
 import com.silverpeas.pdc.PdcServiceFactory;
@@ -58,6 +56,7 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.ZipManager;
 import com.silverpeas.whitePages.control.CardManager;
 import com.silverpeas.whitePages.model.Card;
+
 import com.stratelia.silverpeas.containerManager.ContainerContext;
 import com.stratelia.silverpeas.containerManager.ContainerPositionInterface;
 import com.stratelia.silverpeas.contentManager.ContentManager;
@@ -72,7 +71,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.util.DateUtil;
@@ -87,11 +85,13 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 
-import edu.emory.mathcs.backport.java.util.Collections;
+import org.apache.commons.io.IOUtils;
+
+import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
+import static org.silverpeas.util.Charsets.UTF_8;
 
 public class QuestionReplySessionController extends AbstractComponentSessionController {
 
@@ -252,6 +252,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
 
   /**
    * Persist new FAQ inside database and add positions
+   *
    * @param Positions the JSON position request
    * @return question identifier
    * @throws QuestionReplyException
@@ -500,8 +501,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
           break;
         case writer:
           if (flag != SilverpeasRole.publisher) {
-            flag = SilverpeasRole.writer;
-          }
+          flag = SilverpeasRole.writer;
+        }
           break;
         default:
           break;
@@ -550,8 +551,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
         + "/RquestionReply/" + getComponentId() + "/Main");
     PairObject hostPath1 = new PairObject(getCurrentQuestion().getTitle(),
         "/RquestionReply/" + getComponentId() + "/ConsultQuestionQuery?questionId="
-            + getCurrentQuestion().getPK().getId());
-    PairObject[] hostPath = { hostPath1 };
+        + getCurrentQuestion().getPK().getId());
+    PairObject[] hostPath = {hostPath1};
 
     gp.resetAll();
 
@@ -597,7 +598,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * Récupère la liste des experts du domaine de la question
    */
   public Collection<UserDetail> getCurrentQuestionWriters() throws QuestionReplyException {
-    OrganizationController orga = getOrganizationController();
+    OrganisationController orga = getOrganisationController();
     List<UserDetail> arrayUsers = new ArrayList<UserDetail>();
 
     try {
@@ -615,8 +616,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       // question
       ContainerPositionInterface position = getSilverContentIdPosition();
       if (position != null && !position.isEmpty()) {
-        List<Integer> liste =
-            containerContext.getSilverContentIdByPosition(position, listeInstanceId);
+        List<Integer> liste = containerContext.getSilverContentIdByPosition(position,
+            listeInstanceId);
 
         CardManager cardManager = CardManager.getInstance();
         for (Integer silverContentId : liste) {
@@ -678,8 +679,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   private void notifyQuestionFromExpert(Question question) throws QuestionReplyException {
     List<String> profils = new ArrayList<String>();
     profils.add(SilverpeasRole.writer.name());
-    String[] usersIds =
-        getOrganizationController().getUsersIdsByRoleNames(getComponentId(), profils);
+    String[] usersIds = getOrganisationController()
+        .getUsersIdsByRoleNames(getComponentId(), profils);
     List<UserRecipient> users = new ArrayList<UserRecipient>(usersIds.length);
     for (String userId : usersIds) {
       users.add(new UserRecipient(userId));
@@ -691,10 +692,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * @param reply
    * @throws QuestionReplyException
    */
-  @SuppressWarnings("unchecked")
   private void notifyReply(Reply reply) throws QuestionReplyException {
-    UserDetail user =
-        getOrganizationController().getUserDetail(getCurrentQuestion().getCreatorId());
+    UserDetail user = getOrganisationController().getUserDetail(getCurrentQuestion().getCreatorId());
     ReplyNotifier notifier = new ReplyNotifier(getUserDetail(getUserId()), URLManager.getServerURL(
         null), getCurrentQuestion(), reply, new NotificationData(getString(
         "questionReply.notification") + getComponentLabel(), getSpaceLabel() + " - "
@@ -731,16 +730,17 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     return "yes".equalsIgnoreCase(getComponentParameterValue("privateRepliesUsed"));
   }
 
-  /*
-   *
-   */
+  public boolean isPDCUsed() {
+    if (!StringUtil.isDefined(getComponentParameterValue("usePdc"))) {
+      return true;
+    }
+    return "yes".equalsIgnoreCase(getComponentParameterValue("usePdc"));
+  }
+
   public void setContainerContext(ContainerContext containerContext) {
     this.containerContext = containerContext;
   }
 
-  /*
-   *
-   */
   public ContainerContext getContainerContext() {
     return containerContext;
   }
@@ -855,8 +855,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     }
 
     // intégrer la css du disque dans "files"
-    ResourceLocator settings =
-        new ResourceLocator("com.silverpeas.questionReply.settings.questionReplySettings", "");
+    ResourceLocator settings = new ResourceLocator(
+        "com.silverpeas.questionReply.settings.questionReplySettings", "");
     try {
       String chemin = (settings.getString("mappingDir"));
       if (chemin.startsWith("file:")) {
@@ -864,8 +864,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       }
       Collection<File> files = FileFolderManager.getAllFile(chemin);
       for (File file : files) {
-        File newFile =
-            new File(dir + File.separator + nameForFiles + File.separator + file.getName());
+        File newFile = new File(dir + File.separator + nameForFiles + File.separator + file
+            .getName());
         FileRepositoryManager.copyFile(file.getPath(), newFile.getPath());
       }
     } catch (Exception ex) {
@@ -967,7 +967,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     StringBuilder sb = new StringBuilder();
     sb.append("<table width=\"100%\">\n");
     Collection<NodeDetail> categories = getAllCategories();
-    QuestionReplyExport exporter = new QuestionReplyExport(resource, file);
+    QuestionReplyExport exporter = new QuestionReplyExport(getUserDetail(), resource, file);
     for (NodeDetail category : categories) {
       String categoryId = java.lang.Integer.toString(category.getId());
       exportCategory(exporter, category, categoryId, sb);
@@ -998,19 +998,10 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     sb.append("</tr>\n");
   }
 
-  public boolean isVersionControlled() {
-    String strVersionControlled = this.getComponentParameterValue("versionControl");
-    return ((strVersionControlled != null)
-        && !("").equals(strVersionControlled) && !("no").equals(
-          strVersionControlled.toLowerCase()));
-  }
-
   private NodeBm getNodeBm() throws QuestionReplyException {
     NodeBm nodeBm;
     try {
-      NodeBmHome nodeBmHome = EJBUtilitaire.getEJBObjectRef(
-          JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
-      nodeBm = nodeBmHome.create();
+      nodeBm = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
     } catch (Exception e) {
       throw new QuestionReplyException("QuestionReplySessioncontroller.getNodeBm()",
           SilverpeasRuntimeException.ERROR, "QuestionReply.MSG_NODEBM_NOT_EXIST", e);
@@ -1020,6 +1011,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
 
   /**
    * Classify the question reply FAQ on the PdC only if the positions parameter is filled
+   *
    * @param questionId the question identifier
    * @param positions the json string positions
    */
@@ -1044,12 +1036,12 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       if (qiClassification != null && !qiClassification.isUndefined()) {
         List<PdcPosition> pdcPositions = qiClassification.getPdcPositions();
         String questionIdStr = Long.toString(questionId);
-        PdcClassification classification =
-            aPdcClassificationOfContent(questionIdStr, questionDetail.getComponentInstanceId())
-                .withPositions(pdcPositions);
+        PdcClassification classification = aPdcClassificationOfContent(questionIdStr, questionDetail
+            .getComponentInstanceId())
+            .withPositions(pdcPositions);
         if (!classification.isEmpty()) {
-          PdcClassificationService service =
-              PdcServiceFactory.getFactory().getPdcClassificationService();
+          PdcClassificationService service = PdcServiceFactory.getFactory()
+              .getPdcClassificationService();
           classification.ofContent(questionIdStr);
           service.classifyContent(questionDetail, classification);
         }

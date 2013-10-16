@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -27,12 +27,10 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Date;
 
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.process.util.ProcessList;
 
 import com.silverpeas.gallery.ImageType;
 import com.silverpeas.gallery.control.ejb.GalleryBm;
-import com.silverpeas.gallery.control.ejb.GalleryBmHome;
 import com.silverpeas.gallery.delegate.PhotoDataCreateDelegate;
 import com.silverpeas.gallery.delegate.PhotoDataUpdateDelegate;
 import com.silverpeas.gallery.model.AlbumDetail;
@@ -49,15 +47,17 @@ import com.silverpeas.gallery.process.photo.GalleryPastePhotoDataProcess;
 import com.silverpeas.gallery.process.photo.GalleryPastePhotoFileProcess;
 import com.silverpeas.gallery.process.photo.GalleryUpdatePhotoDataProcess;
 import com.silverpeas.gallery.process.photo.GalleryUpdatePhotoFileProcess;
+
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+
+import org.apache.commons.fileupload.FileItem;
 
 /**
  * @author Yohann Chastagnier
@@ -66,8 +66,7 @@ public class GalleryProcessManagement {
 
   private final UserDetail user;
   private final String componentInstanceId;
-  private final ProcessList<GalleryProcessExecutionContext> processList =
-      new ProcessList<GalleryProcessExecutionContext>();
+  private final ProcessList<GalleryProcessExecutionContext> processList;
 
   /**
    * Default constructor
@@ -75,6 +74,7 @@ public class GalleryProcessManagement {
   public GalleryProcessManagement(final UserDetail user, final String componentInstanceId) {
     this.user = user;
     this.componentInstanceId = componentInstanceId;
+    processList = new ProcessList<GalleryProcessExecutionContext>();
   }
 
   /*
@@ -178,16 +178,20 @@ public class GalleryProcessManagement {
   public void addImportFromRepositoryProcesses(final File repository, final String albumId,
       final boolean watermark, final String watermarkHD, final String watermarkOther,
       final PhotoDataCreateDelegate delegate) throws Exception {
-    for (final File file : repository.listFiles()) {
-      if (file.isFile()) {
-        if (ImageType.isImage(file.getName())) {
-          // création de la photo
-          addCreatePhotoProcesses(new PhotoDetail(), albumId, file, watermark, watermarkHD,
+    final File[] fileList = repository.listFiles();
+    if (fileList != null) {
+      for (final File file : fileList) {
+        if (file.isFile()) {
+          if (ImageType.isImage(file.getName())) {
+            // création de la photo
+            addCreatePhotoProcesses(new PhotoDetail(), albumId, file, watermark, watermarkHD,
+                watermarkOther, delegate);
+          }
+        } else if (file.isDirectory()) {
+          addImportFromRepositoryProcesses(file,
+              createAlbum(file.getName(), albumId).getNodePK().getId(), watermark, watermarkHD,
               watermarkOther, delegate);
         }
-      } else if (file.isDirectory()) {
-        addImportFromRepositoryProcesses(file, createAlbum(file.getName(), albumId).getNodePK()
-            .getId(), watermark, watermarkHD, watermarkOther, delegate);
       }
     }
   }
@@ -225,7 +229,7 @@ public class GalleryProcessManagement {
       // CUT & PASTE
 
       // Move images
-      NodePK toSubAlbumPK = null;
+      NodePK toSubAlbumPK;
       for (final NodeDetail subAlbumToPaste : getNodeBm().getSubTree(fromAlbum.getNodePK())) {
         toSubAlbumPK = new NodePK(subAlbumToPaste.getNodePK().getId(), componentInstanceId);
         addPastePhotoAlbumProcesses(subAlbumToPaste.getNodePK(), toSubAlbumPK, isCutted);
@@ -311,8 +315,7 @@ public class GalleryProcessManagement {
    */
   private static GalleryBm getGalleryBm() {
     try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.GALLERYBM_EJBHOME, GalleryBmHome.class)
-          .create();
+      return EJBUtilitaire.getEJBObjectRef(JNDINames.GALLERYBM_EJBHOME, GalleryBm.class);
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryProcessBuilder.getGalleryBm()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
@@ -325,7 +328,7 @@ public class GalleryProcessManagement {
    */
   private static NodeBm getNodeBm() {
     try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class).create();
+      return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryProcessBuilder.getNodeBm()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);

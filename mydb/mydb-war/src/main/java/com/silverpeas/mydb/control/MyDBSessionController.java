@@ -1,27 +1,23 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.mydb.control;
 
 import java.math.BigDecimal;
@@ -45,11 +41,12 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
 
+import org.silverpeas.mydb.control.DriverManager;
+
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
 import com.silverpeas.mydb.control.ejb.MyDBBm;
-import com.silverpeas.mydb.control.ejb.MyDBBmHome;
 import com.silverpeas.mydb.data.datatype.DataTypeList;
 import com.silverpeas.mydb.data.date.DateFormatter;
 import com.silverpeas.mydb.data.db.DbColumn;
@@ -66,18 +63,23 @@ import com.silverpeas.mydb.exception.MyDBException;
 import com.silverpeas.mydb.model.MyDBConnectionInfoDetail;
 import com.silverpeas.mydb.model.MyDBConnectionInfoPK;
 import com.silverpeas.mydb.model.MyDBRuntimeException;
+
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.selectionPeas.jdbc.JdbcConnectorSetting;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
+import com.stratelia.webactiv.persistence.PersistenceException;
+import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import com.stratelia.webactiv.util.exception.UtilException;
 
 /**
  * MyDB session control.
+ *
  * @author Antoine HEDIN
  */
 public class MyDBSessionController extends AbstractComponentSessionController {
@@ -100,14 +102,15 @@ public class MyDBSessionController extends AbstractComponentSessionController {
 
   /**
    * Standard Session Controller Constructor
+   *
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
    */
   public MyDBSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-        "com.silverpeas.mydb.multilang.myDBBundle",
-        "com.silverpeas.mydb.settings.myDBIcons");
+        "org.silverpeas.mydb.multilang.myDBBundle",
+        "org.silverpeas.mydb.settings.myDBIcons");
     resources = new ResourcesWrapper(getMultilang(), getIcon(), getSettings(),
         getLanguage());
     driverManager = new DriverManager();
@@ -145,6 +148,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
 
   /**
    * Update the database filter.
+   *
    * @param column The name of the column.
    * @param compare The symbol which links the column and the value.
    * @param value The value.
@@ -155,6 +159,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
 
   /**
    * Update the table's name.
+   *
    * @param tableName The new name of the table.
    * @throws MyDBException
    */
@@ -192,6 +197,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
 
   /**
    * Initializes the database connection informations.
+   *
    * @throws MyDBRuntimeException
    */
   private void initMyDB() throws MyDBRuntimeException {
@@ -201,7 +207,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
         MyDBBm myDBBm = getMyDBBm();
         Collection<MyDBConnectionInfoDetail> c =
             myDBBm.getConnectionList(new MyDBConnectionInfoPK("",
-                getSpaceId(), getComponentId()));
+            getSpaceId(), getComponentId()));
         if (c.size() > 1) {
           throw new MyDBRuntimeException("myDBSessionController.initMyDB()",
               SilverpeasException.FATAL, "myDB.EX_MUST_BE_ONLY_ONE_CONNECTION");
@@ -211,7 +217,19 @@ public class MyDBSessionController extends AbstractComponentSessionController {
         if (i.hasNext()) {
           myDBDetail = i.next();
         }
-      } catch (Exception e) {
+      } catch (MyDBException e) {
+        SilverTrace.error("myDB", "myDBSessionController.initMyDB()",
+            "myDB.EX_CONNECTION_SETTING_INIT_FAILED", e);
+        throw new MyDBRuntimeException("myDBSessionController.initMyDB()",
+            SilverpeasException.FATAL,
+            "myDB.EX_CONNECTION_SETTING_INIT_FAILED", e);
+      } catch (PersistenceException e) {
+        SilverTrace.error("myDB", "myDBSessionController.initMyDB()",
+            "myDB.EX_CONNECTION_SETTING_INIT_FAILED", e);
+        throw new MyDBRuntimeException("myDBSessionController.initMyDB()",
+            SilverpeasException.FATAL,
+            "myDB.EX_CONNECTION_SETTING_INIT_FAILED", e);
+      } catch (MyDBRuntimeException e) {
         SilverTrace.error("myDB", "myDBSessionController.initMyDB()",
             "myDB.EX_CONNECTION_SETTING_INIT_FAILED", e);
         throw new MyDBRuntimeException("myDBSessionController.initMyDB()",
@@ -223,6 +241,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
 
   /**
    * Update the table's name and the corresponding connection information.
+   *
    * @param tableName The new table's name.
    * @throws MyDBException
    */
@@ -246,10 +265,8 @@ public class MyDBSessionController extends AbstractComponentSessionController {
   private MyDBBm getMyDBBm() throws MyDBException {
     if (myDBEjb == null) {
       try {
-        MyDBBmHome myDBEjbHome = (MyDBBmHome) EJBUtilitaire.getEJBObjectRef(
-            JNDINames.MYDBBM_EJBHOME, MyDBBmHome.class);
-        myDBEjb = myDBEjbHome.create();
-      } catch (Exception e) {
+        myDBEjb = EJBUtilitaire.getEJBObjectRef(JNDINames.MYDBBM_EJBHOME, MyDBBm.class);
+      } catch (UtilException e) {
         throw new MyDBException("myDBSessionController.getMyDBBm()",
             SilverpeasException.ERROR, "myDB.EX_EJB_CREATION_FAILED", e);
       }
@@ -259,6 +276,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
 
   /**
    * Loads the connection informations.
+   *
    * @throws MyDBException
    */
   private void newMyDB() throws MyDBException {
@@ -267,7 +285,10 @@ public class MyDBSessionController extends AbstractComponentSessionController {
         // load and return the current jdbc settings for the component
         MyDBBm myDBBm = getMyDBBm();
         myDBDetail.setPK(myDBBm.addConnection(myDBDetail));
-      } catch (Exception e) {
+      } catch (MyDBException e) {
+        throw new MyDBException("myDBSessionController.newMyDB()",
+            SilverpeasException.FATAL, "myDB.EX_NEW_CONNECTION_FAILED", e);
+      } catch (PersistenceException e) {
         throw new MyDBException("myDBSessionController.newMyDB()",
             SilverpeasException.FATAL, "myDB.EX_NEW_CONNECTION_FAILED", e);
       }
@@ -280,6 +301,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
 
   /**
    * Initializes the table manager.
+   *
    * @param mode the table mode (creation or modification).
    * @param originPage The origin page. Indeed, table mode can be accessed from the table selection
    * page or the table detail page. This information is also memorized to go back to the origin page
@@ -318,6 +340,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
 
   /**
    * Updates the database connection informations.
+   *
    * @param JDBCdriverName The name of the driver.
    * @param JDBCurl The URL to access the database.
    * @param login The login to access the database.
@@ -369,6 +392,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
 
   /**
    * Updates the database connection informations.
+   *
    * @throws MyDBException
    */
   private void updateMyDB() throws MyDBException {
@@ -479,7 +503,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
       try {
         DatabaseMetaData dbMetaData = connection.getMetaData();
         if (dbMetaData != null) {
-          rs = dbMetaData.getTables(null, null, null, new String[] { "TABLE" });
+          rs = dbMetaData.getTables(null, null, null, new String[]{"TABLE"});
           while (rs.next()) {
             tableVector.addElement(rs.getString("TABLE_NAME"));
           }
@@ -511,7 +535,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
           DatabaseMetaData dbMetaData = connection.getMetaData();
 
           rs = dbMetaData.getTables(null, "%", tableName,
-              new String[] { "TABLE" });
+              new String[]{"TABLE"});
           if (rs.next()) {
             // Table.
             dbTable = new DbTable(tableName);
@@ -769,9 +793,8 @@ public class MyDBSessionController extends AbstractComponentSessionController {
 
         if (rs.next()) {
           if (n == 1) {
-            return MessageFormat.format(resources
-                .getString("LineCreationNotAllowed1"), new String[] {
-                primaryKeys[0], getFormParameter(primaryKeys[0]) });
+            return MessageFormat.format(resources.getString("LineCreationNotAllowed1"),
+                primaryKeys[0], getFormParameter(primaryKeys[0]));
           } else {
             StringBuffer columnsSb = new StringBuffer();
             StringBuffer valuesSb = new StringBuffer();
@@ -783,14 +806,12 @@ public class MyDBSessionController extends AbstractComponentSessionController {
               columnsSb.append(primaryKeys[i]);
               valuesSb.append(getFormParameter(primaryKeys[i]));
             }
-            return MessageFormat.format(resources
-                .getString("LineCreationNotAllowedN"), new String[] {
-                columnsSb.toString(), valuesSb.toString() });
+            return MessageFormat.format(resources.getString("LineCreationNotAllowedN"), columnsSb.
+                toString(), valuesSb.toString());
           }
         }
       } catch (SQLException e) {
-        SilverTrace.warn("myDB",
-            "MyDBSessionController.getLineCreationErrorMessage()",
+        SilverTrace.warn("myDB", "MyDBSessionController.getLineCreationErrorMessage()",
             "myDB.MSG_CANNOT_CHECK_LINE_CREATION", e);
       } finally {
         closeConnection();
@@ -837,10 +858,9 @@ public class MyDBSessionController extends AbstractComponentSessionController {
 
       prepStmt.executeUpdate();
     } catch (SQLException e) {
-      SilverTrace.warn("myDB", "MyDBSessionController.createDbLine()",
-          "myDB.MSG_CANNOT_CREATE_LINE", e);
-      return MessageFormat.format(resources.getString("LineCreationError"),
-          new String[] { e.getMessage() });
+      SilverTrace.
+          warn("myDB", "MyDBSessionController.createDbLine()", "myDB.MSG_CANNOT_CREATE_LINE", e);
+      return MessageFormat.format(resources.getString("LineCreationError"), e.getMessage());
     } finally {
       closeConnection();
     }
@@ -899,10 +919,9 @@ public class MyDBSessionController extends AbstractComponentSessionController {
       }
       prepStmt.executeUpdate();
     } catch (SQLException e) {
-      SilverTrace.warn("myDB", "MyDBSessionController.updateDbData()",
-          "myDB.MSG_CANNOT_UPDATE_LINE", e);
-      return MessageFormat.format(resources.getString("LineUpdateError"),
-          new String[] { e.getMessage() });
+      SilverTrace.
+          warn("myDB", "MyDBSessionController.updateDbData()", "myDB.MSG_CANNOT_UPDATE_LINE", e);
+      return MessageFormat.format(resources.getString("LineUpdateError"), e.getMessage());
     } finally {
       closeConnection();
     }
@@ -973,17 +992,15 @@ public class MyDBSessionController extends AbstractComponentSessionController {
                   // étrangère contient la même
                   // valeur que la ligne en cours de suppression.
                   // envoi d'un message d'erreur.
-                  return MessageFormat.format(resources
-                      .getString("LineDeletionNotAllowed"), new String[] {
-                      value, columnName, fkColumnName, fkTableName });
+                  return MessageFormat.format(resources.getString("LineDeletionNotAllowed"),
+                      value, columnName, fkColumnName, fkTableName);
                 }
               }
             }
           }
         }
       } catch (SQLException e) {
-        SilverTrace.warn("myDB",
-            "MyDBSessionController.getLineDeletionErrorMessage()",
+        SilverTrace.warn("myDB", "MyDBSessionController.getLineDeletionErrorMessage()",
             "myDB.MSG_CANNOT_CHECK_LINE_DELETION", e);
       } finally {
         closeConnection();
@@ -1024,8 +1041,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
     } catch (SQLException e) {
       SilverTrace.warn("myDB", "MyDBSessionController.deleteDbData()",
           "myDB.MSG_CANNOT_DELETE_LINE", e);
-      return MessageFormat.format(resources.getString("LineDeletionError"),
-          new String[] { e.getMessage() });
+      return MessageFormat.format(resources.getString("LineDeletionError"), e.getMessage());
     } finally {
       closeConnection();
     }
@@ -1063,6 +1079,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
 
   /**
    * Loads in the form's parameters the values contained into the map.
+   *
    * @param parameterMap The map which contains the record's describing data.
    */
   public void initFormParameters(Map<String, String[]> parameterMap) {
@@ -1092,7 +1109,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
         // colonne.
         value = column.getDefaultValue();
       }
-      formParameters[i] = new String[] { columnName, value };
+      formParameters[i] = new String[]{columnName, value};
     }
   }
 
@@ -1112,6 +1129,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
   /**
    * Executes the different queries to create the table corresponding to the current informations of
    * the controller.
+   *
    * @return True if the creation ended successfully.
    */
   public boolean createTable() {
@@ -1139,8 +1157,8 @@ public class MyDBSessionController extends AbstractComponentSessionController {
     } catch (SQLException e) {
       SilverTrace.warn("myDB", "MyDBSessionController.createTable()",
           "myDB.MSG_CANNOT_CREATE_TABLE", e);
-      tableManager.setErrorLabel(MessageFormat.format(resources
-          .getString("TableCreationError"), new String[] { e.getMessage() }));
+      tableManager.setErrorLabel(MessageFormat.format(resources.getString("TableCreationError"), 
+          e.getMessage()));
       return false;
     } finally {
       closeConnection();
@@ -1150,17 +1168,19 @@ public class MyDBSessionController extends AbstractComponentSessionController {
   /**
    * Removes from the database the table corresponding to the current informations of the
    * controller.
+   *
    * @return True if the deletion ended successfully.
    */
   public boolean dropTable() {
+    Statement stmt = null;
     try {
       String tableName = tableManager.getTable().getName();
       connection = getConnection();
       DatabaseMetaData dbMetaData = connection.getMetaData();
-      rs = dbMetaData.getTables(null, "%", tableName, new String[] { "TABLE" });
+      rs = dbMetaData.getTables(null, "%", tableName, new String[]{"TABLE"});      
       if (rs.next()) {
         // Vérification de l'existence de la table.
-        Statement stmt = connection.createStatement();
+        stmt = connection.createStatement();
         String query = "DROP TABLE " + tableName;
         stmt.execute(query);
       }
@@ -1168,10 +1188,11 @@ public class MyDBSessionController extends AbstractComponentSessionController {
     } catch (SQLException e) {
       SilverTrace.warn("myDB", "MyDBSessionController.dropTable()",
           "myDB.MSG_CANNOT_DELETE_TABLE", e);
-      tableManager.setErrorLabel(MessageFormat.format(resources
-          .getString("TableDeletionError"), new String[] { e.getMessage() }));
+      tableManager.setErrorLabel(MessageFormat.format(resources.getString("TableDeletionError"), 
+          e.getMessage()));
       return false;
     } finally {
+      DBUtil.close(stmt);
       closeConnection();
     }
   }
@@ -1190,6 +1211,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
 
   /**
    * Completes the statement with the value by respecting its type.
+   *
    * @param value The value to store in database.
    * @param dataType The type of the value.
    * @param index The index of the data in the statement.

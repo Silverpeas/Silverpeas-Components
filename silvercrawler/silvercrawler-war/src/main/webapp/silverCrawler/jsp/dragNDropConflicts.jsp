@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -69,7 +69,7 @@
 				<table>
 				<c:forEach items="${DnDReport.items}" var="item">
 					<c:if test="${item.itemAlreadyExists}">
-						<tr><td><b>${item.fileName}</b> ${alreadyExistsLabel}</td><td><input type="radio" name="choice${item.id}" value="ignore" checked/> ${ignoreLabel} - <input type="radio" name="choice${item.id}" value="replace"/> ${replaceLabel} </td></tr>
+						<tr><td><b>${item.relativePath}</b> ${alreadyExistsLabel}</td><td><input type="radio" name="choice${item.id}" value="ignore" checked/> ${ignoreLabel} - <input type="radio" name="choice${item.id}" value="replace"/> ${replaceLabel} </td></tr>
 					</c:if>
 				</c:forEach>
 				</table>

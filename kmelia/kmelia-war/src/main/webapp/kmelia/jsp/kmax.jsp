@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -104,7 +104,7 @@ function search() {
         }
     }
     if (nbSelectedAxis != 1) {
-		window.alert("Vous devez s�lectionnez au moins un axe !");
+		window.alert("Vous devez sélectionnez au moins un axe !");
     } else {
 		document.managerForm.TimeCriteria.value = timeCriteria;
 		document.managerForm.SearchCombination.value = z;
@@ -190,14 +190,12 @@ function init()
 			},"html");
 }
 
-function exportComponent()
-{
-	exportComponentWindow = SP_openWindow("exportTopic.jsp","exportComponentWindow",700,250,"scrollbars=yes, resizable=yes");
+function exportComponent() {
+	exportComponentWindow = SP_openWindow("ExportTopic","exportComponentWindow",700,250,"scrollbars=yes, resizable=yes");
 }
 
-function exportPublications()
-{
-	exportComponentWindow = SP_openWindow("exportTopic.jsp?TopicId=dummy","exportComponentWindow",700,250,"scrollbars=yes, resizable=yes");
+function exportPublications() {
+	exportComponentWindow = SP_openWindow("ExportTopic?TopicId=dummy","exportComponentWindow",700,250,"scrollbars=yes, resizable=yes");
 }
 -->
 </script>

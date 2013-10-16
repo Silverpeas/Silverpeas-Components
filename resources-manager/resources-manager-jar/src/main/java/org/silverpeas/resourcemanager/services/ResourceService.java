@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -20,20 +20,19 @@
  */
 package org.silverpeas.resourcemanager.services;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.inject.Inject;
-import javax.inject.Named;
+import com.silverpeas.annotation.Service;
 import org.silverpeas.resourcemanager.model.Reservation;
 import org.silverpeas.resourcemanager.model.Resource;
 import org.silverpeas.resourcemanager.model.ResourceValidator;
 import org.silverpeas.resourcemanager.repository.ReservationRepository;
 import org.silverpeas.resourcemanager.repository.ReservedResourceRepository;
 import org.silverpeas.resourcemanager.repository.ResourceRepository;
-import com.silverpeas.annotation.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Named
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @Transactional
 public class ResourceService {
@@ -45,9 +44,8 @@ public class ResourceService {
   @Inject
   private ReservedResourceRepository reservedResourceRepository;
 
-  public String createResource(Resource resource) {
-    Resource savedResource = repository.saveAndFlush(resource);
-    return savedResource.getId();
+  public void createResource(Resource resource) {
+    repository.saveAndFlush(resource);
   }
 
   public void updateResource(Resource resource) {
@@ -112,8 +110,7 @@ public class ResourceService {
     List<Resource> availableBookableResources = new ArrayList<Resource>(bookableResources.size());
     for (Resource resource : bookableResources) {
       List<Reservation> reservations = reservationRepository.
-          findAllReservationsNotRefusedForResourceInRange(resource.getIntegerId(),
-          startDate, endDate);
+          findAllReservationsNotRefusedForResourceInRange(resource.getId(), startDate, endDate);
       if (reservations == null || reservations.isEmpty()) {
         availableBookableResources.add(resource);
       }
@@ -129,9 +126,9 @@ public class ResourceService {
     return repository.findAllResourcesForReservation(reservationId);
   }
 
-  public List<Resource> findAllResourcesWithProblem(long currentReservationId,
-      List<Long> futureReservedResourceIds, String startPeriod, String endPeriod) {
-    return repository.findAllResourcesWithProblem(currentReservationId,
-        futureReservedResourceIds, startPeriod, endPeriod);
+  public List<Resource> findAllReservedResources(long reservationIdToSkip,
+      List<Long> aimedResourceIds, String startPeriod, String endPeriod) {
+    return repository
+        .findAllReservedResources(reservationIdToSkip, aimedResourceIds, startPeriod, endPeriod);
   }
 }

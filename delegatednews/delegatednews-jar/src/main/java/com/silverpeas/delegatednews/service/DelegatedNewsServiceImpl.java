@@ -41,6 +41,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import javax.inject.Inject;
+
+import org.silverpeas.core.admin.OrganisationController;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
@@ -156,10 +158,10 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
   /**
    * @return
    */
-  private OrganizationController getOrganizationController() {
+  private OrganisationController getOrganisationController() {
     // must return a new instance each time
     // This is to resolve Serializable problems
-    OrganizationController orga = new OrganizationController();
+    OrganisationController orga = new OrganizationController();
     return orga;
   }
 
@@ -226,7 +228,7 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
         }
         List<String> roles = new ArrayList<String>();
         roles.add("admin");
-        String[] editors = getOrganizationController().getUsersIdsByRoleNames(
+        String[] editors = getOrganisationController().getUsersIdsByRoleNames(
             delegatednewsInstanceId, roles);
         for (String editorId : editors) {
           notifMetaData.addUserRecipient(new UserRecipient(editorId));

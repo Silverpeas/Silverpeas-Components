@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -25,28 +25,40 @@ package com.silverpeas.kmelia.notification;
 
 import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.util.template.SilverpeasTemplate;
+import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
+import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
 /**
  * @author Yohann Chastagnier
  */
-public abstract class AbstractKmeliaPublicationUserNotification extends
-    AbstractKmeliaUserNotification<PublicationDetail> {
+public abstract class AbstractKmeliaPublicationUserNotification
+    extends AbstractKmeliaUserNotification<PublicationDetail> {
 
-  public AbstractKmeliaPublicationUserNotification(final PublicationDetail resource, final String fileName,
-      final String subject) {
-    super(resource, null, null);
+  private final NodePK nodePK;
+  private final NotifAction action;
+  private final String senderName;
+
+  protected AbstractKmeliaPublicationUserNotification(final NodePK nodePK,
+      final PublicationDetail resource, final NotifAction action) {
+    this(nodePK, resource, action, null);
   }
 
-  protected abstract String getPath(final String language);
-
-  protected abstract String getSenderName();
+  protected AbstractKmeliaPublicationUserNotification(final NodePK nodePK,
+      final PublicationDetail resource, final NotifAction action, final String senderName) {
+    super(resource, null, null);
+    this.nodePK = nodePK;
+    this.action = action;
+    this.senderName = senderName;
+  }
 
   @Override
   protected void performTemplateData(final String language, final PublicationDetail resource,
       final SilverpeasTemplate template) {
-    getNotificationMetaData().addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()), "");
+    getNotificationMetaData()
+        .addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()),
+            "");
     template.setAttribute("path", getPath(language));
     template.setAttribute("publication", resource);
     template.setAttribute("publicationName", resource.getName(language));
@@ -57,14 +69,54 @@ public abstract class AbstractKmeliaPublicationUserNotification extends
   }
 
   @Override
-  protected void performNotificationResource(final String language, final PublicationDetail resource,
-      final NotificationResourceData notificationResourceData) {
+  protected void performNotificationResource(final String language,
+      final PublicationDetail resource, final NotificationResourceData notificationResourceData) {
     notificationResourceData.setResourceName(resource.getName(language));
     notificationResourceData.setResourceDescription(resource.getDescription(language));
   }
 
   @Override
+  protected boolean stopWhenNoUserToNotify() {
+    return (!NotifAction.REPORT.equals(action));
+  }
+
+  @Override
   protected String getResourceURL(final PublicationDetail resource) {
     return KmeliaHelper.getPublicationUrl(resource);
+  }
+
+  protected NodePK getNodePK() {
+    return nodePK;
+  }
+
+  protected final String getPath(final String language) {
+    if (nodePK == null) {
+      return "";
+    }
+    return getHTMLNodePath(nodePK, language);
+  }
+
+  protected String getSenderName() {
+    return senderName;
+  }
+
+  @Override
+  protected NotifAction getAction() {
+    return action;
+  }
+
+  @Override
+  protected String getComponentInstanceId() {
+    return getResource().getInstanceId();
+  }
+
+  @Override
+  protected String getSender() {
+    if (NotifAction.REPORT.equals(action)) {
+      return null;
+    } else if (NotifAction.CREATE.equals(action)) {
+      return getResource().getCreatorId();
+    }
+    return getResource().getUpdaterId();
   }
 }

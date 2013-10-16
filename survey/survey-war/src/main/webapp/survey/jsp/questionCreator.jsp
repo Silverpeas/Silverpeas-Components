@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -77,7 +77,7 @@ String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getStrin
 String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
 String px =  m_context + "/util/icons/colorPix/1px.gif";
 
-ResourceLocator surveySettings = new ResourceLocator("com.stratelia.webactiv.survey.surveySettings", surveyScc.getLanguage());
+ResourceLocator surveySettings = new ResourceLocator("org.silverpeas.survey.surveySettings", surveyScc.getLanguage());
 
 String nbMaxAnswers = surveySettings.getString("NbMaxAnswers");
 
@@ -159,7 +159,8 @@ while (itemIter.hasNext()) {
 }
 
 %>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
 <%out.println(gef.getLookStyleSheet()); %>
@@ -502,7 +503,7 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
 	                        out.println("<input type=\"hidden\" id=\"valueImageGallery"+i+"\" name=\"valueImageGallery"+i+"\" >");
 
 	                        List<ComponentInstLight> galleries = surveyScc.getGalleries();
-	                        if (galleries != null)
+	                        if (galleries.size() > 0)
 	    					{
 	    						out.println(" <select id=\"galleries\" name=\"galleries\" onchange=\"choixGallery(this, '"+i+"');this.selectedIndex=0;\"> ");
 	    						out.println(" <option selected>"+resources.getString("survey.galleries")+"</option> ");
@@ -579,7 +580,8 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
  } //End if action = ViewQuestion
 if (action.equals("End")) {
 %>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <script language="Javascript">
     function goToSurveyPreview() {

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -20,24 +20,26 @@
  */
 package com.silverpeas.gallery.image;
 
-import com.drew.imaging.ImageMetadataReader;
-import com.drew.imaging.ImageProcessingException;
-import com.drew.metadata.Metadata;
-import com.drew.metadata.MetadataException;
-import com.drew.metadata.exif.ExifIFD0Descriptor;
-import com.drew.metadata.exif.ExifIFD0Directory;
-import com.drew.metadata.iptc.IptcDirectory;
-import com.silverpeas.gallery.model.MetaData;
-import com.silverpeas.util.ArrayUtil;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.silverpeas.gallery.model.MetaData;
+import com.silverpeas.util.ArrayUtil;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.imaging.ImageProcessingException;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.exif.ExifIFD0Descriptor;
+import com.drew.metadata.exif.ExifIFD0Directory;
+import com.drew.metadata.iptc.IptcDirectory;
 import org.apache.commons.lang3.CharEncoding;
 
 import static com.drew.metadata.iptc.IptcDirectory.*;
@@ -174,8 +176,6 @@ public class DrewImageMetadataExtractor extends AbstractImageMetadataExtractor {
         metaData.convert(encoding);
       }
       return result;
-    } catch (MetadataException ex) {
-      throw new ImageMetadataException(ex);
     } catch (ImageProcessingException ex) {
       throw new ImageMetadataException(ex);
     }
@@ -183,7 +183,7 @@ public class DrewImageMetadataExtractor extends AbstractImageMetadataExtractor {
 
   private void addStringMetaData(List<MetaData> metadata, IptcDirectory iptcDirectory,
       IptcProperty iptcProperty, String lang, ByteArrayOutputStream forEncodingDetection)
-      throws IOException, UnsupportedEncodingException, MetadataException {
+      throws IOException, UnsupportedEncodingException {
     String value = getIptcStringValue(iptcDirectory, iptcProperty.getProperty());
     if (value != null) {
       MetaData meta = new MetaData(value.getBytes());
@@ -201,7 +201,7 @@ public class DrewImageMetadataExtractor extends AbstractImageMetadataExtractor {
 
   private void addMetaData(List<MetaData> metadata, IptcDirectory iptcDirectory,
     IptcProperty iptcProperty, String lang, ByteArrayOutputStream forEncodingDetection)
-    throws IOException, UnsupportedEncodingException, MetadataException {
+    throws IOException, UnsupportedEncodingException {
     byte[] data = getIptcValue(iptcDirectory, iptcProperty.getProperty());
     if (data != null && !ArrayUtil.isEmpty(data)) {
       MetaData meta = new MetaData(data);
@@ -217,16 +217,14 @@ public class DrewImageMetadataExtractor extends AbstractImageMetadataExtractor {
     }
   }
 
-  private byte[] getIptcValue(IptcDirectory iptcDirectory, int iptcTag) throws
-    UnsupportedEncodingException, MetadataException {
+  private byte[] getIptcValue(IptcDirectory iptcDirectory, int iptcTag) {
     if (iptcDirectory != null && iptcDirectory.containsTag(iptcTag)) {
       return iptcDirectory.getByteArray(iptcTag);
     }
     return null;
   }
 
-  private String getIptcStringValue(IptcDirectory iptcDirectory, int iptcTag) throws
-    UnsupportedEncodingException, MetadataException {
+  private String getIptcStringValue(IptcDirectory iptcDirectory, int iptcTag) {
     if (iptcDirectory != null && iptcDirectory.containsTag(iptcTag)) {
       return iptcDirectory.getString(iptcTag);
     }
@@ -236,9 +234,11 @@ public class DrewImageMetadataExtractor extends AbstractImageMetadataExtractor {
   private String getIptcCharset(IptcDirectory iptcDirectory) throws UnsupportedEncodingException {
     if (iptcDirectory != null && iptcDirectory.containsTag(TAG_CODED_CHARACTER_SET)) {
       byte[] data = iptcDirectory.getByteArray(TAG_CODED_CHARACTER_SET);
-      String escapeCode = new String(data, CharEncoding.UTF_8);
-      if ("%G".equals(escapeCode)) {
-        return CharEncoding.UTF_8;
+      if (data != null) {
+        String escapeCode = new String(data, CharEncoding.UTF_8);
+        if ("%G".equals(escapeCode)) {
+          return CharEncoding.UTF_8;
+        }
       }
     }
     return null;

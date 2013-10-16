@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -38,7 +38,7 @@
 %><%@ page import="com.silverpeas.form.PagesContext"
 %><%@ page import="com.silverpeas.form.Util"
 %><%@ page import="com.silverpeas.mydb.MyDBConstants"
-%><%@ page import="com.silverpeas.mydb.control.DriverManager"
+%><%@ page import="org.silverpeas.mydb.control.DriverManager"
 %><%@ page import="com.silverpeas.mydb.control.MyDBSessionController"
 %><%@ page import="com.silverpeas.mydb.control.TableManager"
 %><%@ page import="com.silverpeas.mydb.data.datatype.DataType"
@@ -81,7 +81,7 @@
 	MyDBSessionController myDBSC = (MyDBSessionController)request.getAttribute("MyDB");
 	ResourcesWrapper resource = (ResourcesWrapper)request.getAttribute("resources");
 	String userRoleLevel = (String)request.getAttribute("userRoleLevel");
-	String applicationURL = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+	String applicationURL = GeneralPropertiesManager.getString("ApplicationURL");
 	
 	GraphicElementFactory gef = (GraphicElementFactory)session.getAttribute("SessionGraphicElementFactory");
 	Window window = gef.getWindow();

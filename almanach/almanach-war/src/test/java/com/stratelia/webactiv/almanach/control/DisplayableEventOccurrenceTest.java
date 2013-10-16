@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -38,6 +38,8 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import static org.junit.Assert.*;
 import static com.stratelia.webactiv.almanach.model.EventOccurrence.*;
 
@@ -46,12 +48,13 @@ import static com.stratelia.webactiv.almanach.model.EventOccurrence.*;
  * The tests are on the JSON encoding of the DTO.
  */
 public class DisplayableEventOccurrenceTest {
-
+private static ApplicationContext context;
   public DisplayableEventOccurrenceTest() {
   }
 
   @BeforeClass
   public static void setUpClass() throws Exception {
+    context = new ClassPathXmlApplicationContext("spring-almanach.xml");
   }
 
   @AfterClass

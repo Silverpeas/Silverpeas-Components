@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -27,6 +27,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class Message implements Serializable {
+  private static final String TYPE = "forum_message";
 
   public static final String STATUS_VALIDATE = "V";
   public static final String STATUS_FOR_VALIDATION = "A";
@@ -71,6 +72,10 @@ public class Message implements Serializable {
     return id;
   }
 
+  public String getIdAsString() {
+    return String.valueOf(id);
+  }
+
   public void setId(int id) {
     this.id = id;
   }
@@ -103,12 +108,20 @@ public class Message implements Serializable {
     return forumId;
   }
 
+  public String getForumIdAsString() {
+    return String.valueOf(forumId);
+  }
+
   public void setForumId(int forumId) {
     this.forumId = forumId;
   }
 
   public int getParentId() {
     return parentId;
+  }
+
+  public String getParentIdAsString() {
+    return String.valueOf(parentId);
   }
 
   public void setParentId(int parentId) {
@@ -146,7 +159,15 @@ public class Message implements Serializable {
   public void setStatus(String status) {
     this.status = status;
   }
-  
+
+  /**
+   * Indicates if the message is a subject (first message of a forum) or a message.
+   * @return
+   */
+  public boolean isSubject() {
+    return (parentId == 0);
+  }
+
   public boolean isValid() {
     return STATUS_VALIDATE.equals(status);
   }
@@ -157,6 +178,14 @@ public class Message implements Serializable {
   
    public boolean isRefused() {
     return STATUS_REFUSED.equals(status);
+  }
+
+  /**
+   * The type of this resource
+   * @return the same value returned by getContributionType()
+   */
+  public static String getResourceType() {
+    return TYPE;
   }
 
   @Override

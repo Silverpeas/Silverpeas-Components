@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -99,7 +99,7 @@ if (action.equals("SendQuizzHeader")) {
 		nbAnswersNeeded = "0";
   } */
 
-    QuestionContainerHeader quizzHeader = new QuestionContainerHeader(null, title, description,notice, null, null, beginDate, endDate, false, 0, Integer.parseInt(nbQuestions), Integer.parseInt(nbAnswersMax), Integer.parseInt(nbAnswersNeeded),0);
+    QuestionContainerHeader quizzHeader = new QuestionContainerHeader(null, title, description,notice, null, null, beginDate, endDate, false, 0, Integer.parseInt(nbQuestions), Integer.parseInt(nbAnswersMax), Integer.parseInt(nbAnswersNeeded),0, QuestionContainerHeader.IMMEDIATE_RESULTS, QuestionContainerHeader.TWICE_DISPLAY_RESULTS);
     quizzScc.updateQuizzHeader(quizzHeader, quizzId);
 %>
 <jsp:forward page="<%=quizzScc.getComponentUrl()+\"Main.jsp\"%>"/>

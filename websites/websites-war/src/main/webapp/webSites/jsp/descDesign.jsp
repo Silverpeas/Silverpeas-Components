@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -191,46 +191,46 @@ function isCorrectForm() {
   var nomSite = stripInitialWhitespace(document.descriptionSite.nomSite.value);
   var description = document.descriptionSite.description;
   var nomPage = stripInitialWhitespace(document.descriptionSite.nomPage.value);
-  
-  
+
+
   if (isWhitespace(nomSite)) {
    errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.name")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
    errorNb++;
   }
-  
+
   if (! isCorrectNameSite(nomSite)) {
     errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.name")%>' <%=resources.getString("MustNotContainSpecialChar")%>\n<%=EncodeHelper.javaStringToJsString(resources.getString("Char4"))%>\n";
     errorNb++;
   }
-  
+
   if (! isValidTextArea(description)) {
     errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.description")%>' <%=resources.getString("ContainsTooLargeText")+resources.getString("NbMaxTextArea")+resources.getString("Characters")%>\n";
     errorNb++;
   }
-  
+
   if (isWhitespace(nomPage)) {
     errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("NomPagePrincipale")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
     errorNb++;
   }
-  
+
   if (! isCorrect(nomPage)) {
     errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("NomPagePrincipale")%>' <%=resources.getString("MustNotContainSpecialChar")%>\n<%=EncodeHelper.javaStringToJsString(resources.getString("Char5"))%>\n";
     errorNb++;
   }
-  
+
   if (! isCorrectNameFile(nomPage)) {
     errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("NomPagePrincipale")%>' <%=resources.getString("MustContainFileName")%>\n";
     errorNb++;
   }
-  
+
    // verify the extension
   if ( ! isCorrectExtension(nomPage) ){
     errorMsg += "<%=resources.getString("HTMLExtensionRequired")%>";
     errorNb++;
   }
-  
+
   <view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>
-  
+
    switch(errorNb)
    {
       case 0 :
@@ -282,7 +282,7 @@ function B_VALIDER_ONCLICK(nbthemes, nbicones) {
       }
     }
     document.descriptionSite.ListeTopics.value = f;
-    <view:pdcPositions setIn="document.descriptionSite.Positions.value"/>;    
+    <view:pdcPositions setIn="document.descriptionSite.Positions.value"/>;
     document.descriptionSite.submit(); /* et on a bien une page html */
   }
 }
@@ -356,7 +356,7 @@ function B_ANNULER_ONCLICK() {
       <label class="txtlibform" for="date"><fmt:message key="GML.date" /> </label>
       <div class="champs"><%=creationDate%></div>
     </div>
-    
+
   </div>
 </fieldset>
 
@@ -391,8 +391,8 @@ function B_ANNULER_ONCLICK() {
         </c:forEach>
       </div>
     </div>
-    
-    
+
+
   </div>
 </fieldset>
 

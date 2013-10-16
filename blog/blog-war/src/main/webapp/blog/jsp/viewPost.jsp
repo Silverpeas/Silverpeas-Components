@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -44,31 +44,35 @@ String 		dateCal		= (String) request.getAttribute("DateCalendar");
 WallPaper wallPaper = (WallPaper) request.getAttribute("WallPaper");
 StyleSheet styleSheet = (StyleSheet) request.getAttribute("StyleSheet");
 
-Date 	   dateCalendar	= new Date(dateCal);
-String categoryId = "";
-if (post.getCategory() != null)
-	categoryId = post.getCategory().getNodePK().getId();
-String postResourceType = post.getContributionType();
-String postId = post.getPublication().getPK().getId();
-String link	= post.getPermalink();
+  Date 	   dateCalendar	= DateUtil.parse(dateCal);
+  String categoryId = "";
+  if (post.getCategory() != null) {
+    categoryId = post.getCategory().getNodePK().getId();
+  }
+  String postResourceType = post.getContributionType();
+  String postId = post.getPublication().getPK().getId();
+  String link = post.getPermalink();
 
-java.util.Calendar cal = GregorianCalendar.getInstance();
-cal.setTime(post.getDateEvent());
-String day = resource.getString("GML.jour"+cal.get(java.util.Calendar.DAY_OF_WEEK));
+  java.util.Calendar cal = GregorianCalendar.getInstance();
+  cal.setTime(post.getDateEvent());
+  String day = resource.getString("GML.jour" + cal.get(java.util.Calendar.DAY_OF_WEEK));
 
-boolean isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAccessLevel());
-
-if (SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile)) || SilverpeasRole.publisher.equals(SilverpeasRole.valueOf(profile))) { 
-	operationPane.addOperation("useless", resource.getString("blog.updatePost"), "EditPost?PostId="+postId);
-	if (post.getPublication().getStatus().equals(PublicationDetail.DRAFT)) {
-	  	operationPane.addOperation("useless", resource.getString("blog.draftOutPost"), "DraftOutPost?PostId="+postId);
-	}
-	operationPane.addOperation("useless", resource.getString("blog.deletePost"), "javascript:onClick=deletePost('"+postId+"')");
-	operationPane.addLine();
-}
-if (!isUserGuest) { 
-  operationPane.addOperation("useless", resource.getString("GML.notify"), "javaScript:onClick=goToNotify('ToAlertUser?PostId="+postId+"')");
-}
+  if (SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile)) ||
+      SilverpeasRole.publisher.equals(SilverpeasRole.valueOf(profile))) {
+    operationPane.addOperation("useless", resource.getString("blog.updatePost"),
+        "EditPost?PostId=" + postId);
+    if (post.getPublication().getStatus().equals(PublicationDetail.DRAFT)) {
+      operationPane.addOperation("useless", resource.getString("blog.draftOutPost"),
+          "DraftOutPost?PostId=" + postId);
+    }
+    operationPane.addOperation("useless", resource.getString("blog.deletePost"),
+        "javascript:onClick=deletePost('" + postId + "')");
+    operationPane.addLine();
+  }
+  if (!m_MainSessionCtrl.getCurrentUserDetail().isAccessGuest()) {
+    operationPane.addOperation("useless", resource.getString("GML.notify"),
+        "javaScript:onClick=goToNotify('ToAlertUser?PostId=" + postId + "')");
+  }
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
@@ -147,10 +151,7 @@ out.println(window.printBefore());
 				</div>
 				<div class="infoTicket"><%=day%> <%=resource.getOutputDate(post.getDateEvent())%></div>
 				<div class="contentTicket">
-		      <%
-		      	out.flush();
-		     		getServletConfig().getServletContext().getRequestDispatcher("/wysiwyg/jsp/htmlDisplayer.jsp?ObjectId="+postId+"&ComponentId="+instanceId).include(request, response);
-		     	%>
+				<view:displayWysiwyg objectId="<%=postId%>" componentId="<%=instanceId %>" language="<%=resource.getLanguage() %>" />
 				</div>   
 				<div class="footerTicket">    	
 				   <span class="versCommentaires">

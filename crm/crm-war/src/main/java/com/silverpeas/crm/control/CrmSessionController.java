@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -471,8 +471,8 @@ public class CrmSessionController extends AbstractComponentSessionController {
 
     if (user != null && user.length() != 0) {
       setFilterId(user);
-      setFilterLib(getOrganizationController().getUserDetail(user).getLastName());
-      setParticipantEmail(getOrganizationController().getUserDetail(user).geteMail());
+      setFilterLib(getOrganisationController().getUserDetail(user).getLastName());
+      setParticipantEmail(getOrganisationController().getUserDetail(user).geteMail());
     }
 
     SilverTrace.debug("crm", "CrmSessionController.userPanelReturn()",

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2000 - 2012 Silverpeas
+ *  Copyright (C) 2000 - 2013 Silverpeas
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as
@@ -23,47 +23,15 @@
  */
 package com.silverpeas.kmelia.export;
 
-import static com.silverpeas.converter.DocumentFormat.inFormat;
-import static com.silverpeas.converter.DocumentFormat.odt;
-import static com.silverpeas.kmelia.export.DocumentTemplateParts.FIELD_AUTHOR;
-import static com.silverpeas.kmelia.export.DocumentTemplateParts.FIELD_CREATION_DATE;
-import static com.silverpeas.kmelia.export.DocumentTemplateParts.FIELD_LAST_MODIFIER;
-import static com.silverpeas.kmelia.export.DocumentTemplateParts.FIELD_MODIFICATION_DATE;
-import static com.silverpeas.kmelia.export.DocumentTemplateParts.FIELD_URL;
-import static com.silverpeas.kmelia.export.DocumentTemplateParts.FIELD_VERSION;
-import static com.silverpeas.kmelia.export.DocumentTemplateParts.LIST_OF_ATTACHMENTS;
-import static com.silverpeas.kmelia.export.DocumentTemplateParts.LIST_OF_COMMENTS;
-import static com.silverpeas.kmelia.export.DocumentTemplateParts.SECTION_ATTACHMENTS;
-import static com.silverpeas.kmelia.export.DocumentTemplateParts.SECTION_CLASSIFICATION;
-import static com.silverpeas.kmelia.export.DocumentTemplateParts.SECTION_COMMENTS;
-import static com.silverpeas.kmelia.export.DocumentTemplateParts.SECTION_CONTENT;
-import static com.silverpeas.kmelia.export.DocumentTemplateParts.SECTION_SEEALSO;
-import static com.silverpeas.kmelia.export.ODTDocumentTextTranslator.aTranslatorWith;
-import static com.silverpeas.kmelia.export.ODTDocumentsMerging.atSection;
-import static com.silverpeas.kmelia.export.ODTDocumentsMerging.decorates;
-import static com.silverpeas.kmelia.export.VersionedAttachmentHolder.hold;
-import static com.silverpeas.util.StringUtil.isDefined;
-import static com.silverpeas.util.StringUtil.isInteger;
-import static com.stratelia.webactiv.util.DateUtil.dateToString;
-import static com.stratelia.webactiv.util.DateUtil.formatDate;
-import static com.stratelia.webactiv.util.DateUtil.getOutputDate;
-
 import java.io.File;
 import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.odftoolkit.odfdom.dom.element.text.TextAElement;
-import org.odftoolkit.simple.TextDocument;
-import org.odftoolkit.simple.meta.Meta;
-import org.odftoolkit.simple.table.Cell;
-import org.odftoolkit.simple.table.Row;
-import org.odftoolkit.simple.table.Table;
-import org.odftoolkit.simple.text.Paragraph;
-import org.odftoolkit.simple.text.Section;
-import org.odftoolkit.simple.text.list.ListItem;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.util.UnitUtil;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.converter.DocumentFormatConverterFactory;
@@ -75,36 +43,52 @@ import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.RenderingContext;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.ClassifyValue;
 import com.stratelia.silverpeas.pdc.model.Value;
-import com.stratelia.silverpeas.versioning.model.Document;
-import com.stratelia.silverpeas.versioning.model.DocumentVersion;
-import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
-import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBmHome;
 import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.odftoolkit.odfdom.dom.element.text.TextAElement;
+import org.odftoolkit.simple.TextDocument;
+import org.odftoolkit.simple.meta.Meta;
+import org.odftoolkit.simple.table.Row;
+import org.odftoolkit.simple.table.Table;
+import org.odftoolkit.simple.text.Paragraph;
+import org.odftoolkit.simple.text.Section;
+import org.odftoolkit.simple.text.list.ListItem;
+
+import static com.silverpeas.converter.DocumentFormat.inFormat;
+import static com.silverpeas.converter.DocumentFormat.odt;
+import static com.silverpeas.kmelia.export.DocumentTemplateParts.*;
+import static com.silverpeas.kmelia.export.ODTDocumentTextTranslator.aTranslatorWith;
+import static com.silverpeas.kmelia.export.ODTDocumentsMerging.atSection;
+import static com.silverpeas.kmelia.export.ODTDocumentsMerging.decorates;
+import static com.silverpeas.util.StringUtil.isDefined;
+import static com.silverpeas.util.StringUtil.isInteger;
+import static com.stratelia.webactiv.util.DateUtil.*;
+
 /**
- * A builder of an ODT document based on a given template and from a specified
- * Kmelia publication.
+ * A builder of an ODT document based on a given template and from a specified Kmelia publication.
  */
 public class ODTDocumentBuilder {
 
   private static final String DOCUMENT_TEMPLATE = "kmelia.export.template";
   private static final ResourceLocator settings = new ResourceLocator(
-      "com.stratelia.webactiv.kmelia.settings.kmeliaSettings", "");
+      "org.silverpeas.kmelia.settings.kmeliaSettings", "");
   private UserDetail user;
   private String language = "";
   private String topicIdToConsider;
@@ -112,6 +96,7 @@ public class ODTDocumentBuilder {
 
   /**
    * Gets an instance of a builder of ODT documents.
+   *
    * @return an ODTDocumentBuilder instance.
    */
   public static ODTDocumentBuilder anODTDocumentBuilder() {
@@ -120,8 +105,9 @@ public class ODTDocumentBuilder {
 
   /**
    * Informs this builder the build is for the specified user. If not set, then the builds will be
-   * performed for the publication creator.
-   * Only information the user is authorized to access will be rendered into the ODT documents.
+   * performed for the publication creator. Only information the user is authorized to access will
+   * be rendered into the ODT documents.
+   *
    * @param user the user for which the build of the documents should be done.
    * @return itself.
    */
@@ -131,9 +117,10 @@ public class ODTDocumentBuilder {
   }
 
   /**
-   * Informs this builder the prefered language to use for the content of the documents to build.
-   * If the publication doesn't have a content in the specified language, then it is the default
+   * Informs this builder the prefered language to use for the content of the documents to build. If
+   * the publication doesn't have a content in the specified language, then it is the default
    * publication's text that will be taken (whatever the language in which it is written).
+   *
    * @param language the language in which the text should be displayed in the built documents.
    * @return itself.
    */
@@ -143,12 +130,13 @@ public class ODTDocumentBuilder {
   }
 
   /**
-   * Informs explicitly the topic to consider when building a document from publications.
-   * This topic can be provided by the caller itself as it was already computed for the publications
-   * to export and according to the rights of the user on a such topic.
-   * If this topic isn't provided explicitly, then it is computed directly from the publication and
-   * according to the rights of the user on the topics the publication belongs to.
-   * @param topic the topic to explicitly consider.
+   * Informs explicitly the topic to consider when building a document from publications. This topic
+   * can be provided by the caller itself as it was already computed for the publications to export
+   * and according to the rights of the user on a such topic. If this topic isn't provided
+   * explicitly, then it is computed directly from the publication and according to the rights of
+   * the user on the topics the publication belongs to.
+   *
+   * @param topicId the topic to explicitly consider.
    * @return itself.
    */
   public ODTDocumentBuilder inTopic(final String topicId) {
@@ -160,6 +148,7 @@ public class ODTDocumentBuilder {
    * A convenient method to improve the readability in the call of the method
    * buildFromPublication(). It can be uses as:
    * <code>File odt = builder.buildFrom(mypublication, anODTAt("/tmp/foo.odt"));</code>
+   *
    * @param documentPath the path of the document to build.
    * @return the document path as passed as parameter.
    */
@@ -168,9 +157,9 @@ public class ODTDocumentBuilder {
   }
 
   /**
-   * Builds an ODT document at the specified path and from the specified Kmelia publication.
-   * If an error occurs while building the document, a runtime exception DocumentBuildException is
-   * thrown.
+   * Builds an ODT document at the specified path and from the specified Kmelia publication. If an
+   * error occurs while building the document, a runtime exception DocumentBuildException is thrown.
+   *
    * @param publication the publication from which an ODT document is built.
    * @param documentPath the path of the ODT document to build.
    * @return the file corresponding to the ODT document built from the publication.
@@ -212,6 +201,7 @@ public class ODTDocumentBuilder {
 
   /**
    * Loads the template to use in the build of ODT documents.
+   *
    * @return an ODT document corresponding to the loaded template.
    * @throws Exception if the template loading fails.
    */
@@ -250,7 +240,8 @@ public class ODTDocumentBuilder {
     metadata.setUserDefinedDataValue(FIELD_MODIFICATION_DATE,
         getOutputDate(detail.getUpdateDate(), getLanguage()));
     metadata.setUserDefinedDataValue(FIELD_AUTHOR, publication.getCreator().getDisplayedName());
-    metadata.setUserDefinedDataValue(FIELD_LAST_MODIFIER, publication.getLastModifier().getDisplayedName());
+    metadata.setUserDefinedDataValue(FIELD_LAST_MODIFIER, publication.getLastModifier().
+        getDisplayedName());
     metadata.setUserDefinedDataValue(FIELD_URL, publication.getURL());
     metadata.setUserDefinedDataValue(FIELD_VERSION, detail.getVersion());
   }
@@ -305,10 +296,10 @@ public class ODTDocumentBuilder {
         decorates(odtDocument).merge(htmlContent, atSection(SECTION_CONTENT));
       } finally {
         if (htmlFile != null) {
-          htmlFile.delete();
+          FileUtils.deleteQuietly(htmlFile);
         }
         if (odtConvertedHtmlFile != null) {
-          odtConvertedHtmlFile.delete();
+          FileUtils.deleteQuietly(odtConvertedHtmlFile);
         }
       }
     } else {
@@ -321,7 +312,8 @@ public class ODTDocumentBuilder {
     boolean removeSection = true;
     String templateId = publication.getDetail().getInfoId();
     if (!isInteger(templateId)) {
-      PublicationTemplate template = PublicationTemplateManager.getInstance().getPublicationTemplate(
+      PublicationTemplate template = PublicationTemplateManager.getInstance().
+          getPublicationTemplate(
           publication.getPk().getInstanceId() + ":" + templateId);
       Form viewForm = template.getViewForm();
       RecordSet recordSet = template.getRecordSet();
@@ -353,63 +345,30 @@ public class ODTDocumentBuilder {
 
   private void buildAttachmentsSection(final TextDocument odtDocument,
       final KmeliaPublication publication) {
-    if (publication.isVersioned()) {
-      buildWithVersionedAttachments(publication.getVersionedAttachments(), in(odtDocument));
-    } else {
-      buildWithAttachments(publication.getAttachments(), in(odtDocument));
-    }
-  }
-
-  private void buildWithVersionedAttachments(final List<Document> versionedAttachments,
-      final TextDocument odtDocument) {
-    if (versionedAttachments.isEmpty()) {
-      Section attachmentsSection = odtDocument.getSectionByName(SECTION_ATTACHMENTS);
-      attachmentsSection.remove();
-    } else {
-      Table attachmentsTable = odtDocument.getTableByName(LIST_OF_ATTACHMENTS);
-      updateTableForVersionedAttachments(attachmentsTable);
-      int i = 1;
-      for (Document versionedAttachment : versionedAttachments) {
-        VersionedAttachmentHolder attachmentHolder = hold(versionedAttachment);
-        if (attachmentHolder.isUserAuthorized(getUser())) {
-          DocumentVersion lastVersion = attachmentHolder.getLastVersionAccessibleBy(getUser());
-          if (lastVersion != null) {
-            String creatorOrValidators = attachmentHolder.getCreatorOrValidatorsDisplayedName(
-                lastVersion);
-            String version = attachmentHolder.getVersionNumber(lastVersion);
-            String creationDate = dateToString(versionedAttachment.getLastCheckOutDate(),
-                getLanguage());
-
-            Row row = attachmentsTable.getRowByIndex(i++);
-            row.getCellByIndex(0).setStringValue(lastVersion.getLogicalName());
-            row.getCellByIndex(1).setStringValue(versionedAttachment.getName());
-            row.getCellByIndex(2).setStringValue(versionedAttachment.getDescription());
-            row.getCellByIndex(3).setStringValue(version);
-            row.getCellByIndex(4).setStringValue(creationDate);
-            row.getCellByIndex(5).setStringValue(creatorOrValidators);
-          }
-        }
-      }
-    }
-  }
-
-  private void buildWithAttachments(final List<AttachmentDetail> attachments,
-      final TextDocument odtDocument) {
-    if (attachments.isEmpty()) {
-      Section attachmentsSection = odtDocument.getSectionByName(SECTION_ATTACHMENTS);
-      attachmentsSection.remove();
-    } else {
-      Table attachmentsTable = odtDocument.getTableByName(LIST_OF_ATTACHMENTS);
-      int i = 1;
-      for (AttachmentDetail attachment : attachments) {
+    List<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService()
+        .listDocumentsByForeignKey(publication.getPk(), getLanguage());
+    boolean hasNoAttachmentToDisplay = true;
+    Table attachmentsTable = odtDocument.getTableByName(LIST_OF_ATTACHMENTS);
+    int i = 1;
+    for (SimpleDocument document : attachments) {
+      SimpleDocument attachment = document.getLastPublicVersion();
+      if (attachment != null) {
+        hasNoAttachmentToDisplay = false;
+        SimpleDocumentHolder attachmentHolder = SimpleDocumentHolder.hold(attachment);
         Row row = attachmentsTable.getRowByIndex(i++);
-        row.getCellByIndex(0).setStringValue(attachment.getLogicalName(getLanguage()));
-        row.getCellByIndex(1).setStringValue(attachment.getTitle(getLanguage()));
-        row.getCellByIndex(2).setStringValue(attachment.getInfo(getLanguage()));
-        row.getCellByIndex(3).setStringValue(attachment.getAttachmentFileSize(getLanguage()));
-        row.getCellByIndex(4).setStringValue(getOutputDate(attachment.getCreationDate(getLanguage()),
-            getLanguage()));
+        row.getCellByIndex(0).setStringValue(attachment.getFilename());
+        row.getCellByIndex(1).setStringValue(attachment.getTitle());
+        row.getCellByIndex(2).setStringValue(attachment.getDescription());
+        row.getCellByIndex(3).setStringValue(UnitUtil.formatMemSize(attachment.getSize()));
+        row.getCellByIndex(4).setStringValue(attachmentHolder.getVersionNumber());
+        row.getCellByIndex(5)
+            .setStringValue(attachmentHolder.getLastModification(getLanguage()));
+        row.getCellByIndex(6).setStringValue(attachmentHolder.getAuthorFullName());
       }
+    }
+    if (hasNoAttachmentToDisplay) {
+      Section attachmentsSection = odtDocument.getSectionByName(SECTION_ATTACHMENTS);
+      attachmentsSection.remove();
     }
   }
 
@@ -428,9 +387,8 @@ public class ODTDocumentBuilder {
         }
         for (KmeliaPublication aLinkedPublication : linkedPublications) {
           PublicationDetail publicationDetail = aLinkedPublication.getDetail();
-          if (publicationDetail.getStatus() != null
-              && "Valid".equals(publicationDetail.getStatus())
-              && !publicationDetail.getPK().getId().equals(publication.getPk().getId())) {
+          if (publicationDetail.isValid() && !publicationDetail.getPK().getId().equals(publication
+              .getPk().getId())) {
             TextAElement hyperlink = new TextAElement(odtDocument.getContentDom());
             hyperlink.setXlinkHrefAttribute(aLinkedPublication.getURL());
             hyperlink.setXlinkTypeAttribute("simple");
@@ -496,17 +454,6 @@ public class ODTDocumentBuilder {
     }
   }
 
-  private void updateTableForVersionedAttachments(final Table attachmentsTable) {
-    Cell defaultCell = attachmentsTable.getCellByPosition(0, 0);
-    String cellStyle = defaultCell.getCellStyleName();
-    String textStyle = defaultCell.getParagraphByIndex(0, true).getStyleName();
-
-    attachmentsTable.getCellByPosition(3, 0).setStringValue("Version");
-    Cell newCell = attachmentsTable.appendColumn().getCellByIndex(0);
-    newCell.getOdfElement().setStyleName(cellStyle);
-    newCell.addParagraph("Validateur").getOdfElement().setStyleName(textStyle);
-  }
-
   private boolean isRightsOnTopicsEnabled(final String componentInstanceId) {
     return Boolean.valueOf(getOrganizationService().getComponentParameterValue(componentInstanceId,
         "rightsOnTopics"));
@@ -525,7 +472,8 @@ public class ODTDocumentBuilder {
     String theTopicId = this.topicIdToConsider;
     if (theTopicId == null) {
       String componentId = publication.getPk().getInstanceId();
-      NodePK pk = getKmeliaService().getPublicationFatherPK(publication.getPk(), isTree(componentId),
+      NodePK pk = getKmeliaService().
+          getPublicationFatherPK(publication.getPk(), isTree(componentId),
           getUser().getId(), isRightsOnTopicsEnabled(componentId));
       theTopicId = pk.getId();
     }
@@ -542,22 +490,21 @@ public class ODTDocumentBuilder {
 
   private ResourceLocator getMessagesBundle() {
     if (this.messages == null) {
-      this.messages = new ResourceLocator(
-          "com.stratelia.webactiv.kmelia.multilang.kmeliaExport", getLanguage());
+      this.messages = new ResourceLocator("org.silverpeas.kmelia.multilang.kmeliaExport",
+          getLanguage());
     }
     return this.messages;
+
   }
 
   /**
    * Gets the Kmelia service.
+   *
    * @return an instance of KmeliaBm.
    */
   protected KmeliaBm getKmeliaService() {
     try {
-      KmeliaBmHome kscEjbHome =
-          EJBUtilitaire.getEJBObjectRef(JNDINames.KMELIABM_EJBHOME,
-          KmeliaBmHome.class);
-      return kscEjbHome.create();
+      return EJBUtilitaire.getEJBObjectRef(JNDINames.KMELIABM_EJBHOME, KmeliaBm.class);
     } catch (Exception e) {
       throw new KmeliaRuntimeException(getClass().getSimpleName() + ".getKmeliaService()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
@@ -566,6 +513,7 @@ public class ODTDocumentBuilder {
 
   /**
    * Gets the organization controller.
+   *
    * @return an instance of OrganizationController.
    */
   protected OrganizationController getOrganizationService() {

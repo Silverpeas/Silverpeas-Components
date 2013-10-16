@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -35,7 +35,7 @@ import javax.ws.rs.core.Response.Status;
 public abstract class QuestionRelyBaseWebService extends RESTWebService {
 
   SilverpeasRole getUserProfile() {
-    String[] roles = getOrganizationController().getUserProfiles(getUserDetail().getId(),
+    String[] roles = getOrganisationController().getUserProfiles(getUserDetail().getId(),
             getComponentId());
     SilverpeasRole profile = user;
     for (String currentRole : roles) {

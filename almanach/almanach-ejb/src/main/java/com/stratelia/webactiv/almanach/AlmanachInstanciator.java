@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -25,14 +25,14 @@ package com.stratelia.webactiv.almanach;
 
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.InstanciationException;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.SQLRequest;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.attachment.SimpleDocumentInstanciator;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.SQLRequest;
-import com.stratelia.webactiv.util.attachment.AttachmentInstanciator;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class AlmanachInstanciator extends SQLRequest implements ComponentsInstanciatorIntf {
 
@@ -43,12 +43,6 @@ public class AlmanachInstanciator extends SQLRequest implements ComponentsInstan
   @Override
   public void create(Connection con, String spaceId, String componentId, String userId) throws
       InstanciationException {
-    SilverTrace.info("almanach", "AlmanachInstanciator.create()",
-        "almanach.MSG_CREATE_WITH_SPACE_AND_COMPONENT",
-        "space : " + spaceId + "component : " + componentId);
-
-    AttachmentInstanciator ai = new AttachmentInstanciator("com.stratelia.webactiv.almanach");
-    ai.create(con, spaceId, componentId, userId);
     SilverTrace.info("almanach", "AlmanachInstanciator.create()", "root.MSG_GEN_EXIT_METHOD");
   }
 
@@ -59,8 +53,7 @@ public class AlmanachInstanciator extends SQLRequest implements ComponentsInstan
         "spaceId : " + spaceId);
     setDeleteQueries();
     deleteDataOfInstance(con, componentId, "Event");
-    AttachmentInstanciator ai = new AttachmentInstanciator("com.stratelia.webactiv.almanach");
-    ai.delete(con, spaceId, componentId, userId);
+    new SimpleDocumentInstanciator().delete(componentId);
     SilverTrace.info("almanach", "AlmanachInstanciator.delete()", "root.MSG_GEN_EXIT_METHOD");
   }
 

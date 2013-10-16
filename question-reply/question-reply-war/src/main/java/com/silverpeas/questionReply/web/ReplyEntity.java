@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -32,7 +32,8 @@ import static com.stratelia.webactiv.SilverpeasRole.admin;
 import static com.stratelia.webactiv.SilverpeasRole.writer;
 import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import org.silverpeas.attachment.model.SimpleDocument;
+
 import java.net.URI;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -73,7 +74,7 @@ public class ReplyEntity implements Exposable {
   private boolean readOnly = true;
   @XmlElement
   private AttachmentEntity[] attachments;
-  
+
   @XmlTransient
   private String language = DisplayI18NHelper.getDefaultLanguage();
 
@@ -129,7 +130,11 @@ public class ReplyEntity implements Exposable {
   public String getTitle() {
     return title;
   }
-  
+
+  public String getLanguage() {
+    return this.language;
+  }
+
   public AttachmentEntity[] getAttachments() {
     return this.attachments;
   }
@@ -253,25 +258,25 @@ public class ReplyEntity implements Exposable {
   public ReplyEntity withURI(final URI uri) {
     this.uri = uri;
     return this;
-  } 
-  
+  }
+
   /**
    * Sets a URI to this entity.
    * With this URI, it can then be accessed through the Web.
-   * @param attachmentDetails 
+   * @param attachmentDetails
    * @return itself.
    */
-  public ReplyEntity withAttachments(final Collection<AttachmentDetail> attachmentDetails) {
+  public ReplyEntity withAttachments(final Collection<SimpleDocument> attachmentDetails) {
     if(attachmentDetails != null && !attachmentDetails.isEmpty()) {
       List<AttachmentEntity> entities = new ArrayList<AttachmentEntity>(attachmentDetails.size());
-      for(AttachmentDetail attachment : attachmentDetails) {
-        entities.add(AttachmentEntity.fromAttachment(attachment, this.language));
+      for(SimpleDocument attachment : attachmentDetails) {
+        entities.add(AttachmentEntity.fromAttachment(attachment));
       }
       this.attachments = entities.toArray(new AttachmentEntity[entities.size()]);
     }
     return this;
-  } 
-  
+  }
+
   /**
    * Sets the accessing user profile to this entity.
    * With this profile the status of this reply can be defined.

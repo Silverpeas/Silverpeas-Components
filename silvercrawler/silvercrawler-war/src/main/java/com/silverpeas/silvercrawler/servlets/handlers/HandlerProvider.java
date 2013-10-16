@@ -31,6 +31,7 @@ public class HandlerProvider {
     handlerMap.put("IndexDirSelected", new IndexSelectedFoldersHandler());
     handlerMap.put("IndexFileSelected", new IndexSelectedFilesHandler());
     handlerMap.put("Search", new SearchHandler());
+    handlerMap.put("searchResult", new SearchHandler());
     handlerMap.put("ViewResult", new BackToSearchResultsHandler());
     handlerMap.put("portlet", new PortletHandler());
     handlerMap.put("ActivateRWaccess", new ActivateReadWriteAccessHandler());

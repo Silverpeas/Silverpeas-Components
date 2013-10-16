@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -24,7 +24,6 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="org.silverpeas.resourcemanager.model.Category"%>
 <%@ page import="java.util.List" %>
 
@@ -32,11 +31,9 @@
 <%@ include file="check.jsp" %>
 <% 
 	// Recuperation de la liste des categories
-	List list = (List)request.getAttribute("categories");
+	List<Category> categories = (List)request.getAttribute("categories");
 
 	// declaration des elements du tableau
-	ArrayCellText arrayCellText1;
-	ArrayCellText arrayCellText2;
 	ArrayLine arrayLine;
 %>
 
@@ -68,35 +65,38 @@
 		arrayPane.addArrayColumn(resource.getString("resourcesManager.formulaire"));
 		ArrayColumn columnOp = arrayPane.addArrayColumn(resource.getString("resourcesManager.operations"));
 		columnOp.setSortable(false);
-		
-		for(int i=0;i<list.size();i++){ 
-			Category category = (Category)list.get(i);
-			IconPane iconPane = gef.getIconPane();
-			IconPane iconPane1 = gef.getIconPane();
-		    Icon reservableIcon = iconPane.addIcon();
-		    Icon editIcon = iconPane1.addIcon();
-		    Icon deleteIcon = iconPane1.addIcon();
-		  		    
-		    //recuperation des donnees de la liste
-		    String id = category.getId();
-		    String name = category.getName();
-		    boolean bookable = category.isBookable();
-			String form = category.getForm();
 
-			arrayLine = arrayPane.addArrayLine();
-			if (bookable) {
-				reservableIcon.setProperties(resource.getIcon("resourcesManager.buletColoredGreen"),resource.getString("resourcesManager.categoriereservable"),"");
-            } else {
-				reservableIcon.setProperties(resource.getIcon("resourcesManager.buletColoredRed"),resource.getString("resourcesManager.categorieirreservable"),"");
-                		}
-			arrayLine.addArrayCellIconPane(iconPane);
-			arrayLine.addArrayCellLink(name,"ViewResources?id="+id);
-			arrayCellText2 = arrayLine.addArrayCellText(form);
-		
-			deleteIcon.setProperties(resource.getIcon("resourcesManager.smallDelete"), resource.getString("resourcesManager.supprimercategorie"),"javascript:deleteCategory('"+id+"','"+name+"')");
-			editIcon.setProperties(resource.getIcon("resourcesManager.updateCategory"), resource.getString("resourcesManager.modifiercategorie"),"EditCategory?id="+id);
-			arrayLine.addArrayCellIconPane(iconPane1);
-		}
+    for (Category category : categories) {
+      IconPane iconPane = gef.getIconPane();
+      IconPane iconPane1 = gef.getIconPane();
+      Icon reservableIcon = iconPane.addIcon();
+      Icon editIcon = iconPane1.addIcon();
+      Icon deleteIcon = iconPane1.addIcon();
+
+      //recuperation des donnees de la liste
+      Long id = category.getId();
+      String name = category.getName();
+      boolean bookable = category.isBookable();
+      String form = category.getForm();
+
+      arrayLine = arrayPane.addArrayLine();
+      if (bookable) {
+        reservableIcon.setProperties(resource.getIcon("resourcesManager.buletColoredGreen"),
+            resource.getString("resourcesManager.categoriereservable"), "");
+      } else {
+        reservableIcon.setProperties(resource.getIcon("resourcesManager.buletColoredRed"), resource.getString("resourcesManager.categorieirreservable"),
+            "");
+      }
+      arrayLine.addArrayCellIconPane(iconPane);
+      arrayLine.addArrayCellLink(name, "ViewResources?id=" + id);
+      arrayLine.addArrayCellText(form);
+
+      deleteIcon.setProperties(resource.getIcon("resourcesManager.smallDelete"), resource.getString("resourcesManager.supprimercategorie"),
+          "javascript:deleteCategory('" + id + "','" + name + "')");
+      editIcon.setProperties(resource.getIcon("resourcesManager.updateCategory"), resource.getString("resourcesManager.modifiercategorie"),
+          "EditCategory?id=" + id);
+      arrayLine.addArrayCellIconPane(iconPane1);
+    }
 		
 		out.println(window.printBefore());
 %>		

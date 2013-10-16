@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -173,7 +173,7 @@ public class AlmanachPdfGenerator {
 
   private static void generateAlmanach(Chapter chapter,
       AlmanachSessionController almanach, List<DisplayableEventOccurrence> occurrences,
-      String mode) throws AlmanachException {
+      String mode) {
 
     boolean monthScope =
         AlmanachPdfGenerator.PDF_MONTH_EVENTSONLY.equals(mode) ||

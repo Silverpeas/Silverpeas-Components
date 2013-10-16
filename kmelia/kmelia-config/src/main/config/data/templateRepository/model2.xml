@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -29,6 +29,10 @@
 	<description>Du texte et une image</description>
 	<image>/weblib/xmlForms/model2.gif</image>
 	<visible>true</visible>
+	<applications>
+		<application>kmax</application>
+        <application>kmelia</application>
+    </applications>
 	<dataFileName>model2/data.xml</dataFileName>
 	<viewFileName>model2/view.xml</viewFileName>
 	<updateFileName>model2/update.xml</updateFileName>

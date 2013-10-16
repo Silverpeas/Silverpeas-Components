@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -87,10 +87,10 @@ private String afficheArbo(ArrayPane arrayPane, String idNode, WebSiteSessionCon
  */
 private int nbThemes(String idNode, WebSiteSessionController scc, int nb) throws Exception {
   int N = nb;
-  
+
   FolderDetail rootFolder = scc.getFolder(idNode);
   N++;
-  
+
   Collection<NodeDetail> subThemes = rootFolder.getNodeDetail().getChildrenDetails();
   if (subThemes != null) {
       Iterator<NodeDetail> coll = subThemes.iterator();
@@ -139,28 +139,28 @@ function isCorrectForm() {
   var nomSite = stripInitialWhitespace(document.descriptionSite.nomSite.value);
   var description = document.descriptionSite.description;
   var nomPage = stripInitialWhitespace(document.descriptionSite.nomPage.value);
-  
-  
+
+
   if (isWhitespace(nomSite)) {
    errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.name")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
    errorNb++;
   }
-  
+
   if (! isValidTextArea(description)) {
    errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.description")%>' <%=resources.getString("ContainsTooLargeText")+resources.getString("NbMaxTextArea")+resources.getString("Characters")%>\n";
    errorNb++;
   }
-  
+
   if (isWhitespace(nomPage)) {
    errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("URL")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
    errorNb++;
   }
-  
+
   if (! isCorrect(nomPage)) {
    errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("URL")%>' <%=EncodeHelper.javaStringToJsString(resources.getString("MustNotContainSpecialChar"))%>\n<%=EncodeHelper.javaStringToJsString(resources.getString("Char1"))%>\n";
    errorNb++;
   }
-  
+
   <view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>
 
   switch(errorNb)
@@ -212,7 +212,7 @@ function B_VALIDER_ONCLICK(nbthemes, nbicones) {
 			}
 		}
 		document.descriptionSite.ListeTopics.value = f;
-    <view:pdcPositions setIn="document.descriptionSite.Positions.value"/>;    
+    <view:pdcPositions setIn="document.descriptionSite.Positions.value"/>;
 		document.descriptionSite.submit();
   }
 }
@@ -269,14 +269,14 @@ function B_ANNULER_ONCLICK() {
 
   //Le cadre
   Frame frame = gef.getFrame();
-  
+
   //Start code
   out.println(window.printBefore());
   out.println(frame.printBefore());
 
   //current User
   UserDetail actor = scc.getUserDetail();
-  
+
   //currentDate
   String creationDate = resources.getOutputDate(new Date());
 %>
@@ -321,7 +321,7 @@ function B_ANNULER_ONCLICK() {
       <label class="txtlibform" for="date"><fmt:message key="GML.date" /> </label>
       <div class="champs"><%=creationDate%></div>
     </div>
-    
+
   </div>
 </fieldset>
 
@@ -357,7 +357,7 @@ function B_ANNULER_ONCLICK() {
       </div>
     </div>
   </div>
-</fieldset>    
+</fieldset>
 
 
 <%
@@ -367,7 +367,7 @@ function B_ANNULER_ONCLICK() {
 <fieldset id="foldersFieldset" class="skinFieldset">
   <legend><fmt:message key="websites.header.fieldset.folders" /></legend>
 
-<%      
+<%
   		ArrayPane arrayPane = gef.getArrayPane("siteList", "", request, session);
       arrayPane.setVisibleLineNumber(1000);
 
@@ -395,17 +395,17 @@ function B_ANNULER_ONCLICK() {
 <%
   //fin du code
   out.println(frame.printMiddle());
-  
+
   ButtonPane buttonPane = gef.getButtonPane();
   Button validerButton = null;
   Button annulerButton = null;
-  
+
   int size = allIcons.size() - 1;
   Iterator i = allIcons.iterator();
 
   IconDetail icon = (IconDetail) i.next(); // on saute la premiere icone (site important)
   String nameReference = resources.getString(icon.getName());
-  
+
   if (action.equals("suggest")) {
       validerButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=B_SUGGERER_ONCLICK("+size+", '"+nameReference+"');", false);
       annulerButton = gef.getFormButton(resources.getString("GML.cancel"), "listSite_reader.jsp", false);
@@ -416,9 +416,9 @@ function B_ANNULER_ONCLICK() {
   buttonPane.addButton(validerButton);
   buttonPane.addButton(annulerButton);
   buttonPane.setHorizontalPosition();
-  
+
   out.println("<br/><center>"+buttonPane.print()+"</center><br/>");
-  
+
   out.println(frame.printAfter());
   out.println(window.printAfter());
 

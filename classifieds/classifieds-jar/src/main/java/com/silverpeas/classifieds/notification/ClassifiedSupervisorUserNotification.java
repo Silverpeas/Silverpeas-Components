@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -32,6 +32,7 @@ import java.util.List;
 import com.silverpeas.classifieds.model.ClassifiedDetail;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganisationController;
 
 /**
  * @author Yohann Chastagnier
@@ -45,7 +46,7 @@ public class ClassifiedSupervisorUserNotification extends AbstractClassifiedUser
   @Override
   protected Collection<String> getUserIdsToNotify() {
     final List<String> roles = Collections.singletonList("admin");
-    final OrganizationController orga = new OrganizationController();
+    final OrganisationController orga = new OrganizationController();
     return new ArrayList<String>(Arrays.asList(orga.getUsersIdsByRoleNames(getComponentInstanceId(), roles)));
   }
 

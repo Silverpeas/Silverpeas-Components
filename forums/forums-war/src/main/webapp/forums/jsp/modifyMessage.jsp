@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -39,13 +39,15 @@
     String text = message.getText();
     String title = message.getTitle();
 %>
-<html>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title></title>
     <view:looknfeel/>
+    <view:includePlugin name="wysiwyg"/>
     <script type="text/javascript" src="<%=context%>/util/javaScript/checkForm.js"></script>
     <script type="text/javascript" src="<%=context%>/forums/jsp/javaScript/forums.js"></script>
-    <view:includePlugin name="wysiwyg"/>
     <script type="text/javascript">
         function init() {
         	<view:wysiwyg replace="messageText" language="<%=fsc.getLanguage()%>" width="600" height="300" toolbar="forums"/>
@@ -68,7 +70,6 @@
         }
     </script>
 </head>
-
 <body <%addBodyOnload(out, fsc, "init()");%>>
 <%
     Window window = graphicFactory.getWindow();
@@ -84,7 +85,6 @@
 
     String formAction = "";
 %>
-    <center>
         <table width="98%" border="0" cellspacing="0" cellpadding="0" class="intfdcolor4">
         <form name="forumsForm" action="viewMessage" method="post">
             <tr>
@@ -98,7 +98,7 @@
                                     </tr>
                                     <tr>
                                         <td align="left" valign="top"><span class="txtlibform"><%=resource.getString("messageTitle")%> :&nbsp;</span></td>
-                                        <td valign="top"><input type="text" name="messageTitle" value="<%=title%>" size="88" maxlength="<%=DBUtil.getTextFieldLength()%>"></td>
+                                        <td valign="top"><input type="text" name="messageTitle" value="<%=title%>" size="88" maxlength="<%=DBUtil.getTextFieldLength()%>"/></td>
                                     </tr>
                                     <tr>
                                         <td align="left" valign="top"><span class="txtlibform"><%=resource.getString("messageText")%> :&nbsp;</span></td>
@@ -106,14 +106,14 @@
                                     </tr>
                                     <tr>
                                         <td align="left" valign="top"><span class="txtlibform"><%=resource.getString("subscribeMessage")%> :&nbsp;</span></td>
-                                        <td valign="top"><input type="checkbox" name="subscribeMessage"></td>
+                                        <td valign="top"><input type="checkbox" name="subscribeMessage"/></td>
                                     </tr>
                                 </table>
                             </td>
                         </tr>
                     </table>
-                    <br>
-                    <center><%
+                    <br/>
+                    <%
 
     String backUrl = ActionUrl.getUrl("viewMessage", "viewForum", 1, messageId, forumId);
     ButtonPane buttonPane = graphicFactory.getButtonPane();
@@ -122,7 +122,6 @@
     buttonPane.setHorizontalPosition();
     out.println(buttonPane.print());
 %>
-                    </center>
                 </td>
             </tr>
             <input type="hidden" name="action" value="8"/>
@@ -131,8 +130,7 @@
             <input type="hidden" name="parentId" value="<%=message.getParentId()%>"/>
         </form>
         </table>
-    </center><%
-
+<%
     out.println(frame.printMiddle());
     out.println(frame.printAfter());
     out.println(window.printAfter());

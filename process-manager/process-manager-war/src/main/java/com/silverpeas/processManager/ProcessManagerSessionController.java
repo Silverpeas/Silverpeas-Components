@@ -1,25 +1,22 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.processManager;
 
@@ -85,6 +82,7 @@ import com.silverpeas.workflow.engine.WorkflowHub;
 import com.silverpeas.workflow.engine.dataRecord.ProcessInstanceRowRecord;
 import com.silverpeas.workflow.engine.instance.LockingUser;
 import com.silverpeas.workflow.engine.model.ItemImpl;
+
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -94,6 +92,8 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+
+import static org.silverpeas.attachment.AttachmentService.VERSION_MODE;
 
 /**
  * The ProcessManager Session controller
@@ -105,6 +105,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Builds and init a new session controller
+   *
    * @param mainSessionCtrl
    * @param context
    * @throws ProcessManagerException
@@ -151,6 +152,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * Builds a ill session controller. Initialization is skipped and this session controller can only
    * display the fatal exception. Used by the request router when a full session controller can't be
    * built.
+   *
    * @param mainSessionCtrl
    * @param context
    * @param fatal
@@ -166,6 +168,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Get the creation rights
+   *
    * @return true if user can do the "Creation" action
    */
   public boolean getCreationRights() {
@@ -214,6 +217,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Print button on an action can be disabled. So it's return the visibility status of that button.
+   *
    * @return true is print button is visible
    */
   public boolean isPrintButtonEnabled() {
@@ -222,6 +226,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Save button on an action can be disabled. So it's return the visibility status of that button.
+   *
    * @return true is save button is visible
    */
   public boolean isSaveButtonEnabled() {
@@ -319,7 +324,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    */
   public DataRecord[] resetCurrentProcessList() throws ProcessManagerException {
     try {
-      String[] groupIds = getOrganizationController().getAllGroupIdsOfUser(getUserId());
+      String[] groupIds = getOrganisationController().getAllGroupIdsOfUser(getUserId());
       ProcessInstance[] processList = Workflow.getProcessInstanceManager().getProcessInstances(
           peasId, currentUser, currentRole, getUserRoles(), groupIds);
       currentProcessList = getCurrentFilter().filter(processList, currentRole, getLanguage());
@@ -344,6 +349,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Get the process instance Id referred by the todo with the given todo id
+   *
    * @param externalTodoId
    * @return the process instance Id referred by the todo with the given todo id.
    * @throws ProcessManagerException
@@ -357,7 +363,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
           "processManager.GET_PROCESS_FROM_TODO_FAILED", "externalTodoId : " + externalTodoId, e);
     }
   }
-  
+
   public boolean isUserAllowedOnActiveStates() {
     String[] states = currentProcessInstance.getActiveStates();
     if (states == null) {
@@ -373,6 +379,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Get the active states.
+   *
    * @return the active states.
    */
   public String[] getActiveStates() {
@@ -457,7 +464,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
               if (item != null) {
                 String groupId = currentProcessInstance.getField(item.getName()).getStringValue();
                 if (groupId != null) {
-                  Group group = getOrganizationController().getGroup(groupId);
+                  Group group = getOrganisationController().getGroup(groupId);
                   if (group != null) {
                     role += group.getName();
                   }
@@ -577,7 +584,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
           "root.MSG_GEN_PARAM_VALUE", "roles après élagage : " + roles);
     }
 
-    String[] userIds = getOrganizationController().getUsersIdsByRoleNames(getComponentId(), roles);
+    String[] userIds = getOrganisationController().getUsersIdsByRoleNames(getComponentId(), roles);
     for (int u = 0; u < userIds.length; u++) {
       users.add(userIds[u]);
     }
@@ -592,7 +599,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
           if (item != null) {
             try {
               String groupId = currentProcessInstance.getField(item.getName()).getStringValue();
-              UserDetail[] usersOfGroup = getOrganizationController().getAllUsersOfGroup(groupId);
+              UserDetail[] usersOfGroup = getOrganisationController().getAllUsersOfGroup(groupId);
               for (UserDetail userOfGroup : usersOfGroup) {
                 users.add(userOfGroup.getId());
               }
@@ -608,6 +615,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Returns the workflow user having the given id.
+   *
    * @param userId
    * @return the workflow user having the given id.
    * @throws ProcessManagerException
@@ -623,6 +631,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Returns the process model having the given id.
+   *
    * @param modelId
    * @return the process model having the given id.
    * @throws ProcessManagerException
@@ -638,6 +647,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Returns the current role name.
+   *
    * @return
    */
   public String getCurrentRole() {
@@ -646,6 +656,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Returns the current role name.
+   *
    * @param role
    * @throws ProcessManagerException
    */
@@ -813,6 +824,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * get the question with the given id
+   *
    * @param questionId question id
    * @return the found question
    */
@@ -966,6 +978,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Create a new process instance with the filled form.
+   *
    * @param data the form data
    * @param isDraft true if form has just been saved as draft
    * @param firstTimeSaved true if form is saved as draft for the first time
@@ -1007,6 +1020,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   /**
    * Search for an hypothetic action of kind "delete", allowed for the current user with the given
    * role
+   *
    * @return an array of 2 String { action.name, state.name }, null if no action found
    */
   public String[] getDeleteAction() {
@@ -1168,6 +1182,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Get locking users list
+   *
    * @throws ProcessManagerException
    */
   public List<LockVO> getLockingUsers() throws ProcessManagerException {
@@ -1181,8 +1196,10 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
           LockingUser lockingUser = currentProcessInstance.getLockingUser(stateName);
           if (lockingUser != null) {
             User user = WorkflowHub.getUserManager().getUser(lockingUser.getUserId());
-            boolean isDraftPending = ( currentProcessInstance.getSavedStep(lockingUser.getUserId()) != null);
-            lockingUsers.add(new LockVO(user, lockingUser.getLockDate(), lockingUser.getState(), !isDraftPending));
+            boolean isDraftPending = (currentProcessInstance.getSavedStep(lockingUser.getUserId())
+                != null);
+            lockingUsers.add(new LockVO(user, lockingUser.getLockDate(), lockingUser.getState(),
+                !isDraftPending));
             if (lockingUser.getUserId().equals(getUserId())) {
               this.currentUserIsLockingUser = true;
             }
@@ -1194,8 +1211,10 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       LockingUser lockingUser = currentProcessInstance.getLockingUser("");
       if (lockingUser != null) {
         User user = WorkflowHub.getUserManager().getUser(lockingUser.getUserId());
-        boolean isDraftPending = ( currentProcessInstance.getSavedStep(lockingUser.getUserId()) != null);
-        lockingUsers.add(new LockVO(user, lockingUser.getLockDate(), lockingUser.getState(), !isDraftPending));
+        boolean isDraftPending = (currentProcessInstance.getSavedStep(lockingUser.getUserId())
+            != null);
+        lockingUsers.add(new LockVO(user, lockingUser.getLockDate(), lockingUser.getState(),
+            !isDraftPending));
         if (lockingUser.getUserId().equals(getUserId())) {
           this.currentUserIsLockingUser = true;
         }
@@ -1211,6 +1230,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Lock the current instance for current user and given state
+   *
    * @param stateName state name
    */
   public void lock(String stateName) throws ProcessManagerException {
@@ -1226,6 +1246,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Un-Lock the current instance for given user and given state
+   *
    * @param userId user Id
    * @param stateName state name
    */
@@ -1243,6 +1264,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Un-Lock the current instance for current user and given state
+   *
    * @param stateName state name
    */
   public void unlock(String stateName) throws ProcessManagerException {
@@ -1367,6 +1389,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Get the list of actors in History Step of current process instance
+   *
    * @return an array of string containing actors full name
    */
   public String getStepActor(HistoryStep step) {
@@ -1383,6 +1406,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Get the list of actions in History Step of current process instance
+   *
    * @return an array of string containing actions names
    */
   public String getStepAction(HistoryStep step) {
@@ -1409,6 +1433,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Returns the form used to display the i-th step. Returns null if the step is unkwown.
+   *
    * @throws ProcessManagerException
    */
   public Form getStepForm(HistoryStep step) throws ProcessManagerException {
@@ -1481,6 +1506,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Get step saved by given user id.
+   *
    * @throws ProcessManagerException
    */
   public HistoryStep getSavedStep() throws ProcessManagerException {
@@ -1494,6 +1520,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Get step data record saved.
+   *
    * @throws ProcessManagerException
    * @throws ProcessManagerException
    */
@@ -1543,6 +1570,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Get the label of given action
+   *
    * @param actionName action name
    * @return action label
    */
@@ -1561,6 +1589,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Get the state with the given name
+   *
    * @param stateName state name
    * @return State object
    */
@@ -1570,6 +1599,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Get the named action
+   *
    * @param actionName action name
    * @return action
    */
@@ -1583,6 +1613,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Tests if there is some question for current user in current processInstance
+   *
    * @return true if there is one or more question
    */
   public boolean hasPendingQuestions() {
@@ -1700,7 +1731,8 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    */
   public void removeProcess(String processId) throws ProcessManagerException {
     try {
-      ((UpdatableProcessInstanceManager) Workflow.getProcessInstanceManager()).removeProcessInstance(
+      ((UpdatableProcessInstanceManager) Workflow.getProcessInstanceManager())
+          .removeProcessInstance(
           processId);
     } catch (WorkflowException we) {
       throw new ProcessManagerException("ProcessManagerSessionController",
@@ -1744,9 +1776,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   }
 
   public boolean isVersionControlled() {
-    String strVersionControlled = this.getComponentParameterValue("versionControl");
-    return ((strVersionControlled != null)
-        && !("").equals(strVersionControlled) && !("no").equals(strVersionControlled.toLowerCase()));
+    return StringUtil.getBooleanValue(getComponentParameterValue(VERSION_MODE));
   }
 
   public boolean isAttachmentTabEnable() {
@@ -1754,8 +1784,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     if (param == null) {
       return true;
     }
-    return param != null && !("").equals(param)
-        && !("no").equals(param.toLowerCase());
+    return param != null && !("").equals(param) && !("no").equals(param.toLowerCase());
   }
 
   public boolean isProcessIdVisible() {
@@ -2060,6 +2089,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Is current user is part of the locking users for current process instance ?
+   *
    * @return true is current user is part of the locking users for current process instance
    */
   public boolean isCurrentUserIsLockingUser() {
@@ -2167,7 +2197,5 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * Current token Id prevents users to use several windows with the same session.
    */
   private String currentTokenId = null;
-
-
 
 }

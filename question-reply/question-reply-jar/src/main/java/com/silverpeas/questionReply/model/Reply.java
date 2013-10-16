@@ -1,41 +1,42 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.questionReply.model;
 
 import com.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.silverpeas.wysiwyg.WysiwygException;
-import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
-import java.util.Date;
 
-import com.stratelia.webactiv.beans.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.SilverpeasBean;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.util.DateUtil;
 
+import java.util.Date;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class Reply extends SilverpeasBean {
 
+  Logger logger = LoggerFactory.getLogger("questionReply");
   private static final long serialVersionUID = 5638699228049557540L;
   private long questionId;
   private String title;
@@ -45,7 +46,6 @@ public class Reply extends SilverpeasBean {
   private String creationDate;
   private int publicReply = 0;
   private int privateReply = 1;
-
 
   public Reply() {
   }
@@ -121,31 +121,23 @@ public class Reply extends SilverpeasBean {
   }
 
   public String readCreatorName() {
-    OrganizationController organizationController = new OrganizationController();
-    return readCreatorName(organizationController);
-  }
-
-  public String readCreatorName(OrganizationController organizationController) {
     String creatorName = null;
-    UserDetail userDetail = readAuthor(organizationController);
+    UserDetail userDetail = readAuthor();
     if (userDetail != null) {
       creatorName = userDetail.getDisplayedName();
     }
     return creatorName;
   }
 
-  public UserDetail readAuthor(OrganizationController organizationController) {
-    return organizationController.getUserDetail(String.valueOf(getCreatorId()));
+  public UserDetail readAuthor() {
+    return OrganisationControllerFactory.getOrganisationController().getUserDetail(String.valueOf(
+        getCreatorId()));
   }
 
   public String loadWysiwygContent() {
-    try {
-       this.wysiwygContent = WysiwygController.load(getPK().getInstanceId(), getPK().getId(),
+   this.wysiwygContent = WysiwygController.load(getPK().getInstanceId(), getPK().getId(),
           I18NHelper.defaultLanguage);
-       return  this.wysiwygContent;
-    } catch (WysiwygException e) {
-      return this.wysiwygContent;
-    }
+    return wysiwygContent;
   }
 
   public String readCurrentWysiwygContent() {
@@ -168,6 +160,8 @@ public class Reply extends SilverpeasBean {
 
   @Override
   public String toString() {
-    return "Reply{" + "questionId=" + questionId + ", title=" + title + ", content=" + content + ", creatorId=" + creatorId + ", creationDate=" + creationDate + ", publicReply=" + publicReply + ", privateReply=" + privateReply + '}';
+    return "Reply{" + "questionId=" + questionId + ", title=" + title + ", content=" + content
+        + ", creatorId=" + creatorId + ", creationDate=" + creationDate + ", publicReply="
+        + publicReply + ", privateReply=" + privateReply + '}';
   }
 }

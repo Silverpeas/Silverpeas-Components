@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -40,30 +40,28 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
-<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="org.silverpeas.resourcemanager.model.Category"%>
 <%@ page import="org.silverpeas.resourcemanager.model.Resource"%>
 <%@ page import="java.util.List" %>
 <%@ include file="check.jsp" %>
-<% 
-//Recuperation des details de l'utilsateur
-//list est la liste des ressources de la categorie
-//listCategory est la liste de l'ensemble des categories
-List list = (List)request.getAttribute("list");
-List<Category> listCategory = (List<Category>)request.getAttribute("listCategories");
-String idCategory = (String)request.getAttribute("categoryId");
-String categoryName ="";
+<%
+  //Recuperation des details de l'utilsateur
+  //list est la liste des ressources de la categorie
+  //listCategory est la liste de l'ensemble des categories
+  List<Resource> resources = (List) request.getAttribute("list");
+  List<Category> listCategory = (List<Category>) request.getAttribute("listCategories");
+  Long idCategory = (Long) request.getAttribute("categoryId");
+  String categoryName = "";
 
-while(!listCategory.isEmpty()){
-	Category maCategory = listCategory.get(0);
-	String categoryIdTemp = maCategory.getId();
-	if(categoryIdTemp.equals(idCategory)){
-		categoryName = maCategory.getName();
-	}
-	listCategory.remove(0);
-}
-ArrayLine arrayLine;
-ArrayCellText arrayCellText2;
+  while (!listCategory.isEmpty()) {
+    Category maCategory = listCategory.get(0);
+    Long categoryIdTemp = maCategory.getId();
+    if (categoryIdTemp.equals(idCategory)) {
+      categoryName = maCategory.getName();
+    }
+    listCategory.remove(0);
+  }
+  ArrayLine arrayLine;
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -96,29 +94,35 @@ function deleteResource(resourceId, name,categoryId) {
 		arrayPane.addArrayColumn(resource.getString("GML.lastName"));
 		ArrayColumn columnOp = arrayPane.addArrayColumn(resource.getString("resourcesManager.operations"));
 		columnOp.setSortable(false);
-		
-		for (int i=0; i<list.size(); i++){
-			IconPane iconPane = gef.getIconPane();
-			IconPane iconPane1 = gef.getIconPane();
-			Icon reservableIcon = iconPane.addIcon();
-			Icon editIcon = iconPane1.addIcon();
-			Icon deleteIcon = iconPane1.addIcon();
-			
-			Resource maResource = (Resource)list.get(i);
-			String name = maResource.getName();
-			boolean bookable = maResource.isBookable();
-			String resourceId = maResource.getId();
-			arrayLine = arrayPane.addArrayLine();
-			if(bookable)
-				reservableIcon.setProperties(resource.getIcon("resourcesManager.buletColoredGreen"),resource.getString("resourcesManager.resourcereservable"),"");
-			else
-				reservableIcon.setProperties(resource.getIcon("resourcesManager.buletColoredRed"),resource.getString("resourcesManager.resourceirreservable"),"");
-			arrayLine.addArrayCellIconPane(iconPane);
-			arrayLine.addArrayCellLink(name,"ViewResource?resourceId="+resourceId+"&categoryId="+idCategory+"&provenance="+"resources");
-			deleteIcon.setProperties(resource.getIcon("resourcesManager.smallDelete"), resource.getString("resourcesManager.supprimerressource"),"javascript:deleteResource('"+resourceId+"','"+name+"','"+idCategory+"')");
-			editIcon.setProperties(resource.getIcon("resourcesManager.updateCategory"), resource.getString("resourcesManager.modifierresource"),"EditResource?resourceId="+resourceId+"&categoryId="+idCategory);
-			arrayLine.addArrayCellIconPane(iconPane1);
-		}
+
+    for (Resource myResource : resources) {
+      IconPane iconPane = gef.getIconPane();
+      IconPane iconPane1 = gef.getIconPane();
+      Icon reservableIcon = iconPane.addIcon();
+      Icon editIcon = iconPane1.addIcon();
+      Icon deleteIcon = iconPane1.addIcon();
+
+      String name = myResource.getName();
+      boolean bookable = myResource.isBookable();
+      Long resourceId = myResource.getId();
+      arrayLine = arrayPane.addArrayLine();
+      if (bookable) {
+        reservableIcon.setProperties(resource.getIcon("resourcesManager.buletColoredGreen"),
+            resource.getString("resourcesManager.resourcereservable"), "");
+      } else {
+        reservableIcon.setProperties(resource.getIcon("resourcesManager.buletColoredRed"),
+            resource.getString("resourcesManager.resourceirreservable"), "");
+      }
+      arrayLine.addArrayCellIconPane(iconPane);
+      arrayLine.addArrayCellLink(name,
+          "ViewResource?resourceId=" + resourceId + "&categoryId=" + idCategory + "&provenance=" +
+              "resources");
+      deleteIcon.setProperties(resource.getIcon("resourcesManager.smallDelete"), resource.getString("resourcesManager.supprimerressource"),
+          "javascript:deleteResource('" + resourceId + "','" + name + "','" + idCategory + "')");
+      editIcon.setProperties(resource.getIcon("resourcesManager.updateCategory"), resource.getString("resourcesManager.modifierresource"),
+          "EditResource?resourceId=" + resourceId + "&categoryId=" + idCategory);
+      arrayLine.addArrayCellIconPane(iconPane1);
+    }
 		
 		out.println(window.printBefore());
 %>

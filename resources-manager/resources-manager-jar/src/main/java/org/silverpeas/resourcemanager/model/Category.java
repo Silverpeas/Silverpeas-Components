@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -21,15 +21,10 @@
 package org.silverpeas.resourcemanager.model;
 
 import com.silverpeas.util.StringUtil;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.TableGenerator;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -64,6 +59,18 @@ public class Category {
   @OneToMany(mappedBy = "category", orphanRemoval = false)
   private List<Resource> resources = new ArrayList<Resource>();
 
+  @PrePersist
+  public void beforePersist() {
+    Date now = new Date();
+    setCreationDate(now);
+    setUpdateDate(now);
+  }
+
+  @PreUpdate
+  public void beforeUpdate() {
+    setUpdateDate(new Date());
+  }
+
   public boolean isBookable() {
     return 1 == bookable;
   }
@@ -92,14 +99,16 @@ public class Category {
     this.form = form;
   }
 
-  public String getId() {
-    return String.valueOf(id);
+  public Long getId() {
+    return id;
   }
 
-  public final void setId(String id) {
-    if (StringUtil.isLong(id)) {
-      this.id = Long.parseLong(id);
-    }
+  public void setId(final Long id) {
+    this.id = id;
+  }
+
+  public String getIdAsString() {
+    return String.valueOf(id);
   }
 
   public String getInstanceId() {
@@ -137,22 +146,6 @@ public class Category {
   public Category() {
   }
 
-  public Category(String id, String instanceId, String name, Date creationDate, Date updateDate,
-          boolean bookable, String form, String createrId, String updaterId, String description,
-          List<Resource> resources) {
-    setId(id);
-    this.instanceId = instanceId;
-    this.name = name;
-    setCreationDate(creationDate);
-    setUpdateDate(updateDate);
-    setBookable(bookable);
-    this.form = form;
-    this.createrId = createrId;
-    this.updaterId = updaterId;
-    this.description = description;
-    this.resources = resources;
-  }
-
   public Category(String name, boolean bookable, String form, String description) {
     this.name = name;
     setBookable(bookable);
@@ -166,22 +159,17 @@ public class Category {
    * @param id
    * @param instanceId
    * @param name
-   * @param creationDate
-   * @param updateDate
    * @param bookable
    * @param form
-   * @param responsibleId
    * @param createrId
    * @param updaterId
    * @param description
    */
-  public Category(String id, String instanceId, String name, Date creationDate, Date updateDate,
-          boolean bookable, String form, String createrId, String updaterId, String description) {
+  public Category(Long id, String instanceId, String name, boolean bookable, String form, String
+      createrId, String updaterId, String description) {
     setId(id);
     this.instanceId = instanceId;
     this.name = name;
-    setCreationDate(creationDate);
-    setUpdateDate(updateDate);
     setBookable(bookable);
     this.form = form;
     this.createrId = createrId;
@@ -236,60 +224,30 @@ public class Category {
       return false;
     }
     final Category other = (Category) obj;
-    if (this.id != other.id && (this.id == null || !this.id.equals(other.id))) {
-      return false;
-    }
-    if ((this.instanceId == null) ? (other.instanceId != null) : !this.instanceId.equals(
-            other.instanceId)) {
-      return false;
-    }
-    if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
-      return false;
-    }
-    if ((this.creationDate == null) ? (other.creationDate != null) : !this.creationDate.equals(
-            other.creationDate)) {
-      return false;
-    }
-    if ((this.updateDate == null) ? (other.updateDate != null) : !this.updateDate.equals(
-            other.updateDate)) {
-      return false;
-    }
-    if (this.bookable != other.bookable && (this.bookable == null || !this.bookable.equals(
-            other.bookable))) {
-      return false;
-    }
-    if ((this.form == null) ? (other.form != null) : !this.form.equals(other.form)) {
-      return false;
-    }
-    if ((this.createrId == null) ? (other.createrId != null) : !this.createrId.equals(
-            other.createrId)) {
-      return false;
-    }
-    if ((this.updaterId == null) ? (other.updaterId != null) : !this.updaterId.equals(
-            other.updaterId)) {
-      return false;
-    }
-    if ((this.description == null) ? (other.description != null) : !this.description.equals(
-            other.description)) {
-      return false;
-    }
-    return true;
+    EqualsBuilder matcher = new EqualsBuilder();
+    matcher.append(getId(), other.getId());
+    matcher.append(getInstanceId(), other.getInstanceId());
+    matcher.append(getName(), other.getName());
+    matcher.append(isBookable(), other.isBookable());
+    matcher.append(getForm(), other.getForm());
+    matcher.append(getCreaterId(), other.getCreaterId());
+    matcher.append(getUpdaterId(), other.getUpdaterId());
+    matcher.append(getDescription(), other.getDescription());
+    return matcher.isEquals();
   }
 
   @Override
   public int hashCode() {
-    int hash = 7;
-    hash = 97 * hash + (this.id != null ? this.id.hashCode() : 0);
-    hash = 97 * hash + (this.instanceId != null ? this.instanceId.hashCode() : 0);
-    hash = 97 * hash + (this.name != null ? this.name.hashCode() : 0);
-    hash = 97 * hash + (this.creationDate != null ? this.creationDate.hashCode() : 0);
-    hash = 97 * hash + (this.updateDate != null ? this.updateDate.hashCode() : 0);
-    hash = 97 * hash + (this.bookable != null ? this.bookable.hashCode() : 0);
-    hash = 97 * hash + (this.form != null ? this.form.hashCode() : 0);
-    hash = 97 * hash + (this.createrId != null ? this.createrId.hashCode() : 0);
-    hash = 97 * hash + (this.updaterId != null ? this.updaterId.hashCode() : 0);
-    hash = 97 * hash + (this.description != null ? this.description.hashCode() : 0);
-    return hash;
+    HashCodeBuilder hash = new HashCodeBuilder();
+    hash.append(getId());
+    hash.append(getInstanceId());
+    hash.append(getName());
+    hash.append(isBookable());
+    hash.append(getForm());
+    hash.append(getCreaterId());
+    hash.append(getUpdaterId());
+    hash.append(getDescription());
+    return hash.toHashCode();
   }
 
   @Override

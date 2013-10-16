@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -38,13 +38,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.silverpeas.core.admin.OrganisationController;
+
 import com.silverpeas.gallery.control.ejb.GalleryBm;
-import com.silverpeas.gallery.control.ejb.GalleryBmHome;
 import com.silverpeas.gallery.model.AlbumDetail;
 import com.silverpeas.gallery.model.GalleryRuntimeException;
 import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.gallery.model.PhotoPK;
 import com.silverpeas.util.StringUtil;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -90,7 +92,7 @@ public class GalleryInWysiwygRouter extends HttpServlet {
     // contrôle que "componentId" est bien une photothèque ayant le droit d'être
     // vu dans un Wysiwyg
     boolean isViewInWysiwyg = "yes"
-        .equalsIgnoreCase(getOrganizationController()
+        .equalsIgnoreCase(getOrganisationController()
         .getComponentParameterValue(componentId, "viewInWysiwyg"));
     if (isViewInWysiwyg) {
       SilverTrace.info("gallery", "GalleryInWysiwygRouter.doPost",
@@ -203,20 +205,10 @@ public class GalleryInWysiwygRouter extends HttpServlet {
   }
 
   private GalleryBm getGalleryBm() {
-    GalleryBm galleryBm = null;
-    try {
-      GalleryBmHome galleryBmHome = (GalleryBmHome) EJBUtilitaire
-          .getEJBObjectRef(JNDINames.GALLERYBM_EJBHOME, GalleryBmHome.class);
-      galleryBm = galleryBmHome.create();
-    } catch (Exception e) {
-      throw new GalleryRuntimeException(
-          "GalleryInWysiwygRouter.getGalleryBm()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
-    return galleryBm;
+    return EJBUtilitaire.getEJBObjectRef(JNDINames.GALLERYBM_EJBHOME, GalleryBm.class);
   }
 
-  private OrganizationController getOrganizationController() {
+  private OrganisationController getOrganisationController() {
     return new OrganizationController();
   }
 }

@@ -1,49 +1,25 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.kmelia;
 
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.security.ComponentSecurity;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.ObjectType;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
-import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.NodeBmHome;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
-import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
-
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -51,6 +27,27 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.security.ComponentSecurity;
+
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.ObjectType;
+import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
+import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
+import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import com.stratelia.webactiv.util.node.control.NodeBm;
+import com.stratelia.webactiv.util.node.model.NodeDetail;
+import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.util.publication.control.PublicationBm;
+import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
 import static com.stratelia.webactiv.SilverpeasRole.*;
 
@@ -67,16 +64,17 @@ public class KmeliaSecurity implements ComponentSecurity {
   public static final String RIGHTS_ON_TOPIC_PARAM = "rightsOnTopics";
   private PublicationBm publicationBm;
   private NodeBm nodeBm;
-  private OrganizationController controller = null;
+  private OrganisationController controller = null;
   private Map<String, Boolean> cache = Collections.synchronizedMap(new HashMap<String, Boolean>());
   private volatile boolean cacheEnabled = false;
-  private ResourceLocator kmeliaSettings = new ResourceLocator("com.stratelia.webactiv.kmelia.settings.kmeliaSettings", "fr");
+  private ResourceLocator kmeliaSettings = new ResourceLocator(
+      "org.silverpeas.kmelia.settings.kmeliaSettings", "fr");
 
   public KmeliaSecurity() {
-    this.controller = new OrganizationController();
+    this.controller = OrganisationControllerFactory.getOrganisationController();
   }
 
-  public KmeliaSecurity(OrganizationController controller) {
+  public KmeliaSecurity(OrganisationController controller) {
     this.controller = controller;
   }
 
@@ -98,20 +96,20 @@ public class KmeliaSecurity implements ComponentSecurity {
       cache.put(objectId + objectType + componentId, available);
     }
   }
-  
+
   private Boolean readFromCache(String objectId, String objectType, String componentId) {
     if (cacheEnabled) {
       return cache.get(objectId + objectType + componentId);
     }
     return null;
   }
-  
+
   private void writeInCache(String componentId, boolean available) {
     if (cacheEnabled) {
       cache.put(componentId, available);
     }
   }
-  
+
   private Boolean readFromCache(String componentId) {
     if (cacheEnabled) {
       return cache.get(componentId);
@@ -172,11 +170,10 @@ public class KmeliaSecurity implements ComponentSecurity {
           String profile = getProfile(userId, pk);
           if (!user.isInRole(profile)) {
             if (isCoWritingEnable(componentId)
-                  && isDraftVisibleWithCoWriting()
-                  && !reader.isInRole(profile)) {
+                && isDraftVisibleWithCoWriting()
+                && !reader.isInRole(profile)) {
               return true;
-            }
-            else {
+            } else {
               return publication.isPublicationEditor(userId);
             }
           }
@@ -217,7 +214,7 @@ public class KmeliaSecurity implements ComponentSecurity {
   }
 
   protected boolean isCoWritingEnable(String componentId) {
-    String param = controller.getComponentParameterValue(componentId,CO_WRITING_PARAM);
+    String param = controller.getComponentParameterValue(componentId, CO_WRITING_PARAM);
     return StringUtil.getBooleanValue(param);
   }
 
@@ -227,7 +224,7 @@ public class KmeliaSecurity implements ComponentSecurity {
       // Availabily already processed
       return fromCache;
     }
-    
+
     boolean available = controller.isComponentAvailable(componentId, userId);
     writeInCache(componentId, available);
     return available;
@@ -258,9 +255,9 @@ public class KmeliaSecurity implements ComponentSecurity {
             // don't throw exception, log only error
             SilverTrace.error("kmelia", "KmeliaSecurity.isNodeAvailable",
                 "root.MSG_GEN_PARAM_VALUE",
-                "Node (" + fatherPK.getId() + ", " + fatherPK.getInstanceId() +
-                    ") no more exist but still referenced by a publication (" + pk.getId() + ", " +
-                    pk.getInstanceId() + ")");
+                "Node (" + fatherPK.getId() + ", " + fatherPK.getInstanceId()
+                + ") no more exist but still referenced by a publication (" + pk.getId() + ", "
+                + pk.getInstanceId() + ")");
             objectAvailable = false;
           }
         }
@@ -283,13 +280,7 @@ public class KmeliaSecurity implements ComponentSecurity {
     }
     boolean objectAvailable = false;
     if (isRightsOnTopicsEnabled(nodePK.getInstanceId())) {
-      NodeDetail node = null;
-      try {
-        node = getNodeBm().getHeader(nodePK, false);
-      } catch (RemoteException e) {
-        throw new KmeliaRuntimeException("KmeliaSecurity.isNodeAvailable()",
-            SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DOBTENIR_LA_PUBLICATION", e);
-      }
+      NodeDetail node = getNodeBm().getHeader(nodePK, false);
       if (node != null) {
         if (!node.haveRights()) {
           objectAvailable = true;
@@ -314,22 +305,10 @@ public class KmeliaSecurity implements ComponentSecurity {
       profiles = controller.getUserProfiles(userId, pubPK.getInstanceId());
     } else {
       // get topic-level profiles
-      Collection<NodePK> nodePKs;
-      try {
-        nodePKs = getPublicationBm().getAllFatherPK(pubPK);
-      } catch (RemoteException e) {
-        throw new KmeliaRuntimeException("KmeliaSecurity.getProfile()",
-            SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DOBTENIR_LA_PUBLICATION", e);
-      }
+      Collection<NodePK> nodePKs = getPublicationBm().getAllFatherPK(pubPK);
       List<String> lProfiles = new ArrayList<String>();
       for (NodePK nodePK : nodePKs) {
-        NodeDetail node = null;
-        try {
-          node = getNodeBm().getHeader(nodePK);
-        } catch (RemoteException e) {
-          throw new KmeliaRuntimeException("KmeliaSecurity.getProfile()",
-              SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DOBTENIR_LA_PUBLICATION", e);
-        }
+        NodeDetail node = getNodeBm().getHeader(nodePK);
         if (node != null) {
           SilverTrace.debug("kmelia", "KmeliaSecurity.getProfile",
               "root.MSG_GEN_PARAM_VALUE", "nodePK = " + nodePK.toString());
@@ -350,9 +329,8 @@ public class KmeliaSecurity implements ComponentSecurity {
   private PublicationBm getPublicationBm() {
     if (publicationBm == null) {
       try {
-        PublicationBmHome publicationBmHome = EJBUtilitaire.getEJBObjectRef(
-            JNDINames.PUBLICATIONBM_EJBHOME, PublicationBmHome.class);
-        setPublicationBm(publicationBmHome.create());
+        setPublicationBm(EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
+            PublicationBm.class));
       } catch (Exception e) {
         throw new KmeliaRuntimeException("KmeliaSecurity.getPublicationBm()",
             SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_PUBLICATIONBM_HOME",
@@ -365,9 +343,7 @@ public class KmeliaSecurity implements ComponentSecurity {
   public NodeBm getNodeBm() {
     if (nodeBm == null) {
       try {
-        NodeBmHome nodeBmHome = EJBUtilitaire.getEJBObjectRef(
-            JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
-        setNodeBm(nodeBmHome.create());
+        setNodeBm(EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class));
       } catch (Exception e) {
         throw new KmeliaRuntimeException("KmeliaSecurity.getNodeBm()",
             SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_NODEBM_HOME", e);

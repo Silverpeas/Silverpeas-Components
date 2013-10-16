@@ -32,15 +32,14 @@ public class ViewClassifiedHandler extends FunctionHandler {
     // Get creationDate
     ResourcesWrapper resources = classifiedsSC.getResources();
     ClassifiedDetail classified = classifiedsSC.getClassified(classifiedId);
-    request.setAttribute("Classified", classifiedsSC.getClassified(classifiedId));
+    request.setAttribute("Classified", classifiedsSC.getClassifiedWithImages(classifiedId));
     String creationDate = null;
     if (classified.getCreationDate() != null) {
       creationDate = resources.getOutputDateAndHour(classified.getCreationDate());
     } else {
       creationDate = "";
     }
-
-
+    
     // Get updateDate
     String updateDate = null;
     if (classified.getUpdateDate() != null) {
@@ -56,7 +55,7 @@ public class ViewClassifiedHandler extends FunctionHandler {
     } else {
       validateDate = "";
     }
-
+    
     // Get form template and data
     Form formView = null;
     DataRecord data = null;
@@ -82,7 +81,6 @@ public class ViewClassifiedHandler extends FunctionHandler {
     request.setAttribute("CreationDate", creationDate);
     request.setAttribute("UpdateDate", updateDate);
     request.setAttribute("ValidateDate", validateDate);
-
 
     // Returns jsp to redirect to
     return "viewClassified.jsp";

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -45,6 +45,7 @@ import de.nava.informa.core.ItemIF;
 import de.nava.informa.exporters.RSS_2_0_Exporter;
 import de.nava.informa.impl.basic.Channel;
 import de.nava.informa.impl.basic.Item;
+import org.silverpeas.core.admin.OrganisationController;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -64,7 +65,7 @@ public class RssLastPublicationsServlet extends HttpServlet {
   public static final String PASSWORD_PARAM = "password";
   public static final String LOGIN_PARAM = "login";
   private static final SilverpeasWebUtil util = new SilverpeasWebUtil();
-  private static final OrganizationController orga = new OrganizationController();
+  private static final OrganisationController orga = new OrganizationController();
   private static final AdminController adminController = new AdminController(null);
   private static final ResourceLocator settings = new ResourceLocator(
       "com.stratelia.webactiv.kmelia.settings.kmeliaSettings", "");

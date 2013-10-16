@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -105,7 +105,7 @@ public abstract class AbstractImageMetadataExtractor implements ImageMetadataExt
           "org.silverpeas.gallery.multilang.metadataBundle", lang));
     }
     String display = settings.getProperty("display");
-    Iterable<String> propertyNames = COMMA_SPLITTER.split(display);
+    Iterable<String> propertyNames = StringUtil.splitString(display, ',');
     this.imageProperties = defineImageProperties(propertyNames);
     this.imageIptcProperties = defineImageIptcProperties(propertyNames);
   }

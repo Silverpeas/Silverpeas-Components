@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -22,7 +22,11 @@ package com.silverpeas.mailinglist.jms;
 
 import com.mockrunner.mock.jms.JMSMockObjectFactory;
 import com.mockrunner.mock.jms.MockQueue;
-
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.jms.Queue;
 import javax.jms.QueueConnectionFactory;
 import javax.jms.TextMessage;
@@ -31,16 +35,11 @@ import javax.naming.Context;
 import javax.naming.Name;
 import javax.naming.Reference;
 import javax.naming.spi.ObjectFactory;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class MockObjectFactory implements ObjectFactory {
 
   private final static JMSMockObjectFactory factory = new JMSMockObjectFactory();
-  private final static Map<String, Queue> queues = new HashMap<String, Queue>(10);
+  private final static Map<String, Queue> queues = new ConcurrentHashMap<String, Queue>(10);
 
   public synchronized static void clearAll() {
     Set<String> keys = queues.keySet();

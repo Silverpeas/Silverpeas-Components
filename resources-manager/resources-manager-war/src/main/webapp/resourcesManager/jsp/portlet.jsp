@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -23,229 +23,303 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%
-response.setHeader("Cache-Control","no-store"); //HTTP 1.1
-response.setHeader("Pragma","no-cache"); //HTTP 1.0
-response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
-%>
-
-<%@ include file="check.jsp"%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
 <%
-List listResourcesofCategory = (List)request.getAttribute("listResourcesofCategory");
-List listOfCategories = (List)request.getAttribute("listOfCategories");
-
-String idUser = (String)request.getAttribute("idUser");
-String firstNameUser = (String)request.getAttribute("firstNameUser");
-String lastName = (String)request.getAttribute("lastName");
-
-MonthCalendar monthC = (MonthCalendar)request.getAttribute("monthC");
-String objectView = (String)request.getAttribute("idCategory");
-if(objectView == null){
-	objectView = "myReservation";
-}
-
-String idResourceFromRR = (String)request.getAttribute("resourceId");
-String personalReservation = "myReservation";
+  response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
+  response.setHeader("Pragma", "no-cache"); //HTTP 1.0
+  response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
-<c:set var="objectView"><%=objectView%></c:set>
-<html>
+
+<fmt:setLocale value="${requestScope.resources.language}"/>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
+
+<%@ include file="check.jsp" %>
+
+<c:set var="language" value="${requestScope.resources.language}"/>
+<c:set var="profile" value="${requestScope.Profile}"/>
+<c:set var="isResponsible" value="${requestScope.IsResponsible}"/>
+<c:set var="viewContext" value="${requestScope.viewContext}"/>
+<c:set var="componentInstanceId" value="${viewContext.componentInstanceId}"/>
+<c:set var="allReservations" value="allReservations"/>
+<c:set var="categoryId" value="${viewContext.categoryId}"/>
+<c:set var="resourceId" value="${viewContext.resourceId}"/>
+<c:set var="objectView" value="${requestScope.objectView}"/>
+<c:set var="allCategories" value="${requestScope.listOfCategories}"/>
+<c:set var="allResources" value="${requestScope.listResourcesofCategory}"/>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<script type="text/javascript" src="<c:url value='/util/javaScript/animation.js' />" ></script>
-<script type="text/javascript" src="<c:url value='/util/javaScript/overlib.js'/>" ></script>
-<script type="text/javascript">
+  <view:looknfeel/>
+  <view:includePlugin name="qtip"/>
+  <view:includePlugin name="calendar"/>
+  <view:includePlugin name="datepicker"/>
+  <script type="text/javascript" src="<c:url value="/resourcesManager/jsp/javaScript/resourceManager-calendar.js" />"></script>
+  <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js" />"></script>
+  <script type="text/javascript">
 
-function nextMonth(object)
-{
-    document.almanachForm.action = "NextMonth";
-    <%if((idResourceFromRR != null) && (!"".equals(idResourceFromRR))){%>
-		document.almanachForm.resourceId.value = <%=idResourceFromRR%>;
-	<%}%>
-    document.almanachForm.objectView.value = object;
-    document.almanachForm.submit();
-}
+    function viewReservationData() {
+      performForm("ViewReservationData");
+    }
 
-function previousMonth(object)
-{
-	document.almanachForm.action = "PreviousMonth";
-	<%if((idResourceFromRR != null) && (!idResourceFromRR.equals(""))){%>
-		document.almanachForm.resourceId.value = <%=idResourceFromRR%>;
-	<%}%>
-	document.almanachForm.objectView.value = object;
-	document.almanachForm.submit();
-}
-function goToDay(object)
-{
-	document.almanachForm.action = "GoToday";
-	<%if((idResourceFromRR != null) && (!"".equals(idResourceFromRR))){%>
-		document.almanachForm.resourceId.value = <%=idResourceFromRR%>;
-	<%}%>
-	document.almanachForm.objectView.value = object;
-	document.almanachForm.submit();
-}
+    function viewResourceData() {
+      performForm("ViewResourceData");
+    }
 
-function getReservationsOfCategory(select){
-	if (select.value.length == 0)
-	{
-		document.almanachForm.action = "Main";
-		document.almanachForm.submit();
-	}
-	else
-	{
-		document.almanachForm.action = "Calendar";
-		document.almanachForm.objectView.value = select.value;
-		document.almanachForm.submit();
-	}
-}
+    function viewReservationListingData() {
+      performForm("ViewReservationListingData");
+    }
 
-function getReservationsOfResource(select){
-	if (select.value.length == 0)
-	{
-		getReservationsOfCategory(document.getElementById("selectCategory"));
-	}
-	else
-	{
-		document.almanachForm.action = "Calendar";
-		document.almanachForm.objectView.value = document.getElementById("selectCategory").value;
-		document.almanachForm.resourceId.value = select.value;
-	  document.almanachForm.submit();
-	}
-}
+    function viewByMonth() {
+      performForm("ViewByMonth");
+    }
 
-function clickEvent(idEvent, date, componentId){
-    viewEvent(idEvent);
-}
+    function viewByWeek() {
+      performForm("ViewByWeek");
+    }
 
-function clickDay(day){
-   location.href="NewReservation?Day="+day;
-}
+    function nextPeriod() {
+      performForm("NextPeriod");
+    }
 
-function viewEvent(id)
-{
-	<% if(objectView.equals(personalReservation) || "PlanningOtherUser".equals(objectView) ||
-      "viewForValidation".equals(objectView)){%>
-   top.bottomFrame.MyMain.location.href = "ViewReservation?reservationId="+id+"&objectView=<%=objectView%>";
-	<%}else {%>
-	 top.bottomFrame.MyMain.location.href = "ViewResource?resourceId="+id+"&provenance=calendar";
-	<%}%>
-	
-}
-function viewOtherPlanning()
-{
-	SP_openWindow('ChooseOtherPlanning','ChooseOtherPlanning','750','550','scrollbars=yes, resizable, alwaysRaised');
-}
+    function previousPeriod() {
+      performForm("PreviousPeriod");
+    }
 
-</script>
-<view:looknfeel />
+    function goToDay(selectedDate) {
+      if (!selectedDate) {
+        selectedDate = '';
+      }
+      document.almanachForm.selectedDate.value = selectedDate;
+      performForm("GoToday");
+    }
+
+    function getReservationsOfCategory(select) {
+      document.almanachForm.categoryIdFilter.value = select.value;
+      performForm("CategoryIdFilter", 'none');
+    }
+
+    function getReservationsOfResource(select) {
+      if (select.value.length == 0) {
+        getReservationsOfCategory(document.getElementById("selectCategory"));
+      } else {
+        document.almanachForm.categoryIdFilter.value = $('#selectCategory').val();
+        document.almanachForm.resourceIdFilter.value = select.value;
+        performForm("ResourceIdFilter", select.value);
+      }
+    }
+
+    function performForm(action, resourceId, objectView) {
+      $.progressMessage();
+      if (!resourceId) {
+        resourceId = null;
+      }
+      if (!objectView) {
+        objectView = '${objectView}';
+      }
+      document.almanachForm.action = action;
+      <c:if test="${not empty resourceId}">
+      document.almanachForm.resourceId.value = ${resourceId};
+      </c:if>
+      if (resourceId != null) {
+        document.almanachForm.resourceId.value = (resourceId != 'none' ? resourceId : null);
+      }
+      document.almanachForm.objectView.value = (objectView != 'none' ? objectView : null);
+      document.almanachForm.submit();
+    }
+
+    function clickDay(day) {
+      <c:if test="${profile != 'user'}">
+      top.bottomFrame.MyMain.location.href = "NewReservation?objectView=${objectView}&Day=" + day;
+      </c:if>
+    }
+
+    // Labels
+    var labels = {
+      the : '<fmt:message key="GML.date.the" />',
+      hourFrom : '<fmt:message key="GML.date.hour.from" />',
+      from : '<fmt:message key="GML.date.from" />',
+      to : '<fmt:message key="GML.date.to" />',
+      hourTo : '<fmt:message key="GML.date.hour.to" />',
+      close : '<fmt:message key="GML.close" />',
+      week : '<fmt:message key="GML.week" />',
+      bookedBy : '<fmt:message key="resourcesManager.bookedBy" />',
+      reservationLink : '<fmt:message key="resourcesManager.reservationLink" />',
+      resourceLink : '<fmt:message key="resourcesManager.resourceLink" />'
+    };
+
+    <c:set var="refDay" value="${viewContext.referenceDay}" />
+    <c:set var="bpDay" value="${viewContext.referencePeriod.beginDate}" />
+    <c:set var="epDay" value="${viewContext.referencePeriod.endDate}" />
+    // Filters
+    var filters = {
+      isPortlet : true,
+      viewResourceData : ${viewContext.dataViewType.resourcesDataView},
+      categoryUri : '${viewContext.categoryUrl}',
+      resourceUri : '${viewContext.resourceUrl}',
+      monthlyView : ${viewContext.viewType.monthlyView},
+      weeklyView : ${viewContext.viewType.weeklyView},
+      language : '${language}',
+      objectView : '${objectView}',
+      currentDay : new Date().setDay(${refDay.year}, ${refDay.month}, ${refDay.dayOfMonth}),
+      planningOfUser : ${not empty viewContext.selectedUserId}
+    };
+
+    $(document).ready(function() {
+
+      // Calendar
+      $.ajax({
+        url : '${viewContext.reservationEventUrl}',
+        cache : false,
+        type : 'GET',
+        dataType : 'json'
+      }).success(function(data) {
+            <c:choose>
+            <c:when test="${viewContext.dataViewType.reservationListingDataView}">
+            $("#reservationContent").append(renderReservationListing(data, labels, filters));
+            </c:when>
+            <c:otherwise>
+            // Loading calendar
+            $("#reservationContent").calendar({
+              allDaySlot : false,
+              view : '${fn:toLowerCase(viewContext.viewType.name)}',
+              weekends : ${viewContext.withWeekend},
+              firstDayOfWeek : ${viewContext.firstDayOfWeek},
+              currentDate : filters.currentDay,
+              events : prepareCalendarEvents(data, labels, filters),
+              onday : clickDay,
+              onevent : function(event) {
+                displayQTip(event);
+              },
+              eventrender : calendarEventRender
+            });
+            </c:otherwise>
+            </c:choose>
+          }).error(function(jqXHR, textStatus, errorThrown) {
+            alert(errorThrown);
+          });
+    });
+
+  </script>
 </head>
 <body id="resourcesManager">
-  <view:frame>
-  <table width="98%" border="0" cellspacing="0" cellpadding="1">
-    <tr>
-      <td>
-        <table cellpadding="0" cellspacing="0" border="0" width="50%" bgcolor="000000">
-          <tr> 
-            <td>
-              <table cellpadding="2" cellspacing="1" border="0" width="100%">
-                  <tr> 
-                    <td class="intfdcolor" align="center" nowrap width="100%" height="24"> 
-                      <select id="selectCategory" name="selectCategory" onChange="getReservationsOfCategory(this)" class="selectNS">
-                        <c:if test="${requestScope['listOfCategories'] != null && !empty requestScope['listOfCategories']}">
-                          <option value=""><%=resource.getString("resourcesManager.categories")%></option>
-                        	<option value="">-----------------</option>
-                          <c:forEach items="${requestScope['listOfCategories']}" var="category">
-                           <option value="<c:out value="${category.id}" />" <c:if test="${category.id eq objectView}">selected="selected"</c:if>><c:out value="${category.name}"/></option>
-                          </c:forEach>
-                        </c:if>
-                      </select>
-                    </td>
-                  </tr>
-              </table>
-            </td>
-          </tr>
-        </table>
-      </td>
-      <c:if test="${requestScope['listResourcesofCategory'] != null && !empty requestScope['listResourcesofCategory']}">
-      <td>
-      	<table cellpadding="0" cellspacing="0" border="0" width="50%" bgcolor="000000">
-      	  <tr>
-      		<td> 
-              <table cellpadding="2" cellspacing="1" border="0" width="100%">    
-                  <tr> 
-                   	<td class="intfdcolor" align="center" nowrap width="100%" height="24"> 
-                      <select name="selectResource" onChange="getReservationsOfResource(this)">
-                      <option value=""><%=resource.getString("resourcesManager.allResources")%></option>
-                      	<option value="">-----------------</option>
-                      	<c:forEach items="${requestScope['listResourcesofCategory']}" var="resource">
-                      			<option value="<c:out value="${resource.id}" />"<c:if test="${resource.id eq requestScope['resourceId']}">selected="selected"</c:if>><c:out value="${resource.name}" /></option>
-                      	</c:forEach>
-                       </select>
-                    </td>
-                  </tr>
-              </table>
-            </td>
-          </tr>
-        </table>
-      </td>
-	  </c:if>
-        
-    <!-- affichage et traitement du bouton Aujourd hui -->  
-      <td> 
-        <table cellpadding=0 cellspacing=0 border=0 width=50% bgcolor=000000>
-          <tr> 
-            <td> 
-              <table cellpadding=2 cellspacing=1 border=0 width="100%" >
-                <tr> 
-                  <td class=intfdcolor align=center nowrap width="100%" height="24"><a href="javascript:onClick=goToDay('<%=objectView%>')" onFocus="this.blur()" class=hrefComponentName><%=resource.getString("resourcesManager.auJour")%></a></td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </table>
-      </td>
-      
-      <!-- affichage et traitement des boutons < et > -->
-      <td width="100%"> 
-        <table cellpadding=0 cellspacing=0 border=0 width=50% bgcolor=000000>
-          <tr> 
-            <td> 
-              <table cellpadding=0 cellspacing=1 border=0 width="100%" >
-                <tr> 
-                  <td class=intfdcolor><a href="javascript:onClick=previousMonth('<%=objectView%>')" onFocus="this.blur()"><img src="<%=resource.getIcon("resourcesManager.arrLeft")%>" border="0"></a></td>
-                  <td class=intfdcolor align=center nowrap width="100%" height="24"><span class="txtnav"><%=resource.getString("GML.mois" + resourcesManagerSC.getCurrentDay().get(Calendar.MONTH))%> <%=String.valueOf(resourcesManagerSC.getCurrentDay().get(Calendar.YEAR))%></span></td>
-                  <td class=intfdcolor><a href="javascript:onClick=nextMonth('<%=objectView%>')" onFocus="this.blur()"><img src="<%=resource.getIcon("resourcesManager.arrRight")%>" border="0"></a></td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </table>
-      </td>
-      <%if((firstNameUser != null) || (lastName != null)){%>
-	      <td> 
-	        <table cellpadding=0 cellspacing=0 border=0 width=50%>
-	          <tr> 
-	            <td> 
-	              <table cellpadding=2 cellspacing=1 border=0 width="100%" >
-	                <tr> 
-	                  <td align=center nowrap width="100%" height="24"><%=resource.getString("resourcesManager.planningFrom") + " " + firstNameUser + " " + lastName %></td>
-	                </tr>
-	              </table>
-	            </td>
-	          </tr>
-	        </table>
-	      </td>
-	<%} %>
-      
-    </tr>
-  </table>
-  <br/>
-<%=monthC.print()%>
 
-  </view:frame>
+<view:tabs>
+  <fmt:message key="GML.week" var="tmp"/>
+  <c:set var="tmpAction">javascript:onClick=viewByWeek()</c:set>
+  <view:tab label="${tmp}" action="${tmpAction}" selected="${viewContext.viewType.weeklyView}"/>
+  <fmt:message key="GML.month" var="tmp"/>
+  <c:set var="tmpAction">javascript:onClick=viewByMonth()</c:set>
+  <view:tab label="${tmp}" action="${tmpAction}" selected="${viewContext.viewType.monthlyView}"/>
+</view:tabs>
+
+<view:frame>
+  <div class="sousNavBulle">
+    <div id="navigation">
+
+      <div id="others">
+        <h3 id="planning-context">
+          <c:choose>
+            <c:when test="${viewContext.forValidation}">
+              <fmt:message key="resourcesManager.viewReservationForValidation"/>
+            </c:when>
+            <c:when test="${empty viewContext.selectedUser}">
+              <fmt:message key="resourcesManager.allPlanning"/>
+            </c:when>
+            <c:when test="${viewContext.selectedUserId eq viewContext.currentUserId}">
+              <fmt:message key="resourcesManager.myPlanning"/>
+            </c:when>
+            <c:otherwise>
+              <fmt:message key="resourcesManager.planningFrom"/> ${viewContext.selectedUser.displayedName}
+            </c:otherwise>
+          </c:choose>
+        </h3>
+
+        <p><fmt:message key="GML.view.mode"/>
+          <c:choose>
+            <c:when test="${not viewContext.dataViewType.reservationListingDataView}">
+              <c:set var="hrefTmp" value="#"/>
+              <c:set var="classTmp" value=" active"/>
+            </c:when>
+            <c:otherwise>
+              <c:set var="hrefTmp" value="javascript:onClick=viewReservationData()"/>
+              <c:set var="classTmp" value=""/>
+            </c:otherwise>
+          </c:choose>
+          <a class="calendar-mode${classTmp}" href="${hrefTmp}" title="<fmt:message key="resourcesManager.calendarViewType"/>"></a>
+          <c:choose>
+            <c:when test="${viewContext.dataViewType.reservationListingDataView}">
+              <c:set var="hrefTmp" value="#"/>
+              <c:set var="classTmp" value=" active"/>
+            </c:when>
+            <c:otherwise>
+              <c:set var="hrefTmp" value="javascript:onClick=viewReservationListingData()"/>
+              <c:set var="classTmp" value=""/>
+            </c:otherwise>
+          </c:choose>
+          <a class="list-mode${classTmp}" href="${hrefTmp}" title="<fmt:message key="resourcesManager.listViewType"/>"></a>
+        </p>
+      </div>
+
+      <div id="currentScope">
+        <a href="javascript:onClick=previousPeriod()" onfocus="this.blur()"><img align="top" border="0" alt="" src="<c:url value="/util/icons/arrow/arrowLeft.gif"/>"></a>
+        <span class="txtnav">${viewContext.referencePeriodLabel}</span>
+        <a href="javascript:onClick=nextPeriod()" onfocus="this.blur()"><img align="top" border="0" alt="" src="<c:url value="/util/icons/arrow/arrowRight.gif"/>"></a>
+        <span id="today"> <a href="javascript:onClick=goToDay()" onfocus="this.blur()"><fmt:message key="resourcesManager.auJour"/></a></span>
+      </div>
+
+      <p>
+        <c:if test="${not viewContext.dataViewType.reservationListingDataView}">
+          <fmt:message key="GML.Show" var="tmp"/>
+          ${fn:replace(tmp, ':', '')}
+          <c:set var="classTmp" value=""/>
+          <c:if test="${viewContext.dataViewType.reservationsDataView}">
+            <c:set var="classTmp" value=" active"/>
+          </c:if>
+          <a class="${classTmp}" href="javascript:onClick=viewReservationData()"><fmt:message key="resourcesManager.reservationsDataView"/></a>
+          <c:set var="classTmp" value=""/>
+          <c:if test="${viewContext.dataViewType.resourcesDataView}">
+            <c:set var="classTmp" value=" active"/>
+          </c:if>
+          <a class="${classTmp}" href="javascript:onClick=viewResourceData()"><fmt:message key="resourcesManager.resourcesDataView"/></a>
+          -
+        </c:if>
+        <fmt:message key="GML.filterBy"/>
+        <select id="selectCategory" name="selectCategory" onchange="getReservationsOfCategory(this)" class="selectNS">
+          <c:if test="${not empty allCategories}">
+            <option value="">
+              <fmt:message key="resourcesManager.categories"/></option>
+            <option value="">-----------------</option>
+            <c:forEach items="${allCategories}" var="category">
+              <option value="${category.id}" <c:if
+                  test="${category.id eq categoryId}">selected="selected"</c:if>>${category.name}</option>
+            </c:forEach>
+          </c:if>
+        </select>
+        <c:if test="${not empty allResources}">
+          <select name="selectResource" onchange="getReservationsOfResource(this)">
+            <option value="">
+              <fmt:message key="resourcesManager.allResources"/></option>
+            <option value="">-----------------</option>
+            <c:forEach items="${allResources}" var="resource">
+              <option value="${resource.id}" <c:if
+                  test="${resource.id eq resourceId}">selected="selected"</c:if>>${resource.name}</option>
+            </c:forEach>
+          </select>
+        </c:if>
+        <span style="line-height: 25px">&nbsp;</span>
+      </p>
+
+    </div>
+  </div>
+  <div id="reservationContent"></div>
+</view:frame>
 <form name="almanachForm" action="" method="post">
   <input type="hidden" name="isPortlet" value="true"/>
   <input type="hidden" name="objectView" value=""/>
@@ -253,6 +327,10 @@ function viewOtherPlanning()
   <input type="hidden" name="idUser" value=""/>
   <input type="hidden" name="firstNameUser" value=""/>
   <input type="hidden" name="lastName" value=""/>
+  <input type="hidden" name="selectedDate" value=""/>
+  <input type="hidden" name="categoryIdFilter" value=""/>
+  <input type="hidden" name="resourceIdFilter" value=""/>
 </form>
+<view:progressMessage/>
 </body>
 </html>

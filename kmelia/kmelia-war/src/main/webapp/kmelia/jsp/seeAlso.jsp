@@ -1,8 +1,9 @@
+<%@page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
 <%@page import="org.silverpeas.search.SearchEngineFactory"%>
 <%@ page import="org.silverpeas.search.SearchEngine" %>
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -35,7 +36,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ include file="checkKmelia.jsp" %>
 <%@ include file="publicationsList.jsp.inc" %>
-<%@ include file="tabManager.jsp.inc" %>
 
 <%!
  //Icons
@@ -126,7 +126,7 @@ out.println(gef.getLookStyleSheet());
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 function seeAlsoDeleteConfirm() {
-	if (document.seeAlsoForm.PubIds != null){
+	if (document.seeAlsoForm.PubIds != null && $("input[type='checkbox']").is(":checked")){
 	    if(window.confirm("<%=kmeliaScc.getString("kmelia.ConfirmDeleteSeeAlso")%>")){
 	    	document.seeAlsoForm.PubId.value = "<%=id%>";
 			document.seeAlsoForm.Action = "<%=routerUrl%>DeleteSeeAlso";
@@ -177,9 +177,9 @@ function closeWindows() {
         out.println(window.printBefore());
 
         if (isOwner) {
-            displayAllOperations(id, kmeliaScc, gef, action, resources, out);
+            KmeliaDisplayHelper.displayAllOperations(id, kmeliaScc, gef, action, resources, out);
         } else {
-            displayUserOperations(id, kmeliaScc, gef, action, resources, out);
+            KmeliaDisplayHelper.displayUserOperations(id, kmeliaScc, gef, action, resources, out);
         }
 
         out.println(frame.printBefore());

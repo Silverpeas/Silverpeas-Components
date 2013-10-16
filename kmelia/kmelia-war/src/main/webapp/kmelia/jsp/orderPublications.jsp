@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -79,9 +79,7 @@ function topicGoTo(id)
 </head>
 <body>
 <fmt:message key="kmelia.OrderPublications" var="browseBarXtra"/>
-<view:browseBar extraInformations="${browseBarXtra}">
-  <view:browseBarElt link="Main" label="${requestScope['Path']}" />
-</view:browseBar>
+<view:browseBar extraInformations="${browseBarXtra}" path="${requestScope['Path']}"/>
 <view:window>
 <view:frame>
 <div class="inlineMessage">

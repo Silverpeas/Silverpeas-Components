@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -32,8 +32,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
 <jsp:useBean id="quizzUnderConstruction" scope="session" class="com.stratelia.webactiv.util.questionContainer.model.QuestionContainerDetail" />
-<jsp:useBean id="questionsVector" scope="session" class="java.util.Vector" />
-<jsp:useBean id="questionsResponses" scope="session" class="java.util.Hashtable" />
+<jsp:useBean id="questionsVector" scope="session" class="java.util.ArrayList" />
+<jsp:useBean id="questionsResponses" scope="session" class="java.util.HashMap" />
 
 <%@ include file="checkQuizz.jsp" %>
 
@@ -112,11 +112,11 @@ String displayQuizz(QuestionContainerDetail quizz, GraphicElementFactory gef, St
   return r;
 }
 
-Vector displayQuestions(QuestionContainerDetail quizz, int roundId,GraphicElementFactory gef, String m_context,QuizzSessionController quizzScc, ResourcesWrapper resources, ResourceLocator settings, Frame frame, JspWriter out) throws QuizzException {
+List<String> displayQuestions(QuestionContainerDetail quizz, int roundId,GraphicElementFactory gef, String m_context,QuizzSessionController quizzScc, ResourcesWrapper resources, ResourceLocator settings, Frame frame, JspWriter out) throws QuizzException {
   String r = "";
   String s = "";
   Question question = null;
-  Vector displayQuestions = new Vector();
+  List<String> displayQuestions = new ArrayList<String>();
 	try{
 		if (quizz != null) {
 			QuestionContainerHeader quizzHeader = quizz.getHeader();
@@ -264,16 +264,10 @@ String displayQuestion(QuizzSessionController quizzScc, Question question, int i
 		        }
 		        else
 		        {
-		        	url = FileServer.getUrl(answer.getPK().getSpace(), answer.getPK().getComponentName(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
+		        	url = FileServerUtils.getUrl(answer.getPK().getComponentName(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
 		        }
 		        r += "<td width=\"50%\"><img src=\""+url+"\" align=\"left\"></td>";
 	      }
-              //if (answer.getImage() != null) {
-                //String url = FileServer.getUrl(answer.getPK().getSpace(), answer.getPK().getComponentName(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
-                //r += "<td width=\"50%\"><img src=\""+url+"\" align=\"left\"></td>";
-              //} else
-                //r += "<td align=\"left\" width=\"50%\">&nbsp;</td>";
-
               if (answer.isOpened()) {
                   isOpened = 1;
                   r += "<td align=\"left\" width=\"1%\">";
@@ -296,16 +290,16 @@ String displayQuestion(QuizzSessionController quizzScc, Question question, int i
 }
 
 
-Vector displayQuestionResult(QuestionContainerDetail quizz, Question question, int i, String m_context, ResourceLocator settings, QuizzSessionController quizzScc, boolean solutionAllowed, ResourcesWrapper resources) {
+List<String> displayQuestionResult(QuestionContainerDetail quizz, Question question, int i, String m_context, ResourceLocator settings, QuizzSessionController quizzScc, boolean solutionAllowed, ResourcesWrapper resources) {
 
   Collection<Answer> answers = question.getAnswers();
   Collection<QuestionResult> questionResults = question.getQuestionResults();
-  Vector displayQuestionResult = new Vector();
+  List<String> displayQuestionResult = new ArrayList<String>();
   String r = "";
   // User answers
   int questionUserScore = 0;
   Iterator<QuestionResult> itB = questionResults.iterator();
-  Vector qrUser = new Vector();
+  List<String> qrUser = new ArrayList<String>();
   try {
 		while (itB.hasNext()) {
 			QuestionResult questionResult = (QuestionResult) itB.next();
@@ -373,7 +367,7 @@ Vector displayQuestionResult(QuestionContainerDetail quizz, Question question, i
 				        }
 				        else
 				        {
-				        	url = FileServer.getUrl(answer.getPK().getSpace(), answer.getPK().getComponentName(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
+				        	url = FileServerUtils.getUrl(answer.getPK().getComponentName(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
 				        }
 				        r += "<td><img src=\""+url+"\" align=\"left\"></td>";
 			      }
@@ -540,16 +534,10 @@ String displayQuestionPreview(Question question, int i, String m_context, QuizzS
 				        }
 				        else
 				        {
-				        	url = FileServer.getUrl(quizzScc.getSpaceId(), quizzScc.getComponentId(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
+				        	url = FileServerUtils.getUrl(quizzScc.getComponentId(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
 				        }
 				        r += "<td width=\"50%\"><img src=\""+url+"\" align=\"left\"></td>";
 			      }
-
-	            //if (answer.getImage() != null) {
-	              //String url = FileServer.getUrl(quizzScc.getSpaceId(), quizzScc.getComponentId(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
-	              //r += "<td width=\"50%\"><img src=\""+url+"\" align=\"left\"></td>";
-	            //} else
-	              //r += "<td align=\"left\" width=\"50%\">&nbsp;</td>";
 	            r += "<td width=\"40px\" align=\"center\"><input type=\""+inputType+"\" name=\"answer_"+i+"\"></td><td align=\"left\" width=\"100%\">"+Encode.javaStringToHtmlString(answer.getLabel())+"<BR>";
 	            r += "</tr></table>";
 	        }
@@ -561,7 +549,7 @@ String displayQuestionPreview(Question question, int i, String m_context, QuizzS
 
 String displayQuizzResult(QuestionContainerDetail quizz, GraphicElementFactory gef, String m_context,QuizzSessionController quizzScc, ResourcesWrapper resources, ResourceLocator settings, int nb_user_votes) throws QuizzException {
         String r = "";
-        Vector function = null;
+        List<String> function = null;
         int quizzUserScore = 0;
         int quizzScoreMax = 0;
 
@@ -637,7 +625,7 @@ String displayQuizzResult(QuestionContainerDetail quizz, GraphicElementFactory g
 
   String displayQuizzResultAdmin(QuestionContainerDetail quizz, GraphicElementFactory gef, String m_context,QuizzSessionController quizzScc, ResourcesWrapper resources, ResourceLocator settings, int nb_user_votes) throws QuizzException {
         String r = "";
-        Vector function = null;
+        List<String> function = null;
         int quizzUserScore = 0;
         int quizzScoreMax = 0;
 
@@ -728,7 +716,7 @@ String topicAddSrc = m_context + "/util/icons/folderAdd.gif";
 String ligne = m_context + "/util/icons/colorPix/1px.gif";
 
 //Html
-Vector html_string = null;
+List<String> html_string = null;
 
 QuestionContainerDetail quizz = null;
 
@@ -868,12 +856,12 @@ function clipboardCopy(id) {
 if (action.equals("RecordQuestionsResponses")) {
   int nbQuestions = Integer.parseInt(request.getParameter("NbQuestions"));
   int cluePenalty  = 0;
-  Hashtable hash = (Hashtable) session.getAttribute("questionsResponses");
+  Map hash = (Map) session.getAttribute("questionsResponses");
   if (hash == null)
-        hash = new Hashtable();
+        hash = new HashMap();
 
   for (int i = 1; i <= nbQuestions; i++) {
-      Vector v = new Vector(5, 2);
+      List v = new ArrayList(5);
       cluePenalty = Integer.parseInt(request.getParameter("cluePenalty_"+i));
       v.add("PC"+cluePenalty);
       String[] selectedAnswers = (String[]) request.getParameterValues("answer_"+i);
@@ -894,12 +882,12 @@ if (action.equals("RecordQuestionsResponses")) {
 } else if (action.equals("SendVote")) {
   int nbQuestions = Integer.parseInt(request.getParameter("NbQuestions"));
   int cluePenalty  = 0;
-  Hashtable hash = (Hashtable) session.getAttribute("questionsResponses");
+  Map hash = (Map) session.getAttribute("questionsResponses");
   if (hash == null)
-      hash = new Hashtable();
+      hash = new HashMap();
 
   for (int i = 1; i <= nbQuestions; i++) {
-      Vector v = new Vector(5, 2);
+      List v = new ArrayList(5);
       cluePenalty = Integer.parseInt(request.getParameter("cluePenalty_"+i));
       v.add("PC"+cluePenalty);
       String[] selectedAnswers = (String[]) request.getParameterValues("answer_"+i);
@@ -920,7 +908,7 @@ if (action.equals("RecordQuestionsResponses")) {
 if (action.equals("SubmitQuizz")) {
   QuestionContainerDetail quizzDetail = (QuestionContainerDetail) session.getAttribute("quizzUnderConstruction");
   //Vector 2 Collection
-  Vector questionsV = (Vector) session.getAttribute("questionsVector");
+  List questionsV = (List) session.getAttribute("questionsVector");
   List<Question> q = new ArrayList<Question>();
   for (int j = 0; j < questionsV.size(); j++) {
         q.add((Question) questionsV.get(j));
@@ -930,7 +918,7 @@ if (action.equals("SubmitQuizz")) {
   session.removeAttribute("quizzUnderConstruction");
   quizzScc.setPositions(null);
   %>
-  <jsp:forward page="<%=quizzScc.getComponentUrl()+\"Main.jsp\"%>"/>
+  <jsp:forward page='<%=quizzScc.getComponentUrl()+"Main.jsp"%>'/>
   <%
   return;
 } else if (action.equals("PreviewQuizz")) {
@@ -940,7 +928,7 @@ if (action.equals("SubmitQuizz")) {
     BrowseBar browseBar = window.getBrowseBar();
     browseBar.setDomainName(quizzScc.getSpaceLabel());
     browseBar.setComponentName(quizzScc.getComponentLabel());
-    browseBar.setExtraInformation(resources.getString("GML.preview"));
+    browseBar.setExtraInformation(resources.getString("quizz.preview"));
 
     out.println(window.printBefore());
     Frame frame = gef.getFrame();
@@ -990,7 +978,7 @@ if (action.equals("ViewQuizz")) {
   out.println(quizzPart);
 %>
   <view:pdcClassification componentId="<%= quizzScc.getComponentId() %>" contentId="<%= quizzId %>" />
-<%        
+<%
   out.println(frame.printMiddle());
   out.println(frame.printAfter());
   out.println(window.printAfter());

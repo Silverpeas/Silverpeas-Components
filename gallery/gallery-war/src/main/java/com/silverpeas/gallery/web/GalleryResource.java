@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -30,10 +30,20 @@ import com.silverpeas.gallery.model.AlbumDetail;
 import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.gallery.model.PhotoPK;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import org.apache.commons.io.IOUtils;
 
-import javax.ws.rs.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.StreamingOutput;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import static com.silverpeas.gallery.web.GalleryResourceURIs.*;
 
@@ -89,8 +99,75 @@ public class GalleryResource extends AbstractGalleryResource {
       final AlbumDetail album =
           getGalleryBm().getAlbum(new NodePK(albumId, getComponentId()), true);
       final PhotoDetail photo = getGalleryBm().getPhoto(new PhotoPK(photoId, getComponentId()));
-      verifyViewAllPhotoAuthorized(photo);
+      verifyUserPhotoAccess(photo);
       return asWebEntity(photo, album);
+    } catch (final WebApplicationException ex) {
+      throw ex;
+    } catch (final Exception ex) {
+      throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
+    }
+  }
+
+  /**
+   * Gets the preview content of a photo.
+   * If it doesn't exist, a 404 HTTP code is returned.
+   * If the user isn't authentified, a 401 HTTP code is returned.
+   * If a problem occurs when processing the request, a 503 HTTP code is returned.
+   * @param photoId the identifier of the photo
+   * @return the response to the HTTP GET request preview content of the asked photo.
+   */
+  @GET
+  @Path(GALLERY_ALBUMS_URI_PART + "/{albumId}/" + GALLERY_PHOTOS_PART + "/{photoId}/" +
+      GALLERY_PHOTO_PREVIEW_PART)
+  @Produces("image/*")
+  public Response getPhotoPreviewContent(@PathParam("albumId") final String albumId,
+      @PathParam("photoId") final String photoId) {
+    return getPhotoContent(albumId, photoId, false);
+  }
+
+  /**
+   * Gets the content of a photo.
+   * If it doesn't exist, a 404 HTTP code is returned.
+   * If the user isn't authentified, a 401 HTTP code is returned.
+   * If a problem occurs when processing the request, a 503 HTTP code is returned.
+   * @param photoId the identifier of the photo
+   * @return the response to the HTTP GET request content of the asked photo.
+   */
+  @GET
+  @Path(GALLERY_ALBUMS_URI_PART + "/{albumId}/" + GALLERY_PHOTOS_PART + "/{photoId}/" +
+      GALLERY_PHOTO_CONTENT_PART)
+  @Produces("image/*")
+  public Response getPhotoOriginalContent(@PathParam("albumId") final String albumId,
+      @PathParam("photoId") final String photoId) {
+    return getPhotoContent(albumId, photoId, true);
+  }
+
+  /**
+   * Centralization of getting of photo content.
+   * @param albumId
+   * @param photoId
+   * @param isOriginalRequired
+   * @return
+   */
+  private Response getPhotoContent(final String albumId, final String photoId,
+      final boolean isOriginalRequired) {
+    try {
+      final AlbumDetail album =
+          getGalleryBm().getAlbum(new NodePK(albumId, getComponentId()), true);
+      final PhotoDetail photo = getGalleryBm().getPhoto(new PhotoPK(photoId, getComponentId()));
+      verifyUserPhotoAccess(photo);
+      return Response.ok(new StreamingOutput() {
+        @Override
+        public void write(final OutputStream output) throws IOException, WebApplicationException {
+          final InputStream photoStream = asInputStream(photo, album,
+              (isOriginalRequired && (isUserPrivileged() || photo.isDownloadable())));
+          try {
+            IOUtils.copy(photoStream, output);
+          } finally {
+            IOUtils.closeQuietly(photoStream);
+          }
+        }
+      }).header("Content-Type", photo.getImageMimeType()).build();
     } catch (final WebApplicationException ex) {
       throw ex;
     } catch (final Exception ex) {

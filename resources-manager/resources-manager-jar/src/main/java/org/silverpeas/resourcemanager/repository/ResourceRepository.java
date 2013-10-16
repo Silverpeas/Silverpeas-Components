@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2000 - 2012 Silverpeas
+ *  Copyright (C) 2000 - 2013 Silverpeas
  * 
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as
@@ -40,32 +40,27 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
   @Query("from Resource resource WHERE resource.instanceId = :instanceId AND resource.bookable = 1 AND resource.category.bookable = 1")
   public List<Resource> findAllBookableResources(@Param("instanceId") String instanceId);
 
-  @Query("SELECT DISTINCT reservedResource.resource FROM ReservedResource reservedResource WHERE reservedResource.reservedResourcePk.reservationId = :currentReservationId")
+  @Query("SELECT DISTINCT reservedResource.resource FROM ReservedResource reservedResource WHERE reservedResource.reservedResourcePk.reservationId = :reservationId")
   public List<Resource> findAllResourcesForReservation(
-      @Param("currentReservationId") Long currentReservationId);
+      @Param("reservationId") Long reservationId);
 
   @Query("SELECT DISTINCT reservedResource.resource FROM ReservedResource reservedResource " +
-  "WHERE reservedResource.reservation.id != :currentReservationId AND reservedResource.status != 'R'" +
-  "AND reservedResource.resource.id IN :futureReservedResourceIds " +
-  "AND (( reservedResource.reservation.endDate > :startPeriod AND  reservedResource.reservation.beginDate <= :startPeriod)" +
-  "OR ( reservedResource.reservation.endDate >= :endPeriod  AND  reservedResource.reservation.beginDate < :endPeriod))")
-  public List<Resource> findAllResourcesWithProblem(
-      @Param("currentReservationId") Long currentReservationId,
-      @Param("futureReservedResourceIds") List<Long> futureReservedResourceIds,
+  "WHERE reservedResource.reservation.id != :reservationIdToSkip AND reservedResource.status != 'R'" +
+  "AND reservedResource.resource.id IN :aimedResourceIds " +
+  "AND reservedResource.reservation.beginDate < :endPeriod " +
+  "AND reservedResource.reservation.endDate > :startPeriod ")
+  public List<Resource> findAllReservedResources(
+      @Param("reservationIdToSkip") Long reservationIdToSkip,
+      @Param("aimedResourceIds") List<Long> aimedResourceIds,
       @Param("startPeriod") String startPeriod, @Param("endPeriod") String endPeriod);
-  
-  
+
+
   @Query("SELECT DISTINCT resourceValidator FROM ResourceValidator resourceValidator " +
-  "WHERE resourceValidator.resourceValidatorPk.managerId = :currentUserId AND resourceValidator.resourceValidatorPk.resourceId = :currentReservationId")
+  "WHERE resourceValidator.resourceValidatorPk.managerId = :currentUserId AND resourceValidator.resourceValidatorPk.resourceId = :reservationId")
   public ResourceValidator getResourceValidator(
-      @Param("currentReservationId") Long currentResourceId, @Param("currentUserId") Long currentUserId);
-  
-  @Modifying
-  @Query("DELETE ResourceValidator resourceValidator WHERE resourceValidator.resourceValidatorPk.resourceId = :currentResourceId")
-  public void deleteAllManagersOfResource(@Param("currentResourceId") Long currentResourceId);
-  
+      @Param("reservationId") Long currentResourceId, @Param("currentUserId") Long currentUserId);
+
   @Modifying
   @Query("DELETE Resource resource WHERE resource.category.id = :categoryId")
   public void deleteResourcesFromCategory(@Param("categoryId") Long categoryId);
-
 }

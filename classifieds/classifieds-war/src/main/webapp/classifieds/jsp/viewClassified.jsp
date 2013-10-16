@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -26,9 +26,13 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"
 	isELIgnored="false"%>
 
+<%@page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
+<%@ page import="com.silverpeas.util.EncodeHelper"%>
 <%@page import="com.silverpeas.form.Form"%>
 <%@page import="com.silverpeas.form.PagesContext"%>
 <%@page import="com.silverpeas.form.DataRecord"%>
+<%@page import="com.silverpeas.classifieds.model.ClassifiedDetail"%>
+<%@page import="org.silverpeas.attachment.model.SimpleDocument"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
@@ -37,8 +41,8 @@
 
 <%
   response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
-			response.setHeader("Pragma", "no-cache"); //HTTP 1.0
-			response.setDateHeader("Expires", -1); //prevents caching at the proxy server
+	response.setHeader("Pragma", "no-cache"); //HTTP 1.0
+	response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 
 <c:set var="language" value="${requestScope.resources.language}"/>
@@ -49,6 +53,7 @@
 
 <c:set var="browseContext" value="${requestScope.browseContext}" />
 <c:set var="componentLabel" value="${browseContext[1]}" />
+
 <c:set var="isDraftEnabled" value="${requestScope.IsDraftEnabled}" />
 <c:set var="isCommentsEnabled" value="${requestScope.IsCommentsEnabled}" />
 <c:set var="profile" value="${requestScope.Profile}" />
@@ -59,15 +64,23 @@
 <c:set var="classified" value="${requestScope.Classified}" />
 <c:set var="instanceId" value="${classified.instanceId}" />
 <c:set var="creatorId" value="${classified.creatorId}" />
-
 <c:set var="xmlForm" value="${requestScope.Form}" />
 <c:set var="xmlData" value="${requestScope.Data}" />
 <c:set var="xmlContext" value="${requestScope.Context}" />
+<c:set var="title" value="${classified.title}" />
+<c:set var="description" value="${classified.description}" />
+<c:set var="displayedTitle"><view:encodeHtml string="${title}" /></c:set>
+<c:set var="displayedDescription"><view:encodeHtmlParagraph string="${description}" /></c:set>
+<%
+String m_context = GeneralPropertiesManager.getString("ApplicationURL");
+%>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel />
+<view:includePlugin name="messageme"/>
 <script type="text/javascript" src="<c:url value='/util/javaScript/animation.js'/>"></script>
 <fmt:message var="deletionConfirm" key="classifieds.confirmDeleteClassified" />
 <script type="text/javascript">
@@ -81,7 +94,7 @@
 	}
 
 	function updateClassified(id) {
-		document.classifiedForm.action = "EditClassified";
+		document.classifiedForm.action = "EditClassified?ClassifiedId="+id;
 		document.classifiedForm.ClassifiedId.value = id;
 		document.classifiedForm.submit();
 	}
@@ -148,9 +161,25 @@
 		}
 		return result;
 	}
+	
+	$(document).ready(function() {
+
+		  $('.classified_thumbs a').click(function() {
+		        cheminImage=$(this).children('img').attr('src');
+		        $('.selected').removeClass('selected');
+		        $(this).addClass('selected');
+		        $('.classified_selected_photo img').attr('src',cheminImage);
+		        $('.classified_selected_photo a').attr('href',"javascript:onClick=openImage('"+cheminImage+"')");
+		  });
+		});
+	
+	function openImage(url) {
+		  SP_openWindow(url,'image','700','500','scrollbars=yes, noresize, alwaysRaised');
+  }
 </script>
 </head>
-<body id="classified-view">
+<body id="classifieds">
+<div id="${instanceId}">
 	<fmt:message var="classifiedPath" key="classifieds.classified" />
 	<view:browseBar>
 		<view:browseBarElt label="${classifiedPath}" link="" />
@@ -176,7 +205,7 @@
 				action="javascript:deleteConfirm('${classified.classifiedId}');"
 				altText="${deleteOp}" icon="${deleteIcon}" />
 
-			<c:if test="${isDraftEnabled}">
+			<c:if test="${userId == creatorId and isDraftEnabled}">
 				<view:operationSeparator />
 				<c:choose>
 					<c:when test="${'Draft' == classified.status}">
@@ -218,59 +247,92 @@
 
 	<view:window>
 		<view:frame>
-			<table cellpadding="5" width="100%">
-				<tr>
-					<td>
-						<div class="tableBoard" id="classified-view-header">
-							<h1 class="titreFenetre" id="classified-title">
-								<c:out value="${classified.title}" />
-							</h1>
-							<div id="classified-view-header-owner">
-								<span class="txtlibform"><fmt:message
-										key="classifieds.annonceur" />: </span> <span class="txtvalform"><c:out
-										value="${classified.creatorName} (${classified.creatorEmail})" />
-								</span>
-							</div>
-							<div id="classified-view-header-parutionDate">
-								<span class="txtlibform"><fmt:message
-										key="classifieds.parutionDate" />: </span> <span class="txtvalform"><c:out
-										value="${creationDate}" />
-								</span>
-							</div>
-							<c:if test="${fn:length(updateDate) > 0}">
-								<div id="classified-view-header-updateDate">
-									<span class="txtlibform"><fmt:message
-											key="classifieds.updateDate" />: </span> <span class="txtvalform"><c:out
-											value="${updateDate}" />
-									</span>
-								</div>
-							</c:if>
-							<c:if
-								test="${fn:length(validationDate) > 0 and classified.validatorName != null and fn:length(classified.validatorName) > 0}">
-								<div id="classified-view-header-validateDate">
-									<span class="txtlibform"><fmt:message
-											key="classifieds.validateDate" />: </span> <span class="txtvalform"><c:out
-											value="${validationDate}" />&nbsp;<span><fmt:message
-												key="classifieds.by" />
-									</span>&nbsp;<c:out value="${classified.validatorName}" />
-									</span>
-								</div>
-							</c:if>
-							<hr class="clear" />
-						</div> <c:if test="${not empty xmlForm}">
-							<div class="tableBoard" id="classified-view-content">
-								<%
-									Form xmlForm = (Form) pageContext.getAttribute("xmlForm");
-									DataRecord data = (DataRecord) pageContext.getAttribute("xmlData");
-									PagesContext context = (PagesContext) pageContext.getAttribute("xmlContext");
+			  <table cellpadding="5" width="100%">
+			  <tr>
+            <td valign="top"> 
+              <div id="header_classifieds"> </div>
+              <div class="rightContent">
+                <div class="bgDegradeGris" id="classified_info">
+                  <div class="paragraphe" id="classified_info_creation">
+                   <fmt:message key="classifieds.online" /><br/>
+                   <c:if test="${fn:length(validationDate) > 0}">
+                     <b><c:out value="${validationDate}" /></b>&nbsp;
+                   </c:if>
+                   <c:if test="${empty validationDate}">
+                      <b><c:out value="${creationDate}" /></b>&nbsp;
+                   </c:if>
+                   <fmt:message key="classifieds.by" />&nbsp;
+                    <view:username userId="${classified.creatorId}" />
+                    <div class="profilPhoto"><img class="defaultAvatar" alt="" src="${pageContext.request.contextPath}${classified.creator.avatar}"/></div><br/>
+									 <c:if test="${fn:length(updateDate) > 0}">
+									   <fmt:message key="classifieds.updateDate" /> : <b><c:out value="${updateDate}" /></b><br/>
+									 </c:if>
+									</div>
+									<div id="classified_contact_link" class="bgDegradeGris">
+									 <a rel="${classified.creatorId},${classified.creatorName}" class="link notification" href="#"><fmt:message key="classifieds.contactAdvertiser"/></a>
+									</div>
+                  <p></p>
+                </div>
+              </div>
+              <div class="principalContent">
+                <div id="menubar-creation-actions"></div>
+                <div class="classified_fiche">
+                  <h2 class="classified_title">${displayedTitle}</h2>
+                  <div class="classified_photos">
+                    <div class="classified_thumbs">
+                    <%
+                    int i = 0;
+                    %>
+		                <c:forEach var="image" items="${classified.images}">
+		                <%
+		                SimpleDocument simpleDocument = (SimpleDocument) pageContext.getAttribute("image");
+		                String url = m_context +  simpleDocument.getAttachmentURL();
+		                String select = "";
+		                if (i == 0) {
+		                  select = "class=\"selected\"";
+		                }
+		                %>
+		                  <a <%=select%> href="#"><img src="<%=url%>"/></a>
+		                <%
+		                i++;
+		                %>
+		                </c:forEach>
+                    </div>
+                    <c:if test="${not empty classified.images}">
+                    <div class="classified_selected_photo">
+                    <c:forEach var="image" items="${classified.images}" begin="0" end="0">
+                    <%
+                    SimpleDocument simpleDocument = (SimpleDocument) pageContext.getAttribute("image");
+                    String url = m_context +  simpleDocument.getAttachmentURL();
+                    %>
+                      <a href="javascript:onClick=openImage('<%=url%>')"><img src="<%=url%>"/></a>
+                    </c:forEach>
+                    </div>
+                    </c:if>
+                  </div>
+                  <c:if test="${classified.price > 0}">
+                    <div class="classified_price">${classified.price} &euro;</div>
+                  </c:if>  
+                  <p class="classified_description">${displayedDescription}</p>
+                  
+                  <!-- <hr class="clear" /> -->
+                  <c:if test="${not empty xmlForm}">
+                     <div id="classified_content_form">
+                <%
+                  Form xmlForm = (Form) pageContext.getAttribute("xmlForm");
+                  DataRecord data = (DataRecord) pageContext.getAttribute("xmlData");
+                  PagesContext context = (PagesContext) pageContext.getAttribute("xmlContext");
 
-									xmlForm.display(out, context, data);
-								%>
-								<hr class="clear" />
-							</div>
-						</c:if>
-					</td>
-				</tr>
+                  xmlForm.display(out, context, data);
+                %>
+                      <hr class="clear" />
+                    </div>
+                  </c:if>
+                </div>
+              </div>
+             </td>
+          </tr>
+          
 				<tr>
 					<td>
 						<!--Afficher les commentaires-->
@@ -298,7 +360,7 @@
 							</tr>
 							<tr>
 								<td class="txtlibform"><fmt:message key="GML.title" /> :</td>
-								<td valign="top">${classified.title}</td>
+								<td valign="top">${displayedTitle}</td>
 							</tr>
 							<tr>
 								<td class="txtlibform" valign="top"><fmt:message key="classifieds.refusalMotive" /> :</td>
@@ -312,5 +374,6 @@
 			</table>
 		</form>
 	</div>
+</div>	
 </body>
 </html>

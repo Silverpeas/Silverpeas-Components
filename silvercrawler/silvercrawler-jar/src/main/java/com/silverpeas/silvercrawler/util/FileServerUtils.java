@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,48 +23,31 @@
  */
 package com.silverpeas.silvercrawler.util;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-
 import com.stratelia.silverpeas.peasCore.URLManager;
+
+import javax.ws.rs.core.UriBuilder;
 
 
 public class FileServerUtils extends com.stratelia.webactiv.util.FileServerUtils {
 
-
-  public static String getUrl(String logicalName, String physicalName, String mimeType,
-      String userId, String componentId) {
-    StringBuilder url = new StringBuilder(256);
-    url.append(URLManager.getApplicationURL());
-    url.append("/SilverCrawlerFileServer/");
-    url.append(replaceSpecialChars(logicalName));
-    url.append("?SourceFile=").append(encode(physicalName));
-    url.append("&TypeUpload=link&MimeType=").append(mimeType);
-    url.append("&UserId=").append(userId);
-    url.append("&ComponentId=").append(componentId);
-    return url.toString();
+  public static String getSilverCrawlerUrl(String logicalName, String physicalName,
+      String componentId) {
+    UriBuilder uri = UriBuilder.fromPath(URLManager.getApplicationURL());
+    uri.path("SilverCrawlerFileServer").path(logicalName);
+    uri.queryParam("SourceFile", physicalName);
+    uri.queryParam("TypeUpload", "link");
+    uri.queryParam("ComponentId", componentId);
+    return uri.build().toString();
   }
 
-  public static String getUrlToTempDir(String logicalName, String physicalName, String mimeType,
-      String userId, String componentId, String path) {
-    StringBuilder url = new StringBuilder(256);
-    url.append(URLManager.getApplicationURL());
-    url.append("/SilverCrawlerFileServer/");
-    url.append(replaceSpecialChars(logicalName));
-    url.append("?SourceFile=").append(encode(physicalName));
-    url.append("&TypeUpload=zip&MimeType=").append(mimeType);
-    url.append("&UserId=").append(userId);
-    url.append("&ComponentId=").append(componentId);
-    url.append("&Path=").append(path);
-    return url.toString();
+  public static String getSilverCrawlerUrl(String logicalName, String physicalName,
+      String componentId, String path) {
+    UriBuilder uri = UriBuilder.fromPath(URLManager.getApplicationURL());
+    uri.path("SilverCrawlerFileServer").path(logicalName);
+    uri.queryParam("SourceFile", physicalName);
+    uri.queryParam("TypeUpload", "zip");
+    uri.queryParam("ComponentId", componentId);
+    uri.queryParam("Path", path);
+    return uri.build().toString();
   }
-  
-  private static String encode(String path) {
-    try {
-      return URLEncoder.encode(path, "UTF-8");
-    } catch (UnsupportedEncodingException e) {
-      return path;
-    }
-  }
-
 }

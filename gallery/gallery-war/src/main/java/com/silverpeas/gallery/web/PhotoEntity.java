@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,14 +23,17 @@
  */
 package com.silverpeas.gallery.web;
 
+import com.silverpeas.gallery.model.PhotoDetail;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import java.net.URI;
 
-import com.silverpeas.gallery.model.PhotoDetail;
-import com.stratelia.webactiv.util.FileServerUtils;
+import static com.silverpeas.gallery.web.GalleryResourceURIs.GALLERY_PHOTO_CONTENT_PART;
+import static com.silverpeas.gallery.web.GalleryResourceURIs.GALLERY_PHOTO_PREVIEW_PART;
 
 /**
  * @author Yohann Chastagnier
@@ -39,8 +42,6 @@ import com.stratelia.webactiv.util.FileServerUtils;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class PhotoEntity extends AbstractMediaEntity<PhotoEntity> {
   private static final long serialVersionUID = -4634076513167690314L;
-
-  private final static String PREVIEW_SUFFIX = "_preview.jpg";
 
   @XmlElement(defaultValue = "")
   private String previewUrl;
@@ -56,6 +57,13 @@ public class PhotoEntity extends AbstractMediaEntity<PhotoEntity> {
 
   @XmlTransient
   private final PhotoDetail photo;
+
+  @Override
+  public PhotoEntity withURI(final URI uri) {
+    previewUrl = uri.toString() + "/" + GALLERY_PHOTO_PREVIEW_PART;
+    url = uri.toString() + "/" + GALLERY_PHOTO_CONTENT_PART;
+    return super.withURI(uri);
+  }
 
   /**
    * Creates a new photo entity from the specified photo.
@@ -73,8 +81,6 @@ public class PhotoEntity extends AbstractMediaEntity<PhotoEntity> {
   private PhotoEntity(final PhotoDetail photo, final String language) {
     super("photo", photo.getId(), photo.getTitle(), photo.getDescription(language));
     this.photo = photo;
-    previewUrl = buildURL(new StringBuilder().append(photo.getId()).append(PREVIEW_SUFFIX).toString());
-    url = photo.isDownloadable() ? buildURL(photo.getImageName()) : previewUrl;
     width = photo.getSizeL();
     height = photo.getSizeH();
   }
@@ -110,16 +116,5 @@ public class PhotoEntity extends AbstractMediaEntity<PhotoEntity> {
    */
   public int getWidth() {
     return width;
-  }
-
-  /**
-   * Centralized method to build an Photo URL.
-   * @param imageName
-   * @return
-   */
-  private String buildURL(final String imageName) {
-    return FileServerUtils.getUrl(null, photo.getInstanceId(), imageName, photo.getImageMimeType(),
-        new StringBuilder(gallerySettings.getString("imagesSubDirectory")).append(photo.getId())
-            .toString());
   }
 }

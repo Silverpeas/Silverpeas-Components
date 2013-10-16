@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.silverpeas.components</groupId>
     <artifactId>infoletter</artifactId>
-    <version>5.12-SNAPSHOT</version>
+    <version>5.14-SNAPSHOT</version>
   </parent>
 	
   <groupId>com.silverpeas.components.infoletter</groupId>
@@ -17,6 +17,13 @@
       <groupId>com.silverpeas.core</groupId>
       <artifactId>lib-core</artifactId>
       <version>${core.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <artifactId>node</artifactId>
+      <version>${core.version}</version>
+      <classifier>client</classifier>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>

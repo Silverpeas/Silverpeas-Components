@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -20,96 +20,47 @@
  */
 package com.silverpeas.mailinglist.service.model;
 
-import com.silverpeas.mailinglist.AbstractSilverpeasDatasourceSpringContextTests;
+import com.silverpeas.mailinglist.AbstractMailingListTest;
 import com.silverpeas.mailinglist.service.model.beans.ExternalUser;
 import com.silverpeas.mailinglist.service.model.beans.InternalUser;
 import com.silverpeas.mailinglist.service.model.beans.InternalUserSubscriber;
 import com.silverpeas.mailinglist.service.model.beans.MailingList;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.dataset.DataSetException;
-import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
-import org.dbunit.operation.DatabaseOperation;
-
 import java.io.IOException;
-import java.sql.SQLException;
+import java.io.InputStream;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import javax.inject.Inject;
-import org.junit.After;
+import org.apache.commons.io.IOUtils;
+import org.dbunit.dataset.DataSetException;
+import org.dbunit.dataset.IDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.test.context.ContextConfiguration;
+
 import static org.junit.Assert.*;
 
-@ContextConfiguration(locations = {"/spring-checker.xml", "/spring-notification.xml",
-  "/spring-hibernate.xml", "/spring-datasource.xml"})
-public class TestMailingListService extends AbstractSilverpeasDatasourceSpringContextTests {
-
-  @Inject
-  private MailingListService mailingListService;
-  @Inject
-  private OrganizationController organizationController;
-
-  @After
-  public void onTearDown() throws Exception {
-    IDatabaseConnection connection = null;
-    try {
-      connection = getConnection();
-      DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    } finally {
-      if (connection != null) {
-        try {
-          connection.getConnection().close();
-        } catch (SQLException e) {
-          e.printStackTrace();
-        }
-      }
-    }
-    super.onTearDown();
-  }
+public class TestMailingListService extends AbstractMailingListTest {
 
   @Before
   public void onSetUp() {
-    registerDatasource();
-    IDatabaseConnection connection = null;
-    try {
-      connection = getConnection();
-      DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
-      DatabaseOperation.CLEAN_INSERT.execute(connection, getDataSet());
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    } finally {
-      if (connection != null) {
-        try {
-          connection.getConnection().close();
-        } catch (SQLException e) {
-          e.printStackTrace();
-        }
-      }
-    }
-    organizationController.reloadAdminCache();
+    getOrganisationController().reloadAdminCache();
   }
 
   @Override
   protected IDataSet getDataSet() throws DataSetException, IOException {
-    if (isOracle()) {
-      return new ReplacementDataSet(
-          new FlatXmlDataSet(
-          TestMailingListService.class.getResourceAsStream(
-          "test-mailinglist-service-oracle-dataset.xml")));
+    InputStream in = null;
+    try {
+      in = TestMailingListService.class
+          .getResourceAsStream("test-mailinglist-service-dataset.xml");
+      return new FlatXmlDataSetBuilder().build(in);
+    } finally {
+      IOUtils.closeQuietly(in);
     }
-    return new ReplacementDataSet(new FlatXmlDataSet(
-        TestMailingListService.class.getResourceAsStream("test-mailinglist-service-dataset.xml")));
   }
 
   @Test
   public void testCreateMailingList() {
+    MailingListService mailingListService = getMailingListService();
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("100");
     ExternalUser tahiti = new ExternalUser();
@@ -139,6 +90,7 @@ public class TestMailingListService extends AbstractSilverpeasDatasourceSpringCo
 
   @Test
   public void testAddExternalUser() {
+    MailingListService mailingListService = getMailingListService();
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("100");
     ExternalUser tahiti = new ExternalUser();
@@ -184,6 +136,7 @@ public class TestMailingListService extends AbstractSilverpeasDatasourceSpringCo
 
   @Test
   public void testAddInternalSubscribers() {
+    MailingListService mailingListService = getMailingListService();
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("100");
     InternalUserSubscriber bart = new InternalUserSubscriber();
@@ -251,6 +204,7 @@ public class TestMailingListService extends AbstractSilverpeasDatasourceSpringCo
 
   @Test
   public void testAddExternalUsers() {
+    MailingListService mailingListService = getMailingListService();
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("100");
     ExternalUser tahiti = new ExternalUser();
@@ -303,6 +257,7 @@ public class TestMailingListService extends AbstractSilverpeasDatasourceSpringCo
 
   @Test
   public void testRemoveExternalUser() {
+    MailingListService mailingListService = getMailingListService();
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("100");
     ExternalUser tahiti = new ExternalUser();
@@ -345,6 +300,7 @@ public class TestMailingListService extends AbstractSilverpeasDatasourceSpringCo
 
   @Test
   public void testDeleteMailingList() {
+    MailingListService mailingListService = getMailingListService();
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("100");
     ExternalUser tahiti = new ExternalUser();
@@ -377,6 +333,7 @@ public class TestMailingListService extends AbstractSilverpeasDatasourceSpringCo
 
   @Test
   public void testListMailingList() {
+    MailingListService mailingListService = getMailingListService();
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("100");
     ExternalUser tahiti = new ExternalUser();
@@ -406,25 +363,26 @@ public class TestMailingListService extends AbstractSilverpeasDatasourceSpringCo
     assertEquals(3, mailingList.getModerators().size());
     for (InternalUser user : mailingList.getModerators()) {
       assertEquals("http://localhost:8000", user.getDomain());
-      assertTrue("200".equals(user.getId()) || "202".equals(user.getId()) ||
-           "203".equals(user.getId()));
-      assertTrue("homer.simpson@silverpeas.com".equals(user.getEmail()) ||
-           "marge.simpson@silverpeas.com".equals(user.getEmail()) ||
-           "bart.simpson@silverpeas.com".equals(user.getEmail()));
+      assertTrue("200".equals(user.getId()) || "202".equals(user.getId()) || "203".equals(user.
+          getId()));
+      assertTrue("homer.simpson@silverpeas.com".equals(user.getEmail())
+          || "marge.simpson@silverpeas.com".equals(user.getEmail())
+          || "bart.simpson@silverpeas.com".equals(user.getEmail()));
     }
     assertNotNull(mailingList.getReaders());
     assertEquals(2, mailingList.getReaders().size());
     for (InternalUser user : mailingList.getReaders()) {
       assertTrue("201".equals(user.getId()) || "204".equals(user.getId()));
       assertEquals("http://localhost:8000", user.getDomain());
-      assertTrue("lisa.simpson@silverpeas.com".equals(user.getEmail()) ||
-           "maggie.simpson@silverpeas.com".equals(user.getEmail()));
+      assertTrue("lisa.simpson@silverpeas.com".equals(user.getEmail())
+          || "maggie.simpson@silverpeas.com".equals(user.getEmail()));
     }
 
   }
 
   @Test
   public void testGetMailingList() {
+    MailingListService mailingListService = getMailingListService();
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("100");
     ExternalUser tahiti = new ExternalUser();
@@ -455,28 +413,30 @@ public class TestMailingListService extends AbstractSilverpeasDatasourceSpringCo
     assertEquals(3, mailingList.getModerators().size());
     for (InternalUser user : mailingList.getModerators()) {
       assertEquals("http://localhost:8000", user.getDomain());
-      assertTrue("200".equals(user.getId()) || "202".equals(user.getId()) ||
-           "203".equals(user.getId()));
-      assertTrue("homer.simpson@silverpeas.com".equals(user.getEmail()) ||
-           "marge.simpson@silverpeas.com".equals(user.getEmail()) ||
-           "bart.simpson@silverpeas.com".equals(user.getEmail()));
+      assertTrue("200".equals(user.getId()) || "202".equals(user.getId()) || "203".equals(user.
+          getId()));
+      assertTrue("homer.simpson@silverpeas.com".equals(user.getEmail())
+          || "marge.simpson@silverpeas.com".equals(user.getEmail())
+          || "bart.simpson@silverpeas.com".equals(user.getEmail()));
     }
     assertNotNull(mailingList.getReaders());
     assertEquals(2, mailingList.getReaders().size());
     for (InternalUser user : mailingList.getReaders()) {
       assertEquals("http://localhost:8000", user.getDomain());
       assertTrue("201".equals(user.getId()) || "204".equals(user.getId()));
-      assertTrue("lisa.simpson@silverpeas.com".equals(user.getEmail()) ||
-           "maggie.simpson@silverpeas.com".equals(user.getEmail()));
+      assertTrue("lisa.simpson@silverpeas.com".equals(user.getEmail())
+          || "maggie.simpson@silverpeas.com".equals(user.getEmail()));
     }
 
   }
 
   public MailingListService getMailingListService() {
-    return mailingListService;
+    return getManagedService(MailingListService.class);
   }
 
-  public void setMailingListService(MailingListService mailingListService) {
-    this.mailingListService = mailingListService;
+  @Override
+  protected String[] getContextConfigurations() {
+    return new String[]{"/spring-mailinglist-dao.xml", "/spring-mailinglist-embbed-datasource.xml",
+      "/spring-mailinglist-services.xml"};
   }
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -26,25 +26,18 @@
 -->
 
 <beans xmlns="http://www.springframework.org/schema/beans"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+  <context:annotation-config/>
+
+  <context:component-scan base-package="com.silverpeas.whitePages"/>
 
   <bean id="whitePagesServicesFactory" name="whitePagesServicesFactory"
-    class="com.silverpeas.whitePages.service.ServicesFactory"
-    factory-method="getInstance" />
-
-  <bean id="whitePagesService" name="whitePagesService"
-    class="com.silverpeas.whitePages.service.WhitePagesServiceImpl">
-    <property name="searchFieldDao" ref="searchFieldDao" />
-  </bean>
-  
-   <bean id="mixedSearchService" name="mixedSearchService"
-    class="com.silverpeas.whitePages.service.MixedSearchServiceImpl">
-  </bean>
-
-  <bean id="searchFieldDao" name="searchFieldDao"
-    class="com.silverpeas.whitePages.dao.SearchFieldDaoImpl">
-    <property name="sessionFactory" ref="sessionFactory" />
-  </bean>
+        class="com.silverpeas.whitePages.service.ServicesFactory"
+        factory-method="getFactory" />
 
 </beans>

@@ -1,36 +1,24 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.mailinglist.web;
-
-import java.sql.SQLException;
-
-import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
-import org.dbunit.operation.DatabaseOperation;
 
 import com.meterware.httpunit.ClientProperties;
 import com.meterware.httpunit.HttpUnitOptions;
@@ -39,21 +27,28 @@ import com.meterware.httpunit.WebForm;
 import com.meterware.httpunit.WebLink;
 import com.meterware.httpunit.WebResponse;
 import com.meterware.httpunit.WebTable;
-import com.silverpeas.mailinglist.AbstractSilverpeasDatasourceSpringContextTests;
-import org.junit.After;
+import com.silverpeas.mailinglist.AbstractMailingListTest;
+import org.dbunit.dataset.IDataSet;
+import org.dbunit.dataset.ReplacementDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.test.context.ContextConfiguration;
-
 
 import static org.junit.Assert.*;
 
-@ContextConfiguration(locations = {"/spring-checker.xml", "/spring-notification.xml",
-        "/spring-hibernate.xml", "/spring-datasource.xml"})
-public class TestMailingListMessages extends
-    AbstractSilverpeasDatasourceSpringContextTests {
+public class TestMailingListMessages extends AbstractMailingListTest {
 
-  private static String MESSAGE_BASE = "/silverpeas/Rmailinglist/mailinglist45/destination/list/message/";
+  private static String MESSAGE_BASE =
+      "/silverpeas/Rmailinglist/mailinglist45/destination/list/message/";
+
+  @Before
+  public void onSetUp() {
+    HttpUnitOptions.setExceptionsThrownOnErrorStatus(true);
+    HttpUnitOptions.setExceptionsThrownOnScriptError(false);
+    HttpUnitOptions.setScriptingEnabled(true);
+    ClientProperties.getDefaultProperties().setAcceptCookies(true);
+    ClientProperties.getDefaultProperties().setAutoRedirect(true);
+  }
 
   @Test
   public void testSimpleUser() throws Exception {
@@ -335,7 +330,7 @@ public class TestMailingListMessages extends
     assertNotNull(listPage);
     WebForm deleteMessagesForm = listPage.getFormWithID("removeMessage");
     assertNotNull(deleteMessagesForm);
-    deleteMessagesForm.setParameter("message", new String[] { "1", "4" });
+    deleteMessagesForm.setParameter("message", new String[]{"1", "4"});
     listPage = deleteMessagesForm.submit();
     assertNotNull(listPage);
     tableMessages = listPage.getTableWithID("list");
@@ -387,56 +382,17 @@ public class TestMailingListMessages extends
 
   @Override
   protected IDataSet getDataSet() throws Exception {
-    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(
+    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(
         TestMailingListActivity.class
-            .getResourceAsStream("test-mailinglist-messages-dataset.xml")));
+        .getResourceAsStream("test-mailinglist-messages-dataset.xml")));
     dataSet.addReplacementObject("[NULL]", null);
     return dataSet;
   }
 
-  @Before
-  public void onSetUp() {
-    super.onSetUp();
-    HttpUnitOptions.setExceptionsThrownOnErrorStatus(true);
-    HttpUnitOptions.setExceptionsThrownOnScriptError(false);
-    HttpUnitOptions.setScriptingEnabled(true);
-    ClientProperties.getDefaultProperties().setAcceptCookies(true);
-    ClientProperties.getDefaultProperties().setAutoRedirect(true);
-    IDatabaseConnection connection = null;
-    try {
-      connection = getConnection();
-      DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
-      DatabaseOperation.CLEAN_INSERT.execute(connection, getDataSet());
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    } finally {
-      if (connection != null) {
-        try {
-          connection.getConnection().close();
-        } catch (SQLException e) {
-          e.printStackTrace();
-        }
-      }
-    }
+  @Override
+  protected String[] getContextConfigurations() {
+    return new String[]{"/spring-checker.xml", "/spring-notification.xml",
+      "/spring-mailinglist-services-factory.xml", "/spring-mailinglist-dao.xml",
+      "/spring-mailinglist-embbed-datasource.xml"};
   }
-
-  @After
-  public void onTearDown() {
-    IDatabaseConnection connection = null;
-    try {
-      connection = getConnection();
-      DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    } finally {
-      if (connection != null) {
-        try {
-          connection.getConnection().close();
-        } catch (SQLException e) {
-          e.printStackTrace();
-        }
-      }
-    }
-  }
-
 }

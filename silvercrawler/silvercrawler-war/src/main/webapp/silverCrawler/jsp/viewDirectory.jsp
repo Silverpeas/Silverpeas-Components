@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -27,39 +27,40 @@
 <%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page import="com.silverpeas.util.StringUtil"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+
+<%-- Set resource bundle --%>
+<fmt:setLocale value="${requestScope.resources.language}"/>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+
+<c:set var="componentId" value="${requestScope.browseContext[3]}"/>
 
 <%@ include file="check.jsp" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
-FileFolder 	folder 			= (FileFolder) request.getAttribute("Folder");
-String 		profile 		= (String) request.getAttribute("Profile");
-String 		userId 			= (String) request.getAttribute("UserId");
-Boolean 	isDownload 		= (Boolean) request.getAttribute("IsDownload");
-Collection 	path 			= (Collection) request.getAttribute("Path");
-Boolean 	isRootPathB 	= (Boolean) request.getAttribute("IsRootPath");
-Boolean 	isAllowedNav 	= (Boolean) request.getAttribute("IsAllowedNav");
-String		rootPath		= (String) request.getAttribute("RootPath");
-String		maxDirectories	= (String) request.getAttribute("MaxDirectories");
-String 		maxFiles		= (String) request.getAttribute("MaxFiles");
-String 		language		= (String) request.getAttribute("Language");
-Boolean     isReadWriteActivated = (Boolean) request.getAttribute("isReadWriteActivated");
-Boolean     isUserAllowedToSetRWAccess = (Boolean) request.getAttribute("userAllowedToSetRWAccess");
-Boolean     isUserAllowedToLANAccess = (Boolean) request.getAttribute("userAllowedToLANAccess");
-String 		errorMessage 	= (String) request.getAttribute("errorMessage");
-String 		successMessage 	= (String) request.getAttribute("successMessage");
-
-boolean download 	= isDownload.booleanValue();
-boolean isRootPath 	= isRootPathB.booleanValue();
-boolean allowedNav 	= isAllowedNav.booleanValue();
+FileFolder folder = (FileFolder) request.getAttribute("Folder");
 boolean folderIsWritable = folder.isWritable();
-boolean readWriteActivated = isReadWriteActivated.booleanValue();
-boolean userAllowedToSetRWAccess = isUserAllowedToSetRWAccess.booleanValue();
-boolean userAllowedToLANAccess = isUserAllowedToSetRWAccess.booleanValue();
+String profile = (String) request.getAttribute("Profile");
+String userId = (String) request.getAttribute("UserId");
+boolean download = (Boolean) request.getAttribute("IsDownload");
+Collection path = (Collection) request.getAttribute("Path");
+boolean isRootPath = (Boolean) request.getAttribute("IsRootPath");
+boolean allowedNav = (Boolean) request.getAttribute("IsAllowedNav");
+String rootPath = (String) request.getAttribute("RootPath");
+String maxDirectories = (String) request.getAttribute("MaxDirectories");
+String maxFiles = (String) request.getAttribute("MaxFiles");
+String language = (String) request.getAttribute("Language");
+boolean readWriteActivated = (Boolean) request.getAttribute("isReadWriteActivated");
+boolean userAllowedToSetRWAccess = (Boolean) request.getAttribute("userAllowedToSetRWAccess");
+boolean userAllowedToLANAccess = (Boolean) request.getAttribute("userAllowedToLANAccess");
+String errorMessage = (String) request.getAttribute("errorMessage");
+String successMessage = (String) request.getAttribute("successMessage");
 
-ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
 String sRequestURL = request.getRequestURL().toString();
-String m_sAbsolute = sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().length());
-String httpServerBase = generalSettings.getString("httpServerBase", m_sAbsolute);
+String m_sAbsolute =
+    sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().length());
+String httpServerBase = GeneralPropertiesManager.getString("httpServerBase", m_sAbsolute);
 
 int nbDirectories = 10;
 if (maxDirectories != null && Integer.parseInt(maxDirectories) != 0)
@@ -118,6 +119,7 @@ var downloadWindow = window;
 function indexFolder(folderName)
 {
     if(window.confirm("<%=resource.getString("silverCrawler.folderIndexConfirmation")%> '" + folderName + "' ?")){
+          $.progressMessage();
           document.folderDetailForm.action = "IndexPath";
           document.folderDetailForm.FolderName.value = folderName;
           document.folderDetailForm.submit();
@@ -127,6 +129,7 @@ function indexFolder(folderName)
 function removeFolder(folderName)
 {
     if(window.confirm("<%=resource.getString("silverCrawler.folderRemoveConfirmation")%> '" + folderName + "' ?")){
+          $.progressMessage();
           document.folderDetailForm.action = "RemoveFolder";
           document.folderDetailForm.FolderName.value = folderName;
           document.folderDetailForm.submit();
@@ -136,6 +139,7 @@ function removeFolder(folderName)
 function removeFile(fileName)
 {
     if(window.confirm("<%=resource.getString("silverCrawler.fileRemoveConfirmation")%> '" + fileName + "' ?")){
+          $.progressMessage();
           document.folderDetailForm.action = "RemoveFile";
           document.folderDetailForm.FolderName.value = "";
           document.folderDetailForm.FileName.value = fileName;
@@ -147,8 +151,9 @@ function removeFilesByLot() {
 	var selectedFiles = "<%=resource.getString("silverCrawler.filesRemoveConfirmation")%> : \n\n";
 	$('input:checkbox[name=checkedFile]:checked').each(function() {selectedFiles = selectedFiles + $(this).val() + "\n";});
 	if(window.confirm(selectedFiles)){
+        $.progressMessage();
         document.liste_file.action = "RemoveSelectedFiles";
-		document.liste_file.submit();
+        document.liste_file.submit();
   }
 }
 
@@ -156,167 +161,113 @@ function removeFoldersByLot() {
 	var selectedFolders = "<%=resource.getString("silverCrawler.foldersRemoveConfirmation")%> : \n\n";
 	$('input:checkbox[name=checkedDir]:checked').each(function() {selectedFolders = selectedFolders + $(this).val() + "\n";});
 	if(window.confirm(selectedFolders)){
+        $.progressMessage();
         document.liste_dir.action = "RemoveSelectedFolders";
-		document.liste_dir.submit();
+        document.liste_dir.submit();
   }
 }
 
 function renameFolder(folderName) {
-    	$("#modalDialog").dialog({
-        		buttons: {
-            		"Ok": function() {
-            			submitForm(folderName);
-                		},
-            		"Cancel": function() {
-                		$(this).dialog("close");
-                		}
-			 	},
-
-			 	width: 400,
-
-			 	title: "<%=resource.getString("silverCrawler.renameFolder")%>"
-
-	 	});
-
-		var url = "<%=m_context%>/RsilverCrawler/<%=componentId%>/RenameFolderForm?folderName="+escape(folderName);
-    	$("#modalDialog").load(url).dialog("open");
+  showDialog({
+    dialogTitle : '<fmt:message key="silverCrawler.renameFolder" />',
+    submitAction : 'RenameFolder',
+    dialogFormId : 'renameForm',
+    oldName : folderName
+  });
 }
 
 function createFolder() {
-	$("#modalDialog").dialog({
-    		buttons: {
-        		"Ok": function() {
-        			submitCreateFolder();
-            		},
-        		"Cancel": function() {
-            		$(this).dialog("close");
-            		}
-		 	},
-
-		 	width: 400,
-
-		 	title: "<%=resource.getString("silverCrawler.createFolder")%>"
-
- 	});
-
-	var url = "<%=m_context%>/RsilverCrawler/<%=componentId%>/CreateFolderForm";
-	$("#modalDialog").load(url).dialog("open");
+  showDialog({
+    dialogTitle : '<fmt:message key="silverCrawler.createFolder" />',
+    submitAction : 'CreateFolder',
+    dialogFormId : 'createForm'
+  });
 }
 
 function uploadFile() {
-	$("#modalDialog").dialog({
-    		buttons: {
-        		"Ok": function() {
-        			submitUploadFileForm();
-            		},
-        		"Cancel": function() {
-            		$(this).dialog("close");
-            		}
-		 	},
-
-		 	width: 400,
-
-		 	title: "<%=resource.getString("silverCrawler.uploadFile")%>"
-
- 	});
-
-	var url = "<%=m_context%>/RsilverCrawler/<%=componentId%>/UploadFileForm";
-	$("#modalDialog").load(url).dialog("open");
-
+  showDialog({
+    isFileUpload : true,
+    dialogTitle : '<fmt:message key="silverCrawler.uploadFile" />',
+    submitAction : 'UploadFile',
+    dialogFormId : 'fileUploadForm'
+  });
 }
 
 function renameFile(fileName) {
-	$("#modalDialog").dialog({
-    		buttons: {
-        		"Ok": function() {
-        			submitRenameFileForm(fileName);
-            		},
-        		"Cancel": function() {
-            		$(this).dialog("close");
-            		}
-		 	},
-
-		 	width: 400,
-
-		 	title: "<%=resource.getString("silverCrawler.renameFile")%>"
-
- 	});
-
-	var url = "<%=m_context%>/RsilverCrawler/<%=componentId%>/RenameFileForm?fileName="+escape(fileName);
-	$("#modalDialog").load(url).dialog("open");
+  showDialog({
+    dialogTitle : '<fmt:message key="silverCrawler.renameFile" />',
+    submitAction : 'RenameFile',
+    dialogFormId : 'renameForm',
+    oldName : fileName
+  });
 }
 
-function submitForm(folderName) {
-	$.ajax({
-		  url: "RenameFolder?folderName="+escape(folderName)+"&newName="+escape($("#newName").val()),
-		  context: document.body,
-		  success: function( data ) {
-			    if (data=='statusOK') {
-			    	document.folderDetailForm.action = "ViewDirectory";
-			        document.folderDetailForm.FolderName.value = "";
-			        document.folderDetailForm.submit();
-				}
-			    else {
-				    alert(data);
-				}
-			  },
-		  failure: function(){
-			    alert('erreur inconnue');
-			  }
-		});
+function showDialog(params) {
+  var options = $.extend({
+    isFileUpload : false,
+    dialogTitle : '',
+    submitAction : '',
+    dialogFormId : '',
+    oldName : ''
+  }, params);
+  $("#modalDialog").dialog({
+    buttons : {
+      "Ok" : function() {
+        $('form', this).submit();
+      },
+      "Cancel" : function() {
+        $(this).dialog("close");
+      }
+    },
+    width : 400,
+    title : options.dialogTitle
+  });
 
+  var url = "<c:url value="/RsilverCrawler/${componentId}/" />" + options.submitAction +
+      "Form?oldName=" + encodeURIComponent(options.oldName);
+  $("#modalDialog").load(url, function() {
+    $('form', this).submit(function(){
+      $.progressMessage();
+      if (options.isFileUpload) {
+        return true;
+      }
+      performPost(options.submitAction, options.dialogFormId);
+      return false;
+    });
+    $(this).dialog("open");
+  });
 }
 
-function submitRenameFileForm(fileName) {
-	$.ajax({
-		  url: "RenameFile",
-		  data: {fileName: fileName, newName: $("#newName").val()},
-		  context: document.body,
-		  success: function( data ) {
-			    if (data=='statusOK') {
-			    	document.folderDetailForm.action = "ViewDirectory";
-			        document.folderDetailForm.FolderName.value = "";
-			        document.folderDetailForm.submit();
-				}
-			    else {
-				    alert(data);
-				}
-			  },
-		  failure: function(){
-			    alert('erreur inconnue');
-			  }
-		});
-
-}
-
-function submitUploadFileForm(folderName) {
-	document.fileUploadForm.submit();
-}
-
-function submitCreateFolder() {
-	$.ajax({
-		  url: "CreateFolder",
-		  data: {newName: $("#newName").val()},
-		  context: document.body,
-		  success: function( data ) {
-			    if (data=='statusOK') {
-			    	document.folderDetailForm.action = "ViewDirectory";
-			        document.folderDetailForm.FolderName.value = "";
-			        document.folderDetailForm.submit();
-				}
-			    else {
-				    alert(data);
-				}
-			  },
-		  failure: function(){
-			    alert('erreur inconnue');
-			  }
-		});
+function performPost(url, formId) {
+  $.ajax({
+    type : 'POST',
+    url : url,
+    data : $('#'+formId).serialize(),
+    cache : false,
+    success : function(data) {
+      if (data == 'statusOK') {
+        document.folderDetailForm.action = "ViewDirectory";
+        document.folderDetailForm.FolderName.value = "";
+        document.folderDetailForm.FileName.value = "";
+        document.folderDetailForm.submit();
+      } else {
+        $.closeProgressMessage();
+        alert(data);
+        $("#newName").focus();
+      }
+    },
+    error : function() {
+      $.closeProgressMessage();
+      alert('erreur inconnue');
+      $("#newName").focus();
+    }
+  });
 }
 
 function indexFile(fileName)
 {
     if(window.confirm("<%=resource.getString("silverCrawler.fileIndexConfirmation")%> '" + fileName + "' ?")){
+          $.progressMessage();
           document.folderDetailForm.action = "IndexFile";
           document.folderDetailForm.FileName.value = fileName;
           document.folderDetailForm.submit();
@@ -326,6 +277,7 @@ function indexFile(fileName)
 function indexDisk()
 {
     if(window.confirm("<%=resource.getString("silverCrawler.diskIndexConfirmation")%>")){
+          $.progressMessage();
           document.folderDetailForm.action = "IndexPath";
           document.folderDetailForm.FolderName.value = "";
           document.folderDetailForm.submit();
@@ -335,6 +287,7 @@ function indexDisk()
 function indexDirByLot()
 {
 	if(window.confirm("<%=resource.getString("silverCrawler.fileIndexByLotConfirmation")%>")){
+    	$.progressMessage();
 		document.liste_dir.action = "IndexDirSelected";
 		document.liste_dir.submit();
 	}
@@ -343,6 +296,7 @@ function indexDirByLot()
 function indexFileByLot()
 {
 	if(window.confirm("<%=resource.getString("silverCrawler.fileIndexByLotConfirmation")%>")){
+    	$.progressMessage();
 		document.liste_file.action = "IndexFileSelected";
 		document.liste_file.submit();
 	}
@@ -412,6 +366,11 @@ function processDnD() {
     document.folderDetailForm.submit();
 }
 
+function goToDirectory(path) {
+	$.progressMessage();
+	location.href = "SubDirectory?DirectoryPath="+encodeURIComponent(path);
+}
+
 $(document).ready(function(){
     var dialogOpts = {
             modal: true,
@@ -446,7 +405,7 @@ if ("admin".equals(profile))
 	operationPane.addOperation(resource.getIcon("silverCrawler.indexFileByLot"), resource.getString("silverCrawler.indexFileByLot"), "javaScript:indexFileByLot('')");
 }
 
-if ( ("admin".equals(profile)) || ("publisher".equals(profile)) )
+if ("admin".equals(profile) || "publisher".equals(profile))
 {
 	// RW operations
 	if (readWriteActivated && folderIsWritable) {
@@ -456,7 +415,7 @@ if ( ("admin".equals(profile)) || ("publisher".equals(profile)) )
 			operationPane.addOperationOfCreation(resource.getIcon("silverCrawler.createFolder"), resource.getString("silverCrawler.createFolder"), "javascript:createFolder()");
  		}
 
-	  	if ( ("admin".equals(profile)) || ("publisher".equals(profile)) )
+	  	if ("admin".equals(profile) || "publisher".equals(profile))
  		{
 			operationPane.addOperationOfCreation(resource.getIcon("silverCrawler.uploadFile"), resource.getString("silverCrawler.uploadFile"), "javascript:uploadFile()");
  		}
@@ -467,7 +426,7 @@ if ( ("admin".equals(profile)) || ("publisher".equals(profile)) )
 			operationPane.addOperation(resource.getIcon("silverCrawler.removeFoldersByLot"), resource.getString("silverCrawler.removeFoldersByLot"), "javascript:removeFoldersByLot()");
  		}
 
-	  	if ( ("admin".equals(profile)) || ("publisher".equals(profile)) )
+	  	if ("admin".equals(profile) || "publisher".equals(profile))
  		{
 			operationPane.addOperation(resource.getIcon("silverCrawler.removeFilesByLot"), resource.getString("silverCrawler.removeFilesByLot"), "javascript:removeFilesByLot()");
  		}
@@ -552,7 +511,7 @@ Button validateButton 	= gef.getFormButton("OK", "javascript:onClick=sendData();
 <div id="physical-path"><%=resource.getString("silverCrawler.physicalPath")%> : ${Folder.path}</div>
 <% } %>
 
-<FORM NAME="liste_dir" >
+<form name="liste_dir" action="#" method="POST">
 <%
 
 // remplissage de l'ArrayPane avec la liste des sous répertoires
@@ -599,20 +558,16 @@ if (nav || (!nav && !isRootPath))
 	        boolean indexed = file.isIsIndexed();
 
 	        String nameCell = "";
-
-	        if (nav)
-	        {
-	        	nameCell = "<a href=\"SubDirectory?DirectoryPath="+encodedFileName + "\">" + EncodeHelper.javaStringToHtmlString(fileName)+"</a>";
-	        }
-	        else
-	        {
+	        if (nav) {
+	        	nameCell = "<a href=\"javascript:onclick=goToDirectory('"+fileName + "')\">" + EncodeHelper.javaStringToHtmlString(fileName)+"</a>";
+	        } else {
 	        	nameCell = EncodeHelper.javaStringToHtmlString(fileName);
 	        }
 	        //  permalien
 	        String filePath = file.getPath();
 	        filePath = filePath.substring(rootPath.length()+1);
 	        link = URLManager.getApplicationURL() + "/SubDir/" + componentId +"?Path="+URLEncoder.encode(filePath, "UTF-8");
-	        nameCell = nameCell + "&nbsp;<a href=\"" + link + "\">"+ "<img border=\"0\" src=\""+resource.getIcon("silverCrawler.permalien")+"\">" + "</a>";
+	        nameCell = nameCell + "&nbsp;<a href=\"" + link + "\"><img border=\"0\" src=\""+resource.getIcon("silverCrawler.permalien")+"\"/></a>";
 
 	        // affichage de la cellule
 	        arrayLine.addArrayCellText(nameCell);
@@ -674,7 +629,7 @@ if (nav || (!nav && !isRootPath))
 	}
 	%>
 	</form>
-	<form name="liste_file" >
+	<form name="liste_file" action="#" method="POST">
 	<%
 
 	//affichage des fichiers
@@ -718,7 +673,8 @@ if (nav || (!nav && !isRootPath))
 
 		    boolean indexed = fileDetail.isIsIndexed();
 
-		    ArrayCellLink cellLink = arrayLine.addArrayCellLink(EncodeHelper.javaStringToHtmlString(fileDetail.getName()), fileDetail.getFileURL(userId, componentId));
+		    ArrayCellLink cellLink = arrayLine.addArrayCellLink(EncodeHelper.javaStringToHtmlString(fileDetail.getName()), fileDetail.getFileURL(
+            componentId));
 		    cellLink.setTarget("_blank");
 
 		    ArrayCellText cellSize = arrayLine.addArrayCellText(fileDetail.getFileSize());
@@ -770,7 +726,7 @@ if (nav || (!nav && !isRootPath))
 
 		   		arrayLine.addArrayCellIconPane(iconPane);
 
-		   		if ("admin".equals(profile))
+		   		if ("admin".equals(profile) || "publisher".equals(profile))
 				{
 			   		// case à cocher pour traitement par lot
 			   		arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"checkedFile\" value=\""+EncodeHelper.javaStringToHtmlString(fileName)+"\">");

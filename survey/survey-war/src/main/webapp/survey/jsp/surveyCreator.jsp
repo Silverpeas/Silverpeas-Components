@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -61,10 +61,10 @@ String anonymousString = request.getParameter("anonymous");
 
 //Anonymous mode -> force anonymous mode for each survey
 if(surveyScc.isAnonymousModeEnabled()) {
-	anonymousString = "true";
+	anonymousString = "on";
 }
 
-boolean anonymous = StringUtil.isDefined(anonymousString) && "true".equalsIgnoreCase(anonymousString);
+boolean anonymous = StringUtil.isDefined(anonymousString) && "on".equalsIgnoreCase(anonymousString);
 
 //Mise a jour de l'espace
 if (action == null) {
@@ -94,7 +94,6 @@ function isCorrectForm() {
      var errorMsg = "";
      var errorNb = 0;
      var title = stripInitialWhitespace(document.surveyForm.title.value);
-     var description = document.surveyForm.description.value;
      var nbQuestions = document.surveyForm.nbQuestions.value;
      var beginDate = document.surveyForm.beginDate.value;
      var endDate = document.surveyForm.endDate.value;
@@ -224,16 +223,28 @@ if (action.equals("CreateSurvey")) {
 			        //Mode anonyme -> force les votes à être tous anonymes
 			        String anonymousDisabled = "";
 			        String anonymousCheck = "";
+				      if (anonymous) {
+				        anonymousCheck = "checked=\"checked\"";
+              }
 			        if(surveyScc.isAnonymousModeEnabled()) {
-			          anonymousCheck = "checked=\"checked\"";
-			          anonymousDisabled = "disabled=\"disabled\"";
+			         anonymousCheck = "checked=\"checked\"";
+			         anonymousDisabled = "disabled=\"disabled\"";
 			        }
 				%>
 				<label class="txtlibform" for="anonymous"><%=resources.getString("survey.surveyAnonymous")%></label>
 				<div class="champs">
-					<input type="checkbox" name="anonymous" value="" <%=anonymousCheck%> <%=anonymousDisabled%>/>
+					<input type="checkbox" name="anonymous" <%=anonymousCheck%> <%=anonymousDisabled%>/>
 				</div>
 			</div>
+			<div class="field" id="resultModeArea">
+        <label class="txtlibform" for="resultMode"><%=resources.getString("survey.creation.resultMode")%></label>
+        <div class="champs">
+          <select id="resultMode" name="resultMode">
+              <option value="<%=QuestionContainerHeader.IMMEDIATE_RESULTS%>"><%=resources.getString("survey.creation.resultMode.1")%></option>
+              <option value="<%=QuestionContainerHeader.DELAYED_RESULTS%>"><%=resources.getString("survey.creation.resultMode.2")%></option>
+          </select>
+        </div>
+      </div>
 			<input type="hidden" name="Action" value="<%=nextAction%>"/>
 		</div>
 	</fieldset>
@@ -277,7 +288,8 @@ if (action.equals("CreateSurvey")) {
  } //End if action = ViewQuestion
 if (action.equals("SendNewSurvey")) {
 %>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <script language="javascript">
     function goToQuestionCreator() {

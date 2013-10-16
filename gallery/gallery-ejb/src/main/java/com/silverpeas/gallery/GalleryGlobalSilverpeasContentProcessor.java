@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -53,7 +53,7 @@ public class GalleryGlobalSilverpeasContentProcessor extends DefaultGlobalSilver
     String instanceId = sci.getInstanceId();
     String directory = galleryDirectory + sci.getId();
     PhotoDetail photo = (PhotoDetail) sci;
-    gsc.setThumbnailURL(FileServerUtils.getUrl(null, instanceId, photo.getImageName(), photo
+    gsc.setThumbnailURL(FileServerUtils.getUrl(instanceId, photo.getImageName(), photo
         .getImageMimeType(), directory));
     Size size = new Size(60, 45);
     try {

@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -43,6 +43,7 @@
 	Collection 	questions 	= (Collection) request.getAttribute("questions");
 	String		questionId	= (String) request.getAttribute("QuestionId");  // question en cours e ouvrir
 	Collection	categories	= (Collection) request.getAttribute("Categories");
+	boolean		pdcUsed		= (Boolean) request.getAttribute("PDCUsed");
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -67,7 +68,7 @@ function bindQuestionsEvent() {
         etat[id] = "open";
             var found = $('#a'+id + '>ul>li');
             if (found.length == 0) {
-				
+
 				$.ajax({
 					url: answersUrl,
 					type: "GET",
@@ -107,7 +108,7 @@ function bindCategoryEvent() {
         });
         var found = $('#qc'+id + '>li');
         if (found.length == 0) {
-		
+
 			   $.ajax({
 					url: questionUrl,
 					type: "GET",
@@ -127,9 +128,9 @@ function bindCategoryEvent() {
 						bindQuestionsEvent();
 					}
 				});
-		
-		
-        
+
+
+
         }
         $('#qc'+id).show();
         $(this).parent().addClass('select');
@@ -140,7 +141,7 @@ function bindCategoryEvent() {
 $(document).ready(function() {
   bindCategoryEvent();
   bindQuestionsEvent();
-  $('.questions').hide(); 
+  $('.questions').hide();
   <c:choose>
     <c:when test="${param.categoryId != null}">
       $("#qc<c:out value="${param.categoryId}"/>").show();
@@ -182,7 +183,7 @@ $(document).ready(function() {
     questionTitleDiv.append(questionTitle);
     questionHyperlink = $('<a>').addClass('permalink').attr('href', '<c:url value="/Question/" />' + questionToBeDisplayed.id).attr('title', '<fmt:message key="questionReply.CopyQuestionLink"/>');
     hyperlinkImg = $('<img>').attr('src', '<c:url value="${hyperlinkIcon}"/>').attr('alt', '<fmt:message key="questionReply.CopyQuestionLink"/>').attr('border', '0');
-    questionHyperlink.append(hyperlinkImg);    
+    questionHyperlink.append(hyperlinkImg);
     questionTitleDiv.append(questionHyperlink);
     switch(questionToBeDisplayed.status) {
       case 0 :
@@ -198,12 +199,12 @@ $(document).ready(function() {
         questionTitleDiv.append(questionStatusImg);
         break;
     }
-        
+
     questionAuthor = $('<span>').addClass('questionAuthor').addClass('txtBaseline').text(questionToBeDisplayed.creator.fullName + ' ');
     questionCreationDate = $('<span>').addClass('questionDate').text('- ' + questionToBeDisplayed.creationDate);
-    questionAuthor.append(questionCreationDate);    
-    questionTitleDiv.append(questionAuthor);    
-    questionDiv.append(questionTitleDiv);    
+    questionAuthor.append(questionCreationDate);
+    questionTitleDiv.append(questionAuthor);
+    questionDiv.append(questionTitleDiv);
     actionDiv = $('<div>').addClass('action');
     if(questionToBeDisplayed.replyable){
       replyQuestionLink = $('<a>').addClass('reply').attr('title', '<fmt:message key="questionReply.ajoutR"/>').attr('href', 'CreateRQuery?QuestionId=' + questionToBeDisplayed.id);
@@ -222,7 +223,7 @@ $(document).ready(function() {
       updateQuestionImg = $('<img>').addClass('actionQuestion').attr('alt', '<fmt:message key="questionReply.modifQ"/>').attr('src', '<c:url value="${updateIcon}" />' ).attr('border', '0' );
       updateQuestionLink.append(updateQuestionImg);
       actionDiv.append(updateQuestionLink);
-      
+
       deleteQuestionLink = $('<a>').addClass('delete').attr('title', '<fmt:message key="questionReply.delQ"/>').attr('href', 'javascript:deleteConfirm(\'' + questionToBeDisplayed.id + '\')');
       deleteQuestionImg = $('<img>').attr('alt', '<fmt:message key="questionReply.delQ"/>').attr('src', '<c:url value="${deleteIcon}" />' ).attr('border', '0' );
       deleteQuestionLink.append(deleteQuestionImg);
@@ -245,13 +246,13 @@ $(document).ready(function() {
     } else {
       answerTitle.append($('<img>').addClass('status').attr('alt','<fmt:message key="questionReply.Rprivee" />').attr('title','<fmt:message key="questionReply.Rprivee" />').attr('src', '<c:url value="${privateAnswerIcon}" />').attr('border', '0' ));
     }
-    actionDiv = $('<div>').addClass('action');    
+    actionDiv = $('<div>').addClass('action');
     if(!answer.readOnly){
       updateAnswerLink = $('<a>').attr('title', '<fmt:message key="questionReply.modifR" />').attr('href', 'UpdateR?replyId=' + answer.id + '&QuestionId=' + answer.questionId);
       updateAnswerImg = $('<img>').attr('alt', '<fmt:message key="questionReply.modifR" />').attr('src', '<c:url value="${updateIcon}" />').attr('border', '0' );
       updateAnswerLink.append(updateAnswerImg);
       actionDiv.append(updateAnswerLink);
-      
+
       deleteAnswerLink = $('<a>').attr('title', '<fmt:message key="questionReply.delR" />').attr('href', 'javascript:deleteConfirmR(\'' + answer.id + '\', \'' + answer.questionId + '\')');
       deleteAnswerImg = $('<img>').attr('alt', '<fmt:message key="questionReply.delR" />').attr('src', '<c:url value="${deleteIcon}" />').attr('border', '0' );
       deleteAnswerLink.append(deleteAnswerImg);
@@ -262,7 +263,7 @@ $(document).ready(function() {
     answerContentDiv = $('<div>').addClass('answerContent');
     answerAttachmentDiv = $('<div>').addClass('answerAttachment');
     if(answer.attachments != null && answer.attachments.length > 0) {
-      answerAttachmentDiv.load('<c:url value="/attachment/jsp/displayAttachments.jsp?Context=Images&ComponentId=${pageScope.componentId}" />&Id=' + answer.id);
+      answerAttachmentDiv.load('<c:url value="/attachment/jsp/displayAttachedFiles.jsp?Context=attachment&ComponentId=${pageScope.componentId}" />&Id=' + answer.id);
       answerContentDiv.append(answerAttachmentDiv);
     }
     answerContentDiv.append(answer.content);
@@ -300,7 +301,7 @@ function closeQ(id)
 	//confirmation de cloture de la question
 	if(window.confirm('<fmt:message key="MessageCloseQ" />'))
 	{
-		
+
 			document.QForm.action = "CloseQ";
 			document.QForm.Id.value = id;
 			document.QForm.submit();
@@ -453,14 +454,14 @@ function confirmDeleteCategory(categoryId) {
 <fmt:message key="GML.subscribe" var="labelSubscribe"/>
 <fmt:message key="GML.unsubscribe" var="labelUnsubscribe"/>
 function successUnsubscribe() {
-   $("#yui-gen1").empty().append($('<a>').addClass('yuimenuitemlabel').attr('href', 
-   "javascript:subscribe();").attr('title', 
+   $("#yui-gen1").empty().append($('<a>').addClass('yuimenuitemlabel').attr('href',
+   "javascript:subscribe();").attr('title',
    '<view:encodeJs string="${labelUnsubscribe}" />').append('<view:encodeJs string="${labelSubscribe}" />') );
 }
 
 function successSubscribe() {
    $("#yui-gen1").empty().append($('<a>').addClass('yuimenuitemlabel').attr(
-   'href', "javascript:unsubscribe();").attr('title', 
+   'href', "javascript:unsubscribe();").attr('title',
    '<view:encodeJs string="${labelUnsubscribe}" />').append('<view:encodeJs string="${labelUnsubscribe}" />') );
 }
 
@@ -477,13 +478,15 @@ function subscribe() {
 <%
   browseBar.setDomainName(spaceLabel);
   browseBar.setPath("");
-  
+
   if (profil.equals("admin")) {
-    // gestion du plan de classement
-    operationPane.addOperation(resource.getIcon("questionReply.pdcUtilizationSrc"), resource.
-            getString("GML.PDCParam"),
-            "javascript:onClick=openSPWindow('" + m_context + "/RpdcUtilization/jsp/Main?ComponentId=" + componentId + "','utilizationPdc1')");
-    operationPane.addLine();
+    if (pdcUsed) {
+	    // gestion du plan de classement
+	    operationPane.addOperation(resource.getIcon("questionReply.pdcUtilizationSrc"), resource.
+	            getString("GML.PDCParam"),
+	            "javascript:onClick=openSPWindow('" + m_context + "/RpdcUtilization/jsp/Main?ComponentId=" + componentId + "','utilizationPdc1')");
+	    operationPane.addLine();
+    }
     // creation des categories
     operationPane.addOperationOfCreation(resource.getIcon("questionReply.createCategory"), resource.getString(
             "questionReply.createCategory"), "NewCategory");
@@ -505,7 +508,7 @@ function subscribe() {
   operationPane.addLine();
   operationPane.addOperation(resource.getIcon("questionReply.export"), resource.getString(
           "questionReply.export"), "javascript:onClick=openSPWindow('Export','export')");
-  
+
   if(((Boolean)request.getAttribute("userAlreadySubscribed"))) {
     operationPane.addOperation(resource.getIcon("GML.unsubscribe"), resource.getString(
           "GML.unsubscribe"), "javascript:unsubscribe();");
@@ -513,7 +516,7 @@ function subscribe() {
     operationPane.addOperation(resource.getIcon("questionReply.subscribe"), resource.getString(
           "GML.subscribe"), "javascript:subscribe();");
   }
-            
+
   out.println(window.printBefore());
 %>
 <view:frame>
@@ -528,7 +531,7 @@ function subscribe() {
           <h3><a class="categoryTitle"  id="lc<c:out value='${category.id}'/>" title="<fmt:message key="questionReply.openCategory"/>" href="#"><c:out value='${category.name}'/></a></h3>
           <div class="action">
             <c:if test="${'admin' eq requestScope.Flag}">
-            <a title="<fmt:message key="questionReply.updateCategory"/>" href="EditCategory?CategoryId=<c:out value='${category.id}'/>"> 
+            <a title="<fmt:message key="questionReply.updateCategory"/>" href="EditCategory?CategoryId=<c:out value='${category.id}'/>">
               <img src="<c:url value="${updateCategoryIcon}"/>" alt="<fmt:message key="questionReply.updateCategory"/>" border="0"/></a>
             <a title="<fmt:message key="questionReply.deleteCategory"/>" href="javascript:confirmDeleteCategory('<c:out value='${category.id}'/>');">
               <img src="<c:url value="${deleteCategoryIcon}"/>" alt="<fmt:message key="questionReply.deleteCategory"/>" border="0"/></a>
@@ -541,18 +544,18 @@ function subscribe() {
     <li class="category">
         <div class="categoryTitle" id="cnull">
           <h3><a class="categoryTitle"  id="lcnull" title="<fmt:message key="questionReply.openCategory"/>" href="#"><fmt:message key="questionReply.noCategory"/></a></h3>
-          <div class="action">            
+          <div class="action">
           </div>
         </div>
         <ul class="questions" id="qcnull" ></ul>
     </li>
 </ul>
 </form>
-  
+
 <form name="QForm" action="" method="post">
   <input type="hidden" name="Id" />
 </form>
-  
+
 <form id ="RForm" name="RForm" action="" method="post">
   <input type="hidden" name="replyId" />
   <input type="hidden" name="QuestionId" />

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -37,7 +37,7 @@
 		L’objectif de cette application est simple : recenser et partager les sites web utiles
 		pour un projet, un service, une équipe...
 	</message>
-    <message lang="en">Manage bookmarks on a specific topic.</message>
+    <message lang="en">Manage bookmarks on folders.</message>
 	<message lang="de">Verwaltet Favoriten zu einem bestimmten Thema.</message>
   </description>
   <suite>
@@ -56,8 +56,8 @@
 		<message lang="de">Administrators</message>
       </label>
       <help>
-        <message lang="fr">Les gestionnaires créent des liens vers des sites web, gèrent les thèmes et paramètrent le Plan de Classement.</message>
-        <message lang="en">Administrators create bookmarks, manage topics and set up the classification scheme.</message>
+        <message lang="fr">Les gestionnaires créent des liens vers des sites web, gèrent les dossiers et paramètrent le Plan de Classement.</message>
+        <message lang="en">Administrators create bookmarks, manage folders and set up the classification scheme.</message>
 		<message lang="de">Administrator</message>
       </help>
     </profile>
@@ -68,8 +68,8 @@
 		<message lang="de">Herausgeber</message>
       </label>
       <help>
-        <message lang="fr">Les publieurs créent des liens vers des sites web dans les thèmes existants.</message>
-        <message lang="en">Publishers create bookmarks.</message>
+        <message lang="fr">Les publieurs créent des liens vers des sites web et gèrent les dossiers.</message>
+        <message lang="en">Publishers create bookmarks and manage folders.</message>
 		<message lang="de">Herausgeber</message>
       </help>
     </profile>
@@ -108,9 +108,9 @@
     <parameter>
       <name>sortedTopics</name>
       <label>
-        <message lang="fr">Thèmes liens ordonnés</message>
-        <message lang="en">Topics/Links sorted</message>
-		<message lang="de">sortierte Themen / Favoriten</message>
+        <message lang="fr">Dossiers/liens ordonnés</message>
+        <message lang="en">Folders/Links sorted</message>
+		<message lang="de">Records/Favoriten sortiert</message>
       </label>
       <order>2</order>
       <mandatory>true</mandatory>
@@ -118,9 +118,9 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Ce paramètre permet d'ordonner les thèmes et les liens.</message>
-        <message lang="en">This parameter allows to order topics and links.</message>
-		<message lang="de">Dieser Parameter ermöglicht es Ihnen Themen und Favoriten zu sortieren</message>
+        <message lang="fr">Ce paramètre permet d'ordonner les dossiers et les liens.</message>
+        <message lang="en">This parameter allows to order folders and links.</message>
+		<message lang="de">Dieser Parameter ermöglicht es Ihnen Records und Favoriten zu sortieren</message>
       </help>
     </parameter>
   </parameters>

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -28,6 +28,8 @@ import com.silverpeas.classifieds.model.ClassifiedDetail;
 import com.silverpeas.classifieds.model.Subscribe;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Services provided by the Classified Silverpeas component.
@@ -53,10 +55,11 @@ public interface ClassifiedService extends SilverpeasComponentService<Classified
 
   /**
    * delete the classified corresponding to classifiedId
+   * @param instanceId : String
    * @param classifiedId : String
    * @
    */
-  public void deleteClassified(String classifiedId) ;
+  public void deleteClassified(String instanceId, String classifiedId);
 
   /**
    * delete all classifieds for the instance corresponding to instanceId
@@ -76,9 +79,10 @@ public interface ClassifiedService extends SilverpeasComponentService<Classified
    * take out draft mode the classified corresponding to classified
    * @param classifiedId : String
    * @param profile : String
+   * @param isValidationEnabled : boolean
    * @
    */
-  public void draftOutClassified(String classifiedId, String profile) ;
+  public void draftOutClassified(String classifiedId, String profile, boolean isValidationEnabled) ;
 
   /**
    * get all classifieds for an instance corresponding to instanceId
@@ -109,7 +113,7 @@ public interface ClassifiedService extends SilverpeasComponentService<Classified
   /**
    * get all classifieds to validate for an instance corresponding to instanceId
    * @param instanceId : String
-   * @return a collection of ClassifiedDetail
+   * @return a Collection of ClassifiedDetail
    * @
    */
   public Collection<ClassifiedDetail> getClassifiedsToValidate(String instanceId)
@@ -141,7 +145,7 @@ public interface ClassifiedService extends SilverpeasComponentService<Classified
    * @return a collection of ClassifiedDetail
    * @
    */
-  public Collection<ClassifiedDetail> search(QueryDescription query) ;
+  public List<ClassifiedDetail> search(QueryDescription query) ;
 
   /**
    * index all the classifieds for the instance corresponding to instanceId
@@ -223,4 +227,20 @@ public interface ClassifiedService extends SilverpeasComponentService<Classified
    * @
    */
   Collection<ClassifiedDetail> getUnpublishedClassifieds(String instanceId, String userId);
+  
+  /**
+  * get all valid classifieds
+  * @param instanceId : String
+  * @param mapFields1 : HashMap des champs de recherche 1 
+  * @param mapFields2 : HashMap des champs de recherche 1
+  * @param searchField1 : champ de recherche 1
+  * @param searchField2 : champ de recherche 2
+  * @param currentPage : numéro de page actuelle 
+  * @param elementsPerPage : nombre d'éléments à afficher par page
+  * @return a collection of ClassifiedDetail
+  */
+  public Collection<ClassifiedDetail> getAllValidClassifieds(String instanceId, Map<String, String> mapFields1, Map<String, String> mapFields2, String searchField1, String searchField2, int currentPage, int elementsPerPage);
+  
+  public void setClassification(ClassifiedDetail classified, String searchField1, String searchField2, String xmlFormName);
+  
 }

@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2009 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -109,7 +109,7 @@ ScheduleEventSessionController seScc = (ScheduleEventSessionController) request.
   		<c:if test="${not empty requestScope.scheduleEventList}">
     		<c:forEach items="${requestScope.scheduleEventList}" var="event" varStatus="eventIndex">
       		<tr align="center">
-      			<td valign="top" align="center" class="ArrayCell"><a href="javascript:getDetail('${event.id}');">${event.title}</a>&nbsp;<a href="<c:url value="/ScheduleEvent/${event.id}"/>"><img src="${linkIcon}" border="0" align="bottom" alt="${linkIconAlt}" title="${linkIconAlt}"/></a><c:if test="${event.status == 0}">&nbsp;<img alt="${closedIconAlt}" title="${closedIconAlt}" src="${closedIcon}" height="15" width="15"/></c:if></td>
+			<td valign="top" align="center" class="ArrayCell"><a href="javascript:getDetail('${event.id}');"><c:out value="${event.title}"/></a>&nbsp;<a href="<c:url value="/ScheduleEvent/${event.id}"/>"><img src="${linkIcon}" border="0" align="bottom" alt="${linkIconAlt}" title="${linkIconAlt}"/></a><c:if test="${event.status == 0}">&nbsp;<img alt="${closedIconAlt}" title="${closedIconAlt}" src="${closedIcon}" height="15" width="15"/></c:if></td>
       			<td valign="top" align="center" class="ArrayCell"><view:formatDate value="${event.creationDate}" /></td>
       			<%
       			ScheduleEvent currentSe = (ScheduleEvent) pageContext.getAttribute("event");

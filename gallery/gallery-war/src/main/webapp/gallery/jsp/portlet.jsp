@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -23,14 +23,14 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="com.silverpeas.gallery.ImageType"%>
+
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="check.jsp" %>
 
-<% 
+<%
   AlbumDetail root = (AlbumDetail) request.getAttribute("root");
   List photos = (List) request.getAttribute("Photos");
-    
+
 // parametrage pour l'affichage des dernieres photos telechargees
   int nbTotal = 10;
   int nbAffiche = 0;
@@ -74,11 +74,11 @@ div {
   <%
     browseBar.setDomainName(spaceLabel);
     browseBar.setComponentName(componentLabel, "Main");
-      
+
     NavigationList navList = gef.getNavigationList();
     navList.setTitle(root.getName());
     Iterator it = root.getChildrenDetails().iterator();
-      
+
     while (it.hasNext()) {
       NodeDetail unAlbum = (NodeDetail) it.next();
       int id = unAlbum.getId();
@@ -88,17 +88,17 @@ div {
           lien);
     }
     out.println(navList.print());
-      
-      
+
+
     // afficher les dernieres photos telechargees
     // ------------------------------------------
-      
+
     Board board = gef.getBoard();
   %>
 			<br>
 	<%
 	out.println(board.printBefore());
-	
+
 	// affichage de l'entete
 	%>
 		<table border="0" cellspacing="0" cellpadding="0" align=center width="100%">
@@ -114,7 +114,7 @@ div {
             String vignette_url = null;
             String altTitle = "";
             int nbPhotos = photos.size();
-              
+
             if (nbPhotos > 0) {
               PhotoDetail photo;
               String idP;
@@ -123,7 +123,7 @@ div {
                 // affichage de la photo
                 out.println("<tr><td>&nbsp;</td></tr>");
                 out.println("<tr><td align=\"center\">");
-                  
+
                 while (itP.hasNext() && nbAffiche < nbTotal) {
                   photo = (PhotoDetail) itP.next();
                   altTitle = "";
@@ -132,15 +132,14 @@ div {
                     String nomRep = resource.getSetting("imagesSubDirectory") + idP;
                     String name = photo.getImageName();
                     if (name != null) {
-                      String type = name.substring(name.lastIndexOf(".") + 1, name.length());
                       name = photo.getId() + "_66x50.jpg";
-                      vignette_url = FileServerUtils.getUrl(spaceId, componentId, name, photo.
+                      vignette_url = FileServerUtils.getUrl(componentId, name, photo.
                           getImageMimeType(), nomRep);
-                      if (!ImageType.isPreviewable(name)) {
+                      if (!photo.isPreviewable()) {
                         vignette_url = m_context + "/gallery/jsp/icons/notAvailable_" + resource.
                             getLanguage() + "_66x50.jpg";
                       }
-                        
+
                       altTitle = EncodeHelper.javaStringToHtmlString(photo.getTitle());
                       if (photo.getDescription() != null && photo.getDescription().length() > 0) {
                         altTitle += " : " + EncodeHelper.javaStringToHtmlString(photo.getDescription());
@@ -180,9 +179,9 @@ div {
 	%>
 		</table>
 	<%
-		
+
   	out.println(board.printAfter());
-	
+
   	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>

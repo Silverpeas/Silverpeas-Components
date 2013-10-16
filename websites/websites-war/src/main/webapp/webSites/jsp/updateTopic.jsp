@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -60,14 +60,14 @@ String name = "";
 String description = "";
 
 //R�cup�ration des param�tres
-String id = (String) request.getParameter("ChildId");
-String path = (String) request.getParameter("Path");
+String id = request.getParameter("ChildId");
+String path = request.getParameter("Path");
 
 //Icons
 String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
 
-Button cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=window.close();", false);
-Button validateButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData()", false);
+Button cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=window.close();", false);
+Button validateButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData()", false);
 
 
 NodeDetail folderDetail = (NodeDetail) request.getAttribute("CurrentFolder");
@@ -120,13 +120,8 @@ function isCorrectForm() {
      var errorMsg = "";
      var errorNb = 0;
      var title = stripInitialWhitespace(document.topicForm.Name.value);
-     var description = stripInitialWhitespace(document.topicForm.Description.value);
      if (isWhitespace(title)) {
        errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.name")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
-       errorNb++;
-     }
-     if (isWhitespace(description)) {
-       errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.description")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
        errorNb++;
      }
      if (! isCorrect(title)) {
@@ -158,12 +153,8 @@ function isCorrectForm() {
 <%
     Window window = gef.getWindow();
     BrowseBar browseBar = window.getBrowseBar();
-    //CBO : UPDATE
-	//browseBar.setDomainName(scc.getSpaceLabel());
-	browseBar.setDomainName(spaceLabel);
-    //CBO : UPDATE
-	//browseBar.setComponentName(scc.getComponentLabel());
-	browseBar.setComponentName(componentLabel);
+    browseBar.setDomainName(spaceLabel);
+    browseBar.setComponentName(componentLabel);
     browseBar.setPath(resources.getString("FolderUpdateTitle"));
 
     //Le cadre
@@ -196,8 +187,7 @@ function isCorrectForm() {
 
     <TR>
         <TD class="txtlibform"><%=resources.getString("GML.description")%> : </TD>
-            <TD><input type="text" name="Description" value="<%=Encode.javaStringToHtmlString(description)%>" size="60" maxlength="50">
-                &nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5" maxlength="50"> </TD>
+            <TD><input type="text" name="Description" value="<%=Encode.javaStringToHtmlString(description)%>" size="60" maxlength="50"></TD>
         </TR>
           <TR>
             <TD colspan="2">(<img border="0" src="<%=mandatoryField%>" width="5" height="5">

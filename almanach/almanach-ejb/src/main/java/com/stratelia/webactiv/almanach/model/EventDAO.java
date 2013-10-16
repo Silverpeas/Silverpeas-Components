@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -26,6 +26,8 @@ import com.stratelia.webactiv.util.DBUtil;
 import static com.stratelia.webactiv.util.DateUtil.*;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.UtilException;
+import org.silverpeas.date.Period;
+
 import java.sql.*;
 import java.text.MessageFormat;
 import java.util.Date;
@@ -147,8 +149,8 @@ public class EventDAO {
   /**
    * Find all events that can occur in the specified range and for the specified almanachs.
    *
-   * @param startDate the start date of the range. It has to be in the format yyyy/MM/dd.
-   * @param endDate the end date of the range. It has to be in the format yyyy/MM/dd. If the end
+   * @param startDay the start date of the range. It has to be in the format yyyy/MM/dd.
+   * @param endDay the end date of the range. It has to be in the format yyyy/MM/dd. If the end
    * date is null or empty, then there is no end date and all events from startDay are taken into
    * account.
    * @param almanachIds the identifiers of the almanachs.
@@ -193,44 +195,10 @@ public class EventDAO {
     }
   }
 
-  public Collection<EventDetail> findAllEventsInYear(final Date date, String... instanceIds)
-          throws SQLException, Exception {
-    String year = formatDate(date);
-    year = year.substring(0, 4);
-    String startDay = year + "/01/01";
-    String endDay = year + "/12/31";
-    return findAllEventsInRange(startDay, endDay, instanceIds);
-  }
-
-  public Collection<EventDetail> findAllEventsInMonth(final Date date, String... instanceIds)
-          throws SQLException, Exception {
-    String month = formatDate(date);
-    month = month.substring(0, month.length() - 2);
-    String startDay = month + "01";
-    String endDay = month + "31";
-    return findAllEventsInRange(startDay, endDay, instanceIds);
-  }
-
-  public Collection<EventDetail> findAllEventsInWeek(final Date week, String... instanceIds)
-          throws SQLException, Exception {
-    Calendar firstDayWeek = Calendar.getInstance();
-    firstDayWeek.setTime(week);
-    firstDayWeek.set(java.util.Calendar.DAY_OF_WEEK, firstDayWeek.getFirstDayOfWeek());
-    firstDayWeek.set(java.util.Calendar.HOUR_OF_DAY, 0);
-    firstDayWeek.set(java.util.Calendar.MINUTE, 0);
-    firstDayWeek.set(java.util.Calendar.SECOND, 0);
-    firstDayWeek.set(java.util.Calendar.MILLISECOND, 0);
-    Calendar lastDayWeek = Calendar.getInstance();
-    lastDayWeek.setTime(week);
-    lastDayWeek.set(java.util.Calendar.HOUR_OF_DAY, 0);
-    lastDayWeek.set(java.util.Calendar.MINUTE, 0);
-    lastDayWeek.set(java.util.Calendar.SECOND, 0);
-    lastDayWeek.set(java.util.Calendar.MILLISECOND, 0);
-    lastDayWeek.set(java.util.Calendar.DAY_OF_WEEK, lastDayWeek.getFirstDayOfWeek());
-    lastDayWeek.add(java.util.Calendar.WEEK_OF_YEAR, 1);
-    String startDay = formatDate(firstDayWeek.getTime());
-    String endDay = formatDate(lastDayWeek.getTime());
-
+  public Collection<EventDetail> findAllEventsInPeriod(final Period period, String... instanceIds)
+          throws Exception {
+    String startDay = formatDate(period.getBeginDate());
+    String endDay = formatDate(period.getEndDate());
     return findAllEventsInRange(startDay, endDay, instanceIds);
   }
 
@@ -325,7 +293,7 @@ public class EventDAO {
   }
 
   protected EventDetail decodeEventDetailFromResultSet(final ResultSet rs)
-          throws SQLException, Exception {
+          throws Exception {
     String id;
     try {
       id = rs.getString(EventPK.TABLE_NAME + ".eventId");
@@ -386,29 +354,4 @@ public class EventDAO {
   protected void closeConnection(final Connection connection) {
     DBUtil.close(connection);
   }
-//  public static Collection<EventDetail> getNextEvents(Connection con, EventPK pk,
-//      int nbReturned) throws SQLException, Exception {
-//    ResultSet rs = null;
-//    PreparedStatement prepStmt = null;
-//    String selectQuery = "SELECT DISTINCT *"
-//        + " FROM " + pk.getTableName() + " LEFT OUTER JOIN " + Periodicity.getTableName()
-//        + " ON " + pk.getTableName() + ".eventId = " + Periodicity.getTableName() + ".eventId"
-//        + " WHERE instanceId= ? AND eventStartDay >= ? ORDER BY eventStartDay";
-//    try {
-//      SilverTrace.info("almanach", "EventDAO.getNextEvents()", "almanach.MSG_SQL_REQUEST",
-//          "selectRequest = " + selectQuery);
-//      prepStmt = con.prepareStatement(selectQuery);
-//      prepStmt.setString(1, pk.getComponentName());
-//      prepStmt.setString(2, formatDate(new Date()));
-//      rs = prepStmt.executeQuery();
-//      List<EventDetail> list = new ArrayList<EventDetail>();
-//      while (rs.next() && nbReturned != 0) {
-//        list.add(getEventDetailFromResultSet(rs));
-//        nbReturned--;
-//      }
-//      return list;
-//    } finally {
-//      DBUtil.close(rs, prepStmt);
-//    }
-//  }
 }

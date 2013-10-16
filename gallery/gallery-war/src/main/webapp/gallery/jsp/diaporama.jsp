@@ -1,5 +1,5 @@
 <%--
-  Copyright (C) 2000 - 2012 Silverpeas
+  Copyright (C) 2000 - 2013 Silverpeas
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU Affero General Public License as
@@ -22,8 +22,8 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
@@ -42,20 +42,14 @@
 <view:includePlugin name="popup"/>
 <view:includePlugin name="notifier"/>
 
-<link href="<view:componentUrl componentId=""/>/gallery/jsp/styleSheets/slider/themes/classic/galleria.classic.css" type="text/css" rel="stylesheet">
-<script src="<view:componentUrl componentId=""/>/gallery/jsp/javaScript/slider/galleria-1.2.8.min.js" type="text/javascript"></script>
-<script src="<view:componentUrl componentId=""/>/gallery/jsp/styleSheets/slider/themes/classic/galleria.classic.min.js" type="text/javascript"></script>
-<script src="<view:componentUrl componentId=""/>/gallery/jsp/javaScript/silverpeas-gallery-slider.js" type="text/javascript"></script>
+<link href="<c:url value="/gallery/jsp/styleSheets/slider/themes/classic/galleria.classic.css"/>" type="text/css" rel="stylesheet">
+<script src="<c:url value="/gallery/jsp/javaScript/slider/galleria-1.2.9.min.js"/>" type="text/javascript"></script>
+<script src="<c:url value="/gallery/jsp/styleSheets/slider/themes/classic/galleria.classic.min.js"/>" type="text/javascript"></script>
+<script src="<c:url value="/gallery/jsp/javaScript/silverpeas-gallery-slider.js"/>" type="text/javascript"></script>
 <script type="text/JavaScript">
   function startSlideshow(fromPhotoId) {
-    $.popup.showWaiting();
     var nbPauses = -1;
-    var $slider = $('#gallerySlider');
-    if ($slider.size() == 0) {
-      $slider = $("<div>").attr("id", "gallerySlider");
-      $(document.body).append($slider);
-    }
-    $slider.gallerySlider('album', {
+    displayAlbumGallerySlider({
       componentInstanceId : '<c:out value="${componentInstanceId}" />',
       albumId : '<c:out value="${albumId}" />',
       fromPhotoId : fromPhotoId,

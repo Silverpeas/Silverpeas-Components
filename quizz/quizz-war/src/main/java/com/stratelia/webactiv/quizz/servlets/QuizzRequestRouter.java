@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -29,6 +29,7 @@ import java.io.File;
 import javax.servlet.http.HttpServletRequest;
 
 import com.silverpeas.util.StringUtil;
+
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -157,9 +158,7 @@ public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionContr
       }
 
       if (profileError) {
-        String sessionTimeout =
-            GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
-
+        String sessionTimeout = GeneralPropertiesManager.getString("sessionTimeout");
         destination = sessionTimeout;
       } else {
         destination = "/quizz/jsp/" + destination;

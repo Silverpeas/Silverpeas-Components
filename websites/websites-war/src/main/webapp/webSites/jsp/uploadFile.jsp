@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -65,7 +65,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ include file="checkScc.jsp" %>
 
 <% 
-	//CBO : ADD
 	String thePath = (String) request.getParameter("path");
 	Boolean uploadOk = (Boolean) request.getAttribute("UploadOk");
 
@@ -117,12 +116,9 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 				var indexPoint = file.lastIndexOf(".");
 				
-				//CBO : ADD
 				if(indexPoint == -1) {
 					alert("<%=resources.getString("ErreurFichierUpload")%>");
 				} else {
-
-					//CBO : UPDATE
 					var nomFile = file.substring(0, indexPoint);
 
 					if (! isCorrect(nomFile)) {// verif caract�res speciaux contenus dans le nom du fichier

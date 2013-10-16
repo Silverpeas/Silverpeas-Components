@@ -136,17 +136,21 @@ td.txtlibform {
 
 .btnAction {
 	background-image: none;
-	background-color:#F1790F;
+	background-color:#FFD5AF;
 	border:1px solid #F1790F;
-	border-radius: 5px;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
-	padding:2px 15px;
-	color:#FFF;
+	border-radius:8px;
+	-moz-border-radius: 8px;
+	-webkit-border-radius: 8px;
+	padding:8px 10px;
+	color:#444444;
+	font-weight:bold;
+	line-height:120%;
+	margin-top:4px;
+	display:inline-block;
 }
 
 .btnAction:hover {
-	background-color:#EF882C;
+	background-color:#F1790F;
 	color:#FFF;
 }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -97,7 +97,6 @@ public class InfoLetterContentManager implements ContentInterface {
    * update the visibility attributes of the content. Here, the type of content is a
    * PublicationDetail
    * @param ilPub the content
-   * @param silverObjectId the unique identifier of the content
    */
   public void updateSilverContentVisibility(InfoLetterPublicationPdC ilPub)
       throws ContentManagerException {

@@ -1,59 +1,57 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.kmelia;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJBException;
 
+import org.silverpeas.core.admin.OrganisationController;
+
 import com.silverpeas.look.PublicationHelper;
 import com.silverpeas.util.StringUtil;
+
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import java.util.Date;
 
 public class KmeliaTransversal implements PublicationHelper {
 
   private String userId = null;
   private PublicationBm publicationBm = null;
-  private OrganizationController organizationControl = null;
+  private OrganisationController organizationControl = null;
 
   public KmeliaTransversal() {
   }
-  
+
   public KmeliaTransversal(String userId) {
     this.userId = userId;
   }
@@ -83,9 +81,9 @@ public class KmeliaTransversal implements PublicationHelper {
   public List<PublicationDetail> getPublications(String spaceId, int nbPublis) {
     SilverTrace.debug("kmelia", "KmeliaTransversal.getPublications()",
         "root.MSG_GEN_ENTER_METHOD", "spaceId = " + spaceId + ", nbPublis = " + nbPublis);
-   List<String> componentIds = getAvailableComponents(spaceId);
+    List<String> componentIds = getAvailableComponents(spaceId);
     SilverTrace.debug("kmelia", "KmeliaTransversal.getPublications()",
-        "root.MSG_GEN_PARAM_VALUE", "componentIds = "  + componentIds.toString());
+        "root.MSG_GEN_PARAM_VALUE", "componentIds = " + componentIds.toString());
     List<PublicationPK> publicationPKs = null;
     try {
       publicationPKs = (List<PublicationPK>) getPublicationBm().getPublicationPKsByStatus(
@@ -99,17 +97,17 @@ public class KmeliaTransversal implements PublicationHelper {
 
     try {
       return (List<PublicationDetail>) getPublicationBm().getPublications(filteredPublicationPKs);
-    } catch (RemoteException e) {
+    } catch (Exception e) {
       SilverTrace.error("kmelia", "KmeliaTransversal.getPublications()",
           "kmelia.CANT_GET_PUBLICATIONS", "spaceId = " + spaceId, e);
     }
     return new ArrayList<PublicationDetail>();
   }
-  
+
   @Override
   public List<PublicationDetail> getUpdatedPublications(String spaceId, int since, int nbReturned) {
     int maxAge = since;
-        if (maxAge > 0) {
+    if (maxAge > 0) {
       maxAge = -1 * maxAge;
       Calendar calendar = Calendar.getInstance();
       calendar.add(Calendar.DAY_OF_MONTH, maxAge);
@@ -120,14 +118,14 @@ public class KmeliaTransversal implements PublicationHelper {
 
   protected List<PublicationDetail> getUpdatedPublications(String spaceId, Date since, int nbPublis) {
     SilverTrace.debug("kmelia", "KmeliaTransversal.getPublications()",
-        "root.MSG_GEN_ENTER_METHOD", "spaceId = " + spaceId + ", nbPublis = "  + nbPublis);
+        "root.MSG_GEN_ENTER_METHOD", "spaceId = " + spaceId + ", nbPublis = " + nbPublis);
     List<String> componentIds = getAvailableComponents(spaceId);
     SilverTrace.debug("kmelia", "KmeliaTransversal.getPublications()",
-        "root.MSG_GEN_PARAM_VALUE", "componentIds = "  + componentIds.toString());
+        "root.MSG_GEN_PARAM_VALUE", "componentIds = " + componentIds.toString());
 
     List<PublicationPK> publicationPKs = null;
     try {
-      publicationPKs = (List<PublicationPK>) getPublicationBm().getUpdatedPublicationPKsByStatus(        
+      publicationPKs = (List<PublicationPK>) getPublicationBm().getUpdatedPublicationPKsByStatus(
           PublicationDetail.VALID, since, 0, componentIds);
     } catch (Exception e) {
       SilverTrace.error("kmelia", "KmeliaTransversal.getPublications()",
@@ -137,14 +135,13 @@ public class KmeliaTransversal implements PublicationHelper {
         nbPublis);
     try {
       return (List<PublicationDetail>) getPublicationBm().getPublications(filteredPublicationPKs);
-    } catch (RemoteException e) {
+    } catch (Exception e) {
       SilverTrace.error("kmelia", "KmeliaTransversal.getPublications()",
           "kmelia.CANT_GET_PUBLICATIONS", "spaceId = " + spaceId, e);
     }
     return new ArrayList<PublicationDetail>();
   }
-  
-  
+
   protected List<String> getAvailableComponents(String spaceId) {
     List<String> componentIds = new ArrayList<String>();
     if (!StringUtil.isDefined(spaceId)) {
@@ -175,8 +172,7 @@ public class KmeliaTransversal implements PublicationHelper {
       publications = (List<PublicationDetail>) getPublicationBm().getPublicationsByStatus("Valid",
           componentIds);
     } catch (Exception e) {
-      SilverTrace.error("kmelia",
-          "KmeliaTransversal.getPublicationsByComponentId()",
+      SilverTrace.error("kmelia", "KmeliaTransversal.getPublicationsByComponentId()",
           "kmelia.CANT_GET_PUBLICATIONS", "componentId = " + componentId, e);
     }
     return filterPublications(publications, -1);
@@ -223,7 +219,7 @@ public class KmeliaTransversal implements PublicationHelper {
     return filteredPublicationPKs;
   }
 
-  private OrganizationController getOrganizationControl() {
+  private OrganisationController getOrganizationControl() {
     if (organizationControl == null) {
       organizationControl = new OrganizationController();
     }
@@ -233,11 +229,10 @@ public class KmeliaTransversal implements PublicationHelper {
   private PublicationBm getPublicationBm() {
     if (publicationBm == null) {
       try {
-        publicationBm = EJBUtilitaire.getEJBObjectRef(
-            JNDINames.PUBLICATIONBM_EJBHOME, PublicationBmHome.class).create();
+        publicationBm = EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
+            PublicationBm.class);
       } catch (Exception e) {
-        SilverTrace.error("quickinfo",
-            "QuickInfoTransversalSC.getPublicationBm()",
+        SilverTrace.error("quickinfo","QuickInfoTransversalSC.getPublicationBm()",
             "root.MSG_EJB_CREATE_FAILED", JNDINames.PUBLICATIONBM_EJBHOME, e);
         throw new EJBException(e);
       }

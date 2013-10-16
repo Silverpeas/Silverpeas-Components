@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -30,12 +30,12 @@
     Collection photos = (List) request.getAttribute("Photos");
     Collection selectedIds = (Collection) request.getAttribute("SelectedIds");
     boolean isOrder = ((Boolean) request.getAttribute("IsOrder")).booleanValue();
-      
+
     // declaration des variables :
     int id = 0;
     String extension = "_66x50.jpg";
     String extensionAlt = "_266x150.jpg";
-      
+
     Iterator itP = photos.iterator();
 %>
 
@@ -48,8 +48,8 @@
 	src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script language="javascript">
 	var albumWindow = window;
-	
-	function sendDataDelete() 
+
+	function sendDataDelete()
 	{
 		//confirmation de suppression des photos selectionnees
 		if(window.confirm("<%=resource.getString("gallery.confirmDeletePhotos")%> "))
@@ -75,7 +75,7 @@
 					// il n'y a qu'une checkbox non selectionnee
 					items += boxItems.value+",";
 				} else{
-					// search not checked boxes 
+					// search not checked boxes
 					for (i=0;i<boxItems.length ;i++ ){
 						if (boxItems[i].checked == selected){
 							items += boxItems[i].value+",";
@@ -86,11 +86,11 @@
 		}
 		catch (e)
 		{
-			//Checkboxes are not displayed 
+			//Checkboxes are not displayed
 		}
 		return items;
 	}
-	
+
 	function doPagination(index)
 	{
 		document.photoForm.SelectedIds.value 	= getObjects(true);
@@ -99,7 +99,7 @@
 		document.photoForm.action				= "BasketPagination";
 		document.photoForm.submit();
 	}
-	
+
 	function deleteConfirm(id)
 	{
 		// confirmation de suppression d'une photo
@@ -110,14 +110,14 @@
   			document.photoFormDelete.submit();
 		}
 	}
-	
+
 	/***********************************************
 * Image w/ description tooltip- By Dynamic Web Coding (www.dyn-web.com)
 * Copyright 2002-2007 by Sharon Paine
 * Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
 ***********************************************/
 
-/* IMPORTANT: Put script after tooltip div or 
+/* IMPORTANT: Put script after tooltip div or
 	 put tooltip div just before </BODY>. */
 
 var dom = (document.getElementById) ? true : false;
@@ -132,20 +132,20 @@ var origWidth, origHeight;
 if (nodyn) { event = "nope" }
 
 ///////////////////////  CUSTOMIZE HERE   ////////////////////
-// settings for tooltip 
+// settings for tooltip
 // Do you want tip to move when mouse moves over link?
-var tipFollowMouse= false;	
+var tipFollowMouse= false;
 // Be sure to set tipWidth wide enough for widest image
 var tipWidth= 160;
 var offX= 20;	// how far from mouse to show tip
-var offY= 12; 
+var offY= 12;
 var tipFontFamily= "Verdana, arial, helvetica, sans-serif";
 var tipFontSize= "8pt";
 // set default text color and background color for tooltip here
 // individual tooltips can have their own (set in messages arrays)
 // but don't have to
 var tipFontColor= "#000000";
-var tipBgColor= "#DDECFF"; 
+var tipBgColor= "#DDECFF";
 var tipBorderColor= "#000000";
 var tipBorderWidth= 1;
 var tipBorderStyle= "solid";
@@ -153,7 +153,7 @@ var tipPadding= 0;
 
 // tooltip content goes here (image, description, optional bgColor, optional textcolor)
 var messages = new Array();
-// multi-dimensional arrays containing: 
+// multi-dimensional arrays containing:
 // image and text for tooltip
 // optional: bgColor and color to be sent to tooltip
   <%int messagesId = 0;
@@ -161,8 +161,8 @@ var messages = new Array();
             String photoId = (String) itP.next();
             PhotoDetail photo = gallerySC.getPhoto(photoId);
             String nomRep = resource.getSetting("imagesSubDirectory")
-                + photo.getId();%>		
-            messages[<%=messagesId%>] = new Array('<%=FileServerUtils.getUrl(spaceId, componentId, photo.getId()
+                + photo.getId();%>
+            messages[<%=messagesId%>] = new Array('<%=FileServerUtils.getUrl( componentId, photo.getId()
             + extensionAlt, photo.getImageMimeType(),
             nomRep)%>','<%=EncodeHelper.javaStringToJsString(photo.getName()) %>',"#FFFFFF");
         <%messagesId++;
@@ -189,7 +189,7 @@ var endStr = '</td></tr></table>';
 
 ////////////////////////////////////////////////////////////
 //  initTip	- initialization for tooltip.
-//		Global variables for tooltip. 
+//		Global variables for tooltip.
 //		Set styles
 //		Set up mousemove capture if tipFollowMouse set true.
 ////////////////////////////////////////////////////////////
@@ -218,7 +218,7 @@ window.onload = initTip;
 
 /////////////////////////////////////////////////
 //  doTooltip function
-//			Assembles content for tooltip and writes 
+//			Assembles content for tooltip and writes
 //			it to tipDiv
 /////////////////////////////////////////////////
 var t1,t2;	// for setTimeouts
@@ -253,7 +253,7 @@ function trackMouse(evt) {
 //  positionTip function
 //		If tipFollowMouse set false, so trackMouse function
 //		not being used, get position of mouseover event.
-//		Calculations use mouseover event position, 
+//		Calculations use mouseover event position,
 //		offset amounts and tooltip width to position
 //		tooltip within window.
 /////////////////////////////////////////////////////////////
@@ -270,11 +270,11 @@ function positionTip(evt) {
 	var winWd = (ns5)? window.innerWidth-20+window.pageXOffset: standardbody.clientWidth+standardbody.scrollLeft;
 	var winHt = (ns5)? window.innerHeight-20+window.pageYOffset: standardbody.clientHeight+standardbody.scrollTop;
 	// check mouse position against tip and window dimensions
-	// and position the tooltip 
-	if ((mouseX+offX+tpWd)>winWd) 
+	// and position the tooltip
+	if ((mouseX+offX+tpWd)>winWd)
 		tipcss.left = mouseX-(tpWd+offX)+"px";
 	else tipcss.left = mouseX+offX+"px";
-	if ((mouseY+offY+tpHt)>winHt) 
+	if ((mouseY+offY+tpHt)>winHt)
 		tipcss.top = winHt-(tpHt+offY)+"px";
 	else tipcss.top = mouseY+offY+"px";
 	if (!tipFollowMouse) t1=setTimeout("tipcss.visibility='visible'",100);
@@ -296,7 +296,7 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
     browseBar.setDomainName(spaceLabel);
     browseBar.setComponentName(componentLabel, "Main");
     browseBar.setPath(resource.getString("gallery.basket"));
-      
+
     if (photos.size() != 0) {
       if (isOrder) {
         // transformer le panier en demande
@@ -304,20 +304,20 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
             "gallery.addOrder"), "OrderAdd");
         operationPane.addLine();
       }
-        
+
       // possibilite de modifier ou supprimer les photos par lot
       operationPane.addOperation(resource.getIcon("gallery.deleteSelectedPhoto"), resource.getString(
           "gallery.deleteSelectedPhoto"),
           "javascript:onClick=sendDataDelete();");
-            
+
       // vider le panier
       operationPane.addOperation(resource.getIcon("gallery.deleteBasket"), resource.getString(
           "gallery.deleteBasket"), "BasketDelete");
     }
-      
+
     out.println(window.printBefore());
     out.println(frame.printBefore());
-      
+
     // afficher les photos du panier
     // -------------------
 %>
@@ -342,7 +342,7 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
        int indexPhoto = 0;
        while (itP.hasNext()) {
          ArrayLine ligne = arrayPane.addArrayLine();
-           
+
          id = Integer.parseInt((String) itP.next());
          PhotoDetail photo = gallerySC.getPhoto(Integer.toString(id));
          String nomRep = resource.getSetting("imagesSubDirectory")
@@ -354,13 +354,12 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
            altTitle += " : "
                + EncodeHelper.javaStringToHtmlString(photo.getDescription());
          }
-         String vignette_url = FileServerUtils.getUrl(spaceId, componentId, name, photo.
+         String vignette_url = FileServerUtils.getUrl(componentId, name, photo.
              getImageMimeType(), nomRep);
-         String vignetteAlt = FileServerUtils.getUrl(spaceId,
-             componentId, photo.getId() + extensionAlt, photo.getImageMimeType(), nomRep);
+         String vignetteAlt = FileServerUtils.getUrl(componentId, photo.getId() + extensionAlt, photo.getImageMimeType(), nomRep);
          String alt = EncodeHelper.javaStringToHtmlString("<IMG SRC=\""
              + vignetteAlt + "\" border=\"0\">");
-               
+
          ArrayCellText arrayCellText0 = ligne.addArrayCellText("<a href=\"PreviewPhoto?PhotoId="
              + id
              + "\" onmouseover=\"doTooltip(event,"
@@ -369,7 +368,7 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
              + vignette_url + "\" border=\"0\"></a>");
          arrayCellText0.setCompareOn(name);
          indexPhoto++;
-           
+
          // case e cocher pour traitement par lot
          String usedCheck = "";
          if (selectedIds != null
@@ -384,13 +383,13 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
              + resource.getString("gallery.deletePhoto")
              + "\" border=\"0\" align=\"absmiddle\"></a> <input type=\"checkbox\" name=\"SelectPhoto\" value=\""
              + EncodeHelper.javaStringToHtmlString(String.valueOf(id)) + usedCheck + "\">");
-               
+
        }
        if (ok) {
          out.println(arrayPane.print());
        }
      }
-       
+
      out.println(frame.printAfter());
      out.println(window.printAfter());
  %>

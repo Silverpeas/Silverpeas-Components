@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -37,7 +37,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 /**
  * @author Yohann Chastagnier
  */
-public class KmeliaSupervisorPublicationUserNotification extends KmeliaSubscriptionPublicationUserNotification {
+public class KmeliaSupervisorPublicationUserNotification extends AbstractKmeliaPublicationUserNotification {
 
   public KmeliaSupervisorPublicationUserNotification(final NodePK nodePK, final PublicationDetail resource) {
     super(nodePK, resource, NotifAction.CREATE);
@@ -57,7 +57,7 @@ public class KmeliaSupervisorPublicationUserNotification extends KmeliaSubscript
   protected Collection<String> getUserIdsToNotify() {
     final List<String> roles = Collections.singletonList("supervisor");
     final List<String> supervisors =
-        new ArrayList<String>(Arrays.asList(getOrganizationController().getUsersIdsByRoleNames(
+        new ArrayList<String>(Arrays.asList(getOrganisationController().getUsersIdsByRoleNames(
             getResource().getPK().getInstanceId(), roles)));
     SilverTrace.debug("kmelia", "KmeliaSupervisorPublicationNotification.getUserIdToNotify()",
         "root.MSG_GEN_PARAM_VALUE", supervisors.size() + " users in role supervisor !");

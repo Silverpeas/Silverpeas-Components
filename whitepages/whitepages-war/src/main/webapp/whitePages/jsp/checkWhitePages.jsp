@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -77,7 +77,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%
 
 MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-//OrganizationController organizationCtrl = m_MainSessionCtrl.getOrganizationController();
+//OrganizationController organizationCtrl = m_MainSessionCtrl.getOrganisationController();
 GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
 WhitePagesSessionController scc = (WhitePagesSessionController) request.getAttribute("whitePages");
@@ -88,7 +88,7 @@ if (scc == null)
     getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
     return;
 }
-	
+
 
 ResourcesWrapper resource = (ResourcesWrapper)request.getAttribute("resources");
 
@@ -123,7 +123,7 @@ if (containerContext == null) {
 	else
 		browseBar.setComponentName(componentLabel, "Main");
 } else {
-	browseBar.setComponentName(componentLabel, m_context+containerContext.getReturnURL()); 
+	browseBar.setComponentName(componentLabel, m_context+containerContext.getReturnURL());
 }
 
 %>

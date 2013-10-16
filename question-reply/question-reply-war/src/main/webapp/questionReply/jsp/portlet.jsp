@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -50,7 +50,7 @@
   <view:looknfeel />
   <link rel="stylesheet" type="text/css" href="css/question-reply-css.jsp" />
 <script type="text/javascript">
-<!-- 
+<!--
 
 var etat = new Array();
 function bindQuestionsEvent() {
@@ -65,8 +65,8 @@ function bindQuestionsEvent() {
           $('#a'+id).show();
           etat[id] = "open";
           var found = $('#a'+id + '>ul>li');
-          if (found.length == 0) {  
-				
+          if (found.length == 0) {
+
 				$.ajax({
 					url: answersUrl,
 					type: "GET",
@@ -85,28 +85,28 @@ function bindQuestionsEvent() {
         } else {
           $('#a'+id).hide();
           etat[id] = "close";
-		} 
+		}
   		    return false;
       }
   });
 }
-    
+
 function bindCategoryEvent() {
    $('.categoryTitle').on('click', function() {
       category = this.id;
       id = category.substring(1);
       questionUrl = '<c:url value="/services/questionreply/${pageScope.componentId}/questions/category/"/>' + id;
-      typeLien = category.substring(0,1);	
+      typeLien = category.substring(0,1);
       if (typeLien!="l") {
         $('.category').removeClass('select');
         $('.questions').hide();
         $('#qc' + id + ' .answers').hide();
-        $.each(etat, function(index) { 
+        $.each(etat, function(index) {
           etat[index] = 'close';
         });
         var found = $('#qc'+id + '>li');
-        if (found.length == 0) {  
-		
+        if (found.length == 0) {
+
 			   $.ajax({
 					url: questionUrl,
 					type: "GET",
@@ -119,23 +119,23 @@ function bindCategoryEvent() {
               answersDiv = $('<div>').addClass('answers').attr('id', 'a' + question.id)
               answersDiv.append($('<p>').text(question.content));
               answersDiv.append($('<ul>'));
-              answersDiv.hide();            
+              answersDiv.hide();
               $('#qc'+id).append($('<li>').append(displayQuestion(question)).append(answersDiv));
             });
 						$('.questionTitle').off('click');
 						bindQuestionsEvent();
 					}
           });
-		
-		
-        
+
+
+
         }
-        $('#qc'+id).show();        	   
-        $(this).parent().addClass('select');			
+        $('#qc'+id).show();
+        $(this).parent().addClass('select');
       }
     });
 }
-    
+
 $(document).ready(function() {
   bindCategoryEvent();
   bindQuestionsEvent();
@@ -169,7 +169,7 @@ $(document).ready(function() {
     questionTitleDiv.append(questionTitle);
     questionHyperlink = $('<a>').addClass('permalink').attr('href', '<c:url value="/Question/" />' + questionToBeDisplayed.id).attr('title', '<fmt:message key="questionReply.CopyQuestionLink"/>');
     hyperlinkImg = $('<img>').attr('src', '<c:url value="${hyperlinkIcon}"/>').attr('alt', '<fmt:message key="questionReply.CopyQuestionLink"/>').attr('border', '0');
-    questionHyperlink.append(hyperlinkImg);    
+    questionHyperlink.append(hyperlinkImg);
     questionTitleDiv.append(questionHyperlink);
     switch(questionToBeDisplayed.status) {
       case 0 :
@@ -185,13 +185,13 @@ $(document).ready(function() {
         questionTitleDiv.append(questionStatusImg);
         break;
     }
-        
+
     questionAuthor = $('<span>').addClass('questionAuthor').addClass('txtBaseline').text(questionToBeDisplayed.creator.fullName + ' ');
     questionCreationDate = $('<span>').addClass('questionDate').text('- ' + questionToBeDisplayed.creationDate);
-    questionAuthor.append(questionCreationDate);    
-    questionTitleDiv.append(questionAuthor);    
-    questionDiv.append(questionTitleDiv);    
-    actionDiv = $('<div>').addClass('action');    
+    questionAuthor.append(questionCreationDate);
+    questionTitleDiv.append(questionAuthor);
+    questionDiv.append(questionTitleDiv);
+    actionDiv = $('<div>').addClass('action');
     return questionDiv;
   }
   <fmt:message key="questionReply.minicone" bundle="${icons}" var="publicAnswerIcon"/>
@@ -204,13 +204,13 @@ $(document).ready(function() {
     } else {
       answerTitle.append($('<img>').addClass('status').attr('alt','<fmt:message key="questionReply.Rprivee" />').attr('title','<fmt:message key="questionReply.Rprivee" />').attr('src', '<c:url value="${privateAnswerIcon}" />').attr('border', '0' ));
     }
-    actionDiv = $('<div>').addClass('action');    
+    actionDiv = $('<div>').addClass('action');
     answerTitle.append(actionDiv);
     answerBlock.append(answerTitle);
     answerContentDiv = $('<div>').addClass('answerContent');
     answerAttachmentDiv = $('<div>').addClass('answerAttachment');
     if(answer.attachments != null && answer.attachments.length > 0) {
-      answerAttachmentDiv.load('<c:url value="/attachment/jsp/displayAttachments.jsp?Context=Images&ComponentId=${pageScope.componentId}" />&Id=' + answer.id);
+      answerAttachmentDiv.load('<c:url value="/attachment/jsp/displayAttachedFiles.jsp?Context=attachment&ComponentId=${pageScope.componentId}" />&Id=' + answer.id);
       answerContentDiv.append(answerAttachmentDiv);
     }
     answerContentDiv.append(answer.content);
@@ -231,7 +231,7 @@ $(document).ready(function() {
       <li class="category">
         <div class="categoryTitle" id="c<c:out value='${category.id}'/>">
           <h3><a class="categoryTitle"  id="lc<c:out value='${category.id}'/>" title="<fmt:message key="questionReply.openCategory"/>" href="#"><c:out value='${category.name}'/></a></h3>
-          <div class="action">          
+          <div class="action">
           </div>
         </div>
         <ul class="questions" id="qc<c:out value='${category.id}'/>" ></ul>
@@ -240,7 +240,7 @@ $(document).ready(function() {
     <li class="category">
         <div class="categoryTitle" id="cnull">
           <h3><a class="categoryTitle"  id="lcnull" title="<fmt:message key="questionReply.openCategory"/>" href="#"><fmt:message key="questionReply.noCategory"/></a></h3>
-          <div class="action">            
+          <div class="action">
           </div>
         </div>
         <ul class="questions" id="qcnull" ></ul>

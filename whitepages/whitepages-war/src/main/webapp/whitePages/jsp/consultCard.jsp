@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -43,36 +43,44 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
 	browseBar.setDomainName(spaceLabel);
-	browseBar.setPath(resource.getString("whitePages.usersList") + " > "+ resource.getString("whitePages.consultCard"));
 	
 	UserFull userFull = (UserFull) request.getAttribute("userFull");
   
 	Card card = (Card) request.getAttribute("card");
 	String userCardId = card.getPK().getId();
+	UserRecord userRecord = card.readUserRecord();
+	browseBar.setPath(resource.getString("whitePages.usersList") + " > "+ userRecord.getUserDetail().getDisplayedName());
 	
-	boolean isAdmin = ( (Boolean) request.getAttribute("isAdmin")).booleanValue();
+	boolean isAdmin = (Boolean) request.getAttribute("isAdmin");
 	
 	Collection<WhitePagesCard> whitePagesCards = (Collection<WhitePagesCard>) request.getAttribute("whitePagesCards");
 	Form viewForm = (Form) request.getAttribute("Form");
 	PagesContext context = (PagesContext) request.getAttribute("context"); 
+	context.setBorderPrinted(false);
 	DataRecord data = (DataRecord) request.getAttribute("data"); 
 	Map<String, Set<ClassifyValue>> pdcPositions = (Map<String, Set<ClassifyValue>>)request.getAttribute("pdcPositions");
 	
+	boolean anotherCard = false;
+	if (whitePagesCards != null) {
+		for (WhitePagesCard whitePagesCard: whitePagesCards) {
+			long id = whitePagesCard.getUserCardId();
+			if(!card.getPK().getId().equals(String.valueOf(id))){
+			  anotherCard = true;
+			}
+		}
+	}
+	
 	if (! card.readReadOnly()) {
-		operationPane.addOperation(resource.getIcon("whitePages.editCard"), resource.getString("whitePages.op.editUser"), "javascript:onClick=B_UPDATE_ONCLICK('"+userCardId+"');");
-		operationPane.addLine();
-		
+		operationPane.addOperation(resource.getIcon("whitePages.editCard"), resource.getString("whitePages.op.editUser"), "javascript:onClick=B_UPDATE_ONCLICK('"+userCardId+"');");		
 		operationPane.addOperation(resource.getString("whitePages.PdcClassification"), resource.getString("whitePages.op.editPdc"), "javascript:onclick=displayPDC()");
 		operationPane.addLine();
 
 		if (isAdmin) {
 			operationPane.addOperation(resource.getIcon("whitePages.delCard"), resource.getString("whitePages.op.deleteUser"), "javascript:onClick=B_DELETE_ONCLICK('"+userCardId+"');");
-			operationPane.addLine();
 			
 			if (card.getHideStatus() == 0) {//Visible
 				operationPane.addOperation(resource.getIcon("whitePages.hideCard"), resource.getString("whitePages.op.hideCard"), "javascript:onClick=B_REVERSEHIDE_ONCLICK('"+userCardId+"');");	
-			}
-			else {//Masque
+			} else {//Masque
 				operationPane.addOperation(resource.getIcon("whitePages.showCard"), resource.getString("whitePages.op.showCard"), "javascript:onClick=B_REVERSEHIDE_ONCLICK('"+userCardId+"');");
 			}
 		}
@@ -161,13 +169,18 @@ function openSPWindow(fonction,windowName){
 			$(".active").show();
 			
 			$(".linkSee").click(function() {
-				
-			var divAAfficher = this.id.substring(5);
-			$(".linkSee").removeClass('active');
-			$('#'+this.id).addClass('active');
-			$(".divSee").hide();
-			$('#'+divAAfficher).show();
+				var divAAfficher = this.id.substring(5);
+				$(".linkSee").removeClass('active');
+				$('#'+this.id).addClass('active');
+				$(".divSee").hide();
+				$('#'+divAAfficher).show();
 			});
+			
+			if ($.trim($("#sheetIdentity").text()).length == 0) {
+				$(".linkSee").removeClass('active');
+				$('#link_sheetExpert').addClass('active');
+				$('#sheetExpert').show();
+			}
       });
 </script>
 </head>
@@ -176,7 +189,6 @@ function openSPWindow(fonction,windowName){
 out.println(window.printBefore());
 out.println(frame.printBefore());
 
-UserRecord userRecord = card.readUserRecord();
 String lastName = userRecord.getField("LastName").getValue(language);
 String firstName = userRecord.getField("FirstName").getValue(language);
 %>
@@ -206,28 +218,22 @@ String firstName = userRecord.getField("FirstName").getValue(language);
         </div>
              
         <p class="statut">
-        <%
-        if (card.getHideStatus() == 1) {// hide card
-        %>
+        <% if (card.getHideStatus() == 1) {// hide card %>
         	<img title="Masque" alt="Masque" src="<%=m_context%>/util/icons/masque.gif" />
-        <%
-        }else{
-        %>
+        <% } else { %>
         	<img title="Visible" alt="Visible" src="<%=m_context%>/util/icons/visible.gif" />
-        <%
-        }
-        %>	
+        <% } %>	
         </p>
          
         <br clear="all" />
- 	</div><!-- /info  -->          
+ 	</div><!-- /info  -->
     
-    <!-- pdcPosition  -->        
+    <% if(pdcPositions != null && !pdcPositions.isEmpty()){ %>  
+    <!-- pdcPosition  -->
     <div class="pdcPosition">
         <h3><fmt:message key="whitePages.pdc"/></h3>
         <ul>
         <%
-        if(pdcPositions != null && !pdcPositions.isEmpty()){
           Set<String> keysStart = pdcPositions.keySet();
           String[] keys = keysStart.toArray(new String[keysStart.size()]);
           Arrays.sort(keys);
@@ -255,10 +261,10 @@ String firstName = userRecord.getField("FirstName").getValue(language);
               </li>
               <%
 	        }
-        }
         %>
         </ul>
-	</div><!-- /pdcPosition  -->      
+	</div><!-- /pdcPosition  -->
+	<% } %> 
       
 </div><!-- /userProfil  -->      
 
@@ -279,16 +285,15 @@ String firstName = userRecord.getField("FirstName").getValue(language);
                 class="linkSee">
              <fmt:message key="whitePages.expertpart"/>
              </a>
-             
-        &nbsp;&nbsp;-&nbsp;&nbsp; <img alt="Annuaire" title="Autres annuaires" src="<%=m_context%>/util/icons/component/whitePagesSmall.gif"/><fmt:message key="whitePages.others"/> :
         
-        <%
-        if (whitePagesCards != null) {
+        <% if (anotherCard) { %>
+	        &nbsp;&nbsp;-&nbsp;&nbsp; <img alt="Annuaire" title="Autres annuaires" src="<%=m_context%>/util/icons/component/whitePagesSmall.gif"/><fmt:message key="whitePages.others"/> :
+    	<%    
           for(WhitePagesCard whitePagesCard: whitePagesCards) {
 				long id = whitePagesCard.getUserCardId();
 				String instanceId = whitePagesCard.getInstanceId();
 				if(!card.getPK().getId().equals(String.valueOf(id))){
-					String label = whitePagesCard.readInstanceLabel();
+					String label = whitePagesCard.getInstanceLabel();
 					String url = URLManager.getApplicationURL() + URLManager.getURL("whitePages", spaceId, instanceId);
 					out.println("<a href=\"javascript:changerChoice('"+id+"','"+url+"')\">"+label+"</a>");
 				}
@@ -299,28 +304,21 @@ String firstName = userRecord.getField("FirstName").getValue(language);
 
 <div class="divSee active" id="sheetIdentity">
 
-<table width="100%" cellspacing="0" cellpadding="5" border="0" class="contourintfdcolor">
+<table cellspacing="0" cellpadding="5" border="0">
 <tbody>
 <%
 if (userFull != null) {
-      	//  récupérer toutes les propriétés de ce User
+      	  // getting all user properties
           String[] properties = userFull.getPropertiesNames();
-
-          String property = null;
-          for (int p = 0; p < properties.length; p++) {
-           property = properties[p];
-           if (StringUtil.isDefined(userFull.getValue(property))) {
+          for (String property : properties) {
+          	if (StringUtil.isDefined(userFull.getValue(property))) {
           %>
-              <tr align="center">
-                <td valign="top" align="left" class="intfdcolor4">
-	               	<span class="txtlibform"><%=userFull.getSpecificLabel(language, property)%> :</span>
-                </td>
-                <td valign="baseline" align="left" class="intfdcolor4">
-					<%=userFull.getValue(property)%>
-				</td>
+              <tr id="property-<%=property%>">
+                <td class="txtlibform"><%=userFull.getSpecificLabel(language, property)%> : </td>
+                <td><%=userFull.getValue(property)%></td>
               </tr>
   		<%
-              }
+            }
           }
 }
 %>

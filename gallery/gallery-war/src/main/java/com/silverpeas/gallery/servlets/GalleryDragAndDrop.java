@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -20,14 +20,27 @@
  */
 package com.silverpeas.gallery.servlets;
 
+import java.io.File;
+import java.io.IOException;
+import java.rmi.ServerException;
+import java.util.List;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.silverpeas.core.admin.OrganisationController;
+
 import com.silverpeas.gallery.control.ejb.GalleryBm;
-import com.silverpeas.gallery.control.ejb.GalleryBmHome;
 import com.silverpeas.gallery.delegate.PhotoDataCreateDelegate;
 import com.silverpeas.gallery.model.GalleryRuntimeException;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.ZipManager;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
+import com.stratelia.silverpeas.peasCore.servlets.QuotaErrorManager;
 import com.stratelia.silverpeas.peasCore.servlets.SilverpeasWebErrorManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
@@ -37,17 +50,8 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-import org.apache.commons.fileupload.FileItem;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.IOException;
-import java.rmi.ServerException;
-import java.util.List;
+import org.apache.commons.fileupload.FileItem;
 
 import static com.silverpeas.util.StringUtil.isDefined;
 
@@ -139,7 +143,7 @@ public class GalleryDragAndDrop extends HttpServlet {
 
   private void importRepository(final File repository, final String userId, final String componentId,
       final String albumId) throws Exception {
-    OrganizationController orga = new OrganizationController();
+    OrganisationController orga = new OrganizationController();
     boolean watermark =
         "yes".equalsIgnoreCase(orga.getComponentParameterValue(componentId, "watermark"));
     boolean download =
@@ -186,8 +190,7 @@ public class GalleryDragAndDrop extends HttpServlet {
    */
   private static GalleryBm getGalleryBm() {
     try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.GALLERYBM_EJBHOME, GalleryBmHome.class)
-          .create();
+      return EJBUtilitaire.getEJBObjectRef(JNDINames.GALLERYBM_EJBHOME, GalleryBm.class);
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryProcessBuilder.getGalleryBm()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);

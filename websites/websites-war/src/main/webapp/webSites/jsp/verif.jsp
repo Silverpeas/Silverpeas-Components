@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -108,9 +108,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     /**
     * affichageErreur
     */  
-	//CBO : UPDATE
-/*   public void  affichageErreur(JspWriter out, WebSiteSessionController scc, String infoPath, 
-                String mess, GraphicElementFactory gef) throws IOException {*/
 	public void  affichageErreur(JspWriter out, WebSiteSessionController scc, String infoPath, 
                 String mess, GraphicElementFactory gef, String spaceLabel, String componentLabel) throws IOException {
    
@@ -118,11 +115,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     
     // La barre de naviagtion
     BrowseBar browseBar = laFenetre.getBrowseBar();
-    //CBO : UPDATE
-	//browseBar.setDomainName(scc.getSpaceLabel());
-	browseBar.setDomainName(spaceLabel);
-	//CBO : UPDATE
-    //browseBar.setComponentName(scc.getComponentLabel(), "manage.jsp?Action=view");
+    browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "manage.jsp?Action=view");
     browseBar.setPath("<a href= \"manage.jsp?Action=view\"></a>"+infoPath);
     
@@ -185,9 +178,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     
     else if (resultat.equals("pbAjoutFolder")) {
         debutAffichage(out, "", action, id, currentPath, name, newName, code, gef, resources);
-        //CBO : UPDATE
-		//affichageErreur(out, scc, infoPath, resources.getString("ErreurPbAjoutRep"), gef);
-		affichageErreur(out, scc, infoPath, resources.getString("ErreurPbAjoutRep"), gef, spaceLabel, componentLabel);
+        affichageErreur(out, scc, infoPath, resources.getString("ErreurPbAjoutRep"), gef, spaceLabel, componentLabel);
     }
     
     else  if (resultat.equals("pbRenommageFolder")) {
@@ -196,9 +187,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
         }
         else {
             debutAffichage(out, "", action, id, currentPath, name, newName, code, gef, resources);
-            //CBO : UPDATE
-			//affichageErreur(out, scc, infoPath, resources.getString("ErreurPbRenommageRep"), gef);
-			affichageErreur(out, scc, infoPath, resources.getString("ErreurPbRenommageRep"), gef, spaceLabel, componentLabel);
+            affichageErreur(out, scc, infoPath, resources.getString("ErreurPbRenommageRep"), gef, spaceLabel, componentLabel);
         }
     }
     
@@ -208,8 +197,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
         }
         else {
             debutAffichage(out, "", action, id, currentPath, name, newName, code, gef, resources);
-			//CBO : UPDATE
-            //affichageErreur(out, scc, infoPath, resources.getString("ErreurPbRenommageFichier"), gef);
 			affichageErreur(out, scc, infoPath, resources.getString("ErreurPbRenommageFichier"), gef, spaceLabel, componentLabel);
         }
     }

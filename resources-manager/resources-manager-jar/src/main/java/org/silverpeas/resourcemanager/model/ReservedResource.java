@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,20 +23,15 @@
  */
 package org.silverpeas.resourcemanager.model;
 
-import static org.silverpeas.resourcemanager.model.ResourceStatus.STATUS_FOR_VALIDATION;
-import static org.silverpeas.resourcemanager.model.ResourceStatus.STATUS_REFUSED;
-import static org.silverpeas.resourcemanager.model.ResourceStatus.STATUS_VALIDATE;
-
-import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import java.io.Serializable;
 
-import com.silverpeas.util.StringUtil;
+import static org.silverpeas.resourcemanager.model.ResourceStatus.*;
 
 /**
  *
@@ -67,8 +62,8 @@ public class ReservedResource implements Serializable {
 
   public void setReservation(Reservation reservation) {
     this.reservation = reservation;
-    if (reservation != null && StringUtil.isInteger(reservation.getId())) {
-      this.reservedResourcePk.setReservationId(Integer.parseInt(reservation.getId()));
+    if (reservation != null && reservation.getId() != null) {
+      this.reservedResourcePk.setReservationId(reservation.getId());
     }
   }
 
@@ -86,8 +81,8 @@ public class ReservedResource implements Serializable {
 
   public void setResource(Resource resource) {
     this.resource = resource;
-    if (resource != null && StringUtil.isInteger(resource.getId())) {
-      this.reservedResourcePk.setResourceId(Integer.parseInt(resource.getId()));
+    if (resource != null && resource.getId() != null) {
+      this.reservedResourcePk.setResourceId(resource.getId());
     }
   }
 

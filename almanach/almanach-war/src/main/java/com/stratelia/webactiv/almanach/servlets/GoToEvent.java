@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -29,10 +29,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.silverpeas.peasUtil.GoTo;
+
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.almanach.control.ejb.AlmanachBm;
-import com.stratelia.webactiv.almanach.control.ejb.AlmanachBmHome;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.EventPK;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -42,6 +42,7 @@ public class GoToEvent extends GoTo {
   
   private static final long serialVersionUID = -3086487345543160152L;
 
+  @Override
   public String getDestination(String eventId, HttpServletRequest req,
       HttpServletResponse res) throws Exception {
     EventPK eventPK = new EventPK(eventId);
@@ -60,14 +61,11 @@ public class GoToEvent extends GoTo {
   }
 
   private AlmanachBm getAlmanachBm() {
-    AlmanachBm currentAlmanachBm = null;
     try {
-      AlmanachBmHome almanachBmHome = (AlmanachBmHome) EJBUtilitaire
-          .getEJBObjectRef(JNDINames.ALMANACHBM_EJBHOME, AlmanachBmHome.class);
-      currentAlmanachBm = almanachBmHome.create();
+      return EJBUtilitaire.getEJBObjectRef(JNDINames.ALMANACHBM_EJBHOME, AlmanachBm.class);
     } catch (Exception e) {
       displayError(null);
+      return null;
     }
-    return currentAlmanachBm;
   }
 }

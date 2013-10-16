@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -33,17 +33,17 @@
  * (for example from one month to another one or from one week to another one).
  */
 #navigation {
- 	background-color:#EAEAEA;
-    padding: 5px;
-    width:99%;
-	min-height:24px;
-	position:relative;
+  background-color:#EAEAEA;
+  padding: 5px;
+  width:99%;
+  min-height:24px;
+  position:relative;
 }
 
-.rss {  
-	position: relative;
-    float: right;
-    padding-top: 10px;}
+.rss {
+  position: relative;
+  float: right;
+  padding-top: 10px;}
 
 /**
  * #curentScope: the current time interval displayed by the calendar (for example, december).
@@ -63,15 +63,15 @@
   margin-top:7px;
 }
 #others {
-	position:absolute;
-  	top: 3px;
-	right:2px;
+  position:absolute;
+  top: 3px;
+  right:2px;
 }
 
 .eventsView #others {
-	position:relative;
-    float:right;
-    margin-bottom: 5px;
+  position:relative;
+  float:right;
+  margin-bottom: 5px;
 }
 
 #currentScope {
@@ -90,15 +90,15 @@
   padding: 0px;
 }
 
-#today a{ 
-	background-color: #FAD163;
-    color: #000000;
-    font-size: 11px;
-    font-weight: 100;
-    padding: 3px 11px;
+#today a{
+  background-color: #FAD163;
+  color: #000000;
+  font-size: 11px;
+  font-weight: 100;
+  padding: 3px 11px;
 }
-#today a:hover, #today a:focus{ 
-	background-color: #FFFFCC;
+#today a:hover, #today a:focus{
+  background-color: #FFFFCC;
 }
 
 
@@ -112,282 +112,282 @@
   padding:0 2px 0 14px ;
   margin:0;
   width:auto;
-  
+
 }
 
 #agregatedAlmanachs {
-	background: url("../../../util/icons/arrow/bg_tri.png") no-repeat scroll left bottom #EAEAEA;
-    padding: 5px 5px 14px;
-    width: 99%;
-	clear:both;
-	position:relative;
-	height:auto;
-    min-height: 24px;
+  background: url("../../../util/icons/arrow/bg_tri.png") no-repeat scroll left bottom #EAEAEA;
+  padding: 5px 5px 14px;
+  width: 99%;
+  clear:both;
+  position:relative;
+  height:auto;
+  min-height: 24px;
 }
 
 #agregatedAlmanachs table {
-	margin-right:30px;
-	float:right;
-	}
-	
+  margin-right:30px;
+  float:right;
+}
+
 #agregatedAlmanachs input {
-	border:0;}
+  border:0;}
 
 /* Mise en forme des ViewMonthEvents */
 
 ul.months {
-	list-style-type:none;
-	padding:0;
-	margin:0;
-	}
+  list-style-type:none;
+  padding:0;
+  margin:0;
+}
 .month h3{
-	background-color: #EAEAEA;
-    border: 1px solid #CCCCCC;
-    border-bottom: 0px solid #CCCCCC;
-    font-size: 11px;
-    font-weight: bold;
-    padding: 4px 0;
-    text-align: center;
-    text-transform: uppercase;
-	height:100%;
-	margin:0;
-	}
+  background-color: #EAEAEA;
+  border: 1px solid #CCCCCC;
+  border-bottom: 0px solid #CCCCCC;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 4px 0;
+  text-align: center;
+  text-transform: uppercase;
+  height:100%;
+  margin:0;
+}
 
 ul.days{
-	list-style-type:none;
-	padding:0;
-	margin:0;
-	border: 1px solid #CCCCCC;
-	padding: 10px;
-	
-	}
+  list-style-type:none;
+  padding:0;
+  margin:0;
+  border: 1px solid #CCCCCC;
+  padding: 10px;
+
+}
 li.day {
-	border-bottom:1px solid #DFDFDF;
-	margin-bottom:10px;
-	
-	}
+  border-bottom:1px solid #DFDFDF;
+  margin-bottom:10px;
+
+}
 
 ul.events {
-	float:right;
-	width:70%;
-	margin:0;
-	padding:0;
-	list-style-type:none;}
-	
+  float:right;
+  width:70%;
+  margin:0;
+  padding:0;
+  list-style-type:none;}
 
-	
+
+
 div.eventDetail{
-	border-bottom:1px dashed #DFDFDF;
-	}
+  border-bottom:1px dashed #DFDFDF;
+}
 div.eventDetail a{color:#274D9F;}
 .priorityEvent div.eventDetail{
-	  background:transparent url('/silverpeas/util/icons/important.gif') top right no-repeat;
-	 }
+  background:transparent url('/silverpeas/util/icons/important.gif') top right no-repeat;
+}
 
 div.description {
-	background-color: #EFEFEF;
-    border: 1px solid #DFDFDF;
-    margin: 5px 0;
-    padding: 10px;
-    text-align: left;
+  background-color: #EFEFEF;
+  border: 1px solid #DFDFDF;
+  margin: 5px 0;
+  padding: 10px;
+  text-align: left;
 }
-	
+
 div.description p {padding:0; margin:0;}
 
 
 /* Mise en forme des ViewEventContent */
 
 .eventName , .eventName a{
-    font-size: 130%;
-    font-weight: bold;
-	padding:0;
-	margin:0 0 10px 0;
-	}    
+  font-size: 130%;
+  font-weight: bold;
+  padding:0;
+  margin:0 0 10px 0;
+}
 .eventName a{
-	font-size:100%;
-	}
+  font-size:100%;
+}
 #eventPeriodicity h4 {
-	 background:transparent url('/silverpeas/util/icons/periodicity.gif') top right no-repeat;
-	height:16px;
+  background:transparent url('/silverpeas/util/icons/periodicity.gif') top right no-repeat;
+  height:16px;
 }
 
 #eventInfo, #eventPeriodicity, #eventInfoPublication {
-	padding-bottom:10px;
+  padding-bottom:10px;
 }
 
 .eventInfo {
-	background-color:#EFEFEF;
-	border:1px solid #CDCDCD;
-	border-radius:15px;
-	padding:15px 0;
-	display:table;
-	width:98%;
-	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
+  background-color:#EFEFEF;
+  border:1px solid #CDCDCD;
+  border-radius:15px;
+  padding:15px 0;
+  display:table;
+  width:98%;
+  behavior: url("/silverpeas/util/styleSheets/PIE.htc");
 }
 
 .eventInfo div {
-	display:table-cell;
-	border-left:2px solid #DCDCDC;
-	min-height:16px;
-	vertical-align:middle;
-	text-align:left;
-	width:33%;
+  display:table-cell;
+  border-left:2px solid #DCDCDC;
+  min-height:16px;
+  vertical-align:middle;
+  text-align:left;
+  width:33%;
 }
 
- *+html .eventInfo div {
-	float:left;
-	width:32%;
+*+html .eventInfo div {
+  float:left;
+  width:32%;
 }
 * html  .eventInfo div {
-	float:left;
-	width:32%;
-	border:0;
+  float:left;
+  width:32%;
+  border:0;
 }
 
 .eventInfo div:first-child {
-	border:0;
+  border:0;
 }
 .eventInfo div div.bloc{
-	padding:0 10px 0 37px;
-	color:#333;
-	font-size:110%;
-	display:inline-block;
-	width:auto;
-	text-align:left;
+  padding:0 10px 0 37px;
+  color:#333;
+  font-size:110%;
+  display:inline-block;
+  width:auto;
+  text-align:left;
 }
 
 * html  .eventInfo div div.bloc {
-	padding:0 10px 0 27px;
-	width:70%;
+  padding:0 10px 0 27px;
+  width:70%;
 }
 
 .eventInfo div span {
-	display:block;
+  display:block;
 }
 .eventInfo div span a {
-	color:#333;
-	font-size:110%;
-	text-decoration:underline;
+  color:#333;
+  font-size:110%;
+  text-decoration:underline;
 }
 
 .eventPlace .bloc{
-	 background:transparent url('/silverpeas/util/icons/marker.gif') 17px center   no-repeat;
+  background:transparent url('/silverpeas/util/icons/marker.gif') 17px center   no-repeat;
 }
 
 .eventURL .bloc{
-	 background:transparent url('/silverpeas/util/icons/webLink.gif') 17px center   no-repeat;
+  background:transparent url('/silverpeas/util/icons/webLink.gif') 17px center   no-repeat;
 }
 
 .eventDate .bloc{
-	 background:transparent url('/silverpeas/util/icons/calendar_2.gif') 12px  center   no-repeat;
+  background:transparent url('/silverpeas/util/icons/calendar_2.gif') 12px  center   no-repeat;
 }
 
 span.priority {
-	background-color:#F6DEDE;
-	border:1px solid #FDBABA;
-	border-radius:5px;
-	color:#F02929;
-	font-size:8px;
-	line-height:9px;
-	letter-spacing:0.11em;
-	display:inline;
-	padding:1px 4px;
-	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
+  background-color:#F6DEDE;
+  border:1px solid #FDBABA;
+  border-radius:5px;
+  color:#F02929;
+  font-size:8px;
+  line-height:9px;
+  letter-spacing:0.11em;
+  display:inline;
+  padding:1px 4px;
+  behavior: url("/silverpeas/util/styleSheets/PIE.htc");
 }
 
 .eventDesc {
-	margin-top:10px;
-	color:#333;
-	width:98%;
+  margin-top:10px;
+  color:#333;
+  width:98%;
 }
 
 .eventList, #eventList{
-	margin:0;
-	padding:0;
-	list-style-type:none;
-	}
-	
+  margin:0;
+  padding:0;
+  list-style-type:none;
+}
+
 .eventList span.priority {
-	display:none;
-	}
-	
+  display:none;
+}
+
 .eventList 	.eventInfo {
-	padding:4px 0;
-	}
-	
+  padding:4px 0;
+}
+
 li.event {
-	clear:both;
-	position:relative;
- 	margin: 0 10px;
-    padding: 10px 0 0 120px;
-	border-bottom:1px solid #CDCDCD;
-	cursor:pointer;
-	min-height: 100px;
-	}
+  clear:both;
+  position:relative;
+  margin: 0 10px;
+  padding: 10px 0 0 120px;
+  border-bottom:1px solid #CDCDCD;
+  cursor:pointer;
+  min-height: 100px;
+}
 li.event:hover {
-	background-color:#E8E8E8;
-	}
+  background-color:#E8E8E8;
+}
 
 .eventAttachments{
-	width:310px;
-	float:right;
-	margin-left:10px;
-	position:relative;
-	}
+  width:310px;
+  float:right;
+  margin-left:10px;
+  position:relative;
+}
 
 div.eventBeginDate {
-	position:absolute;
-	top:15px;
-	left:10px;
-	background:transparent url("../icons/bgCalendar.png") top left no-repeat;
-	height:87px;
-	width:87px;
+  position:absolute;
+  top:15px;
+  left:10px;
+  background:transparent url("../icons/bgCalendar.png") top left no-repeat;
+  height:87px;
+  width:87px;
 }
 
 * html div.eventBeginDate {
-	top:15px;
-	left:-110px;
-	}
+  top:15px;
+  left:-110px;
+}
 
 .priority div.eventBeginDate {
-	background:transparent url("../icons/bgCalendarHight.png") top left no-repeat;
-	}	
-	
+  background:transparent url("../icons/bgCalendarHight.png") top left no-repeat;
+}
+
 .eventBeginDate .day , .eventBeginDate .number, .eventBeginDate .month, .eventBeginDate .year{
-	text-align:center;
-	position:absolute;
-	left:5px;
-	width:78px;
-	z-index:10;
-	}
+  text-align:center;
+  position:absolute;
+  left:5px;
+  width:78px;
+  z-index:10;
+}
 .eventBeginDate .day {
-	top:68px;	
-	color:#496093;
-	font-size:10px;
-	}
+  top:68px;
+  color:#496093;
+  font-size:10px;
+}
 .eventBeginDate .number {
-   font-size: 36px;
-    font-weight: bold;
-    top: 26px;
-	color:#333;
-	}
+  font-size: 36px;
+  font-weight: bold;
+  top: 26px;
+  color:#333;
+}
 .eventBeginDate .month {
-	color: #FFFFFF;
-    font-size: 11px;
-    text-transform: uppercase;
-    top: 5px;
-	}
+  color: #FFFFFF;
+  font-size: 11px;
+  text-transform: uppercase;
+  top: 5px;
+}
 .eventBeginDate .year {
-	display:none;
-	}
-	
+  display:none;
+}
+
 .eventMonth {
-	border-bottom:1px solid #CDCDCD;
-	color: #666;
-    font-size: 130%;
-    font-weight: bold;
-	margin:0 0 10px 0;
-	padding:8px
+  border-bottom:1px solid #CDCDCD;
+  color: #666;
+  font-size: 130%;
+  font-weight: bold;
+  margin:0 0 10px 0;
+  padding:8px
 }
 
 .eventsView #agregatedAlmanachs {
@@ -397,122 +397,130 @@ div.eventBeginDate {
 
 
 .sousNavBulle #agregatedAlmanachs a {
-	background-color:inherit;
-	border:inherit;
-	padding:inherit;
-	margin:inherit;
-	}
-    
+  background-color:inherit;
+  border:inherit;
+  padding:inherit;
+  margin:inherit;
+}
+
 .sousNavBulle a {
-      white-space: nowrap;
-    }
-    
+  white-space: nowrap;
+}
+
 /**mise en page createEvent **/
 #eventPeriodicity legend{
-	background:transparent url(../../../util/icons/periodicity.gif) 11px 0px no-repeat;
+  background:transparent url(../../../util/icons/periodicity.gif) 11px 0px no-repeat;
 }
 
 #eventInfo legend{
-	background:transparent url(../icons/mini_publi.gif) 11px 0px no-repeat; /*icone présente dans kmelia */
+  background:transparent url(../icons/mini_publi.gif) 11px 0px no-repeat; /*icone présente dans kmelia */
 }
 
 #eventNameArea, #eventDescriptionArea, #eventStartDateArea, #eventEndDateArea,
-#eventFrequencyWeekArea, #eventPeriodicityChoiceThisMonthArea, 
+#eventFrequencyWeekArea, #eventPeriodicityChoiceThisMonthArea,
 #eventPeriodicityChoiceMonthArea, #eventPeriodicityStartDateArea, #eventPeriodicityUntilDateArea {
-	width:98%;
-	clear:both;
+  width:98%;
+  clear:both;
 }
 
 #eventDescriptionArea textarea, #eventNameArea input{
-	width:95%;
+  width:95%;
 }
 
 #eventPeriodicityChoiceThisMonthArea .champs{
-	margin:0;
+  margin:0;
 }
 
 #eventPeriodicityChoiceMonthArea select {
-	width:auto;
-}	
+  width:auto;
+}
 
 #eventFrequencyArea input{
-	width:auto;
+  width:auto;
 }
 
 .portlet li.events {
-	clear: both;
-    border-bottom:1px solid #efefef;
-    position: relative;
-    margin: 2px 0 0;
-    min-height: 50px;
-    padding: 3px 0 3px 58px;
-	background:transparent url(/silverpeas/util/icons/gradientSVG.jsp?from=ffffff&to=efefef&vertical=0&horizontal=100) 0 23px no-repeat;
-		-moz-background-size: 100%;
+  clear: both;
+  border-bottom:1px solid #efefef;
+  position: relative;
+  margin: 2px 0 0;
+  min-height: 50px;
+  padding: 3px 0 3px 58px;
+  background:transparent url(/silverpeas/util/icons/gradientSVG.jsp?from=ffffff&to=efefef&vertical=0&horizontal=100) 0 23px no-repeat;
+  -moz-background-size: 100%;
 }
 
 .portlet li.events div.event {
-	margin-bottom:2px;
+  margin-bottom:2px;
 }
 
 .portlet li.events div.event:last-child{
-	margin-bottom:0;
+  margin-bottom:0;
 }
 
 .portlet  div.eventShortDate {
-	position:absolute;
-	top:3px;
-	left:3px;
-	background:transparent url("../icons/bgCalendar-portlet.png") top left no-repeat;
-	height:48px;
-	width:47px;
-	color:#33529b;
-	line-height:54px;
-	font-size:14px;
-	text-align:center;
-	font-weight:bold;
+  position:absolute;
+  top:3px;
+  left:3px;
+  background:transparent url("../icons/bgCalendar-portlet.png") top left no-repeat;
+  height:48px;
+  width:47px;
+  color:#33529b;
+  line-height:54px;
+  font-size:14px;
+  text-align:center;
+  font-weight:bold;
 }
 
 
 .portlet .priority  div.eventShortDate {
-	background-image:url("../icons/bgCalendarHight-portlet.png");
+  background-image:url("../icons/bgCalendarHight-portlet.png");
 }
 
 .portlet  div.eventLongDate {
-	color:#304f98;
-	font-weight:bold;
+  color:#304f98;
+  font-weight:bold;
 }
 
 .portlet  div.eventName  {
-	font-size:11px;
-	font-weight: 100;
-	margin-bottom:2px;
+  font-size:11px;
+  font-weight: 100;
+  margin-bottom:2px;
 }
 
 .portlet  div.eventName  .eventBeginHours{
-	color:#666;
+  color:#666;
 }
 
 .portlet  div.eventShortDate .number {
-	font-size:16px;
-	color:#333;
+  font-size:16px;
+  color:#333;
 }
 
 .portlet li.event .eventDesc, .portlet li.event  .eventURL{
-	display:none;
+  display:none;
 }
 .portlet .eventInfo div {
-    width: 90%;
+  width: 90%;
 }
 .portlet .eventInfo div div.bloc {
-    padding: 0 8px 0 27px;
-	font-size:100%;
+  padding: 0 8px 0 27px;
+  font-size:100%;
 }
 
 .portlet .eventList .eventInfo {
-	padding:1px 0;
+  padding:1px 0;
 }
 
 .portlet .eventPlace .bloc {
-	background-position:6px center;
+  background-position:6px center;
 }
 
+#eventTypePeriodicityArea,
+#eventFrequencyArea,
+#eventFrequencyWeekArea,
+#eventPeriodicityChoiceThisMonthArea,
+#eventPeriodicityChoiceMonthArea,
+#eventPeriodicityStartDateArea {
+  width:98%;
+}

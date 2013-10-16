@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -20,14 +20,18 @@
  */
 package com.stratelia.webactiv.yellowpages;
 
-import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
-import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJBException;
+
+import org.silverpeas.core.admin.OrganisationController;
+
+import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -35,11 +39,9 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.contact.model.ContactDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.yellowpages.control.ejb.YellowpagesBm;
-import com.stratelia.webactiv.yellowpages.control.ejb.YellowpagesBmHome;
 import com.stratelia.webactiv.yellowpages.model.TopicDetail;
 import com.stratelia.webactiv.yellowpages.model.UserContact;
 import com.stratelia.webactiv.yellowpages.model.YellowpagesRuntimeException;
@@ -94,9 +96,7 @@ public class YellowpagesStatistics implements ComponentStatisticsInterface {
   private YellowpagesBm getYellowpagesBm() {
     if (kscEjb == null) {
       try {
-        YellowpagesBmHome kscEjbHome = EJBUtilitaire.getEJBObjectRef(JNDINames.YELLOWPAGESBM_EJBHOME,
-                YellowpagesBmHome.class);
-        kscEjb = kscEjbHome.create();
+        kscEjb = EJBUtilitaire.getEJBObjectRef(JNDINames.YELLOWPAGESBM_EJBHOME, YellowpagesBm.class);
       } catch (Exception e) {
         throw new EJBException(e);
       }
@@ -120,37 +120,32 @@ public class YellowpagesStatistics implements ComponentStatisticsInterface {
       return c;
     }
 
-    OrganizationController myOrga = new OrganizationController();
+    OrganisationController myOrga = new OrganizationController();
 
     if (topicId.startsWith("group_")) {
       int nbUsers = myOrga.getAllSubUsersNumber(topicId.substring("group_".length()));
       for (int n = 0; n < nbUsers; n++) {
-        ContactDetail detail = new ContactDetail("useless", "useless", "useless", "useless", 
+        ContactDetail detail = new ContactDetail("useless", "useless", "useless", "useless",
                 "useless", "useless", "useless", new Date(), "0");
         UserContact contact = new UserContact();
         contact.setContact(detail);
         c.add(contact);
       }
     } else {
-      getYellowpagesBm().setActor(myOrga.getUserDetail("0"));
-      getYellowpagesBm().setPrefixTableName(spaceId);
-      getYellowpagesBm().setComponentId(componentId);
-
       TopicDetail topic;
       try {
-        topic = getYellowpagesBm().goTo(topicId);
+        topic = getYellowpagesBm().goTo(new NodePK(topicId, componentId), "0");
         if (topic != null) {
           c.addAll(topic.getContactDetails());
         }
       } catch (Exception ex) {
         topic = null;
-        SilverTrace.info("silverstatistics", "YellowpagesStatistics.getContacts()", 
+        SilverTrace.info("silverstatistics", "YellowpagesStatistics.getContacts()",
                 "root.MSG_GEN_PARAM_VALUE", ex);
       }
       // treatment of the nodes of current topic
       if (topic != null) {
         Collection<NodeDetail> subTopics = topic.getNodeDetail().getChildrenDetails();
-
         for (NodeDetail node : subTopics) {
           if (!(node.getNodePK().isRoot() || node.getNodePK().isTrash() || node.getNodePK().isUnclassed())) {
             c.addAll(getContacts(node.getNodePK().getId(), spaceId, componentId));
@@ -164,9 +159,7 @@ public class YellowpagesStatistics implements ComponentStatisticsInterface {
   private NodeBm getNodeBm() {
     if (currentNodeBm == null) {
       try {
-        NodeBmHome nodeBmHome = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, 
-                NodeBmHome.class);
-        currentNodeBm = nodeBmHome.create();
+        currentNodeBm = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
       } catch (Exception re) {
         throw new YellowpagesRuntimeException("YellowpagesBmEJB.getNodeBm()",
                 SilverpeasRuntimeException.ERROR, "yellowpages.EX_GET_NODEBM_HOME_FAILED", re);

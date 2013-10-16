@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -65,18 +65,6 @@ public class WikiInstanciatorTest extends AbstractTestDao {
   public void setUp() throws Exception {
     super.setUp();
     folder.create();
-    Properties props = new Properties();
-    props.load(this.getClass().getClassLoader().getResourceAsStream(
-        "jndi.properties"));
-    String jndiBaseDir = props.getProperty(Context.PROVIDER_URL).substring(8);
-    props = new Properties();
-    props.load(this.getClass().getClassLoader().getResourceAsStream(
-        "jdbc.properties"));
-    String jndiPath = props.getProperty("jndi.name", "");
-    File jndiDir = new File(jndiBaseDir + File.separatorChar + jndiPath.substring(0, jndiPath.
-        lastIndexOf('/')));
-    jndiDir.mkdirs();
-    super.setUp();
   }
 
   @Override
@@ -112,5 +100,10 @@ public class WikiInstanciatorTest extends AbstractTestDao {
     assertNotNull(uncompressedFiles.size());
     assertEquals(29, uncompressedFiles.size());
 
+  }
+
+  @Override
+  protected String getTableCreationFileName() {
+    return "create-database.sql";
   }
 }

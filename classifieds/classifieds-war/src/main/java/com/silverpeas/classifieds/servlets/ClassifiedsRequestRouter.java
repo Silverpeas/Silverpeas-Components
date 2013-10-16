@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -31,7 +31,6 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
 import javax.servlet.http.HttpServletRequest;
 
 public class ClassifiedsRequestRouter extends ComponentRequestRouter<ClassifiedsSessionController> {
@@ -92,18 +91,25 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter<Classifieds
     SilverTrace.debug("classifieds", "classifiedsRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "Profile=" + highestRole);
 
-    // Delegate to specific Handler
-    FunctionHandler handler = HandlerProvider.getHandler(function);
-    if (handler != null) {
-      destination = handler.computeDestination(classifiedsSC, request);
-    } else {
-      destination = rootDest + function;
+    try {
+      // Delegate to specific Handler
+      FunctionHandler handler = HandlerProvider.getHandler(function);
+      if (handler != null) {
+        destination = handler.computeDestination(classifiedsSC, request);
+      } else {
+        destination = rootDest + function;
+      }
+    } catch (Exception e) {
+      request.setAttribute("javax.servlet.jsp.jspException", e);
+      return "/admin/jsp/errorpageMain.jsp";
     }
 
     SilverTrace.info("classifieds", "classifiedsRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
     return destination;
   }
+  
+ 
 
   private boolean isAnonymousAccess(HttpServletRequest request) {
     LookHelper lookHelper = (LookHelper) request.getSession().getAttribute(LookHelper.SESSION_ATT);

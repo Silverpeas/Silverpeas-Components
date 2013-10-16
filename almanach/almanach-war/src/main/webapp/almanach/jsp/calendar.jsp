@@ -38,10 +38,10 @@
     <link rel='stylesheet' type='text/css' href="<c:url value='/almanach/jsp/styleSheets/almanach.css'/>" />
     <style type="text/css">
       <c:out value=".${instanceId} { border-color: ${calendarView.almanach.color}; color: ${calendarView.almanach.color}; }"/>
-      <c:out value=".${instanceId} .fc-event-skin { background-color: ${calendarView.almanach.color}; border-color: ${calendarView.almanach.color}; color: white; }"/>
+      <c:out value=" .fc-event.${instanceId} { background-color: ${calendarView.almanach.color}; border-color: ${calendarView.almanach.color}; color: white; }"/>
       <c:forEach var="almanach" items="${othersAlmanachs}">
         <c:out value=".${almanach.instanceId} { border-color: ${almanach.color}; color: ${almanach.color}; }"/>
-        <c:out value=".${almanach.instanceId} .fc-event-skin { background-color: ${almanach.color}; border-color: ${almanach.color}; color: white; }"/>
+        <c:out value=".fc-event.${almanach.instanceId} { background-color: ${almanach.color}; border-color: ${almanach.color}; color: white; }"/>
       </c:forEach>
     </style>
     <script type="text/javascript" src="<c:url value='/util/javaScript/animation.js'/>"></script>
@@ -96,7 +96,7 @@
 
       function clickDay(day){
         flag = "<c:out value='${flag}'/>";
-        if(flag == "publisher" || flag == "admin")
+        if(flag === "publisher" || flag === "admin")
           addEvent(day);
       }
 
@@ -163,7 +163,7 @@
           if (myForm.chk_allalmanach)
             newState = myForm.chk_allalmanach.checked;
 
-          if (myForm.chk_almanach.length == null)
+          if (myForm.chk_almanach.length === undefined || myForm.chk_almanach.length === 0)
           {
             myForm.chk_almanach.checked = true;
           }
@@ -188,9 +188,9 @@
           // page is now ready, initialize the calendar...
 
           var currentDay = new Date();
+          currentDay.setDate(${currentDay.dayOfMonth});
           currentDay.setFullYear(${currentDay.year});
           currentDay.setMonth(${currentDay.month});
-          currentDay.setDate(${currentDay.dayOfMonth});
 
         // page is now ready, initialize the calendar...
         <c:if test='${not calendarView.viewType.nextEventsView}'>
@@ -204,6 +204,21 @@
             onevent: function(event) {
               var eventDate = $.fullCalendar.formatDate(event.start, "yyyy/MM/dd");
               clickEvent(event.id, eventDate, event.instanceId);
+            }
+          });
+
+          $(window).keydown(function(e){
+            var keyCode = eval(e.keyCode);
+            if (37 === keyCode || keyCode === 39) {
+              e.preventDefault();
+              if (37 === keyCode) {
+                // Previous
+                previousView();
+              } else if (39 === keyCode) {
+                // Next
+                nextView();
+              }
+              return false;
             }
           });
         </c:if>
@@ -296,7 +311,7 @@
           
           <c:if test="${accessibleInstances ne null and not empty accessibleInstances}">
             <div id="others">
-              <select name="select" onchange="window.open(this.options[this.selectedIndex].value,'_self')" class="selectNS">
+              <select name="select" onchange="window.open(this.options[this.selectedIndex].value,'_self');" class="selectNS">
                 <c:forEach var="instance" items="${accessibleInstances}">
                   <c:set var="componentId" value="${instance.instanceId}"/>
                   <c:set var="selected" value=""/>
@@ -324,7 +339,7 @@
                     </tr><tr><td>&nbsp;</td>
                     </c:if>
                     <td>
-                      <input onclick="updateAgregation(<c:out value='${i}'/>)" type="checkbox" name="chk_almanach" <c:out value='${checked}'/> value="<c:out value='${otherAlmanach.instanceId}'/>"/>
+                      <input onclick="updateAgregation(<c:out value='${i}'/>);" type="checkbox" name="chk_almanach" <c:out value='${checked}'/> value="<c:out value='${otherAlmanach.instanceId}'/>"/>
                     </td>
                     <td>
                       <a class="almanach" href="<c:url value='/Ralmanach/${otherAlmanach.instanceId}/Main'/>">

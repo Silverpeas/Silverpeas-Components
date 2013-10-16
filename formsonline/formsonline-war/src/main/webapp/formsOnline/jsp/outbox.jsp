@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -24,7 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <%@ include file="check.jsp" %>
 
@@ -37,6 +37,7 @@
 <%@page import="java.text.DateFormat"%>
 <%@page import="java.text.SimpleDateFormat"%>
 <%@page import="com.silverpeas.formsonline.model.FormInstance"%>
+<%@ page import="org.silverpeas.core.admin.OrganisationController" %>
 
 <%!
 	String iconsPath 			= GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
@@ -51,9 +52,9 @@
 	FormDetail 				choosenForm 	= (FormDetail) request.getAttribute("choosenForm");
 	List					formInstances	= (List) request.getAttribute("formInstances");
 	String 					userBestProfile = (String) request.getAttribute("userBestProfile");
-	OrganizationController 	controller		= new OrganizationController();
+	OrganisationController controller		= new OrganizationController();
 	UserDetail 				userDetail 		= (choosenForm == null ) ? null : controller.getUserDetail(choosenForm.getCreatorId());
-	
+
 	filteredState = (filteredState == null) ? "" : filteredState;
 %>
 
@@ -62,8 +63,8 @@
 <title></title>
 	<%=gef.getLookStyleSheet()%>
 	<script type="text/javascript">
-	    function archiveFormInstances() {    
-	         if (window.confirm("<%=resource.getString("formsOnline.archiveFormConfirm")%>")) { 
+	    function archiveFormInstances() {
+	         if (window.confirm("<%=resource.getString("formsOnline.archiveFormConfirm")%>")) {
 	            document.archiveForm.submit();
 	         }
 	    }
@@ -92,21 +93,21 @@
 <%
     browseBar.setDomainName(spaceLabel);
     browseBar.setComponentName(componentLabel);
-    
+
     TabbedPane tabbedPane = gef.getTabbedPane(1);
     if ( (userBestProfile != null) && (userBestProfile.equals("Administrator")) ) {
 	    tabbedPane.addTab(resource.getString("formsOnline.formsList"), "Main", false,1);
     }
     tabbedPane.addTab(resource.getString("formsOnline.outbox"), "OutBox", true,1);
     tabbedPane.addTab(resource.getString("formsOnline.inbox"), "InBox", false,1);
-    
+
     if (choosenForm != null) {
 		if (choosenForm.getState() == FormDetail.STATE_PUBLISHED) {
 	    	operationPane.addOperation(iconDelete,resource.getString("formsOnline.createFormInstance"), "CreateInstance");
 		}
 		operationPane.addOperation(iconDelete,resource.getString("formsOnline.archiveFormInstance"), "javascript:archiveFormInstances()");
 	}
-%>    
+%>
 
 	<%=window.printBefore()%>
 	<%=tabbedPane.print()%>
@@ -126,12 +127,12 @@
             <td>
             	<select size="1" name="modele" onchange="changeForm(this.value)">
     			<%
-				Iterator it = availableForms.iterator();	
+				Iterator it = availableForms.iterator();
 				while (it.hasNext()) {
 					FormDetail form = (FormDetail) it.next();
 					boolean selected = ( choosenForm.getId() == form.getId() );
-					%> 
-					<option <%=(selected) ? "selected=\"selected\"":""%> value="<%=form.getId()%>"><%=form.getName()%></option> 					
+					%>
+					<option <%=(selected) ? "selected=\"selected\"":""%> value="<%=form.getId()%>"><%=form.getName()%></option>
 					<%
 				}
 				%>
@@ -141,15 +142,15 @@
 	  	<tr>
 			<td width="30%"><span class="txtlibform"><%=resource.getString("GML.description")%> : </span></td>
 	        <td colspan="4"><span class="txtlibform"><%=choosenForm.getDescription()%></span></td>
-		</tr>			
+		</tr>
 <!--   	<tr>
 			<td width="30%"><span class="txtlibform"><%=resource.getString("GML.date")%> : </span></td>
 	        <td colspan="4"><span class="txtlibform"><%=formatter.format(choosenForm.getCreationDate())%></span></td>
-		</tr>			
+		</tr>
 	   	<tr>
 			<td width="30%"><span class="txtlibform"><%=resource.getString("GML.publisher")%> : </span></td>
 	        <td colspan="4"><span class="txtlibform"><%=userDetail.getDisplayedName()%></span></td>
-		</tr>			
+		</tr>
  -->
 	</table>
 	<%
@@ -224,10 +225,10 @@ if ( choosenForm != null )
     <%
 }
 %>
-    
+
     <%=frame.printAfter()%>
     <%=window.printAfter()%>
 </form>
-    
+
 </body>
 </html>

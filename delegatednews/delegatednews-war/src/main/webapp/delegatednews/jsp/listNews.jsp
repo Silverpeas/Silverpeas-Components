@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2009 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -50,6 +50,7 @@
     <script type="text/javascript" src="<c:url value='/util/javaScript/animation.js'/>"></script>
     <script type="text/javascript" src="<c:url value='/util/javaScript/checkForm.js'/>"></script>
     <script type="text/javascript">
+    <!--
     function openPublication(pubId, instanceId) {
       url = "OpenPublication?PubId="+pubId+"&InstanceId="+instanceId;
       SP_openWindow(url,'publication','800','600','scrollbars=yes, noresize, alwaysRaised');
@@ -71,61 +72,61 @@
     
     function areDatesCorrect(beginDate, beginHour, endDate, endHour, language) {
       var errorMsg = "";
-        var errorNb = 0;
-        var beginDateOK = true;
+      var errorNb = 0;
+      var beginDateOK = true;
       if (!isWhitespace(beginDate)) {
-          if (!isDateOK(beginDate, language)) {
-                 errorMsg+="  - '<fmt:message key="delegatednews.visibilityBeginDate"/>' <fmt:message key="GML.MustContainsCorrectDate"/>\n";
-               errorNb++;
-               beginDateOK = false;
-            } 
-         }
-         if (!checkHour(beginHour))
-         {
-           errorMsg+="  - '<fmt:message key="delegatednews.hour"/>' <fmt:message key="GML.MustContainsCorrectHour"/>\n";
-           errorNb++;
-         }
-         if (!isWhitespace(endDate)) {
-           if (!isDateOK(endDate, language)) {
-              errorMsg+="  - '<fmt:message key="delegatednews.visibilityEndDate"/>' <fmt:message key="GML.MustContainsCorrectDate"/>\n";
-              errorNb++;
-            } else {
-              if (!isWhitespace(beginDate) && !isWhitespace(endDate)) {
-                if (beginDateOK && !isDate1AfterDate2(endDate, beginDate, language)) {
-                    errorMsg+="  - '<fmt:message key="delegatednews.visibilityEndDate"/>' <fmt:message key="GML.MustContainsPostOrEqualDateTo"/> "+beginDate+"\n";
-                    errorNb++;
-                  }
-              } else {
-                  if (isWhitespace(beginDate) && !isWhitespace(endDate)) {
-                  if (!isFuture(endDate, language)) {
-                        errorMsg+="  - '<fmt:message key="delegatednews.visibilityEndDate"/>' <fmt:message key="GML.MustContainsPostDate"/>\n";
+      	if (!isDateOK(beginDate, language)) {
+        	errorMsg+="  - '<fmt:message key="delegatednews.visibilityBeginDate"/>' <fmt:message key="GML.MustContainsCorrectDate"/>\n";
+            errorNb++;
+            beginDateOK = false;
+		} 
+      }
+      if (!checkHour(beginHour)) {
+      	errorMsg+="  - '<fmt:message key="delegatednews.hour"/>' <fmt:message key="GML.MustContainsCorrectHour"/>\n";
+        errorNb++;
+	  }
+      if (!isWhitespace(endDate)) {
+      	if (!isDateOK(endDate, language)) {
+        	errorMsg+="  - '<fmt:message key="delegatednews.visibilityEndDate"/>' <fmt:message key="GML.MustContainsCorrectDate"/>\n";
+            errorNb++;
+		} else {
+        	if (!isWhitespace(beginDate) && !isWhitespace(endDate)) {
+            	if (beginDateOK && !isDate1AfterDate2(endDate, beginDate, language)) {
+            		errorMsg+="  - '<fmt:message key="delegatednews.visibilityEndDate"/>' <fmt:message key="GML.MustContainsPostOrEqualDateTo"/> "+beginDate+"\n";
+                	errorNb++;
+				}
+			} else {
+            	if (isWhitespace(beginDate) && !isWhitespace(endDate)) {
+                	if (!isFuture(endDate, language)) {
+                    	errorMsg+="  - '<fmt:message key="delegatednews.visibilityEndDate"/>' <fmt:message key="GML.MustContainsPostDate"/>\n";
                         errorNb++;
                     }
-                  }
-              }
-           }
-         }
-         if (!checkHour(endHour))
-         {
-           errorMsg+="  - '<fmt:message key="delegatednews.hour"/>' <fmt:message key="GML.MustContainsCorrectHour"/>\n";
-           errorNb++;
-         }
-         switch(errorNb) {
-          case 0 :
-              result = true;
+				}
+			}
+		}
+	  }
+      if (!checkHour(endHour))
+      {
+      	errorMsg+="  - '<fmt:message key="delegatednews.hour"/>' <fmt:message key="GML.MustContainsCorrectHour"/>\n";
+        errorNb++;
+	  }
+         
+      switch(errorNb) {
+      	case 0 :
+			result = true;
             break;
-          case 1 :
-              errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
-              window.alert(errorMsg);
-              result = false;
+		case 1 :
+        	errorMsg = '<fmt:message key="GML.ThisFormContains"/> 1 <fmt:message key="GML.error"/> : \n' + errorMsg;
+            window.alert(errorMsg);
+            result = false;
             break;
-          default :
-              errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
-              window.alert(errorMsg);
-              result = false;
-              break;
-         }
-         return result;
+		default :
+        	errorMsg = '<fmt:message key="GML.ThisFormContains" /> " + errorNb + " <fmt:message key="GML.errors"/> :\n' + errorMsg;
+            window.alert(errorMsg);
+            result = false;
+            break;
+	  }
+      return result;
     }
     
     $(function() {
@@ -330,6 +331,7 @@
         return result;
       }
       
+    //-->
     </script>
   </head>  
   <body>

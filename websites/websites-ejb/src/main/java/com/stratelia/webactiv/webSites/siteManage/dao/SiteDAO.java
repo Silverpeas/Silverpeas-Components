@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -62,16 +62,14 @@ public class SiteDAO {
   private static final String tableSiteIconsName = "SC_WebSites_SiteIcons";
   private static final String tablePublicationName = "SB_Publication_Publi";
 
-  private String prefixTableName;
   private String componentId;
 
-  public SiteDAO(String prefixTableName, String componentId) {
-    this.prefixTableName = prefixTableName;
+  public SiteDAO(String componentId) {
     this.componentId = componentId;
   }
 
   /* DBConnection methods */
-  private Connection openConnection() throws SQLException, UtilException {
+  private Connection openConnection() throws UtilException {
     return DBUtil.makeConnection(JNDINames.BOOKMARK_DATASOURCE);
   }
 
@@ -497,7 +495,7 @@ public class SiteDAO {
    * @throws SQLException
    * @throws UtilException
    */
-  private String daoGetNextId() throws SQLException, UtilException {
+  private String daoGetNextId() throws UtilException {
 
     int nextid = DBUtil.getNextId(tableSiteName, "siteId");
 
@@ -729,7 +727,7 @@ public class SiteDAO {
       id = array.get(i);
       SilverTrace.info("webSites", "SiteDAO.DAOdeleteWebSites()",
           "root.MSG_GEN_PARAM_VALUE", "id = " + id);
-      SitePK s = new SitePK(id, prefixTableName, componentId);
+      SitePK s = new SitePK(id, componentId);
       daoDeleteWebSite(s);
       i++;
     }

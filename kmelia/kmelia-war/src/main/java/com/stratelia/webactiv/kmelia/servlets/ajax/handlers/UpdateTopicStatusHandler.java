@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -27,7 +27,6 @@ import java.rmi.RemoteException;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
 import com.stratelia.webactiv.kmelia.servlets.ajax.AjaxHandler;
@@ -35,8 +34,7 @@ import com.stratelia.webactiv.kmelia.servlets.ajax.AjaxHandler;
 public class UpdateTopicStatusHandler implements AjaxHandler {
 
   @Override
-  public String handleRequest(HttpServletRequest request, ComponentSessionController controller) {
-    KmeliaSessionController kmelia = ((KmeliaSessionController) controller);
+  public String handleRequest(HttpServletRequest request, KmeliaSessionController kmelia) {
     String subTopicId = request.getParameter("Id");
     String newStatus = request.getParameter("Status");
     String recursive = request.getParameter("Recursive");

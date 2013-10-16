@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,21 +23,25 @@
  */
 package com.silverpeas.webpages.notification;
 
-import java.util.Collection;
-import java.util.List;
-
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 import com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuilder;
 import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.subscribe.constant.SubscriberType;
+import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
+import com.silverpeas.subscribe.util.SubscriptionUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
-import com.stratelia.webactiv.beans.admin.OrganizationControllerFactory;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.util.node.model.NodePK;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Yohann Chastagnier
@@ -46,9 +50,12 @@ public class WebPagesUserNotifier extends AbstractTemplateUserNotificationBuilde
 
   private final String userId;
 
+  private Map<SubscriberType, Collection<String>> subscriberIdsByTypes;
+
   /**
-   * Builds and sends a webpages notification.
-   * A warning message is logged when an exception is catched.
+   * Builds and sends a webpages notification. A warning message is logged when an exception is
+   * catched.
+   *
    * @param resource
    * @param userId
    */
@@ -63,6 +70,7 @@ public class WebPagesUserNotifier extends AbstractTemplateUserNotificationBuilde
 
   /**
    * Default constructor
+   *
    * @param resource
    */
   public WebPagesUserNotifier(final NodePK resource, final String userId) {
@@ -70,20 +78,32 @@ public class WebPagesUserNotifier extends AbstractTemplateUserNotificationBuilde
     this.userId = userId;
   }
 
+  @Override
+  protected void initialize() {
+    super.initialize();
+
+    // Subscribers
+    subscriberIdsByTypes = SubscriptionUtil.indexSubscriberIdsByType(
+        SubscriptionServiceFactory.getFactory().getSubscribeService()
+            .getSubscribers(ComponentSubscriptionResource.from(getResource().getInstanceId())));
+  }
+
   /*
-   * (non-Javadoc)
-   * @see
-   * com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuilder#performTemplateData
-   * (java.lang.String, java.lang.Object, com.silverpeas.util.template.SilverpeasTemplate)
-   */
+     * (non-Javadoc)
+     * @see
+     * com.silverpeas.notification.builder
+     * .AbstractTemplateUserNotificationBuilder#performTemplateData
+     * (java.lang.String, java.lang.Object, com.silverpeas.util.template.SilverpeasTemplate)
+     */
   @Override
   protected void performTemplateData(final String language, final NodePK resource,
       final SilverpeasTemplate template) {
-    getNotificationMetaData().addLanguage(language,
-        getBundle(language).getString(getBundleSubjectKey(), getTitle()), "");
+    getNotificationMetaData()
+        .addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()),
+            "");
     template.setAttribute("path", "");
-    template.setAttribute("senderName", OrganizationControllerFactory.getFactory()
-        .getOrganizationController().getUserDetail(userId).getDisplayedName());
+    template.setAttribute("senderName", OrganisationControllerFactory.getOrganisationController().
+        getUserDetail(userId).getDisplayedName());
     template.setAttribute("silverpeasURL", getResourceURL(resource));
   }
 
@@ -97,8 +117,8 @@ public class WebPagesUserNotifier extends AbstractTemplateUserNotificationBuilde
   protected void performNotificationResource(final String language, final NodePK resource,
       final NotificationResourceData notificationResourceData) {
     // The resource name corresponds at the label of the instantiated application
-    notificationResourceData.setResourceName(OrganizationControllerFactory.getFactory()
-        .getOrganizationController().getComponentInstLight(getComponentInstanceId()).getLabel());
+    notificationResourceData.setResourceName(OrganisationControllerFactory.
+        getOrganisationController().getComponentInstLight(getComponentInstanceId()).getLabel());
     notificationResourceData.setResourceId(resource.getId());
     notificationResourceData.setResourceType(getTemplatePath());
     // Exceptionally the resource location is builded at this level
@@ -108,6 +128,7 @@ public class WebPagesUserNotifier extends AbstractTemplateUserNotificationBuilde
 
   /**
    * Builds the specific location
+   *
    * @return the specific location
    */
   private String buildResourceLocation() {
@@ -201,7 +222,11 @@ public class WebPagesUserNotifier extends AbstractTemplateUserNotificationBuilde
    */
   @Override
   protected Collection<String> getUserIdsToNotify() {
-    return SubscriptionServiceFactory.getFactory().getSubscribeService()
-        .getSubscribers(getResource());
+    return subscriberIdsByTypes.get(SubscriberType.USER);
+  }
+
+  @Override
+  protected Collection<String> getGroupIdsToNotify() {
+    return subscriberIdsByTypes.get(SubscriberType.GROUP);
   }
 }

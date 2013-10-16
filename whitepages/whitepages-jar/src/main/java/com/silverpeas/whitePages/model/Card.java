@@ -1,42 +1,37 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.whitePages.model;
 
-import com.stratelia.webactiv.persistence.*;
 import com.silverpeas.form.*;
 import com.silverpeas.whitePages.record.*;
+import com.stratelia.webactiv.persistence.*;
 
 public class Card extends SilverpeasBean {
-  
+
   private static final long serialVersionUID = -3513309887697109085L;
   private String userId;
   private int hideStatus = 0;
   private String instanceId;
   private String creationDate;
   private int creatorId;
-
   private boolean readOnly = true;
   private UserRecord userRecord;
   private DataRecord cardRecord;
@@ -48,7 +43,7 @@ public class Card extends SilverpeasBean {
   }
 
   public Card(String instanceId) {
-    setInstanceId(instanceId);
+    this.instanceId = instanceId;
   }
 
   public String getUserId() {
@@ -124,10 +119,12 @@ public class Card extends SilverpeasBean {
     this.cardUpdateForm = cardUpdateForm;
   }
 
+  @Override
   public String _getTableName() {
     return "SC_WhitePages_Card";
   }
 
+  @Override
   public int _getConnectionType() {
     return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
   }
@@ -147,5 +144,4 @@ public class Card extends SilverpeasBean {
   public int getCreatorId() {
     return this.creatorId;
   }
-
 }

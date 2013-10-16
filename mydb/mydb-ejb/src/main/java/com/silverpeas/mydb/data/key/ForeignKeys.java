@@ -1,27 +1,23 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.mydb.data.key;
 
 import java.text.MessageFormat;
@@ -32,10 +28,12 @@ import com.silverpeas.mydb.data.datatype.DataTypeList;
 import com.silverpeas.mydb.data.db.DbColumn;
 import com.silverpeas.mydb.data.db.DbTable;
 import com.silverpeas.util.StringUtil;
+
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 
 /**
  * Table foreign keys list.
+ *
  * @author Antoine HEDIN
  */
 public class ForeignKeys {
@@ -151,33 +149,25 @@ public class ForeignKeys {
         foreignColumn = foreignKey.getForeignColumn(j);
         dataType = dataTypeList.get(column.getDataType());
         if (column.getDataType() != foreignColumn.getDataType()) {
-          label = MessageFormat.format(resources
-              .getString("ErrorForeignKeyTypes"), new String[] {
-              foreignKey.getName(), columnName, dataType.getName(),
-              foreignColumn.getName(), foreignKey.getForeignTable(),
-              dataTypeList.getDataTypeName(foreignColumn.getDataType()) });
+          label = MessageFormat.format(resources.getString("ErrorForeignKeyTypes"), foreignKey.
+              getName(), columnName, dataType.getName(), foreignColumn.getName(), foreignKey.
+              getForeignTable(), dataTypeList.getDataTypeName(foreignColumn.getDataType()));
           errors.add(new ForeignKeyError(columnName, label,
               ForeignKeyError.ERROR_TYPE, foreignColumn.getDataType()));
         }
-        if (column.getDataSize() != foreignColumn.getDataSize()
-            && dataType.isSizeEnabled()) {
+        if (column.getDataSize() != foreignColumn.getDataSize() && dataType.isSizeEnabled()) {
           String columnSize = (column.hasDataSize() ? column
               .getDataSizeAsString() : resources.getString("UndefinedFemale"));
-          String foreignColumnSize = (foreignColumn.hasDataSize() ? foreignColumn
-              .getDataSizeAsString()
-              : resources.getString("UndefinedFemale"));
-          label = MessageFormat.format(resources
-              .getString("ErrorForeignKeySizes"), new String[] {
-              foreignKey.getName(), columnName, columnSize,
-              foreignColumn.getName(), foreignKey.getForeignTable(),
-              foreignColumnSize });
+          String foreignColumnSize = (foreignColumn.hasDataSize() ? foreignColumn.
+              getDataSizeAsString() : resources.getString("UndefinedFemale"));
+          label = MessageFormat.format(resources.getString("ErrorForeignKeySizes"), foreignKey.
+              getName(), columnName, columnSize, foreignColumn.getName(), foreignKey.
+              getForeignTable(), foreignColumnSize);
           errors.add(new ForeignKeyError(columnName, label,
               ForeignKeyError.ERROR_SIZE, foreignColumn.getDataSize()));
         }
       }
     }
-    return (ForeignKeyError[]) errors
-        .toArray(new ForeignKeyError[errors.size()]);
+    return (ForeignKeyError[]) errors.toArray(new ForeignKeyError[errors.size()]);
   }
-
 }

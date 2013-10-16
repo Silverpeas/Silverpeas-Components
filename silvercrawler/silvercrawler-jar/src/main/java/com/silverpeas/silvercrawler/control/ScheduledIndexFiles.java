@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -39,6 +39,7 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.search.indexEngine.model.RepositoryIndexer;
 
 public class ScheduledIndexFiles
@@ -68,7 +69,7 @@ public class ScheduledIndexFiles
 
     try {
       // indexation des fichiers du composant
-      OrganizationController orga = new OrganizationController();
+      OrganisationController orga = new OrganizationController();
       String[] instanceIds = orga.getCompoId("silverCrawler");
       for (int i = 0; instanceIds != null && i < instanceIds.length; i++) {
         ComponentInst instance = orga.getComponentInst("silverCrawler"

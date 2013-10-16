@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,16 +24,16 @@
 
 package com.stratelia.webactiv.webSites.siteManage.model;
 
-import java.util.Collection;
-
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
-public class FolderDetail extends Object implements java.io.Serializable {
+import java.util.Collection;
+
+public class FolderDetail implements java.io.Serializable {
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = -3512181245552407866L;
 

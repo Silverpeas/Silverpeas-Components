@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,33 +23,34 @@
  */
 package com.silverpeas.kmelia.notification;
 
+import org.silverpeas.attachment.model.SimpleDocument;
 import static com.silverpeas.util.StringUtil.isDefined;
 
 import com.silverpeas.notification.model.NotificationResourceData;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
-import com.stratelia.silverpeas.versioning.model.Document;
-import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
 import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+
+import java.util.Collection;
 
 /**
  * @author Yohann Chastagnier
  */
 public class KmeliaDocumentSubscriptionPublicationUserNotification extends
-    KmeliaSubscriptionPublicationUserNotification {
+    AbstractKmeliaPublicationUserNotification {
 
-  private final Document document;
-  private final DocumentVersion documentVersion;
+  private final SimpleDocument document;
 
   public KmeliaDocumentSubscriptionPublicationUserNotification(final NodePK nodePK, final PublicationDetail resource,
-      final Document document, final DocumentVersion documentVersion, final String senderName) {
+      final SimpleDocument document, final String senderName) {
     super(nodePK, resource, NotifAction.REPORT, senderName);
     this.document = document;
-    this.documentVersion = documentVersion;
   }
 
   @Override
@@ -63,27 +64,36 @@ public class KmeliaDocumentSubscriptionPublicationUserNotification extends
   }
 
   @Override
+  protected Collection<String> getUserIdsToNotify() {
+    // Users to notify are not handled here.
+    return null;
+  }
+
+  @Override
   protected void performTemplateData(final String language, final PublicationDetail resource,
       final SilverpeasTemplate template) {
     super.performTemplateData(language, resource, template);
 
-    template.setAttribute("attachmentFileName", documentVersion.getLogicalName());
-    if (isDefined(document.getName())) {
-      template.setAttribute("attachmentTitle", document.getName());
+    template.setAttribute("attachmentFileName", document.getFilename());
+    if (isDefined(document.getTitle())) {
+      template.setAttribute("attachmentTitle", document.getTitle());
     }
     if (isDefined(document.getDescription())) {
       template.setAttribute("attachmentDesc", document.getDescription());
     }
     template
-        .setAttribute("attachmentCreationDate", DateUtil.getOutputDate(documentVersion.getCreationDate(), language));
-    template.setAttribute("attachmentSize", documentVersion.getDisplaySize());
+        .setAttribute("attachmentCreationDate", DateUtil.getOutputDate(document.getCreated(), language));
+    template.setAttribute("attachmentSize", FileRepositoryManager.formatFileSize(document.getSize()));
 
-    final UserDetail authorDetail =
-        getOrganizationController().getUserDetail(Integer.toString(documentVersion.getAuthorId()));
+    String author = document.getUpdatedBy();
+    if(!StringUtil.isDefined(author)) {
+      author = document.getCreatedBy();
+    }
+    final UserDetail authorDetail = getOrganisationController().getUserDetail(author);
     template.setAttribute("attachmentAuthor", authorDetail.getFirstName() + " " + authorDetail.getLastName());
 
-    template.setAttribute("attachmentMajorNumber", documentVersion.getMajorNumber());
-    template.setAttribute("attachmentMinorNumber", documentVersion.getMinorNumber());
+    template.setAttribute("attachmentMajorNumber", document.getMajorVersion());
+    template.setAttribute("attachmentMinorNumber", document.getMinorVersion());
   }
 
   @Override
@@ -91,14 +101,14 @@ public class KmeliaDocumentSubscriptionPublicationUserNotification extends
       final NotificationResourceData notificationResourceData) {
     super.performNotificationResource(language, resource, notificationResourceData);
 
-    final StringBuffer sb = new StringBuffer();
-    if (isDefined(document.getName())) {
-      sb.append(document.getName());
+    final StringBuilder sb = new StringBuilder(1024);
+    if (isDefined(document.getTitle())) {
+      sb.append(document.getTitle());
     }
     if (sb.length() > 0) {
       sb.append(" - ");
     }
-    sb.append(documentVersion.getLogicalName());
+    sb.append(document.getFilename());
 
     sb.insert(0, " - ");
     sb.insert(0, notificationResourceData.getResourceName());

@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -37,12 +37,9 @@
 <%
 
 // Retrieve parameters
-String fatherId = (String) request.getParameter("Id");
-String path = (String) request.getParameter("Path");
-String action = (String) request.getParameter("Action");
-
-//CBO : REMOVE String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-
+String fatherId = request.getParameter("Id");
+String path = request.getParameter("Path");
+String action = request.getParameter("Action");
 //Icons
 String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
 
@@ -63,16 +60,16 @@ if (action.equals("View")) {
 
 <script type="text/javascript">
 function isCorrect(nom) {
-  if (nom.indexOf("\\")>-1 || nom.indexOf("/")>-1 || nom.indexOf(":")>-1 || 
+  if (nom.indexOf("\\")>-1 || nom.indexOf("/")>-1 || nom.indexOf(":")>-1 ||
       nom.indexOf("*")>-1 || nom.indexOf("?")>-1 || nom.indexOf("\"")>-1 ||
       nom.indexOf("<")>-1 || nom.indexOf(">")>-1 || nom.indexOf("|")>-1 ||
       nom.indexOf("&")>-1 || nom.indexOf(";")>-1 || nom.indexOf("+")>-1 ||
-      nom.indexOf("%")>-1 || nom.indexOf("#")>-1 || 
-      nom.indexOf(".")>-1 || nom.indexOf("'")>-1 || 
-      nom.indexOf("²")>-1 || nom.indexOf("é")>-1 || nom.indexOf("è")>-1 || 
-      nom.indexOf("ç")>-1 || nom.indexOf("à")>-1 || nom.indexOf("^")>-1 || 
-      nom.indexOf("ù")>-1 || nom.indexOf("°")>-1 || nom.indexOf("£")>-1 || 
-      nom.indexOf("µ")>-1 || nom.indexOf("§")>-1 || nom.indexOf("¤")>-1 || 
+      nom.indexOf("%")>-1 || nom.indexOf("#")>-1 ||
+      nom.indexOf(".")>-1 || nom.indexOf("'")>-1 ||
+      nom.indexOf("²")>-1 || nom.indexOf("é")>-1 || nom.indexOf("è")>-1 ||
+      nom.indexOf("ç")>-1 || nom.indexOf("à")>-1 || nom.indexOf("^")>-1 ||
+      nom.indexOf("ù")>-1 || nom.indexOf("°")>-1 || nom.indexOf("£")>-1 ||
+      nom.indexOf("µ")>-1 || nom.indexOf("§")>-1 || nom.indexOf("¤")>-1 ||
       nom.indexOf(" ")>-1) {
       return false;
   }
@@ -85,17 +82,17 @@ function isCorrectForm() {
      var errorMsg = "";
      var errorNb = 0;
      var title = stripInitialWhitespace(document.topicForm.Name.value);
-  
+
      if (isWhitespace(title)) {
        errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.name")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
-       errorNb++; 
+       errorNb++;
      }
-     
+
      if (! isCorrect(title)) {
        errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.name")%>' <%=resources.getString("MustNotContainSpecialChar")%>\n<%=EncodeHelper.javaStringToJsString(resources.getString("Char2"))%>\n";
-       errorNb++; 
+       errorNb++;
      }
-     
+
      switch(errorNb)
      {
         case 0 :
@@ -131,14 +128,10 @@ function sendData() {
 <%
   Window window = gef.getWindow();
   BrowseBar browseBar = window.getBrowseBar();
-  //CBO : UPDATE
-	//browseBar.setDomainName(scc.getSpaceLabel());
 	browseBar.setDomainName(spaceLabel);
-    //CBO : UPDATE
-  //browseBar.setComponentName(scc.getComponentLabel());
   browseBar.setComponentName(componentLabel);
   browseBar.setPath(resources.getString("RepCreationTitle"));
-  
+
   //Le cadre
   Frame frame = gef.getFrame();
 
@@ -157,11 +150,11 @@ function sendData() {
         <td class="txtlibform"><%=resources.getString("GML.name")%> : </TD>
             <td valign="top"><input type="text" name="Name" value="" size="60" maxlength="50">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td>
       </tr>
-      
-      <tr> 
-            <td colspan="2">(<img border="0" src="<%=mandatoryField%>" width="5" height="5"> 
+
+      <tr>
+            <td colspan="2">(<img border="0" src="<%=mandatoryField%>" width="5" height="5">
               : <%=resources.getString("GML.requiredField")%>)</td>
-      </tr>      
+      </tr>
     </table>
   </form>
 <%
@@ -172,11 +165,11 @@ function sendData() {
   ButtonPane buttonPane = gef.getButtonPane();
   buttonPane.addButton(validateButton);
   buttonPane.addButton(cancelButton);
-    
+
 	out.println("<br><center>"+buttonPane.print()+"</center><br>");
   out.println(frame.printAfter());
   out.println(window.printAfter());
-    
+
 %>
 
 <form name="topicDetailForm" action="addRep.jsp" method=post>
@@ -187,7 +180,7 @@ function sendData() {
 </form>
 </body>
 </html>
-<% } //End View 
+<% } //End View
 
 else if (action.equals("Add")) {
 

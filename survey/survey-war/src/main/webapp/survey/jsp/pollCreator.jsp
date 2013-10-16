@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -105,7 +105,6 @@ void displayAnswer(int i, String style, ResourcesWrapper resources, List<Compone
 
     String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 
-    String anonymousAllowed = "";
     String anonymousCheck = "";
     String anonymous = FileUploadUtil.getOldParameter(items, "AnonymousAllowed");
 
@@ -126,7 +125,7 @@ void displayAnswer(int i, String style, ResourcesWrapper resources, List<Compone
 
     ResourceLocator uploadSettings = new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings",
         surveyScc.getLanguage());
-    ResourceLocator settings = new ResourceLocator("com.stratelia.webactiv.survey.surveySettings",
+    ResourceLocator settings = new ResourceLocator("org.silverpeas.survey.surveySettings",
         surveyScc.getLanguage());
 
     creationDate = resources.getOutputDate(new Date());
@@ -196,7 +195,8 @@ void displayAnswer(int i, String style, ResourcesWrapper resources, List<Compone
     }
 
 %>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title></title>
     <link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
@@ -361,7 +361,7 @@ void displayAnswer(int i, String style, ResourcesWrapper resources, List<Compone
           } else {
             //nb min answers = 2
             if (nbAnswers <= 1) {
-              errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationNbPossibleAnswer")%>' <%=resources.getString("MustContainsNumberGreaterThan2")%>\n";
+              errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationNbPossibleAnswer")%>' <%=resources.getString("MustContainsNumberGreaterThan")%> 1\n";
               errorNb++;
             }
           }
@@ -436,11 +436,11 @@ void displayAnswer(int i, String style, ResourcesWrapper resources, List<Compone
             validateButton = gef.getFormButton(generalMessage.getString("GML.validate"), "javascript:onClick=sendData()", false);
             suggestionCheck = "";
             if (! "0".equals(suggestion)) {
-              suggestionCheck = "checked";
+              suggestionCheck = "checked=\"checked\"";
             }
             anonymousCheck = "";
             if (! "0".equals(anonymous)) {
-              anonymousCheck = "checked";
+              anonymousCheck = "checked=\"checked\"";
             }
             nextAction = "SendNewPoll";
           }
@@ -503,7 +503,7 @@ void displayAnswer(int i, String style, ResourcesWrapper resources, List<Compone
 				<div class="field" id="suggestionAllowedArea">
 					<label class="txtlibform"><%=resources.getString("SuggestionAllowed")%></label>
 					<div class="champs">
-						<input type="checkbox" name="suggestion" value="" <%=suggestionCheck%> <%=disabledValue%>/>
+						<input type="checkbox" name="suggestion" <%=suggestionCheck%> <%=disabledValue%>/>
 					</div>
 				</div>
 				<div class="field" id="anonymousArea">
@@ -517,7 +517,7 @@ void displayAnswer(int i, String style, ResourcesWrapper resources, List<Compone
 					%>
 					<label class="txtlibform"><%=resources.getString("survey.pollAnonymous")%></label>
 					<div class="champs">
-						<input type="checkbox" name="anonymous" value="" <%=anonymousCheck%> <%=disabledValue%> <%=anonymousDisabled%>/>
+						<input type="checkbox" name="anonymous" <%=anonymousCheck%> <%=disabledValue%> <%=anonymousDisabled%>/>
 					</div>
 				</div>
 				<input type="hidden" name="Action" value="<%=nextAction%>"/>
@@ -605,7 +605,7 @@ void displayAnswer(int i, String style, ResourcesWrapper resources, List<Compone
           if (anonymous.equals("1")) {
             anonymousB = true;
           }
-          QuestionContainerHeader surveyHeader = new QuestionContainerHeader(null, title, description, null, creationDate, beginDate, endDate, false, 0, 1, anonymousB);
+          QuestionContainerHeader surveyHeader = new QuestionContainerHeader(null, title, description, null, creationDate, beginDate, endDate, false, 0, 1, anonymousB, QuestionContainerHeader.IMMEDIATE_RESULTS, QuestionContainerHeader.TWICE_DISPLAY_RESULTS);
           Question questionObject = new Question(null, null, question, "", "", null, style, 0);
           List<Question> questions = new ArrayList<Question>();
           questionObject.setAnswers(answers);
@@ -617,7 +617,8 @@ void displayAnswer(int i, String style, ResourcesWrapper resources, List<Compone
           surveyScc.createSurvey(surveyDetail);
           surveyScc.setSessionSurveyUnderConstruction(surveyDetail);
     %>
-  <html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
     <head>
       <script language="Javascript">
             function goToList() {

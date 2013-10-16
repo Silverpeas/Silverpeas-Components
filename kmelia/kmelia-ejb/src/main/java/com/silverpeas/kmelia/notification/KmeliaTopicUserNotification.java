@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -88,7 +88,7 @@ public class KmeliaTopicUserNotification extends AbstractKmeliaUserNotification<
     final String[] users;
     if (!haveRights) {
       if ("All".equals(alertType)) {
-        final UserDetail[] userDetails = getOrganizationController().getAllUsers(getComponentInstanceId());
+        final UserDetail[] userDetails = getOrganisationController().getAllUsers(getComponentInstanceId());
         if (userDetails != null) {
           users = new String[userDetails.length];
           int i = 0;
@@ -104,7 +104,7 @@ public class KmeliaTopicUserNotification extends AbstractKmeliaUserNotification<
         profileNames.add("admin");
         profileNames.add("publisher");
         profileNames.add("writer");
-        users = getOrganizationController().getUsersIdsByRoleNames(getComponentInstanceId(), profileNames);
+        users = getOrganisationController().getUsersIdsByRoleNames(getComponentInstanceId(), profileNames);
       } else {
         users = null;
       }
@@ -117,11 +117,11 @@ public class KmeliaTopicUserNotification extends AbstractKmeliaUserNotification<
       if (alertType.equals("All")) {
         profileNames.add("user");
         users =
-            getOrganizationController().getUsersIdsByRoleNames(getComponentInstanceId(),
+            getOrganisationController().getUsersIdsByRoleNames(getComponentInstanceId(),
                 String.valueOf(rightsDependOn), ObjectType.NODE, profileNames);
       } else if (alertType.equals("Publisher")) {
         users =
-            getOrganizationController().getUsersIdsByRoleNames(getComponentInstanceId(),
+            getOrganisationController().getUsersIdsByRoleNames(getComponentInstanceId(),
                 String.valueOf(rightsDependOn), ObjectType.NODE, profileNames);
       } else {
         users = null;

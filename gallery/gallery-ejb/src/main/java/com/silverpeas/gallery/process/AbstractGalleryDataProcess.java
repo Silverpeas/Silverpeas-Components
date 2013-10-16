@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -25,13 +25,14 @@ package com.silverpeas.gallery.process;
 
 import java.util.Date;
 
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.process.management.AbstractDataProcess;
 import org.silverpeas.process.session.ProcessSession;
 
 import com.silverpeas.form.record.GenericRecordSetManager;
 import com.silverpeas.gallery.GalleryContentManager;
 import com.silverpeas.gallery.control.ejb.GalleryBm;
-import com.silverpeas.gallery.control.ejb.GalleryBmHome;
 import com.silverpeas.gallery.dao.PhotoDAO;
 import com.silverpeas.gallery.model.GalleryRuntimeException;
 import com.silverpeas.gallery.model.PhotoDetail;
@@ -39,13 +40,11 @@ import com.silverpeas.gallery.model.PhotoPK;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.OrganizationControllerFactory;
+
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.NodeBmHome;
 
 /**
  * @author Yohann Chastagnier
@@ -54,7 +53,7 @@ public abstract class AbstractGalleryDataProcess extends
     AbstractDataProcess<GalleryProcessExecutionContext> {
   private final PhotoDetail photo;
   private GalleryContentManager galleryContentManager;
-  private OrganizationController organizationController;
+  private OrganisationController organizationController;
 
   /**
    * Default constructor
@@ -89,8 +88,7 @@ public abstract class AbstractGalleryDataProcess extends
    */
   protected GalleryBm getGalleryBm() {
     try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.GALLERYBM_EJBHOME, GalleryBmHome.class)
-          .create();
+      return EJBUtilitaire.getEJBObjectRef(JNDINames.GALLERYBM_EJBHOME, GalleryBm.class);
     } catch (final Exception e) {
       throw new GalleryRuntimeException("AbstractGalleryDataProcess.getGalleryBm()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
@@ -103,7 +101,7 @@ public abstract class AbstractGalleryDataProcess extends
    */
   public NodeBm getNodeBm() {
     try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class).create();
+      return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
     } catch (final Exception e) {
       throw new GalleryRuntimeException("AbstractGalleryDataProcess.getNodeBm()",
           SilverpeasRuntimeException.ERROR, "gallery.EX_IMPOSSIBLE_DE_FABRIQUER_NODEBM_HOME", e);
@@ -151,7 +149,7 @@ public abstract class AbstractGalleryDataProcess extends
    */
   protected String getXMLFormName(final GalleryProcessExecutionContext context) {
     String formName =
-        getOrganizationController().getComponentParameterValue(context.getComponentInstanceId(),
+        getOrganisationController().getComponentParameterValue(context.getComponentInstanceId(),
             "XMLFormName");
     // contrôle du formulaire et retour du nom si convenable
     if (StringUtil.isDefined(formName)) {
@@ -226,10 +224,9 @@ public abstract class AbstractGalleryDataProcess extends
    * Access to the shared OrganizationController
    * @return
    */
-  protected OrganizationController getOrganizationController() {
+  protected OrganisationController getOrganisationController() {
     if (organizationController == null) {
-      organizationController =
-          OrganizationControllerFactory.getFactory().getOrganizationController();
+      organizationController = OrganisationControllerFactory.getOrganisationController();
     }
     return organizationController;
   }

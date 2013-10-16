@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -39,6 +39,7 @@
 
 <c:set var="browseContext" value="${requestScope.browseContext}" />
 <c:set var="componentLabel" value="${browseContext[1]}" />
+
 <c:set var="classifieds" value="${requestScope.Classifieds}" />
 <c:set var="title" value="${requestScope.TitlePath}" />
 <c:set var="extra" value="${requestScope.Extra}" />
@@ -49,16 +50,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel />
-<script type="text/javascript" src="${pageContext.request.contextPath}/util/javaScript/animation.js"></script>
-<script type="text/javascript" src="${pageContext.request.contextPath}/util/javaScript/checkForm.js"></script>
-<script type="text/javascript">
-	var classifiedWindow = window;
-
-	function openSPWindow(fonction, windowName) {
-		pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600',
-				'400', 'scrollbars=yes, resizable, alwaysRaised');
-	}
-</script>
 </head>
 <body id="classifieds">
 	<fmt:message var="classifiedPath" key="${ (empty title) ? 'classifieds.myClassifieds' : title}" />
@@ -82,8 +73,13 @@
 					<c:if test="${not empty classifieds}">
 					<ul class="list_result_classifieds">
 						<c:forEach items="${classifieds}" var="classified">
+						<c:set var="title" value="${classified.title}" />
+						<c:set var="displayedTitle"><view:encodeHtml string="${title}" /></c:set>
 						<li class="status_${classified.status}">
-								<a class="title_result_classifieds" href="ViewClassified?ClassifiedId=${classified.classifiedId}">${classified.title}</a>
+								<a class="title_result_classifieds" href="ViewClassified?ClassifiedId=${classified.classifiedId}">${displayedTitle}</a>
+								<c:if test="${classified.price > 0}">
+				                  ${classified.price} &euro; - 
+				                 </c:if>
 									<span class="status_result_classifieds">
 										<c:choose>
 											<c:when test="${classified.status == 'Draft'}">
@@ -101,12 +97,14 @@
 											</c:when>
 										</c:choose>
 									</span>
-									<span class="creatorName_result_classifieds">${classified.creatorName}</span><span class="sep_creatorName_result_classifieds"> - </span>
+									<span class="creatorName_result_classifieds">
+								   		<view:username userId="${classified.creatorId}" />
+									</span>
+									<span class="sep_creatorName_result_classifieds"> - </span>
 									<c:if test="${not empty classified.validateDate}">
 										<span class="date_result_classifieds"><view:formatDateTime value="${classified.validateDate}" language="${language}"/></span>
 									</c:if>
 									<c:if test="${empty classified.validateDate}">
-										
 										<c:if test="${not empty classified.updateDate}">
 										<span class="date_result_classifieds updateDate"><view:formatDateTime value="${classified.updateDate}" language="${language}"/></span>
 										</c:if>
@@ -114,13 +112,14 @@
 											<span class="date_result_classifieds creationDate"><view:formatDateTime value="${classified.creationDate}" language="${language}"/></span>
 										</c:if>
 									</c:if>
+							</li>
 						</c:forEach>
 					</ul>
 					</c:if>
 
 					<c:if test="${empty classifieds}">
 					<p class="message_noResult">
-								<fmt:message key="classifieds.CategoryEmpty" /> 
+						<fmt:message key="classifieds.CategoryEmpty" /> 
 					</p>
 					</c:if>
 				

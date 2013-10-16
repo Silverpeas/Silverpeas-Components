@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -20,140 +20,158 @@
  */
 package com.stratelia.webactiv.kmelia;
 
-import com.silverpeas.attachment.importExport.AttachmentImportExport;
-import com.silverpeas.importExport.control.MassiveDocumentImport;
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.MetaData;
-import com.silverpeas.util.MetadataExtractor;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.ZipManager;
-import com.silverpeas.versioning.importExport.VersioningImportExport;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
-import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
-import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import org.apache.commons.io.FileUtils;
+import static java.io.File.separator;
+import static org.silverpeas.util.Charsets.UTF_8;
 
+import com.silverpeas.importExport.control.ImportSettings;
+import com.silverpeas.importExport.control.MassiveDocumentImport;
+import com.silverpeas.importExport.control.PublicationsTypeManager;
+import com.silverpeas.importExport.model.ImportExportException;
+import com.silverpeas.importExport.model.PublicationType;
+import com.silverpeas.importExport.model.PublicationsType;
+import com.silverpeas.importExport.report.ImportReport;
+import com.silverpeas.importExport.report.ImportReportManager;
+import com.silverpeas.importExport.report.MassiveReport;
+import com.silverpeas.node.importexport.NodePositionType;
+import com.silverpeas.node.importexport.NodePositionsType;
+import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.ZipManager;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.silverpeas.util.ResourcesWrapper;
+import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.silverpeas.importExport.attachment.AttachmentDetail;
+import org.silverpeas.importExport.attachment.AttachmentsType;
 
 /**
- * Class for unitary and massive import
+ * Class for unit and massive import
  *
  * @author dlesimple
  */
 public class FileImport {
+  
+  private static final ResourceLocator settings = new ResourceLocator(
+      "org.silverpeas.importExport.settings.mapping", "");
 
-  private AttachmentImportExport attachmentImportExport;
-  private VersioningImportExport versioningImportExport;
-  private MetadataExtractor metadataExtractor;
   /**
    * Private or Public (ie DocumentVersion)
    */
   private int versionType;
-  /**
-   * Import in draft mode or not
-   */
-  private boolean draftMode;
-  private String topicId;
   private File fileUploaded;
   private KmeliaSessionController kmeliaScc;
+
+  public FileImport(KmeliaSessionController kmeliaScc, File uploadedFile) {
+    this.kmeliaScc = kmeliaScc;
+    this.fileUploaded = uploadedFile;
+  }
 
   public void setVersionType(int versionType) {
     this.versionType = versionType;
   }
 
-  public void setDraftMode(boolean draftMode) {
-    this.draftMode = draftMode;
-  }
-
-  public void setTopicId(String topicId) {
-    this.topicId = topicId;
-  }
-
-  public void setFileUploaded(File fileUploaded) {
-    this.fileUploaded = fileUploaded;
-  }
-
-  public void setKmeliaScc(KmeliaSessionController kmeliaScc) {
-    this.kmeliaScc = kmeliaScc;
-  }
-
-  public FileImport() {
-    attachmentImportExport = new AttachmentImportExport();
-    versioningImportExport = new VersioningImportExport();
-    metadataExtractor = new MetadataExtractor();
-  }
-
   /**
    * Import a single file for a unique publication
    *
-   * @return ArrayList of PublicationDetail
+   * @return a report of the import
+   * @throws ImportExportException
    */
-  public List<PublicationDetail> importFile() {
-    List<PublicationDetail> publicationDetails = new ArrayList<PublicationDetail>();
-    // Get files of the concerned upload directory
-    File[] filesToProcess = fileUploaded.getParentFile().listFiles();
-    PublicationDetail publicationDetail = processImportFile(
-        attachmentImportExport, versioningImportExport, filesToProcess,
-        KmeliaSessionController.UNITARY_IMPORT_MODE);
-    if (publicationDetail != null) {
-      publicationDetails.add(publicationDetail);
-    }
-    return publicationDetails;
+  public ImportReport importFile(boolean draft) throws ImportExportException {
+    MassiveDocumentImport massiveImporter = new MassiveDocumentImport();
+    ImportSettings settings = getImportSettings(fileUploaded.getParent(), draft);
+
+    return massiveImporter.importDocuments(settings, new MassiveReport());
   }
 
   /**
    * Import a zip file for a unique publication with attachments
    *
-   * @return ArrayList of PublicationsDetails
+   * @return a report of the import
    */
-  public List<PublicationDetail> importFiles() {
+  public ImportReport importFiles(boolean draft) {
     SilverTrace.info("kmelia", "FileImport.importFiles()", "root.MSG_GEN_ENTER_METHOD");
     List<PublicationDetail> publicationDetails = new ArrayList<PublicationDetail>();
+    ImportReportManager reportManager = new ImportReportManager();
     try {
+      PublicationsTypeManager typeMgr = new PublicationsTypeManager();
+
+      ImportSettings settings = getImportSettings(fileUploaded.getParent(), draft);
+
+      PublicationsType publicationsType = new PublicationsType();
+      PublicationType publication = new PublicationType();
+      PublicationDetail pubDetail = getPublicationDetail(fileUploaded, settings);
+      publication.setPublicationDetail(pubDetail);
+
       String tempFolderPath = unzipUploadedFile();
       Collection<File> filesExtracted = FileUtils.listFiles(new File(tempFolderPath), null, true);
       SilverTrace.info("kmelia", "FileImport.importFiles()", "root.MSG_GEN_PARAM_VALUE",
           "nb filesExtracted = " + filesExtracted.size());
-      PublicationDetail publicationDetail = processImportFile(attachmentImportExport,
-          versioningImportExport, filesExtracted.toArray(new File[filesExtracted.size()]),
-          KmeliaSessionController.MASSIVE_IMPORT_MODE_ONE_PUBLICATION);
+
+      // set files to attach to publication
+      AttachmentsType attachmentsType = new AttachmentsType();
+      List<AttachmentDetail> attachments = new ArrayList<AttachmentDetail>();
+      for (File file : filesExtracted) {
+        AttachmentDetail attachment = new AttachmentDetail();
+        attachment.setPhysicalName(file.getAbsolutePath());
+        attachment.setSize(file.length());
+        attachment.setAuthor(kmeliaScc.getUserId());
+        attachments.add(attachment);
+      }
+      attachmentsType.setListAttachmentDetail(attachments);
+      publication.setAttachmentsType(attachmentsType);
+
+      // set folder where to create publication
+      NodePositionsType nodesType = new NodePositionsType();
+      List<NodePositionType> nodes = new ArrayList<NodePositionType>();
+      NodePositionType node = new NodePositionType();
+      node.setId(Integer.valueOf(kmeliaScc.getCurrentFolderId()));
+      nodes.add(node);
+      nodesType.setListNodePositionType(nodes);
+      publication.setNodePositionsType(nodesType);
+
+      List<PublicationType> publications = new ArrayList<PublicationType>();
+      publications.add(publication);
+      publicationsType.setListPublicationType(publications);
+
+      // import files and create publication
+      typeMgr.processImport(publicationsType, settings, reportManager);
+
       FileFolderManager.deleteFolder(tempFolderPath);
-      if (publicationDetail != null) {
-        publicationDetails.add(publicationDetail);
+      if (pubDetail != null) {
+        publicationDetails.add(pubDetail);
       }
     } catch (Exception e) {
       SilverTrace.warn("kmelia", "FileImport.importFiles()", "root.EX_LOAD_ATTACHMENT_FAILED", e);
     }
+    reportManager.reportImportEnd();
     SilverTrace.info("kmelia", "FileImport.importFiles()", "root.MSG_GEN_EXIT_METHOD");
-    return publicationDetails;
+    return reportManager.getImportReport();
   }
 
   private String unzipUploadedFile() {
     int nbFiles = ZipManager.getNbFiles(fileUploaded);
     String tempFolderName = Long.toString(System.currentTimeMillis()) + '_' + kmeliaScc.getUserId();
-    String tempFolderPath = FileRepositoryManager.getAbsolutePath(kmeliaScc.getComponentId()) +
-        GeneralPropertiesManager.getGeneralResourceLocator().getString("RepositoryTypeTemp") +
-        File.separator + tempFolderName;
+    String tempFolderPath =
+        FileRepositoryManager.getTemporaryPath() + File.separator + tempFolderName;
     File tempFolder = new File(tempFolderPath);
     if (!tempFolder.exists()) {
-      FileRepositoryManager.createAbsolutePath(kmeliaScc.getComponentId(),
-          GeneralPropertiesManager.getGeneralResourceLocator().getString("RepositoryTypeTemp") +
-              File.separator + tempFolderName);
+      FileRepositoryManager.createGlobalTempPath(tempFolderName);
     }
     SilverTrace.info("kmelia", "FileImport.importFiles()", "root.MSG_GEN_PARAM_VALUE",
         "nbFiles = " + nbFiles);
@@ -166,125 +184,50 @@ public class FileImport {
   /**
    * Import a zip file for a publication per file in zip
    *
-   * @return List of PublicationsDetail
+   * @return a report of the import
    */
-  public List<PublicationDetail> importFilesMultiPubli() {
+  public ImportReport importFilesMultiPubli(boolean draft) {
     SilverTrace.info("kmelia", "FileImport.importFilesMultiPubli()", "root.MSG_GEN_ENTER_METHOD");
-    List<PublicationDetail> publicationDetails = new ArrayList<PublicationDetail>();
+    ImportReport importReport = null;
     try {
       String tempFolderPath = unzipUploadedFile();
       MassiveDocumentImport massiveImporter = new MassiveDocumentImport();
-      publicationDetails = massiveImporter
-          .importDocuments(kmeliaScc, tempFolderPath, Integer.parseInt(topicId), draftMode, true);
+      ImportSettings settings = getImportSettings(tempFolderPath, draft);
+      importReport = massiveImporter.importDocuments(settings, new MassiveReport());
     } catch (Exception e) {
       SilverTrace.warn("kmelia", "FileImport.importFilesMultiPubli()",
           "root.EX_LOAD_ATTACHMENT_FAILED", e);
     }
     SilverTrace.info("kmelia", "FileImport.importFilesMultiPubli()", "root.MSG_GEN_EXIT_METHOD");
-    return publicationDetails;
+    return importReport;
   }
-
+  
   /**
-   * Convert File into a publication with an attachment
+   * Write import report into a log file
    *
-   * @param attachmentIE
-   * @param versioningIE
-   * @param filesToProcess
-   * @param importMode
-   * @return PublicationDetail
    */
-  private PublicationDetail processImportFile(AttachmentImportExport attachmentIE,
-      VersioningImportExport versioningIE, File[] filesToProcess, String importMode) {
-    String componentId = kmeliaScc.getComponentId();
-    UserDetail userDetail = kmeliaScc.getUserDetail();
-    boolean isVersioningUsed = kmeliaScc.isVersionControlled();
-    boolean componentDraftMode = kmeliaScc.isDraftEnabled();
-    PublicationDetail pubDetailToCreate = null;
-    try {
-      // Get informations of the document to create the publication
-      if (KmeliaSessionController.MASSIVE_IMPORT_MODE_MULTI_PUBLICATIONS.equals(importMode)) {
-        pubDetailToCreate = getPublicationDetail(filesToProcess[0]);
-      } else {
-        pubDetailToCreate = getPublicationDetail(fileUploaded);
-      }
-      pubDetailToCreate.setPk(new PublicationPK("unknown", "useless",
-          componentId));
-
-      // Override draft Mode if the component use it
-      if (componentDraftMode && draftMode) {
-        pubDetailToCreate.setStatus(PublicationDetail.DRAFT);
-      } else if (componentDraftMode && !draftMode) {
-        pubDetailToCreate.setStatus(PublicationDetail.VALID);
-      }
-
-      // Create the publication
-      String pubId = kmeliaScc.getKmeliaBm().createPublicationIntoTopic(
-          pubDetailToCreate, new NodePK(topicId, componentId));
-      pubDetailToCreate.getPK().setId(pubId);
-      SilverTrace.info("kmelia", "FileImport.processImportFile()",
-          "root.MSG_GEN_PARAM_VALUE", "componentId = " + componentId);
-
-      // Add the attachments(s)
-      List<AttachmentDetail> attachments = new ArrayList<AttachmentDetail>();
-      if (isVersioningUsed) {
-        // Versioning Mode
-        for (File filesToProces : filesToProcess) {
-          AttachmentDetail attDetail = new AttachmentDetail();
-          attDetail.setPhysicalName(filesToProces.getAbsolutePath());
-          SilverTrace.info("kmelia", "FileImport.processImportFile()",
-              "root.MSG_GEN_PARAM_VALUE", "filesExtracted[i].getPath() versioning = " +
-              filesToProces.getAbsolutePath());
-          attDetail.setAuthor(userDetail.getId());
-          attDetail.setInstanceId(componentId);
-          attDetail.setPK(new AttachmentPK(componentId));
-          // Copy the file on the server and enhance the AttachmentDetail
-          SilverTrace.info("kmelia", "FileImport.processImportFile()", "root.MSG_GEN_PARAM_VALUE",
-              "versioningIE.getVersioningPath(componentId) = " + versioningIE.getVersioningPath(
-                  componentId));
-
-          String filePath = filesToProces.getAbsolutePath();
-          MetaData metadata = metadataExtractor.extractMetadata(filePath);
-          if (FileUtil.isOpenOfficeCompatible(filePath)) {
-            attDetail.setTitle(getOfficeTitle(metadata, filesToProces.getName()));
-            attDetail.setDescription(getOfficeSubject(metadata, ""));
-            attDetail.setAuthor(getOfficeAuthor(metadata, ""));
-          }
-          attachments.add(attDetail);
+  public void writeImportToLog(ImportReport importReport, ResourcesWrapper resource) {
+    if (importReport != null) {
+      String reportLogFile = settings.getString("importExportLogFile");
+      ResourceBundle resources = FileUtil.loadBundle(
+          "com.stratelia.silverpeas.silvertrace.settings.silverTrace", new Locale("", ""));
+      String reportLogPath = resources.getString("ErrorDir");
+      File file = new File(reportLogPath + separator + reportLogFile);
+      Writer fileWriter = null;
+      try {
+        if (!file.exists()) {
+          file.createNewFile();
         }
-        List<AttachmentDetail> copiedAttachments = attachmentIE.copyFiles(componentId,
-            attachments, versioningIE.getVersioningPath(componentId));
-        SilverTrace.info("kmelia", "FileImport.processImportFile()",
-            "root.MSG_GEN_PARAM_VALUE", "copiedAttachments.size() = " +
-            copiedAttachments);
-        versioningIE.importDocuments(pubDetailToCreate.getId(), componentId,
-            copiedAttachments, Integer.parseInt(userDetail.getId()),
-            versionType, KmeliaHelper.isIndexable(pubDetailToCreate));
-      } else {
-        // Add attachments
-        for (File filesToProces : filesToProcess) {
-          AttachmentDetail attDetail = new AttachmentDetail();
-          SilverTrace.info("kmelia", "FileImport.processImportFile()",
-              "root.MSG_GEN_PARAM_VALUE", "filesExtracted[i].getPath() Non versionning = " +
-              filesToProces.getAbsolutePath());
-          attDetail.setPhysicalName(filesToProces.getAbsolutePath());
-          attDetail.setAuthor(userDetail.getId());
-
-          // Get information from Office document
-          String filePath = filesToProces.getAbsolutePath();
-          MetaData metadata = metadataExtractor.extractMetadata(filePath);
-          if (FileUtil.isOpenOfficeCompatible(filePath)) {
-            attDetail.setTitle(getOfficeTitle(metadata, filesToProces.getName()));
-            attDetail.setDescription(getOfficeSubject(metadata, ""));
-          }
-          attachments.add(attDetail);
-        }
-        attachmentIE.importAttachments(pubDetailToCreate.getId(), componentId,
-            attachments, userDetail.getId(), KmeliaHelper.isIndexable(pubDetailToCreate));
+        fileWriter = new OutputStreamWriter(new FileOutputStream(file.getPath(), true), UTF_8);
+        fileWriter.write(importReport.writeToLog(resource));
+      } catch (IOException ex) {
+        SilverTrace.error("kmelia", "FileImport.writeImportToLog()",
+            "root.EX_CANT_WRITE_FILE",
+            ex);
+      } finally {
+        IOUtils.closeQuietly(fileWriter);
       }
-    } catch (Exception ex) {
-      SilverTrace.error("kmelia", "FileImport.processImportFile()", "root.EX_NO_MESSAGE", ex);
     }
-    return pubDetailToCreate;
   }
 
   /**
@@ -293,102 +236,23 @@ public class FileImport {
    * @param file
    * @return PublicationDetail
    */
-  private PublicationDetail getPublicationDetail(File file) {
+  private PublicationDetail getPublicationDetail(File file, ImportSettings settings) {
     SilverTrace.info("kmelia", "FileImport.getPublicationDetail()",
-        "root.MSG_GEN_PARAM_VALUE", "fileName = " + file.getName() +
-        " filepath=" + file.getAbsolutePath());
-    String pubName = formatNameFile(file.getName());
-    String description = formatNameFile(file.getName());
-    String author = "";
-    String keywords = "";
-    String content = "";
-    MetaData metadata = metadataExtractor.extractMetadata(file);
-    if (FileUtil.isOpenOfficeCompatible(file.getAbsolutePath())) {
-      pubName = getOfficeTitle(metadata, pubName);
-      description = getOfficeSubject(metadata, description);
-      author = getOfficeAuthor(metadata, author);
-      keywords = getOfficeKeywords(metadata, keywords);
-    }
+        "root.MSG_GEN_PARAM_VALUE", "fileName = " + file.getName() + " filepath=" + file.
+        getAbsolutePath());
+    String pubName = settings.getPublicationName(file.getName());
     PublicationDetail publicationDetail =
-        new PublicationDetail(null, pubName, description, new Date(), new Date(), null,
-            kmeliaScc.getUserDetail().getId(), "1", null, keywords, content, null, "", author);
-    if (kmeliaScc.isAuthorUsed()) {
-      publicationDetail.setAuthor(author);
-    }
+        new PublicationDetail(null, pubName, "", new Date(), new Date(), null,
+        kmeliaScc.getUserDetail().getId(), "1", null, "", "", null, "", "");
     return publicationDetail;
   }
 
-  /**
-   * Format file name without extension
-   *
-   * @param fileName
-   * @return fileName formatted
-   */
-  private String formatNameFile(String fileName) {
-    String name = fileName;
-    if (fileName.lastIndexOf('.') != -1) {
-      name = fileName.substring(0, fileName.lastIndexOf('.'));
-    }
-    return name;
-  }
-
-  /**
-   * Get the title of the document
-   *
-   * @param metadata
-   * @param value    Name of the field
-   * @return Title
-   */
-  private String getOfficeTitle(MetaData metadata, String value) {
-    String officeValue = value;
-    if (StringUtil.isDefined(metadata.getTitle())) {
-      officeValue = metadata.getTitle();
-    }
-    return officeValue;
-  }
-
-  /**
-   * Get the subject of the document
-   *
-   * @param metadata
-   * @param value
-   * @return Subject
-   */
-  private String getOfficeSubject(MetaData metadata, String value) {
-    String officeValue = value;
-    if (StringUtil.isDefined(metadata.getSubject())) {
-      officeValue = metadata.getSubject();
-    }
-    return officeValue;
-  }
-
-  /**
-   * Get the author of the document
-   *
-   * @param metadata
-   * @param value
-   * @return Author name
-   */
-  private String getOfficeAuthor(MetaData metadata, String value) {
-    String officeValue = value;
-    if (StringUtil.isDefined(metadata.getAuthor())) {
-      officeValue = metadata.getAuthor();
-    }
-    return officeValue;
-  }
-
-  /**
-   * Get the keywords of the document
-   *
-   * @param metadata
-   * @param value
-   * @return
-   */
-  private String getOfficeKeywords(MetaData metadata, String value) {
-    String officeValue = value;
-    if (metadata.getKeywords()!= null && metadata.getKeywords().length > 0 ) {
-      officeValue = StringUtils.join(metadata.getKeywords(), ';');
-    }
-    return officeValue;
+  private ImportSettings getImportSettings(String path, boolean draft) {
+    ImportSettings settings =
+        new ImportSettings(path, kmeliaScc.getUserDetail(), kmeliaScc.getComponentId(),
+        kmeliaScc.getCurrentFolderId(), draft, true, ImportSettings.FROM_MANUAL);
+    settings.setVersioningUsed(kmeliaScc.isVersionControlled());
+    settings.setVersionType(versionType);
+    return settings;
   }
 }

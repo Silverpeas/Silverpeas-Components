@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -51,7 +51,7 @@ out.println(gef.getLookStyleSheet());
     out.println(window.printBefore());
 
     TabbedPane tabbedPane = gef.getTabbedPane(1);
-    
+
     tabbedPane.addTab(resource.getString("projectManager.Projet"), "ToProject", false);
 	tabbedPane.addTab(resource.getString("projectManager.Taches"), "Main", false);
 	if ("admin".equals(role))
@@ -60,13 +60,13 @@ out.println(gef.getLookStyleSheet());
 	tabbedPane.addTab(resource.getString("projectManager.Gantt"), "ToGantt", false);
 	if ("admin".equals(role))
 		tabbedPane.addTab(resource.getString("projectManager.Calendrier"), "ToCalendar", false);
-	
+
     out.println(tabbedPane.print());
     out.println(frame.printBefore());
 
     out.flush();
-    
-    getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/editAttFiles.jsp?Id="+task.getId()+"&ComponentId="+task.getInstanceId()+"&Url="+url).include(request, response);
+
+    getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/editAttachedFiles.jsp?Id="+task.getId()+"&ComponentId="+task.getInstanceId()+"&Url="+url).include(request, response);
 
     out.println(frame.printAfter());
     out.println(window.printAfter());

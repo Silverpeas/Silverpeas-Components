@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -45,14 +45,10 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 
+<%@ page import="com.stratelia.webactiv.SilverpeasRole"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="com.stratelia.webactiv.survey.control.SurveySessionController "%>
 <%@ page import="com.stratelia.webactiv.survey.SurveyException"%>
-
-<%@ page import="com.stratelia.webactiv.servlets.FileServer"%>
-
-<%@ page import="com.stratelia.webactiv.quizz.QuestionHelper"%>
-<%@ page import="com.stratelia.webactiv.quizz.QuestionForm"%>
 
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
@@ -90,6 +86,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
 
 <%@ page import="com.silverpeas.util.web.servlet.FileUploadUtil"%>
+
+<%@ page import="org.silverpeas.attachment.model.SimpleDocument"%>
 <%@ page import="org.apache.commons.fileupload.FileItem"%>
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>

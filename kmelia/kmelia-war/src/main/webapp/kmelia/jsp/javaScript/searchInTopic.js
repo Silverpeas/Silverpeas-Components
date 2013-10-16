@@ -1,5 +1,4 @@
-function searchInTopic()
-{
+function searchInTopic() {
   var topicQuery = getSearchQuery();
   if (topicQuery != "" && topicQuery.length > 1) {
 		$.progressMessage();
@@ -14,16 +13,14 @@ function searchInTopic()
 	return;
 }
 
-function checkSubmitToSearch(ev)
-{
+function checkSubmitToSearch(ev) {
 	var touche = ev.keyCode;
 	if (touche == 13) {
 		searchInTopic();
 	}
 }
 
-function getSearchQuery()
-{
+function getSearchQuery() {
 	var topicQuery = "";
 	if (document.getElementById("topicQuery") != null) {
 		topicQuery = $("#topicQuery").val();
@@ -31,8 +28,7 @@ function getSearchQuery()
 	return topicQuery;
 }
 
-function clearSearchQuery()
-{
+function clearSearchQuery() {
   try {
     if (document.getElementById("topicQuery") != null) {
       $("#topicQuery").val("");

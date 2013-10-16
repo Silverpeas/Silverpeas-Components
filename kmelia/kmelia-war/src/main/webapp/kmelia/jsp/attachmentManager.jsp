@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -25,9 +25,8 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ include file="checkKmelia.jsp" %>
-<%@ include file="attachmentUtils.jsp" %>
-<%@ include file="tabManager.jsp.inc"%>
+<%@page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
+<%@include file="checkKmelia.jsp" %>
 
 <%
 PublicationDetail 	pubDetail 	= (PublicationDetail) request.getAttribute("CurrentPublicationDetail");
@@ -99,7 +98,7 @@ function topicGoTo(id) {
 <%
 	Window window = gef.getWindow();
 	Frame frame = gef.getFrame();
-	
+
 	BrowseBar browseBar = window.getBrowseBar();
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "Main");
@@ -108,17 +107,20 @@ function topicGoTo(id) {
 	browseBar.setI18N(languages, currentLang);
 
 	out.println(window.printBefore());
-	
+
 	if ("progress".equals(wizard)) {
-		displayWizardOperations(wizardRow, pubId, kmeliaScc, gef, "ViewAttachments", resources, out, kmaxMode);
+		KmeliaDisplayHelper.displayWizardOperations(wizardRow, pubId, kmeliaScc, gef,
+          "ViewAttachments", resources, out, kmaxMode);
 	} else {
 		if (isOwner) {
-			displayAllOperations(pubId, kmeliaScc, gef, "ViewAttachments", resources, out, kmaxMode);
+			KmeliaDisplayHelper.displayAllOperations(pubId, kmeliaScc, gef, "ViewAttachments",
+            resources, out, kmaxMode);
 		} else {
-			displayUserOperations(pubId, kmeliaScc, gef, "ViewAttachments", resources, out, kmaxMode);
+			KmeliaDisplayHelper.displayUserOperations(pubId, kmeliaScc, gef, "ViewAttachments",
+            resources, out, kmaxMode);
 		}
 	}
-	
+
 	out.println(frame.printBefore());
 	if ("progress".equals(wizard) || "finish".equals(wizard)) {
 		//  cadre d'aide
@@ -130,19 +132,9 @@ function topicGoTo(id) {
 		<br clear="all"/>
 <%	}
 	out.flush();
-
-	if (kmeliaScc.isVersionControlled()) 
-	{
-		//Versioning links
-		getServletConfig().getServletContext().getRequestDispatcher("/versioningPeas/jsp/documents.jsp?Id="+URLEncoder.encode(pubId)+"&SpaceId="+URLEncoder.encode(spaceId)+"&ComponentId="+URLEncoder.encode(componentId)+"&Context=Images&IndexIt="+pIndexIt+"&Url="+URLEncoder.encode(url)+"&SL="+URLEncoder.encode(kmeliaScc.getSpaceLabel())+"&NodeId="+kmeliaScc.getCurrentFolderId()+"&TopicRightsEnabled="+kmeliaScc.isRightsOnTopicsEnabled()+"&VersionningFileRightsMode="+kmeliaScc.getVersionningFileRightsMode()+"&CL="+URLEncoder.encode(kmeliaScc.getComponentLabel())+"&XMLFormName="+URLEncoder.encode(xmlForm)).include(request, response);
-	} 
-	else
-	{
-		//Attachments links
-		getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/editAttFiles.jsp?Id="+pubId+"&ComponentId="+componentId+"&Context=Images&IndexIt="+pIndexIt+"&Url="+url+"&UserId="+kmeliaScc.getUserId()+"&OpenUrl="+openUrl+"&Profile="+kmeliaScc.getProfile()+"&Language="+currentLang+"&XMLFormName="+URLEncoder.encode(xmlForm)).include(request, response);
-	}
+	getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/editAttachedFiles.jsp?Id="+pubId+"&ComponentId="+componentId+"&Context=attachment&IndexIt="+pIndexIt+"&Url="+url+"&UserId="+kmeliaScc.getUserId()+"&OpenUrl="+openUrl+"&Profile="+kmeliaScc.getProfile()+"&Language="+currentLang+"&XMLFormName="+URLEncoder.encode(xmlForm)).include(request, response);
 	out.flush();
-	
+
 	if ("progress".equals(wizard) || "finish".equals(wizard)) {
 		ButtonPane buttonPane = gef.getButtonPane();
 		buttonPane.addButton(nextButton);

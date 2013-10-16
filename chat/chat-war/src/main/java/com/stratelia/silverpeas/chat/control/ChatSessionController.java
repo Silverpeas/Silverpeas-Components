@@ -1,27 +1,23 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.chat.control;
 
 import jChatBox.Chat.Chatroom;
@@ -42,7 +38,6 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
@@ -51,16 +46,16 @@ import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 
 public class ChatSessionController extends AbstractComponentSessionController {
   // utilisation de userPanel/ userpanelPeas
+
   String[] idSelectedUser = null;
   String[] nameSelectedUser = null;
   String[] lastnameSelectedUser = null;
-
   private UserDetail currentUser = getUserDetail();
   private String componentName = getComponentId();
   private String componentName2 = getComponentLabel();
-
-  /** utilise pour notifier les utilisateurs */
-
+  /**
+   * utilise pour notifier les utilisateurs
+   */
   private ChatDataAccess chatDAO = new ChatDataAccess(getComponentId());
   private String currentRoomId = null;
 
@@ -215,9 +210,9 @@ public class ChatSessionController extends AbstractComponentSessionController {
     String roomName = chatroom.getParams().getName();
 
     ResourceLocator message = new ResourceLocator(
-        "com.stratelia.silverpeas.chat.multilang.chatBundle", "fr");
+        "org.silverpeas.chat.multilang.chatBundle", "fr");
     ResourceLocator message_en = new ResourceLocator(
-        "com.stratelia.silverpeas.chat.multilang.chatBundle", "en");
+        "org.silverpeas.chat.multilang.chatBundle", "en");
 
     String subject = getNotificationSubject(message);
     String body = getNotificationBody(message, senderName, roomName);
@@ -232,7 +227,7 @@ public class ChatSessionController extends AbstractComponentSessionController {
 
     // German notifications
     ResourceLocator message_de = new ResourceLocator(
-        "com.stratelia.silverpeas.chat.multilang.chatBundle", "de");
+        "org.silverpeas.chat.multilang.chatBundle", "de");
     if (message_de != null) {
       String subject_de = getNotificationSubject(message_de);
       String body_de = getNotificationBody(message_de, senderName, roomName);
@@ -250,17 +245,15 @@ public class ChatSessionController extends AbstractComponentSessionController {
 
   private String getNotificationBody(ResourceLocator message,
       String senderName, String roomName) {
-    StringBuffer messageText = new StringBuffer();
+    StringBuilder messageText = new StringBuilder();
     messageText.append(senderName).append(" ");
-    messageText.append(message.getString("chat.notifInfo")).append(" ").append(
-        roomName).append(".\n\n");
-
+    messageText.append(message.getString("chat.notifInfo")).append(" ").append(roomName).append(
+        ".\n\n");
     return messageText.toString();
   }
 
   public UserDetail[] getAvailableUsers() {
-    OrganizationController orga = getOrganizationController();
-    return orga.getAllUsers(this.componentName2);
+    return getOrganisationController().getAllUsers(this.componentName2);
   }
 
   public boolean isPdcUsed() {

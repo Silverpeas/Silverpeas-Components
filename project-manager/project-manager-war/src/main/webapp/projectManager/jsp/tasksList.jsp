@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -94,7 +94,7 @@ ArrayLine fillArrayLine(ArrayLine arrayLine, TaskDetail task, String iconeLiaiso
 	}
 	
 	ArrayCellText cellNom = null;
-	if (task.getAttachments().size()>0)
+	if (!task.getAttachments().isEmpty())
 		cellNom = arrayLine.addArrayCellText(nom+"&nbsp<img src=\""+resource.getIcon("projectManager.attachedFile")+"\" border=\"0\" align=\"absmiddle\">");
 	else
 		cellNom = arrayLine.addArrayCellText(nom);

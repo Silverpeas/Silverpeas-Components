@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -98,13 +98,9 @@
     WebSiteSessionController 	scc 		= (WebSiteSessionController) request.getAttribute("webSites");
     GraphicElementFactory 		gef 		= (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
     ResourcesWrapper 			resources 	= (ResourcesWrapper)request.getAttribute("resources");
+	String[] 					browseContext 	= (String[]) request.getAttribute("browseContext");
 
-	//CBO : ADD
-	String[] 						browseContext 	= (String[]) request.getAttribute("browseContext");
-
-	//CBO : ADD
 	String m_context = URLManager.getApplicationURL();
-    
 	String spaceLabel = browseContext[0];
 	String componentLabel = browseContext[1];
 	String spaceId = browseContext[2];

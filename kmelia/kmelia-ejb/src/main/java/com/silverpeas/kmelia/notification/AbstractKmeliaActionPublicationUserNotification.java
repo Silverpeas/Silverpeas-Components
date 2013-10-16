@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -32,7 +32,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 /**
  * @author Yohann Chastagnier
  */
-public abstract class AbstractKmeliaActionPublicationUserNotification extends KmeliaSubscriptionPublicationUserNotification {
+public abstract class AbstractKmeliaActionPublicationUserNotification extends AbstractKmeliaPublicationUserNotification {
 
   public AbstractKmeliaActionPublicationUserNotification(NodePK nodePK, PublicationDetail resource, NotifAction action) {
     super(nodePK, resource, action);

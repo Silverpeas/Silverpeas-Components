@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -75,7 +75,7 @@
     </script>
   </head>
   <body>
-  <div id="userDetailDialog"/>
+  <div id="userDetailDialog"></div>
 
 	<fmt:message key="organizationchart.icons.print" var="printIcon" bundle="${icons}" />
 	<fmt:message key="organizationchart.message.print" var="printMessageAltText" />
@@ -86,12 +86,10 @@
 	</view:operationPane>
 
     <view:window>
-      <view:frame>
-        <view:board>
           <c:out value="${error}"/>
           <div align="center" style="overflow: visible;">
-             <div id="chart" border="2px"></div>
-             <div id="chartInvisible" border="2px"></div>
+             <div id="chart"></div>
+             <div id="chartInvisible"></div>
 		     <script type="text/javascript">
 		     <c:choose>
                 <c:when test="${organigramme.chartType==0}">
@@ -103,8 +101,6 @@
        	  	</c:choose>
    	      </script>
 	      </div>
-        </view:board>
-      </view:frame>
     </view:window>
     
     <view:progressMessage/>

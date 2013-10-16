@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -26,20 +26,20 @@ package com.silverpeas.wiki;
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.InstanciationException;
 import com.silverpeas.util.ConfigurationClassLoader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.sql.Connection;
-import java.util.zip.ZipEntry;
-import org.apache.commons.io.FileUtils;
-
 import com.silverpeas.util.FileUtil;
-import com.silverpeas.versioning.VersioningInstanciator;
 import com.silverpeas.wiki.control.WikiException;
 import com.silverpeas.wiki.control.WikiPageDAO;
 import com.silverpeas.wiki.control.model.PageDetail;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
+import org.apache.commons.io.FileUtils;
+import org.silverpeas.attachment.SimpleDocumentInstanciator;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.sql.Connection;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class WikiInstanciator implements ComponentsInstanciatorIntf {
@@ -87,8 +87,7 @@ public class WikiInstanciator implements ComponentsInstanciatorIntf {
       SilverTrace.info("wiki", "WikiInstanciator.delete()", "root.EX_RECORD_DELETE_FAILED",
           "componentId " + componentId, e);
     }
-    VersioningInstanciator version = new VersioningInstanciator();
-    version.delete(con, spaceId, componentId, userId);
+    new SimpleDocumentInstanciator().delete(componentId);
     try {
       FileUtils.forceDelete(getComponentDirectory(componentId));
     } catch (Exception e) {

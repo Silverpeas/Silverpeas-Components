@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -43,6 +43,10 @@ import javax.mail.internet.ContentType;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.ParseException;
+
+import org.apache.commons.io.IOUtils;
+
+import com.silverpeas.util.FileUtil;
 
 public class MailProcessor {
 
@@ -176,43 +180,21 @@ public class MailProcessor {
    */
   public String saveAttachment(Part part, String componentId, String messageId)
       throws IOException, MessagingException {
-    String filePath = null;
     File parentDir = new File(FileRepositoryManager.getAbsolutePath(componentId) +
          replaceSpecialChars(messageId));
     if (!parentDir.exists()) {
       parentDir.mkdirs();
     }
-    FileOutputStream fileOut = null;
-    BufferedOutputStream out = null;
-    BufferedInputStream in = null;
-    InputStream partIn = null;
+    File targetFile = new File(parentDir, getFileName(part));
+    InputStream partIn = part.getInputStream();
     try {
-      partIn = part.getInputStream();
-      in = new BufferedInputStream(partIn);
-      File targetFile = new File(parentDir, getFileName(part));
-      filePath = targetFile.getAbsolutePath();
-      fileOut = new FileOutputStream(targetFile);
-      out = new BufferedOutputStream(fileOut);
-      byte[] buffer = new byte[8];
-      int c = 0;
-      while ((c = in.read(buffer)) != -1) {
-        out.write(buffer, 0, c);
-      }
+      
+      FileUtil.writeFile(targetFile, partIn);
+     
     } finally {
-      if (in != null) {
-        in.close();
-      }
-      if (partIn != null) {
-        partIn.close();
-      }
-      if (out != null) {
-        out.close();
-      }
-      if (fileOut != null) {
-        fileOut.close();
-      }
+      IOUtils.closeQuietly(partIn);
     }
-    return filePath;
+    return targetFile.getAbsolutePath();
   }
 
   /**
@@ -246,8 +228,7 @@ public class MailProcessor {
     }
     message.setTitle(mail.getSubject());
     SilverTrace.info("mailingList", "MailProcessor.prepareMessage()",
-        "mailinglist.notification.error",
-        "Processing message " + mail.getSubject());
+        "mailinglist.notification.error", "Processing message " + mail.getSubject());
     Object content = mail.getContent();
     if (content instanceof Multipart) {
       processMultipart((Multipart) content, message);

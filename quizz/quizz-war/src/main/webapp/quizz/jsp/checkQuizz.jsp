@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -59,7 +59,7 @@
 <%@ page import="com.stratelia.webactiv.quizz.QuizzException"%>
 <%@ page import="com.stratelia.webactiv.quizz.QuestionForm"%>
 <%@ page import="com.stratelia.webactiv.quizz.QuestionHelper"%>
-<%@ page import="com.stratelia.webactiv.servlets.FileServer"%>
+<%@ page import="com.stratelia.webactiv.util.FileServerUtils"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.board.Board"%>
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
@@ -102,7 +102,7 @@
   ResourcesWrapper resources = (ResourcesWrapper) request.getAttribute("resources");
   if (quizzScc == null) {
     String sessionTimeout =
-        GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+        GeneralPropertiesManager.getString("sessionTimeout");
     getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(
         request, response);
     return;

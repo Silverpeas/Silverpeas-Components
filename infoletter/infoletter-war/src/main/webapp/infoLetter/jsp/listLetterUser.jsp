@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -45,11 +45,11 @@ function openViewParution(par) {
 <body>
 <%
 boolean showHeader = (Boolean) request.getAttribute("showHeader");
-boolean isSuscriber = ((String)request.getAttribute("userIsSuscriber")).equals("true");
+boolean isSuscriber = "true".equals(request.getAttribute("userIsSuscriber"));
 if (isSuscriber) {
 	operationPane.addOperation(resource.getIcon("infoLetter.desabonner"), resource.getString("infoLetter.desabonner"), "UnsuscribeMe");
 } else {
-	operationPane.addOperation(resource.getIcon("infoLetter.abonner"), resource.getString("infoLetter.abonner"), "SuscribeMe");	
+	operationPane.addOperation(resource.getIcon("infoLetter.abonner"), resource.getString("infoLetter.abonner"), "SuscribeMe");
 }
 out.println(window.printBefore());
 %>
@@ -61,17 +61,17 @@ out.println(window.printBefore());
 			<td class="txtlibform" valign="baseline" nowrap="nowrap"><%=resource.getString("infoLetter.name")%> :</td>
 			<td align="left" width="100%"><%= (String) request.getAttribute("letterName") %></td>
 		</tr>
-		<tr> 
+		<tr>
 			<td class="txtlibform" valign="top" nowrap="nowrap"><%=resource.getString("GML.description")%> :</td>
 			<td align="left"><%= EncodeHelper.javaStringToHtmlParagraphe((String) request.getAttribute("letterDescription")) %></td>
 		</tr>
-		<tr> 
+		<tr>
 			<td class="txtlibform" valign="baseline" nowrap="nowrap"><%=resource.getString("infoLetter.frequence")%> :</td>
 			<td align="left"><%= (String) request.getAttribute("letterFrequence") %></td>
 		</tr>
 	</table>
 </view:board>
-<br/>	
+<br/>
 <% } %>
 <view:areaOfOperationOfCreation/>
 <%
@@ -80,9 +80,9 @@ List<InfoLetterPublication> publications = (List<InfoLetterPublication>) request
 int i=0;
 				ArrayPane arrayPane = gef.getArrayPane("InfoLetter", "Main", request, session);
 		        //arrayPane.setVisibleLineNumber(10);
-				
-		        arrayPane.setTitle(resource.getString("infoLetter.listParutions"));	
-				
+
+		        arrayPane.setTitle(resource.getString("infoLetter.listParutions"));
+
 		        ArrayColumn arrayColumn0 = arrayPane.addArrayColumn("&nbsp;");
 				arrayColumn0.setSortable(false);
 
@@ -95,22 +95,22 @@ if (publications.size()>0) {
 						InfoLetterPublication pub = (InfoLetterPublication) publications.get(i);
 						if (pub._isValid()) {
 							ArrayLine arrayLine = arrayPane.addArrayLine();
-						
+
 							IconPane iconPane1 = gef.getIconPane();
 							Icon debIcon = iconPane1.addIcon();
 							debIcon.setProperties(resource.getIcon("infoLetter.minicone"), "#");
-							arrayLine.addArrayCellIconPane(iconPane1);	
-						
+							arrayLine.addArrayCellIconPane(iconPane1);
+
 							arrayLine.addArrayCellLink(EncodeHelper.javaStringToHtmlString(pub.getTitle()), "javascript:openViewParution('" + pub.getPK().getId() + "');");
-						
+
 							java.util.Date date = DateUtil.parse(pub.getParutionDate());
 							ArrayCellText cell = arrayLine.addArrayCellText(resource.getOutputDate(date));
 							cell.setCompareOn(date);
 						}
 	}
-}	
+}
 		out.println(arrayPane.print());
-		
+
 %>
 <form name="viewParution" action="View" method="post">
 	<input type="hidden" name="parution" value=""/>

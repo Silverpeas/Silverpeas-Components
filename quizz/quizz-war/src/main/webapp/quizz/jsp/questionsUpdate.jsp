@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -48,9 +48,9 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
         Question question = null;
         Collection<Answer> answers = null;
         String operations = "";
-        
+
         Board board = gef.getBoard();
-        
+
     try{
       //Display the questions
       r += "<center>";
@@ -82,19 +82,19 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
             Iterator<Answer> itA = answers.iterator();
             int isOpened = 0;
             r += "<tr><td colspan=\"2\"><textarea name=\"openedAnswer_"+i+"\" cols=\"60\" rows=\"4\"></textarea></td></tr>";
-          } 
-          else 
+          }
+          else
           {
               String style = question.getStyle();
                 if (style.equals("list"))
                 {
                   // drop down list
                     String selectedStr = "";
-                    
+
                       r += "<tr><td><select id=\"answer_"+i+"\" name=\"answer_"+i+"\" >";
-                                      
+
                       Iterator<Answer> itA = answers.iterator();
-                    while (itA.hasNext()) 
+                    while (itA.hasNext())
                     {
                       Answer answer = (Answer) itA.next();
                           r += "<option value=\"\" "+selectedStr+">"+EncodeHelper.javaStringToHtmlString(answer.getLabel())+"</option>";
@@ -114,14 +114,14 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
                 if (answer.isOpened()) {
                   isOpened = 1;
                   r += "<tr><td align=\"left\"><input type=\""+inputType+"\" name=\"answer_"+i+"\" value=\"\" checked></td><td align=\"left\">"+Encode.javaStringToHtmlString(answer.getLabel())+"<BR><input type=\"text\" size=\"20\" name=\"openedAnswer_"+i+"\"></td></tr>";
-                } 
-                else 
+                }
+                else
                 {
-                  if (answer.getImage() == null) 
+                  if (answer.getImage() == null)
                             {
                       r += "<tr><td align=\"left\"><input type=\""+inputType+"\" name=\"answer_"+i+"\" value=\"\" checked></td><td align=\"left\" width=\"100%\">"+Encode.javaStringToHtmlString(answer.getLabel())+"</td></tr>";
-                            } 
-                            else 
+                            }
+                            else
                             {
                                 String imageUrl = answer.getImage();
                                 String url = "";
@@ -131,13 +131,13 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
                                 }
                                 else
                                 {
-                                  url = FileServer.getUrl(quizzScc.getSpaceId(), quizzScc.getComponentId(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
+                                  url = FileServerUtils.getUrl(quizzScc.getComponentId(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
                                 }
                       r += "<tr valign=middle><td align=\"left\"><input type=\""+inputType+"\" name=\"answer_"+i+"\" value=\"\" checked></td><td align=\"left\" valign=top>"+Encode.javaStringToHtmlString(answer.getLabel())+"&nbsp;&nbsp;&nbsp;";
                       r += "<img src=\""+url+"\" border=\"0\" hspace=10 vspace=10 align=absmiddle></td><td>";
                             }
-                      
-                      
+
+
                 }
               }
             }
@@ -240,7 +240,7 @@ function SendQuestions(nb)
     session.removeAttribute("questionsVector");
 
     session.setAttribute("currentQuizzId", quizzId);
-    
+
     quizz = quizzScc.getQuizzDetail(quizzId);
     Collection<Question> questions = quizz.getQuestions();
     //questions collection to questions vector
@@ -249,7 +249,7 @@ function SendQuestions(nb)
   }
   questionsV = (Vector) session.getAttribute("questionsVector");
   quizzId = (String) session.getAttribute("currentQuizzId");
-  
+
   Window window = gef.getWindow();
   Frame frame=gef.getFrame();
   BrowseBar browseBar = window.getBrowseBar();
@@ -259,14 +259,14 @@ function SendQuestions(nb)
 
   OperationPane operationPane = window.getOperationPane();
   operationPane.addOperation(m_context + "/util/icons/quizz_to_addQuestion.gif", resources.getString("QuestionAdd"), "javaScript:addQuestion()");
-  
+
   out.println(window.printBefore());
 
   TabbedPane tabbedPane = gef.getTabbedPane();
   tabbedPane.addTab(resources.getString("GML.head"), "quizzUpdate.jsp?Action=UpdateQuizzHeader&QuizzId="+quizzId, action.equals("UpdateQuizzHeader"), true);
   tabbedPane.addTab(resources.getString("QuizzQuestions"), "questionsUpdate.jsp?Action=UpdateQuestions&QuizzId="+quizzId, action.equals("UpdateQuestions"), false);
   out.println(tabbedPane.print());
- 
+
   out.println(frame.printBefore());
 
   out.println(displayQuestionsUpdateView(questionsV, gef, m_context, quizzScc, settings, resources));
