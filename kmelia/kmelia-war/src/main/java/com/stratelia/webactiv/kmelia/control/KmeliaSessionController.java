@@ -2686,30 +2686,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     }
   }
 
-  public void updateTopicDependency(NodeDetail node, boolean enableIt) throws RemoteException {
-    if (!enableIt) {
-      NodePK fatherPK = node.getFatherPK();
-      NodeDetail father = getNodeBm().getHeader(fatherPK);
-
-      node.setRightsDependsOn(father.getRightsDependsOn());
-
-      // Topic profiles must be removed
-      List<ProfileInst> profiles = getAdmin().getProfilesByObject(node.getNodePK().getId(),
-          ObjectType.NODE.getCode(),
-          getComponentId());
-      for (int p = 0; profiles != null && p < profiles.size(); p++) {
-        ProfileInst profile = profiles.get(p);
-        if (profile != null) {
-          getAdmin().deleteProfileInst(profile.getId());
-        }
-      }
-    } else {
-      node.setRightsDependsOnMe();
-    }
-
-    getNodeBm().updateRightsDependency(node);
-  }
-
   public ProfileInst getTopicProfile(String role, String topicId) {
     List<ProfileInst> profiles = getAdmin().getProfilesByObject(topicId, ObjectType.NODE.getCode(),
         getComponentId());
@@ -3065,8 +3041,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
             if (instanceId.equals(getComponentId())) {
               tree = getKmeliaBm().getTreeview(root, "useless", false, false, getUserId(),
-                  false, StringUtil.getBooleanValue(getOrganisationController().
-                  getComponentParameterValue(instanceId, "rightsOnTopics")));
+                  false, isRightsOnTopicsEnabled());
             }
 
             if (!StringUtil.isDefined(path)) {
@@ -3111,8 +3086,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       NodePK root = new NodePK(NodePK.ROOT_NODE_ID, instanceId);
 
       tree = getKmeliaBm().getTreeview(root, "useless", false, false, getUserId(), false,
-          StringUtil.getBooleanValue(getOrganisationController().getComponentParameterValue(
-          instanceId, "rightsOnTopics")));
+          isRightsOnTopicsEnabled());
     }
     return tree;
   }

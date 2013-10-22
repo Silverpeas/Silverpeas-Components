@@ -504,10 +504,38 @@ public class KmeliaBmEJB implements KmeliaBm {
   public NodePK updateTopic(NodeDetail topic, String alertType) {
     try {
       // Order of the node must be unchanged
-      NodeDetail node = nodeBm.getHeader(topic.getNodePK());
-      int order = node.getOrder();
+      NodeDetail oldNode = nodeBm.getHeader(topic.getNodePK());
+      int order = oldNode.getOrder();
       topic.setOrder(order);
       nodeBm.setDetail(topic);
+      
+      // manage operations relative to folder rights
+      if (isRightsOnTopicsEnabled(topic.getNodePK().getInstanceId())) {
+        if (oldNode.getRightsDependsOn() != topic.getRightsDependsOn()) {
+          // rights dependency have changed
+          if (!topic.haveRights()) {
+            
+            NodeDetail father = nodeBm.getHeader(oldNode.getFatherPK());
+            topic.setRightsDependsOn(father.getRightsDependsOn());
+            
+            AdminController admin = new AdminController(null);
+            
+            // Topic profiles must be removed
+            List<ProfileInst> profiles = admin.getProfilesByObject(topic.getNodePK().getId(),
+                ObjectType.NODE.getCode(), topic.getNodePK().getInstanceId());
+            if (profiles != null) {
+              for (ProfileInst profile : profiles) {
+                if (profile != null) {
+                  admin.deleteProfileInst(profile.getId());
+                }
+              }
+            }
+          } else {
+            topic.setRightsDependsOnMe();
+          }
+          nodeBm.updateRightsDependency(topic);
+        }
+      }
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.updateTopic()", ERROR,
           "kmelia.EX_IMPOSSIBLE_DE_MODIFIER_THEME", e);
@@ -1232,8 +1260,7 @@ public class KmeliaBmEJB implements KmeliaBm {
   private String getProfile(String userId, NodePK nodePK) {
     String profile;
     OrganisationController orgCtrl = getOrganisationController();
-    if (StringUtil.getBooleanValue(
-        orgCtrl.getComponentParameterValue(nodePK.getInstanceId(), "rightsOnTopics"))) {
+    if (isRightsOnTopicsEnabled(nodePK.getInstanceId())) {
       NodeDetail topic = nodeBm.getHeader(nodePK);
       if (topic.haveRights()) {
         profile = KmeliaHelper.getProfile(orgCtrl.getUserProfiles(userId, nodePK.getInstanceId(),
