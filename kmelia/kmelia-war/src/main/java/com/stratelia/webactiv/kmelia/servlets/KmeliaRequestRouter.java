@@ -504,23 +504,26 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           topic.setType(NodeDetail.FILE_LINK_TYPE);
           topic.setPath(path);
         }
-        kmelia.updateTopicHeader(topic, alertType);
+        boolean goToProfilesDefinition = false;
         if (kmelia.isRightsOnTopicsEnabled()) {
           int rightsUsed = Integer.parseInt(request.getParameter("RightsUsed"));
-          topic = kmelia.getNodeHeader(id);
-          if (topic.getRightsDependsOn() != rightsUsed) {
+          topic.setRightsDependsOn(rightsUsed);
+          
+          // process destination
+          NodeDetail oldTopic = kmelia.getNodeHeader(id);
+          if (oldTopic.getRightsDependsOn() != rightsUsed) {
             // rights dependency have changed
-            if (rightsUsed == -1) {
-              kmelia.updateTopicDependency(topic, false);
-              destination = getDestination("GoToCurrentTopic", kmelia, request);
-            } else {
-              kmelia.updateTopicDependency(topic, true);
-              request.setAttribute("NodeId", id);
-              destination = getDestination("ViewTopicProfiles", kmelia, request);
+            if (rightsUsed != -1) {
+              // folder uses its own rights
+              goToProfilesDefinition = true;
             }
-          } else {
-            destination = getDestination("GoToCurrentTopic", kmelia, request);
           }
+        }
+        kmelia.updateTopicHeader(topic, alertType);
+        
+        if (goToProfilesDefinition) {
+          request.setAttribute("NodeId", id);
+          destination = getDestination("ViewTopicProfiles", kmelia, request);
         } else {
           destination = getDestination("GoToCurrentTopic", kmelia, request);
         }
