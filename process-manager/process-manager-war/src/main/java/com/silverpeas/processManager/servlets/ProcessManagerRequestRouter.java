@@ -59,6 +59,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class ProcessManagerRequestRouter
     extends ComponentRequestRouter<ProcessManagerSessionController> {
@@ -605,6 +606,8 @@ public class ProcessManagerRequestRouter
         // Session Safe : reset Token Id
         resetTokenId(session, request);
 
+        // use random id as temporary object id
+        context.setObjectId(UUID.randomUUID().toString());
         List<String> attachmentIds = form.update(items, data, context, false);
 
         boolean isDraft = StringUtil.getBooleanValue(FileUploadUtil.getParameter(items, "isDraft"));
@@ -615,9 +618,11 @@ public class ProcessManagerRequestRouter
             "root.MSG_GEN_ENTER_METHOD", session.getTrace("saveCreation",
             "isDraft=" + isDraft + ", isFirstTimeSaved=" + isFirstTimeSaved));
         String instanceId = session.createProcessInstance(data, isDraft, isFirstTimeSaved);
+        
         // launch update again to have a correct object id in wysiwyg
         context.setObjectId(instanceId);
         form.updateWysiwyg(items, data, context);
+        
         // Attachment's foreignkey must be set with the just created instanceId
         for (String attachmentId : attachmentIds) {
 
