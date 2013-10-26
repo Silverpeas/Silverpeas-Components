@@ -20,55 +20,6 @@
  */
 package com.stratelia.webactiv.kmelia.control.ejb;
 
-import static com.silverpeas.util.StringUtil.getBooleanValue;
-import static com.silverpeas.util.StringUtil.isDefined;
-import static com.silverpeas.util.StringUtil.isInteger;
-import static com.stratelia.webactiv.util.JNDINames.SILVERPEAS_DATASOURCE;
-import static com.stratelia.webactiv.util.exception.SilverpeasRuntimeException.ERROR;
-import static org.silverpeas.attachment.AttachmentService.VERSION_MODE;
-import static org.silverpeas.core.admin.OrganisationControllerFactory.getOrganisationController;
-
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response.Status;
-
-import org.apache.commons.io.FilenameUtils;
-import org.silverpeas.attachment.AttachmentException;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.HistorisedDocument;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.component.kmelia.InstanceParameters;
-import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.search.indexEngine.model.IndexManager;
-import org.silverpeas.wysiwyg.WysiwygException;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
 import com.silverpeas.component.kmelia.KmeliaCopyDetail;
@@ -107,7 +58,7 @@ import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
 import com.silverpeas.thumbnail.ThumbnailException;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
-import com.silverpeas.thumbnail.service.ThumbnailServiceImpl;
+import com.silverpeas.thumbnail.service.ThumbnailServiceFactory;
 import com.silverpeas.util.CollectionUtil;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
@@ -136,10 +87,14 @@ import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.kmelia.model.TopicComparator;
 import com.stratelia.webactiv.kmelia.model.TopicDetail;
+import com.stratelia.webactiv.util.ActionType;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.annotation.Action;
+import com.stratelia.webactiv.util.annotation.SourcePK;
+import com.stratelia.webactiv.util.annotation.TargetPK;
 import com.stratelia.webactiv.util.coordinates.control.CoordinatesBm;
 import com.stratelia.webactiv.util.coordinates.model.Coordinate;
 import com.stratelia.webactiv.util.coordinates.model.CoordinatePK;
@@ -160,6 +115,44 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.ValidationStep;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
 import com.stratelia.webactiv.util.statistic.model.HistoryObjectDetail;
+import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.attachment.AttachmentException;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.HistorisedDocument;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.component.kmelia.InstanceParameters;
+import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.process.annotation.SimulationActionProcess;
+import org.silverpeas.process.annotation.SimulationActionProcessAnnotationEJBInterceptor;
+import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.wysiwyg.WysiwygException;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.interceptor.Interceptors;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response.Status;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static com.silverpeas.util.StringUtil.*;
+import static com.stratelia.webactiv.util.JNDINames.SILVERPEAS_DATASOURCE;
+import static com.stratelia.webactiv.util.exception.SilverpeasRuntimeException.ERROR;
+import static org.silverpeas.attachment.AttachmentService.VERSION_MODE;
+import static org.silverpeas.core.admin.OrganisationControllerFactory.getOrganisationController;
 
 /**
  * This is the KMelia EJB-tier controller of the MVC. It is implemented as a session EJB. It
@@ -185,7 +178,7 @@ public class KmeliaBmEJB implements KmeliaBm {
   private PdcBm pdcBm;
   @EJB
   private CoordinatesBm coordinatesBm;
-  private static final long serialVersionUID = 1L;
+
   private CommentService commentService = null;
 
   public KmeliaBmEJB() {
@@ -1432,9 +1425,12 @@ public class KmeliaBmEJB implements KmeliaBm {
         getEndDate() != null && !pubDetail.getEndDate().equals(old.getEndDate())));
     return beginVisibilityPeriodUpdated || endVisibilityPeriodUpdated;
   }
-  
+
+  @Interceptors(SimulationActionProcessAnnotationEJBInterceptor.class)
+  @SimulationActionProcess(elementLister = KmeliaPublicationSimulationElementLister.class)
+  @Action(ActionType.MOVE)
   @Override
-  public void movePublication(PublicationPK pubPK, NodePK to, String userId) {
+  public void movePublication(@SourcePK PublicationPK pubPK, @TargetPK NodePK to, String userId) {
     PublicationDetail pub = getPublicationDetail(pubPK);
     if (pub != null) {
       if (pubPK.getInstanceId().equals(to.getInstanceId())) {
@@ -1445,9 +1441,12 @@ public class KmeliaBmEJB implements KmeliaBm {
     }
   }
 
+  @Interceptors(SimulationActionProcessAnnotationEJBInterceptor.class)
+  @SimulationActionProcess(elementLister = KmeliaPublicationSimulationElementLister.class)
+  @Action(ActionType.MOVE)
   @Override
-  public void movePublicationInSameApplication(PublicationPK pubPK, NodePK from, NodePK to,
-      String userId) {
+  public void movePublicationInSameApplication(@SourcePK PublicationPK pubPK, @TargetPK NodePK from,
+      NodePK to, String userId) {
     PublicationDetail pub = getPublicationDetail(pubPK);
 
     // check if user can cut publication from source folder
@@ -1464,8 +1463,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     }
   }
 
-  @Override
-  public void movePublicationInSameApplication(PublicationDetail pub, NodePK to, String userId) {
+  private void movePublicationInSameApplication(PublicationDetail pub, NodePK to, String userId) {
     if (to.isTrash()) {
       sendPublicationToBasket(pub.getPK());
     } else {
@@ -1489,14 +1487,19 @@ public class KmeliaBmEJB implements KmeliaBm {
    * <li>moving the statistics</li>
    * </ul>
    */
+
+  @Interceptors(SimulationActionProcessAnnotationEJBInterceptor.class)
+  @SimulationActionProcess(elementLister = KmeliaPublicationSimulationElementLister.class)
+  @Action(ActionType.MOVE)
   @Override
-  public void movePublicationInAnotherApplication(PublicationDetail pub, NodePK to, String userId) {
+  public void movePublicationInAnotherApplication(@SourcePK PublicationDetail pub,
+      @TargetPK NodePK to, String userId) {
 
     try {
       ForeignPK fromForeignPK = new ForeignPK(pub.getPK());
       String fromComponentId = pub.getInstanceId();
       ForeignPK toPubliForeignPK = new ForeignPK(pub.getId(), to);
-      
+
       // remove index relative to publication
       unIndexExternalElementsOfPublication(pub.getPK());
 
@@ -1536,7 +1539,7 @@ public class KmeliaBmEJB implements KmeliaBm {
         GenericRecordSet toRecordSet = templateManager.addDynamicPublicationTemplate(to.getInstanceId() + ":"
             + pub.getInfoId(), pub.getInfoId() + ".xml");
         RecordTemplate toRecordTemplate = toRecordSet.getRecordTemplate();
-        
+
         // get xmlContent to move
         PublicationTemplate pubTemplateFrom = templateManager.
             getPublicationTemplate(fromComponentId + ":" + pub.getInfoId());
@@ -1566,7 +1569,7 @@ public class KmeliaBmEJB implements KmeliaBm {
       // move publication itself
       publicationBm.movePublication(pub.getPK(), to, false);
       pub.getPK().setComponentName(to.getInstanceId());
-      
+
       processPublicationAfterMove(pub, to, userId);
 
       // index moved publication
@@ -3098,9 +3101,10 @@ public class KmeliaBmEJB implements KmeliaBm {
     SilverTrace.info("kmelia", "KmeliaBmEJB.deleteAllReadingControlsByPublication()",
         "root.MSG_GEN_EXIT_METHOD");
   }
-  
+
+  @Override
   public List<HistoryObjectDetail> getLastAccess(PublicationPK pk, NodePK nodePK, String excludedUserId) {
-    
+
     Collection<HistoryObjectDetail> allAccess =
         statisticBm.getHistoryByAction(new ForeignPK(pk), 1, "Publication");
     List<String> userIds = getUserIdsOfFolder(nodePK);
@@ -3119,7 +3123,7 @@ public class KmeliaBmEJB implements KmeliaBm {
 
     return lastAccess;
   }
-  
+
   @Override
   public List<String> getUserIdsOfFolder(NodePK pk) {
     if (!isRightsOnTopicsEnabled(pk.getInstanceId())) {
@@ -4120,7 +4124,7 @@ public class KmeliaBmEJB implements KmeliaBm {
 
   @Override
   public void setAlias(PublicationPK pubPK, List<Alias> alias) {
-    
+
     publicationBm.setAlias(pubPK, alias);
 
     // Send subscriptions to aliases subscribers
@@ -4379,12 +4383,12 @@ public class KmeliaBmEJB implements KmeliaBm {
         createInfoModelDetail(clonePK, refPubComplete.getModelDetail().getId(), refPubComplete.
             getInfoDetail());
       } else {
-        String infoId = refPub.getInfoId();
-        if (infoId != null && !"0".equals(infoId) && !isInteger(infoId)) {
+        String xmlFormShortName = refPub.getInfoId();
+        if (xmlFormShortName != null && !"0".equals(xmlFormShortName) &&
+            !isInteger(xmlFormShortName)) {
           PublicationTemplateManager templateManager = PublicationTemplateManager.getInstance();
           // Content = XMLForm
           // register xmlForm to publication
-          String xmlFormShortName = infoId;
           templateManager.addDynamicPublicationTemplate(fromComponentId + ":"
               + xmlFormShortName, xmlFormShortName + ".xml");
 
@@ -4432,7 +4436,7 @@ public class KmeliaBmEJB implements KmeliaBm {
           FileRepositoryManager.copyFile(from, to);
           thumbDetail.setOriginalFileName(newVignette);
         }
-        new ThumbnailServiceImpl().createThumbnail(thumbDetail);
+        ThumbnailServiceFactory.getThumbnailService().createThumbnail(thumbDetail);
       }
     } catch (IOException e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.clonePublication", ERROR,
@@ -4574,6 +4578,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     }
   }
 
+  @SuppressWarnings("StatementWithEmptyBody")
   private void setAllowedSubfolders(NodeDetail node, String userId) {
     String instanceId = node.getNodePK().getInstanceId();
     if (isRightsOnTopicsEnabled(instanceId)) {
@@ -4692,11 +4697,10 @@ public class KmeliaBmEJB implements KmeliaBm {
         AdminController admin = null;
         if (descendant.haveLocalRights()) {
           // check if user is admin or publisher on this topic
-          if (admin == null) {
-            admin = new AdminController(userId);
-          }
-          String[] profiles = admin.getProfilesByObjectAndUserId(descendant.getId(),
-              ObjectType.NODE.getCode(), componentId, userId);
+          admin = new AdminController(userId);
+          String[] profiles = admin
+              .getProfilesByObjectAndUserId(descendant.getId(), ObjectType.NODE.getCode(),
+                  componentId, userId);
           if (profiles != null && profiles.length > 0) {
             List<String> lProfiles = Arrays.asList(profiles);
             isPublisherOrAdmin = lProfiles.contains(SilverpeasRole.admin.name())
@@ -4724,12 +4728,10 @@ public class KmeliaBmEJB implements KmeliaBm {
         AdminController admin = null;
         if (descendant.haveLocalRights()) {
           // check if user is admin, publisher or writer on this topic
-          if (admin == null) {
-            admin = new AdminController(userId);
-          }
-          String[] profiles = admin.getProfilesByObjectAndUserId(descendant.getId(), ObjectType.NODE
-              .getCode(),
-              componentId, userId);
+          admin = new AdminController(userId);
+          String[] profiles = admin
+              .getProfilesByObjectAndUserId(descendant.getId(), ObjectType.NODE.getCode(),
+                  componentId, userId);
           if (profiles != null && profiles.length > 0) {
             List<String> lProfiles = Arrays.asList(profiles);
             userCanWrite = lProfiles.contains(SilverpeasRole.admin.name())
@@ -4855,15 +4857,17 @@ public class KmeliaBmEJB implements KmeliaBm {
   public ResourceLocator getComponentMessages(String language) {
     return new ResourceLocator(MESSAGES_PATH, language);
   }
-  
+
+  @Interceptors(SimulationActionProcessAnnotationEJBInterceptor.class)
+  @SimulationActionProcess(elementLister = KmeliaNodeSimulationElementLister.class)
+  @Action(ActionType.MOVE)
   @Override
-  public NodeDetail moveNode(NodePK nodePK, NodePK to, String userId) {
-    
+  public NodeDetail moveNode(@SourcePK NodePK nodePK, @TargetPK NodePK to, String userId) {
     List<NodeDetail> treeToPaste = nodeBm.getSubTree(nodePK);
 
     // move node and subtree
     nodeBm.moveNode(nodePK, to);
-    
+
     AdminController admin = new AdminController(userId);
     for (NodeDetail fromNode : treeToPaste) {
       if (fromNode != null) {
@@ -4882,7 +4886,7 @@ public class KmeliaBmEJB implements KmeliaBm {
             }
           }
         }
-                
+
         try {
           NodePK fromForeignPK = fromNode.getNodePK();
           List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
@@ -4898,28 +4902,32 @@ public class KmeliaBmEJB implements KmeliaBm {
         // change images path in wysiwyg
         WysiwygController.wysiwygPlaceHaveChanged(fromNode.getNodePK().getInstanceId(),
             "Node_" + fromNode.getNodePK().getId(), to.getInstanceId(), "Node_" + toNodePK.getId());
-        
+
         // move publications of topics
         movePublicationsOfTopic(fromNode.getNodePK(), toNodePK, userId);
       }
     }
-    
+
     nodePK.setComponentName(to.getInstanceId());
     return getNodeHeader(nodePK);
   }
-  
+
   private void movePublicationsOfTopic(NodePK fromPK, NodePK toPK, String userId) {
     Collection<PublicationDetail> publications = publicationBm.getDetailsByFatherPK(fromPK);
     for (PublicationDetail publi : publications) {
       movePublication(publi.getPK(), toPK, userId);
     }
   }
-  
-  public NodeDetail copyNode(KmeliaCopyDetail copyDetail) {
+
+  @Interceptors(SimulationActionProcessAnnotationEJBInterceptor.class)
+  @SimulationActionProcess(elementLister = KmeliaNodeSimulationElementLister.class)
+  @Action(ActionType.COPY)
+  @Override
+  public NodeDetail copyNode(@SourcePK @TargetPK KmeliaCopyDetail copyDetail) {
     HashMap<Integer, Integer> oldAndNewIds = new HashMap<Integer, Integer>();
     return copyNode(copyDetail, oldAndNewIds);
   }
-  
+
   private NodeDetail copyNode(KmeliaCopyDetail copyDetail, HashMap<Integer, Integer> oldAndNewIds) {
     NodePK nodePKToCopy = copyDetail.getFromNodePK();
     NodePK targetPK = copyDetail.getToNodePK();
@@ -4928,7 +4936,7 @@ public class KmeliaBmEJB implements KmeliaBm {
         nodePKToCopy.toString() + ", to = " + targetPK.toString());
     NodeDetail nodeToCopy = nodeBm.getDetail(nodePKToCopy);
     NodeDetail father = getNodeHeader(targetPK);
-    
+
     // paste topic
     NodePK nodePK = new NodePK("unknown", targetPK);
     NodeDetail node = new NodeDetail();
@@ -4941,7 +4949,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     node.setCreationDate(DateUtil.today2SQLDate());
     node.setStatus(nodeToCopy.getStatus());
     nodePK = nodeBm.createNode(node, father);
-    
+
     // duplicate rights
     if (copyDetail.isNodeRightsMustBeCopied()) {
       oldAndNewIds.put(Integer.parseInt(nodePKToCopy.getId()), Integer.parseInt(nodePK.getId()));
@@ -4983,7 +4991,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     KmeliaCopyDetail folderContentCopy = new KmeliaCopyDetail(copyDetail);
     folderContentCopy.setFromNodePK(nodePKToCopy);
     folderContentCopy.setToNodePK(nodePK);
-    
+
     if (copyDetail.isPublicationHeaderMustBeCopied()) {
       copyPublications(folderContentCopy);
     }
@@ -4998,22 +5006,29 @@ public class KmeliaBmEJB implements KmeliaBm {
     }
     return node;
   }
-  
+
+  @Interceptors(SimulationActionProcessAnnotationEJBInterceptor.class)
+  @SimulationActionProcess(elementLister = KmeliaPublicationSimulationElementLister.class)
+  @Action(ActionType.COPY)
   @Override
-  public void copyPublications(KmeliaCopyDetail copyDetail) {
+  public void copyPublications(@SourcePK @TargetPK KmeliaCopyDetail copyDetail) {
     Collection<PublicationDetail> publications = publicationBm.getDetailsByFatherPK(copyDetail.getFromNodePK());
     for (PublicationDetail publi : publications) {
       copyPublication(publi, copyDetail);
     }
   }
 
+  @Interceptors(SimulationActionProcessAnnotationEJBInterceptor.class)
+  @SimulationActionProcess(elementLister = KmeliaPublicationSimulationElementLister.class)
+  @Action(ActionType.COPY)
   @Override
-  public PublicationPK copyPublication(PublicationDetail publi, NodePK nodePK, String userId) {
+  public PublicationPK copyPublication(@SourcePK PublicationDetail publi, @TargetPK NodePK nodePK,
+      String userId) {
     KmeliaCopyDetail copyDetail = new KmeliaCopyDetail(userId);
     copyDetail.setToNodePK(nodePK);
     return copyPublication(publi, copyDetail);
   }
-  
+
   private PublicationPK copyPublication(PublicationDetail publi, KmeliaCopyDetail copyDetail) {
     NodePK nodePK = copyDetail.getToNodePK();
     String userId = copyDetail.getUserId();
@@ -5032,12 +5047,12 @@ public class KmeliaBmEJB implements KmeliaBm {
 
       publi.setUpdaterId(userId); // ignore initial parameters
       publi.setPk(toPubPK);
-      
+
       if (KmeliaHelper.ROLE_WRITER.equals(getUserTopicProfile(nodePK, userId))) {
         // in case of writers, status of new publication must be processed
         publi.setStatus(null);
       }
-      
+
       if (!copyDetail.isPublicationContentMustBeCopied()) {
         publi.setInfoId(null);
       }
@@ -5046,46 +5061,45 @@ public class KmeliaBmEJB implements KmeliaBm {
       // update id cause new publication is created
       toPubPK.setId(id);
       toForeignPK.setId(id);
-      
+
       SilverTrace.spy("kmelia", "KmeliaBmEJB.copyPublication", "unknown", nodePK.getInstanceId(),
           id, userId, SilverTrace.SPY_ACTION_CREATE);
-      
+
       // paste vignette
       ThumbnailController.copyThumbnail(fromForeignPK, toForeignPK);
-      
+
       // Paste positions on Pdc
       if (copyDetail.isPublicationPositionsMustBeCopied()) {
         copyPdcPositions(fromPubPK, toPubPK);
       }
-      
+
       Map<String, String> fileIds = new HashMap<String, String>();
       if (copyDetail.isPublicationContentMustBeCopied()) {
         // paste wysiwyg
         fileIds = WysiwygController.copy(fromComponentId, fromId, toPubPK.getInstanceId(), id, userId);
       }
-      
+
       if (copyDetail.isPublicationFilesMustBeCopied()) {
         fileIds.putAll(copyFiles(fromPubPK, toPubPK));
       }
-      
+
       if (copyDetail.isPublicationContentMustBeCopied()) {
-        String infoId = publi.getInfoId();
-        if (infoId != null && !"0".equals(infoId)) {
+        String xmlFormShortName = publi.getInfoId();
+        if (xmlFormShortName != null && !"0".equals(xmlFormShortName)) {
           // Content = XMLForm
           // register xmlForm to publication
-          String xmlFormShortName = infoId;
           PublicationTemplateManager publicationTemplateManager = PublicationTemplateManager.getInstance();
           GenericRecordSet toRecordset = publicationTemplateManager.addDynamicPublicationTemplate(toComponentId + ":"
               + xmlFormShortName, xmlFormShortName + ".xml");
-          
+
           PublicationTemplate pubTemplate = publicationTemplateManager.getPublicationTemplate(fromComponentId
               + ":" + xmlFormShortName);
           RecordSet set = pubTemplate.getRecordSet();
-          
+
           set.copy(fromForeignPK, toForeignPK, toRecordset.getRecordTemplate(), fileIds);
         }
       }
-  
+
       // force the update
       PublicationDetail newPubli = getPublicationDetail(toPubPK);
       newPubli.setStatusMustBeChecked(false);
@@ -5098,7 +5112,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     }
     return null;
   }
-  
+
   private Map<String, String> copyFiles(PublicationPK fromPK, PublicationPK toPK)
       throws IOException {
     Map<String, String> fileIds = new HashMap<String, String>();
@@ -5111,7 +5125,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     }
     return fileIds;
   }
-  
+
   private void copyPdcPositions(PublicationPK fromPK, PublicationPK toPK) throws RemoteException,
       PdcException {
     int fromSilverObjectId = getSilverObjectId(fromPK);

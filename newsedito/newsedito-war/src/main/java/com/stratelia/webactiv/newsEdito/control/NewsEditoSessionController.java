@@ -37,6 +37,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.thumbnail.service.ThumbnailService;
+import com.silverpeas.thumbnail.service.ThumbnailServiceFactory;
 import com.silverpeas.thumbnail.service.ThumbnailServiceImpl;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
@@ -83,7 +84,6 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
   private PublicationBm publicationBm;
   private FavoritBm favoritBm;
   private StatisticBm statisticBm;
-  private ThumbnailService thumbnailService = null;
   private ResourceLocator settings;
 
   /**
@@ -654,10 +654,7 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
   }
 
   public ThumbnailService getThumbnailService() {
-    if (thumbnailService == null) {
-      thumbnailService = new ThumbnailServiceImpl();
-    }
-    return thumbnailService;
+    return ThumbnailServiceFactory.getThumbnailService();
   }
 
   /**

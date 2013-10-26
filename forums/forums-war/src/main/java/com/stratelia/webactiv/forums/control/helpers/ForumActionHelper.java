@@ -209,8 +209,9 @@ public class ForumActionHelper {
             if (StringUtil.isDefined(messageTitle) && StringUtil.isDefined(messageText)) {
               Collection<UploadedFile> uploadedFiles = FileUploadManager.getUploadedFiles(request,
                   fsc.getUserDetail());
-              int result = fsc.createMessage(messageTitle, userId, forumId, parentId, messageText,
-                  forumKeywords, uploadedFiles);
+              int result =
+                  fsc.createMessage(request, messageTitle, userId, forumId, parentId, messageText,
+                      forumKeywords, uploadedFiles);
               if (subscribe == null) {
                 subscribe = "0";
               } else {

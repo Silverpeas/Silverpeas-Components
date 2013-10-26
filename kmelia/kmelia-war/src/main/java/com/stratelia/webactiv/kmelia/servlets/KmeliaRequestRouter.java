@@ -82,6 +82,16 @@ import com.stratelia.webactiv.util.publication.model.Alias;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.CharEncoding;
+import org.owasp.encoder.Encode;
+import org.silverpeas.importExport.versioning.DocumentVersion;
+import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -94,14 +104,6 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
-import javax.xml.parsers.ParserConfigurationException;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.CharEncoding;
-import org.owasp.encoder.Encode;
-import org.silverpeas.importExport.versioning.DocumentVersion;
-import org.silverpeas.wysiwyg.control.WysiwygController;
 
 public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionController> {
 
@@ -141,6 +143,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
+  @SuppressWarnings("StatementWithEmptyBody")
   @Override
   public String getDestination(String function, KmeliaSessionController kmelia,
       HttpServletRequest request) {
@@ -1125,7 +1128,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       } else if (function.equals("AddLinksToPublication")) {
         String id = request.getParameter("PubId");
         String topicId = request.getParameter("TopicId");
-        HashSet<String> list = (HashSet<String>) request.getSession().getAttribute(
+        //noinspection unchecked
+        HashSet<String> list = (HashSet) request.getSession().getAttribute(
             KmeliaConstants.PUB_TO_LINK_SESSION_KEY);
 
         int nb = kmelia.addPublicationsToLink(id, list);
@@ -1147,7 +1151,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           // build an exploitable list by importExportPeas
           SilverTrace.info("kmelia", "KmeliaRequestRouter.ExportTopic",
               "root.MSG_PARAM_VALUE", "topicId =" + topicId);
-          List<WAAttributeValuePair> publicationsIds = null;
+          final List<WAAttributeValuePair> publicationsIds;
           if (exportFullApp) {
             publicationsIds = kmelia.getAllVisiblePublications();
           } else {
@@ -1867,8 +1871,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       detail.setOriginalFileName(physicalName);
       detail.setMimeType(mimeType);
       try {
-        int[] thumbnailSize = kmelia.getThumbnailWidthAndHeight();
-        ThumbnailController.updateThumbnail(detail, thumbnailSize[0], thumbnailSize[1]);
+        ThumbnailController.updateThumbnail(detail);
 
         // force indexation to taking into account new thumbnail
         if (publication.isIndexable()) {
@@ -1906,7 +1909,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     boolean error = false;
 
     String tempFolderName;
-    String tempFolderPath;
+    String tempFolderPath = null;
 
     String fileType;
     long fileSize;
@@ -2066,8 +2069,13 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         }
       }
     } catch (Exception e) {
+      String exMessage =
+          SilverpeasTransverseErrorUtil.performExceptionMessage(e, kmeliaScc.getLanguage());
+      if (StringUtil.isNotDefined(exMessage)) {
+        exMessage = e.getMessage();
+      }
       // Other exception
-      request.setAttribute("Message", e.getMessage());
+      request.setAttribute("Message", exMessage);
       request.setAttribute("TopicId", topicId);
       destination = routeDestination + "importOneFile.jsp";
       if (isMassiveMode) {
@@ -2076,6 +2084,10 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
       SilverTrace.warn("kmelia", "KmeliaRequestRouter.processFormUpload()",
           "root.EX_LOAD_ATTACHMENT_FAILED", e);
+    } finally {
+      if (tempFolderPath != null) {
+        FileFolderManager.deleteFolder(tempFolderPath);
+      }
     }
     return destination;
   }
@@ -2535,8 +2547,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     Collection<PublicationTemplate> listModelXml = new ArrayList<PublicationTemplate>();
     List<PublicationTemplate> templates = kmelia.getForms();
     // recherche de la liste des modèles utilisables
-    for (PublicationTemplate template : templates) {
-      PublicationTemplate xmlForm = template;
+    for (PublicationTemplate xmlForm : templates) {
       // recherche si le modèle est dans la liste
       if (modelUsed.contains(xmlForm.getFileName())) {
         listModelXml.add(xmlForm);
@@ -2565,8 +2576,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     request.setAttribute("WysiwygValid", wysiwygValid);
 
     // s'il n'y a pas de modèles selectionnés, les présenter tous
-    if ((listModelXml == null || listModelXml.isEmpty())
-        && (listModelForm == null || listModelForm.isEmpty()) && !wysiwygValid) {
+    if ((listModelXml.isEmpty()) && (listModelForm.isEmpty()) && !wysiwygValid) {
       request.setAttribute("XMLForms", templates);
       request.setAttribute("DBForms", dbForms);
       request.setAttribute("WysiwygValid", Boolean.TRUE);
@@ -2588,9 +2598,5 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       pks.add(new ForeignPK(oneId, instanceId));
     }
     return pks;
-  }
-
-  private void setAttributesToPublicationHeader(KmeliaSessionController kmelia,
-      HttpServletRequest request) {
   }
 }

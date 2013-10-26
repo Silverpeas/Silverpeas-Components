@@ -45,9 +45,9 @@
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 <%@ page import="org.silverpeas.upload.FileUploadManager"%>
 <%@ page import="org.silverpeas.upload.UploadedFile"%>
+<%@ page import="org.silverpeas.util.NotifierUtil"%>
 <%@ page import="java.util.HashMap"%>
-<%@ page import="java.util.Map"%>
-<%@ page import="org.silverpeas.util.NotifierUtil" %>
+<%@ page import="java.util.Map" %>
 <%@ include file="checkForums.jsp"%>
 <%
     int messageId = 0;
@@ -90,9 +90,12 @@
 
                 if ((messageTitle.length() > 0) && (messageText.length() > 0)) {
                     if (params == -1) {
-                      	Collection<UploadedFile> uploadedFiles = FileUploadManager.getUploadedFiles(request, fsc.getUserDetail());
-                        int result = fsc.createMessage(messageTitle, userId, forumId, parentId, messageText, null, uploadedFiles);
-                        messageId = result;
+                      Collection<UploadedFile> uploadedFiles =
+                          FileUploadManager.getUploadedFiles(request, fsc.getUserDetail());
+                      int result =
+                          fsc.createMessage(request, messageTitle, userId, forumId, parentId,
+                              messageText, null, uploadedFiles);
+                      messageId = result;
                     } else {
                         // Modification
                         messageId = params;

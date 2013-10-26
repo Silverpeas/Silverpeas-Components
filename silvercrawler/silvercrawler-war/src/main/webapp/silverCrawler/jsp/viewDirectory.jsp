@@ -352,8 +352,7 @@ function hideSuccessMsg() {
 
 function showDnD() {
 	<%
-	ResourceLocator uploadSettings = new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings", "");
-	String maximumFileSize = uploadSettings.getString("MaximumFileSize", "10000000");
+	long maximumFileSize = FileRepositoryManager.getUploadMaximumFileSize();
 	if (profile.equals("publisher")) { %>
 		showHideDragDrop('<%=httpServerBase+m_context%>/SilverCrawlerDragAndDrop/?UserId=<%=userId%>&ComponentId=<%=componentId%>&IgnoreFolders=1&SessionId=<%=session.getId()%>','<%=httpServerBase + m_context%>/upload/ModeNormal_<%=language%>.html','<%=resource.getString("GML.applet.dnd.alt")%>','<%=maximumFileSize%>','<%=m_context%>','<%=resource.getString("GML.DragNDropExpand")%>','<%=resource.getString("GML.DragNDropCollapse")%>');
 	<% } else { %>

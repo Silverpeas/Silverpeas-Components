@@ -69,8 +69,10 @@ import org.silverpeas.components.forum.notification.ForumsMessagePendingValidati
 import org.silverpeas.components.forum.notification.ForumsMessageSubscriptionUserNotification;
 import org.silverpeas.components.forum.notification.ForumsMessageValidationUserNotification;
 import org.silverpeas.upload.UploadedFile;
+import org.silverpeas.web.util.SilverpeasTransverseWebErrorUtil;
 
 import javax.ejb.EJBException;
+import javax.servlet.ServletRequest;
 import javax.xml.bind.JAXBException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -426,6 +428,8 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   /**
    * Cree un nouveau message dans la datasource
    *
+   *
+   * @param request
    * @param title titre du message
    * @param author id de l'auteur du message
    * @param forumId id du forum
@@ -436,8 +440,8 @@ public class ForumsSessionController extends AbstractComponentSessionController 
    * @author frageade
    * @since 04 Octobre 2000
    */
-  public int createMessage(String title, String author, int forumId, int parentId, String text,
-      String keywords, Collection<UploadedFile> uploadedFiles) {
+  public int createMessage(final ServletRequest request, String title, String author, int forumId,
+      int parentId, String text, String keywords, Collection<UploadedFile> uploadedFiles) {
     String status = STATUS_FOR_VALIDATION;
 
     MessagePK messagePK = new MessagePK(getComponentId(), getSpaceId());
@@ -466,11 +470,15 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     }
 
     // Attach uploaded files
-    if (com.silverpeas.util.CollectionUtil.isNotEmpty(uploadedFiles)) {
-      for (UploadedFile uploadedFile : uploadedFiles) {
-        // Register attachment
-        uploadedFile.registerAttachment(messagePK, I18NHelper.defaultLanguage, false);
+    try {
+      if (com.silverpeas.util.CollectionUtil.isNotEmpty(uploadedFiles)) {
+        for (UploadedFile uploadedFile : uploadedFiles) {
+          // Register attachment
+          uploadedFile.registerAttachment(messagePK, I18NHelper.defaultLanguage, false);
+        }
       }
+    } catch (RuntimeException re) {
+      SilverpeasTransverseWebErrorUtil.notifyToRequest(re, request, getLanguage());
     }
 
     return messageId;
