@@ -6,7 +6,7 @@
 			<tbody>
 				<tr>
 					<td class="txtlibform">${titleLabel}&nbsp;:</td>
-					<td>${currentScheduleEvent.title}</td>
+					<td><c:out value="${currentScheduleEvent.title}"/></td>
 				</tr>
 				<tr>
 					<td class="txtlibform">${descLabel}&nbsp;:</td>
