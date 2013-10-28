@@ -91,6 +91,17 @@ function updateChain() {
     document.updateChain.submit();
 }
 <% } %>
+  
+$.i18n.properties({
+  name: 'kmeliaBundle',
+  path: webContext + '/services/bundles/com/silverpeas/kmelia/multilang/',
+  language: '<%=language%>',
+  mode: 'map'
+});
+    
+function getString(key) {
+	return $.i18n.prop(key);
+}
 
 function getCurrentNodeId() {
 	return "0";
@@ -144,7 +155,7 @@ function pasteFromOperations() {
 	$.get(url, {ComponentId:getComponentId(),Action:'Paste',Id:'0',IEFix:ieFix},
 			function(data){
 				$.closeProgressMessage();
-				if (data == "ok") {
+				if (data === "ok") {
 					displayPublications("0");
 				} else {
 					alert(data);
@@ -268,7 +279,7 @@ $(document).ready(function() {
 								appletDisplayed = true;
 						%>
 								<td>
-									<div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding:0px; width:100%" valign="top"><img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/></div>
+									<div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; padding:0px; width:100%" valign="top"><img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/></div>
 								</td>
 						<% } %>
 						<% if (kmeliaScc.isDraftEnabled()) {
@@ -276,7 +287,7 @@ $(document).ready(function() {
 								out.println("<td width=\"5%\">&nbsp;</td>");
 							%>
 							<td>
-								<div id="DragAndDropDraft" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding:0px width:100%" valign="top"><img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/></div>
+								<div id="DragAndDropDraft" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; padding:0px; width:100%" valign="top"><img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/></div>
 							</td>
 						<% } %>
 						</tr></table>
