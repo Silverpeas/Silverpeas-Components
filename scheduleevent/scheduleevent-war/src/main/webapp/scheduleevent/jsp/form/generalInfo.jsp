@@ -85,13 +85,13 @@
 								<tr>
 									<td class="txtlibform">${titleLabel} :</td>
 									<td>
-										<input id="title" type="text" name="title" maxlength="254" size="100" value="${currentTitle}" />&nbsp;${mandatoryImage}
+										<input id="title" type="text" name="title" maxlength="254" size="100" value="<c:out value='${currentTitle}'/>" />&nbsp;${mandatoryImage}
 									</td>
 								</tr>
 								<tr>
 									<td class="txtlibform">${descLabel} :</td>
 									<td>
-										<textarea id="description" rows="5" cols="100" name="description">${currentDescription}</textarea>
+										<textarea id="description" rows="5" cols="100" name="description"><c:out value="${currentDescription}"/></textarea>
 									</td>
 								</tr>
 								<tr>
