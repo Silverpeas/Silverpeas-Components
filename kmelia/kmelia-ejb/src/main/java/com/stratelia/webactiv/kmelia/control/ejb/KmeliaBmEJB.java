@@ -2424,7 +2424,7 @@ public class KmeliaBmEJB implements KmeliaBm {
   public boolean validatePublication(PublicationPK pubPK, String userId, boolean force) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.validatePublication()", "root.MSG_GEN_ENTER_METHOD");
     boolean validationComplete = false;
-
+    boolean update = false;
     try {
       CompletePublication currentPub = publicationBm.getCompletePublication(pubPK);
       PublicationDetail currentPubDetail = currentPub.getPublicationDetail();
@@ -2480,6 +2480,7 @@ public class KmeliaBmEJB implements KmeliaBm {
           removeAllTodosForPublication(pubPK);
         }
         if (currentPubDetail.haveGotClone()) {
+          update = currentPubDetail.isValid();
           currentPubDetail = mergeClone(currentPub, userId);
         } else if (currentPubDetail.isValidationRequired()) {
           currentPubDetail.setValidatorId(userId);
@@ -2493,7 +2494,7 @@ public class KmeliaBmEJB implements KmeliaBm {
         indexExternalElementsOfPublication(currentPubDetail);
         // the publication has been validated
         // we must alert all subscribers of the different topics
-        NodePK oneFather = sendSubscriptionsNotification(currentPubDetail, false, false);
+        NodePK oneFather = sendSubscriptionsNotification(currentPubDetail, update, false);
 
         // we have to alert publication's creator
         sendValidationNotification(oneFather, currentPubDetail, null, userId);
@@ -2797,10 +2798,11 @@ public class KmeliaBmEJB implements KmeliaBm {
    */
   @Override
   public void draftOutPublication(PublicationPK pubPK, NodePK topicPK, String userProfile) {
+    boolean update = getPublicationDetail(pubPK).isValid();
     PublicationDetail pubDetail = draftOutPublicationWithoutNotifications(pubPK, topicPK,
         userProfile);
     indexExternalElementsOfPublication(pubDetail);
-    sendTodosAndNotificationsOnDraftOut(pubDetail, topicPK, userProfile);
+    sendTodosAndNotificationsOnDraftOut(pubDetail, topicPK, userProfile, update);
   }
 
   /**
@@ -2827,12 +2829,18 @@ public class KmeliaBmEJB implements KmeliaBm {
     SilverTrace.info("kmelia", "KmeliaBmEJB.draftOutPublication()",
         "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubPK.getId());
     try {
+      boolean update = false;
       CompletePublication currentPub = publicationBm.getCompletePublication(pubPK);
       PublicationDetail pubDetail = currentPub.getPublicationDetail();
       SilverTrace.info("kmelia", "KmeliaBmEJB.draftOutPublication()",
           "root.MSG_GEN_PARAM_VALUE", "actual status = " + pubDetail.getStatus());
       if (userProfile.equals("publisher") || userProfile.equals("admin")) {
         if (pubDetail.haveGotClone()) {
+          // special case when a publication is draft out
+          // check public publication status to determine
+          // if it's a creation or an update...
+          update = pubDetail.isValid();
+          
           pubDetail = mergeClone(currentPub, null);
         }
 
@@ -2861,7 +2869,7 @@ public class KmeliaBmEJB implements KmeliaBm {
       if (!inTransaction) {
         // index all publication's elements
         indexExternalElementsOfPublication(pubDetail);
-        sendTodosAndNotificationsOnDraftOut(pubDetail, topicPK, userProfile);
+        sendTodosAndNotificationsOnDraftOut(pubDetail, topicPK, userProfile, update);
       }
 
       return pubDetail;
@@ -2872,14 +2880,14 @@ public class KmeliaBmEJB implements KmeliaBm {
   }
 
   private void sendTodosAndNotificationsOnDraftOut(PublicationDetail pubDetail, NodePK topicPK,
-      String userProfile) {
+      String userProfile, boolean update) {
     if (SilverpeasRole.writer.isInRole(userProfile)) {
       createTodosForPublication(pubDetail, true);
     }
     // Subscriptions and supervisors are supported by kmelia and filebox only
     if (!KmeliaHelper.isKmax(pubDetail.getInstanceId())) {
       // alert subscribers
-      sendSubscriptionsNotification(pubDetail, false, false);
+      sendSubscriptionsNotification(pubDetail, update, false);
 
       // alert supervisors
       if (topicPK != null) {
