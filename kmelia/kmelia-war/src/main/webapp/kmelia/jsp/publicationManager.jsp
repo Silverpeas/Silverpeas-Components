@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -195,7 +195,7 @@
       }
 
       name = pubDetail.getName(language);
-      description = pubDetail.getDescription(language);
+      description = StringUtil.defaultIfBlank(pubDetail.getDescription(language), "");
       creationDate = resources.getOutputDate(pubDetail.getCreationDate());
       if (pubDetail.getBeginDate() != null) {
         beginDate = resources.getInputDate(pubDetail.getBeginDate());
@@ -223,7 +223,7 @@
       }
       version = pubDetail.getVersion();
       importance = Integer.toString(pubDetail.getImportance());
-      keywords = pubDetail.getKeywords(language);
+      keywords = StringUtil.defaultIfBlank(pubDetail.getKeywords(language), "");
       content = pubDetail.getContent();
       status = pubDetail.getStatus();
       if (beginDate == null || beginDate.length() == 0) {
@@ -244,7 +244,7 @@
         endHour = "";
       }
 
-      author = pubDetail.getAuthor();
+      author = StringUtil.defaultIfBlank(pubDetail.getAuthor(), "");
       targetValidatorId = pubDetail.getTargetValidatorId();
 
       if (StringUtil.isDefined(targetValidatorId)) {
@@ -672,7 +672,7 @@
 	      if (!pathString.equals("")) {
 	      	namePath = namePath + " > " + pathString;
 	      }
-		  operationPane.addOperation(favoriteAddSrc, resources.getString("FavoritesAddPublication")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(namePath))+"','"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(pubDetail.getDescription(language)))+"','"+urlPublication+"')");
+		  operationPane.addOperation(favoriteAddSrc, resources.getString("FavoritesAddPublication")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(namePath))+"','"+pubDetail.getDescription(language)+"','"+urlPublication+"')");
           operationPane.addLine();
 
           if (!"supervisor".equals(profile)) {
@@ -767,7 +767,7 @@
 				<div class="field" id="pubNameArea">
 					<label for="pubName" class="txtlibform"><%=resources.getString("PubTitre")%></label>
 					<div class="champs">
-						<input type="text" name="Name" id="pubName" value="<%=EncodeHelper.javaStringToHtmlString(name)%>" size="68" maxlength="150" />&nbsp;<img src="<%=mandatorySrc%>" width="5" height="5" border="0"/>
+						<input type="text" name="Name" id="pubName" value="<%=name%>" size="68" maxlength="150" />&nbsp;<img src="<%=mandatorySrc%>" width="5" height="5" border="0"/>
 					</div>
 				</div>
 
@@ -775,7 +775,7 @@
 				<div class="field" id="descriptionArea">
 					<label for="pubDesc" class="txtlibform"><%=resources.getString("PubDescription")%></label>
 					<div class="champs">
-						<textarea rows="4" cols="65" name="Description" id="pubDesc"><%=EncodeHelper.javaStringToHtmlString(description)%></textarea>
+						<textarea rows="4" cols="65" name="Description" id="pubDesc"><%=description%></textarea>
 						<% if (isFieldDescriptionMandatory) {%>
           					<img src="<%=mandatorySrc%>" width="5" height="5" border="0"/>
           				<% }%>
@@ -787,7 +787,7 @@
 				<div class="field" id="keywordsArea">
 					<label for="pubKeys" class="txtlibform"><%=resources.getString("PubMotsCles")%></label>
 					<div class="champs">
-						<input type="text" name="Keywords" id="pubKeys" value="<%=EncodeHelper.javaStringToHtmlString(keywords)%>" size="68" maxlength="1000" />
+						<input type="text" name="Keywords" id="pubKeys" value="<%=keywords%>" size="68" maxlength="1000" />
 					</div>
 				</div>
 				<% } %>
@@ -795,7 +795,7 @@
 				<div class="field" id="authorArea">
 					<label for="author" class="txtlibform"><%=resources.getString("GML.author")%></label>
 					<div class="champs">
-						<input type="text" id="author" name="Author" value="<%=EncodeHelper.javaStringToHtmlString(author)%>" size="68" maxlength="50" />
+						<input type="text" id="author" name="Author" value="<%=author%>" size="68" maxlength="50" />
 					</div>
 				</div>
 				<% } %>

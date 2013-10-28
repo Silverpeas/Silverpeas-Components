@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -131,7 +131,8 @@ function getComponentId() {
 }
 
 function getComponentLabel() {
-	return "<%=EncodeHelper.javaStringToJsString(componentLabel)%>";
+	return "<%=EncodeHelper.javaStringToJsString(EncodeHelper.javaStringToHtmlString(
+      componentLabel))%>";
 }
 
 function getLanguage() {
@@ -214,7 +215,7 @@ var searchFolderId = "<%=id%>";
 								appletDisplayed = true;
 						%>
 								<td>
-									<div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding:0px; width:100%" valign="top"><img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/></div>
+									<div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; padding:0px; width:100%" valign="top"><img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/></div>
 								</td>
 						<% } %>
 						<% if (kmeliaScc.isDraftEnabled()) {
@@ -222,7 +223,7 @@ var searchFolderId = "<%=id%>";
 								out.println("<td width=\"5%\">&nbsp;</td>");
 							%>
 							<td>
-								<div id="DragAndDropDraft" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding:0px width:100%" valign="top"><img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/></div>
+								<div id="DragAndDropDraft" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; padding:0px; width:100%" valign="top"><img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/></div>
 							</td>
 						<% } %>
 						</tr></table>
@@ -661,7 +662,7 @@ function spreadNbItems(children) {
 				child.attr['class'] = child.attr['status'];
 			<% } %>
 			if (child.attr['nbItems']) {
-				child.data = child.data + " ("+child.attr['nbItems']+")";
+				child.data = child.data + " ( "+child.attr['nbItems']+")";
 				spreadNbItems(child.children);
 			}
 		}
@@ -784,6 +785,7 @@ $(document).ready(
     	})
     	.jstree({
     	"core" : {
+        html_titles: true
     			//"load_open" : true
     	},
     	"ui" :{
@@ -809,7 +811,7 @@ $(document).ready(
 						} else {
 							if (n.data) {
 								// this is the root
-								n.data = "<%=EncodeHelper.javaStringToJsString(componentLabel)%>";
+								n.data = "<%=EncodeHelper.javaStringToHtmlString(componentLabel)%>";
 								if (n.attr['nbItems']) {
 									n.data = n.data + " ("+n.attr['nbItems']+")";
 								}
@@ -979,7 +981,7 @@ $(document).ready(
 </div>
 <div id="rightClick-message" title="<%=resources.getString("kmelia.help.rightclick.title") %>" style="display: none;">
 	<p>
-		<%=resources.getStringWithParam("kmelia.help.rightclick.content", componentLabel) %>
+    <%=resources.getStringWithParam("kmelia.help.rightclick.content", EncodeHelper.javaStringToHtmlString(componentLabel)) %>
 	</p>
 </div>
 <div id="addOrUpdateNode" style="display: none;">

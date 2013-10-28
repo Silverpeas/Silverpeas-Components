@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -38,6 +38,8 @@ import com.stratelia.webactiv.util.publication.model.Alias;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import com.stratelia.webactiv.util.statistic.model.HistoryObjectDetail;
+
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -762,6 +764,10 @@ public interface KmeliaBm extends SilverpeasComponentService<KmeliaPublication> 
 
   public List<String> deletePublications(List<String> ids, NodePK nodePK, String userId);
   
+  public List<String> getUserIdsOfFolder(NodePK pk);
+  
+  public List<HistoryObjectDetail> getLastAccess(PublicationPK pk, NodePK nodePK, String excludedUserId);
+
   public NodeDetail copyNode(KmeliaCopyDetail copyDetail);
   
   public void copyPublications(KmeliaCopyDetail copyDetail);
@@ -769,4 +775,5 @@ public interface KmeliaBm extends SilverpeasComponentService<KmeliaPublication> 
   public PublicationPK copyPublication(PublicationDetail publi, NodePK nodePK, String userId);
   
   public NodeDetail moveNode(NodePK nodePK, NodePK to, String userId);
+
 }

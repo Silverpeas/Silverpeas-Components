@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -224,7 +224,8 @@ out.println("<br>");
 			    fileName = fileDetail.getName();
 			    filePath = fileDetail.getPath();
 			    
-			    ArrayCellLink cellLink = arrayLine.addArrayCellLink(EncodeHelper.javaStringToHtmlString(fileDetail.getName()), fileDetail.getFileURL(userId, componentId));
+			    ArrayCellLink cellLink = arrayLine.addArrayCellLink(EncodeHelper.javaStringToHtmlString(fileDetail.getName()), fileDetail.getFileURL(
+              componentId));
 			    cellLink.setTarget("_blank");
 			    
 			    ArrayCellText cellSize = arrayLine.addArrayCellText(fileDetail.getFileSize());

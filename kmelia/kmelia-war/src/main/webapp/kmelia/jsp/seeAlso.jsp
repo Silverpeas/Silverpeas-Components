@@ -3,7 +3,7 @@
 <%@ page import="org.silverpeas.search.SearchEngine" %>
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -126,7 +126,7 @@ out.println(gef.getLookStyleSheet());
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 function seeAlsoDeleteConfirm() {
-	if (document.seeAlsoForm.PubIds != null){
+	if (document.seeAlsoForm.PubIds != null && $("input[type='checkbox']").is(":checked")){
 	    if(window.confirm("<%=kmeliaScc.getString("kmelia.ConfirmDeleteSeeAlso")%>")){
 	    	document.seeAlsoForm.PubId.value = "<%=id%>";
 			document.seeAlsoForm.Action = "<%=routerUrl%>DeleteSeeAlso";

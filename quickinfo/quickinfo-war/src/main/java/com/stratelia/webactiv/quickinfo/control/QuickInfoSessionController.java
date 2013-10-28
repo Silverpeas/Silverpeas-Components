@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -19,6 +19,26 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.quickinfo.control;
+
+import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
+
+import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.ejb.CreateException;
+import javax.ejb.EJBException;
+import javax.xml.bind.JAXBException;
+
+import org.silverpeas.wysiwyg.WysiwygException;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
@@ -41,24 +61,6 @@ import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import org.silverpeas.wysiwyg.WysiwygException;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-
-import javax.ejb.CreateException;
-import javax.ejb.EJBException;
-import javax.xml.bind.JAXBException;
-import java.rmi.RemoteException;
-import java.sql.Connection;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-
-import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
 /**
  * @author squere
@@ -171,7 +173,8 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     validateInformations(name, begin, end);
 
     PublicationDetail detail = new PublicationDetail(new PublicationPK("unknown", getSpaceId(),
-        getComponentId()), name, null, new Date(), begin, end, getUserId(), 1, "", "", "");
+        getComponentId()), name, null, new Date(), begin, end, getUserId(), 1, "",
+        "", "");
     // Create the Publication
     PublicationPK pubPK = getPublicationBm().createPublication(detail);
     try {
@@ -191,8 +194,8 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     validateInformations(name, begin, end);
 
     PublicationDetail detail = new PublicationDetail(new PublicationPK(id, getSpaceId(),
-        getComponentId()), name, null, new java.util.Date(), begin, end, getUserId(), 1, "",
-        "", "");
+        getComponentId()), name, null, new java.util.Date(), begin, end, getUserId(),
+        1, "", "", "");
     // Update the Publication
     getPublicationBm().setDetail(detail);
     try {
@@ -260,6 +263,7 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     return message;
   }
 
+  @Override
   public ResourceLocator getSettings() {
     return settings;
   }

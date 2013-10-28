@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -118,7 +118,7 @@
           ArrayCellText arrayCellText0 =
               arrayLine
               .addArrayCellText("<a href=\"surveyDetail.jsp?Action=ViewCurrentQuestions&SurveyId=" +
-              survey.getPK().getId() + "\">" + survey.getTitle() + "</a>" + link);
+              survey.getPK().getId() + "\">" + EncodeHelper.javaStringToHtmlString(survey.getTitle()) + "</a>" + link);
           arrayCellText0.setCompareOn(survey.getTitle());
 
           if (survey.getEndDate() == null)
@@ -174,7 +174,7 @@
           ArrayCellText arrayCellText =
               arrayLine
               .addArrayCellText("<a href=\"surveyDetail.jsp?Action=ViewCurrentQuestions&SurveyId=" +
-              survey.getPK().getId() + "\">" + survey.getTitle() + "</a>" + link);
+              survey.getPK().getId() + "\">" + EncodeHelper.javaStringToHtmlString(survey.getTitle()) + "</a>" + link);
           arrayCellText.setCompareOn(survey.getTitle());
 
           if (survey.getBeginDate() == null) {
@@ -261,7 +261,7 @@
           ArrayCellText arrayCellText0 =
               arrayLine
               .addArrayCellText("<a href=\"surveyDetail.jsp?Action=ViewCurrentQuestions&SurveyId=" +
-              survey.getPK().getId() + "\">" + survey.getTitle() + "</a>" + link);
+              survey.getPK().getId() + "\">" + EncodeHelper.javaStringToHtmlString(survey.getTitle()) + "</a>" + link);
           arrayCellText0.setCompareOn(survey.getTitle());
 
           if (survey.getEndDate() == null)
@@ -277,7 +277,7 @@
               arrayLine.addArrayCellText(new Integer(survey.getNbVoters()).toString());
           arrayCellText2.setCompareOn(new Integer(survey.getNbVoters()));
         } else {
-          arrayLine.addArrayCellLink(survey.getTitle(), "#");
+          arrayLine.addArrayCellLink(EncodeHelper.javaStringToHtmlString(survey.getTitle()), "#");
 
           if (survey.getBeginDate() == null)
             arrayLine.addArrayCellText("&nbsp;");

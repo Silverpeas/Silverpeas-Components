@@ -1,25 +1,22 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.blog.servlets;
 
@@ -38,16 +35,13 @@ import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Event;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.fileupload.FileItem;
-
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.fileupload.FileItem;
 
 public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionController> {
 
@@ -94,12 +88,14 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    *
-   * @param function    The entering request function (ex : "Main.jsp")
+   * @param function The entering request function (ex : "Main.jsp")
    * @param blogSC The component Session Control, build and initialised.
-   * @return The complete destination URL for a forward (ex : "/almanach/jsp/almanach.jsp?flag=user")
+   * @return The complete destination URL for a forward (ex :
+   * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
-  public String getDestination(String function, BlogSessionController blogSC, HttpServletRequest request) {
+  public String getDestination(String function, BlogSessionController blogSC,
+      HttpServletRequest request) {
     String destination = "";
     SilverTrace.info("blog", "BlogRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
         "User=" + blogSC.getUserId() + " Function=" + function);
@@ -129,12 +125,12 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
 
         request.setAttribute("DateCalendar", blogSC.getCurrentBeginDateAsString());
         request.setAttribute("NbPostDisplayed", Integer.valueOf(10));
-        
+
         // appel de la page d'accueil
         destination = rootDest + "accueil.jsp";
       } else if (function.equals("NewPost")) {
         request.setAttribute("AllCategories", blogSC.getAllCategories());
-        
+
         // appel de la page de création
         destination = rootDest + "postManager.jsp";
       } else if (function.equals("CreatePost")) {
@@ -142,13 +138,13 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         String title = request.getParameter("Title");
         String categoryId = request.getParameter("CategoryId");
         String date = request.getParameter("DateEvent");
-        Date dateEvent = null;
+        Date dateEvent;
         if (StringUtil.isDefined(date)) {
           dateEvent = DateUtil.stringToDate(date, blogSC.getLanguage());
         } else {
           dateEvent = new Date();
         }
-        
+
         // Classification
         String positions = request.getParameter("Positions");
         PdcClassificationEntity classification =
@@ -156,13 +152,14 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         if (StringUtil.isDefined(positions)) {
           classification = PdcClassificationEntity.fromJSON(positions);
         }
-  
+
         String postId = blogSC.createPost(title, categoryId, dateEvent, classification);
 
         // appel de la page pour saisir le contenu du billet
         request.setAttribute("PostId", postId);
         destination = getDestination("ViewContent", blogSC, request);
       } else if (function.equals("EditPost")) {
+        blogSC.checkWriteAccessOnBlogPost();
         String postId = request.getParameter("PostId");
         if (!StringUtil.isDefined(postId)) {
           postId = (String) request.getAttribute("PostId");
@@ -178,7 +175,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         String title = request.getParameter("Title");
         String categoryId = request.getParameter("CategoryId");
         String date = request.getParameter("DateEvent");
-        Date dateEvent = null;
+        Date dateEvent;
         if (StringUtil.isDefined(date)) {
           dateEvent = DateUtil.stringToDate(date, blogSC.getLanguage());
         } else {
@@ -391,7 +388,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         // mise à jour du pied de page
         destination = rootDest + "footer.jsp";
       } else if (function.equals("DraftOutPost")) {
-        // sortir du mode brouillon 
+        // sortir du mode brouillon
         String postId = request.getParameter("PostId");
         blogSC.draftOutPost(postId);
         request.setAttribute("PostId", postId);
@@ -402,7 +399,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         String removeStyleSheetFile = FileUploadUtil.getParameter(items, "removeStyleSheetFile");
         FileItem fileWallPaper = FileUploadUtil.getFile(items, "wallPaper");
         FileItem fileStyleSheet = FileUploadUtil.getFile(items, "styleSheet");
-        
+
         if (fileWallPaper != null && StringUtil.isDefined(fileWallPaper.getName())) {//Update
           blogSC.saveWallPaperFile(fileWallPaper);
         } else if ("yes".equals(removeWallPaperFile)) {//Remove
@@ -439,8 +436,9 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
       } catch (RemoteException e) {
         dateEvent = post.getPublication().getCreationDate();
       }
-      Event event = new Event(post.getPublication().getPK().getId(), post.getPublication().getName(),
-              dateEvent, dateEvent, null, 0);
+      Event event =
+          new Event(post.getPublication().getPK().getId(), post.getPublication().getName(),
+          dateEvent, dateEvent, null, 0);
       events.add(event);
     }
 

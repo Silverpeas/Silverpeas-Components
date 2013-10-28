@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -364,7 +364,7 @@ $(function() {
 	        /*********************************************************************************************************************/
 	        out.print("<h2 class=\"publiName\">");
 
-	        out.print(EncodeHelper.javaStringToHtmlString(pubDetail.getName()));
+	        out.print(pubDetail.getName());
 
 	     	if (!"user".equals(profile)) {
 	          if (pubDetail.isValidationRequired()) {

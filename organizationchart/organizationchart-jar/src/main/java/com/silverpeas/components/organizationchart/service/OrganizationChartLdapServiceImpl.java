@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -165,8 +165,10 @@ public class OrganizationChartLdapServiceImpl extends AbstractOrganizationChartS
 
     if (parentName != null) {
       // there is a parent so define is path for return to top level OU
-      int indexStart = unit.getCompleteName().indexOf(parentName);
-      String parentOu = unit.getCompleteName().substring(indexStart - 3);
+      int indexStart =
+          unit.getCompleteName().toUpperCase()
+              .indexOf(ou.toUpperCase() + "=" + parentName.toUpperCase());
+      String parentOu = unit.getCompleteName().substring(indexStart);
       unit.setParentOu(parentOu);
     }
   }

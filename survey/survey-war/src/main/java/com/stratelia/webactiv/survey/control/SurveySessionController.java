@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -20,32 +20,6 @@
  */
 package com.stratelia.webactiv.survey.control;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.rmi.RemoteException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-
-import javax.ejb.EJBException;
-import javax.servlet.http.HttpServletRequest;
-import javax.xml.bind.JAXBException;
-
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.admin.OrganisationController;
-
 import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
@@ -62,7 +36,6 @@ import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
-
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -93,8 +66,29 @@ import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerPK;
 import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerSelection;
 import com.stratelia.webactiv.util.questionResult.control.QuestionResultBm;
 import com.stratelia.webactiv.util.questionResult.model.QuestionResult;
-
+import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.rmi.RemoteException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import javax.ejb.EJBException;
+import javax.servlet.http.HttpServletRequest;
+import javax.xml.bind.JAXBException;
 import org.apache.commons.fileupload.FileItem;
+import org.owasp.encoder.Encode;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.admin.OrganisationController;
 
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
@@ -108,7 +102,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
   private QuestionContainerDetail sessionSurveyUnderConstruction = null;
   private QuestionContainerDetail sessionSurvey = null;
   private List<Question> sessionQuestions = null;
-  private Hashtable<String, Vector<String>> sessionResponses = null;
+  private Map<String, List<String>> sessionResponses = null;
   private String sessionSurveyId = null;
   private String sessionSurveyName = null;
   public final static int OPENED_SURVEYS_VIEW = 1;
@@ -353,6 +347,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
     SilverTrace.info("Survey", "SurveySessionController.createSurvey", "Survey.MSG_ENTRY_METHOD",
         "title = " + surveyDetail.getHeader().getTitle());
     QuestionContainerPK qcPK = new QuestionContainerPK(null, getSpaceId(), getComponentId());
+    //encodeForHtml(surveyDetail.getHeader());
     try {
       qcPK = questionContainerBm.createQuestionContainer(qcPK, surveyDetail, getUserId());
     } catch (Exception e) {
@@ -393,6 +388,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
     SilverTrace.info("Survey", "SurveySessionController.createSurvey",
         "Survey.MSG_ENTRY_METHOD", "title = " + surveyDetail.getHeader().getTitle());
     QuestionContainerPK qcPK = new QuestionContainerPK(null, null, componentId);
+    //encodeForHtml(surveyDetail.getHeader());
     try {
       qcPK = questionContainerBm.createQuestionContainer(qcPK, surveyDetail, getUserId());
     } catch (Exception e) {
@@ -412,6 +408,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
       surveyHeader.setPK(qcPK);
+      //encodeForHtml(surveyHeader);
       questionContainerBm.updateQuestionContainerHeader(surveyHeader);
     } catch (Exception e) {
       throw new SurveyException("SurveySessionController.updateSurveyHeader",
@@ -484,9 +481,8 @@ public class SurveySessionController extends AbstractComponentSessionController 
       QuestionResult result = it.next();
 
       if (result != null) {
-        String userName = "";
         if (withName) {
-          userName = getUserDetail(result.getUserId()).getDisplayedName();
+          String userName = getUserDetail(result.getUserId()).getDisplayedName();
           users.add(result.getUserId() + "/" + userName);
         } else {
           users.add(result.getUserId());
@@ -551,7 +547,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
     }
   }
 
-  public void recordReply(String surveyId, Hashtable<String, Vector<String>> reply) throws
+  public void recordReply(String surveyId, Map<String, List<String>> reply) throws
       SurveyException {
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
@@ -563,7 +559,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
     }
   }
 
-  public void recordReply(String surveyId, Hashtable<String, Vector<String>> reply, String comment,
+  public void recordReply(String surveyId, Map<String, List<String>> reply, String comment,
       boolean isAnonymousComment) throws SurveyException {
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
@@ -666,11 +662,11 @@ public class SurveySessionController extends AbstractComponentSessionController 
     setSessionQuestions(null);
   }
 
-  public Hashtable<String, Vector<String>> getSessionResponses() {
+  public Map<String, List<String>> getSessionResponses() {
     return this.sessionResponses;
   }
 
-  public void setSessionResponses(Hashtable<String, Vector<String>> responses) {
+  public void setSessionResponses(Map<String, List<String>> responses) {
     this.sessionResponses = responses;
   }
 
@@ -824,9 +820,8 @@ public class SurveySessionController extends AbstractComponentSessionController 
   }
 
   public String exportSurveyCSV(String surveyId) {
-    QuestionContainerDetail survey = null;
     try {
-      survey = getSurvey(surveyId);
+      QuestionContainerDetail survey = getSurvey(surveyId);
       return questionContainerBm.exportCSV(survey, false);
     } catch (Exception e) {
       SilverTrace.error("Survey", SurveySessionController.class.getName(),
@@ -868,7 +863,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
    * @throws Exception
    */
   private void pasteSurvey(QuestionContainerDetail survey) throws Exception {
-    String componentId = "";
+    String componentId;
     if (survey.getHeader().getInstanceId().equals(getComponentId())) {
       // in the same component
       componentId = survey.getHeader().getInstanceId();
@@ -944,7 +939,6 @@ public class SurveySessionController extends AbstractComponentSessionController 
       qV.set(qId - 1, q1);
       qV.set(qId, q2);
       this.setSessionQuestions(qV);
-      action = "UpdateQuestions";
     } else if ("DownQuestion".equals(action)) {
       // Move a question down
       int qId = Integer.parseInt(request.getParameter("QId"));
@@ -954,7 +948,6 @@ public class SurveySessionController extends AbstractComponentSessionController 
       qV.set(qId + 1, q1);
       qV.set(qId, q2);
       this.setSessionQuestions(qV);
-      action = "UpdateQuestions";
     } else if ("DeleteQuestion".equals(action)) {
       // Delete a question
       int qId = Integer.parseInt(request.getParameter("QId"));
@@ -969,7 +962,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
         SilverTrace.warn("Survey", "SurveySessionController.questionsUpdateBusinessModel", message.
             toString());
       }
-      action = "UpdateQuestions";
+
     } else if ("SendQuestions".equals(action)) {
       List<Question> qV = this.getSessionQuestions();
       surveyId = this.getSessionSurveyId();
@@ -981,7 +974,6 @@ public class SurveySessionController extends AbstractComponentSessionController 
             "Survey.EX_PROBLEM_TO_UPDATE_QUESTION", e);
         request.setAttribute("UpdateSucceed", Boolean.FALSE);
       }
-      action = "UpdateQuestions";
     }
 
     if (StringUtil.isDefined(surveyId)) {
@@ -1027,7 +1019,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
    * @return the view to display
    */
   public String manageQuestionBusiness(String function, HttpServletRequest request) {
-    String view = "";
+    String view;
 
     String surveyImageDirectory =
         FileServerUtils.getUrl(this.getComponentId(), "REPLACE_FILE_NAME",
@@ -1038,16 +1030,16 @@ public class SurveySessionController extends AbstractComponentSessionController 
     String action = "";
     String question = "";
     String nbAnswers = "";
-    String answerInput = "";
+    String answerInput;
     String suggestion = "";
     String style = "";
     String questionId = null;
-    File dir = null;
-    String logicalName = null;
-    String type = null;
-    String physicalName = null;
+    File dir;
+    String logicalName;
+    String type;
+    String physicalName;
     boolean file = false;
-    long size = 0;
+    long size;
     int attachmentSuffix = 0;
     List<Answer> answers = new ArrayList<Answer>();
     Answer answer = null;
@@ -1326,5 +1318,20 @@ public class SurveySessionController extends AbstractComponentSessionController 
     SimpleDocumentPK surveyForeignKey = new SimpleDocumentPK(surveyId, this.getComponentId());
     return AttachmentServiceFactory.getAttachmentService().listDocumentsByForeignKey(
         surveyForeignKey, I18NHelper.defaultLanguage);
+  }
+
+  private void encodeForHtml(QuestionContainerHeader header) {
+    String text = header.getComment();
+    if (StringUtil.isDefined(text)) {
+      header.setComment(Encode.forHtml(text));
+    }
+    text = header.getDescription();
+    if (StringUtil.isDefined(text)) {
+      header.setDescription(Encode.forHtml(text));
+    }
+    text = header.getTitle();
+    if (StringUtil.isDefined(text)) {
+      header.setTitle(Encode.forHtml(text));
+    }
   }
 }

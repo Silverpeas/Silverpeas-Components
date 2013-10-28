@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -121,7 +121,7 @@ out.println(gef.getLookStyleSheet());
 	browseBar.setDomainName(kmeliaScc.getSpaceLabel());
 	browseBar.setComponentName(kmeliaScc.getComponentLabel(), "KmaxMain");
 	String pubName = kmeliaScc.getSessionPublication().getDetail().getName(currentLang);
-	browseBar.setExtraInformation(EncodeHelper.javaStringToHtmlString(pubName));
+	browseBar.setExtraInformation(pubName);
 	String id = kmeliaScc.getSessionPublication().getDetail().getId();
 	browseBar.setI18N(action, currentLang);
 	

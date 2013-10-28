@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -132,13 +132,9 @@ public class YellowpagesStatistics implements ComponentStatisticsInterface {
         c.add(contact);
       }
     } else {
-      getYellowpagesBm().setActor(myOrga.getUserDetail("0"));
-      getYellowpagesBm().setPrefixTableName(spaceId);
-      getYellowpagesBm().setComponentId(componentId);
-
       TopicDetail topic;
       try {
-        topic = getYellowpagesBm().goTo(topicId);
+        topic = getYellowpagesBm().goTo(new NodePK(topicId, componentId), "0");
         if (topic != null) {
           c.addAll(topic.getContactDetails());
         }

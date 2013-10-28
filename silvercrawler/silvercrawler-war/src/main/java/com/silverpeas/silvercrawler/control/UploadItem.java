@@ -1,5 +1,7 @@
 package com.silverpeas.silvercrawler.control;
 
+import org.apache.commons.io.FileUtils;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -12,13 +14,13 @@ import java.io.IOException;
 public class UploadItem {
   int id = -1;
   String fileName = null;
-  String parentPath = null;
+  File parentRelativePath = null;
   boolean itemAlreadyExists = false;
   boolean replace = false;
   private boolean copyFailed;
   private IOException copyFailedException;
 
-  public String getFileName() {
+  private String getFileName() {
     return fileName;
   }
 
@@ -37,20 +39,15 @@ public class UploadItem {
   }
 
   public void setFileName(String fileName) {
-    if (!fileName.startsWith(File.separator)) {
-      this.fileName = File.separator + fileName;
-    }
-    else {
-      this.fileName = fileName;
-    }
+    this.fileName = fileName;
   }
 
-  public String getParentPath() {
-    return parentPath;
+  public File getRelativePath() {
+    return FileUtils.getFile(parentRelativePath, getFileName());
   }
 
-  public void setParentPath(String parentPath) {
-    this.parentPath = parentPath;
+  public void setParentRelativePath(File parentRelativePath) {
+    this.parentRelativePath = parentRelativePath;
   }
 
   public boolean isItemAlreadyExists() {

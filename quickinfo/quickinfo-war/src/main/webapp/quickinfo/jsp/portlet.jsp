@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -55,7 +55,7 @@
 		PublicationDetail pub = (PublicationDetail) infosI.next();
 		ArrayLine line = arrayPane.addArrayLine();
 
-		st = "<b>"+pub.getName()+"</b>";
+		st = "<b>"+EncodeHelper.javaStringToHtmlString(pub.getName())+"</b>";
 		if (pub.getWysiwyg() != null && !"".equals(pub.getWysiwyg()))
     	description = pub.getWysiwyg();
 		else if (pub.getDescription() != null && !pub.getDescription().equals(""))

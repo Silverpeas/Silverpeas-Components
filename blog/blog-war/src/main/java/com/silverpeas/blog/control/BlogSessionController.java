@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -20,22 +20,7 @@
  */
 package com.silverpeas.blog.control;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.rmi.RemoteException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-
-import javax.xml.bind.JAXBException;
-
-import org.silverpeas.node.web.NodeEntity;
-import org.silverpeas.search.indexEngine.model.IndexManager;
-
+import com.silverpeas.blog.access.BlogPostWriteAccessController;
 import com.silverpeas.blog.model.Archive;
 import com.silverpeas.blog.model.BlogRuntimeException;
 import com.silverpeas.blog.model.Category;
@@ -53,7 +38,6 @@ import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.util.FileUtil;
-
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
@@ -75,22 +59,38 @@ import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-
+import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.rmi.RemoteException;
+import java.security.AccessControlException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import javax.xml.bind.JAXBException;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.codehaus.jackson.map.AnnotationIntrospector;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.xc.JaxbAnnotationIntrospector;
+import org.silverpeas.node.web.NodeEntity;
+import org.silverpeas.search.indexEngine.model.IndexManager;
 
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
-public class BlogSessionController extends AbstractComponentSessionController {
+public final class BlogSessionController extends AbstractComponentSessionController {
 
   private Calendar currentBeginDate = Calendar.getInstance(); // format = yyyy/MM/ddd
   private Calendar currentEndDate = Calendar.getInstance(); // format = yyyy/MM/ddd
   private String serverURL = null;
   private WallPaper wallPaper = null;
   private StyleSheet styleSheet = null;
+  private static BlogPostWriteAccessController accessController =
+      new BlogPostWriteAccessController();
+  private static final String FORBIDEN_ACCESS_MSG = "blog.error.access";
 
   /**
    * Standard Session Controller Constructeur
@@ -108,6 +108,13 @@ public class BlogSessionController extends AbstractComponentSessionController {
     serverURL = defaultDomain.getSilverpeasServerURL();
     setWallPaper();
     setStyleSheet();
+  }
+
+  public void checkWriteAccessOnBlogPost() {
+    if (!accessController.isUserAuthorized(getUserId(), getComponentId())) {
+      String errorMsg = getMultilang().getString(FORBIDEN_ACCESS_MSG);
+      throw new AccessControlException(errorMsg);
+    }
   }
 
   public Collection<PostDetail> lastPosts() {
@@ -183,6 +190,7 @@ public class BlogSessionController extends AbstractComponentSessionController {
 
   public synchronized String createPost(String title, String categoryId, Date dateEvent,
       PdcClassificationEntity classification) {
+    checkWriteAccessOnBlogPost();
     PublicationDetail pub =
         new PublicationDetail("X", title, "", null, null, null, null, "1", null, null, "");
     pub.getPK().setComponentName(getComponentId());
@@ -209,7 +217,9 @@ public class BlogSessionController extends AbstractComponentSessionController {
   }
 
   public synchronized void updatePost(String postId, String title, String categoryId, Date dateEvent) {
+    checkWriteAccessOnBlogPost();
     PostDetail post = getPost(postId);
+
     PublicationDetail pub = post.getPublication();
     pub.setName(title);
     pub.setUpdaterId(getUserId());
@@ -226,6 +236,7 @@ public class BlogSessionController extends AbstractComponentSessionController {
   }
 
   public synchronized void draftOutPost(String postId) {
+    checkWriteAccessOnBlogPost();
     PostDetail post = getPost(postId);
     getBlogService().draftOutPost(post);
 
@@ -270,6 +281,7 @@ public class BlogSessionController extends AbstractComponentSessionController {
   }
 
   public synchronized void deletePost(String postId) {
+    checkWriteAccessOnBlogPost();
     getBlogService().deletePost(postId, getComponentId());
     // supprimer les commentaires
     Collection<Comment> comments = getAllComments(postId);
@@ -484,7 +496,7 @@ public class BlogSessionController extends AbstractComponentSessionController {
   public void setWallPaper() {
     String path = FileRepositoryManager.getAbsolutePath(this.getComponentId());
 
-    List<File> files = null;
+    List<File> files;
     try {
       files = (List<File>) FileFolderManager.getAllFile(path);
     } catch (UtilException e) {
@@ -587,7 +599,7 @@ public class BlogSessionController extends AbstractComponentSessionController {
   public void setStyleSheet() {
     String path = FileRepositoryManager.getAbsolutePath(this.getComponentId());
 
-    List<File> files = null;
+    List<File> files;
     try {
       files = (List<File>) FileFolderManager.getAllFile(path);
     } catch (UtilException e) {

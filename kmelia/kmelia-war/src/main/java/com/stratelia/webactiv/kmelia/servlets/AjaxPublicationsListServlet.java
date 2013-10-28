@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -64,7 +64,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.StringTokenizer;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -146,7 +145,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
       String selectedPublicationIds = req.getParameter("SelectedPubIds");
       String notSelectedPublicationIds = req.getParameter("NotSelectedPubIds");
-      List<String> selectedIds = kmeliaSC.processSelectedPublicationIds(selectedPublicationIds,
+      List<PublicationPK> selectedIds = kmeliaSC.processSelectedPublicationIds(selectedPublicationIds,
           notSelectedPublicationIds);
       boolean toPortlet = StringUtil.getBooleanValue(sToPortlet);
       boolean searchInProgress = StringUtil.isDefined(query);
@@ -276,7 +275,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       boolean sortAllowed, boolean linksAllowed, boolean seeAlso, boolean toSearch,
       KmeliaSessionController kmeliaScc, String profile,
       GraphicElementFactory gef, String context, ResourcesWrapper resources,
-      List<String> selectedIds, String pubIdToHighlight, Writer out, boolean linkAttachment)
+      List<PublicationPK> selectedIds, String pubIdToHighlight, Writer out, boolean linkAttachment)
       throws IOException {
 
     String publicationSrc = resources.getIcon("kmelia.publication");
@@ -409,12 +408,12 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         out.write("<div class=\"firstColumn\">");
         if (!kmeliaScc.getUserDetail().isAnonymous() && !kmeliaScc.isKmaxMode) {
           String checked = "";
-          if (selectedIds != null && selectedIds.contains(pub.getPK().getId())) {
+          if (selectedIds != null && selectedIds.contains(pub.getPK())) {
             checked = "checked=\"checked\"";
           }
           out.write("<span class=\"selection\">");
           out.write("<input type=\"checkbox\" name=\"C1\" value=\""
-              + pub.getPK().getId() + "/" + pub.getPK().getInstanceId() + "\" " + checked
+              + pub.getPK().getId() + "-" + pub.getPK().getInstanceId() + "\" " + checked
               + " onclick=\"sendPubId(this.value, this.checked);\"/>");
           out.write("</span>");
         }
@@ -544,7 +543,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     template.setAttribute("publication", pub);
     template.setAttribute("link", "javascript:onClick=publicationGoTo('" + pub.getId() + "')");
     template.setAttribute("name", name);
-    template.setAttribute("description", EncodeHelper.javaStringToHtmlParagraphe(description));
+    template.setAttribute("description", EncodeHelper.convertWhiteSpacesForHTMLDisplay(description));
     template.setAttribute("showDescription",
         StringUtil.isDefined(description) && !description.equals(name));
     template.setAttribute("importance", displayImportance(pub.getImportance(), resources));
@@ -720,7 +719,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     if (StringUtil.isDefined(description) && !description.equals(name)) {
       out.write("<div class=\"line3\">");
       out.write("<span class=\"description\">");
-      out.write(EncodeHelper.javaStringToHtmlParagraphe(description));
+      out.write(EncodeHelper.convertWhiteSpacesForHTMLDisplay(description));
       out.write("</span>");
       out.write("</div>");
     }
@@ -914,16 +913,16 @@ public class AjaxPublicationsListServlet extends HttpServlet {
   }
 
   @SuppressWarnings("unchecked")
-  private List<String> processPublicationsToLink(HttpServletRequest request) {
+  private List<PublicationPK> processPublicationsToLink(HttpServletRequest request) {
     // get from session the list of publications to link with current publication
     HashSet<String> list = (HashSet<String>) request.getSession().getAttribute(
         KmeliaConstants.PUB_TO_LINK_SESSION_KEY);
     // store the publication identifiers in an array list
-    List<String> publicationsToLink = new ArrayList<String>();
+    List<PublicationPK> publicationsToLink = new ArrayList<PublicationPK>();
     if (list != null) {
       for (String link : list) {
-        StringTokenizer tokens = new StringTokenizer(link, "/");
-        publicationsToLink.add(tokens.nextToken());
+        String[] tokens = StringUtil.splitByWholeSeparator(link, "-");
+        publicationsToLink.add(new PublicationPK(tokens[0], tokens[1]));
       }
     }
     return publicationsToLink;
@@ -1170,7 +1169,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
           writer.write("<td valign=\"top\" width=\"" + width + "%\">");
           writer.write("<p><b><a href=\"javascript:onClick=publicationGoToFromMain('"
               + pub.getPK().
-              getId() + "')\">" + EncodeHelper.javaStringToHtmlString(pub.getName(language))
+              getId() + "')\">" + pub.getName(language)
               + "</a>" + shortcut + "</b><br/>");
 
           if (kmeliaScc.showUserNameInList()) {
@@ -1185,7 +1184,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
                 "kmelia.CopyPublicationLink") + "\"></a>");
           }
           writer.write("<br/>");
-          writer.write(EncodeHelper.javaStringToHtmlParagraphe(pub.getDescription(language)));
+          writer.write(EncodeHelper.convertWhiteSpacesForHTMLDisplay(pub.getDescription(language)));
           writer.write("</p>");
           writer.write("</td>");
           writer.write("<!-- Publication Body End -->");

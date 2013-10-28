@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2012 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -114,9 +114,9 @@ out.println(gef.getLookStyleSheet());
 %>
 	<table border="0" width="98%" align=center>
 		<tr>
-			<td align="left"><span class=txtnav><b><%=EncodeHelper.javaStringToHtmlString(detail.getName(kmeliaScc.getCurrentLanguage()))%></b></span><BR>
+			<td align="left"><span class=txtnav><b><%=detail.getName(kmeliaScc.getCurrentLanguage())%></b></span><BR>
 
-				<b><%=EncodeHelper.javaStringToHtmlString(detail.getDescription(kmeliaScc.getCurrentLanguage()))%><b>
+				<b><%=detail.getDescription(kmeliaScc.getCurrentLanguage())%><b>
 				<br />
 				<br /> 
 <%

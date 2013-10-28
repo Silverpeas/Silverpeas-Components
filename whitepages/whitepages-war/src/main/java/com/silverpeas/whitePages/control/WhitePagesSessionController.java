@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -145,8 +145,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
           delete(cards);
           return null;
         }
-        DataRecord cardRecord = template.getRecordSet().getRecord(
-            new Long(userCardId).toString());
+        DataRecord cardRecord = template.getRecordSet().getRecord(Long.toString(userCardId));
         if (cardRecord == null) {
           cardRecord = template.getRecordSet().getEmptyRecord();
         }
@@ -811,8 +810,8 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
       userInstanceIds = new ArrayList<String>();
       CompoSpace[] instances = getOrganisationController().getCompoForUser(
           getUserId(), "whitePages");
-      for (int i = 0; i < instances.length; i++) {
-        userInstanceIds.add(instances[i].getComponentId());
+      for (CompoSpace instance : instances) {
+        userInstanceIds.add(instance.getComponentId());
       }
     }
     return userInstanceIds;
