@@ -27,6 +27,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Date;
 
+import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.process.util.ProcessList;
 
 import com.silverpeas.gallery.ImageType;
@@ -47,7 +48,6 @@ import com.silverpeas.gallery.process.photo.GalleryPastePhotoDataProcess;
 import com.silverpeas.gallery.process.photo.GalleryPastePhotoFileProcess;
 import com.silverpeas.gallery.process.photo.GalleryUpdatePhotoDataProcess;
 import com.silverpeas.gallery.process.photo.GalleryUpdatePhotoFileProcess;
-
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -56,8 +56,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
-
-import org.apache.commons.fileupload.FileItem;
 
 /**
  * @author Yohann Chastagnier
@@ -301,7 +299,17 @@ public class GalleryProcessManagement {
    */
   private void addDeletePhotoAlbumProcesses(final NodePK albumPk) throws Exception {
     for (final PhotoDetail photo : getGalleryBm().getAllPhoto(albumPk, true)) {
-      addDeletePhotoProcesses(photo);
+      Collection<String> albumIds =
+          getGalleryBm().getPathList(photo.getInstanceId(), photo.getId());
+      if (albumIds.size() >= 2) {
+        // the image is in several albums
+        // delete only the link between it and album to delete
+        albumIds.remove(albumPk.getId());
+        getGalleryBm().setPhotoPath(photo.getId(), photo.getInstanceId(),
+            albumIds.toArray(new String[0]));
+      } else {
+        addDeletePhotoProcesses(photo);
+      }
     }
   }
 
