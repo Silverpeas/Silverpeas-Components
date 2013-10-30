@@ -260,6 +260,8 @@ public class KmeliaSecurity implements ComponentSecurity {
                 + pk.getInstanceId() + ")");
             objectAvailable = false;
           }
+        } else {
+          objectAvailable = true;
         }
         if (objectAvailable) {
           break;
