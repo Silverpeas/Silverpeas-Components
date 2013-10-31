@@ -60,9 +60,7 @@ if (typeof String.prototype.endsWith !== 'function') {
  */
 if (typeof Date.prototype.setDay !== 'function') {
   Date.prototype.setDay = function(year, month, dayOfMonth) {
-    this.setFullYear(year);
-    this.setMonth(month);
-    this.setDate(dayOfMonth);
+    this.setFullYear(year, month, dayOfMonth);
     return this;
   };
 }
