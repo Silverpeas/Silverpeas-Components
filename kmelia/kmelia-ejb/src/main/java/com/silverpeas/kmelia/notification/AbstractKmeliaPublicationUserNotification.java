@@ -26,6 +26,7 @@ package com.silverpeas.kmelia.notification;
 import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
@@ -115,7 +116,11 @@ public abstract class AbstractKmeliaPublicationUserNotification
     if (NotifAction.REPORT.equals(action)) {
       return null;
     } else if (NotifAction.CREATE.equals(action)) {
-      return getResource().getCreatorId();
+      String userId = getResource().getCreatorId();
+      if (UserDetail.getById(userId).isDeletedState()) {
+        return getResource().getUpdaterId();
+      }
+      return userId;
     }
     return getResource().getUpdaterId();
   }
