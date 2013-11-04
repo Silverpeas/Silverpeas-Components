@@ -4917,24 +4917,13 @@ public class KmeliaBmEJB implements KmeliaBm {
             }
           }
         }
-                
-        try {
-          NodePK fromForeignPK = fromNode.getNodePK();
-          List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
-              listAllDocumentsByForeignKey(fromForeignPK, null);
-          ForeignPK toForeignPK = new ForeignPK(toNodePK.getId(), to);
-          for (SimpleDocument document : documents) {
-            AttachmentServiceFactory.getAttachmentService().moveDocument(document, toForeignPK);
-          }
-        } catch (org.silverpeas.attachment.AttachmentException e) {
-          SilverTrace.error("kmelia", "KmeliaSessionController.pastePublication()",
-              "root.MSG_GEN_PARAM_VALUE", "kmelia.CANT_MOVE_ATTACHMENTS", e);
-        }
-        // change images path in wysiwyg
-        WysiwygController.wysiwygPlaceHaveChanged(fromNode.getNodePK().getInstanceId(),
-            "Node_" + fromNode.getNodePK().getId(), to.getInstanceId(), "Node_" + toNodePK.getId());
         
-        // move publications of topics
+        // move rich description of node
+        if (!nodePK.getInstanceId().equals(to.getInstanceId())) {
+          WysiwygController.move(fromNode.getNodePK().getInstanceId(), "Node_" + fromNode.getId(), to.getInstanceId(), "Node_" + toNodePK.getId());
+        }
+        
+        // move publications of node
         movePublicationsOfTopic(fromNode.getNodePK(), toNodePK, userId);
       }
     }

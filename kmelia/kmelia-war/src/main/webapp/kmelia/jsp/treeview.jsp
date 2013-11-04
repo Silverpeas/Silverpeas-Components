@@ -662,7 +662,7 @@ function spreadNbItems(children) {
 				child.attr['class'] = child.attr['status'];
 			<% } %>
 			if (child.attr['nbItems']) {
-				child.data = child.data + " ( "+child.attr['nbItems']+")";
+				child.data = child.data + " ("+child.attr['nbItems']+")";
 				spreadNbItems(child.children);
 			}
 		}
