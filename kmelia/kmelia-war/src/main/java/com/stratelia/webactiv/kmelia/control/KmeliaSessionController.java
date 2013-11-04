@@ -213,7 +213,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   private String sortValue = null;
   private String defaultSortValue = "2";
   private String autoRedirectURL = null;
-  private int nbPublicationsOnRoot = -1;
   private int rang = 0;
   private ResourceLocator publicationSettings = null;
   public final static String TAB_PREVIEW = "tabpreview";
@@ -237,7 +236,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   String[] idSelectedUser = null;
   // pagination de la liste des publications
   private int indexOfFirstPubToDisplay = 0;
-  private int nbPublicationsPerPage = -1;
   // Assistant de publication
   private String wizard = "none";
   private String wizardRow = "0";
@@ -353,34 +351,24 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public int getNbPublicationsOnRoot() {
-    if (nbPublicationsOnRoot == -1) {
-      String parameterValue = getComponentParameterValue("nbPubliOnRoot");
-      if (StringUtil.isDefined(parameterValue)) {
-        nbPublicationsOnRoot = Integer.parseInt(parameterValue);
-      } else {
-        if (KmeliaHelper.isKmelia(getComponentId())) {
-          // lecture du properties
-          nbPublicationsOnRoot = getSettings().getInteger("HomeNbPublications", 15);
-        } else {
-          nbPublicationsOnRoot = 0;
-        }
+    int nbPublicationsOnRoot = 0;
+    String parameterValue = getComponentParameterValue("nbPubliOnRoot");
+    if (StringUtil.isDefined(parameterValue)) {
+      nbPublicationsOnRoot = Integer.parseInt(parameterValue);
+    } else {
+      if (KmeliaHelper.isKmelia(getComponentId())) {
+        // lecture du properties
+        nbPublicationsOnRoot = getSettings().getInteger("HomeNbPublications", 15);
       }
     }
     return nbPublicationsOnRoot;
   }
 
   public int getNbPublicationsPerPage() {
-    if (nbPublicationsPerPage == -1) {
-      String parameterValue = this.getComponentParameterValue("nbPubliPerPage");
-      if (parameterValue == null || parameterValue.length() <= 0) {
-        nbPublicationsPerPage = getSettings().getInteger("NbPublicationsParPage", 10);
-      } else {
-        try {
-          nbPublicationsPerPage = Integer.parseInt(parameterValue);
-        } catch (Exception e) {
-          nbPublicationsPerPage = getSettings().getInteger("NbPublicationsParPage", 10);
-        }
-      }
+    int nbPublicationsPerPage = getSettings().getInteger("NbPublicationsParPage", 10);
+    String parameterValue = getComponentParameterValue("nbPubliPerPage");
+    if (StringUtil.isInteger(parameterValue)) {
+      nbPublicationsPerPage = Integer.parseInt(parameterValue);
     }
     return nbPublicationsPerPage;
   }
