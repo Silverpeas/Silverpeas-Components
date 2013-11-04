@@ -1122,6 +1122,15 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
               request.setAttribute("UploadOk", Boolean.FALSE);
               destination = "/webSites/jsp/descUpload.jsp";
               break;
+
+            case -3: // the zip content isn't correct
+              scc.deleteDirectory(scc.getWebSitePathById(descriptionSite.getId()));
+              request.setAttribute("Site", descriptionSite);
+              request.setAttribute("AllIcons", scc.getAllIcons());
+              request.setAttribute("ListeIcones", listeIcones);
+              request.setAttribute("UploadOk", Boolean.FALSE);
+              destination = "/webSites/jsp/descUpload.jsp";
+              break;
           }
         }
       } else {
