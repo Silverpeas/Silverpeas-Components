@@ -58,6 +58,7 @@ import com.stratelia.webactiv.webSites.siteManage.util.Expand;
 import java.io.File;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -65,6 +66,7 @@ import java.util.List;
 import javax.ejb.EJBException;
 import javax.xml.bind.JAXBException;
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.FilenameUtils;
 
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
@@ -78,6 +80,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
   private String siteName;
   public final static String TAB_PDC = "tabPdc";
   private static final String WEBSITE_REPO_PROPERTY = "uploadsPath";
+  private static final String WEBSITE_WHITE_LIST = "whiteList";
 
   public WebSiteSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
@@ -891,6 +894,18 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     return getWebSiteRepositoryPath() + relativePath;
   }
 
+  public int addFileIntoWebSite(String webSitePath, FileItem fileItem) throws Exception {
+    String fileName = FileUploadUtil.getFileName(fileItem);
+    if (isInWhiteList(fileName)) {
+      String path = getWebSiteRepositoryPath() + "/" + webSitePath;
+      File file = new File(path, fileName);
+      fileItem.write(file);
+      return 0;
+    } else {
+      return -2;
+    }
+  }
+
   /**
    * Creates a web site from the content of an archive file (a ZIP file).
    *
@@ -915,6 +930,14 @@ public class WebSiteSessionController extends AbstractComponentSessionController
       /* dezip du fichier.zip sur le serveur */
       String cheminFichierZip = cheminZip + "/" + fichierZipName;
       unzip(cheminZip, cheminFichierZip);
+
+      /* check the files are thoses expected */
+      Collection<File> files = FileFolderManager.getAllFile(cheminZip);
+      for (File uploadedFile : files) {
+        if (!uploadedFile.getName().equals(fichierZipName) && !isInWhiteList(uploadedFile.getName())) {
+          return -2;
+        }
+      }
 
       /* verif que le nom de la page principale est correcte */
       Collection<File> collPages = getAllWebPages2(getWebSitePathById(descriptionSite.getId()));
@@ -943,5 +966,15 @@ public class WebSiteSessionController extends AbstractComponentSessionController
       return -2;
     }
     return 0;
+  }
+
+  public boolean isInWhiteList(String fileName) {
+    String authorizedExtensions = getSettings().getString(WEBSITE_WHITE_LIST);
+    if (StringUtil.isDefined(authorizedExtensions)) {
+      List<String> whiteList = Arrays.asList(authorizedExtensions.split(" "));
+      String extension = FilenameUtils.getExtension(fileName).toLowerCase();
+      return whiteList.contains(extension);
+    }
+    return false;
   }
 }
