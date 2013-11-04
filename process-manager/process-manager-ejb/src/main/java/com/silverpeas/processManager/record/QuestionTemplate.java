@@ -82,10 +82,14 @@ public class QuestionTemplate implements RecordTemplate {
     fieldTemplate = new GenericFieldTemplate(fieldName, "text");
     fieldTemplate.addLabel(label.getString("processManager." + fieldName),
         language);
-    fieldTemplate.setDisplayerName("textarea");
-    fieldTemplate.setMandatory(true);
-    fieldTemplate.setReadOnly(readonly);
-    fieldTemplate.addParameter(TextField.PARAM_MAXLENGTH, "500");
+    if (readonly) {
+      fieldTemplate.setDisplayerName("simpletext");
+    } else {
+      fieldTemplate.setDisplayerName("textarea");
+      fieldTemplate.setMandatory(true);
+      fieldTemplate.setReadOnly(readonly);
+      fieldTemplate.addParameter(TextField.PARAM_MAXLENGTH, "500");
+    }
     return fieldTemplate;
   }
 
