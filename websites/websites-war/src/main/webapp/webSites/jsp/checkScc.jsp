@@ -105,6 +105,8 @@
 	String componentLabel = browseContext[1];
 	String spaceId = browseContext[2];
 	String componentId = browseContext[3];
+  
+  pageContext.setAttribute("componentLabel", componentLabel);
 	
 	boolean bookmarkMode = componentId.startsWith("bookmark");
 %>
