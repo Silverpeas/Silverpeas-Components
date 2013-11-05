@@ -67,6 +67,7 @@ import java.util.List;
 import javax.ejb.EJBException;
 import javax.xml.bind.JAXBException;
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.FilenameUtils;
 
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
@@ -128,7 +129,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
    */
   /* WebSite - Gestion des objets session */
   /**
-   * ***********************************************************************************
+   * **********************************************************************************
    */
   public synchronized void setSessionTopic(FolderDetail topicDetail) {
     this.sessionTopic = topicDetail;
@@ -712,7 +713,14 @@ public class WebSiteSessionController extends AbstractComponentSessionController
       throws WebSitesException {
     /* chemin = c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite\\Folder */
     try {
-      FileFolderManager.renameFile(getFullPath(rep), name, newName);
+      String extension = FilenameUtils.getExtension(name);
+      String newExtension = FilenameUtils.getExtension(newName);
+      if (extension.equals(newExtension)) {
+        FileFolderManager.renameFile(getFullPath(rep), name, newName);
+      } else {
+        throw new IllegalArgumentException(
+            "the new and the old file names must have the same extension: " + extension);
+      }
     } catch (Exception e) {
       throw new WebSitesException("WebSiteSessionController.renameFile()",
           SilverpeasException.ERROR, "webSites.EX_RENAME_FILE_FAIL", e);
@@ -974,7 +982,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
       List<String> whiteList = Arrays.asList(authorizedMimeTypes.split(" "));
       String mimeType = FileUtil.getMimeType(file.getPath());
       for (String whiteMiteType : whiteList) {
-        if (mimeType.matches(whiteMiteType.replace("*", ".*"))) {
+        if (mimeType.matches(whiteMiteType.replace("*", ".*").replace("+", "\\+"))) {
           return true;
         }
       }
