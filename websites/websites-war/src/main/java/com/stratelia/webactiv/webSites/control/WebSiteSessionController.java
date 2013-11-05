@@ -31,6 +31,7 @@ import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
+import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -58,6 +59,7 @@ import com.stratelia.webactiv.webSites.siteManage.util.Expand;
 import java.io.File;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -78,6 +80,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
   private String siteName;
   public final static String TAB_PDC = "tabPdc";
   private static final String WEBSITE_REPO_PROPERTY = "uploadsPath";
+  private static final String WEBSITE_WHITE_LIST = "whiteList";
 
   public WebSiteSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
@@ -891,6 +894,18 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     return getWebSiteRepositoryPath() + relativePath;
   }
 
+  public int addFileIntoWebSite(String webSitePath, FileItem fileItem) throws Exception {
+    String fileName = FileUploadUtil.getFileName(fileItem);
+    String path = getWebSiteRepositoryPath() + "/" + webSitePath;
+    File file = new File(path, fileName);
+    fileItem.write(file);
+    if (!isInWhiteList(file)) {
+      FileUtil.forceDeletion(file);
+      return -3;
+    }
+    return 0;
+  }
+
   /**
    * Creates a web site from the content of an archive file (a ZIP file).
    *
@@ -915,6 +930,14 @@ public class WebSiteSessionController extends AbstractComponentSessionController
       /* dezip du fichier.zip sur le serveur */
       String cheminFichierZip = cheminZip + "/" + fichierZipName;
       unzip(cheminZip, cheminFichierZip);
+
+      /* check the files are thoses expected */
+      Collection<File> files = FileFolderManager.getAllWebPages(cheminZip);
+      for (File uploadedFile : files) {
+        if (!uploadedFile.getName().equals(fichierZipName) && !isInWhiteList(uploadedFile)) {
+          return -3;
+        }
+      }
 
       /* verif que le nom de la page principale est correcte */
       Collection<File> collPages = getAllWebPages2(getWebSitePathById(descriptionSite.getId()));
@@ -943,5 +966,19 @@ public class WebSiteSessionController extends AbstractComponentSessionController
       return -2;
     }
     return 0;
+  }
+
+  private boolean isInWhiteList(File file) {
+    String authorizedMimeTypes = getSettings().getString(WEBSITE_WHITE_LIST);
+    if (StringUtil.isDefined(authorizedMimeTypes)) {
+      List<String> whiteList = Arrays.asList(authorizedMimeTypes.split(" "));
+      String mimeType = FileUtil.getMimeType(file.getPath());
+      for (String whiteMiteType : whiteList) {
+        if (mimeType.matches(whiteMiteType.replace("*", ".*"))) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 }
