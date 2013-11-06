@@ -497,10 +497,38 @@ public class KmeliaBmEJB implements KmeliaBm {
   public NodePK updateTopic(NodeDetail topic, String alertType) {
     try {
       // Order of the node must be unchanged
-      NodeDetail node = nodeBm.getHeader(topic.getNodePK());
-      int order = node.getOrder();
+      NodeDetail oldNode = nodeBm.getHeader(topic.getNodePK());
+      int order = oldNode.getOrder();
       topic.setOrder(order);
       nodeBm.setDetail(topic);
+      
+      // manage operations relative to folder rights
+      if (isRightsOnTopicsEnabled(topic.getNodePK().getInstanceId())) {
+        if (oldNode.getRightsDependsOn() != topic.getRightsDependsOn()) {
+          // rights dependency have changed
+          if (!topic.haveRights()) {
+            
+            NodeDetail father = nodeBm.getHeader(oldNode.getFatherPK());
+            topic.setRightsDependsOn(father.getRightsDependsOn());
+            
+            AdminController admin = new AdminController(null);
+            
+            // Topic profiles must be removed
+            List<ProfileInst> profiles = admin.getProfilesByObject(topic.getNodePK().getId(),
+                ObjectType.NODE.getCode(), topic.getNodePK().getInstanceId());
+            if (profiles != null) {
+              for (ProfileInst profile : profiles) {
+                if (profile != null) {
+                  admin.deleteProfileInst(profile.getId());
+                }
+              }
+            }
+          } else {
+            topic.setRightsDependsOnMe();
+          }
+          nodeBm.updateRightsDependency(topic);
+        }
+      }
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.updateTopic()", ERROR,
           "kmelia.EX_IMPOSSIBLE_DE_MODIFIER_THEME", e);
@@ -1225,8 +1253,7 @@ public class KmeliaBmEJB implements KmeliaBm {
   private String getProfile(String userId, NodePK nodePK) {
     String profile;
     OrganisationController orgCtrl = getOrganisationController();
-    if (StringUtil.getBooleanValue(
-        orgCtrl.getComponentParameterValue(nodePK.getInstanceId(), "rightsOnTopics"))) {
+    if (isRightsOnTopicsEnabled(nodePK.getInstanceId())) {
       NodeDetail topic = nodeBm.getHeader(nodePK);
       if (topic.haveRights()) {
         profile = KmeliaHelper.getProfile(orgCtrl.getUserProfiles(userId, nodePK.getInstanceId(),
@@ -2532,7 +2559,7 @@ public class KmeliaBmEJB implements KmeliaBm {
   public boolean validatePublication(PublicationPK pubPK, String userId, boolean force) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.validatePublication()", "root.MSG_GEN_ENTER_METHOD");
     boolean validationComplete = false;
-
+    boolean update = false;
     try {
       CompletePublication currentPub = publicationBm.getCompletePublication(pubPK);
       PublicationDetail currentPubDetail = currentPub.getPublicationDetail();
@@ -2588,6 +2615,7 @@ public class KmeliaBmEJB implements KmeliaBm {
           removeAllTodosForPublication(pubPK);
         }
         if (currentPubDetail.haveGotClone()) {
+          update = currentPubDetail.isValid();
           currentPubDetail = mergeClone(currentPub, userId);
         } else if (currentPubDetail.isValidationRequired()) {
           currentPubDetail.setValidatorId(userId);
@@ -2601,7 +2629,7 @@ public class KmeliaBmEJB implements KmeliaBm {
         indexExternalElementsOfPublication(currentPubDetail);
         // the publication has been validated
         // we must alert all subscribers of the different topics
-        NodePK oneFather = sendSubscriptionsNotification(currentPubDetail, false, false);
+        NodePK oneFather = sendSubscriptionsNotification(currentPubDetail, update, false);
 
         // we have to alert publication's creator
         sendValidationNotification(oneFather, currentPubDetail, null, userId);
@@ -2905,10 +2933,11 @@ public class KmeliaBmEJB implements KmeliaBm {
    */
   @Override
   public void draftOutPublication(PublicationPK pubPK, NodePK topicPK, String userProfile) {
+    boolean update = getPublicationDetail(pubPK).isValid();
     PublicationDetail pubDetail = draftOutPublicationWithoutNotifications(pubPK, topicPK,
         userProfile);
     indexExternalElementsOfPublication(pubDetail);
-    sendTodosAndNotificationsOnDraftOut(pubDetail, topicPK, userProfile);
+    sendTodosAndNotificationsOnDraftOut(pubDetail, topicPK, userProfile, update);
   }
 
   /**
@@ -2936,12 +2965,18 @@ public class KmeliaBmEJB implements KmeliaBm {
     SilverTrace.info("kmelia", "KmeliaBmEJB.draftOutPublication()",
         "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubPK.getId());
     try {
+      boolean update = false;
       CompletePublication currentPub = publicationBm.getCompletePublication(pubPK);
       PublicationDetail pubDetail = currentPub.getPublicationDetail();
       SilverTrace.info("kmelia", "KmeliaBmEJB.draftOutPublication()",
           "root.MSG_GEN_PARAM_VALUE", "actual status = " + pubDetail.getStatus());
       if (userProfile.equals("publisher") || userProfile.equals("admin")) {
         if (pubDetail.haveGotClone()) {
+          // special case when a publication is draft out
+          // check public publication status to determine
+          // if it's a creation or an update...
+          update = pubDetail.isValid();
+          
           pubDetail = mergeClone(currentPub, null);
         }
 
@@ -2970,7 +3005,7 @@ public class KmeliaBmEJB implements KmeliaBm {
       if (!inTransaction) {
         // index all publication's elements
         indexExternalElementsOfPublication(pubDetail);
-        sendTodosAndNotificationsOnDraftOut(pubDetail, topicPK, userProfile);
+        sendTodosAndNotificationsOnDraftOut(pubDetail, topicPK, userProfile, update);
       }
 
       return pubDetail;
@@ -2981,14 +3016,14 @@ public class KmeliaBmEJB implements KmeliaBm {
   }
 
   private void sendTodosAndNotificationsOnDraftOut(PublicationDetail pubDetail, NodePK topicPK,
-      String userProfile) {
+      String userProfile, boolean update) {
     if (SilverpeasRole.writer.isInRole(userProfile)) {
       createTodosForPublication(pubDetail, true);
     }
     // Subscriptions and supervisors are supported by kmelia and filebox only
     if (!KmeliaHelper.isKmax(pubDetail.getInstanceId())) {
       // alert subscribers
-      sendSubscriptionsNotification(pubDetail, false, false);
+      sendSubscriptionsNotification(pubDetail, update, false);
 
       // alert supervisors
       if (topicPK != null) {
@@ -4886,24 +4921,13 @@ public class KmeliaBmEJB implements KmeliaBm {
             }
           }
         }
-
-        try {
-          NodePK fromForeignPK = fromNode.getNodePK();
-          List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
-              listAllDocumentsByForeignKey(fromForeignPK, null);
-          ForeignPK toForeignPK = new ForeignPK(toNodePK.getId(), to);
-          for (SimpleDocument document : documents) {
-            AttachmentServiceFactory.getAttachmentService().moveDocument(document, toForeignPK);
-          }
-        } catch (org.silverpeas.attachment.AttachmentException e) {
-          SilverTrace.error("kmelia", "KmeliaSessionController.pastePublication()",
-              "root.MSG_GEN_PARAM_VALUE", "kmelia.CANT_MOVE_ATTACHMENTS", e);
+        
+        // move rich description of node
+        if (!nodePK.getInstanceId().equals(to.getInstanceId())) {
+          WysiwygController.move(fromNode.getNodePK().getInstanceId(), "Node_" + fromNode.getId(), to.getInstanceId(), "Node_" + toNodePK.getId());
         }
-        // change images path in wysiwyg
-        WysiwygController.wysiwygPlaceHaveChanged(fromNode.getNodePK().getInstanceId(),
-            "Node_" + fromNode.getNodePK().getId(), to.getInstanceId(), "Node_" + toNodePK.getId());
 
-        // move publications of topics
+        // move publications of node
         movePublicationsOfTopic(fromNode.getNodePK(), toNodePK, userId);
       }
     }

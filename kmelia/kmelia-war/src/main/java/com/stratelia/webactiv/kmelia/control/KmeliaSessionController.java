@@ -206,7 +206,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   private String sortValue = null;
   private String defaultSortValue = "2";
   private String autoRedirectURL = null;
-  private int nbPublicationsOnRoot = -1;
   private int rang = 0;
   private ResourceLocator publicationSettings = null;
   public final static String TAB_PREVIEW = "tabpreview";
@@ -230,7 +229,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   String[] idSelectedUser = null;
   // pagination de la liste des publications
   private int indexOfFirstPubToDisplay = 0;
-  private int nbPublicationsPerPage = -1;
   // Assistant de publication
   private String wizard = "none";
   private String wizardRow = "0";
@@ -346,34 +344,24 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public int getNbPublicationsOnRoot() {
-    if (nbPublicationsOnRoot == -1) {
-      String parameterValue = getComponentParameterValue("nbPubliOnRoot");
-      if (StringUtil.isDefined(parameterValue)) {
-        nbPublicationsOnRoot = Integer.parseInt(parameterValue);
-      } else {
-        if (KmeliaHelper.isKmelia(getComponentId())) {
-          // lecture du properties
-          nbPublicationsOnRoot = getSettings().getInteger("HomeNbPublications", 15);
-        } else {
-          nbPublicationsOnRoot = 0;
-        }
+    int nbPublicationsOnRoot = 0;
+    String parameterValue = getComponentParameterValue("nbPubliOnRoot");
+    if (StringUtil.isDefined(parameterValue)) {
+      nbPublicationsOnRoot = Integer.parseInt(parameterValue);
+    } else {
+      if (KmeliaHelper.isKmelia(getComponentId())) {
+        // lecture du properties
+        nbPublicationsOnRoot = getSettings().getInteger("HomeNbPublications", 15);
       }
     }
     return nbPublicationsOnRoot;
   }
 
   public int getNbPublicationsPerPage() {
-    if (nbPublicationsPerPage == -1) {
-      String parameterValue = this.getComponentParameterValue("nbPubliPerPage");
-      if (parameterValue == null || parameterValue.length() <= 0) {
-        nbPublicationsPerPage = getSettings().getInteger("NbPublicationsParPage", 10);
-      } else {
-        try {
-          nbPublicationsPerPage = Integer.parseInt(parameterValue);
-        } catch (Exception e) {
-          nbPublicationsPerPage = getSettings().getInteger("NbPublicationsParPage", 10);
-        }
-      }
+    int nbPublicationsPerPage = getSettings().getInteger("NbPublicationsParPage", 10);
+    String parameterValue = getComponentParameterValue("nbPubliPerPage");
+    if (StringUtil.isInteger(parameterValue)) {
+      nbPublicationsPerPage = Integer.parseInt(parameterValue);
     }
     return nbPublicationsPerPage;
   }
@@ -2676,30 +2664,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     }
   }
 
-  public void updateTopicDependency(NodeDetail node, boolean enableIt) throws RemoteException {
-    if (!enableIt) {
-      NodePK fatherPK = node.getFatherPK();
-      NodeDetail father = getNodeBm().getHeader(fatherPK);
-
-      node.setRightsDependsOn(father.getRightsDependsOn());
-
-      // Topic profiles must be removed
-      List<ProfileInst> profiles = getAdmin().getProfilesByObject(node.getNodePK().getId(),
-          ObjectType.NODE.getCode(),
-          getComponentId());
-      for (int p = 0; profiles != null && p < profiles.size(); p++) {
-        ProfileInst profile = profiles.get(p);
-        if (profile != null) {
-          getAdmin().deleteProfileInst(profile.getId());
-        }
-      }
-    } else {
-      node.setRightsDependsOnMe();
-    }
-
-    getNodeBm().updateRightsDependency(node);
-  }
-
   public ProfileInst getTopicProfile(String role, String topicId) {
     List<ProfileInst> profiles = getAdmin().getProfilesByObject(topicId, ObjectType.NODE.getCode(),
         getComponentId());
@@ -3055,8 +3019,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
             if (instanceId.equals(getComponentId())) {
               tree = getKmeliaBm().getTreeview(root, "useless", false, false, getUserId(),
-                  false, StringUtil.getBooleanValue(getOrganisationController().
-                  getComponentParameterValue(instanceId, "rightsOnTopics")));
+                  false, isRightsOnTopicsEnabled());
             }
 
             if (!StringUtil.isDefined(path)) {
@@ -3101,8 +3064,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       NodePK root = new NodePK(NodePK.ROOT_NODE_ID, instanceId);
 
       tree = getKmeliaBm().getTreeview(root, "useless", false, false, getUserId(), false,
-          StringUtil.getBooleanValue(getOrganisationController().getComponentParameterValue(
-          instanceId, "rightsOnTopics")));
+          isRightsOnTopicsEnabled());
     }
     return tree;
   }
