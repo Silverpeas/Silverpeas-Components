@@ -70,12 +70,8 @@ public class AjaxServlet extends HttpServlet {
       } else {
         result = action.handleRequest(req, kmeliaSC);
       }
-    } catch (RuntimeException re) {
-      String transverseMessage = SilverpeasTransverseErrorUtil.performExceptionMessage(re,
-          (kmeliaSC != null) ? kmeliaSC.getLanguage() : I18NHelper.defaultLanguage);
-      if (StringUtil.isDefined(transverseMessage)) {
-        result = transverseMessage;
-      }
+    } catch (Exception ignored) {
+      result = "";
     }
     Writer writer = resp.getWriter();
     writer.write(result);

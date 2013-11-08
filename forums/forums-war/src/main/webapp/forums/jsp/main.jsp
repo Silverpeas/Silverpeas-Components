@@ -32,7 +32,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags/silverpeas/util" %>
 <c:set var="componentId" value="${requestScope.componentId}" />
 <c:set var="sessionController" value="${requestScope.forumsSessionClientController}" />
 <c:set var="isReader" value="${sessionController.reader}" />
@@ -129,7 +128,6 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
   </head>
 
   <body id="forum" <%ForumHelper.addBodyOnload(out, fsc);%>>
-  <tags:displayNotification/>
   <c:set var="isSubscriber" value="${sessionController.componentSubscriber}" />
   <view:browseBar />
     <c:if test="${isAdmin or isUser or !sessionController.external}">

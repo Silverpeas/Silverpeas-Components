@@ -94,7 +94,6 @@ boolean userCanManageTopics = rightsOnTopics.booleanValue() || "admin".equalsIgn
 <view:includePlugin name="userZoom"/>
 <view:includePlugin name="popup"/>
 <view:includePlugin name="preview"/>
-<view:includePlugin name="notifier"/>
 
 <script type="text/javascript" src="javaScript/navigation.js"></script>
 <script type="text/javascript" src="javaScript/searchInTopic.js"></script>

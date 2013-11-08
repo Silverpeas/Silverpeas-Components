@@ -34,7 +34,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags/silverpeas/util" %>
 <c:set var="sessionController" value="${requestScope.forumsSessionClientController}" />
 <c:set var="componentId" value="${sessionController.componentId}" />
 <c:set var="isReader" value="${sessionController.reader}" />
@@ -93,7 +92,7 @@
                       Collection<UploadedFile> uploadedFiles =
                           FileUploadManager.getUploadedFiles(request, fsc.getUserDetail());
                       int result =
-                          fsc.createMessage(request, messageTitle, userId, forumId, parentId,
+                          fsc.createMessage(messageTitle, userId, forumId, parentId,
                               messageText, null, uploadedFiles);
                       messageId = result;
                     } else {
@@ -140,7 +139,7 @@
                 bundleKey = message.isSubject() ? "forums.subject.unsubscribe.success" :
                     "forums.message.unsubscribe.success";
                 NotifierUtil
-                  .addSuccess(request, resource.getStringWithParam(bundleKey, message.getTitle()));
+                  .addSuccess(resource.getStringWithParam(bundleKey, message.getTitle()));
                 break;
 
             case 14 :
@@ -148,7 +147,7 @@
                 messageId = params;
                 bundleKey = message.isSubject() ? "forums.subject.subscribe.success" :
                     "forums.message.subscribe.success";
-                NotifierUtil.addSuccess(request, resource.getStringWithParam(bundleKey, message.getTitle()));
+                NotifierUtil.addSuccess(resource.getStringWithParam(bundleKey, message.getTitle()));
                 break;
 
             case 15 :
@@ -213,7 +212,6 @@
     <view:looknfeel />
     <view:includePlugin name="wysiwyg"/>
     <view:includePlugin name="popup"/>
-    <view:includePlugin name="notifier"/>
     <link type="text/css" href="<c:url value='/util/styleSheets/fieldset.css'/>" rel="stylesheet" />
     <script type="text/javascript" src="<c:url value='/util/javaScript/checkForm.js'/>" ></script>
     <script type="text/javascript" src="<c:url value='/forums/jsp/javaScript/forums.js'/>" ></script>
@@ -317,7 +315,6 @@
     </script>
 </head>
 <body id="forum<%=forumId%>" class="forum" <%addBodyOnload(out, fsc);%>>
-<tags:displayNotification/>
 <%
 
         Window window = graphicFactory.getWindow();

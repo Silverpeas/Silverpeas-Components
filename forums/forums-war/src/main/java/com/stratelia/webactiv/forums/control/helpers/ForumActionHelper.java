@@ -210,7 +210,7 @@ public class ForumActionHelper {
               Collection<UploadedFile> uploadedFiles = FileUploadManager.getUploadedFiles(request,
                   fsc.getUserDetail());
               int result =
-                  fsc.createMessage(request, messageTitle, userId, forumId, parentId, messageText,
+                  fsc.createMessage(messageTitle, userId, forumId, parentId, messageText,
                       forumKeywords, uploadedFiles);
               if (subscribe == null) {
                 subscribe = "0";
@@ -247,24 +247,22 @@ public class ForumActionHelper {
           }
           case UNSUBSCRIBE_FORUMS: {
             fsc.unsubscribeComponent();
-            NotifierUtil.addSuccess(request, resource.getString("forums.unsubscribe.success", ""));
+            NotifierUtil.addSuccess(resource.getString("forums.unsubscribe.success", ""));
             break;
           }
           case SUBSCRIBE_FORUMS: {
             fsc.subscribeComponent();
-            NotifierUtil.addSuccess(request, resource.getString("forums.subscribe.success", ""));
+            NotifierUtil.addSuccess(resource.getString("forums.subscribe.success", ""));
             break;
           }
           case UNSUBSCRIBE_FORUM: {
             Forum forum = fsc.unsubscribeForum(params);
-            NotifierUtil.addSuccess(request,
-                resource.getStringWithParam("forums.forum.unsubscribe.success", forum.getName()));
+            NotifierUtil.addSuccess(resource.getStringWithParam("forums.forum.unsubscribe.success", forum.getName()));
             break;
           }
           case SUBSCRIBE_FORUM: {
             Forum forum = fsc.subscribeForum(params);
-            NotifierUtil.addSuccess(request,
-                resource.getStringWithParam("forums.forum.subscribe.success", forum.getName()));
+            NotifierUtil.addSuccess(resource.getStringWithParam("forums.forum.subscribe.success", forum.getName()));
             break;
           }
           case UNSUBSCRIBE_THREAD: {
@@ -272,7 +270,7 @@ public class ForumActionHelper {
             String bundleKey = message.isSubject() ? "forums.subject.unsubscribe.success" :
                 "forums.message.unsubscribe.success";
             NotifierUtil
-                .addSuccess(request, resource.getStringWithParam(bundleKey, message.getTitle()));
+                .addSuccess(resource.getStringWithParam(bundleKey, message.getTitle()));
             break;
           }
           case SUBSCRIBE_THREAD: {
@@ -280,7 +278,7 @@ public class ForumActionHelper {
             String bundleKey = message.isSubject() ? "forums.subject.subscribe.success" :
                 "forums.message.subscribe.success";
             NotifierUtil
-                .addSuccess(request, resource.getStringWithParam(bundleKey, message.getTitle()));
+                .addSuccess(resource.getStringWithParam(bundleKey, message.getTitle()));
             break;
           }
           case UPDATE_MESSAGE: {
@@ -306,7 +304,7 @@ public class ForumActionHelper {
       }
     }
     if (!fsc.isComponentSubscriptionInfoDisplayed() && fsc.isComponentSubscriber()) {
-      NotifierUtil.addInfo(request, fsc.getString("forums.forum.subscribe.info"));
+      NotifierUtil.addInfo(fsc.getString("forums.forum.subscribe.info"));
       fsc.setComponentSubscriptionInfoDisplayed(true);
     }
 

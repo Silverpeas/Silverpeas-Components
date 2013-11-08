@@ -29,7 +29,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags/silverpeas/util" %>
 <%
     response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
     response.setHeader("Pragma", "no-cache"); //HTTP 1.0
@@ -67,7 +66,6 @@ function goto_jsp(url) {
 </script>
 </head>
 <body id="forum">
-<tags:displayNotification/>
         <table width="95%" border="0" align="center" cellpadding="4" cellspacing="1" class="testTableau">
             <tr class="enteteTableau">
                 <td colspan="2" nowrap="nowrap" align="center"><%=resources.getString("theme")%></td>

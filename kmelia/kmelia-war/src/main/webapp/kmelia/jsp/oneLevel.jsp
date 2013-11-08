@@ -85,7 +85,6 @@ String httpServerBase = GeneralPropertiesManager.getString("httpServerBase", m_s
 <view:includePlugin name="datepicker" />
 <view:includePlugin name="popup"/>
 <view:includePlugin name="preview"/>
-<view:includePlugin name="notifier"/>
 <script type="text/javascript" src="javaScript/navigation.js"></script>
 <script type="text/javascript" src="javaScript/searchInTopic.js"></script>
 <script type="text/javascript" src="javaScript/publications.js"></script>

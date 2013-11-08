@@ -2075,10 +2075,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       String exMessage =
           SilverpeasTransverseErrorUtil.performExceptionMessage(e, kmeliaScc.getLanguage());
       if (StringUtil.isNotDefined(exMessage)) {
-        exMessage = e.getMessage();
+        request.setAttribute("Message", e.getMessage());
       }
       // Other exception
-      request.setAttribute("Message", exMessage);
       request.setAttribute("TopicId", topicId);
       destination = routeDestination + "importOneFile.jsp";
       if (isMassiveMode) {
