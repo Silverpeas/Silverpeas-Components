@@ -209,15 +209,12 @@ public class ForumActionHelper {
             if (StringUtil.isDefined(messageTitle) && StringUtil.isDefined(messageText)) {
               Collection<UploadedFile> uploadedFiles = FileUploadManager.getUploadedFiles(request,
                   fsc.getUserDetail());
-              int result =
+              int messageId =
                   fsc.createMessage(messageTitle, userId, forumId, parentId, messageText,
                       forumKeywords, uploadedFiles);
-              if (subscribe == null) {
-                subscribe = "0";
-              } else {
-                subscribe = "1";
-                if (result != 0) {
-                  fsc.subscribeMessage(result);
+              if (subscribe != null) {
+                if (messageId != 0) {
+                  fsc.subscribeMessage(messageId);
                 }
               }
               if (parentId > 0) {

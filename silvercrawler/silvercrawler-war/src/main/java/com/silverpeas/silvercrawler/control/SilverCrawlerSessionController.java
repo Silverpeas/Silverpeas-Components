@@ -55,6 +55,7 @@ import org.silverpeas.search.indexEngine.model.RepositoryIndexer;
 import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
 import org.silverpeas.util.UnitUtil;
+import org.silverpeas.util.memory.MemoryUnit;
 
 import java.io.File;
 import java.io.IOException;
@@ -243,7 +244,7 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
     SilverTrace.debug("silverCrawler", "SilverCrawlerSessionController.zipFolder()",
         "root.MSG_GEN_PARAM_VALUE", "fileZip = " + zipFile.getName());
 
-    long sizeMax = UnitUtil.convertTo(getSizeMax(), UnitUtil.memUnit.MB, UnitUtil.memUnit.B);
+    long sizeMax = UnitUtil.convertTo(getSizeMax(), MemoryUnit.MB, MemoryUnit.B);
     long zipSize = 0;
     String url = "";
     SilverTrace.debug("silverCrawler",

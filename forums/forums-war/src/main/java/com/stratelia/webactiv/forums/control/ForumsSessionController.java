@@ -445,7 +445,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     String status = STATUS_FOR_VALIDATION;
 
     MessagePK messagePK = new MessagePK(getComponentId(), getSpaceId());
-    int messageId;
+    int messageId = 0;
 
     try {
       if (!isValidationActive() || admin.isInRole(getUserRoleLevel()) ||
@@ -455,8 +455,9 @@ public class ForumsSessionController extends AbstractComponentSessionController 
       // creation du message dans la base
       messageId = getForumsBM().createMessage(messagePK, truncateTextField(title),
           author, null, forumId, parentId, text, keywords, status);
-    } catch (ForumsException e) {
-      throw new EJBException(e.getMessage(), e);
+    } catch (Exception e) {
+      SilverpeasTransverseErrorUtil.stopTransverseErrorIfAny(new EJBException(e.getMessage(), e));
+      return messageId;
     }
     messagePK.setId(String.valueOf(messageId));
 
@@ -502,8 +503,9 @@ public class ForumsSessionController extends AbstractComponentSessionController 
       }
       getForumsBM().updateMessage(messagePK, truncateTextField(title), text,
           getUserId(), currentStatus);
-    } catch (ForumsException e) {
-      throw new EJBException(e.getMessage(), e);
+    } catch (Exception e) {
+      SilverpeasTransverseErrorUtil.stopTransverseErrorIfAny(new EJBException(e.getMessage(), e));
+      return;
     }
 
     // Send notification to subscribers
