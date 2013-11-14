@@ -35,6 +35,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.node.web.NodeEntity;
 
 import com.silverpeas.annotation.Authorized;
@@ -45,6 +46,7 @@ import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
@@ -84,7 +86,7 @@ public class FolderResource extends RESTWebService {
       uri = getUriInfo().getRequestUri();
     }
     NodeEntity entity = NodeEntity.fromNodeDetail(root, uri, language);
-    decorateRoot(entity);
+    decorateRoot(entity, language);
 
     return entity;
   }
@@ -133,8 +135,14 @@ public class FolderResource extends RESTWebService {
       for (NodeDetail node : nodes) {
         entities.add(NodeEntity.fromNodeDetail(node, uri, language));
       }
+      
+      NodeEntity[] aEntities = entities.toArray(new NodeEntity[0]);
+      if (nodePK.isTrash()) {
+        // decorate special nodes
+        decorateRootChildren(aEntities, language);
+      }
 
-      return entities.toArray(new NodeEntity[0]);
+      return aEntities;
     } catch (Exception e1) {
       throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
     }
@@ -173,27 +181,33 @@ public class FolderResource extends RESTWebService {
 
     if (nodePK.isRoot()) {
       // decorate special nodes
-      decorateRootChildren(aEntities);
+      decorateRootChildren(aEntities, language);
     }
 
     return aEntities;
   }
 
-  private void decorateRoot(NodeEntity root) {
+  private void decorateRoot(NodeEntity root, String lang) {
     root.setState("open");
     root.getAttr().setRel("root");
-    decorateRootChildren(root.getChildren());
+    decorateRootChildren(root.getChildren(), lang);
   }
 
-  private void decorateRootChildren(NodeEntity[] children) {
+  private void decorateRootChildren(NodeEntity[] children, String lang) {
     // case of special nodes (bin, to validate)
+    ResourceLocator messages =
+        new ResourceLocator("org.silverpeas.kmelia.multilang.kmeliaBundle", lang);
     for (NodeEntity child : children) {
       if (child.getAttr().getId().equalsIgnoreCase("tovalidate")) {
         child.getAttr().setRel("tovalidate");
         child.setState("");
+        child.setData(Encode.forHtml(messages.getString("ToValidateShort")));
+        child.getAttr().setDescription(messages.getString("kmelia.tovalidate.desc"));
       } else if (child.getAttr().getId().equalsIgnoreCase("1")) {
         child.getAttr().setRel("bin");
         child.setState("");
+        child.setData(Encode.forHtml(messages.getString("kmelia.basket")));
+        child.getAttr().setDescription(messages.getString("kmelia.basket.desc"));
       }
     }
   }
@@ -221,7 +235,7 @@ public class FolderResource extends RESTWebService {
       String uri = requestUri.substring(0, requestUri.lastIndexOf("/"));
 
       NodeEntity rootEntity = NodeEntity.fromNodeDetail(root, uri, language);
-      decorateRoot(rootEntity);
+      decorateRoot(rootEntity, language);
 
       setOpenState(rootEntity.getChildren(), nodes);
 
