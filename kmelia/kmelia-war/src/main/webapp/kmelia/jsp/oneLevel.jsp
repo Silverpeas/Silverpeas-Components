@@ -110,7 +110,7 @@ String httpServerBase = GeneralPropertiesManager.getString("httpServerBase", m_s
         mode: 'map'
       });
 
-      displayTopicContent(<%=id%>);
+      displayTopicContent('<%=id%>');
 
       <% if (settings.getBoolean("DisplayDnDOnLoad", false)) { %>
       showDnD();
@@ -350,8 +350,6 @@ function displayTopicContent(id) {
 
 	//display topic rich description
 	displayTopicDescription(id);
-	
-	// location.href = location.href + "#pubList";
 }
 	
 function displaySubTopics(id) {
@@ -454,7 +452,7 @@ function getString(key) {
            </tr>
          <% } %>
          <tr>
-           <td colspan="2">( <img border="0" alt="mandatory" src="<c:out value="${mandatoryFieldUrl}" />" width="5" height="5"/> : <fmt:message key="GML.requiredField"/> )</td>
+           <td colspan="2"><img border="0" alt="mandatory" src="<c:out value="${mandatoryFieldUrl}" />" width="5" height="5"/> : <fmt:message key="GML.requiredField"/></td>
          </tr>
        </table>
      </form>
