@@ -26,7 +26,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <jsp:useBean id="quizzUnderConstruction" scope="session" class="com.stratelia.webactiv.util.questionContainer.model.QuestionContainerDetail" />
-<jsp:useBean id="questionsVector" scope="session" class="java.util.Vector" />
+<jsp:useBean id="questionsVector" scope="session" class="java.util.ArrayList" />
 
 <%@ include file="checkQuizz.jsp" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
@@ -39,7 +39,7 @@
 
 //Retrieve parameter
 String nextAction = "";
-String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+String m_context = GeneralPropertiesManager.getString("ApplicationURL");
 
 int nbZone = 4; // number of field to control
 List<ComponentInstLight> galleries = quizzScc.getGalleries();
@@ -347,11 +347,11 @@ function choixImageInGallery(url) {
 <%
 
 if (action.equals("FirstQuestion")) {
-      session.setAttribute("questionsVector", new Vector(10, 2));
+      session.setAttribute("questionsVector", new ArrayList<Question>(10));
       action = "CreateQuestion";
 }
 if (action.equals("SendNewQuestion")) {
-      Vector questionsV = (Vector) session.getAttribute("questionsVector");
+  	  List<Question> questionsV = (List<Question>) session.getAttribute("questionsVector");
       int questionNb = questionsV.size() + 1;
       int penaltyInt=0;
       int nbPointsMinInt=-1000;
@@ -369,26 +369,22 @@ if (action.equals("SendNewQuestion")) {
       action = "CreateQuestion";
 } //End if action = ViewResult
 else if (action.equals("End")) {
-      out.println("<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor=#FFFFFF>");
+      out.println("<body>");
       QuestionContainerDetail questionContainerDetail = (QuestionContainerDetail) session.getAttribute("quizzUnderConstruction");
       //Vector 2 Collection
-      Vector questionsV = (Vector) session.getAttribute("questionsVector");
-      ArrayList q = new ArrayList();
-      for (int j = 0; j < questionsV.size(); j++) {
-            q.add((Question) questionsV.get(j));
-      }
-      questionContainerDetail.setQuestions(q);
+      List<Question> questionsV = (List<Question>) session.getAttribute("questionsVector");
+      questionContainerDetail.setQuestions(questionsV);
       out.println("</body></html>");
 }
 if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
-      out.println("<body bgcolor=#FFFFFF>");
-      Vector questionsV = (Vector) session.getAttribute("questionsVector");
+      out.println("<body>");
+      List<Question> questionsV = (List<Question>) session.getAttribute("questionsVector");
       int questionNb = questionsV.size() + 1;
-      cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "javascript:confirmCancel();", false);
+      cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "javascript:confirmCancel();", false);
       buttonPane = gef.getButtonPane();
       if (action.equals("CreateQuestion")) {
-            validateButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData()", false);
-            finishButton = (Button) gef.getFormButton(resources.getString("Finish"), "javascript:onClick=goToEnd()", false);
+            validateButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData()", false);
+            finishButton = gef.getFormButton(resources.getString("Finish"), "javascript:onClick=goToEnd()", false);
             question = "";
             nbAnswers = "";
             penalty = "";
@@ -403,7 +399,7 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
             buttonPane.addButton(cancelButton);
             buttonPane.setHorizontalPosition();
       } else if (action.equals("SendQuestionForm")) {
-            validateButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData2()", false);
+            validateButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData2()", false);
             nextAction="SendNewQuestion";
             buttonPane.addButton(validateButton);
             buttonPane.addButton(cancelButton);

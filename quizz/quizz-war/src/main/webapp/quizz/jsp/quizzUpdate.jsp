@@ -32,8 +32,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
 <jsp:useBean id="quizzUnderConstruction" scope="session" class="com.stratelia.webactiv.util.questionContainer.model.QuestionContainerDetail" />
-<jsp:useBean id="questionsVector" scope="session" class="java.util.Vector" />
-<jsp:useBean id="questionsResponses" scope="session" class="java.util.Hashtable" />
+<jsp:useBean id="questionsVector" scope="session" class="java.util.ArrayList" />
+<jsp:useBean id="questionsResponses" scope="session" class="java.util.HashMap" />
 
 <%@ include file="checkQuizz.jsp" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
@@ -43,32 +43,19 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%
 //Retrieve parameters
-String action = "";
-String quizzId = "";
-String title = "";
-String description = "";
 String creationDate = "";
-String beginDate = "";
-String endDate = "";
-String nbQuestions = "";
-String notice="";
-String nbAnswersNeeded = "1";
-String nbAnswersMax = "1";
+String action = request.getParameter("Action");
+String quizzId = request.getParameter("QuizzId");
+String title = request.getParameter("title");
+String description = request.getParameter("description");
+String beginDate = request.getParameter("beginDate");
+String endDate = request.getParameter("endDate");
+String nbQuestions = request.getParameter("nbQuestions");
+String notice= request.getParameter("notice");
+String nbAnswersNeeded = request.getParameter("nbAnswersNeeded");
+String nbAnswersMax = request.getParameter("nbAnswersMax");
 
-
-action = (String) request.getParameter("Action");
-quizzId = (String) request.getParameter("QuizzId");
-title = (String) request.getParameter("title");
-description = (String) request.getParameter("description");
-beginDate = (String) request.getParameter("beginDate");
-endDate = (String) request.getParameter("endDate");
-nbQuestions = (String) request.getParameter("nbQuestions");
-notice=(String) request.getParameter("notice");
-nbAnswersNeeded = (String) request.getParameter("nbAnswersNeeded");
-nbAnswersMax = (String) request.getParameter("nbAnswersMax");
-
-
-String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+String m_context = GeneralPropertiesManager.getString("ApplicationURL");
 
 //Icons
 String topicAddSrc = m_context + "/util/icons/folderAdd.gif";

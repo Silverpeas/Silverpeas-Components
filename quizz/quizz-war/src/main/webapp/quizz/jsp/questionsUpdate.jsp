@@ -32,14 +32,14 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
 <jsp:useBean id="quizzUnderConstruction" scope="session" class="com.stratelia.webactiv.util.questionContainer.model.QuestionContainerDetail" />
-<jsp:useBean id="questionsVector" scope="session" class="java.util.Vector" />
-<jsp:useBean id="questionsResponses" scope="session" class="java.util.Hashtable" />
+<jsp:useBean id="questionsVector" scope="session" class="java.util.ArrayList" />
+<jsp:useBean id="questionsResponses" scope="session" class="java.util.HashMap" />
 <jsp:useBean id="currentQuizzId" scope="session" class="java.lang.String" />
 
 <%@ include file="checkQuizz.jsp" %>
 
 <%!
-  String displayQuestionsUpdateView(Vector questions, GraphicElementFactory gef, String m_context, QuizzSessionController quizzScc,ResourceLocator settings, ResourcesWrapper resources) throws QuizzException {
+  String displayQuestionsUpdateView(List<Question> questions, GraphicElementFactory gef, String m_context, QuizzSessionController quizzScc,ResourceLocator settings, ResourcesWrapper resources) throws QuizzException {
         String questionUpSrc = "icons/questionUp.gif";
         String questionDownSrc = "icons/questionDown.gif";
         String questionDeleteSrc = "icons/questionDelete.gif";
@@ -59,10 +59,10 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
       r += "<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" width=\"98%\"><tr><td>";
       r += "<form name=\"quizz\" Action=\"questionsUpdate.jsp\" Method=\"Post\">";
       r += "<input type=\"hidden\" name=\"Action\" value=\"SubmitQuestions\">";
-      Iterator itQ = questions.iterator();
+      Iterator<Question> itQ = questions.iterator();
       int i = 1;
       for (int j=0; j<questions.size(); j++) {
-          question = (Question) questions.get(j);
+          question = questions.get(j);
           answers = question.getAnswers();
 
           //check available operations to current question
@@ -149,8 +149,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
       r += board.printAfter();
       //r += "</td></tr></table>";
       //r += "<table>";
-      Button cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "Main.jsp", false);
-      Button voteButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:SendQuestions('"+questions.size()+"');", false);
+      Button cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "Main.jsp", false);
+      Button voteButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:SendQuestions('"+questions.size()+"');", false);
       r += "<table><tr><td align=\"center\"><br><table border=\"0\"><tr><td>"+voteButton.print()+"</td><td>"+cancelButton.print()+"</td></tr></table></td></tr>";
       r += "</table>";
     } catch(Exception e){
@@ -164,10 +164,10 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%
 //Retrieve parameters
-String action = (String) request.getParameter("Action");
-String quizzId = (String) request.getParameter("QuizzId");
+String action = request.getParameter("Action");
+String quizzId = request.getParameter("QuizzId");
 
-String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+String m_context = GeneralPropertiesManager.getString("ApplicationURL");
 
 //Icons
 String topicAddSrc = m_context + "/util/icons/folderAdd.gif";
@@ -178,8 +178,8 @@ ResourceLocator settings = quizzScc.getSettings();
 QuestionContainerDetail quizz = null;
 
 if (action.equals("UpQuestion")) {
-      int qId = new Integer((String) request.getParameter("QId")).intValue();
-      Vector qV = (Vector) session.getAttribute("questionsVector");
+      int qId = new Integer(request.getParameter("QId")).intValue();
+      List<Question> qV = (List<Question>) session.getAttribute("questionsVector");
       Question q1 = (Question) qV.get(qId);
       Question q2 = (Question) qV.get(qId-1);
       qV.set(qId-1, q1);
@@ -187,8 +187,8 @@ if (action.equals("UpQuestion")) {
       session.setAttribute("questionsVector", qV);
       action = "UpdateQuestions";
 } else if (action.equals("DownQuestion")) {
-      int qId = new Integer((String) request.getParameter("QId")).intValue();
-      Vector qV = (Vector) session.getAttribute("questionsVector");
+      int qId = new Integer(request.getParameter("QId")).intValue();
+      List<Question> qV = (List<Question>) session.getAttribute("questionsVector");
       Question q1 = (Question) qV.get(qId);
       Question q2 = (Question) qV.get(qId+1);
       qV.set(qId+1, q1);
@@ -196,14 +196,14 @@ if (action.equals("UpQuestion")) {
       session.setAttribute("questionsVector", qV);
       action = "UpdateQuestions";
 } else if (action.equals("DeleteQuestion")) {
-      int qId = new Integer((String) request.getParameter("QId")).intValue();
-      Vector qV = (Vector) session.getAttribute("questionsVector");
+      int qId = new Integer(request.getParameter("QId")).intValue();
+      List<Question> qV = (List<Question>) session.getAttribute("questionsVector");
       qV.remove(qId);
       session.setAttribute("questionsVector", qV);
       action = "UpdateQuestions";
 }
 if (action.equals("SendQuestions")) {
-      Vector qV = (Vector) session.getAttribute("questionsVector");
+  	  List<Question> qV = (List<Question>) session.getAttribute("questionsVector");
       quizzScc.updateQuestions(qV, (String) session.getAttribute("currentQuizzId"));
 %>
 	<jsp:forward page="<%=quizzScc.getComponentUrl()+\"Main.jsp\"%>"/>
@@ -234,7 +234,7 @@ function SendQuestions(nb)
 </script>
 <body>
 <%
-  Vector<Question> questionsV = null;
+  List<Question> questionsV = null;
   if (quizzId != null) {
     session.removeAttribute("currentQuizzId");
     session.removeAttribute("questionsVector");
@@ -244,10 +244,10 @@ function SendQuestions(nb)
     quizz = quizzScc.getQuizzDetail(quizzId);
     Collection<Question> questions = quizz.getQuestions();
     //questions collection to questions vector
-    questionsV = new Vector<Question>(questions);
+    questionsV = new ArrayList<Question>(questions);
     session.setAttribute("questionsVector", questionsV);
   }
-  questionsV = (Vector) session.getAttribute("questionsVector");
+  questionsV = (List<Question>) session.getAttribute("questionsVector");
   quizzId = (String) session.getAttribute("currentQuizzId");
 
   Window window = gef.getWindow();
