@@ -25,7 +25,7 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<jsp:useBean id="questionsVector" scope="session" class="java.util.Vector" />
+<jsp:useBean id="questionsVector" scope="session" class="java.util.ArrayList" />
 
 <%@ include file="checkQuizz.jsp" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
@@ -36,7 +36,7 @@
 <%
 String nextAction = "";
 
-String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+String m_context = GeneralPropertiesManager.getString("ApplicationURL");
 
 int nbZone = 4; // nombre de zones � contr�ler
 List<ComponentInstLight> galleries = quizzScc.getGalleries();
@@ -68,7 +68,7 @@ boolean file = false;
 int nb = 0;
 int attachmentSuffix = 0;
 QuestionForm form = new QuestionForm(file, attachmentSuffix);
-List answers = QuestionHelper.extractAnswer(items, form, quizzScc.getComponentId(), quizzSettings.getString("imagesSubDirectory"));
+List<Answer> answers = QuestionHelper.extractAnswer(items, form, quizzScc.getComponentId(), quizzSettings.getString("imagesSubDirectory"));
 file = form.isFile();
 attachmentSuffix = form.getAttachmentSuffix();
 %>
@@ -339,7 +339,7 @@ function choixImageInGallery(url) {
 </head>
 <%
 if (action.equals("SendNewQuestion")) {
-      Vector questionsV = (Vector) session.getAttribute("questionsVector");
+  	  List<Question> questionsV = (List<Question>) session.getAttribute("questionsVector");
       int questionNb = questionsV.size() + 1;
       int penaltyInt=0;
       int nbPointsMinInt=-1000;
@@ -360,22 +360,18 @@ else if (action.equals("End")) {
       out.println("<body>");
       QuestionContainerDetail quizzDetail = (QuestionContainerDetail) session.getAttribute("quizzUnderConstruction");
       //Vector 2 Collection
-      Vector questionsV = (Vector) session.getAttribute("questionsVector");
-      List<Question> q = new ArrayList<Question>();
-      for (int j = 0; j < questionsV.size(); j++) {
-            q.add((Question) questionsV.get(j));
-      }
-      quizzDetail.setQuestions(q);
+      List<Question> questionsV = (List<Question>) session.getAttribute("questionsVector");
+      quizzDetail.setQuestions(questionsV);
       out.println("</body></html>");
 }
 if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
       out.println("<body>");
-      Vector questionsV = (Vector) session.getAttribute("questionsVector");
+      List<Question> questionsV = (List<Question>) session.getAttribute("questionsVector");
       int questionNb = questionsV.size() + 1;
-      cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "Main.jsp", false);
+      cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "Main.jsp", false);
       buttonPane = gef.getButtonPane();
       if (action.equals("CreateQuestion")) {
-            validateButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData()", false);
+            validateButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData()", false);
             question = "";
             nbAnswers = "";
             penalty = "";
@@ -387,7 +383,7 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
             buttonPane.addButton(cancelButton);
             buttonPane.setHorizontalPosition();
       } else if (action.equals("SendQuestionForm")) {
-            validateButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData2()", false);
+            validateButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData2()", false);
             nextAction="SendNewQuestion";
             buttonPane.addButton(validateButton);
             buttonPane.addButton(cancelButton);
