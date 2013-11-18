@@ -40,7 +40,7 @@
 <c:set var="isReader" value="${sessionController.reader}" />
 <c:set var="isUser" value="${sessionController.user}" />
 <c:set var="isAdmin" value="${sessionController.admin}" />
-<fmt:setLocale value="${sessionScope[sessionController].language}" />
+<fmt:setLocale value="${requestScope.resources.language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 <%@ page import="org.silverpeas.upload.FileUploadManager"%>
