@@ -23,19 +23,22 @@
  */
 package com.stratelia.webactiv.kmelia.servlets;
 
-import java.io.IOException;
-import java.io.Writer;
+import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.silverpeas.peasCore.ComponentContext;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
+import com.stratelia.webactiv.kmelia.servlets.ajax.AjaxOperation;
+import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
-import com.stratelia.webactiv.kmelia.servlets.ajax.AjaxOperation;
+import java.io.IOException;
+import java.io.Writer;
 
 public class AjaxServlet extends HttpServlet {
 
@@ -58,13 +61,17 @@ public class AjaxServlet extends HttpServlet {
       kmeliaSC = createSessionController(session, componentId);
     }
     String result = "nok";
-    AjaxOperation action = AjaxOperation.valueOf(getAction(req));
-    if (action.requiresController()) {
-      if (kmeliaSC != null) {
+    try {
+      AjaxOperation action = AjaxOperation.valueOf(getAction(req));
+      if (action.requiresController()) {
+        if (kmeliaSC != null) {
+          result = action.handleRequest(req, kmeliaSC);
+        }
+      } else {
         result = action.handleRequest(req, kmeliaSC);
       }
-    } else {
-      result = action.handleRequest(req, kmeliaSC);
+    } catch (Exception ignored) {
+      result = "";
     }
     Writer writer = resp.getWriter();
     writer.write(result);

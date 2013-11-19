@@ -21,8 +21,6 @@
 package com.stratelia.webactiv.kmelia.servlets.ajax.handlers;
 
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
@@ -33,6 +31,9 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
+
+import javax.servlet.http.HttpServletRequest;
 
 public class MovePublicationHandler implements AjaxHandler {
 
@@ -49,6 +50,7 @@ public class MovePublicationHandler implements AjaxHandler {
       return "ok";
     } catch (Exception e) {
       SilverTrace.error("kmelia", "PasteHandler.handleRequest", "root.MSG_GEN_PARAM_VALUE", e);
+      SilverpeasTransverseErrorUtil.throwTransverseErrorIfAny(e, controller.getLanguage());
       return e.getMessage();
     }
   }

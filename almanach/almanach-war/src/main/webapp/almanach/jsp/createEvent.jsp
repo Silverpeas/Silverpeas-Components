@@ -60,7 +60,6 @@
 <view:includePlugin name="datepicker"/>
 <view:includePlugin name="wysiwyg"/>
 <view:includePlugin name="popup"/>
-<view:includePlugin name="notifier"/>
 <link type="text/css" href="<c:url value='/util/styleSheets/fieldset.css'/>" rel="stylesheet" />
 <script type="text/javascript" src="<c:url value='/util/javaScript/checkForm.js'/>"></script>
 <script type="text/javascript">

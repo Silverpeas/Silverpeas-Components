@@ -121,8 +121,7 @@ function getComponentId() {
 
 function showDnD() {
 	<%
-	ResourceLocator uploadSettings = new ResourceLocator("org.silverpeas.util.uploads.uploadSettings", "");
-	String maximumFileSize = uploadSettings.getString("MaximumFileSize", "10000000");
+	long maximumFileSize = FileRepositoryManager.getUploadMaximumFileSize();
 	%>
 	showHideDragDrop('<%=URLManager.getFullApplicationURL(request)%>/RImportDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&IgnoreFolders=1&SessionId=<%=session.getId()%>','<%=URLManager.getFullApplicationURL(request)%>/upload/ModeNormal_<%=language%>.html','<%=URLManager.getFullApplicationURL(request)%>/RImportDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&IgnoreFolders=1&Draft=1&SessionId=<%=session.getId()%>','<%=URLManager.getFullApplicationURL(request)%>/upload/ModeDraft_<%=language%>.html','<%=resources.getString("GML.applet.dnd.alt")%>','<%=maximumFileSize%>','<%=m_context%>','<%=resources.getString("GML.DragNDropExpand")%>','<%=resources.getString("GML.DragNDropCollapse")%>');
 }
@@ -149,18 +148,18 @@ function topicWysiwyg() {
 }
 
 function pasteFromOperations() {
-	$.progressMessage();
-	var ieFix = new Date().getTime();
-	var url = getWebContext()+'/KmeliaAJAXServlet';
-	$.get(url, {ComponentId:getComponentId(),Action:'Paste',Id:'0',IEFix:ieFix},
-			function(data){
-				$.closeProgressMessage();
-				if (data === "ok") {
-					displayPublications("0");
-				} else {
-					alert(data);
-				}
-			}, 'text');
+  $.progressMessage();
+  var ieFix = new Date().getTime();
+  var url = getWebContext() + '/KmeliaAJAXServlet';
+  $.get(url, {ComponentId : getComponentId(), Action : 'Paste', Id : '0', IEFix : ieFix},
+      function(data) {
+        $.closeProgressMessage();
+        if (data === "ok") {
+          displayPublications("0");
+        } else {
+          notyError(data);
+        }
+      }, 'text');
 }
 
 var searchInProgress = <%=searchContext != null%>;

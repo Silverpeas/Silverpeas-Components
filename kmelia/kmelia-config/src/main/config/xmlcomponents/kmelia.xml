@@ -117,13 +117,63 @@
   </profiles>
   <parameters>
     <parameter>
+      <name>authorizedFileExtension</name>
+      <label>
+        <message lang="fr">Fichiers autorisés</message>
+        <message lang="en">Authorized files</message>
+        <message lang="de">Authorized files</message>
+      </label>
+      <order>1</order>
+      <mandatory>false</mandatory>
+      <value/>
+      <type>text</type>
+      <size>25</size>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Liste d'extensions de fichiers séparées par des virgules, le paramètre
+          "Fichiers interdits" est ignoré si une valeur est saisie
+        </message>
+        <message lang="en">List of file extensions separated by comma, "Forbidden files" parameter
+          is ignored if a value is filled
+        </message>
+        <message lang="de">List of file extensions separated by comma, "Forbidden files" parameter
+          is ignored if a value is filled
+        </message>
+      </help>
+    </parameter>
+    <parameter>
+      <name>forbiddenFileExtension</name>
+      <label>
+        <message lang="fr">Fichiers interdits</message>
+        <message lang="en">Forbidden files</message>
+        <message lang="de">Forbidden files</message>
+      </label>
+      <order>2</order>
+      <mandatory>false</mandatory>
+      <value/>
+      <type>text</type>
+      <size>25</size>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Liste d'extensions de fichiers séparées par des virgules, ignoré si une
+          valeur existe pour le paramètre "Fichiers autorisés"
+        </message>
+        <message lang="en">List of file extensions separated by comma, ignored if a value is entered
+          into "Authorized files" parameter
+        </message>
+        <message lang="de">List of file extensions separated by comma, ignored if a value is entered
+          into "Authorized files" parameter
+        </message>
+      </help>
+    </parameter>
+    <parameter>
       <name>nbPubliOnRoot</name>
       <label>
         <message lang="fr">Nb dernières publi</message>
         <message lang="en">Number of last publications</message>
         <message lang="de">Anzahl der letzten Veröffentlichungen</message>
       </label>
-      <order>1</order>
+      <order>3</order>
       <mandatory>true</mandatory>
       <value>15</value>
       <type>text</type>
@@ -152,7 +202,7 @@
         <message lang="en">Number of publications per page.</message>
         <message lang="de">Anzahl der Veröffentlichungen pro Seite</message>
       </label>
-      <order>2</order>
+      <order>4</order>
       <mandatory>false</mandatory>
       <value></value>
       <type>text</type>
@@ -171,7 +221,7 @@
         <message lang="en">Tree view</message>
         <message lang="de">Baumansicht</message>
       </label>
-      <order>3</order>
+      <order>5</order>
       <mandatory>true</mandatory>
       <value>0</value>
       <options>
@@ -215,7 +265,7 @@
         <message lang="en">Classification Scheme</message>
         <message lang="de">Klassierungsplan</message>
       </label>
-      <order>4</order>
+      <order>6</order>
       <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
@@ -233,7 +283,7 @@
         <message lang="en">Content</message>
         <message lang="de">Inhalt</message>
       </label>
-      <order>5</order>
+      <order>7</order>
       <mandatory>true</mandatory>
       <value>yes</value>
       <type>checkbox</type>
@@ -251,7 +301,7 @@
         <message lang="en">Attachments</message>
         <message lang="de">Anhänge</message>
       </label>
-      <order>6</order>
+      <order>8</order>
       <mandatory>true</mandatory>
       <value>yes</value>
       <type>checkbox</type>
@@ -269,7 +319,7 @@
         <message lang="en">See also</message>
         <message lang="de">Siehe auch</message>
       </label>
-      <order>7</order>
+      <order>9</order>
       <mandatory>true</mandatory>
       <value>yes</value>
       <type>checkbox</type>
@@ -287,7 +337,7 @@
         <message lang="en">Multiple locations</message>
         <message lang="de">Mehrere Standorte</message>
       </label>
-      <order>8</order>
+      <order>10</order>
       <mandatory>true</mandatory>
       <value>yes</value>
       <type>checkbox</type>
@@ -306,7 +356,7 @@
         <message lang="en">Readers list</message>
         <message lang="de">Leser-Liste</message>
       </label>
-      <order>9</order>
+      <order>11</order>
       <mandatory>true</mandatory>
       <value>yes</value>
       <type>checkbox</type>
@@ -325,7 +375,7 @@
         <message lang="en">Comments</message>
         <message lang="de">Kommentare</message>
       </label>
-      <order>10</order>
+      <order>12</order>
       <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
@@ -343,7 +393,7 @@
         <message lang="en">Versioned attachments</message>
         <message lang="de">Versionierte Anhänge</message>
       </label>
-      <order>11</order>
+      <order>13</order>
       <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
@@ -361,7 +411,7 @@
         <message lang="en">Draft mode</message>
         <message lang="de">Entwurf</message>
       </label>
-      <order>13</order>
+      <order>15</order>
       <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
@@ -381,7 +431,7 @@
         <message lang="en">Content for web</message>
         <message lang="de">Inhalt für das Web</message>
       </label>
-      <order>14</order>
+      <order>16</order>
       <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
@@ -399,7 +449,7 @@
         <message lang="en">Folder management delegation</message>
         <message lang="de">Theme-Verwaltung Delegierung</message>
       </label>
-      <order>16</order>
+      <order>17</order>
       <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
@@ -417,7 +467,7 @@
         <message lang="en">Author field</message>
         <message lang="de">Autor Feld</message>
       </label>
-      <order>17</order>
+      <order>18</order>
       <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
@@ -435,7 +485,7 @@
         <message lang="en">Directly open attachments</message>
         <message lang="de">Anhänge direkt öffnen</message>
       </label>
-      <order>18</order>
+      <order>19</order>
       <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
@@ -453,7 +503,7 @@
         <message lang="en">Importing document(s)</message>
         <message lang="de">Dokument(e) importieren</message>
       </label>
-      <order>19</order>
+      <order>20</order>
       <mandatory>true</mandatory>
       <value>0</value>
       <options>
@@ -505,7 +555,7 @@
         <message lang="en">Publication validation</message>
         <message lang="de">Veröffentlichungsbestätigung</message>
       </label>
-      <order>20</order>
+      <order>21</order>
       <mandatory>true</mandatory>
       <value>0</value>
       <options>
@@ -570,7 +620,7 @@
         <message lang="en">Export</message>
         <message lang="de">Export</message>
       </label>
-      <order>21</order>
+      <order>22</order>
       <mandatory>true</mandatory>
       <value>no</value>
       <options>
@@ -622,7 +672,7 @@
         <message lang="en">Drag And Drop</message>
         <message lang="de">Drag And Drop</message>
       </label>
-      <order>22</order>
+      <order>23</order>
       <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
@@ -640,7 +690,7 @@
         <message lang="en">Co-writing</message>
         <message lang="de">Co-Schreibung</message>
       </label>
-      <order>23</order>
+      <order>24</order>
       <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
@@ -661,7 +711,7 @@
         <message lang="en">Publication always visible</message>
         <message lang="de">Veröffentlichung immer sichtbar</message>
       </label>
-      <order>24</order>
+      <order>25</order>
       <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
@@ -679,7 +729,7 @@
         <message lang="en">Wizard for creating a publication</message>
         <message lang="de">Assistent für die Erstellung einer Veröffentlichung</message>
       </label>
-      <order>25</order>
+      <order>26</order>
       <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>

@@ -1,22 +1,20 @@
 package com.silverpeas.component.kmelia;
 
-import java.util.HashMap;
-
 import com.silverpeas.admin.components.PasteDetail;
+import com.silverpeas.admin.components.PasteDetailFromToPK;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.node.model.NodePK;
 
-public class KmeliaCopyDetail extends PasteDetail {
-  
+import java.util.HashMap;
+
+public class KmeliaCopyDetail extends PasteDetailFromToPK<NodePK, NodePK> {
+
   public final static String PUBLICATION_HEADER = PasteDetail.OPTION_PREFIX+"PublicationHeader";
   public final static String PUBLICATION_CONTENT = PasteDetail.OPTION_PREFIX+"PublicationContent";
   public final static String PUBLICATION_FILES = PasteDetail.OPTION_PREFIX+"PublicationFiles";
   public final static String PUBLICATION_PDC = PasteDetail.OPTION_PREFIX+"PublicationPDC";
   
   public final static String NODE_RIGHTS = PasteDetail.OPTION_PREFIX+"NodeRights";
-  
-  private NodePK fromNodePK;
-  private NodePK toNodePK;
 
   public KmeliaCopyDetail(String userId) {
     super(userId);
@@ -28,19 +26,19 @@ public class KmeliaCopyDetail extends PasteDetail {
   }
 
   public void setFromNodePK(NodePK fromNodePK) {
-    this.fromNodePK = fromNodePK;
+    setFromPK(fromNodePK);
   }
 
   public NodePK getFromNodePK() {
-    return fromNodePK;
+    return getFromPK();
   }
 
   public void setToNodePK(NodePK toNodePK) {
-    this.toNodePK = toNodePK;
+    setToPK(toNodePK);
   }
 
   public NodePK getToNodePK() {
-    return toNodePK;
+    return getToPK();
   }
   
   public void addOption(String key, String value) {
@@ -51,12 +49,8 @@ public class KmeliaCopyDetail extends PasteDetail {
   }
   
   public boolean isPublicationHeaderMustBeCopied() {
-    if (getOptions() == null) {
-      return true;
-    }
-    return isMustBeCopied(PUBLICATION_HEADER) ||
-        isPublicationContentMustBeCopied() ||
-        isPublicationFilesMustBeCopied();
+    return getOptions() == null || isMustBeCopied(PUBLICATION_HEADER) ||
+        isPublicationContentMustBeCopied() || isPublicationFilesMustBeCopied();
   }
   
   public boolean isPublicationContentMustBeCopied() {
@@ -72,18 +66,10 @@ public class KmeliaCopyDetail extends PasteDetail {
   }
   
   public boolean isNodeRightsMustBeCopied() {
-    if (getOptions() == null) {
-      return false;
-    }
-    return StringUtil.getBooleanValue(getOptions().get(NODE_RIGHTS));
+    return getOptions() != null && StringUtil.getBooleanValue(getOptions().get(NODE_RIGHTS));
   }
   
   private boolean isMustBeCopied(String optionName) {
-    if (getOptions() == null) {
-      return true;
-    }
-    return StringUtil.getBooleanValue(getOptions().get(optionName));
+    return getOptions() == null || StringUtil.getBooleanValue(getOptions().get(optionName));
   }
-  
-
 }
