@@ -666,13 +666,13 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
     List<ComponentInstLight> galleries = null;
     OrganisationController orgaController = new OrganizationController();
     String[] compoIds = orgaController.getCompoId("gallery");
-    for (int c = 0; c < compoIds.length; c++) {
-      if ("yes".equalsIgnoreCase(orgaController.getComponentParameterValue("gallery" + compoIds[c],
-          "viewInWysiwyg"))) {
+    for (final String compoId : compoIds) {
+      if ("yes".equalsIgnoreCase(
+          orgaController.getComponentParameterValue("gallery" + compoId, "viewInWysiwyg"))) {
         if (galleries == null) {
           galleries = new ArrayList<ComponentInstLight>();
         }
-        ComponentInstLight gallery = orgaController.getComponentInstLight("gallery" + compoIds[c]);
+        ComponentInstLight gallery = orgaController.getComponentInstLight("gallery" + compoId);
         galleries.add(gallery);
       }
     }

@@ -28,7 +28,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <c:set var="sessionController" value="${requestScope.forumsSessionClientController}" />
-<fmt:setLocale value="${sessionScope[sessionController].language}" />
+<fmt:setLocale value="${requestScope.resources.language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
 <%@ page import="com.stratelia.webactiv.forums.control.helpers.ForumListHelper"%>
