@@ -612,14 +612,15 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
     
         <div class="thumbnailInputs">
         <img title="<%=resources.getString("survey.answer.image.select")%>" alt="<%=resources.getString("survey.answer.image.select")%>" src="/silverpeas/util/icons/images.png" /> <input type="file" id="thumbnailFile" size="40" name="image<%=i%>" />
+        <%if (galleries != null) {%>
         <span class="txtsublibform"> ou </span><input type="hidden" name="valueImageGallery<%= i %>" id="valueImageGallery<%= i %>"/>
          <select class="galleries" name="galleries" onchange="choixGallery(this, '<%= i %>');this.selectedIndex=0;"> 
            <option selected><%= resources.getString("survey.galleries") %></option>
 <%
-          for (int k = 0; k < galleries.size(); k++) {
-            ComponentInstLight gallery = galleries.get(k); %>
+          for (ComponentInstLight gallery : galleries) { %>
              <option value="<%= gallery.getId() %>"><%= gallery.getLabel() %></option> 
-<%        } %>
+<%        }
+        } %>
           </select>
         </div>
       </div>
