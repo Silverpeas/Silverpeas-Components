@@ -176,6 +176,20 @@ public class ScheduleEvent implements SilverpeasToolContent, ScheduleEventBean, 
   }
 
   /**
+   * Is the specified user can access this content?
+   * <p/>
+   * The user can access this event it comes from the schedule event tool of its personal workspace.
+   *
+   * @param user a user in Silverpeas.
+   * @return true if the tool belongs to the personal workspace of the specified user, false
+   * otherwise.
+   */
+  @Override
+  public boolean canBeAccessedBy(final UserDetail user) {
+    return user.getId().equals(String.valueOf(author));
+  }
+
+  /**
    * The type of this resource
    *
    * @return the same value returned by getContributionType()

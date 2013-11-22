@@ -24,6 +24,8 @@
 package com.silverpeas.blog.model;
 
 import com.silverpeas.SilverpeasContent;
+import com.silverpeas.accesscontrol.AccessController;
+import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.util.Date;
 
@@ -167,7 +169,22 @@ public final class PostDetail implements SilverpeasContent {
   public String getContributionType() {
     return TYPE;
   }
-  
+
+  /**
+   * Is the specified user can access this post?
+   * <p/>
+   * A user can access a post if it has enough rights to access the blog instance in
+   * which is managed this post.
+   * @param user a user in Silverpeas.
+   * @return true if the user can access this post, false otherwise.
+   */
+  @Override
+  public boolean canBeAccessedBy(final UserDetail user) {
+    AccessController<String> accessController =
+        AccessControllerProvider.getAccessController("componentAccessController");
+    return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
+  }
+
   /**
    * The type of this resource
    * @return the same value returned by getContributionType()
