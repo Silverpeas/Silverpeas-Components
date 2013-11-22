@@ -24,6 +24,8 @@
 package com.silverpeas.classifieds.model;
 
 import com.silverpeas.SilverpeasContent;
+import com.silverpeas.accesscontrol.AccessController;
+import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.util.ArrayList;
@@ -210,6 +212,21 @@ public class ClassifiedDetail implements SilverpeasContent {
   @Override
   public String getContributionType() {
     return TYPE;
+  }
+
+  /**
+   * Is the specified user can access this classified?
+   * <p/>
+   * A user can access a classified if it has enough rights to access the Classified instance in
+   * which is managed this classified.
+   * @param user a user in Silverpeas.
+   * @return true if the user can access this classified, false otherwise.
+   */
+  @Override
+  public boolean canBeAccessedBy(final UserDetail user) {
+    AccessController<String> accessController =
+        AccessControllerProvider.getAccessController("componentAccessController");
+    return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
   }
 
   /**
