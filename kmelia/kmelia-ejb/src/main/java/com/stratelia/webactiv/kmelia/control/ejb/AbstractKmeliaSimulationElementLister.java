@@ -25,6 +25,7 @@ package com.stratelia.webactiv.kmelia.control.ejb;
 
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import org.silverpeas.process.annotation.SimulationElementLister;
@@ -63,7 +64,7 @@ public abstract class AbstractKmeliaSimulationElementLister extends SimulationEl
   }
 
   @Override
-  public void listElements(final Object source, final String language) {
+  public void listElements(final Object source, final String language, final WAPrimaryKey targetPK) {
     throw new NotImplementedException();
   }
 }
