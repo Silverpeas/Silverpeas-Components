@@ -117,56 +117,6 @@
   </profiles>
   <parameters>
     <parameter>
-      <name>authorizedFileExtension</name>
-      <label>
-        <message lang="fr">Fichiers autorisés</message>
-        <message lang="en">Authorized files</message>
-        <message lang="de">Authorized files</message>
-      </label>
-      <order>1</order>
-      <mandatory>false</mandatory>
-      <value/>
-      <type>text</type>
-      <size>25</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Liste d'extensions de fichiers séparées par des virgules, le paramètre
-          "Fichiers interdits" est ignoré si une valeur est saisie
-        </message>
-        <message lang="en">List of file extensions separated by comma, "Forbidden files" parameter
-          is ignored if a value is filled
-        </message>
-        <message lang="de">List of file extensions separated by comma, "Forbidden files" parameter
-          is ignored if a value is filled
-        </message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>forbiddenFileExtension</name>
-      <label>
-        <message lang="fr">Fichiers interdits</message>
-        <message lang="en">Forbidden files</message>
-        <message lang="de">Forbidden files</message>
-      </label>
-      <order>2</order>
-      <mandatory>false</mandatory>
-      <value/>
-      <type>text</type>
-      <size>25</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Liste d'extensions de fichiers séparées par des virgules, ignoré si une
-          valeur existe pour le paramètre "Fichiers autorisés"
-        </message>
-        <message lang="en">List of file extensions separated by comma, ignored if a value is entered
-          into "Authorized files" parameter
-        </message>
-        <message lang="de">List of file extensions separated by comma, ignored if a value is entered
-          into "Authorized files" parameter
-        </message>
-      </help>
-    </parameter>
-    <parameter>
       <name>nbPubliOnRoot</name>
       <label>
         <message lang="fr">Nb dernières publi</message>
@@ -1256,6 +1206,56 @@
         <message lang="de">Caution! By checking this box, you will enable managers to the application to freely share folders with users not identified in the platform.</message>
       </warning>
       <personalSpaceValue>no</personalSpaceValue>
+    </parameter>
+	<parameter>
+      <name>authorizedFileExtension</name>
+      <label>
+        <message lang="fr">Fichiers autorisés</message>
+        <message lang="en">Authorized files</message>
+        <message lang="de">Authorized files</message>
+      </label>
+      <order>49</order>
+      <mandatory>false</mandatory>
+      <value/>
+      <type>text</type>
+      <size>25</size>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Liste d'extensions de fichiers séparées par des virgules, le paramètre
+          "Fichiers interdits" est ignoré si une valeur est saisie
+        </message>
+        <message lang="en">List of file extensions separated by comma, "Forbidden files" parameter
+          is ignored if a value is filled
+        </message>
+        <message lang="de">List of file extensions separated by comma, "Forbidden files" parameter
+          is ignored if a value is filled
+        </message>
+      </help>
+    </parameter>
+    <parameter>
+      <name>forbiddenFileExtension</name>
+      <label>
+        <message lang="fr">Fichiers interdits</message>
+        <message lang="en">Forbidden files</message>
+        <message lang="de">Forbidden files</message>
+      </label>
+      <order>50</order>
+      <mandatory>false</mandatory>
+      <value/>
+      <type>text</type>
+      <size>25</size>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Liste d'extensions de fichiers séparées par des virgules, ignoré si une
+          valeur existe pour le paramètre "Fichiers autorisés"
+        </message>
+        <message lang="en">List of file extensions separated by comma, ignored if a value is entered
+          into "Authorized files" parameter
+        </message>
+        <message lang="de">List of file extensions separated by comma, ignored if a value is entered
+          into "Authorized files" parameter
+        </message>
+      </help>
     </parameter>
   </parameters>
 </WAComponent>
