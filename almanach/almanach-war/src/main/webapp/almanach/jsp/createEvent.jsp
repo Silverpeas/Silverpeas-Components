@@ -77,119 +77,44 @@ function reallyAdd() {
 }
 
 function isCorrectForm() {
-  var errorMsg = "";
-  var errorNb = 0;
-  var title = stripInitialWhitespace(document.eventForm.Title.value);
-  var beginDate = document.eventForm.StartDate.value;
-  var endDate = document.eventForm.EndDate.value;
-  var beginTime = stripInitialWhitespace(document.eventForm.StartHour.value);
-  var endTime = stripInitialWhitespace(document.eventForm.EndHour.value);
-  var unity = document.eventForm.Unity.value;
-  var frequency = stripInitialWhitespace(document.eventForm.Frequency.value);
-  var beginPeriodicity = document.eventForm.PeriodicityStartDate.value;
-  var untilDate = document.eventForm.PeriodicityUntilDate.value;
+	var errorMsg = "";
+    var errorNb = 0;
+    var title = stripInitialWhitespace(document.eventForm.Title.value);
+	var unity = document.eventForm.Unity.value;
 
-  var beginDateOK = true;
-  var beginPeriodicityOK = true;
-
-  if (isWhitespace(title)) {
-    errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='GML.name'/>' <fmt:message key='GML.MustBeFilled'/>\n";
-    errorNb++;
-  }
-  if (isWhitespace(beginDate)) {
-    errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='GML.dateBegin'/>' <fmt:message key='GML.MustBeFilled'/>\n";
-    errorNb++;
-  }
-  else {
-	if (!isDateOK(beginDate, '<c:out value="${language}"/>')) {
-      errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='GML.dateBegin'/>' <fmt:message key='GML.MustContainsCorrectDate'/>\n";
-      errorNb++;
-      beginDateOK = false;
+    if (isWhitespace(title)) {
+          errorMsg+=" - '<fmt:message key='GML.name'/>' <fmt:message key='GML.MustBeFilled'/>\n";
+          errorNb++;
     }
-  }
-
-  if (!checkHour(beginTime) || (isWhitespace(beginTime) && !isWhitespace(endTime))) {
-    errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='hourBegin'/>' <fmt:message key='MustContainsCorrectHour'/>\n";
-    errorNb++;
-  }
-
-  if (!isWhitespace(endDate)) {
-	if (!isDateOK(endDate, '<c:out value="${language}"/>')) {
-      errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='GML.dateEnd'/> <fmt:message key='GML.MustContainsCorrectDate'/>\n";
-      errorNb++;
-    } else {
-        if (!isWhitespace(beginDate) && !isWhitespace(endDate)) {
-          if (beginDateOK && !isDate1AfterDate2(endDate, beginDate, '<c:out value="${language}"/>')) {
-            errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='GML.dateEnd'/>' <fmt:message key='GML.MustContainsPostOrEqualDateTo'/> " + beginDate + "\n";
-            errorNb++;
-          }
-        } else {
-          if (isWhitespace(beginDate) && !isWhitespace(endDate)) {
-            if (!isFuture(endDate, '<c:out value="${language}"/>')) {
-              errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='GML.dateEnd'/>' <fmt:message key='GML.MustContainsPostDate'/>\n";
-              errorNb++;
-            }
-          }
-        }
-    }
-  }
-
-  if (!checkHour(endTime)) {
-    errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='hourEnd'/>' <fmt:message key='MustContainsCorrectHour'/>\n";
-    errorNb++;
-  }
     
-  if (beginDate == endDate && !isWhitespace(endTime) && !isWhitespace(beginTime)) {
-    var beginHour = atoi(extractHour(beginTime));
-    var beginMinute = atoi(extractMinute(beginTime));
-    var endHour = atoi(extractHour(endTime));
-    var endMinute = atoi(extractMinute(endTime));
-    if (beginHour > endHour || (beginHour == endHour && beginMinute > endMinute)) {
-      errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='hourEnd'/>' <fmt:message key='GML.MustContainsPostOrEqualDateTo'/> " + beginTime + "\n";
+    var beginDate = {dateId : 'eventStartDate', hourId : 'StartHour', isMandatory : true};
+    var endDate = {dateId : 'eventEndDate', hourId : 'EndHour', defaultDateHour : '23:59'};
+    var dateErrors = isPeriodValid(beginDate, endDate);
+    $(dateErrors).each(function(index, error) {
+      errorMsg += " - " + error.message + "\n";
       errorNb++;
-    }
-  }
+    });
 
-  if (unity != "0") {
-    if (isWhitespace(frequency)) {
-      errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='frequency'/>' <fmt:message key='GML.MustBeFilled'/>\n";
-      errorNb++;
-    } else {
-      if (! isInteger(frequency)) {
-        errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='frequency'/>' <fmt:message key='GML.MustContainsNumber'/>\n";
-        errorNb++;
-      }
+	 if (unity != "0") {
+		var frequency = stripInitialWhitespace(document.eventForm.Frequency.value);
+		if (isWhitespace(frequency)) {
+    		errorMsg+=" - '<fmt:message key='frequency'/>' <fmt:message key='GML.MustBeFilled'/>\n";
+    		errorNb++;
+		} else {
+			if( ! isInteger(frequency)) {
+				errorMsg+=" - '<fmt:message key='frequency'/>' <fmt:message key='GML.MustContainsNumber'/>\n";
+				errorNb++;
+			}
+		}
+		
+		var beginPeriodicity = {dateId : 'eventPeriodicityStartDate'};
+		var untilDate = {dateId : 'eventPeriodicityUntil'};
+		var periodicityErrors = isPeriodValid(beginPeriodicity, untilDate);
+	     $(periodicityErrors).each(function(index, error) {
+	       errorMsg += " - " + error.message + "\n";
+	       errorNb++;
+	     });
     }
-
-    if (! isWhitespace(beginPeriodicity)) {
-		if (!isDateOK(beginPeriodicity, '<c:out value="${language}"/>')) {
-        	errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='beginDatePeriodicity'/>' <fmt:message key='GML.MustContainsCorrectDate'/>\n";
-        	errorNb++;
-        	beginPeriodicityOK = false;
-      	}
-    }
-
-    if (! isWhitespace(untilDate)) {
-    	if (!isDateOK(untilDate, '<c:out value="${language}"/>')) {
-	        errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='endDatePeriodicity'/>' <fmt:message key='GML.MustContainsCorrectDate'/>\n";
-	        errorNb++;
-      	} else {
-          if (!isWhitespace(beginPeriodicity) && !isWhitespace(untilDate)) {
-            if (beginPeriodicityOK && !isDate1AfterDate2(untilDate, beginPeriodicity, '<c:out value="${language}"/>')) {
-              errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='endDatePeriodicity'/>' <fmt:message key='GML.MustContainsPostOrEqualDateTo'/> " + beginPeriodicity + "\n";
-              errorNb++;
-            }
-          } else {
-            if (isWhitespace(beginPeriodicity) && !isWhitespace(untilDate)) {
-              if (!isFuture(untilDate, '<c:out value="${language}"/>')) {
-                errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='endDatePeriodicity'/>' <fmt:message key='GML.MustContainsPostDate'/>\n";
-                errorNb++;
-              }
-            }
-          }
-        }
-      }
-  }
   
   <view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>;
 
@@ -343,7 +268,7 @@ $(document).ready(function() {
 						<input id="eventStartDate" type="text" class="dateToPick" name="StartDate" size="14" maxlength="<c:out value='${maxDateLength}'/>" value="<c:out value='${day[0]}'/>" onchange="javascript:updateDates();"/>
 						<span class="txtnote">(<fmt:message key='GML.dateFormatExemple'/>)</span>
 						<span class="txtlibform">&nbsp;<fmt:message key='ToHour'/>&nbsp;</span>
-						<input class="inputHour" type="text" name="StartHour" size="5" maxlength="5" value="<c:out value='${day[1]}'/>"/> <span class="txtnote">(hh:mm)</span>&nbsp;<img  alt="obligatoire" src="icons/cube-rouge.gif" width="5" height="5"/>
+						<input class="inputHour" type="text" name="StartHour" id="StartHour" size="5" maxlength="5" value="<c:out value='${day[1]}'/>"/> <span class="txtnote">(hh:mm)</span>&nbsp;<img  alt="obligatoire" src="icons/cube-rouge.gif" width="5" height="5"/>
 					</div>
 				</div>
 				
@@ -353,7 +278,7 @@ $(document).ready(function() {
 						<input id="eventEndDate" type="text" class="dateToPick" name="EndDate" size="14" maxlength="<c:out value='${maxDateLength}'/>" value="<c:out value='${day[0]}'/>"/>
 						<span class="txtnote">(<fmt:message key='GML.dateFormatExemple'/>)</span>
 						<span class="txtlibform">&nbsp;<fmt:message key='ToHour'/>&nbsp;</span>
-						<input class="inputHour" type="text" name="EndHour" size="5" maxlength="5"/> <span class="txtnote">(hh:mm)</span>
+						<input class="inputHour" type="text" name="EndHour" id="EndHour" size="5" maxlength="5"/> <span class="txtnote">(hh:mm)</span>
 					</div>
 				</div>
 				
@@ -453,9 +378,7 @@ $(document).ready(function() {
                 </div>
 
                 <div class="field eventPeriodicityDateArea" id="eventPeriodicityStartDateArea">
-                  <label for="eventPeriodicityStartDate" class="txtlibform">
-                    <fmt:message key='beginDatePeriodicity'/> </label>
-
+                  <label for="eventPeriodicityStartDate" class="txtlibform"><fmt:message key='beginDatePeriodicity'/></label>
                   <div class="champs">
                     <input type="text" id="eventPeriodicityStartDate" class="dateToPick" name="PeriodicityStartDate" size="14" maxlength="<c:out value='${maxDateLength}'/>" readonly="readonly" value="<c:out value='${day[0]}'/>"/>
                     (<fmt:message key='GML.dateFormatExemple'/>)
@@ -464,7 +387,6 @@ $(document).ready(function() {
 
                 <div class="field eventPeriodicityDateArea" id="eventPeriodicityUntilDateArea">
                   <label for="eventPeriodicityUntil" class="txtlibform"><fmt:message key='endDatePeriodicity'/></label>
-
                   <div class="champs">
                     <input type="text" id="eventPeriodicityUntil" class="dateToPick" name="PeriodicityUntilDate" size="14" maxlength="<c:out value='${maxDateLength}'/>"/><span class="txtnote"> (<fmt:message key='GML.dateFormatExemple'/>)</span>
                   </div>
