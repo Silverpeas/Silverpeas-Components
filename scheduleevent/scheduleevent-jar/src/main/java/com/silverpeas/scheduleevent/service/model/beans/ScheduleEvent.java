@@ -27,6 +27,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -48,8 +49,8 @@ import javax.persistence.Temporal;
 @Table(name = "sc_scheduleevent_list")
 @NamedQueries({
   @NamedQuery(name = "findByAuthor", query = "from ScheduleEvent where author = :authorId"),
-  @NamedQuery(name = "findByContributor", query =
-      "select e from Contributor c join c.scheduleEvent e where c.userId = :contributorId")})
+  @NamedQuery(name = "findByContributor", query
+      = "select e from Contributor c join c.scheduleEvent e where c.userId = :contributorId")})
 public class ScheduleEvent implements SilverpeasToolContent, ScheduleEventBean, Serializable {
 
   private static final long serialVersionUID = 1L;
@@ -65,13 +66,13 @@ public class ScheduleEvent implements SilverpeasToolContent, ScheduleEventBean, 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   @JoinColumn(name = "scheduleeventid", nullable = false)
   @OrderBy("day, hour ASC")
-  private Set<DateOption> dates = new TreeSet<DateOption>();
-  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true, mappedBy =
-      "scheduleEvent")
-  private Set<Contributor> contributors = new HashSet<Contributor>();
-  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true, mappedBy =
-      "scheduleEvent")
-  private Set<Response> responses = new HashSet<Response>();
+  private final Set<DateOption> dates = new TreeSet<DateOption>();
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true, mappedBy
+      = "scheduleEvent")
+  private final Set<Contributor> contributors = new HashSet<Contributor>();
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true, mappedBy
+      = "scheduleEvent")
+  private final Set<Response> responses = new HashSet<Response>();
   private int status;
 
   @PrePersist
@@ -178,7 +179,7 @@ public class ScheduleEvent implements SilverpeasToolContent, ScheduleEventBean, 
   /**
    * Is the specified user can access this content?
    * <p/>
-   * The user can access this event it comes from the schedule event tool of its personal workspace.
+   * The user can access this event if it is either the author or a contributor of this event.
    *
    * @param user a user in Silverpeas.
    * @return true if the tool belongs to the personal workspace of the specified user, false
@@ -186,7 +187,11 @@ public class ScheduleEvent implements SilverpeasToolContent, ScheduleEventBean, 
    */
   @Override
   public boolean canBeAccessedBy(final UserDetail user) {
-    return user.getId().equals(String.valueOf(author));
+    boolean isContributor = user.getId().equals(String.valueOf(getAuthor()));
+    for (Iterator<Contributor> it = getContributors().iterator(); it.hasNext() && !isContributor;) {
+      isContributor = user.getId().equals(String.valueOf(it.next().getUserId()));
+    }
+    return isContributor;
   }
 
   /**
