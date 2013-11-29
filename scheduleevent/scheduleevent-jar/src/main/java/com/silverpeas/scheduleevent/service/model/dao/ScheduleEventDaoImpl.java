@@ -70,7 +70,7 @@ public class ScheduleEventDaoImpl implements ScheduleEventDao {
         .getFactory()
         .getCommentService()
         .deleteAllCommentsOnPublication(ScheduleEvent.getResourceType(),
-        new CommentPK(scheduleEvent.getId().toString(), ScheduleEventConstant.TOOL_ID));
+            new CommentPK(scheduleEvent.getId().toString(), ScheduleEventConstant.TOOL_ID));
   }
 
   @Override
