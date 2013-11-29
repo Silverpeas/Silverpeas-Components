@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.silverpeas.SilverpeasContent;
+import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
@@ -45,6 +46,7 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
@@ -338,6 +340,19 @@ public class KmeliaPublication implements SilverpeasContent {
   @Override
   public String getContributionType() {
     return getDetail().getContributionType();
+  }
+
+  /**
+   * Is the specified user can access this publication?
+   * <p/>
+   * A user can access a publication if he has enough rights to access both the Kmelia instance
+   * in which is managed this publication and the topics to which this publication belongs to.
+   * @param user a user in Silverpeas.
+   * @return true if the user can access this publication, false otherwise.
+   */
+  @Override
+  public boolean canBeAccessedBy(final UserDetail user) {
+    return getDetail().canBeAccessedBy(user);
   }
 
   public void setRank(int rank) {

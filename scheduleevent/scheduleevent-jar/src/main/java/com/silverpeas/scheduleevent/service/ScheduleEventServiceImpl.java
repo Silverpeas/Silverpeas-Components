@@ -38,10 +38,10 @@ import javax.inject.Inject;
 public class ScheduleEventServiceImpl implements ScheduleEventService {
 
   public static final String COMPONENT_NAME = ScheduleEventConstant.TOOL_ID;
-  private static final String MESSAGES_PATH =
-      "com.silverpeas.components.scheduleevent.multilang.ScheduleEventBundle";
-  private static final String SETTINGS_PATH =
-      "com.silverpeas.components.scheduleevent.settings.ScheduleEventSettings";
+  private static final String MESSAGES_PATH
+      = "com.silverpeas.components.scheduleevent.multilang.ScheduleEventBundle";
+  private static final String SETTINGS_PATH
+      = "com.silverpeas.components.scheduleevent.settings.ScheduleEventSettings";
   private static final ResourceLocator settings = new ResourceLocator(SETTINGS_PATH, "");
   @Inject
   private ScheduleEventDao scheduleEventDao;
@@ -108,8 +108,7 @@ public class ScheduleEventServiceImpl implements ScheduleEventService {
   }
 
   @Override
-  public void setLastVisited(String scheduleEventId, int userId) {
-    ScheduleEvent event = scheduleEventDao.getScheduleEvent(scheduleEventId);
+  public void setLastVisited(ScheduleEvent event, int userId) {
     Set<Contributor> contributors = event.getContributors();
     Iterator<Contributor> iter = contributors.iterator();
     boolean finish = false;
