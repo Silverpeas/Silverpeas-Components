@@ -57,7 +57,7 @@ if(request.getAttribute("NbLinks")!=null){
 }
 </style>
 <%-- load the css and js file used by tree menu --%>
-<menuTree:head displayCssFile="true" displayJavascriptFile="true" displayIconsStyles="true" contextName="<%=m_context%>"></menuTree:head>
+<menuTree:head displayCssFile="true" displayJavascriptFile="true" displayIconsStyles="false" contextName="<%=m_context%>"></menuTree:head>
 <%-- personalizable Javascript for  YUI treeView menu --%>
 <script type="text/javascript" src="<%=m_context %>/util/javaScript/treeMenu/menu.js"></script>
 
