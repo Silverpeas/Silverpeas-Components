@@ -54,6 +54,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.subscribe.service.NodeSubscriptionResource;
 import com.silverpeas.thumbnail.service.ThumbnailService;
+import com.silverpeas.thumbnail.service.ThumbnailServiceFactory;
 import com.silverpeas.thumbnail.service.ThumbnailServiceImpl;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.FileUtil;
@@ -138,24 +139,6 @@ import com.stratelia.webactiv.util.statistic.model.HistoryObjectDetail;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.StringTokenizer;
-import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.DocumentType;
@@ -172,14 +155,23 @@ import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
 import org.silverpeas.subscription.SubscriptionContext;
 import org.silverpeas.util.GlobalContext;
+import org.silverpeas.util.UnitUtil;
 import org.silverpeas.wysiwyg.WysiwygException;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
-import static org.silverpeas.attachment.AttachmentService.VERSION_MODE;
+import javax.xml.parsers.ParserConfigurationException;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.util.*;
 
 import static com.silverpeas.kmelia.export.KmeliaPublicationExporter.*;
 import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
+import static org.silverpeas.attachment.AttachmentService.VERSION_MODE;
 
 public class KmeliaSessionController extends AbstractComponentSessionController implements
     ExportFileNameProducer {
@@ -193,7 +185,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    */
   private static final String[] AVAILABLE_EXPORT_FORMATS = {"zip", "pdf", "odt", "doc"};
 
-  /* EJBs used by sessionController */ private ThumbnailService thumbnailService = null;
+  /* EJBs used by sessionController */
+  private ThumbnailService thumbnailService = null;
   private CommentService commentService = null;
   private PdcBm pdcBm = null;
   private StatisticBm statisticBm = null;
@@ -213,7 +206,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   private String sortValue = null;
   private String defaultSortValue = "2";
   private String autoRedirectURL = null;
-  private int nbPublicationsOnRoot = -1;
   private int rang = 0;
   private ResourceLocator publicationSettings = null;
   public final static String TAB_PREVIEW = "tabpreview";
@@ -237,7 +229,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   String[] idSelectedUser = null;
   // pagination de la liste des publications
   private int indexOfFirstPubToDisplay = 0;
-  private int nbPublicationsPerPage = -1;
   // Assistant de publication
   private String wizard = "none";
   private String wizardRow = "0";
@@ -353,34 +344,24 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public int getNbPublicationsOnRoot() {
-    if (nbPublicationsOnRoot == -1) {
-      String parameterValue = getComponentParameterValue("nbPubliOnRoot");
-      if (StringUtil.isDefined(parameterValue)) {
-        nbPublicationsOnRoot = Integer.parseInt(parameterValue);
-      } else {
-        if (KmeliaHelper.isKmelia(getComponentId())) {
-          // lecture du properties
-          nbPublicationsOnRoot = getSettings().getInteger("HomeNbPublications", 15);
-        } else {
-          nbPublicationsOnRoot = 0;
-        }
+    int nbPublicationsOnRoot = 0;
+    String parameterValue = getComponentParameterValue("nbPubliOnRoot");
+    if (StringUtil.isDefined(parameterValue)) {
+      nbPublicationsOnRoot = Integer.parseInt(parameterValue);
+    } else {
+      if (KmeliaHelper.isKmelia(getComponentId())) {
+        // lecture du properties
+        nbPublicationsOnRoot = getSettings().getInteger("HomeNbPublications", 15);
       }
     }
     return nbPublicationsOnRoot;
   }
 
   public int getNbPublicationsPerPage() {
-    if (nbPublicationsPerPage == -1) {
-      String parameterValue = this.getComponentParameterValue("nbPubliPerPage");
-      if (parameterValue == null || parameterValue.length() <= 0) {
-        nbPublicationsPerPage = getSettings().getInteger("NbPublicationsParPage", 10);
-      } else {
-        try {
-          nbPublicationsPerPage = Integer.parseInt(parameterValue);
-        } catch (Exception e) {
-          nbPublicationsPerPage = getSettings().getInteger("NbPublicationsParPage", 10);
-        }
-      }
+    int nbPublicationsPerPage = getSettings().getInteger("NbPublicationsParPage", 10);
+    String parameterValue = getComponentParameterValue("nbPubliPerPage");
+    if (StringUtil.isInteger(parameterValue)) {
+      nbPublicationsPerPage = Integer.parseInt(parameterValue);
     }
     return nbPublicationsPerPage;
   }
@@ -2169,10 +2150,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public ThumbnailService getThumbnailService() {
-    if (thumbnailService == null) {
-      thumbnailService = new ThumbnailServiceImpl();
-    }
-    return thumbnailService;
+    return ThumbnailServiceFactory.getThumbnailService();
   }
 
   /**
@@ -3426,12 +3404,16 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     while (iterator.hasNext()) {
       NodeDetail nodeInPath = iterator.next();
       if ((i <= beforeAfter) || (i + beforeAfter >= nbItemInPath - 1)) {
-        if (!nodeInPath.getNodePK().getId().equals("0")) {
+        if (!nodeInPath.getNodePK().isRoot()) {
           String nodeName;
-          if (getCurrentLanguage() != null) {
-            nodeName = nodeInPath.getName(getCurrentLanguage());
+          if (nodeInPath.getNodePK().isTrash()) {
+            nodeName = getString("kmelia.basket");
           } else {
-            nodeName = nodeInPath.getName();
+            if (getCurrentLanguage() != null) {
+              nodeName = nodeInPath.getName(getCurrentLanguage());
+            } else {
+              nodeName = nodeInPath.getName();
+            }
           }
           linkedPathString.append("<a href=\"javascript:onClick=topicGoTo('").append(
               nodeInPath.getNodePK().getId()).append("')\">").append(
@@ -3938,11 +3920,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   private String getMaxSizeErrorMessage(ResourceLocator messages) {
     ResourceLocator uploadSettings = new ResourceLocator(
         "org.silverpeas.util.uploads.uploadSettings", "");
-    double maximumFileSize = uploadSettings.getLong("MaximumFileSize", 10485760);
-    double maximumFileSizeMo = maximumFileSize / 1048576.0d;
-    return messages.getString("attachment.dialog.errorAtLeastOneFileSize")
-        + " " + messages.getString("attachment.dialog.maximumFileSize") + " ("
-        + maximumFileSizeMo + " Mo)";
+    long maximumFileSize = FileRepositoryManager.getUploadMaximumFileSize();
+    String maximumFileSizeMo = UnitUtil.formatMemSize(maximumFileSize);
+    return messages.getString("attachment.dialog.errorAtLeastOneFileSize") + " " +
+        messages.getString("attachment.dialog.maximumFileSize") + " (" + maximumFileSizeMo + ")";
   }
 
   public List<HistoryObjectDetail> getLastAccess(PublicationPK pk) {

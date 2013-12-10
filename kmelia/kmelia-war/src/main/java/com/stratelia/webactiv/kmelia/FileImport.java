@@ -20,9 +20,6 @@
  */
 package com.stratelia.webactiv.kmelia;
 
-import static java.io.File.separator;
-import static org.silverpeas.util.Charsets.UTF_8;
-
 import com.silverpeas.importExport.control.ImportSettings;
 import com.silverpeas.importExport.control.MassiveDocumentImport;
 import com.silverpeas.importExport.control.PublicationsTypeManager;
@@ -36,6 +33,7 @@ import com.silverpeas.node.importexport.NodePositionType;
 import com.silverpeas.node.importexport.NodePositionsType;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ZipManager;
+import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
@@ -43,6 +41,12 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.silverpeas.importExport.attachment.AttachmentDetail;
+import org.silverpeas.importExport.attachment.AttachmentsType;
+import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -55,10 +59,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.silverpeas.importExport.attachment.AttachmentDetail;
-import org.silverpeas.importExport.attachment.AttachmentsType;
+import static java.io.File.separator;
+import static org.silverpeas.util.Charsets.UTF_8;
 
 /**
  * Class for unit and massive import
@@ -108,6 +110,7 @@ public class FileImport {
     SilverTrace.info("kmelia", "FileImport.importFiles()", "root.MSG_GEN_ENTER_METHOD");
     List<PublicationDetail> publicationDetails = new ArrayList<PublicationDetail>();
     ImportReportManager reportManager = new ImportReportManager();
+    String tempFolderPath = null;
     try {
       PublicationsTypeManager typeMgr = new PublicationsTypeManager();
 
@@ -118,7 +121,7 @@ public class FileImport {
       PublicationDetail pubDetail = getPublicationDetail(fileUploaded, settings);
       publication.setPublicationDetail(pubDetail);
 
-      String tempFolderPath = unzipUploadedFile();
+      tempFolderPath = unzipUploadedFile();
       Collection<File> filesExtracted = FileUtils.listFiles(new File(tempFolderPath), null, true);
       SilverTrace.info("kmelia", "FileImport.importFiles()", "root.MSG_GEN_PARAM_VALUE",
           "nb filesExtracted = " + filesExtracted.size());
@@ -152,12 +155,16 @@ public class FileImport {
       // import files and create publication
       typeMgr.processImport(publicationsType, settings, reportManager);
 
-      FileFolderManager.deleteFolder(tempFolderPath);
       if (pubDetail != null) {
         publicationDetails.add(pubDetail);
       }
     } catch (Exception e) {
       SilverTrace.warn("kmelia", "FileImport.importFiles()", "root.EX_LOAD_ATTACHMENT_FAILED", e);
+      SilverpeasTransverseErrorUtil.throwTransverseErrorIfAny(e, I18NHelper.defaultLanguage);
+    } finally {
+      if (tempFolderPath != null) {
+        FileFolderManager.deleteFolder(tempFolderPath);
+      }
     }
     reportManager.reportImportEnd();
     SilverTrace.info("kmelia", "FileImport.importFiles()", "root.MSG_GEN_EXIT_METHOD");

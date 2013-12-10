@@ -32,7 +32,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags/silverpeas/util" %>
 <c:set var="sessionController" value="${requestScope.forumsSessionClientController}" />
 <c:set var="componentId" value="${sessionController.componentId}" />
 <c:set var="isReader" value="${sessionController.reader}" />
@@ -146,7 +145,6 @@
     </script>
   </head>
   <body id="forum" <%ForumHelper.addBodyOnload(out, fsc);%>>
-  <tags:displayNotification/>
     <c:set var="viewForumPage">/Rforums/<c:out value="${componentId}" />/viewForum.jsp</c:set>
     <view:browseBar>
       <c:forEach items="${requestScope.parents}" var="ancestor">

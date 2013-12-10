@@ -454,8 +454,6 @@ public interface KmeliaBm extends SilverpeasComponentService<KmeliaPublication> 
   public void movePublicationInSameApplication(PublicationPK pubPK, NodePK from, NodePK to,
       String userId);
 
-  public void movePublicationInSameApplication(PublicationDetail pub, NodePK to, String userId);
-
   public void movePublicationInAnotherApplication(PublicationDetail pub, NodePK to, String userId);
 
   /**

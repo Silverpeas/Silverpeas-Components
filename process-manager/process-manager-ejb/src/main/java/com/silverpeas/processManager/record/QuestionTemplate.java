@@ -28,6 +28,7 @@ import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordTemplate;
+import com.silverpeas.form.fieldType.TextField;
 import com.silverpeas.form.record.GenericFieldTemplate;
 import com.stratelia.webactiv.util.ResourceLocator;
 
@@ -81,10 +82,14 @@ public class QuestionTemplate implements RecordTemplate {
     fieldTemplate = new GenericFieldTemplate(fieldName, "text");
     fieldTemplate.addLabel(label.getString("processManager." + fieldName),
         language);
-    fieldTemplate.setDisplayerName("textarea");
-    fieldTemplate.setMandatory(true);
-    fieldTemplate.setReadOnly(readonly);
-
+    if (readonly) {
+      fieldTemplate.setDisplayerName("simpletext");
+    } else {
+      fieldTemplate.setDisplayerName("textarea");
+      fieldTemplate.setMandatory(true);
+      fieldTemplate.setReadOnly(readonly);
+      fieldTemplate.addParameter(TextField.PARAM_MAXLENGTH, "500");
+    }
     return fieldTemplate;
   }
 

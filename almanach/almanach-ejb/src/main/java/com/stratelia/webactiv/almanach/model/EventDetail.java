@@ -28,6 +28,8 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.silverpeas.accesscontrol.AccessController;
+import com.silverpeas.accesscontrol.AccessControllerProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
@@ -58,8 +60,8 @@ import net.fortuna.ical4j.model.property.Uid;
 
 import static com.silverpeas.util.StringUtil.isDefined;
 
-public class EventDetail extends AbstractI18NBean implements
-    SilverContentInterface, Serializable, SilverpeasContent {
+public class EventDetail extends AbstractI18NBean
+    implements SilverContentInterface, Serializable, SilverpeasContent {
 
   private static final long serialVersionUID = 9077018265272108291L;
   public static ResourceLocator almanachSettings =
@@ -93,7 +95,8 @@ public class EventDetail extends AbstractI18NBean implements
 
   public EventDetail(EventPK pk, String title, Date startDate, Date endDate) {
     if (endDate.before(startDate)) {
-      throw new IllegalArgumentException("The end date cannot be before the start date of the event");
+      throw new IllegalArgumentException(
+          "The end date cannot be before the start date of the event");
     }
     this._pk = pk;
     this._title = title;
@@ -103,7 +106,6 @@ public class EventDetail extends AbstractI18NBean implements
 
   /**
    * Is this event periodic?
-   *
    * @return true if the event is recurrent, false otherwise.
    */
   public boolean isPeriodic() {
@@ -177,7 +179,6 @@ public class EventDetail extends AbstractI18NBean implements
 
   /**
    * Sets the date at which this event ends. The end date cannot be null.
-   *
    * @param date end date of this event.
    */
   public void setEndDate(Date date) {
@@ -301,13 +302,14 @@ public class EventDetail extends AbstractI18NBean implements
 
   public Collection<SimpleDocument> getAttachments() {
     try {
-      AlmanachBm almanachService = EJBUtilitaire.getEJBObjectRef(JNDINames.ALMANACHBM_EJBHOME,
-          AlmanachBm.class);
+      AlmanachBm almanachService =
+          EJBUtilitaire.getEJBObjectRef(JNDINames.ALMANACHBM_EJBHOME, AlmanachBm.class);
       return almanachService.getAttachments(getPK());
     } catch (Exception ex) {
       Logger.getLogger(EventDetail.class.getName()).log(Level.SEVERE, null, ex);
       throw new AlmanachRuntimeException("EventDetail.getAttachments()",
-          SilverpeasRuntimeException.ERROR, "almanach.EX_IMPOSSIBLE_DOBTENIR_LES_FICHIERSJOINTS", ex);
+          SilverpeasRuntimeException.ERROR, "almanach.EX_IMPOSSIBLE_DOBTENIR_LES_FICHIERSJOINTS",
+          ex);
     }
   }
 
@@ -360,7 +362,6 @@ public class EventDetail extends AbstractI18NBean implements
 
   /**
    * Gets the time zone in which this event is defined.
-   *
    * @return the time zone in which the event occur.
    */
   public TimeZone getTimeZone() {
@@ -448,5 +449,20 @@ public class EventDetail extends AbstractI18NBean implements
   @Override
   public String getContributionType() {
     return TYPE;
+  }
+
+  /**
+   * Is the specified user can access this event?
+   * <p/>
+   * A user can access an event if it has enough rights to access the Almanach instance in
+   * which is managed this event.
+   * @param user a user in Silverpeas.
+   * @return true if the user can access this event, false otherwise.
+   */
+  @Override
+  public boolean canBeAccessedBy(final UserDetail user) {
+    AccessController<String> accessController =
+        AccessControllerProvider.getAccessController("componentAccessController");
+    return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
   }
 }

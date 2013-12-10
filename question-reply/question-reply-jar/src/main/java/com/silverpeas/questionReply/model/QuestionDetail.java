@@ -4,6 +4,8 @@ import java.text.ParseException;
 import java.util.Date;
 
 import com.silverpeas.SilverpeasContent;
+import com.silverpeas.accesscontrol.AccessController;
+import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.contentManager.ContentManagerFactory;
@@ -99,6 +101,21 @@ public class QuestionDetail implements SilverpeasContent {
   @Override
   public String getContributionType() {
     return TYPE;
+  }
+
+  /**
+   * Is the specified user can access this question?
+   * <p/>
+   * A user can access a question if it has enough rights to access the QuestionReply instance in
+   * which is managed this question.
+   * @param user a user in Silverpeas.
+   * @return true if the user can access this question, false otherwise.
+   */
+  @Override
+  public boolean canBeAccessedBy(final UserDetail user) {
+    AccessController<String> accessController =
+        AccessControllerProvider.getAccessController("componentAccessController");
+    return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
   }
 
 }

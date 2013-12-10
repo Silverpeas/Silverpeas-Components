@@ -69,8 +69,10 @@ import org.silverpeas.components.forum.notification.ForumsMessagePendingValidati
 import org.silverpeas.components.forum.notification.ForumsMessageSubscriptionUserNotification;
 import org.silverpeas.components.forum.notification.ForumsMessageValidationUserNotification;
 import org.silverpeas.upload.UploadedFile;
+import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
 
 import javax.ejb.EJBException;
+import javax.servlet.ServletRequest;
 import javax.xml.bind.JAXBException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -426,6 +428,8 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   /**
    * Cree un nouveau message dans la datasource
    *
+   *
+   *
    * @param title titre du message
    * @param author id de l'auteur du message
    * @param forumId id du forum
@@ -441,7 +445,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     String status = STATUS_FOR_VALIDATION;
 
     MessagePK messagePK = new MessagePK(getComponentId(), getSpaceId());
-    int messageId;
+    int messageId = 0;
 
     try {
       if (!isValidationActive() || admin.isInRole(getUserRoleLevel()) ||
@@ -451,8 +455,9 @@ public class ForumsSessionController extends AbstractComponentSessionController 
       // creation du message dans la base
       messageId = getForumsBM().createMessage(messagePK, truncateTextField(title),
           author, null, forumId, parentId, text, keywords, status);
-    } catch (ForumsException e) {
-      throw new EJBException(e.getMessage(), e);
+    } catch (Exception e) {
+      SilverpeasTransverseErrorUtil.stopTransverseErrorIfAny(new EJBException(e.getMessage(), e));
+      return messageId;
     }
     messagePK.setId(String.valueOf(messageId));
 
@@ -466,11 +471,15 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     }
 
     // Attach uploaded files
-    if (com.silverpeas.util.CollectionUtil.isNotEmpty(uploadedFiles)) {
-      for (UploadedFile uploadedFile : uploadedFiles) {
-        // Register attachment
-        uploadedFile.registerAttachment(messagePK, I18NHelper.defaultLanguage, false);
+    try {
+      if (com.silverpeas.util.CollectionUtil.isNotEmpty(uploadedFiles)) {
+        for (UploadedFile uploadedFile : uploadedFiles) {
+          // Register attachment
+          uploadedFile.registerAttachment(messagePK, I18NHelper.defaultLanguage, false);
+        }
       }
+    } catch (RuntimeException re) {
+      SilverpeasTransverseErrorUtil.stopTransverseErrorIfAny(re);
     }
 
     return messageId;
@@ -494,8 +503,9 @@ public class ForumsSessionController extends AbstractComponentSessionController 
       }
       getForumsBM().updateMessage(messagePK, truncateTextField(title), text,
           getUserId(), currentStatus);
-    } catch (ForumsException e) {
-      throw new EJBException(e.getMessage(), e);
+    } catch (Exception e) {
+      SilverpeasTransverseErrorUtil.stopTransverseErrorIfAny(new EJBException(e.getMessage(), e));
+      return;
     }
 
     // Send notification to subscribers

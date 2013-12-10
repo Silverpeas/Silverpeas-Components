@@ -27,6 +27,8 @@ import java.util.Date;
 import java.util.Iterator;
 
 import com.silverpeas.SilverpeasContent;
+import com.silverpeas.accesscontrol.AccessController;
+import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.infoLetter.InfoLetterContentManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -176,5 +178,20 @@ public class InfoLetterPublicationPdC extends InfoLetterPublication implements
   @Override
   public String getContributionType() {
     return TYPE;
+  }
+
+  /**
+   * Is the specified user can access this information letter?
+   * <p/>
+   * A user can access an information letter if it has enough rights to access the InfoLetter
+   * instance in which is managed this letter.
+   * @param user a user in Silverpeas.
+   * @return true if the user can access this letter, false otherwise.
+   */
+  @Override
+  public boolean canBeAccessedBy(final UserDetail user) {
+    AccessController<String> accessController =
+        AccessControllerProvider.getAccessController("componentAccessController");
+    return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
   }
 }

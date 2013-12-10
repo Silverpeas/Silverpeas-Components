@@ -316,9 +316,8 @@
           var url = "<%=URLManager.getFullApplicationURL(request)%>/RgalleryDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&AlbumId=<%=currentAlbum.getNodePK().getId()%>";
           var message = "<%=URLManager.getFullApplicationURL(request)%>/upload/Gallery_<%=resource.getLanguage()%>.html";
 
-      <%ResourceLocator uploadSettings = new ResourceLocator(
-                "com.stratelia.webactiv.util.uploads.uploadSettings", "");
-        String maximumFileSize = uploadSettings.getString("MaximumFileSize", "10000000");%>
+      <%
+        long maximumFileSize = FileRepositoryManager.getUploadMaximumFileSize();%>
             showHideDragDrop(url, message,'<%=resource.getString("GML.applet.dnd.alt")%>','<%=maximumFileSize%>','<%=m_context%>','<%=resource.getString("GML.DragNDropExpand")%>','<%=resource.getString("GML.DragNDropCollapse")%>');
           }
 

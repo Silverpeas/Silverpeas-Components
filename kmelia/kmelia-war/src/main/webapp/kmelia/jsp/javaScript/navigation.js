@@ -827,7 +827,7 @@ function pasteNode(id) {
     if (data === "ok") {
       reloadPage(id);
     } else {
-      alert(data);
+      notyError(data);
     }
   }, 'text');
 }

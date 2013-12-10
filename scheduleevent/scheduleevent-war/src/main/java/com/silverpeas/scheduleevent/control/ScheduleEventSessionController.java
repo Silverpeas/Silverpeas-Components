@@ -20,7 +20,7 @@
  */
 package com.silverpeas.scheduleevent.control;
 
-import static com.silverpeas.export.ExportDescriptor.withWriter;
+import com.silverpeas.calendar.CalendarEvent;
 import com.silverpeas.export.ExportException;
 import com.silverpeas.export.Exporter;
 import com.silverpeas.export.ExporterFactory;
@@ -53,11 +53,9 @@ import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
-import com.silverpeas.calendar.CalendarEvent;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
@@ -66,8 +64,9 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.apache.commons.io.FileUtils;
+
+import static com.silverpeas.export.ExportDescriptor.withWriter;
 
 public class ScheduleEventSessionController extends AbstractComponentSessionController {
 
@@ -155,10 +154,10 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
       cancelDirection = "Detail?scheduleEventId=" + currentScheduleEvent.getId();
     }
 
-    String hostUrl =
-        m_context + URLManager.getURL(URLManager.CMP_SCHEDULE_EVENT, null, null) + hostDirection;
-    String cancelUrl =
-        m_context + URLManager.getURL(URLManager.CMP_SCHEDULE_EVENT, null, null) + cancelDirection;
+    String hostUrl = m_context + URLManager.getURL(URLManager.CMP_SCHEDULE_EVENT, null, null)
+        + hostDirection;
+    String cancelUrl = m_context + URLManager.getURL(URLManager.CMP_SCHEDULE_EVENT, null, null)
+        + cancelDirection;
     sel.setGoBackURL(hostUrl);
     sel.setCancelURL(cancelUrl);
 
@@ -180,8 +179,8 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
   }
 
   public void setIdUsersAndGroups() {
-    String[] usersId =
-        SelectionUsersGroups.getDistinctUserIds(sel.getSelectedElements(), sel.getSelectedSets());
+    String[] usersId = SelectionUsersGroups.getDistinctUserIds(sel.getSelectedElements(), sel.
+        getSelectedSets());
 
     if (usersId.length < 1) {
       return;
@@ -226,8 +225,8 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
     }
 
     UserDetail[] userDetails = SelectionUsersGroups.getUserDetails(usersId);
-    Contributor[] contrib =
-        (Contributor[]) recordedContributors.toArray(new Contributor[recordedContributors.size()]);
+    Contributor[] contrib = (Contributor[]) recordedContributors.toArray(
+        new Contributor[recordedContributors.size()]);
     boolean found = false;
     for (int c = contrib.length - 1; c >= 0; c--) {
       if (getUserId().equals(String.valueOf(contrib[c].getUserId()))) {
@@ -244,7 +243,8 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
         // } else {
         currentScheduleEvent.getContributors().remove(contrib[c]);
         // }
-        SilverTrace.debug("scheduleevent", "ScheduleEventSessionController.deleteRecordedContributors()",
+        SilverTrace.debug("scheduleevent",
+            "ScheduleEventSessionController.deleteRecordedContributors()",
             "Contributor '" + contrib[c].getUserName() + "' deleted from event '"
             + currentScheduleEvent.getTitle() + "'");
       }
@@ -252,8 +252,8 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
   }
 
   public void updateIdUsersAndGroups() {
-    String[] usersId =
-        SelectionUsersGroups.getDistinctUserIds(sel.getSelectedElements(), sel.getSelectedSets());
+    String[] usersId = SelectionUsersGroups.getDistinctUserIds(sel.getSelectedElements(), sel.
+        getSelectedSets());
 
     Set<Contributor> recordedContributors = currentScheduleEvent.getContributors();
     deleteRecordedContributors(usersId, recordedContributors);
@@ -269,7 +269,6 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
 
     // create all dateoption for database
     // preTreatementForDateOption();
-
     getScheduleEventService().createScheduleEvent(currentScheduleEvent);
 
     // notify contributors
@@ -287,7 +286,7 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
 
       UserNotificationHelper
           .buildAndSend(new ScheduleEventUserNotification(currentScheduleEvent, getUserDetail(),
-          type));
+                  type));
 
     } catch (Exception e) {
       SilverTrace.warn("scheduleevent",
@@ -301,8 +300,8 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
   }
 
   public List<ScheduleEvent> getScheduleEventsByUserId() {
-    Set<ScheduleEvent> allEvents =
-        getScheduleEventService().listAllScheduleEventsByUserId(getUserId());
+    Set<ScheduleEvent> allEvents = getScheduleEventService().listAllScheduleEventsByUserId(
+        getUserId());
     List<ScheduleEvent> results = new ArrayList<ScheduleEvent>(allEvents);
     Collections.sort(results, new ScheduleEventComparator());
 
@@ -310,10 +309,16 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
   }
 
   public ScheduleEvent getDetail(String id) {
+    ScheduleEvent event = getScheduleEventService().findScheduleEvent(id);
     // update last visited date
-    getScheduleEventService().setLastVisited(id, Integer.valueOf(getUserId()));
-    // return detail for page
-    return getScheduleEventService().findScheduleEvent(id);
+    if (event != null) {
+      if (event.canBeAccessedBy(getUserDetail())) {
+        getScheduleEventService().setLastVisited(event, Integer.valueOf(getUserId()));
+      } else {
+        event = null;
+      }
+    }
+    return event;
   }
 
   public void switchState(String id) {
@@ -380,7 +385,7 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
     result.setOptionId(dateId);
     return result;
   }
-  
+
   /**
    * Converts the specified detailed scheduleevent into a calendar event.
    *
@@ -388,27 +393,28 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
    * @param list of dates.
    * @return the calendar events corresponding to the schedule event.
    */
-  private List<CalendarEvent> asCalendarEvents(final ScheduleEvent event, final List<DateOption> listDateOption) {
+  private List<CalendarEvent> asCalendarEvents(final ScheduleEvent event,
+      final List<DateOption> listDateOption) {
     CalendarEventEncoder encoder = new CalendarEventEncoder();
     return encoder.encode(event, listDateOption);
   }
-  
+
   /**
    * Exports the current ScheduleEvent in iCal format. The iCal file is generated into the temporary
    * directory.
    *
    * @return the iCal file name into which is generated the current ScheduleEvent.
-   * @throws Exception 
+   * @throws Exception
    */
   public String exportToICal(ScheduleEvent event) throws Exception {
-    
+
     //construction de la liste des dates retenues de l'événement
     List<DateOption> listDateOption = new ArrayList<DateOption>();
     ScheduleEventDetailVO scheduleEventDetailVO = new ScheduleEventDetailVO(this, event);
     BestTimeVO bestTimeVO = scheduleEventDetailVO.getBestTimes();
-    if(bestTimeVO.isBestDateExists()) {
+    if (bestTimeVO.isBestDateExists()) {
       List<TimeVO> listTimeVO = bestTimeVO.getTimes();
-      for(TimeVO timeVO : listTimeVO) {
+      for (TimeVO timeVO : listTimeVO) {
         HalfDayTime halfDayTime = (HalfDayTime) timeVO;
         DateVO dateVO = halfDayTime.getDate();
         HalfDayDateVO halfDayDateVO = (HalfDayDateVO) dateVO;
@@ -416,7 +422,7 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
         DateOption dateOption = new DateOption();
         dateOption.setDay(day);
         String label = halfDayTime.getMultilangLabel();
-        if("scheduleevent.form.hour.columnam".equals(label)) {
+        if ("scheduleevent.form.hour.columnam".equals(label)) {
           dateOption.setHour(ScheduleEventVO.MORNING_HOUR);
         } else if ("scheduleevent.form.hour.columnpm".equals(label)) {
           dateOption.setHour(ScheduleEventVO.AFTERNOON_HOUR);
@@ -424,10 +430,10 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
         listDateOption.add(dateOption);
       }
     }
-    
+
     //transformation des dates en CalendarEvent
     List<CalendarEvent> eventsToExport = asCalendarEvents(event, listDateOption);
-    
+
     //export iCal
     ExporterFactory exporterFactory = ExporterFactory.getFactory();
     Exporter<ExportableCalendar> iCalExporter = exporterFactory.getICalExporter();

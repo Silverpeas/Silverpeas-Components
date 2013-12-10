@@ -29,6 +29,8 @@ import java.util.Date;
 import java.util.Iterator;
 
 import com.silverpeas.SilverpeasContent;
+import com.silverpeas.accesscontrol.AccessController;
+import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -233,6 +235,21 @@ public class ForumDetail extends AbstractI18NBean implements SilverContentInterf
   @Override
   public String getContributionType() {
     return TYPE;
+  }
+
+  /**
+   * Is the specified user can access this forum?
+   * <p/>
+   * A user can access a forum if it has enough rights to access the Forums instance in
+   * which is managed this forum.
+   * @param user a user in Silverpeas.
+   * @return true if the user can access this forum, false otherwise.
+   */
+  @Override
+  public boolean canBeAccessedBy(final UserDetail user) {
+    AccessController<String> accessController =
+        AccessControllerProvider.getAccessController("componentAccessController");
+    return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
   }
 
   @Override

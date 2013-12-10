@@ -40,7 +40,6 @@
 <c:set var="wait" value="${requestScope.wait}"/>
 
 <view:includePlugin name="popup"/>
-<view:includePlugin name="notifier"/>
 
 <link href="<c:url value="/gallery/jsp/styleSheets/slider/themes/classic/galleria.classic.css"/>" type="text/css" rel="stylesheet">
 <script src="<c:url value="/gallery/jsp/javaScript/slider/galleria-1.2.9.min.js"/>" type="text/javascript"></script>
@@ -48,7 +47,7 @@
 <script src="<c:url value="/gallery/jsp/javaScript/silverpeas-gallery-slider.js"/>" type="text/javascript"></script>
 <script type="text/JavaScript">
   function startSlideshow(fromPhotoId) {
-    nbPauses = -1;
+    var nbPauses = -1;
     displayAlbumGallerySlider({
       componentInstanceId : '<c:out value="${componentInstanceId}" />',
       albumId : '<c:out value="${albumId}" />',

@@ -28,7 +28,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <c:set var="sessionController" value="${requestScope.forumsSessionClientController}" />
-<fmt:setLocale value="${sessionScope[sessionController].language}" />
+<fmt:setLocale value="${requestScope.resources.language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
 <%@ page import="com.stratelia.webactiv.forums.control.helpers.ForumListHelper"%>
@@ -135,7 +135,6 @@ public void listFolders(JspWriter out, String userId, boolean admin, int rootId,
     <view:looknfeel />
     <view:includePlugin name="wysiwyg"/>
     <view:includePlugin name="popup"/>
-	<view:includePlugin name="notifier"/>
 	<link type="text/css" href="<c:url value='/util/styleSheets/fieldset.css'/>" rel="stylesheet" />
     <script type="text/javascript" src="<%=context%>/util/javaScript/checkForm.js"></script>
     <script type="text/javascript" src="<%=context%>/forums/jsp/javaScript/forums.js"></script>
