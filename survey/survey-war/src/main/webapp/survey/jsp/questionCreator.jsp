@@ -188,7 +188,10 @@ function checkAnswers() {
      var fieldsEmpty = "";
      for (var i=0; i<document.surveyForm.length; i++)
      {
-        inputName = document.surveyForm.elements[i].name.substring(0, 5);
+        var inputName = document.surveyForm.elements[i].name;
+        if (inputName) {
+        	inputName = inputName.substring(0, 5);
+        }
         if (inputName == "answe" ) {
             if (isWhitespace(stripInitialWhitespace(document.surveyForm.elements[i].value))) {
                   answerEmpty = true;

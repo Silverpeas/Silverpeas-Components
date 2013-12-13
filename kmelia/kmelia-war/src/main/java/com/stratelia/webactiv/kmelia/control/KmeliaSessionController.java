@@ -3886,12 +3886,16 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     while (iterator.hasNext()) {
       NodeDetail nodeInPath = iterator.next();
       if ((i <= beforeAfter) || (i + beforeAfter >= nbItemInPath - 1)) {
-        if (!nodeInPath.getNodePK().getId().equals("0")) {
+        if (!nodeInPath.getNodePK().isRoot()) {
           String nodeName;
-          if (getCurrentLanguage() != null) {
-            nodeName = nodeInPath.getName(getCurrentLanguage());
+          if (nodeInPath.getNodePK().isTrash()) {
+            nodeName = getString("kmelia.basket");
           } else {
-            nodeName = nodeInPath.getName();
+            if (getCurrentLanguage() != null) {
+              nodeName = nodeInPath.getName(getCurrentLanguage());
+            } else {
+              nodeName = nodeInPath.getName();
+            }
           }
           linkedPathString.append("<a href=\"javascript:onClick=topicGoTo('").append(
               nodeInPath.getNodePK().getId()).append("')\">").append(

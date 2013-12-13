@@ -238,7 +238,10 @@ void displayAnswer(int i, String style, ResourcesWrapper resources, List<Compone
     var fieldsEmpty = "";
     for (var i=0; i<document.pollForm.length; i++)
     {
-      inputName = document.pollForm.elements[i].name.substring(0, 5);
+      var inputName = document.pollForm.elements[i].name;
+      if (inputName) {
+    	  inputName = inputName.substring(0, 5);
+      }
       if (inputName == "answe" ) {
         if (isWhitespace(stripInitialWhitespace(document.pollForm.elements[i].value))) {
           answerEmpty = true;
@@ -477,7 +480,7 @@ void displayAnswer(int i, String style, ResourcesWrapper resources, List<Compone
 					<label class="txtlibform"><%=resources.getString("survey.style")%></label>
 					<div class="champs">
 						<% if (!"SendPollForm".equals(action)) {  %>
-						<select id="questionStyle" name="questionStyle" onchange="showQuestionOptions(this.value);">
+						<select id="questionStyle" name="questionStyle">
 			              <option value="null"><%=resources.getString("survey.style")%></option>
 			              <option <%="radio".equals(style) ? "selected=\"selected\"" : ""%> value="radio"><%=resources.getString("survey.radio")%></option>
 			              <option <%="checkbox".equals(style) ? "selected=\"selected\"" : ""%> value="checkbox"><%=resources.getString("survey.checkbox")%></option>
