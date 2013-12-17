@@ -305,7 +305,7 @@
               idP = photo.getPhotoPK().getId();
               String nomRep = resource.getSetting("imagesSubDirectory") + idP;
               String name = photo.getId() + extension;
-              vignette_url = FileServerUtils.getUrl(spaceId, componentId, name, photo.getImageMimeType(), nomRep);
+              vignette_url = FileServerUtils.getUrl(componentId, name, photo.getImageMimeType(), nomRep);
               if (!photo.isPreviewable()) {
                 vignette_url = m_context + "/gallery/jsp/icons/notAvailable_" + resource.getLanguage() + extension;
               }
