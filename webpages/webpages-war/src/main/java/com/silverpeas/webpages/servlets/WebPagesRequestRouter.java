@@ -25,7 +25,6 @@
 package com.silverpeas.webpages.servlets;
 
 import com.silverpeas.look.LookHelper;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.silverpeas.webpages.control.WebPagesSessionController;
 import com.silverpeas.webpages.model.WebPagesException;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -33,6 +32,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.servlet.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -67,12 +67,14 @@ public class WebPagesRequestRouter extends ComponentRequestRouter<WebPagesSessio
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param webPagesSC The component Session Control, build and initialised.
+   * @param request
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
-  public String getDestination(String function,WebPagesSessionController webPagesSC, HttpServletRequest request) {
+  public String getDestination(String function,WebPagesSessionController webPagesSC, HttpRequest request) {
     String destination = "";
     String rootDestination = "/webPages/jsp/";
     SilverTrace.info("webPages", "WebPagesRequestRouter.getDestination()",
@@ -134,7 +136,7 @@ public class WebPagesRequestRouter extends ComponentRequestRouter<WebPagesSessio
         destination = rootDestination + "editXMLContent.jsp";
       } else if ("UpdateXMLContent".equals(function)) {
         // user saves updated data
-        List<FileItem> items = FileUploadUtil.parseRequest(request);
+        List<FileItem> items = request.getFileItems();
         webPagesSC.saveDataRecord(items);
 
         destination = getDestination("Main", webPagesSC, request);

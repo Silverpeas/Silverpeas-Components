@@ -30,8 +30,8 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import jChatBox.Chat.ChatroomManager;
+import org.silverpeas.servlet.HttpRequest;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Vector;
 
 public class ChatRequestRouter extends ComponentRequestRouter<ChatSessionController> {
@@ -66,7 +66,7 @@ public class ChatRequestRouter extends ComponentRequestRouter<ChatSessionControl
   }
 
   public String getDestination(String function,
-      ChatSessionController chatSC, HttpServletRequest request) {
+      ChatSessionController chatSC, HttpRequest request) {
     SilverTrace.debug("chat", "ChatRequestRouter.getDestination()",
         "root.MSG_GEN_ENTER_METHOD", "function = " + function);
 

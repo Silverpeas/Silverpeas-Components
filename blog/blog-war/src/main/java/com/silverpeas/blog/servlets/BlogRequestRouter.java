@@ -25,7 +25,6 @@ import com.silverpeas.blog.model.Category;
 import com.silverpeas.blog.model.PostDetail;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
@@ -39,9 +38,9 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.servlet.HttpRequest;
 
 public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionController> {
 
@@ -88,14 +87,16 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    *
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param blogSC The component Session Control, build and initialised.
+   * @param request
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
   public String getDestination(String function, BlogSessionController blogSC,
-      HttpServletRequest request) {
+      HttpRequest request) {
     String destination = "";
     SilverTrace.info("blog", "BlogRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
         "User=" + blogSC.getUserId() + " Function=" + function);
@@ -394,11 +395,10 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         request.setAttribute("PostId", postId);
         destination = getDestination("ViewPost", blogSC, request);
       } else if (function.equals("Customize")) {
-        List<FileItem> items = FileUploadUtil.parseRequest(request);
-        String removeWallPaperFile = FileUploadUtil.getParameter(items, "removeWallPaperFile");
-        String removeStyleSheetFile = FileUploadUtil.getParameter(items, "removeStyleSheetFile");
-        FileItem fileWallPaper = FileUploadUtil.getFile(items, "wallPaper");
-        FileItem fileStyleSheet = FileUploadUtil.getFile(items, "styleSheet");
+        String removeWallPaperFile = request.getParameter("removeWallPaperFile");
+        String removeStyleSheetFile = request.getParameter("removeStyleSheetFile");
+        FileItem fileWallPaper = request.getFile("wallPaper");
+        FileItem fileStyleSheet = request.getFile("styleSheet");
 
         if (fileWallPaper != null && StringUtil.isDefined(fileWallPaper.getName())) {//Update
           blogSC.saveWallPaperFile(fileWallPaper);

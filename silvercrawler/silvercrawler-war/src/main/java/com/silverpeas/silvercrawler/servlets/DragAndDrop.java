@@ -30,12 +30,13 @@ import com.silverpeas.silvercrawler.control.SilverCrawlerSessionController;
 import com.silverpeas.silvercrawler.control.UploadItem;
 import com.silverpeas.silvercrawler.control.UploadReport;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
+import org.silverpeas.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.servlet.HttpRequest;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -72,11 +73,13 @@ public class DragAndDrop extends HttpServlet {
   }
 
   @Override
-  public void doPost(HttpServletRequest request, HttpServletResponse res)
+  public void doPost(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
     SilverTrace.info("silverCrawler", "DragAndDrop.doPost", "root.MSG_GEN_ENTER_METHOD");
+    HttpRequest request = HttpRequest.decorate(req);
     request.setCharacterEncoding("UTF-8");
-    if (!FileUploadUtil.isRequestMultipart(request)) {
+
+    if (!request.isContentInMultipart()) {
       res.getOutputStream().println("SUCCESS");
       return;
     }
@@ -109,7 +112,7 @@ public class DragAndDrop extends HttpServlet {
       }
 
       // Loop items
-      List<FileItem> items = FileUploadUtil.parseRequest(request);
+      List<FileItem> items = request.getFileItems();
       for (FileItem item : items) {
         if (!item.isFormField()) {
           String fileUploadId = item.getFieldName().substring(4);

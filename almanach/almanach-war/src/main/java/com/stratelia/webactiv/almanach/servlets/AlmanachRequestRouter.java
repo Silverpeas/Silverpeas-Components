@@ -39,6 +39,7 @@ import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import org.silverpeas.calendar.CalendarViewType;
+import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.upload.FileUploadManager;
 import org.silverpeas.upload.UploadedFile;
 
@@ -87,6 +88,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
    * This method has to be implemented by the component request Router it has to compute a
    * destination page
    *
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param almanach The component Session Control, build and initialised.
    * @param request The entering request. The request Router need it to get parameters
@@ -95,7 +97,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
    */
   @Override
   public String getDestination(String function, AlmanachSessionController almanach,
-          HttpServletRequest request) {
+          HttpRequest request) {
 
     SilverTrace.info("almanach", "AlmanachRequestRouter.getDestination()",
             "root.MSG_GEN_ENTER_METHOD");

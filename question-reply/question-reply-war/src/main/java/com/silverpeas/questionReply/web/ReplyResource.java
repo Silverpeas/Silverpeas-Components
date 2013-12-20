@@ -22,6 +22,7 @@ package com.silverpeas.questionReply.web;
 
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
 import com.silverpeas.questionReply.QuestionReplyException;
 import com.silverpeas.questionReply.control.QuestionManagerFactory;
 import com.silverpeas.questionReply.model.Reply;
@@ -35,7 +36,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
-import org.springframework.stereotype.Service;
 
 /**
  *

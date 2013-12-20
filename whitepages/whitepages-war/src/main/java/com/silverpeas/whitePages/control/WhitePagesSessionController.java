@@ -35,7 +35,7 @@ import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementFactory;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
+import org.silverpeas.servlet.FileUploadUtil;
 import com.silverpeas.whitePages.WhitePagesException;
 import com.silverpeas.whitePages.model.Card;
 import com.silverpeas.whitePages.model.SearchField;
@@ -69,6 +69,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.JAXBException;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.search.indexEngine.model.FieldDescription;
+import org.silverpeas.servlet.HttpRequest;
 
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
@@ -337,7 +338,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
   public void createCard(HttpServletRequest request)
       throws WhitePagesException, JAXBException {
 
-    List<FileItem> items = FileUploadUtil.parseRequest(request);
+    List<FileItem> items = HttpRequest.decorate(request).getFileItems();
 
     // get PDC classification
     String positions = FileUploadUtil.getParameter(items, "Positions");
@@ -385,7 +386,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
   public void updateCardRecord(HttpServletRequest request)
       throws WhitePagesException {
     try {
-      List<FileItem> items = FileUploadUtil.parseRequest(request);
+      List<FileItem> items = HttpRequest.decorate(request).getFileItems();
       PagesContext pageContext = new PagesContext("", getLanguage());
       pageContext.setComponentId(getComponentId());
       pageContext.setObjectId(getCurrentCard().getPK().getId());

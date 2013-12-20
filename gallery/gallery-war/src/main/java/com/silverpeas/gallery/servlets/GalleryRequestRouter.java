@@ -43,7 +43,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
+import org.silverpeas.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
@@ -60,6 +60,7 @@ import com.stratelia.webactiv.util.node.model.NodeDetail;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.search.indexEngine.model.FieldDescription;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
+import org.silverpeas.servlet.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -105,14 +106,16 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    *
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param gallerySC The component Session Control, build and initialised.
+   * @param request
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
   public String getDestination(String function, GallerySessionController gallerySC,
-      HttpServletRequest request) {
+      HttpRequest request) {
     String destination = "";
     String rootDest = "/gallery/jsp/";
     request.setAttribute("gallerySC", gallerySC);
@@ -339,9 +342,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
               SilverpeasException.WARNING, null);
         }
 
-        final String photoId =
-            createPhotoData(FileUploadUtil.parseRequest(request), gallerySC,
-                request.getCharacterEncoding());
+        final String photoId = createPhotoData(request, gallerySC);
 
         // Reload the album
         gallerySC.loadCurrentAlbum();
@@ -375,11 +376,11 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         if (!StringUtil.isDefined(request.getCharacterEncoding())) {
           request.setCharacterEncoding("UTF-8");
         }
-        List<FileItem> parameters = FileUploadUtil.parseRequest(request);
+        List<FileItem> parameters = request.getFileItems();
         String photoId =
             FileUploadUtil.getParameter(parameters, "PhotoId", null,
             request.getCharacterEncoding());
-        updatePhotoData(photoId, parameters, gallerySC, request.getCharacterEncoding());
+        updatePhotoData(photoId, request, gallerySC);
         // retour à la preview
         request.setAttribute("PhotoId", photoId);
         destination = getDestination("PreviewPhoto", gallerySC, request);
@@ -757,7 +758,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         if (!StringUtil.isDefined(request.getCharacterEncoding())) {
           request.setCharacterEncoding("UTF-8");
         }
-        List<FileItem> items = FileUploadUtil.parseRequest(request);
+        List<FileItem> items = request.getFileItems();
         String photoId =
             FileUploadUtil.getParameter(items, "PhotoId", null, request.getCharacterEncoding());
         // check user rights
@@ -970,7 +971,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         if (!StringUtil.isDefined(request.getCharacterEncoding())) {
           request.setCharacterEncoding("UTF-8");
         }
-        List<FileItem> items = FileUploadUtil.parseRequest(request);
+        List<FileItem> items = request.getFileItems();
         QueryDescription query = new QueryDescription();
         // Ajout de la requete classique
         String word =
@@ -1309,7 +1310,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           if (!StringUtil.isDefined(request.getCharacterEncoding())) {
             request.setCharacterEncoding("UTF-8");
           }
-          List<FileItem> items = FileUploadUtil.parseRequest(request);
+          List<FileItem> items = request.getFileItems();
 
           String xmlFormName = gallerySC.getOrderForm();
           if (isDefined(xmlFormName)) {
@@ -1513,35 +1514,29 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
     return nb;
   }
 
-  private String createPhotoData(List<FileItem> parameters, GallerySessionController gallerySC,
-      String encoding)
+  private String createPhotoData(HttpRequest request, GallerySessionController gallerySC)
       throws Exception {
 
+    final List<FileItem> parameters = request.getFileItems();
     final PhotoDataCreateDelegate delegate =
         new PhotoDataCreateDelegate(gallerySC.getLanguage(), gallerySC.getCurrentAlbumId(),
             parameters);
 
     // 1. Récupération des données de l'entête
     delegate.getHeaderData().setAlbumLabel(
-        FileUploadUtil.getParameter(parameters, "AlbumLabel", null, encoding));
-    delegate.getHeaderData().setTitle(
-        FileUploadUtil.getParameter(parameters, ParameterNames.ImageTitle, null, encoding));
-    delegate.getHeaderData().setDescription(
-        FileUploadUtil.getParameter(parameters, ParameterNames.ImageDescription, null, encoding));
-    delegate.getHeaderData().setAuthor(
-        FileUploadUtil.getParameter(parameters, ParameterNames.ImageAuthor, null, encoding));
-    delegate.getHeaderData().setKeyWord(
-        FileUploadUtil.getParameter(parameters, ParameterNames.ImageKeyWord, null, encoding));
-    delegate.getHeaderData().setDownload(
-        FileUploadUtil.getParameter(parameters, ParameterNames.ImageDownload, null, encoding));
+        request.getParameter("AlbumLabel"));
+    delegate.getHeaderData().setTitle(request.getParameter(ParameterNames.ImageTitle));
+    delegate.getHeaderData().setDescription(request.getParameter(ParameterNames.ImageDescription));
+    delegate.getHeaderData().setAuthor(request.getParameter(ParameterNames.ImageAuthor));
+    delegate.getHeaderData().setKeyWord(request.getParameter(ParameterNames.ImageKeyWord));
+    delegate.getHeaderData().setDownload(request.getParameter(ParameterNames.ImageDownload));
     delegate.getHeaderData().setBeginDownloadDate(
-        FileUploadUtil.getParameter(parameters, ParameterNames.ImageBeginDownloadDate, null, encoding));
+        request.getParameter(ParameterNames.ImageBeginDownloadDate));
     delegate.getHeaderData().setEndDownloadDate(
-        FileUploadUtil.getParameter(parameters, ParameterNames.ImageEndDownloadDate, null, encoding));
-    delegate.getHeaderData().setBeginDate(
-        FileUploadUtil.getParameter(parameters,  ParameterNames.ImageBeginDate, null, encoding));
+        request.getParameter(ParameterNames.ImageEndDownloadDate));
+    delegate.getHeaderData().setBeginDate(request.getParameter(ParameterNames.ImageBeginDate));
     delegate.getHeaderData().setEndDate(
-        FileUploadUtil.getParameter(parameters, ParameterNames.ImageEndDate, null, encoding));
+        request.getParameter(ParameterNames.ImageEndDate));
 
     // 2. Récupération des données du formulaire
     final String xmlFormName = gallerySC.getXMLFormName();
@@ -1589,12 +1584,12 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
    * @param encoding
    * @throws Exception
    */
-  private void updateSelectedPhoto(HttpServletRequest request, GallerySessionController gallerySC,
+  private void updateSelectedPhoto(HttpRequest request, GallerySessionController gallerySC,
       Collection<String> photoIds, String encoding) throws Exception {
 
     // tri des paramètres entre ceux de l'entête et ceux propres au formulaire
     final List<FileItem> parameters = new ArrayList<FileItem>();
-    for (FileItem param : FileUploadUtil.parseRequest(request)) {
+    for (FileItem param : request.getFileItems()) {
       if (param.getFieldName().startsWith("Im$")) {
         // c'est un paramètre de l'entête
         parameters.add(param);
@@ -1719,33 +1714,32 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
     gallerySC.updatePhoto(photo);
   }
 
-  private void updatePhotoData(String photoId, List<FileItem> parameters,
-      GallerySessionController gallerySC, String encoding)
-      throws Exception {
+  private void updatePhotoData(String photoId, HttpRequest request,
+      GallerySessionController gallerySC) throws Exception {
 
     final PhotoDataUpdateDelegate delegate =
         new PhotoDataUpdateDelegate(gallerySC.getLanguage(), gallerySC.getCurrentAlbumId(),
-            parameters, false);
+            request.getFileItems(), false);
 
     // 1. Récupération des données de l'entête
     delegate.getHeaderData().setTitle(
-        FileUploadUtil.getParameter(parameters, ParameterNames.ImageTitle, null, encoding));
+        request.getParameter(ParameterNames.ImageTitle));
     delegate.getHeaderData().setDescription(
-        FileUploadUtil.getParameter(parameters, ParameterNames.ImageDescription, null, encoding));
+        request.getParameter(ParameterNames.ImageDescription));
     delegate.getHeaderData().setAuthor(
-        FileUploadUtil.getParameter(parameters, ParameterNames.ImageAuthor, null, encoding));
+        request.getParameter(ParameterNames.ImageAuthor));
     delegate.getHeaderData().setKeyWord(
-        FileUploadUtil.getParameter(parameters, ParameterNames.ImageKeyWord, null, encoding));
+        request.getParameter(ParameterNames.ImageKeyWord));
     delegate.getHeaderData().setDownload(
-        FileUploadUtil.getParameter(parameters, ParameterNames.ImageDownload, null, encoding));
+        request.getParameter(ParameterNames.ImageDownload));
     delegate.getHeaderData().setBeginDownloadDate(
-        FileUploadUtil.getParameter(parameters, ParameterNames.ImageBeginDownloadDate, null, encoding));
+        request.getParameter(ParameterNames.ImageBeginDownloadDate));
     delegate.getHeaderData().setEndDownloadDate(
-        FileUploadUtil.getParameter(parameters, ParameterNames.ImageEndDownloadDate, null, encoding));
+        request.getParameter(ParameterNames.ImageEndDownloadDate));
     delegate.getHeaderData().setBeginDate(
-        FileUploadUtil.getParameter(parameters,  ParameterNames.ImageBeginDate, null, encoding));
+        request.getParameter(ParameterNames.ImageBeginDate));
     delegate.getHeaderData().setEndDate(
-        FileUploadUtil.getParameter(parameters, ParameterNames.ImageEndDate, null, encoding));
+        request.getParameter(ParameterNames.ImageEndDate));
 
     // 2. Récupération des données du formulaire
     final String xmlFormName = gallerySC.getXMLFormName();
@@ -1851,7 +1845,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
     return ids;
   }
 
-  private String returnToAlbum(HttpServletRequest request, GallerySessionController gallerySC) {
+  private String returnToAlbum(HttpRequest request, GallerySessionController gallerySC) {
     String destination;
     // retour d'où on vient
     if (!gallerySC.isSearchResult() && !gallerySC.isViewNotVisible()) {

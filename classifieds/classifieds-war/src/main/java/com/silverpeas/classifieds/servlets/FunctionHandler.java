@@ -33,6 +33,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
+import org.silverpeas.servlet.HttpRequest;
 
 /**
  * A functio handler is associated to a peas function and is called by the request router when this
@@ -42,7 +43,7 @@ public abstract class FunctionHandler {
 
   protected static final String ROOT_DESTINATION = "/classifieds/jsp/";
 
-  public String computeDestination(ClassifiedsSessionController session, HttpServletRequest request) {
+  public String computeDestination(ClassifiedsSessionController session, HttpRequest request) {
     try {
       String destination = getDestination(session, request);
       if (destination.startsWith("/")) {
@@ -60,11 +61,10 @@ public abstract class FunctionHandler {
 
   /**
    * Process the request and returns the response url.
-   * @param function the user request name
    * @param request the user request params
    * @param session the user request context
    */
-  public abstract String getDestination(ClassifiedsSessionController session, HttpServletRequest request) throws Exception;
+  public abstract String getDestination(ClassifiedsSessionController session, HttpRequest request) throws Exception;
 
   /**
    * Gets the template of the publication based on the classified XML form.
@@ -95,7 +95,7 @@ public abstract class FunctionHandler {
     return PublicationTemplateManager.getInstance();
   }
 
-  protected boolean isAnonymousAccess(HttpServletRequest request) {
+  protected boolean isAnonymousAccess(HttpRequest request) {
     LookHelper lookHelper = (LookHelper) request.getSession().getAttribute(LookHelper.SESSION_ATT);
     if (lookHelper != null) {
       return lookHelper.isAnonymousAccess();

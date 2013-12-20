@@ -18,6 +18,7 @@ import com.silverpeas.util.StringUtil;
 
 import org.silverpeas.search.searchEngine.model.QueryDescription;
 import org.silverpeas.search.indexEngine.model.FieldDescription;
+import org.silverpeas.servlet.HttpRequest;
 
 /**
  * Default use case : show all categories and for each one, list last published adds
@@ -27,7 +28,7 @@ public class DefaultHandler extends FunctionHandler {
 
   @Override
   public String getDestination(ClassifiedsSessionController classifiedsSC,
-      HttpServletRequest request) throws Exception {
+      HttpRequest request) throws Exception {
     
     Form formUpdate = null;
     DataRecord data = null;

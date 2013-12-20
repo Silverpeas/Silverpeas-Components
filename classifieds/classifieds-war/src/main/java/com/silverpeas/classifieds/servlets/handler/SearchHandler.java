@@ -2,8 +2,6 @@ package com.silverpeas.classifieds.servlets.handler;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.search.indexEngine.model.FieldDescription;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
@@ -19,8 +17,8 @@ import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.form.XmlSearchForm;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.servlet.HttpRequest;
 
 /**
  * Use Case : for all users, show all adds of given category
@@ -30,7 +28,7 @@ public class SearchHandler extends FunctionHandler {
 
   @Override
   public String getDestination(ClassifiedsSessionController classifiedsSC,
-      HttpServletRequest request) throws Exception {
+      HttpRequest request) throws Exception {
 
       QueryDescription query = buildQuery(classifiedsSC, request);
       
@@ -48,10 +46,10 @@ public class SearchHandler extends FunctionHandler {
   }
   
   private QueryDescription buildQuery(ClassifiedsSessionController classifiedsSC,
-      HttpServletRequest request) throws PublicationTemplateException, FormException {
+      HttpRequest request) throws PublicationTemplateException, FormException {
     // Parse request to retrieve search parameters
-    if (FileUploadUtil.isRequestMultipart(request)) {
-      List<FileItem> items = FileUploadUtil.parseRequest(request);
+    if (request.isContentInMultipart()) {
+      List<FileItem> items = request.getFileItems();
       QueryDescription query = new QueryDescription();
 
       DataRecord data = null;

@@ -26,8 +26,6 @@ package com.stratelia.webactiv.quizz.servlets;
 
 import java.io.File;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.silverpeas.util.StringUtil;
 
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -39,6 +37,7 @@ import com.stratelia.webactiv.quizz.control.QuizzSessionController;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import org.silverpeas.servlet.HttpRequest;
 
 public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionController> {
 
@@ -69,13 +68,14 @@ public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionContr
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    *
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param quizzSC  The component Session Control, build and initialised.
    * @param request  The entering request. The request rooter need it to get parameters
    * @return The complete destination URL for a forward (ex : "/quizz/jsp/quizz.jsp?flag=user")
    */
   public String getDestination(String function, QuizzSessionController quizzSC,
-      HttpServletRequest request) {
+      HttpRequest request) {
     SilverTrace
         .info("Quizz", "QuizzRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE", function);
     String destination = "";

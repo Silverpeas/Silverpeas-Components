@@ -35,7 +35,7 @@ import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
+import org.silverpeas.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -89,6 +89,7 @@ import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.servlet.HttpRequest;
 
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
@@ -1046,7 +1047,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
 
     // Retrieve all the parameter from request
     try {
-      List<FileItem> items = FileUploadUtil.parseRequest(request);
+      List<FileItem> items = HttpRequest.decorate(request).getFileItems();
       for (FileItem item : items) {
         if (item.isFormField()) {
           String mpName = item.getFieldName();

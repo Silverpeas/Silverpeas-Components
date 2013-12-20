@@ -26,7 +26,7 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.processManager.*;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
+import org.silverpeas.servlet.FileUploadUtil;
 import com.silverpeas.workflow.api.error.WorkflowError;
 import com.silverpeas.workflow.api.instance.HistoryStep;
 import com.silverpeas.workflow.api.instance.ProcessInstance;
@@ -40,6 +40,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
@@ -100,12 +101,12 @@ public class ProcessManagerRequestRouter
    * Process the request and returns the response url.
    *
    * @param function the user request name
-   * @param request the user request params
    * @param sessionController the user request context
+   * @param request the user request params
    */
   @Override
   public String getDestination(String function, ProcessManagerSessionController sessionController,
-      HttpServletRequest request) {
+      HttpRequest request) {
     SilverTrace.info("processManager", "ProcessManagerRequestRouter.getDestination()",
         "root.MSG_GEN_ENTER_METHOD", "function = " + function);
     FunctionHandler handler = getHandlerMap().get(function);
