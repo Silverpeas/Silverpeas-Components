@@ -46,7 +46,6 @@ import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.MimeTypes;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -101,6 +100,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.CharEncoding;
 import org.owasp.encoder.Encode;
 import org.silverpeas.importExport.versioning.DocumentVersion;
+import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
 import org.silverpeas.wysiwyg.control.WysiwygController;
@@ -910,23 +910,26 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
         NodeDetail topic = kmelia.getSubTopicDetail(subTopicId);
 
-        destination = request.getScheme() + "://" + kmelia.getServerNameAndPort()
-            + URLManager.getApplicationURL() + "/wysiwyg/jsp/htmlEditor.jsp?";
-        destination += "SpaceId=" + kmelia.getSpaceId();
-        destination += "&SpaceName=" + URLEncoder.encode(kmelia.getSpaceLabel(), CharEncoding.UTF_8);
-        destination += "&ComponentId=" + kmelia.getComponentId();
-        destination += "&ComponentName=" + URLEncoder.encode(kmelia.getComponentLabel(),
-            CharEncoding.UTF_8);
-        destination += "&BrowseInfo=" + URLEncoder.encode(kmelia.getSessionPathString() + " > "
-            + topic.getName() + " > " + kmelia.getString("TopicWysiwyg"), CharEncoding.UTF_8);
-
-        destination += "&ObjectId=Node_" + subTopicId;
-        destination += "&Language=" + kmelia.getLanguage();
-        destination += "&ContentLanguage=" + kmelia.getCurrentLanguage();
-        destination += "&ReturnUrl=" + URLEncoder.encode(URLManager.getApplicationURL()
+        request.setAttribute("SpaceId", kmelia.getSpaceId());
+        request.setAttribute("SpaceName", URLEncoder.encode(kmelia.getSpaceLabel(),
+            CharEncoding.UTF_8));
+        request.setAttribute("ComponentId", kmelia.getComponentId());
+        request.setAttribute("ComponentName", URLEncoder.encode(kmelia.getComponentLabel(),
+            CharEncoding.UTF_8));
+        String browseInfo = URLEncoder.encode(kmelia.getSessionPathString(), CharEncoding.UTF_8);
+        if (!browseInfo.contains(topic.getName())) {
+          browseInfo += Encode.forHtml(topic.getName());
+        }
+        request.setAttribute("BrowseInfo", browseInfo + " > " + Encode.forHtml(kmelia.getString(
+            "TopicWysiwyg")));
+        request.setAttribute("ObjectId", "Node_" + subTopicId);
+        request.setAttribute("Language", kmelia.getLanguage());
+        request.setAttribute("ContentLanguage", kmelia.getCurrentLanguage());
+        request.setAttribute("ReturnUrl", URLManager.getApplicationURL()
             + URLManager.getURL(kmelia.getSpaceId(), kmelia.getComponentId())
             + "FromTopicWysiwyg?Action=Search&Id=" + topicId + "&ChildId=" + subTopicId
-            + "&Profile=" + flag, "UTF-8");
+            + "&Profile=" + flag);
+        destination = "/wysiwyg/jsp/htmlEditor.jsp";
       } else if (function.equals("FromTopicWysiwyg")) {
         String subTopicId = request.getParameter("ChildId");
 
@@ -1251,15 +1254,31 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           kmelia.clonePublication();
         }
         // put current publication
-        request.setAttribute("CurrentPublicationDetail", kmelia.getSessionPubliOrClone().
-            getDetail());
+        PublicationDetail publication = kmelia.getSessionPubliOrClone().getDetail();
 
         // Parametres du Wizard
         setWizardParams(request, kmelia);
-        request.setAttribute("Language", kmelia.getContentLanguage());
-        request.setAttribute("CurrentLanguage", kmelia.getContentLanguage());
+        request.setAttribute("SpaceId", kmelia.getSpaceId());
+        request.setAttribute("SpaceName", URLEncoder.encode(kmelia.getSpaceLabel(),
+            CharEncoding.UTF_8));
+        request.setAttribute("ComponentId", kmelia.getComponentId());
+        request.setAttribute("ComponentName", URLEncoder.encode(kmelia.getComponentLabel(),
+            CharEncoding.UTF_8));
+        if (kmaxMode) {
+          request.setAttribute("BrowseInfo", Encode.forHtml(publication.getName()));
+        } else {
+          request.setAttribute("BrowseInfo", URLEncoder.encode(kmelia.getSessionPathString(),
+              CharEncoding.UTF_8) + " > " + Encode.forHtml(publication.getName()));
+        }
+        request.setAttribute("ObjectId", publication.getId());
+        request.setAttribute("Language", kmelia.getLanguage());
+        request.setAttribute("ContentLanguage", kmelia.getCurrentLanguage());
+        request.setAttribute("ReturnUrl", URLManager.getApplicationURL() + kmelia.getComponentUrl()
+            + "FromWysiwyg?PubId=" + publication.getId());
+        request.setAttribute("UserId", kmelia.getUserId());
+        request.setAttribute("IndexIt", "false");
 
-        destination = rootDestination + "toWysiwyg.jsp";
+        destination = "/wysiwyg/jsp/htmlEditor.jsp";
       } else if ("FromWysiwyg".equals(function)) {
         String id = request.getParameter("PubId");
 

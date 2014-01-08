@@ -20,12 +20,7 @@
  */
 package com.stratelia.silverpeas.infoLetter.servlets;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
 import com.silverpeas.util.StringUtil;
-
 import com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetter;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetterPublication;
@@ -37,7 +32,8 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.util.DateUtil;
-
+import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.servlet.HttpRequest;
 
@@ -208,8 +204,8 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         }
       } else if (function.startsWith("portlet")) {
         InfoLetter defaultLetter = getCurrentLetter(infoLetterSC);
-        List<InfoLetterPublication> listParutions =
-            infoLetterSC.getInfoLetterPublications(defaultLetter.getPK());
+        List<InfoLetterPublication> listParutions = infoLetterSC.getInfoLetterPublications(
+            defaultLetter.getPK());
         String letterName = defaultLetter.getName();
         if (letterName == null) {
           letterName = "";
@@ -296,7 +292,7 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         request.setAttribute("Language", infoLetterSC.getLanguage());
         request.setAttribute("ReturnUrl", URLManager.getApplicationURL() + "/RinfoLetter/"
             + infoLetterSC.getComponentId() + "/ParutionHeaders?parution=" + parution);
-        destination = "editLetter.jsp";
+        destination = "/wysiwyg/jsp/htmlEditor.jsp";
       } else if (function.startsWith("ParutionHeaders")) {
         String parution = param(request, "parution");
         String title = "";
