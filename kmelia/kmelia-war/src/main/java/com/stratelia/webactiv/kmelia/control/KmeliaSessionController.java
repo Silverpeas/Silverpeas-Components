@@ -55,7 +55,6 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.subscribe.service.NodeSubscriptionResource;
 import com.silverpeas.thumbnail.service.ThumbnailService;
 import com.silverpeas.thumbnail.service.ThumbnailServiceFactory;
-import com.silverpeas.thumbnail.service.ThumbnailServiceImpl;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
@@ -3260,7 +3259,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         FileRepositoryManager.copyFile(pdf.getPath(), subDirPath + File.separator + pdf.getName());
       }
       // copy files
-      new AttachmentImportExport().getAttachments(pubPK, subDirPath, "useless", null);
+      new AttachmentImportExport(getUserDetail())
+          .getAttachments(pubPK, subDirPath, "useless", null);
 
       String zipFileName = FileRepositoryManager.getTemporaryPath() + fileName + ".zip";
       // zip PDF and files

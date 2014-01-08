@@ -137,7 +137,7 @@ public class WikiVersioningAttachmentProvider implements WikiAttachmentProvider 
     try {
       if (versionNumber != WikiProvider.LATEST_VERSION) {
         List<SimpleDocument> versions = ((HistorisedDocument) AttachmentServiceFactory.
-            getAttachmentService().searchDocumentById(docPk, null)).getHistory();
+            getAttachmentService().searchDocumentById(docPk, null)).getFunctionalHistory();
         for (SimpleDocument version : versions) {
           if (versionNumber == version.getMajorVersion()) {
             return version;
@@ -157,7 +157,7 @@ public class WikiVersioningAttachmentProvider implements WikiAttachmentProvider 
       ProviderException {
     try {
       return ((HistorisedDocument) AttachmentServiceFactory.getAttachmentService().
-          searchDocumentById(docPk, null)).getHistory();
+          searchDocumentById(docPk, null)).getFunctionalHistory();
     } catch (AttachmentException e) {
       ProviderException ex = new ProviderException(e.getMessage());
       ex.initCause(e);

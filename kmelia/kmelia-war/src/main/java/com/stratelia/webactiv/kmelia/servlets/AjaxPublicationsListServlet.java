@@ -55,6 +55,18 @@ import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import com.stratelia.webactiv.util.viewGenerator.html.UserNameGenerator;
 import com.stratelia.webactiv.util.viewGenerator.html.board.Board;
 import com.stratelia.webactiv.util.viewGenerator.html.pagination.Pagination;
+import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.viewer.ViewerFactory;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
@@ -64,17 +76,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import org.apache.commons.io.FilenameUtils;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.viewer.ViewerFactory;
 
 import static com.stratelia.webactiv.SilverpeasRole.*;
 import static com.stratelia.webactiv.util.publication.model.PublicationDetail.*;
@@ -749,8 +750,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       sb.append("<span class=\"files\">");
       // Can be a shortcut. Must check attachment mode according to publication source.
       boolean alias = isAlias(kmeliaScc, pub);
-      sb.append(displayAttachments(pub, resources, linkAttachment, alias, kmeliaScc
-          .getCurrentLanguage()));
+      sb.append(displayAttachments(kmeliaScc, pub, resources, linkAttachment, alias));
 
       sb.append("</span>");
     }
@@ -928,11 +928,12 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     return publicationsToLink;
   }
 
-  private String displayAttachments(PublicationDetail pubDetail, ResourcesWrapper resources,
-      boolean linkAttachment, boolean alias, String language) {
+  private String displayAttachments(final KmeliaSessionController kmeliaScc,
+      PublicationDetail pubDetail, ResourcesWrapper resources, boolean linkAttachment,
+      boolean alias) {
     ForeignPK foreignPK = new ForeignPK(pubDetail.getPK());
     List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
-        listDocumentsByForeignKey(foreignPK, language);
+        listDocumentsByForeignKey(foreignPK, kmeliaScc.getCurrentLanguage());
     StringBuilder result = new StringBuilder(documents.size() * 256);
     boolean hasDisplayableAttachments = false;
     for (SimpleDocument document : documents) {
@@ -965,7 +966,9 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         boolean viewable = ViewerFactory.isViewable(attachment.getAttachmentPath());
         result.append(displayFile(url, title, attachment.getDescription(), icon, logicalName, size,
             downloadTime, attachment.getCreated(), permalink, resources, linkAttachment,
-            previewable, viewable, attachment.getPk().getId()));
+            previewable, viewable, attachment.isDownloadAllowedForReaders(),
+            attachment.isDownloadAllowedForRolesFrom(kmeliaScc.getUserDetail()),
+            attachment.getPk().getId()));
       }
     }
     if (hasDisplayableAttachments) {
@@ -988,20 +991,23 @@ public class AjaxPublicationsListServlet extends HttpServlet {
    * @param attachmentLink determines if the attachments are displayed in the management interface
    * links to attachments. If it's true it formats differently the HTML rendering
    * @param viewable
-   * @param out
+   * @param isDownloadAllowedForReaders
+   * @param isUserAllowedToDownloadFile
    * @return
    * @throws IOException
    */
-  private String displayFile(String url, String title, String info, String icon,
-      String logicalName, String size, String downloadTime, Date creationDate, String permalink,
+  private String displayFile(String url, String title, String info, String icon, String logicalName,
+      String size, String downloadTime, Date creationDate, String permalink,
       ResourcesWrapper resources, boolean attachmentLink, boolean previewable, boolean viewable,
+      final boolean isDownloadAllowedForReaders, final boolean isUserAllowedToDownloadFile,
       String id) {
     SilverTrace.info("kmelia", "AjaxPublicationsListServlet.displayFile()",
         "root.MSG_GEN_ENTER_METHOD");
     StringBuilder result = new StringBuilder(1024);
 
     if (!attachmentLink) {
-      String link = "<a href=\"" + url + "\" target=\"_blank\">";
+      String link = isUserAllowedToDownloadFile ? "<a href=\"" + url + "\" target=\"_blank\">" :
+          "<span class=\"forbidden-download\">";
       result.append("<tr><td valign=\"top\">");
       // Add doc type icon
       result.append(link).append("<img src=\"").append(icon).append(
@@ -1012,9 +1018,9 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       if (StringUtil.isDefined(fileTitle) && showTitle) {
         result.append(fileTitle);
       }
-      result.append("</a>");
+      result.append(isUserAllowedToDownloadFile ? "</a>" : "</span>");
 
-      if (StringUtil.isDefined(permalink)) {
+      if (StringUtil.isDefined(permalink) && isUserAllowedToDownloadFile) {
         result.append("&#160;<a href=\"").append(permalink).append(
             "\" target=\"_blank\"><img src=\"").append(resources.getIcon("kmelia.link")).append(
             "\" border=\"0\" valign=\"absmiddle\" alt=\"").append(
@@ -1050,6 +1056,15 @@ public class AjaxPublicationsListServlet extends HttpServlet {
             .append(resources.getIcon("kmelia.file.view"))
             .append("\" alt=\"").append(resources.getString("GML.view")).append("\" title=\"")
             .append(resources.getString("GML.view")).append("\"/>");
+      }
+      if (!isDownloadAllowedForReaders) {
+        String forbiddenDownloadHelp =
+            isUserAllowedToDownloadFile ? resources.getString("GML.download.forbidden.readers") :
+                resources.getString("GML.download.forbidden");
+        result.append(" <img class=\"forbidden-download-file\" src=\"")
+            .append(resources.getIcon("kmelia.file.forbidden-download")).append("\" alt=\"")
+            .append(forbiddenDownloadHelp).append("\" title=\"").append(forbiddenDownloadHelp)
+            .append("\"/>");
       }
       result.append("</i>");
 
