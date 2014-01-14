@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,11 +24,10 @@
 package com.stratelia.webactiv.hyperlink;
 
 
-import com.stratelia.silverpeas.silverstatistics.control.ComponentStatisticsInterface;
-import com.stratelia.silverpeas.silverstatistics.control.UserIdCountVolumeCouple;
-import java.util.ArrayList;
+import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
 import java.util.Collection;
-import java.util.List;
+import java.util.Collections;
 
 /**
  * Class declaration
@@ -37,14 +36,10 @@ import java.util.List;
 public class HyperlinkStatistics implements ComponentStatisticsInterface {
 
   @Override
-  public Collection getVolume(String spaceId, String componentId) throws Exception {
-    List<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>();
-
+  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) throws Exception {
     UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
     myCouple.setUserId("-2"); // unknown userId
     myCouple.setCountVolume(1);
-    myArrayList.add(myCouple);
-
-    return myArrayList;
+    return Collections.singletonList(myCouple);
   }
 }

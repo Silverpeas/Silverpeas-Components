@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -68,9 +68,15 @@ jCells[cellIndex] = new JCell( {
 			${(not mainLoopInfo.last) ? ',' : ''}
 		</c:forEach>
 	),
+	userAttributes : new Array(
+		<c:forEach items="${organigramme.rootOrganization.details}" var="detail" varStatus="loopInfo">
+			{label : "${detail.key}", value: "${detail.value}"} ${(not loopInfo.last) ? ',' : ''}
+		</c:forEach>
+	),
 	parentURL : "${organigramme.rootOrganization.parentUrl}",
 	level : 0,
 	className : 0,
+	extraClassName : "${organigramme.rootOrganization.specificCSSClass}",
 	cellType : CELL_TYPE_ORGANIZATION,
 	showCenterLink : false,
 	showDetailsLink : ${organigramme.rootOrganization.detailLinkActive},
@@ -96,6 +102,7 @@ jCells[cellIndex] = new JCell( {
 	),
 	level : 1,
 	className : 3,
+	extraClassName : "${organigramme.rootOrganization.specificCSSClass}",
 	cellType : CELL_TYPE_CATEGORY,
 	showCenterLink : false,
 	showDetailsLink : false,
@@ -122,6 +129,7 @@ jCells[cellIndex] = new JCell( {
 	),
 	level : 1,
 	className : 4,
+	extraClassName : "${organigramme.rootOrganization.specificCSSClass}",
 	cellType : CELL_TYPE_CATEGORY,
 	showCenterLink : false,
 	showDetailsLink : false,
@@ -141,8 +149,14 @@ jCells[cellIndex] = new JCell( {
 			{role : "${mainActor.role}", userFullName: "${mainActor.fullName}", login : "${mainActor.login}"} ${(not loopInfo.last) ? ',' : ''}
 		</c:forEach>
 	),
+	userAttributes : new Array(
+		<c:forEach items="${organization.details}" var="detail" varStatus="loopInfo">
+			{label : "${detail.key}", value: "${detail.value}"} ${(not loopInfo.last) ? ',' : ''}
+		</c:forEach>
+	),
 	level : 1+levelOffset,
 	className : 1,
+	extraClassName : "${organization.specificCSSClass}",
 	cellType : CELL_TYPE_ORGANIZATION,
 	showCenterLink : ${organization.centerLinkActive},
 	showDetailsLink : ${organization.detailLinkActive},

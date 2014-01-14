@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -71,6 +71,7 @@
     margin-right: 0.5em;
     width:24%;
 	position:relative;
+	border:0;
 } 
 
 #subTopics ul li a { 
@@ -127,13 +128,6 @@
 
 #topicDescription {
 	color:#666;
-	}
-
-.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
-    background: none;
-    border: none;
-    color: #1C94C4;
-    font-weight: bold;
 }
 
 #albumList { 
@@ -150,7 +144,6 @@
 	height: 90px; 
 }
 
-
 .ui-state-default a, .ui-state-default a:link, .ui-state-default a:visited {
     color: #000000;
     text-decoration: none;
@@ -162,6 +155,22 @@ ul#albumList li.ui-state-highlight {
 	padding:10px;
 	background-image: none;
 	background-color: #EAEAEA;
+}
+
+/* Slider */
+.gallery-slider-player-buttons {
+    z-index: 10;
+    width: 20px;
+    height: 20px;
+    margin: 0 auto;
+    cursor: pointer;
+    opacity:0.7;
+    position: absolute;
+    filter: alpha(opacity=70);
+}
+.gallery-slider-player-buttons:hover {
+    opacity:1;
+    filter: alpha(opacity=100);
 }
 
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -73,8 +73,8 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
   // Queries about Forms instances
   private static final String QUERY_FIND_FORMS_INSTANCES =
       "select * from " + FORMS_INSTANCES_TABLENAME +
-          " where instanceId = ? and formId = ? and creatorId = ? and not state = " +
-          FormInstance.STATE_ARCHIVED + " order by creationDate desc";
+      " where instanceId = ? and formId = ? and creatorId = ? and not state = " +
+      FormInstance.STATE_ARCHIVED + " order by creationDate desc";
   private static final String QUERY_LOAD_FORM_INSTANCE =
       "select * from " + FORMS_INSTANCES_TABLENAME + " where instanceId = ? and id = ?";
   private static final String QUERY_UPDATE_FORM_INSTANCE =
@@ -83,7 +83,9 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
           +
           " set formId = ?, state = ?, creatorId = ?, creationDate = ?, validatorId = ?, validationDate = ?, comments = ?, instanceId = ? where id = ? ";
   private static final String QUERY_INSERT_FORMINSTANCE =
-      "INSERT INTO " + FORMS_INSTANCES_TABLENAME + "( "
+      "INSERT INTO " +
+          FORMS_INSTANCES_TABLENAME +
+          "( "
           +
           "id, formId, state, creatorId, creationDate, validatorId, validationDate, comments, instanceId) "
           + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";;
@@ -93,22 +95,22 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
   // Queries about Rights
   private static final String QUERY_LOAD_USER_RIGHTS =
       "select * from " + USER_RIGHTS_TABLENAME +
-          " where instanceId = ? and formId = ? and rightType = ?";
+      " where instanceId = ? and formId = ? and rightType = ?";
   private static final String QUERY_LOAD_GROUP_RIGHTS =
       "select * from " + GROUP_RIGHTS_TABLENAME +
-          " where instanceId = ? and formId = ? and rightType = ?";
+      " where instanceId = ? and formId = ? and rightType = ?";
   private static final String QUERY_REMOVE_USER_RIGHTS =
       "delete from " + USER_RIGHTS_TABLENAME +
-          " where instanceId = ? and formId = ? and rightType = ?";
+      " where instanceId = ? and formId = ? and rightType = ?";
   private static final String QUERY_REMOVE_GROUP_RIGHTS =
       "delete from " + GROUP_RIGHTS_TABLENAME +
-          " where instanceId = ? and formId = ? and rightType = ?";
+      " where instanceId = ? and formId = ? and rightType = ?";
   private static final String QUERY_INSERT_USER_RIGHTS =
       "INSERT INTO " + USER_RIGHTS_TABLENAME + "(formId, instanceId, rightType, userId) "
-          + "VALUES (?, ?, ?, ?)";
+      + "VALUES (?, ?, ?, ?)";
   private static final String QUERY_INSERT_GROUP_RIGHTS =
       "INSERT INTO " + GROUP_RIGHTS_TABLENAME + "(formId, instanceId, rightType, groupId) "
-          + "VALUES (?, ?, ?, ?)";
+      + "VALUES (?, ?, ?, ?)";
 
   public FormDetail createForm(FormDetail formDetail) throws FormsOnlineDatabaseException {
     Connection con = getConnection();
@@ -164,7 +166,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
     } catch (SQLException se) {
       throw new FormsOnlineDatabaseException("FormsOnlineDAOJdbc.deleteForm()",
           SilverpeasException.ERROR, "formsOnline.DELETE_FORM_FAILED", "instanceId=" + instanceId +
-              ", formId=" + formId, se);
+          ", formId=" + formId, se);
     } finally {
       DBUtil.close(rs, stmt);
       freeConnection(con);
@@ -188,7 +190,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
     } catch (SQLException se) {
       throw new FormsOnlineDatabaseException("FormsOnlineDAOJdbc.getForm()",
           SilverpeasException.ERROR, "formsOnline.GET_FORM_FAILED", "instanceId = " + instanceId +
-              ", formId=" + formId, se);
+          ", formId=" + formId, se);
     } finally {
       DBUtil.close(rs, stmt);
       freeConnection(con);
@@ -213,7 +215,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
     } catch (SQLException se) {
       throw new FormsOnlineDatabaseException("FormsOnlineDAOJdbc.findAllForms()",
           SilverpeasException.ERROR, "formsOnline.GET_ALL_FORMS_FAILED", "instanceId = " +
-              instanceId, se);
+          instanceId, se);
     } finally {
       DBUtil.close(rs, stmt);
       freeConnection(con);
@@ -304,7 +306,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
     } catch (SQLException se) {
       throw new FormsOnlineDatabaseException("FormsOnlineDAOJdbc.getGroupRights()",
           SilverpeasException.ERROR, "formsOnline.FIND_GROUP_RIGHTS", "instanceId = " + instanceId +
-              ", formId = " + formId, se);
+          ", formId = " + formId, se);
     } finally {
       DBUtil.close(rs, stmt);
       freeConnection(con);
@@ -331,7 +333,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
     } catch (SQLException se) {
       throw new FormsOnlineDatabaseException("FormsOnlineDAOJdbc.getUserRights()",
           SilverpeasException.ERROR, "formsOnline.FIND_USER_RIGHTS", "instanceId = " + instanceId +
-              ", formId = " + formId, se);
+          ", formId = " + formId, se);
     } finally {
       DBUtil.close(rs, stmt);
       freeConnection(con);
@@ -476,7 +478,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
         " where creatorId = '").append(userId).append("')")
         .append(" )");
 
-    /* 3rd criteria : user has reveiver rights (directly or from a group) */
+    /* 3rd criteria : user has receiver rights (directly or from a group) */
     query.append(" and (")
         .append(" id in (select formId from ").append(USER_RIGHTS_TABLENAME).append(
         " where rightType='S' and userId = '").append(userId).append("') ");
@@ -509,7 +511,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
     } catch (SQLException se) {
       throw new FormsOnlineDatabaseException("FormsOnlineDAOJdbc.getUserAvailableForms()",
           SilverpeasException.ERROR, "formsOnline.FIND_USER_AVAILABLE_FORMS", "instanceId = " +
-              instanceId + ",userId = " + userId, se);
+          instanceId + ",userId = " + userId, se);
     } finally {
       DBUtil.close(rs, stmt);
       freeConnection(con);
@@ -524,8 +526,9 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
   public List<FormDetail> getForms(List<String> formIds) throws FormsOnlineDatabaseException {
 
     List<FormDetail> forms = new ArrayList<FormDetail>();
-    if ((formIds == null) || (formIds.isEmpty()))
+    if ((formIds == null) || (formIds.isEmpty())) {
       return forms;
+    }
 
     /* Build query */
     StringBuffer query = new StringBuffer("select * from " + FORMS_TABLENAME + " where id in (");
@@ -586,7 +589,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
     } catch (SQLException se) {
       throw new FormsOnlineDatabaseException("FormsOnlineDAOJdbc.getSentFormInstances()",
           SilverpeasException.ERROR, "formsOnline.FIND_SENT_FORM_INSTANCE_FAILED", "instanceId = " +
-              instanceId + ", userId = " + userId, se);
+          instanceId + ", userId = " + userId, se);
     } finally {
       DBUtil.close(rs, stmt);
       freeConnection(con);
@@ -649,8 +652,8 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
     /* build query */
     StringBuffer query =
         new StringBuffer("select distinct id from " + FORMS_TABLENAME + " where instanceId = '" +
-            instanceId + "' and id in (select formId from " + USER_RIGHTS_TABLENAME +
-            " where rightType='R' and userId = '" + userId + "') ");
+        instanceId + "' and id in (select formId from " + USER_RIGHTS_TABLENAME +
+        " where rightType='R' and userId = '" + userId + "') ");
     if ((userGroupIds != null) && (userGroupIds.length > 0)) {
       query.append("or id in (select formId from " + GROUP_RIGHTS_TABLENAME +
           " where rightType='R' and groupId in ( ");
@@ -673,7 +676,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
     } catch (SQLException se) {
       throw new FormsOnlineDatabaseException("FormsOnlineDAOJdbc.getAvailableFormIds()",
           SilverpeasException.ERROR, "formsOnline.FIND_AVAILABLE_FORM_IDS_FAILED", "instanceId = " +
-              instanceId + ", userId = " + userId, se);
+          instanceId + ", userId = " + userId, se);
     } finally {
       DBUtil.close(rs, stmt);
       freeConnection(con);
@@ -756,7 +759,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
     } catch (SQLException se) {
       throw new FormsOnlineDatabaseException("FormsOnlineDAOJdbc.getFormInstance()",
           SilverpeasException.ERROR, "formsOnline.CREATE_FORM_FAILED", "instanceId = " +
-              instanceId + ", formInstanceId=" + formInstanceId, se);
+          instanceId + ", formInstanceId=" + formInstanceId, se);
     } finally {
       DBUtil.close(rs, stmt);
       freeConnection(con);
@@ -811,7 +814,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
     } catch (SQLException se) {
       throw new FormsOnlineDatabaseException("FormsOnlineDAOJdbc.deleteFormInstance()",
           SilverpeasException.ERROR, "formsOnline.DELETE_FORM_FAILED", "instanceId=" + instanceId +
-              ", formInstanceId=" + formInstanceId, se);
+          ", formInstanceId=" + formInstanceId, se);
     } finally {
       DBUtil.close(rs, stmt);
       freeConnection(con);
@@ -839,10 +842,9 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
    * @return the initialized connection.
    * @throws FormsOnlineDatabaseException if a database error occured while getting connection
    */
-  private final Connection getConnection() throws FormsOnlineDatabaseException {
+  protected Connection getConnection() throws FormsOnlineDatabaseException {
     try {
-      Connection con = DBUtil.makeConnection(DB_NAME);
-      return con;
+      return DBUtil.makeConnection(DB_NAME);
     } catch (UtilException e) {
       throw new FormsOnlineDatabaseException(
           "FormsOnlineDAOJdbc.getConnection()",

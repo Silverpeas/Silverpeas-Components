@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,136 +23,109 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.util.StringUtil"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%@ include file="imports.jsp" %>
 <%@ include file="init.jsp.inc" %>
 
 <%
-String columnValueS = "";
-String action ="";
 String column = "";
 String compare = "";
-String col = "";
-String sort ="";
 
 int cpp =0;
 
-String[] columns = null;
-String[] compares = null;
 String[] allColumns_rs = new String[1];
 allColumns_rs[0] = connecteurJDBC.getString("comboTous");
 String[] allCompares = {connecteurJDBC.getString("contient"), "=", "<=", ">=", "!=", ">", "<"};
 
-col				= request.getParameter("colNumber");
-columnValueS	= request.getParameter("columnValue");
-action			= request.getParameter("Action");
-sort			= request.getParameter("Sort");
+String col			= request.getParameter("colNumber");
+String columnValueS	= request.getParameter("columnValue");
+String action		= request.getParameter("Action");
+String sort			= request.getParameter("Sort");
 
-columns			= (String[]) request.getParameterValues("columns");
-compares		= (String[]) request.getParameterValues("compares");
+String[] columns	= (String[]) request.getParameterValues("columns");
+String[] compares	= (String[]) request.getParameterValues("compares");
 
 String value = "";
 String label = "";
 String selected = "";
 
-if(sort == null || sort.equals(""))
-{
-	sort = "desc";
+if (sort == null || sort.equals("")) {
+  sort = "desc";
+} else {
+  connecteurJDBC.setSortType(sort);
 }
-else connecteurJDBC.setSortType(sort);
 
-
-if (columns != null)
-{
-	column = columns[0];
-	connecteurJDBC.setColumnReq(column);
+if (columns != null) {
+  column = columns[0];
+  connecteurJDBC.setColumnReq(column);
+} else {
+  column = connecteurJDBC.getColumnReq();
 }
-else column = connecteurJDBC.getColumnReq();
 
-if (compares != null)
-{
-	compare = compares[0];
-	connecteurJDBC.setCompare(compare);
+if (compares != null) {
+  compare = compares[0];
+  connecteurJDBC.setCompare(compare);
+} else {
+  compare = connecteurJDBC.getCompare();
 }
-else compare = connecteurJDBC.getCompare();
 
-if ((columnValueS != null) && (!columnValueS.equals(connecteurJDBC.getColumnValue())))
-{
-	connecteurJDBC.setColumnValue(columnValueS);
+if ((columnValueS != null) && (!columnValueS.equals(connecteurJDBC.getColumnValue()))) {
+  connecteurJDBC.setColumnValue(columnValueS);
+} else {
+  columnValueS = connecteurJDBC.getColumnValue();
 }
-else columnValueS = connecteurJDBC.getColumnValue();
 
-if(col!=null && !col.equals(""))
-{
-	cpp = (new Integer(col)).intValue();
+if(col!=null && !col.equals("")) {
+  cpp = Integer.parseInt(col);
 }
 
 String SQLreq = connecteurJDBC.getSQLreq();
 String lastValidSqlReq = connecteurJDBC.getFullRequest();
 
-if(action != null)
-{
-	if (action.equals("newSQLReq"))
-	{
-	}
-	else if(action.equals("sortColumn"))
-	{
+if (action != null) {
+	if (action.equals("newSQLReq")) {
+	  // do nothing ?
+	} else if(action.equals("sortColumn")) {
 		int index = lastValidSqlReq.toLowerCase().indexOf("order by");
 		if (index != -1) //** SCO ** d�j� une close order by
 		{
 			lastValidSqlReq = lastValidSqlReq.substring(0, index -1);
 		}
 		lastValidSqlReq =  lastValidSqlReq+ " ORDER BY "+connecteurJDBC.getColumnName(cpp) +" "+connecteurJDBC.getSortType();
-      connecteurJDBC.setFullRequest(lastValidSqlReq);
+      	connecteurJDBC.setFullRequest(lastValidSqlReq);
 	}
-		
 }
 %>
 
-
-<HTML>
-<Head>
-  <TITLE><%=connecteurJDBC.getString("windowTitleMain")%></TITLE>
-<%
-out.println(gef.getLookStyleSheet());
-%>
-</head>
-<Script language="JavaScript">
-
-	function restrictResults()
-	{
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=connecteurJDBC.getString("windowTitleMain")%></title>
+<view:looknfeel/>
+<script type="text/javascript">
+	function restrictResults() {
 		document.sqlReqForm.Action.value = "newSQLReq";
 		document.sqlReqForm.submit();
 	}
-	function doArrayPane(ResultSet, i)
-	{
-		document.sqlReqForm.Action.value = "sortColumn";
-		document.sqlReqForm.colNumber.value= i;
-		<% if(sort.equals("desc"))
-		   {%>
-				document.sqlReqForm.Sort.value = "asc";
-		   <%}
-		   else
-		   {%>
-			    document.sqlReqForm.Sort.value = "desc";
-		<% } %>
-		document.sqlReqForm.submit();
-	}
-</Script>
-<BODY marginwidth=5 marginheight=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
-
+</script>
+</head>
+<body>
 <%
-	browseBar.setExtraInformation(connecteurJDBC.getString("titreExecution")) ;
+	browseBar.setExtraInformation(connecteurJDBC.getString("titreExecution"));
 	    
     if (flag.equals("publisher") || flag.equals("admin")) {
 	    tabbedPane = gef.getTabbedPane();
-			tabbedPane.addTab(connecteurJDBC.getString("tabbedPaneConsultation"), "DoRequest", true);
+		tabbedPane.addTab(connecteurJDBC.getString("tabbedPaneConsultation"), "DoRequest", true);
     	tabbedPane.addTab(connecteurJDBC.getString("tabbedPaneRequete"), "ParameterRequest",false );
 	}
 	
-	if (flag.equals("admin"))
+	if (flag.equals("admin")) {
 		tabbedPane.addTab(connecteurJDBC.getString("tabbedPaneParametresJDBC"),"ParameterConnection", false);
+	}
 
 	Frame frame = gef.getFrame();
 
@@ -162,14 +135,14 @@ out.println(gef.getLookStyleSheet());
 	}
 	out.println(frame.printBefore());
 
-	 //Tableau
-	  ArrayPane arrayPane = gef.getArrayPane("ResultSet","",request,session);
-	  arrayPane.setSortable(true);
-	  arrayPane.setExportData(true);
+	//Tableau
+	ArrayPane arrayPane = gef.getArrayPane("ResultSet","",request,session);
+	arrayPane.setSortable(true);
+	arrayPane.setExportData(true);
+	arrayPane.setVisibleLineNumber(15);
 	
-	if (lastValidSqlReq!=null)
-	{	
-		connecteurJDBC.startConnection(lastValidSqlReq);	
+	if (lastValidSqlReq!=null) {	
+		connecteurJDBC.startConnection(lastValidSqlReq);
 	  
 	  // Add the columns titles
 	  allColumns_rs = new String[connecteurJDBC.getColumnCount()]; 
@@ -182,19 +155,16 @@ out.println(gef.getLookStyleSheet());
 	  while (connecteurJDBC.getNext()) {
 			// apply filter if needed
 			boolean rowIsOK = false;
-			if ( (column!=null) && (compare!=null) && (columnValueS!= null)
-				&& (!"*".equals(column)) && (!"*".equals(compare)) && (!"".equals(columnValueS)) )
-			{
+			if (column!=null && compare!=null && columnValueS!= null
+				&& !"*".equals(column) && !"*".equals(compare) && !"".equals(columnValueS)) {
 				String theValue = connecteurJDBC.getString(Integer.parseInt(column));
-				if (theValue == null)
+				if (theValue == null) {
 					rowIsOK = false;
-				else if ( connecteurJDBC.getString("contient").equals(compare) )
-				{
-					if (theValue!=null)
-						rowIsOK = ( theValue.toLowerCase().indexOf(columnValueS.toLowerCase())!=-1 );
-				}
-				else
-				{
+				} else if (connecteurJDBC.getString("contient").equals(compare)) {
+					if (theValue != null) {
+						rowIsOK = theValue.toLowerCase().indexOf(columnValueS.toLowerCase())!=-1;
+					}
+				} else {
 					int compareResult = theValue.compareToIgnoreCase(columnValueS);
 
 					if ( "!=".equals(compare) )
@@ -210,18 +180,23 @@ out.println(gef.getLookStyleSheet());
 					if ( "<".equals(compare) )
 						rowIsOK = (compareResult < 0);
 				}
-			}
-			else
+			} else {
 				rowIsOK = true;
+			}
 
-			if (rowIsOK)
-			{
+			if (rowIsOK) {
 				ArrayLine arrayLine = arrayPane.addArrayLine() ;
 				for (int i=1 ; i<=connecteurJDBC.getColumnCount() ; i++) {
-					ArrayCellText champ = arrayLine.addArrayCellText(connecteurJDBC.getString(i));
-					champ.setCompareOn(new String("NULL"));
-					if (connecteurJDBC.getString(i) != null)
-						champ.setCompareOn(connecteurJDBC.getString(i));
+				  String val = connecteurJDBC.getString(i);
+				  ArrayCellText champ = arrayLine.addArrayCellText(val);
+				  champ.setCompareOn(new String("NULL"));
+				  if (val != null) {
+				    if (StringUtil.isInteger(val)) {
+					  champ.setCompareOn(Integer.parseInt(val));  
+					} else {
+				      champ.setCompareOn(val.toLowerCase());
+					}
+				  }
 				}
 			}
 	  }
@@ -230,21 +205,20 @@ out.println(gef.getLookStyleSheet());
 
  %>
 <center> 
-<table cellpadding=0 cellspacing=0 border=0 width="98%" bgcolor=000000>
+<table cellpadding="0" cellspacing="0" border="0" width="98%" bgcolor="#000000">
           <tr> 
-            <td> 
+            <td>
+            <form name="sqlReqForm" action="connecteurJDBC.jsp" method="post">
+            	<input name="Sender" type="hidden" value = "connecteurJDBC.jsp"/>
+				<input type="hidden" name="skip" value="0"/>
+				<input name="Action" type="hidden"/>
+				<input name="colNumber" type="hidden"/>
+				<input name="Sort" type="hidden" value="<%=connecteurJDBC.getSortType()%>"/>
+				<input name="SQLreq" type="hidden" value="<%=connecteurJDBC.getSQLreq()%>"/>
 				<table cellpadding=2 cellspacing=1 border=0 width="100%" >
-				<FORM name="sqlReqForm" action="connecteurJDBC.jsp" method="POST">
-				  <input name="Sender" type="hidden" value = "connecteurJDBC.jsp" >
-				  <input type="hidden" name="skip" value="0">
-				  <input name="Action" type="hidden" >
-				  <input name="colNumber" type="hidden" >
-				  <input name="Sort" type="hidden" value="<%=connecteurJDBC.getSortType()%>">
-				  <input name="SQLreq" type="hidden" value="<%=connecteurJDBC.getSQLreq()%>">
-
                   <tr> 
-                     <td class=intfdcolor align=center nowrap height="24"> 
-                      <span class=selectNS> 
+                     <td class="intfdcolor" align="center" nowrap="nowrap" height="24"> 
+                      <span class="selectNS"> 
                       <select name="columns" size="1">
 		              <%
 		value = "*";
@@ -253,21 +227,19 @@ out.println(gef.getLookStyleSheet());
 		out.println("<option "+selected
 	              + " value=" + value + ">"
 				  + label + "</option>");
-		for(int nI = 0; nI <allColumns_rs.length; nI++) 
-		{
+		for(int nI = 0; nI <allColumns_rs.length; nI++) {
 			//value = allColumns_rs[nI];
 			value = Integer.toString(nI+1);
 			label = allColumns_rs[nI];
 			if ((label == null) || (label.length() == 0)) label = value;
 			selected = (value.equals(column))?"selected":"";
-			out.println("<option "+selected
-						+" value=" + value + ">" + label + "</option>");
+			out.println("<option "+selected +" value=" + value + ">" + label + "</option>");
 		}
 %>
                       </select></span>
                     </td>
-                    <td class=intfdcolor align=center nowrap height="24"> 
-                      <span class=selectNS> 
+                    <td class="intfdcolor" align="center" nowrap="nowrap" height="24"> 
+                      <span class="selectNS"> 
 					  <select name="compares" size="1">
                       <%
 					  value = "*";
@@ -275,8 +247,7 @@ out.println(gef.getLookStyleSheet());
 					  out.println("<option "+selected
 	                             + " value=" + value + ">"
 		                         + label + "</option>");
-					  for(int nI = 0; nI <allCompares.length; nI++) 
-					  {
+					  for(int nI = 0; nI <allCompares.length; nI++) {
                  		 value = allCompares[nI];
 						 label = allCompares[nI];
 			             if ((label == null) || (label.length() == 0)) label = value;
@@ -287,37 +258,29 @@ out.println(gef.getLookStyleSheet());
 %>
                       </select></span>
                     </td>
-                    <td class=intfdcolor align=center nowrap height="24"> 
-                      <span class=selectNS> 
-                      &nbsp;<%=connecteurJDBC.getString("champValeur")%> : <input type="text" name="columnValue" size="30" value="<%=columnValueS%>"></span>&nbsp;
+                    <td class="intfdcolor" align="center" nowrap="nowrap" height="24"> 
+                      <span class="selectNS"> 
+                      &nbsp;<%=connecteurJDBC.getString("champValeur")%> : <input type="text" name="columnValue" size="30" value="<%=columnValueS%>"/></span>&nbsp;
                     </td>
-					<td class=intfdcolor>
-				  
-				   <%
+					<td class="intfdcolor">
+				    <%
 						ButtonPane buttonPane0 = gef.getButtonPane();
-						buttonPane0.addButton((Button) gef.getFormButton("Ok", "javascript:onClick=restrictResults()", false));
+						buttonPane0.addButton(gef.getFormButton("Ok", "javascript:onclick=restrictResults()", false));
 						out.println(buttonPane0.print());
 					%>
 					</td>
-				
 				 </tr>
-				 </Form>
-			   </table>             
-				  
-              
-			</td><td width="100%" class=intfdcolor51></td>
+			   </table>
+			   </form>
+			</td><td width="100%" class="intfdcolor51"></td>
 		  </tr>
 		 </table>
 </center>    	
-<br>
+<br/>
 <% 
 	out.println(arrayPane.print());
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
-
-<form name="navigationForm">
-</form>
-
-</Body>
-</HTML>
+</body>
+</html>

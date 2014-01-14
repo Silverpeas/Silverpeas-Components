@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -41,30 +41,24 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
-<%@ page import="java.io.IOException"%>
-<%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
-<%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail"%>
-<%@ page import="com.stratelia.webactiv.forums.sessionController.helpers.*"%>
-<%@ page import="com.stratelia.webactiv.forums.sessionController.ForumsSessionController"%>
-<%@ page import="com.stratelia.webactiv.forums.models.Forum"%>
-<%@ page import="com.stratelia.webactiv.forums.models.Message"%>
+<%@ page import="com.stratelia.webactiv.forums.control.helpers.*"%>
+<%@ page import="com.stratelia.webactiv.forums.control.ForumsSessionController"%>
 <%
     ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
         "forumsSessionClientController");
     ResourcesWrapper resources = (ResourcesWrapper)request.getAttribute("resources");
-    ResourceLocator resource = new ResourceLocator(
-        "com.stratelia.webactiv.forums.multilang.forumsBundle", fsc.getLanguage());
     if (fsc == null) {
         // No forums session controller in the request -> security exception
-        String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator()
-            .getString("sessionTimeout");
+        String sessionTimeout = GeneralPropertiesManager.getString("sessionTimeout");
         getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout)
             .forward(request, response);
         return;
     }
+    ResourceLocator resource = new ResourceLocator(
+      "org.silverpeas.forums.multilang.forumsBundle", fsc.getLanguage());
     String userId = fsc.getUserId();
     boolean isAdmin = fsc.isAdmin();
     boolean isUser = fsc.isUser();
@@ -74,14 +68,19 @@
 
     boolean isModerator = fsc.isModerator(userId, forumId);
     ForumActionHelper.actionManagement(request, isAdmin, isModerator, userId, resource, out, fsc);
+    boolean isForumSubscriberByInheritance =
+      (Boolean) request.getAttribute("isForumSubscriberByInheritance");
 %>
+<c:set var="isModerator" value="<%=isModerator%>" />
 <c:set var="currentForum" value="${requestScope.currentForum}" />
 <c:set var="isActive"  value="${requestScope.currentForum.active}" />
 <c:set var="globalNote" value="${requestScope.notation.roundGlobalNote}" />
 <c:set var="userNote" value="${requestScope.notation.userNote}" />
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title><c:out value="${currentForum.name}" /></title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <view:looknfeel />
     <script type="text/javascript" src="<c:url value="/forums/jsp/javaScript/forums.js" />" ></script>
     <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js" />" ></script>
@@ -149,8 +148,10 @@
     <c:set var="viewForumPage">/Rforums/<c:out value="${componentId}" />/viewForum.jsp</c:set>
     <view:browseBar>
       <c:forEach items="${requestScope.parents}" var="ancestor">
-        <c:url var="ancestorLink" value="${viewForumPage}"><c:param name="call" value="viewForum"/><c:param name="forumId" value="${ancestor.id}"/></c:url>
-        <view:browseBarElt id="${ancestor.id}" label="${ancestor.name}" link="${ancestorLink}" />
+        <c:if test="${not empty ancestor.id}">
+          <c:url var="ancestorLink" value="${viewForumPage}"><c:param name="call" value="viewForum"/><c:param name="forumId" value="${ancestor.id}"/></c:url>
+          <view:browseBarElt id="${ancestor.id}" label="${ancestor.name}" link="${ancestorLink}" />
+        </c:if>
       </c:forEach>
       <c:url var="forumLink" value="${viewForumPage}"><c:param name="call" value="viewForum"/><c:param name="forumId" value="${param.forumId}"/></c:url>
       <view:browseBarElt id="${currentForum.id}" label="${currentForum.name}" link="${forumLink}" />
@@ -168,7 +169,7 @@
         <c:set var="mail2AdminOperation">javascript:notifyPopup2('<c:out value="${pageContext.request.contextPath}"/>', '<c:out value="${sessionController.componentId}" />','<c:out value="${sessionController.adminIds}" />', '');</c:set>
         <c:url var="mail2AdminIconUrl" value="/util/icons/forums_mailtoAdmin.gif" />
         <view:operation altText="${mail2AdminAltText}" icon="${mail2AdminIconUrl}" action="${mail2AdminOperation}" />
-        <c:if test="${isAdmin}">
+        <c:if test="${isAdmin && sessionController.forumInsideForum}">
           <fmt:message key="newForum" var="addForumAltText" />
           <c:url var="addForumOperation" value="editForumInfo.jsp">
             <c:param name="call" value="viewForum"/>
@@ -176,24 +177,21 @@
             <c:param name="forumId" value="${param.forumId}"/>
             <c:param name="params" value="${param.forumId}"/>
           </c:url>
-          <c:url var="addForumIconUrl" value="/util/icons/forums_to_add.gif" />
-          <view:operation altText="${addForumAltText}" icon="${addForumIconUrl}" action="${addForumOperation}" />
-          <fmt:message key="forums.addCategory" var="addCategoryAltText" />
-          <c:set var="addCategoryOperation">javascript:notifyPopup2('<c:out value="${pageContext.request.contextPath}"/>', '<c:out value="${sessionController.componentId}" />','<c:out value="${sessionController.adminIds}" />', '');</c:set>
-          <c:url var="addCategoryIconUrl" value="/util/icons/folderAddBig.gif" />
-          <view:operation altText="${addCategoryAltText}" icon="${addCategoryIconUrl}" action="NewCategory" />
+          <c:url var="addForumIconUrl" value="/util/icons/create-action/add-forum.png" />
+          <view:operationOfCreation altText="${addForumAltText}" icon="${addForumIconUrl}" action="${addForumOperation}" />
         </c:if>
         <c:if test="${isActive}">
           <fmt:message key="newMessage" var="newMessageAltText" />
-          <c:url var="newMessageIconUrl" value="/util/icons/forums_addMessage.gif" />
+          <c:url var="newMessageIconUrl" value="/util/icons/create-action/add-message.png" />
           <c:set var="newMessagePage">/Rforums/<c:out value="${componentId}" />/editMessage.jsp</c:set>
           <c:url var="newMessageOperation" value="${newMessagePage}"><c:param name="call" value="viewForum"/><c:param name="action" value="1"/><c:param name="forumId" value="${param.forumId}"/><c:param name="params" value="${param.forumId}"/></c:url>
-          <view:operation altText="${newMessageAltText}" icon="${newMessageIconUrl}" action="${newMessageOperation}" />
+          <view:operationOfCreation altText="${newMessageAltText}" icon="${newMessageIconUrl}" action="${newMessageOperation}" />
         </c:if>
       </view:operationPane>
     </c:if>
     <view:window>
       <view:frame>
+      	<view:areaOfOperationOfCreation/>
         <table class="intfdcolor4" border="0" cellspacing="0" cellpadding="0" width="98%">
           <c:if test="${requestScope.nbChildrens > 0}">
             <tr>
@@ -205,18 +203,19 @@
                     <td nowrap="nowrap" align="center"><fmt:message key="forums.nbMessages" /></td>
                     <td nowrap="nowrap" align="center"><fmt:message key="forums.lastMessage" /></td>
                     <td nowrap="nowrap" align="center"><fmt:message key="forums.notation" /></td>
-                    <c:if test="${isAdmin}">
+                    <td nowrap="nowrap" align="center"><fmt:message key="subscribeMessage" /></td>
+                    <c:if test="${isAdmin || isModerator}">
                       <td nowrap="nowrap" align="center"><fmt:message key="operations" /></td>
                     </c:if>
                   </tr>
-                  <%ForumListHelper.displayChildForums(out, resources, isAdmin, isModerator, isReader, forumId, "main", fsc);%>
+                  <%ForumListHelper.displayChildForums(out, resources, isAdmin, isModerator, isReader, forumId, "main", fsc, isForumSubscriberByInheritance);%>
                 </table>
               </td>
             </tr>
-          </c:if>
             <tr>
               <td><br/><br/></td>
             </tr>
+          </c:if>
           <tr class="notationLine">
             <td align="right">
               <c:url var="starIcon" value="/util/icons/shim.gif"/>
@@ -236,7 +235,7 @@
                         <tr class="ArrayColumn">
                           <td nowrap="nowrap" align="center" colspan="3"><fmt:message key="forums.nbSubjects"/></td>
                           <td nowrap="nowrap" align="center"><fmt:message key="forums.lastMessage"/></td>
-                          <td nowrap="nowrap" align="center"><<fmt:message key="forums.nbMessages"/></td>
+                          <td nowrap="nowrap" align="center"><fmt:message key="forums.nbMessages"/></td>
                           <td nowrap="nowrap" align="center"><fmt:message key="forums.nbViews"/></td>
                           <td nowrap="nowrap" align="center"><fmt:message key="forums.notation"/></td>
                           <c:if test="${isAdmin || isModerator}">
@@ -245,7 +244,7 @@
                         </tr><%
 fsc.deployAllMessages(forumId);
 ForumHelper.displayMessagesList(out, resource, userId, isAdmin, isModerator, isReader, true, forumId, false,
-"viewForum", fsc, resources);
+"viewForum", fsc, resources, isForumSubscriberByInheritance);
                         %>
                       </table>
                 </form>
@@ -258,11 +257,12 @@ ForumHelper.displayMessagesList(out, resource, userId, isAdmin, isModerator, isR
           <img src="icons/newMessage.gif" alt="<fmt:message key="forums.newMessageVisite" />" /> <fmt:message key="forums.newMessageVisite" />
         </c:if>
         <br/>
-        <center>
+        <div style="text-align: center;">
+          <fmt:message key="accueil" var="btnLabel"/>
           <view:buttonPane>
-            <view:button action="main.jsp" label="Retour" disabled="false" />
+            <view:button action="main.jsp" label="${btnLabel}" disabled="false" />
           </view:buttonPane>
-        </center>
+        </div>
       </view:frame>
     </view:window>
     <c:if test="${!isReader}">

@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,15 +25,18 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@ page import="com.silverpeas.resourcesmanager.model.CategoryDetail"%>
-<%@ page import="com.silverpeas.resourcesmanager.model.ResourceDetail"%>
+<%@ page import="org.silverpeas.resourcemanager.model.Category"%>
+<%@ page import="org.silverpeas.resourcemanager.model.Resource"%>
 <%@ page import="java.util.List" %>
+
+<%@taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
 <%@ include file="check.jsp" %>
 <% 
-	String 			idcategory 	= (String) request.getAttribute("categoryId");
-	List 			list 		= (List) request.getAttribute("listCategories");
-	ResourceDetail 	details 	= (ResourceDetail) request.getAttribute("resource");
-	List managers  = (List) request.getAttribute("Managers");
+	Long 			idcategory 	= (Long) request.getAttribute("categoryId");
+	List<Category> 			list 		= (List) request.getAttribute("listCategories");
+	Resource details 	= (Resource) request.getAttribute("resource");
+	List<UserDetail> managers  = (List<UserDetail>) request.getAttribute("Managers");
 	
 	Form 			formUpdate  = (Form) request.getAttribute("Form");
 	DataRecord 		data    	= (DataRecord) request.getAttribute("Data"); 
@@ -51,27 +54,24 @@
 		else
 			context.setCurrentFieldIndex("6");
 	    context.setBorderPrinted(false);
-	    //context.setObjectId(idResource);
 	}
 	
 	String name = "";
-	String reponsibleId = "";
 	String description = "";
 	boolean bookable = false;
-	String resourceId = "";
+	Long resourceId = null;
 	
 	if (details != null){
 		resourceId 		= details.getId();
 		name 			= details.getName();
-		bookable 		= details.getBookable();
-		//reponsibleId 	= details.getResponsibleId();
+		bookable 		= details.isBookable();
 		description 	= details.getDescription();
 	}
 	
 	//creation des boutons Valider et Annuler
 	Button validateButton = gef.getFormButton(resource.getString("GML.validate"), "javaScript:verification()", false);
 	Button cancelButton = null;
-	if(!idcategory.equals("noCategory"))
+	if(!"noCategory".equals(idcategory.toString()))
 		cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "ViewResources?id="+idcategory,false);
 	else
 		cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "ViewCategories",false);
@@ -79,9 +79,7 @@
 	%>
 <html>
 <head>
-<%
-	out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
@@ -169,8 +167,8 @@ buttonPane.addButton(cancelButton);
 		<TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.nomcategorie"));%> : </TD>
 		<TD width="100%">
 		<%for(int i=0;i< list.size();i++){
-			CategoryDetail category = (CategoryDetail)list.get(i);
-			String categoryId = category.getId();
+			Category category = (Category)list.get(i);
+			Long categoryId = category.getId();
 		    String nameCategory = category.getName();
 			if (categoryId.equals(idcategory))
 			{
@@ -195,7 +193,7 @@ buttonPane.addButton(cancelButton);
 	
 	<tr>
 		<TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.reservable"));%> : </TD>
-		<TD><input type="checkbox" name="SPRM_bookable" id="bookable" <% if((details != null) && (bookable == true)){out.println("checked="+"checked");}else{out.println("");}%> /> <label for="bookable"></label>&nbsp;</TD>
+		<TD><input type="checkbox" name="SPRM_bookable" id="bookable" <% if((details != null) && (bookable)){out.println("checked="+"checked");}else{out.println("");}%> /> <label for="bookable"></label>&nbsp;</TD>
 	</tr>
 
 	<tr>
@@ -203,14 +201,12 @@ buttonPane.addButton(cancelButton);
 	   
 	   <TD id="managers"> 
 			<%
-		    String managerNames = "";
-			  if (managers != null) {
-			    Iterator it = managers.iterator();
-			    while(it.hasNext())
-			    {
-			      UserDetail manager = (UserDetail) it.next();
-			      managerIds += manager.getId()+ ",";
-			      managerNames += manager.getDisplayedName()+"<br/>";
+		    StringBuilder managerNames = new StringBuilder("");
+			  if (managers != null && ! managers.isEmpty()) {
+			    for(UserDetail manager : managers) {
+			      managerIds += manager.getId()+ ","; %>
+			      <view:username userId="<%=manager.getId()%>"/><br/>
+			      <%
 			    }
 			  } %>
 			  <%=managerNames %>
@@ -219,11 +215,11 @@ buttonPane.addButton(cancelButton);
   </tr>
 	
 	<tr>
-		<td colspan="2">( <img border="0" src=<%=resource.getIcon("resourcesManager.obligatoire")%> width="5" height="5"> : <%=resource.getString("GML.requiredField")%>)</td>
+		<td colspan="2">( <img border="0" src="<%=resource.getIcon("resourcesManager.obligatoire")%>" width="5" height="5" alt=""> : <%=resource.getString("GML.requiredField")%>)</td>
 	</tr>
 		<!-- <input type="HIDDEN" name="idcategory" value=<%=idcategory%> > -->
 		<%if (details != null){ %>
-			<input type="HIDDEN" name="SPRM_resourceId" value="<%=resourceId%>"/>
+			<input type="hidden" name="SPRM_resourceId" value="<%=resourceId%>"/>
 		<%}%>
 			
 </TABLE>

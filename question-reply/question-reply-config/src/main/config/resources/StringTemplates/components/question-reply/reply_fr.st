@@ -4,4 +4,4 @@ Question : $QuestionDetail.title$
 $QuestionDetail.content$
 
 Réponse : $ReplyDetail.title$
-$ReplyDetail.content$
+$replyContent$

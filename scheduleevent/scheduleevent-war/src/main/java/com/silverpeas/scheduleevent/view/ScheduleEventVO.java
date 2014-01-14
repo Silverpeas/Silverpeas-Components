@@ -1,21 +1,20 @@
 package com.silverpeas.scheduleevent.view;
 
+import com.silverpeas.scheduleevent.service.model.ScheduleEventBean;
+import com.silverpeas.scheduleevent.service.model.beans.Contributor;
+import com.silverpeas.scheduleevent.service.model.beans.ContributorComparator;
+import com.silverpeas.scheduleevent.service.model.beans.DateOption;
+import com.silverpeas.scheduleevent.service.model.beans.Response;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import com.silverpeas.scheduleevent.service.model.ScheduleEventBean;
-import com.silverpeas.scheduleevent.service.model.beans.Contributor;
-import com.silverpeas.scheduleevent.service.model.beans.ContributorComparator;
-import com.silverpeas.scheduleevent.service.model.beans.DateOption;
-import com.silverpeas.scheduleevent.service.model.beans.Response;
-
 public class ScheduleEventVO implements ScheduleEventBean {
-  private static final int MORNING_HOUR = 8;
-  private static final int AFTERNOON_HOUR = 14;
 
+  public static final int MORNING_HOUR = 8;
+  public static final int AFTERNOON_HOUR = 14;
   private ScheduleEventBean event;
 
   public ScheduleEventVO(ScheduleEventBean current) {
@@ -78,11 +77,6 @@ public class ScheduleEventVO implements ScheduleEventBean {
   }
 
   @Override
-  public void setDates(Set<DateOption> dates) {
-    event.setDates(dates);
-  }
-
-  @Override
   public Set<Contributor> getContributors() {
     //return event.getContributors();
     SortedSet<Contributor> contributors = new TreeSet<Contributor>(new ContributorComparator());
@@ -92,23 +86,13 @@ public class ScheduleEventVO implements ScheduleEventBean {
     return contributors;
   }
 
-  @Override
-  public void setContributors(Set<Contributor> contributors) {
-    event.setContributors(contributors);
-  }
-
   public Integer getSubscribersCount() {
-   return event.getContributors().size();
+    return event.getContributors().size();
   }
 
   @Override
   public Set<Response> getResponses() {
     return event.getResponses();
-  }
-
-  @Override
-  public void setResponses(Set<Response> responses) {
-    event.setResponses(responses);
   }
 
   @Override
@@ -155,7 +139,6 @@ public class ScheduleEventVO implements ScheduleEventBean {
       addMorningDateIfSelected(dates, date);
       addAfertnoonDateIfSelected(dates, date);
     }
-    event.setDates(dates);
   }
 
   private void addMorningDateIfSelected(Set<DateOption> dates, OptionDateVO date) {
@@ -218,5 +201,4 @@ public class ScheduleEventVO implements ScheduleEventBean {
   private boolean areCorrespondingDates(OptionDateVO searchedDate, DateOption date) {
     return searchedDate.isSameDateAs(date);
   }
-
 }

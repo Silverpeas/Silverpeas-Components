@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,9 +28,14 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Iterator;
 
+import com.silverpeas.SilverpeasContent;
+import com.silverpeas.accesscontrol.AccessController;
+import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.forums.ForumsContentManager;
 import com.stratelia.webactiv.util.DateUtil;
 
 /**
@@ -38,8 +43,10 @@ import com.stratelia.webactiv.util.DateUtil;
  * @author Marc Guillemin
  * @version 1.0
  */
-public class ForumDetail extends AbstractI18NBean implements SilverContentInterface, Serializable {
+public class ForumDetail extends AbstractI18NBean implements SilverContentInterface, Serializable, SilverpeasContent {
 
+  private static final long serialVersionUID = -5500661559879178630L;
+  private static final String TYPE = "forum";  
   private ForumPK pk;
   private String name;
   private String description;
@@ -109,7 +116,7 @@ public class ForumDetail extends AbstractI18NBean implements SilverContentInterf
   }
 
   public void setSilverObjectId(int silverObjectId) {
-    this.silverObjectId = new Integer(silverObjectId).toString();
+    this.silverObjectId = Integer.toString(silverObjectId);
   }
 
   public String getSilverObjectId() {
@@ -166,7 +173,7 @@ public class ForumDetail extends AbstractI18NBean implements SilverContentInterf
     return getName();
   }
 
-  public Iterator getLanguages() {
+  public Iterator<String> getLanguages() {
     return null;
   }
 
@@ -218,5 +225,47 @@ public class ForumDetail extends AbstractI18NBean implements SilverContentInterf
     result = 31 * result + (silverObjectId != null ? silverObjectId.hashCode() : 0);
     result = 31 * result + (iconUrl != null ? iconUrl.hashCode() : 0);
     return result;
+  }
+
+  @Override
+  public String getComponentInstanceId() {
+    return getPK().getComponentName();
+  }
+
+  @Override
+  public String getContributionType() {
+    return TYPE;
+  }
+
+  /**
+   * Is the specified user can access this forum?
+   * <p/>
+   * A user can access a forum if it has enough rights to access the Forums instance in
+   * which is managed this forum.
+   * @param user a user in Silverpeas.
+   * @return true if the user can access this forum, false otherwise.
+   */
+  @Override
+  public boolean canBeAccessedBy(final UserDetail user) {
+    AccessController<String> accessController =
+        AccessControllerProvider.getAccessController("componentAccessController");
+    return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
+  }
+
+  @Override
+  public UserDetail getCreator() {
+    return UserDetail.getById(this.getCreatorId());
+  }
+
+  @Override
+  public String getSilverpeasContentId() {
+    if (this.silverObjectId == null) {
+      ForumsContentManager forumsContentMgr = new ForumsContentManager();
+      int objectId = forumsContentMgr.getSilverObjectId(getId(), getComponentInstanceId());
+      if (objectId >= 0) {
+        this.silverObjectId = String.valueOf(objectId);
+      }
+    }
+    return this.silverObjectId;
   }
 }

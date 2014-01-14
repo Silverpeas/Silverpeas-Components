@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,6 +23,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@page import="com.silverpeas.util.StringUtil"%>
+<%@page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -35,7 +38,7 @@
   response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 
-<fmt:setLocale value="${sessionScope[sessionController].language}"/>
+<fmt:setLocale value="${requestScope.Language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
@@ -54,11 +57,11 @@
 <head>
 <title><fmt:message key="GML.popupTitle"/></title>
 <view:looknfeel/>
+<view:includePlugin name="datepicker"/>
+<view:includePlugin name="wysiwyg"/>
+<view:includePlugin name="popup"/>
 <link type="text/css" href="<c:url value='/util/styleSheets/fieldset.css'/>" rel="stylesheet" />
 <script type="text/javascript" src="<c:url value='/util/javaScript/checkForm.js'/>"></script>
-<script type="text/javascript" src="<c:url value='/util/javaScript/dateUtils.js'/>"></script>
-<script type="text/javascript" src="<c:url value='/wysiwyg/jsp/FCKeditor/fckeditor.js'/>"></script>
-<script type="text/javascript" src="<c:url value='/util/javaScript/silverpeas-pdc.js'/>"></script>
 <script type="text/javascript">
 function reallyAdd() {
 	$('.WeekDayWeek').attr("disabled", false); 
@@ -69,123 +72,48 @@ function reallyAdd() {
   
   	<view:pdcPositions setIn="document.eventForm.Positions.value"/>
   	document.eventForm.action = "ReallyAddEvent";
-  	document.eventForm.submit();
+  	$(document.eventForm).submit();
 }
 
 function isCorrectForm() {
-  var errorMsg = "";
-  var errorNb = 0;
-  var title = stripInitialWhitespace(document.eventForm.Title.value);
-  var beginDate = document.eventForm.StartDate.value;
-  var endDate = document.eventForm.EndDate.value;
-  var beginTime = stripInitialWhitespace(document.eventForm.StartHour.value);
-  var endTime = stripInitialWhitespace(document.eventForm.EndHour.value);
-  var unity = document.eventForm.Unity.value;
-  var frequency = stripInitialWhitespace(document.eventForm.Frequency.value);
-  var beginPeriodicity = document.eventForm.PeriodicityStartDate.value;
-  var untilDate = document.eventForm.PeriodicityUntilDate.value;
+	var errorMsg = "";
+    var errorNb = 0;
+    var title = stripInitialWhitespace(document.eventForm.Title.value);
+	var unity = document.eventForm.Unity.value;
 
-  var beginDateOK = true;
-  var beginPeriodicityOK = true;
-
-  if (isWhitespace(title)) {
-    errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='GML.name'/>' <fmt:message key='GML.MustBeFilled'/>\n";
-    errorNb++;
-  }
-  if (isWhitespace(beginDate)) {
-    errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='GML.dateBegin'/>' <fmt:message key='GML.MustBeFilled'/>\n";
-    errorNb++;
-  }
-  else {
-	if (!isDateOK(beginDate, '<c:out value="${language}"/>')) {
-      errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='GML.dateBegin'/>' <fmt:message key='GML.MustContainsCorrectDate'/>\n";
-      errorNb++;
-      beginDateOK = false;
+    if (isWhitespace(title)) {
+          errorMsg+=" - '<fmt:message key='GML.name'/>' <fmt:message key='GML.MustBeFilled'/>\n";
+          errorNb++;
     }
-  }
-
-  if (!checkHour(beginTime) || (isWhitespace(beginTime) && !isWhitespace(endTime))) {
-    errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='hourBegin'/>' <fmt:message key='MustContainsCorrectHour'/>\n";
-    errorNb++;
-  }
-
-  if (!isWhitespace(endDate)) {
-	if (!isDateOK(endDate, '<c:out value="${language}"/>')) {
-      errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='GML.dateEnd'/> <fmt:message key='GML.MustContainsCorrectDate'/>\n";
-      errorNb++;
-    } else {
-        if (!isWhitespace(beginDate) && !isWhitespace(endDate)) {
-          if (beginDateOK && !isDate1AfterDate2(endDate, beginDate, '<c:out value="${language}"/>')) {
-            errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='GML.dateEnd'/>' <fmt:message key='GML.MustContainsPostOrEqualDateTo'/> " + beginDate + "\n";
-            errorNb++;
-          }
-        } else {
-          if (isWhitespace(beginDate) && !isWhitespace(endDate)) {
-            if (!isFuture(endDate, '<c:out value="${language}"/>')) {
-              errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='GML.dateEnd'/>' <fmt:message key='GML.MustContainsPostDate'/>\n";
-              errorNb++;
-            }
-          }
-        }
-    }
-  }
-
-  if (!checkHour(endTime)) {
-    errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='hourEnd'/>' <fmt:message key='MustContainsCorrectHour'/>\n";
-    errorNb++;
-  }
     
-  if (beginDate == endDate && !isWhitespace(endTime) && !isWhitespace(beginTime)) {
-    var beginHour = atoi(extractHour(beginTime));
-    var beginMinute = atoi(extractMinute(beginTime));
-    var endHour = atoi(extractHour(endTime));
-    var endMinute = atoi(extractMinute(endTime));
-    if (beginHour > endHour || (beginHour == endHour && beginMinute > endMinute)) {
-      errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='hourEnd'/>' <fmt:message key='GML.MustContainsPostOrEqualDateTo'/> " + beginTime + "\n";
+    var beginDate = {dateId : 'eventStartDate', hourId : 'StartHour', isMandatory : true};
+    var endDate = {dateId : 'eventEndDate', hourId : 'EndHour', defaultDateHour : '23:59'};
+    var dateErrors = isPeriodValid(beginDate, endDate);
+    $(dateErrors).each(function(index, error) {
+      errorMsg += " - " + error.message + "\n";
       errorNb++;
-    }
-  }
+    });
 
-  if (unity != "0") {
-    if (isWhitespace(frequency)) {
-      errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='frequency'/>' <fmt:message key='GML.MustBeFilled'/>\n";
-      errorNb++;
-    } else {
-      if (! isInteger(frequency)) {
-        errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='frequency'/>' <fmt:message key='GML.MustContainsNumber'/>\n";
-        errorNb++;
-      }
+	 if (unity != "0") {
+		var frequency = stripInitialWhitespace(document.eventForm.Frequency.value);
+		if (isWhitespace(frequency)) {
+    		errorMsg+=" - '<fmt:message key='frequency'/>' <fmt:message key='GML.MustBeFilled'/>\n";
+    		errorNb++;
+		} else {
+			if( ! isInteger(frequency)) {
+				errorMsg+=" - '<fmt:message key='frequency'/>' <fmt:message key='GML.MustContainsNumber'/>\n";
+				errorNb++;
+			}
+		}
+		
+		var beginPeriodicity = {dateId : 'eventPeriodicityStartDate'};
+		var untilDate = {dateId : 'eventPeriodicityUntil'};
+		var periodicityErrors = isPeriodValid(beginPeriodicity, untilDate);
+	     $(periodicityErrors).each(function(index, error) {
+	       errorMsg += " - " + error.message + "\n";
+	       errorNb++;
+	     });
     }
-
-    if (! isWhitespace(beginPeriodicity)) {
-		if (!isDateOK(beginPeriodicity, '<c:out value="${language}"/>')) {
-        	errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='beginDatePeriodicity'/>' <fmt:message key='GML.MustContainsCorrectDate'/>\n";
-        	errorNb++;
-        	beginPeriodicityOK = false;
-      	}
-    }
-
-    if (! isWhitespace(untilDate)) {
-    	if (!isDateOK(untilDate, '<c:out value="${language}"/>')) {
-	        errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='endDatePeriodicity'/>' <fmt:message key='GML.MustContainsCorrectDate'/>\n";
-	        errorNb++;
-      	} else {
-          if (!isWhitespace(beginPeriodicity) && !isWhitespace(untilDate)) {
-            if (beginPeriodicityOK && !isDate1AfterDate2(untilDate, beginPeriodicity, '<c:out value="${language}"/>')) {
-              errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='endDatePeriodicity'/>' <fmt:message key='GML.MustContainsPostOrEqualDateTo'/> " + beginPeriodicity + "\n";
-              errorNb++;
-            }
-          } else {
-            if (isWhitespace(beginPeriodicity) && !isWhitespace(untilDate)) {
-              if (!isFuture(untilDate, '<c:out value="${language}"/>')) {
-                errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='endDatePeriodicity'/>' <fmt:message key='GML.MustContainsPostDate'/>\n";
-                errorNb++;
-              }
-            }
-          }
-        }
-      }
-  }
   
   <view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>;
 
@@ -300,6 +228,8 @@ $(document).ready(function() {
 	$('#eventPeriodicityChoiceMonthArea').hide();
 	$('#eventFrequencyArea').hide();
 	$('.eventPeriodicityDateArea').hide();
+	
+	<view:wysiwyg replace="Description" language="${language}" width="600" height="300" toolbar="almanach"/>
 });
 </script>
 </head>
@@ -334,10 +264,10 @@ $(document).ready(function() {
 				<div class="field" id="eventStartDateArea">
 					<label for="eventStartDate" class="txtlibform"><fmt:message key='GML.dateBegin'/></label>
 					<div class="champs">
-						<input type="text" class="dateToPick" name="StartDate" size="14" maxlength="<c:out value='${maxDateLength}'/>" value="<c:out value='${day[0]}'/>" onchange="javascript:updateDates();"/>
+						<input id="eventStartDate" type="text" class="dateToPick" name="StartDate" size="14" maxlength="<c:out value='${maxDateLength}'/>" value="<c:out value='${day[0]}'/>" onchange="javascript:updateDates();"/>
 						<span class="txtnote">(<fmt:message key='GML.dateFormatExemple'/>)</span>
 						<span class="txtlibform">&nbsp;<fmt:message key='ToHour'/>&nbsp;</span>
-						<input class="inputHour" type="text" name="StartHour" size="5" maxlength="5" value="<c:out value='${day[1]}'/>"/> <span class="txtnote">(hh:mm)</span>&nbsp;<img  alt="obligatoire" src="icons/cube-rouge.gif" width="5" height="5"/>
+						<input class="inputHour" type="text" name="StartHour" id="StartHour" size="5" maxlength="5" value="<c:out value='${day[1]}'/>"/> <span class="txtnote">(hh:mm)</span>&nbsp;<img  alt="obligatoire" src="icons/cube-rouge.gif" width="5" height="5"/>
 					</div>
 				</div>
 				
@@ -347,7 +277,7 @@ $(document).ready(function() {
 						<input id="eventEndDate" type="text" class="dateToPick" name="EndDate" size="14" maxlength="<c:out value='${maxDateLength}'/>" value="<c:out value='${day[0]}'/>"/>
 						<span class="txtnote">(<fmt:message key='GML.dateFormatExemple'/>)</span>
 						<span class="txtlibform">&nbsp;<fmt:message key='ToHour'/>&nbsp;</span>
-						<input class="inputHour" type="text" name="EndHour" size="5" maxlength="5"/> <span class="txtnote">(hh:mm)</span>
+						<input class="inputHour" type="text" name="EndHour" id="EndHour" size="5" maxlength="5"/> <span class="txtnote">(hh:mm)</span>
 					</div>
 				</div>
 				
@@ -373,90 +303,102 @@ $(document).ready(function() {
 				</div>		
 			</div>
 		</fieldset>
-		
-		<fieldset id="eventPeriodicity" class="skinFieldset">
+        <div class="table">
+          <div class="cell">
+            <fieldset id="eventPeriodicity" class="skinFieldset">
 
-			<legend><fmt:message key='periodicity'/></legend>
-			<div class="fields">
-				<div class="field" id="eventTypePeriodicityArea">
-					<label for="eventTypePeriodicity" class="txtlibform"><fmt:message key='periodicity'/></label>
-					<div class="champs">
-						<select id="eventTypePeriodicity" name="Unity" size="1" onchange="changeUnity();">
-							<option value="0"><fmt:message key='noPeriodicity'/></option>
-                			<option value="1"><fmt:message key='allDays'/></option>
-                			<option value="2"><fmt:message key='allWeeks'/></option>
-                			<option value="3"><fmt:message key='allMonths'/></option>
-                			<option value="4"><fmt:message key='allYears'/></option>
-						</select>
-					</div>
-				</div>
-				
-				<div class="field" id="eventFrequencyArea">
-					<label for="eventFrequency" class="txtlibform"><fmt:message key='frequency'/></label>
-					<div class="champs">
-						<input type="text" id="eventFrequency" name="Frequency" size="5" maxlength="5" value="1"/> <span id="eventTypePeriodicitySelected"> <fmt:message key='almanach.header.periodicity.frequency.months'/></span>
-					</div>
-					
-				</div>
-				
-				<div class="field" id="eventFrequencyWeekArea">
-					<label class="txtlibform"><fmt:message key='almanach.header.periodicity.week.on'/></label>
-					<div class="champs">
-						<input type="checkbox" class="checkbox WeekDayWeek" name="WeekDayWeek2" value="2" disabled="disabled"/><fmt:message key='GML.jour2'/>
-			            <input type="checkbox" class="checkbox WeekDayWeek" name="WeekDayWeek3" value="3" disabled="disabled"/><fmt:message key='GML.jour3'/>
-			            <input type="checkbox" class="checkbox WeekDayWeek" name="WeekDayWeek4" value="4" disabled="disabled"/><fmt:message key='GML.jour4'/>
-			            <input type="checkbox" class="checkbox WeekDayWeek" name="WeekDayWeek5" value="5" disabled="disabled"/><fmt:message key='GML.jour5'/>
-			            <input type="checkbox" class="checkbox WeekDayWeek" name="WeekDayWeek6" value="6" disabled="disabled"/><fmt:message key='GML.jour6'/>
-			            <input type="checkbox" class="checkbox WeekDayWeek" name="WeekDayWeek7" value="7" disabled="disabled"/><fmt:message key='GML.jour7'/>
-			            <input type="checkbox" class="checkbox WeekDayWeek" name="WeekDayWeek1" value="1" disabled="disabled"/><fmt:message key='GML.jour1'/>
-					</div>
-				</div>
-				
-				<div class="field" id="eventPeriodicityChoiceThisMonthArea">
-					<label class="txtlibform"><fmt:message key='almanach.header.periodicity.rule'/></label>
-					<div class="champs">
-						<input id="eventPeriodicityChoiceMonth" type="radio" class="radio" name="ChoiceMonth" value="MonthDate" disabled="disabled" checked="checked" onclick="changeChoiceMonth();"/><fmt:message key='choiceDateMonth'/>&nbsp;
-					</div>
-				</div>
-				
-				<div class="field" id="eventPeriodicityChoiceMonthArea">
-					<div class="champs">
-						<input type="radio" class="radio" name="ChoiceMonth" value="MonthDay" disabled="disabled" onclick="changeChoiceMonth();"/><fmt:message key='choiceDayMonth'/>&nbsp;:&nbsp;
-						<select name="MonthNumWeek" size="1" disabled="disabled">
-							<option value="1"><fmt:message key='first'/></option>
-			                <option value="2"><fmt:message key='second'/></option>
-			                <option value="3"><fmt:message key='third'/></option>
-			                <option value="4"><fmt:message key='fourth'/></option>
-			                <option value="-1"><fmt:message key='fifth'/></option>
-						</select>
-						
-						<input type="radio" class="radio MonthDayWeek" name="MonthDayWeek" value="2" disabled="disabled" checked="checked"/><fmt:message key='GML.jour2'/>
-		              	<input type="radio" class="radio MonthDayWeek" name="MonthDayWeek" value="3" disabled="disabled"/><fmt:message key='GML.jour3'/>
-						<input type="radio" class="radio MonthDayWeek" name="MonthDayWeek" value="4" disabled="disabled"/><fmt:message key='GML.jour4'/>
-		              	<input type="radio" class="radio MonthDayWeek" name="MonthDayWeek" value="5" disabled="disabled"/><fmt:message key='GML.jour5'/>
-		              	<input type="radio" class="radio MonthDayWeek" name="MonthDayWeek" value="6" disabled="disabled"/><fmt:message key='GML.jour6'/>
-		              	<input type="radio" class="radio MonthDayWeek" name="MonthDayWeek" value="7" disabled="disabled"/><fmt:message key='GML.jour7'/>
-		              	<input type="radio" class="radio MonthDayWeek" name="MonthDayWeek" value="1" disabled="disabled"/><fmt:message key='GML.jour1'/>
-					</div>
-				</div>
-				
-				<div class="field eventPeriodicityDateArea" id="eventPeriodicityStartDateArea">
-					<label for="eventPeriodicityStartDate" class="txtlibform"> <fmt:message key='beginDatePeriodicity'/> </label>
-					<div class="champs">
-						<input type="text" id="eventPeriodicityStartDate" class="dateToPick" name="PeriodicityStartDate" size="14" maxlength="<c:out value='${maxDateLength}'/>" readonly="readonly" value="<c:out value='${day[0]}'/>" /> (<fmt:message key='GML.dateFormatExemple'/>)
-					</div>
-				</div>
-				
-				<div class="field eventPeriodicityDateArea" id="eventPeriodicityUntilDateArea">
-					<label for="eventPeriodicityUntil" class="txtlibform"><fmt:message key='endDatePeriodicity'/></label>
-					<div class="champs">
-						<input type="text" id="eventPeriodicityUntil" class="dateToPick" name="PeriodicityUntilDate" size="14" maxlength="<c:out value='${maxDateLength}'/>"/><span class="txtnote"> (<fmt:message key='GML.dateFormatExemple'/>)</span>
-					</div>
-				</div>
-			</div>
-		</fieldset>
+              <legend><fmt:message key='periodicity'/></legend>
+              <div class="fields">
+                <div class="field" id="eventTypePeriodicityArea">
+                  <label for="eventTypePeriodicity" class="txtlibform"><fmt:message key='periodicity'/></label>
+
+                  <div class="champs">
+                    <select id="eventTypePeriodicity" name="Unity" size="1" onchange="changeUnity();">
+                      <option value="0"><fmt:message key='noPeriodicity'/></option>
+                      <option value="1"><fmt:message key='allDays'/></option>
+                      <option value="2"><fmt:message key='allWeeks'/></option>
+                      <option value="3"><fmt:message key='allMonths'/></option>
+                      <option value="4"><fmt:message key='allYears'/></option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="field" id="eventFrequencyArea">
+                  <label for="eventFrequency" class="txtlibform"><fmt:message key='frequency'/></label>
+
+                  <div class="champs">
+                    <input type="text" id="eventFrequency" name="Frequency" size="5" maxlength="5" value="1"/>
+                    <span id="eventTypePeriodicitySelected"> <fmt:message key='almanach.header.periodicity.frequency.months'/></span>
+                  </div>
+
+                </div>
+
+                <div class="field" id="eventFrequencyWeekArea">
+                  <label class="txtlibform"><fmt:message key='almanach.header.periodicity.week.on'/></label>
+
+                  <div class="champs">
+                    <input type="checkbox" class="checkbox WeekDayWeek" name="WeekDayWeek2" value="2" disabled="disabled"/><fmt:message key='GML.jour2'/>
+                    <input type="checkbox" class="checkbox WeekDayWeek" name="WeekDayWeek3" value="3" disabled="disabled"/><fmt:message key='GML.jour3'/>
+                    <input type="checkbox" class="checkbox WeekDayWeek" name="WeekDayWeek4" value="4" disabled="disabled"/><fmt:message key='GML.jour4'/>
+                    <input type="checkbox" class="checkbox WeekDayWeek" name="WeekDayWeek5" value="5" disabled="disabled"/><fmt:message key='GML.jour5'/>
+                    <input type="checkbox" class="checkbox WeekDayWeek" name="WeekDayWeek6" value="6" disabled="disabled"/><fmt:message key='GML.jour6'/>
+                    <input type="checkbox" class="checkbox WeekDayWeek" name="WeekDayWeek7" value="7" disabled="disabled"/><fmt:message key='GML.jour7'/>
+                    <input type="checkbox" class="checkbox WeekDayWeek" name="WeekDayWeek1" value="1" disabled="disabled"/><fmt:message key='GML.jour1'/>
+                  </div>
+                </div>
+
+                <div class="field" id="eventPeriodicityChoiceThisMonthArea">
+                  <label class="txtlibform"><fmt:message key='almanach.header.periodicity.rule'/></label>
+
+                  <div class="champs">
+                    <input id="eventPeriodicityChoiceMonth" type="radio" class="radio" name="ChoiceMonth" value="MonthDate" disabled="disabled" checked="checked" onclick="changeChoiceMonth();"/><fmt:message key='choiceDateMonth'/>&nbsp;
+                  </div>
+                </div>
+
+                <div class="field" id="eventPeriodicityChoiceMonthArea">
+                  <div class="champs">
+                    <input type="radio" class="radio" name="ChoiceMonth" value="MonthDay" disabled="disabled" onclick="changeChoiceMonth();"/><fmt:message key='choiceDayMonth'/>&nbsp;:&nbsp;
+                    <select name="MonthNumWeek" size="1" disabled="disabled">
+                      <option value="1"><fmt:message key='first'/></option>
+                      <option value="2"><fmt:message key='second'/></option>
+                      <option value="3"><fmt:message key='third'/></option>
+                      <option value="4"><fmt:message key='fourth'/></option>
+                      <option value="-1"><fmt:message key='fifth'/></option>
+                    </select>
+
+                    <input type="radio" class="radio MonthDayWeek" name="MonthDayWeek" value="2" disabled="disabled" checked="checked"/><fmt:message key='GML.jour2'/>
+                    <input type="radio" class="radio MonthDayWeek" name="MonthDayWeek" value="3" disabled="disabled"/><fmt:message key='GML.jour3'/>
+                    <input type="radio" class="radio MonthDayWeek" name="MonthDayWeek" value="4" disabled="disabled"/><fmt:message key='GML.jour4'/>
+                    <input type="radio" class="radio MonthDayWeek" name="MonthDayWeek" value="5" disabled="disabled"/><fmt:message key='GML.jour5'/>
+                    <input type="radio" class="radio MonthDayWeek" name="MonthDayWeek" value="6" disabled="disabled"/><fmt:message key='GML.jour6'/>
+                    <input type="radio" class="radio MonthDayWeek" name="MonthDayWeek" value="7" disabled="disabled"/><fmt:message key='GML.jour7'/>
+                    <input type="radio" class="radio MonthDayWeek" name="MonthDayWeek" value="1" disabled="disabled"/><fmt:message key='GML.jour1'/>
+                  </div>
+                </div>
+
+                <div class="field eventPeriodicityDateArea" id="eventPeriodicityStartDateArea">
+                  <label for="eventPeriodicityStartDate" class="txtlibform"><fmt:message key='beginDatePeriodicity'/></label>
+                  <div class="champs">
+                    <input type="text" id="eventPeriodicityStartDate" class="dateToPick" name="PeriodicityStartDate" size="14" maxlength="<c:out value='${maxDateLength}'/>" readonly="readonly" value="<c:out value='${day[0]}'/>"/>
+                    (<fmt:message key='GML.dateFormatExemple'/>)
+                  </div>
+                </div>
+
+                <div class="field eventPeriodicityDateArea" id="eventPeriodicityUntilDateArea">
+                  <label for="eventPeriodicityUntil" class="txtlibform"><fmt:message key='endDatePeriodicity'/></label>
+                  <div class="champs">
+                    <input type="text" id="eventPeriodicityUntil" class="dateToPick" name="PeriodicityUntilDate" size="14" maxlength="<c:out value='${maxDateLength}'/>"/><span class="txtnote"> (<fmt:message key='GML.dateFormatExemple'/>)</span>
+                  </div>
+                </div>
+              </div>
+            </fieldset>
+          </div>
+          <div class="cell" style="width: 50%">
+            <view:fileUpload fieldset="true" jqueryFormSelector="form[name='eventForm']" />
+          </div>
+        </div>
 		
-		<view:pdcNewClassification componentId="${instanceId}" contentId=""/>
+		<view:pdcNewContentClassification componentId="${instanceId}"/>
 		
 		<div class="legend">
 			<img alt="obligatoire" src="icons/cube-rouge.gif" width="5" height="5"/> : <fmt:message key='GML.requiredField'/>
@@ -482,22 +424,5 @@ $(document).ready(function() {
   <input type="hidden" name="Action"/>
   <input type="hidden" name="Id"/>
 </form>
-<script type="text/javascript">
-  <fmt:message key='configFile' var='configFile'/>
-  <c:if test="${configFile eq '???configFile???'}">
-  <c:url value="/wysiwyg/jsp/javaScript/myconfig.js" var="configFile"/>
-  </c:if>
-  var oFCKeditor = new FCKeditor('Description');
-  oFCKeditor.Width = "500";
-  oFCKeditor.Height = "300";
-  oFCKeditor.BasePath = "<c:url value='/wysiwyg/jsp/FCKeditor/'/>";
-  oFCKeditor.DisplayErrors = true;
-  oFCKeditor.Config["AutoDetectLanguage"] = false;
-  oFCKeditor.Config["DefaultLanguage"] = "<c:out value='${language}'/>";
-  oFCKeditor.Config["CustomConfigurationsPath"] = "<c:out value='${configFile}'/>"
-  oFCKeditor.ToolbarSet = 'almanach';
-  oFCKeditor.Config["ToolbarStartExpanded"] = true;
-  oFCKeditor.ReplaceTextarea();
-</script>
 </body>
 </html>

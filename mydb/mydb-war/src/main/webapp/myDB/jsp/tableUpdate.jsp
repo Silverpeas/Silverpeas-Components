@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,13 +25,14 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="init.jsp" %>
 
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<view:looknfeel/>
 <%
-	out.println(gef.getLookStyleSheet());
-
 	TableManager tableManager = myDBSC.getTableManager();
 	DataTypeList dataTypeList = tableManager.getDataTypeList();
 	PrimaryKey primaryKey = tableManager.getPrimaryKey();
@@ -171,11 +172,10 @@
 	</script>
 </head>
 
-<body onload="init()" onunload="closeColumnWindow()" marginwidth="5" marginheight="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF">
+<body onload="init()" onunload="closeColumnWindow()">
 <%
 	String browseBarLabel = "";
-	switch (tableManager.getMode())
-	{
+	switch (tableManager.getMode()) {
 		case TableManager.MODE_CREATION :
 			browseBarLabel = resource.getString("PageTitleTableCreation");
 			break;
@@ -184,15 +184,13 @@
 			break;
 	}
 	String tableName = table.getName();
-	if (tableName != null && tableName.length() > 0)
-	{
+	if (tableName != null && tableName.length() > 0) {
 		browseBarLabel += " : " + tableName;
 	}
 
 	browseBar.setExtraInformation(browseBarLabel);
 	
-	operationPane.addOperation(
-		resource.getIcon("myDB.addColumn"), resource.getString("OperationAddColumn"), "javascript:updateColumn(-1, true)");
+	operationPane.addOperationOfCreation(resource.getIcon("myDB.addColumn"), resource.getString("OperationAddColumn"), "javascript:updateColumn(-1, true)");
 	if (columnsCount > 0)
 	{
 		operationPane.addOperation(
@@ -207,8 +205,9 @@
 	
 	
 	out.println(window.printBefore());
-	out.println(frame.printBefore());
 %>
+	<view:frame>
+	<view:areaOfOperationOfCreation/>
 	<form name="processForm" action="<%=MyDBConstants.ACTION_UPDATE_TABLE%>" method="post" onsubmit="return false;">
 		<input type="hidden" name="command" value="update"/>
 		<input type="hidden" name="index" value=""/>
@@ -238,7 +237,7 @@
 					</td>
 				</tr>
 			</table>
-			<br>
+			<br/>
 <%
 	ArrayPane arrayPane = gef.getArrayPane("Columns", MyDBConstants.ACTION_UPDATE_TABLE, request, session);
 	arrayPane.setSortable(false);
@@ -282,7 +281,7 @@
 	if (!primaryKey.isEmpty())
 	{
 %>
-			<br>
+			<br/>
 <%
 		ArrayPane pkArrayPane = gef.getArrayPane("Primary Key", MyDBConstants.ACTION_UPDATE_TABLE, request, session);
 		pkArrayPane.setSortable(false);
@@ -313,7 +312,7 @@
 	if (!unicityKeys.isEmpty())
 	{
 %>
-			<br>
+			<br/>
 <%
 		ArrayPane ukArrayPane = gef.getArrayPane("Unicity Keys", MyDBConstants.ACTION_UPDATE_TABLE, request, session);
 		ukArrayPane.setSortable(false);
@@ -351,7 +350,7 @@
 	if (!foreignKeys.isEmpty())
 	{
 %>
-			<br>
+			<br/>
 <%
 		ArrayPane fkArrayPane = gef.getArrayPane("Foreign Keys", MyDBConstants.ACTION_UPDATE_TABLE, request, session);
 		fkArrayPane.setSortable(false);
@@ -422,7 +421,7 @@
 	if (fkErrors.length > 0)
 	{
 %>
-	<br>
+	<br/>
 	<form name="fkErrorForm" action="<%=MyDBConstants.ACTION_UPDATE_TABLE%>" method="post">
 		<input type="hidden" name="command" value="modifyColumn"/>
 		<input type="hidden" name="columnName" value=""/>
@@ -475,14 +474,14 @@
 	if (!displayErrorColumn && tableManager.hasErrorLabel())
 	{
 %>
-	<br>
+	<br/>
 	<center>
 		<span class="MessageReadHighPriority"><%=tableManager.getErrorLabel()%></span>
 	</center>
 <%
 	}
 %>
-	<br>
+	<br/>
 	<center>
 <%
 	ButtonPane buttonPane = gef.getButtonPane();
@@ -491,8 +490,8 @@
 	out.print(buttonPane.print());
 %>
 	</center>
+	</view:frame>
 <%
-	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
 </body>

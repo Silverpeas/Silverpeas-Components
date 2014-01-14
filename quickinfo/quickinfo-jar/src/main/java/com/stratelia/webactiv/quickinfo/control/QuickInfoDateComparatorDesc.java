@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,18 +27,14 @@ package com.stratelia.webactiv.quickinfo.control;
 import java.util.Comparator;
 import com.stratelia.webactiv.util.publication.model.*;
 
-public class QuickInfoDateComparatorDesc implements Comparator {
+public class QuickInfoDateComparatorDesc implements Comparator<PublicationDetail> {
   static public QuickInfoDateComparatorDesc comparator = new QuickInfoDateComparatorDesc();
 
   /**
    * This result is reversed as we want a descending sort.
    */
-  public int compare(Object o1, Object o2) {
-    PublicationDetail qI1 = (PublicationDetail) o1;
-    PublicationDetail qI2 = (PublicationDetail) o2;
-
-    int compareResult = qI1.getUpdateDate().compareTo(qI2.getUpdateDate());
-
+  public int compare(PublicationDetail pd1, PublicationDetail pd2) {
+    int compareResult = pd1.getUpdateDate().compareTo(pd2.getUpdateDate());
     return 0 - compareResult;
   }
 

@@ -38,8 +38,13 @@ function showHideDragDrop(targetURL1, message1, targetURL2, message2, altMessage
   dNdVisible = !dNdVisible;
 }
 
-function uploadCompleted(s)
-{
-	refreshPublications();
+function uploadCompleted(s) {
+    if (s.indexOf('pubid=') > -1) {
+      validatePublicationClassification(s);
+    } else if (s.indexOf('newFolder=true') > -1) {
+      reloadPage(getCurrentNodeId());
+    } else {
+      refreshPublications();
+    }
 	return true;
 }

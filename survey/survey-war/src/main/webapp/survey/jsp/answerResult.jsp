@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,76 +25,65 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayPane"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayLine"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayCellText"%>
-<%@ page import="com.silverpeas.util.EncodeHelper"%>
 
 <%@ include file="checkSurvey.jsp" %>
 
 <%
-	Collection 	users 		= (Collection) request.getAttribute("Users");
-	String 		surveyId 	= (String) request.getAttribute("SurveyId");
+Collection<String> 	users 	= (Collection<String>) request.getAttribute("Users");
+QuestionContainerDetail survey = (QuestionContainerDetail) request.getAttribute("Survey");
 
-	// d�claration des boutons
-	Button close = (Button) gef.getFormButton(resources.getString("GML.close"), "javaScript:window.close();", false);
-	String iconsPath = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+Button close = gef.getFormButton(resources.getString("GML.close"), "javaScript:window.close();", false);
+String iconsPath = GeneralPropertiesManager.getString("ApplicationURL");
 %>
 
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<title></title>
-	<% out.println(gef.getLookStyleSheet()); %>
-	<script type="text/javascript" src="<%=iconsPath%>/util/javaScript/animation.js"></script>
-	<script language="JavaScript1.2">
-
-        function viewResultByUser(userId, userName)
-        {
-        	url = "UserResult?UserId="+userId+"&UserName="+userName;
- 		    windowName = "resultByUser";
- 		    larg = "700";
- 		    haut = "500";
- 		    windowParams = "directories=0,menubar=0,toolbar=0,resizable=1,scrollbars=1,alwaysRaised";
- 		    suggestions = SP_openWindow(url, windowName, larg , haut, windowParams);
- 		    suggestions.focus();
-        }
- 				   
-     	</script>
+<title></title>
+<% out.println(gef.getLookStyleSheet()); %>
+<script type="text/javascript" src="<%=iconsPath%>/util/javaScript/animation.js"></script>
+<script type="text/javascript">
+function viewResultByUser(userId, userName) {
+	url = "UserResult?UserId="+userId+"&UserName="+userName;
+ 	windowName = "resultByUser";
+ 	larg = "700";
+ 	haut = "500";
+ 	windowParams = "directories=0,menubar=0,toolbar=0,resizable=1,scrollbars=1,alwaysRaised";
+ 	suggestions = SP_openWindow(url, windowName, larg , haut, windowParams);
+ 	suggestions.focus();
+}
+</script>
 </head>
-
 <body>
 <% 
 	Window window = gef.getWindow();
 	BrowseBar browseBar = window.getBrowseBar();
+	browseBar.setExtraInformation(survey.getHeader().getTitle());
 	browseBar.setClickable(false);
 	Frame frame = gef.getFrame();
 	
 	out.println(window.printBefore());
 	out.println(frame.printBefore());
 
-	ArrayPane arrayPane = gef.getArrayPane("SurveyParticipantsList", "ViewAllUsers?SurveyId="+surveyId, request, session);
+	ArrayPane arrayPane = gef.getArrayPane("SurveyParticipantsList", "ViewAllUsers?SurveyId="+survey.getId(), request, session);
 	arrayPane.addArrayColumn(resources.getString("GML.name"));
 	
-	if (users != null)
-	{	
+	if (users != null) {	
 	  	ArrayCellText cell = null; 
-		Iterator it = users.iterator();
-		while (it.hasNext())
-		{
-			String userId = (String) it.next();
-			UserDetail user = surveyScc.getUserDetail(userId);	
-			ArrayLine ligne = arrayPane.addArrayLine();
-			String url = "<a href=\"javaScript:onClick=viewResultByUser('"+userId+"','"+EncodeHelper.javaStringToHtmlString(user.getDisplayedName())+"');\">"+EncodeHelper.javaStringToHtmlString(user.getLastName()+" "+user.getFirstName())+"</a>";
-			cell = ligne.addArrayCellText(url);
-			cell.setCompareOn(user.getLastName()+" "+user.getFirstName());
-		}
+	    for (String userId : users) {
+			 UserDetail user = surveyScc.getUserDetail(userId);	
+			 ArrayLine ligne = arrayPane.addArrayLine();
+			 String url = "<a href=\"javaScript:onclick=viewResultByUser('"+userId+"','"+EncodeHelper.javaStringToHtmlString(user.getDisplayedName())+"');\">"+EncodeHelper.javaStringToHtmlString(user.getLastName()+" "+user.getFirstName())+"</a>";
+			 cell = ligne.addArrayCellText(url);
+			 cell.setCompareOn(user.getLastName()+" "+user.getFirstName());
+      	}
 	}
 
 	out.println(arrayPane.print());
 	
 	ButtonPane buttonPane = gef.getButtonPane();
-    buttonPane.addButton(close);
-	out.print("<BR><center>"+buttonPane.print()+"</center>");
+  	buttonPane.addButton(close);
+	out.print("<br/>"+buttonPane.print());
 	out.print(frame.printAfter());
 	out.print(window.printAfter());
 %>

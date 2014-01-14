@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,8 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
 <%@ include file="check.jsp" %>
 
 <%@page import="java.util.List"%>
@@ -39,16 +38,16 @@
 <%@page import="java.text.SimpleDateFormat"%>
 <%@page import="com.stratelia.webactiv.beans.admin.Group"%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
 <%!	
 	ResourceLocator resourceJSPP = new ResourceLocator("com.silverpeas.jobStartPagePeas.settings.jobStartPagePeasIcons", "");
 %>
-
-<%
-	out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 </head>
 <body>
 
@@ -76,7 +75,7 @@
 	<%=frame.printBefore()%>
 
 	<%=board.printBefore()%>
-	<table width="70%" align="center" border="0" cellPadding="0" cellSpacing="0">
+	<table width="70%" align="center" border="0" cellpadding="0" cellspacing="0">
 		<tr>
 			<td colspan="2" class="txttitrecol"><%=resource.getString("formsOnline.senders")%></td>
 		</tr>
@@ -110,15 +109,13 @@
 		// La boucle sur les users
 		Iterator users = m_listUserSenders.iterator();
 		UserDetail user = null;
-		while (users.hasNext())
-		{
-			user = (UserDetail) users.next();
-			out.println("<tr>");
-			out.println("<td align=\"center\"><IMG SRC=\""+m_context+resourceJSPP.getString("JSPP.user")+"\"></td>");
-			out.println("<td align=\"center\">"+user.getLastName() + " " + user.getFirstName()+"</td>");
-			out.println("</tr>");
-		}
-		%>			
+		while (users.hasNext()) {
+			user = (UserDetail) users.next(); %>
+			<tr>
+			<td align="center"><img src="<%=m_context+resourceJSPP.getString("JSPP.user") %>"/></td>
+			<td align="center"><view:username userId="<%=user.getId()%>"/></td>
+			</tr>
+		<% } %>	
 		<tr>
 			<td colspan="2" align="center" class="intfdcolor"  height="1"><img src="<%=m_context%><%=resourceJSPP.getString("JSPP.px")%>" alt=""/></td>
 		</tr>
@@ -126,7 +123,7 @@
     <%=board.printAfter()%>
 	<br/>
 	<%=board.printBefore()%>
-	<table width="70%" align="center" border="0" cellPadding="0" cellSpacing="0">
+	<table width="70%" align="center" border="0" cellpadding="0" cellspacing="0">
 		<tr>
 			<td colspan="2" class="txttitrecol"><%=resource.getString("formsOnline.receivers")%></td>
 		</tr>
@@ -160,17 +157,15 @@
 		// La boucle sur les users
 		users = m_listUserReceivers.iterator();
 		user = null;
-		while (users.hasNext())
-		{
-			user = (UserDetail) users.next();
-			out.println("<tr>");
-			out.println("<td align=\"center\"><IMG SRC=\""+m_context+resourceJSPP.getString("JSPP.user")+"\"></td>");
-			out.println("<td align=\"center\">"+user.getLastName() + " " + user.getFirstName()+"</td>");
-			out.println("</tr>");
-		}
-		%>			
+		while (users.hasNext()) {
+			user = (UserDetail) users.next(); %>
+			<tr>
+			<td align="center"><img src="<%=m_context+resourceJSPP.getString("JSPP.user") %>"/></td>
+			<td align="center"><view:username userId="<%=user.getId()%>"/></td>
+			</tr>
+		<% } %>	
 		<tr>
-			<td colspan="2" align="center" class="intfdcolor"  height="1"><img src="<%=m_context%><%=resourceJSPP.getString("JSPP.px")%>" alt=""/></td>
+			<td colspan="2" align="center" class="intfdcolor" height="1"><img src="<%=m_context%><%=resourceJSPP.getString("JSPP.px")%>" alt=""/></td>
 		</tr>
 	</table>
 	

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,17 +25,16 @@ package com.silverpeas.processManager;
 
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.InstanciationException;
-import java.sql.Connection;
-
-import com.silverpeas.versioning.VersioningInstanciator;
 import com.silverpeas.workflow.api.UpdatableProcessInstanceManager;
 import com.silverpeas.workflow.api.Workflow;
 import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.instance.ProcessInstance;
-import com.stratelia.webactiv.beans.admin.Admin;
+import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.calendar.backbone.TodoBackboneAccess;
-import com.stratelia.webactiv.util.attachment.AttachmentInstanciator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.attachment.SimpleDocumentInstanciator;
+
+import java.sql.Connection;
 
 public class ProcessManagerInstanciator implements ComponentsInstanciatorIntf {
 
@@ -47,8 +46,7 @@ public class ProcessManagerInstanciator implements ComponentsInstanciatorIntf {
       InstanciationException {
     String xmlFilename = null;
     try {
-      Admin admin = new Admin();
-      xmlFilename = admin.getComponentParameterValue(componentId, "XMLFileName");
+      xmlFilename = AdminReference.getAdminService().getComponentParameterValue(componentId, "XMLFileName");
       Workflow.getProcessModelManager().createProcessModel(xmlFilename, componentId);
     } catch (WorkflowException e) {
       throw new InstanciationException("ProcessManagerInstanciator", SilverpeasException.ERROR,
@@ -69,10 +67,7 @@ public class ProcessManagerInstanciator implements ComponentsInstanciatorIntf {
         ((UpdatableProcessInstanceManager) Workflow.getProcessInstanceManager()).
             removeProcessInstance(instance.getInstanceId());
       }
-      AttachmentInstanciator attachmentI = new AttachmentInstanciator();
-      attachmentI.delete(con, spaceId, componentId, userId);
-      VersioningInstanciator versioningI = new VersioningInstanciator();
-      versioningI.delete(con, spaceId, componentId, userId);
+      new SimpleDocumentInstanciator().delete(componentId);
       TodoBackboneAccess tbba = new TodoBackboneAccess();
       tbba.removeEntriesByInstanceId(componentId);
     } catch (WorkflowException e) {

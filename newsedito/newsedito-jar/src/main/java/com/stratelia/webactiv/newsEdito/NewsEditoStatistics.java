@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,28 +21,27 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
 
 package com.stratelia.webactiv.newsEdito;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.List;
 
 import javax.ejb.EJBException;
 
-import com.stratelia.silverpeas.silverstatistics.control.ComponentStatisticsInterface;
-import com.stratelia.silverpeas.silverstatistics.control.UserIdCountVolumeCouple;
+import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
+
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 
 /**
  * Class declaration
+ *
  * @author
  */
 public class NewsEditoStatistics implements ComponentStatisticsInterface {
@@ -51,15 +50,11 @@ public class NewsEditoStatistics implements ComponentStatisticsInterface {
 
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
       throws Exception {
-    ArrayList<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>();
-    Collection<NodeDetail> c = getElements(spaceId, componentId);
-    Iterator<NodeDetail> iter = c.iterator();
-
-    while (iter.hasNext()) {
-      NodeDetail detail = iter.next();
-
+    Collection<NodeDetail> details = getElements(spaceId, componentId);
+    List<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>(
+        details.size());
+    for (NodeDetail detail : details) {
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
-
       myCouple.setUserId(detail.getCreatorId());
       myCouple.setCountVolume(1);
       myArrayList.add(myCouple);
@@ -71,8 +66,7 @@ public class NewsEditoStatistics implements ComponentStatisticsInterface {
   private NodeBm getNodeBm() {
     if (nodeBm == null) {
       try {
-        nodeBm = ((NodeBmHome) EJBUtilitaire.getEJBObjectRef(
-            JNDINames.NODEBM_EJBHOME, NodeBmHome.class)).create();
+        nodeBm = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
       } catch (Exception e) {
         throw new EJBException(e);
       }
@@ -83,8 +77,6 @@ public class NewsEditoStatistics implements ComponentStatisticsInterface {
   private Collection<NodeDetail> getElements(String spaceId, String componentId)
       throws Exception {
     // recuperation des journaux
-    Collection<NodeDetail> archives = getNodeBm().getFrequentlyAskedChildrenDetails(
-        new NodePK("0", spaceId, componentId));
-    return archives;
+    return getNodeBm().getFrequentlyAskedChildrenDetails(new NodePK("0", spaceId, componentId));
   }
 }

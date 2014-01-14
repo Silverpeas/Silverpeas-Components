@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -43,6 +43,7 @@
 	Collection 	questions 	= (Collection) request.getAttribute("questions");
 	String		questionId	= (String) request.getAttribute("QuestionId");  // question en cours e ouvrir
 	Collection	categories	= (Collection) request.getAttribute("Categories");
+	boolean		pdcUsed		= (Boolean) request.getAttribute("PDCUsed");
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -51,72 +52,111 @@
   <view:looknfeel />
   <link rel="stylesheet" type="text/css" href="css/question-reply-css.jsp" />
 <script type="text/javascript">
-<!-- 
-$(document).ready(function() {  
-  var etat = new Array();
+  <!--
 
-  $('.question').live('click', function(objectEvent) {
-      question = this.id;
-      id = question.substring(1);
-      answersUrl = '<c:url value="/services/questionreply/${pageScope.componentId}/replies/question/"/>' + id;
-      typeLien = question.substring(0,1);
-      if (typeLien!="l" && !$(objectEvent.target).hasClass('actionQuestion')) {
-        $('#' + this.id + ' .answers').hide();
-        if(etat[id] != "open"){
-          $('#a'+id).show();
-          etat[id] = "open";
-          var found = $('#a'+id + '>ul>li');
-          if (found.length == 0) {  
-            $.getJSON(answersUrl,function(data) {
-              $('#a'+id + ' > ul').html('');
-              $.each(data, function(key, answer) {
-                $('#a'+ id + ' > ul').append(displayAnswer(answer));
-              });
-            });
-          }
-        } else {
-          $('#a'+id).hide();
-          etat[id] = "close";
-		} 
-      }
-    }, function() {}
-  );
-    
-  $('.categoryTitle').click(function() {
+var etat = new Array();
+function bindQuestionsEvent() {
+  $('.questionTitle').on('click', function(event) {
+    question = this.id;
+    id = question.substring(1);
+    answersUrl = '<c:url value="/services/questionreply/${pageScope.componentId}/replies/question/"/>' + id;
+    typeLien = question.substring(0,1);
+    if (typeLien!="l" && !$(event.target).hasClass('actionQuestion')) {
+      $('#' + this.id + ' .answers').hide();
+      if(etat[id] != "open"){
+        $('#a'+id).show();
+        etat[id] = "open";
+            var found = $('#a'+id + '>ul>li');
+            if (found.length == 0) {
+
+				$.ajax({
+					url: answersUrl,
+					type: "GET",
+					contentType: "application/json",
+					dataType: "json",
+					cache: false,
+					success: function(data) {
+						$('#a'+id + ' > ul').html('');
+						$.each(data, function(key, answer) {
+						  $('#a'+ id + ' > ul').append(displayAnswer(answer));
+						});
+					}
+				});
+
+            }
+          } else {
+            $('#a'+id).hide();
+            etat[id] = "close";
+  		    }
+  		    return false;
+        }
+  });
+}
+
+function bindCategoryEvent() {
+   $('.categoryTitle').on('click', function() {
       category = this.id;
       id = category.substring(1);
       questionUrl = '<c:url value="/services/questionreply/${pageScope.componentId}/questions/category/"/>' + id;
-      typeLien = category.substring(0,1);	
+      typeLien = category.substring(0,1);
       if (typeLien!="l") {
         $('.category').removeClass('select');
         $('.questions').hide();
         $('#qc' + id + ' .answers').hide();
-        $.each(etat, function(index) { 
+        $.each(etat, function(index) {
           etat[index] = 'close';
         });
         var found = $('#qc'+id + '>li');
-        if (found.length == 0) {  
-          $.getJSON(questionUrl,function(data) {
-            $('#qc'+id).html('');
-            $.each(data, function(key, question) {
-              answersDiv = $('<div>').addClass('answers').attr('id', 'a' + question.id)
-              answersDiv.append($('<p>').text(question.content));
-              answersDiv.append($('<ul>'));
-              answersDiv.hide();            
-              $('#qc'+id).append($('<li>').append(displayQuestion(question)).append(answersDiv));
-            });
-          });
+        if (found.length == 0) {
+
+			   $.ajax({
+					url: questionUrl,
+					type: "GET",
+					contentType: "application/json",
+					dataType: "json",
+					cache: false,
+					success: function(data) {
+						$('#qc'+id).html('');
+						$.each(data, function(key, question) {
+						  answersDiv = $('<div>').addClass('answers').attr('id', 'a' + question.id)
+						  answersDiv.append($('<p>').text(question.content));
+						  answersDiv.append($('<ul>'));
+						  answersDiv.hide();
+						  $('#qc'+id).append($('<li>').append(displayQuestion(question)).append(answersDiv));
+						});
+						$('.questionTitle').off('click');
+						bindQuestionsEvent();
+					}
+				});
+
+
+
         }
-        $('#qc'+id).show();        	   
-        $(this).parent().addClass('select');			
+        $('#qc'+id).show();
+        $(this).parent().addClass('select');
       }
-    }, function() {}
-  );  
-    
+    });
+}
+
+$(document).ready(function() {
+  bindCategoryEvent();
+  bindQuestionsEvent();
   $('.questions').hide();
-  $("ul li:first-child .questions").show();
-  $("ul li:first-child").addClass('select');
-  $("ul li:first-child .categoryTitle").trigger($.Event("click"));
+  <c:choose>
+    <c:when test="${param.categoryId != null}">
+      $("#qc<c:out value="${param.categoryId}"/>").show();
+      $("#c<c:out value="${param.categoryId}"/>").parent().addClass('select');
+      $("#c<c:out value="${param.categoryId}"/>").trigger($.Event("click"));
+    </c:when>
+    <c:otherwise>
+      $("ul li:first-child .questions").show();
+      $("ul li:first-child").addClass('select');
+      $("ul li:first-child .categoryTitle").trigger($.Event("click"));
+    </c:otherwise>
+  </c:choose>
+  <c:if test="${param.questionId != null}">
+    setTimeout("$('#q<c:out value="${param.questionId}"/>').trigger($.Event('click'))", 250);
+  </c:if>
 
   $('.category').hover(function() {
       $(this).addClass('hover');
@@ -135,62 +175,62 @@ $(document).ready(function() {
   <fmt:message key="questionReply.close" bundle="${icons}" var="closeIcon"/>
   <fmt:message key="questionReply.miniconeReponse" bundle="${icons}" var="addReplyIcon"/>
   function displayQuestion(questionToBeDisplayed) {
-    questionDiv = $('<div>').attr('id', 'q' + questionToBeDisplayed.id).addClass('question');
-    questionTitleDiv = $('<div>').addClass('questionTitle');
+    questionDiv = $('<div>').addClass('question');
+    questionTitleDiv = $('<div>').attr('id', 'q' + questionToBeDisplayed.id).addClass('questionTitle');
     questionTitle = $('<h4>');
-    questionTitleLink = $('<a>').addClass('question').attr('id', 'l' + questionToBeDisplayed.id).attr('href', '#').attr('title', '<fmt:message key="questionReply.open"/>').text(questionToBeDisplayed.title);
+    questionTitleLink = $('<a>').addClass('question').attr('id', 'l' + questionToBeDisplayed.id).attr('href', '#'+questionToBeDisplayed.id).attr('title', '<fmt:message key="questionReply.open"/>').text(questionToBeDisplayed.title);
     questionTitle.append(questionTitleLink);
     questionTitleDiv.append(questionTitle);
-    questionHyperlink = $('<a>').addClass('hyperlink').attr('href', '<c:url value="/Question/" />' + questionToBeDisplayed.id).attr('title', '<fmt:message key="questionReply.CopyQuestionLink"/>');
-    hyperlinkImg = $('<img>').addClass('actionQuestion').attr('src', '<c:url value="${hyperlinkIcon}"/>').attr('alt', '<fmt:message key="questionReply.CopyQuestionLink"/>').attr('border', '0');
-    questionHyperlink.append(hyperlinkImg);    
+    questionHyperlink = $('<a>').addClass('permalink').attr('href', '<c:url value="/Question/" />' + questionToBeDisplayed.id).attr('title', '<fmt:message key="questionReply.CopyQuestionLink"/>');
+    hyperlinkImg = $('<img>').attr('src', '<c:url value="${hyperlinkIcon}"/>').attr('alt', '<fmt:message key="questionReply.CopyQuestionLink"/>').attr('border', '0');
+    questionHyperlink.append(hyperlinkImg);
     questionTitleDiv.append(questionHyperlink);
     switch(questionToBeDisplayed.status) {
       case 0 :
-        questionStatusImg = $('<img>').addClass('status').attr('alt',  '<fmt:message key="questionReply.encours" />').attr('title',  '<fmt:message key="questionReply.encours" />').attr('src', '<c:url value="${newIcon}" />');
+        questionStatusImg = $('<img>').addClass('status').attr('alt',  '<fmt:message key="questionReply.encours" />').attr('title',  '<fmt:message key="questionReply.encours" />').attr('src', '<c:url value="${newIcon}" />').attr('border', '0' );
         questionTitleDiv.append(questionStatusImg);
         break;
       case 1 :
-        questionStatusImg = $('<img>').addClass('status').attr('alt',  '<fmt:message key="questionReply.waiting" />').attr('title',  '<fmt:message key="questionReply.waiting" />').attr('src', '<c:url value="${waitingIcon}" />');
+        questionStatusImg = $('<img>').addClass('status').attr('alt',  '<fmt:message key="questionReply.waiting" />').attr('title',  '<fmt:message key="questionReply.waiting" />').attr('src', '<c:url value="${waitingIcon}" />').attr('border', '0' );
         questionTitleDiv.append(questionStatusImg);
         break;
       case 2 :
-        questionStatusImg = $('<img>').addClass('status').attr('alt',  '<fmt:message key="questionReply.close" />').attr('title',  '<fmt:message key="questionReply.close" />').attr('src', '<c:url value="${closeIcon}" />');
+        questionStatusImg = $('<img>').addClass('status').attr('alt',  '<fmt:message key="questionReply.close" />').attr('title',  '<fmt:message key="questionReply.close" />').attr('src', '<c:url value="${closeIcon}" />').attr('border', '0' );
         questionTitleDiv.append(questionStatusImg);
         break;
     }
-        
+
     questionAuthor = $('<span>').addClass('questionAuthor').addClass('txtBaseline').text(questionToBeDisplayed.creator.fullName + ' ');
     questionCreationDate = $('<span>').addClass('questionDate').text('- ' + questionToBeDisplayed.creationDate);
-    questionAuthor.append(questionCreationDate);    
-    questionTitleDiv.append(questionAuthor);    
-    questionDiv.append(questionTitleDiv);    
+    questionAuthor.append(questionCreationDate);
+    questionTitleDiv.append(questionAuthor);
+    questionDiv.append(questionTitleDiv);
     actionDiv = $('<div>').addClass('action');
     if(questionToBeDisplayed.replyable){
       replyQuestionLink = $('<a>').addClass('reply').attr('title', '<fmt:message key="questionReply.ajoutR"/>').attr('href', 'CreateRQuery?QuestionId=' + questionToBeDisplayed.id);
-      replyQuestionImg = $('<img>').addClass('actionQuestion').attr('alt', '<fmt:message key="questionReply.ajoutR"/>').attr('src', '<c:url value="${addReplyIcon}" />' );
+      replyQuestionImg = $('<img>').addClass('actionQuestion').attr('alt', '<fmt:message key="questionReply.ajoutR"/>').attr('src', '<c:url value="${addReplyIcon}" />' ).attr('border', '0' );
       replyQuestionLink.append(replyQuestionImg);
       actionDiv.append(replyQuestionLink);
     }
     if(questionToBeDisplayed.reopenable){
       reopenQuestionLink = $('<a>').addClass('open').attr('title', '<fmt:message key="questionReply.open"/>').attr('href', 'javascript:openQ(\'' + questionToBeDisplayed.id + '\')');
-      reopenQuestionImg = $('<img>').addClass('actionQuestion').attr('alt', '<fmt:message key="questionReply.open"/>').attr('src', '<c:url value="${openIcon}" />' );
+      reopenQuestionImg = $('<img>').addClass('actionQuestion').attr('alt', '<fmt:message key="questionReply.open"/>').attr('src', '<c:url value="${openIcon}" />' ).attr('border', '0' );
       reopenQuestionLink.append(reopenQuestionImg);
       actionDiv.append(reopenQuestionLink);
     }
     if(questionToBeDisplayed.updatable){
       updateQuestionLink = $('<a>').addClass('update').attr('title', '<fmt:message key="questionReply.modifQ"/>').attr('href', 'UpdateQ?QuestionId=' + questionToBeDisplayed.id);
-      updateQuestionImg = $('<img>').addClass('actionQuestion').attr('alt', '<fmt:message key="questionReply.modifQ"/>').attr('src', '<c:url value="${updateIcon}" />' );
+      updateQuestionImg = $('<img>').addClass('actionQuestion').attr('alt', '<fmt:message key="questionReply.modifQ"/>').attr('src', '<c:url value="${updateIcon}" />' ).attr('border', '0' );
       updateQuestionLink.append(updateQuestionImg);
       actionDiv.append(updateQuestionLink);
-      
+
       deleteQuestionLink = $('<a>').addClass('delete').attr('title', '<fmt:message key="questionReply.delQ"/>').attr('href', 'javascript:deleteConfirm(\'' + questionToBeDisplayed.id + '\')');
-      deleteQuestionImg = $('<img>').attr('alt', '<fmt:message key="questionReply.delQ"/>').attr('src', '<c:url value="${deleteIcon}" />' );
+      deleteQuestionImg = $('<img>').attr('alt', '<fmt:message key="questionReply.delQ"/>').attr('src', '<c:url value="${deleteIcon}" />' ).attr('border', '0' );
       deleteQuestionLink.append(deleteQuestionImg);
       actionDiv.append(deleteQuestionLink);
     }
     <c:if test="${'user' != requestScope.Flag}">
-      actionDiv.append($('<input>').addClass('checkbox').attr('name', 'checkedQuestion').attr('value', questionToBeDisplayed.id).attr('type', 'checkbox'));
+      actionDiv.append($('<input>').addClass('checkbox').attr('name', 'checkedQuestion').attr('value', questionToBeDisplayed.id).attr('type', 'checkbox').prop('value', questionToBeDisplayed.id));
       actionDiv.append($('<input>').attr('name', 'status').attr('value', questionToBeDisplayed.status).attr('type', 'hidden'));
       questionDiv.append(actionDiv);
     </c:if>
@@ -199,22 +239,22 @@ $(document).ready(function() {
   <fmt:message key="questionReply.minicone" bundle="${icons}" var="publicAnswerIcon"/>
   <fmt:message key="questionReply.miniconeReponse" bundle="${icons}" var="privateAnswerIcon"/>
   function displayAnswer(answer) {
-    answerBlock = $('<li>').addClass('answer tableBoard');
+    answerBlock = $('<li>').addClass('answer');
     answerTitle = $('<h5>').addClass('answerTitle').text(answer.title);
     if(answer.publicReply) {
-      answerTitle.append($('<img>').addClass('status').attr('alt','<fmt:message key="questionReply.Rpublique" />').attr('title','<fmt:message key="questionReply.Rpublique" />').attr('src', '<c:url value="${publicAnswerIcon}" />'));
+      answerTitle.append($('<img>').addClass('status').attr('alt','<fmt:message key="questionReply.Rpublique" />').attr('title','<fmt:message key="questionReply.Rpublique" />').attr('src', '<c:url value="${publicAnswerIcon}" />').attr('border', '0' ));
     } else {
-      answerTitle.append($('<img>').addClass('status').attr('alt','<fmt:message key="questionReply.Rprivee" />').attr('title','<fmt:message key="questionReply.Rprivee" />').attr('src', '<c:url value="${privateAnswerIcon}" />'));
+      answerTitle.append($('<img>').addClass('status').attr('alt','<fmt:message key="questionReply.Rprivee" />').attr('title','<fmt:message key="questionReply.Rprivee" />').attr('src', '<c:url value="${privateAnswerIcon}" />').attr('border', '0' ));
     }
-    actionDiv = $('<div>').addClass('action');    
+    actionDiv = $('<div>').addClass('action');
     if(!answer.readOnly){
       updateAnswerLink = $('<a>').attr('title', '<fmt:message key="questionReply.modifR" />').attr('href', 'UpdateR?replyId=' + answer.id + '&QuestionId=' + answer.questionId);
-      updateAnswerImg = $('<img>').attr('alt', '<fmt:message key="questionReply.modifR" />').attr('src', '<c:url value="${updateIcon}" />');
+      updateAnswerImg = $('<img>').attr('alt', '<fmt:message key="questionReply.modifR" />').attr('src', '<c:url value="${updateIcon}" />').attr('border', '0' );
       updateAnswerLink.append(updateAnswerImg);
       actionDiv.append(updateAnswerLink);
-      
+
       deleteAnswerLink = $('<a>').attr('title', '<fmt:message key="questionReply.delR" />').attr('href', 'javascript:deleteConfirmR(\'' + answer.id + '\', \'' + answer.questionId + '\')');
-      deleteAnswerImg = $('<img>').attr('alt', '<fmt:message key="questionReply.delR" />').attr('src', '<c:url value="${deleteIcon}" />');
+      deleteAnswerImg = $('<img>').attr('alt', '<fmt:message key="questionReply.delR" />').attr('src', '<c:url value="${deleteIcon}" />').attr('border', '0' );
       deleteAnswerLink.append(deleteAnswerImg);
       actionDiv.append(deleteAnswerLink);
     }
@@ -223,7 +263,7 @@ $(document).ready(function() {
     answerContentDiv = $('<div>').addClass('answerContent');
     answerAttachmentDiv = $('<div>').addClass('answerAttachment');
     if(answer.attachments != null && answer.attachments.length > 0) {
-      answerAttachmentDiv.load('<c:url value="/attachment/jsp/displayAttachments.jsp?Context=Images&ComponentId=${pageScope.componentId}" />&Id=' + answer.id);
+      answerAttachmentDiv.load('<c:url value="/attachment/jsp/displayAttachedFiles.jsp?Context=attachment&ComponentId=${pageScope.componentId}" />&Id=' + answer.id);
       answerContentDiv.append(answerAttachmentDiv);
     }
     answerContentDiv.append(answer.content);
@@ -261,6 +301,7 @@ function closeQ(id)
 	//confirmation de cloture de la question
 	if(window.confirm('<fmt:message key="MessageCloseQ" />'))
 	{
+
 			document.QForm.action = "CloseQ";
 			document.QForm.Id.value = id;
 			document.QForm.submit();
@@ -300,7 +341,7 @@ function DeletesAdmin()
 // clore toutes les questions selectionnees
 function Closes()
 {
-	if (existSelect())
+	if (existSelected())
 	{
 		if (existStatusError('1'))
 			alert("<%=resource.getString("questionReply.closeStatusErr")%>");
@@ -413,14 +454,14 @@ function confirmDeleteCategory(categoryId) {
 <fmt:message key="GML.subscribe" var="labelSubscribe"/>
 <fmt:message key="GML.unsubscribe" var="labelUnsubscribe"/>
 function successUnsubscribe() {
-   $("#yui-gen1").empty().append($('<a>').addClass('yuimenuitemlabel').attr('href', 
-   "javascript:subscribe();").attr('title', 
+   $("#yui-gen1").empty().append($('<a>').addClass('yuimenuitemlabel').attr('href',
+   "javascript:subscribe();").attr('title',
    '<view:encodeJs string="${labelUnsubscribe}" />').append('<view:encodeJs string="${labelSubscribe}" />') );
 }
 
 function successSubscribe() {
    $("#yui-gen1").empty().append($('<a>').addClass('yuimenuitemlabel').attr(
-   'href', "javascript:unsubscribe();").attr('title', 
+   'href', "javascript:unsubscribe();").attr('title',
    '<view:encodeJs string="${labelUnsubscribe}" />').append('<view:encodeJs string="${labelUnsubscribe}" />') );
 }
 
@@ -437,24 +478,26 @@ function subscribe() {
 <%
   browseBar.setDomainName(spaceLabel);
   browseBar.setPath("");
-  
+
   if (profil.equals("admin")) {
-    // gestion du plan de classement
-    operationPane.addOperation(resource.getIcon("questionReply.pdcUtilizationSrc"), resource.
-            getString("GML.PDCParam"),
-            "javascript:onClick=openSPWindow('" + m_context + "/RpdcUtilization/jsp/Main?ComponentId=" + componentId + "','utilizationPdc1')");
-    operationPane.addLine();
+    if (pdcUsed) {
+	    // gestion du plan de classement
+	    operationPane.addOperation(resource.getIcon("questionReply.pdcUtilizationSrc"), resource.
+	            getString("GML.PDCParam"),
+	            "javascript:onClick=openSPWindow('" + m_context + "/RpdcUtilization/jsp/Main?ComponentId=" + componentId + "','utilizationPdc1')");
+	    operationPane.addLine();
+    }
     // creation des categories
-    operationPane.addOperation(resource.getIcon("questionReply.createCategory"), resource.getString(
+    operationPane.addOperationOfCreation(resource.getIcon("questionReply.createCategory"), resource.getString(
             "questionReply.createCategory"), "NewCategory");
     operationPane.addLine();
   }
   if (!profil.equals("user")) {
-    operationPane.addOperation(resource.getIcon("questionReply.addQ"), resource.getString(
+    operationPane.addOperationOfCreation(resource.getIcon("questionReply.addQ"), resource.getString(
             "questionReply.addQ"), "CreateQQuery");
   }
   if (profil.equals("admin") || profil.equals("writer")) {
-    operationPane.addOperation(resource.getIcon("questionReply.addQR"), resource.getString(
+    operationPane.addOperationOfCreation(resource.getIcon("questionReply.addQR"), resource.getString(
             "questionReply.addQR"), "CreateQueryQR");
     operationPane.addLine();
     operationPane.addOperation(resource.getIcon("questionReply.delQ"), resource.getString(
@@ -465,18 +508,19 @@ function subscribe() {
   operationPane.addLine();
   operationPane.addOperation(resource.getIcon("questionReply.export"), resource.getString(
           "questionReply.export"), "javascript:onClick=openSPWindow('Export','export')");
-  
+
   if(((Boolean)request.getAttribute("userAlreadySubscribed"))) {
     operationPane.addOperation(resource.getIcon("GML.unsubscribe"), resource.getString(
           "GML.unsubscribe"), "javascript:unsubscribe();");
   }else {
-    operationPane.addOperation(resource.getIcon("GML.subscribe"), resource.getString(
+    operationPane.addOperation(resource.getIcon("questionReply.subscribe"), resource.getString(
           "GML.subscribe"), "javascript:subscribe();");
   }
-            
+
   out.println(window.printBefore());
-  out.println(frame.printBefore());
 %>
+<view:frame>
+<view:areaOfOperationOfCreation/>
 <form method="post" action="">
   <ul>
     <fmt:message key="questionReply.updateCategory" bundle="${icons}" var="updateCategoryIcon"/>
@@ -487,10 +531,10 @@ function subscribe() {
           <h3><a class="categoryTitle"  id="lc<c:out value='${category.id}'/>" title="<fmt:message key="questionReply.openCategory"/>" href="#"><c:out value='${category.name}'/></a></h3>
           <div class="action">
             <c:if test="${'admin' eq requestScope.Flag}">
-            <a title="<fmt:message key="questionReply.updateCategory"/>" href="EditCategory?CategoryId=<c:out value='${category.id}'/>"> 
-              <img src="<c:url value="${updateCategoryIcon}"/>" alt="<fmt:message key="questionReply.updateCategory"/>"/></a>
+            <a title="<fmt:message key="questionReply.updateCategory"/>" href="EditCategory?CategoryId=<c:out value='${category.id}'/>">
+              <img src="<c:url value="${updateCategoryIcon}"/>" alt="<fmt:message key="questionReply.updateCategory"/>" border="0"/></a>
             <a title="<fmt:message key="questionReply.deleteCategory"/>" href="javascript:confirmDeleteCategory('<c:out value='${category.id}'/>');">
-              <img src="<c:url value="${deleteCategoryIcon}"/>" alt="<fmt:message key="questionReply.deleteCategory"/>"/></a>
+              <img src="<c:url value="${deleteCategoryIcon}"/>" alt="<fmt:message key="questionReply.deleteCategory"/>" border="0"/></a>
             </c:if>
           </div>
         </div>
@@ -500,24 +544,24 @@ function subscribe() {
     <li class="category">
         <div class="categoryTitle" id="cnull">
           <h3><a class="categoryTitle"  id="lcnull" title="<fmt:message key="questionReply.openCategory"/>" href="#"><fmt:message key="questionReply.noCategory"/></a></h3>
-          <div class="action">            
+          <div class="action">
           </div>
         </div>
         <ul class="questions" id="qcnull" ></ul>
     </li>
 </ul>
 </form>
-  
+
 <form name="QForm" action="" method="post">
   <input type="hidden" name="Id" />
 </form>
-  
+
 <form id ="RForm" name="RForm" action="" method="post">
   <input type="hidden" name="replyId" />
   <input type="hidden" name="QuestionId" />
 </form>
+</view:frame>
 <%
-out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
 </body>

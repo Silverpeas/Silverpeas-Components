@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,17 +23,16 @@
  */
 package com.silverpeas.projectManager.model;
 
+import com.stratelia.webactiv.calendar.backbone.TodoDetail;
+import com.stratelia.webactiv.calendar.model.Attendee;
+import org.apache.commons.lang.StringUtils;
+import org.silverpeas.attachment.model.SimpleDocument;
+
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-
-import com.stratelia.webactiv.calendar.backbone.TodoDetail;
-import com.stratelia.webactiv.calendar.model.Attendee;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
-import java.util.ArrayList;
 
 /**
  * @author neysseri
@@ -46,6 +45,7 @@ public class TaskDetail implements Serializable {
   public final static int COMPLETE = 3;
   public final static int IN_ALERT = 4;
   public final static int NOT_STARTED = 5;
+  private static final String TYPE = "Task";
   private int id;
   private int mereId = -1;
   private int chrono;
@@ -71,7 +71,7 @@ public class TaskDetail implements Serializable {
   private String organisateurFullName;
   private String uiDateDebut;
   private String uiDateFin;
-  private List<AttachmentDetail> attachments = null;
+  private List<SimpleDocument> attachments = null;
   private boolean isUnfold = false;
   private int level = 0;
   private boolean updateAvailable = false;
@@ -539,14 +539,14 @@ public class TaskDetail implements Serializable {
   /**
    * @return
    */
-  public List<AttachmentDetail> getAttachments() {
+  public List<SimpleDocument> getAttachments() {
     return attachments;
   }
 
   /**
    * @param vector
    */
-  public void setAttachments(List<AttachmentDetail> vector) {
+  public void setAttachments(List<SimpleDocument> vector) {
     attachments = vector;
   }
 
@@ -646,5 +646,17 @@ public class TaskDetail implements Serializable {
    */
   public void setPreviousTaskName(String string) {
     previousTaskName = string;
+  }
+
+  public String getContributionType() {
+    return TYPE;
+  }
+  
+  /**
+   * The type of this resource
+   * @return the same value returned by getContributionType()
+   */
+  public static String getResourceType() {
+    return TYPE;
   }
 }

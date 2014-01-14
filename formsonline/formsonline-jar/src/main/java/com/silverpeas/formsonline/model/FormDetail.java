@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -174,5 +174,49 @@ public class FormDetail {
 
   public boolean isAlreadyUsed() {
     return alreadyUsed;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final FormDetail other = (FormDetail) obj;
+    if (this.id != other.id) {
+      return false;
+    }
+    if ((this.instanceId == null) ? (other.instanceId != null) : !this.instanceId
+        .equals(other.instanceId)) {
+      return false;
+    }
+    if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
+      return false;
+    }
+    if ((this.title == null) ? (other.title != null) : !this.title.equals(other.title)) {
+      return false;
+    }
+    if (this.creationDate != other.creationDate &&
+        (this.creationDate == null || !this.creationDate.equals(other.creationDate))) {
+      return false;
+    }
+    if (this.alreadyUsed != other.alreadyUsed) {
+      return false;
+    }
+    if ((this.xmlFormName == null) ? (other.xmlFormName != null) : !this.xmlFormName
+        .equals(other.xmlFormName)) {
+      return false;
+    }
+    if ((this.description == null) ? (other.description != null) : !this.description
+        .equals(other.description)) {
+      return false;
+    }
+    if (this.state != other.state) {
+      return false;
+    }
+
+    return true;
   }
 }

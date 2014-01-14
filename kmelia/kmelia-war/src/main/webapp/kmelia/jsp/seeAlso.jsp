@@ -1,6 +1,9 @@
+<%@page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
+<%@page import="org.silverpeas.search.SearchEngineFactory"%>
+<%@ page import="org.silverpeas.search.SearchEngine" %>
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +15,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -33,7 +36,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ include file="checkKmelia.jsp" %>
 <%@ include file="publicationsList.jsp.inc" %>
-<%@ include file="tabManager.jsp.inc" %>
 
 <%!
  //Icons
@@ -100,7 +102,6 @@ seeAlsoDeleteSrc	= "icons/linkedDel.gif";
 
 //Vrai si le user connecte est le createur de cette publication ou si il est admin
 boolean isOwner = false;
-TopicDetail currentTopic = null;
 
 String linkedPathString = kmeliaScc.getSessionPath();
 
@@ -114,17 +115,18 @@ String					instanceId		= pubComplete.getPublicationDetail().getPK().getInstanceI
 if (profile.equals("admin") || profile.equals("publisher") || profile.equals("supervisor") || (ownerDetail != null && kmeliaScc.getUserDetail().getId().equals(ownerDetail.getId()) && profile.equals("writer")))
 	isOwner = true;
 %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title></title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script language="javascript">
+<script type="text/javascript">
 function seeAlsoDeleteConfirm() {
-	if (document.seeAlsoForm.PubIds != null){
+	if (document.seeAlsoForm.PubIds != null && $("input[type='checkbox']").is(":checked")){
 	    if(window.confirm("<%=kmeliaScc.getString("kmelia.ConfirmDeleteSeeAlso")%>")){
 	    	document.seeAlsoForm.PubId.value = "<%=id%>";
 			document.seeAlsoForm.Action = "<%=routerUrl%>DeleteSeeAlso";
@@ -152,11 +154,10 @@ function closeWindows() {
 }
 </script>
 </head>
-<body onUnload="closeWindows()">
+<body onunload="closeWindows()">
 <%
         Window window = gef.getWindow();
         Frame frame = gef.getFrame();
-        Board boardHelp = gef.getBoard();
         
         BrowseBar browseBar = window.getBrowseBar();
         browseBar.setDomainName(spaceLabel);
@@ -175,23 +176,22 @@ function closeWindows() {
         
         out.println(window.printBefore());
 
-        if (isOwner)
-            displayAllOperations(id, kmeliaScc, gef, action, resources, out);
-        else
-            displayUserOperations(id, kmeliaScc, gef, action, resources, out);
+        if (isOwner) {
+            KmeliaDisplayHelper.displayAllOperations(id, kmeliaScc, gef, action, resources, out);
+        } else {
+            KmeliaDisplayHelper.displayUserOperations(id, kmeliaScc, gef, action, resources, out);
+        }
 
         out.println(frame.printBefore());
 
-        if ("finish".equals(wizard))
-    	{
-    		//  cadre d'aide
-    	    out.println(boardHelp.printBefore());
-    		out.println("<table border=\"0\"><tr>");
-    		out.println("<td valign=\"absmiddle\"><img border=\"0\" src=\""+resources.getIcon("kmelia.info")+"\"></td>");
-    		out.println("<td>"+kmeliaScc.getString("kmelia.HelpSeeAlso")+"</td>");
-    		out.println("</tr></table>");
-    	    out.println(boardHelp.printAfter());
-    	    out.println("<BR>");
+        if ("finish".equals(wizard)) {
+          %>
+          	<div class="inlineMessage">
+				<img border="0" src="<%=resources.getIcon("kmelia.info") %>"/>
+				<%=resources.getString("kmelia.HelpSeeAlso") %>
+			</div>
+			<br clear="all"/>
+    	  <%
     	}
         
         if (action.equals("LinkAuthorView")) {
@@ -201,14 +201,12 @@ function closeWindows() {
             displaySameSubjectPublications(linkedPublications, resources.getString("PubReferenceeParAuteur"), kmeliaScc, id, isOwner, resources, out);
         } else if (action.equals("SameTopicView")) {
             displayLinkViewSelection(3, kmeliaScc, out);
-            currentTopic = kmeliaScc.getSessionTopic();
-            displaySameSubjectPublications(kmeliaScc.getSessionTopic().getKmeliaPublications(), resources.getString("PubDeMemeTheme"), kmeliaScc, id, false, resources, out);
+            displaySameSubjectPublications(kmeliaScc.getSessionPublicationsList(), resources.getString("PubDeMemeTheme"), kmeliaScc, id, false, resources, out);
         } else if (action.equals("SameSubjectView")) {
             displayLinkViewSelection(2, kmeliaScc, out);
             
             String keywords = kmeliaScc.getSessionPublication().getDetail().getKeywords();
             
-            SearchEngineBm searchEngine = kmeliaScc.getSearchEngine();
             String queryStr = pubName+" "+keywords;
             
             //'*' or '?' not allowed as first character in WildcardQuery
@@ -218,14 +216,10 @@ function closeWindows() {
             QueryDescription query = new QueryDescription(queryStr);
             query.setSearchingUser(kmeliaScc.getUserDetail().getId());
             query.addSpaceComponentPair(kmeliaScc.getSpaceId(), kmeliaScc.getComponentId());
-            MatchingIndexEntry[] result = null;
-            try {
-                searchEngine.search(query);
-                result = searchEngine.getRange(0, searchEngine.getResultLength());
-            } catch (Exception e) {
-				   throw new KmeliaException("JSPpublicationManager",SilverpeasRuntimeException.ERROR,"root.EX_SEARCH_ENGINE_FAILED", e);
-            }
-            displaySearchResults(result, resources.getString("PubDeMemeSujet"), kmeliaScc, id, resources, out);
+            
+            List<MatchingIndexEntry> results = SearchEngineFactory.getSearchEngine().search(query).getEntries();
+            
+            displaySearchResults(results, resources.getString("PubDeMemeSujet"), kmeliaScc, id, resources, out);
         }else if(action.equals("PubReferencedBy")){
           displayLinkViewSelection(4, kmeliaScc, out);
           
@@ -238,9 +232,9 @@ function closeWindows() {
         out.println(window.printAfter());
 %>
 <form name="pubForm" action="<%=routerUrl%>publicationManager.jsp" method="post">
-  <input type="hidden" name="Action">
-  <input type="hidden" name="PubId">
-  <input type="hidden" name="CheckPath">
+  <input type="hidden" name="Action"/>
+  <input type="hidden" name="PubId"/>
+  <input type="hidden" name="CheckPath"/>
 </form>
 </body>
 </html>

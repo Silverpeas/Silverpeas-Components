@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -31,63 +31,26 @@ response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
-<%@ page import="javax.servlet.*"%>
-<%@ page import="javax.servlet.http.*"%>
-<%@ page import="javax.servlet.jsp.*"%>
-<%@ page import="java.io.PrintWriter"%>
-<%@ page import="java.io.IOException"%>
-<%@ page import="java.io.FileInputStream"%>
-<%@ page import="java.io.ObjectInputStream"%>
-<%@ page import="java.util.Vector"%>
-<%@ page import="java.beans.*"%>
-
-<%@ page import="java.util.*"%>
 <%@ page import="java.lang.*"%>
-<%@ page import="javax.ejb.*,java.sql.SQLException,javax.naming.*,javax.rmi.PortableRemoteObject"%>
-
 <%@ page import="com.stratelia.webactiv.util.*"%>
-
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayPane"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayLine"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayColumn"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayCellText"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.iconPanes.IconPane"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.icons.Icon"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.navigationList.NavigationList"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
-<%@ page import="com.stratelia.webactiv.webSites.siteManage.model.SiteDetail"%>
 <%@ page import="com.stratelia.webactiv.util.publication.model.*"%>
 <%@ page import="com.stratelia.webactiv.util.publication.info.model.*"%>
 <%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
 
-<%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ include file="checkScc.jsp" %>
 <%@ include file="util.jsp" %>
 
 <%
-
-ResourceLocator settings;
-//CBO : REMOVE Collection listeSites;
-ArrayList arraySites;
-
-settings = new ResourceLocator("com.stratelia.webactiv.webSites.settings.webSiteSettings", "fr");
-
-//CBO : REMOVE String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-
 String role 		= (String) request.getAttribute("BestRole");
 
 //Icons
-String bookmark			= m_context+"/util/icons/bookmark_to_add.gif";
+String bookmark			= m_context+"/util/icons/create-action/add-bookmark.png";
 String bookmarkDelete	= m_context+"/util/icons/bookmark_to_remove.gif";
 
-String upload			= m_context+"/util/icons/webSites_upload.gif";
-String create			= m_context+"/util/icons/webSites_to_design.gif";
+String upload			= m_context+"/util/icons/create-action/download-website.png";
+String create			= m_context+"/util/icons/create-action/create-website.png";
 String belpou 			= m_context+"/util/icons/webSites_to_del.gif";
 
 String webLink			= m_context+"/util/icons/webLink.gif";
@@ -95,25 +58,16 @@ String localLink		= m_context+"/util/icons/computer.gif";
 String check			= m_context+"/util/icons/ok.gif";
 String pdcUtilizationSrc = m_context+"/pdcPeas/jsp/icons/pdcPeas_paramPdc.gif";
 
-
-/* recup parametres */
-
-
-//CBO : ADD
 Collection listeSites = (Collection) request.getAttribute("ListSites");
-
 %>
 
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-
-<%
-out.println(gef.getLookStyleSheet());
-%>
-
 <title><%=resources.getString("GML.popupTitle")%></title>
+<view:looknfeel />
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script language="javascript">
+<script type="text/javascript">
 
 function URLENCODE(URL){
     URL = escape(URL);
@@ -188,76 +142,62 @@ function designSite(path, id) {
 function openSPWindow(fonction, windowName){
 	pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600', '400','scrollbars=yes, resizable, alwaysRaised');
 }
-
 </script>
 </head>
 <body>
 
 <form name="descriptionSite" action="descUpload.jsp" method="post" enctype="multipart/form-data">
-  <input type="hidden" name="Action">
+  <input type="hidden" name="Action"/>
 </form>
 
 
 <form name="liste_liens" action="manage.jsp" >
-  <input type="hidden" name="Action">
-  <input type="hidden" name="SiteList">
+  <input type="hidden" name="Action"/>
+  <input type="hidden" name="SiteList"/>
 
 <%
 
-	//CBO : REMOVE listeSites = scc.getAllWebSite();
-    arraySites = new ArrayList(listeSites);
-    SilverTrace.info("websites", "JSPmanage", "root.MSG_GEN_PARAM_VALUE", "taille de l'arraySites= "+arraySites.size());
+  ArrayList arraySites = new ArrayList(listeSites);
+  SilverTrace.info("websites", "JSPmanage", "root.MSG_GEN_PARAM_VALUE", "taille de l'arraySites= "+arraySites.size());
 
-
-    Window window = gef.getWindow();
-    String bodyPart="";
-
-    // La barre de naviagtion
-    BrowseBar browseBar = window.getBrowseBar();
-	//CBO : UPDATE
-	//browseBar.setDomainName(scc.getSpaceLabel());
-    browseBar.setDomainName(spaceLabel);
-	//CBO : UPDATE
-    //browseBar.setComponentName(scc.getComponentLabel(), "manage.jsp");
+  Window window = gef.getWindow();
+  String bodyPart="";
+  BrowseBar browseBar = window.getBrowseBar();
+  browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "manage.jsp");
 
-    //Les operations
-    OperationPane operationPane = window.getOperationPane();
+  //Les operations
+  OperationPane operationPane = window.getOperationPane();
 
-	if (scc.isPdcUsed() && role.equals("Admin")) {
-		//CBO : UPDATE
-		/*operationPane.addOperation(pdcUtilizationSrc, resources.getString("GML.PDCParam"), "javascript:onClick=openSPWindow('"+m_context+"/RpdcUtilization/jsp/Main?ComponentId="+scc.getComponentId()+"','utilizationPdc1')");*/
+	if (scc.isPdcUsed() && "Admin".equals(role)) {
 		operationPane.addOperation(pdcUtilizationSrc, resources.getString("GML.PDCParam"), "javascript:onClick=openSPWindow('"+m_context+"/RpdcUtilization/jsp/Main?ComponentId="+componentId+"','utilizationPdc1')");
 		operationPane.addLine();
 	}
-
-    operationPane.addOperation(bookmark, resources.getString("BookmarkSite"), "javascript:onClick=B_SPECIFIER_BOOK_ONCLICK();");
-    if (bookmarkMode)
-    {
-    	operationPane.addOperation(bookmarkDelete, resources.getString("SupprimerSite"), "javascript:onClick=deleteWebSites('"+listeSites.size()+"')");
-    } 
-    else 
-    {
-		operationPane.addOperation(upload, resources.getString("UploadSite"), "javascript:onClick=B_SPECIFIER_UPLOAD_ONCLICK();");
-		operationPane.addOperation(create, resources.getString("DesignSite"), "javascript:onClick=B_SPECIFIER_DESIGN_ONCLICK();");
+  operationPane.addOperationOfCreation(bookmark, resources.getString("BookmarkSite"), "javascript:onClick=B_SPECIFIER_BOOK_ONCLICK();");
+  if (bookmarkMode) {
+  	operationPane.addOperation(bookmarkDelete, resources.getString("SupprimerSite"), "javascript:onClick=deleteWebSites('"+listeSites.size()+"')");
+  } else {
+		operationPane.addOperationOfCreation(upload, resources.getString("UploadSite"), "javascript:onClick=B_SPECIFIER_UPLOAD_ONCLICK();");
+		operationPane.addOperationOfCreation(create, resources.getString("DesignSite"), "javascript:onClick=B_SPECIFIER_DESIGN_ONCLICK();");
 		operationPane.addOperation(belpou, resources.getString("SupprimerSite"), "javascript:onClick=deleteWebSites('"+listeSites.size()+"')");
 	}
 	
-
-    //Les onglets
-    TabbedPane tabbedPane = gef.getTabbedPane();
-    tabbedPane.addTab(resources.getString("Consulter"), "listSite.jsp", false);
-    tabbedPane.addTab(resources.getString("Organiser"), "organize.jsp", false);
-    tabbedPane.addTab(resources.getString("GML.management"), "manage.jsp", true);
-
-    //Le cadre
-    Frame frame = gef.getFrame();
-
-    //Le tableau de tri
-    ArrayPane arrayPane = gef.getArrayPane("foldersList", "manage.jsp", request, session);
+  out.println(window.printBefore());
+  
+  TabbedPane tabbedPane = gef.getTabbedPane();
+  tabbedPane.addTab(resources.getString("Consulter"), "Main", false);
+  tabbedPane.addTab(resources.getString("Organiser"), "organize.jsp", false);
+  tabbedPane.addTab(resources.getString("GML.management"), "manage.jsp", true);
+  
+  out.println(tabbedPane.print());
+%>
+<view:frame>
+<view:areaOfOperationOfCreation/>
+<%
+  //Le tableau de tri
+  ArrayPane arrayPane = gef.getArrayPane("foldersList", "manage.jsp", request, session);
 	arrayPane.setVisibleLineNumber(10);
 	arrayPane.setTitle(resources.getString("ListeSites"));
-	//Definition des colonnes du tableau
 	arrayPane.addArrayColumn(resources.getString("GML.name"));
 	arrayPane.addArrayColumn(resources.getString("GML.description"));
 	if (! bookmarkMode) {
@@ -291,8 +231,7 @@ function openSPWindow(fonction, windowName){
 			arrayLine.addArrayCellLink(nom, "javascript:onClick=updateDescription('"+theId+"')");
 		}
 		else {//site interne
-			//CBO : UPDATE
-			arrayLine.addArrayCellLink(nom, "javascript:onClick=designSite('"+doubleAntiSlash(settings.getString("uploadsPath")+settings.getString("Context")+"/"+componentId+"/"+theId)+"', '"+theId+"')");
+			arrayLine.addArrayCellLink(nom, "javascript:onClick=designSite('"+componentId+"/"+theId+"', '"+theId+"')");
 		}
 
 		//desc
@@ -328,20 +267,16 @@ function openSPWindow(fonction, windowName){
 		}
 
 		//check
-		arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"supLien\" value=\""+theId+"\">");
+		arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"supLien\" value=\""+theId+"\"/>");
 
 		i++;
   }
-
-	//Recuperation du tableau dans le haut du cadre
-	frame.addTop(arrayPane.print());
-	frame.addBottom("");
-
-	//On crache le HTML ;o)
-	bodyPart+=tabbedPane.print();
-	bodyPart+=frame.print();
-	window.addBody(bodyPart);
-	out.println(window.print());
+	
+	out.println(arrayPane.print());
+%>
+</view:frame>
+<%
+	out.println(window.printAfter());
 %>
 </form>
 </body>

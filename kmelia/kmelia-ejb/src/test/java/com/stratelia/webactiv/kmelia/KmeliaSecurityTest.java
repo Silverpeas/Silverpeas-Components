@@ -1,3 +1,27 @@
+/**
+ * Copyright (C) 2000 - 2013 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -16,6 +40,8 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.silverpeas.core.admin.OrganisationController;
+
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -66,13 +92,13 @@ public class KmeliaSecurityTest {
 
   /**
    * Test of isAccessAuthorized method, of class KmeliaSecurity.
-   * @throws Exception 
+   * @throws Exception
    */
   @Test
   public void testIsAccessAuthorizedForValidPublication() throws Exception {
     String instanceId = "100";
     String adminId = "11";
-    OrganizationController controller = mock(OrganizationController.class);
+    OrganisationController controller = mock(OrganizationController.class);
     when(controller.isComponentAvailable(eq(instanceId), anyString())).thenReturn(Boolean.TRUE);
     when(controller.isComponentAvailable(instanceId, "10")).thenReturn(Boolean.FALSE);
     when(controller.getComponentParameterValue(instanceId, KmeliaSecurity.RIGHTS_ON_TOPIC_PARAM)).
@@ -104,7 +130,7 @@ public class KmeliaSecurityTest {
     String publisherId = "13";
     String authorWriterId = "14";
     String notAuthorizedWriterId = "15";
-    OrganizationController controller = mock(OrganizationController.class);
+    OrganisationController controller = mock(OrganizationController.class);
     when(controller.isComponentAvailable(eq(instanceId), anyString())).thenReturn(Boolean.TRUE);
     when(controller.getComponentParameterValue(instanceId, KmeliaSecurity.RIGHTS_ON_TOPIC_PARAM)).
       thenReturn(null);
@@ -150,7 +176,7 @@ public class KmeliaSecurityTest {
     String publisherId = "13";
     String authorWriterId = "14";
     String notAuthorizedWriterId = "15";
-    OrganizationController controller = mock(OrganizationController.class);
+    OrganisationController controller = mock(OrganizationController.class);
     when(controller.isComponentAvailable(eq(instanceId), anyString())).thenReturn(Boolean.TRUE);
     when(controller.getComponentParameterValue(instanceId, KmeliaSecurity.RIGHTS_ON_TOPIC_PARAM)).
       thenReturn(null);
@@ -209,7 +235,7 @@ public class KmeliaSecurityTest {
    */
   @Test
   public void testIsObjectAvailable() {
-    OrganizationController controller = mock(OrganizationController.class);
+    OrganisationController controller = mock(OrganizationController.class);
     KmeliaSecurity instance = new KmeliaSecurity(controller);
     assertTrue("Object not of type kmelia", instance.isObjectAvailable("100", "10", "1000", "toto"));
   }
@@ -235,7 +261,7 @@ public class KmeliaSecurityTest {
    */
   @Test
   public void testIsRightsOnTopicsEnabled() {
-    OrganizationController controller = mock(OrganizationController.class);
+    OrganisationController controller = mock(OrganizationController.class);
     when(controller.getComponentParameterValue("100", KmeliaSecurity.RIGHTS_ON_TOPIC_PARAM)).
       thenReturn("yes");
     when(controller.getComponentParameterValue("101", KmeliaSecurity.RIGHTS_ON_TOPIC_PARAM)).

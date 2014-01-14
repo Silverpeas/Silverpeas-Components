@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -13,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -34,8 +34,12 @@
     <message lang="de">Ressourcen-Manager</message>
   </label>
   <description>
-    <message lang="fr">Ce composant permet de gérer ses ressources matérielles et de les réserver.</message>
-    <message lang="en">This component manages physical resources and how to book them.</message>
+    <message lang="fr">L’application permet de gérer des ressources (salles,
+		véhicules, matériel informatique...). Les utilisateurs créent des réservations sur
+		une ou plusieurs ressources. Seules les ressources disponibles aux dates demandées
+		sont proposées. Un système de validation est activable.
+	</message>
+    <message lang="en">This application manages physical resources and how to book them.</message>
     <message lang="de">Diese Komponente verwaltet physische Ressourcen und wie man diese buchen kann.</message>
   </description>
   <suite>
@@ -45,7 +49,7 @@
   </suite>
   <visible>true</visible>
   <portlet>false</portlet>
-  <instanceClassName>com.silverpeas.resourcesmanager.ResourcesManagerInstanciator</instanceClassName>
+  <instanceClassName>org.silverpeas.resourcemanager.ResourcesManagerInstanciator</instanceClassName>
   <profiles>
     <profile name="admin">
       <label>
@@ -86,13 +90,49 @@
   </profiles>
   <parameters>
     <parameter>
+      <name>defaultDisplay</name>
+      <label>
+        <message lang="fr">Par défaut, afficher</message>
+        <message lang="en">By default, display</message>
+        <message lang="de">By default, display</message>
+      </label>
+      <order>1</order>
+      <mandatory>true</mandatory>
+      <value>allReservations</value>
+      <options>
+        <option>
+          <name>
+            <message lang="fr">toutes les réservations</message>
+            <message lang="en">all reservations</message>
+            <message lang="de">all reservations</message>
+          </name>
+          <value>allReservations</value>
+        </option>
+        <option>
+          <name>
+            <message lang="fr">réservations de l'utilisateur</message>
+            <message lang="en">reservations of user</message>
+            <message lang="de">reservations of user</message>
+          </name>
+          <value>myReservation</value>
+        </option>
+      </options>
+      <type>select</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Permet de définir l'affichage par défaut lorsque l'utilisateur arrive sur l'application.</message>
+        <message lang="en">Sets the default display when the user enters the application.</message>
+        <message lang="de">Sets the default display when the user enters the application.</message>
+      </help>
+    </parameter>
+    <parameter>
       <name>comments</name>
       <label>
         <message lang="fr">Commentaires</message>
         <message lang="en">Comments</message>
         <message lang="de">Kommentare</message>
       </label>
-      <order>1</order>
+      <order>2</order>
       <mandatory>true</mandatory>
       <value>yes</value>
       <type>checkbox</type>
@@ -110,7 +150,7 @@
         <message lang="en">Hide week-ends</message>
         <message lang="de">Wochenenden Verstecken</message>
       </label>
-      <order>2</order>
+      <order>3</order>
       <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>

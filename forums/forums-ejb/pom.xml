@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.silverpeas.components</groupId>
     <artifactId>forums</artifactId>
-    <version>5.7-SNAPSHOT</version>
+    <version>5.14-SNAPSHOT</version>
   </parent>
 
   <groupId>com.silverpeas.components.forums</groupId>
@@ -21,42 +21,42 @@
     <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
       <artifactId>node</artifactId>
+      <classifier>client</classifier>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
       <artifactId>publication</artifactId>
+      <classifier>client</classifier>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
       <artifactId>notation</artifactId>
+      <classifier>client</classifier>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
       <artifactId>tagcloud</artifactId>
+      <classifier>client</classifier>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
       <artifactId>statistic</artifactId>
-      <version>${core.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.silverpeas.core.ejb-core</groupId>
-      <artifactId>silverstatistics</artifactId>
+      <classifier>client</classifier>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
       <artifactId>pdc</artifactId>
+      <classifier>client</classifier>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -65,6 +65,12 @@
       <artifactId>test-core</artifactId>
       <version>${core.version}</version>
       <scope>test</scope>
+    </dependency>    
+    <dependency>
+      <groupId>javax.ejb</groupId>
+      <artifactId>ejb-api</artifactId>
+      <version>3.0</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 
@@ -78,5 +84,20 @@
     <filters>
       <filter>src/test/filters/filters.properties</filter>
     </filters>
+    <plugins>
+      <plugin>
+        <artifactId>maven-ejb-plugin</artifactId>
+        <version>2.3</version>
+        <configuration>
+          <ejbVersion>3.0</ejbVersion>
+          <generateClient>true</generateClient>
+          <clientExcludes>
+            <clientExclude>**/*DAO.class</clientExclude>
+            <clientExclude>**/*EJB.class</clientExclude>
+            <clientExclude>META-INF/*.xml</clientExclude>
+          </clientExcludes>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
 </project>

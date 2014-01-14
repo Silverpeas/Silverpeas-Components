@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,40 +23,28 @@
  */
 package com.stratelia.webactiv.almanach.control.ejb;
 
-import java.util.ArrayList;
-import java.util.TimeZone;
-import com.stratelia.webactiv.util.ResourceLocator;
-import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
-import net.fortuna.ical4j.model.TimeZoneRegistry;
 import com.silverpeas.calendar.Datable;
 import com.silverpeas.calendar.Date;
+import com.stratelia.webactiv.almanach.control.ExceptionDatesGenerator;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.EventOccurrence;
-import com.stratelia.webactiv.almanach.model.Periodicity;
-import com.stratelia.webactiv.almanach.model.PeriodicityException;
-import com.stratelia.webactiv.persistence.IdPK;
-import com.stratelia.webactiv.persistence.PersistenceException;
-import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
-import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import net.fortuna.ical4j.model.Calendar;
-import net.fortuna.ical4j.model.Component;
-import net.fortuna.ical4j.model.ComponentList;
-import net.fortuna.ical4j.model.DateList;
-import net.fortuna.ical4j.model.DateTime;
-import net.fortuna.ical4j.model.Period;
-import net.fortuna.ical4j.model.PeriodList;
-import net.fortuna.ical4j.model.Property;
+import com.stratelia.webactiv.util.ResourceLocator;
+import net.fortuna.ical4j.model.*;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.CalScale;
 import net.fortuna.ical4j.model.property.Categories;
 import net.fortuna.ical4j.model.property.ExDate;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.TimeZone;
+
+import static com.silverpeas.util.StringUtil.isDefined;
 import static com.stratelia.webactiv.almanach.model.EventOccurrence.*;
-import static com.silverpeas.util.StringUtil.*;
-import static com.stratelia.webactiv.util.DateUtil.*;
+import static com.stratelia.webactiv.util.DateUtil.extractHour;
+import static com.stratelia.webactiv.util.DateUtil.extractMinutes;
 
 /**
  * A generator of event occurrences built on the iCal4J library.
@@ -64,79 +52,11 @@ import static com.stratelia.webactiv.util.DateUtil.*;
 public class ICal4JEventOccurrencesGenerator implements EventOccurrenceGenerator {
 
   @Override
-  public List<EventOccurrence> generateOccurrencesInYear(java.util.Calendar year,
+  public List<EventOccurrence> generateOccurrencesInPeriod(org.silverpeas.date.Period period,
           List<EventDetail> events) {
-    java.util.Calendar firstDayYear = java.util.Calendar.getInstance();
-    firstDayYear.set(java.util.Calendar.YEAR, year.get(java.util.Calendar.YEAR));
-    firstDayYear.set(java.util.Calendar.DAY_OF_MONTH, 1);
-    firstDayYear.set(java.util.Calendar.MONTH, java.util.Calendar.JANUARY);
-    firstDayYear.set(java.util.Calendar.HOUR_OF_DAY, 0);
-    firstDayYear.set(java.util.Calendar.MINUTE, 0);
-    firstDayYear.set(java.util.Calendar.SECOND, 0);
-    firstDayYear.set(java.util.Calendar.MILLISECOND, 0);
-    java.util.Calendar lastDayYear = java.util.Calendar.getInstance();
-    lastDayYear.set(java.util.Calendar.YEAR, year.get(java.util.Calendar.YEAR));
-    lastDayYear.set(java.util.Calendar.DAY_OF_MONTH, 1);
-    lastDayYear.set(java.util.Calendar.MONTH, java.util.Calendar.JANUARY);
-    lastDayYear.set(java.util.Calendar.HOUR_OF_DAY, 0);
-    lastDayYear.set(java.util.Calendar.MINUTE, 0);
-    lastDayYear.set(java.util.Calendar.SECOND, 0);
-    lastDayYear.set(java.util.Calendar.MILLISECOND, 0);
-    lastDayYear.add(java.util.Calendar.YEAR, 1);
-    Period theYear = new Period(new DateTime(firstDayYear.getTime()),
-            new DateTime(lastDayYear.getTime()));
-
-    return generateOccurrencesOf(events, occuringIn(theYear));
-  }
-
-  @Override
-  public List<EventOccurrence> generateOccurrencesInMonth(java.util.Calendar month,
-          List<EventDetail> events) {
-    java.util.Calendar firstDayMonth = java.util.Calendar.getInstance();
-    firstDayMonth.set(java.util.Calendar.YEAR, month.get(java.util.Calendar.YEAR));
-    firstDayMonth.set(java.util.Calendar.DAY_OF_MONTH, 1);
-    firstDayMonth.set(java.util.Calendar.MONTH, month.get(java.util.Calendar.MONTH));
-    firstDayMonth.set(java.util.Calendar.HOUR_OF_DAY, 0);
-    firstDayMonth.set(java.util.Calendar.MINUTE, 0);
-    firstDayMonth.set(java.util.Calendar.SECOND, 0);
-    firstDayMonth.set(java.util.Calendar.MILLISECOND, 0);
-    java.util.Calendar lastDayMonth = java.util.Calendar.getInstance();
-    lastDayMonth.set(java.util.Calendar.YEAR, month.get(java.util.Calendar.YEAR));
-    lastDayMonth.set(java.util.Calendar.DAY_OF_MONTH, 1);
-    lastDayMonth.set(java.util.Calendar.MONTH, month.get(java.util.Calendar.MONTH));
-    lastDayMonth.set(java.util.Calendar.HOUR_OF_DAY, 0);
-    lastDayMonth.set(java.util.Calendar.MINUTE, 0);
-    lastDayMonth.set(java.util.Calendar.SECOND, 0);
-    lastDayMonth.set(java.util.Calendar.MILLISECOND, 0);
-    lastDayMonth.add(java.util.Calendar.MONTH, 1);
-    Period theMonth = new Period(new DateTime(firstDayMonth.getTime()),
-            new DateTime(lastDayMonth.getTime()));
-
-    return generateOccurrencesOf(events, occuringIn(theMonth));
-  }
-
-  @Override
-  public List<EventOccurrence> generateOccurrencesInWeek(java.util.Calendar week,
-          List<EventDetail> events) {
-    java.util.Calendar firstDayWeek = java.util.Calendar.getInstance();
-    firstDayWeek.setTime(week.getTime());
-    firstDayWeek.set(java.util.Calendar.DAY_OF_WEEK, week.getFirstDayOfWeek());
-    firstDayWeek.set(java.util.Calendar.HOUR_OF_DAY, 0);
-    firstDayWeek.set(java.util.Calendar.MINUTE, 0);
-    firstDayWeek.set(java.util.Calendar.SECOND, 0);
-    firstDayWeek.set(java.util.Calendar.MILLISECOND, 0);
-    java.util.Calendar lastDayWeek = java.util.Calendar.getInstance();
-    lastDayWeek.setTime(week.getTime());
-    lastDayWeek.set(java.util.Calendar.HOUR_OF_DAY, 0);
-    lastDayWeek.set(java.util.Calendar.MINUTE, 0);
-    lastDayWeek.set(java.util.Calendar.SECOND, 0);
-    lastDayWeek.set(java.util.Calendar.MILLISECOND, 0);
-    lastDayWeek.set(java.util.Calendar.DAY_OF_WEEK, week.getFirstDayOfWeek());
-    lastDayWeek.add(java.util.Calendar.WEEK_OF_YEAR, 1);
-    Period theWeek = new Period(new DateTime(firstDayWeek.getTime()),
-            new DateTime(lastDayWeek.getTime()));
-
-    return generateOccurrencesOf(events, occuringIn(theWeek));
+    Period thePeriod =
+        new Period(new DateTime(period.getBeginDate()), new DateTime(period.getEndDate()));
+    return generateOccurrencesOf(events, occuringIn(thePeriod));
   }
 
   @Override
@@ -212,59 +132,13 @@ public class ICal4JEventOccurrencesGenerator implements EventOccurrenceGenerator
    * @return an ExDate instance with all of the exception dates.
    */
   private ExDate generateExceptionDates(final EventDetail event) {
-    Collection<PeriodicityException> periodicityExceptions =
-            getPeriodicityExceptions(event.getPeriodicity());
-    DateList exceptionDates = new DateList();
-    java.util.Calendar exceptionsStartDate = java.util.Calendar.getInstance();
-    java.util.Calendar exceptionsEndDate = java.util.Calendar.getInstance();
-    for (PeriodicityException periodicityException : periodicityExceptions) {
-      Datable<?> datable = toDatable(periodicityException.getBeginDateException(), event.
-              getStartHour());
-      exceptionsStartDate.setTime(datable.asDate());
-      if (!isDefined(event.getEndHour()) && isDefined(event.getStartHour())) {
-        datable = toDatable(periodicityException.getEndDateException(), event.getStartHour());
-      } else {
-        datable = toDatable(periodicityException.getEndDateException(), event.getEndHour());
-      }
-      exceptionsEndDate.setTime(datable.asDate());
-      while (exceptionsStartDate.before(exceptionsEndDate)
-              || exceptionsStartDate.equals(exceptionsEndDate)) {
-        exceptionDates.add(new DateTime(exceptionsStartDate.getTime()));
-        exceptionsStartDate.add(java.util.Calendar.DATE, 1);
-      }
+    ExceptionDatesGenerator generator = new ExceptionDatesGenerator();
+    Set<java.util.Date> exceptionDates = generator.generateExceptionDates(event);
+    DateList exDateList = new DateList();
+    for (java.util.Date anExceptionDate : exceptionDates) {
+      exDateList.add(new DateTime(anExceptionDate));
     }
-    return new ExDate(exceptionDates);
-  }
-
-  /**
-   * Gets all the exceptions of the specified periodicity.
-   * @param periodicity an event periodicity
-   * @return a collection of exceptions that were applied to the specified periodicity.
-   */
-  private Collection<PeriodicityException> getPeriodicityExceptions(final Periodicity periodicity) {
-    try {
-      IdPK pk = new IdPK();
-      return getPeriodicityExceptionDAO().findByWhereClause(pk, "periodicityId = " + periodicity.
-              getPK().getId());
-    } catch (PersistenceException e) {
-      throw new AlmanachRuntimeException(
-              "AlmanachBmEJB.getListPeriodicityException()",
-              SilverpeasRuntimeException.ERROR,
-              "almanach.EX_GET_PERIODICITY_EXCEPTION", e);
-    }
-  }
-
-  private SilverpeasBeanDAO<PeriodicityException> getPeriodicityExceptionDAO() {
-    try {
-      SilverpeasBeanDAO<PeriodicityException> dao = SilverpeasBeanDAOFactory.getDAO(
-          "com.stratelia.webactiv.almanach.model.PeriodicityException");
-      return dao;
-    } catch (PersistenceException pe) {
-      throw new AlmanachRuntimeException(
-              "AlmanachBmEJB.getPeriodicityExceptionDAO()",
-              SilverpeasRuntimeException.ERROR,
-              "almanach.EX_PERSISTENCE_PERIODICITY_EXCEPTION", pe);
-    }
+    return new ExDate(exDateList);
   }
 
   private Datable<?> toDatable(final java.util.Date date, String time) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,19 +23,22 @@
  */
 package com.stratelia.webactiv.kmelia.servlets;
 
-import java.io.IOException;
-import java.io.Writer;
+import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.silverpeas.peasCore.ComponentContext;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
+import com.stratelia.webactiv.kmelia.servlets.ajax.AjaxOperation;
+import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
-import com.stratelia.webactiv.kmelia.servlets.ajax.AjaxOperation;
+import java.io.IOException;
+import java.io.Writer;
 
 public class AjaxServlet extends HttpServlet {
 
@@ -53,18 +56,22 @@ public class AjaxServlet extends HttpServlet {
     HttpSession session = req.getSession(true);
     String componentId = req.getParameter("ComponentId");
     KmeliaSessionController kmeliaSC =
-        (KmeliaSessionController) session.getAttribute("Silverpeas_" + "kmelia" + "_" + componentId);
+        (KmeliaSessionController) session.getAttribute("Silverpeas_kmelia_" + componentId);
     if (kmeliaSC == null) {
       kmeliaSC = createSessionController(session, componentId);
     }
     String result = "nok";
-    AjaxOperation action = AjaxOperation.valueOf(getAction(req));
-    if (action.requiresController()) {
-      if (kmeliaSC != null) {
+    try {
+      AjaxOperation action = AjaxOperation.valueOf(getAction(req));
+      if (action.requiresController()) {
+        if (kmeliaSC != null) {
+          result = action.handleRequest(req, kmeliaSC);
+        }
+      } else {
         result = action.handleRequest(req, kmeliaSC);
       }
-    } else {
-      result = action.handleRequest(req, kmeliaSC);
+    } catch (Exception ignored) {
+      result = "";
     }
     Writer writer = resp.getWriter();
     writer.write(result);
@@ -80,7 +87,7 @@ public class AjaxServlet extends HttpServlet {
         MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     if (msc != null) {
       ComponentContext componentContext = msc.createComponentContext(null, componentId);
-      if (msc.getOrganizationController().isComponentAvailable(componentId, msc.getUserId())) {
+      if (msc.getOrganisationController().isComponentAvailable(componentId, msc.getUserId())) {
         return new KmeliaSessionController(msc, componentContext);
       }
     }

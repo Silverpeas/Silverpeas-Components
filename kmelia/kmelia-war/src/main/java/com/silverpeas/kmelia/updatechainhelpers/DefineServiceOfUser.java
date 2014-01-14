@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,18 +24,17 @@
 
 package com.silverpeas.kmelia.updatechainhelpers;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.Iterator;
-import java.util.List;
-
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.List;
 
 public class DefineServiceOfUser extends UpdateChainHelperImpl {
 
@@ -51,9 +50,7 @@ public class DefineServiceOfUser extends UpdateChainHelperImpl {
     // associer le service au node
     String[] topics = new String[1];
     List<NodeDetail> allTopics = uchc.getAllTopics();
-    Iterator<NodeDetail> it = allTopics.iterator();
-    while (it.hasNext()) {
-      NodeDetail node = it.next();
+    for (NodeDetail node : allTopics) {
       if (node.getName().equals(service)) {
         // enregistrer
         topics[0] = node.getId() + "," + node.getNodePK().getInstanceId();

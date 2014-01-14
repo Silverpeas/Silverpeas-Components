@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,6 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="com.silverpeas.util.EncodeHelper" %>
 <%
     response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
     response.setHeader("Pragma", "no-cache"); //HTTP 1.0
@@ -31,10 +32,7 @@
 %>
 <%@ include file="check.jsp"%>
 <%
-    String resourceId = (String)request.getParameter("ResourceId");
-    String resourceName = (String)request.getParameter("ResourceName");
-    String reservationId = (String)request.getParameter("reservationId");
-    String objectView = request.getParameter("objectView");
+    String resourceName = request.getParameter("ResourceName");
     //Icons
     String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
 %>
@@ -45,8 +43,12 @@
   %>
   <script type='text/javascript'>
     function validateResource() {
-      document.refusalForm.action = "RefuseResource";
-    	document.refusalForm.submit();  
+      if (!$('textarea').val()) {
+        window.alert("'<%=resource.getString("resourcesManager.RefusalMotive")%>' <%=resource.getString("GML.MustBeFilled")%>\n");
+      } else {
+        document.refusalForm.action = "RefuseResource";
+        document.refusalForm.submit();
+      }
     }
 
     function cancelResource() {
@@ -75,19 +77,19 @@
 	    <TABLE ALIGN=CENTER CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%" CLASS=intfdcolor4>
 	      <TR>
 	         <TD></TD>
-	         <TD valign="top"><%=Encode.javaStringToHtmlString(resourceName)%></TD>
+	         <TD valign="top"><%=EncodeHelper.javaStringToHtmlString(resourceName)%></TD>
 	      <TR>
 	         <TD class="txtlibform" valign=top><%=resource.getString("resourcesManager.RefusalMotive")%> :</TD>
 	         <TD>
-	            <textarea name="Motive" rows="5" cols="60"></textarea>&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"> 
-	            <input type="hidden" name="ResourceId" value="<%=resourceId%>"> 
-	            <input type="hidden" name="reservationId" value="<%=reservationId%>"> 
-	            <input type="hidden" name="objectView" value="<%=objectView%>"> 
+	            <textarea name="Motive" rows="5" cols="60"></textarea>&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5" alt="">
+	            <input type="hidden" name="ResourceId" value="${requestScope.ResourceId}"> 
+	            <input type="hidden" name="reservationId" value="${requestScope.reservationId}"> 
+	            <input type="hidden" name="objectView" value="${requestScope.objectView}"> 
 	         </TD>
 	      </TR>
 	      <TR>
 	         <TD colspan="2">
-	           ( <img border="0" src="<%=mandatoryField%>" width="5" height="5"> : <%=resource.getString("GML.requiredField")%> )
+	           ( <img border="0" src="<%=mandatoryField%>" width="5" height="5" alt=""> : <%=resource.getString("GML.requiredField")%> )
 	         </TD>
 	      </TR>
 	   </TABLE>  

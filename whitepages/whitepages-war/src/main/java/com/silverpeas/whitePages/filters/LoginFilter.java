@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,7 +24,14 @@
 
 package com.silverpeas.whitePages.filters;
 
-import java.io.IOException;
+import com.silverpeas.whitePages.control.CardManager;
+import com.silverpeas.whitePages.model.Card;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.AdminReference;
+import com.stratelia.webactiv.beans.admin.CompoSpace;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -35,15 +42,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-
-import com.silverpeas.whitePages.control.CardManager;
-import com.silverpeas.whitePages.model.Card;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.Admin;
-import com.stratelia.webactiv.beans.admin.CompoSpace;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import java.io.IOException;
 
 /**
  * Ce filtre a pour effet de contrôler que l'utilisateur courant n'a pas une fiche à remplir dans
@@ -74,8 +73,8 @@ public class LoginFilter implements Filter {
     /*
      * Retrieve main session controller
      */
-    MainSessionController mainSessionCtrl = (MainSessionController) session
-        .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+    MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute(
+        MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 
     /*
      * If no main session controller, forward user to timeout page
@@ -94,25 +93,25 @@ public class LoginFilter implements Filter {
     else {
       String userId = mainSessionCtrl.getUserId();
       try {
-        Admin admin = new Admin();
-        CompoSpace[] availableInstances = admin.getCompoForUser(userId, "whitePages");
+        CompoSpace[] availableInstances = AdminReference.getAdminService().getCompoForUser(userId, "whitePages");
 
         for (int i = 0; i < availableInstances.length; i++) {
           String instanceId = availableInstances[i].getComponentId();
 
           /* Retrieve component */
-          ComponentInst instance = admin.getComponentInst(instanceId);
+          ComponentInst instance = AdminReference.getAdminService().getComponentInst(instanceId);
 
           /* Is user is administrator for that instance */
           boolean userIsAdmin = false;
-          String[] activeProfiles = admin.getCurrentProfiles(userId, instance);
+          String[] activeProfiles = AdminReference.getAdminService().getCurrentProfiles(userId,
+              instance);
           for (int j = 0; j < activeProfiles.length; j++) {
-            if (activeProfiles[j].equals("admin"))
+            if ("admin".equals(activeProfiles[j]))
               userIsAdmin = true;
           }
 
           /* Is forcedCardFilling parameter turned on */
-          String forcedCardFilling = admin.getComponentParameterValue(
+          String forcedCardFilling = AdminReference.getAdminService().getComponentParameterValue(
               instanceId, "isForcedCardFilling");
           boolean isForcedCardFilling = ((forcedCardFilling != null) && (forcedCardFilling
               .equals("yes")));
@@ -123,8 +122,7 @@ public class LoginFilter implements Filter {
           if (isForcedCardFilling && !userIsAdmin) {
             CardManager cardManager = CardManager.getInstance();
             Card userCard = cardManager.getUserCard(userId, instanceId);
-            if ((userCard == null)
-                || (!cardManager.isPublicationClassifiedOnPDC(userCard))) {
+            if ((userCard == null) || (!cardManager.isPublicationClassifiedOnPDC(userCard))) {
               session.setAttribute(ATTRIBUTE_COMPONENT_ID, instanceId);
               session.setAttribute(ATTRIBUTE_FORCE_CARD_CREATION, instanceId);
               break;

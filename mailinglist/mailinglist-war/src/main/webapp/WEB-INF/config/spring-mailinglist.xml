@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -13,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,37 +26,22 @@
 -->
 
 <beans xmlns="http://www.springframework.org/schema/beans"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-  <bean id="servicesFactory" name="servicesFactory"
-    class="com.silverpeas.mailinglist.service.ServicesFactory"
-    factory-method="getInstance" />
-
-  <bean id="mailingListService" name="mailingListService"
-    class="com.silverpeas.mailinglist.service.model.MailingListServiceImpl">
-    <property name="mailingListDao" ref="mailingListDao" />
-    <property name="organizationController" ref="organizationController" />
-  </bean>
+  <context:annotation-config/>
+  <context:component-scan base-package="com.silverpeas.mailinglist.service.model"/>
 
   <bean id="messageService" name="messageService"
-    class="com.silverpeas.mailinglist.service.model.MessageServiceImpl">
-    <property name="calendarBm" ref="calendarBm" />
-    <property name="messageDao" ref="messageDao" />
+        class="com.silverpeas.mailinglist.service.model.MessageServiceImpl">
     <property name="elementsPerPage" value="10" />
   </bean>
 
-  <bean id="mailingListDao" name="mailingListDao"
-    class="com.silverpeas.mailinglist.service.model.dao.MailingListDaoImpl">
-    <property name="sessionFactory" ref="sessionFactory" />
-  </bean>
-
-  <bean id="messageDao"
-    class="com.silverpeas.mailinglist.service.model.dao.MessageDaoImpl">
-    <property name="sessionFactory" ref="sessionFactory" />
-  </bean>
-
-  <bean id="organizationController" name="organizationController"
-    class="com.stratelia.webactiv.beans.admin.OrganizationController" />
+  <bean id="servicesFactory" name="servicesFactory"
+        class="com.silverpeas.mailinglist.service.ServicesFactory"
+        factory-method="getFactory" />
 
 </beans>

@@ -1,3 +1,4 @@
+<%@page import="com.silverpeas.util.EncodeHelper"%>
 <%!
 String displayPath(YellowpagesSessionController Scc, Collection path, boolean linked, int beforeAfter) {
       String linkedPathString = new String();
@@ -11,16 +12,16 @@ String displayPath(YellowpagesSessionController Scc, Collection path, boolean li
       while (iterator.hasNext()) {
             NodeDetail nodeInPath = (NodeDetail) iterator.next();
             if ((i <= beforeAfter) || (i + beforeAfter >= nbItemInPath - 1)){
-				nodeName = Encode.javaStringToHtmlString(nodeInPath.getName());
+				nodeName = EncodeHelper.javaStringToHtmlString(nodeInPath.getName());
 				bundleName = Scc.getString(nodeName);
-				// Vérifie que le nom n'est pas Corbeille
+				// Vï¿½rifie que le nom n'est pas Corbeille
 				if (bundleName != null){
 					nodeName = bundleName;
 				}
 			if (nodeInPath.getNodePK().getId().equals("0"))
-				nodeName = Encode.javaStringToHtmlString(Scc.getComponentLabel());
+				nodeName = EncodeHelper.javaStringToHtmlString(Scc.getComponentLabel());
 				linkedPathString += "<a href=\"javascript:onClick=topicGoTo('"+nodeInPath.getNodePK().getId()+"')\">"+nodeName+"</a>";
-                pathString += Encode.javaStringToHtmlString(nodeInPath.getName());
+                pathString += EncodeHelper.javaStringToHtmlString(nodeInPath.getName());
                 if (iterator.hasNext()) {
                       linkedPathString += " > ";
                       pathString += " > ";
@@ -106,7 +107,7 @@ TopicDetail displayTopicsToAdmin(YellowpagesSessionController yellowpagesScc, St
 		                folder.setProperties(resources.getIcon("yellowpages.folder"), "", link);
 	                	
 	                	Icon expleIcon1 = actionPane.addIcon();
-						expleIcon1.setProperties(resources.getIcon("yellowpages.update"), yellowpagesScc.getString("ModifierSousTheme")+" '"+Encode.javaStringToHtmlString(childName)+"'", "javascript:onClick=topicUpdate('"+childId+"')");
+						expleIcon1.setProperties(resources.getIcon("yellowpages.update"), yellowpagesScc.getString("ModifierSousTheme")+" '"+Encode.javaStringToHtmlString(childName)+"'", "javascript:onClick=toAddOrUpdateFolder('ToUpdateFolder', '"+childId+"')");
 						Icon expleIcon2 = actionPane.addIcon();
 						expleIcon2.setProperties(resources.getIcon("yellowpages.delete"),  yellowpagesScc.getString("SupprimerSousTheme")+" '"+Encode.javaStringToHtmlString(childName)+"'", "javascript:onClick=topicDeleteConfirm('"+childId+"', '"+Encode.javaStringToHtmlString(Encode.javaStringToJsString(childName))+"')");
 	                }
@@ -132,60 +133,5 @@ TopicDetail displayTopicsToAdmin(YellowpagesSessionController yellowpagesScc, St
 
 TopicDetail displayTopicsToUsers(YellowpagesSessionController yellowpagesScc, String id, String separator,String profile,GraphicElementFactory gef, PageContext pageContext, javax.servlet.ServletRequest request, javax.servlet.http.HttpSession session, ResourcesWrapper resources, JspWriter out) throws IOException, Exception {
       return displayTopicsToAdmin(yellowpagesScc, id, separator, gef, pageContext, request, session, resources, out, false);
-}
-
-TopicDetail displaySimpleTopicsToUsers(YellowpagesSessionController yellowpagesScc, String id, JspWriter out) throws IOException, Exception  {
-      TopicDetail CurrentTopic = yellowpagesScc.getTopic(id);
-      NodeDetail nodeDetail = CurrentTopic.getNodeDetail();
-      String nodeName = Encode.javaStringToHtmlString(nodeDetail.getName());
-
-        out.println("<select name=\"selectSimpleTopic\" onChange=\"simpleTopicGoToSelected()\">");
-        out.println("<option value=\""+nodeDetail.getNodePK().getId()+"\" selected>"+nodeName+"</option>");
-    if (nodeDetail.getChildrenNumber() > 0 ) {
-        boolean peer = true;
-        NodeDetail node = null;
-        String childId;
-        String childName;
-        int nbContact;
-        Collection nodes = (Collection) nodeDetail.getChildrenDetails();
-        Iterator iteratorN = nodes.iterator();
-        Collection nbContactByTopic = CurrentTopic.getNbContactByTopic();
-        Iterator iteratorNbContact = nbContactByTopic.iterator();
-        while (iteratorN.hasNext()) {
-            node = (NodeDetail) iteratorN.next();
-            nbContact = -1;
-            if (iteratorNbContact.hasNext())
-                nbContact = ((Integer) iteratorNbContact.next()).intValue();
-            childId = node.getNodePK().getId(); 
-            childName = node.getName();
-            switch (new Integer(childId).intValue()){
-              case 1 : //Basket -- Do not display the basket in the list
-                    break;
-              case 2 : //DZ -- Do Not display the DZ in the list
-                    break;
-              default : //Others
-                out.println("<option value=\""+childId+"\">&nbsp;-&nbsp;"+Encode.javaStringToHtmlString(childName)+"</option>");
-                    break;
-            } //fin du switch
-          } //fin du while   
-    }
-        out.println("</select>");
-        return null;
-}
-
-NodePK addTopic(YellowpagesSessionController yellowpagesScc, String name, String description, JspWriter out) throws Exception {
-	TopicDetail CurrentTopic=yellowpagesScc.getCurrentTopic();
-   	NodeDetail topic = new NodeDetail("X",name,description,null,null,CurrentTopic.getNodeDetail().getPath(),new Integer(CurrentTopic.getNodeDetail().getLevel()+1).toString(),"X");
-    return yellowpagesScc.addSubTopic(topic);
-}
-
-NodePK updateTopic(YellowpagesSessionController yellowpagesScc, String id, String name, String description, String modelId, JspWriter out) throws Exception {        
-	TopicDetail CurrentTopic=yellowpagesScc.getCurrentTopic();
-    NodeDetail topic = new NodeDetail(id,name,description,null,null,CurrentTopic.getNodeDetail().getPath()+"/",CurrentTopic.getNodeDetail().getLevel()+1,"X",modelId, null,null);
-    return yellowpagesScc.updateTopicHeader(topic);
-}
-
-void removeTopic(YellowpagesSessionController yellowpagesScc, String id, JspWriter out) throws Exception  {
-    yellowpagesScc.deleteTopic(id);
 }
 %>

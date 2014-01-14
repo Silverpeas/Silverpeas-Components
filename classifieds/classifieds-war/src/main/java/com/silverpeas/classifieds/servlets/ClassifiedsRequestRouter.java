@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,21 +23,19 @@
  */
 package com.silverpeas.classifieds.servlets;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.silverpeas.classifieds.control.ClassifiedsRole;
 import com.silverpeas.classifieds.control.ClassifiedsSessionController;
 import com.silverpeas.classifieds.servlets.handler.HandlerProvider;
 import com.silverpeas.look.LookHelper;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import javax.servlet.http.HttpServletRequest;
 
-public class ClassifiedsRequestRouter extends ComponentRequestRouter {
-  
-  private static final long serialVersionUID = -4872776979680116068L;  
+public class ClassifiedsRequestRouter extends ComponentRequestRouter<ClassifiedsSessionController> {
+
+  private static final long serialVersionUID = -4872776979680116068L;
 
   /**
    * This method has to be implemented in the component request rooter class. returns the session
@@ -50,13 +48,14 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter {
 
   /**
    * Method declaration
+   *
    * @param mainSessionCtrl
    * @param componentContext
    * @return
    * @see
    */
   @Override
-  public ComponentSessionController createComponentSessionController(
+  public ClassifiedsSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new ClassifiedsSessionController(mainSessionCtrl, componentContext);
   }
@@ -64,22 +63,22 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
-   * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialised.
-   * @return The complete destination URL for a forward (ex :
-   * "/almanach/jsp/almanach.jsp?flag=user")
+   *
+   * @param function      The entering request function (ex : "Main.jsp")
+   * @param classifiedsSC The component Session Control, build and initialised.
+   * @return The complete destination URL for a forward (ex : "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
-  public String getDestination(String function, ComponentSessionController componentSC,
+  public String getDestination(String function, ClassifiedsSessionController classifiedsSC,
       HttpServletRequest request) {
     String destination = "";
     String rootDest = "/classifieds/jsp/";
-    ClassifiedsSessionController classifiedsSC = (ClassifiedsSessionController) componentSC;
     SilverTrace.info("classifieds", "classifiedsRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + componentSC.getUserId() + " Function=" + function);
+        "root.MSG_GEN_PARAM_VALUE", "User=" + classifiedsSC.getUserId() + " Function=" + function);
 
     // Common parameters
-    ClassifiedsRole highestRole = (isAnonymousAccess(request)) ? ClassifiedsRole.ANONYMOUS : ClassifiedsRole.getRole(classifiedsSC.getUserRoles());
+    ClassifiedsRole highestRole = (isAnonymousAccess(request)) ? ClassifiedsRole.ANONYMOUS :
+        ClassifiedsRole.getRole(classifiedsSC.getUserRoles());
     String userId = classifiedsSC.getUserId();
 
     // Store them in request as attributes
@@ -92,19 +91,25 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter {
     SilverTrace.debug("classifieds", "classifiedsRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "Profile=" + highestRole);
 
-    // Delegate to specific Handler
-    FunctionHandler handler = HandlerProvider.getHandler(function);
-    if (handler != null) {
-      destination = handler.computeDestination(classifiedsSC, request);
-    }
-    else {
-      destination = rootDest + function;
+    try {
+      // Delegate to specific Handler
+      FunctionHandler handler = HandlerProvider.getHandler(function);
+      if (handler != null) {
+        destination = handler.computeDestination(classifiedsSC, request);
+      } else {
+        destination = rootDest + function;
+      }
+    } catch (Exception e) {
+      request.setAttribute("javax.servlet.jsp.jspException", e);
+      return "/admin/jsp/errorpageMain.jsp";
     }
 
     SilverTrace.info("classifieds", "classifiedsRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
     return destination;
   }
+  
+ 
 
   private boolean isAnonymousAccess(HttpServletRequest request) {
     LookHelper lookHelper = (LookHelper) request.getSession().getAttribute(LookHelper.SESSION_ATT);

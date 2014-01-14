@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,20 +24,17 @@
 
 package com.stratelia.silverpeas.chat.servlets;
 
-import jChatBox.Chat.ChatroomManager;
-
-import java.util.Vector;
-
-import javax.servlet.http.HttpServletRequest;
-
 import com.stratelia.silverpeas.chat.control.ChatSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import jChatBox.Chat.ChatroomManager;
 
-public class ChatRequestRouter extends ComponentRequestRouter {
+import javax.servlet.http.HttpServletRequest;
+import java.util.Vector;
+
+public class ChatRequestRouter extends ComponentRequestRouter<ChatSessionController> {
 
   private Vector listChatroom = new Vector();
   private Vector listBanned = new Vector();
@@ -47,10 +44,12 @@ public class ChatRequestRouter extends ComponentRequestRouter {
     int i;
 
     for (i = 0; i < profiles.length; i++) {
-      if (profiles[i].equals("admin"))
+      if (profiles[i].equals("admin")) {
         return profiles[i];
-      if (profiles[i].equals("publisher"))
+      }
+      if (profiles[i].equals("publisher")) {
         return profiles[i];
+      }
     }
     return flag;
   }
@@ -59,7 +58,7 @@ public class ChatRequestRouter extends ComponentRequestRouter {
     return "chat";
   }
 
-  public ComponentSessionController createComponentSessionController(
+  public ChatSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new ChatSessionController(mainSessionCtrl, componentContext,
         "com.stratelia.silverpeas.chat.multilang.chatBundle",
@@ -67,10 +66,9 @@ public class ChatRequestRouter extends ComponentRequestRouter {
   }
 
   public String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request) {
+      ChatSessionController chatSC, HttpServletRequest request) {
     SilverTrace.debug("chat", "ChatRequestRouter.getDestination()",
         "root.MSG_GEN_ENTER_METHOD", "function = " + function);
-    ChatSessionController chatSC = (ChatSessionController) componentSC;
 
     String flag = getFlag(chatSC.getUserRoles());
     String destination = "";
@@ -84,22 +82,25 @@ public class ChatRequestRouter extends ComponentRequestRouter {
       request.setAttribute("chat_fullName", chat_fullName);
 
       // Set a value if current user is publisher (can notify peoples)
-      if (flag.equals("publisher"))
+      if (flag.equals("publisher")) {
         request.setAttribute("chat_isPublisher", "yes");
-      else
+      } else {
         request.setAttribute("chat_isPublisher", "no");
+      }
 
       // Set a value if current user is admin
-      if (flag.equals("admin"))
+      if (flag.equals("admin")) {
         request.setAttribute("chat_isAdmin", "yes");
-      else
+      } else {
         request.setAttribute("chat_isAdmin", "no");
+      }
 
       // Set flag for PdC usage
-      if (chatSC.isPdcUsed())
+      if (chatSC.isPdcUsed()) {
         request.setAttribute("isPdcUsed", "yes");
-      else
+      } else {
         request.setAttribute("isPdcUsed", "no");
+      }
 
       // Redirect to the correct first page when user click on the domain's
       // barre

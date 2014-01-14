@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,6 +28,7 @@ import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordTemplate;
+import com.silverpeas.form.fieldType.TextField;
 import com.silverpeas.form.record.GenericFieldTemplate;
 import com.stratelia.webactiv.util.ResourceLocator;
 
@@ -81,10 +82,14 @@ public class QuestionTemplate implements RecordTemplate {
     fieldTemplate = new GenericFieldTemplate(fieldName, "text");
     fieldTemplate.addLabel(label.getString("processManager." + fieldName),
         language);
-    fieldTemplate.setDisplayerName("textarea");
-    fieldTemplate.setMandatory(true);
-    fieldTemplate.setReadOnly(readonly);
-
+    if (readonly) {
+      fieldTemplate.setDisplayerName("simpletext");
+    } else {
+      fieldTemplate.setDisplayerName("textarea");
+      fieldTemplate.setMandatory(true);
+      fieldTemplate.setReadOnly(readonly);
+      fieldTemplate.addParameter(TextField.PARAM_MAXLENGTH, "500");
+    }
     return fieldTemplate;
   }
 

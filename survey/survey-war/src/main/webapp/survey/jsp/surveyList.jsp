@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -51,8 +51,10 @@
 
 <c:set var="isPolling" value="${requestScope['PollingStationMode']}" />
 <fmt:message var="surveyConfirmUpdateLabel" key="survey.confirmUpdateSurvey" />
+<fmt:message var="surveyConfirmDeleteLabel" key="ConfirmDeleteSurvey" />
 <c:if test="${isPolling}">
   <fmt:message var="surveyConfirmUpdateLabel" key="survey.confirmUpdatePoll"/>
+  <fmt:message var="surveyConfirmDeleteLabel" key="ConfirmDeletePollingStation"/>
 </c:if>
 
 <%!String lockSrc = "";
@@ -116,7 +118,7 @@
           ArrayCellText arrayCellText0 =
               arrayLine
               .addArrayCellText("<a href=\"surveyDetail.jsp?Action=ViewCurrentQuestions&SurveyId=" +
-              survey.getPK().getId() + "\">" + survey.getTitle() + "</a>" + link);
+              survey.getPK().getId() + "\">" + EncodeHelper.javaStringToHtmlString(survey.getTitle()) + "</a>" + link);
           arrayCellText0.setCompareOn(survey.getTitle());
 
           if (survey.getEndDate() == null)
@@ -172,7 +174,7 @@
           ArrayCellText arrayCellText =
               arrayLine
               .addArrayCellText("<a href=\"surveyDetail.jsp?Action=ViewCurrentQuestions&SurveyId=" +
-              survey.getPK().getId() + "\">" + survey.getTitle() + "</a>" + link);
+              survey.getPK().getId() + "\">" + EncodeHelper.javaStringToHtmlString(survey.getTitle()) + "</a>" + link);
           arrayCellText.setCompareOn(survey.getTitle());
 
           if (survey.getBeginDate() == null) {
@@ -259,7 +261,7 @@
           ArrayCellText arrayCellText0 =
               arrayLine
               .addArrayCellText("<a href=\"surveyDetail.jsp?Action=ViewCurrentQuestions&SurveyId=" +
-              survey.getPK().getId() + "\">" + survey.getTitle() + "</a>" + link);
+              survey.getPK().getId() + "\">" + EncodeHelper.javaStringToHtmlString(survey.getTitle()) + "</a>" + link);
           arrayCellText0.setCompareOn(survey.getTitle());
 
           if (survey.getEndDate() == null)
@@ -275,7 +277,7 @@
               arrayLine.addArrayCellText(new Integer(survey.getNbVoters()).toString());
           arrayCellText2.setCompareOn(new Integer(survey.getNbVoters()));
         } else {
-          arrayLine.addArrayCellLink(survey.getTitle(), "#");
+          arrayLine.addArrayCellLink(EncodeHelper.javaStringToHtmlString(survey.getTitle()), "#");
 
           if (survey.getBeginDate() == null)
             arrayLine.addArrayCellText("&nbsp;");
@@ -315,9 +317,9 @@
   pdcUtilizationSrc = iconsPath + "/pdcPeas/jsp/icons/pdcPeas_paramPdc.gif";
   linkSrc = iconsPath + "/util/icons/link.gif";
   if (pollingStationMode) {
-    addSurveySrc = iconsPath + "/util/icons/polling_to_add.gif";
+    addSurveySrc = iconsPath + "/util/icons/create-action/add-polling.png";
   } else {
-    addSurveySrc = iconsPath + "/util/icons/survey_to_add.gif";
+    addSurveySrc = iconsPath + "/util/icons/create-action/add-survey.png";
   }
 
   //Update space
@@ -352,12 +354,14 @@
   surveyScc.removeSessionSurvey();
   surveyScc.removeSessionResponses();
 %>
-<html>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
 <view:looknfeel />
 <script type="text/javascript" src="<%=iconsPath%>/util/javaScript/animation.js"></script>
-<script language="javascript1.2">
+<script type="text/javascript">
 function viewOpenedSurveys() {
   document.surveysForm.Action.value = "ViewOpenedSurveys";
   document.surveysForm.submit();
@@ -383,7 +387,7 @@ function createPollingStation() {
 	}
 
 function deleteSurvey(surveyId, name) {
-  if(window.confirm("<%=EncodeHelper.javaStringToJsString(resources.getString("ConfirmDeleteSurvey"))%> '" + name + "' ?")){
+  if(window.confirm("<view:encodeJs string="${surveyConfirmDeleteLabel}" /> '" + name + "' ?")){
       document.surveysForm.Action.value = "DeleteSurvey";
       document.surveysForm.SurveyId.value = surveyId;
       document.surveysForm.submit();
@@ -402,7 +406,7 @@ function updateSurvey(surveyId, name, nbVotes)
 }
 
 function clipboardPaste() {     
-	  top.IdleFrame.document.location.replace('../..<%=URLManager.getURL(URLManager.CMP_CLIPBOARD)%>paste?compR=RSurvey&SpaceFrom=<%=spaceId%>&ComponentFrom=<%=componentId%>&JSPPage=<%=response.encodeURL(URLEncoder.encode("surveyList", "UTF-8"))%>&TargetFrame=MyMain&message=REFRESH');
+	  top.IdleFrame.document.location.replace('../..<%=URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null)%>paste?compR=RSurvey&SpaceFrom=<%=spaceId%>&ComponentFrom=<%=componentId%>&JSPPage=<%=response.encodeURL(URLEncoder.encode("surveyList", "UTF-8"))%>&TargetFrame=MyMain&message=REFRESH');
 	}
 
 function openSPWindow(fonction, windowName){
@@ -410,7 +414,6 @@ function openSPWindow(fonction, windowName){
 }
 </script>
 </head>
-
 <body>
 <%
   Window window = gef.getWindow();
@@ -419,29 +422,33 @@ function openSPWindow(fonction, windowName){
   browseBar.setDomainName(surveyScc.getSpaceLabel());
   browseBar.setComponentName(surveyScc.getComponentLabel(), "surveyList.jsp");
 
-  if (profile.equals("admin") || profile.equals("publisher")) {
+  if (SilverpeasRole.admin.toString().equals(profile) || 
+    SilverpeasRole.publisher.toString().equals(profile)) {
     OperationPane operationPane = window.getOperationPane();
-    if (profile.equals("admin") && surveyScc.isPdcUsed()) {
+    if (SilverpeasRole.admin.toString().equals(profile) &&
+        surveyScc.isPdcUsed()) {
       operationPane.addOperation(pdcUtilizationSrc, resources.getString("GML.PDC"),
           "javascript:openSPWindow('" + m_context + "/RpdcUtilization/jsp/Main?ComponentId=" +
           surveyScc.getComponentId() + "','utilizationPdc1')");
       operationPane.addLine();
     }
     if (pollingStationMode) {
-      operationPane.addOperation(addSurveySrc, resources.getString("PollingStationNewVote"),
+      operationPane.addOperationOfCreation(addSurveySrc, resources.getString("PollingStationNewVote"),
           "javaScript:createPollingStation()");
     } else {
-      operationPane.addOperation(addSurveySrc, resources.getString("SurveyNewSurvey"),
+      operationPane.addOperationOfCreation(addSurveySrc, resources.getString("SurveyNewSurvey"),
           "javaScript:createSurvey()");
     }
     operationPane.addOperation(resources.getIcon("survey.paste"), resources
         .getString("GML.paste"), "javascript:onClick=clipboardPaste()");
   }
-
-  String bodyPart = "";
-
+  
+  out.println(window.printBefore());
+%>
+<view:areaOfOperationOfCreation/>
+<%
   int view = surveyScc.getViewType();
-  Collection surveys = surveyScc.getSurveys();
+  Collection<QuestionContainerHeader> surveys = surveyScc.getSurveys();
 
   TabbedPane tabbedPane = gef.getTabbedPane();
   tabbedPane.addTab(resources.getString("SurveyOpened"),
@@ -453,46 +460,45 @@ function openSPWindow(fonction, windowName){
   tabbedPane.addTab(resources.getString("SurveyInWait"),
       "javaScript:onClick=viewInWaitSurveys()",
       (view == SurveySessionController.INWAIT_SURVEYS_VIEW));
-
-  bodyPart += tabbedPane.print();
-
-  Frame frame = gef.getFrame();
-
+  
+  out.println(tabbedPane.print());
+%>
+<view:frame>
+<table cellpadding="0" cellspacing="0" border="0" width="98%"><tr><td>
+<%
   ArrayPane arrayPane = null;
-  if (profile.equals("admin") || profile.equals("publisher")) {
+  if (SilverpeasRole.admin.toString().equals(profile) || 
+        SilverpeasRole.publisher.toString().equals(profile)) {
     arrayPane =
         buildSurveyArrayToAdmin(gef, surveyScc, view, surveys, resources, request, session, pollingStationMode);
   } else {
     arrayPane =
         buildSurveyArrayToUser(gef, surveyScc, view, surveys, resources, request, session, pollingStationMode);
   }
-
-  //Retrieve array in the top corner           
-  frame.addTop("<center><table cellpadding=0 cellspacing=0 border=0 width='98%'><tr><td>" +
-      arrayPane.print() + "</td></tr></table></center>");
-
-  bodyPart += frame.print();
-
-  window.addBody(bodyPart);
-  out.println(window.print());
+  out.println(arrayPane.print());
+%>
+</td></tr></table>
+</view:frame>
+<%
+  out.println(window.printAfter());
 %>
 
 <form name="surveysForm" action="surveyList.jsp" method="post">
-  <input type="hidden" name="Action" value=""> 
-  <input type="hidden" name="SurveyId" value="">
+  <input type="hidden" name="Action" value=""/> 
+  <input type="hidden" name="SurveyId" value=""/>
 </form>
 
 <form name="updateForm" action="UpdateSurvey" method="post">
-  <input type="hidden" name="Action" value=""> 
-  <input type="hidden" name="SurveyId" value="">
+  <input type="hidden" name="Action" value=""/> 
+  <input type="hidden" name="SurveyId" value=""/>
 </form>
 
 <form name="newSurveyForm" action="surveyCreator.jsp" method="post">
-  <input type="hidden" name="Action" value="">
+  <input type="hidden" name="Action" value=""/>
 </form>
 
 <form name="newPollingStationForm" action="pollCreator.jsp" method="post" enctype="multipart/form-data">
-  <input type="hidden" name="Action" value="">
+  <input type="hidden" name="Action" value=""/>
 </form>
 
 </body>

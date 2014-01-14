@@ -35,18 +35,17 @@
     <c:if test="${rssUrl ne null and not empty rssUrl}">
       <link rel="alternate" type="application/rss+xml" title="<c:out value='${componentLabel}'/> : <fmt:message key='almanach.rssNext'/>" href="<c:url value='${rssUrl}'/>"/>
     </c:if>
-    <link rel='stylesheet' type='text/css' href="<c:url value='/util/styleSheets/jquery/fullcalendar.css'/>" />
     <link rel='stylesheet' type='text/css' href="<c:url value='/almanach/jsp/styleSheets/almanach.css'/>" />
     <style type="text/css">
       <c:out value=".${instanceId} { border-color: ${calendarView.almanach.color}; color: ${calendarView.almanach.color}; }"/>
-      <c:out value=".${instanceId} .fc-event-skin { background-color: ${calendarView.almanach.color}; border-color: ${calendarView.almanach.color}; color: white; }"/>
+      <c:out value=" .fc-event.${instanceId} { background-color: ${calendarView.almanach.color}; border-color: ${calendarView.almanach.color}; color: white; }"/>
       <c:forEach var="almanach" items="${othersAlmanachs}">
         <c:out value=".${almanach.instanceId} { border-color: ${almanach.color}; color: ${almanach.color}; }"/>
-        <c:out value=".${almanach.instanceId} .fc-event-skin { background-color: ${almanach.color}; border-color: ${almanach.color}; color: white; }"/>
+        <c:out value=".fc-event.${almanach.instanceId} { background-color: ${almanach.color}; border-color: ${almanach.color}; color: white; }"/>
       </c:forEach>
     </style>
     <script type="text/javascript" src="<c:url value='/util/javaScript/animation.js'/>"></script>
-    <script type="text/javascript" src="<c:url value='/util/javaScript/jquery/fullcalendar.min.js'/>"></script>
+    <view:includePlugin name="calendar"/>
     <script type="text/javascript">
       <!--
 
@@ -97,7 +96,7 @@
 
       function clickDay(day){
         flag = "<c:out value='${flag}'/>";
-        if(flag == "publisher" || flag == "admin")
+        if(flag === "publisher" || flag === "admin")
           addEvent(day);
       }
 
@@ -164,7 +163,7 @@
           if (myForm.chk_allalmanach)
             newState = myForm.chk_allalmanach.checked;
 
-          if (myForm.chk_almanach.length == null)
+          if (myForm.chk_almanach.length === undefined || myForm.chk_almanach.length === 0)
           {
             myForm.chk_almanach.checked = true;
           }
@@ -188,51 +187,41 @@
 
           // page is now ready, initialize the calendar...
 
-          $('#calendar').fullCalendar({
-            header: false,
-            // put your options and callbacks here
-            monthNames: ['<fmt:message key="GML.mois0"/>', '<fmt:message key="GML.mois1"/>', '<fmt:message key="GML.mois2"/>', '<fmt:message key="GML.mois3"/>',
-              '<fmt:message key="GML.mois4"/>', '<fmt:message key="GML.mois5"/>', '<fmt:message key="GML.mois6"/>', '<fmt:message key="GML.mois7"/>',
-              '<fmt:message key="GML.mois8"/>', '<fmt:message key="GML.mois9"/>', '<fmt:message key="GML.mois10"/>', '<fmt:message key="GML.mois11"/>'],
-            dayNames: ['<fmt:message key="GML.jour1"/>', '<fmt:message key="GML.jour2"/>', '<fmt:message key="GML.jour3"/>', '<fmt:message key="GML.jour4"/>',
-              '<fmt:message key="GML.jour5"/>', '<fmt:message key="GML.jour6"/>', '<fmt:message key="GML.jour7"/>'],
-            dayNamesShort: ['<fmt:message key="GML.shortJour1"/>', '<fmt:message key="GML.shortJour2"/>', '<fmt:message key="GML.shortJour3"/>',
-              '<fmt:message key="GML.shortJour4"/>', '<fmt:message key="GML.shortJour5"/>', '<fmt:message key="GML.shortJour6"/>', '<fmt:message key="GML.shortJour7"/>'],
-            buttonText: {
-              prev:     '&nbsp;&#9668;&nbsp;',  // left triangle
-              next:     '&nbsp;&#9658;&nbsp;',  // right triangle
-              prevYear: '&nbsp;&lt;&lt;&nbsp;', // <<
-              nextYear: '&nbsp;&gt;&gt;&nbsp;', // >>
-              today:    "${today}",
-              month:    '<fmt:message key="GML.month"/>',
-              week:     '<fmt:message key="GML.week"/>',
-              day:      '<fmt:message key="GML.day"/>'
-            },
-            minHour: 8,
-            allDayText: '',
-            allDayDefault: false,
-            ignoreTimezone: false,
-            timeFormat: 'HH:mm{ - HH:mm}',
-            axisFormat: 'HH:mm',
-            columnFormat: { agendaWeek: 'ddd d' },
-            firstDay: <c:out value='${calendarView.firstDayOfWeek - 1}' />,
-            defaultView: "<c:out value='${calendarView.viewType}'/>",
-            dayClick: function(date, allDay, jsEvent, view) {
-              var dayDate = $.fullCalendar.formatDate(date, "yyyy-MM-dd'T'HH:mm");
-              clickDay(dayDate);
-            },
-            eventClick: function(calEvent, jsEvent, view) {
-              var eventDate = $.fullCalendar.formatDate(calEvent.start, "yyyy/MM/dd");
-              clickEvent(calEvent.id, eventDate, calEvent.instanceId);
-            },
-            events: <c:out value='${calendarView.eventsInJSON}' escapeXml='yes'/>
-      <c:if test='${not calendarView.weekendVisible}'>
-            , weekends: false
-      </c:if>
+          var currentDay = new Date();
+          currentDay.setDate(${currentDay.dayOfMonth});
+          currentDay.setFullYear(${currentDay.year});
+          currentDay.setMonth(${currentDay.month});
+
+        // page is now ready, initialize the calendar...
+        <c:if test='${not calendarView.viewType.nextEventsView}'>
+          $("#calendar").calendar({
+            view: "${fn:toLowerCase(calendarView.viewType.name)}",
+            weekends: ${calendarView.weekendVisible},
+            firstDayOfWeek: ${calendarView.firstDayOfWeek},
+            currentDate: currentDay,
+            events: <c:out value='${calendarView.eventsInJSON}' escapeXml='yes'/>,
+            onday: clickDay,
+            onevent: function(event) {
+              var eventDate = $.fullCalendar.formatDate(event.start, "yyyy/MM/dd");
+              clickEvent(event.id, eventDate, event.instanceId);
+            }
           });
 
-          $('#calendar').fullCalendar('gotoDate', <c:out value="${currentDay.year}"/>, <c:out value="${currentDay.month}"/>, <c:out value="${currentDay.dayOfMonth}"/>)
-
+          $(window).keydown(function(e){
+            var keyCode = eval(e.keyCode);
+            if (37 === keyCode || keyCode === 39) {
+              e.preventDefault();
+              if (37 === keyCode) {
+                // Previous
+                previousView();
+              } else if (39 === keyCode) {
+                // Next
+                nextView();
+              }
+              return false;
+            }
+          });
+        </c:if>
         });
         
         -->
@@ -253,7 +242,7 @@
         <fmt:message key="creerEvenement" var="opLabel" />
         <fmt:message key="almanach.icons.addEvent" var="opIcon" bundle="${icons}"/>
         <c:url var="opIcon" value="${opIcon}"/>
-        <view:operation altText="${opLabel}" icon="${opIcon}" action="javascript:onClick=addEvent('')"/>
+        <view:operationOfCreation altText="${opLabel}" icon="${opIcon}" action="javascript:onClick=addEvent('')"/>
         <view:operationSeparator/>
       </c:if>
 
@@ -295,6 +284,8 @@
     </view:operationPane>
 
     <view:window>
+    
+    <view:areaOfOperationOfCreation/>
 
       <view:tabs>
         <fmt:message key="almanach.rssNext" var="opLabel" />
@@ -320,7 +311,7 @@
           
           <c:if test="${accessibleInstances ne null and not empty accessibleInstances}">
             <div id="others">
-              <select name="select" onchange="window.open(this.options[this.selectedIndex].value,'_self')" class="selectNS">
+              <select name="select" onchange="window.open(this.options[this.selectedIndex].value,'_self');" class="selectNS">
                 <c:forEach var="instance" items="${accessibleInstances}">
                   <c:set var="componentId" value="${instance.instanceId}"/>
                   <c:set var="selected" value=""/>
@@ -348,7 +339,7 @@
                     </tr><tr><td>&nbsp;</td>
                     </c:if>
                     <td>
-                      <input onclick="updateAgregation(<c:out value='${i}'/>)" type="checkbox" name="chk_almanach" <c:out value='${checked}'/> value="<c:out value='${otherAlmanach.instanceId}'/>"/>
+                      <input onclick="updateAgregation(<c:out value='${i}'/>);" type="checkbox" name="chk_almanach" <c:out value='${checked}'/> value="<c:out value='${otherAlmanach.instanceId}'/>"/>
                     </td>
                     <td>
                       <a class="almanach" href="<c:url value='/Ralmanach/${otherAlmanach.instanceId}/Main'/>">

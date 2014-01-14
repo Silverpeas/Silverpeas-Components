@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,14 +24,13 @@
 
 package com.stratelia.webactiv.kmelia.model.updatechain;
 
+import com.silverpeas.form.FormException;
+
+import javax.servlet.jsp.JspWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.List;
-
-import javax.servlet.jsp.JspWriter;
-
-import com.silverpeas.form.FormException;
 
 public class FieldUpdateChainDescriptor {
   private String type;
@@ -113,10 +112,10 @@ public class FieldUpdateChainDescriptor {
       throws IOException, FormException {
     StringWriter sw = new StringWriter();
     PrintWriter out = new PrintWriter(sw, true);
-    if (type.equals("text")) {
+    if ("text".equals(type)) {
       TextFieldDisplayer fieldDisplayer = new TextFieldDisplayer();
       fieldDisplayer.display(out, this, fieldsContext, mandatory);
-    } else if (type.equals("jdbc")) {
+    } else if ("jdbc".equals(type)) {
       JdbcFieldDisplayer fieldDisplayer = new JdbcFieldDisplayer();
       fieldDisplayer.display(out, this, fieldsContext, mandatory);
     }

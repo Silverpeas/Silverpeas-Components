@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,6 +25,7 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 
 <%!
@@ -93,7 +94,7 @@ ArrayLine fillArrayLine(ArrayLine arrayLine, TaskDetail task, String iconeLiaiso
 	}
 	
 	ArrayCellText cellNom = null;
-	if (task.getAttachments().size()>0)
+	if (!task.getAttachments().isEmpty())
 		cellNom = arrayLine.addArrayCellText(nom+"&nbsp<img src=\""+resource.getIcon("projectManager.attachedFile")+"\" border=\"0\" align=\"absmiddle\">");
 	else
 		cellNom = arrayLine.addArrayCellText(nom);
@@ -182,11 +183,10 @@ String imgCollapse 	= "<img src=\""+resource.getIcon("projectManager.treePlus")+
 String imgUnfold 	= "<img src=\""+resource.getIcon("projectManager.treeMinus")+"\">";
 %>
 
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<%
-	out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
@@ -271,14 +271,14 @@ function sendFilterData() {
 }
 </script>
 </head>
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+<body>
 <%
 browseBar.setDomainName(spaceLabel);
 browseBar.setComponentName(componentLabel, "Main");
 
 operationPane.addOperation(resource.getIcon("projectManager.exportTaches"), resource.getString("projectManager.Export"), "javaScript:exportTasks()");
 if ("admin".equals(role)) {
-	operationPane.addOperation(resource.getIcon("projectManager.addTache"), resource.getString("projectManager.CreerTache"), "ToAddTask");
+	operationPane.addOperationOfCreation(resource.getIcon("projectManager.addTache"), resource.getString("projectManager.CreerTache"), "ToAddTask");
 }
 
 out.println(window.printBefore());
@@ -286,17 +286,17 @@ out.println(window.printBefore());
 TabbedPane tabbedPane = gef.getTabbedPane();
 tabbedPane.addTab(resource.getString("projectManager.Projet"), "ToProject", false);
 tabbedPane.addTab(resource.getString("projectManager.Taches"), "Main", true);
-if ("admin".equals(role))
+if ("admin".equals(role)) {
 	tabbedPane.addTab(resource.getString("GML.attachments"), "ToAttachments", false);
+}
 tabbedPane.addTab(resource.getString("projectManager.Commentaires"), "ToComments", false);
 tabbedPane.addTab(resource.getString("projectManager.Gantt"), "ToGantt", false);
-if ("admin".equals(role))
+if ("admin".equals(role)) {
 	tabbedPane.addTab(resource.getString("projectManager.Calendrier"), "ToCalendar", false);
+}
 out.println(tabbedPane.print());
-
-out.println(frame.printBefore());
-
 %>
+<view:frame>
 <!---------------------------------------------------------------------------------->
 <!--------------------------- FILTRE ----------------------------------------------->
 <!---------------------------------------------------------------------------------->
@@ -308,38 +308,35 @@ out.println(frame.printBefore());
 			<table cellpadding=0 cellspacing=0 border=0 width="100%">
 				<tr>
 					<td class="intfdcolor" rowspan="2" nowrap width="100%">
-						<img border="0" src="<%=resource.getIcon("projectManager.px") %>" width="5">
+						<img border="0" src="<%=resource.getIcon("projectManager.px") %>" width="5"/>
 						<span class="txtNav"><%=resource.getString("projectManager.Filtre") %></span>
 					</td>
-					<td class="intfdcolor"><img border="0" height="10" src="<%=resource.getIcon("projectManager.px") %>"></td>
-					<td class="intfdcolor"><img border="0" height="10" src="<%=resource.getIcon("projectManager.px") %>"></td>
+					<td class="intfdcolor"><img border="0" height="10" src="<%=resource.getIcon("projectManager.px") %>"/></td>
+					<td class="intfdcolor"><img border="0" height="10" src="<%=resource.getIcon("projectManager.px") %>"/></td>
 				</tr>
 				<tr>
-					<td height="0" class="intfdcolor" align="right" valign="bottom"><img border="0" src="<%=resource.getIcon("projectManager.boxAngleLeft") %>"></td>
+					<td height="0" class="intfdcolor" align="right" valign="bottom"><img border="0" src="<%=resource.getIcon("projectManager.boxAngleLeft") %>"/></td>
 					<td align="center" valign="bottom" nowrap>
 					<%if (!filtreActif.booleanValue()) {
-						out.println("<a href=\"FilterShow\"><img border=\"0\" src=\""+resource.getIcon("projectManager.boxDown")+"\"></a>");
+						out.println("<a href=\"FilterShow\"><img border=\"0\" src=\""+resource.getIcon("projectManager.boxDown")+"\"/></a>");
 					}
 					else{
-						out.println("<a href=\"FilterHide\"><img border=\"0\" src=\""+resource.getIcon("projectManager.boxUp")+"\"></a>");
+						out.println("<a href=\"FilterHide\"><img border=\"0\" src=\""+resource.getIcon("projectManager.boxUp")+"\"/></a>");
 					}
 					%>
-					<img border="0" height="1" width="3" src="<%=resource.getIcon("projectManager.px") %>">
+					<img border="0" height="1" width="3" src="<%=resource.getIcon("projectManager.px") %>"/>
 					</td>
 				</tr>
 			</table>
-			<%
-				if (filtreActif.booleanValue()) 
-				{
-			%>
+			<% if (filtreActif.booleanValue()) { %>
 				<table cellpadding="5" cellspacing="0" border="0" width="100%">
 					<tr>
 						<td class="txtlibform"><%=resource.getString("projectManager.TacheNumero")%> <%=resource.getString("projectManager.Tache")%></td>
-						<td><%=resource.getString("projectManager.De")%> <input type="text" name="TaskFrom" size="6" value="<%=actionFrom%>"> <%=resource.getString("projectManager.A")%> <input type="text" name="TaskTo" size="6" value="<%=actionTo%>"></td>
+						<td><%=resource.getString("projectManager.De")%> <input type="text" name="TaskFrom" size="6" value="<%=actionFrom%>"/> <%=resource.getString("projectManager.A")%> <input type="text" name="TaskTo" size="6" value="<%=actionTo%>"/></td>
 					</tr>
 					<tr>
 						<td class="txtlibform"><%=resource.getString("projectManager.TacheNom")%> <%=resource.getString("projectManager.Tache")%></td>
-						<td><input type="text" name="TaskNom" size="60" value="<%=actionNom%>"></td>
+						<td><input type="text" name="TaskNom" size="60" value="<%=actionNom%>"/></td>
 					</tr>
 					<tr>
 						<td class="txtlibform"><%=resource.getString("projectManager.TacheStatut")%></td>
@@ -380,11 +377,11 @@ out.println(frame.printBefore());
 					</tr>
 					<tr>
 						<td class="txtlibform"><%=resource.getString("projectManager.TacheDateDebut")%></td>
-						<td><%=resource.getString("projectManager.Du")%> <input type="text" name="DateDebutFrom" size="12" maxlength="10" value="<%=dateDebutFrom%>">&nbsp;<a href="javascript:onClick=editDate(4)"><img src="<%=resource.getIcon("projectManager.calendrier")%>" border=0 valign=absmiddle align="middle" alt="<%=resource.getString("GML.viewCalendar")%>"></a>&nbsp;<span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)</span>&nbsp;&nbsp;&nbsp;&nbsp;<%=resource.getString("projectManager.Au")%> <input type="text" name="DateDebutTo" size="12" maxlength="10" value="<%=dateDebutTo%>">&nbsp;<a href="javascript:onClick=editDate(5)"><img src="<%=resource.getIcon("projectManager.calendrier")%>"  border=0 valign=absmiddle align="middle" alt="<%=resource.getString("GML.viewCalendar")%>"></a>&nbsp;<span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)</span></td>
+						<td><%=resource.getString("projectManager.Du")%> <input type="text" name="DateDebutFrom" size="12" maxlength="10" value="<%=dateDebutFrom%>"/>&nbsp;<a href="javascript:onClick=editDate(4)"><img src="<%=resource.getIcon("projectManager.calendrier")%>" border=0 valign=absmiddle align="middle" alt="<%=resource.getString("GML.viewCalendar")%>"/></a>&nbsp;<span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)</span>&nbsp;&nbsp;&nbsp;&nbsp;<%=resource.getString("projectManager.Au")%> <input type="text" name="DateDebutTo" size="12" maxlength="10" value="<%=dateDebutTo%>"/>&nbsp;<a href="javascript:onClick=editDate(5)"><img src="<%=resource.getIcon("projectManager.calendrier")%>"  border=0 valign=absmiddle align="middle" alt="<%=resource.getString("GML.viewCalendar")%>"/></a>&nbsp;<span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)</span></td>
 					</tr>
 					<tr>
 						<td class="txtlibform"><%=resource.getString("projectManager.TacheDateFin")%></td>
-						<td><%=resource.getString("projectManager.Du")%> <input type="text" name="DateFinFrom" size="12" maxlength="10" value="<%=dateFinFrom%>">&nbsp;<a href="javascript:onClick=editDate(6)"><img src="<%=resource.getIcon("projectManager.calendrier")%>" border=0 valign=absmiddle align="middle" alt="<%=resource.getString("GML.viewCalendar")%>"></a>&nbsp;<span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)</span>&nbsp;&nbsp;&nbsp;&nbsp;<%=resource.getString("projectManager.Au")%> <input type="text" name="DateFinTo" size="12" maxlength="10" value="<%=dateFinTo%>">&nbsp;<a href="javascript:onClick=editDate(7)"><img src="<%=resource.getIcon("projectManager.calendrier")%>"  border=0 valign=absmiddle align="middle" alt="<%=resource.getString("GML.viewCalendar")%>"></a>&nbsp;<span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)</span></td>
+						<td><%=resource.getString("projectManager.Du")%> <input type="text" name="DateFinFrom" size="12" maxlength="10" value="<%=dateFinFrom%>"/>&nbsp;<a href="javascript:onClick=editDate(6)"><img src="<%=resource.getIcon("projectManager.calendrier")%>" border=0 valign=absmiddle align="middle" alt="<%=resource.getString("GML.viewCalendar")%>"/></a>&nbsp;<span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)</span>&nbsp;&nbsp;&nbsp;&nbsp;<%=resource.getString("projectManager.Au")%> <input type="text" name="DateFinTo" size="12" maxlength="10" value="<%=dateFinTo%>"/>&nbsp;<a href="javascript:onClick=editDate(7)"><img src="<%=resource.getIcon("projectManager.calendrier")%>"  border=0 valign=absmiddle align="middle" alt="<%=resource.getString("GML.viewCalendar")%>"/></a>&nbsp;<span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)</span></td>
 					</tr>
 					<tr>
 						<td class="txtlibform"><%=resource.getString("projectManager.Retard")%></td>
@@ -400,7 +397,7 @@ out.println(frame.printBefore());
 								else
 									retardToutes = "checked";
 							%>
-							<input type="radio" name="Retard" value="1" <%=retardOui%>> <%=resource.getString("GML.yes")%> <input type="radio" name="Retard" value="0" <%=retardNon%>> <%=resource.getString("GML.no")%> <input type="radio" name="Retard" value="-1" <%=retardToutes%>> <%=resource.getString("GML.allFP")%>
+							<input type="radio" name="Retard" value="1" <%=retardOui%>/> <%=resource.getString("GML.yes")%> <input type="radio" name="Retard" value="0" <%=retardNon%>/> <%=resource.getString("GML.no")%> <input type="radio" name="Retard" value="-1" <%=retardToutes%>/> <%=resource.getString("GML.allFP")%>
 						</td>
 					</tr>
 					<tr>
@@ -417,68 +414,58 @@ out.println(frame.printBefore());
 								else
 									avToutes = "checked";
 							%>
-							<input type="radio" name="Avancement" value="1" <%=av100%>> 100% <input type="radio" name="Avancement" value="0" <%=av50%>> <100% <input type="radio" name="Avancement" value="-1" <%=avToutes%>> <%=resource.getString("GML.allFP")%>
+							<input type="radio" name="Avancement" value="1" <%=av100%>/> 100% <input type="radio" name="Avancement" value="0" <%=av50%>/> <100% <input type="radio" name="Avancement" value="-1" <%=avToutes%>/> <%=resource.getString("GML.allFP")%>
 						</td>
 					</tr>
 					<tr>
 						<td class="txtlibform"><%=resource.getString("projectManager.TacheResponsable")%></td>
-						<td><input type="text" name="Responsable" value="<%=responsableName%>" size="60" disabled><input type="hidden" name="ResponsableName" value="<%=responsableName%>"><input type="hidden" name="ResponsableId" value="<%=responsableId%>">&nbsp;<a href="javascript:callUserPanel()"><img src="<%=resource.getIcon("projectManager.userPanel")%>" alt="<%=resource.getString("projectManager.SelectionnerResponsable")%>" border=0 align="absmiddle"></a></td>
+						<td><input type="text" name="Responsable" value="<%=responsableName%>" size="60" disabled/><input type="hidden" name="ResponsableName" value="<%=responsableName%>"/><input type="hidden" name="ResponsableId" value="<%=responsableId%>"/>&nbsp;<a href="javascript:callUserPanel()"><img src="<%=resource.getIcon("projectManager.userPanel")%>" alt="<%=resource.getString("projectManager.SelectionnerResponsable")%>" border=0 align="absmiddle"/></a></td>
 					</tr>
 					<tr>
 						<td colspan="2" align="center">
 						<%
 							ButtonPane buttonPane = gef.getButtonPane();
-							buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendFilterData()", false));
-							buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"), "Main", false));
+							buttonPane.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendFilterData()", false));
+							buttonPane.addButton(gef.getFormButton(resource.getString("GML.cancel"), "Main", false));
 							out.println(buttonPane.print());
 						%>
 						</td>
 					</tr>
 					<tr>
-						<td colspan="2" align="right"><a href="FilterHide"><img border="0" src="<%=resource.getIcon("projectManager.boxUp") %>"></a><img border="0" width="3" src="<%=resource.getIcon("projectManager.px") %>"></td>
+						<td colspan="2" align="right"><a href="FilterHide"><img border="0" src="<%=resource.getIcon("projectManager.boxUp") %>"/></a><img border="0" width="3" src="<%=resource.getIcon("projectManager.px") %>"/></td>
 					</tr>
 				</table>
-			<%
-				}
-				else
-				{
-			%>
-					<table border="0" cellpadding="0" cellspacing="0"><tr><td class="intfdcolor4"></td><img border="0" src="<%=resource.getIcon("projectManager.px") %>"></tr></table>
-			<%
-				}
-			%>
+			<% } else { %>
+					<table border="0" cellpadding="0" cellspacing="0"><tr><td class="intfdcolor4"><img border="0" src="<%=resource.getIcon("projectManager.px") %>"/></td></tr></table>
+			<% } %>
 		</td>
 	</tr>
 </table>
 </form> 
 </center>
-<br>
-<% 
-	Board board = gef.getBoard();
-	out.println(board.printBefore());
-%>
+<br/>
+<view:board>
 	<center>
 	<table><tr>
-	<td><img src="<%=resource.getIcon("projectManager.nondemarree")%>" border="0" align="absmiddle"></td><td class="txtNav"><%=resource.getString("projectManager.TacheAvancementND")%></td>
-	<td><img src="<%=resource.getIcon("projectManager.px")%>" border="0" align="absmiddle" width="20"></td>
-	<td><img src="<%=resource.getIcon("projectManager.enCours")%>" border="0" align="absmiddle"></td><td class="txtNav"><%=resource.getString("projectManager.TacheStatutEnCours")%></td>
-	<td><img src="<%=resource.getIcon("projectManager.px")%>" border="0" align="absmiddle" width="20"></td>
-	<td><img src="<%=resource.getIcon("projectManager.gelee")%>" border="0" align="absmiddle"></td><td class="txtNav"><%=resource.getString("projectManager.TacheStatutGelee")%></td>
-	<td><img src="<%=resource.getIcon("projectManager.px")%>" border="0" align="absmiddle" width="20"></td>
-	<td><img src="<%=resource.getIcon("projectManager.realisee")%>" border="0" align="absmiddle"></td><td class="txtNav"><%=resource.getString("projectManager.TacheStatutRealisee")%></td>
-	<td><img src="<%=resource.getIcon("projectManager.px")%>" border="0" align="absmiddle" width="20"></td>
-	<td><img src="<%=resource.getIcon("projectManager.abandonnee")%>" border="0" align="absmiddle"></td><td class="txtNav"><%=resource.getString("projectManager.TacheStatutAbandonnee")%></td>
-	<td><img src="<%=resource.getIcon("projectManager.px")%>" border="0" align="absmiddle" width="20"></td>
-	<td><img src="<%=resource.getIcon("projectManager.alerte")%>" border="0" align="absmiddle"></td><td class="txtNav"><%=resource.getString("projectManager.TacheStatutEnAlerte")%></td>
+	<td><img src="<%=resource.getIcon("projectManager.nondemarree")%>" border="0" align="absmiddle"/></td><td class="txtNav"><%=resource.getString("projectManager.TacheAvancementND")%></td>
+	<td><img src="<%=resource.getIcon("projectManager.px")%>" border="0" align="absmiddle" width="20"/></td>
+	<td><img src="<%=resource.getIcon("projectManager.enCours")%>" border="0" align="absmiddle"/></td><td class="txtNav"><%=resource.getString("projectManager.TacheStatutEnCours")%></td>
+	<td><img src="<%=resource.getIcon("projectManager.px")%>" border="0" align="absmiddle" width="20"/></td>
+	<td><img src="<%=resource.getIcon("projectManager.gelee")%>" border="0" align="absmiddle"/></td><td class="txtNav"><%=resource.getString("projectManager.TacheStatutGelee")%></td>
+	<td><img src="<%=resource.getIcon("projectManager.px")%>" border="0" align="absmiddle" width="20"/></td>
+	<td><img src="<%=resource.getIcon("projectManager.realisee")%>" border="0" align="absmiddle"/></td><td class="txtNav"><%=resource.getString("projectManager.TacheStatutRealisee")%></td>
+	<td><img src="<%=resource.getIcon("projectManager.px")%>" border="0" align="absmiddle" width="20"/></td>
+	<td><img src="<%=resource.getIcon("projectManager.abandonnee")%>" border="0" align="absmiddle"/></td><td class="txtNav"><%=resource.getString("projectManager.TacheStatutAbandonnee")%></td>
+	<td><img src="<%=resource.getIcon("projectManager.px")%>" border="0" align="absmiddle" width="20"/></td>
+	<td><img src="<%=resource.getIcon("projectManager.alerte")%>" border="0" align="absmiddle"/></td><td class="txtNav"><%=resource.getString("projectManager.TacheStatutEnAlerte")%></td>
 	</tr></table>
 	</center>
-<%
-	out.println(board.printAfter());
-%>
+</view:board>
 <!---------------------------------------------------------------------------------->
 <!--------------------------- FILTRE (FIN) ----------------------------------------->
 <!---------------------------------------------------------------------------------->
-<br>
+<view:areaOfOperationOfCreation/>
+<br/>
 <%
 
 ArrayPane arrayPane = gef.getArrayPane("actionsList", "Main", request, session);
@@ -527,10 +514,10 @@ for (int a=0; a<tasks.size(); a++)
 		
 		for (int i=1; i<task.getLevel(); i++)
 		{
-			indent += "<img src=\""+imgIndent+"\" border=\"0\" align=\"absmiddle\">";
+			indent += "<img src=\""+imgIndent+"\" border=\"0\" align=\"absmiddle\"/>";
 		}
 
-		ilt = indent+"<img src=\""+resource.getIcon("projectManager.treeL")+"\" border=\"0\" align=\"absmiddle\">";
+		ilt = indent+"<img src=\""+resource.getIcon("projectManager.treeL")+"\" border=\"0\" align=\"absmiddle\"/>";
 		//il reste � savoir s'il on met un T ou un L
 		//on regarde l'task suivante
 		if (a+1 < tasks.size())
@@ -538,12 +525,12 @@ for (int a=0; a<tasks.size(); a++)
 			actionSuivante = (TaskDetail) tasks.get(a+1);
 			if (actionSuivante.getLevel() == task.getLevel())
 			{
-				ilt = indent+"<img src=\""+resource.getIcon("projectManager.treeT")+"\" border=\"0\" align=\"absmiddle\">";
+				ilt = indent+"<img src=\""+resource.getIcon("projectManager.treeT")+"\" border=\"0\" align=\"absmiddle\"/>";
 			}
 			else {
 				if (otherActionOnSameLevel(tasks, task, a+1))
 				{
-					ilt = indent+"<img src=\""+resource.getIcon("projectManager.treeT")+"\" border=\"0\" align=\"absmiddle\">";
+					ilt = indent+"<img src=\""+resource.getIcon("projectManager.treeT")+"\" border=\"0\" align=\"absmiddle\"/>";
 				}
 			}
 		}
@@ -554,11 +541,13 @@ for (int a=0; a<tasks.size(); a++)
 	}
 }
 out.println(arrayPane.print());
-out.println(frame.printAfter());
+%>
+</view:frame>
+<%
 out.println(window.printAfter());
 %>
-<form name="listForm" Action="RemoveTask" method="post">
-<input type="hidden" name="Id">
+<form name="listForm" action="RemoveTask" method="post">
+<input type="hidden" name="Id"/>
 </form>
 </body>
 </html>

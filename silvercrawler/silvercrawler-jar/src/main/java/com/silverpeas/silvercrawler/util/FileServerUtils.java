@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,83 +23,31 @@
  */
 package com.silverpeas.silvercrawler.util;
 
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.silverpeas.peasCore.URLManager;
 
-/**
- *
- * @author NEY
- * @version
- */
+import javax.ws.rs.core.UriBuilder;
 
-public class FileServerUtils extends Object {
 
-  private static String replaceSpecialChars(String toParse) {
+public class FileServerUtils extends com.stratelia.webactiv.util.FileServerUtils {
 
-    String newLogicalName = toParse.replace(' ', '_');
-    newLogicalName = newLogicalName.replace('\'', '_'); // added on 06/09/2001
-    newLogicalName = newLogicalName.replace('#', '_');
-    newLogicalName = newLogicalName.replace('%', '_');
-    FileServerUtils.replaceAccentChars(newLogicalName);
-
-    return newLogicalName;
+  public static String getSilverCrawlerUrl(String logicalName, String physicalName,
+      String componentId) {
+    UriBuilder uri = UriBuilder.fromPath(URLManager.getApplicationURL());
+    uri.path("SilverCrawlerFileServer").path(logicalName);
+    uri.queryParam("SourceFile", physicalName);
+    uri.queryParam("TypeUpload", "link");
+    uri.queryParam("ComponentId", componentId);
+    return uri.build().toString();
   }
 
-  public static String replaceAccentChars(String toParse) {
-
-    String newLogicalName = toParse.replace('é', 'e');
-    newLogicalName = newLogicalName.replace('è', 'e');
-    newLogicalName = newLogicalName.replace('ë', 'e');
-    newLogicalName = newLogicalName.replace('ê', 'e');
-    newLogicalName = newLogicalName.replace('ö', 'o');
-    newLogicalName = newLogicalName.replace('ô', 'o');
-    newLogicalName = newLogicalName.replace('õ', 'o');
-    newLogicalName = newLogicalName.replace('ò', 'o');
-    newLogicalName = newLogicalName.replace('ï', 'i');
-    newLogicalName = newLogicalName.replace('î', 'i');
-    newLogicalName = newLogicalName.replace('ì', 'i');
-    newLogicalName = newLogicalName.replace('ñ', 'n');
-    newLogicalName = newLogicalName.replace('ü', 'u');
-    newLogicalName = newLogicalName.replace('û', 'u');
-    newLogicalName = newLogicalName.replace('ù', 'u');
-    newLogicalName = newLogicalName.replace('ç', 'c');
-    newLogicalName = newLogicalName.replace('à', 'a');
-    newLogicalName = newLogicalName.replace('ä', 'a');
-    newLogicalName = newLogicalName.replace('ã', 'a');
-    newLogicalName = newLogicalName.replace('â', 'a');
-
-    return newLogicalName;
+  public static String getSilverCrawlerUrl(String logicalName, String physicalName,
+      String componentId, String path) {
+    UriBuilder uri = UriBuilder.fromPath(URLManager.getApplicationURL());
+    uri.path("SilverCrawlerFileServer").path(logicalName);
+    uri.queryParam("SourceFile", physicalName);
+    uri.queryParam("TypeUpload", "zip");
+    uri.queryParam("ComponentId", componentId);
+    uri.queryParam("Path", path);
+    return uri.build().toString();
   }
-
-  public static String getUrl(String logicalName, String physicalName,
-      String mimeType, String userId, String componentId) {
-    StringBuffer url = new StringBuffer();
-
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator()
-        .getString("ApplicationURL");
-    String newLogicalName = replaceSpecialChars(logicalName);
-
-    url.append(m_context).append("/SilverCrawlerFileServer/").append(
-        newLogicalName).append("?SourceFile=").append(physicalName).append(
-        "&TypeUpload=link&MimeType=").append(mimeType).append("&UserId=")
-        .append(userId).append("&ComponentId=").append(componentId);
-
-    return url.toString();
-  }
-
-  public static String getUrlToTempDir(String logicalName, String physicalName,
-      String mimeType, String userId, String componentId, String path) {
-    StringBuffer url = new StringBuffer();
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator()
-        .getString("ApplicationURL");
-
-    String newLogicalName = replaceSpecialChars(logicalName);
-
-    url.append(m_context).append("/SilverCrawlerFileServer/").append(
-        newLogicalName).append("?SourceFile=").append(physicalName).append(
-        "&TypeUpload=zip&MimeType=").append(mimeType).append("&UserId=")
-        .append(userId).append("&ComponentId=").append(componentId).append(
-            "&Path=").append(path);
-    return url.toString();
-  }
-
 }

@@ -1,45 +1,29 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.webSites.servlets;
-
-import java.io.File;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.fileupload.FileItem;
 
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
@@ -51,15 +35,24 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.webSites.control.WebSiteSessionController;
 import com.stratelia.webactiv.webSites.siteManage.model.FolderDetail;
 import com.stratelia.webactiv.webSites.siteManage.model.SiteDetail;
+import java.io.File;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.fileupload.FileItem;
 
 /**
  * Class declaration
+ *
  * @author
  */
-public class WebSitesRequestRouter extends ComponentRequestRouter {
+public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSessionController> {
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = -536203260896933461L;
 
@@ -67,36 +60,37 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
    * This method has to be implemented in the component request router class. returns the session
    * control bean name to be put in the request object ex : for almanach, returns "almanach"
    */
+  @Override
   public String getSessionControlBeanName() {
     return "webSites";
   }
 
   /**
    * Method declaration
+   *
    * @param mainSessionCtrl
    * @param componentContext
    * @return
    * @see
    */
-  public ComponentSessionController createComponentSessionController(
+  @Override
+  public WebSiteSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
-    ComponentSessionController component =
-        (ComponentSessionController) new WebSiteSessionController(
-            mainSessionCtrl, componentContext);
-
-    return component;
+    return new WebSiteSessionController(mainSessionCtrl, componentContext);
   }
 
   /**
    * This method has to be implemented by the component request router it has to compute a
    * destination page
+   *
    * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialised.
+   * @param scc The component Session Control, build and initialised.
    * @param request The entering request. The request router need it to get parameters
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
-  public String getDestination(String function, ComponentSessionController componentSC,
+  @Override
+  public String getDestination(String function, WebSiteSessionController scc,
       HttpServletRequest request) {
 
     SilverTrace.info("webSites", "WebSitesRequestRouter.getDestination()",
@@ -104,10 +98,8 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
     String destination = "";
 
     // the flag is the best user's profile
-    String flag = getFlag(componentSC.getUserRoles());
+    String flag = getFlag(scc.getUserRoles());
     request.setAttribute("BestRole", flag);
-    WebSiteSessionController scc = (WebSiteSessionController) componentSC;
-
     try {
 
       if (function.startsWith("Main")) {
@@ -120,11 +112,9 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
         {
           destination = "/webSites/jsp/listSite_reader.jsp";
         }
-      }
-
-      else if (function.startsWith("listSite.jsp")) {
-        String action = (String) request.getParameter("Action");
-        String id = (String) request.getParameter("Id");
+      } else if (function.startsWith("listSite.jsp")) {
+        String action = request.getParameter("Action");
+        String id = request.getParameter("Id");
 
         if (action == null) {
           id = "0";
@@ -136,11 +126,9 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
         request.setAttribute("CurrentFolder", webSitesCurrentFolder);
 
         destination = "/webSites/jsp/listSite.jsp?Action=" + action + "&Id=" + id;
-      }
-
-      else if (function.startsWith("listSite_reader.jsp")) {
-        String action = (String) request.getParameter("Action");
-        String id = (String) request.getParameter("Id");
+      } else if (function.startsWith("listSite_reader.jsp")) {
+        String action = request.getParameter("Action");
+        String id = request.getParameter("Id");
 
         if (action == null) {
           id = "0";
@@ -165,12 +153,13 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
         }
       } else if (function.startsWith("searchResult")) {
         String id = request.getParameter("Id"); /* id de la publication */
+
         String typeRequest = request.getParameter("Type");
 
         if ("Publication".equals(typeRequest) || "Site".equals(typeRequest)) {
           // recherche de l'url complete d'acces a la page
           try {
-            SiteDetail sitedetail = null;
+            SiteDetail sitedetail;
             if (typeRequest.equals("Site")) {
               sitedetail = scc.getWebSite(id);
             } else {
@@ -183,24 +172,19 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
             SilverTrace.warn("webSites", "WebSitesRequestRouter.getDestination()",
                 "root.MSG_GEN_PARAM_VALUE", null, e);
           }
-        }
-
-        else if ("Node".equals(typeRequest)) {
+        } else if ("Node".equals(typeRequest)) {
           destination = scc.getComponentUrl() + "listSite.jsp?Action=Search&Id=" + id;
         }
-      }
-
-      else if (function.equals("SuggestLink")) {
-        String nomSite = (String) request.getParameter("nomSite");
-        String description = (String) request.getParameter("description");
-        String nomPage = (String) request.getParameter("nomPage");
-        String auteur = (String) request.getParameter("auteur");
-        String date = (String) request.getParameter("date");
-        String listeIcones = (String) request.getParameter("ListeIcones");
+      } else if (function.equals("SuggestLink")) {
+        String nomSite = request.getParameter("nomSite");
+        String description = request.getParameter("description");
+        String nomPage = request.getParameter("nomPage");
+        String auteur = request.getParameter("auteur");
+        String date = request.getParameter("date");
+        String listeIcones = request.getParameter("ListeIcones");
 
         int begin = 0;
-        int end = 0;
-        end = listeIcones.indexOf(',', begin);
+        int end = listeIcones.indexOf(',', begin);
         String listeMessage = "";
 
         // parcours des icones
@@ -215,21 +199,19 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
 
         request.setAttribute("SuggestionName", nomSite);
         request.setAttribute("SuggestionUrl", nomPage);
-        destination = getDestination("Main", componentSC, request);
-      }
-
-      else if (function.equals("DisplaySite")) {
+        destination = getDestination("Main", scc, request);
+      } else if (function.equals("DisplaySite")) {
         String sitePage = request.getParameter("SitePage");
         destination = sitePage;
       } else if (function.startsWith("ToWysiwyg")) {
         String path = request.getParameter("path");
+        scc.checkPath(path);
         String name = request.getParameter("name");
         String nameSite = request.getParameter("nameSite");
         String id = request.getParameter("id");
 
-        destination =
-            "http://" + getMachine(request) + URLManager.getApplicationURL() +
-                "/wysiwyg/jsp/htmlEditor.jsp?";
+        destination = "http://" + getMachine(request) + URLManager.getApplicationURL()
+            + "/wysiwyg/jsp/htmlEditor.jsp?";
         destination += "SpaceId=" + scc.getSpaceId();
 
         destination += "&SpaceName=" + URLEncoder.encode(scc.getSpaceLabel(), "UTF-8");
@@ -240,16 +222,16 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
         destination += "&ObjectId=" + id;
         destination += "&FileName=" + URLEncoder.encode(name, "UTF-8");
         destination += "&Path=" + URLEncoder.encode(path, "UTF-8");
-        destination +=
-            "&ReturnUrl=" +
-                URLEncoder.encode(URLManager.getApplicationURL() +
-                    URLManager.getURL(scc.getSpaceId(), scc.getComponentId()) +
-                    "FromWysiwyg?path=" + path + "&name=" + name + "&nameSite=" + nameSite +
-                    "&profile=" + flag + "&id=" + id, "UTF-8");
+        destination += "&ReturnUrl=" + URLEncoder.encode(URLManager.getApplicationURL()
+            + URLManager.getURL(
+                scc.getSpaceId(), scc.getComponentId()) + "FromWysiwyg?path=" + path + "&name="
+            + name
+            + "&nameSite=" + nameSite + "&profile=" + flag + "&id=" + id, "UTF-8");
         SilverTrace.info("webSites", "WebSitesRequestRouter.getDestination().ToWysiwyg",
             "root.MSG_GEN_PARAM_VALUE", "destination = " + destination);
       } else if (function.startsWith("FromWysiwyg")) {
         String path = request.getParameter("path");
+        scc.checkPath(path);
         String id = request.getParameter("id");
 
         SiteDetail site = scc.getWebSite(id);
@@ -303,32 +285,30 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
 
         destination = "/webSites/jsp/organize.jsp?Action=Search&Id=" + id;
       } else if (function.startsWith("modifDesc.jsp")) {
-        String id = (String) request.getParameter("Id");
-        String currentPath = (String) request.getParameter("path"); /*
-                                                                     * = null ou rempli si type=
-                                                                     * design
-                                                                     */
-        String type = (String) request.getParameter("type"); // null ou design
+        String id = request.getParameter("Id");
+        // = null ou rempli si type= design
+        String currentPath = request.getParameter("path");
+        String type = request.getParameter("type"); // null ou design
 
         request.setAttribute("Site", scc.getWebSite(id));
         request.setAttribute("AllIcons", scc.getAllIcons());
         request.setAttribute("ListIcons", scc.getIcons(id));
 
-        String recupParam = (String) request.getParameter("RecupParam"); // =null ou oui
+        String recupParam = request.getParameter("RecupParam"); // =null ou oui
         String complete = null;
         if (recupParam != null) {// =oui
-          String nom = (String) request.getParameter("Nom");
-          String description = (String) request.getParameter("Description");
-          String lapage = (String) request.getParameter("Page");
-          String listeIcones = (String) request.getParameter("ListeIcones");
+          String nom = request.getParameter("Nom");
+          String description = request.getParameter("Description");
+          String lapage = request.getParameter("Page");
+          String listeIcones = request.getParameter("ListeIcones");
 
           type = "design";
-          complete =
-              "&RecupParam=oui&Nom=" + nom + "&Description=" + description + "&Page=" + lapage +
-                  "&ListeIcones=" + listeIcones;
+          complete = "&RecupParam=oui&Nom=" + nom + "&Description=" + description + "&Page="
+              + lapage
+              + "&ListeIcones=" + listeIcones;
         } else {
-          destination =
-              "/webSites/jsp/modifDesc.jsp?Id=" + id + "&path=" + currentPath + "&type=" + type;
+          destination = "/webSites/jsp/modifDesc.jsp?Id=" + id + "&path=" + currentPath + "&type="
+              + type;
         }
 
         destination = "/webSites/jsp/modifDesc.jsp?Id=" + id;
@@ -357,30 +337,28 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
 
       } else if (function.startsWith("organize.jsp")) {
 
-        String action = (String) request.getParameter("Action");
-        String id = (String) request.getParameter("Id");
-        String path = (String) request.getParameter("Path");
+        String action = request.getParameter("Action");
+        String id = request.getParameter("Id");
+        String path = request.getParameter("Path");
 
         if (action == null) {
           action = "Search";
         } else if (action.equals("Update")) {
-          String childId = (String) request.getParameter("ChildId");
-          String name = (String) request.getParameter("Name");
-          String description = (String) request.getParameter("Description");
-          NodeDetail folder =
-              new NodeDetail(childId, name, description, null, null, null, "0", "X");
+          String childId = request.getParameter("ChildId");
+          String name = request.getParameter("Name");
+          String description = request.getParameter("Description");
+          NodeDetail folder = new NodeDetail(childId, name, description, null, null, null, "0", "X");
           scc.updateFolderHeader(folder, "");
           action = "Search";
-        } else if (action.equals("Delete")) { /*
-                                               * declassification des sites et suppression des
-                                               * themes
-                                               */
-
+        } else if (action.equals("Delete")) {
+          /*
+           * declassification des sites et suppression des themes
+           */
           /* delete folder */
           int i = 0;
           String[] listeId = request.getParameterValues("checkbox");
           if (listeId == null) {
-            String Id = (String) request.getParameter("checkbox");
+            String Id = request.getParameter("checkbox");
             if (Id != null) {
               // delete theme et publications
               scc.deleteFolder(Id);
@@ -414,7 +392,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
           }
 
           /* declassify sites */
-          String listeSite = (String) request.getParameter("SiteList");
+          String listeSite = request.getParameter("SiteList");
           arrayToDePublish = new ArrayList<String>();
           i = 0;
           int begin = 0;
@@ -444,7 +422,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
 
           action = "Search";
         } else if (action.equals("classify")) {
-          String listeSite = (String) request.getParameter("SiteList");
+          String listeSite = request.getParameter("SiteList");
           ArrayList<String> arrayToClassify = new ArrayList<String>();
           int begin = 0;
           int end = 0;
@@ -470,7 +448,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
           action = "Search";
         } else if (action.equals("declassify")) {
 
-          String listeSite = (String) request.getParameter("SiteList");
+          String listeSite = request.getParameter("SiteList");
 
           ArrayList<String> arrayToDeClassify = new ArrayList<String>();
           int begin = 0;
@@ -513,20 +491,20 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
         destination = "/webSites/jsp/organize.jsp?Action=" + action + "&Id=" + id + "&Path=" + path;
       } else if (function.equals("AddTopic")) {
 
-        String action = (String) request.getParameter("Action");// =Add
-        String fatherId = (String) request.getParameter("Id");
-        String newTopicName = (String) request.getParameter("Name");
-        String newTopicDescription = (String) request.getParameter("Description");
+        String action = request.getParameter("Action");// =Add
+        String fatherId = request.getParameter("Id");
+        String newTopicName = request.getParameter("Name");
+        String newTopicDescription = request.getParameter("Description");
 
-        NodeDetail folder =
-            new NodeDetail("X", newTopicName, newTopicDescription, null, null, null, "0", "X");
+        NodeDetail folder = new NodeDetail("X", newTopicName, newTopicDescription, null, null, null,
+            "0", "X");
         scc.addFolder(folder, "");
 
         destination = "/webSites/jsp/addTopic.jsp?Action=" + action + "&Id=" + fatherId;
       } else if (function.startsWith("updateTopic")) {
 
-        String id = (String) request.getParameter("ChildId");
-        String path = (String) request.getParameter("Path");
+        String id = request.getParameter("ChildId");
+        String path = request.getParameter("Path");
 
         NodeDetail folderDetail = scc.getFolderDetail(id);
         request.setAttribute("CurrentFolder", folderDetail);
@@ -534,27 +512,29 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
         destination = "/webSites/jsp/updateTopic.jsp?ChildId=" + id + "&Path=" + path;
       } else if (function.startsWith("classifyDeclassify.jsp")) {
 
-        String action = (String) request.getParameter("Action");
-        String id = (String) request.getParameter("TopicId");
-        String linkedPathString = (String) request.getParameter("Path");
+        String action = request.getParameter("Action");
+        String id = request.getParameter("TopicId");
+        String linkedPathString = request.getParameter("Path");
 
         Collection<SiteDetail> listeSites = scc.getAllWebSite();
         request.setAttribute("ListSites", listeSites);
         request.setAttribute("CurrentFolder", scc.getSessionTopic());
 
-        destination =
-            "/webSites/jsp/classifyDeclassify.jsp?Action=" + action + "&TopicId=" + id + "&Path=" +
-                linkedPathString;
+        destination = "/webSites/jsp/classifyDeclassify.jsp?Action=" + action + "&TopicId=" + id
+            + "&Path="
+            + linkedPathString;
       } else if (function.startsWith("manage.jsp")) {
-        String action = (String) request.getParameter("Action");
+        String action = request.getParameter("Action");
 
         if (action != null && action.equals("addBookmark")) {
-          String nomSite = (String) request.getParameter("nomSite");
-          String description = (String) request.getParameter("description");
-          String nomPage = (String) request.getParameter("nomPage");
-          String tempPopup = (String) request.getParameter("popup");
-          String listeIcones = (String) request.getParameter("ListeIcones");
-          String listeTopics = (String) request.getParameter("ListeTopics");
+          String nomSite = request.getParameter("nomSite");
+          String description = request.getParameter("description");
+          String nomPage = request.getParameter("nomPage");
+          String tempPopup = request.getParameter("popup");
+          String listeIcones = request.getParameter("ListeIcones");
+          String listeTopics = request.getParameter("ListeTopics");
+          // Retrieve positions
+          String positions = request.getParameter("Positions");
 
           int popup = 0;
           if ((tempPopup != null) && (tempPopup.length() > 0)) {
@@ -576,13 +556,11 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
           /* recuperation de l'id */
           String id = scc.getNextId();
 
-          /* creation en BD */
-          SiteDetail descriptionSite =
-              new SiteDetail(id, nomSite, description, nomPage, 1, null, null, 0, popup); /*
-                                                                                           * type 1
-                                                                                           * =
-                                                                                           * bookmark
-                                                                                           */
+          /* Persist siteDetail inside database, type 1 = bookmark */
+          SiteDetail descriptionSite
+              = new SiteDetail(id, scc.getComponentId(), nomSite, description, nomPage, 1, null,
+                  null, 0, popup);
+          descriptionSite.setPositions(positions);
 
           String pubId = scc.createWebSite(descriptionSite);
 
@@ -620,7 +598,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
 
           ArrayList<String> listToDelete = new ArrayList<String>();
 
-          String liste = (String) request.getParameter("SiteList");
+          String liste = request.getParameter("SiteList");
 
           int begin = 0;
           int end = 0;
@@ -635,18 +613,12 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
 
             // recup info sur ce webSite
             info = scc.getWebSite(idToDelete);
-            type = info.getType(); /*
-                                    * type = 0 : site cree, type = 1 : site bookmark, type = 2 :
-                                    * site upload
-                                    */
+            // type = 0 : site cree, type = 1 : site bookmark, type = 2 : site upload
+            type = info.getType();
 
             if (type != 1) { // type != bookmark
-              StringBuilder deletedDir = new StringBuilder();
-              deletedDir.append(scc.getSettings().getString("uploadsPath"));
-              deletedDir.append(File.separator).append(scc.getComponentId());
-              deletedDir.append(File.separator).append(idToDelete);
               // delete directory
-              scc.deleteDirectory(deletedDir.toString());
+              scc.deleteDirectory(scc.getWebSitePathById(idToDelete));
             }
 
             // delete publication
@@ -661,14 +633,14 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
           scc.deleteWebSites(listToDelete);
         } else if (action != null && action.equals("updateDescription")) {
 
-          String id = (String) request.getParameter("Id"); // cas de l'update
-          String nomSite = (String) request.getParameter("nomSite");
-          String description = (String) request.getParameter("description");
-          String nomPage = (String) request.getParameter("nomPage");
-          String tempPopup = (String) request.getParameter("popup");
-          String letat = (String) request.getParameter("etat");
-          String listeIcones = (String) request.getParameter("ListeIcones");
-          String listeTopics = (String) request.getParameter("ListeTopics");
+          String id = request.getParameter("Id"); // cas de l'update
+          String nomSite = request.getParameter("nomSite");
+          String description = request.getParameter("description");
+          String nomPage = request.getParameter("nomPage");
+          String tempPopup = request.getParameter("popup");
+          String letat = request.getParameter("etat");
+          String listeIcones = request.getParameter("ListeIcones");
+          String listeTopics = request.getParameter("ListeTopics");
 
           int popup = 0;
           if ((tempPopup != null) && (tempPopup.length() > 0)) {
@@ -696,8 +668,9 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
           int type = ancien.getType();
 
           /* update description en BD */
-          SiteDetail descriptionSite2 =
-              new SiteDetail(id, nomSite, description, nomPage, type, null, null, etat, popup);
+          SiteDetail descriptionSite2 = new SiteDetail(id, scc.getComponentId(), nomSite,
+              description, nomPage, type, null,
+              null, etat, popup);
 
           scc.updateWebSite(descriptionSite2);
 
@@ -738,35 +711,32 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
         request.setAttribute("BookmarkMode", Boolean.valueOf(scc.isBookmarkMode()));
 
         destination = "/webSites/jsp/manage.jsp";
-      }
-
-      else if (function.startsWith("design.jsp")) {
+      } else if (function.startsWith("design.jsp")) {
         // Action = newSite the firt time, never null
-        String action = (String) request.getParameter("Action"); 
-        String id = (String) request.getParameter("Id"); // jamais null sauf en creation ou en
-        //Retrieve currentPath parameter : null when creating a webSite
-        
-        String currentPath = (String) request.getParameter("path");
+        String action = request.getParameter("Action");
+        String id = request.getParameter("Id"); // jamais null sauf en creation ou en
+        // Retrieve currentPath parameter : null when creating a webSite
+
+        String currentPath = request.getParameter("path");
         if (currentPath != null) {
           currentPath = doubleAntiSlash(currentPath);
         }
 
-        ResourceLocator settings =
-            new ResourceLocator("com.stratelia.webactiv.webSites.settings.webSiteSettings", "fr");
-
         // ADD NEW SITE -------------------------------------------------------------
         if (action.equals("newSite")) {
-          // = rempli au premier acces a designSite pui toujours null
-          String nomSite = (String) request.getParameter("nomSite"); 
-          // = rempli la premiere fois a la creation, puis toujours null
-          String description = (String) request.getParameter("description");
-          // = rempli la premiere fois a la creation, puis toujours null
-          String nomPage = (String) request.getParameter("nomPage"); 
-          String tempPopup = (String) request.getParameter("popup");
-          //= rempli la premiere fois a la creation, puis toujours null
-          String listeIcones = (String) request.getParameter("ListeIcones"); 
+          // Filled at first access then null
+          String nomSite = request.getParameter("nomSite");
+          // Filled at first access then null
+          String description = request.getParameter("description");
+          // Filled at first access then null
+          String nomPage = request.getParameter("nomPage");
+          String tempPopup = request.getParameter("popup");
+          // Filled at first creation then null
+          String listeIcones = request.getParameter("ListeIcones");
           // = en cas de new Site ou de classifySite
-          String listeTopics = (String) request.getParameter("ListeTopics"); 
+          String listeTopics = request.getParameter("ListeTopics");
+          // Retrieve positions
+          String positions = request.getParameter("Positions");
 
           int popup = 0;
           if ((tempPopup != null) && (tempPopup.length() > 0)) {
@@ -789,13 +759,13 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
           id = scc.getNextId();
 
           /* Creer le repertoire id */
-          scc.createFolder(settings.getString("uploadsPath") + File.separator +
-              scc.getComponentId() + File.separator + id);
+          scc.createFolder(scc.getWebSitePathById(id));
 
-          /* creation en BD */
-          // type 0 = site cree
-          SiteDetail descriptionSite =
-              new SiteDetail(id, nomSite, description, nomPage, 0, null, null, 0, popup); 
+          // Persist siteDetail inside database type 0 = site cree
+          SiteDetail descriptionSite
+              = new SiteDetail(id, scc.getComponentId(), nomSite, description, nomPage, 0, null,
+                  null, 0, popup);
+          descriptionSite.setPositions(positions);
 
           String pubId = scc.createWebSite(descriptionSite);
           descriptionSite = scc.getWebSite(id);
@@ -805,11 +775,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
             scc.associateIcons(id, listIcons);
           }
 
-          currentPath =
-              settings.getString("uploadsPath") + File.separator + scc.getComponentId() +
-                  File.separator + id;
-
-          currentPath = doubleAntiSlash(currentPath);
+          currentPath = scc.getWebSitePathById(id);
 
           /* ajout de la page principale */
           String code = " ";
@@ -843,27 +809,19 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
 
           request.setAttribute("Site", descriptionSite);
         } else if (action.equals("updateDescription")) { // type 0 design ou 2 upload
-          String nomSite = (String) request.getParameter("nomSite"); /*
-                                                                      * = rempli au premier acces a
-                                                                      * designSite pui toujours null
-                                                                      */
-          String description = (String) request.getParameter("description"); /*
-                                                                              * = rempli la premiere
-                                                                              * fois a la creation,
-                                                                              * puis toujours null
-                                                                              */
-          String nomPage = (String) request.getParameter("nomPage"); /*
-                                                                      * = rempli la premiere fois a
-                                                                      * la creation, puis toujours
-                                                                      * null
-                                                                      */
-          String tempPopup = (String) request.getParameter("popup");
-          String etat = (String) request.getParameter("etat");
-          String listeIcones = (String) request.getParameter("ListeIcones"); /*
-                                                                              * = rempli la premiere
-                                                                              * fois a la creation,
-                                                                              * puis toujours null
-                                                                              */
+
+          // = rempli au premier acces a designSite pui toujours null
+          String nomSite = request.getParameter("nomSite");
+
+          // = rempli la premiere fois a la creation, puis toujours null
+          String description = request.getParameter("description");
+
+          // = rempli la premiere fois a la creation, puis toujours null
+          String nomPage = request.getParameter("nomPage");
+          String tempPopup = request.getParameter("popup");
+          String etat = request.getParameter("etat");
+          // = rempli la premiere fois a la creation, puis toujours null
+          String listeIcones = request.getParameter("ListeIcones");
 
           int popup = 0;
           if ((tempPopup != null) && (tempPopup.length() > 0)) {
@@ -901,9 +859,10 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
 
           boolean searchOk = ok;
 
-          SiteDetail descriptionSite2 =
-              new SiteDetail(id, nomSite, description, nomPage, type, null, null, Integer
-                  .parseInt(etat), popup);
+          SiteDetail descriptionSite2 = new SiteDetail(id, scc.getComponentId(), nomSite,
+              description, nomPage, type, null,
+              null, Integer
+              .parseInt(etat), popup);
 
           if (searchOk) {
 
@@ -922,87 +881,58 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
           scc.setSessionSite(descriptionSite2);
           request.setAttribute("Site", descriptionSite2);
         } else if (action.equals("addFolder")) {
-          String name = (String) request.getParameter("name"); /*
-                                                                * = null la premiere fois, puis =
-                                                                * nom du repertoire courant
-                                                                */
+          // = null la premiere fois, puis = nom du repertoire courant
+          String name = request.getParameter("name");
 
           // ADD FOLDER -------------------------------------------------------------
           /* Creer le nouveau repertoire */
-          scc.createFolder(currentPath + File.separator + name);
+          scc.createFolder(currentPath + "/" + name);
 
           request.setAttribute("Site", scc.getSessionSite());
 
         } else if (action.equals("renameFolder")) {
-          String name = (String) request.getParameter("name"); /*
-                                                                * = null la premiere fois, puis =
-                                                                * nom du repertoire courant
-                                                                */
-          String newName = (String) request.getParameter("newName"); /*
-                                                                      * = changement de noms des
-                                                                      * fichiers et repertoires
-                                                                      */
+          // = null la premiere fois, puis = nom du repertoire courant
+          String name = request.getParameter("name");
+          // = changement de noms des fichiers et repertoires
+          String newName = request.getParameter("newName");
 
           // RENAME FOLDER -------------------------------------------------------------
 
           /* Modifier le nom du repertoire */
-          scc.renameFolder(currentPath + File.separator + name, currentPath + File.separator +
-              newName);
+          scc.renameFolder(currentPath + "/" + name, currentPath + "/"
+              + newName);
 
           request.setAttribute("Site", scc.getSessionSite());
 
         } else if (action.equals("deleteFolder")) {
-          String name = (String) request.getParameter("name"); /*
-                                                                * = null la premiere fois, puis =
-                                                                * nom du repertoire courant
-                                                                */
+          // null la premiere fois, puis = nom du repertoire courant
+          String name = request.getParameter("name");
 
           // DELETE FOLDER -------------------------------------------------------------
 
           /* Supprimer le repertoire */
-          scc.delFolder(currentPath + File.separator + name);
+          scc.delFolder(currentPath + "/" + name);
 
           request.setAttribute("Site", scc.getSessionSite());
         } else if (action.equals("addPage")) {
-          String nomPage = (String) request.getParameter("nomPage"); /*
-                                                                      * = rempli la premiere fois a
-                                                                      * la creation, puis toujours
-                                                                      * null
-                                                                      */
+          // = rempli la premiere fois a la creation, puis toujours null
+          String nomPage = request.getParameter("nomPage");
 
           // ADD PAGE -------------------------------------------------------------
-          String code = (String) request.getParameter("Code"); // = code de la page a parser
+          String code = request.getParameter("Code"); // = code de la page a parser
 
           code = EncodeHelper.htmlStringToJavaString(code);
 
-          String newCode = parseCodeSupprImage(scc, code, request, settings, currentPath); /*
-                                                                                            * enleve
-                                                                                            * les
-                                                                                            * http
-                                                                                            * ://
-                                                                                            * localhost
-                                                                                            * :8000/
-                                                                                            * WAwebSiteUploads
-                                                                                            * /
-                                                                                            * WA0webSite17
-                                                                                            * /18/
-                                                                                            * et on
-                                                                                            * garde
-                                                                                            * seulement
-                                                                                            * rep
-                                                                                            * /icon
-                                                                                            * .gif
-                                                                                            */
-
-          newCode = parseCodeSupprHref(scc, newCode, settings, currentPath); /*
-                                                                              * enleve les
-                                                                              * http://localhost
-                                                                              * :8000
-                                                                              * /webactiv/RwebSite
-                                                                              * /jsp/ et on garde
-                                                                              * seulement
-                                                                              * rep/page.html
-                                                                              */
+          /*
+           * enleve les http :// localhost :8000/ WAwebSiteUploads / WA0webSite17 /18/ et on garde
+           * seulement rep /icon .gif
+           */
+          String newCode = parseCodeSupprImage(scc, code, request, scc.getSettings(), currentPath);
+          /*
+           * enleve les http://localhost :8000 /webactiv/RwebSite /jsp/ et on garde seulement
+           * rep/page.html
+           */
+          newCode = parseCodeSupprHref(scc, newCode, scc.getSettings(), currentPath);
 
           // Creer une nouvelle page
           scc.createFile(currentPath, nomPage, newCode);
@@ -1010,42 +940,28 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
           request.setAttribute("Site", scc.getSessionSite());
         } else if (action.equals("renamePage")) {
           // RENAME PAGE -------------------------------------------------------------
-
-          String name = (String) request.getParameter("name"); /*
-                                                                * = null la premiere fois, puis =
-                                                                * nom du repertoire courant
-                                                                */
-          String newName = (String) request.getParameter("newName"); /*
-                                                                      * = changement de noms des
-                                                                      * fichiers et repertoires
-                                                                      */
+          // = null la premiere fois, puis = nom du repertoire courant
+          String name = request.getParameter("name");
+          // = changement de noms des fichiers et repertoires
+          String newName = request.getParameter("newName");
 
           /* Modifier le nom du fichier */
           scc.renameFile(currentPath, name, newName);
 
           request.setAttribute("Site", scc.getSessionSite());
-        }
-
-        else if (action.equals("deletePage")) {
+        } else if (action.equals("deletePage")) {
           // DELETE PAGE -------------------------------------------------------------
-          String name = (String) request.getParameter("name"); /*
-                                                                * = null la premiere fois, puis =
-                                                                * nom du repertoire courant
-                                                                */
+          // = null la premiere fois, puis = nom du repertoire courant
+          String name = request.getParameter("name");
 
           /* Supprimer la page */
-          scc.deleteFile(currentPath + File.separator + name);
+          scc.deleteFile(currentPath + "/" + name);
 
           request.setAttribute("Site", scc.getSessionSite());
-        }
-
-        else if (action.equals("classifySite")) { // cas de l'upload et du design
+        } else if (action.equals("classifySite")) { // cas de l'upload et du design
           // CLASSIFY SITE -------------------------------------------------------------
-
-          String listeTopics = (String) request.getParameter("ListeTopics"); /*
-                                                                              * = en cas de new Site
-                                                                              * ou de classifySite
-                                                                              */
+          // = en cas de new Site ou de classifySite
+          String listeTopics = request.getParameter("ListeTopics");
 
           request.setAttribute("Site", scc.getSessionSite());
 
@@ -1075,16 +991,12 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
           } else {
             scc.dePublish(arrayToClassify); // set etat du site a 0
           }
-        }
-
-        else if (action.equals("design")) {
+        } else if (action.equals("design")) {
           // DESIGN -------------------------------------------------------------
           SiteDetail site = scc.getWebSite(id);
           scc.setSessionSite(site);
           request.setAttribute("Site", site);
-        }
-
-        else {
+        } else {
           // AUTRE -------------------------------------------------------------
           // view en cas de rechargement de la page pour naviguer dans le chemin
           // ou createSite annule
@@ -1097,25 +1009,20 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
         }
 
         destination = "/webSites/jsp/design.jsp?Action=design&path=" + currentPath + "&Id=" + id;
-      }
-
-      else if (function.equals("EffectiveUploadFile")) {
+      } else if (function.equals("EffectiveUploadFile")) {
         List<FileItem> items = FileUploadUtil.parseRequest(request);
-
+        boolean status = true;
         String thePath = FileUploadUtil.getParameter(items, "path");
+        scc.checkPath(thePath);
         FileItem item = FileUploadUtil.getFile(items);
         if (item != null) {
-          String fileName = FileUploadUtil.getFileName(item);
-          File file = new File(thePath, fileName);
-          item.write(file);
+          status = (scc.addFileIntoWebSite(thePath, item) == 0);
         }
 
-        request.setAttribute("UploadOk", Boolean.TRUE);
+        request.setAttribute("UploadOk", status);
 
         destination = "/webSites/jsp/uploadFile.jsp?path=" + thePath;
-      }
-
-      else if (function.startsWith("descUpload.jsp")) {
+      } else if (function.startsWith("descUpload.jsp")) {
         request.setAttribute("AllIcons", scc.getAllIcons());
         destination = "/webSites/jsp/descUpload.jsp";
       } else if (function.equals("EffectiveUploadSiteZip")) {
@@ -1131,57 +1038,22 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
         String nomPage = FileUploadUtil.getParameter(items, "nomPage");
         String listeIcones = FileUploadUtil.getParameter(items, "ListeIcones");
         String listeTopics = FileUploadUtil.getParameter(items, "ListeTopics");
+        String positions = FileUploadUtil.getParameter(items, "Positions");
 
         FileItem fileItem = FileUploadUtil.getFile(items);
         if (fileItem != null) {
           /* recuperation de l'id = nom du directory */
           String id = scc.getNextId();
 
-          SiteDetail descriptionSite =
-              new SiteDetail(id, nomSite, description, nomPage, 2, null, null, 0, popup); /*
-                                                                                           * type 2
-                                                                                           * = site
-                                                                                           * uploade
-                                                                                           */
+          // Persist uploaded website inside database, type=2
+          SiteDetail descriptionSite
+              = new SiteDetail(id, scc.getComponentId(), nomSite, description, nomPage, 2, null,
+                  null, 0, popup);
 
-          /* Création du directory */
-          String cheminZip =
-              scc.getSettings().getString("uploadsPath") + File.separator + scc.getComponentId() +
-                  File.separator + id;
-          File directory = new File(cheminZip);
-          if (directory.mkdir()) {
-            /* creation du zip sur le serveur */
-            String fichierZipName = FileUploadUtil.getFileName(fileItem);
-            File fichier = new File(cheminZip + File.separator + fichierZipName);
-
-            fileItem.write(fichier);
-
-            /* dezip du fichier.zip sur le serveur */
-            String cheminFichierZip = cheminZip + File.separator + fichierZipName;
-            scc.unzip(cheminZip, cheminFichierZip);
-
-            /* verif que le nom de la page principale est correcte */
-            Collection<File> collPages = scc.getAllWebPages2(cheminZip);
-            SilverTrace.debug("webSites", "RequestRouter.EffectiveUploadSiteZip",
-                "root.MSG_GEN_PARAM_VALUE", collPages.size() + " files in zip");
-            SilverTrace.debug("webSites", "RequestRouter.EffectiveUploadSiteZip",
-                "root.MSG_GEN_PARAM_VALUE", "nomPage = " + nomPage);
-
-            Iterator<File> j = collPages.iterator();
-
-            boolean searchOk = false;
-            File f;
-            while (j.hasNext()) {
-              f = j.next();
-              SilverTrace.debug("webSites", "RequestRouter.EffectiveUploadSiteZip",
-                  "root.MSG_GEN_PARAM_VALUE", "f.getName() = " + f.getName());
-              if (f.getName().equals(nomPage)) {
-                searchOk = true;
-                break;
-              }
-            }
-
-            if (searchOk) {
+          descriptionSite.setPositions(positions);
+          int result = scc.createWebSiteFromZipFile(descriptionSite, fileItem);
+          switch (result) {
+            case 0:
               /* creation en BD */
               ArrayList<String> listIcons = new ArrayList<String>();
               int begin = 0;
@@ -1229,9 +1101,11 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
               request.setAttribute("BookmarkMode", Boolean.valueOf(scc.isBookmarkMode()));
 
               destination = "/webSites/jsp/manage.jsp";
+              break;
 
-            } else { // le nom de la page principale n'est pas bonne, on supprime ce qu'on a dezipe
-              scc.deleteDirectory(cheminZip);
+            case -1:
+              // le nom de la page principale n'est pas bonne, on supprime ce qu'on a dezipe
+              scc.deleteDirectory(scc.getWebSitePathById(descriptionSite.getId()));
 
               request.setAttribute("Site", descriptionSite);
               request.setAttribute("AllIcons", scc.getAllIcons());
@@ -1239,15 +1113,24 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
               request.setAttribute("UploadOk", Boolean.TRUE);
               request.setAttribute("SearchOk", Boolean.FALSE);
               destination = "/webSites/jsp/descUpload.jsp";
-            }
+              break;
 
-          }// if directory.mkdir
-          else {
-            request.setAttribute("Site", descriptionSite);
-            request.setAttribute("AllIcons", scc.getAllIcons());
-            request.setAttribute("ListeIcones", listeIcones);
-            request.setAttribute("UploadOk", Boolean.FALSE);
-            destination = "/webSites/jsp/descUpload.jsp";
+            case -2:
+              request.setAttribute("Site", descriptionSite);
+              request.setAttribute("AllIcons", scc.getAllIcons());
+              request.setAttribute("ListeIcones", listeIcones);
+              request.setAttribute("UploadOk", Boolean.FALSE);
+              destination = "/webSites/jsp/descUpload.jsp";
+              break;
+
+            case -3: // the zip content isn't correct
+              scc.deleteDirectory(scc.getWebSitePathById(descriptionSite.getId()));
+              request.setAttribute("Site", descriptionSite);
+              request.setAttribute("AllIcons", scc.getAllIcons());
+              request.setAttribute("ListeIcones", listeIcones);
+              request.setAttribute("UploadOk", Boolean.FALSE);
+              destination = "/webSites/jsp/descUpload.jsp";
+              break;
           }
         }
       } else {
@@ -1285,9 +1168,9 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
       ResourceLocator settings = new ResourceLocator(
           "com.stratelia.webactiv.webSites.settings.webSiteSettings", "fr");
 
-      nomPage = "http://" + getMachine(request) + File.separator
-          + settings.getString("Context") + File.separator
-          + scc.getComponentId() + File.separator + siteId + File.separator
+      nomPage = "http://" + getMachine(request) + "/"
+          + settings.getString("Context") + "/"
+          + scc.getWebSitePathById(siteId) + "/"
           + nomPage;
     }
     return "/webSites/jsp/ouvertureSite.jsp?URL="
@@ -1297,9 +1180,9 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
   }
 
   /* construitTab */
-
   /**
    * Method declaration
+   *
    * @param deb
    * @return
    * @see
@@ -1326,9 +1209,9 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
   }
 
   /* getMachine */
-
   /**
    * Method declaration
+   *
    * @param request
    * @return
    * @see
@@ -1340,7 +1223,6 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
         "com.stratelia.webactiv.general", "fr");
 
     String machine = settings.getString("Machine"); // ex :
-    // http://info.aero.jussieu.fr:8080
     String context = (generalSettings.getString("ApplicationURL")).substring(1);
 
     if (machine.equals("")) {
@@ -1359,7 +1241,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
           if (machine.equals("")) {
             machine += a.get(j);
           } else {
-            machine = machine + File.separator + a.get(j);
+            machine = machine + "/" + a.get(j);
           }
         } else {
           break;
@@ -1371,9 +1253,9 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
   }
 
   /* getFlag */
-
   /**
    * Method declaration
+   *
    * @param profiles
    * @return
    * @see
@@ -1587,25 +1469,27 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
     String apres;
     int index;
     String href = "<A href=\""; /* longueur de chaine = 9 */
+
     String finChemin;
     String fichier;
     String deb;
     String theReturn = "";
 
     index = theCode.indexOf(href);
-    if (index == -1)
+    if (index == -1) {
       theReturn = theCode;
-
-    else {
+    } else {
 
       avant = theCode.substring(0, index + 9);
 
       apres = theCode.substring(index + 9);
 
       if (apres.substring(0, 7).equals("http://")) { /* lien externe */
+
         theReturn = avant
             + parseCodeSupprHref(scc, apres, settings, currentPath);
       } else if (apres.substring(0, 6).equals("ftp://")) { /* lien externe */
+
         theReturn = avant
             + parseCodeSupprHref(scc, apres, settings, currentPath);
       } else if (apres.substring(0, 3).equals("rr:")) { /* deja en relatif */
@@ -1629,17 +1513,17 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
 
         /* absolute = rep/coucou.html */
         String absolute = finChemin.substring(0, indexGuillemet);
-        SilverTrace.info("webSites", "JSPcreateSite", "root.MSG_GEN_PARAM_VALUE", "absolute = " +
-            absolute);
+        SilverTrace.info("webSites", "JSPcreateSite", "root.MSG_GEN_PARAM_VALUE", "absolute = "
+            + absolute);
 
         /* apres = ">... */
         apres = finChemin.substring(indexGuillemet);
-        SilverTrace.info("webSites", "JSPcreateSite", "root.MSG_GEN_PARAM_VALUE", "apres = " +
-            apres);
+        SilverTrace.
+            info("webSites", "JSPcreateSite", "root.MSG_GEN_PARAM_VALUE", "apres = " + apres);
 
         int indexSlash = absolute.lastIndexOf("\\");
-        SilverTrace.info("webSites", "JSPcreateSite", "root.MSG_GEN_PARAM_VALUE", "indexSlash = " +
-            Integer.toString(indexSlash));
+        SilverTrace.info("webSites", "JSPcreateSite", "root.MSG_GEN_PARAM_VALUE", "indexSlash = "
+            + Integer.toString(indexSlash));
 
         if (indexSlash == -1) {
           // pas d'arborescence, le fichier du lien est sur la racine
@@ -1694,5 +1578,4 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
     }
     return theReturn;
   }
-
 }

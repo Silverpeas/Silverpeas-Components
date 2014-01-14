@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -57,11 +57,18 @@ jCells[cellIndex] = new JCell( {
 			{role : "${mainActor.role}", userFullName: "${mainActor.fullName}", login : "${mainActor.login}"} ${(not loopInfo.last) ? ',' : ''}
 		</c:forEach>
 	),
+	userAttributes : new Array(
+		<c:forEach items="${organigramme.rootOrganization.details}" var="detail" varStatus="loopInfo">
+			{label : "${detail.key}", value: "${detail.value}"} ${(not loopInfo.last) ? ',' : ''}
+		</c:forEach>
+	),
 	parentURL : "${organigramme.rootOrganization.parentUrl}",
 	level : 0,
 	className : 0,
+	extraClassName : "${organigramme.rootOrganization.specificCSSClass}",
 	cellType : CELL_TYPE_ORGANIZATION,
-	commonUserURL : "Details?login="
+	commonUserURL : "Details?login=",
+	usersIcon : "${usersIcon}"
 });
 
 <%-- CATEGORIES --%>
@@ -72,10 +79,10 @@ jCells[cellIndex] = new JCell( {
 		title: "${(category.name eq 'Personnel') ? '' : category.name}",
 		level : 1,
 		className : 5,
+		extraClassName : "${organigramme.rootOrganization.specificCSSClass}",
 		cellType : CELL_TYPE_CATEGORY,
-		commonUserURL : "Details?login="
-		<%--<c:if test="${category.name eq 'Personnel'}"> --%>
-		, innerUsers : new Array(
+		commonUserURL : "Details?login=",
+		innerUsers : new Array(
 			<c:forEach items="${category.users}" var="user" varStatus="mainLoopInfo">
 					{login : "${user.login}", userFullName: "${user.fullName}",
 					userAttributes: new Array(
@@ -86,27 +93,6 @@ jCells[cellIndex] = new JCell( {
 					} ${(not mainLoopInfo.last) ? ',' : ''}
 			</c:forEach>
 			)
-		<%--</c:if> --%>
 	});
 	jLinks[linkIndex++] = new JLink(0,cellIndex++, 0, ORIENTATION_HORIZONTAL);
-
-<%--
-	<c:if test="${!(category.name eq 'Personnel')}">
-		<c:forEach items="${category.users}" var="user">
-			jCells[cellIndex] = new JCell( {
-				id : cellIndex,
-				title: "${user.fullName}",
-				level : 2,
-				className : 2,
-				userAttributes: new Array(
-					<c:forEach items="${user.details}" var="detail" varStatus="loopInfo">
-						{label : "${detail.key}", value: "${detail.value}"} ${(not loopInfo.last) ? ',' : ''}
-					</c:forEach>
-				),
-				cellType : CELL_TYPE_PERSON,
-				onClickURL : "Details?login=${user.login}"
-			});
-			jLinks[linkIndex++] = new JLink(currentCategoryIndex,cellIndex++, 0, ORIENTATION_VERTICAL);
-		</c:forEach>
-	</c:if> --%>
 </c:forEach>

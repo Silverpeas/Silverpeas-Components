@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -31,6 +31,7 @@
 			response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkQuizz.jsp"%>
 
 <jsp:useBean id="currentQuizz" scope="session"
@@ -47,10 +48,11 @@
 			String linkIcon = iconsPath + "/util/icons/link.gif";
 %>
 
-<HTML>
-<HEAD>
-<TITLE>___/ Silverpeas - Corporate Portal Organizer
-\__________________________________________</TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>___/ Silverpeas - Corporate Portal Organizer\__________________________________________</title>
+<view:looknfeel/>
 <%
   ResourceLocator settings = quizzScc.getSettings();
 			String space = quizzScc.getSpaceLabel();
@@ -66,9 +68,8 @@
 				isAdmin = true;
 			}
 %>
-<script language="javascript"
-	src="<%=m_context%>/util/javaScript/formUtil.js"></script>
-<script language="JavaScript1.2">
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/formUtil.js"></script>
+<script type="text/javascript">
 function SP_openWindow(page,nom,largeur,hauteur,options) {
 	var top=(screen.height-hauteur)/2;
 	var left=(screen.width-largeur)/2;
@@ -93,14 +94,9 @@ function clipboardPaste() {
   // forcer le rafraichissmeent de la page
   document.location.reload();   
 }
-
 </script>
-<%
-  out.println(gef.getLookStyleSheet());
-%>
 </head>
 <body>
-
 <%
   //objet window
 			Window window = gef.getWindow();
@@ -122,8 +118,8 @@ function clipboardPaste() {
 								+ "','utilizationPdc1')");
 				operationPane.addLine();
 			}
-			operationPane.addOperation(m_context
-					+ "/util/icons/quizz_to_add.gif", resources
+			operationPane.addOperationOfCreation(m_context
+					+ "/util/icons/create-action/add-quizz.png", resources
 					.getString("QuizzNewQuizz"), "quizzCreator.jsp");
 			if (isAdmin) {
 				operationPane.addOperation(resources.getIcon("quizz.paste"),
@@ -131,8 +127,6 @@ function clipboardPaste() {
 						"javascript:onClick=clipboardPaste()");
 			}
 			out.println(window.printBefore());
-
-			Frame frame = gef.getFrame();
 
 			//onglets
 			TabbedPane tabbedPane1 = gef.getTabbedPane();
@@ -142,8 +136,10 @@ function clipboardPaste() {
 					"quizzResultAdmin.jsp", false);
 
 			out.println(tabbedPane1.print());
-			out.println(frame.printBefore());
-
+%>
+<view:frame>
+<view:areaOfOperationOfCreation/>
+<%			
 			//Tableau
 			ArrayPane arrayPane = gef.getArrayPane("QuizzList",
 					"quizzAdmin.jsp", request, session);
@@ -197,14 +193,9 @@ function clipboardPaste() {
 			}
 			out.println(arrayPane.print());
 %>
-
-<!--  FIN TAG FORM-->
+</view:frame>
 <%
-  out.println(frame.printMiddle());
-			out.println(frame.printAfter());
-			out.println(window.printAfter());
+	out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
-
-
+</body>
+</html>

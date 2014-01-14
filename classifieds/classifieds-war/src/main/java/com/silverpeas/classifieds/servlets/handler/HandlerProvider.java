@@ -21,9 +21,9 @@ public class HandlerProvider {
     handlerMap.put("Main", new DefaultHandler());
     handlerMap.put("ViewClassifiedToValidate", new ListToValidateHandler());
     handlerMap.put("ViewMyClassifieds", new MyClassifiedsHandler());
-    handlerMap.put("ViewAllClassifiedsByCategory", new ClassifiedsListByCategoryHandler());
 
     handlerMap.put("SearchClassifieds", new SearchHandler());
+    handlerMap.put("Pagination", new PaginationHandler());
     handlerMap.put("searchResult", new SearchResultsHandler());
 
     handlerMap.put("ViewClassified", new ViewClassifiedHandler());
@@ -33,15 +33,10 @@ public class HandlerProvider {
     handlerMap.put("UpdateClassified", new ClassifiedUpdateHandler());
     handlerMap.put("DeleteClassified", new ClassifiedDeleteHandler());
 
-    handlerMap.put("AddComment", new CommentCreationHandler());
-    handlerMap.put("DeleteComment", new CommentDeleteHandler());
-    handlerMap.put("UpdateComment", new CommentUpdateHandler());
-
     handlerMap.put("DraftIn", new DraftInHandler());
     handlerMap.put("DraftOut", new DraftOutHandler());
 
     handlerMap.put("ValidateClassified", new ClassifiedValidateHandler());
-    handlerMap.put("WantToRefuseClassified", new ClassifiedRefuseFormHandler());
     handlerMap.put("RefusedClassified", new ClassifiedRefuseHandler());
 
     handlerMap.put("NewSubscription", new SubscriptionCreateFormHandler());
@@ -51,6 +46,7 @@ public class HandlerProvider {
 
     handlerMap.put("ToWysiwygHeader", new ToWysiwygHeaderHandler());
     handlerMap.put("FromTopicWysiwyg", new DefaultHandler());
+    
   }
 
   /**

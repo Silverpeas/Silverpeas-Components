@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2000 - 2011 Silverpeas
+ *  Copyright (C) 2000 - 2013 Silverpeas
  * 
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  *  Open Source Software ("FLOSS") applications as described in Silverpeas's
  *  FLOSS exception.  You should have recieved a copy of the text describing
  *  the FLOSS exception, and it is also available here:
- *  "http://www.silverpeas.com/legal/licensing"
+ *  "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  * 
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,6 +28,7 @@ import com.silverpeas.questionReply.QuestionReplyException;
 import com.silverpeas.questionReply.model.Question;
 import com.silverpeas.questionReply.model.Reply;
 import com.silverpeas.ui.DisplayI18NHelper;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -56,15 +57,14 @@ public class ReplyNotifier extends Notifier {
   final String source;
   final NotificationSender notifSender;
 
-  public ReplyNotifier(UserDetail sender, Question question, Reply reply, String subject,
-          String source, String componentLabel, String componentId) {
-    super(sender);
+  public ReplyNotifier(UserDetail sender, String serverUrl, Question question, Reply reply, NotificationData data) {
+    super(sender, serverUrl);
     this.reply = reply;
     this.question = question;
-    this.componentLabel = componentLabel;
-    this.subject = subject;
-    this.source = source;
-    this.notifSender = new NotificationSender(componentId);
+    this.componentLabel = data.getComponentLabel();
+    this.subject = data.getSubject();
+    this.source = data.getSource();
+    this.notifSender = new NotificationSender(data.getComponentId());
   }
 
   /**
@@ -89,14 +89,18 @@ public class ReplyNotifier extends Notifier {
         template.setAttribute("QuestionDetail", question);
         template.setAttribute("ReplyDetail", reply);
         template.setAttribute("replyTitle", reply.getTitle());
-        template.setAttribute("replyContent", reply.getContent());
+        template.setAttribute("replyContent", reply.loadWysiwygContent());
         templates.put(language, template);
         notifMetaData.addLanguage(language, message.getString("questionReply.notification", "")
                 + componentLabel, "");
       }
       notifMetaData.setSender(sender.getId());
       notifMetaData.addUserRecipients(users);
-      notifMetaData.setLink(question._getPermalink());
+      if(StringUtil.isDefined(serverUrl)) {
+        notifMetaData.setLink(serverUrl + question._getPermalink());
+      }else {
+         notifMetaData.setLink(question._getPermalink());
+      }
       notifSender.notifyUser(notifMetaData);
     } catch (NotificationManagerException e) {
       throw new QuestionReplyException("QuestionReplySessionController.notify()",

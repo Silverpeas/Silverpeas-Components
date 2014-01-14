@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -39,21 +39,23 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <% 
 String pubId = kmeliaScc.getSessionPublication().getDetail().getPK().getId();
 String pubComponentId = kmeliaScc.getSessionPublication().getDetail().getPK().getComponentName();
-Button closeButton = (Button) gef.getFormButton(resources.getString("GML.close"), "javaScript:closeAndReturn('"+pubId+"');", false);
-Button linkButton = (Button) gef.getFormButton(resources.getString("GML.linkTo"), "javaScript:linkTo();", false);
+Button closeButton = gef.getFormButton(resources.getString("GML.close"), "javaScript:closeAndReturn('"+pubId+"');", false);
+Button linkButton = gef.getFormButton(resources.getString("GML.linkTo"), "javaScript:linkTo();", false);
 String closeWindow="";
 if(request.getAttribute("NbLinks")!=null){
   closeWindow ="onload=\"closeAndReturn('"+pubId+"');\"";
-  
 }
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
 <head>
 <title><%=resources.getString("GML.popupTitle")%></title>
-<meta http-equiv="content-type" content="text/html; charset=UTF-8">
-<link rel="stylesheet" type="text/css" href="<%=m_context %>/kmelia/jsp/styleSheets/kmelia.css">
 <view:looknfeel />
+<style type="text/css">
+#pubList .selection input {
+	display: block;
+}
+</style>
 <%-- load the css and js file used by tree menu --%>
 <menuTree:head displayCssFile="true" displayJavascriptFile="true" displayIconsStyles="true" contextName="<%=m_context%>"></menuTree:head>
 <%-- personalizable Javascript for  YUI treeView menu --%>

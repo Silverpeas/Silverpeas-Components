@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -47,13 +47,16 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.webSites.control.WebSiteSessionController"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
 
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
+
+<%@ page import="com.silverpeas.util.EncodeHelper"%>
 
 
 <%!
 
+  ResourceLocator settings = new ResourceLocator("com.stratelia.webactiv.webSites.settings.webSiteSettings", "fr");
+  
   /* getMachine */
   public String getMachine(HttpServletRequest request) {
     ResourceLocator settings = new ResourceLocator("com.stratelia.webactiv.webSites.settings.webSiteSettings","fr");
@@ -232,7 +235,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
       /* collection[0] = c:\\j2sdk\\public_html\\WAwebSiteUploads\\webSite17\\3 : toujours */
       /* collection[1] = c:\\j2sdk\\public_html\\WAwebSiteUploads\\webSite17\\3\\rep1 */
       /* collection[1] = c:\\j2sdk\\public_html\\WAwebSiteUploads\\webSite17\\3\\rep1\\rep11 */
-
+      
       ArrayList liste = new ArrayList();
       boolean ok = true;
       String deb;
@@ -319,8 +322,8 @@ String navigPath(Collection path, boolean linked, int beforeAfter) {
                     String name = nodeInPath.getName();
                     if (name.length() > 20)
                             name = name.substring(0, 20) + "...";
-                    linkedPathString += "<a href=\"javascript:onClick=topicGoTo('"+nodeInPath.getNodePK().getId()+"')\">"+Encode.javaStringToHtmlString(name)+"</a>";
-                    pathString += Encode.javaStringToHtmlString(nodeInPath.getName());
+                    linkedPathString += "<a href=\"javascript:onClick=topicGoTo('"+nodeInPath.getNodePK().getId()+"')\">"+EncodeHelper.javaStringToHtmlString(name)+"</a>";
+                    pathString += EncodeHelper.javaStringToHtmlString(nodeInPath.getName());
                     if (iterator.hasNext()) {
                             linkedPathString += " > ";
                             pathString += " > ";

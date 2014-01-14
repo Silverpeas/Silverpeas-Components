@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -34,8 +34,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 
 <%!
-    String displayCredits(int nb_max_user_votes , int nb_user_votes) throws QuizzException
-    {
+String displayCredits(int nb_max_user_votes , int nb_user_votes) throws QuizzException
+{
 	String Html_display = null;
 	if (nb_user_votes == nb_max_user_votes)
 		Html_display = "<img src=\"icons/feuRouge.gif\">&nbsp;";
@@ -58,21 +58,21 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
   String component = quizzScc.getComponentLabel();
 
  %>
-<HTML>
-<HEAD>
-<TITLE>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</TITLE>
+<html>
+<head>
+<title>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_Context%>/util/javaScript/animation.js"></script>
 </head>
 
-<SCRIPT LANGUAGE="JAVASCRIPT">
+<script language="javascript">
 function notifyPopup2(context,compoId,users,groups)
 {
     SP_openWindow(context+'/RnotificationUser/jsp/Main.jsp?popupMode=Yes&editTargets=No&compoId=' + compoId + '&theTargetsUsers='+users+'&theTargetsGroups='+groups, 'notifyUserPopup', '700', '400', 'menubar=no,scrollbars=no,statusbar=no');
 }
-</SCRIPT>
+</script>
 
 <body bgcolor=#FFFFFF leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
  <%
@@ -110,15 +110,15 @@ function notifyPopup2(context,compoId,users,groups)
   arrayPane.addArrayColumn(resources.getString("ScoreLib"));
   arrayPane.addArrayColumn(resources.getString("ScorePosition"));
 
-  Collection quizzList = quizzScc.getAdminResults();
-  Iterator i = quizzList.iterator();
+  Collection<QuestionContainerHeader> quizzList = quizzScc.getAdminResults();
+  Iterator<QuestionContainerHeader> i = quizzList.iterator();
   while (i.hasNext()) {
     QuestionContainerHeader quizzHeader = (QuestionContainerHeader) i.next();
     int nb_max_participations = quizzHeader.getNbMaxParticipations();
-    Collection scoreDetails = quizzHeader.getScores();
+    Collection<ScoreDetail> scoreDetails = quizzHeader.getScores();
     if (scoreDetails != null)
     {
-      Iterator j = scoreDetails.iterator();
+      Iterator<ScoreDetail> j = scoreDetails.iterator();
       while (j.hasNext()) {
         ScoreDetail scoreDetail = (ScoreDetail) j.next();
 	int nb_user_votes = quizzScc.getUserNbParticipationsByFatherId(quizzHeader.getPK().getId(), scoreDetail.getUserId());
@@ -149,9 +149,9 @@ function notifyPopup2(context,compoId,users,groups)
         arrayLine.addArrayCellLink(resources.getOutputDate(participationDate),"quizzQuestionsNew.jsp?QuizzId="+quizzHeader.getPK().getId()+"&Action=ViewResultAdmin&Page=1"+"&UserId="+scoreDetail.getUserId()+"&ParticipationId="+new Integer(scoreDetail.getParticipationId()).toString());
         
         arrayLine.addArrayCellText(displayCredits(nb_max_participations, nb_user_votes));
-        ArrayCellText arrayCellText1 = arrayLine.addArrayCellText(new Integer(scoreDetail.getScore()).toString()+"/"+quizzHeader.getNbMaxPoints());
+        ArrayCellText arrayCellText1 = arrayLine.addArrayCellText(Integer.toString(scoreDetail.getScore())+"/"+quizzHeader.getNbMaxPoints());
         arrayCellText1.setCompareOn(new Integer(scoreDetail.getScore()));
-        ArrayCellText arrayCellText3 = arrayLine.addArrayCellText(new Integer(scoreDetail.getPosition()).toString());
+        ArrayCellText arrayCellText3 = arrayLine.addArrayCellText(Integer.toString(scoreDetail.getPosition()));
 	arrayCellText3.setCompareOn(new Integer(scoreDetail.getPosition()));
       }
     }
@@ -168,7 +168,7 @@ function notifyPopup2(context,compoId,users,groups)
   out.println(frame.printAfter());
   out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>
 
 

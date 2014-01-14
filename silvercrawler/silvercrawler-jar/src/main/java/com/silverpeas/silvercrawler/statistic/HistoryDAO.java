@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -35,8 +35,8 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 
 public class HistoryDAO {
-  public static Collection getHistoryDetails(ResultSet rs) throws SQLException {
-    ArrayList list = new ArrayList();
+  public static Collection<HistoryDetail> getHistoryDetails(ResultSet rs) throws SQLException {
+    ArrayList<HistoryDetail> list = new ArrayList<HistoryDetail>();
     Date date;
     String userId;
     String path;
@@ -74,7 +74,7 @@ public class HistoryDAO {
     }
   }
 
-  public static Collection getHistoryDetailByObject(Connection con,
+  public static Collection<HistoryDetail> getHistoryDetailByObject(Connection con,
       String tableName, String path, String componentId) throws SQLException {
     SilverTrace.info("silverCrawler", "HistoryDAO.getHistoryDetailByObject",
         "root.MSG_GEN_ENTER_METHOD");
@@ -89,14 +89,14 @@ public class HistoryDAO {
       prepStmt.setString(2, componentId);
       rs = prepStmt.executeQuery();
 
-      Collection list = getHistoryDetails(rs);
+      Collection<HistoryDetail> list = getHistoryDetails(rs);
       return list;
     } finally {
       DBUtil.close(rs, prepStmt);
     }
   }
 
-  public static Collection getHistoryDetailByObjectAndUser(Connection con,
+  public static Collection<HistoryDetail> getHistoryDetailByObjectAndUser(Connection con,
       String tableName, String path, String userId, String componentId)
       throws SQLException {
     SilverTrace.info("silverCrawler",
@@ -114,7 +114,7 @@ public class HistoryDAO {
       prepStmt.setString(2, componentId);
       prepStmt.setString(3, userId);
       rs = prepStmt.executeQuery();
-      Collection list = getHistoryDetails(rs);
+      Collection<HistoryDetail> list = getHistoryDetails(rs);
       return list;
     } finally {
       DBUtil.close(rs, prepStmt);

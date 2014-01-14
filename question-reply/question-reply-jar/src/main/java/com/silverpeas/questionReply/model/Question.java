@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,6 +29,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.SilverpeasBean;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.core.admin.OrganisationController;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -169,11 +170,11 @@ public class Question extends SilverpeasBean {
   }
 
   public String readCreatorName() {
-    OrganizationController organizationController = new OrganizationController();
+    OrganisationController organizationController = new OrganizationController();
     return readCreatorName(organizationController);
   }
 
-  public String readCreatorName(OrganizationController organizationController) {
+  public String readCreatorName(OrganisationController organizationController) {
     String creatorName = null;
     UserDetail userDetail = readAuthor(organizationController);
     if (userDetail != null) {
@@ -183,7 +184,7 @@ public class Question extends SilverpeasBean {
   }
 
 
-  public UserDetail readAuthor(OrganizationController organizationController) {
+  public UserDetail readAuthor(OrganisationController organizationController) {
     return organizationController.getUserDetail(getCreatorId());
   }
 

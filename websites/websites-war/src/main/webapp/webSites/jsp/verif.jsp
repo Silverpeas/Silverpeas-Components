@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,6 +23,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.util.StringUtil"%>
+<%@page import="org.apache.commons.io.FilenameUtils"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%
@@ -108,9 +110,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     /**
     * affichageErreur
     */  
-	//CBO : UPDATE
-/*   public void  affichageErreur(JspWriter out, WebSiteSessionController scc, String infoPath, 
-                String mess, GraphicElementFactory gef) throws IOException {*/
 	public void  affichageErreur(JspWriter out, WebSiteSessionController scc, String infoPath, 
                 String mess, GraphicElementFactory gef, String spaceLabel, String componentLabel) throws IOException {
    
@@ -118,11 +117,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     
     // La barre de naviagtion
     BrowseBar browseBar = laFenetre.getBrowseBar();
-    //CBO : UPDATE
-	//browseBar.setDomainName(scc.getSpaceLabel());
-	browseBar.setDomainName(spaceLabel);
-	//CBO : UPDATE
-    //browseBar.setComponentName(scc.getComponentLabel(), "manage.jsp?Action=view");
+    browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "manage.jsp?Action=view");
     browseBar.setPath("<a href= \"manage.jsp?Action=view\"></a>"+infoPath);
     
@@ -155,8 +150,10 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     String currentPath;
     String name;
     String newName;
+    String fullNewName;
     String nomPage = "";//pas besoin du nom de la page
     String code;
+    String extension;
 
     String resultat;
 
@@ -166,50 +163,49 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     name = (String) request.getParameter("name"); 
     newName = (String) request.getParameter("newName");
     code = (String) request.getParameter("Code");
-
     
-
+    if ("renamePage".equals(action)) {
+      extension = FilenameUtils.getExtension(name);
+      fullNewName = (StringUtil.isDefined(extension) ? newName + "." + extension:newName);
+    } else {
+      fullNewName = newName;
+    }
+    
     if (code != null)
-      code = Encode.javaStringToHtmlString(code);
+      code = EncodeHelper.javaStringToHtmlString(code);
    
 
-    resultat = scc.verif(action, currentPath, name, newName, nomPage);
+    resultat = scc.verif(action, currentPath, name, fullNewName, nomPage);
     
     String nameSite = scc.getSiteName();
     Collection collectionRep = affichageChemin(scc, currentPath);
     String infoPath = displayPath(collectionRep, true, 3, "design.jsp?Action=view&path=", nameSite);
 
     if (resultat.equals("ok")) {
-        debutAffichage(out, "ok", action, id, currentPath, name, newName, code, gef, resources);
+        debutAffichage(out, "ok", action, id, currentPath, name, fullNewName, code, gef, resources);
     }
     
     else if (resultat.equals("pbAjoutFolder")) {
-        debutAffichage(out, "", action, id, currentPath, name, newName, code, gef, resources);
-        //CBO : UPDATE
-		//affichageErreur(out, scc, infoPath, resources.getString("ErreurPbAjoutRep"), gef);
-		affichageErreur(out, scc, infoPath, resources.getString("ErreurPbAjoutRep"), gef, spaceLabel, componentLabel);
+        debutAffichage(out, "", action, id, currentPath, name, fullNewName, code, gef, resources);
+        affichageErreur(out, scc, infoPath, resources.getString("ErreurPbAjoutRep"), gef, spaceLabel, componentLabel);
     }
     
     else  if (resultat.equals("pbRenommageFolder")) {
-        if (name.equals(newName)) {
-            debutAffichage(out, "ok", action, id, currentPath, name, newName, code, gef, resources);
+        if (name.equals(fullNewName)) {
+            debutAffichage(out, "ok", action, id, currentPath, name, fullNewName, code, gef, resources);
         }
         else {
-            debutAffichage(out, "", action, id, currentPath, name, newName, code, gef, resources);
-            //CBO : UPDATE
-			//affichageErreur(out, scc, infoPath, resources.getString("ErreurPbRenommageRep"), gef);
-			affichageErreur(out, scc, infoPath, resources.getString("ErreurPbRenommageRep"), gef, spaceLabel, componentLabel);
+            debutAffichage(out, "", action, id, currentPath, name, fullNewName, code, gef, resources);
+            affichageErreur(out, scc, infoPath, resources.getString("ErreurPbRenommageRep"), gef, spaceLabel, componentLabel);
         }
     }
     
     else  if (resultat.equals("pbRenommageFile")) {
-        if (name.equals(newName)) {
-            debutAffichage(out, "ok", action, id, currentPath, name, newName, code, gef, resources);
+        if (name.equals(fullNewName)) {
+            debutAffichage(out, "ok", action, id, currentPath, name, fullNewName, code, gef, resources);
         }
         else {
-            debutAffichage(out, "", action, id, currentPath, name, newName, code, gef, resources);
-			//CBO : UPDATE
-            //affichageErreur(out, scc, infoPath, resources.getString("ErreurPbRenommageFichier"), gef);
+            debutAffichage(out, "", action, id, currentPath, name, fullNewName, code, gef, resources);
 			affichageErreur(out, scc, infoPath, resources.getString("ErreurPbRenommageFichier"), gef, spaceLabel, componentLabel);
         }
     }

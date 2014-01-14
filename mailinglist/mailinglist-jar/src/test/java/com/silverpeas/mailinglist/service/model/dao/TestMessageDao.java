@@ -1,129 +1,125 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.mailinglist.service.model.dao;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 
 import com.silverpeas.mailinglist.service.job.TestMessageChecker;
 import com.silverpeas.mailinglist.service.model.beans.Activity;
 import com.silverpeas.mailinglist.service.model.beans.Attachment;
 import com.silverpeas.mailinglist.service.model.beans.Message;
 import com.silverpeas.mailinglist.service.util.OrderBy;
-import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.sql.DataSource;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.dbunit.DataSourceDatabaseTester;
+import org.dbunit.IDatabaseTester;
+import org.dbunit.dataset.DataSetException;
+import org.dbunit.dataset.IDataSet;
+import org.dbunit.dataset.ReplacementDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.silverpeas.util.Charsets;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-public class TestMessageDao extends AbstractTransactionalDataSourceSpringContextTests {
+import static org.junit.Assert.*;
 
-  private static final int ATT_SIZE = 87186;
+import static java.io.File.separatorChar;
+
+public class TestMessageDao {
+
+  private static final int ATT_SIZE = 86199;
   private static final OrderBy orderByDate = new OrderBy("sentDate", false);
-  private static final String textEmailContent = "Bonjour famille Simpson, j'espère que vous allez bien. "
-          + "Ici tout se passe bien et Krusty est très sympathique. Surtout "
-          + "depuis que Tahiti Bob est retourné en prison. Je dois remplacer"
-          + "l'homme canon dans la prochaine émission.\nBart";
+  private static final String textEmailContent =
+      "Bonjour famille Simpson, j'espère que vous allez bien. "
+      + "Ici tout se passe bien et Krusty est très sympathique. Surtout "
+      + "depuis que Tahiti Bob est retourné en prison. Je dois remplacer"
+      + "l'homme canon dans la prochaine émission.\nBart";
   private static final String attachmentPath = getAttachmentPath();
-  private static final String COPY_PATH = System.getProperty("basedir") + File.separatorChar + "target" + File.separatorChar
-            + "test-classes" + File.separatorChar + "com" + File.separatorChar + "silverpeas"
-            + File.separatorChar + "mailinglist" + File.separatorChar + "service"
-            + File.separatorChar + "job" + File.separatorChar + "lemonde.html";
-  private MessageDao messageDao;
+  private static final String COPY_PATH = System.getProperty("basedir") + separatorChar + "target"
+      + separatorChar + "test-classes" + separatorChar + "com" + separatorChar + "silverpeas"
+      + separatorChar + "mailinglist" + separatorChar + "service" + separatorChar + "job"
+      + separatorChar + "lemonde.html";
+  private ConfigurableApplicationContext context;
+  private IDatabaseTester databaseTester;
 
-  public MessageDao getMessageDao() {
-    return messageDao;
+  @Before
+  public void setUpTest() throws Exception {
+    context = new ClassPathXmlApplicationContext(
+        "/spring-mailinglist-dao.xml", "/spring-mailinglist-embbed-datasource.xml");
+
+    databaseTester = new DataSourceDatabaseTester(getDataSource());
+    databaseTester.setDataSet(getDataSet());
+    databaseTester.onSetup();
   }
 
-  public void setMessageDao(MessageDao messageDao) {
-    this.messageDao = messageDao;
+  @After
+  public void tearDownTest() throws Exception {
+    databaseTester.onTearDown();
+    FileFolderManager.deleteFolder(getUploadPath(), false);
+    context.close();
   }
 
-  protected String[] getConfigLocations() {
-    return new String[]{"spring-checker.xml",
-              "spring-notification.xml", "spring-hibernate.xml",
-              "spring-datasource.xml"};
+  private IDataSet getDataSet() throws DataSetException {
+    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(
+        MessageDao.class.getClassLoader().getResourceAsStream(
+        "com/silverpeas/mailinglist/service/model/dao/mailinglist-dataset.xml")));
+    dataSet.addReplacementObject("[NULL]", null);
+    return dataSet;
+  }
+
+  private MessageDao getMessageDAO() {
+    return context.getBean(MessageDao.class);
+  }
+
+  private DataSource getDataSource() {
+    return context.getBean("jpaDataSource", DataSource.class);
   }
 
   protected String loadHtml() throws IOException {
-    StringWriter buffer = null;
-    BufferedReader reader = null;
+    InputStream in = TestMessageChecker.class.getResourceAsStream("lemonde.html");
     try {
-      buffer = new StringWriter();
-      reader = new BufferedReader(new InputStreamReader(
-              TestMessageChecker.class.getResourceAsStream("lemonde.html")));
-      String line = null;
-      while ((line = reader.readLine()) != null) {
-        buffer.write(line);
-      }
-      return buffer.toString();
+      return IOUtils.toString(in, Charsets.UTF_8);
     } finally {
-      if (reader != null) {
-        reader.close();
-      }
-      if (buffer != null) {
-        buffer.close();
-      }
+      IOUtils.closeQuietly(in);
     }
   }
 
-  protected void copyFile(String filePath, String targetPath)
-          throws IOException {
-    FileInputStream in = null;
-    FileOutputStream out = null;
-    try {
-      File file = new File(targetPath);
-      file.getParentFile().mkdirs();
-      in = new FileInputStream(filePath);
-      out = new FileOutputStream(file);
-      byte[] buffer = new byte[8];
-      int c = 0;
-      while ((c = in.read(buffer)) != -1) {
-        out.write(buffer, 0, c);
-      }
-    } finally {
-      if (in != null) {
-        in.close();
-      }
-      if (out != null) {
-        out.close();
-      }
-    }
+  protected void copyFile(String filePath, String targetPath) throws IOException {
+    FileUtils.copyFile(new File(filePath), new File(targetPath));
   }
 
+  @Test
   public void testCreateSimpleMessage() {
     Calendar sentDate = Calendar.getInstance();
     Message message = new Message();
@@ -136,9 +132,9 @@ public class TestMessageDao extends AbstractTransactionalDataSourceSpringContext
     message.setSentDate(sentDate.getTime());
     message.setTitle("Simple text message");
     message.setContentType("text/plain");
-    String id = messageDao.saveMessage(message);
+    String id = getMessageDAO().saveMessage(message);
     assertNotNull(id);
-    Message savedMessage = messageDao.findMessageById(id);
+    Message savedMessage = getMessageDAO().findMessageById(id);
     assertNotNull(savedMessage);
     assertEquals(textEmailContent, savedMessage.getBody());
     assertEquals("componentId", savedMessage.getComponentId());
@@ -155,7 +151,42 @@ public class TestMessageDao extends AbstractTransactionalDataSourceSpringContext
     assertEquals("text/plain", savedMessage.getContentType());
   }
 
+  @Test
+  public void testCreateSimpleMessageWithCompleteId() {
+    MessageDao messageDao = getMessageDAO();
+    Calendar sentDate = Calendar.getInstance();
+    Message message = new Message();
+    message.setBody(textEmailContent);
+    message.setComponentId("componentId");
+    message.setModerated(true);
+    message.setSummary(textEmailContent.substring(0, 200));
+    message.setSender("bart.simpson@ilverpeas.com");
+    message.setMessageId("<510A99E9.5060702@silverpeas.com>");
+    message.setSentDate(sentDate.getTime());
+    message.setTitle("Simple text message");
+    message.setContentType("text/plain");
+    String id = messageDao.saveMessage(message);
+    assertNotNull(id);
+    Message savedMessage = messageDao.findMessageById(id);
+    assertNotNull(savedMessage);
+    assertEquals(textEmailContent, savedMessage.getBody());
+    assertEquals("componentId", savedMessage.getComponentId());
+    assertEquals(true, savedMessage.isModerated());
+    assertEquals(textEmailContent.substring(0, 200), savedMessage.getSummary());
+    assertEquals("bart.simpson@ilverpeas.com", savedMessage.getSender());
+    assertEquals("<510A99E9.5060702@silverpeas.com>", savedMessage.getMessageId());
+    assertEquals(sentDate.getTime(), savedMessage.getSentDate());
+    assertEquals("Simple text message", savedMessage.getTitle());
+    assertEquals(sentDate.get(Calendar.YEAR), savedMessage.getYear());
+    assertEquals(sentDate.get(Calendar.MONTH), savedMessage.getMonth());
+    assertEquals(id, savedMessage.getId());
+    assertEquals(0, savedMessage.getVersion());
+    assertEquals("text/plain", savedMessage.getContentType());
+  }
+
+  @Test
   public void testRecreateSimpleMessage() {
+    MessageDao messageDao = getMessageDAO();
     Calendar sentDate = Calendar.getInstance();
     Message message = new Message();
     message.setBody(textEmailContent);
@@ -199,7 +230,9 @@ public class TestMessageDao extends AbstractTransactionalDataSourceSpringContext
     assertEquals(id, newId);
   }
 
+  @Test
   public void testCreateSimpleHtmlMessage() throws IOException {
+    MessageDao messageDao = getMessageDAO();
     Calendar sentDate = Calendar.getInstance();
     Message message = new Message();
     String html = loadHtml();
@@ -231,7 +264,9 @@ public class TestMessageDao extends AbstractTransactionalDataSourceSpringContext
     assertEquals("text/html", savedMessage.getContentType());
   }
 
+  @Test
   public void testCreateMessageWithAttachments() {
+    MessageDao messageDao = getMessageDAO();
     Calendar sentDate = Calendar.getInstance();
     Message message = new Message();
     message.setBody(textEmailContent);
@@ -277,7 +312,9 @@ public class TestMessageDao extends AbstractTransactionalDataSourceSpringContext
     assertEquals(attachmentPath + "lemonde.html", attached.getPath());
   }
 
+  @Test
   public void testUpdateMessage() {
+    MessageDao messageDao = getMessageDAO();
     Calendar sentDate = Calendar.getInstance();
     Message message = new Message();
     message.setBody(textEmailContent);
@@ -321,7 +358,9 @@ public class TestMessageDao extends AbstractTransactionalDataSourceSpringContext
     assertEquals(id, savedMessage.getId());
   }
 
+  @Test
   public void testUpdateMessageWithAttachment() {
+    MessageDao messageDao = getMessageDAO();
     Calendar sentDate = Calendar.getInstance();
     Message message = new Message();
     message.setBody(textEmailContent);
@@ -391,7 +430,9 @@ public class TestMessageDao extends AbstractTransactionalDataSourceSpringContext
     assertEquals(attachmentPath + "lemonde.html", attached.getPath());
   }
 
-  public void testDeleteMessageWithAttachments() throws IOException {
+  @Test
+  public void testDeleteMessageWithAttachments() throws Exception {
+    MessageDao messageDao = getMessageDAO();
     copyFile(COPY_PATH, attachmentPath + "lemonde2.html");
     copyFile(COPY_PATH, attachmentPath + "lemonde.html");
 
@@ -436,7 +477,7 @@ public class TestMessageDao extends AbstractTransactionalDataSourceSpringContext
     assertEquals(0, savedMessage.getVersion());
     assertNotNull(savedMessage.getAttachments());
     assertEquals(2, savedMessage.getAttachments().size());
-    assertEquals(174372, savedMessage.getAttachmentsSize());
+    assertEquals(172398, savedMessage.getAttachmentsSize());
     messageDao.deleteMessage(savedMessage);
     savedMessage = messageDao.findMessageById(id);
     assertNull(savedMessage);
@@ -448,7 +489,9 @@ public class TestMessageDao extends AbstractTransactionalDataSourceSpringContext
     assertFalse(deletedAttachement.exists());
   }
 
-  public void testDeleteMessageWithAttachmentShared() throws IOException {     
+  @Test
+  public void testDeleteMessageWithAttachmentShared() throws Exception {
+    MessageDao messageDao = getMessageDAO();
     copyFile(COPY_PATH, attachmentPath + "lemonde2.html");
     copyFile(COPY_PATH, attachmentPath + "toto\\lemonde2.html");
     copyFile(COPY_PATH, attachmentPath + "lemonde.html");
@@ -502,7 +545,6 @@ public class TestMessageDao extends AbstractTransactionalDataSourceSpringContext
     assertEquals(3, countRowsInTable("SC_MAILINGLIST_ATTACHMENT"));
     messageDao.deleteMessage(savedMessage);
 
-    savedMessage = messageDao.findMessageById(id);
     assertEquals(1, countRowsInTable("SC_MAILINGLIST_MESSAGE"));
     assertEquals(1, countRowsInTable("SC_MAILINGLIST_ATTACHMENT"));
     File deletedAttachement = new File(attachmentPath + "lemonde.html");
@@ -513,8 +555,9 @@ public class TestMessageDao extends AbstractTransactionalDataSourceSpringContext
     assertFalse(deletedAttachement.exists());
   }
 
-  public void testListMessagesOfMailingList() {
-
+  @Test
+  public void testListMessagesOfMailingList() throws Exception {
+    MessageDao messageDao = getMessageDAO();
     Calendar sentDate = Calendar.getInstance();
     sentDate.set(Calendar.YEAR, 2008);
     sentDate.set(Calendar.MONTH, Calendar.MARCH);
@@ -573,75 +616,77 @@ public class TestMessageDao extends AbstractTransactionalDataSourceSpringContext
     message.setTitle("Simple text message 3");
     messageDao.saveMessage(message);
     List messages = messageDao.listAllMessagesOfMailingList("componentId", 0,
-            10, orderByDate);
+        10, orderByDate);
     assertNotNull(messages);
     assertEquals(3, messages.size());
     assertEquals(3, countRowsInTable("SC_MAILINGLIST_MESSAGE"));
     assertEquals(2, countRowsInTable("SC_MAILINGLIST_ATTACHMENT"));
     messages = messageDao.listAllMessagesOfMailingList("componentId", 0, 2,
-            orderByDate);
+        orderByDate);
     assertNotNull(messages);
     assertEquals(2, messages.size());
     messages = messageDao.listAllMessagesOfMailingList("componentId", 1, 2,
-            orderByDate);
+        orderByDate);
     assertNotNull(messages);
     assertEquals(1, messages.size());
 
     messages = messageDao.listDisplayableMessagesOfMailingList("componentId",
-            -1, -1, 0, 10, orderByDate);
+        -1, -1, 0, 10, orderByDate);
     assertNotNull(messages);
     assertEquals(2, messages.size());
     messages = messageDao.listDisplayableMessagesOfMailingList("componentId",
-            -1, 2008, 0, 10, orderByDate);
+        -1, 2008, 0, 10, orderByDate);
     assertNotNull(messages);
     assertEquals(2, messages.size());
     messages = messageDao.listDisplayableMessagesOfMailingList("componentId",
-            -1, 2007, 0, 10, orderByDate);
+        -1, 2007, 0, 10, orderByDate);
     assertNotNull(messages);
     assertEquals(0, messages.size());
     messages = messageDao.listDisplayableMessagesOfMailingList("componentId",
-            Calendar.MARCH, 2008, 0, 10, orderByDate);
+        Calendar.MARCH, 2008, 0, 10, orderByDate);
     assertNotNull(messages);
     assertEquals(1, messages.size());
     messages = messageDao.listDisplayableMessagesOfMailingList("componentId",
-            Calendar.FEBRUARY, 2008, 0, 10, orderByDate);
+        Calendar.FEBRUARY, 2008, 0, 10, orderByDate);
     assertNotNull(messages);
     assertEquals(1, messages.size());
     messages = messageDao.listDisplayableMessagesOfMailingList("componentId",
-            -1, -1, 0, 1, orderByDate);
+        -1, -1, 0, 1, orderByDate);
     assertNotNull(messages);
     assertEquals(1, messages.size());
     messages = messageDao.listDisplayableMessagesOfMailingList("componentId",
-            -1, -1, 1, 1, orderByDate);
+        -1, -1, 1, 1, orderByDate);
     assertNotNull(messages);
     assertEquals(1, messages.size());
 
     messages = messageDao.listUnmoderatedMessagesOfMailingList("componentId",
-            0, 10, orderByDate);
+        0, 10, orderByDate);
     assertNotNull(messages);
     assertEquals(1, messages.size());
     messages = messageDao.listUnmoderatedMessagesOfMailingList("componentId",
-            0, 1, orderByDate);
+        0, 1, orderByDate);
     assertNotNull(messages);
     assertEquals(1, messages.size());
     messages = messageDao.listUnmoderatedMessagesOfMailingList("componentId",
-            1, 1, orderByDate);
+        1, 1, orderByDate);
     assertNotNull(messages);
     assertEquals(0, messages.size());
 
     assertEquals(3, countRowsInTable("SC_MAILINGLIST_MESSAGE"));
     assertEquals(2, countRowsInTable("SC_MAILINGLIST_ATTACHMENT"));
 
-    int unmoderatedMessages = messageDao.listTotalNumberOfUnmoderatedMessages("componentId");
+    long unmoderatedMessages = messageDao.listTotalNumberOfUnmoderatedMessages("componentId");
     assertEquals(1, unmoderatedMessages);
-    int displayabledMessages = messageDao.listTotalNumberOfDisplayableMessages("componentId");
+    long displayabledMessages = messageDao.listTotalNumberOfDisplayableMessages("componentId");
     assertEquals(2, displayabledMessages);
-    int totalMessages = messageDao.listTotalNumberOfMessages("componentId");
+    long totalMessages = messageDao.listTotalNumberOfMessages("componentId");
     assertEquals(3, totalMessages);
 
   }
 
-  public void testListActivityMessages() {
+  @Test
+  public void testListActivityMessages() throws Exception {
+    MessageDao messageDao = getMessageDAO();
     Calendar sentDate = Calendar.getInstance();
     Message message = new Message();
     message.setBody(textEmailContent);
@@ -691,7 +736,7 @@ public class TestMessageDao extends AbstractTransactionalDataSourceSpringContext
     message.setTitle("Simple text message 3");
     messageDao.saveMessage(message);
     List messages = messageDao.listActivityMessages("componentId", 5,
-            orderByDate);
+        orderByDate);
     assertNotNull(messages);
     assertEquals(2, messages.size());
     assertEquals(3, countRowsInTable("SC_MAILINGLIST_MESSAGE"));
@@ -721,7 +766,9 @@ public class TestMessageDao extends AbstractTransactionalDataSourceSpringContext
     assertEquals(0, activityMessage.getAttachmentsSize());
   }
 
+  @Test
   public void testListActivities() {
+    MessageDao messageDao = getMessageDAO();
     Calendar sentDate = Calendar.getInstance();
     sentDate.set(Calendar.MILLISECOND, 0);
     sentDate.set(Calendar.SECOND, 10);
@@ -805,7 +852,9 @@ public class TestMessageDao extends AbstractTransactionalDataSourceSpringContext
     }
   }
 
-  public void testCreateMessagesWithSameAttachments() throws IOException {  
+  @Test
+  public void testCreateMessagesWithSameAttachments() throws IOException {
+    MessageDao messageDao = getMessageDAO();
     Calendar sentDate = Calendar.getInstance();
     Message message = new Message();
     message.setBody(textEmailContent);
@@ -818,12 +867,10 @@ public class TestMessageDao extends AbstractTransactionalDataSourceSpringContext
     message.setTitle("Simple text message");
     message.setContentType("text/plain");
     Attachment attachment = new Attachment();
-    attachment.setPath(attachmentPath + "toto" + File.separator
-            + "lemonde.html");
+    attachment.setPath(attachmentPath + "toto" + File.separator + "lemonde.html");
     attachment.setFileName("lemonde.html");
     attachment.setSize(10000);
-    copyFile(COPY_PATH, attachmentPath + "toto"
-            + File.separator + "lemonde.html");
+    copyFile(COPY_PATH, attachmentPath + "toto" + File.separator + "lemonde.html");
     message.getAttachments().add(attachment);
     String id1 = messageDao.saveMessage(message);
     assertNotNull(id1);
@@ -841,7 +888,7 @@ public class TestMessageDao extends AbstractTransactionalDataSourceSpringContext
     assertEquals(sentDate.get(Calendar.MONTH), savedMessage.getMonth());
     assertEquals(id1, savedMessage.getId());
     assertEquals(0, savedMessage.getVersion());
-    assertEquals(87186, savedMessage.getAttachmentsSize());
+    assertEquals(86199, savedMessage.getAttachmentsSize());
     assertNotNull(savedMessage.getAttachments());
     assertEquals(1, savedMessage.getAttachments().size());
     assertEquals("text/plain", savedMessage.getContentType());
@@ -849,10 +896,10 @@ public class TestMessageDao extends AbstractTransactionalDataSourceSpringContext
     assertNotNull(attached);
     assertEquals(0, attached.getVersion());
     assertNotNull(attached.getId());
-    assertEquals(87186, attached.getSize());
+    assertEquals(86199, attached.getSize());
     assertEquals("lemonde.html", attached.getFileName());
     assertEquals(attachmentPath + "toto" + File.separator + "lemonde.html",
-            attached.getPath());
+        attached.getPath());
 
     message = new Message();
     message.setBody(textEmailContent);
@@ -865,12 +912,10 @@ public class TestMessageDao extends AbstractTransactionalDataSourceSpringContext
     message.setTitle("Simple text message 2");
 
     attachment = new Attachment();
-    attachment.setPath(attachmentPath + "titi" + File.separator
-            + "lemonde.html");
+    attachment.setPath(attachmentPath + "titi" + File.separator + "lemonde.html");
     attachment.setFileName("lemonde.html");
     attachment.setSize(10000);
-    copyFile(COPY_PATH, attachmentPath + "titi"
-            + File.separator + "lemonde.html");
+    copyFile(COPY_PATH, attachmentPath + "titi" + File.separator + "lemonde.html");
     message.getAttachments().add(attachment);
     String id2 = messageDao.saveMessage(message);
     assertNotNull(id2);
@@ -898,22 +943,12 @@ public class TestMessageDao extends AbstractTransactionalDataSourceSpringContext
     assertEquals(ATT_SIZE, attached.getSize());
     assertEquals("lemonde.html", attached.getFileName());
     assertEquals(attachmentPath + "toto" + File.separator + "lemonde.html",
-            attached.getPath());
-  }
-
-  @Override
-  protected void onTearDown() throws Exception {
-    super.onTearDown();
-    try {
-      FileFolderManager.deleteFolder(getUploadPath(), false);
-    } catch (UtilException e) {
-      e.printStackTrace();
-    }
+        attached.getPath());
   }
 
   private static String getAttachmentPath() {
-    return getUploadPath() + File.separatorChar + "componentId"
-            + File.separatorChar + "mailId@silverpeas.com" + File.separatorChar;
+    return getUploadPath() + File.separatorChar + "componentId" + File.separatorChar
+        + "mailId@silverpeas.com" + File.separatorChar;
   }
 
   private static String getUploadPath() {
@@ -924,5 +959,9 @@ public class TestMessageDao extends AbstractTransactionalDataSourceSpringContext
       Logger.getLogger(TestMessageDao.class.getName()).log(Level.SEVERE, null, ex);
     }
     return props.getProperty("upload.dir", "c:\\tmp\\uploads");
+  }
+
+  private int countRowsInTable(String table) throws Exception {
+    return databaseTester.getConnection().getRowCount(table);
   }
 }

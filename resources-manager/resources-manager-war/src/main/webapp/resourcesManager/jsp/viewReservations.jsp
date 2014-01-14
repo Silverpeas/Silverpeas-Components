@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,24 +24,15 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@ page import="com.silverpeas.resourcesmanager.model.CategoryDetail"%>
-<%@ page import="com.silverpeas.resourcesmanager.model.ResourceDetail"%>
-<%@ page import="com.silverpeas.resourcesmanager.model.ReservationDetail"%>
-<%@ page import="com.stratelia.webactiv.util.DateUtil"%>
+<%@ page import="org.silverpeas.resourcemanager.model.Reservation"%>
 <%@ page import="java.util.List" %>
-<%@ page import= "java.util.Date" %>
 <%@ include file="check.jsp" %>
 <% 
-//Récupération des détails de l'ulisateur
+//Recuperation des details de l'utilisateur
 
 List listOfReservation = (List)request.getAttribute("listOfReservation");
 
-ArrayCellText arrayCellText1;
 ArrayLine arrayLine;
-ArrayCellText arrayCellText2;
-ArrayCellText arrayCellText3;
-ArrayCellText arrayCellText4;
 %>
 <html>
 	<head>
@@ -54,7 +45,7 @@ ArrayCellText arrayCellText4;
 	}
 	
 	function deleteReservation(reservationId, event) {
-		  if (confirm("Etes vous sûr de vouloir supprimer la réservation liée à l'événement "+event+"?")) {
+		  if (confirm("Etes vous sÃ»r de vouloir supprimer la rÃ©servation liÃ©e Ã  l'Ã©vÃ¨nement "+event+"?")) {
 			location.href="DeleteReservation?id="+reservationId;
 		  }
 	}
@@ -88,12 +79,12 @@ ArrayColumn columnOp = arrayPane.addArrayColumn(resource.getString("resourcesMan
 columnOp.setSortable(false);
 
 
-while(listOfReservation.isEmpty() == false){
+while(!listOfReservation.isEmpty()){
 	IconPane iconPane1 = gef.getIconPane();
 	Icon editIcon = iconPane1.addIcon();
 	Icon deleteIcon = iconPane1.addIcon();
-	ReservationDetail maReservation = (ReservationDetail)listOfReservation.get(0);
-	String reservationId = maReservation.getId();
+	Reservation maReservation = (Reservation)listOfReservation.get(0);
+	Long reservationId = maReservation.getId();
 	String event = maReservation.getEvent();
 	String place = maReservation.getPlace();
 	String reason = maReservation.getReason();
@@ -104,10 +95,10 @@ while(listOfReservation.isEmpty() == false){
 	
 	arrayLine = arrayPane.addArrayLine();
 	arrayLine.addArrayCellLink(event,"ViewReservation?reservationId="+reservationId);
-	arrayCellText1 = arrayLine.addArrayCellText(dateBegin);
-	arrayCellText2 = arrayLine.addArrayCellText(dateEnd);
-	arrayCellText3 = arrayLine.addArrayCellText(reason);
-	arrayCellText4 = arrayLine.addArrayCellText(place);
+	arrayLine.addArrayCellText(dateBegin);
+	arrayLine.addArrayCellText(dateEnd);
+	arrayLine.addArrayCellText(reason);
+	arrayLine.addArrayCellText(place);
 	editIcon.setProperties(resource.getIcon("resourcesManager.updateCategory"), resource.getString("resourcesManager.modifierReservation"),"EditReservation?id="+reservationId);
 	deleteIcon.setProperties(resource.getIcon("resourcesManager.smallDelete"), resource.getString("resourcesManager.supprimerReservation"),"javascript:deleteReservation('"+reservationId+"','"+event+"')");
 	arrayLine.addArrayCellIconPane(iconPane1);

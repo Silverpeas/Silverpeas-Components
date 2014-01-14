@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -13,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -35,7 +35,9 @@
   </label>
   <description>
     <message lang="fr">Un wiki rend ses pages web librement modifiables par tous les contributeurs.
-  Un wiki est utilisé pour faciliter l'écriture collaborative de documents avec un minimum de contraintes.
+		Un wiki est utilisé pour faciliter l’écriture collaborative de documents avec un
+		minimum de contraintes. Toutes les fonctions de base sont présentent : éditeur
+		Wysiwyg, annotations, suivi des modifications, ajout de fichiers...
     </message>
     <message lang="en">A wiki allows every users to easily edit its pages thus providing an easy way to collaborate.</message>
     <message lang="de">Ein Wiki ermöglicht es jedem Benutzer auf einfacher Weise seine Seiten zu bearbeiten und ist auch eine einfache lösung um zusammenzuarbeiten.</message>

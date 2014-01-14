@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,10 +23,6 @@
  */
 package com.silverpeas.wiki.servlets;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-
 import com.ecyrd.jspwiki.WikiEngine;
 import com.ecyrd.jspwiki.auth.AuthenticationManager;
 import com.ecyrd.jspwiki.auth.WikiSecurityException;
@@ -37,12 +33,15 @@ import com.ecyrd.jspwiki.i18n.SilverpeasWikiInternationalizationManager;
 import com.silverpeas.wiki.control.WikiMultiInstanceManager;
 import com.silverpeas.wiki.control.WikiSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
-public class WikiRequestRouter extends ComponentRequestRouter {
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+
+public class WikiRequestRouter extends ComponentRequestRouter<WikiSessionController> {
   private WikiEngine m_engine;
 
   /**
@@ -75,13 +74,14 @@ public class WikiRequestRouter extends ComponentRequestRouter {
 
   /**
    * Method declaration
+   *
    * @param mainSessionCtrl
    * @param componentContext
    * @return
    * @see
    */
   @Override
-  public ComponentSessionController createComponentSessionController(
+  public WikiSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new WikiSessionController(mainSessionCtrl, componentContext);
   }
@@ -89,19 +89,18 @@ public class WikiRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
+   *
    * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialised.
-   * @return The complete destination URL for a forward (ex :
-   * "/almanach/jsp/almanach.jsp?flag=user")
+   * @param wikiSC   The component Session Control, build and initialised.
+   * @return The complete destination URL for a forward (ex : "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
-  public String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request) {
-    WikiSessionController wikiSC = (WikiSessionController) componentSC;
+  public String getDestination(String function, WikiSessionController wikiSC,
+      HttpServletRequest request) {
     SilverTrace.info("wiki", "WikiRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + componentSC.getUserId()
+        "root.MSG_GEN_PARAM_VALUE", "User=" + wikiSC.getUserId()
         + " Function=" + function);
-    String[] roles = componentSC.getUserRoles();
+    String[] roles = wikiSC.getUserRoles();
     request.setAttribute(SilverpeasWikiAuthorizer.ROLE_ATTR_NAME, roles);
     request.setAttribute(SilverpeasWikiAuthorizer.USER_ATTR_NAME, wikiSC
         .getUserDetail());

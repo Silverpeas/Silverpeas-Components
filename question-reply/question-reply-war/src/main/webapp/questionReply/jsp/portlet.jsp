@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,496 +23,229 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
-<%@ page import="java.util.*"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
 <%@ include file="checkQuestionReply.jsp" %>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
+<fmt:setLocale value="{sessionScope.SilverSessionController.favoriteLanguage}" />
 
 <%
-	// r�cup�ration des param�tres
+	// recuperation des parametres
 	String		profil		= (String) request.getAttribute("Flag");
 	String		userId		= (String) request.getAttribute("UserId");
 	Collection 	questions 	= (Collection) request.getAttribute("questions");
-	String		questionId	= (String) request.getAttribute("QuestionId");  // question en cours � ouvrir
+	String		questionId	= (String) request.getAttribute("QuestionId");  // question en cours e ouvrir
 	Collection	categories	= (Collection) request.getAttribute("Categories");
-	
-	profil = "user";
-	browseBar.setComponentName("");
 %>
 
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title><fmt:message key="GML.popupTitle"/></title>
+  <view:looknfeel />
+  <link rel="stylesheet" type="text/css" href="css/question-reply-css.jsp" />
+<script type="text/javascript">
+<!--
 
-<style type="text/css">
-/* Layout properties for your question  */
-.question{
-	cursor:pointer;		/* Cursor is like a hand when someone rolls the mouse over the question */
-	background-color:#B3BFD1;	
-}
+var etat = new Array();
+function bindQuestionsEvent() {
+  $('.questionTitle').on('click', function(event) {
+      question = this.id;
+      id = question.substring(1);
+      answersUrl = '<c:url value="/services/questionreply/${pageScope.componentId}/replies/question/"/>' + id;
+      typeLien = question.substring(0,1);
+    if (typeLien!="l" && !$(event.target).hasClass('actionQuestion')) {
+        $('#' + this.id + ' .answers').hide();
+        if(etat[id] != "open"){
+          $('#a'+id).show();
+          etat[id] = "open";
+          var found = $('#a'+id + '>ul>li');
+          if (found.length == 0) {
 
-.answer{
-	padding:3px;
-	display:none;	
-}
+				$.ajax({
+					url: answersUrl,
+					type: "GET",
+					contentType: "application/json",
+					dataType: "json",
+					cache: false,
+					success: function(data) {
+              $('#a'+id + ' > ul').html('');
+              $.each(data, function(key, answer) {
+                $('#a'+ id + ' > ul').append(displayAnswer(answer));
+              });
+					}
+            });
 
-.answers{
-	border-left: solid; 
-	border-right: solid;
-	border-width: 1px;
-	border-color: #B3BFD1;   
-	background-color: #EDEDED;
-}
-
-.titreCateg{
-	padding:5px;
-	font-size: 11px;
-	font-weight: bold;
-	background-image: url(/silverpeas/questionReply/jsp/icons/fondCateg.gif);
-	background-repeat: repeat-x;
-}
-</style>
-
-<script language="javascript">
-
-function openSPWindow(fonction, windowName)
-{
-	pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600', '400','scrollbars=yes, resizable, alwaysRaised');
-}
-
-
-
-
-function showHideAnswer()
-{
-	var numericID = this.id.replace(/[^\d]/g,'');
-	var obj = document.getElementById('a' + numericID);
-	if(obj.style.display=='block'){
-		obj.style.display='none';
-	}else{
-		obj.style.display='block';
-	}		
-}
-
-function initShowHideContent()
-{
-	var divs = document.getElementsByTagName('div');
-	for(var no=0;no<divs.length;no++)
-	{
-		if(divs[no].className=='question')
-		{
-			divs[no].onclick = showHideAnswer;
+          }
+        } else {
+          $('#a'+id).hide();
+          etat[id] = "close";
 		}
-	}
-	<% if (questionId != null && !questionId.equals("null") && questionId.length() > 0) { %>
-		openQuestion(<%=questionId%>);
-	<% } %>
+  		    return false;
+      }
+  });
 }
 
-// d�rouler les r�ponses d'une question dans la liste
-function openQuestion(questionId)
-{
-	var obj = document.getElementById('a' + questionId);
-	obj.style.display='block';
+function bindCategoryEvent() {
+   $('.categoryTitle').on('click', function() {
+      category = this.id;
+      id = category.substring(1);
+      questionUrl = '<c:url value="/services/questionreply/${pageScope.componentId}/questions/category/"/>' + id;
+      typeLien = category.substring(0,1);
+      if (typeLien!="l") {
+        $('.category').removeClass('select');
+        $('.questions').hide();
+        $('#qc' + id + ' .answers').hide();
+        $.each(etat, function(index) {
+          etat[index] = 'close';
+        });
+        var found = $('#qc'+id + '>li');
+        if (found.length == 0) {
+
+			   $.ajax({
+					url: questionUrl,
+					type: "GET",
+					contentType: "application/json",
+					dataType: "json",
+					cache: false,
+					success: function(data) {
+            $('#qc'+id).html('');
+            $.each(data, function(key, question) {
+              answersDiv = $('<div>').addClass('answers').attr('id', 'a' + question.id)
+              answersDiv.append($('<p>').text(question.content));
+              answersDiv.append($('<ul>'));
+              answersDiv.hide();
+              $('#qc'+id).append($('<li>').append(displayQuestion(question)).append(answersDiv));
+            });
+						$('.questionTitle').off('click');
+						bindQuestionsEvent();
+					}
+          });
+
+
+
+        }
+        $('#qc'+id).show();
+        $(this).parent().addClass('select');
+      }
+    });
 }
 
-window.onload = initShowHideContent;
+$(document).ready(function() {
+  bindCategoryEvent();
+  bindQuestionsEvent();
+  $('.questions').hide();
+  $("ul li:first-child .questions").show();
+  $("ul li:first-child").addClass('select');
+  $("ul li:first-child .categoryTitle").trigger($.Event("click"));
 
-</SCRIPT>
+  $('.category').hover(function() {
+      $(this).addClass('hover');
+    }, function() {
+      $(this).removeClass('hover');
+    }
+  );
 
-</HEAD>
-<BODY marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF">
-<%
-	
-   	boolean existToClose = existQuestionStatus(questions, 1);
-	boolean existToDelete = existQuestionStatus(questions, 2);
-	boolean existToBeReplied = existQuestionStatus(questions, 0);
-	
-	//out.println(window.printBefore());  
-	out.println(frame.printBefore());	
-%>
-<FORM METHOD="POST" ACTION="">
-<%
-	// lecture des cat�gories
-	out.println("<table width=\"100%\">");
-	Iterator itC = categories.iterator();
-	while (itC.hasNext())
-	{
-		NodeDetail uneCategory = (NodeDetail) itC.next();
-		String categoryId = Integer.toString(uneCategory.getId());
-		String nom = uneCategory.getName();
-		String description = uneCategory.getDescription();
-		// affichage de la cat�gorie 
-		out.println("<tr>");	
-		out.println("<td colspan=\"2\" width=\"91%\" class=\"titreCateg\">"+nom+"</td>");
-		out.println("</tr>");
-		
-		out.println("<tr><td colspan=\"2\">");
-		Collection questionsByCategory = scc.getQuestionsByCategory(categoryId);
-		// lecture de toutes les questions de la cat�gorie
-		Iterator it = questionsByCategory.iterator();
-		while(it.hasNext())
-		{
-			Question question = (Question) it.next();
-			String title = Encode.javaStringToHtmlString(question.getTitle());
-			String content = Encode.javaStringToHtmlString(question.getContent());
-			String creator = Encode.javaStringToHtmlString(question.readCreatorName());
-			String date = resource.getOutputDate(question.getCreationDate());
-			String id = question.getPK().getId();
-			String link = question._getPermalink();
-			int status = question.getStatus();
-			
-			// on n'affiche pas les questions en attente pour les lecteurs
-			if (!profil.equals("user") || (profil.equals("user") && status != 0))
-			{
-				// recherche de l'icone de l'�tat
-				String etat = "";
-				if (status == 0)
-					etat = resource.getIcon("questionReply.waiting");
-				if (status == 1)
-					etat = resource.getIcon("questionReply.encours");
-				if (status == 2)
-					etat = resource.getIcon("questionReply.close");
-				
-				// affichage de la question 
-				// ------------------------
-				String qId = "q" + id;
-				%>
-				<table cellpadding="0" cellspacing="0" border="0" width="98%" align="center" class="question"><tr><td>
-				<!-- <div id="<%=qId%>" class="question"> -->
-					<table cellpadding="0" cellspacing="2" width="100%">
-						<tr>
-							
-							<td><img src="<%=etat%>"></td>
-							<td class="titreQuestionReponse" width="100%">
-								<div id="<%=qId%>" class="question">
-									<%=Encode.javaStringToHtmlParagraphe(title)%>
-								</div>
-							</td>
-							<td>
-							<a href="<%=link%>"><img border="0" src="<%=resource.getIcon("questionReply.link")%>" alt='<%=resource.getString("questionReply.CopyQuestionLink")%>' title='<%=resource.getString("questionReply.CopyQuestionLink")%>' /></a>
-							</td>
-							
-						</tr>
-						<tr>
-							<td>&nbsp;</td>
-							<td colspan="2">
-								<span class="txtBaseline"><%=resource.getString("questionReply.questionOf")%> <%=creator%> <%=resource.getString("questionReply.replyBy")%> <%=date%></span>
-							</td>
-						</tr>
-					</table>
-				<!-- </div> -->
-				</td></tr></table>
-				<%
-				
-				// affichage des r�ponses 
-				// ----------------------
-				String aId = "a" + id;
-				Collection replies = question.readReplies();
-				Iterator itR = replies.iterator();
-				boolean existe = false;
-				if (itR.hasNext())
-					existe = true;
-				// MODIF A VALIDER : toujours afficher la zone des r�ponses, pour avoir une s�paration entre les questions
-				existe = true;
-				// FIN MODIF A VALIDER
-				if (existe)
-				{
-					// il y a au moins une r�ponse, on peut cr�er la zone des r�ponses 
-					%>
-					<table cellpadding="0" cellspacing="0" width="98%" align="center">
-					<tr>
-						<td class="answers">
-							<div id="<%=aId%>" class="answer"><br/>
-							<% if (content != null && content.length() > 0) 
-							{ %>
-								<table><tr><td>
-									<%=Encode.javaStringToHtmlParagraphe(content)%>
-								</td></tr></table>				
-								<br/>
-							<% } 
-				}
-				
-				// lecture de toutes les r�ponses de la question en cours
-				while (itR.hasNext())
-				{
-					Reply reply = (Reply) itR.next();
-					String creatorR = Encode.javaStringToHtmlString(reply.readCreatorName());
-					String contentR = Encode.javaStringToHtmlString(reply.getContent());
-					String dateR = resource.getOutputDate(reply.getCreationDate());
-					String titleR = reply.getTitle();
-					String idR = reply.getPK().getId();
-					
-					// recherche du type de la r�ponse (publique ou priv�e) pour l'ic�ne � afficher
-					int statusR = reply.getPublicReply();
-					String typeReply = "";
-					if (statusR == 1)
-						typeReply = resource.getIcon("questionReply.minicone"); 
-					else
-						typeReply = resource.getIcon("questionReply.miniconeReponse");
-					
-					// dans le cas du demandeur, regarder si la question est la sienne pour afficher ou non les r�ponses priv�es
-					boolean isPublisherQuestion = true;
-					if (profil.equals("publisher") && statusR == 0)
-					{
-						if (!question.getCreatorId().equals(userId))
-							isPublisherQuestion = false;
-						else
-							isPublisherQuestion = true;
-					}
-	
-					if ( (statusR == 0 && profil.equals("user")) || (!isPublisherQuestion) )
-					{
-						// on n'affiche pas cette r�ponse priv�e car :
-						// soit c'est un lecteur (il ne voit jamais les r�ponses priv�es)
-						// soit c'est un publieur et ce n'est pas sa question (il ne voit pas les r�ponses priv�es des autres demandeurs)
-					}
-					else
-					{ 
-						out.println(board.printBefore());
-						%>
-						<table cellpadding="0" cellspacing="2" width="100%">
-						<tr>
-							<td><img src="<%=typeReply%>"></td>
-							<td class="titreQuestionReponse" width="100%">
-								<span class="titreQuestionReponse"><%=Encode.javaStringToHtmlParagraphe(titleR)%></span>
-							</td>
-							<td nowrap>
-								<%
-								if (profil.equals("admin") || profil.equals("writer"))
-								{ %>
-									<a href="UpdateR?replyId=<%=idR%>&QuestionId=<%=id%>"><img border="0" src="<%=resource.getIcon("questionReply.update")%>" title='<%=resource.getString("questionReply.modifR")%>'/></a>
-									<a href="javaScript:deleteConfirmR('<%=idR%>', '<%=id%>')"><img border="0" src="<%=resource.getIcon("questionReply.delete")%>" title='<%=resource.getString("questionReply.delR")%>'/></a>
-							    <% } %>
-						    </td>
-						</tr>
-						</table>
-						<% if (contentR != null && !contentR.equals(""))
-						{ %>
-							<br>
-							<table><tr><td>
-								<%=Encode.javaStringToHtmlParagraphe(contentR)%>
-							</td></tr></table>
-						<% }%> 
-						<br>
-						<span class="txtBaseline">
-							<%=resource.getString("questionReply.replyOf")%> <%=creatorR%> <%=resource.getString("questionReply.replyBy")%> <%=dateR%>
-						</span>
-						<%
-						out.println(board.printAfter());
-						out.println("<br>");
-					}
-				} // fin while (lecture des r�ponses)
-				if (existe)
-				{ %>
-					</div>
-					</td></tr>
-					</table>
-				<% } 
-			}   // fin "if (!profil.equals("user") || (profil.equals("user") && status != 0))"
-		}  // fin while (lecture des questions)
+});
+  <fmt:message key="questionReply.link" bundle="${icons}" var="hyperlinkIcon"/>
+  <fmt:message key="questionReply.open" bundle="${icons}" var="openIcon"/>
+  <fmt:message key="questionReply.update" bundle="${icons}" var="updateIcon"/>
+  <fmt:message key="questionReply.delete" bundle="${icons}" var="deleteIcon"/>
+  <fmt:message key="questionReply.encours" bundle="${icons}" var="newIcon"/>
+  <fmt:message key="questionReply.waiting" bundle="${icons}" var="waitingIcon"/>
+  <fmt:message key="questionReply.close" bundle="${icons}" var="closeIcon"/>
+  <fmt:message key="questionReply.miniconeReponse" bundle="${icons}" var="addReplyIcon"/>
+  function displayQuestion(questionToBeDisplayed) {
+    questionDiv = $('<div>').addClass('question');
+    questionTitleDiv = $('<div>').attr('id', 'q' + questionToBeDisplayed.id).addClass('questionTitle');
+    questionTitle = $('<h4>');
+    questionTitleLink = $('<a>').addClass('question').attr('id', 'l' + questionToBeDisplayed.id).attr('href', '#'+questionToBeDisplayed.id).attr('title', '<fmt:message key="questionReply.open"/>').text(questionToBeDisplayed.title);
+    questionTitle.append(questionTitleLink);
+    questionTitleDiv.append(questionTitle);
+    questionHyperlink = $('<a>').addClass('permalink').attr('href', '<c:url value="/Question/" />' + questionToBeDisplayed.id).attr('title', '<fmt:message key="questionReply.CopyQuestionLink"/>');
+    hyperlinkImg = $('<img>').attr('src', '<c:url value="${hyperlinkIcon}"/>').attr('alt', '<fmt:message key="questionReply.CopyQuestionLink"/>').attr('border', '0');
+    questionHyperlink.append(hyperlinkImg);
+    questionTitleDiv.append(questionHyperlink);
+    switch(questionToBeDisplayed.status) {
+      case 0 :
+        questionStatusImg = $('<img>').addClass('status').attr('alt',  '<fmt:message key="questionReply.encours" />').attr('title',  '<fmt:message key="questionReply.encours" />').attr('src', '<c:url value="${newIcon}" />').attr('border', '0' );
+        questionTitleDiv.append(questionStatusImg);
+        break;
+      case 1 :
+        questionStatusImg = $('<img>').addClass('status').attr('alt',  '<fmt:message key="questionReply.waiting" />').attr('title',  '<fmt:message key="questionReply.waiting" />').attr('src', '<c:url value="${waitingIcon}" />').attr('border', '0' );
+        questionTitleDiv.append(questionStatusImg);
+        break;
+      case 2 :
+        questionStatusImg = $('<img>').addClass('status').attr('alt',  '<fmt:message key="questionReply.close" />').attr('title',  '<fmt:message key="questionReply.close" />').attr('src', '<c:url value="${closeIcon}" />').attr('border', '0' );
+        questionTitleDiv.append(questionStatusImg);
+        break;
+    }
 
-		out.println("</td></tr>"); 
-	}
-
-
-	// les questions sans cat�gories
-	Collection questionsByCategory = scc.getQuestionsByCategory(null);
-	if (questionsByCategory != null)
-	{
-		String nom = "  ";
-		out.println("<tr>");	
-		out.println("<td colspan=\"2\" class=\"titreCateg\">"+nom+"</td>");
-		out.println("</tr>");
-		out.println("<tr><td colspan=\"2\">");
-		// lecture de toutes les questions de la cat�gorie
-		Iterator it = questionsByCategory.iterator();
-		while(it.hasNext())
-		{
-			Question question = (Question) it.next();
-			String title = Encode.javaStringToHtmlString(question.getTitle());
-			String content = Encode.javaStringToHtmlString(question.getContent());
-			String creator = Encode.javaStringToHtmlString(question.readCreatorName());
-			String date = resource.getOutputDate(question.getCreationDate());
-			String id = question.getPK().getId();
-			String link = question._getPermalink();
-			int status = question.getStatus();
-			// recherche si le profil peut modifier la question
-			// le demandeur ne peut modifier que ses questions sans r�ponse (en attente)
-			
-			// on n'affiche pas les questions en attente pour les lecteurs
-			if (!profil.equals("user") || (profil.equals("user") && status != 0))
-			{
-				// recherche de l'icone de l'�tat
-				String etat = "";
-				if (status == 0)
-					etat = resource.getIcon("questionReply.waiting");
-				if (status == 1)
-					etat = resource.getIcon("questionReply.encours");
-				if (status == 2)
-					etat = resource.getIcon("questionReply.close");
-				
-				// affichage de la question 
-				// ------------------------
-				String qId = "q" + id;
-				%>
-				<table cellpadding="0" cellspacing="0" border="0" width="98%" align="center" class="question"><tr><td>
-				<!-- <div id="<%=qId%>" class="question"> -->
-					<table cellpadding="0" cellspacing="2" width="100%">
-						<tr>
-							
-							<td><img src="<%=etat%>"></td>
-							<td class="titreQuestionReponse" width="100%">
-								<div id="<%=qId%>" class="question">
-									<%=Encode.javaStringToHtmlParagraphe(title)%>
-								</div>
-							</td>
-							<td>
-							<a href="<%=link%>"><img border="0" src="<%=resource.getIcon("questionReply.link")%>" alt='<%=resource.getString("questionReply.CopyQuestionLink")%>' title='<%=resource.getString("questionReply.CopyQuestionLink")%>' /></a>
-							</td>
-	
-						</tr>
-						<tr>
-							<td>&nbsp;</td>
-							<td colspan="2">
-								<span class="txtBaseline"><%=resource.getString("questionReply.questionOf")%> <%=creator%> <%=resource.getString("questionReply.replyBy")%> <%=date%></span>
-							</td>
-						</tr>
-					</table>
-				<!-- </div> -->
-				</td></tr></table>
-				<%
-				
-				// affichage des r�ponses 
-				// ----------------------
-				String aId = "a" + id;
-				Collection replies = question.readReplies();
-				Iterator itR = replies.iterator();
-				boolean existe = false;
-				if (itR.hasNext())
-					existe = true;
-				// MODIF A VALIDER : toujours afficher la zone des r�ponses, pour avoir une s�paration entre les questions
-				existe = true;
-				// FIN MODIF A VALIDER
-				if (existe)
-				{
-					// il y a au moins une r�ponse, on peut cr�er la zone des r�ponses 
-					%>
-					<table cellpadding="0" cellspacing="0" width="98%" align="center">
-					<tr>
-						<td class="answers">
-							<div id="<%=aId%>" class="answer"><br/>
-							<% if (content != null && content.length() > 0) 
-							{ %>
-								<table><tr><td>
-									<%=Encode.javaStringToHtmlParagraphe(content)%>
-								</td></tr></table>				
-								<br/>
-							<% } 
-				}
-				
-				// lecture de toutes les r�ponses de la question en cours
-				while (itR.hasNext())
-				{
-					Reply reply = (Reply) itR.next();
-					String creatorR = Encode.javaStringToHtmlString(reply.readCreatorName());
-					String contentR = Encode.javaStringToHtmlString(reply.getContent());
-					String dateR = resource.getOutputDate(reply.getCreationDate());
-					String titleR = reply.getTitle();
-					String idR = reply.getPK().getId();
-					
-					// recherche du type de la r�ponse (publique ou priv�e) pour l'ic�ne � afficher
-					int statusR = reply.getPublicReply();
-					String typeReply = "";
-					if (statusR == 1)
-						typeReply = resource.getIcon("questionReply.minicone"); 
-					else
-						typeReply = resource.getIcon("questionReply.miniconeReponse");
-					
-					// dans le cas du demandeur, regarder si la question est la sienne pour afficher ou non les r�ponses priv�es
-					boolean isPublisherQuestion = true;
-					if (profil.equals("publisher") && statusR == 0)
-					{
-						if (!question.getCreatorId().equals(userId))
-							isPublisherQuestion = false;
-						else
-							isPublisherQuestion = true;
-					}
-	
-					if ( (statusR == 0 && profil.equals("user")) || (!isPublisherQuestion) )
-					{
-						// on n'affiche pas cette r�ponse priv�e car :
-						// soit c'est un lecteur (il ne voit jamais les r�ponses priv�es)
-						// soit c'est un publieur et ce n'est pas sa question (il ne voit pas les r�ponses priv�es des autres demandeurs)
-					}
-					else
-					{ 
-						out.println(board.printBefore());
-						%>
-						<table cellpadding="0" cellspacing="2" width="100%">
-						<tr>
-							<td><img src="<%=typeReply%>"></td>
-							<td class="titreQuestionReponse" width="100%">
-								<span class="titreQuestionReponse"><%=Encode.javaStringToHtmlParagraphe(titleR)%></span>
-							</td>
-							<td nowrap>
-								<%
-								if (profil.equals("admin") || profil.equals("writer"))
-								{ %>
-									<a href="UpdateR?replyId=<%=idR%>&QuestionId=<%=id%>"><img border="0" src="<%=resource.getIcon("questionReply.update")%>" title='<%=resource.getString("questionReply.modifR")%>'/></a>
-									<a href="javaScript:deleteConfirmR('<%=idR%>', '<%=id%>')"><img border="0" src="<%=resource.getIcon("questionReply.delete")%>" title='<%=resource.getString("questionReply.delR")%>'/></a>
-							    <% } %>
-						    </td>
-						</tr>
-						</table>
-						<% if (contentR != null && !contentR.equals(""))
-						{ %>
-							<br>
-							<table><tr><td>
-								<%=Encode.javaStringToHtmlParagraphe(contentR)%>
-							</td></tr></table>
-						<% }%> 
-						<br>
-						<span class="txtBaseline">
-							<%=resource.getString("questionReply.replyOf")%> <%=creatorR%> <%=resource.getString("questionReply.replyBy")%> <%=dateR%>
-						</span>
-						<%
-						out.println(board.printAfter());
-						out.println("<br>");
-					}
-				} // fin while (lecture des r�ponses)
-				if (existe)
-				{ %>
-					</div>
-					</td></tr>
-					</table>
-				<% } 
-			}   // fin "if (!profil.equals("user") || (profil.equals("user") && status != 0))"
-		}  // fin while (lecture des questions)
-		out.println("</td></tr>");
-	}
-
-
-	out.println("</table>");
-
-%>
-</FORM>
-
-<form name="QForm" action="" Method="POST">
-<input type="hidden" name="Id">
-</form>
-
-<form name="RForm" action="" Method="POST">
-<input type="hidden" name="replyId">
-<input type="hidden" name="QuestionId">
-</form>
-<%
-out.println(frame.printAfter());
-//out.println(window.printAfter());
-%>
-</BODY>
-</HTML>
+    questionAuthor = $('<span>').addClass('questionAuthor').addClass('txtBaseline').text(questionToBeDisplayed.creator.fullName + ' ');
+    questionCreationDate = $('<span>').addClass('questionDate').text('- ' + questionToBeDisplayed.creationDate);
+    questionAuthor.append(questionCreationDate);
+    questionTitleDiv.append(questionAuthor);
+    questionDiv.append(questionTitleDiv);
+    actionDiv = $('<div>').addClass('action');
+    return questionDiv;
+  }
+  <fmt:message key="questionReply.minicone" bundle="${icons}" var="publicAnswerIcon"/>
+  <fmt:message key="questionReply.miniconeReponse" bundle="${icons}" var="privateAnswerIcon"/>
+  function displayAnswer(answer) {
+    answerBlock = $('<li>').addClass('answer');
+    answerTitle = $('<h5>').addClass('answerTitle').text(answer.title);
+    if(answer.publicReply) {
+      answerTitle.append($('<img>').addClass('status').attr('alt','<fmt:message key="questionReply.Rpublique" />').attr('title','<fmt:message key="questionReply.Rpublique" />').attr('src', '<c:url value="${publicAnswerIcon}" />').attr('border', '0' ));
+    } else {
+      answerTitle.append($('<img>').addClass('status').attr('alt','<fmt:message key="questionReply.Rprivee" />').attr('title','<fmt:message key="questionReply.Rprivee" />').attr('src', '<c:url value="${privateAnswerIcon}" />').attr('border', '0' ));
+    }
+    actionDiv = $('<div>').addClass('action');
+    answerTitle.append(actionDiv);
+    answerBlock.append(answerTitle);
+    answerContentDiv = $('<div>').addClass('answerContent');
+    answerAttachmentDiv = $('<div>').addClass('answerAttachment');
+    if(answer.attachments != null && answer.attachments.length > 0) {
+      answerAttachmentDiv.load('<c:url value="/attachment/jsp/displayAttachedFiles.jsp?Context=attachment&ComponentId=${pageScope.componentId}" />&Id=' + answer.id);
+      answerContentDiv.append(answerAttachmentDiv);
+    }
+    answerContentDiv.append(answer.content);
+    answerBlock.append(answerContentDiv);
+    answerAuthorBlock = $('<span>').addClass('answerAuthor txtBaseline').text(answer.creatorName);
+    answerDateBlock = $('<span>').addClass('answerDate').text(' - ' + answer.creationDate);
+    answerAuthorBlock.append(answerDateBlock);
+    answerBlock.append(answerAuthorBlock);
+    return answerBlock;
+  }
+-->
+</script>
+</head>
+<body id="portlet-faq">
+  <view:window browseBarVisible="false">
+  <ul>
+    <c:forEach items="${requestScope.Categories}" var="category">
+      <li class="category">
+        <div class="categoryTitle" id="c<c:out value='${category.id}'/>">
+          <h3><a class="categoryTitle"  id="lc<c:out value='${category.id}'/>" title="<fmt:message key="questionReply.openCategory"/>" href="#"><c:out value='${category.name}'/></a></h3>
+          <div class="action">
+          </div>
+        </div>
+        <ul class="questions" id="qc<c:out value='${category.id}'/>" ></ul>
+    </li>
+    </c:forEach>
+    <li class="category">
+        <div class="categoryTitle" id="cnull">
+          <h3><a class="categoryTitle"  id="lcnull" title="<fmt:message key="questionReply.openCategory"/>" href="#"><fmt:message key="questionReply.noCategory"/></a></h3>
+          <div class="action">
+          </div>
+        </div>
+        <ul class="questions" id="qcnull" ></ul>
+    </li>
+  </ul>
+  </view:window>
+</body>
+</html>

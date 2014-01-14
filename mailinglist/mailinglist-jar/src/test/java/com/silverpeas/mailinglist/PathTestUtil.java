@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,6 +28,7 @@
  */
 package com.silverpeas.mailinglist;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -39,15 +40,14 @@ import java.util.logging.Logger;
  */
 public class PathTestUtil {
 
-  public static final String SEPARATOR = System.getProperty("file.separator");
+  public static final String SEPARATOR = File.separator;
   private final static Properties TESTS_PROPS = new Properties();
   public static String BUILD_PATH = "";
   static {
     try {
       TESTS_PROPS.load(PathTestUtil.class.getClassLoader().
           getResourceAsStream("maven.properties"));
-      BUILD_PATH = TESTS_PROPS.getProperty("build.dir").replace('/',
-          SEPARATOR.charAt(0));
+      BUILD_PATH = TESTS_PROPS.getProperty("build.dir").replace('/', SEPARATOR.charAt(0));
     } catch (IOException ex) {
       Logger.getLogger(PathTestUtil.class.getName()).log(Level.SEVERE, null, ex);
     }

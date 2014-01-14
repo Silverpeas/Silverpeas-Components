@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -196,8 +196,7 @@ public class MessageChecker
         try {
           MimeMessage message = (MimeMessage) msgs[msgNum];
           if (isImap()) {
-            if (!message.getFlags().contains(Flag.SEEN)
-                && !message.getFlags().contains(Flag.DELETED)) {
+            if (!message.isSet(Flag.SEEN) && !message.isSet(Flag.DELETED)) {
               message = new MimeMessage(message);
               processEmail(message, eventsMap, listenersByEmail);
             }
@@ -255,8 +254,7 @@ public class MessageChecker
    * @throws MessagingException
    * @throws IOException
    */
-  void processEmail(MimeMessage mail,
-      Map<MessageListener, MessageEvent> eventsMap,
+  void processEmail(MimeMessage mail, Map<MessageListener, MessageEvent> eventsMap,
       Map<String, MessageListener> listenersByEmail) throws MessagingException,
       IOException {
     BetterMimeMessage email = new BetterMimeMessage(mail);
@@ -264,8 +262,7 @@ public class MessageChecker
       return;
     }
     Set<String> allRecipients = getAllRecipients(mail);
-    Set<MessageListener> mailingLists = getRecipientMailingLists(allRecipients,
-        listenersByEmail);
+    Set<MessageListener> mailingLists = getRecipientMailingLists(allRecipients, listenersByEmail);
     Iterator<MessageListener> iter = mailingLists.iterator();
     while (iter.hasNext()) {
       MessageEvent event;
@@ -321,7 +318,7 @@ public class MessageChecker
     Iterator<String> recipientIter = recipients.iterator();
     while (recipientIter.hasNext()) {
       String email = recipientIter.next();
-      MessageListener mailingList = listenersByEmail.get(email);
+      MessageListener mailingList = listenersByEmail.get(email.toLowerCase());
       if (mailingList != null) {
         mailingLists.add(mailingList);
       }
@@ -341,7 +338,7 @@ public class MessageChecker
       MessageListener listener = listenerIter.next();
       MailingList list = mailingListService.findMailingList(listener.getComponentId());
       if (list != null && list.getSubscribedAddress() != null) {
-        listenersByEmail.put(list.getSubscribedAddress(), listener);
+        listenersByEmail.put(list.getSubscribedAddress().toLowerCase(), listener);
       }
     }
     return listenersByEmail;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -151,7 +151,13 @@ public class EventOccurrence implements Comparable<EventOccurrence> {
    * @return true if the event is occurring all the day.
    */
   public boolean isAllDay() {
-    return startDate instanceof Date || endDate instanceof Date;
+    boolean allDay = startDate instanceof Date || endDate instanceof Date;
+    if (!allDay) {
+      Date startDay = new Date(startDate.asDate());
+      Date endDay = new Date(endDate.asDate());
+      allDay = startDay.isBefore(endDay);
+    }
+    return allDay;
   }
 
   /**

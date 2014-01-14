@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -13,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -35,8 +35,10 @@
   </label>
   <description>
     <message lang="fr">
-      Permet de créer un annuaire de compétences. A chaque expert est associé un formulaire décrivant ses domaines d'expertise.
-      L'indexation du CV sur le plan de classement permet de trouver rapidement une compétence.
+		L’application a pour objectif de retrouver les utilisateurs
+		experts dans un domaine et de se mettre en relation avec eux. Les experts sont
+		qualifiés grâce à un formulaire personnalisable et la cartographie de connaissances
+		(Plan de classement).
     </message>
     <message lang="en">
       Create a directory of skills, whith each expert described by an xml form. The resume is classified on the classification scheme 
@@ -91,6 +93,7 @@
       <mandatory>true</mandatory>
       <value>whitePages/annuaire.xml</value>
       <type>text</type>
+	  <size>30</size>
       <updatable>creation</updatable>
       <help>
         <message lang="fr">Modèle xml spécifique permettant de saisir des informations sur l'expert.</message>
@@ -109,6 +112,7 @@
       <mandatory>true</mandatory>
       <value>whitePages/annuaire.html</value>
       <type>text</type>
+	  <size>30</size>
       <updatable>always</updatable>
       <help>
         <message lang="fr">Fichier html permettant de présenter les informations de l'expert.</message>
@@ -129,7 +133,7 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Active le masquage des mails dans l'IHM. Les notifications envoyées à partir de ce composant auront un expéditeur générique.</message>
+        <message lang="fr">Active le masquage des mails dans l'IHM. Les notifications envoyées à partir de cette application auront un expéditeur générique.</message>
         <message lang="en">Hide the emailaddress. The sender of notifications will be generic.</message>
         <message lang="de">Blendet die E-Mailadresse aus. Der Absender der eingegangenen Meldungen wird anonym sein.</message>
       </help>
@@ -178,14 +182,15 @@
     <parameter>
       <name>domainId</name>
       <label>
-        <message lang="fr">Domaine auquel rattachée l'annuaire</message>
-        <message lang="en">Silverpeas's domains to which the directory is attached</message>
+        <message lang="fr">Domaine auquel est rattaché l'annuaire</message>
+        <message lang="en">Silverpeas's domain to which the directory is attached</message>
         <message lang="de">Silverpeas-Domänen auf, die das Verzeichnis angeschlossen ist</message>
       </label>      
       <order>6</order>
       <mandatory>true</mandatory>
       <value>0</value>
       <type>text</type>
+	  <size>5</size>
       <updatable>always</updatable>
       <help>
         <message lang="fr">Définit le domaine auquel on souhaite rattacher l'annuaire.</message>

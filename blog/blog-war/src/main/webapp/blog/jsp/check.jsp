@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -70,10 +70,10 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="com.silverpeas.myLinks.model.LinkDetail"%>
 <%@ page import="com.stratelia.webactiv.agenda.view.CalendarHtmlView"%>
 <%@ page import="com.stratelia.webactiv.agenda.control.AgendaSessionController"%>
-<%@ page import="com.stratelia.webactiv.calendar.model.SchedulableCount"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.calendar.Calendar"%>
 <%@ page import="com.silverpeas.util.StringUtil"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
+<%@ page import="com.stratelia.webactiv.SilverpeasRole"%>
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 
@@ -84,7 +84,6 @@ MainSessionController 	m_MainSessionCtrl 	= (MainSessionController) session.getA
 String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 
 ResourcesWrapper resource = (ResourcesWrapper)request.getAttribute("resources");
-ResourceLocator settings = (ResourceLocator) request.getAttribute("settings");
 
 Window window = gef.getWindow();
 BrowseBar browseBar = window.getBrowseBar();

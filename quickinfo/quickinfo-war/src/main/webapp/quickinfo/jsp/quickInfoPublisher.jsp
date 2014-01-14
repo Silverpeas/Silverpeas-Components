@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,6 +25,7 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkQuickInfo.jsp" %>
 
 <%
@@ -40,14 +41,11 @@
   }
 
 %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>Quick Info - Publieur</title>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/formUtil.js"></script>
 <script type="text/javascript">
@@ -85,22 +83,23 @@ function addQuickInfo() {
         Window window = gef.getWindow();
 
         BrowseBar browseBar = window.getBrowseBar();
-        Frame maFrame = gef.getFrame();
 
         OperationPane operationPane = window.getOperationPane();
         if (isAdmin && quickinfo.isPdcUsed()) {
             operationPane.addOperation(pdcUtilizationSrc, resources.getString("GML.PDCParam"), "javascript:onClick=openSPWindow('"+m_context+"/RpdcUtilization/jsp/Main?ComponentId=" + quickinfo.getComponentId() + "','utilizationPdc1')");
             operationPane.addLine();
         }
-        operationPane.addOperation(m_context+"/util/icons/quickInfo_to_add.gif", resources.getString("creation"), "javascript:onClick=addQuickInfo()");
+        operationPane.addOperationOfCreation(m_context+"/util/icons/create-action/add-news.png", resources.getString("creation"), "javascript:onClick=addQuickInfo()");
 
         // Clipboard
-        operationPane.addOperation(m_context+"/util/icons/copy.gif", generalMessage.getString("GML.copy"), "javascript:onClick=ClipboardCopyAll()");
-        operationPane.addOperation(m_context+"/util/icons/paste.gif", generalMessage.getString("GML.paste"),    "javascript:onClick=ClipboardPaste()");
+        operationPane.addOperation(m_context+"/util/icons/copy.gif", resources.getString("GML.copy"), "javascript:onClick=ClipboardCopyAll()");
+        operationPane.addOperation(m_context+"/util/icons/paste.gif", resources.getString("GML.paste"), "javascript:onClick=ClipboardPaste()");
 
         out.println(window.printBefore());
-        out.println(maFrame.printBefore());
-
+%>
+<view:frame>
+<view:areaOfOperationOfCreation/>
+<%
           ArrayPane arrayPane = gef.getArrayPane("quickinfoList", pageContext);
           arrayPane.setXHTML(true);
           arrayPane.addArrayColumn(null);
@@ -119,7 +118,7 @@ function addQuickInfo() {
 			ArrayLine line = arrayPane.addArrayLine();
 		IconPane iconPane1 = gef.getIconPane();
 		Icon debIcon = iconPane1.addIcon();
-		debIcon.setProperties(m_context+"/util/icons/quickInfoLittleIcon.gif", "", "");
+		debIcon.setProperties(m_context+"/util/icons/Actualite.gif", "", "");
 		line.addArrayCellIconPane(iconPane1);	
             line.addArrayCellLink(EncodeHelper.javaStringToHtmlString(pub.getName()), "javascript:onClick=editQuickInfo('"+pub.getPK().getId()+"')");
                                                 try {
@@ -146,8 +145,9 @@ function addQuickInfo() {
                                 index++;
           }
           out.println(arrayPane.print());
-
-        out.println(maFrame.printAfter());
+%>
+</view:frame>
+<%
         out.println(window.printAfter());
 %>
 </form>

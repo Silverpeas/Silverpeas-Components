@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -32,26 +32,22 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 <%@ page import="com.stratelia.webactiv.util.coordinates.model.Coordinate"%>
 <%@ page import="com.stratelia.webactiv.util.coordinates.model.CoordinatePoint"%>
+<%@ page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
+
 
 <%@ include file="checkKmelia.jsp" %>
 <%@ include file="kmax_axisReport.jsp" %>
-<%@ include file="tabManager.jsp.inc" %>
 
 <%!
-CoordinatePoint getPoint(NodeDetail nodeDetail, Collection points, String translation, KmeliaSessionController kmeliaScc)
-{
-	Iterator 		pointsIt 	= points.iterator();
-	CoordinatePoint point 		= null;
+CoordinatePoint getPoint(NodeDetail nodeDetail, Collection points, String translation, KmeliaSessionController kmeliaScc) {
+	Iterator pointsIt 	= points.iterator();
 	while (pointsIt.hasNext()) {
-		point = (CoordinatePoint) pointsIt.next();
-		if (point.getPath().indexOf("/"+nodeDetail.getNodePK().getId()+"/") != -1)
-		{
-			try
-			{
-				NodeDetail pointDetail = kmeliaScc.getNodeHeader(new Integer(point.getNodeId()).toString());
+		CoordinatePoint point = (CoordinatePoint) pointsIt.next();
+		if (point.getPath().contains("/" + nodeDetail.getNodePK().getId() + "/")) {
+			try {
+				NodeDetail pointDetail = kmeliaScc.getNodeHeader(Integer.toString(point.getNodeId()));
 				point.setName(pointDetail.getName(translation));
-			}  catch (Exception e)
-			{
+			}  catch (Exception e) {
 				SilverTrace.error( "kmax", "kmax_viewCombination.jsp", "kmelia.EX_IMPOSSIBLE_DACCEDER_AU_THEME", e );
 			}
 			return point;
@@ -62,37 +58,17 @@ CoordinatePoint getPoint(NodeDetail nodeDetail, Collection points, String transl
 %>
 
 <%
-	String deleteSrc			= m_context + "/util/icons/delete.gif";
-	String alertSrc			= m_context + "/util/icons/alert.gif";
-	String deletePubliSrc		= m_context + "/util/icons/publicationDelete.gif";
-	String hLineSrc			= m_context + "/util/icons/colorPix/1px.gif";
-
-	ResourceLocator publicationSettings = new ResourceLocator("com.stratelia.webactiv.util.publication.publicationSettings", kmeliaScc.getLanguage());
+	String deleteSrc = m_context + "/util/icons/delete.gif";
+	String hLineSrc	 = m_context + "/util/icons/colorPix/1px.gif";
 	
-	KmeliaPublication kmeliaPublication = null;
-	UserDetail ownerDetail = null;
-	boolean isOwner = false;
-	
-	CompletePublication pubComplete = null;
-	PublicationDetail pubDetail = null;
-	InfoDetail infos = null;
-	ModelDetail model = null;
-	String vignette_url = null;
-	
-	String 	profile 	= (String) request.getParameter("Profile");
 	String	currentLang = (String) request.getAttribute("Language");
 	
-	String	wizardLast		= (String) request.getAttribute("WizardLast");
 	String 	wizard			= (String) request.getAttribute("Wizard");
 	String 	wizardRow		= (String) request.getAttribute("WizardRow");
 
-	if (!StringUtil.isDefined(wizardLast))
-		wizardLast = "4";
-
-	if (wizardRow == null)
+	if (wizardRow == null) {
 		wizardRow = "4";
-
-	boolean isEnd = true;
+	}
 	
 	String action = "KmaxViewCombination";
 %>
@@ -104,7 +80,7 @@ CoordinatePoint getPoint(NodeDetail nodeDetail, Collection points, String transl
 out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script language="javascript">
+<script type="text/javascript">
 	function search() {
 	    z = "";
 	    nbSelectedAxis = 0;
@@ -118,7 +94,7 @@ out.println(gef.getLookStyleSheet());
 	        }
 	    }
 	    if (nbSelectedAxis != 1) {
-	            window.alert("Vous devez s�lectionnez au moins un axe !");
+	            window.alert("Vous devez sélectionnez au moins un axe !");
 	    } else {
 	            document.managerForm.action = "KmaxAddCoordinate";
 	            document.managerForm.SearchCombination.value = z;
@@ -145,35 +121,33 @@ out.println(gef.getLookStyleSheet());
 	browseBar.setDomainName(kmeliaScc.getSpaceLabel());
 	browseBar.setComponentName(kmeliaScc.getComponentLabel(), "KmaxMain");
 	String pubName = kmeliaScc.getSessionPublication().getDetail().getName(currentLang);
-	browseBar.setExtraInformation(Encode.encodeSpecialChar(pubName));
+	browseBar.setExtraInformation(pubName);
 	String id = kmeliaScc.getSessionPublication().getDetail().getId();
 	browseBar.setI18N(action, currentLang);
 	
-    out.println(window.printBefore());
+  out.println(window.printBefore());
 
-	if ("progress".equals(wizard))
-		displayWizardOperations(wizardRow, id, kmeliaScc, gef, action, resources, out, kmaxMode);
-	else
-		displayAllOperations(id, kmeliaScc, gef, action, resources, out, true);
-    	
-    out.println(frame.printBefore());
-    if ("finish".equals(wizard) || "progress".equals(wizard))
-	{
-		//cadre d'aide
-    	Board boardHelp = gef.getBoard();
-	    out.println(boardHelp.printBefore());
-		out.println("<table border=\"0\"><tr>");
-		out.println("<td valign=\"absmiddle\"><img border=\"0\" src=\""+resources.getIcon("kmelia.info")+"\"></td>");
-		out.println("<td>"+Encode.javaStringToHtmlParagraphe(resources.getString("kmelia.HelpKmaxClassification"))+"</td>");
-		out.println("</tr></table>");
-	    out.println(boardHelp.printAfter());
-	    out.println("<br />");
+	if ("progress".equals(wizard)) {
+		KmeliaDisplayHelper.displayWizardOperations(wizardRow, id, kmeliaScc, gef, action, resources, out, kmaxMode);
+	} else {
+		KmeliaDisplayHelper.displayAllOperations(id, kmeliaScc, gef, action, resources, out, true);
+	}
+  out.println(frame.printBefore());
+  if ("finish".equals(wizard) || "progress".equals(wizard)) {
+    %>
+    	<!-- cadre d'aide -->
+		<div class="inlineMessage">
+			<img border="0" src="<%=resources.getIcon("kmelia.info") %>"/>
+      <%=EncodeHelper.javaStringToHtmlParagraphe(resources.getString("kmelia.HelpKmaxClassification"))%>
+    </div>
+		<br clear="all"/>
+    <%
 	}
     
 	out.println(displayAxisToPublish(kmeliaScc, gef, currentLang));
     
 	Collection coordinates = kmeliaScc.getPublicationCoordinates(id);
-	out.println("<br>");
+	out.println("<br/>");
 	out.println(board.printBefore());
 
 	out.println("<table align=\"center\" cellpading=\"0\" cellspacing=\"3\" border=\"0 \" width=\"100%\">");
@@ -184,16 +158,16 @@ out.println(gef.getLookStyleSheet());
       List axisHeaders = kmeliaScc.getAxisHeaders();
       Iterator headersIt = axisHeaders.iterator();
       NodeDetail nodeDetail = null;
-	  out.println("<tr><td colspan=\"15\" align=\"center\" class=\"intfdcolor\" height=\"1\"><img src=\""+hLineSrc+"\" width=\"100%\" height=\"1\"></td></tr>");
+	    out.println("<tr><td colspan=\"15\" align=\"center\" class=\"intfdcolor\" height=\"1\"><img src=\""+hLineSrc+"\" width=\"100%\" height=\"1\"></td></tr>");
       out.println("<tr>");
       while (headersIt.hasNext()) {
           nodeDetail = (NodeDetail) headersIt.next();
 		  //Do not get hidden nodes (Basket and unclassified)
 		  if (!NodeDetail.STATUS_INVISIBLE.equals(nodeDetail.getStatus()))
-			  out.println("<td align=\"center\"><b>"+Encode.javaStringToHtmlString(nodeDetail.getName(currentLang))+"</b></td>");
+			  out.println("<td align=\"center\"><b>" + EncodeHelper.javaStringToHtmlString(nodeDetail.getName(currentLang)) + "</b></td>");
       }
      out.println("<td align=\"center\"><b>"+kmeliaScc.getString("Del")+"</b></td></tr>");
-	 out.println("<tr><td colspan=\"15\" align=\"center\" class=\"intfdcolor\" height=\"1\"><img src=\""+hLineSrc+"\" width=\"100%\" height=\"1\"></td></tr>");
+	   out.println("<tr><td colspan=\"15\" align=\"center\" class=\"intfdcolor\" height=\"1\"><img src=\""+hLineSrc+"\" width=\"100%\" height=\"1\"></td></tr>");
 
       //display coordinates
       Iterator it = coordinates.iterator();
@@ -210,44 +184,37 @@ out.println(gef.getLookStyleSheet());
           headersIt = axisHeaders.iterator();
           while (headersIt.hasNext()) {
           	nodeDetail 	= (NodeDetail) headersIt.next();
-          	if (!NodeDetail.STATUS_INVISIBLE.equals(nodeDetail.getStatus()))
-          	{
+          	if (!NodeDetail.STATUS_INVISIBLE.equals(nodeDetail.getStatus())) {
 	          	point		= getPoint(nodeDetail, points, currentLang, kmeliaScc);
-	          	if (point != null)
-	          	{
+	          	if (point != null) {
 	          		pointName = point.getName();
-	              	pointLevel = point.getLevel();
-	              	if (pointLevel == 2)
-	                	out.println("<td align=\"center\">"+kmeliaScc.getString("All")+"</td>");
-	              	else
-	                	out.println("<td align=\"center\">"+Encode.javaStringToHtmlString(pointName)+"</td>");
-	          	}
-	          	else
+	              pointLevel = point.getLevel();
+	              if (pointLevel == 2) {
+                  out.println("<td align=\"center\">" + kmeliaScc.getString("All") + "</td>");
+                } else {
+                  out.println("<td align=\"center\">" + EncodeHelper.javaStringToHtmlString(pointName)+"</td>");
+                }
+	          	} else {
 	          		out.println("<td align=\"center\">"+kmeliaScc.getString("All")+"</td>");
+              }
           	}
-       	}
+       	  }
           out.println("<td  align=\"center\"><A href=\"javaScript:deleteCoordinate('"+coordinate.getCoordinateId()+"')\"><img src=\""+deleteSrc+"\" title=\""+kmeliaScc.getString("Delete")+"\" border=0></A></td>");
           out.println("</tr>");
-      }
-	  out.println("<tr><td colspan=\"15\" align=\"center\" class=\"intfdcolor\" height=\"1\"><img src=\""+hLineSrc+"\" width=\"100%\" height=\"1\"></td></tr>");
+        }
+      out.println("<tr><td colspan=\"15\" align=\"center\" class=\"intfdcolor\" height=\"1\"><img src=\""+hLineSrc+"\" width=\"100%\" height=\"1\"></td></tr>");
     }
     out.println("</table>");
     out.println("</center>");
     out.println(board.printAfter());
     
-    if ("progress".equals(wizard))
-	{
-    	Button cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "DeletePublication?PubId="+id, false);
-    	Button nextButton;
-    	if (isEnd)
-    		nextButton = (Button) gef.getFormButton(resources.getString("kmelia.End"), "WizardNext?Position=KmaxClassification", false);
-    	else
-    		nextButton = (Button) gef.getFormButton(resources.getString("GML.next"), "WizardNext?Position=KmaxClassification", false);
+    if ("progress".equals(wizard)) {
+    	Button cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "DeletePublication?PubId="+id, false);
+    	Button nextButton = gef.getFormButton(resources.getString("kmelia.End"), "WizardNext?Position=KmaxClassification", false);
     	
 		ButtonPane buttonPane = gef.getButtonPane();
 		buttonPane.addButton(nextButton);
 		buttonPane.addButton(cancelButton);
-		buttonPane.setHorizontalPosition();
 		out.println("<br /><center>"+buttonPane.print()+"</center><br />");
 	}
     

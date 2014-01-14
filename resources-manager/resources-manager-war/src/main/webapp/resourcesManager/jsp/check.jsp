@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -36,9 +36,9 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
 <%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
-<%@ page import="com.silverpeas.resourcesmanager.model.CategoryDetail"%>
-<%@ page import="com.silverpeas.resourcesmanager.model.ResourceDetail"%>
-<%@ page import="com.silverpeas.resourcesmanager.model.ReservationDetail"%>
+<%@ page import="org.silverpeas.resourcemanager.model.Category"%>
+<%@ page import="org.silverpeas.resourcemanager.model.Resource"%>
+<%@ page import="org.silverpeas.resourcemanager.model.Reservation"%>
 <%@ page import="com.silverpeas.form.DataRecord"%>
 <%@ page import="com.silverpeas.form.Form"%>
 <%@ page import="com.silverpeas.form.RecordSet"%>
@@ -68,7 +68,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.*"%>
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
-<%@ page import="com.silverpeas.resourcesmanager.control.ResourcesManagerSessionController"%>
+<%@ page import="org.silverpeas.resourcesmanager.control.ResourcesManagerSessionController"%>
 <%@ page import="java.util.Calendar"%>
 <%@ page import="java.util.List"%>
 
@@ -89,7 +89,6 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="java.util.*"%>
 <%@ page import="javax.ejb.*,java.sql.SQLException,javax.naming.*,javax.rmi.PortableRemoteObject"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.*"%>
 
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
 <%@ page import="com.stratelia.webactiv.util.exception.*"%>

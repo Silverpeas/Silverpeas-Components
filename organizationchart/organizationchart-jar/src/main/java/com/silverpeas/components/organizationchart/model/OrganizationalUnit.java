@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,10 +25,12 @@
 package com.silverpeas.components.organizationchart.model;
 
 import java.util.List;
+import java.util.Map;
 
 public class OrganizationalUnit {
 
   private String name;
+  private String specificCSSClass = "";
 
   // case organizational unit is a category of personn
   private String key;
@@ -42,6 +44,8 @@ public class OrganizationalUnit {
   private String parentName;
   private String parentOu;
   private String completeName;
+  
+  private Map<String, String> detail;
 
   public OrganizationalUnit(String name, String completeName) {
     this.name = name;
@@ -108,6 +112,22 @@ public class OrganizationalUnit {
 
   public List<OrganizationalPerson> getMainActors() {
     return mainActors;
+  }
+
+  public void setSpecificCSSClass(String specificCSSClass) {
+    this.specificCSSClass = specificCSSClass;
+  }
+
+  public String getSpecificCSSClass() {
+    return specificCSSClass;
+  }
+  
+  public void setDetail(Map<String, String> detail) {
+    this.detail = detail;
+  }
+
+  public Map<String, String> getDetail() {
+    return detail;
   }
 
 }

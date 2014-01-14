@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -39,14 +39,10 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
-
-<c:set var="browseContext" value="${requestScope.browseContext}" />
-<c:set var="componentLabel" value="${browseContext[1]}" />
 <c:set var="profile" value="${requestScope.Profile}" />
 <c:set var="categories" value="${requestScope.Categories}" />
 <c:set var="nbTotal" value="${requestScope.NbTotal}" />
 <c:set var="validation" value="${requestScope.Validation}" />
-<c:set var="componentInstanceId" value="${requestScope.InstanceId}" />
 
 <c:set var="formSearch" value="${requestScope.Form}" />
 <c:set var="data" value="${requestScope.Data}" />
@@ -54,30 +50,24 @@
 <c:set var="isWysiwygHeaderEnabled" value="${requestScope.isWysiwygHeaderEnabled}"/>
 <c:set var="wysiwygHeader" value="${requestScope.wysiwygHeader}"/>
 
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel />
-<script type="text/javascript" src="${pageContext.request.contextPath}/util/javaScript/animation.js"></script>
-<script type="text/javascript" src="${pageContext.request.contextPath}/util/javaScript/checkForm.js"></script>
-
 <script type="text/javascript">
-	var subscriptionWindow = window;
+function sendData() {
+	document.searchForm.submit();
+}
 
-	function openSPWindow(fonction, windowName) {
-		pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600',
-				'400', 'scrollbars=yes, resizable, alwaysRaised');
-	}
-
-	function sendData() {
-		document.classifiedForm.submit();
-	}
+function viewClassifieds(fieldNumber, fieldValue) {
+	var id = $("#searchForm select").get(fieldNumber).id;
+	$("#searchForm #"+id+" option[value='"+fieldValue+"']").attr('selected','selected');
+	sendData();
+}
 </script>
-
 </head>
-
 <body id="classifieds">
-	<center>
-		<div id="${componentInstanceId}">
+		<div id="${instanceId}">
 
 			<view:browseBar />
 
@@ -85,65 +75,53 @@
 				<c:if test="${profile.name != 'anonymous'}">
 					<c:if test="${(profile.name == 'admin') && (isWysiwygHeaderEnabled)}">
 						<fmt:message var="updateWysiwygLabel" key="classifieds.updateWysiwygClassified" />
-						<fmt:message var="updateWysiwygIcon" key="classifieds.updateWysiwygClassified"
-							bundle="${icons}" />
-						<view:operation action="ToWysiwygHeader" altText="${updateWysiwygLabel}"
-							icon="${updateWysiwygIcon}" />
+						<fmt:message var="updateWysiwygIcon" key="classifieds.updateWysiwygClassified" bundle="${icons}" />
+						<view:operation action="ToWysiwygHeader" altText="${updateWysiwygLabel}" icon="${updateWysiwygIcon}" />
 					</c:if>
 
 					<c:if
 						test="${(profile.name == 'admin') || (profile.name == 'publisher')}">
 						<fmt:message var="addOp" key="classifieds.addClassified" />
-						<fmt:message var="addIcon" key="classifieds.addClassified"
-							bundle="${icons}" />
-						<view:operation action="NewClassified" altText="${addOp}"
-							icon="${addIcon}" />
+						<fmt:message var="addIcon" key="classifieds.addClassified" bundle="${icons}" />
+						<c:url var="addIcon" value="${addIcon}"/>
+						<view:operationOfCreation action="NewClassified" altText="${addOp}" icon="${addIcon}" />
 					</c:if>
 
 					<fmt:message var="myOp" key="classifieds.myClassifieds" />
-					<fmt:message var="myIcon" key="classifieds.myClassifieds"
-						bundle="${icons}" />
-					<view:operation action="ViewMyClassifieds" altText="${myOp}"
-						icon="${myIcon}" />
+					<fmt:message var="myIcon" key="classifieds.myClassifieds" bundle="${icons}" />
+					<view:operation action="ViewMyClassifieds" altText="${myOp}" icon="${myIcon}" />
 
 					<view:operationSeparator />
 
 					<fmt:message var="subAddOp" key="classifieds.addSubscription" />
-					<fmt:message var="subAddIcon" key="classifieds.subscriptionsAdd"
-						bundle="${icons}" />
-					<view:operation action="javascript:addSubscription()"
-						altText="${subAddOp}" icon="${subAddIcon}" />
+					<fmt:message var="subAddIcon" key="classifieds.subscriptionsAdd" bundle="${icons}" />
+					<view:operation action="javascript:addSubscription()" altText="${subAddOp}" icon="${subAddIcon}" />
 
 					<fmt:message var="mySubOp" key="classifieds.mySubscriptions" />
-					<fmt:message var="mySubIcon" key="classifieds.mySubscriptions"
-						bundle="${icons}" />
-					<view:operation action="ViewMySubscriptions" altText="${mySubOp}"
-						icon="${mySubIcon}" />
+					<fmt:message var="mySubIcon" key="classifieds.mySubscriptions" bundle="${icons}" />
+					<view:operation action="ViewMySubscriptions" altText="${mySubOp}" icon="${mySubIcon}" />
 				</c:if>
 
 				<c:if test="${(profile.name == 'admin') && (validation)}">
 					<view:operationSeparator />
-					<fmt:message var="toValidateOp"
-						key="classifieds.viewClassifiedToValidate" />
-					<fmt:message var="toValidateIcon"
-						key="classifieds.viewClassifiedToValidate" bundle="${icons}" />
-					<view:operation action="ViewClassifiedToValidate"
-						altText="${toValidateOp}" icon="${toValidateIcon}" />
+					<fmt:message var="toValidateOp" key="classifieds.viewClassifiedToValidate" />
+					<fmt:message var="toValidateIcon" key="classifieds.viewClassifiedToValidate" bundle="${icons}" />
+					<view:operation action="ViewClassifiedToValidate" altText="${toValidateOp}" icon="${toValidateIcon}" />
 				</c:if>
 			</view:operationPane>
 
 			<view:window>
 
-				<div id="header">
+				<div id="header_classifieds">
 				${wysiwygHeader}
 				</div>
 
 				<view:frame>
+					<view:areaOfOperationOfCreation/>
 					<jsp:include page="subscriptionManager.jsp"/>
-					<form name="classifiedForm" action="SearchClassifieds" method="post" enctype="multipart/form-data">
+					<form id="searchForm" name="searchForm" action="SearchClassifieds" method="post" enctype="multipart/form-data">
 						<c:if test="${not empty formSearch}">
-							<center>
-								<div id="search">
+								<div id="search" >
 									<!-- Search Form -->
 									<view:board>
 										<%
@@ -159,7 +137,7 @@
 											formSearch.display(out, context, data);
 										%>
 										<br/>
-										<center>
+										<div class="center">
 										<view:buttonPane>
 											<fmt:message var="searchLabel" key="classifieds.searchButton">
 												<fmt:param value="${nbTotal}" />
@@ -167,57 +145,58 @@
 											<view:button label="${searchLabel}"
 												action="javascript:onClick=sendData();" />
 										</view:buttonPane>
-										</center>
+										</div>
 									</view:board>
 								</div>
-							</center>
+							
 						</c:if>
 					</form>
 
 					<div id="categories">
 						<c:if test="${not empty categories}">
-							<c:forEach items="${categories}" var="category"
-								varStatus="loopStatus">
-								<div
-									id="category${((loopStatus.index % 2) == 0) ? 'left' : 'right'}"
-									class="category${category.key}">
+							<c:forEach items="${categories}" var="category" varStatus="loopStatus">
+								<div id="category${category.key}" class="category${((loopStatus.index % 2) == 0) ? 'left' : 'right'}">
 									<div class="categoryTitle">
-										<a
-											href="ViewAllClassifiedsByCategory?CategoryName=${category.value}&FieldKey=${category.key}">
-											${category.value} </a>
+										<a href="javascript:viewClassifieds(0, '${category.key}')"> ${category.value} </a>
 									</div>
 									<div class="categoryContent">
 										<c:if test="${empty category.classifieds}">
-											<span class="emptyCategory"><fmt:message
-													key="classifieds.CategoryEmpty" />
+											<span class="emptyCategory"><fmt:message key="classifieds.CategoryEmpty" />
 											</span>
 										</c:if>
 										<c:if test="${not empty category.classifieds}">
 											<ul>
 												<c:forEach items="${category.classifieds}" var="classified" end="4">
 													<li><a href="ViewClassified?ClassifiedId=${classified.classifiedId}">${classified.title}</a>
+													<c:if test="${classified.price > 0}">
+													${classified.price} &euro;
+													</c:if>
 														<span class="date">
-															<c:if test="${not empty classified.updateDate}">
-																<view:formatDateTime value="${classified.updateDate}" language="${language}"/>
-															</c:if>
-															<c:if test="${empty classified.updateDate}">
-																<view:formatDateTime value="${classified.creationDate}" language="${language}"/>
-															</c:if>
+														  <c:if test="${not empty classified.validateDate}">
+							                                <span class="sep"> - </span><view:formatDateTime value="${classified.validateDate}" language="${language}"/>
+							                              </c:if>
+							                              <c:if test="${empty classified.validateDate}">
+													        <c:if test="${not empty classified.updateDate}">
+							                                  <span class="sep"> - </span><view:formatDateTime value="${classified.updateDate}" language="${language}"/>
+							                                </c:if>
+							                                <c:if test="${empty classified.updateDate}">
+							                                  <span class="sep"> - </span><view:formatDateTime value="${classified.creationDate}" language="${language}"/>
+							                                </c:if>
+													      </c:if>
 														</span>
 													</li>
 												</c:forEach>
 											</ul>
 										</c:if>
 									</div>
-									<div id="ViewAllClassifiedsByCategory">
-										<a
-											href="ViewAllClassifiedsByCategory?CategoryName=${category.value}&FieldKey=${category.key}">
+									<div class="ViewAllClassifiedsByCategory">
+										<a href="javascript:viewClassifieds(0, '${category.key}')">
 											<fmt:message key="classifieds.viewAllClassifiedsByCategory" />
 										</a>
 									</div>
 									<c:if
 										test="${(profile.name == 'admin') || (profile.name == 'publisher')}">
-										<div id="newClassified">
+										<div class="newClassified">
 											<a href="NewClassified?FieldKey=${category.key}"> <fmt:message
 													key="classifieds.newClassified" /> </a>
 										</div>
@@ -227,12 +206,13 @@
 						</c:if>
 
 						<!-- legal notice -->
-						<div id="infos" class="tableBoard">
+						<div id="infos" class="inlineMessage">
 							<fmt:message key="classifieds.infos" />
 						</div>
 					</div>
 
 				</view:frame>
 			</view:window>
+		</div>
 </body>
 </html>

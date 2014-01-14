@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -36,11 +36,11 @@
 <%
 	String language = almanach.getLanguage();
 
-	EventDetail event = (EventDetail) request.getAttribute("CompleteEvent");
-	Date dateDebutIteration = (Date) request.getAttribute("DateDebutIteration");
-	Date dateFinIteration = (Date) request.getAttribute("DateFinIteration");
+	EventDetail event = (EventDetail) request.getAttribute("Event");
+	Date startDate = (Date) request.getAttribute("EventStartDate");
+	Date endDate = (Date) request.getAttribute("EventEndDate");
 
-	String dateDebutIterationString = DateUtil.date2SQLDate(dateDebutIteration);
+	String startDateString = DateUtil.date2SQLDate(startDate);
 
 	Periodicity periodicity = event.getPeriodicity();
 
@@ -79,24 +79,17 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=resources.getString("GML.popupTitle")%></title>
-<%
-out.println(graphicFactory.getLookStyleSheet());
-%>
+<view:looknfeel/>
+<view:includePlugin name="datepicker"/>
+<view:includePlugin name="wysiwyg"/>
 <link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
-<script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/silverpeas-pdc.js"></script>
 <script type="text/javascript">
 <!--
-var oEditor;
-
-function FCKeditor_OnComplete( editorInstance )
-{
-	oEditor = FCKeditorAPI.GetInstance(editorInstance.Name);
+function getCKEditor() {
+	return CKEDITOR.instances.Description;
 }
-
 function reallyUpdate() {
 	$('.WeekDayWeek').attr("disabled", false); 
 	$('.MonthDayWeek').attr("disabled", false); 
@@ -123,118 +116,40 @@ function isCorrectForm() {
      var errorMsg = "";
      var errorNb = 0;
      var title = stripInitialWhitespace(document.eventForm.Title.value);
-     var beginDate = document.eventForm.StartDate.value;
-     var endDate = document.eventForm.EndDate.value;
-     var beginTime = stripInitialWhitespace(document.eventForm.StartHour.value);
-     var endTime = stripInitialWhitespace(document.eventForm.EndHour.value);
 	 var unity = document.eventForm.Unity.value;
-	 var frequency = stripInitialWhitespace(document.eventForm.Frequency.value);
-	 var beginPeriodicity = document.eventForm.PeriodicityStartDate.value;
-	 var untilDate = document.eventForm.PeriodicityUntilDate.value;
-
-	 var beginDateOK = true;
-	 var beginPeriodicityOK = true;
 
      if (isWhitespace(title)) {
            errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.name")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
            errorNb++;
      }
-     if (isWhitespace(beginDate)) {
-     	errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.dateBegin")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
-     	errorNb++;
-     }
-     else
-     {
-     	if (!isDateOK(beginDate, '<%=language%>')) {
-        	errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.dateBegin")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
-            errorNb++;
-			beginDateOK = false;
-        }
-     }
-
-     if (!checkHour(beginTime) || (isWhitespace(beginTime) && !isWhitespace(endTime)))
-     {
-    	 errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=almanach.getString("hourBegin")%>' <%=almanach.getString("MustContainsCorrectHour")%>\n";
-	     errorNb++;
-     }
-
-	if (!isWhitespace(endDate)) {
-    	if (!isDateOK(endDate, '<%=language%>')) {
-			errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.dateEnd")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
-            errorNb++;
-		} else {
-			if (!isWhitespace(beginDate) && !isWhitespace(endDate)) {
-            	if (beginDateOK && !isDate1AfterDate2(endDate, beginDate, '<%=language%>')) {
-                	errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.dateEnd")%>' <%=resources.getString("GML.MustContainsPostOrEqualDateTo")%> "+beginDate+"\n";
-                    errorNb++;
-                }
-            } else {
-			   	if (isWhitespace(beginDate) && !isWhitespace(endDate)) {
-			   		if (!isFuture(endDate, '<%=language%>')) {
-						errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.dateEnd")%>' <%=resources.getString("GML.MustContainsPostDate")%>\n";
-						errorNb++;
-				   	}
-			   	}
-		 	}
-		}
-	}
-    
-     if (!checkHour(endTime))
-     {
-    	 errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=almanach.getString("hourEnd")%>' <%=almanach.getString("MustContainsCorrectHour")%>\n";
-         errorNb++;
-     }
      
-     if (beginDate == endDate && !isWhitespace(endTime) && !isWhitespace(beginTime)) {
-      var beginHour = atoi(extractHour(beginTime));
-      var beginMinute = atoi(extractMinute(beginTime));
-      var endHour = atoi(extractHour(endTime));
-      var endMinute = atoi(extractMinute(endTime));
-      if (beginHour > endHour || (beginHour == endHour && beginMinute > endMinute)) {
-        errorMsg += "  - <%=resources.getString("GML.theField")%> '<%=resources.getString("hourEnd")%>' <%=resources.getString("GML.MustContainsPostOrEqualDateTo")%> " + beginTime + "\n";
-        errorNb++;
-      }
-     }
+     var beginDate = {dateId : 'eventStartDate', hourId : 'StartHour', isMandatory : true};
+     var endDate = {dateId : 'eventEndDate', hourId : 'EndHour', defaultDateHour : '23:59'};
+     var dateErrors = isPeriodValid(beginDate, endDate);
+     $(dateErrors).each(function(index, error) {
+       errorMsg += " - " + error.message + "\n";
+       errorNb++;
+     });
 
 	 if (unity != "0") {
+		var frequency = stripInitialWhitespace(document.eventForm.Frequency.value);
 		if (isWhitespace(frequency)) {
-     		errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("frequency")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
+     		errorMsg+=" - '<%=resources.getString("frequency")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
      		errorNb++;
 		} else {
 			if( ! isInteger(frequency)) {
-				errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("frequency")%>' <%=resources.getString("GML.MustContainsNumber")%>\n";
+				errorMsg+=" - '<%=resources.getString("frequency")%>' <%=resources.getString("GML.MustContainsNumber")%>\n";
 				errorNb++;
 			}
 		}
-
-		if (!isWhitespace(beginPeriodicity)) {
-			if (!isDateOK(beginPeriodicity, '<%=language%>')) {
-				errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("beginDatePeriodicity")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
-				errorNb++;
-				beginPeriodicityOK = false;
-			}
-		 }
-
-		 if (!isWhitespace(untilDate)) {
-			if (!isDateOK(untilDate, '<%=language%>')) {
-				errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("endDatePeriodicity")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
-				errorNb++;
-			} else {
-				if (!isWhitespace(beginPeriodicity) && !isWhitespace(untilDate)) {
-                	if (beginPeriodicityOK && !isDate1AfterDate2(untilDate, beginPeriodicity, '<%=language%>')) {
-                    	errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("endDatePeriodicity")%>' <%=resources.getString("GML.MustContainsPostOrEqualDateTo")%> "+beginPeriodicity+"\n";
-                        errorNb++;
-                     }
-				} else {
-					if (isWhitespace(beginPeriodicity) && !isWhitespace(untilDate)) {
-						if (!isFuture(untilDate, '<%=language%>')) {
-							errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("endDatePeriodicity")%>' <%=resources.getString("GML.MustContainsPostDate")%>\n";
-							errorNb++;
-						}
-					}
-				}
-			}
-		 }
+		
+		var beginPeriodicity = {dateId : 'eventPeriodicityStartDate'};
+		var untilDate = {dateId : 'eventPeriodicityUntil'};
+		var periodicityErrors = isPeriodValid(beginPeriodicity, untilDate);
+	     $(periodicityErrors).each(function(index, error) {
+	       errorMsg += " - " + error.message + "\n";
+	       errorNb++;
+	     });		
      }
 
      switch(errorNb) {
@@ -286,13 +201,12 @@ function sendEventData() {
 	    		}
 
 	    		var oldDesc = '<%=EncodeHelper.javaStringToJsString(description)%>';
-				var desc = oEditor.GetXHTML(true);
-	    		if (oldDesc != desc)
-	    		{
+				var desc = getCKEditor().getData();
+	    		if (oldDesc != desc) {
 	    			isChanged = 1;
 	    		}
 
-				var oldStartDate = '<%=resources.getOutputDate(dateDebutIteration)%>';
+				var oldStartDate = '<%=resources.getOutputDate(startDate)%>';
 	    		var startDate = document.eventForm.StartDate.value;
 	    		if (oldStartDate != startDate)
 	    		{
@@ -306,7 +220,7 @@ function sendEventData() {
 	    			isChanged = 1;
 	    		}
 
-				var oldEndDate = '<%=resources.getOutputDate(dateFinIteration)%>';
+				var oldEndDate = '<%=resources.getOutputDate(endDate)%>';
 	    		var endDate = document.eventForm.EndDate.value;
 	    		if (oldEndDate != endDate)
 	    		{
@@ -457,6 +371,8 @@ $(document).ready(function(){
         width: 650});
 	
 	changeUnity();
+	
+	<view:wysiwyg replace="Description" language="${language}" width="600" height="300" toolbar="almanach"/>
 });
 //-->
 </script>
@@ -478,9 +394,8 @@ $(document).ready(function(){
     operationPane.addOperation(m_context + "/util/icons/almanach_to_del.gif", almanach.getString("supprimerEvenement"), "javascript:onClick=eventDeleteConfirm('" + EncodeHelper.javaStringToJsString(title) + "','" + id +"')");
     out.println(window.printBefore());
 
-	tabbedPane.addTab(almanach.getString("evenement"), "viewEventContent.jsp?Id="+id+"&Date="+dateDebutIterationString, false);
-	tabbedPane.addTab(almanach.getString("entete"), "editEvent.jsp?Id="+id+"&Date="+dateDebutIterationString, true);
-	tabbedPane.addTab(resources.getString("GML.attachments"), "editAttFiles.jsp?Id="+id+"&Date="+dateDebutIterationString, false);
+	tabbedPane.addTab(almanach.getString("evenement"), "viewEventContent.jsp?Id="+id+"&Date="+startDateString, false);
+	tabbedPane.addTab(almanach.getString("entete"), "editEvent.jsp?Id="+id+"&Date="+startDateString, true);
 
 	out.println(tabbedPane.print());
 	out.println(frame.printBefore());
@@ -493,7 +408,7 @@ $(document).ready(function(){
 			<div class="field" id="eventNameArea">
 				<label for="eventName" class="txtlibform"><fmt:message key='GML.name'/></label>
 				<div class="champs">
-					<input id="eventName" type="text" name="Title" size="60" maxlength="<c:out value='${maxTextLength}'/>" value="<%=event.getTitle()%>"/>&nbsp;<img alt="obligatoire" src="icons/cube-rouge.gif" width="5" height="5"/>
+					<input id="eventName" type="text" name="Title" size="60" maxlength="<c:out value='${maxTextLength}'/>" value="<%=title%>"/>&nbsp;<img alt="obligatoire" src="icons/cube-rouge.gif" width="5" height="5"/>
 				</div>
 			</div>
 			
@@ -507,20 +422,20 @@ $(document).ready(function(){
 			<div class="field" id="eventStartDateArea">
 				<label for="eventStartDate" class="txtlibform"><fmt:message key='GML.dateBegin'/></label>
 				<div class="champs">
-					<input type="text" class="dateToPick" name="StartDate" size="14" maxlength="<c:out value='${maxDateLength}'/>" value="<%=resources.getOutputDate(dateDebutIteration)%>" onchange="javascript:updateDates();"/>
+					<input type="text" class="dateToPick" name="StartDate" id="eventStartDate" size="14" maxlength="<c:out value='${maxDateLength}'/>" value="<%=resources.getOutputDate(startDate)%>" onchange="javascript:updateDates();"/>
 					<span class="txtnote">(<fmt:message key='GML.dateFormatExemple'/>)</span>
 					<span class="txtlibform">&nbsp;<fmt:message key='ToHour'/>&nbsp;</span>
-					<input class="inputHour" type="text" name="StartHour" size="5" maxlength="5" value="<%=startHour%>"/> <span class="txtnote">(hh:mm)</span>&nbsp;<img  alt="obligatoire" src="icons/cube-rouge.gif" width="5" height="5"/>
+					<input class="inputHour" type="text" name="StartHour" id="StartHour" size="5" maxlength="5" value="<%=startHour%>"/> <span class="txtnote">(hh:mm)</span>&nbsp;<img  alt="obligatoire" src="icons/cube-rouge.gif" width="5" height="5"/>
 				</div>
 			</div>
 			
 			<div class="field" id="eventEndDateArea">
 				<label for="eventEndDate" class="txtlibform"><fmt:message key='GML.dateEnd'/></label>
 				<div class="champs">
-					<input id="eventEndDate" type="text" class="dateToPick" name="EndDate" size="14" maxlength="<c:out value='${maxDateLength}'/>" value="<%=resources.getOutputDate(dateFinIteration)%>"/>
+					<input id="eventEndDate" type="text" class="dateToPick" name="EndDate" id="eventEndDate" size="14" maxlength="<c:out value='${maxDateLength}'/>" value="<%=resources.getOutputDate(endDate)%>"/>
 					<span class="txtnote">(<fmt:message key='GML.dateFormatExemple'/>)</span>
 					<span class="txtlibform">&nbsp;<fmt:message key='ToHour'/>&nbsp;</span>
-					<input class="inputHour" type="text" name="EndHour" size="5" maxlength="5" value="<%=endHour%>"/> <span class="txtnote">(hh:mm)</span>
+					<input class="inputHour" type="text" name="EndHour" id="EndHour" size="5" maxlength="5" value="<%=endHour%>"/> <span class="txtnote">(hh:mm)</span>
 				</div>
 			</div>
 			
@@ -613,7 +528,7 @@ $(document).ready(function(){
 			</div>
 			
 			<div class="field eventPeriodicityDateArea" id="eventPeriodicityStartDateArea">
-				<label for="eventPeriodicityStartDate" class="txtlibform"> <fmt:message key='beginDatePeriodicity'/> </label>
+				<label for="eventPeriodicityStartDate" class="txtlibform"><fmt:message key='beginDatePeriodicity'/></label>
 				<div class="champs">
 					<input type="text" id="eventPeriodicityStartDate" class="dateToPick" name="PeriodicityStartDate" size="14" maxlength="<c:out value='${maxDateLength}'/>" readonly="readonly" value="<%=resources.getInputDate(event.getStartDate())%>" /> (<fmt:message key='GML.dateFormatExemple'/>)
 				</div>
@@ -633,8 +548,8 @@ $(document).ready(function(){
 
   	<input type="hidden" name="Action"/>
   	<input type="hidden" name="Id" value="<%=event.getPK().getId()%>"/>
-  	<input type="hidden" name="DateDebutIteration" value="<%=dateDebutIterationString%>"/>
-  	<input type="hidden" name="DateFinIteration" value="<%=DateUtil.date2SQLDate(dateFinIteration)%>"/>
+  	<input type="hidden" name="EventStartDate" value="<%=startDateString%>"/>
+  	<input type="hidden" name="EventEndDate" value="<%=DateUtil.date2SQLDate(endDate)%>"/>
  </form>
    <center><br/>
    <%

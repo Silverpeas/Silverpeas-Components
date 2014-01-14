@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -30,16 +30,57 @@
 <%@ page import="java.io.File"%>
 <%@ page import="java.io.FileInputStream"%>
 <%@ page import="java.io.ObjectInputStream"%>
-<%@ page import="java.util.Vector"%>
-<%@ page import="org.apache.commons.fileupload.FileItem" %>
-<%@ page import="com.silverpeas.util.web.servlet.FileUploadUtil" %>
 <%@ page import="com.stratelia.webactiv.survey.control.FileHelper" %>
 <%@ page import="java.text.ParsePosition"%>
 
 <%@ include file="checkSurvey.jsp" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+
+<%!
+void displayAnswer(int i, String style, ResourcesWrapper resources, List<ComponentInstLight> galleries, JspWriter out) throws IOException {
+  String inputName = "answer" + i;
+  
+  out.println("<div class=\"field\">");
+  out.println("<label for=\""+inputName+"\" class=\"txtlibform\">"+resources.getString("SurveyCreationAnswerNb") + "&nbsp;" + (i+1)+"</label>");
+  out.println("<div class=\"champs\">");
+  	out.println("<input type=\"text\" name=\"" + inputName + "\" value=\"\" size=\"60\" maxlength=\"" + DBUtil.getTextFieldLength() + "\"/>");
+  out.println("</div>");
+  out.println("</div>");
+  
+  if (!style.equals("list")) {
+    out.println("<div class=\"field fieldImage\">");
+    out.println("<label for=\"image" + i + "\" class=\"txtlibform\">"+resources.getString("SurveyCreationAnswerImage") + "&nbsp;" + (i+1)+"</label>");
+  	out.println("<div class=\"champs\">");
+  	out.println("<div class=\"thumbnailPreviewAndActions\" id=\"thumbnailPreviewAndActions" + i + "\">");
+  		out.println("<div class=\"thumbnailPreview\">");
+  		out.println("<img alt=\"\" class=\"thumbnail\" id=\"thumbnail" + i + "\" src=\"null\">");
+  		out.println("</div>");
+  		out.println("<div class=\"thumbnailActions\" id=\"thumbnailActions" + i + "\">");
+  		out.println("<a href=\"javascript:deleteImage("+i+")\"><img title=\""+resources.getString("survey.answer.image.delete")+"\" alt=\""+resources.getString("survey.answer.image.delete")+"\" src=\"/silverpeas/util/icons/cross.png\"> "+resources.getString("survey.answer.image.delete")+"</a>");
+  		out.println("</div>");
+  		out.println("</div>");
+	
+  		out.println("<div class=\"thumbnailInputs\">");
+  		out.println("<img title=\""+resources.getString("survey.answer.image.select")+"\" alt=\""+resources.getString("survey.answer.image.select")+"\" src=\"/silverpeas/util/icons/images.png\"> <input type=\"file\" id=\"thumbnailFile\" size=\"40\" name=\"image"+i+"\">");
+  		out.println("<span class=\"txtsublibform\"> ou </span><input type=\"hidden\" name=\"valueImageGallery" + i + "\" id=\"valueImageGallery" + i + "\">");
+  		out.println(" <select class=\"galleries\" name=\"galleries\" onchange=\"choixGallery(this, '" + i + "');this.selectedIndex=0;\"> ");
+	      out.println(" <option selected>" + resources.getString("survey.galleries") + "</option> ");
+	      for (int k = 0; k < galleries.size(); k++) {
+	        ComponentInstLight gallery = galleries.get(k);
+	        out.println(" <option value=\"" + gallery.getId() + "\">" + gallery.getLabel() + "</option> ");
+	      }
+	      out.println("</select>");
+	      out.println("</div>");
+	out.println("</div>");
+	out.println("</div>");
+  }
+}
+%>
 
 <%
-    List items = FileUploadUtil.parseRequest(request);
+    List<FileItem> items = FileUploadUtil.parseRequest(request);
     String action = FileUploadUtil.getOldParameter(items, "Action");
     String pollId = FileUploadUtil.getOldParameter(items, "PollId");
     String title = FileUploadUtil.getOldParameter(items, "title");
@@ -64,10 +105,11 @@
 
     String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 
-    String anonymousAllowed = "";
     String anonymousCheck = "";
     String anonymous = FileUploadUtil.getOldParameter(items, "AnonymousAllowed");
 
+    String positions = FileUploadUtil.getOldParameter(items, "Positions");
+    
     //Mode anonyme -> force les votes à être tous anonymes
 	if(surveyScc.isAnonymousModeEnabled()) {
 		anonymous = "1";
@@ -83,7 +125,7 @@
 
     ResourceLocator uploadSettings = new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings",
         surveyScc.getLanguage());
-    ResourceLocator settings = new ResourceLocator("com.stratelia.webactiv.survey.surveySettings",
+    ResourceLocator settings = new ResourceLocator("org.silverpeas.survey.surveySettings",
         surveyScc.getLanguage());
 
     creationDate = resources.getOutputDate(new Date());
@@ -104,9 +146,9 @@
     int nb = 0;
     int attachmentSuffix = 0;
     ArrayList imageList = new ArrayList();
-    ArrayList answers = new ArrayList();
+    List<Answer> answers = new ArrayList<Answer>();
     Answer answer = null;
-    Iterator itemIter = items.iterator();
+    Iterator<FileItem> itemIter = items.iterator();
     while (itemIter.hasNext()) {
       FileItem item = (FileItem) itemIter.next();
       if (item.isFormField()) {
@@ -153,25 +195,35 @@
     }
 
 %>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title></title>
-    <%
-        out.println(gef.getLookStyleSheet());
-    %>
+    <link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
+    <view:looknfeel/>
+    <style type="text/css">
+      .thumbnailPreviewAndActions {
+        display: none;
+      }
+    </style>
+    <view:includePlugin name="datepicker"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
   function sendData()
   {
     if (isCorrectForm()) {
       if (checkAnswers()) {
-        if (window.document.pollForm.suggestion.checked)
+        if (window.document.pollForm.suggestion.checked) {
           window.document.pollForm.SuggestionAllowed.value = "1";
+        }
         window.document.pollForm.anonymous.disabled = false;
-        if (window.document.pollForm.anonymous.checked)
+        if (window.document.pollForm.anonymous.checked) {
             window.document.pollForm.AnonymousAllowed.value = "1";
+        }
+<% if ("SendPollForm".equals(action)) { %>
+        <view:pdcPositions setIn="document.pollForm.Positions.value"/>;
+<% } %>
         window.document.pollForm.submit();
       }
     }
@@ -186,7 +238,10 @@
     var fieldsEmpty = "";
     for (var i=0; i<document.pollForm.length; i++)
     {
-      inputName = document.pollForm.elements[i].name.substring(0, 5);
+      var inputName = document.pollForm.elements[i].name;
+      if (inputName) {
+    	  inputName = inputName.substring(0, 5);
+      }
       if (inputName == "answe" ) {
         if (isWhitespace(stripInitialWhitespace(document.pollForm.elements[i].value))) {
           answerEmpty = true;
@@ -254,11 +309,13 @@
         errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.name")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
         errorNb++;
       }
+      <% if ("SendQuestionForm".equals(action)) { %>
       if (window.document.pollForm.questionStyle.options[window.document.pollForm.questionStyle.selectedIndex].value=="null") {
         //choisir au moins un style
         errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("survey.style")%>' <%=resources.getString("GML.MustBeFilled")%> \n";
         errorNb++;
       }
+      <% } %>
       if (!isWhitespace(beginDate)) {
     	if (!isDateOK(beginDate, '<%=resources.getLanguage()%>')) {
           errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationBeginDate")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
@@ -307,13 +364,18 @@
           } else {
             //nb min answers = 2
             if (nbAnswers <= 1) {
-              errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationNbPossibleAnswer")%>' <%=resources.getString("MustContainsNumberGreaterThan2")%>\n";
+              errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationNbPossibleAnswer")%>' <%=resources.getString("MustContainsNumberGreaterThan")%> 1\n";
               errorNb++;
             }
           }
         }
       }
-      switch(errorNb) {
+   	  
+      <% if ("SendQuestionForm".equals(action)) { %>
+      	<view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>
+      <% } %>
+   
+   	  switch(errorNb) {
         case 0 :
           result = true;
           break;
@@ -352,71 +414,42 @@
         }
       }
 
-      function deleteImage(idImage)
-      {
-        document.getElementById('imageGallery'+idImage).innerHTML = "";
-        document.getElementById('valueImageGallery'+idImage).value = "";
+      function deleteImage(idImage) {
+        $("#thumbnailPreviewAndActions"+idImage).css("display", "none");
+        $("#valueImageGallery"+idImage).attr("value", "");
       }
-
-      //function choixImageInGallery(url)
-      //{
-      //document.getElementById('imageGallery'+currentAnswer).innerHTML = "<a href=\""+url+"\" target=\"_blank\"><%=resources.getString("survey.imageGallery")%></a> <a href=\"javascript:deleteImage('"+currentAnswer+"')\"><img src=\"icons/questionDelete.gif\" border=\"0\" align=\"absmiddle\" alt=\"<%=resources.getString("GML.delete")%>\" title=\"<%=resources.getString("GML.delete")%>\"></a>";
-      //document.getElementById('valueImageGallery'+currentAnswer).value = url;
-      //}
-
-      function choixImageInGallery(url)
-      {
-        var newLink = document.createElement("a");
-        newLink.setAttribute("href", url);
-        newLink.setAttribute("target", "_blank");
-
-        var newLabel = document.createTextNode("<%=resources.getString("survey.imageGallery")%>");
-        newLink.appendChild(newLabel);
-
-        var removeLink =  document.createElement("a");
-        removeLink.setAttribute("href", "javascript:deleteImage('"+currentAnswer+"')");
-        var removeIcon = document.createElement("img");
-        removeIcon.setAttribute("src", "icons/questionDelete.gif");
-        removeIcon.setAttribute("border", "0");
-        removeIcon.setAttribute("align", "absmiddle");
-        removeIcon.setAttribute("alt", "<%=resources.getString("GML.delete")%>");
-        removeIcon.setAttribute("title", "<%=resources.getString("GML.delete")%>");
-
-        removeLink.appendChild(removeIcon);
-
-        document.getElementById('imageGallery'+currentAnswer).appendChild(newLink);
-        document.getElementById('imageGallery'+currentAnswer).appendChild(removeLink);
-
-        document.getElementById('valueImageGallery'+currentAnswer).value = url;
+      
+      function choixImageInGallery(url) {
+        $("#thumbnailPreviewAndActions"+currentAnswer).css("display", "block");
+        $("#thumbnailActions"+currentAnswer).css("display", "block");
+        $("#thumbnail"+currentAnswer).attr("src", url);
+        $("#valueImageGallery"+currentAnswer).attr("value", url);
       }
 
 </script>
   </head>
-  <body>
+  <body id="creation-page" class="pollingStation">
     <%
-        if ((action.equals("CreatePoll")) || (action.equals("SendPollForm"))) {
-          cancelButton = (Button) gef.getFormButton(generalMessage.getString("GML.cancel"), "Main.jsp", false);
+        if (("CreatePoll".equals(action)) || ("SendPollForm".equals(action))) {
+          cancelButton = gef.getFormButton(generalMessage.getString("GML.cancel"), "Main.jsp", false);
           if (action.equals("CreatePoll")) {
-            validateButton = (Button) gef.getFormButton(generalMessage.getString("GML.validate"),
-                "javascript:onClick=sendData()", false);
+            validateButton = gef.getFormButton(generalMessage.getString("GML.validate"), "javascript:onClick=sendData()", false);
             nextAction = "SendPollForm";
-          } else if (action.equals("SendPollForm")) {
-            validateButton = (Button) gef.getFormButton(generalMessage.getString("GML.validate"),
-                "javascript:onClick=sendData()", false);
+          } else if ("SendPollForm".equals(action)) {
+            validateButton = gef.getFormButton(generalMessage.getString("GML.validate"), "javascript:onClick=sendData()", false);
             suggestionCheck = "";
             if (! "0".equals(suggestion)) {
-              suggestionCheck = "checked";
+              suggestionCheck = "checked=\"checked\"";
             }
             anonymousCheck = "";
             if (! "0".equals(anonymous)) {
-              anonymousCheck = "checked";
+              anonymousCheck = "checked=\"checked\"";
             }
             nextAction = "SendNewPoll";
           }
 
           Window window = gef.getWindow();
           Frame frame = gef.getFrame();
-          Board board = gef.getBoard();
 
           BrowseBar browseBar = window.getBrowseBar();
           browseBar.setDomainName(surveyScc.getSpaceLabel());
@@ -425,110 +458,140 @@
 
           out.println(window.printBefore());
           out.println(frame.printBefore());
-          out.println(board.printBefore());
     %>
     <!--DEBUT CORPS -->
-    <%
-String disabledValue = "";
-if (action.equals("SendPollForm")) {
-disabledValue = "disabled";
-}
-    %>
     <form name="pollForm" action="pollCreator.jsp" method="post" enctype="multipart/form-data">
-      <table border=0 cellspacing=0 cellpadding=5 width="98%" align=center>
-        <tr><td class="txtlibform"><%=resources.getString("GML.name")%> :</td><td><input type="text" name="title" size="60" maxlength="60" value="<%=EncodeHelper.javaStringToHtmlString(title)%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"> </td></tr>
-        <tr><td class="txtlibform"><%=resources.getString("SurveyCreationDate")%> :</td><td><%=creationDate%></td></tr>
-        <tr><td class="txtlibform"><%=resources.getString("SurveyCreationBeginDate")%> :</td><td><input type="text" class="dateToPick" name="beginDate" size="12" value="<%=beginDate%>" maxlength="<%=DBUtil.getDateFieldLength()%>"/></td></tr>
-        <tr><td class="txtlibform"><%=resources.getString("SurveyCreationEndDate")%> :</td><td><input type="text" class="dateToPick" name="endDate" size="12" value="<%=endDate%>" maxlength="<%=DBUtil.getDateFieldLength()%>"/></td></tr>
-        <tr><td class="txtlibform"><%=resources.getString("SurveyCreationQuestion")%> :</td><td><input type="text" name="question" value="<%=Encode.javaStringToHtmlString(question)%>" size="60" maxlength="<%=DBUtil.getTextFieldLength()%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"> </td></tr>
-            <%if (disabledValue != "disabled") {%>
-        <!--  type de question -->
-        <tr><td class="txtlibform" valign=top><%=resources.getString("survey.style")%> :</td><td>
-            <select id="questionStyle" name="questionStyle" onchange="showQuestionOptions(this.value);">
-              <option selected value="null"><%=resources.getString("survey.style")%></option>
-              <option value="radio"><%=resources.getString("survey.radio")%></option>
-              <option value="checkbox"><%=resources.getString("survey.checkbox")%></option>
-              <option value="list"><%=resources.getString("survey.list")%></option>
-            </select>
-          </td></tr>
-          <% } else {%>
-        <select style="visibility: hidden;" id="questionStyle" name="questionStyle"><option selected><%=style%></option></select>
-        <%}%>
+    	<fieldset id="info" class="skinFieldset">
+			<legend><%=resources.getString("survey.header.fieldset.info") %></legend>
+			<div class="fields">
+				<div class="field" id="nameArea">
+					<label class="txtlibform"><%=resources.getString("GML.name")%></label>
+					<div class="champs">
+						<input type="text" name="title" size="60" maxlength="60" value="<%=EncodeHelper.javaStringToHtmlString(title)%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"/>
+					</div>
+				</div>
+				<div class="field" id="questionArea">
+					<label class="txtlibform"><%=resources.getString("SurveyCreationQuestion")%></label>
+					<div class="champs">
+						<input type="text" name="question" value="<%=EncodeHelper.javaStringToHtmlString(question)%>" size="60" maxlength="<%=DBUtil.getTextFieldLength()%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"/>
+					</div>
+				</div>
+				<div class="field" id="typeArea">
+					<label class="txtlibform"><%=resources.getString("survey.style")%></label>
+					<div class="champs">
+						<% if (!"SendPollForm".equals(action)) {  %>
+						<select id="questionStyle" name="questionStyle">
+			              <option value="null"><%=resources.getString("survey.style")%></option>
+			              <option <%="radio".equals(style) ? "selected=\"selected\"" : ""%> value="radio"><%=resources.getString("survey.radio")%></option>
+			              <option <%="checkbox".equals(style) ? "selected=\"selected\"" : ""%> value="checkbox"><%=resources.getString("survey.checkbox")%></option>
+			              <option <%="list".equals(style) ? "selected=\"selected\"" : ""%> value="list"><%=resources.getString("survey.list")%></option>
+			            </select>
+			            <% } else { %>
+			            	<%=resources.getString("survey."+style)%><input type="hidden" name="questionStyle" value="<%=style%>"/>
+			            <% } %>
+					</div>
+				</div>
+				<%
+				String disabledValue = "";
+				if ("SendPollForm".equals(action)) {
+					disabledValue = "disabled=\"disabled\"";
+				} 
+				%>
+				<div class="field" id="nbAnswersArea">
+					<label class="txtlibform"><%=resources.getString("SurveyCreationNbPossibleAnswer")%></label>
+					<div class="champs">
+						<input type="text" name="nbAnswers" value="<%=nbAnswers%>" size="3" maxlength="2" <%=disabledValue%>>&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"/>
+					</div>
+				</div>
+				<div class="field" id="suggestionAllowedArea">
+					<label class="txtlibform"><%=resources.getString("SuggestionAllowed")%></label>
+					<div class="champs">
+						<input type="checkbox" name="suggestion" <%=suggestionCheck%> <%=disabledValue%>/>
+					</div>
+				</div>
+				<div class="field" id="anonymousArea">
+					<%
+				        //Mode anonyme -> force les votes à être tous anonymes
+				        String anonymousDisabled = "";
+				        if(surveyScc.isAnonymousModeEnabled()) {
+				          anonymousCheck = "checked=\"checked\"";
+				          anonymousDisabled = "disabled=\"disabled\"";
+				        }
+					%>
+					<label class="txtlibform"><%=resources.getString("survey.pollAnonymous")%></label>
+					<div class="champs">
+						<input type="checkbox" name="anonymous" <%=anonymousCheck%> <%=disabledValue%> <%=anonymousDisabled%>/>
+					</div>
+				</div>
+				<input type="hidden" name="Action" value="<%=nextAction%>"/>
+            	<input type="hidden" name="SuggestionAllowed" value="0"/>
+	            <input type="hidden" name="AnonymousAllowed" value="0"/>
+			</div>
+		</fieldset>
+		
+		<fieldset id="dates" class="skinFieldset">
+				<legend><%=resources.getString("survey.header.fieldset.period") %></legend>
+				<div class="fields">
+					<div class="field" id="beginArea">
+						<label for="beginDate" class="txtlibform"><%=resources.getString("SurveyCreationBeginDate")%></label>
+						<div class="champs">
+							<input type="text" class="dateToPick" name="beginDate" size="12" value="<%=beginDate%>" maxlength="<%=DBUtil.getDateFieldLength()%>"/>
+						</div>
+					</div>
+					<div class="field" id="endArea">
+						<label for="beginDate" class="txtlibform"><%=resources.getString("SurveyCreationEndDate")%></label>
+						<div class="champs">
+							<input type="text" class="dateToPick" name="endDate" size="12" value="<%=endDate%>" maxlength="<%=DBUtil.getDateFieldLength()%>"/>
+						</div>
+					</div>
+				</div>
+		</fieldset>
+		
+		<% if ("SendPollForm".equals(action)) { %>
+		
+		<fieldset id="answers" class="skinFieldset">
+				<legend><%=resources.getString("survey.header.fieldset.answers") %></legend>
+				<div class="fields">
+				<%
+					nb = Integer.parseInt(nbAnswers);
+		  			List<ComponentInstLight> galleries = surveyScc.getGalleries();
+		  			for (int i = 0; i < nb; i++) {
+		    			displayAnswer(i, style, resources, galleries, out);
+		  			}
+		  		%>
+		  			<% if (!"0".equals(suggestion)) { %>
+					<div class="field" id="otherAnswerArea">
+						<label for="beginDate" class="txtlibform"><%=resources.getString("OtherAnswer")%></label>
+						<div class="champs">
+							<input type="text" name="suggestionLabel" value="<%=resources.getString("SurveyCreationDefaultSuggestionLabel")%>" size="60" maxlength="50"/>
+						</div>
+					</div>
+					<% } %>
+				</div>
+		</fieldset>
+		
+		<input type="hidden" name="Positions" />
+      	<view:pdcNewContentClassification componentId="<%=componentId%>" />
+		
+		<% } %>
 
-        <tr><td class="txtlibform"><%=resources.getString("SurveyCreationNbPossibleAnswer")%> :</td><td><input type="text" name="nbAnswers" value="<%=nbAnswers%>" size="3" maxlength="2" <%=disabledValue%>>&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"> </td></tr>
-        <tr><td class="txtlibform"><%=resources.getString("SuggestionAllowed")%> :</td><td><input type="checkbox" name="suggestion" value="" <%=suggestionCheck%> <%=disabledValue%>></td></tr>
-
-        <%
-        //Mode anonyme -> force les votes à être tous anonymes
-        String anonymousDisabled = "";
-        if(surveyScc.isAnonymousModeEnabled()) {
-			anonymousCheck = "checked";
-			anonymousDisabled = "disabled";
-		}
-		%>
-
-        <tr><td class="txtlibform"><%=resources.getString("survey.pollAnonymous")%> :</td><td><input type="checkbox" name="anonymous" value="" <%=anonymousCheck%> <%=disabledValue%> <%=anonymousDisabled%>></td></tr>
-
-        <% if ("SendPollForm".equals(action)) {
-nb = new Integer(nbAnswers).intValue();
-String inputName = "";
-int j = 0;
-for (int i = 0; i < nb; i++) {
-  j = i + 1;
-  inputName = "answer" + i;
-  out.println(
-      "<tr><td class=\"txtlibform\">" + resources.getString("SurveyCreationAnswerNb") + "&nbsp;" + j + " :</td><td><input type=\"text\" name=\"" + inputName + "\" value=\"\" size=\"60\" maxlength=\"" + DBUtil.getTextFieldLength() + "\"></td></tr>");
-  if (!style.equals("list")) {
-    out.println(
-        "<tr><td class=\"txtlibform\">" + resources.getString("SurveyCreationAnswerImage") + "&nbsp;" + j + " :</td><td><input type=\"file\" name=\"image" + i + "\" size=\"60\"></td></tr>");
-
-    //zone pour le lien vers l'image
-    out.println("<tr><td></td><td><span id=\"imageGallery" + i + "\"></span>");
-    out.println("<input type=\"hidden\" id=\"valueImageGallery" + i + "\" name=\"valueImageGallery" + i + "\" >");
-
-    List galleries = surveyScc.getGalleries();
-    if (galleries != null) {
-      out.println(
-          " <select id=\"galleries\" name=\"galleries\" onchange=\"choixGallery(this, '" + i + "');this.selectedIndex=0;\"> ");
-      out.println(" <option selected>" + resources.getString("survey.galleries") + "</option> ");
-      for (int k = 0; k < galleries.size(); k++) {
-        ComponentInstLight gallery = (ComponentInstLight) galleries.get(k);
-        out.println(" <option value=\"" + gallery.getId() + "\">" + gallery.getLabel() + "</option> ");
-      }
-      out.println("</select>");
-      out.println("");
-      out.println("</td>");
-    }
-    out.println("</tr>");
-  }
-}
-if (!"0".equals(suggestion)) {
-  out.println("<tr><td class=\"txtlibform\">" + resources.getString("OtherAnswer") + "&nbsp;:</td><td><input type=\"text\" name=\"suggestionLabel\" value=\"" + resources.
-      getString("SurveyCreationDefaultSuggestionLabel") + "\" size=\"60\" maxlength=\"50\"></td></tr>");
-    }
-
-  }%>
-        <tr><td>(<img border="0" src="<%=mandatoryField%>" width="5" height="5"> : <%=resources.getString("GML.requiredField")%>)</td></tr>
-        <tr><td><input type="hidden" name="Action" value="<%=nextAction%>">
-            <input type="hidden" name="SuggestionAllowed" value="0">
-             <input type="hidden" name="AnonymousAllowed" value="0">
-         </td></tr>
-      </table>
+	<div class="legend">
+		<img src="<%=mandatoryField%>" width="5" height="5"/> : <%=resources.getString("GML.requiredField")%>
+	</div>
     </form>
 
     <!-- FIN CORPS -->
     <%
-          out.println(board.printAfter());
           out.println(frame.printMiddle());
           ButtonPane buttonPane = gef.getButtonPane();
           buttonPane.addButton(validateButton);
           buttonPane.addButton(cancelButton);
           buttonPane.setHorizontalPosition();
-          out.println("<BR><center>" + buttonPane.print() + "</center><br>");
+          out.println("<br/><center>" + buttonPane.print() + "</center><br/>");
           out.println(frame.printAfter());
           out.println(window.printAfter());
         } //End if action = ViewQuestion
-        if (action.equals("SendNewPoll")) {
+        if ("SendNewPoll".equals(action)) {
           if (beginDate != null) {
             if (beginDate.length() > 0) {
               beginDate = resources.getDBDate(beginDate);
@@ -544,19 +607,21 @@ if (!"0".equals(suggestion)) {
           boolean anonymousB = false;
           if (anonymous.equals("1")) {
             anonymousB = true;
-		  }
-          QuestionContainerHeader surveyHeader = new QuestionContainerHeader(null, title, description, null, creationDate, beginDate, endDate, false, 0, 1, anonymousB);
+          }
+          QuestionContainerHeader surveyHeader = new QuestionContainerHeader(null, title, description, null, creationDate, beginDate, endDate, false, 0, 1, anonymousB, QuestionContainerHeader.IMMEDIATE_RESULTS, QuestionContainerHeader.TWICE_DISPLAY_RESULTS);
           Question questionObject = new Question(null, null, question, "", "", null, style, 0);
-          ArrayList questions = new ArrayList();
+          List<Question> questions = new ArrayList<Question>();
           questionObject.setAnswers(answers);
           questions.add(questionObject);
           QuestionContainerDetail surveyDetail = new QuestionContainerDetail(surveyHeader, questions, null, null);
           surveyDetail.setHeader(surveyHeader);
           surveyDetail.setQuestions(questions);
+          surveyScc.setNewSurveyPositionsFromJSON(positions);
           surveyScc.createSurvey(surveyDetail);
           surveyScc.setSessionSurveyUnderConstruction(surveyDetail);
     %>
-  <html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
     <head>
       <script language="Javascript">
             function goToList() {

@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>components</artifactId>
-    <version>5.7-SNAPSHOT</version>
+    <version>5.14-SNAPSHOT</version>
   </parent>
   
   <groupId>com.silverpeas.components</groupId>
@@ -13,7 +13,7 @@
   <name>jdbc-connector Component</name>
 
   <modules>
-    <module>jdbc-connector-ejb</module>
+    <module>jdbc-connector-jar</module>
     <module>jdbc-connector-war</module>
     <module>jdbc-connector-config</module>
   </modules>

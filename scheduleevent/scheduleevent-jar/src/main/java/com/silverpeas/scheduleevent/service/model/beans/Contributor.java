@@ -1,39 +1,59 @@
 /**
  * Copyright (C) 2000 - 2009 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.scheduleevent.service.model.beans;
 
+import java.io.Serializable;
 import java.util.Date;
+import java.util.UUID;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
-public class Contributor implements Comparable<Contributor> {
+@Entity
+@Table(name = "sc_scheduleevent_contributor")
+public class Contributor implements Comparable<Contributor>, Serializable {
 
+  @Id
   private String id;
+  @ManyToOne
+  @JoinColumn(name = "scheduleeventid", nullable = false)
   private ScheduleEvent scheduleEvent;
   private int userId;
+  @Transient
   private String userName;
+  @Temporal(TemporalType.TIMESTAMP)
   private Date lastVisit;
+  @Temporal(TemporalType.TIMESTAMP)
   private Date lastValidation;
+
+  @PrePersist
+  protected void setUpId() {
+    id = UUID.randomUUID().toString();
+  }
 
   public String getId() {
     return id;
@@ -109,8 +129,6 @@ public class Contributor implements Comparable<Contributor> {
 //      return false;
 //    return true;
 //  }
-
-  
   public void setLastVisit(Date lastVisit) {
     this.lastVisit = lastVisit;
   }
@@ -125,20 +143,25 @@ public class Contributor implements Comparable<Contributor> {
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
+    if (this == obj) {
       return true;
-    if (obj == null)
+    }
+    if (obj == null) {
       return false;
-    if (getClass() != obj.getClass())
+    }
+    if (getClass() != obj.getClass()) {
       return false;
+    }
     Contributor other = (Contributor) obj;
     if (id == null) {
-      if (other.id != null)
+      if (other.id != null) {
         return false;
-      else
+      } else {
         return (userId == other.userId);
-    } else if (!id.equals(other.id))
+      }
+    } else if (!id.equals(other.id)) {
       return false;
+    }
     return true;
   }
 
@@ -161,5 +184,4 @@ public class Contributor implements Comparable<Contributor> {
   public ScheduleEvent getScheduleEvent() {
     return scheduleEvent;
   }
-
 }

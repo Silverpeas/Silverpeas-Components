@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,9 +26,6 @@ package com.silverpeas.hyperlink;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
-import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 
 /**
  *
@@ -39,15 +36,6 @@ public class HyperlinkIndexer implements ComponentIndexerInterface {
   @Override
   public void index(MainSessionController mainSessionCtrl, ComponentContext context) throws
       Exception {
-    ComponentInstLight componentInstLight = mainSessionCtrl.getOrganizationController().
-        getComponentInstLight(context.getCurrentComponentId());
-    FullIndexEntry indexEntry = new FullIndexEntry(context.getCurrentComponentId(),
-        "hyperlink", context.getCurrentComponentId());
-    indexEntry.setTitle(componentInstLight.getLabel());
-    indexEntry.addTextContent(componentInstLight.getLabel());
-    indexEntry.setCreationDate(componentInstLight.getCreateDate());
-    indexEntry.setPreView(componentInstLight.getLabel());
-    indexEntry.addTextContent(componentInstLight.getCreatorName());
-    IndexEngineProxy.addIndexEntry(indexEntry);
+    // nothing to index for this application
   }
 }

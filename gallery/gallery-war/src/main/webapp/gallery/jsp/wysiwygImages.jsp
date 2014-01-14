@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.util.StringUtil"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.Iterator"%>
 <%@ page import="java.util.List"%>
@@ -32,21 +33,17 @@
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@ page import="com.silverpeas.util.EncodeHelper"%>
 <%
-	String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
-	
-	ResourceLocator multilang = null;
-%>
+String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
-<% 
-  List photos = (List) request.getAttribute("Photos");
-  String language = (String) request.getAttribute("Language");
+List photos = (List) request.getAttribute("Photos");
+String language = (String) request.getAttribute("Language");
     
 // param�trage pour l'affichage des photos 
-  int nbAffiche = 0;
-  int nbParLigne = 4;
+int nbAffiche = 0;
+int nbParLigne = 4;
     
-  multilang = new ResourceLocator("com.silverpeas.gallery.multilang.galleryBundle", language);
+ResourceLocator multilang = new ResourceLocator("com.silverpeas.gallery.multilang.galleryBundle", language);
 %>
 
 <html>
@@ -63,7 +60,7 @@ function selectImage(url, idP)
 }
 </script>
 </head>
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+<body leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
 
 <table class="Treeview" width="100%" height="100%"><tr><td valign="top">
 <form name="frmVignette">
@@ -86,14 +83,12 @@ if (photos != null) {
           String name = "";
           String url = "";
           if (photo.getImageName() != null && !photo.getImageName().equals("")) {
-            name = photo.getImageName();
-            String type = name.substring(name.lastIndexOf(".") + 1, name.length());
             url = m_context + "/GalleryInWysiwyg/dummy?ImageId=" + idP + "&ComponentId=" + photo.
                 getPhotoPK().getInstanceId();
             name = photo.getId() + "_133x100.jpg";
             vignette_url = m_context + "/GalleryInWysiwyg/dummy?ImageId=" + idP + "&ComponentId=" + photo.
                 getPhotoPK().getInstanceId() + "&Size=133x100";
-            if ("bmp".equalsIgnoreCase(type)) {
+            if (!photo.isPreviewable()) {
               vignette_url = m_context + "/gallery/jsp/icons/notAvailable_" + "fr" + "_133x100.jpg";
             }
           }
@@ -101,7 +96,7 @@ if (photos != null) {
           nbAffiche = nbAffiche + 1;
             
           String altTitle = EncodeHelper.javaStringToHtmlString(photo.getTitle());
-          if (photo.getDescription() != null && photo.getDescription().length() > 0) {
+          if (StringUtil.isDefined(photo.getDescription())) {
             altTitle += " : " + EncodeHelper.javaStringToHtmlString(photo.getDescription());
           }
             
@@ -111,8 +106,9 @@ if (photos != null) {
 						<table border="0" align="center" width="10" cellspacing="1" cellpadding="0" class="fondPhoto">
 							<tr><td align="center" colspan="2">
 								<table cellspacing="1" cellpadding="3" border="0" class="cadrePhoto"><tr><td bgcolor="#FFFFFF">
-									<a href="javaScript:selectImage('<%=url%>','<%=idP%>');"><IMG SRC="<%=vignette_url%>" border="0" alt="<%=altTitle%>" title="<%=altTitle%>"></a>
-										<input type="checkbox" name="UseOriginal<%=idP%>" value="true" checked><font style="font-size: 9px"><%=photo.getSizeL()%>x<%=photo.getSizeH()%></font><br>
+									<div style="text-align:right" class="imagename"><%=photo.getImageName() %></div>
+									<a href="javaScript:selectImage('<%=url%>','<%=idP%>');"><img src="<%=vignette_url%>" border="0" alt="<%=altTitle%>" title="<%=altTitle%>"/></a>
+										<input type="checkbox" name="UseOriginal<%=idP%>" value="true"><font style="font-size: 9px"><%=photo.getSizeL()%>x<%=photo.getSizeH()%></font><br>
 								</td></tr></table>
 							</td></tr>
 						</table>

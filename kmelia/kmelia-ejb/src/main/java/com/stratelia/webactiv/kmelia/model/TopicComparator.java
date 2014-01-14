@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,10 +24,10 @@
 
 package com.stratelia.webactiv.kmelia.model;
 
+import com.stratelia.webactiv.util.node.model.NodeDetail;
+
 import java.util.Comparator;
 import java.util.HashMap;
-
-import com.stratelia.webactiv.util.node.model.NodeDetail;
 import java.util.Map;
 
 public class TopicComparator implements Comparator<NodeDetail> {
@@ -46,10 +46,10 @@ public class TopicComparator implements Comparator<NodeDetail> {
       namesWeights = new HashMap<String, Integer>();
       int i = 0;
       for (i = 0; i < criteria.length; i++) {
-        namesWeights.put(criteria[i].toLowerCase(), Integer.valueOf(i));
+        namesWeights.put(criteria[i].toLowerCase(), i);
       }
       if (i > 0 && !namesWeights.containsKey(DEFAULT_NAME)) {
-        namesWeights.put(DEFAULT_NAME, Integer.valueOf(i));
+        namesWeights.put(DEFAULT_NAME, i);
       }
     }
     useCriteria = (namesWeights != null && !namesWeights.isEmpty());

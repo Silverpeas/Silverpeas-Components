@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,13 +24,12 @@
 
 package com.stratelia.webactiv.kmelia.model.updatechain;
 
-import java.io.PrintWriter;
-import java.util.Iterator;
-import java.util.List;
-
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.Util;
 import com.silverpeas.util.EncodeHelper;
+
+import java.io.PrintWriter;
+import java.util.List;
 
 public class TextFieldDisplayer {
   /**
@@ -49,12 +48,12 @@ public class TextFieldDisplayer {
       value = "";
     if (values != null && values.size() > 0) {
       out.println("<select name=\"" + field.getName() + "\">");
-      Iterator it = values.iterator();
-      while (it.hasNext()) {
-        String currentValue = (String) it.next();
+      for (Object value1 : values) {
+        String currentValue = (String) value1;
         String selected = "";
-        if (currentValue.equals(field.getName()))
+        if (currentValue.equals(field.getName())) {
           selected = "selected";
+        }
 
         out.println("<option value=\""
             + EncodeHelper.javaStringToHtmlString(currentValue) + "\" "

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,6 +22,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.yellowpages.control;
+
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.servlet.jsp.JspWriter;
 
 import com.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
@@ -38,18 +46,10 @@ import com.stratelia.webactiv.util.viewGenerator.html.iconPanes.IconPane;
 import com.stratelia.webactiv.util.viewGenerator.html.icons.Icon;
 import com.stratelia.webactiv.yellowpages.model.UserContact;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.servlet.jsp.JspWriter;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
 public class DisplayContactsHelper {
 
   public static void displayContactsAdmin(String contactCard,
-      YellowpagesSessionController yellowpagesScc, String profile, Collection contacts,
+      YellowpagesSessionController yellowpagesScc, String profile, Collection<UserContact> contacts,
       boolean subtopicsExist, String contactDeleteIcon, GraphicElementFactory gef,
       ServletRequest request, HttpSession session, ResourcesWrapper resources, JspWriter out) throws
       IOException {
@@ -61,9 +61,9 @@ public class DisplayContactsHelper {
       arrayColumn0.setSortable(false);
       indexLastNameColumn = 2;
     }
-    ArrayColumn arrayColumn2 = arrayPane.addArrayColumn(resources.getString("GML.name"));
-    ArrayColumn arrayColumn1 = arrayPane.addArrayColumn(resources.getString("GML.surname"));
-    ArrayColumn arrayColumn3 = arrayPane.addArrayColumn(resources.getString("GML.eMail"));
+    arrayPane.addArrayColumn(resources.getString("GML.name"));
+    arrayPane.addArrayColumn(resources.getString("GML.surname"));
+    arrayPane.addArrayColumn(resources.getString("GML.eMail"));
     if (resources.getSetting("columns").contains("phone")) {
       ArrayColumn arrayColumn4 = arrayPane.addArrayColumn(resources.getString("GML.phoneNumber"));
       arrayColumn4.setSortable(false);
@@ -75,9 +75,7 @@ public class DisplayContactsHelper {
     ArrayColumn arrayColumn6 = arrayPane.addArrayColumn(resources.getString("Operations"));
     arrayColumn6.setSortable(false);
 
-    Iterator iterator = contacts.iterator();
-    while (iterator.hasNext()) {
-      UserContact userContact = (UserContact) iterator.next();
+    for (UserContact userContact : contacts) {
       ContactDetail contact = userContact.getContact();
       ArrayLine ligne1 = arrayPane.addArrayLine();
       if (!"No".equalsIgnoreCase(resources.getSetting("showContactIcon"))) {
@@ -119,7 +117,7 @@ public class DisplayContactsHelper {
   }
 
   public static void displayContactsUser(YellowpagesSessionController yellowpagesScc,
-      Collection contacts, String id, String componentLabel, GraphicElementFactory gef,
+      Collection<ContactFatherDetail> contacts, String id, String componentLabel, GraphicElementFactory gef,
       ServletRequest request, HttpSession session, ResourcesWrapper resources, JspWriter out) throws
       IOException {
 
@@ -138,9 +136,7 @@ public class DisplayContactsHelper {
       arrayPane.addArrayColumn(nameHeader);
     }
 
-    Iterator iterator = contacts.iterator();
-    while (iterator.hasNext()) {
-      ContactFatherDetail contactFather = (ContactFatherDetail) iterator.next();
+    for (ContactFatherDetail contactFather : contacts) {
       ContactDetail contact = contactFather.getContactDetail();
       UserFull userFull = contact.getUserFull();
       String nodeName = contactFather.getNodeName();

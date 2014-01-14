@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,40 +27,34 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<c:set var="sessionController">Silverpeas_ScheduleEvent</c:set>
+<fmt:setLocale value="${sessionScope[sessionController].language}" />
+<%@ include file="dateFormat.jspf"%>
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
+<c:set var="browseContext" value="${requestScope.browseContext}" />
+<c:set var="currentScheduleEvent" value="${requestScope.currentScheduleEvent}" />
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel />
-<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <script type="text/javascript">
-
-	function trimAll(sString) {
-	  while (sString.substring(0,1) == ' ' ||  sString.substring(0,1) == '\t' || sString.substring(0,1) == '\n') {
-	    sString = sString.substring(1, sString.length);
-	  }
-	  while (sString.substring(sString.length-1, sString.length) == ' ' || 
-			  sString.substring(sString.length-1, sString.length) == '\n') {
-	    sString = sString.substring(0,sString.length-1);
-	  }
-	  return sString;
-	}
-	
 	function addOptionsHour(){
-		var table = document.getElementById("dateTable");
-		var row;
 		var dateValue;
 		var alertFlag = false;
-		for (var i = 1; i < table.rows.length; i++) {
-		  row = table.rows[i];
-		  amChecked = row.cells[1].firstElementChild.checked;
-		  pmChecked = row.cells[2].firstElementChild.checked;
-		  if (!amChecked && !pmChecked) {
-			  dateValue =  trimAll(row.cells[0].firstChild.nodeValue)
+		
+		$('#dateTable >tbody >tr').each(function(index) {
+			dateChecked = $(this).find('input:checked').length > 0;
+		  	if (!dateChecked) {
+			  dateValue =  $(this).find('.day').text();
 			  alertFlag = true;
-		  }
-		}
+		  	}
+		});
+		
 		if (alertFlag) {
-	      alert('<fmt:message key="scheduleevent.form.hour.mandatoryCheck"/>' + ' ' + dateValue);
+	      alert('<fmt:message key="scheduleevent.form.hour.mandatoryCheck"/> ' + $.trim(dateValue));
 		} else {
     	  document.addOptionsHour.submit();
 		}
@@ -69,15 +63,8 @@
 	function checkEnable(){
 	}
   </script>
-<link rel='stylesheet' type='text/css' href="<c:url value='/scheduleevent/jsp/styleSheets/scheduleevent.css'/>" />
+<link rel="stylesheet" type="text/css" href="<c:url value='/scheduleevent/jsp/styleSheets/scheduleevent.css'/>" />
 </head>
-<c:set var="sessionController">Silverpeas_ScheduleEvent</c:set>
-<fmt:setLocale value="${sessionScope[sessionController].language}" />
-<%@ include file="dateFormat.jspf"%>
-<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
-<c:set var="browseContext" value="${requestScope.browseContext}" />
-<c:set var="currentScheduleEvent" value="${requestScope.currentScheduleEvent}" />
-
 <body class="scheduleEvent" id="scheduleEvent_selected_hour">
 
 <fmt:message key="scheduleevent.form.title.screen3" var="scheduleEventTitle" />

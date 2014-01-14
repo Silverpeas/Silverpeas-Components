@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -13,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,11 +28,16 @@
   <name>gallery</name>
   <label>
     <message lang="fr">Galerie d'images</message>
-    <message lang="en">Image Gallery</message>
+    <message lang="en">Image gallery</message>
     <message lang="de">Bildergalerie</message>
   </label>
   <description>
-    <message lang="fr">Les images sont classées dans des albums. La création des albums est facilitée par la fonction de glisser/déposer.</message>
+    <message lang="fr">Les images peuvent être définies avec précision grâce à un formulaire personnalisable.
+      Organisées en albums, elles peuvent être ajoutées par glisser/
+      déposer. Le moteur de recherche exploite les données EXIF, IPTC et les
+      données personnalisées. Retaillées automatiquement, de nombreux traitements
+      par lot sont possibles.
+    </message>
     <message lang="en">Images are stored into albums. Creating albums and uploading images is easy with the drag and drop.</message>
     <message lang="de">Die Bilder werden in Alben abgelegt. Erstellen von Alben und das Hochladen von Bildern geht einfach durch der Drag and Drop.</message>
   </description>
@@ -42,17 +47,17 @@
     <message lang="de">04 Inhaltsverwaltung</message>
   </suite>
   <visible>true</visible>
-  <visibleInPersonalSpace>no</visibleInPersonalSpace>
+  <visibleInPersonalSpace>false</visibleInPersonalSpace>
   <portlet>true</portlet>
   <instanceClassName>com.silverpeas.gallery.GalleryInstanciator</instanceClassName>
   <profiles>
     <profile name="admin">
-      <label>     
+      <label>
         <message lang="fr">Gestionnaires</message>
         <message lang="en">Administrators</message>
         <message lang="de">Administrator</message>
       </label>
-      <help>     
+      <help>
         <message lang="fr">Les gestionnaires créent les albums et paramètrent le Plan de Classement</message>
         <message lang="en">Administrators create albums and set up the Classification Scheme</message>
         <message lang="de">Administrator</message>
@@ -102,7 +107,7 @@
       </label>
       <help>
         <message lang="fr">Les lecteurs visualisent les images.</message>
-        <message lang="en">Readers visualize pictures.</message>
+        <message lang="en">Readers visualize images.</message>
         <message lang="de">Leser</message>
       </help>
     </profile>
@@ -118,9 +123,9 @@
       <order>1</order>
       <mandatory>true</mandatory>
       <value>5</value>
-      <type>text</type>      
-      <size>5</size>      
-      <updatable>always</updatable>      
+      <type>text</type>
+      <size>5</size>
+      <updatable>always</updatable>
       <help>
         <message lang="fr">Temps d'attente entre deux images (en secondes)</message>
         <message lang="en">Time wait between two images (in seconds)</message>
@@ -149,17 +154,17 @@
       <name>usePdc</name>
       <label>
         <message lang="fr">Classification PDC</message>
-        <message lang="en">Classification Scheme</message>
+        <message lang="en">Taxonomy</message>
         <message lang="de">klassierungsplan</message>
       </label>
-      <order>4</order>      
+      <order>4</order>
       <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
-      <updatable>always</updatable>     
+      <updatable>always</updatable>
       <help>
         <message lang="fr">Les images créées au sein de cette instance pourront être classées sur le Plan de Classement</message>
-        <message lang="en">Images would be classified on PDC</message>
+        <message lang="en">Images would be classified on taxonomy</message>
         <message lang="de">Bilder werden auf dem KP Klassifiziert</message>
       </help>
     </parameter>
@@ -174,9 +179,9 @@
       <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
-      <updatable>always</updatable>      
+      <updatable>always</updatable>
       <help>
-        <message lang="fr">Permet d'afficher les Méta données (EXIF, IPTC, Windows) de chaque photo</message>
+        <message lang="fr">Permet d'afficher les méta-données (EXIF, IPTC, Windows) de chaque image</message>
         <message lang="en">Display image meta data (EXIF, IPTC, Windows)</message>
         <message lang="de">Bilder Metadaten anzeigen (EXIF, IPTC, Windows)</message>
       </help>
@@ -185,7 +190,7 @@
       <name>viewList</name>
       <label>
         <message lang="fr">Albums sous forme de liste</message>
-        <message lang="en">View albums as list</message>
+        <message lang="en">Albums as lists</message>
         <message lang="de">Alben als Liste zeigen</message>
       </label>
       <order>6</order>
@@ -195,7 +200,7 @@
       <updatable>always</updatable>
       <help>
         <message lang="fr">Permet de visualiser les images détaillées pour le format 266x150</message>
-        <message lang="en">Display a detailed list of image (size 266x150 only)</message>
+        <message lang="en">Display a detailed list of images (size 266x150 only)</message>
         <message lang="de">Zeigt eine detaillierte Liste der Bild (Größe nur 266x150)</message>
       </help>
     </parameter>
@@ -210,7 +215,7 @@
       <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
-      <updatable>always</updatable>     
+      <updatable>always</updatable>
       <help>
         <message lang="fr">Permet d'insérer le nom du photographe sous forme de watermark sur les images</message>
         <message lang="en">Insert photographer's name into image as watermark</message>
@@ -223,7 +228,7 @@
         <message lang="fr">Nb de jours avant fin de visibilité</message>
         <message lang="en">Number of days before the images are no longer visible.</message>
         <message lang="de">Anzahl der Tage, bevor die Bilder nicht mehr sichtbar sind.</message>
-      </label>      
+      </label>
       <order>8</order>
       <mandatory>true</mandatory>
       <value>3</value>
@@ -249,8 +254,8 @@
       <type>xmltemplates</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Nom du formulaire XML associé à la photothèque</message>
-        <message lang="en">Form XML name attached to this gallery</message>
+        <message lang="fr">Nom du formulaire associé à la photothèque</message>
+        <message lang="en">Form name attached to this gallery</message>
         <message lang="de">Name des XML Formulars, der an der Fotothek gebunden ist</message>
       </help>
     </parameter>
@@ -267,10 +272,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Permet d'utiliser les images de ce composant depuis l'éditeur Wysiwyg et les composants Vote et Enquête</message>
-        <message lang="en">Images will be available from Wysiwyg editor and Vote and Survey components</message>
+        <message lang="fr">Permet d'utiliser les images de cette application depuis l'éditeur Wysiwyg et les applications Vote et Enquête</message>
+        <message lang="en">Images will be available from Wysiwyg editor and Vote and Survey applications</message>
         <message lang="de">Bilder werden von WYSIWYG-Editor, Abstimmung und Umfrage Komponent verfügbar sein</message>
       </help>
+      <warning>
+        <message lang="fr">En cochant cette case, les images gérées par cette application seront librement utilisables (sans tenir compte des droits) par les autres applications.</message>
+        <message lang="en">By checking this box, images managed by this application will be available for use (regardless of rights) by other applications.</message>
+        <message lang="de">By checking this box, images managed by this application will be available for use (regardless of rights) by other applications.</message>
+      </warning>
     </parameter>
     <parameter>
       <name>comments</name>
@@ -304,8 +314,8 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Si ce paramètre est activé, les images indexées ne seront pas retrouvables par le moteur de recherche général mais uniquement par le moteur de recherche dédié à ce composant.</message>
-        <message lang="en">If this parameter is enabled, indexed images will not be findable by global search engine but only by the dedicated search engine of this component.</message>
+        <message lang="fr">Si ce paramètre est activé, les images indexées ne seront pas retrouvables par le moteur de recherche général mais uniquement par le moteur de recherche dédié à cette application.</message>
+        <message lang="en">If this parameter is enabled, indexed images will not be findable by global search engine but only by the dedicated search engine of this application.</message>
         <message lang="de">Wenn dieser Parameter aktiviert ist, werden indexierte Bilder von der globalen Suchmaschinen nicht auffindbaren sein, sondern nur durch die spezielle Suchmaschinen dieser Komponente.</message>
       </help>
       <personalSpaceValue>yes</personalSpaceValue>
@@ -314,7 +324,7 @@
       <name>download</name>
       <label>
         <message lang="fr">Image originale téléchargeable</message>
-        <message lang="en">Enable the download of the original image</message>
+        <message lang="en">Enable download of the original image</message>
         <message lang="de">Aktivieren Sie des Download der Original-Bildes</message>
       </label>
       <order>13</order>
@@ -324,7 +334,7 @@
       <updatable>always</updatable>
       <help>
         <message lang="fr">Si ce paramètre est activé, les images seront téléchargeables, par defaut, dans leur format original. Ce paramètre pourra être changé à tout moment sur chaque photo.</message>
-        <message lang="en">If this parameter is enabled, original pictures will be downloadable.</message>
+        <message lang="en">If this parameter is enabled, original images will be downloadable.</message>
         <message lang="de">Wenn dieser Parameter aktiviert ist, können Original-Bilder herunter geladen werden</message>
       </help>
     </parameter>
@@ -376,26 +386,26 @@
       <name>WatermarkHD</name>
       <label>
         <message lang="fr">Watermark image originale</message>
-        <message lang="en">Put a watermark on the original picture</message>
+        <message lang="en">Put a watermark on the original image</message>
         <message lang="de">Setzen Sie ein Wasserzeichen auf dem Original Bild</message>
       </label>
       <order>15</order>
       <mandatory>false</mandatory>
-      <value>false</value>
+      <value></value>
       <type>text</type>
       <size>25</size>
       <updatable>always</updatable>
       <help>
         <message lang="fr">Numéro de la donnée IPTC à mettre comme Watermark sur les images haute définition</message>
-        <message lang="en">IPTC number to be used for watermarking on High definition picture</message>
+        <message lang="en">IPTC number to be used for watermarking on High definition image</message>
         <message lang="de">IPTC Nummer verwenden für Wasserzeichen auf High-Definition-Bild</message>
       </help>
     </parameter>
     <parameter>
       <name>WatermarkOther</name>
       <label>
-        <message lang="fr">Watermark autres</message>
-        <message lang="en">Use iptc data for Watermark</message>
+        <message lang="fr">Watermark vignettes</message>
+        <message lang="en">Thumbnail watermark</message>
         <message lang="de">Verwenden Sie IPTC-Daten für Wasserzeichen</message>
       </label>
       <order>16</order>
@@ -406,7 +416,7 @@
       <updatable>always</updatable>
       <help>
         <message lang="fr">Numéro de la donnée IPTC à mettre comme Watermark sur les vignettes</message>
-        <message lang="en">IPTC number to be used for watermarking.</message>
+        <message lang="en">IPTC number to be used for watermarking on thumbnails</message>
         <message lang="de">IPTC Nummer verwenden für Wasserzeichen</message>
       </help>
     </parameter>
@@ -432,7 +442,7 @@
       <name>order</name>
       <label>
         <message lang="fr">Demandes de photos</message>
-        <message lang="en">Ask for an image</message>
+        <message lang="en">Ask for images</message>
         <message lang="de">Fordern Sie ein Bildes</message>
       </label>
       <order>18</order>
@@ -442,16 +452,16 @@
       <updatable>always</updatable>
       <help>
         <message lang="fr">Si ce paramètre est activé, les lecteurs aurons la possibilité de faire des demandes de photos</message>
-        <message lang="en">Readers can ask for the HD image.</message>
+        <message lang="en">Readers can ask for HD images</message>
         <message lang="de">Leser können das HD-Bildes anfordern</message>
       </help>
     </parameter>
     <parameter>
       <name>XMLOrderFormname</name>
       <label>
-        <message lang="fr">Formulaire XML associé aux demandes</message>
-        <message lang="en">XML Form to ask for pictures.</message>
-        <message lang="de">XML-Formular für Bilder anforderung</message>
+        <message lang="fr">Formulaire associé aux demandes</message>
+        <message lang="en">Form to ask for images</message>
+        <message lang="de">Formular für Bilder anforderung</message>
       </label>
       <order>19</order>
       <mandatory>false</mandatory>
@@ -459,16 +469,16 @@
       <type>xmltemplates</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Nom du formulaire XML associé aux demandes de photos</message>
-        <message lang="en">Form XML name attached to the order</message>
+        <message lang="fr">Nom du formulaire associé aux demandes de photos</message>
+        <message lang="en">Form name attached to the order</message>
         <message lang="de">Name des XML Formulars, der an den Bilderanfordeung gebunden ist</message>
       </help>
     </parameter>
     <parameter>
       <name>UrlCharte</name>
       <label>
-        <message lang="fr">Url de la charte</message>
-        <message lang="en">URL to the charter</message>
+        <message lang="fr">URL de la charte</message>
+        <message lang="en">URL of the usage policy</message>
         <message lang="de">URL der Charta</message>
       </label>
       <order>20</order>
@@ -478,8 +488,8 @@
       <size>25</size>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Url de la charte associée aux demandes des photos</message>
-        <message lang="en">URL to the charter defining the usage of the images.</message>
+        <message lang="fr">URL de la charte associée aux demandes de photos</message>
+        <message lang="en">URL of the usage policy defining the images usage</message>
         <message lang="de">URL der an den Anforderung der Bilder gebundenen Charta</message>
       </help>
     </parameter>

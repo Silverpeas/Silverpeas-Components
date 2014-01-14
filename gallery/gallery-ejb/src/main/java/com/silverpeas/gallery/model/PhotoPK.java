@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,8 +23,6 @@
  */
 package com.silverpeas.gallery.model;
 
-import java.io.Serializable;
-
 import com.stratelia.webactiv.util.WAPrimaryKey;
 
 /**
@@ -33,11 +31,9 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
  * @author Nicolas Eysseric
  * @version 1.0
  */
-public class PhotoPK extends WAPrimaryKey implements Serializable {
+public class PhotoPK extends WAPrimaryKey {
 
   private static final long serialVersionUID = -7700365133735243226L;
-  // to apply the fat key pattern
-  transient public PhotoDetail photoDetail = null;
 
   /**
    * Constructor which set only the id
@@ -77,6 +73,7 @@ public class PhotoPK extends WAPrimaryKey implements Serializable {
    * @return the root table name of the object
    * @since 1.0
    */
+  @Override
   public String getRootTableName() {
     return "Gallery";
   }
@@ -87,6 +84,7 @@ public class PhotoPK extends WAPrimaryKey implements Serializable {
    * @return the table name of the object
    * @since 1.0
    */
+  @Override
   public String getTableName() {
     return "SC_Gallery_Photo";
   }
@@ -111,8 +109,8 @@ public class PhotoPK extends WAPrimaryKey implements Serializable {
    * 
    * @return A hash code for this object
    */
+    @Override
   public int hashCode() {
     return this.id.hashCode() ^ this.componentName.hashCode();
-    // return toString().hashCode();
   }
 }

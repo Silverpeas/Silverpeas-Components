@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,8 +23,6 @@
  */
 
 package com.silverpeas.mydb.servlets;
-
-import javax.servlet.http.HttpServletRequest;
 
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
@@ -41,16 +39,17 @@ import com.silverpeas.mydb.data.key.UnicityKey;
 import com.silverpeas.mydb.exception.MyDBException;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * MyDB request router.
  * @author Antoine HEDIN
  */
-public class MyDBRequestRouter extends ComponentRequestRouter implements MyDBConstants {
+public class MyDBRequestRouter extends ComponentRequestRouter<MyDBSessionController> implements MyDBConstants {
 
   private static final long serialVersionUID = 1L;
 
@@ -67,7 +66,7 @@ public class MyDBRequestRouter extends ComponentRequestRouter implements MyDBCon
    * @param componentContext The context of the component.
    * @return The new created MyDB session control.
    */
-  public ComponentSessionController createComponentSessionController(
+  public MyDBSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new MyDBSessionController(mainSessionCtrl, componentContext);
   }
@@ -76,13 +75,11 @@ public class MyDBRequestRouter extends ComponentRequestRouter implements MyDBCon
    * This method has to be implemented by the component request rooter. It has to compute a
    * destination page.
    * @param function The entering request function.
-   * @param componentSC The session control component.
+   * @param myDBSC The session control component.
    * @return The complete destination URL for a forward.
    */
-  public String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request) {
+  public String getDestination(String function, MyDBSessionController myDBSC, HttpServletRequest request) {
     String destination = "";
-    MyDBSessionController myDBSC = (MyDBSessionController) componentSC;
     SilverTrace.info("myDB", "MyDBRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "User=" + myDBSC.getUserId()
         + ", Function=" + function);
@@ -393,7 +390,7 @@ public class MyDBRequestRouter extends ComponentRequestRouter implements MyDBCon
    * @throws MyDBException
    */
   private String getUpdateTableColumnDestination(HttpServletRequest request,
-      MyDBSessionController myDBSC) throws MyDBException {
+      MyDBSessionController myDBSC) {
     String command = request.getParameter("command");
     TableManager tableManager = myDBSC.getTableManager();
     if (command.equals("displayColumn")) {
@@ -455,9 +452,8 @@ public class MyDBRequestRouter extends ComponentRequestRouter implements MyDBCon
    * @throws MyDBException
    */
   @SuppressWarnings("unchecked")
-  private String getUpdateTablePrimaryKeyDestination(
-      HttpServletRequest request, MyDBSessionController myDBSC)
-      throws MyDBException {
+  private String getUpdateTablePrimaryKeyDestination(HttpServletRequest request,
+      MyDBSessionController myDBSC) {
     String command = request.getParameter("command");
     TableManager tableManager = myDBSC.getTableManager();
     if (command.equals("displayPK")) {
@@ -490,9 +486,8 @@ public class MyDBRequestRouter extends ComponentRequestRouter implements MyDBCon
    * @throws MyDBException
    */
   @SuppressWarnings("unchecked")
-  private String getUpdateTableUnicityKeyDestination(
-      HttpServletRequest request, MyDBSessionController myDBSC)
-      throws MyDBException {
+  private String getUpdateTableUnicityKeyDestination(HttpServletRequest request,
+      MyDBSessionController myDBSC) {
     String command = request.getParameter("command");
     TableManager tableManager = myDBSC.getTableManager();
     if (command.equals("displayUK")) {
@@ -529,9 +524,8 @@ public class MyDBRequestRouter extends ComponentRequestRouter implements MyDBCon
    * @return The destination corresponding to the current foreign key operation.
    * @throws MyDBException
    */
-  private String getUpdateTableForeignKeyDestination(
-      HttpServletRequest request, MyDBSessionController myDBSC)
-      throws MyDBException {
+  private String getUpdateTableForeignKeyDestination(HttpServletRequest request,
+      MyDBSessionController myDBSC) {
     String command = request.getParameter("command");
     TableManager tableManager = myDBSC.getTableManager();
     if (command.equals("displayFK")) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,8 +28,8 @@ import com.silverpeas.crm.control.CrmDataManager;
 import com.silverpeas.crm.control.ServiceFactory;
 import com.silverpeas.crm.model.Crm;
 import com.silverpeas.crm.model.CrmContact;
-import com.stratelia.silverpeas.silverstatistics.control.ComponentStatisticsInterface;
-import com.stratelia.silverpeas.silverstatistics.control.UserIdCountVolumeCouple;
+import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -38,13 +38,15 @@ import java.util.List;
 
 /**
  * Class declaration
+ *
  * @author
  */
 public class CrmStatistics implements ComponentStatisticsInterface {
 
+  @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
       throws Exception {
-    int crmsCount = getCrmsCount(spaceId, componentId);
+    int crmsCount = getCrmsCount(componentId);
     List<UserIdCountVolumeCouple> result = new ArrayList<UserIdCountVolumeCouple>(crmsCount);
     for (int i = 0; i < crmsCount; i++) {
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
@@ -55,7 +57,7 @@ public class CrmStatistics implements ComponentStatisticsInterface {
     return result;
   }
 
-  public int getCrmsCount(String spaceId, String componentId) throws RemoteException {
+  public int getCrmsCount(String componentId) throws RemoteException {
     ArrayList<CrmContact> publications = new ArrayList<CrmContact>();
     CrmDataManager dataManager = ServiceFactory.getCrmData();
     List<Crm> crms = dataManager.listAllCrms(componentId);

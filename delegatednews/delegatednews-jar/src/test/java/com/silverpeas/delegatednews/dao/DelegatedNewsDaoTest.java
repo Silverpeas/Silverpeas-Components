@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,27 +24,24 @@
 package com.silverpeas.delegatednews.dao;
 
 import com.silverpeas.delegatednews.model.DelegatedNews;
-
-import org.dbunit.operation.DatabaseOperation;
-import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import javax.naming.NamingException;
 import java.io.IOException;
+import java.util.Date;
+import java.util.List;
+import javax.naming.NamingException;
 import javax.sql.DataSource;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
+import org.dbunit.dataset.ReplacementDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSet;
+import org.dbunit.operation.DatabaseOperation;
 import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import java.lang.String;
-import java.lang.Integer;
-import java.util.Date;
-import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 
 public class DelegatedNewsDaoTest {
 
@@ -58,7 +55,7 @@ public class DelegatedNewsDaoTest {
   public static void generalSetUp() throws IOException, NamingException, Exception {
     context = new ClassPathXmlApplicationContext("spring-delegatednews.xml");
     dao = (DelegatedNewsDao) context.getBean("delegatedNewsDao");
-    DataSource ds = (DataSource) context.getBean("dataSource");
+    DataSource ds = (DataSource) context.getBean("jpaDataSource");
     ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(
     DelegatedNewsDaoTest.class.getClassLoader().getResourceAsStream(
     "com/silverpeas/delegatednews/dao/delegatednews-dataset.xml")));
@@ -74,12 +71,12 @@ public class DelegatedNewsDaoTest {
 
   @Test
   public void testInsertDelegatedNews() throws Exception {
-    Integer pubId = new Integer("3");
+    Integer pubId = new Integer("4");
     String instanceId = "kmelia1";  
     String contributorId = "1";
     DelegatedNews expectedDetail = new DelegatedNews(pubId.intValue(), instanceId, contributorId, new Date(), new Date(), null);
     expectedDetail = dao.save(expectedDetail);
-    DelegatedNews detail = dao.readByPrimaryKey(pubId);
+    DelegatedNews detail = dao.findOne(pubId);
     assertThat(detail, notNullValue());
     assertThat(detail.getPubId(), is(expectedDetail.getPubId()));
     assertThat(detail.getInstanceId(), is(expectedDetail.getInstanceId()));
@@ -89,25 +86,31 @@ public class DelegatedNewsDaoTest {
   @Test
   public void testGetDelegatedNews() throws Exception {
     Integer pubId = new Integer("1");
-	  DelegatedNews detail = dao.readByPrimaryKey(pubId);
+	  DelegatedNews detail = dao.findOne(pubId);
     assertThat(detail, notNullValue());
 
     pubId = new Integer("2");
-    detail = dao.readByPrimaryKey(pubId);
+    detail = dao.findOne(pubId);
+    assertThat(detail, notNullValue());
+    
+    pubId = new Integer("3");
+    detail = dao.findOne(pubId);
     assertThat(detail, notNullValue());
   }
   
   
   @Test
   public void testFindDelegatedNewsByStatus() throws Exception {
-    String status = "Valid";
+    String status = DelegatedNews.NEWS_VALID;
     List<DelegatedNews> listDetail = dao.findByStatus(status);
     assertThat(listDetail, notNullValue());
-    assertThat(listDetail.size(), is(1));
+    assertThat(listDetail.size(), is(2));
     DelegatedNews detail = listDetail.get(0);
+    assertThat(detail.getPubId(), is(3));
+    detail = listDetail.get(1);
     assertThat(detail.getPubId(), is(2));
     
-    status = "Refused";
+    status = DelegatedNews.NEWS_REFUSED;
     listDetail = dao.findByStatus(status);
     assertThat(listDetail, notNullValue());
     assertThat(listDetail.size(), is(0));

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
+import com.silverpeas.rssAgregator.model.RSSViewType;
 import com.silverpeas.rssAgregator.model.RssAgregatorException;
 import com.silverpeas.rssAgregator.model.SPChannel;
 import com.silverpeas.rssAgregator.model.SPChannelPK;
@@ -65,6 +66,8 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
   private ChannelBuilder channelBuilder = new ChannelBuilder();
   private SPChannel currentChannel = null;
   private SimpleDateFormat dateFormatter = null;
+  private static final String DEFAULT_VIEW_PARAMETER = "defaultView";
+  private RSSViewType viewMode;
 
   /**
    * Default constructor
@@ -73,7 +76,14 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
         "com.silverpeas.rssAgregator.multilang.rssAgregatorBundle",
-        "com.silverpeas.rssAgregator.settings.rssAgregatorIcons");
+        "com.silverpeas.rssAgregator.settings.rssAgregatorIcons",
+        "com.silverpeas.rssAgregator.settings.rssAgregatorSettings");
+    String defaultView = getComponentParameterValue(DEFAULT_VIEW_PARAMETER);
+    if (defaultView.isEmpty()) {
+      viewMode = RSSViewType.SEPARATED;
+    } else {
+      viewMode = RSSViewType.valueOf(defaultView);
+    }
   }
 
   /**
@@ -81,7 +91,7 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
    */
   public List<SPChannel> getAvailableChannels() throws RssAgregatorException {
     List<SPChannel> channelsFromDB = getRssBm().getChannels(getComponentId());
-    ArrayList<SPChannel> channels = new ArrayList<SPChannel>();
+    List<SPChannel> channels = new ArrayList<SPChannel>();
     SPChannel channel = null;
     SPChannelPK channelPK = null;
 
@@ -104,27 +114,23 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
   public List<SPChannel> getChannelsContent() throws RssAgregatorException {
     List<SPChannel> channelsFromDB = getRssBm().getChannels(getComponentId());
     ArrayList<SPChannel> channels = new ArrayList<SPChannel>();
-    SPChannel channel = null;
     Channel rssChannel = null;
     SPChannelPK channelPK = null;
     boolean oneChannelLoaded = false;
 
-    for (int c = 0; c < channelsFromDB.size(); c++) {
-      channel = (SPChannel) channelsFromDB.get(c);
+    for (SPChannel channel : channelsFromDB) {
       channelPK = (SPChannelPK) channel.getPK();
       if (cache.isContentNeedToRefresh(channelPK)) {
         if (oneChannelLoaded) {
           channel = null;
         } else {
-          SilverTrace.debug("rssAgregator",
-              "RssAgregatorSessionController.getChannels",
-              "Mise a jour du cache", "channelPK = " + channelPK.toString());
+          SilverTrace.debug("rssAgregator", "RssAgregatorSessionController.getChannels",
+              "Update cache", "channelPK = " + channelPK.toString());
           try {
             rssChannel = getChannelFromUrl(channel.getUrl());
           } catch (Exception e) {
-            SilverTrace.info("rssAgregator",
-                "RssAgregatorSessionController.getChannelsContent()",
-                "Mise a jour du cache", "channelPK = " + channelPK.toString());
+            SilverTrace.info("rssAgregator", "RssAgregatorSessionController.getChannelsContent()",
+                "Update cache", "channelPK = " + channelPK.toString());
           } finally {
             channel._setChannel(rssChannel);
             cache.addChannelToCache(channel);
@@ -132,9 +138,8 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
         }
         oneChannelLoaded = true;
       } else {
-        SilverTrace.debug("rssAgregator",
-            "RssAgregatorSessionController.getChannels",
-            "Utilisation du cache", "channelPK = " + channelPK.toString());
+        SilverTrace.debug("rssAgregator", "RssAgregatorSessionController.getChannels",
+            "Use cache", "channelPK = " + channelPK.toString());
         channel = cache.getChannelFromCache(channelPK);
       }
       channels.add(channel);
@@ -154,18 +159,16 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
 
   public void updateChannel(SPChannel channel) throws RssAgregatorException {
     boolean urlHaveChanged = true;
-    SilverTrace.debug("rssAgregator",
-        "RssAgregatorSessionController.updateChannel",
+    SilverTrace.debug("rssAgregator", "RssAgregatorSessionController.updateChannel",
         "root.MSG_GEN_PARAM_VALUE", "channelPK = " + channel.getPK().getId());
-    SilverTrace.debug("rssAgregator",
-        "RssAgregatorSessionController.updateChannel",
-        "root.MSG_GEN_PARAM_VALUE", "channelPK = "
-            + currentChannel.getPK().getId());
+    SilverTrace.debug("rssAgregator", "RssAgregatorSessionController.updateChannel",
+        "root.MSG_GEN_PARAM_VALUE", "channelPK = " + currentChannel.getPK().getId());
     if (currentChannel != null
         && currentChannel.getPK().getId().equals(channel.getPK().getId())) {
       urlHaveChanged = !currentChannel.getUrl().equals(channel.getUrl());
-      if (urlHaveChanged)
+      if (urlHaveChanged) {
         currentChannel.setUrl(channel.getUrl());
+      }
       currentChannel.setNbDisplayedItems(channel.getNbDisplayedItems());
       currentChannel.setRefreshRate(channel.getRefreshRate());
       currentChannel.setDisplayImage(channel.getDisplayImage());
@@ -199,14 +202,12 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
   }
 
   public SPChannel getChannel(String id) throws RssAgregatorException {
-    currentChannel = getRssBm().getChannel(
-        new SPChannelPK(id, getComponentId()));
+    currentChannel = getRssBm().getChannel(new SPChannelPK(id, getComponentId()));
     return currentChannel;
   }
 
   private Channel getChannelFromUrl(String sUrl) throws RssAgregatorException {
-    SilverTrace.debug("rssAgregator",
-        "RssAgregatorSessionController.getChannelFromUrl",
+    SilverTrace.debug("rssAgregator", "RssAgregatorSessionController.getChannelFromUrl",
         "root.MSG_GEN_ENTER_METHOD", "sUrl = " + sUrl);
     Channel channel = null;
     try {
@@ -247,14 +248,13 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
   }
 
   /**
-   * 
    * @return HTML string content of RSS presentation
    */
   public String getRSSIntroductionContent() {
     SilverpeasTemplate rssTemplate = getNewTemplate();
     return rssTemplate.applyFileTemplate("introductionRSS_" + this.getLanguage());
   }
-  
+
   /**
    * @return an RSS aggregator Silverpeas Template
    */
@@ -268,4 +268,46 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
         .getString("customersTemplatePath"));
     return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfiguration);
   }
+
+  /**
+   * Sets the current view mode of the RSS agregator rendering.
+   * @param viewMode the view mode (separated, agregated).
+   */
+  public void setViewMode(final RSSViewType viewMode) {
+    this.viewMode = viewMode;
+  }
+  
+  /**
+   * @return the current viewMode
+   */
+  public RSSViewType getViewMode() {
+    return this.viewMode;
+  }
+  
+  /**
+   * 
+   * @return
+
+  public RSSViewForm getAgregateViewForm() {
+    String role = this.getRole();
+    
+    new RSSViewForm(role, channels, items, viewMode)
+  }   */
+  
+  /**
+   * This method return the highest user profiles
+   * @return profile which gives the higher access
+   */
+  public String getHighestRole() {
+    String[] profiles = this.getUserRoles();
+    String role = "user";
+    for (String profile : profiles) {
+      // if admin, return it, we won't find a better profile
+      if ("admin".equals(profile)) {
+        return profile;
+      }
+    }
+    return role;
+  }
+
 }

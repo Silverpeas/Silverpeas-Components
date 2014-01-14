@@ -4,13 +4,14 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>parent</artifactId>
-    <version>20-SNAPSHOT</version>
+    <version>27-SNAPSHOT</version>
   </parent>
 
   <scm>
     <connection>scm:git:git@github.com:Silverpeas/Silverpeas-Components.git</connection>
     <developerConnection>scm:git:git@github.com:Silverpeas/Silverpeas-Components.git</developerConnection>
     <url>http://github.com/Silverpeas/Silverpeas-Components</url>
+    <tag>HEAD</tag>
   </scm>
 
   <repositories>
@@ -30,18 +31,24 @@
 
   <groupId>com.silverpeas</groupId>
   <artifactId>components</artifactId>
-  <version>5.7-SNAPSHOT</version>
+  <version>5.14-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Silverpeas Components</name>
 
   <properties>
-    <core.version>5.7-SNAPSHOT</core.version>
+    <!-- Default JDBC properties for test, can be overriden by -D arguments -->
+    <test.jdbc.driver>org.postgresql.Driver</test.jdbc.driver>
+    <test.jdbc.url>jdbc:postgresql://localhost:5432/SilverpeasV5</test.jdbc.url>
+    <test.jdbc.user>postgres</test.jdbc.user>
+    <test.jdbc.password>postgres</test.jdbc.password>
+    <!-- Version of Silverpeas-Core on which it depends -->
+    <core.version>5.14-SNAPSHOT</core.version>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
+      <artifactId>javax.servlet-api</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.servlet.jsp</groupId>

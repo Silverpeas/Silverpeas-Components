@@ -1,34 +1,28 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.stratelia.webactiv.forums;
 
-import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -36,13 +30,13 @@ import com.stratelia.silverpeas.classifyEngine.ClassifyEngine;
 import com.stratelia.silverpeas.contentManager.ContentInterface;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
+import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.contentManager.SilverContentVisibility;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.forums.models.ForumDetail;
-import com.stratelia.webactiv.forums.models.ForumPK;
 import com.stratelia.webactiv.forums.forumsException.ForumsRuntimeException;
 import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsBM;
-import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsBMHome;
+import com.stratelia.webactiv.forums.models.ForumDetail;
+import com.stratelia.webactiv.forums.models.ForumPK;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
@@ -52,24 +46,18 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
  */
 public class ForumsContentManager implements ContentInterface {
 
-  /**
-   * Find all the SilverContent with the given list of SilverContentId
-   * @param ids list of silverContentId to retrieve
-   * @param peasId the id of the instance
-   * @param userId the id of the user who wants to retrieve silverContent
-   * @param userRoles the roles of the user
-   * @return a List of SilverContent
-   */
-  public List getSilverContentById(List ids, String peasId, String userId,
-      List userRoles) {
+  @Override
+  public List<SilverContentInterface> getSilverContentById(List<Integer> alSilverContentId,
+      String sComponentId, String sUserId, List<String> alContentUserRoles) {
     if (getContentManager() == null) {
-      return new ArrayList();
+      return new ArrayList<SilverContentInterface>();
     }
-    return getHeaders(makePKArray(ids, peasId));
+    return getHeaders(makePKArray(alSilverContentId, sComponentId));
   }
 
   /**
    * Method declaration
+   *
    * @param pubId
    * @param peasId
    * @return
@@ -90,6 +78,7 @@ public class ForumsContentManager implements ContentInterface {
 
   /**
    * add a new content. It is registered to contentManager service
+   *
    * @param con a Connection
    * @param forumDetail the content to register
    * @param userId the creator of the content
@@ -99,14 +88,14 @@ public class ForumsContentManager implements ContentInterface {
       throws ContentManagerException {
     SilverContentVisibility scv = new SilverContentVisibility(true);
     SilverTrace.info("forums", "ForumsContentManager.createSilverContent()",
-        "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = "
-        + scv.toString());
-    return getContentManager().addSilverContent(con, forumPK.getId(),
-        forumPK.getComponentName(), userId, scv);
+        "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = " + scv.toString());
+    return getContentManager().addSilverContent(con, forumPK.getId(), forumPK.getComponentName(),
+        userId, scv);
   }
 
   /**
    * update the visibility attributes of the content. Here, the type of content is a ForumDetail
+   *
    * @param forumDetail the content
    * @param silverObjectId the unique identifier of the content
    */
@@ -131,6 +120,7 @@ public class ForumsContentManager implements ContentInterface {
 
   /**
    * delete a content. It is registered to contentManager service
+   *
    * @param con a Connection
    * @param forumPK the identifiant of the content to unregister
    */
@@ -149,6 +139,7 @@ public class ForumsContentManager implements ContentInterface {
 
   /**
    * Method declaration
+   *
    * @param forumDetail
    * @return
    * @see
@@ -159,23 +150,24 @@ public class ForumsContentManager implements ContentInterface {
 
   /**
    * return a list of forumPK according to a list of silverContentId
+   *
    * @param idList a list of silverContentId
-   * @param peasId the id of the instance
+   * @param componentId the id of the instance
    * @return a list of forumPK
    */
-  private ArrayList makePKArray(List idList, String peasId) {
-    ArrayList fks = new ArrayList();
+  private List<ForumPK> makePKArray(List<Integer> idList, String componentId) {
+    List<ForumPK> fks = new ArrayList<ForumPK>();
     ForumPK forumPK = null;
-    Iterator iter = idList.iterator();
+    Iterator<Integer> iter = idList.iterator();
     String id = null;
 
     // for each silverContentId, we get the corresponding forumId
     while (iter.hasNext()) {
-      int contentId = ((Integer) iter.next()).intValue();
+      int contentId = iter.next().intValue();
 
       try {
         id = getContentManager().getInternalContentId(contentId);
-        forumPK = new ForumPK(peasId, id);
+        forumPK = new ForumPK(componentId, id);
         fks.add(forumPK);
       } catch (ClassCastException ignored) {
         // ignore unknown item
@@ -188,23 +180,16 @@ public class ForumsContentManager implements ContentInterface {
 
   /**
    * return a list of silverContent according to a list of ForumPK
+   *
    * @param ids a list of ForumPK
    * @return a list of ForumDetail
    */
-  private List getHeaders(List ids) {
-    ForumDetail forumDetail = null;
-    ArrayList headers = new ArrayList();
-
-    try {
-      ArrayList forumDetails = (ArrayList) getForumsBM().getForums(ids);
-
-      for (int i = 0; i < forumDetails.size(); i++) {
-        forumDetail = (ForumDetail) forumDetails.get(i);
-        forumDetail.setIconUrl("forumsSmall.gif");
-        headers.add(forumDetail);
-      }
-    } catch (RemoteException e) {
-      // skip unknown and ill formed id.
+  private List getHeaders(List<ForumPK> ids) {
+    Collection<ForumDetail> forumDetails = getForumsBM().getForums(ids);
+    List<ForumDetail> headers = new ArrayList<ForumDetail>(forumDetails.size());
+    for (ForumDetail forumDetail : forumDetails) {
+      forumDetail.setIconUrl("forumsSmall.gif");
+      headers.add(forumDetail);
     }
 
     return headers;
@@ -212,6 +197,7 @@ public class ForumsContentManager implements ContentInterface {
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -219,9 +205,8 @@ public class ForumsContentManager implements ContentInterface {
     if (contentManager == null) {
       try {
         contentManager = new ContentManager();
-      } catch (Exception e) {
-        SilverTrace.fatal("forums", "ForumsContentManager",
-            "root.EX_UNKNOWN_CONTENT_MANAGER", e);
+      } catch (ContentManagerException e) {
+        SilverTrace.fatal("forums", "ForumsContentManager", "root.EX_UNKNOWN_CONTENT_MANAGER", e);
       }
     }
     return contentManager;
@@ -229,25 +214,21 @@ public class ForumsContentManager implements ContentInterface {
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
   private ForumsBM getForumsBM() {
     if (forumsBM == null) {
       try {
-        ForumsBMHome forumsBMHome = (ForumsBMHome) EJBUtilitaire
-            .getEJBObjectRef(JNDINames.FORUMSBM_EJBHOME, ForumsBMHome.class);
-
-        forumsBM = forumsBMHome.create();
+        forumsBM = EJBUtilitaire.getEJBObjectRef(JNDINames.FORUMSBM_EJBHOME, ForumsBM.class);
       } catch (Exception e) {
         throw new ForumsRuntimeException("ForumsContentManager.getForumsBM()",
-            SilverpeasRuntimeException.ERROR,
-            "forums.EX_IMPOSSIBLE_DE_FABRIQUER_FORUMSBM_HOME", e);
+            SilverpeasRuntimeException.ERROR, "forums.EX_IMPOSSIBLE_DE_FABRIQUER_FORUMSBM_HOME", e);
       }
     }
     return forumsBM;
   }
-
   private ContentManager contentManager = null;
   private ForumsBM forumsBM = null;
 }

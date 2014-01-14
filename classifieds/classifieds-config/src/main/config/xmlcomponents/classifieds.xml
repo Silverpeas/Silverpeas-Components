@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -13,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -33,7 +33,11 @@
     <message lang="de">Kleinanzeigen</message>
   </label>
   <description>
-    <message lang="fr">Les petites annonces sont classées par catégories et types</message>
+    <message lang="fr">Les annonces peuvent être classées par thématiques.
+		La structure des annonces est personnalisable. Elles peuvent être modérées. Les
+		utilisateurs peuvent laisser des commentaires et s’abonner aux thématiques de
+		leurs choix.
+	</message>
     <message lang="en">Classified adds are organized by categories and types</message>
     <message lang="de">Kleinanzeigen organisiert nach Art und Kategorie</message>
   </description>
@@ -82,6 +86,58 @@
    </profile>    
   </profiles>
   <parameters>
+	<parameter>
+      <name>homePage</name>
+      <label>
+        <message lang="fr">Page d'accueil</message>
+        <message lang="en">Homepage</message>
+		<message lang="de">Home page</message>
+      </label>
+      <order>1</order>
+      <mandatory>true</mandatory>
+      <value>0</value>
+      <options>
+        <option>
+          <name>
+            <message lang="fr">Annonces par catégories</message>
+            <message lang="en">Classifieds by category</message>
+            <message lang="de">Anzeigen nach Kategorie</message>
+          </name>
+          <value>0</value>
+        </option>
+        <option>
+          <name>
+            <message lang="fr">Annonces non catégorisées</message>
+            <message lang="en">Classifieds uncategorized</message>
+            <message lang="de">Anzeigen uncategorized</message>
+          </name>
+          <value>1</value>
+        </option>
+      </options>
+      <type>select</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Type d'affichage de la page d'accueil des petites annonces</message>
+        <message lang="en">Type of display of the classifieds home page</message>
+        <message lang="de">Anzeige Geben Sie die Homepage von Anzeigen</message>
+      </help>
+    </parameter>  
+    <parameter>
+      <name>wysiwygHeader</name>
+      <label>
+        <message lang="fr">Entête personnalisable</message>
+        <message lang="en">Customisable header</message>
+      </label>
+      <order>2</order>
+      <mandatory>true</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Permet d'activer la possibilité de personnaliser l'entête de la page d'accueil</message>
+        <message lang="en">Enables ability to customize welcome page header</message>
+      </help>
+    </parameter>
     <parameter>
       <name>XMLFormName</name>
       <label>
@@ -89,7 +145,7 @@
         <message lang="en">XML Form</message>
 	<message lang="de">XML Formular</message>
       </label>
-      <order>1</order>
+      <order>3</order>
       <mandatory>true</mandatory>
       <value>classifieds.xml</value>
       <type>xmltemplates</type>
@@ -107,7 +163,7 @@
         <message lang="en">Categorization field</message>
         <message lang="de">Suchfeld 1</message>
       </label>
-      <order>2</order>
+      <order>4</order>
       <mandatory>false</mandatory>
       <value>category</value>
       <type>text</type>
@@ -124,11 +180,11 @@
       <label>
         <message lang="fr">Champs recherche 2</message>
         <message lang="en">Search field 2</message>
-		<message lang="de">Erstes Suchfeld</message>
+		<message lang="de">Suchfeld 2</message>
       </label>
-      <order>3</order>
+      <order>5</order>
       <mandatory>false</mandatory>
-      <value>category</value>
+      <value>type</value>
       <type>text</type>
       <size>25</size>
       <updatable>always</updatable>
@@ -145,7 +201,7 @@
         <message lang="en">Draf</message>
         <message lang="de">Entwurf</message>
       </label>
-      <order>4</order>
+      <order>6</order>
       <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
@@ -163,7 +219,7 @@
         <message lang="en">Validation</message>
         <message lang="de">Validierung</message>
       </label>
-      <order>5</order>
+      <order>7</order>
       <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
@@ -180,7 +236,7 @@
         <message lang="fr">Commentaires</message>
         <message lang="en">Comments</message>
       </label>
-      <order>6</order>
+      <order>8</order>
       <mandatory>true</mandatory>
       <value>yes</value>
       <type>checkbox</type>
@@ -196,7 +252,7 @@
         <message lang="fr">Délai d'expiration des annonces en jours</message>
         <message lang="en">Classifieds expiration delay in days</message>
       </label>
-      <order>7</order>
+      <order>9</order>
       <mandatory>false</mandatory>
       <value></value>
       <type>text</type>
@@ -205,22 +261,6 @@
       <help>
         <message lang="fr">Permet de spécifier un délai d'expiration spécifique à cette instance</message>
         <message lang="en">Allow a specific setup of expiration delay for this instance</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>wysiwygHeader</name>
-      <label>
-        <message lang="fr">Entête personnalisable</message>
-        <message lang="en">Customisable header</message>
-      </label>
-      <order>8</order>
-      <mandatory>true</mandatory>
-      <value>no</value>
-      <type>checkbox</type>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Permet d'activer la possibilité de personnaliser l'entête de la page d'accueil</message>
-        <message lang="en">Enables ability to customize welcome page header</message>
       </help>
     </parameter>
   </parameters>

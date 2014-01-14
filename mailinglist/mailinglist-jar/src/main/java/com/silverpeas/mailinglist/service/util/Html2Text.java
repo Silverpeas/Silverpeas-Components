@@ -1,27 +1,23 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.mailinglist.service.util;
 
 import java.io.IOException;
@@ -34,31 +30,39 @@ import javax.swing.text.html.parser.ParserDelegator;
 
 /**
  * HTML parser, used to extract text form the HTML.
+ *
  * @author Emmanuel Hugonnet
  */
 public class Html2Text extends HTMLEditorKit.ParserCallback implements HtmlCleaner {
-  private StringBuffer texte;
+
+  private StringBuilder texte = new StringBuilder(1024);
   private boolean register = false;
   private int inScript = 0;
   private boolean hasError = false;
   private boolean isFormatTag = false;
-  private int maxSize = 0;
+  private int maxSize = 150;
 
   /**
    * Constructor.
-   * @param maxSize the maximum size of the extracted text.
    */
   public Html2Text() {
   }
 
+  /**
+   * Constructor.
+   *
+   * @param maxSize the maximum size of the extracted text.
+   */
   public Html2Text(int maxSize) {
     this.maxSize = maxSize;
   }
 
+  @Override
   public void setSummarySize(int maxSize) {
     this.maxSize = maxSize;
   }
 
+  @Override
   public void handleStartTag(HTML.Tag t, MutableAttributeSet a, int pos) {
     hasError = false;
     if (!register) {
@@ -83,10 +87,12 @@ public class Html2Text extends HTMLEditorKit.ParserCallback implements HtmlClean
     }
   }
 
+  @Override
   public void handleError(String errorMsg, int pos) {
     hasError = !errorMsg.startsWith("invalid.tagatt");
   }
 
+  @Override
   public void handleEndTag(HTML.Tag t, int pos) {
     if (HTML.Tag.SCRIPT.equals(t)) {
       register = true;
@@ -110,12 +116,14 @@ public class Html2Text extends HTMLEditorKit.ParserCallback implements HtmlClean
     }
   }
 
+  @Override
   public void parse(Reader in) throws IOException {
-    texte = new StringBuffer();
+    texte = new StringBuilder(1024);
     ParserDelegator delegator = new ParserDelegator();
     delegator.parse(in, this, true);
   }
 
+  @Override
   public void handleText(char[] text, int pos) {
     if (register && inScript <= 0 && !hasError && texte.length() <= maxSize) {
       for (int i = 0; i < text.length; i++) {
@@ -133,15 +141,18 @@ public class Html2Text extends HTMLEditorKit.ParserCallback implements HtmlClean
     }
   }
 
+  @Override
   public void handleEndOfLineString(String eol) {
     if (texte.length() <= maxSize) {
       texte.append(' ');
     }
   }
 
+  @Override
   public void handleComment(char[] data, int pos) {
   }
 
+  @Override
   public void handleSimpleTag(HTML.Tag t, MutableAttributeSet a, int pos) {
   }
 

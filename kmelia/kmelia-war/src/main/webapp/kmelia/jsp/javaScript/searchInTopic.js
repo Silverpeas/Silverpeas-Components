@@ -1,7 +1,6 @@
-function searchInTopic()
-{
-	var topicQuery = getSearchQuery();
-	if (topicQuery != "" && topicQuery.length > 1) {
+function searchInTopic() {
+  var topicQuery = getSearchQuery();
+  if (topicQuery != "" && topicQuery.length > 1) {
 		$.progressMessage();
 		var ieFix = new Date().getTime();
 		var componentId = getComponentId();
@@ -14,29 +13,26 @@ function searchInTopic()
 	return;
 }
 
-function checkSubmitToSearch(ev)
-{
+function checkSubmitToSearch(ev) {
 	var touche = ev.keyCode;
 	if (touche == 13) {
 		searchInTopic();
 	}
 }
 
-function getSearchQuery()
-{
+function getSearchQuery() {
 	var topicQuery = "";
 	if (document.getElementById("topicQuery") != null) {
-		topicQuery = document.getElementById("topicQuery").value;
+		topicQuery = $("#topicQuery").val();
 	}
 	return topicQuery;
 }
 
-function clearSearchQuery()
-{
-	try {
-		if (document.getElementById("topicQuery") != null) {
-			document.getElementById("topicQuery").value = "";
-		}
-	} catch (e) {
-	}
+function clearSearchQuery() {
+  try {
+    if (document.getElementById("topicQuery") != null) {
+      $("#topicQuery").val("");
+    }
+  } catch (e) {
+  }
 }

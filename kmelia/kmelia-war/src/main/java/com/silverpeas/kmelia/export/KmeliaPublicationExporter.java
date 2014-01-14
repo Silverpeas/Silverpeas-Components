@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,23 +22,26 @@
  */
 package com.silverpeas.kmelia.export;
 
-import java.io.IOException;
 import com.silverpeas.converter.DocumentFormat;
-import com.silverpeas.converter.ODTConverter;
 import com.silverpeas.converter.DocumentFormatConverterFactory;
-import java.io.File;
+import com.silverpeas.converter.ODTConverter;
 import com.silverpeas.export.ExportDescriptor;
 import com.silverpeas.export.ExportException;
 import com.silverpeas.export.Exporter;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
-import com.stratelia.webactiv.kmelia.model.TopicDetail;
 import com.stratelia.webactiv.util.FileRepositoryManager;
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.UUID;
-import org.apache.commons.io.FileUtils;
-import static com.silverpeas.kmelia.export.ODTDocumentBuilder.*;
-import static com.silverpeas.converter.DocumentFormat.*;
+
+import static com.silverpeas.converter.DocumentFormat.inFormat;
+import static com.silverpeas.converter.DocumentFormat.odt;
+import static com.silverpeas.kmelia.export.ODTDocumentBuilder.anODTAt;
+import static com.silverpeas.kmelia.export.ODTDocumentBuilder.anODTDocumentBuilder;
 
 /**
  * An exporter of Kmelia publications into a document in a given format.
@@ -80,7 +83,7 @@ public class KmeliaPublicationExporter implements Exporter<KmeliaPublication> {
    * @param descriptor the descriptor providing enough information about the export to perform
    * (document name, user for which the export is, the language in which the export has to be done,
    * ...)
-   * @param publications the publications to export. If several publications are passed as parameter,
+   * @param publication the publication to export. If several publications are passed as parameter,
    * only the first one is taken.
    * @throws ExportException if an error occurs while exporting the publication.
    */
@@ -90,13 +93,13 @@ public class KmeliaPublicationExporter implements Exporter<KmeliaPublication> {
     OutputStream output = descriptor.getOutputStream();
     UserDetail user = descriptor.getParameter(EXPORT_FOR_USER);
     String language = descriptor.getParameter(EXPORT_LANGUAGE);
-    TopicDetail topic = descriptor.getParameter(EXPORT_TOPIC);
+    String folderId = descriptor.getParameter(EXPORT_TOPIC);
     DocumentFormat targetFormat = DocumentFormat.inFormat(descriptor.getFormat());
     String documentPath = getTemporaryExportFilePathFor(publication);
     File odtDocument = null, exportFile = null;
     try {
       ODTDocumentBuilder builder = anODTDocumentBuilder().forUser(user).inLanguage(language).
-              inTopic(topic);
+              inTopic(folderId);
       odtDocument = builder.buildFrom(publication, anODTAt(documentPath));
       if (targetFormat != odt) {
         ODTConverter converter = DocumentFormatConverterFactory.getFactory().getODTConverter();

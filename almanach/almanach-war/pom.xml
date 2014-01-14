@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.silverpeas.components</groupId>
     <artifactId>almanach</artifactId>
-    <version>5.7-SNAPSHOT</version>
+    <version>5.14-SNAPSHOT</version>
   </parent>
 
   <groupId>com.silverpeas.components.almanach</groupId>
@@ -13,6 +13,16 @@
   <name>almanach Webapp</name>
 
   <dependencies>
+    <dependency>
+      <groupId>com.silverpeas.core</groupId>
+      <artifactId>web-core</artifactId>
+      <version>${core.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>jstl</artifactId>
+    </dependency>
     <dependency>
       <groupId>com.silverpeas.components.almanach</groupId>
       <artifactId>almanach-ejb</artifactId>
@@ -38,12 +48,6 @@
       <artifactId>pdc</artifactId>
       <version>${core.version}</version>
       <classifier>client</classifier>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.silverpeas.core</groupId>
-      <artifactId>web-core</artifactId>
-      <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -76,11 +80,6 @@
       <groupId>com.silverpeas.core</groupId>
       <artifactId>ws-test-core</artifactId>
       <version>${core.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-all</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

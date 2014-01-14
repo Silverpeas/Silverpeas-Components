@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,12 +26,12 @@
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ include file="check.jsp" %>
 
-<% 
+<%
 	// récupération des paramètres :
 	String			profile				= (String) request.getAttribute("Profile");
 	Order			order				= (Order) request.getAttribute("Order");
 	Collection		selectedIds			= (Collection) request.getAttribute("SelectedIds");
-	
+
 	// paramètres du formulaire
 	Form		xmlForm 		= (Form) request.getAttribute("XMLForm");
 	DataRecord	xmlData			= (DataRecord) request.getAttribute("XMLData");
@@ -41,10 +41,10 @@
 	int 	photoId			= 0;
 	String 	extension		= "_66x50.jpg";
 	String 	extensionAlt 	= "_266x150.jpg";
-	
+
 	List 		rows 	= order.getRows();
 	Iterator 	itP 	= (Iterator) rows.iterator();
-	
+
 	PagesContext 		context 	= new PagesContext("myForm", "0", resource.getLanguage(), false, componentId, null);
 	context.setBorderPrinted(false);
 %>
@@ -63,7 +63,7 @@
 * Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
 ***********************************************/
 
-/* IMPORTANT: Put script after tooltip div or 
+/* IMPORTANT: Put script after tooltip div or
 	 put tooltip div just before </BODY>. */
 
 var dom = (document.getElementById) ? true : false;
@@ -78,20 +78,20 @@ var origWidth, origHeight;
 if (nodyn) { event = "nope" }
 
 ///////////////////////  CUSTOMIZE HERE   ////////////////////
-// settings for tooltip 
+// settings for tooltip
 // Do you want tip to move when mouse moves over link?
-var tipFollowMouse= false;	
+var tipFollowMouse= false;
 // Be sure to set tipWidth wide enough for widest image
 var tipWidth= 160;
 var offX= 20;	// how far from mouse to show tip
-var offY= 12; 
+var offY= 12;
 var tipFontFamily= "Verdana, arial, helvetica, sans-serif";
 var tipFontSize= "8pt";
 // set default text color and background color for tooltip here
 // individual tooltips can have their own (set in messages arrays)
 // but don't have to
 var tipFontColor= "#000000";
-var tipBgColor= "#DDECFF"; 
+var tipBgColor= "#DDECFF";
 var tipBorderColor= "#000000";
 var tipBorderWidth= 1;
 var tipBorderStyle= "solid";
@@ -99,19 +99,21 @@ var tipPadding= 0;
 
 // tooltip content goes here (image, description, optional bgColor, optional textcolor)
 var messages = new Array();
-// multi-dimensional arrays containing: 
+// multi-dimensional arrays containing:
 // image and text for tooltip
 // optional: bgColor and color to be sent to tooltip
 <%
 	int messagesId = 0;
-	while (itP.hasNext()) 
+	while (itP.hasNext())
 	{
 		OrderRow row = (OrderRow) itP.next();
 		PhotoDetail photo = row.getPhoto();
 		String nomRep = resource.getSetting("imagesSubDirectory") + photo.getId();
-%>		
-		messages[<%=messagesId%>] = new Array('<%=FileServerUtils.getUrl(spaceId, componentId, photo.getId() + extensionAlt, photo.getImageMimeType(), nomRep)%>','<%=photo.getName()%>',"#FFFFFF");
-<%		
+%>
+		messages[<%=messagesId%>] = new Array('<%=FileServerUtils.getUrl( componentId, photo.getId()
+		    + extensionAlt, photo.getImageMimeType(), nomRep)%>',
+		    '<%=EncodeHelper.javaStringToJsString(photo.getName())%>',"#FFFFFF");
+<%
 		messagesId++;
 	}
 %>
@@ -137,7 +139,7 @@ var endStr = '</td></tr></table>';
 
 ////////////////////////////////////////////////////////////
 //  initTip	- initialization for tooltip.
-//		Global variables for tooltip. 
+//		Global variables for tooltip.
 //		Set styles
 //		Set up mousemove capture if tipFollowMouse set true.
 ////////////////////////////////////////////////////////////
@@ -166,7 +168,7 @@ window.onload = initTip;
 
 /////////////////////////////////////////////////
 //  doTooltip function
-//			Assembles content for tooltip and writes 
+//			Assembles content for tooltip and writes
 //			it to tipDiv
 /////////////////////////////////////////////////
 var t1,t2;	// for setTimeouts
@@ -201,7 +203,7 @@ function trackMouse(evt) {
 //  positionTip function
 //		If tipFollowMouse set false, so trackMouse function
 //		not being used, get position of mouseover event.
-//		Calculations use mouseover event position, 
+//		Calculations use mouseover event position,
 //		offset amounts and tooltip width to position
 //		tooltip within window.
 /////////////////////////////////////////////////////////////
@@ -218,11 +220,11 @@ function positionTip(evt) {
 	var winWd = (ns5)? window.innerWidth-20+window.pageXOffset: standardbody.clientWidth+standardbody.scrollLeft;
 	var winHt = (ns5)? window.innerHeight-20+window.pageYOffset: standardbody.clientHeight+standardbody.scrollTop;
 	// check mouse position against tip and window dimensions
-	// and position the tooltip 
-	if ((mouseX+offX+tpWd)>winWd) 
+	// and position the tooltip
+	if ((mouseX+offX+tpWd)>winWd)
 		tipcss.left = mouseX-(tpWd+offX)+"px";
 	else tipcss.left = mouseX+offX+"px";
-	if ((mouseY+offY+tpHt)>winHt) 
+	if ((mouseY+offY+tpHt)>winHt)
 		tipcss.top = winHt-(tpHt+offY)+"px";
 	else tipcss.top = mouseY+offY+"px";
 	if (!tipFollowMouse) t1=setTimeout("tipcss.visibility='visible'",100);
@@ -239,7 +241,7 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
 </script>
 <script language="javascript">
 	var albumWindow = window;
-	
+
 	function getObjects(selected)
 	{
 		var  items = "";
@@ -253,7 +255,7 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
 					// il n'y a qu'une checkbox non selectionnée
 					items += boxItems.value+",";
 				} else{
-					// search not checked boxes 
+					// search not checked boxes
 					for (i=0;i<boxItems.length ;i++ ){
 						if (boxItems[i].checked == selected){
 							items += boxItems[i].value+",";
@@ -264,11 +266,11 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
 		}
 		catch (e)
 		{
-			//Checkboxes are not displayed 
+			//Checkboxes are not displayed
 		}
 		return items;
 	}
-	
+
 	function doPagination(index)
 	{
 		document.orderForm.SelectedIds.value 	= getObjects(true);
@@ -277,9 +279,9 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
 		document.orderForm.action				= "OrderPagination";
 		document.orderForm.submit();
 	}
-	
+
 	var orderWindow = window;
-	
+
 	function download(photoId)
 	{
 		var url = "OrderDownloadImage?PhotoId="+photoId;
@@ -288,10 +290,10 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
 	        orderWindow.close();
 	    orderWindow = SP_openWindow(url, "orderWindow", "740", "600", windowParams);
 	}
-	
+
 	function updateOrder()
 	{
-		if (isCorrectForm()) 
+		if (isCorrectForm())
 		{
 			if(window.confirm("<%=resource.getString("gallery.confirmValidOrder")%> "))
 			{
@@ -305,25 +307,25 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
 			window.alert(errorMsg);
 		}
 	}
-	
+
 	function isCorrectForm()
 	{
 		<%
 			// tableau des photoIds
 			itP = (Iterator) rows.iterator();
 			String elementIds = "";
-			while (itP.hasNext()) 
+			while (itP.hasNext())
 			{
 				OrderRow row = (OrderRow) itP.next();
-				
+
 				elementIds += "\"DownloadType"+row.getPhotoId()+"\"";
 				if (itP.hasNext())
 					elementIds += ", ";
-			}	
+			}
 		%>
-		
+
 		var elementIds = new Array(<%=elementIds%>);
-		
+
 		var selectItem;
 		var nbErrors = 0;
 		for (i=0; i<elementIds.length; i++)
@@ -334,12 +336,12 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
 				nbErrors++;
 			}
 		}
-		
+
 		if (nbErrors > 0)
 			return false;
 		else
 			return true;
-	}	
+	}
 </script>
 </head>
 <body>
@@ -349,21 +351,21 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
 	browseBar.setComponentName(componentLabel, "Main");
 	String chemin = "<a href=\"OrderViewList\">" + resource.getString("gallery.viewOrderList")+"</a>" + " > " + resource.getString("gallery.order");
 	browseBar.setPath(chemin);
-	
+
 	int orderId = order.getOrderId();
-	
+
 	out.println(window.printBefore());
     out.println(frame.printBefore());
-    
+
  	// déclaration des boutons
-	Button validateButton = (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:updateOrder()", false);
-	Button cancelButton   = (Button) gef.getFormButton(resource.getString("GML.cancel"), "OrderViewList", false);
-	Button returnButton	  = (Button) gef.getFormButton(resource.getString("GML.back"), "OrderViewList", false);
+	Button validateButton = gef.getFormButton(resource.getString("GML.validate"), "javascript:updateOrder()", false);
+	Button cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "OrderViewList", false);
+	Button returnButton	= gef.getFormButton(resource.getString("GML.back"), "OrderViewList", false);
 
     // entête de la demande
     // --------------------
     Board board	= gef.getBoard();
-    
+
     board.printBefore();
     %>
 	<table border="0" width="80%">
@@ -396,13 +398,13 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
 	</table>
 	<%
 	board.printAfter();
-	
+
 	// formulaire
-	if (xmlForm != null) 
+	if (xmlForm != null)
 	{
 		%>
 			<br/>
-							
+
 			<%=board.printBefore()%>
 			<table border="0" width="50%">
 			<!-- AFFICHAGE du formulaire -->
@@ -411,58 +413,58 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
 					<%
 						PagesContext xmlContext = new PagesContext("myForm", "0", resource.getLanguage(), false, componentId, null);
 						xmlContext.setBorderPrinted(false);
-						
+
 				    	xmlForm.display(out, xmlContext, xmlData);
 				    %>
-					</td>	
+					</td>
 				</tr>
 			</table>
 			<%=board.printAfter()%>
 			<br/>
-		<% } 
-		
+		<% }
+
 	// afficher la charte
-	
-	%>	
+
+	%>
 		<table><tr>
 			<td><input type="checkbox" checked=true disabled=true name="CheckCharte"/> </td><td><%=resource.getString("gallery.validCharte")%></td>
 		</tr></table>
-    
+
 
 	<FORM NAME="orderForm" Method="POST" accept-charset="UTF-8">
 	<input type="hidden" name="SelectedIds">
 	<input type="hidden" name="NotSelectedIds">
 	<input type="hidden" name="OrderId" value="<%=orderId%>">
 	<%
-      
-  // afficher les photos 
-  // -------------------   
-    
+
+  // afficher les photos
+  // -------------------
+
   // affichage des lignes de la demande dans un ArrayPane
   ArrayPane arrayPane = gef.getArrayPane("order", "OrderViewPagin", request, session);
   arrayPane.setVisibleLineNumber(100);
   boolean viewValid = true;
-    
+
   if ("admin".equals(profile)) {
-    
+
     boolean ok = false;
     itP = rows.iterator();
     if (itP.hasNext()) {
       ArrayColumn columnOp0 = arrayPane.addArrayColumn(resource.getString("gallery.photo"));
       columnOp0.setSortable(false);
       ArrayColumn columnOp1 = arrayPane.addArrayColumn(resource.getString("gallery.choiceDownload"));
-      columnOp1.setSortable(false);        
+      columnOp1.setSortable(false);
       ok = true;
     }
     int indexPhoto = 0;
     while (itP.hasNext()) {
       ArrayLine ligne = arrayPane.addArrayLine();
-        
+
       OrderRow row = (OrderRow) itP.next();
       photoId = row.getPhotoId();
-        
+
       String download = row.getDownloadDecision();
-        
+
       String nomRep = resource.getSetting("imagesSubDirectory") + photoId;
       String name = photoId + extension;
       PhotoDetail photo = row.getPhoto();
@@ -470,21 +472,21 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
       if (StringUtil.isDefined(photo.getDescription())) {
         altTitle += " : " + EncodeHelper.javaStringToHtmlString(photo.getDescription());
       }
-      String vignette_url = FileServerUtils.getUrl(spaceId, componentId, name, photo.
+      String vignette_url = FileServerUtils.getUrl(componentId, name, photo.
           getImageMimeType(), nomRep);
-            
+
       ArrayCellText arrayCellText0 = ligne.addArrayCellText(
           "<a href=\"PreviewPhoto?PhotoId=" + photoId + "\" onmouseover=\"doTooltip(event," + indexPhoto + ")\" onmouseout=\"hideTip()\"><IMG SRC=\"" + vignette_url + "\" border=\"0\"></a>");
       arrayCellText0.setCompareOn(name);
       indexPhoto++;
-        
-        
+
+
       // colonne des choix de téléchargement
       String choix = "";
       if ("T".equals(download)) {
         // la photo a été téléchargée
         Date dateDownload = row.getDownloadDate();
-          
+
         choix = resource.getString("gallery.downloadDate") + resource.getOutputDateAndHour(
             dateDownload);
         viewValid = false;
@@ -498,7 +500,7 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
             // la photo est autorisée en téléchargement
             choix = resource.getString("gallery.downloadOk");
           } else if (("DW").equals(download)) {
-            // la photo est autorisée en téléchargement avec le watermark 
+            // la photo est autorisée en téléchargement avec le watermark
             choix = resource.getString("gallery.downloadWithWatermark");
           }
           viewValid = false;
@@ -528,7 +530,7 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
           choix = choix + "</select>";
         }
       }
-      ligne.addArrayCellText(choix);     
+      ligne.addArrayCellText(choix);
     }
     if (ok) {
       out.println(arrayPane.print());
@@ -546,7 +548,7 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
     int indexPhoto = 0;
     while (itP.hasNext()) {
       ArrayLine ligne = arrayPane.addArrayLine();
-        
+
       OrderRow row = (OrderRow) itP.next();
       photoId = row.getPhotoId();
       String nomRep = resource.getSetting("imagesSubDirectory") + photoId;
@@ -556,18 +558,18 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
       if (StringUtil.isDefined(photo.getDescription())) {
         altTitle += " : " + EncodeHelper.javaStringToHtmlString(photo.getDescription());
       }
-      String vignette_url = FileServerUtils.getUrl(spaceId, componentId, name, photo.getImageMimeType(),
+      String vignette_url = FileServerUtils.getUrl(componentId, name, photo.getImageMimeType(),
           nomRep);
-            
+
       ArrayCellText arrayCellText0 = ligne.addArrayCellText(
           "<a href=\"PreviewPhoto?PhotoId=" + photoId + "\" onmouseover=\"doTooltip(event," + indexPhoto + ")\" onmouseout=\"hideTip()\"><IMG SRC=\"" + vignette_url + "\" border=\"0\"></a>");
       arrayCellText0.setCompareOn(name);
       indexPhoto++;
-        
+
       // SECOND TELECHARGEMENT AVEC MISE A JOUR
       // traitement du téléchargement
       String download = resource.getString("gallery.wait");
-        
+
       // rechercher l'état de la photo
       String downloadDecision = row.getDownloadDecision();
       if (("R").equals(downloadDecision)) {
@@ -578,7 +580,7 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
         download = "<a href=\"OrderDownloadImage?PhotoId=" + photoId + "&OrderId=" + orderId + "\" target=_blank>" + EncodeHelper.
             javaStringToHtmlString(resource.getString("gallery.telecharger")) + "</a>";
       } else if (("DW").equals(downloadDecision)) {
-        // la photo est autorisée en téléchargement avec le watermark 
+        // la photo est autorisée en téléchargement avec le watermark
         download = "<a href=\"OrderDownloadImage?PhotoId=" + photoId + "&OrderId=" + orderId + "\" target=_blank>" + EncodeHelper.
             javaStringToHtmlString(resource.getString("gallery.telecharger")) + "</a>";
       } else if (("T").equals(downloadDecision)) {
@@ -588,17 +590,17 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
           download = resource.getString("gallery.downloadDate") + resource.getOutputDateAndHour(
               dateDownload);
         }
-      }        
+      }
       ligne.addArrayCellText(download);
     }
     if (ok) {
       out.println(arrayPane.print());
     }
   }
-    
-    
+
+
   ButtonPane buttonPane = gef.getButtonPane();
-    
+
   if ("admin".equals(profile)) {
     if (viewValid) {
       buttonPane.addButton(validateButton);
@@ -609,9 +611,9 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
   } else {
     buttonPane.addButton(returnButton);
   }
-    
+
   out.println("<br/><center>" + buttonPane.print() + "</center><br/>");
-    
+
   out.println(frame.printAfter());
   out.println(window.printAfter());
 %>

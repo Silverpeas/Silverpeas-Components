@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -13,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -34,7 +34,11 @@
     <message lang="de">Informations Brief</message>
   </label>
   <description>
-    <message lang="fr">Permet de créer une lettre d'information périodique, suivant un modèle de publication ré-utilisable. Gère les abonnements à la lettre.</message>
+    <message lang="fr">Cette application permet l’envoi d’une newsletter à des 
+		utilisateurs de la plateforme ou bien à des contacts externes. La gestion des
+		contacts est facilitée grâce à l’import/export CSV. La mise en place d’un modèle
+		facilite la création d’une nouvelle parution.
+	</message>
     <message lang="en">Create a periodic information according to a publication template re-usable. The subscritpions to thee letter are managed here also.</message>
     <message lang="de">Erstellet ein periodischer Informations Brief gemäß einer wieder verwendbarer Veröffentlichung Vorlage. Die Abonnements für den Informations Brief werden auch hier verwaltet.</message>
   </description>

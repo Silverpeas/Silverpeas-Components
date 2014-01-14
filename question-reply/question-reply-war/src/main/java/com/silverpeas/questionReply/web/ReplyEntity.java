@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,27 +23,24 @@
  */
 package com.silverpeas.questionReply.web;
 
+import com.silverpeas.attachment.web.AttachmentEntity;
+import com.silverpeas.questionReply.model.Reply;
+import com.silverpeas.ui.DisplayI18NHelper;
+import com.silverpeas.web.Exposable;
+import com.stratelia.webactiv.SilverpeasRole;
 import static com.stratelia.webactiv.SilverpeasRole.admin;
 import static com.stratelia.webactiv.SilverpeasRole.writer;
+import com.stratelia.webactiv.persistence.IdPK;
+import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.attachment.model.SimpleDocument;
 
 import java.net.URI;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import com.silverpeas.attachment.web.AttachmentEntity;
-import com.silverpeas.questionReply.model.Reply;
-import com.silverpeas.rest.Exposable;
-import com.silverpeas.ui.DisplayI18NHelper;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.persistence.IdPK;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import javax.xml.bind.annotation.XmlTransient;
 /**
  *
@@ -77,7 +74,7 @@ public class ReplyEntity implements Exposable {
   private boolean readOnly = true;
   @XmlElement
   private AttachmentEntity[] attachments;
-  
+
   @XmlTransient
   private String language = DisplayI18NHelper.getDefaultLanguage();
 
@@ -133,7 +130,11 @@ public class ReplyEntity implements Exposable {
   public String getTitle() {
     return title;
   }
-  
+
+  public String getLanguage() {
+    return this.language;
+  }
+
   public AttachmentEntity[] getAttachments() {
     return this.attachments;
   }
@@ -257,25 +258,25 @@ public class ReplyEntity implements Exposable {
   public ReplyEntity withURI(final URI uri) {
     this.uri = uri;
     return this;
-  } 
-  
+  }
+
   /**
    * Sets a URI to this entity.
    * With this URI, it can then be accessed through the Web.
-   * @param attachmentDetails 
+   * @param attachmentDetails
    * @return itself.
    */
-  public ReplyEntity withAttachments(final Collection<AttachmentDetail> attachmentDetails) {
+  public ReplyEntity withAttachments(final Collection<SimpleDocument> attachmentDetails) {
     if(attachmentDetails != null && !attachmentDetails.isEmpty()) {
       List<AttachmentEntity> entities = new ArrayList<AttachmentEntity>(attachmentDetails.size());
-      for(AttachmentDetail attachment : attachmentDetails) {
-        entities.add(AttachmentEntity.fromAttachment(attachment, this.language));
+      for(SimpleDocument attachment : attachmentDetails) {
+        entities.add(AttachmentEntity.fromAttachment(attachment));
       }
       this.attachments = entities.toArray(new AttachmentEntity[entities.size()]);
     }
     return this;
-  } 
-  
+  }
+
   /**
    * Sets the accessing user profile to this entity.
    * With this profile the status of this reply can be defined.

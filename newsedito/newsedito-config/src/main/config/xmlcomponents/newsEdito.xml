@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -13,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -40,7 +40,7 @@
   </description>
   <suite>
     <message lang="fr">04 Gestion de contenu</message>
-    <message lang="en">04 Content management</message>
+    <message lang="en">04 Content Management</message>
     <message lang="de">04 Inhaltsverwaltung</message>
   </suite>
   <visible>true</visible>
@@ -63,12 +63,12 @@
       <label>
         <message lang="fr">Rédacteurs</message>
         <message lang="en">Writers</message>
-        <message lang="de">Schreiber</message>
+        <message lang="de">Herausgeber</message>
       </label>
       <help>
         <message lang="fr">Les rédacteurs rédigent des articles.</message>
         <message lang="en">Writers create posts</message>
-        <message lang="de">Schreiber</message>
+        <message lang="de">Herausgeber</message>
       </help>
     </profile>
     <profile name="user">

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -13,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -34,8 +34,13 @@
     <message lang="de">Projektverwaltung</message>
   </label>
   <description>
-    <message lang="fr">Ce composant permet de gérer la notion de précédence entre deux tâches de même niveau.</message>
-    <message lang="en">This component create hierarchies of tasks affected to users.</message>
+    <message lang="fr">L’application permet de créer des tâches, d’affecter des 
+		ressources. Chaque tâche (et ses sous-taches) est gérée par un responsable.
+		L’allocation des ressources associées est calculée automatiquement et permet
+		de détecter la sur-allocation. Le diagramme de Gantt permet une visualisation
+		optimale.
+	</message>
+    <message lang="en">This application creates hierarchies of tasks affected to users.</message>
     <message lang="de">Diese Komponente erstellt eine Aufgaben Hierarchie die an Benutzer zugewiesen kann.</message>
   </description>
   <suite>

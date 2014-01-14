@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -77,7 +77,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%
 
 MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-//OrganizationController organizationCtrl = m_MainSessionCtrl.getOrganizationController();
+//OrganizationController organizationCtrl = m_MainSessionCtrl.getOrganisationController();
 GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
 WhitePagesSessionController scc = (WhitePagesSessionController) request.getAttribute("whitePages");
@@ -88,7 +88,7 @@ if (scc == null)
     getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
     return;
 }
-	
+
 
 ResourcesWrapper resource = (ResourcesWrapper)request.getAttribute("resources");
 
@@ -123,7 +123,7 @@ if (containerContext == null) {
 	else
 		browseBar.setComponentName(componentLabel, "Main");
 } else {
-	browseBar.setComponentName(componentLabel, m_context+containerContext.getReturnURL()); 
+	browseBar.setComponentName(componentLabel, m_context+containerContext.getReturnURL());
 }
 
 %>

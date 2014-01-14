@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -33,13 +33,12 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ include file="checkKmelia.jsp" %>
 <%@ include file="topicReport.jsp.inc" %>
-<%@ include file="tabManager.jsp.inc" %>
+
+<%@taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%
 String name				= "";
 String description		= "";
-String creatorName		= "";
-String creationDate		= "";
 String pubName			= "";
 String nextAction 		= "";
 String screenMessage 	= "";
@@ -65,14 +64,16 @@ TopicDetail currentTopic = null;
 String linkedPathString = "";
 String pathString = "";
 
-if (wizardRow == null)
+if (wizardRow == null) {
 	wizardRow = "1";
+}
 
 boolean isEnd = false;
-if ("1".equals(wizardLast))
+if ("1".equals(wizardLast)) {
 	isEnd = true;
+}
 
-Button cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "GoToCurrentTopic", false);
+Button cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "GoToCurrentTopic", false);
 Button nextButton = null;
 
 //Action = Wizard (New), UpdateWizard
@@ -88,20 +89,12 @@ if (action.equals("UpdateWizard"))
       ownerDetail 	= kmeliaPublication.getCreator();
 
       description 	= pubDetail.getDescription(currentLang);
-      creationDate 	= resources.getOutputDate(pubDetail.getCreationDate());
-      if (ownerDetail != null)
-          creatorName = ownerDetail.getDisplayedName();
-      else
-          creatorName = resources.getString("UnknownAuthor");
  	  nextAction	= "UpdatePublication";
 } 
 else if (action.equals("Wizard")) 
 {
-      creationDate	= resources.getOutputDate(new Date());
-      creatorName	= kmeliaScc.getUserDetail().getDisplayedName();
       currentTopic 	= kmeliaScc.getSessionTopic();
-      if (currentTopic != null)
-      {
+      if (currentTopic != null) {
     	  Collection pathColl = currentTopic.getPath();
     	  linkedPathString = displayPath(pathColl, true, 3);
     	  kmeliaScc.setSessionPath(linkedPathString);
@@ -110,48 +103,32 @@ else if (action.equals("Wizard"))
       }
 	  nextAction = "AddPublication";
 }
-if (isEnd)
-	nextButton = (Button) gef.getFormButton(resources.getString("kmelia.End"), "javascript:onClick=sendPublicationDataToRouter('"+nextAction+"');", false);
-else
-	nextButton = (Button) gef.getFormButton(resources.getString("GML.next"), "javascript:onClick=sendPublicationDataToRouter('"+nextAction+"');", false);
+if (isEnd) {
+	nextButton = gef.getFormButton(resources.getString("kmelia.End"), "javascript:onClick=sendPublicationDataToRouter('"+nextAction+"');", false);
+} else {
+	nextButton = gef.getFormButton(resources.getString("GML.next"), "javascript:onClick=sendPublicationDataToRouter('"+nextAction+"');", false);
+}
 
 %>
-<HTML>
-<HEAD>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<TITLE></TITLE>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title></title>
+<view:looknfeel/>
+<link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="javascript">
+<script type="text/javascript">
 function topicGoTo(id) {
 	location.href="GoToTopic?Id="+id;
 }
 
-function publicationGoTo(id, action){
-    document.pubForm.Action.value = "ViewPublication";
-    document.pubForm.CheckPath.value = "1";
-    document.pubForm.PubId.value = id;
-    document.pubForm.submit();
-}
-
-function sendOperation(operation) {
-    document.pubForm.Action.value = operation;
-    document.pubForm.submit();
-}
-
-function sendPublicationData(operation) {
-    if (isCorrectForm()) {
-         document.pubForm.Action.value = operation;
-         document.pubForm.submit();
-     }
-}
-
 function sendPublicationDataToRouter(func) {
 	if (isCorrectForm()) {
+		<% if (!kmeliaScc.isKmaxMode) { %>
+			<view:pdcPositions setIn="document.pubForm.Positions.value"/>
+		<% } %>
     	document.pubForm.action = func;
         document.pubForm.submit();
     }
@@ -174,6 +151,10 @@ function isCorrectForm() {
         	errorNb++;
 	    }
   	 <% } %>
+  	
+  	<% if (!kmeliaScc.isKmaxMode) { %>
+  		<view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>
+  	<% } %>
 
      switch(errorNb) {
         case 0 :
@@ -197,81 +178,102 @@ function init() {
 	document.pubForm.Name.focus();
 }
 </script>
-</HEAD>
-<BODY onLoad="init()">
-<% 
-        Window window = gef.getWindow();
-        Frame frame = gef.getFrame();
-        Board board = gef.getBoard();
-        Board boardHelp = gef.getBoard();
-        
-        BrowseBar browseBar = window.getBrowseBar();
-        browseBar.setDomainName(kmeliaScc.getSpaceLabel());
-        browseBar.setComponentName(kmeliaScc.getComponentLabel(), "javascript:onClick=topicGoTo('0')");
-        browseBar.setPath(linkedPathString);
-		browseBar.setExtraInformation(pubName);
-        
-        out.println(window.printBefore());
-        
-        displayWizardOperations(wizardRow, id, kmeliaScc, gef, action, resources, out, kmaxMode);
-        
-        out.println(frame.printBefore());
-        
-		// cadre d'aide
-	    out.println(boardHelp.printBefore());
-		out.println("<table border=\"0\"><tr>");
-		out.println("<td valign=\"absmiddle\"><img border=\"0\" src=\""+resources.getIcon("kmelia.info")+"\"></td>");
-		out.println("<td>"+resources.getString("kmelia.HelpView")+"</td>");
-		out.println("</tr></table>");
-	    out.println(boardHelp.printAfter());
-	    out.println("</BR>");
-        
-        out.println(board.printBefore());
-%>
-	<TABLE CELLPADDING="5" WIDTH="100%">
-		<FORM Name="pubForm" Action="publicationManager.jsp" Method="POST" enctype="multipart/form-data" accept-charset="UTF-8">
-  			<TR><TD class="txtlibform"><%=resources.getString("PubTitre")%></TD>
-      			<TD><input type="text" name="Name" value="<%=Encode.javaStringToHtmlString(pubName)%>" size="60" maxlength="150">&nbsp;<IMG src="<%=resources.getIcon("kmelia.mandatory")%>" width="5" height="5" border="0"></TD></TR>
-  			<TR><TD class="txtlibform"><%=resources.getString("PubDescription")%></TD>
-      			<TD><TEXTAREA ROWS="4" COLS="70" name="Description"><%=Encode.javaStringToHtmlString(description)%></TEXTAREA></TD></TR>
-  			<TR><TD class="txtlibform"><%=resources.getString("PubDateCreation")%></TD>
-      			<TD><%=creationDate%>&nbsp;<span class="txtlibform"><%=resources.getString("kmelia.By")%></span>&nbsp;<%=creatorName%></TD></TR>
-
-			<% if ("writer".equals(profile) && (kmeliaScc.isTargetValidationEnable() || kmeliaScc.isTargetMultiValidationEnable())) {
-  				String selectUserLab = resources.getString("kmelia.SelectValidator");
-  				String link = "&nbsp;<a href=\"#\" onclick=\"javascript:SP_openWindow('SelectValidator','selectUser',800,600,'');\">";
-         		link += "<img src=\"" 
-              			+ resources.getIcon("kmelia.user") 
-              			+ "\" width=\"15\" height=\"15\" border=\"0\" alt=\"" 
-              			+ selectUserLab + "\" align=\"absmiddle\" title=\"" 
-              			+ selectUserLab + "\"></a>";
-  			%>
-	  			<TR><TD class="txtlibform"><%=resources.getString("kmelia.Valideur")%></TD>
-	      		<TD>
-			      	<% if (kmeliaScc.isTargetValidationEnable()) { %> 
-			      		<input type="text" name="Valideur" value="" size="60" readonly>
-			      	<% } else { %>
-			      		<textarea name="Valideur" value="" rows="4" cols="40" readonly></textarea>
-			      	<% } %>
-			      	<input type="hidden" name="ValideurId" value=""><%=link%>&nbsp;<img src="<%=resources.getIcon("kmelia.mandatory")%>" align="absmiddle" width="5" height="5" border="0"></TD></TR>
-  			<% } %>
-
-  			<TR><TD><input type="hidden" name="Position" value="View"><input type="hidden" name="Action" value="<%=action%>"><input type="hidden" name="PubId" value="<%=id%>"><input type="hidden" name="Importance" value="1"><input type="hidden" name="Status" value=""><input type="hidden" name="WizardRow" value="<%=wizardRow%>"></TD></TR>
-  			<TR><TD colspan="2">( <img border="0" src="<%=resources.getIcon("kmelia.mandatory")%>" width="5" height="5"> : <%=resources.getString("GML.requiredField")%> )</TD></TR>
-  		</FORM>
-	</TABLE>
+</head>
+<body class="publicationManager" onload="init()">
   <%
-  		out.println(board.printAfter());
+    Window window = gef.getWindow();
+    Frame frame = gef.getFrame();
+    Board board = gef.getBoard();
+    BrowseBar browseBar = window.getBrowseBar();
+    browseBar.setDomainName(kmeliaScc.getSpaceLabel());
+    browseBar.setComponentName(kmeliaScc.getComponentLabel(), "javascript:onClick=topicGoTo('0')");
+    browseBar.setPath(linkedPathString);
+    browseBar.setExtraInformation(pubName);
+    out.println(window.printBefore());
+    KmeliaDisplayHelper.displayWizardOperations(wizardRow, id, kmeliaScc, gef, action, resources,
+        out, kmaxMode);
+    out.println(frame.printBefore());
+  %>
+	<!-- cadre d'aide -->
+	<div class="inlineMessage">
+		<img border="0" src="<%=resources.getIcon("kmelia.info") %>"/>
+		<%=resources.getString("kmelia.HelpView") %>
+	</div>
+	<br clear="all"/>
+	
+	<div id="header">
+		<form name="pubForm" action="#" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
+			<input type="hidden" name="Positions"/>
+			<input type="hidden" name="Position" value="View"/>
+			<input type="hidden" name="Action" value="<%=action%>"/>
+			<input type="hidden" name="PubId" value="<%=id%>"/>
+			<input type="hidden" name="Importance" value="1"/>
+			<input type="hidden" name="Status" value=""/>
+			<input type="hidden" name="WizardRow" value="<%=wizardRow%>"/>
+			
+			<fieldset id="pubInfo" class="skinFieldset">
+				<legend><%=resources.getString("kmelia.header.fieldset.main") %></legend>
+					<div class="fields">
+						<div class="field" id="pubNameArea">
+						<label for="pubName" class="txtlibform"><%=resources.getString("PubTitre")%></label>
+						<div class="champs">
+							<input type="text" name="Name" id="pubName" value="<%=EncodeHelper.javaStringToHtmlString(pubName)%>" size="68" maxlength="150" />&nbsp;<img src="<%=resources.getIcon("kmelia.mandatory")%>" width="5" height="5" border="0"/>
+						</div>
+						</div>
+					
+						<div class="field" id="descriptionArea">
+						<label for="pubDesc" class="txtlibform"><%=resources.getString("PubDescription")%></label>
+						<div class="champs">
+							<textarea rows="4" cols="65" name="Description" id="pubDesc"><%=EncodeHelper.javaStringToHtmlString(description)%></textarea>
+						</div>
+						
+						<% if ("writer".equals(profile) && (kmeliaScc.isTargetValidationEnable() || kmeliaScc.isTargetMultiValidationEnable())) {
+					           String selectUserLab = resources.getString("kmelia.SelectValidator");
+					           String link = "&nbsp;<a href=\"#\" onclick=\"javascript:SP_openWindow('SelectValidator','selectUser',800,600,'');\">";
+					           link += "<img src=\""
+					               + resources.getIcon("kmelia.user")
+					               + "\" width=\"15\" height=\"15\" border=\"0\" alt=\""
+					               + selectUserLab + "\" align=\"absmiddle\" title=\""
+					               + selectUserLab + "\"></a>";
+					    %>
+					    <div class="field" id="validatorArea">
+							<label for="Valideur" class="txtlibform"><%=resources.getString("kmelia.Valideur")%></label>
+							<div class="champs">
+								<% if (kmeliaScc.isTargetValidationEnable()) {%>
+		          					<input type="text" name="Valideur" id="Valideur" size="60" readonly="readonly"/>
+		          				<% } else {%>
+		          					<textarea name="Valideur" id="Valideur" rows="4" cols="40" readonly="readonly"></textarea>
+		          				<% }%>
+		          				<input type="hidden" name="ValideurId" id="ValideurId" value=""/><%=link%>&nbsp;<img src="<%=resources.getIcon("kmelia.mandatory")%>" width="5" height="5" border="0"/>
+							</div>
+						</div>
+						<% } %>
+				</div>
+				
+				</div>
+			</fieldset>
+			
+			<% if (!kmeliaScc.isKmaxMode) { %>
+				<view:pdcNewContentClassification componentId="<%= componentId %>" nodeId="<%= kmeliaScc.getCurrentFolderId() %>"/>
+			<% } %>
+			
+			<div class="legend">
+				<img src="<%=resources.getIcon("kmelia.mandatory")%>" width="5" height="5"/> : <%=resources.getString("GML.requiredField")%>
+			</div>
+		</form>
+	</div>
+	
+  <%
         ButtonPane buttonPane = gef.getButtonPane();
         buttonPane.addButton(nextButton);
         buttonPane.addButton(cancelButton);
         buttonPane.setHorizontalPosition();
-        out.println("<BR/><center>"+buttonPane.print()+"</center>");
+        out.println("<br/><center>"+buttonPane.print()+"</center>");
         out.println(frame.printAfter());
         out.println(window.printAfter());
 %>
-<FORM name="toRouterForm">
-	<input type="hidden" name="PubId" value="<%=id%>">
-</FORM>
-</BODY>
-</HTML>
+<form name="toRouterForm">
+	<input type="hidden" name="PubId" value="<%=id%>"/>
+</form>
+</body>
+</html>

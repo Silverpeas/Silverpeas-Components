@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,24 +21,17 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
----*/
-
 package com.stratelia.webactiv.almanach;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
-import javax.ejb.EJBException;
+import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
 
-import com.stratelia.silverpeas.silverstatistics.control.ComponentStatisticsInterface;
-import com.stratelia.silverpeas.silverstatistics.control.UserIdCountVolumeCouple;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.almanach.control.ejb.AlmanachBm;
-import com.stratelia.webactiv.almanach.control.ejb.AlmanachBmHome;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.EventPK;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -46,48 +39,42 @@ import com.stratelia.webactiv.util.JNDINames;
 
 /**
  * Class declaration
- * 
- * 
+ *
  * @author
  */
 public class AlmanachStatistics implements ComponentStatisticsInterface {
 
   private AlmanachBm almanachBm = null;
 
+  @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
       throws Exception {
-    List<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>();
-    Collection<EventDetail> c = getEvents(spaceId, componentId);
-    Iterator<EventDetail> iter = c.iterator();
-    while (iter.hasNext()) {
-      EventDetail detail = iter.next();
-
+    Collection<EventDetail> events = getEvents(spaceId, componentId);
+    List<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>(events.size());
+    for (EventDetail detail : events) {
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
-
       myCouple.setUserId(detail.getDelegatorId());
       myCouple.setCountVolume(1);
       myArrayList.add(myCouple);
     }
-
     return myArrayList;
   }
 
-  private AlmanachBm getAlmanachBm() {
+  private AlmanachBm getAlmanachBm() throws Exception {
     if (almanachBm == null) {
       try {
-        almanachBm = ((AlmanachBmHome) EJBUtilitaire.getEJBObjectRef(
-            JNDINames.ALMANACHBM_EJBHOME, AlmanachBmHome.class)).create();
+        almanachBm =EJBUtilitaire.getEJBObjectRef(JNDINames.ALMANACHBM_EJBHOME, AlmanachBm.class);
       } catch (Exception e) {
         SilverTrace.error("almanach", "AlmanachStatistics.getAlmanachBm",
             "root.MSG_EJB_CREATE_FAILED", JNDINames.PUBLICATIONBM_EJBHOME, e);
-        throw new EJBException(e);
+        throw e;
       }
     }
     return almanachBm;
   }
 
   public Collection<EventDetail> getEvents(String spaceId, String componentId)
-      throws RemoteException {
+      throws Exception {
     return getAlmanachBm().getAllEvents(new EventPK("", spaceId, componentId));
   }
 

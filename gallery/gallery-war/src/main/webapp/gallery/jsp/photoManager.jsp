@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,18 +26,19 @@
 
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ include file="check.jsp" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
   // récupération des paramètres :
   PhotoDetail photo = (PhotoDetail) request.getAttribute("Photo");
   String repertoire = (String) request.getAttribute("Repertoire");
   List path = (List) request.getAttribute("Path");
   String userName = (String) request.getAttribute("UserName");
-    
+
   Integer nbCom = (Integer) request.getAttribute("NbComments");
   Boolean isUsePdc = (Boolean) request.getAttribute("IsUsePdc");
   String XMLFormName = (String) request.getAttribute("XMLFormName");
   boolean showComments = ((Boolean) request.getAttribute("ShowCommentsTab")).booleanValue();
-    
+
   // déclaration des variables :
   String photoId = "";
   String title = "";
@@ -61,7 +62,7 @@
   String keyWord = "";
   String beginDate = "";
   String endDate = "";
-    
+
   // dans le cas d'une mise à jour, récupération des données :
   if (photo != null) {
     photoId = new Integer(photo.getPhotoPK().getId()).toString();
@@ -79,7 +80,7 @@
     nomRep = repertoire;
     nameFile = photo.getImageName();
     name = photo.getId() + "_66x50.jpg";
-    vignette_url = FileServerUtils.getUrl(spaceId, componentId, name, photo.getImageMimeType(),
+    vignette_url = FileServerUtils.getUrl(componentId, name, photo.getImageMimeType(),
         nomRep);
     action = "UpdatePhoto";
     creationDate = resource.getOutputDate(photo.getCreationDate());
@@ -96,7 +97,7 @@
     } else {
       endDownloadDate = "";
     }
-      
+
     if (title.equals(nameFile)) {
       title = "";
     }
@@ -115,7 +116,7 @@
       endDate = "";
     }
   }
-    
+
   // déclaration des boutons
   Button validateButton = gef.getFormButton(resource.getString("GML.validate"),
       "javascript:onClick=sendData();", false);
@@ -126,30 +127,26 @@
   } else {
     cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "GoToCurrentAlbum", false);
   }
-    
+
 %>
 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 		<head>
-		<%
-			out.println(gef.getLookStyleSheet());
-		%>
+          <view:looknfeel/>
+          <view:includePlugin name="datepicker"/>
 		<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-		<script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 		<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-		<script language="javascript">
-	
+		<script type="text/javascript">
+
 			// fonctions de contrôle des zones du formulaire avant validation
-			function sendData() 
-			{
-				if (isCorrectForm()) 
-				{
+			function sendData() {
+				if (isCorrectForm()) {
 	        		document.photoForm.submit();
 	    		}
 			}
-		
-			function isCorrectForm() 
-			{
+
+			function isCorrectForm() {
 		     	var errorMsg = "";
 		     	var errorNb = 0;
 		     	var title = stripInitialWhitespace(document.photoForm.<%=ParameterNames.ImageTitle%>.value);
@@ -162,23 +159,20 @@
 		     	var langue = "<%=resource.getLanguage()%>";
      			var beginDownloadDateOK = true;
      			var beginDateOK = true;
-		     	
-		     	if (title.length > 255) 
-		     	{ 
+
+		     	if (title.length > 255) {
 					errorMsg+="  - '<%=resource.getString("GML.title")%>'  <%=resource.getString("gallery.MsgTaille")%>\n";
 		           	errorNb++;
 		     	}
-		   		if (descr.length > 255) 
-		     	{
+		   		if (descr.length > 255) {
 		     		errorMsg+="  - '<%=resource.getString("GML.description")%>'  <%=resource.getString("gallery.MsgTaille")%>\n";
 		           	errorNb++;
-		     	}				
-		     	if (<%=(vignette_url == null)%> && file == "")
-				{
+		     	}
+		     	if (<%=(vignette_url == null)%> && file == "") {
 	           		errorMsg+="  - '<%=resource.getString("gallery.photo")%>'  <%=resource.getString("GML.MustBeFilled")%>\n";
 	           		errorNb++;
 		     	}
-		     	
+
 		     	// vérifier les dates de début et de fin de période
 		     	// les dates de téléchargements
 		     	if (!isWhitespace(beginDownloadDate)) {
@@ -216,9 +210,9 @@
 				   		beginDateOK = false;
 			   		}
 	     		 }
-			     if (!isWhitespace(endDate)) 
+			     if (!isWhitespace(endDate))
 			     {
-			    	   if (!isDateOK(endDate, langue)) { 
+			    	   if (!isDateOK(endDate, langue)) {
 			                 errorMsg+="  - '<%=resource.getString("GML.dateEnd")%>' <%=resource.getString("GML.MustContainsCorrectDate")%>\n";
 			                 errorNb++;
 			           } else {
@@ -237,19 +231,16 @@
 							}
 						}
 			     }
-		     	
+
 		     	// vérifier que le document est bien une image
-		     	if (file != "")
-		     	{
+		     	if (file != "")	{
  					var verif = /[.][jpg,gif,bmp,tiff,tif,jpeg,png,JPG,GIF,BMP,TIFF,TIF,JPEG,PNG]{3,4}$/;
- 					if (verif.exec(file) == null)
- 					{
+ 					if (verif.exec(file) == null) {
   						errorMsg+="  - '<%=resource.getString("gallery.photo")%>'  <%=resource.getString("gallery.format")%>\n";
 	           			errorNb++;
  					}
  				}
-		     	switch(errorNb) 
-		     	{
+		     	switch(errorNb) {
 		        	case 0 :
 		            	result = true;
 		            	break;
@@ -263,21 +254,21 @@
 		            	window.alert(errorMsg);
 		            	result = false;
 		            	break;
-		     	} 
+		     	}
 		     	return result;
 			}
 		</script>
-		
+
 		</head>
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5" onLoad="javascript:document.photoForm.WAIMGVAR0.focus();">
+<body onload="javascript:document.photoForm.WAIMGVAR0.focus();">
 <%
-    
+
   browseBar.setDomainName(spaceLabel);
   browseBar.setComponentName(componentLabel, "Main");
   displayPath(path, browseBar);
-      
+
   Board board = gef.getBoard();
-      
+
   TabbedPane tabbedPane = gef.getTabbedPane();
   if (photo != null) {
     tabbedPane.addTab(resource.getString("gallery.photo"), "PreviewPhoto?PhotoId=" + photoId, false);
@@ -296,32 +287,32 @@
       tabbedPane.addTab(resource.getString("GML.PDC"), "PdcPositions?PhotoId=" + photoId, false);
     }
   }
-      
+
   out.println(window.printBefore());
   out.println(tabbedPane.print());
   out.println(frame.printBefore());
   out.println(board.printBefore());
-      
-%>
-<FORM Name="photoForm" action="<%=action%>" Method="POST" ENCTYPE="multipart/form-data" accept-charset="UTF-8">
 
-<table CELLPADDING="5" WIDTH="100%">
+%>
+<form name="photoForm" action="<%=action%>" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
+
+<table cellpadding="5" width="100%">
 	<tr>
 		<td class="txtlibform"> <%=resource.getString("gallery.photo")%> :</td>
-      	<td><input type="file" name="WAIMGVAR0" size="60">
+      	<td><input type="file" name="WAIMGVAR0" size="60"/>
       		<% if (vignette_url == null) { %>
-	      		<IMG src="<%=resource.getIcon("gallery.obligatoire")%>" width="5" height="5" border="0">
+	      		<img src="<%=resource.getIcon("gallery.obligatoire")%>" width="5" height="5" border="0"/>
       		<% } %>
       	</td>
 	</tr>
 	<% if (vignette_url != null) { 
-		String type = nameFile.substring(nameFile.lastIndexOf(".") + 1, nameFile.length());
-		if ("bmp".equalsIgnoreCase(type))
+		if (!photo.isPreviewable()) {
 			vignette_url = m_context+"/gallery/jsp/icons/notAvailable_"+resource.getLanguage()+"_66x50.jpg";
-	%> 
+		}
+	%>
 		<tr>
 			<td class="txtlibform"><%=resource.getString("gallery.vignette")%> : </td>
-      		<td><IMG SRC="<%=vignette_url%>"></td>
+      		<td><img src="<%=vignette_url%>"/></td>
 		</tr>
 		<tr>
 			<td class="txtlibform"><%=resource.getString("gallery.nomFic")%> :</td>
@@ -330,29 +321,30 @@
 	<% } %>
 	<tr>
 		<td class="txtlibform"><%=resource.getString("GML.title")%> :</td>
-		<TD><input type="text" name="<%=ParameterNames.ImageTitle%>" size="60" maxlength="150" value="<%=title%>">
-			<input type="hidden" name="PhotoId" value="<%=photoId%>"> </td>
+		<td><input type="text" name="<%=ParameterNames.ImageTitle%>" size="60" maxlength="150" value="<%=title%>"/>
+			<input type="hidden" name="PhotoId" value="<%=photoId%>"/> </td>
 	</tr>
 	<tr>
 		<td class="txtlibform"> <%=resource.getString("GML.description")%> :</td>
-		<TD><input type="text" name="<%=ParameterNames.ImageDescription%>" size="60" maxlength="150" value="<%=description%>" ></TD>
+		<td><input type="text" name="<%=ParameterNames.ImageDescription%>" size="60" maxlength="150" value="<%=description%>"/></td>
 	</tr>
 	<tr>
 		<td class="txtlibform"> <%=resource.getString("GML.author")%> :</td>
-		<TD><input type="text" name="<%=ParameterNames.ImageAuthor%>" size="60" maxlength="150" value="<%=author%>" ></TD>
+		<td><input type="text" name="<%=ParameterNames.ImageAuthor%>" size="60" maxlength="150" value="<%=author%>"/></td>
 	</tr>
 	<tr>
 		<td class="txtlibform"> <%=resource.getString("gallery.keyWord")%> :</td>
-		<TD><input type="text" name="<%=ParameterNames.ImageKeyWord%>" size="60" maxlength="150" value="<%=keyWord%>" ></TD>
+		<td><input type="text" name="<%=ParameterNames.ImageKeyWord%>" size="60" maxlength="150" value="<%=keyWord%>"/></td>
 	</tr>
 	<tr>
 		<td class="txtlibform"> <%=resource.getString("gallery.download")%> :</td>
 		<%
 			String downloadCheck = "";
-			if (download)
-				downloadCheck = "checked";
+			if (download) {
+				downloadCheck = "checked=\"checked\"";
+			}
 		%>
-	    <td><input type="checkbox" name="<%=ParameterNames.ImageDownload%>" value="true" <%=downloadCheck%>></td>
+	    <td><input type="checkbox" name="<%=ParameterNames.ImageDownload%>" value="true" <%=downloadCheck%>/></td>
 	</tr>
 	<tr>
 		<td class="txtlibform"><%=resource.getString("gallery.beginDownloadDate")%> :</td>
@@ -374,35 +366,35 @@
 		<td class="txtlibform"> <%=resource.getString("gallery.albumLabel")%> :</td>
 		<%
 			String albumLabelCheck = "";
-			if (albumLabel)
+			if (albumLabel) {
 				albumLabelCheck = "checked";
+			}
 		%>
 	    <td><input type="checkbox" name="AlbumLabel" value="true" <%=albumLabelCheck%>></td>
 	</tr>-->
 	<tr>
 		<td class="txtlibform"><%=resource.getString("gallery.creationDate")%> :</td>
-		<TD><%=creationDate%>&nbsp;<span class="txtlibform"><%=resource.getString("gallery.par")%></span>&nbsp;<%=creatorName%></TD>
+		<td><%=creationDate%>&nbsp;<span class="txtlibform"><%=resource.getString("gallery.par")%></span>&nbsp;<%=creatorName%></td>
 	</tr>
 	<% if (updateDate != null && updateName != null) { %>
 	<tr>
 		<td class="txtlibform"><%=resource.getString("gallery.updateDate")%> :</td>
-		<TD><%=updateDate%>&nbsp;<span class="txtlibform"><%=resource.getString("gallery.par")%></span>&nbsp;<%=updateName%></TD>
+		<td><%=updateDate%>&nbsp;<span class="txtlibform"><%=resource.getString("gallery.par")%></span>&nbsp;<%=updateName%></td>
 	</tr>
 	<% } %>
   	<tr>
-  		<td colspan="2">( <img border="0" src=<%=resource.getIcon("gallery.obligatoire")%> width="5" height="5"> : Obligatoire )</td>
+  		<td colspan="2">( <img border="0" src=<%=resource.getIcon("gallery.obligatoire")%> width="5" height="5"/> : Obligatoire )</td>
   	</tr>
 </table>
 </form>
-<% 
+<%
 	out.println(board.printAfter());
 	ButtonPane buttonPane = gef.getButtonPane();
     buttonPane.addButton(validateButton);
     buttonPane.addButton(cancelButton);
-	out.println("<br/><center>"+buttonPane.print()+"</center>br/>");
+	out.println(buttonPane.print());
  	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
-
 </body>
 </html>

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,17 +23,6 @@
  */
 
 package com.stratelia.webactiv.newsEdito.servlets;
-
-import java.rmi.RemoteException;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.ejb.EJBException;
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
 
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
@@ -48,7 +37,6 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
@@ -58,31 +46,38 @@ import com.stratelia.webactiv.newsEdito.control.NewsEditoSessionController;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationSelection;
+import org.apache.commons.fileupload.FileItem;
+
+import javax.ejb.EJBException;
+import javax.servlet.http.HttpServletRequest;
+import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Class declaration
+ *
  * @author
  */
-public class NewsEditoRequestRouter extends ComponentRequestRouter {
+public class NewsEditoRequestRouter extends ComponentRequestRouter<NewsEditoSessionController> {
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 1L;
 
   /**
    * This method creates a NewsEditoSessionController instance
+   *
    * @param mainSessionCtrl The MainSessionController instance
-   * @param context Context of current component instance
+   * @param context         Context of current component instance
    * @return a NewsEditoSessionController instance
    */
   @Override
-  public ComponentSessionController createComponentSessionController(
+  public NewsEditoSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext context) {
-    ComponentSessionController component =
-        (ComponentSessionController) new NewsEditoSessionController(
-        mainSessionCtrl, context);
-    return component;
+    return new NewsEditoSessionController(mainSessionCtrl, context);
   }
 
   /**
@@ -97,51 +92,48 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
-   * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Controller, build and initialised.
-   * @param request The entering request. The request rooter need it to get parameters
-   * @return The complete destination URL for a forward (ex :
-   * "/almanach/jsp/almanach.jsp?flag=user")
+   *
+   * @param function  The entering request function (ex : "Main.jsp")
+   * @param newsEdito The component Session Controller, build and initialised.
+   * @param request   The entering request. The request rooter need it to get parameters
+   * @return The complete destination URL for a forward (ex : "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
-  public String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request) {
+  public String getDestination(String function, NewsEditoSessionController newsEdito,
+      HttpServletRequest request) {
     String destination = "";
     String rootDest = "/newsEdito/jsp/";
-    NewsEditoSessionController newsEdito = (NewsEditoSessionController) componentSC;
-
     SilverTrace.debug("NewsEdito", "NewsEditoRequestRooter.getDestination",
         "NewsEdito.EX_ENTER", "function = " + function);
 
     if (function.startsWith("portlet")) {
       destination = rootDest + "portlet.jsp";
-    } else if ((function.startsWith("Main"))
-        || (function.startsWith("newsEdito"))) {
+    } else if ((function.startsWith("Main")) || (function.startsWith("newsEdito"))) {
       // the flag is the best user's profile
-      String flag = componentSC.getUserRoleLevel();
+      String flag = newsEdito.getUserRoleLevel();
 
       // initialisation de la variable indiquant que l'utilisateur est en mode
       // consultation
       newsEdito.setIsConsulting(true);
       destination = rootDest + "newsEdito.jsp?flag=" + flag;
     } else if (function.startsWith("manageNews")) {
-      String flag = componentSC.getUserRoleLevel();
+      String flag = newsEdito.getUserRoleLevel();
 
       destination = rootDest + "manageNews.jsp?flag=" + flag;
     } else if (function.startsWith("manageArticles")) {
 
-      String flag = componentSC.getUserRoleLevel();
+      String flag = newsEdito.getUserRoleLevel();
       // initialisation de la variable indiquant que l'utilisateur est en mode
       // manage
-      ((NewsEditoSessionController) componentSC).setIsConsulting(false);
+      newsEdito.setIsConsulting(false);
       destination = rootDest + "manageArticles.jsp?flag=" + flag;
     } else if (function.startsWith("publicationEdit")) {
-      String flag = componentSC.getUserRoleLevel();
+      String flag = newsEdito.getUserRoleLevel();
 
       // initialisation de isConsulting inutile
       destination = rootDest + "publicationEdit.jsp?flag=" + flag;
     } else if (function.equals("UpdatePublication")) {
-      String flag = componentSC.getUserRoleLevel();
+      String flag = newsEdito.getUserRoleLevel();
 
       try {
         // pour le formulaire XML
@@ -152,16 +144,17 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
       }
       destination = rootDest + "publicationEdit.jsp?flag=" + flag;
     } else if (function.startsWith("publication")) {
-      String flag = componentSC.getUserRoleLevel();
+      String flag = newsEdito.getUserRoleLevel();
       PublicationDetail pubDetail;
 
       try {
         // récupérer l'id
         String pubId = request.getParameter("PublicationId");
-        if (StringUtil.isDefined(pubId))
+        if (StringUtil.isDefined(pubId)) {
           pubDetail = newsEdito.getPublicationDetail(pubId);
-        else
+        } else {
           pubDetail = newsEdito.getCompletePublication().getPublicationDetail();
+        }
         // pour le formulaire XML
         putXMLDisplayerIntoRequest(pubDetail, newsEdito, request);
       } catch (Exception e) {
@@ -171,20 +164,19 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
 
       destination = rootDest + "publication.jsp?flag=" + flag;
     } else if (function.startsWith("pdfCompile")) {
-      String flag = componentSC.getUserRoleLevel();
+      String flag = newsEdito.getUserRoleLevel();
 
       // initialisation de isConsulting inutile
       destination = rootDest + "pdfCompile.jsp?flag=" + flag;
     } else if (function.startsWith("publishNews")) {
-      String flag = componentSC.getUserRoleLevel();
+      String flag = newsEdito.getUserRoleLevel();
 
       // initialisation de isConsulting inutile
       destination = rootDest + "publishNews.jsp?flag=" + flag;
-    }
-
-    else if (function.equals("ListModels")) {
+    } else if (function.equals("ListModels")) {
       try {
-        List<PublicationTemplate> listModels = getPublicationTemplateManager().getPublicationTemplates();
+        List<PublicationTemplate> listModels =
+            getPublicationTemplateManager().getPublicationTemplates();
         request.setAttribute("ListModels", listModels);
       } catch (PublicationTemplateException e) {
         SilverTrace.warn("NewsEdito", "NewsEditoRequestRooter.getDestination",
@@ -232,7 +224,7 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
       destination = getDestination("publication", newsEdito, request);
 
     } else if (function.startsWith("searchResult")) {
-      String flag = componentSC.getUserRoleLevel();
+      String flag = newsEdito.getUserRoleLevel();
       String id = request.getParameter("Id");
       String type = request.getParameter("Type");
       if (type.equals("Publication")) {
@@ -267,10 +259,10 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
 
         for (int i = 0; i < Ids.length; i++) {
           if (Ids[i] != null) {
-            CompletePublication pub = ((NewsEditoSessionController) componentSC)
+            CompletePublication pub = ((NewsEditoSessionController) newsEdito)
                 .getCompletePublication(Ids[i]);
             PublicationSelection pubSelect = new PublicationSelection(pub);
-            componentSC.addClipboardSelection((ClipboardSelection) pubSelect);
+            newsEdito.addClipboardSelection((ClipboardSelection) pubSelect);
           }
         }
       } catch (Exception e) {
@@ -283,7 +275,7 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
       return destination;
     } else if (function.startsWith("paste")) {
       try {
-        NewsEditoSessionController news = (NewsEditoSessionController) componentSC;
+        NewsEditoSessionController news = (NewsEditoSessionController) newsEdito;
         String titleId = news.getTitleId();
         Collection<ClipboardSelection> clipObjects = news.getClipboardSelectedObjects();
         Iterator<ClipboardSelection> clipObjectIterator = clipObjects.iterator();
@@ -332,10 +324,9 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
   }
 
   private void updateXmlForm(List<FileItem> items, NewsEditoSessionController newsEdito)
-      throws FileUploadException, NewsEditoException, RemoteException,
+      throws NewsEditoException, RemoteException,
       PublicationTemplateException, FormException {
-    PublicationDetail pubDetail = newsEdito.getCompletePublication()
-        .getPublicationDetail();
+    PublicationDetail pubDetail = newsEdito.getCompletePublication().getPublicationDetail();
 
     String xmlFormShortName = null;
 
@@ -346,8 +337,8 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
 
       // The publication have no content
       // We have to register xmlForm to publication
-      xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf("/") + 1,
-          xmlFormName.indexOf("."));
+      xmlFormShortName =
+          xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
       pubDetail.setInfoId(xmlFormShortName);
       newsEdito.updatePublication(pubDetail);
     } else {
@@ -358,7 +349,7 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
 
     PublicationTemplate pub = getPublicationTemplateManager()
         .getPublicationTemplate(newsEdito.getComponentId() + ":"
-        + xmlFormShortName);
+            + xmlFormShortName);
 
     RecordSet set = pub.getRecordSet();
     Form form = pub.getUpdateForm();
@@ -372,20 +363,18 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
       data.setLanguage(language);
     }
 
-    PagesContext context = new PagesContext("myForm", "3", newsEdito
-        .getLanguage(), false, newsEdito.getComponentId(), newsEdito
-        .getUserId());
+    PagesContext context =
+        new PagesContext("myForm", "3", newsEdito.getLanguage(), false, newsEdito.getComponentId(),
+            newsEdito.getUserId());
     context.setObjectId(pubId);
 
     form.update(items, data, context);
     set.save(data);
   }
 
-  private void setXMLForm(HttpServletRequest request,
-      NewsEditoSessionController newsEdito, String xmlFormName)
+  private void setXMLForm(HttpServletRequest request, NewsEditoSessionController newsEdito, String xmlFormName)
       throws PublicationTemplateException, FormException, NewsEditoException {
-    PublicationDetail pubDetail = newsEdito.getCompletePublication()
-        .getPublicationDetail();
+    PublicationDetail pubDetail = newsEdito.getCompletePublication().getPublicationDetail();
     String pubId = pubDetail.getPK().getId();
 
     String xmlFormShortName = null;
@@ -404,7 +393,7 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
 
     PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) getPublicationTemplateManager()
         .getPublicationTemplate(newsEdito.getComponentId() + ":"
-        + xmlFormShortName, xmlFormName);
+            + xmlFormShortName, xmlFormName);
     Form formUpdate = pubTemplate.getUpdateForm();
     RecordSet recordSet = pubTemplate.getRecordSet();
 
@@ -429,9 +418,9 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
     String pubId = pubDetail.getPK().getId();
     if (StringUtil.isDefined(infoId)) {
       PublicationTemplateImpl pubTemplate =
-              (PublicationTemplateImpl) getPublicationTemplateManager()
-          .getPublicationTemplate(pubDetail.getPK().getInstanceId() + ":"
-          + infoId);
+          (PublicationTemplateImpl) getPublicationTemplateManager()
+              .getPublicationTemplate(pubDetail.getPK().getInstanceId() + ":"
+                  + infoId);
 
       // RecordTemplate recordTemplate = pubTemplate.getRecordTemplate();
       Form formView = pubTemplate.getViewForm();
@@ -450,6 +439,7 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
 
   /**
    * Gets an instance of PublicationTemplateManager.
+   *
    * @return an instance of PublicationTemplateManager.
    */
   private PublicationTemplateManager getPublicationTemplateManager() {

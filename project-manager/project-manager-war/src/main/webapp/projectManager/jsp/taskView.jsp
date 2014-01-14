@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,8 +23,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 
 <%
@@ -33,29 +35,27 @@ TaskDetail 	task 				= (TaskDetail) request.getAttribute("Task");
 String		role				= (String) request.getAttribute("Role");
 %>
 
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<%
-	out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
-<script language="javascript" type="text/javascript">
-function callUserPanel()
-{
+<script type="text/javascript">
+function callUserPanel() {
 	SP_openWindow('ToUserPanel','', '750', '550','scrollbars=yes, resizable, alwaysRaised');
 }
 </script>
 </head>
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+<body>
 <%
 browseBar.setDomainName(spaceLabel);
 browseBar.setComponentName(componentLabel, "Main");
 browseBar.setExtraInformation(task.getNom());
 
 if (ableToAddSubTask.booleanValue()) {
-	operationPane.addOperation(resource.getIcon("projectManager.addTache"), resource.getString("projectManager.CreerTache"), "ToAddTask");
+	operationPane.addOperationOfCreation(resource.getIcon("projectManager.addTache"), resource.getString("projectManager.CreerTache"), "ToAddTask");
 }
 
 out.println(window.printBefore());
@@ -68,14 +68,12 @@ if (ableToAddSubTask.booleanValue()) {
 tabbedPane.addTab(resource.getString("projectManager.Commentaires"), "ToTaskComments", false);
 
 out.println(tabbedPane.print());
-out.println(frame.printBefore());
 %>
+<view:areaOfOperationOfCreation/>
+<view:frame>
 <center>
 <table border="0" cellspacing="5"><tr><td width="100%">
-<%
-Board board = gef.getBoard();
-out.println(board.printBefore());
-%>
+<view:board>
 <form name="actionForm" action="UpdateTask" method="post">
 <table cellpadding="5">
 <tr>
@@ -148,12 +146,12 @@ out.println(board.printBefore());
 
 			}
 		%>
-    	<img src="<%=icon%>" border="0" align="middle">&nbsp;<%=statut%>
+    	<img src="<%=icon%>" border="0" align="middle"/>&nbsp;<%=statut%>
     </td>
 </tr>
 <tr>
 	<td class="txtlibform" valign="top"><%=resource.getString("projectManager.TacheDescription")%> :</td>
-    <td><%=Encode.javaStringToHtmlParagraphe(task.getUiDescription())%></td>
+    <td><%=EncodeHelper.javaStringToHtmlParagraphe(task.getUiDescription())%></td>
 </tr>
 <tr>
 	<td class="txtlibform"><%=resource.getString("projectManager.TacheDateDebut")%> :</td>
@@ -202,21 +200,19 @@ out.println(board.printBefore());
 	</td>
 </tr>
 </table>
-</FORM>
-<%
-out.println(board.printAfter());
-%>
+</form>
+</view:board>
 </td>
 <td valign="top">
 	<% 
 	    out.flush();
-	  	getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachments.jsp?Id="+task.getId()+"&ComponentId="+componentId).include(request, response);
+	  	getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachedFiles.jsp?Id="+task.getId()+"&ComponentId="+componentId).include(request, response);
 	%>
 </td>
 </tr></table>
 </center>
+</view:frame>
 <%
-out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
 </body>

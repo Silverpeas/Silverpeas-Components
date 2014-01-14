@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,19 +25,21 @@
 package com.silverpeas.webpages;
 
 import com.silverpeas.webpages.model.WebPagesRuntimeException;
+import com.silverpeas.webpages.notification.WebPagesUserNotifier;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBack;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import org.silverpeas.core.admin.OrganisationController;
 
 /**
  * @author dlesimple
  */
 public class WebPagesCallBack implements CallBack {
 
-  private OrganizationController oc;
+  private OrganisationController oc;
 
   public WebPagesCallBack() {
   }
@@ -101,11 +103,8 @@ public class WebPagesCallBack implements CallBack {
     return (!pubId.startsWith("Node") && (action == CallBackManager.ACTION_ON_WYSIWYG));
   }
 
-  public void externalElementsOfWebPagesHaveChanged(String componentId,
-      String userId) {
-    NodePK nodePK = new NodePK("0", componentId);
-    WebPagesNotifier notifier = new WebPagesNotifier();
-    notifier.sendSubscriptionsNotification(nodePK, userId);
+  public void externalElementsOfWebPagesHaveChanged(String componentId, String userId) {
+    WebPagesUserNotifier.notify(new NodePK("0", componentId), userId);
   }
 
 }

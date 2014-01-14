@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -49,8 +49,10 @@
 	String title = (String) request.getAttribute("title");
 	String titleClassName 	= resource.getSetting("titleClassName");
 
-	// cr�ation du context
-	PagesContext context = new PagesContext("myForm", "0", resource.getLanguage(), false, "", null);
+	// context creation
+	PagesContext context = (PagesContext) request.getAttribute("FormContext");
+	context.setFormName("myForm");
+	context.setFormIndex("0");
 	context.setBorderPrinted(false);
 %>
 
@@ -77,8 +79,7 @@
 	<%=tabbedPane.print()%>
 	<%=frame.printBefore()%>
 
-	<form name="myForm" method="POST" action="UpdateXMLForm" 
-                    enctype="multipart/form-data">
+	<form name="myForm" method="post" action="UpdateXMLForm" enctype="multipart/form-data">
 	<span class="<%=titleClassName%>"><%=title%></span>
 	<% 
 	formUpdate.display(out, context, data); 

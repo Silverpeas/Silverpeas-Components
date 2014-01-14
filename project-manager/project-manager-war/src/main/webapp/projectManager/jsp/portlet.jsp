@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -92,11 +92,12 @@ ArrayLine fillArrayLine(ArrayLine arrayLine, TaskDetail task, String iconeLiaiso
 		nom = iconeLiaison + "&nbsp;" + nom;
 	}
 	
-	ArrayCellText cellNom = null;
-	if (task.getAttachments().size()>0)
+	ArrayCellText cellNom;
+	if (!task.getAttachments().isEmpty())  {}
 		cellNom = arrayLine.addArrayCellText(nom+"&nbsp<img src=\""+resource.getIcon("projectManager.attachedFile")+"\" border=\"0\" align=\"absmiddle\">");
-	else
+    } else {
 		cellNom = arrayLine.addArrayCellText(nom);
+    }
 	cellNom.setCompareOn(task.getNom());
 
 	arrayLine.addArrayCellText(task.getResponsableFullName());
@@ -108,13 +109,13 @@ ArrayLine fillArrayLine(ArrayLine arrayLine, TaskDetail task, String iconeLiaiso
 	cellFin.setCompareOn(task.getDateFin());
 	
 	ArrayCellText cellCharge = arrayLine.addArrayCellText(task.getCharge());
-	cellCharge.setCompareOn(new Float(task.getCharge()));
+	cellCharge.setCompareOn(Float.valueOf(task.getCharge()));
 	
 	ArrayCellText cellConsomme = arrayLine.addArrayCellText(task.getConsomme());
-	cellConsomme.setCompareOn(new Float(task.getConsomme()));
+	cellConsomme.setCompareOn(Float.valueOf(task.getConsomme()));
 	
 	ArrayCellText cellRaf = arrayLine.addArrayCellText(task.getRaf());
-	cellRaf.setCompareOn(new Float(task.getRaf()));
+	cellRaf.setCompareOn(Float.valueOf(task.getRaf()));
 	
 	
 	return arrayLine;

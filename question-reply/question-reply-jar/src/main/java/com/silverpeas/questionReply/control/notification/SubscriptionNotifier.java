@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2000 - 2011 Silverpeas
+ *  Copyright (C) 2000 - 2013 Silverpeas
  * 
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  *  Open Source Software ("FLOSS") applications as described in Silverpeas's
  *  FLOSS exception.  You should have recieved a copy of the text describing
  *  the FLOSS exception, and it is also available here:
- *  "http://www.silverpeas.com/legal/licensing"
+ *  "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  * 
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -54,8 +54,8 @@ public class SubscriptionNotifier extends Notifier {
   final NotificationSender notificationSender;
   private static final String BUNDLE_NAME = "com.silverpeas.questionReply.multilang.questionReplyBundle";
 
-  public SubscriptionNotifier(UserDetail sender, Question question, Reply reply) {
-    super(sender);
+  public SubscriptionNotifier(UserDetail sender, String serverUrl, Question question, Reply reply) {
+    super(sender, serverUrl);
     this.reply = reply;
     this.question = question;
     this.notificationSender = new NotificationSender(question.getInstanceId());

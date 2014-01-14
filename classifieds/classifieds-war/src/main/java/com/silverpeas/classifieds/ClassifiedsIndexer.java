@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,34 +23,19 @@
  */
 package com.silverpeas.classifieds;
 
-import com.silverpeas.classifieds.control.ejb.ClassifiedsBm;
-import com.silverpeas.classifieds.control.ejb.ClassifiedsBmHome;
-import com.silverpeas.classifieds.model.ClassifiedsRuntimeException;
+import com.silverpeas.classifieds.control.ClassifiedService;
+import com.silverpeas.classifieds.control.ClassifiedServiceFactory;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 public class ClassifiedsIndexer implements ComponentIndexerInterface {
 
+  @Override
   public void index(MainSessionController mainSessionCtrl, ComponentContext context)
       throws Exception {
-    getClassifiedsBm().indexClassifieds(context.getCurrentComponentId());
-  }
-
-  private ClassifiedsBm getClassifiedsBm() {
-    ClassifiedsBm classifiedsBm = null;
-    try {
-      ClassifiedsBmHome classifiedsBmHome =
-          (ClassifiedsBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.CLASSIFIEDSBM_EJBHOME,
-          ClassifiedsBmHome.class);
-      classifiedsBm = classifiedsBmHome.create();
-    } catch (Exception e) {
-      throw new ClassifiedsRuntimeException("ClassifiedsIndexer.getClassifiedsBm()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
-    return classifiedsBm;
+    ClassifiedServiceFactory factory = ClassifiedServiceFactory.getFactory();
+    ClassifiedService service = factory.getClassifiedService();
+    service.indexClassifieds(context.getCurrentComponentId());
   }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,6 +29,7 @@ import com.stratelia.silverpeas.classifyEngine.ClassifyEngine;
 import com.stratelia.silverpeas.contentManager.ContentInterface;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
+import com.stratelia.silverpeas.contentManager.ContentManagerFactory;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.contentManager.SilverContentVisibility;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -45,15 +46,9 @@ import java.util.List;
  */
 public class QuestionReplyContentManager implements ContentInterface {
 
-  ContentManager contentManager = null;
+  ContentManager contentManager = ContentManagerFactory.getFactory().getContentManager();
 
   public QuestionReplyContentManager() {
-    try {
-      contentManager = new ContentManager();
-    } catch (ContentManagerException e) {
-      SilverTrace.fatal("questionReply", "QuestionReplyContentManager",
-          "root.EX_UNKNOWN_CONTENT_MANAGER", e);
-    }
   }
 
   /** Find all the SilverContent with the given SilverContentId

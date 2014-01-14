@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,27 +24,23 @@
 
 package com.silverpeas.webpages.servlets;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.fileupload.FileItem;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
-
 import com.silverpeas.look.LookHelper;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
-import com.silverpeas.webpages.control.*;
+import com.silverpeas.webpages.control.WebPagesSessionController;
 import com.silverpeas.webpages.model.WebPagesException;
+import com.stratelia.silverpeas.peasCore.ComponentContext;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.apache.commons.fileupload.FileItem;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * @author sdevolder
  */
-public class WebPagesRequestRouter extends ComponentRequestRouter {
+public class WebPagesRequestRouter extends ComponentRequestRouter<WebPagesSessionController> {
 
   private static final long serialVersionUID = -707071668797781762L;
   private final static String USER = "user";
@@ -63,7 +59,7 @@ public class WebPagesRequestRouter extends ComponentRequestRouter {
    * @return
    * @see
    */
-  public ComponentSessionController createComponentSessionController(
+  public WebPagesSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new WebPagesSessionController(mainSessionCtrl, componentContext);
   }
@@ -72,18 +68,15 @@ public class WebPagesRequestRouter extends ComponentRequestRouter {
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialised.
+   * @param webPagesSC The component Session Control, build and initialised.
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
-  public String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request) {
+  public String getDestination(String function,WebPagesSessionController webPagesSC, HttpServletRequest request) {
     String destination = "";
     String rootDestination = "/webPages/jsp/";
-
-    WebPagesSessionController webPagesSC = (WebPagesSessionController) componentSC;
     SilverTrace.info("webPages", "WebPagesRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + componentSC.getUserId()
+        "root.MSG_GEN_PARAM_VALUE", "User=" + webPagesSC.getUserId()
             + " Function=" + function);
 
     try {
@@ -92,15 +85,15 @@ public class WebPagesRequestRouter extends ComponentRequestRouter {
         boolean haveGotContent = processHaveGotContent(webPagesSC, request);
         if (!profile.equals(USER) && !haveGotContent) {
           // Si le role est publieur, le composant s'ouvre en edition
-          destination = getDestination("Edit", componentSC, request);
+          destination = getDestination("Edit", webPagesSC, request);
         } else {
           // affichage de la page wysiwyg si le role est lecteur ou si il y a un
           // contenu
-          destination = getDestination("Preview", componentSC, request);
+          destination = getDestination("Preview", webPagesSC, request);
         }
       } else if (function.equals("Edit")) {
         if (webPagesSC.isXMLTemplateUsed()) {
-          destination = getDestination("EditXMLContent", componentSC, request);
+          destination = getDestination("EditXMLContent", webPagesSC, request);
         } else {
           request.setAttribute("userId", webPagesSC.getUserId());
           destination = rootDestination + "edit.jsp";
@@ -126,13 +119,13 @@ public class WebPagesRequestRouter extends ComponentRequestRouter {
         destination = rootDestination + "display.jsp";
       } else if (function.startsWith("portlet")) {       
         request.setAttribute("Action", "Portlet");
-        destination = getDestination("Preview", componentSC, request);
+        destination = getDestination("Preview", webPagesSC, request);
       } else if (function.startsWith("AddSubscription")) {
         webPagesSC.addSubscription();
-        destination = getDestination("Main", componentSC, request);
+        destination = getDestination("Main", webPagesSC, request);
       } else if (function.startsWith("RemoveSubscription")) {
         webPagesSC.removeSubscription();
-        destination = getDestination("Main", componentSC, request);
+        destination = getDestination("Main", webPagesSC, request);
       } else if ("EditXMLContent".equals(function)) {
         // user wants to edit data
         request.setAttribute("Form", webPagesSC.getUpdateForm());
@@ -144,7 +137,7 @@ public class WebPagesRequestRouter extends ComponentRequestRouter {
         List<FileItem> items = FileUploadUtil.parseRequest(request);
         webPagesSC.saveDataRecord(items);
 
-        destination = getDestination("Main", componentSC, request);
+        destination = getDestination("Main", webPagesSC, request);
       } else {
         destination = rootDestination + function;
       }

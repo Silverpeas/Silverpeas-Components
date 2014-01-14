@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,6 +28,7 @@
 <%@ include file="checkProcessManager.jsp" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%
 	ProcessInstance 			process 					= (ProcessInstance) request.getAttribute("process");
@@ -102,20 +103,16 @@
 
 %>
 
+<%@page import="java.util.Iterator"%>
 
-<%@page import="java.util.Iterator"%><HTML>
+<HTML>
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-<script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
-<%
-   out.println(gef.getLookStyleSheet());
-%>
-
+<view:looknfeel/>
+<view:includePlugin name="wysiwyg"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<SCRIPT Language="Javascript">
-
-function printProcess()
-{
+<SCRIPT type="text/javascript">
+function printProcess() {
     url = "printProcessFrameset";
     windowName = "printProcess";
     larg = "600";
@@ -123,7 +120,6 @@ function printProcess()
     windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars=1";
     SP_openWindow(url, windowName, larg , haut, windowParams);
 }
-
 </SCRIPT>
 
 </HEAD>
@@ -236,9 +232,9 @@ function printProcess()
 <%
 	out.flush();
 	if (!isVersionControlled) {
-  		getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachments.jsp?Id="+process.getInstanceId()+"&ComponentId="+componentId+"&Context=Images").include(request, response);
+  		getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachedFiles.jsp?Id="+process.getInstanceId()+"&ComponentId="+componentId+"&Context=attachment").include(request, response);
 	} else {
-		getServletConfig().getServletContext().getRequestDispatcher("/versioningPeas/jsp/displayDocuments.jsp?Id="+process.getInstanceId()+"&ComponentId="+componentId+"&Context=Images").include(request, response);
+		getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachedFiles.jsp?Id="+process.getInstanceId()+"&ComponentId="+componentId+"&Context=attachment").include(request, response);
 	}
 %>
 </td></tr></table>

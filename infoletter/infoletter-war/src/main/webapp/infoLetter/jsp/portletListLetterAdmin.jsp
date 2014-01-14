@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,17 +23,18 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="check.jsp" %>
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="JavaScript">
+<script type="text/javascript">
 function goto_jsp(jsp, param)
 {
   //    alert("../../RinfoLetter/<%=spaceId%>_<%=componentId%>/"+jsp+"?"+param);
@@ -56,7 +57,7 @@ function openViewParution(par) {
 }
 </script>
 </head>
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
+<body bgcolor="#FFFFFF">
 <%
 
 	browseBar.setComponentName(componentLabel, "javascript:goto_jsp('Main','')");
@@ -102,7 +103,7 @@ operationPane.addOperation(resource.getIcon("infoLetter.access_ExternAbonnes"), 
 						<span class="txtlibform"><%=resource.getString("infoLetter.name")%> :</span>
 					</td>
 					<td  class="intfdcolor4" valign="baseline" align=left>
-					<input type="text" name="name" size="50" maxlength="50" value="<%= (String) request.getAttribute("letterName") %>" readonly>
+					<input type="text" name="name" size="50" maxlength="50" value="<%= (String) request.getAttribute("letterName") %>" readonly="readonly"/>
 					</td>
 				</tr>
 				<tr align=center> 
@@ -111,7 +112,7 @@ operationPane.addOperation(resource.getIcon("infoLetter.access_ExternAbonnes"), 
 						<span class="txtlibform"><%=resource.getString("GML.description")%> :</span>
 					</td>
 					<td  class="intfdcolor4" valign="top" align=left>
-					<textarea cols="49" rows="4" name="description" readonly><%= (String) request.getAttribute("letterDescription") %></textarea>
+					<textarea cols="49" rows="4" name="description" readonly="readonly"><%= (String) request.getAttribute("letterDescription") %></textarea>
 					</td>
 				</tr>
 				<tr align=center> 
@@ -120,19 +121,19 @@ operationPane.addOperation(resource.getIcon("infoLetter.access_ExternAbonnes"), 
 						<span class="txtlibform"><%=resource.getString("infoLetter.frequence")%> :</span>
 					</td>
 					<td  class="intfdcolor4" valign="baseline" align=left>
-					<input type="text" name="frequence" size="50" maxlength="50" value="<%= (String) request.getAttribute("letterFrequence") %>" readonly>
+					<input type="text" name="frequence" size="50" maxlength="50" value="<%= (String) request.getAttribute("letterFrequence") %>" readonly="readonly"/>
 					</td>
 				</tr>
 			</table>
 		</td>
 	</tr>
 </table>
-</CENTER>
-<br>
+</center>
+<br/>
 <form name="deletePublications" action="DeletePublications" method="post">
 <%
 // Recuperation de la liste des parutions
-Vector publications = (Vector) request.getAttribute("listParutions");
+List<InfoLetterPublication> publications = (List<InfoLetterPublication>) request.getAttribute("listParutions");
 
 int i=0;
 
@@ -150,7 +151,7 @@ int i=0;
 
 if ((publications != null) && (publications.size()>0)) {
 	for (i = 0; i < publications.size(); i++) {
-						InfoLetterPublication pub = (InfoLetterPublication) publications.elementAt(i);
+						InfoLetterPublication pub = (InfoLetterPublication) publications.get(i);
 						ArrayLine arrayLine = arrayPane.addArrayLine();
 						
 						IconPane iconPane1 = gef.getIconPane();
@@ -163,10 +164,10 @@ if ((publications != null) && (publications.size()>0)) {
 						arrayLine.addArrayCellIconPane(iconPane1);	
 						
 						//if (pub._isValid()) arrayLine.addArrayCellLink(pub.getTitle(), "javascript:openViewParution('" + pub.getPK().getId() + "');");
-						//else arrayLine.addArrayCellLink(Encode.javaStringToHtmlString(pub.getTitle()), "javascript:openEditParution('" + pub.getPK().getId() + "');");
+						//else arrayLine.addArrayCellLink(EncodeHelper.javaStringToHtmlString(pub.getTitle()), "javascript:openEditParution('" + pub.getPK().getId() + "');");
 						
 						if (pub._isValid()) arrayLine.addArrayCellLink(pub.getTitle(), "javascript:goto_jsp('View','parution=" + pub.getPK().getId() + "');");
-						else arrayLine.addArrayCellLink(Encode.javaStringToHtmlString(pub.getTitle()), "javascript:goto_jsp('ParutionHeaders','parution=" + pub.getPK().getId() + "');");
+						else arrayLine.addArrayCellLink(EncodeHelper.javaStringToHtmlString(pub.getTitle()), "javascript:goto_jsp('ParutionHeaders','parution=" + pub.getPK().getId() + "');");
 
 						if (pub._isValid())
 						{
@@ -196,11 +197,11 @@ if ((publications != null) && (publications.size()>0)) {
 %>
 </form>
 <form name="editParution" action="ParutionHeaders" method="post">
-	<input type="hidden" name="parution" value="">
+	<input type="hidden" name="parution" value=""/>
 </form>
 
 <form name="viewParution" action="View" method="post">
-	<input type="hidden" name="parution" value="">
+	<input type="hidden" name="parution" value=""/>
 </form>
 <% // Ici se termine le code de la page %>
 
@@ -209,6 +210,6 @@ if ((publications != null) && (publications.size()>0)) {
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>
 

@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,8 +24,8 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="org.silverpeas.importExport.versioning.DocumentVersion"%>
 
-<%@ page import="com.stratelia.silverpeas.versioning.model.DocumentVersion"%>
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
@@ -58,23 +58,16 @@ function validateForm() {
 	fileName = document.frm_import.file_name.value;
 	if (document.frm_import.opt_importmode[0].checked || document.frm_import.opt_importmode[1].checked) {
 		if (fileName.indexOf(".zip")== -1) {
-			alert("<%=kmeliaScc.getString("kmelia.FileNotZip")%>");
+			alert("<%=resources.getString("kmelia.FileNotZip")%>");
 		} else {
 			formValid = true;
-		}			
+		}
 	} else if (fileName != "") {
 		formValid = true;
-	}			
+	}
 	if (formValid) {
-		var obj = document.getElementById("Processing");
-		if (obj != null) {
-			obj.style.visibility = "visible";
-		}
-		obj = document.getElementById("ImgProcessing");
-		if (obj != null) {
-			obj.style.visibility = "visible";
-		}
-		document.frm_import.submit();	
+		$.progressMessage();
+		document.frm_import.submit();
 	}
 }
 </script>
@@ -83,7 +76,7 @@ function validateForm() {
 <%
   Window window = gef.getWindow();
   BrowseBar browseBar = window.getBrowseBar();
-  browseBar.setPath(kmeliaScc.getString("kmelia.ImportFiles"));
+  browseBar.setPath(resources.getString("kmelia.ImportFiles"));
 
   out.println(window.printBefore());
 %>
@@ -91,51 +84,41 @@ function validateForm() {
 <view:board>
 <form name="frm_import" action="ImportFilesUpload" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
 <input type="hidden" name="topicId" value="<%=topicId%>"/>
-  
+
 	<table cellpadding="5" cellspacing="0" width="100%">
     <tr align="center">
-	    <td class="txtlibform"><%=kmeliaScc.getString("kmelia.ImportModeMassifTitre")%>&nbsp;</td>
+	    <td class="txtlibform"><%=resources.getString("kmelia.ImportModeMassifTitre")%>&nbsp;</td>
 	  </tr>
     <tr>
-	    <td><input type="radio" name="opt_importmode" value="1" checked="checked"/>&nbsp;<%=kmeliaScc.getString("kmelia.ImportMode2")%></td>
+	    <td><input type="radio" name="opt_importmode" value="1" checked="checked"/>&nbsp;<%=resources.getString("kmelia.ImportMode2")%></td>
 	  </tr>
     <tr>
-	    <td><input type="radio" name="opt_importmode" value="2"/>&nbsp;<%=kmeliaScc.getString("kmelia.ImportMode3")%></td>
+	    <td><input type="radio" name="opt_importmode" value="2"/>&nbsp;<%=resources.getString("kmelia.ImportMode3")%></td>
 	  </tr>
     <tr>
 		<td><hr></td>
 	  </tr>
 	  <% if (kmeliaScc.isDraftEnabled() && !kmeliaScc.isPDCClassifyingMandatory()) { %>
 	    <tr>
-		    <td><%=kmeliaScc.getString("kmelia.DraftMode")%>&nbsp;<input type="checkbox" name="chk_draft" value="true"/></td>
+		    <td><%=resources.getString("kmelia.DraftMode")%>&nbsp;<input type="checkbox" name="chk_draft" value="true"/></td>
 		  </tr>
 		<% } %>
 	  <% if (kmeliaScc.isVersionControlled()) { %>
 	    <tr>
-		    <td><%=kmeliaScc.getString("kmelia.TypeVersion")%>&nbsp;
-				<input type="radio" name="opt_versiontype" value="<%=DocumentVersion.TYPE_DEFAULT_VERSION%>" checked="checked"/><%=kmeliaScc.getString("kmelia.PrivateVersion")%>&nbsp;
-				<input type="radio" name="opt_versiontype" value="<%=DocumentVersion.TYPE_PUBLIC_VERSION%>"/><%=kmeliaScc.getString("kmelia.PublicVersion")%>
+		    <td><%=resources.getString("kmelia.TypeVersion")%>&nbsp;
+				<input type="radio" name="opt_versiontype" value="<%=DocumentVersion.TYPE_DEFAULT_VERSION%>" checked="checked"/><%=resources.getString("kmelia.PrivateVersion")%>&nbsp;
+				<input type="radio" name="opt_versiontype" value="<%=DocumentVersion.TYPE_PUBLIC_VERSION%>"/><%=resources.getString("kmelia.PublicVersion")%>
 		    </td>
 		  </tr>
 		<% } %>
     <tr>
-	    <td><%=kmeliaScc.getString("kmelia.FileToImport")%>&nbsp;<input type="file" name="file_name" size="50" value=""/></td>
+	    <td><%=resources.getString("kmelia.FileToImport")%>&nbsp;<input type="file" name="file_name" size="50" value=""/></td>
 	  </tr>
 		<% if (!message.equals(""))	{ %>
 		    <tr>
-			    <td align="center"><span class="MessageReadHighPriority"><%=message%></span></td>
+			    <td align="center"><span class="inlineMessage-nok"><%=message%></span></td>
 			  </tr>
 		<% } %>
-		<tr>
-			<td>
-				<div align="center" id="ImgProcessing" style="visibility:hidden"><img src="<%=resources.getIcon("kmelia.progress")%>" /></div>
-			</td>
-		</tr>
-		<tr>
-			<td>
-				<div align="center" id="Processing" style="visibility:hidden"><b><%=kmeliaScc.getString("kmelia.Processing")%></b></div>
-			</td>				
-		</tr>
 	</table>
 	</form>
 </view:board>
@@ -148,8 +131,9 @@ function validateForm() {
     out.println("<br/></div>");
 %>
 </view:frame>
-<%	
+<%
 	out.println(window.printAfter());
 %>
+<view:progressMessage/>
 </body>
 </html>

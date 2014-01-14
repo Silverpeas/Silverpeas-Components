@@ -71,6 +71,7 @@ function JCell(options)
 	this.commonUserURL 	= options['commonUserURL'];		// URL to call when a user is clicked
 	this.parentURL 		= options['parentURL'];			// URL to call when parent link is clicked
 	this.className 		= options['className'];			// CSS class name
+	this.extraClassName = options['extraClassName'];	// Specific CSS class name
 	this.usersIcon 		= options['usersIcon'];			// icon to display details Link
 	this.innerUsers         = options['innerUsers'];		// users to display inside the same cell
 
@@ -194,7 +195,7 @@ function buildCellDIV(jCell)
 
 	// Main DIV
 	var div = document.createElement("DIV");
-	div.className = "cell"+jCell.className;
+	div.className = "cell"+jCell.className+" "+jCell.extraClassName;
 
 	// DIV Content as a HTML table
 	var table = document.createElement("TABLE");
@@ -221,14 +222,30 @@ function buildCellDIV(jCell)
 	// for organizations, list roles
 		case CELL_TYPE_ORGANIZATION:
 
+			// DIV Content as a HTML table
+			for (var j = 0; j < jCell.userAttributes.length; j++) {
+				var unitAttribute = jCell.userAttributes[j]['value'];
+				if (unitAttribute.length > 0) {
+					var attributeRow = table.insertRow(-1);
+					var attributeCell = attributeRow.insertCell(-1);
+					attributeCell.className = "cellUnitAttribute";
+					attributeCell.colSpan = 2;
+					attributeCell.align = "center";
+					attributeCell.innerHTML = jCell.userAttributes[j]['label'] + " : " + unitAttribute;
+				}
+			}
+			
 			// Roles
 			for (var i = 0; i < jCell.roles.length; i++) {
-				var roleRow = table.insertRow(-1);
-				var roleCell = roleRow.insertCell(-1);
-				roleCell.className = "cellInfos";
-				roleCell.colSpan = 2;
-				roleCell.align = "center";
-				roleCell.innerHTML = jCell.roles[i]['role'] + " : <a target=\"_blank\" href=\"" + jCell.commonUserURL + jCell.roles[i]['login'] + "\">" + jCell.roles[i]['userFullName'] + "</a>";
+				var user = jCell.roles[i]['userFullName'];
+				if (user.length > 0) {
+					var roleRow = table.insertRow(-1);
+					var roleCell = roleRow.insertCell(-1);
+					roleCell.className = "cellInfos";
+					roleCell.colSpan = 2;
+					roleCell.align = "center";
+					roleCell.innerHTML = "<span class=\"role\">"+jCell.roles[i]['role'] + " : </span><a target=\"_blank\" href=\"" + jCell.commonUserURL + jCell.roles[i]['login'] + "\">" + user + "</a>";
+				}
 			}
 
 			// Links
@@ -243,12 +260,10 @@ function buildCellDIV(jCell)
 			if (jCell.linkDetails) {
 				if (jCell.usersIcon != '') {
 					detailLinkCell.innerHTML = "<a href=\"" + jCell.detailsURL +"&chartType=1\"><img src='"+jCell.usersIcon+"' border='0'/></a>"
-				}
-				else {
+				} else {
 					detailLinkCell.innerHTML = "<a href=\"" + jCell.detailsURL +"&chartType=1\">D&eacute;tails</a>"
 				}
-			}
-			else {
+			} else {
 				detailLinkCell.innerHTML = "&nbsp;"
 			}
 			break;
@@ -275,12 +290,15 @@ function buildCellDIV(jCell)
 					// DIV Content as a HTML table
 					var tableMembers = document.createElement("TABLE");
 					for (var j = 0; j < jCell.innerUsers[i]['userAttributes'].length; j++) {
-						var userAttributeRow = tableMembers.insertRow(-1);
-						var userAttributeCell = userAttributeRow.insertCell(-1);
-						userAttributeCell.className = "celluserAttribute";
-						userAttributeCell.colSpan = 2;
-						userAttributeCell.align = "center";
-						userAttributeCell.innerHTML = jCell.innerUsers[i]['userAttributes'][j]['label'] + " : " + jCell.innerUsers[i]['userAttributes'][j]['value'];
+						var userAttribute = jCell.innerUsers[i]['userAttributes'][j]['value'];
+						if (userAttribute.length > 0) {
+							var userAttributeRow = tableMembers.insertRow(-1);
+							var userAttributeCell = userAttributeRow.insertCell(-1);
+							userAttributeCell.className = "celluserAttribute";
+							userAttributeCell.colSpan = 2;
+							userAttributeCell.align = "center";
+							userAttributeCell.innerHTML = "<span class=\"attribute\">"+jCell.innerUsers[i]['userAttributes'][j]['label'] + " : </span>" + userAttribute;
+						}
 					}
 					divMembers.appendChild(tableMembers);
 
@@ -296,12 +314,15 @@ function buildCellDIV(jCell)
 			// User Attributes
 			if (jCell.userAttributes) {
 				for (var i = 0; i < jCell.userAttributes.length; i++) {
-					var userAttributeRow = table.insertRow(-1);
-					var userAttributeCell = userAttributeRow.insertCell(-1);
-					userAttributeCell.className = "celluserAttribute";
-					userAttributeCell.colSpan = 2;
-					userAttributeCell.align = "center";
-					userAttributeCell.innerHTML = jCell.userAttributes[i]['label'] + " : " + jCell.userAttributes[i]['value'];
+					var userAttribute = jCell.userAttributes[i]['value'];
+					if (userAttribute.length > 0) {
+						var userAttributeRow = table.insertRow(-1);
+						var userAttributeCell = userAttributeRow.insertCell(-1);
+						userAttributeCell.className = "celluserAttribute";
+						userAttributeCell.colSpan = 2;
+						userAttributeCell.align = "center";
+						userAttributeCell.innerHTML = jCell.userAttributes[i]['label'] + " : " + userAttribute;
+					}
 				}
 			}
 			break;

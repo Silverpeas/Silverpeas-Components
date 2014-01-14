@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,14 +23,11 @@
  */
 package com.silverpeas.classifieds.control;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
+import java.util.List;
 
-import com.silverpeas.classifieds.control.ejb.ClassifiedsBm;
-import com.silverpeas.classifieds.control.ejb.ClassifiedsBmHome;
 import com.silverpeas.classifieds.model.ClassifiedDetail;
 import com.silverpeas.classifieds.model.ClassifiedsRuntimeException;
 import com.silverpeas.classifieds.model.Subscribe;
@@ -38,9 +35,11 @@ import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
+import com.silverpeas.form.record.GenericFieldTemplate;
+import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
-import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
@@ -48,29 +47,38 @@ import com.silverpeas.comment.service.CommentServiceFactory;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
-import com.stratelia.silverpeas.wysiwyg.WysiwygException;
-import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.searchEngine.model.QueryDescription;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
+
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
+
+import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import com.stratelia.webactiv.util.viewGenerator.html.pagination.Pagination;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 public final class ClassifiedsSessionController extends AbstractComponentSessionController {
 
-  private int indexOfFirstItemToDisplay = 0;
-  //private Map<String, String> fields1 = createListField(getSearchFields1());
-  //private Map<String, String> fields2 = createListField(getSearchFields2());
+  private int currentPage = 0;
   private Map<String, String> fields1 = null;
   private Map<String, String> fields2 = null;
   private CommentService commentService = null;
   private ResourcesWrapper resources = null;
+  private ClassifiedService classifiedService;
+  
+  private SearchContext searchContext = null;
+  private List<ClassifiedDetail> sessionClassifieds = null;
+  Pagination pagination = null;
 
   /**
    * Standard Session Controller Constructeur
@@ -79,25 +87,34 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @see
    */
   public ClassifiedsSessionController(MainSessionController mainSessionCtrl,
-      ComponentContext componentContext) {
+          ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-        "com.silverpeas.classifieds.multilang.classifiedsBundle",
-        "com.silverpeas.classifieds.settings.classifiedsIcons");
-
+            "org.silverpeas.classifieds.multilang.classifiedsBundle",
+            "org.silverpeas.classifieds.settings.classifiedsIcons",
+            "org.silverpeas.classifieds.settings.classifiedsSettings");
+    
     // affectation du formulaire
     String xmlFormName = getXMLFormName();
     String xmlFormShortName = null;
     if (StringUtil.isDefined(xmlFormName)) {
       xmlFormShortName =
-          xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
+              xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
       try {
         getPublicationTemplateManager().addDynamicPublicationTemplate(getComponentId() + ":"
-            + xmlFormShortName, xmlFormName);
+                + xmlFormShortName, xmlFormName);
       } catch (PublicationTemplateException e) {
-        throw new ClassifiedsRuntimeException("GallerySessionController.super()",
-            SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+        throw new ClassifiedsRuntimeException("ClassifiedsSessionController.super()",
+                SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
       }
     }
+  }
+  
+  public void setPagination(Pagination pagination) {
+    this.pagination = pagination;
+  }
+  
+  public Pagination getPagination() {
+    return pagination;
   }
 
   /**
@@ -118,34 +135,14 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    */
   public ClassifiedDetail getClassified(String classifiedId) {
     ClassifiedDetail classified = new ClassifiedDetail();
-    try {
-      classified = getClassifiedsBm().getClassified(classifiedId);
-      classified.setCreatorName(getUserDetail(classified.getCreatorId()).getDisplayedName());
-      classified.setCreatorEmail(getUserDetail(classified.getCreatorId()).geteMail());
-      if (StringUtil.isDefined(classified.getValidatorId())) {
-        classified
-            .setValidatorName((getUserDetail(classified.getValidatorId()).getDisplayedName()));
-      }
-    } catch (RemoteException e) {
-      throw new ClassifiedsRuntimeException("ClassifedsSessionController.getClassified()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+    classified = getClassifiedService().getContentById(classifiedId);
+    classified.setCreatorName(getUserDetail(classified.getCreatorId()).getDisplayedName());
+    classified.setCreatorEmail(getUserDetail(classified.getCreatorId()).geteMail());
+    if (StringUtil.isDefined(classified.getValidatorId())) {
+      classified.setValidatorName((getUserDetail(classified.getValidatorId()).getDisplayedName()));
     }
-    return classified;
-  }
 
-  /**
-   * get all classifieds for this instance
-   * @return a collection of ClassifiedDetail
-   */
-  public Collection<ClassifiedDetail> getAllClassifieds() {
-    Collection<ClassifiedDetail> classifieds = new ArrayList<ClassifiedDetail>();
-    try {
-      classifieds = getClassifiedsBm().getAllClassifieds(getComponentId());
-    } catch (RemoteException e) {
-      throw new ClassifiedsRuntimeException("ClassifedsSessionController.getAllClassifieds()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
-    return classifieds;
+    return classified;
   }
 
   /**
@@ -153,12 +150,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @return number : String
    */
   public String getNbTotalClassifieds() {
-    try {
-      return getClassifiedsBm().getNbTotalClassifieds(getComponentId());
-    } catch (RemoteException e) {
-      throw new ClassifiedsRuntimeException("ClassifedsSessionController.getAllClassifieds()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
+    return getClassifiedService().getNbTotalClassifieds(getComponentId());
   }
 
   /**
@@ -166,17 +158,46 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @param query : QueryDescription
    * @return a collection of ClassifiedDetail
    */
-  public Collection<ClassifiedDetail> search(QueryDescription query) {
-    Collection<ClassifiedDetail> result = new ArrayList<ClassifiedDetail>();
-    try {
-      query.setSearchingUser(getUserId());
-      query.addComponent(getComponentId());
-      result = getClassifiedsBm().search(query);
-      return result;
-    } catch (RemoteException e) {
-      throw new ClassifiedsRuntimeException("ClassifedsSessionController.search()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+  public void search(QueryDescription query) {
+    sessionClassifieds = getClassifieds(query);
+  }
+  
+  private List<ClassifiedDetail> getClassifieds(QueryDescription query) {
+    query.setSearchingUser(getUserId());
+    query.addComponent(getComponentId());
+    return getClassifiedService().search(query);
+  }
+  
+  public List<ClassifiedDetail> getClassifieds(QueryDescription query, int nb) {
+    List<ClassifiedDetail> classifieds = getClassifieds(query);
+    List<ClassifiedDetail> result = new ArrayList<ClassifiedDetail>();
+    for (int i = 0; i < nb && i < classifieds.size(); i++) {
+      ClassifiedDetail classified = classifieds.get(i);
+      enrichClassified(classified);
+      result.add(classified);
     }
+    return result;
+  }
+  
+  public Collection<ClassifiedDetail> getSessionClassifieds() {
+    return sessionClassifieds;
+  }
+  
+  public Collection<ClassifiedDetail> getPage(int itemIndex) {
+    pagination.init(sessionClassifieds.size(), getSettings().getInteger("nbElementsPerPage", 10), itemIndex);
+    List<ClassifiedDetail> classifieds = sessionClassifieds.subList(pagination.getFirstItemIndex(), pagination.getLastItemIndex());
+    
+    // enrich displayed classifieds
+    for (ClassifiedDetail classified : classifieds) {
+      enrichClassified(classified);
+    }
+    
+    return classifieds;
+  }
+  
+  private void enrichClassified(ClassifiedDetail classified) {
+      setImagesToClassified(classified);
+      getClassifiedService().setClassification(classified, getSearchFields1(), getSearchFields2(), getXMLFormName());
   }
 
   /**
@@ -184,14 +205,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @return a collection of ClassifiedDetail
    */
   public Collection<ClassifiedDetail> getClassifiedsByUser() {
-    Collection<ClassifiedDetail> classifieds = new ArrayList<ClassifiedDetail>();
-    try {
-      classifieds = getClassifiedsBm().getClassifiedsByUser(getComponentId(), getUserId());
-    } catch (RemoteException e) {
-      throw new ClassifiedsRuntimeException("ClassifedsSessionController.getClassifiedsByUser()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
-    return classifieds;
+    return getClassifiedService().getClassifiedsByUser(getComponentId(), getUserId());
   }
 
   /**
@@ -200,13 +214,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    */
   public Collection<ClassifiedDetail> getClassifiedsToValidate() {
     Collection<ClassifiedDetail> classifieds = new ArrayList<ClassifiedDetail>();
-    try {
-      classifieds = getClassifiedsBm().getClassifiedsToValidate(getComponentId());
-    } catch (RemoteException e) {
-      throw new ClassifiedsRuntimeException(
-          "ClassifedsSessionController.getClassifiedsToValidate()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
+    classifieds = getClassifiedService().getClassifiedsToValidate(getComponentId());
     return classifieds;
   }
 
@@ -215,53 +223,23 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @param classifiedId : String
    * @return
    */
-  public Collection<Comment> getAllComments(String classifiedId) {
+  private Collection<Comment> getAllComments(String classifiedId) {
     CommentPK foreign_pk = new CommentPK(classifiedId, getComponentId());
-    return getCommentService().getAllCommentsOnPublication(foreign_pk);
-  }
-
-  /**
-   * add a comment (the message) to the classified corresponding to classifiedId
-   * @param classifiedId : String
-   * @param message : String
-   */
-  public synchronized void addComment(String classifiedId, String message) {
-    CommentPK foreign_pk = new CommentPK(classifiedId, getComponentId());
-    CommentPK pk = new CommentPK("X", getComponentId());
-    Date dateToday = new Date();
-    String date = DateUtil.date2SQLDate(dateToday);
-    String owner = getUserDetail(getUserId()).getDisplayedName();
-    SilverTrace.info("classifieds", "ClassifedsSessionController.addComment()",
-        "root.MSG_GEN_PARAM_VALUE", "owner=" + owner);
-
-    Comment comment =
-        new Comment(pk, foreign_pk, Integer.parseInt(getUserId()), owner, message, date, date);
-    getCommentService().createComment(comment);
-    SilverTrace.info("classifieds", "ClassifedsSessionController.addComment()",
-        "root.MSG_GEN_PARAM_VALUE", "owner comment=" + comment.getOwner());
-  }
-
-  /**
-   * delete the comment corresponding to commentId
-   * @param commentId : String
-   */
-  public void deleteComment(String commentId) {
-    CommentPK pk = new CommentPK(commentId, "useless", getComponentId());
-    getCommentService().deleteComment(pk);
+    return getCommentService().getAllCommentsOnPublication(ClassifiedDetail.getResourceType(),
+        foreign_pk);
   }
 
   /**
    * take out draft mode the classified corresponding to classified
    * @param classifiedId : String
-   * @param profile : String
-   * @throws RemoteException
+   * @param highestRole : ClassifiedsRole
    * @throws PublicationTemplateException
    * @throws FormException
    */
   public synchronized void draftOutClassified(String classifiedId, ClassifiedsRole highestRole)
-      throws RemoteException, PublicationTemplateException, FormException {
-    getClassifiedsBm().draftOutClassified(classifiedId, highestRole.toString());
-    if (highestRole==ClassifiedsRole.MANAGER) {
+          throws PublicationTemplateException, FormException {
+    getClassifiedService().draftOutClassified(classifiedId, highestRole.getName(), isValidationEnabled());
+    if (highestRole == ClassifiedsRole.MANAGER) {
       sendSubscriptionsNotification(classifiedId);
     }
   }
@@ -269,23 +247,20 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
   /**
    * pass the classified corresponding to classifiedId in draft mode
    * @param classifiedId : String
-   * @throws RemoteException
    */
-  public synchronized void draftInClassified(String classifiedId) throws RemoteException {
-    getClassifiedsBm().draftInClassified(classifiedId);
+  public synchronized void draftInClassified(String classifiedId) {
+    getClassifiedService().draftInClassified(classifiedId);
   }
 
   /**
    * pass to status validate because the user corresponding to userId validated the classified
    * corresponding to classifiedId
    * @param classifiedId : String
-   * @throws RemoteException
    * @throws PublicationTemplateException
    * @throws FormException
    */
-  public synchronized void validateClassified(String classifiedId) throws RemoteException,
-      PublicationTemplateException, FormException {
-    getClassifiedsBm().validateClassified(classifiedId, getUserId());
+  public synchronized void validateClassified(String classifiedId) throws PublicationTemplateException, FormException {
+    getClassifiedService().validateClassified(classifiedId, getUserId());
     sendSubscriptionsNotification(classifiedId);
   }
 
@@ -294,11 +269,9 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * corresponding to classifiedId for the motive ResusalMotive
    * @param classifiedId : String
    * @param motive : String
-   * @throws RemoteException
    */
-  public synchronized void refusedClassified(String classifiedId, String motive)
-      throws RemoteException {
-    getClassifiedsBm().refusedClassified(classifiedId, getUserId(), motive);
+  public synchronized void refusedClassified(String classifiedId, String motive) {
+    getClassifiedService().refusedClassified(classifiedId, getUserId(), motive);
   }
 
   /**
@@ -328,32 +301,29 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
   /**
    * create classified
    * @param classified : classifiedDetail
-   * @param profile : String
+   * @param profile : ClassifiedsRole
    * @return classifiedId : String
    */
-  public synchronized String createClassified(ClassifiedDetail classified, ClassifiedsRole profile) {
-    try {
-      UserDetail user = getUserDetail();
-      classified.setCreatorId(getUserId());
-      classified.setCreationDate(new Date());
-      classified.setCreatorName(user.getDisplayedName());
-      classified.setCreatorEmail(user.geteMail());
-      classified.setInstanceId(getComponentId());
-      // status
-      if (isDraftEnabled()) {
-        classified.setStatus(ClassifiedDetail.DRAFT);
+  public synchronized String createClassified(ClassifiedDetail classified, Collection<FileItem> listImage, ClassifiedsRole profile) {
+    UserDetail user = getUserDetail();
+    classified.setCreatorId(getUserId());
+    classified.setCreationDate(new Date());
+    classified.setCreatorName(user.getDisplayedName());
+    classified.setCreatorEmail(user.geteMail());
+    classified.setInstanceId(getComponentId());
+    // status
+    if (isDraftEnabled()) {
+      classified.setStatus(ClassifiedDetail.DRAFT);
+    } else {
+      if (profile == ClassifiedsRole.MANAGER || !isValidationEnabled()) {
+        classified.setStatus(ClassifiedDetail.VALID);
       } else {
-        if (profile==ClassifiedsRole.MANAGER || !isValidationEnabled()) {
-          classified.setStatus(ClassifiedDetail.VALID);
-        } else {
-          classified.setStatus(ClassifiedDetail.TO_VALIDATE);
-        }
+        classified.setStatus(ClassifiedDetail.TO_VALIDATE);
       }
-      return getClassifiedsBm().createClassified(classified);
-    } catch (RemoteException e) {
-      throw new ClassifiedsRuntimeException("ClassifedsSessionController.createClassified()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
+    String classifiedId = getClassifiedService().createClassified(classified);
+    createClassifiedImages(listImage, classifiedId);
+    return classifiedId;
   }
 
   /**
@@ -361,19 +331,13 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @param classifiedId : String
    */
   public void deleteClassified(String classifiedId) {
-    try {
-      getClassifiedsBm().deleteClassified(classifiedId);
-      // supprimer les commentaires
-      Collection<Comment> comments = getAllComments(classifiedId);
-      Iterator<Comment> it = comments.iterator();
-      while (it.hasNext()) {
-        Comment comment = it.next();
-        CommentPK commentPK = comment.getCommentPK();
-        getCommentService().deleteComment(commentPK);
-      }
-    } catch (RemoteException e) {
-      throw new ClassifiedsRuntimeException("ClassifedsSessionController.deleteClassified()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_DELETE_OBJECT", e);
+    //supprime la petite annonce et ses images
+    getClassifiedService().deleteClassified(this.getComponentId(), classifiedId);
+    
+    //supprime les commentaires
+    Collection<Comment> comments = getAllComments(classifiedId);
+    for(Comment comment : comments) {
+      getCommentService().deleteComment(comment.getCommentPK());
     }
   }
 
@@ -385,7 +349,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @param isAdmin : boolean
    */
   public synchronized void updateClassified(ClassifiedDetail classified, boolean isUpdate,
-      boolean isAdmin) {
+          boolean isAdmin) {
     try {
       boolean notify = false;
       if (isUpdate) {
@@ -395,23 +359,23 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
           if (classified.getStatus().equals(ClassifiedDetail.VALID)) {
             notify = true;
           }
-          if (!isAdmin && isValidationEnabled() && classified.getStatus().equals(
-              ClassifiedDetail.VALID)) {
-            classified.setStatus(ClassifiedDetail.TO_VALIDATE);
-          }
+        }
+        
+        if (!isAdmin && isValidationEnabled() && classified.getStatus().equals(
+            ClassifiedDetail.VALID)) {
+          classified.setStatus(ClassifiedDetail.TO_VALIDATE);
         }
 
         // special case : status is UNPUBLISHED, user requested classified republication
         if (classified.getStatus().equals(ClassifiedDetail.UNPUBLISHED)) {
-          if (!isAdmin && isValidationEnabled() ) {
+          if (!isAdmin && isValidationEnabled()) {
             classified.setStatus(ClassifiedDetail.TO_VALIDATE);
-          }
-          else {
+          } else {
             classified.setStatus(ClassifiedDetail.VALID);
           }
         }
       }
-      getClassifiedsBm().updateClassified(classified, notify);
+      getClassifiedService().updateClassified(classified, notify);
 
       // for newly created classifieds by admin : need to force notification
       if (!isUpdate && classified.getStatus().equals(ClassifiedDetail.VALID)) {
@@ -420,7 +384,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
 
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException("ClassifedsSessionController.updateClassified()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }
 
@@ -431,31 +395,18 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @throws FormException
    */
   public void sendSubscriptionsNotification(String classifiedId)
-      throws PublicationTemplateException, FormException {
-    try {
-      ClassifiedDetail classified = getClassified(classifiedId);
-      DataRecord data = null;
-      String xmlFormName = getXMLFormName();
-      if (StringUtil.isDefined(xmlFormName)) {
-        String xmlFormShortName =
-            xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
-        PublicationTemplateImpl pubTemplate =
-            (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
-                getComponentId() + ":" + xmlFormShortName, xmlFormName);
-        if (pubTemplate != null) {
-          RecordSet recordSet = pubTemplate.getRecordSet();
-          data = recordSet.getRecord(classifiedId);
-        }
-      }
-      String field1 = (data.getField(getSearchFields1())).getValue();
-      String field2 = (data.getField(getSearchFields2())).getValue();
-
-      getClassifiedsBm().sendSubscriptionsNotification(field1, field2, classified);
-    } catch (RemoteException e) {
-      throw new ClassifiedsRuntimeException(
-          "ClassifedsSessionController.sendSubscriptionsNotification()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+          throws PublicationTemplateException, FormException {
+    ClassifiedDetail classified = getClassified(classifiedId);
+    DataRecord data = null;
+    PublicationTemplate pubTemplate = getPublicationTemplate();
+    if (pubTemplate != null) {
+      RecordSet recordSet = pubTemplate.getRecordSet();
+      data = recordSet.getRecord(classifiedId);
     }
+    String field1 = data.getField(getSearchFields1()).getValue();
+    String field2 = data.getField(getSearchFields2()).getValue();
+
+    getClassifiedService().sendSubscriptionsNotification(field1, field2, classified);
   }
 
   /**
@@ -475,10 +426,10 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
       }
       subscribe.setFieldName1(fields1.get(subscribe.getField1()));
       subscribe.setFieldName2(fields2.get(subscribe.getField2()));
-      getClassifiedsBm().createSubscribe(subscribe);
+      getClassifiedService().createSubscribe(subscribe);
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException("ClassifedsSessionController.createSubscribe()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }
 
@@ -487,12 +438,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @param subscribeId : String
    */
   public void deleteSubscribe(String subscribeId) {
-    try {
-      getClassifiedsBm().deleteSubscribe(subscribeId);
-    } catch (RemoteException e) {
-      throw new ClassifiedsRuntimeException("ClassifedsSessionController.deleteSubscribe()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
+    getClassifiedService().deleteSubscribe(subscribeId);
   }
 
   /**
@@ -502,33 +448,16 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    */
   private Map<String, String> createListField(String listName) {
     Map<String, String> fields = Collections.synchronizedMap(new HashMap<String, String>());
-    if (StringUtil.isDefined(listName)) {  
+    if (StringUtil.isDefined(listName)) {
       // création de la hashtable (key,value)
-      String xmlFormName = getXMLFormName();
-      if (StringUtil.isDefined(xmlFormName)) {
-        String xmlFormShortName =
-            xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
-        PublicationTemplateImpl pubTemplate;
-        try {
-          pubTemplate =
-              (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
-                  getComponentId() + ":" + xmlFormShortName, xmlFormName);
-          String key =
-              pubTemplate.getRecordTemplate().getFieldTemplate(listName).getParameters(
-                  getLanguage()).get("keys");
-          String value =
-              pubTemplate.getRecordTemplate().getFieldTemplate(listName).getParameters(
-                  getLanguage()).get("values");
-          String[] keys = key.split("##");
-          String[] values = value.split("##");
-          for (int i = 0; i < keys.length; i++) {
-            fields.put(keys[i], values[i]);
-          }
-        } catch (Exception e) {
-          // ERREUR : le champ de recherche renseigné n'est pas une liste déroulante
-          throw new ClassifiedsRuntimeException("ClassifedsSessionController.createListField()",
-              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-        }
+      try {
+        PublicationTemplate pubTemplate = getPublicationTemplate();
+        GenericFieldTemplate field = (GenericFieldTemplate) pubTemplate.getRecordTemplate().getFieldTemplate(listName);
+        return field.getKeyValuePairs(getLanguage());
+      } catch (Exception e) {
+        // ERREUR : le champ de recherche renseigné n'est pas une liste déroulante
+        throw new ClassifiedsRuntimeException("ClassifedsSessionController.createListField()",
+                SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
       }
     } else {
       // ERREUR : le champs de recherche n'est pas renseigné
@@ -543,34 +472,33 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
   public Collection<Subscribe> getSubscribesByUser() {
     Collection<Subscribe> subscribes = new ArrayList<Subscribe>();
     try {
-      subscribes = getClassifiedsBm().getSubscribesByUser(getComponentId(), getUserId());
+      subscribes = getClassifiedService().getSubscribesByUser(getComponentId(), getUserId());
 
-      Iterator<Subscribe> it = subscribes.iterator();
       if (fields1 == null) {
         fields1 = createListField(getSearchFields1());
       }
       if (fields2 == null) {
         fields2 = createListField(getSearchFields2());
       }
-      while (it.hasNext()) {
-        Subscribe subscribe = it.next();
+      
+      for (Subscribe subscribe : subscribes) {
         // ajout des libellés
         subscribe.setFieldName1(fields1.get(subscribe.getField1()));
         subscribe.setFieldName2(fields2.get(subscribe.getField2()));
       }
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException("ClassifedsSessionController.getSubscribesByUser()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
     return subscribes;
   }
 
-  public void setIndexOfFirstItemToDisplay(String index) {
-    this.indexOfFirstItemToDisplay = new Integer(index).intValue();
+  public void setCurrentPage(int currentPage) {
+    this.currentPage = currentPage;
   }
 
-  public int getIndexOfFirstItemToDisplay() {
-    return indexOfFirstItemToDisplay;
+  public int getCurrentPage() {
+    return this.currentPage;
   }
 
   /**
@@ -585,25 +513,18 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
     return "yes".equalsIgnoreCase(getComponentParameterValue("validation"));
   }
 
-  private ClassifiedsBm getClassifiedsBm() {
-    ClassifiedsBm classifiedsBm = null;
-    try {
-      ClassifiedsBmHome classifiedsBmHome =
-          (ClassifiedsBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.CLASSIFIEDSBM_EJBHOME,
-              ClassifiedsBmHome.class);
-      classifiedsBm = classifiedsBmHome.create();
-    } catch (Exception e) {
-      throw new ClassifiedsRuntimeException("ClassifedsSessionController.getClassifiedsBm()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+  private ClassifiedService getClassifiedService() {
+    if (classifiedService == null) {
+      classifiedService = ClassifiedServiceFactory.getFactory().getClassifiedService();
     }
-    return classifiedsBm;
+    return classifiedService;
   }
 
   /**
    * Gets a service providing operations on comments.
    * @return a DefaultCommentService instance.
    */
-  public CommentService getCommentService() {
+  private CommentService getCommentService() {
     if (commentService == null) {
       commentService = CommentServiceFactory.getFactory().getCommentService();
     }
@@ -634,7 +555,6 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
     return "yes".equals(getComponentParameterValue("wysiwygHeader").toLowerCase());
   }
 
-
   /**
    * return wysiwyg header html code
    *
@@ -642,12 +562,212 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    */
   public String getWysiwygHeader() {
     if (isWysiwygHeaderEnabled()) {
-      try {
         return WysiwygController.load(getComponentId(), "Node_0", getLanguage());
-      } catch (WysiwygException e) {
-        return "";
-      }
     }
     return "";
+  }
+  
+  /**
+   * create classified image
+   * @param fileImage : FileItem
+   * @param classifiedId : String
+   */
+  public synchronized void createClassifiedImage(FileItem fileImage, String classifiedId) {
+    
+    try {
+      // create SimpleDocumentPK with componentId
+      SimpleDocumentPK sdPK = new SimpleDocumentPK(null, getComponentId());
+  
+      // create SimpleDocument Object
+      Date creationDate = new Date();
+      String fileName = FileUtil.getFilename(fileImage.getName());
+      long size = fileImage.getSize();
+      String mimeType = FileUtil.getMimeType(fileName);
+      
+      SimpleDocument sd = new SimpleDocument(sdPK, classifiedId, 0, false, new SimpleAttachment(fileName, getLanguage(), "", "", size 
+              , mimeType, getUserId(), creationDate, null));
+      sd.setDocumentType(DocumentType.attachment);
+  
+      AttachmentServiceFactory.getAttachmentService().createAttachment(sd, fileImage.getInputStream(), true);
+    } catch (Exception e) {
+      throw new ClassifiedsRuntimeException("ClassifiedsSessionController.createClassifiedImage()",
+            SilverpeasRuntimeException.ERROR, "classifieds.MSG_CLASSIFIED_IMAGE_NOT_CREATE", e);
+    }
+  }
+  
+  /**
+   * create classified images
+   * @param listImage : Collection de FileItem
+   * @param classifiedId : String
+   */
+  private synchronized void createClassifiedImages(Collection<FileItem> listImage, String classifiedId) {
+    for(FileItem fileImage : listImage) {
+      createClassifiedImage(fileImage, classifiedId);
+    }    
+  }
+
+  /**
+   * get classified corresponding to classifiedId including images
+   * @param classifiedId : String
+   * @return classified : ClassifiedDetail
+   */
+  public ClassifiedDetail getClassifiedWithImages(String classifiedId) {
+    ClassifiedDetail classified = getClassified(classifiedId);
+    setImagesToClassified(classified);
+    return classified;
+  }
+  
+  private void setImagesToClassified(ClassifiedDetail classified) {
+    if (classified != null) {
+      try {
+        WAPrimaryKey classifiedForeignKey =
+            new SimpleDocumentPK(classified.getId(), getComponentId());
+        List<SimpleDocument> listSimpleDocument =
+            AttachmentServiceFactory.getAttachmentService().listDocumentsByForeignKeyAndType(
+                classifiedForeignKey, DocumentType.attachment, null);
+        classified.setImages(listSimpleDocument);
+      } catch (Exception e) {
+        throw new ClassifiedsRuntimeException(
+            "ClassifiedsSessionController.setImagesToClassified()",
+            SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_GET_IMAGES", e);
+      }
+    }
+  }
+  
+  /**
+   * update classified image 
+   * @param fileImage : FileItem
+   * @param imageId : String
+   * @param classifiedId : String
+   */
+  public void updateClassifiedImage(FileItem fileImage, String imageId, String classifiedId) {
+    SimpleDocument classifiedImage = null;
+    try {
+      SimpleDocumentPK sdPK = new SimpleDocumentPK(imageId, getComponentId());
+      classifiedImage = AttachmentServiceFactory.getAttachmentService().searchDocumentById(sdPK, null);
+    } catch (Exception e) {
+      throw new ClassifiedsRuntimeException("ClassifiedsSessionController.updateClassifiedImage()",
+        SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_GET_IMAGE", e);
+    }
+    
+    if(classifiedImage != null) {
+      Date updateDate = new Date();
+      String fileName = FileUtil.getFilename(fileImage.getName());
+      long size = fileImage.getSize();
+      String mimeType = FileUtil.getMimeType(fileName);
+      
+      classifiedImage.setDocumentType(DocumentType.attachment);
+      classifiedImage.setFilename(fileName);
+      classifiedImage.setLanguage(null);
+      classifiedImage.setTitle("");
+      classifiedImage.setDescription("");
+      classifiedImage.setSize(size);
+      classifiedImage.setContentType(mimeType);
+      classifiedImage.setUpdatedBy(getUserId());
+      classifiedImage.setUpdated(updateDate);
+      
+      try {
+        AttachmentServiceFactory.getAttachmentService().updateAttachment(classifiedImage, fileImage.getInputStream(), true, false);
+      } catch (Exception e) {
+          throw new ClassifiedsRuntimeException("ClassifiedsSessionController.updateClassifiedImage()",
+            SilverpeasRuntimeException.ERROR, "classifieds.MSG_CLASSIFIED_IMAGE_NOT_UPDATE", e);
+      }
+      
+    } else {
+      createClassifiedImage(fileImage, classifiedId);
+    }
+  }
+  
+  /**
+   * delete classified image 
+   * @param imageId : String
+   */
+  public void deleteClassifiedImage(String imageId) {
+    SimpleDocument classifiedImage = null;
+    try {
+      SimpleDocumentPK sdPK = new SimpleDocumentPK(imageId, getComponentId());
+      classifiedImage = AttachmentServiceFactory.getAttachmentService().searchDocumentById(sdPK, null);
+    } catch (Exception e) {
+      throw new ClassifiedsRuntimeException("ClassifiedsSessionController.deleteClassifiedImage()",
+        SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_GET_IMAGE", e);
+    }
+    
+    if(classifiedImage != null) {
+      //delete the actual picture file in the file server and database
+      AttachmentServiceFactory.getAttachmentService().deleteAttachment(classifiedImage);
+    } else {
+      throw new ClassifiedsRuntimeException("ClassifiedsSessionController.deleteClassifiedImage()",
+          SilverpeasRuntimeException.ERROR, "classifieds.MSG_CLASSIFIED_IMAGE_NOT_DELETE", imageId+" does not exist");
+    }
+  }
+  
+  /**
+   * return true if Home page displays classifieds organized by category
+   * @return boolean
+   */
+  public boolean isHomePageDisplayCategorized() {
+    String parameterHomePage = getComponentParameterValue("homePage");
+    if(StringUtil.isDefined(parameterHomePage)) {
+      return "0".equalsIgnoreCase(getComponentParameterValue("homePage"));
+    }
+    return true;
+  }
+  
+  /**
+   * get all valid classifieds
+   * @param currentPage
+   * @return a collection of ClassifiedDetail
+   */
+  public Collection<ClassifiedDetail> getAllValidClassifieds(int currentPage) {
+    if (fields1 == null) {
+      fields1 = createListField(getSearchFields1());
+    }
+    if (fields2 == null) {
+      fields2 = createListField(getSearchFields2());
+    }
+    int nbElementsPerPage = Integer.parseInt(getResources().getSetting("nbElementsPerPage"));
+    return getClassifiedService().getAllValidClassifieds(getComponentId(), fields1, fields2,
+        getSearchFields1(), getSearchFields2(), currentPage, nbElementsPerPage);
+  }
+  
+  /**
+   * get the number of pages to display
+   * @return number : String
+   */
+  public String getNbPages(String nbClassifieds) {
+    int nbClassifiedsInt = Integer.parseInt(nbClassifieds);
+    int nbElementsPerPage = Integer.parseInt(getResources().getSetting("nbElementsPerPage"));
+    int nbPages = nbClassifiedsInt / nbElementsPerPage;
+    if (nbClassifiedsInt % nbElementsPerPage != 0) {
+      nbPages = nbPages + 1;
+    }
+    return Integer.toString(nbPages);
+  }
+  
+  /**
+   * Gets the template of the publication based on the classified XML form.
+   * @param classifiedsSC the session controller.
+   * @return the publication template for classifieds.
+   * @throws PublicationTemplateException if an error occurs while getting the publication template.
+   */
+  public PublicationTemplate getPublicationTemplate() throws PublicationTemplateException {
+    PublicationTemplate pubTemplate = null;
+    String xmlFormName = getXMLFormName();
+    if (StringUtil.isDefined(xmlFormName)) {
+      String xmlFormShortName =
+          xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
+      pubTemplate =
+          getPublicationTemplateManager().getPublicationTemplate(
+              getComponentId() + ":" + xmlFormShortName, xmlFormName);
+    }
+    return pubTemplate;
+  }
+  
+  public void setSearchContext(SearchContext context) {
+    this.searchContext = context;
+  }
+  
+  public SearchContext getSearchContext() {
+    return searchContext;
   }
 }

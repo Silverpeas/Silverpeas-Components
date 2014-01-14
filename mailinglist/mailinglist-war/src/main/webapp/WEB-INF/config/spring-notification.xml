@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -13,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,16 +25,19 @@
 
 -->
 
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:jee="http://www.springframework.org/schema/jee"
-  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jee="http://www.springframework.org/schema/jee"
+       xsi:schemaLocation="
+         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+         http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd">
 
   <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="locations">
       <list>
-        <value>file:///${SILVERPEAS_HOME}/properties/com/stratelia/silverpeas/notificationserver/channel/smtp/smtpSettings.properties</value>
-        <value>file:///${SILVERPEAS_HOME}/properties/com/silverpeas/mailinglist/notification.properties</value>
-        <value>file:///${SILVERPEAS_HOME}/properties/com/stratelia/webactiv/util/jndi.properties</value>
+        <value>file:///${SILVERPEAS_HOME}/properties/org/silverpeas/notificationserver/channel/smtp/smtpSettings.properties</value>
+        <value>file:///${SILVERPEAS_HOME}/properties/org/silverpeas/mailinglist/notification.properties</value>
+        <value>file:///${SILVERPEAS_HOME}/properties/org/silverpeas/util/jndi.properties</value>
       </list>
     </property>
     <property name="searchSystemEnvironment" value="true" />
@@ -46,7 +49,7 @@
     <property name="notificationSender" ref="notificationSender" />
     <property name="notificationFormatter" ref="notificationFormatter" />
     <property name="smtpConfig" ref="smtpConfiguration" />
-    <property name="controller" ref="organizationController" />
+    <property name="organisationController" ref="organizationController" />
     <property name="calendarBm" ref="calendarBm" />
     <property name="externalThread" value="true" />
   </bean>
@@ -60,18 +63,11 @@
     <property name="secure" value="${SMTPSecure}" />
   </bean>
 
-  <bean id="calendarBm" class="org.springframework.ejb.access.SimpleRemoteStatelessSessionProxyFactoryBean">
-    <property name="jndiName" value="${CALENDARBM_EJBHOME}" />
-    <property name="businessInterface" value="com.stratelia.webactiv.calendar.control.CalendarBm" />
-    <property name="cacheHome" value="true" />
-    <property name="lookupHomeOnStartup" value="true" />
-    <property name="resourceRef" value="false" />
-    <property name="homeInterface" value="com.stratelia.webactiv.calendar.control.CalendarBmHome" />
-    <property name="refreshHomeOnConnectFailure" value="true" />
-  </bean>
+  <jee:local-slsb id="calendarBm" jndi-name="${CALENDARBM_EJBHOME}"
+                  business-interface="com.stratelia.webactiv.calendar.control.SilverpeasCalendar" />
 
   <bean id="mailCheckerInitializer" name="mailCheckerInitializer"
-    class="com.silverpeas.mailinglist.control.MailCheckerInitialize" init-method="registerAll">
+        class="com.silverpeas.mailinglist.control.MailCheckerInitialize" init-method="registerAll">
     <property name="messageChecker" ref="messageChecker" />
     <property name="mailingListService" ref="mailingListService" />
     <property name="frequency" value="${mail.check.frequency}" />
@@ -79,10 +75,10 @@
 
 
   <bean id="notificationFormatter" name="notificationFormatter"
-    class="com.silverpeas.mailinglist.service.notification.AdvancedNotificationFormatter" />
+        class="com.silverpeas.mailinglist.service.notification.AdvancedNotificationFormatter" />
 
   <bean id="notificationSender" name="notificationSender"
-    class="com.stratelia.silverpeas.notificationManager.NotificationSender">
+        class="com.stratelia.silverpeas.notificationManager.NotificationSender">
     <constructor-arg value="fr" type="java.lang.String" />
   </bean>
 

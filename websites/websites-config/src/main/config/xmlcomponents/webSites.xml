@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -13,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,15 +29,16 @@
     xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>webSites</name>
   <label>
-    <message lang="fr">Designer de site web</message>
+    <message lang="fr">Designer de sites web</message>
     <message lang="en">WebSite Designer</message>
     <message lang="de">Website-Designer</message>
   </label>
   <description>
-    <message lang="fr">Idem à l'annuaire de sites. Propose également des services pour créer un site Web,
-  via un éditeur WYSIWYG. Permet enfin de télécharger un site statique.
+    <message lang="fr">Créer des pages web et des répertoires, télécharger des
+		images, voilà tout ce dont vous avez besoin pour mettre en ligne de petits sites
+		intégrés à la plate-forme.
     </message>
-    <message lang="en">A bit like the bookmaks component, but it also allow you to create web pages with a WYSIWYG editor.
+    <message lang="en">A bit like the bookmaks application, but it also allow you to create web pages with a WYSIWYG editor.
     Those pages can be downloaded to create a static web site.
     </message>
     <message lang="de">Ermöglicht es Ihnen, Webseiten mit einem WYSIWYG-Editor zu erstellen. Diese Seiten können heruntergeladen werden, um eine statische Website zu erstellen.</message>
@@ -58,8 +59,8 @@
         <message lang="de">Administrator</message>
       </label>
       <help>
-        <message lang="fr">Les gestionnaires gèrent les thèmes et paramètrent le Plan de Classement.</message>
-        <message lang="en">Administrators manage topics and set up the Classification Scheme.</message>
+        <message lang="fr">Les gestionnaires gèrent les dossiers et paramètrent le Plan de Classement.</message>
+        <message lang="en">Administrators manage folders and set up the Classification Scheme.</message>
         <message lang="de">Administrator</message>
       </help>
     </profile>
@@ -70,8 +71,8 @@
         <message lang="de">Herausgeber</message>
       </label>
       <help>
-        <message lang="fr">Les publieurs créent ou téléchargent des sites web.</message>
-        <message lang="en">Publishers create or upload websites.</message>
+        <message lang="fr">Les publieurs créent ou téléchargent des sites web, gèrent les dossiers.</message>
+        <message lang="en">Publishers create or upload websites, manage folders.</message>
         <message lang="de">Herausgeber</message>
       </help>
     </profile>
@@ -110,9 +111,9 @@
     <parameter>
       <name>sortedTopics</name>
       <label>
-        <message lang="fr">Thèmes / liens ordonés</message>
-        <message lang="en">Topics / Links sorted</message>
-        <message lang="de">Sortierte Themen / Links</message>
+        <message lang="fr">Dossiers/liens ordonnés</message>
+        <message lang="en">Folders/Links sorted</message>
+        <message lang="de">Records/Favoriten sortiert</message>
       </label>
       <order>2</order>
       <mandatory>true</mandatory>
@@ -120,9 +121,9 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Ce paramètre permet d'ordonner les thèmes et les liens</message>
-        <message lang="en">This parameter allows to order topics and links.</message>
-        <message lang="de">Dieser Parameter ermöglicht es Ihnen, Themen und Links zu Sortieren.</message>
+        <message lang="fr">Ce paramètre permet d'ordonner les dossiers et les liens</message>
+        <message lang="en">This parameter allows to order folders and links.</message>
+        <message lang="de">Dieser Parameter ermöglicht es Ihnen, Records und Links zu Sortieren.</message>
       </help>
     </parameter>
   </parameters>

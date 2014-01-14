@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -13,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -33,9 +33,9 @@
     <message lang="de">Multi-level Tracker</message>
   </label>
   <description>
-    <message lang="fr">Permet de créer une base documentaire classée suivant plusieurs axes.
-      L'utilisateur sélectionne les valeurs des différents axes pour retrouver les documents
-      répondant à sa requête.
+    <message lang="fr">Cette application gère également des publications. 
+		Mais celles-ci sont classées dans une taxonomie indépendante permettant
+		à l’utilisateur de faire des recherches croisées en toute simplicité.
     </message>
     <message lang="en">Create a document database where documents are classified according to various
       classification scheme. The user select
@@ -81,12 +81,12 @@
       <label>
         <message lang="fr">Rédacteurs</message>
         <message lang="en">Writers</message>
-        <message lang="de">Schreiber</message>
+        <message lang="de">Redaktor</message>
       </label>
       <help>
         <message lang="fr">Les rédacteurs créent des publications.</message>
         <message lang="en">Writers create publications.</message>
-        <message lang="de">Schreiber</message>
+        <message lang="de">Redaktor</message>
       </help>
     </profile>
     <profile name="user">
@@ -375,8 +375,8 @@
     <parameter>
       <name>exportComponent</name>
       <label>
-        <message lang="fr">Exportation du composant</message>
-        <message lang="en">Export component</message>
+        <message lang="fr">Exportation de l'application</message>
+        <message lang="en">Export application</message>
         <message lang="de">Komponente Export</message>
       </label>
       <order>14</order>
@@ -385,8 +385,8 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Cette fonction permet d'exporter toutes les publications visibles du composant.</message>
-        <message lang="en">This function allow the user to export all the visible publications in the component.</message>
+        <message lang="fr">Cette fonction permet d'exporter toutes les publications visibles de l'application.</message>
+        <message lang="en">This function allow the user to export all the visible publications of the application.</message>
         <message lang="de">Diese Funktion ermöglicht es dem Benutzer, alle sichtbaren Veröffentlichungen in der Komponente zu exportieren.</message>
       </help>
     </parameter>
@@ -406,6 +406,90 @@
         <message lang="fr">Ce paramètre permet d'activer le partage de fichiers à des tiers non utilisateurs du portail</message>
         <message lang="en">This feature allows to activate file sharing with persons who have no access to the portal</message>
         <message lang="de">Mit dieser Funktion können Sie die Dateifreigabe mit Personen, die keinen Zugang zu dem Portal haben, aktivieren.</message>
+      </help>
+    </parameter>
+	<parameter>
+      <name>publicationSort</name>
+      <label>
+        <message lang="fr">Ordre des publications</message>
+        <message lang="en">Publications sorting</message>
+        <message lang="de">Publications sorting</message>
+      </label>
+      <order>16</order>
+      <mandatory>true</mandatory>
+      <value>2</value>
+      <options>
+        <option>
+          <name>
+            <message lang="fr">Nom du créateur croissant</message>
+            <message lang="en">Ascending creator's name</message>
+            <message lang="de">Ascending creator's name</message>
+          </name>
+          <value>0</value>
+        </option>
+        <option>
+          <name>
+            <message lang="fr">Date de modification croissante</message>
+            <message lang="en">Ascending update date</message>
+            <message lang="de">Ascending update date</message>
+          </name>
+          <value>1</value>
+        </option>
+        <option>
+          <name>
+            <message lang="fr">Date de modification décroissante</message>
+            <message lang="en">Descending update date</message>
+            <message lang="de">Descending update date</message>
+          </name>
+          <value>2</value>
+        </option>
+        <option>
+          <name>
+            <message lang="fr">Importance croissante</message>
+            <message lang="en">Ascending importance</message>
+            <message lang="de">Ascending importance</message>
+          </name>
+          <value>3</value>
+        </option>
+        <option>
+          <name>
+            <message lang="fr">Titre croissant</message>
+            <message lang="en">Ascending title</message>
+            <message lang="de">Ascending title</message>
+          </name>
+          <value>4</value>
+        </option>
+        <option>
+          <name>
+            <message lang="fr">Date de création croissante</message>
+            <message lang="en">Ascending creation date</message>
+            <message lang="de">Ascending creation date</message>
+          </name>
+          <value>5</value>
+        </option>
+        <option>
+          <name>
+            <message lang="fr">Date de création décroissante</message>
+            <message lang="en">Descending creation date</message>
+            <message lang="de">Descending creation date</message>
+          </name>
+          <value>6</value>
+        </option>
+        <option>
+          <name>
+            <message lang="fr">Description croissante</message>
+            <message lang="en">Ascending description</message>
+            <message lang="de">Ascending description</message>
+          </name>
+          <value>7</value>
+        </option>
+      </options>
+      <type>select</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Permet de définir l'ordre d'affichage des publications par défaut.</message>
+        <message lang="en">Sets the display order of publications.</message>
+        <message lang="de">Sets the display order of publications.</message>
       </help>
     </parameter>
   </parameters>

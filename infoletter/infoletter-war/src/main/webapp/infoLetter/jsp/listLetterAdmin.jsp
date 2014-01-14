@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,16 +24,18 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="JavaScript">
+<script type="text/javascript">
 
 var templateWindow = window;
 
@@ -69,83 +71,71 @@ function openSPWindow(fonction, windowName){
 
 </script>
 </head>
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
+<body>
 <%
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel, "Accueil");
-	
-			
 boolean isSuscriber = ((String)request.getAttribute("userIsSuscriber")).equals("true");
 boolean isAdmin = ( ((String)request.getAttribute("userIsAdmin")).equals("true") );
 boolean isPdcUsed = ( "yes".equals( (String) request.getAttribute("isPdcUsed") ) );
 boolean showHeader = ( (Boolean) request.getAttribute("showHeader") ).booleanValue();
 boolean isTemplateExist = ( (Boolean) request.getAttribute("IsTemplateExist") ).booleanValue();
 
-if (isAdmin && isPdcUsed)
-{
+if (isAdmin && isPdcUsed) {
 	operationPane.addOperation(resource.getIcon("infoLetter.pdcUtilization"), resource.getString("PDCUtilization"), "javascript:onClick=openSPWindow('"+m_context+"/RpdcUtilization/jsp/Main?ComponentId="+componentId+"','utilizationPdc1')");
 	operationPane.addLine();
 }
-if (isSuscriber) 
-	operationPane.addOperation(resource.getIcon("infoLetter.desabonner"), resource.getString("infoLetter.desabonner"), "UnsuscribeMe");
-else 
-	operationPane.addOperation(resource.getIcon("infoLetter.abonner"), resource.getString("infoLetter.abonner"), "SuscribeMe");	
-operationPane.addLine();
 
-if (showHeader)
-{
+if (showHeader) {
 	operationPane.addOperation(resource.getIcon("infoLetter.modifierHeader"), resource.getString("infoLetter.modifierHeader"), "LetterHeaders");	
 	operationPane.addLine();
 }
-operationPane.addOperation(resource.getIcon("infoLetter.newPubli"), resource.getString("infoLetter.newPubli"), "ParutionHeaders");	
-operationPane.addLine();
+operationPane.addOperationOfCreation(resource.getIcon("infoLetter.newPubli"), resource.getString("infoLetter.newPubli"), "ParutionHeaders");	
 operationPane.addOperation(resource.getIcon("infoLetter.delPubli"), resource.getString("GML.delete"), "javascript:submitForm();");	
 operationPane.addLine();
 operationPane.addOperation(resource.getIcon("infoLetter.access_SilverAbonnes"), resource.getString("infoLetter.access_SilverAbonnes"), "Suscribers");	
+operationPane.addOperation(resource.getIcon("infoLetter.access_ExternAbonnes"), resource.getString("infoLetter.access_ExternAbonnes"), "Emails");
 operationPane.addLine();
-operationPane.addOperation(resource.getIcon("infoLetter.access_ExternAbonnes"), resource.getString("infoLetter.access_ExternAbonnes"), "Emails");	
 
-	out.println(window.printBefore());
-	out.println(frame.printBefore());		
+if (isSuscriber) {
+	operationPane.addOperation(resource.getIcon("infoLetter.desabonner"), resource.getString("infoLetter.desabonner"), "UnsuscribeMe");
+} else { 
+	operationPane.addOperation(resource.getIcon("infoLetter.abonner"), resource.getString("infoLetter.abonner"), "SuscribeMe");
+}
+
+out.println(window.printBefore());
 %>
-
-<%
-if (showHeader)
-{
-	out.println(board.printBefore());
-%>
-
+<view:frame>
+<% if (showHeader) { %>
+<view:board>
 <center>
 	<table border="0" cellspacing="0" cellpadding="5" width="100%">
 		<tr> 
 			<td class="txtlibform" valign="baseline" align=left nowrap><%=resource.getString("infoLetter.name")%> :</td>
-			<td align=left width="100%"><%= (String) request.getAttribute("letterName") %></td>
+			<td align="left" width="100%"><%= (String) request.getAttribute("letterName") %></td>
 		</tr>
 		<tr> 
 			<td class="txtlibform" valign="top" align=left nowrap><%=resource.getString("GML.description")%> :</td>
-			<td align=left><%= (String) request.getAttribute("letterDescription") %></td>
+			<td align="left"><%= EncodeHelper.javaStringToHtmlParagraphe((String) request.getAttribute("letterDescription")) %></td>
 		</tr>
 		<tr> 
 			<td class="txtlibform" valign="top" align=left nowrap><%=resource.getString("infoLetter.frequence")%> :</td>
-			<td align=left><%= (String) request.getAttribute("letterFrequence") %></td>
+			<td align="left"><%= (String) request.getAttribute("letterFrequence") %></td>
 		</tr>
 		<% if (isTemplateExist) { %>
 			<tr> 
 				<td class="txtlibform" valign="baseline" align=left nowrap><%=resource.getString("infoLetter.model")%> :</td>
-				<td align=left><a href="javaScript:openTemplate();"><%=Encode.javaStringToHtmlString(resource.getString("infoLetter.modelLink"))%></a></td>
+				<td align=left><a href="javaScript:openTemplate();"><%=EncodeHelper.javaStringToHtmlString(resource.getString("infoLetter.modelLink"))%></a></td>
 			</tr>
 		<% } %>			
 	</table>
-</CENTER>
-<%
-	out.println(board.printAfter());
-	out.println("<br>");
-}
-%>
+</center>
+</view:board>
+<br/>
+<% } %>
+<view:areaOfOperationOfCreation/>
 <form name="deletePublications" action="DeletePublications" method="post">
 <%
 // Recuperation de la liste des parutions
-Vector publications = (Vector) request.getAttribute("listParutions");
+List<InfoLetterPublication> publications = (List<InfoLetterPublication>) request.getAttribute("listParutions");
 int i=0;
 
 				ArrayPane arrayPane = gef.getArrayPane("InfoLetter", "Main", request, session);
@@ -165,7 +155,7 @@ int i=0;
 
 if (publications.size()>0) {
 	for (i = 0; i < publications.size(); i++) {
-						InfoLetterPublication pub = (InfoLetterPublication) publications.elementAt(i);
+						InfoLetterPublication pub = (InfoLetterPublication) publications.get(i);
 						ArrayLine arrayLine = arrayPane.addArrayLine();
 						
 						IconPane iconPane1 = gef.getIconPane();
@@ -175,7 +165,7 @@ if (publications.size()>0) {
 						arrayLine.addArrayCellIconPane(iconPane1);	
 						
 						if (pub._isValid()) arrayLine.addArrayCellLink(pub.getTitle(), "javascript:openViewParution('" + pub.getPK().getId() + "');");
-						else arrayLine.addArrayCellLink(Encode.javaStringToHtmlString(pub.getTitle()), "javascript:openEditParution('" + pub.getPK().getId() + "');");
+						else arrayLine.addArrayCellLink(EncodeHelper.javaStringToHtmlString(pub.getTitle()), "javascript:openEditParution('" + pub.getPK().getId() + "');");
 						
 						if (pub._isValid())
 						{
@@ -195,29 +185,22 @@ if (publications.size()>0) {
 						
 						arrayLine.addArrayCellIconPane(iconPane2);					
 						
-						arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"publis\" value=\"" + pub.getPK().getId() + "\">");
+						arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"publis\" value=\"" + pub.getPK().getId() + "\"/>");
 	}
 }
-				
-				
-		out.println(arrayPane.print());
-		
+	out.println(arrayPane.print());		
 %>
 </form>
 <form name="editParution" action="ParutionHeaders" method="post">
-	<input type="hidden" name="parution" value="">
+	<input type="hidden" name="parution" value=""/>
 </form>
 
 <form name="viewParution" action="View" method="post">
-	<input type="hidden" name="parution" value="">
+	<input type="hidden" name="parution" value=""/>
 </form>
-<% // Ici se termine le code de la page %>
-
-
+</view:frame>
 <%
-out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
-
+</body>
+</html>

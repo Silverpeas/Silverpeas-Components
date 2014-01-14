@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -40,7 +40,7 @@ import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.gallery.model.PhotoPK;
 import com.silverpeas.gallery.model.PhotoWithStatus;
 import com.silverpeas.gallery.socialNetwork.SocialInformationGallery;
-import com.silverpeas.socialNetwork.model.SocialInformation;
+import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
@@ -237,7 +237,7 @@ public class PhotoDAO {
     PreparedStatement prepStmt = null;
     try {
       int newId = DBUtil.getNextId("SC_Gallery_Photo", "photoId");
-      id = new Integer(newId).toString();
+      id = Integer.toString(newId);
       // création de la requete
       String query =
           "insert into SC_Gallery_Photo (photoId,title,description,sizeH,sizeL,creationDate,updateDate,vueDate"
@@ -262,12 +262,12 @@ public class PhotoDAO {
     PreparedStatement prepStmt = null;
     try {
       int newId = DBUtil.getNextId("SC_Gallery_Path", "photoId");
-      id = new Integer(newId).toString();
+      id = Integer.toString(newId);
       // création de la requete
       String query = "insert into SC_Gallery_Path (photoId, nodeId, instanceId) values (?,?,?)";
       // initialisation des paramètres
       prepStmt = con.prepareStatement(query);
-      prepStmt.setInt(1, new Integer(photo.getId()).intValue());
+      prepStmt.setInt(1, Integer.parseInt(photo.getId()));
       prepStmt.setInt(2, Integer.parseInt(albumId));
       prepStmt.setString(3, photo.getInstanceId());
       prepStmt.executeUpdate();
@@ -435,7 +435,6 @@ public class PhotoDAO {
       prepStmt.setString(3, instanceId);
       prepStmt.executeUpdate();
     } finally {
-      // fermeture
       DBUtil.close(prepStmt);
     }
   }
@@ -512,10 +511,10 @@ public class PhotoDAO {
     } catch (Exception e) {
       throw new SQLException(e.getMessage());
     }
-    if (beginDate.equals(nullBeginDate)) {
+    if (nullBeginDate.equals(beginDate)) {
       beginDate = null;
     }
-    if (endDate.equals(nullEndDate)) {
+    if (nullEndDate.equals(endDate)) {
       endDate = null;
     }
     try {
@@ -534,7 +533,7 @@ public class PhotoDAO {
 
   private static void initParam(PreparedStatement prepStmt, int photoId,
       PhotoDetail photo) throws SQLException {
-    prepStmt.setInt(1, new Integer(photoId).intValue());
+    prepStmt.setInt(1, photoId);
     prepStmt.setString(2, photo.getTitle());
     prepStmt.setString(3, photo.getDescription());
     prepStmt.setInt(4, photo.getSizeH());
@@ -547,12 +546,12 @@ public class PhotoDAO {
     }
     prepStmt.setString(8, photo.getVueDate());
     prepStmt.setString(9, photo.getAuthor());
-    if (photo.isDownload() == true) {
+    if (photo.isDownload()) {
       prepStmt.setInt(10, 1);
     } else {
       prepStmt.setInt(10, 0);
     }
-    if (photo.isAlbumLabel() == true) {
+    if (photo.isAlbumLabel()) {
       prepStmt.setInt(11, 1);
     } else {
       prepStmt.setInt(11, 0);
@@ -598,7 +597,7 @@ public class PhotoDAO {
    * @throws ParseException
    **/
   public static List<String> getAllPhotosIDbyUserid(Connection con, String userId) throws
-      SQLException, ParseException {
+      SQLException {
     List<String> listPhoto = new ArrayList<String>();
     String query =
         "(SELECT creationdate AS dateinformation, photoId,'new'as type FROM SC_Gallery_Photo  WHERE creatorid = ?) "
@@ -635,7 +634,7 @@ public class PhotoDAO {
    * @throws ParseException
    */
   public static List<SocialInformation> getAllPhotosIDbyUserid(Connection con,
-      String userId, Date begin, Date end) throws SQLException, ParseException {
+      String userId, Date begin, Date end) throws SQLException {
     List<SocialInformation> listPhoto = new ArrayList<SocialInformation>();
     String query =
         "(SELECT creationdate AS dateinformation, photoId, 'new' as type FROM SC_Gallery_Photo WHERE creatorid = ? and creationdate >= ? and creationdate <= ? ) "
@@ -654,7 +653,7 @@ public class PhotoDAO {
       rs = prepStmt.executeQuery();
       while (rs.next()) {
         PhotoDetail pd = getPhoto(con, rs.getInt(2));
-        PhotoWithStatus withStatus = new PhotoWithStatus(pd, rs.getBoolean(3));
+        PhotoWithStatus withStatus = new PhotoWithStatus(pd, "update".equalsIgnoreCase(rs.getString(3)));
         listPhoto.add(new SocialInformationGallery(withStatus));
       }
     } finally {
@@ -676,7 +675,7 @@ public class PhotoDAO {
    * @throws ParseException
    */
   public static List<SocialInformation> getSocialInformationsListOfMyContacts(Connection con,
-      List<String> listOfuserId, List<String> availableComponent, Date begin, Date end) throws SQLException, ParseException {
+      List<String> listOfuserId, List<String> availableComponent, Date begin, Date end) throws SQLException {
     List<SocialInformation> listPhoto = new ArrayList<SocialInformation>();
     String query =
         "(SELECT creationdate AS dateinformation, photoId, 'new' as type FROM sc_gallery_photo"
@@ -698,7 +697,7 @@ public class PhotoDAO {
       rs = prepStmt.executeQuery();
       while (rs.next()) {
         PhotoDetail pd = getPhoto(con, rs.getInt(2));
-        PhotoWithStatus withStatus = new PhotoWithStatus(pd, rs.getBoolean(3));
+        PhotoWithStatus withStatus = new PhotoWithStatus(pd, "update".equalsIgnoreCase(rs.getString(3)));
         listPhoto.add(new SocialInformationGallery(withStatus));
       }
     } finally {

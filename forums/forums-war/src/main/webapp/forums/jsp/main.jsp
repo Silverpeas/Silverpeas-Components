@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -41,22 +41,19 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
-<%@ page import="java.io.IOException"%>
 <%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="com.stratelia.webactiv.forums.control.ForumsSessionController"%>
+<%@ page import="com.stratelia.webactiv.forums.control.helpers.ForumActionHelper"%>
+<%@ page import="com.stratelia.webactiv.forums.control.helpers.ForumHelper"%>
+<%@ page import="com.stratelia.webactiv.forums.control.helpers.ForumListHelper"%>
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
-<%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail"%>
-<%@ page import="com.stratelia.webactiv.forums.sessionController.helpers.*"%>
-<%@ page import="com.stratelia.webactiv.forums.sessionController.ForumsSessionController"%>
+<%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail" %>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%
 ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
         "forumsSessionClientController");
     ResourcesWrapper resources = (ResourcesWrapper)request.getAttribute("resources");
-
-    ResourceLocator resource = new ResourceLocator(
-        "com.stratelia.webactiv.forums.multilang.forumsBundle", fsc.getLanguage());
-
     if (fsc == null)
     {
         // No forums session controller in the request -> security exception
@@ -66,6 +63,10 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
             .forward(request, response);
         return;
     }
+
+    ResourceLocator resource = new ResourceLocator(
+      "com.stratelia.webactiv.forums.multilang.forumsBundle", fsc.getLanguage());
+
     String userId = fsc.getUserId();
     boolean isAdmin = fsc.isAdmin();
     boolean isUser = fsc.isUser();
@@ -77,16 +78,28 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
     fsc.resetDisplayAllMessages();
 
     ForumActionHelper.actionManagement(request, isAdmin, isModerator, userId, resource, out, fsc);
+    boolean isForumSubscriberByInheritance =
+      (Boolean) request.getAttribute("isForumSubscriberByInheritance");
 %>
 <fmt:message key="confirmDeleteForum" var="removeForum" />
 <fmt:message key="confirmDeleteCategory" var="removeCategory" />
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <title>_________________/ Silverpeas - Corporate portal organizer \_________________/</title>
+  	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <view:looknfeel />
     <script type="text/javascript" src="<c:url value='/forums/jsp/javaScript/forums.js' />"></script>
     <script type="text/javascript" src="<c:url value='/util/javaScript/animation.js' />"></script>
     <script type="text/javascript">
+
+      function subscribe() {
+        window.location.href = "main.jsp?action=20";
+      }
+
+      function unsubscribe() {
+        window.location.href = "main.jsp?action=19";
+      }
+
       function confirmDeleteForum(forumId)
       {
         if (confirm("<view:encodeJs string="${removeForum}"/>"))
@@ -115,9 +128,11 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
   </head>
 
   <body id="forum" <%ForumHelper.addBodyOnload(out, fsc);%>>
-    <view:browseBar />
-    <c:if test="${isAdmin || isUser}">
+  <c:set var="isSubscriber" value="${sessionController.componentSubscriber}" />
+  <view:browseBar />
+    <c:if test="${isAdmin or isUser or !sessionController.external}">
       <view:operationPane>
+      <c:if test="${isAdmin or isUser}">
         <c:if test="${isAdmin && sessionController.pdcUsed}">
           <fmt:message key="PDCUtilization" var="pdcUtilisation" />
           <c:set var="pdcUtilisationOperation">javascript:onClick=openSPWindow('<c:url value="/RpdcUtilization/jsp/Main" >
@@ -137,36 +152,50 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
             <c:param name="forumId" value="0"/>
             <c:param name="params" value="0"/>
           </c:url>
-          <c:url var="addForumIconUrl" value="/util/icons/forums_to_add.gif" />
-          <view:operation altText="${addForumAltText}" icon="${addForumIconUrl}" action="${addForumOperation}" />
+          <c:url var="addForumIconUrl" value="/util/icons/create-action/add-forum.png" />
+          <view:operationOfCreation altText="${addForumAltText}" icon="${addForumIconUrl}" action="${addForumOperation}" />
           <fmt:message key="forums.addCategory" var="addCategoryAltText" />
           <c:set var="addCategoryOperation">javascript:notifyPopup2('<c:out value="${pageContext.request.contextPath}"/>','<c:out value="${sessionController.componentId}" />','<c:out value="${sessionController.adminIds}" />', '');</c:set>
-          <c:url var="addCategoryIconUrl" value="/util/icons/folderAddBig.gif" />
-          <view:operation altText="${addCategoryAltText}" icon="${addCategoryIconUrl}" action="NewCategory" />
+          <c:url var="addCategoryIconUrl" value="/util/icons/create-action/add-folder.png" />
+          <view:operationOfCreation altText="${addCategoryAltText}" icon="${addCategoryIconUrl}" action="NewCategory" />
         </c:if>
+      </c:if>
+      <view:operationSeparator/>
+      <c:choose>
+        <c:when test="${isSubscriber}">
+          <fmt:message key="forums.unsubscribe" var="unsubscribeAltText" />
+          <view:operation altText="${unsubscribeAltText}" icon="" action="javascript:unsubscribe();" />
+        </c:when>
+        <c:otherwise>
+          <fmt:message key="forums.subscribe" var="subscribeAltText" />
+          <view:operation altText="${subscribeAltText}" icon="" action="javascript:subscribe();" />
+        </c:otherwise>
+      </c:choose>
       </view:operationPane>
     </c:if>
     <view:window>
       <view:frame>
+      	  <view:areaOfOperationOfCreation/>
           <table width="100%" border="0" align="center" cellpadding="4" cellspacing="1" class="testTableau">
             <tr>
-              <th class="ArrayColumn" colspan="2" nowrap="nowrap"><fmt:message key="theme" /></td>
+              <td class="ArrayColumn" colspan="2" nowrap="nowrap"><fmt:message key="theme" /></td>
               <td class="ArrayColumn" nowrap="nowrap"><fmt:message key="forums.nbSubjects" /></td>
               <td class="ArrayColumn" nowrap="nowrap"><fmt:message key="forums.nbMessages" /></td>
               <td class="ArrayColumn" nowrap="nowrap"><fmt:message key="forums.lastMessage" /></td>
               <td class="ArrayColumn" nowrap="nowrap"><fmt:message key="forums.notation" /></td>
+              <td class="ArrayColumn" nowrap="nowrap" align="center"><fmt:message key="subscribeMessage" /></td>
               <c:if test="${isAdmin}">
                 <td class="ArrayColumn" nowrap="nowrap"><fmt:message key="operations" /></td>
               </c:if>
             </tr>
             <c:forEach var="category" items="${sessionController.allCategories}">
               <%
-                          NodeDetail category = (NodeDetail) pageContext.getAttribute("category");
-                          ForumListHelper.displayForumsList(out, resources, isAdmin, isModerator, isReader, forumId, "main", fsc,
-                              Integer.toString(category.getId()), category.getName(), category.getDescription());
+                NodeDetail category = (NodeDetail) pageContext.getAttribute("category");
+                ForumListHelper.displayForumsList(out, resources, isAdmin, isModerator, isReader, forumId, "main", fsc,
+                    Integer.toString(category.getId()), category.getName(), category.getDescription(), isForumSubscriberByInheritance);
               %>
             </c:forEach>
-            <%ForumListHelper.displayForumsList(out, resources, isAdmin, isModerator, isReader, forumId, "main", fsc, null, "", "");%>
+            <%ForumListHelper.displayForumsList(out, resources, isAdmin, isModerator, isReader, forumId, "main", fsc, null, "", "", isForumSubscriberByInheritance);%>
           </table>
           <c:if test="${sessionController.external || ! isReader}">
             <br />

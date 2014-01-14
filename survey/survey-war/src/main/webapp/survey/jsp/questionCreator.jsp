@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -77,7 +77,7 @@ String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getStrin
 String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
 String px =  m_context + "/util/icons/colorPix/1px.gif";
 
-ResourceLocator surveySettings = new ResourceLocator("com.stratelia.webactiv.survey.surveySettings", surveyScc.getLanguage());
+ResourceLocator surveySettings = new ResourceLocator("org.silverpeas.survey.surveySettings", surveyScc.getLanguage());
 
 String nbMaxAnswers = surveySettings.getString("NbMaxAnswers");
 
@@ -88,7 +88,7 @@ ButtonPane buttonPane = null;
 
 QuestionContainerDetail survey = null;
 
-List items = FileUploadUtil.parseRequest(request);
+List<FileItem> items = FileUploadUtil.parseRequest(request);
 String action = FileUploadUtil.getOldParameter(items, "Action");
 String question = FileUploadUtil.getOldParameter(items, "question");
 String nbAnswers = FileUploadUtil.getOldParameter(items, "nbAnswers");
@@ -107,9 +107,9 @@ long size = 0;
 int nb = 0;
 int attachmentSuffix = 0;
 ArrayList imageList = new ArrayList();
-ArrayList answers = new ArrayList();
+List<Answer> answers = new ArrayList<Answer>();
 Answer answer = null;
-Iterator itemIter = items.iterator();
+Iterator<FileItem> itemIter = items.iterator();
 while (itemIter.hasNext()) {
   FileItem item = (FileItem) itemIter.next();
   if (item.isFormField())
@@ -159,7 +159,8 @@ while (itemIter.hasNext()) {
 }
 
 %>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
 <%out.println(gef.getLookStyleSheet()); %>
@@ -187,7 +188,10 @@ function checkAnswers() {
      var fieldsEmpty = "";
      for (var i=0; i<document.surveyForm.length; i++)
      {
-        inputName = document.surveyForm.elements[i].name.substring(0, 5);
+        var inputName = document.surveyForm.elements[i].name;
+        if (inputName) {
+        	inputName = inputName.substring(0, 5);
+        }
         if (inputName == "answe" ) {
             if (isWhitespace(stripInitialWhitespace(document.surveyForm.elements[i].value))) {
                   answerEmpty = true;
@@ -384,13 +388,13 @@ function showQuestionOptions(value)
 </head>
 <%
 if (action.equals("FirstQuestion")) {
-      surveyScc.setSessionQuestions(new ArrayList());
+      surveyScc.setSessionQuestions(new ArrayList<Question>());
       action = "CreateQuestion";
 }
 if (action.equals("SendNewQuestion")) {
       Question questionObject = new Question(null, null, question, "", "", null, style, 0);
       questionObject.setAnswers(answers);
-      List questionsV = surveyScc.getSessionQuestions();
+      List<Question> questionsV = surveyScc.getSessionQuestions();
       questionsV.add(questionObject);
       action = "CreateQuestion";
 } //End if action = ViewResult
@@ -398,13 +402,13 @@ else if (action.equals("End")) {
       out.println("<body>");
       QuestionContainerDetail surveyDetail = surveyScc.getSessionSurveyUnderConstruction();
       //Vector 2 Collection
-      List questionsV = surveyScc.getSessionQuestions();
+      List<Question> questionsV = surveyScc.getSessionQuestions();
       surveyDetail.setQuestions(questionsV);
       out.println("</body></html>");
 }
 if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
       out.println("<body>");
-      List questionsV = surveyScc.getSessionQuestions();
+      List<Question> questionsV = surveyScc.getSessionQuestions();
       int questionNb = questionsV.size() + 1;
       cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "Main.jsp", false);
       buttonPane = gef.getButtonPane();
@@ -501,8 +505,8 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
 	                        out.println("<tr><td></td><td><span id=\"imageGallery"+i+"\"></span>");
 	                        out.println("<input type=\"hidden\" id=\"valueImageGallery"+i+"\" name=\"valueImageGallery"+i+"\" >");
 
-	                        List galleries = surveyScc.getGalleries();
-	                        if (galleries != null)
+	                        List<ComponentInstLight> galleries = surveyScc.getGalleries();
+	                        if (galleries.size() > 0)
 	    					{
 	    						out.println(" <select id=\"galleries\" name=\"galleries\" onchange=\"choixGallery(this, '"+i+"');this.selectedIndex=0;\"> ");
 	    						out.println(" <option selected>"+resources.getString("survey.galleries")+"</option> ");
@@ -579,7 +583,8 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
  } //End if action = ViewQuestion
 if (action.equals("End")) {
 %>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <script language="Javascript">
     function goToSurveyPreview() {

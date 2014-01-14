@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,70 +26,52 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="check.jsp" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<html>
-<HEAD>
-<%
-out.println(gef.getLookStyleSheet());
-%>
-<TITLE></TITLE>
-</HEAD>
-
-<BODY>
-<form name="exportForm" action="ExportEmailsCsv" METHOD=POST>
-</form>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title></title>
+<view:looknfeel/>
+</head>
+<body>
 <%
 	String statusMessage = "";
-	boolean exportOk = false;
 	String emailCsvFileName = "";
 	String urlEmailCsv = "";
 	
-	if (StringUtil.isDefined((String) request.getAttribute("ExportOk")))
-	{
-		exportOk = new Boolean((String) request.getAttribute("ExportOk")).booleanValue();
-		if (exportOk)
-		{
+		boolean exportOk = new Boolean((String) request.getAttribute("ExportOk")).booleanValue();
+		if (exportOk) {
 			 statusMessage = resource.getString("GML.ExportSucceeded");
 			 emailCsvFileName = (String) request.getAttribute("EmailCsvName");
 			 urlEmailCsv = FileServerUtils.getUrlToTempDir(emailCsvFileName);
-		 }
-		else
+		} else {
 			 statusMessage = resource.getString("GML.ExportFailed");
-	}
-	else
-	{ %>
-		<script language="javascript">
-			$.progressMessage();
-			document.exportForm.submit();
-		</script>
-	<%	}
-%>
+		}
 	  
-<%
 	out.println(window.printBefore());
-  out.println(frame.printBefore());
-  out.println(board.printBefore());
 %>
-<CENTER>
+<view:frame>
+<view:board>
+
 <% if (exportOk) { %>
 	<table width="100%" cellpadding="2" cellspacing="2" border="0">
 		<tr>
-			<td align="center"><span class="txtlibform"><%=statusMessage%></span></td>
+			<td class="txtlibform"><%=statusMessage%></td>
 	    </tr>
 	    <tr>
-	    	<td align="center"><a href="<%=urlEmailCsv%>"><%=emailCsvFileName%></a>
+	    	<td><a href="<%=urlEmailCsv%>"><%=emailCsvFileName%></a></td>
 	    </tr>
-	 </table>
-	<% } %>
+	</table>
+<% } %>
+</view:board>
+<center>
 <%
-	out.println(board.printAfter());
 	Button button = gef.getFormButton(resource.getString("GML.close"), "javascript:window.close()", false);
-	out.print("<br/><center>"+button.print()+"</center>");
+	out.print(button.print());
 %>
-</CENTER>
+</center>
+</view:frame>
 <%
-	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
-<view:progressMessage/>
-</BODY>
-</HTML>
+</body>
+</html>

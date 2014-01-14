@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -92,7 +92,7 @@ public class AlmanachPdfGenerator {
         String sHeader = almanach.getString("events");
         if (mode.equals(PDF_MONTH_ALLDAYS) || mode.equals(PDF_MONTH_EVENTSONLY)) {
           sHeader +=
-              " " + almanach.getGeneralString("GML.mois" + currentDay.get(Calendar.MONTH));
+              " " + almanach.getString("GML.mois" + currentDay.get(Calendar.MONTH));
         }
         sHeader += " " + currentDay.get(Calendar.YEAR);
         HeaderFooter header = new HeaderFooter(new Phrase(sHeader), false);
@@ -109,7 +109,7 @@ public class AlmanachPdfGenerator {
             255, 255, 255));
         Paragraph cTitle = new Paragraph(almanach.getString("Almanach")
             + " "
-            + almanach.getGeneralString("GML.mois"
+            + almanach.getString("GML.mois"
                 + currentDay.get(Calendar.MONTH)) + " "
             + currentDay.get(Calendar.YEAR), titleFont);
         Chapter chapter = new Chapter(cTitle, 1);
@@ -173,7 +173,7 @@ public class AlmanachPdfGenerator {
 
   private static void generateAlmanach(Chapter chapter,
       AlmanachSessionController almanach, List<DisplayableEventOccurrence> occurrences,
-      String mode) throws AlmanachException {
+      String mode) {
 
     boolean monthScope =
         AlmanachPdfGenerator.PDF_MONTH_EVENTSONLY.equals(mode) ||
@@ -269,12 +269,12 @@ public class AlmanachPdfGenerator {
       AlmanachSessionController almanach) {
     Font dateFont = new Font(Font.HELVETICA, 14, Font.NORMAL, new Color(0, 0,
         255));
-    Paragraph dateSection = new Paragraph(almanach.getGeneralString("jour"
+    Paragraph dateSection = new Paragraph(almanach.getString("GML.jour"
         + calendar.get(Calendar.DAY_OF_WEEK))
         + " "
         + calendar.get(Calendar.DAY_OF_MONTH)
         + " "
-        + almanach.getGeneralString("GML.mois" + calendar.get(Calendar.MONTH))
+        + almanach.getString("GML.mois" + calendar.get(Calendar.MONTH))
         + " "
         + calendar.get(Calendar.YEAR), dateFont);
     return dateSection;

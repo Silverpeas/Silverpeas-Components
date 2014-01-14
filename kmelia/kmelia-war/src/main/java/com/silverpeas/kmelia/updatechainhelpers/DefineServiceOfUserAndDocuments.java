@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,14 +24,6 @@
 
 package com.silverpeas.kmelia.updatechainhelpers;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.StringTokenizer;
-
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.ClassifyValue;
 import com.stratelia.silverpeas.pdc.model.PdcException;
@@ -43,6 +35,13 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 
 public class DefineServiceOfUserAndDocuments extends UpdateChainHelperImpl {
 
@@ -63,12 +62,12 @@ public class DefineServiceOfUserAndDocuments extends UpdateChainHelperImpl {
     // associer le service au node
     String[] topics = new String[1];
     List<NodeDetail> allTopics = uchc.getAllTopics();
-    Iterator<NodeDetail> it = allTopics.iterator();
-    while (it.hasNext()) {
-      NodeDetail node = it.next();
+    for (NodeDetail node : allTopics) {
       if (node.getName().toUpperCase().equals(service.toUpperCase()))
-        // enregistrer
+      // enregistrer
+      {
         topics[0] = node.getId() + "," + node.getNodePK().getInstanceId();
+      }
     }
     uchc.setTopics(topics);
 
@@ -86,8 +85,7 @@ public class DefineServiceOfUserAndDocuments extends UpdateChainHelperImpl {
     int silverObjectId = kmeliaScc.getSilverObjectId(pubDetail.getId());
     try {
       List<Value> axisValues = kmeliaScc.getPdcBm().getAxisValuesByName(positionLabel);
-      for (int i = 0; i < axisValues.size(); i++) {
-        Value axisValue = axisValues.get(i);
+      for (Value axisValue : axisValues) {
         String selectedPosition = axisValue.getTreeId() + "|" + axisValue.getFullPath();
         ClassifyPosition position = buildPosition(null, selectedPosition);
         kmeliaScc.getPdcBm().addPosition(silverObjectId, position, kmeliaScc.getComponentId(),
@@ -156,20 +154,20 @@ public class DefineServiceOfUserAndDocuments extends UpdateChainHelperImpl {
     String valuePath = "";
     ClassifyValue value = null;
     List<ClassifyValue> values = new ArrayList<ClassifyValue>();
-    for (; st.hasMoreTokens();) {
+    for (; st.hasMoreTokens(); ) {
       valueInfo = st.nextToken();
       if (valueInfo.length() >= 3) {
         axisId = valueInfo.substring(0, valueInfo.indexOf("|"));
-        valuePath = valueInfo.substring(valueInfo.indexOf("|") + 1, valueInfo
-            .length());
-        value = new ClassifyValue(new Integer(axisId).intValue(), valuePath);
+        valuePath = valueInfo.substring(valueInfo.indexOf("|") + 1, valueInfo.length());
+        value = new ClassifyValue(Integer.parseInt(axisId), valuePath);
         values.add(value);
       }
     }
 
     int id = -1;
-    if (positionId != null)
-      id = new Integer(positionId).intValue();
+    if (positionId != null) {
+      id = Integer.parseInt(positionId);
+    }
     ClassifyPosition position = new ClassifyPosition(values);
     position.setPositionId(id);
     return position;

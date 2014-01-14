@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,8 +29,8 @@ import java.io.File;
 import javax.servlet.http.HttpServletRequest;
 
 import com.silverpeas.util.StringUtil;
+
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
@@ -40,7 +40,9 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
-public class QuizzRequestRouter extends ComponentRequestRouter {
+public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionController> {
+
+  private static final long serialVersionUID = -8909826089973730380L;
 
   /**
    * This method has to be implemented in the component request rooter class. returns the session
@@ -52,35 +54,33 @@ public class QuizzRequestRouter extends ComponentRequestRouter {
 
   /**
    * Method declaration
+   *
    * @param mainSessionCtrl
    * @param componentContext
    * @return
    * @see
    */
-  public ComponentSessionController createComponentSessionController(
+  public QuizzSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
-    ComponentSessionController component = (ComponentSessionController) new QuizzSessionController(
-        mainSessionCtrl, componentContext);
-
-    return component;
+    return new QuizzSessionController(mainSessionCtrl, componentContext);
   }
 
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
+   *
    * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialised.
-   * @param request The entering request. The request rooter need it to get parameters
+   * @param quizzSC  The component Session Control, build and initialised.
+   * @param request  The entering request. The request rooter need it to get parameters
    * @return The complete destination URL for a forward (ex : "/quizz/jsp/quizz.jsp?flag=user")
    */
-  public String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request) {
-    SilverTrace.info("Quizz", "QuizzRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", function);
-    QuizzSessionController quizzSC = (QuizzSessionController) componentSC;
+  public String getDestination(String function, QuizzSessionController quizzSC,
+      HttpServletRequest request) {
+    SilverTrace
+        .info("Quizz", "QuizzRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE", function);
     String destination = "";
 
-    String flag = componentSC.getUserRoleLevel();
+    String flag = quizzSC.getUserRoleLevel();
     request.setAttribute("Profile", flag);
 
     try {
@@ -93,12 +93,16 @@ public class QuizzRequestRouter extends ComponentRequestRouter {
           destination = "quizzUser.jsp";
         }
       } else if (function.startsWith("portlet")) {
-        if ("publisher".equals(flag) || "admin".equals(flag))
+        if ("publisher".equals(flag) || "admin".equals(flag)) {
           destination = "quizzPortlet.jsp";
-        else
+        } else {
           destination = "quizzUserPortlet.jsp";
+        }
       } else if (function.startsWith("quizzCreator")) {
         if ("publisher".equals(flag) || "admin".equals(flag)) {
+          
+          quizzSC.createTemporaryQuizz(request);
+          
           destination = "quizzCreator.jsp";
         } else {
           profileError = true;
@@ -123,7 +127,7 @@ public class QuizzRequestRouter extends ComponentRequestRouter {
           SilverTrace.warn("Quizz", "QuizzRequestRouter.getDestination()", "root.EX_COPY_FAILED",
               "function = " + function, e);
         }
-        destination = URLManager.getURL(URLManager.CMP_CLIPBOARD)
+        destination = URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null)
             + "Idle.jsp?message=REFRESHCLIPBOARD";
       } else if (function.startsWith("paste")) {
         try {
@@ -132,7 +136,7 @@ public class QuizzRequestRouter extends ComponentRequestRouter {
           SilverTrace.warn("Quizz", "QuizzRequestRouter.getDestination()", "root.EX_CUT_FAILED",
               "function = " + function, e);
         }
-        destination = URLManager.getURL(URLManager.CMP_CLIPBOARD) + "Idle.jsp";
+        destination = URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null) + "Idle.jsp";
       } else if (function.startsWith("searchResult")) {
         String id = request.getParameter("Id");
 
@@ -142,20 +146,19 @@ public class QuizzRequestRouter extends ComponentRequestRouter {
         if ("publisher".equals(flag) || "admin".equals(flag)) {
           destination = "quizzQuestionsNew.jsp?Action=ViewQuizz&QuizzId=" + id;
         } else {
-          if (quizzSC.isParticipationAllowed(id))
+          if (quizzSC.isParticipationAllowed(id)) {
             destination = "quizzQuestionsNew.jsp?Action=ViewCurrentQuestions&QuizzId="
                 + id;
-          else
+          } else {
             destination = "quizzResultUser.jsp";
+          }
         }
       } else {
         destination = function;
       }
 
       if (profileError) {
-        String sessionTimeout = GeneralPropertiesManager
-            .getGeneralResourceLocator().getString("sessionTimeout");
-
+        String sessionTimeout = GeneralPropertiesManager.getString("sessionTimeout");
         destination = sessionTimeout;
       } else {
         destination = "/quizz/jsp/" + destination;
@@ -167,4 +170,5 @@ public class QuizzRequestRouter extends ComponentRequestRouter {
 
     return destination;
   }
+
 }

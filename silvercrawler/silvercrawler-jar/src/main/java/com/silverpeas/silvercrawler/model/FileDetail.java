@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,34 +24,34 @@
 package com.silverpeas.silvercrawler.model;
 
 import com.silverpeas.silvercrawler.util.FileServerUtils;
-import com.silverpeas.util.FileUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 
-public class FileDetail extends Object implements java.io.Serializable {
+public class FileDetail implements java.io.Serializable {
+
+  private static final long serialVersionUID = 4697608390797941792L;
   private String name;
   private String path;
+  private String fullPath;
   private long size;
   private boolean isDirectory;
   private boolean isIndexed;
 
-  public FileDetail(String name, String path, long size, boolean isDirectory) {
+  public FileDetail(String name, String path, String fullPath, long size, boolean isDirectory) {
     this.name = name;
     this.path = path;
+    this.fullPath = fullPath;
     this.size = size;
     this.isDirectory = isDirectory;
   }
 
-  public FileDetail(String name, String path, long size, boolean isDirectory,
+  public FileDetail(String name, String path, String fullPath, long size, boolean isDirectory,
       boolean isIndexed) {
     this.name = name;
     this.path = path;
+    this.fullPath = fullPath;
     this.size = size;
     this.isDirectory = isDirectory;
     this.isIndexed = isIndexed;
-  }
-
-  public String getFileDownloadEstimation() {
-    return FileRepositoryManager.getFileDownloadTime(size);
   }
 
   public String getFileSize() {
@@ -59,22 +59,12 @@ public class FileDetail extends Object implements java.io.Serializable {
   }
 
   public String getFileIcon() {
-    String icon = "";
-    int pointIndex = name.lastIndexOf(".");
-    int theLength = name.length();
-
-    if ((pointIndex >= 0) && ((pointIndex + 1) < theLength)) {
-      String fileType = name.substring(pointIndex + 1, theLength);
-      icon = FileRepositoryManager.getFileIcon(true, fileType);
-    } else {
-      icon = FileRepositoryManager.getFileIcon("html");
-    }
-    return icon;
+    String fileType = FileRepositoryManager.getFileExtension(name);
+    return FileRepositoryManager.getFileIcon(fileType);
   }
 
-  public String getFileURL(String userId, String componentId) {
-    return FileServerUtils.getUrl(name, path, getMimeType(), userId,
-        componentId);
+  public String getFileURL(String componentId) {
+    return FileServerUtils.getSilverCrawlerUrl(name, path, componentId);
   }
 
   public boolean isIsDirectory() {
@@ -83,10 +73,6 @@ public class FileDetail extends Object implements java.io.Serializable {
 
   public String getName() {
     return name;
-  }
-
-  public String getMimeType() {
-    return FileUtil.getMimeType(name);
   }
 
   public String getPath() {
@@ -100,5 +86,11 @@ public class FileDetail extends Object implements java.io.Serializable {
   public boolean isIsIndexed() {
     return isIndexed;
   }
-
+  
+  public String getDirectURL() {
+	  if (fullPath.startsWith("/")) {
+		  return "file://"+fullPath;
+	  }
+	  return "file:///"+fullPath;
+  }
 }

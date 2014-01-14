@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>components</artifactId>
-    <version>5.7-SNAPSHOT</version>
+    <version>5.14-SNAPSHOT</version>
   </parent>
   
   <groupId>com.silverpeas.components</groupId>
@@ -12,7 +12,7 @@
   <packaging>pom</packaging>
   <name>blog Component</name>
   <modules>
-    <module>blog-ejb</module>
+    <module>blog-jar</module>
     <module>blog-war</module>
     <module>blog-config</module>
   </modules>

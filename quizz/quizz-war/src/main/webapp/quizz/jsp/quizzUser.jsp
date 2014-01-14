@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -65,14 +65,14 @@ String iconsPath = GeneralPropertiesManager.getGeneralResourceLocator().getStrin
 String linkIcon = iconsPath + "/util/icons/link.gif";
 %>
 
-<HTML>
-<HEAD>
-<TITLE>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</TITLE>
+<html>
+<head>
+<title>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
 </head>
-<body bgcolor=#FFFFFF leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+<body bgcolor="#FFFFFF" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
   <%
   session.removeAttribute("currentQuizz");
   session.removeAttribute("questionsResponses");
@@ -113,15 +113,16 @@ out.println(gef.getLookStyleSheet());
   arrayPane.addArrayColumn(resources.getString("QuizzCredits"));
   arrayPane.addArrayColumn(resources.getString("QuizzCreationDate"));
 
-  Collection quizzList = quizzScc.getUserQuizzList();
-  Iterator i = quizzList.iterator();
+  Collection<QuestionContainerHeader> quizzList = quizzScc.getUserQuizzList();
+  Iterator<QuestionContainerHeader> i = quizzList.iterator();
   while (i.hasNext()) {
     QuestionContainerHeader quizzHeader = (QuestionContainerHeader) i.next();
     int nb_max_participations = quizzHeader.getNbMaxParticipations();
-    Collection scoreDetails = quizzHeader.getScores(); 
+    Collection<ScoreDetail> scoreDetails = quizzHeader.getScores(); 
     int nb_user_votes = 0;
-    if (scoreDetails != null)
+    if (scoreDetails != null) {
       nb_user_votes = scoreDetails.size();
+    }
     ArrayLine arrayLine = arrayPane.addArrayLine();
     arrayLine.addArrayCellLink("<img src=\"icons/palmares_30x15.gif\" border=0>","palmares.jsp?quizz_id="+quizzHeader.getPK().getId());
     //  gestion des permaliens sur les quizz
@@ -129,13 +130,13 @@ out.println(gef.getLookStyleSheet());
     String link = "&nbsp;<a href=\""+permalink+"\"><img src=\""+linkIcon+"\" border=\"0\" align=\"bottom\" alt=\""+resources.getString("quizz.CopyQuizzLink")+"\" title=\""+resources.getString("quizz.CopyQuizzLink")+"\"></a>";
 
     ArrayCellText arrayCellText2 = null;
-    if (nb_user_votes >= nb_max_participations)
+    if (nb_user_votes >= nb_max_participations) {
       arrayCellText2 = arrayLine.addArrayCellText(quizzHeader.getTitle() + link);
-    else
+    } else {
       arrayCellText2 = arrayLine.addArrayCellText("<A HREF=quizzQuestionsNew.jsp?QuizzId="+quizzHeader.getPK().getId()+"&ParticipationId="+nb_user_votes+"&Action=ViewCurrentQuestions>"+quizzHeader.getTitle()+"</A>" + link);
-
+    }
     arrayCellText2.setCompareOn(quizzHeader.getTitle().toLowerCase());
-    arrayLine.addArrayCellText(Encode.javaStringToHtmlParagraphe(quizzHeader.getDescription()));
+    arrayLine.addArrayCellText(EncodeHelper.javaStringToHtmlParagraphe(quizzHeader.getDescription()));
     arrayLine.addArrayCellText(displayCredits(nb_max_participations, nb_user_votes));
     
     Date creationDate = DateUtil.parse(quizzHeader.getCreationDate());
@@ -154,5 +155,5 @@ out.println(gef.getLookStyleSheet());
   out.println(frame.printAfter());
   out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>

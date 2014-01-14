@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.silverpeas.components</groupId>
     <artifactId>organizationchart</artifactId>
-    <version>5.7-SNAPSHOT</version>
+    <version>5.14-SNAPSHOT</version>
   </parent>
 
   <groupId>com.silverpeas.components.organizationchart</groupId>
@@ -21,15 +21,19 @@
     </dependency>
     <dependency>
       <groupId>com.silverpeas.core</groupId>
-      <artifactId>web-core</artifactId>
+      <artifactId>lib-core</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.silverpeas.core</groupId>
-      <artifactId>lib-core</artifactId>
+      <artifactId>web-core</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>jstl</artifactId>
     </dependency>
   </dependencies>
 

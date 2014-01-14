@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,6 +27,7 @@
 	height: 500px; 
 	width: 730px;
 }
+
 .firstTd {
 	height: 300px; 
 	width: 250px; 
@@ -36,11 +37,7 @@
 	border-width:1; 
 	border-style:solid
 }
-.secondTd {
-	border-color:grey; 
-	border-width:1; 
-	border-style:solid
-}
+
 .treeDivDisplay {
 	height: 158px; 
 	width: 220px; 
@@ -73,13 +70,17 @@
 	display: none;
 }
 
-#preview .publiName {
-	font-size: 130%;
-	font-weight: bold;
-	color: #333;
+#preview .publiName,
+#preview-clone .publiName {
+	color: #333333;
+    font-size: 130%;
+    font-weight: bold;
+    margin: 0 0 5px;
+    padding: 0;
 }
 
-#preview #status {
+#preview #status,
+#preview-clone #status {
 	vertical-align:bottom;
 }
 
@@ -93,26 +94,18 @@
 	color:#333;
 }
 
-#preview .publiDesc {
+#preview .publiDesc,
+#preview-clone .publiDesc {
 	font-weight: bold;
 	color:#666666;
 	padding:8px;
 	border-left:6px solid #e4e4e4;
 }
 
-#preview .extraInformation_Refused {
-	background: #EF9595;
-	border: 3px solid red;
-	font-weight: bold;
-	padding: 5px;
-	text-align: center;
-	width: 100%;
-}
-
 #preview #pagination {
 	display: block;
-	float: right;
-	margin:5px 0;
+    float: right;
+    margin: 9px 0 1px;
 }
 #preview .currentPage {
 	opacity:0.6;
@@ -120,6 +113,40 @@
 #preview #pagination img {
 	border:0;
 	vertical-align:top;
+}
+
+#preview #backToSearch {    
+	height: 30px;
+	width: 310px;
+	float: right;
+}
+#preview #backToSearch a.button {
+	background-color:#F4F4F4;
+	background-image: url("/silverpeas/util/icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100");
+		-moz-background-size: 100%;
+	border-radius: 5px;
+		 -moz-border-radius: 5px;
+		 -webkit-border-radius: 5px;
+	border: 1px solid #CCCCCC;
+	color: #4C4C4C;
+	font-size: 100%;
+	padding: 7px 10px;
+	position: absolute;
+	right: 101px;
+	width: 187px;
+}
+#preview #backToSearch a.button span{
+	background:transparent url(/silverpeas/util/icons/back.png) 0 0 no-repeat;
+	line-height: 16px;
+	padding: 0px 0px 0px 24px;
+	font-weight:bold;
+	display: block;
+	text-align: center;
+}
+
+#preview #permalinkInfo img,
+#preview-clone #permalinkInfo img {
+	border: 0px;
 }
 
 #sortingList {
@@ -137,27 +164,27 @@
 }
 
 #pubList #pubsHeader {
-	background-color:transparent;
-	background-image:url("/silverpeas/admin/jsp/icons/silverpeasV5/degrade20px.jpg");
-	background-repeat:repeat-x;
+	border-bottom: 1px solid #E9E9E9;
 	font-weight:bold;
 	float: left;
 	width: 100%;
+	line-height: 27px;
+	padding-bottom: 3px;
 }
 
 #pubList #pubsHeader img {
-	float: left;
+	vertical-align: middle;
+	margin-right: 3px;
+	margin-left: 5px;
 }
 
 #pubList #pubsCounter {
-	float:left;
-	margin-top:8px;
 	position:relative;
 }
 
 #pubList #pubsSort {
 	float: right;
-	margin-top: 6px;
+	margin-top: 3px;
 	position: relative;
 }
 
@@ -166,21 +193,52 @@
 	float: left;
 	width: 95%;
 	white-space: normal;
+	padding: 5px 0px 0px 0px;
+	margin: 0px;
 }
 
 #pubList ul li {
-	margin-bottom: 10px;
+	margin: 0px 0px 10px 0px;
+	padding: 3px 0px 0px 0px;
 	float: left;
 	width: 100%;
 }
 
+#pubList ul li.over-publication {
+	background-color: #ECECEC;
+}
+
+#pubList ul li.read .line1 a {
+	color: #006600;
+}
+
 #pubList .firstColumn {
 	float: left;
+	padding-left: 30px;
+    position: relative;
+}
+
+#pubList .thumbnail {
+	float: left;
+}
+
+/*#pubList .unit-operation {
+	display: none;
+}*/
+
+#pubList .selection {
+	left: 3px;
+    position: absolute;
+    top: 0px;
+}
+
+#pubList .selection input {
+	display: none;
 }
 
 #pubList .publication {
 	white-space: normal;
-	/*float: left;*/
+	display: inline;
 }
 
 #pubList .publication .bullet {
@@ -207,10 +265,13 @@
 #pubList .publication .line2, 
 #pubList .publication .line3,
 #pubList .publication .files {
-	margin-left: 15px;
-	width: 95%;
+	padding-left: 32px;
 	white-space: normal;
-	/*float: left;*/
+}
+
+#pubList .publication .files {
+	padding-left: 45px;
+	display:block;
 }
 
 #pubList .publication .line3 {
@@ -295,9 +356,13 @@
 	text-align: center;
 }
 
+#footer img {
+	border: 0px;
+}
+
 #subTopics {
-		width:98%;
-		padding-bottom:5px;
+	width:98%;
+	padding-bottom:5px;
 }
 
 #subTopics ul {
@@ -305,8 +370,6 @@
 	padding:0;
 	margin:5px;
 }
-
-
 
 #subTopics ul li {
 	margin:2px 0 0 0;
@@ -417,11 +480,48 @@
 
 #topicDescription {
 	color:#666;
+	margin: 1em; 
 }
 
 /*** A basculer dans la css global pour utilisation générique */
 .principalContent{
 	margin-right:325px;
+    margin-top: 6px;
+}
+
+.principalContent .inlineMessage,
+.principalContent .inlineMessage-ok,
+.principalContent .inlineMessage-nok {
+    float: none;
+    font-size: 120%;
+    font-weight: bold;
+}
+
+.inlineMessage a.button {
+	background-color:#F4F4F4;
+    background-image: url("/silverpeas/util/icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100");
+  	-moz-background-size: 100%;
+    border-radius: 5px;
+  	-moz-border-radius: 5px;
+  	-webkit-border-radius: 5px;
+    border: 1px solid #CCCCCC;
+    color: #4C4C4C;
+    font-size: 100%;
+    line-height: 52px;
+    margin: 0px 30px;
+    padding: 7px 20px;
+}
+
+a.button.validate span {
+     background: url("/silverpeas/util/icons/ok.gif") no-repeat scroll left center transparent;
+     line-height: 16px;
+     padding: 2px 0px 2px 24px;
+}
+
+a.button.refuse span {
+     background: url("/silverpeas/util/icons/wrong.gif") no-repeat scroll left center transparent;
+     line-height: 16px;
+     padding: 2px 0px 2px 24px;
 }
 
 .rightContent{
@@ -459,8 +559,6 @@
 
 .kmax .sousNavBulle, .kmaxManager .sousNavBull{
 	position:relative;
-	margin:0 2% 0 1%;
-	width:97%;
 }
 
 .kmax .sousNavBulle #btnForm .milieuBoutonV5 a {
@@ -498,6 +596,7 @@
 }
 .oneAxis .action img {
 	width:13px;
+	border: 0px;
 }
 
 .axisManagment .oneAxis{
@@ -554,6 +653,8 @@
 #codificationArea, #pubNameArea, #descriptionArea , #keywordsArea, #authorArea, #draftOutArea, #endArea, #beginArea, #thumb, #validatorArea{
 	width:98%;
 	clear:both;
+	display:block;
+	float:none;
 }
 
 #stateArea img, #languageArea img {
@@ -574,5 +675,187 @@
 
 #header .legend {
 	padding: 15px;
+	clear: both;
+}
+
+.commentaires {
+	border-top: 2px dotted #CECECE;
+	margin-top: 15px;
+	overflow:auto;
+	width:100%;
+	clear:left;
+}
+
+.publicationManager .classification .legende {
+	display: none;
+}
+
+#addOrUpdateNode #deleteTranslation img {
+	vertical-align: text-bottom;
+	border: 0px;
+	margin-left: 3px;
+}
+
+.topic-statistics .container-filter label {
+	display:inline-block;
+	width:150px;
+}
+.topic-statistics .button-filter {
+	margin:20px 0 0 50px;
+}
+.topic-statistics #datePersonnalisedControl {
+	margin:7px 0 0 153px;
+}
+.topic-statistics  .datecontrole , 
+.topic-statistics  .filterLibGroup {
+	margin-bottom:7px;
+}
+
+.topic-statistics  .filterLibGroup a, 
+.topic-statistics  .filterLibGroup a:hover{    
+	background-color:transparent;
+    border: 0px solid #CECECE;
+    padding:0;
+ }
+ .topic-statistics  img {
+	vertical-align:text-bottom;
+ } 
+ 
+ .topic-statistics .inlineMessage {
+	font-size:16px;
+	text-align:left;
+	width:98%;
+	padding:0.5% 1%;
+	margin:10px 0;
+ }
+.table-result-statistics {
+	width:100%;
+	
+}
+.table-result-statistics .even td,
+.table-result-statistics .odd td{
+	background-color:#f9f9f9;
+	border-bottom:1px solid #d4d4d4;
+	padding:10px;
+ }
+.table-result-statistics .odd td{
+	background-color:#eeeeee;
+ }
+.table-result-statistics thead td{
+	background-color:#e4e4e4;
+	border-bottom:1px solid #cccccc;
+	font-weight:bold;
+	padding:10px;
+ }
+.table-result-statistics thead th{
+	font-weight:bold;
+	text-align:left;
+	padding:10px 0;
+	font-size:120%;
+ }
+.table-result-statistics .index-table {
+	width:25px;
+ }
+.table-result-statistics .principal-element-table {
+	font-weight:bold;
+ }
+ 
+/*tree view splitter style*/ 
+#splitter {
+	min-width: 500px;	
+	min-height: 100px;	
+	height: 100%;
+	border: 0;
+}
+
+/*** leftPane ****/
+#splitter #treeDiv1 {
+	overflow:auto;
+	width:250px;
+}
+
+/*** rightPane ****/
+#rightSide {
+	overflow:auto;
+	left:300px;
+}
+
+#footer {
+	text-align: center;
+}
+
+.jstree li.Invisible > a {
+	color: #BBBBBB;
+}
+
+.jstree li.Visible > a {
+	color: #000000;
+}
+
+.vsplitbar {
+	width: 7px;
+	background: #F2F2F2 url(/silverpeas/util/icons/splitter/layout_sprite_vertical.png) 1px center no-repeat;
+}
+
+.basDroiteFrame img, 
+.basMilieuFrame img,
+.basGaucheFrame img {
+	display:none;
+}
+
+#latestPublications p {
+	margin: 0px 0px 10px 0px;
+}
+
+#richContent a {
+	color: blue;
+	text-decoration: underline;
+}
+
+/* Last access */
+#preview #lastReader h4 {
+    background:transparent url("/silverpeas/util/icons/groupe.gif") right top no-repeat  ;
+    height: 16px;
+}
+#preview #lastReaderList {
+	list-style-type:none;
+	padding:17px 10px;
+	margin:0;
+}
+
+#preview #lastReaderList li {
+	width:50%;
+	float:left;
+	position:relative;
+	padding:0;
+	margin:0 0 8px;
+	height:40px;
+	overflow: hidden;
+}
+
+#preview .bgDegradeGris #lastReaderList .profilPhoto {
+	left:0;
+    right:auto;
+    top:0px;
+	background-color:#FFF;
+}
+
+#preview #lastReaderList li span.consultationDate,
+#preview #lastReaderList li span.userToZoom {
+	display:block;
+	padding-left:40px;
+	padding-right: 5px;
+}
+
+#preview #lastReaderList li span.consultationDate {
+	color:#727272;
+}
+
+#preview #readingControlLink {
+	color:#444;
+	display:block;
+	text-align:right;
+	padding: 0px 10px 7px 10px;
+	text-decoration:underline;
 	clear: both;
 }

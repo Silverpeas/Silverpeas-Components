@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,42 +23,31 @@
  */
 package com.silverpeas.blog.servlets;
 
+import com.silverpeas.blog.control.BlogService;
+import com.silverpeas.blog.control.BlogServiceFactory;
 import java.net.URLEncoder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.silverpeas.blog.control.ejb.BlogBm;
-import com.silverpeas.blog.control.ejb.BlogBmHome;
 import com.silverpeas.blog.model.PostDetail;
 import com.silverpeas.peasUtil.GoTo;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
 public class GoToPost extends GoTo {
+
+  private static final long serialVersionUID = 4824194822323955033L;
+
+  @Override
   public String getDestination(String objectId, HttpServletRequest req,
       HttpServletResponse res) throws Exception {
-    PublicationPK pubPK = new PublicationPK(objectId);
-    PostDetail post = getBlogBm().getPost(pubPK);
+    BlogService service = BlogServiceFactory.getFactory().getBlogService();
+    PostDetail post = service.getContentById(objectId);
 
     String gotoURL = URLManager.getURL(null, post.getPublication()
         .getInstanceId())
         + post.getPublication().getURL();
 
     return "goto=" + URLEncoder.encode(gotoURL, "UTF-8");
-  }
-
-  private BlogBm getBlogBm() {
-    BlogBm currentBlogBm = null;
-    try {
-      BlogBmHome blogBmHome = (BlogBmHome) EJBUtilitaire.getEJBObjectRef(
-          JNDINames.BLOGBM_EJBHOME, BlogBmHome.class);
-      currentBlogBm = blogBmHome.create();
-    } catch (Exception e) {
-      displayError(null);
-    }
-    return currentBlogBm;
   }
 }

@@ -1,29 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>com.silverpeas.components</groupId>
-    <artifactId>silvercrawler</artifactId>
-    <version>5.7-SNAPSHOT</version>
-  </parent>
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.silverpeas.components</groupId>
+		<artifactId>silvercrawler</artifactId>
+		<version>5.14-SNAPSHOT</version>
+	</parent>
 
-  <groupId>com.silverpeas.components.silvercrawler</groupId>
-  <artifactId>silvercrawler-war</artifactId>
-  <packaging>war</packaging>
-  <name>silvercrawler Webapp</name>
+	<groupId>com.silverpeas.components.silvercrawler</groupId>
+	<artifactId>silvercrawler-war</artifactId>
+	<packaging>war</packaging>
+	<name>silvercrawler Webapp</name>
 
-  <dependencies>
-    <dependency>
-      <groupId>com.silverpeas.components.silvercrawler</groupId>
-      <artifactId>silvercrawler-jar</artifactId>
-      <version>${project.version}</version>
+	<dependencies>
+		<dependency>
+			<groupId>com.silverpeas.components.silvercrawler</groupId>
+			<artifactId>silvercrawler-jar</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.silverpeas.core</groupId>
+			<artifactId>web-core</artifactId>
+			<version>${core.version}</version>
       <scope>provided</scope>
-    </dependency>
+		</dependency>
     <dependency>
-      <groupId>com.silverpeas.core</groupId>
-      <artifactId>web-core</artifactId>
-      <version>${core.version}</version>
-      <scope>provided</scope>
+      <groupId>javax.servlet</groupId>
+      <artifactId>jstl</artifactId>
     </dependency>
     <dependency>
       <groupId>com.silverpeas.core</groupId>
@@ -31,13 +35,16 @@
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>com.silverpeas.core.ejb-core</groupId>
-      <artifactId>searchengine</artifactId>
-      <version>${core.version}</version>
-      <classifier>client</classifier>
-      <scope>provided</scope>
-    </dependency>
-  </dependencies>
+		<dependency>
+			<groupId>com.silverpeas.core.ejb-core</groupId>
+			<artifactId>searchengine</artifactId>
+			<version>${core.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+		</dependency>
+	</dependencies>
 
 </project>

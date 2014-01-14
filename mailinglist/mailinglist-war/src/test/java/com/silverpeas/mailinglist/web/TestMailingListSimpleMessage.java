@@ -1,36 +1,24 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.mailinglist.web;
-
-import java.sql.SQLException;
-
-import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
-import org.dbunit.operation.DatabaseOperation;
 
 import com.meterware.httpunit.ClientProperties;
 import com.meterware.httpunit.HttpUnitOptions;
@@ -39,11 +27,27 @@ import com.meterware.httpunit.WebForm;
 import com.meterware.httpunit.WebLink;
 import com.meterware.httpunit.WebResponse;
 import com.meterware.httpunit.WebTable;
-import com.silverpeas.mailinglist.AbstractSilverpeasDatasourceSpringContextTests;
+import com.silverpeas.mailinglist.AbstractMailingListTest;
+import org.dbunit.dataset.IDataSet;
+import org.dbunit.dataset.ReplacementDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
+import org.junit.Before;
+import org.junit.Test;
 
-public class TestMailingListSimpleMessage extends
-    AbstractSilverpeasDatasourceSpringContextTests {
+import static org.junit.Assert.*;
 
+public class TestMailingListSimpleMessage extends AbstractMailingListTest {
+
+  @Before
+  public void onSetUp() {
+    HttpUnitOptions.setExceptionsThrownOnErrorStatus(true);
+    HttpUnitOptions.setExceptionsThrownOnScriptError(false);
+    HttpUnitOptions.setScriptingEnabled(true);
+    ClientProperties.getDefaultProperties().setAcceptCookies(true);
+    ClientProperties.getDefaultProperties().setAutoRedirect(true);
+  }
+
+  @Test
   public void testSimpleMessage() throws Exception {
     WebConversation connection = new WebConversation();
     WebResponse loginPage = connection.getResponse(buildUrl("silverpeas/"));
@@ -104,7 +108,7 @@ public class TestMailingListSimpleMessage extends
     assertEquals(
         "/silverpeas/Rmailinglist/mailinglist45/destination/list/message/3",
         tableMessages.getTableCell(1, 0).getLinkWith(
-            "Simple database message 3").getURLString());
+        "Simple database message 3").getURLString());
     WebResponse messageDetailPage = tableMessages.getTableCell(1, 0)
         .getLinkWith("Simple database message 3").click();
     assertNotNull(messageDetailPage);
@@ -117,22 +121,23 @@ public class TestMailingListSimpleMessage extends
         .getTableCell(0, 0).getLinkWith("Liste de diffusion").getURLString());
     assertEquals("/silverpeas/Rmailinglist/mailinglist45/list/mailinglist45",
         browseBar.getTableCell(0, 0).getLinkWith("Liste des Messages")
-            .getURLString());
+        .getURLString());
     WebTable messageTable = messageDetailPage.getTableWithID("message");
     assertNotNull(messageTable);
     assertEquals("Simple database message 3", messageTable.getCellAsText(0, 0));
     assertEquals(
         "Bonjour famille Simpson, j'espère que vous allez bien. "
-            + "Ici tout se passe bien et Krusty est très sympathique. Surtout depuis "
-            + "que Tahiti Bob est retourné en prison. Je dois remplacer l'homme "
-            + "canon dans la prochaine émission.Bart", messageTable
-            .getCellAsText(1, 0));
+        + "Ici tout se passe bien et Krusty est très sympathique. Surtout depuis "
+        + "que Tahiti Bob est retourné en prison. Je dois remplacer l'homme "
+        + "canon dans la prochaine émission.Bart", messageTable
+        .getCellAsText(1, 0));
     assertEquals("bart.simpson@silverpeas.com - 02/03/2008 10:34:15",
         messageTable.getCellAsText(2, 0));
     WebTable attachmentsTable = messageDetailPage.getTableWithID("attachments");
     assertNull(attachmentsTable);
   }
 
+  @Test
   public void testMessageWithAttachment() throws Exception {
     WebConversation connection = new WebConversation();
     WebResponse loginPage = connection.getResponse(buildUrl("silverpeas/"));
@@ -193,7 +198,7 @@ public class TestMailingListSimpleMessage extends
     assertEquals(
         "/silverpeas/Rmailinglist/mailinglist45/destination/list/message/1",
         tableMessages.getTableCell(5, 0).getLinkWith(
-            "Simple database message 1").getURLString());
+        "Simple database message 1").getURLString());
     WebResponse messageDetailPage = tableMessages.getTableCell(5, 0)
         .getLinkWith("Simple database message 1").click();
     assertNotNull(messageDetailPage);
@@ -206,16 +211,16 @@ public class TestMailingListSimpleMessage extends
         .getTableCell(0, 0).getLinkWith("Liste de diffusion").getURLString());
     assertEquals("/silverpeas/Rmailinglist/mailinglist45/list/mailinglist45",
         browseBar.getTableCell(0, 0).getLinkWith("Liste des Messages")
-            .getURLString());
+        .getURLString());
     WebTable messageTable = messageDetailPage.getTableWithID("message");
     assertNotNull(messageTable);
     assertEquals("Simple database message 1", messageTable.getCellAsText(0, 0));
     assertEquals(
         "Bonjour famille Simpson, j'espère que vous allez bien. "
-            + "Ici tout se passe bien et Krusty est très sympathique. Surtout depuis "
-            + "que Tahiti Bob est retourné en prison. Je dois remplacer l'homme "
-            + "canon dans la prochaine émission.Bart", messageTable
-            .getCellAsText(1, 0));
+        + "Ici tout se passe bien et Krusty est très sympathique. Surtout depuis "
+        + "que Tahiti Bob est retourné en prison. Je dois remplacer l'homme "
+        + "canon dans la prochaine émission.Bart", messageTable
+        .getCellAsText(1, 0));
     assertEquals("bart.simpson@silverpeas.com - 01/03/2008 10:34:15",
         messageTable.getCellAsText(2, 0));
     WebTable attachmentsTable = messageDetailPage.getTableWithID("attachments");
@@ -235,60 +240,19 @@ public class TestMailingListSimpleMessage extends
     return "http://localhost:8000/" + path;
   }
 
-  protected String[] getConfigLocations() {
-    return new String[] { "spring-checker.xml", "spring-notification.xml",
-        "spring-hibernate.xml", "spring-datasource.xml" };
-  }
-
+  @Override
   protected IDataSet getDataSet() throws Exception {
-    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(
+    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(
         TestMailingListActivity.class
-            .getResourceAsStream("test-mailinglist-messages-dataset.xml")));
+        .getResourceAsStream("test-mailinglist-messages-dataset.xml")));
     dataSet.addReplacementObject("[NULL]", null);
     return dataSet;
   }
 
-  protected void onSetUp() {
-    super.onSetUp();
-    HttpUnitOptions.setExceptionsThrownOnErrorStatus(true);
-    HttpUnitOptions.setExceptionsThrownOnScriptError(false);
-    HttpUnitOptions.setScriptingEnabled(true);
-    ClientProperties.getDefaultProperties().setAcceptCookies(true);
-    ClientProperties.getDefaultProperties().setAutoRedirect(true);
-    IDatabaseConnection connection = null;
-    try {
-      connection = getConnection();
-      DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
-      DatabaseOperation.CLEAN_INSERT.execute(connection, getDataSet());
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    } finally {
-      if (connection != null) {
-        try {
-          connection.getConnection().close();
-        } catch (SQLException e) {
-          e.printStackTrace();
-        }
-      }
-    }
+  @Override
+  protected String[] getContextConfigurations() {
+    return new String[]{"/spring-checker.xml", "/spring-notification.xml",
+      "/spring-mailinglist-services-factory.xml", "/spring-mailinglist-dao.xml",
+      "/spring-mailinglist-embbed-datasource.xml"};
   }
-
-  protected void onTearDown() {
-    IDatabaseConnection connection = null;
-    try {
-      connection = getConnection();
-      DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    } finally {
-      if (connection != null) {
-        try {
-          connection.getConnection().close();
-        } catch (SQLException e) {
-          e.printStackTrace();
-        }
-      }
-    }
-  }
-
 }

@@ -6,44 +6,30 @@ function resizeFrame()
   }
 }
 
+function isEmpty(str) {
+  return (!str || 0 === str.length);
+}
+
+function isBlank(str) {
+  return (!str || /^\s*$/.test(str));
+}
+
 function isTextFilled()
 {
-  var text = FCKeditorAPI.GetInstance("messageText").GetHTML();
-  var start = 0
-  var end = text.indexOf("<");
-  var s;
-  var index;
-  while (start != -1 && end != -1)
-  {
-    if (end > start)
-    {
-      s = text.substring(start + 1, end);
-      index = s.indexOf(" ");
-      while (index != -1)
-      {
-        s = s.substring(0, index) + s.substring(index + 1);
-        index = s.indexOf(" ");
-      }
-      index = s.indexOf("&nbsp;");
-      while (index != -1)
-      {
-        s = s.substring(0, index) + s.substring(index + 6);
-        index = s.indexOf("&nbsp;");
-      }
-      if (s != "")
-      {
-        return true;
-      }
-    }
-    start = text.indexOf(">", end);
-    end = text.indexOf("<", start);
+  //var text = FCKeditorAPI.GetInstance("messageText").GetHTML();
+  var text = $("#cke_messageText iframe").contents().find("body").text();
+  if (!isEmpty(text) && !isBlank(text)) {
+    //alert('text has been filled !!! text=' + text);
+    return true;
   }
+  //alert("text is empty !!!");
   return false;
 }
 
 function resetText()
 {
-  FCKeditorAPI.GetInstance("messageText").SetHTML("");
+  //FCKeditorAPI.GetInstance("messageText").SetHTML("");
+  $("#cke_messageText iframe").contents().find("body").text("");
 }
 
 var NOTATIONS_COUNT = 5;

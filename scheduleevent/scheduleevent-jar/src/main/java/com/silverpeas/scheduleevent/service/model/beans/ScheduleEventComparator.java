@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,6 +28,7 @@ import java.util.Comparator;
 
 public class ScheduleEventComparator implements Comparator<ScheduleEvent> {
 
+  @Override
   public int compare(ScheduleEvent se1, ScheduleEvent se2) {
     return se1.getTitle().compareTo(se2.getTitle());
   }

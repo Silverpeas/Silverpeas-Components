@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,8 +29,8 @@
 <%@ page import="java.util.Iterator"%>
 <%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail"%>
 <%@ page import="com.stratelia.webactiv.util.publication.model.Alias" %>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
 <%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="com.silverpeas.util.EncodeHelper" %>
 
 <%
 ResourcesWrapper resources = (ResourcesWrapper)request.getAttribute("resources");
@@ -46,11 +46,11 @@ Iterator otherTopics = otherTree.iterator();
 while(otherTopics.hasNext())
 {
 	NodeDetail topic = (NodeDetail) otherTopics.next();
-		
+
 	if (topic.getId() != 1 && topic.getId() != 2)
 	{
-			String name = Encode.convertHTMLEntities(topic.getName(currentLang));
-			    	    			
+			String name = EncodeHelper.convertHTMLEntities(topic.getName(currentLang));
+
 			String ind = "";
 			if(topic.getLevel() > 2)
 			{// calcul chemin arbre
@@ -64,20 +64,20 @@ while(otherTopics.hasNext())
 				}
 			}
 			name = ind + name;
-			
+
 			// recherche si ce th�me est dans la liste des th�mes de la publication
 			String aliasDecoration = "&nbsp;";
 			String checked = "";
 			Iterator it = aliases.iterator();
-			while (it.hasNext()) 
+			while (it.hasNext())
 			{
 				Alias alias = (Alias) it.next();
 				String nodeId = alias.getId();
-				
+
 				if (Integer.toString(topic.getId()).equals(nodeId) && topic.getNodePK().getInstanceId().equals(alias.getInstanceId()))
 				{
 					checked = " checked";
-					aliasDecoration = "<i>"+Encode.convertHTMLEntities(alias.getUserName())+" - "+resources.getOutputDateAndHour(alias.getDate())+"</i>";
+					aliasDecoration = "<i>"+EncodeHelper.convertHTMLEntities(alias.getUserName())+" - "+resources.getOutputDateAndHour(alias.getDate())+"</i>";
 				}
 			}
 			boolean displayCheckbox = false;
@@ -89,7 +89,7 @@ while(otherTopics.hasNext())
         	else
         		out.println("&nbsp;");
         	out.println("</td><td nowrap=\"nowrap\">"+name+"</td><td align=\"right\">"+aliasDecoration+"</td></tr>");
-	}	
+	}
 }
 %>
 </table>

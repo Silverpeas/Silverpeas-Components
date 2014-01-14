@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,16 +24,17 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
 <%
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel, "javascript:window.close();");
-	browseBar.setPath("<a href=\"Accueil\"></a> " + resource.getString("infoLetter.importEmailsCsv"));
+	browseBar.setPath(resource.getString("infoLetter.importEmailsCsv"));
 	
-	String result = (String) request.getParameter("Result");
+	String result = request.getParameter("Result");
 	boolean importOk = false;
-	if ("OK".equals(result))
-	{
+	if ("OK".equals(result)) {
 		importOk = true;
 		%>
 		<script language="javascript">
@@ -42,107 +43,75 @@
 		<%
 	}
 %>
-<html>
-<head>
-<% out.println(gef.getLookStyleSheet()); %>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="JavaScript">
 
-function SubmitWithVerif(verifParams)
-{
+<view:looknfeel/>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<script type="text/javascript">
+function SubmitWithVerif(verifParams) {
     var csvFilefld = stripInitialWhitespace(document.csvFileForm.file_upload.value);
     var errorMsg = "";
 
-    if (verifParams)
-    {
+    if (verifParams) {
          if (isWhitespace(csvFilefld)) {
             errorMsg = "<% out.print(resource.getString("GML.thefield")+resource.getString("GML.csvFile")+resource.getString("CSV.isRequired")); %>";
          } else {
 			var ext = csvFilefld.substring(csvFilefld.length - 4);
-	        
     	    if (ext.toLowerCase() != ".csv") {
     			errorMsg = "<% out.print(resource.getString("GML.errorCsvFile")); %>";		
     		}
 		}
     }
-    if (errorMsg == "")
-    {
+    if (errorMsg == "") {
         document.csvFileForm.submit();
-    }
-    else
-    {
+    } else {
         window.alert(errorMsg);
     }
 }
-
 </script>
 </head>
-<body marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
-
+<body>
 <%
 out.println(window.printBefore());
-out.println(frame.printBefore());
 %>
-<center>
-<%
-out.println(board.printBefore());
-%>
-<form name="csvFileForm" action="ImportEmailsCsv" method="POST" enctype="multipart/form-data">
-    <table CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%">
-			<% if (importOk)
-			{ %>
-				<tr>
-					<td colspan="2" align="center">
-						<%=resource.getString("infoLetter.importEmailsCsvSucceed") %>
-					</td>
-				</tr>
-			<%
-			}
-			else
-			{ %>
-				<tr>
-					<td colspan="2">
+<view:frame>
+<view:board>
+<form name="csvFileForm" action="ImportEmailsCsv" method="post" enctype="multipart/form-data">
+    
+			<% if (importOk) { %>
+			<div class="inlineMessage-ok">
+				<%=resource.getString("infoLetter.importEmailsCsvSucceed") %>
+			</div>
+			<% } else { %>
+				<div class="inlineMessage">
 						<%=resource.getString("infoLetter.importEmailsCsvWarning") %>
-					</td>
-				</tr>
+				</div>
+	<table cellpadding="5" cellspacing="0" border="0" width="100%">
         <tr>			
-            <td valign="baseline" align=left  class="txtlibform">
-                <%=resource.getString("GML.csvFile") %> :
-            </td>
-            <td align=left valign="baseline">
-                <input type="file" name="file_upload" size="50" maxlength="50" VALUE="">&nbsp;<img border="0" src="<%=m_context%>/util/icons/mandatoryField.gif" width="5" height="5"> 
+            <td class="txtlibform"><%=resource.getString("GML.csvFile") %> :</td>
+            <td>
+                <input type="file" name="file_upload" size="50" maxlength="50" value=""/>&nbsp;<img border="0" src="<%=m_context%>/util/icons/mandatoryField.gif" width="5" height="5"/> 
             </td>
         </tr>
         <tr> 
-            <td colspan="2">(<img border="0" src="<%=m_context%>/util/icons/mandatoryField.gif" width="5" height="5"> 
-      : <%=resource.getString("GML.requiredField")%>)</td>
+            <td colspan="2"><img border="0" src="<%=m_context%>/util/icons/mandatoryField.gif" width="5" height="5"/> : <%=resource.getString("GML.requiredField")%></td>
         </tr>
 		<% } %>
     </table>
-
-<%
-out.println(board.printAfter());
-%>
 </form>
-<br/>
+</view:board>
 		<%
 		  ButtonPane bouton = gef.getButtonPane();
-			if (importOk)
-			{
-				  bouton.addButton((Button) gef.getFormButton(resource.getString("GML.close"), "javascript:window.close()", false));
-			}
-			else
-			{
-				  bouton.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:SubmitWithVerif(true)", false));
-		      bouton.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"), "javascript:window.close()", false));
+			if (importOk) {
+				bouton.addButton(gef.getFormButton(resource.getString("GML.close"), "javascript:window.close()", false));
+			} else {
+				bouton.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:SubmitWithVerif(true)", false));
+		      	bouton.addButton(gef.getFormButton(resource.getString("GML.cancel"), "javascript:window.close()", false));
 			}
 		  out.println(bouton.print());
 		%>
-</center>
+</view:frame>
 <%
-out.println(frame.printAfter());
 out.println(window.printAfter());
-	%>
-
+%>
 </body>
 </html>

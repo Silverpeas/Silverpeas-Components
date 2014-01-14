@@ -1,53 +1,26 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.mailinglist.service.notification;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.jms.QueueConnectionFactory;
-import javax.jms.TextMessage;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import javax.naming.InitialContext;
-import javax.naming.Reference;
-
-import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.dataset.DataSetException;
-import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
-import org.dbunit.operation.DatabaseOperation;
-import org.jvnet.mock_javamail.Mailbox;
-
-import com.mockrunner.mock.jms.MockQueue;
-import com.silverpeas.mailinglist.AbstractSilverpeasDatasourceSpringContextTests;
+import com.silverpeas.mailinglist.AbstractMailingListTest;
 import com.silverpeas.mailinglist.jms.MockObjectFactory;
 import com.silverpeas.mailinglist.service.ServicesFactory;
 import com.silverpeas.mailinglist.service.model.beans.ExternalUser;
@@ -56,118 +29,114 @@ import com.silverpeas.mailinglist.service.model.beans.Message;
 import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.notificationserver.NotificationServerUtil;
 import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import javax.jms.TextMessage;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import org.apache.commons.io.IOUtils;
+import org.dbunit.dataset.DataSetException;
+import org.dbunit.dataset.IDataSet;
+import org.dbunit.dataset.ReplacementDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.jvnet.mock_javamail.Mailbox;
 
-public class TestNotificationHelper extends
-    AbstractSilverpeasDatasourceSpringContextTests {
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 
-  private static final String textEmailContent = "Bonjour famille Simpson, j'espère que vous allez bien. "
+public class TestNotificationHelper extends AbstractMailingListTest {
+
+  private static final String textEmailContent =
+      "Bonjour famille Simpson, j'espère que vous allez bien. "
       + "Ici tout se passe bien et Krusty est très sympathique. Surtout "
       + "depuis que Tahiti Bob est retourné en prison. Je dois remplacer "
       + "l'homme canon dans la prochaine émission.Bart";
-
   private SimpleNotificationHelper notificationHelper;
 
-  public SimpleNotificationHelper getNotificationHelper() {
-    return notificationHelper;
+  @After
+  public void clearMailBox() throws Exception {
+    Mailbox.clearAll();
   }
 
-  public void setNotificationHelper(SimpleNotificationHelper notificationHelper) {
-    this.notificationHelper = notificationHelper;
+  @Before
+  public void setupMailbox() throws Exception {
+    Mailbox.clearAll();
+    notificationHelper = getManagedService(SimpleNotificationHelper.class);
   }
 
-  @Override
-  protected String[] getConfigLocations() {
-    return new String[] { "spring-checker.xml", "spring-notification.xml",
-        "spring-hibernate.xml", "spring-datasource.xml", "spring-personalization.xml" };
-  }
-
-  protected void registerMockJMS() throws Exception {
-    InitialContext ic = new InitialContext();
-    // Construct BasicDataSource reference
-    Reference refFactory = new Reference("javax.jms.QueueConnectionFactory",
-        "com.silverpeas.mailinglist.jms.MockObjectFactory", null);
-    ic.rebind(JNDINames.JMS_FACTORY, refFactory);
-    Reference refQueue = new Reference("javax.jms.Queue",
-        "com.silverpeas.mailinglist.jms.MockObjectFactory", null);
-    ic.rebind(JNDINames.JMS_QUEUE, refQueue);
-    QueueConnectionFactory qconFactory = (QueueConnectionFactory) ic
-        .lookup(JNDINames.JMS_FACTORY);
-    assertNotNull(qconFactory);
-    MockQueue queue = (MockQueue) ic.lookup(JNDINames.JMS_QUEUE);
-    queue.clear();
-  }
-
-  @SuppressWarnings("unchecked")
+  @Test
   public void testNotifyInternals() throws Exception {
-    registerMockJMS();
-    Message message = ServicesFactory.getMessageService().getMessage("700");
-    assertNotNull(message);
-    MailingList list = ServicesFactory.getMailingListService().findMailingList(
-        "100");
-    assertNotNull(list);
-    assertNotNull(list.getModerators());
-    assertEquals(3, list.getModerators().size());
-    assertNotNull(list.getReaders());
-    assertEquals(2, list.getReaders().size());
-    List<String> userIds = Arrays.asList(new String[] { "200", "201", "202", "203",
-        "204" });
+    ServicesFactory servicesFactory = ServicesFactory.getFactory();
+    Message message = servicesFactory.getMessageService().getMessage("700");
+    assertThat(message, is(notNullValue()));
+    MailingList list = servicesFactory.getMailingListService().findMailingList("100");
+    assertThat(list, is(notNullValue()));
+    assertThat(list.getModerators(), is(notNullValue()));
+    assertThat(list.getModerators().size(), is(3));
+    assertThat(list.getReaders(), is(notNullValue()));
+    assertThat(list.getReaders().size(), is(2));
+    List<String> userIds = Arrays.asList(new String[]{"200", "201", "202", "203", "204"});
     notificationHelper.notifyInternals(message, list, userIds, null, false);
     List<TextMessage> messages = MockObjectFactory.getMessages(JNDINames.JMS_QUEUE);
-    assertNotNull(messages);
-    assertEquals(5, messages.size());
+    assertThat(messages, is(notNullValue()));
+    assertThat(messages.size(), is(5));
     for (TextMessage alert : messages) {
-      assertNotNull(alert.getText());
-      NotificationData data = NotificationServerUtil
-          .convertXMLToNotificationData(alert.getText());
-      assertNotNull(data);
+      assertThat(alert.getText(), is(notNullValue()));
+      NotificationData data = NotificationServerUtil.convertXMLToNotificationData(alert.getText());
+      assertThat(data, is(notNullValue()));
       String channel = data.getTargetChannel();
-      assertEquals("SMTP", channel);
+      assertThat(channel, is("SMTP"));
       String recipient = data.getTargetReceipt();
-      assertNotNull(recipient);
-      assertTrue("Erreur destinataire " + recipient,
-          "homer.simpson@silverpeas.com".equals(recipient)
-              || "marge.simpson@silverpeas.com".equals(recipient)
-              || "lisa.simpson@silverpeas.com".equals(recipient)
-              || "maggie.simpson@silverpeas.com".equals(recipient)
-              || "bart.simpson@silverpeas.com".equals(recipient));
-      assertEquals(message.getSummary(), data.getMessage());
+      assertThat(recipient, is(notNullValue()));
+      assertThat("Erreur destinataire " + recipient, recipient, isOneOf(
+          "homer.simpson@silverpeas.com", "marge.simpson@silverpeas.com",
+          "lisa.simpson@silverpeas.com", "maggie.simpson@silverpeas.com",
+          "bart.simpson@silverpeas.com"));
+      assertThat(data.getMessage(), is(message.getSummary()));
       String url = (String) data.getTargetParam().get("URL");
-      assertNotNull(url);
-      assertEquals(
-          "http://localhost:8000/silverpeas//autoRedirect.jsp?domainId=0&"
-              + "goto=%2FRmailinglist%2F100%2Fmessage%2F700", url);
+      assertThat(url, is(notNullValue()));
+      assertThat(url, is("http://localhost:8000/silverpeas//autoRedirect.jsp?domainId=0&"
+          + "goto=%2FRmailinglist%2F100%2Fmessage%2F700"));
       String source = (String) data.getTargetParam().get("SOURCE");
-      assertNotNull(source);
-      assertEquals("thesimpsons@silverpeas.com", source);
+      assertThat(source, is(notNullValue()));
+      assertThat(source, is("thesimpsons@silverpeas.com"));
     }
 
   }
 
+  @Test
   public void testNotifyExternals() throws Exception {
-    Message message = ServicesFactory.getMessageService().getMessage("700");
+    ServicesFactory servicesFactory = ServicesFactory.getFactory();
+    Message message = servicesFactory.getMessageService().getMessage("700");
     message.setContentType("text/plain; charset=\"UTF-8\"");
-    assertNotNull(message);
-    MailingList list = ServicesFactory.getMailingListService().findMailingList(
-        "100");
-    assertNotNull(list);
-    assertNotNull(list.getExternalSubscribers());
-    assertEquals(12, list.getExternalSubscribers().size());
+    assertThat(message, is(notNullValue()));
+    MailingList list = servicesFactory.getMailingListService().findMailingList("100");
+    assertThat(list, is(notNullValue()));
+    assertThat(list.getExternalSubscribers(), is(notNullValue()));
+    assertThat(list.getExternalSubscribers().size(), is(12));
     notificationHelper.notifyExternals(message, list);
     Iterator<ExternalUser> iter = list.getExternalSubscribers().iterator();
     while (iter.hasNext()) {
       ExternalUser recipient = iter.next();
-      checkSimpleEmail(recipient.getEmail(),
-          "[Liste de diffusion de test] : Simple Message");
+      checkSimpleEmail(recipient.getEmail(), "[Liste de diffusion de test] : Simple Message");
     }
 
   }
 
+  @Test
   public void testSimpleSendMail() throws Exception {
     MimeMessage mail = new MimeMessage(notificationHelper.getSession());
     InternetAddress theSimpsons = new InternetAddress(
         "thesimpsons@silverpeas.com");
-    mail.addFrom(new InternetAddress[] { theSimpsons });
+    mail.addFrom(new InternetAddress[]{theSimpsons});
     mail.setSubject("Simple text Email test");
     mail.setText(textEmailContent);
     List<ExternalUser> externalUsers = new LinkedList<ExternalUser>();
@@ -179,11 +148,12 @@ public class TestNotificationHelper extends
     checkSimpleEmail("bart.simpson@silverpeas.com", "Simple text Email test");
   }
 
+  @Test
   public void testMultiSendMail() throws Exception {
     MimeMessage mail = new MimeMessage(notificationHelper.getSession());
     InternetAddress theSimpsons = new InternetAddress(
         "thesimpsons@silverpeas.com");
-    mail.addFrom(new InternetAddress[] { theSimpsons });
+    mail.addFrom(new InternetAddress[]{theSimpsons});
     mail.setSubject("Simple text Email test");
     mail.setText(textEmailContent);
     List<ExternalUser> externalUsers = new LinkedList<ExternalUser>();
@@ -235,7 +205,7 @@ public class TestNotificationHelper extends
     user.setComponentId("100");
     user.setEmail("patty.bouvier@silverpeas.com");
     externalUsers.add(user);
-    assertEquals(12, externalUsers.size());
+    assertThat(externalUsers.size(), is(12));
     notificationHelper.sendMail(mail, externalUsers);
     Iterator<ExternalUser> iter = externalUsers.iterator();
     while (iter.hasNext()) {
@@ -244,115 +214,78 @@ public class TestNotificationHelper extends
     }
   }
 
-  @SuppressWarnings("unchecked")
   protected void checkSimpleEmail(String address, String subject)
       throws Exception {
-    List inbox = Mailbox.get(address);
-    assertNotNull(inbox);
-    assertEquals("No message for " + address, 1, inbox.size());
+    Mailbox inbox = Mailbox.get(address);
+    assertThat(inbox, is(notNullValue()));
+    assertThat("No message for " + address, inbox.size(), is(1));
     MimeMessage alert = (MimeMessage) inbox.iterator().next();
-    assertNotNull(alert);
-    assertEquals(subject, alert.getSubject());
-    assertEquals(textEmailContent, alert.getContent());
+    assertThat(alert, is(notNullValue()));
+    assertThat(alert.getSubject(), is(subject));
+    assertThat((String) alert.getContent(), is(textEmailContent));
   }
 
+  @Test
   public void testSpringLoading() {
-    SimpleNotificationHelper helper = getNotificationHelper();
-    assertNotNull(helper);
-    assertNotNull(helper.getSmtpConfig());
-    assertEquals("localhost", helper.getSmtpConfig().getServer());
-    assertEquals("bsimpson", helper.getSmtpConfig().getUsername());
-    assertEquals("bart", helper.getSmtpConfig().getPassword());
-    assertEquals(25, helper.getSmtpConfig().getPort());
-    assertFalse(helper.getSmtpConfig().isAuthenticate());
+    SimpleNotificationHelper helper = notificationHelper;
+    assertThat(helper, is(notNullValue()));
+    assertThat(helper.getSmtpConfig(), is(notNullValue()));
+    assertThat(helper.getSmtpConfig().getServer(), is("localhost"));
+    assertThat(helper.getSmtpConfig().getUsername(), is("bsimpson"));
+    assertThat(helper.getSmtpConfig().getPassword(), is("bart"));
+    assertThat(helper.getSmtpConfig().getPort(), is(25));
+    assertThat(helper.getSmtpConfig().isAuthenticate(), is(false));
   }
 
-  @Override
-  protected void onTearDown() throws IOException {
-    Mailbox.clearAll();
-    IDatabaseConnection connection = null;
-    try {
-      connection = getConnection();
-      DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
-      FileFolderManager.deleteFolder("c:\\tmp\\uploads\\componentId", false);
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    } finally {
-      if (connection != null) {
-        try {
-          connection.getConnection().close();
-        } catch (SQLException e) {
-          e.printStackTrace();
-        }
-      }
-    }
-    super.onTearDown();
-  }
-
-  @Override
-  protected void onSetUp() {
-    super.onSetUp();
-    Mailbox.clearAll();
-    IDatabaseConnection connection = null;
-    try {
-      connection = getConnection();
-      DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
-      DatabaseOperation.CLEAN_INSERT.execute(connection, getDataSet());
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    } finally {
-      if (connection != null) {
-        try {
-          connection.getConnection().close();
-        } catch (SQLException e) {
-          e.printStackTrace();
-        }
-      }
-    }
-  }
-
+  @Test
   public void testGetUsersIds() {
-    MailingList list = ServicesFactory.getMailingListService().findMailingList(
-        "100");
+    MailingList list = ServicesFactory.getFactory().getMailingListService().findMailingList("100");
     list.setModerated(false);
     Collection<String> userIds = notificationHelper.getUsersIds(list);
-    assertEquals(2, userIds.size());
-    for(String userId : userIds) {
-      assertTrue("201".equals(userId) || "204".equals(userId));
+    assertThat(userIds.size(), is(2));
+    for (String userId : userIds) {
+      assertThat(userId, isOneOf("201", "204"));
     }
     list.setModerated(true);
     userIds = notificationHelper.getUsersIds(list);
-    assertEquals(2, userIds.size());
-    for(String userId : userIds) {
-      assertTrue("201".equals(userId) || "204".equals(userId));
+    assertThat(userIds.size(), is(2));
+    for (String userId : userIds) {
+      assertThat(userId, isOneOf("201", "204"));
     }
   }
 
+  @Test
   public void testGetModeratorsIds() {
-    MailingList list = ServicesFactory.getMailingListService().findMailingList(
-        "100");
+    MailingList list = ServicesFactory.getFactory().getMailingListService().findMailingList("100");
     Collection<String> userIds = notificationHelper.getModeratorsIds(list);
-    assertEquals(3, userIds.size());
-    for(String userId : userIds) {
-      assertTrue("Erreur userid " + userId, "200".equals(userId)
-          || "202".equals(userId) || "203".equals(userId));
+    assertThat(userIds.size(), is(3));
+    for (String userId : userIds) {
+      assertThat("Erreur userid " + userId, userId, isOneOf("200", "202", "203"));
     }
     list.setModerated(false);
     userIds = notificationHelper.getModeratorsIds(list);
-    assertEquals(3, userIds.size());
-    for(String userId : userIds) {
-      assertTrue("Erreur userid " + userId, "200".equals(userId)
-          || "202".equals(userId) || "203".equals(userId));
+    assertThat(userIds.size(), is(3));
+    for (String userId : userIds) {
+      assertThat("Erreur userid " + userId, userId, isOneOf("200", "202", "203"));
     }
   }
 
   @Override
   protected IDataSet getDataSet() throws DataSetException, IOException {
-    if(isOracle()) {
-      return new FlatXmlDataSet(TestNotificationHelper.class
-          .getResourceAsStream("test-notification-helper-oracle-dataset.xml"));
+    FlatXmlDataSetBuilder builder = new FlatXmlDataSetBuilder();
+    InputStream in = TestNotificationHelper.class.getResourceAsStream(
+        "test-notification-helper-dataset.xml");
+    try {
+      return new ReplacementDataSet(builder.build(in));
+    } finally {
+      IOUtils.closeQuietly(in);
     }
-    return new FlatXmlDataSet(TestNotificationHelper.class
-        .getResourceAsStream("test-notification-helper-dataset.xml"));
+  }
+
+  @Override
+  protected String[] getContextConfigurations() {
+    return new String[]{"/spring-checker.xml", "/spring-notification.xml",
+      "/spring-mailinglist-services-factory.xml", "/spring-mailinglist-personalization-dao.xml",
+      "/spring-mailinglist-embbed-datasource.xml"};
   }
 }

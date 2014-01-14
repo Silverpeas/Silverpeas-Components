@@ -1,27 +1,23 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.whitePages.filters;
 
 import java.io.IOException;
@@ -44,50 +40,35 @@ import com.stratelia.silverpeas.peasCore.URLManager;
  * RedirectToComponentId : componentId de l'instance pour que le mecanisme de redirection le renvoie
  * sur le composant - - forceCardCreation : componentId de l'instance Le filtre RequestRouterFilter
  * verifie la présence
+ *
  * @author Ludovic Bertin
  */
 public class ComponentRequestRouterFilter implements Filter {
 
-  /**
-   * Configuration du filtre, permettant de récupérer les paramètres.
-   */
-  FilterConfig config = null;
 
   /*
    * (non-Javadoc)
    * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse,
    * javax.servlet.FilterChain)
    */
-  public void doFilter(ServletRequest request, ServletResponse response,
-      FilterChain chain) throws IOException, ServletException {
-    HttpSession session = ((HttpServletRequest) request).getSession(true);
-
-    HttpServletRequest hsRequest = (HttpServletRequest) request;
-    String sURI = hsRequest.getRequestURI();
+  @Override
+  public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws
+      IOException, ServletException {
+    HttpServletRequest httpRequest = (HttpServletRequest) request;
+    String sURI = httpRequest.getRequestURI();
 
     if (sURI.startsWith(URLManager.getApplicationURL() + "/R")) {
-      /*
-       * Retrieve main session controller
-       */
-      String componentId = (String) session
-          .getAttribute(LoginFilter.ATTRIBUTE_FORCE_CARD_CREATION);
-      // String sServletPath = hsRequest.getServletPath();
-      // String sPathInfo = hsRequest.getPathInfo();
-      String sRequestURL = hsRequest.getRequestURL().toString();
-
-      /*
-       * If a user must be redirected to a card creation, just do it.
-       */
-      if ((sRequestURL.indexOf("RpdcClassify") == -1)
-          && (sRequestURL.indexOf("RwhitePages") == -1)
-          && (sRequestURL.indexOf("Rclipboard") == -1)
-          && (sRequestURL.indexOf("importCalendar") == -1)
-          && (componentId != null)) {
-        StringBuffer redirectURL = new StringBuffer();
+      HttpSession session = httpRequest.getSession(false);
+      if (session == null) {
+        chain.doFilter(request, response);
+        return;
+      }
+      String componentId = (String) session.getAttribute(LoginFilter.ATTRIBUTE_FORCE_CARD_CREATION);
+      if (isRedirectRequired(httpRequest, componentId)) {
+        StringBuilder redirectURL = new StringBuilder(512);
         redirectURL.append(URLManager.getURL(null, componentId));
         redirectURL.append("ForceCardCreation");
-        RequestDispatcher dispatcher = request.getRequestDispatcher(redirectURL
-            .toString());
+        RequestDispatcher dispatcher = request.getRequestDispatcher(redirectURL.toString());
         dispatcher.forward(request, response);
       } else {
         chain.doFilter(request, response);
@@ -97,27 +78,20 @@ public class ComponentRequestRouterFilter implements Filter {
     }
   }
 
-  /*
-   * (non-Javadoc)
-   * @see javax.servlet.Filter#getFilterConfig()
-   */
-  public FilterConfig getFilterConfig() {
-    return config;
+  private boolean isRedirectRequired(HttpServletRequest request, String componentId) {
+    String requestURL = request.getRequestURL().toString();
+    return ((requestURL.indexOf("RpdcClassify") == -1)
+        && (requestURL.indexOf("RwhitePages") == -1)
+        && (requestURL.indexOf("Rclipboard") == -1)
+        && (requestURL.indexOf("importCalendar") == -1)
+        && (componentId != null));
   }
 
-  /*
-   * (non-Javadoc)
-   * @see javax.servlet.Filter#setFilterConfig(javax.servlet.FilterConfig)
-   */
-  public void setFilterConfig(FilterConfig arg0) {
-    // this.config = config;
+  @Override
+  public void init(FilterConfig filterConfig) throws ServletException {
   }
 
-  public void init(FilterConfig arg0) {
-    // this.config = config;
-  }
-
+  @Override
   public void destroy() {
-
   }
 }

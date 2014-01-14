@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,306 +24,268 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@ page import="com.silverpeas.resourcesmanager.model.CategoryDetail"%>
-<%@ page import="com.silverpeas.resourcesmanager.model.ResourceDetail"%>
-<%@ page import="com.silverpeas.resourcesmanager.model.ResourceReservableDetail"%>
-<%@ page import="com.silverpeas.resourcesmanager.model.ReservationDetail"%>
+
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
+<%@ page import="org.silverpeas.resourcemanager.model.Resource"%>
+<%@ page import="org.silverpeas.resourcemanager.model.Reservation"%>
 <%@ page import="java.util.List" %>
 <%@ include file="check.jsp" %>
-<% 
-//Récupération des détails de l'ulisateur
-List 			list 						= (List) request.getAttribute("listResourcesReservable");
-int 				nbCategories 				= ((Integer)request.getAttribute("nbCategories")).intValue();
-ReservationDetail 	reservation 				= (ReservationDetail) request.getAttribute("reservation");
-List 			listResourcesProblem 		= (List) request.getAttribute("listResourcesProblem");
-List 			listResourceEverReserved 	= (List) request.getAttribute("listResourceEverReserved");
-String 				idModifiedReservation 		= (String)request.getAttribute("idReservation");
+
+<fmt:setLocale value="${requestScope.resources.language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<%
+Reservation reservation = (Reservation) request.getAttribute("reservation");
+Long modifiedReservationId = (Long) request.getAttribute("idReservation");
 
 String evenement = reservation.getEvent();
 String raison = EncodeHelper.javaStringToHtmlParagraphe(reservation.getReason());
 String lieu = reservation.getPlace();
 
 // boutons de validation du formulaire
-Board	board		 = gef.getBoard();
 ButtonPane buttonPane = gef.getButtonPane();
 Button validateButton = gef.getFormButton(resource.getString("GML.validate"), "javaScript:verification()", false);
-Button cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "Main",false);
+Button cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "Calendar?objectView=" + request.getAttribute("objectView"),false);
 buttonPane.addButton(validateButton);
 buttonPane.addButton(cancelButton);
-
-//String qui permet de récupérer la liste des ids des ressources réservées
-boolean noResource = true;
-
-// Permet de récupérer l'id de la catégorie courante
-String idTemoin="";
 %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
 <html>
-	<head>
-	<%
-		out.println(gef.getLookStyleSheet());
-	%>
+  <head>
+    <view:looknfeel />
+    <script type="text/javascript">
 	
-	<script language=JavaScript>
+      function ajouterRessource(resourceId, categoryId) {
+        var elementResource = document.getElementById(resourceId);
+        var elementlisteReservation = document.getElementById("listeReservation");
+        var theImage = "image"+resourceId ;
+        document.images[theImage].src = "<c:url value="/util/icons/delete.gif" />";
+        elementlisteReservation.appendChild(elementResource);
+      }
 	
-	function ajouterRessource(resourceId, categoryId) {
-		var elementResource = document.getElementById(resourceId);
-		var elementlisteReservation = document.getElementById("listeReservation");
-		var theImage = "image"+resourceId ;
-		document.images[theImage].src = "<%=m_context%>/util/icons/delete.gif";
-		
-		elementlisteReservation.appendChild(elementResource);
-	}
-	
-	function enleverRessource(resourceId, categoryId) {
-		var elementResource = document.getElementById(resourceId);
-		var elementCategory = document.getElementById(categoryId);
-		var theImage = "image"+resourceId ;
-		document.images[theImage].src = "<%=m_context%>/util/icons/ok.gif";		
+      function enleverRessource(resourceId, categoryId) {
+        var elementResource = document.getElementById(resourceId);
+        var elementCategory = document.getElementById(categoryId);
+        var theImage = "image"+resourceId ;
+        document.images[theImage].src = "<c:url value="/util/icons/ok.gif" />";		
 
-		elementCategory.appendChild(elementResource);
-	}
+        elementCategory.appendChild(elementResource);
+      }
 	
-	function switchResource(resourceId, categoryId)
-	{
-		//window.alert("reservee ? "+isResourceReservee(resourceId))
-		if (isResourceReservee(resourceId))
-		{
-			clearCategory(categoryId);
-			
-			enleverRessource(resourceId, categoryId);			
-		}
-		else
-		{
-			ajouterRessource(resourceId, categoryId);
-			
-			if (isCategoryEmpty(categoryId))
-				addEmptyResource(categoryId);
-		}
-	}
+      function switchResource(resourceId, categoryId) {
+        if (isResourceReservee(resourceId)) {
+          clearCategory(categoryId);			
+          enleverRessource(resourceId, categoryId);			
+        }
+        else {
+          ajouterRessource(resourceId, categoryId);			
+          if (isCategoryEmpty(categoryId)) {
+            addEmptyResource(categoryId);
+          }
+        }
+      }
 	
-	function addEmptyResource(categoryId)
-	{
-		//window.alert("empty");
-		var emptyElement = document.createElement("div");
-		emptyElement.id = "-1";
-		emptyElement.innerHTML = "<span class=\"noRessource\"><center><%=resource.getString("resourcesManager.noResource")%></center></span>";
-		
-		var elementCategory = document.getElementById(categoryId);
-		elementCategory.appendChild(emptyElement);
-	}
-			
+      function addEmptyResource(categoryId)
+      {
+        var emptyElement = document.createElement("div");
+        emptyElement.id = "-1";
+        emptyElement.innerHTML = "<span class=\"noRessource\"><center><fmt:message key="resourcesManager.noResource" /></center></span>";
+        var elementCategory = document.getElementById(categoryId);
+        elementCategory.appendChild(emptyElement);
+      }
+
+      function clearCategory(categoryId)
+      {
+        var category = document.getElementById(categoryId);
+        var resources = category.childNodes;
+        for (var r=0; r<resources.length; r++) {
+          if (resources[r].nodeName == 'DIV' && resources[r].id == "-1") {
+            category.removeChild(resources[r]);
+          }
+        }
+      }
 	
-	function clearCategory(categoryId)
-	{
-		var category = document.getElementById(categoryId);
-		var resources = category.childNodes;
-		for (var r=0; r<resources.length; r++)
-		{
-			if (resources[r].nodeName == 'DIV' && resources[r].id == "-1")
-				category.removeChild(resources[r]);
-		}
-	}
+      function isCategoryEmpty(categoryId) {
+        var category = document.getElementById(categoryId);
+        var resources = category.childNodes;
+        for (var r=0; r<resources.length; r++) {
+          if (resources[r].nodeName == 'DIV') {
+            return false;
+          }
+        }
+        return true;
+      }
 	
-	function isCategoryEmpty(categoryId)
-	{
-		var category = document.getElementById(categoryId);
-		var resources = category.childNodes;
-		for (var r=0; r<resources.length; r++)
-		{
-			if (resources[r].nodeName == 'DIV')
-				return false;
-		}
-		return true;
-	}
+      function isResourceReservee(resourceId)
+      {
+        var listeReservation = document.getElementById("listeReservation");
+        var resources = listeReservation.childNodes;
+        for (var r=0; r<resources.length; r++) {
+          if (resources[r].nodeName == 'DIV' && resources[r].id == resourceId) {
+            return true;
+          }
+        }
+        return false;
+      }
 	
-	function isResourceReservee(resourceId)
-	{
-		var listeReservation = document.getElementById("listeReservation");
-		var resources = listeReservation.childNodes;
-		for (var r=0; r<resources.length; r++)
-		{
-			if (resources[r].nodeName == 'DIV' && resources[r].id == resourceId)
-				return true;
-		}
-		return false;
-	}
+      function getResourcesReservees() {
+        var listeReservation = document.getElementById("listeReservation");
+        var resources = listeReservation.childNodes;
+        var resourceIds = "";
+        for (var r=0; r<resources.length; r++) {
+          if (resources[r].nodeName == 'DIV') {
+            resourceIds += resources[r].id + ",";
+          }
+        }
+        resourceIds = resourceIds.substring(0, resourceIds.length-1);
+        return resourceIds;
+      }
 	
-	function getResourcesReservees()
-	{
-		var listeReservation = document.getElementById("listeReservation");
-		var resources = listeReservation.childNodes;
-		var resourceIds = "";
-		for (var r=0; r<resources.length; r++)
-		{
-			if (resources[r].nodeName == 'DIV')
-				resourceIds += resources[r].id+",";
-		}
-		resourceIds = resourceIds.substring(0, resourceIds.length-1);
-		//window.alert(resourceIds);
-		return resourceIds;
-	}
-	
-	function verification(){
-		document.frmResa.listeResa.value = getResourcesReservees();
-		document.frmResa.submit();
-	}
-	function retour() {
-		window.history.back();
-		}
+      function verification(){
+        document.frmResa.listeResa.value = getResourcesReservees();
+        if(getResourcesReservees() == "") {
+          $( "#dialog-message" ).dialog( "open" );
+        } else {
+          document.frmResa.submit();
+        }
+      }
+    
+      function retour() {
+        window.history.back();
+      }
+    
+      $(function() {
+        $('#accordion').accordion();
+        $("#dialog-message" ).dialog({
+          modal: true,
+          autoOpen: false,
+          width: 350,
+          resizable: false,
+          buttons: {
+            Ok: function() {
+              $( this ).dialog( "close" );
+            }
+          }
+        });
+      });
 
-	$(document).ready(function(){
-		$('#accordion').accordion();
-	});
+    </script>
+  </head>
+  <body>
+    <%
+    browseBar.setPath("<a href=\"javascript:retour()\">"+resource.getString("resourcesManager.reservationParametre")+"</a>");
+    browseBar.setExtraInformation(resource.getString("resourcesManager.resourceSelection"));
 
-	</script>
- 	</head>
-	<body>
-	<%
-	browseBar.setPath("<a href=\"javascript:retour()\">"+resource.getString("resourcesManager.reservationParametre")+"</a>");
-	browseBar.setExtraInformation(resource.getString("resourcesManager.resourceSelection"));
+        out.println(window.printBefore());
+        out.println(tabbedPane.print());
+        out.println(frame.printBefore());
+    %>
+    <c:if test="${not empty requestScope.unavailableReservationResources}">
+      <div class="inlineMessage-nok" style="text-align: left">
+        <h4><fmt:message key="resourcesManager.resourceUnReservable"/></h4>
+        <c:forEach items="${requestScope.unavailableReservationResources}" var="unavailableResource">
+          <span title="${unavailableResource.description}"><fmt:message key="resourcesManager.ressourceNom"/> : ${unavailableResource.name}</span><br/>
+        </c:forEach>
+      </div>
+      <br clear="all"/>
+    </c:if>
+    <view:board>
 
-		out.println(window.printBefore());
-		out.println(tabbedPane.print());
-		out.println(frame.printBefore());
-		
-		if(listResourcesProblem != null)
-		{
-			out.println(board.printBefore());
-			out.println("<h4>"+resource.getString("resourcesManager.resourceUnReservable")+"</h4>");
-			for(int i=0;i<listResourcesProblem.size();i++)
-			{ 
-				ResourceDetail resourceProblem = (ResourceDetail)listResourcesProblem.get(i);
-				out.println(resource.getString("resourcesManager.ressourceNom")+" : "+resourceProblem.getName()+"<br/>");
-			}
-			out.println(board.printAfter());
-			out.println("<br />");
-		}
-		
-		out.println(board.printBefore());
-	%>
-		 
-<TABLE ALIGN="CENTER" CELLPADDING="3" CELLSPACING="0" BORDER="0" WIDTH="100%">
-	<tr>
-		<TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.evenement"));%> :</td>
-		<td width="100%"><%=evenement%></td>
-	</tr>
-		
-	<tr>
-		<TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("GML.dateBegin"));%> :</TD>
-		<td><%=resource.getOutputDateAndHour(reservation.getBeginDate())%></td>
-	</tr>
+      <table align="center" cellpadding="3" cellspacing="0" border="0" width="100%">
+        <tr>
+          <td class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.evenement"));%> :</td>
+          <td width="100%"><%=evenement%></td>
+        </tr>
 
-	<tr>
-	<TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("GML.dateEnd"));%> :</td> 
-		<td><%=resource.getOutputDateAndHour(reservation.getEndDate())%></td>	
-	</tr>
+        <tr>
+          <td class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("GML.dateBegin"));%> :</td>
+          <td><%=resource.getOutputDateAndHour(reservation.getBeginDate())%></td>
+        </tr>
 
-	<tr>
-		<TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.raisonReservation"));%> :</td> 
-		<td><%=raison%></TD>
-	</tr>
+        <tr>
+          <td class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("GML.dateEnd"));%> :</td> 
+          <td><%=resource.getOutputDateAndHour(reservation.getEndDate())%></td>	
+        </tr>
 
-	<tr>
-		<TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.lieuReservation"));%> :</td>
-		<td><%=lieu%></TD>
-	</tr>
-</TABLE>
-<%out.println(board.printAfter());%>		
-<br />
+        <tr>
+          <td class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.raisonReservation"));%> :</td> 
+          <td><%=raison%></td>
+        </tr>
 
-		  <table width="100%" align="center" border="0" cellspacing="5">
-		  <tr>
-		  <td width="50%" valign="top">
-		  <div class="titrePanier"><center><%=resource.getString("resourcesManager.clickReservation")%></center></div>
-		  <div id="accordion">
-			<%
-			for (int r=0; r<list.size(); r++)
-			{
-				ResourceReservableDetail maResource = (ResourceReservableDetail)list.get(r);
-				String resourceId = maResource.getResourceId();
-				if(!idTemoin.equals(maResource.getCategoryId()))
-				{
-					if (r != 0)
-					{
-						if (noResource)
-						{%>
-							<div id="-1" class="noRessource">
-								<center><%=resource.getString("resourcesManager.noResource")%></center>
-							</div>
-						<%
-						}
-						out.println("</div>");
-						noResource = true;
-					}
-					%>
-					<h3><a href="#"><%=maResource.getCategoryName()%></a></h3>
-						<div id="categ<%=maResource.getCategoryId()%>">
-					<%
-				}
-				if(!resourceId.equals("0")) {
-					
-					//on entre dans ce if, donc il y a une ressource au moins disponible dans la catégory, donc on ne veut pas 
-					// afficher "pas de ressource disponible dans cette catégorie"
-					noResource = false;%>
-					<div id="<%=resourceId%>" onClick="switchResource(<%=resourceId%>,'categ<%=maResource.getCategoryId()%>');" style="cursor: pointer;">
- 						<table width="100%" cellspacing="0" cellpadding="0" border="0">
- 							<tr>
- 								<td width="80%" nowrap>&nbsp;-&nbsp;<%=maResource.getResourceName()%></td>
- 								<td><img src="<%=m_context %>/util/icons/ok.gif" id="image<%=resourceId%>" align="middle"/></td>
- 							</tr>
- 						</table>
-					</div>
-				<%}
-				idTemoin = maResource.getCategoryId();
-			}
-			if (noResource)
-			{%>
-				<div id="-1" class="noRessource">			
-					<%=resource.getString("resourcesManager.noResource")%>
-				</div>
-			<%}			
-			%> 
-			  </div>
-		  </div>
-		  </td>
-		  <td valign="top" width="50%">
-		  	  <div class="titrePanier"><% out.println(resource.getString("resourcesManager.resourcesReserved"));%></div>
-		      <div id="listeReservation">
-		      <%if (listResourceEverReserved != null){ 
-		    	  
-		  			// la suppression ayant été faite, cette boucle permet d'afficher les resources qui n'ont pas posés problème
-		  			for (int i=0;i<listResourceEverReserved.size();i++){
-		  						ResourceDetail maRessource =(ResourceDetail)listResourceEverReserved.get(i);
-		  		  				String NomResource = maRessource.getName();
-		  		  				String resourceId = maRessource.getId();
-		  		  				String categoryId = maRessource.getCategoryId();
-		  		  			%>
-			  					<div id="<%=resourceId%>" onClick="switchResource(<%=resourceId%>,'categ<%=categoryId%>');" style="cursor: pointer;">
-			  						<table width="100%" cellspacing="0" cellpadding="0" border="0">
-			  							<tr>
-			  								<td width="80%" nowrap>&nbsp;-&nbsp;<%=NomResource%> </td>
-			  								<td><img src="<%=m_context %>/util/icons/delete.gif" id="image<%=resourceId%>" align="middle"/></td>
-			  							</tr>
-			  						</table>
-			  					</div>
-			  				<%
-		  				}
-		  			}
-		  			%>
-		      </div>
-	</td></tr></table>
-	<%
-    out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
-	out.println(frame.printAfter());
-	out.println(window.printAfter());		
-	%>
-<form name="frmResa" method="post" action="FinalReservation">
-	<input type="hidden" name="listeResa" value="">
-	<input type="hidden" name="newResourceReservation" value="">
-	<%if(idModifiedReservation != null){ %>	
-		<input type="hidden" name="idModifiedReservation" value="<%=idModifiedReservation%>">
-	<%}%>
-</form>	
-</body>
+        <tr>
+          <td class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.lieuReservation"));%> :</td>
+          <td><%=lieu%></td>
+        </tr>
+      </table></view:board>
+      <br />
+
+      <table width="100%" align="center" border="0" cellspacing="5">
+        <tr>
+          <td width="50%" valign="top">
+            <div class="titrePanier"><center><fmt:message key="resourcesManager.clickReservation" /></center></div>
+            <div id="accordion">
+              <c:forEach items="${requestScope.categories}" var="category">
+                <h3><a href="#"><c:out value ="${category.name}" /></a></h3>
+              <div id="categ<c:out value ="${category.id}" />">
+                <c:choose>
+                  <c:when test="${requestScope.mapResourcesReservable[category.id] != null}">
+                    <c:forEach items="${requestScope.mapResourcesReservable[category.id]}" var="maResource">
+                      <div id="<c:out value ="${maResource.id}" />" onClick="switchResource(<c:out value ="${maResource.id}" />,'categ<c:out value ="${category.id}" />');" style="cursor: pointer;">
+                      <table width="100%" cellspacing="0" cellpadding="0" border="0">
+                        <tr>
+                          <td width="80%" nowrap><span title="${maResource.description}"> - ${maResource.name}</span></td>
+                          <td><img src="<c:url value="/util/icons/ok.gif" />" id="image<c:out value ="${maResource.id}" />" align="middle"/></td>
+                        </tr>
+                      </table>
+                    </div>
+                    </c:forEach>
+                  </c:when>
+                  <c:otherwise>
+                    <div id="-1" class="noRessource">			
+                      <fmt:message key="resourcesManager.noResource" />
+                    </div>
+                  </c:otherwise>
+                </c:choose>
+              </div>
+              </c:forEach>
+            </div>
+        </td>
+        <td valign="top" width="50%">
+          <div class="titrePanier"><% out.println(resource.getString("resourcesManager.resourcesReserved"));%></div>
+          <div id="listeReservation">
+            <c:if test="${not empty requestScope.listResourceEverReserved}">
+              <c:forEach items="${requestScope.listResourceEverReserved}" var="resource">
+                <div id="${resource.id}" onClick="switchResource(${resource.id},'categ${resource.categoryId}');" style="cursor: pointer;">
+                  <table width="100%" cellspacing="0" cellpadding="0" border="0">
+                    <tr>
+                      <td width="80%" nowrap><span title="${resource.description}"> - ${resource.name}</span></td>
+                      <td>
+                        <img src="<c:url value="/util/icons/delete.gif" />" id="image${resource.id}" align="middle" alt=""/>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+              </c:forEach>
+            </c:if>
+          </div>
+        </td></tr></table>
+        <%
+        out.println("<br/><center>"+buttonPane.print()+"</center><br/>");
+        out.println(frame.printAfter());
+        out.println(window.printAfter());
+        %>
+    <form name="frmResa" method="post" action="FinalReservation">
+      <input type="hidden" name="listeResa" value=""/>
+      <input type="hidden" name="newResourceReservation" value=""/>
+      <%if(modifiedReservationId != null){ %>	
+      <input type="hidden" name="modifiedReservationId" value="<%=modifiedReservationId%>"/>
+      <%}%>
+    </form>	
+    <div id="dialog-message" title="<fmt:message key="resourcesManager.form.validation.error.title" />">
+      <fmt:message key="resourcesManager.noReservedResource" />
+    </div>
+  </body>
 </html>

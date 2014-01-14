@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -79,21 +79,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     */
    private boolean isPublishedInTopic(WebSiteSessionController scc, String idSite, String idNode) throws Exception {
         // est ce que l'id Site est publie dans l'id Node
-
-		//CBO : UPDATE
-        /*Collection coll = scc.getAllPublication(idSite);
-        Iterator i = coll.iterator();
-
-        while(i.hasNext()) {
-              String idPub = (String) i.next(); // idPub
-              FolderDetail folder = scc.getPublicationFather(idPub);
-              if (idNode.equals(folder.getNodeDetail().getNodePK().getId()))
-                  return true;
-        }
-        return false;*/
 		String idPub = scc.getIdPublication(idSite);
-		//CBO : FIN UPDATE
-
 		Collection listFatherPK = scc.getAllFatherPK(idPub);
 		Iterator i = listFatherPK.iterator();
 		NodePK nodePk = null;
@@ -118,12 +104,12 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
             espace += "&nbsp;";
         }
         N += 4;
-    
+
         FolderDetail rootFolder = scc.getFolder(idNode);
 
         ArrayLine arrayLine = arrayPane.addArrayLine();
         arrayLine.addArrayCellText(espace+rootFolder.getNodeDetail().getName());
-        
+
         if (isPublishedInTopic(scc, idSite, rootFolder.getNodeDetail().getNodePK().getId()))
             arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"topic\" value=\""+rootFolder.getNodeDetail().getNodePK().getId()+"\" checked>");
         else arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"topic\" value=\""+rootFolder.getNodeDetail().getNodePK().getId()+"\">");
@@ -167,7 +153,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
 
-<%  
+<%
     String id = (String) request.getParameter("Id");
     String path = (String) request.getParameter("path");
     path = doubleAntiSlash(path);
@@ -179,7 +165,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
 <!-- classifySite -->
-      
+
 <HTML>
 <HEAD>
 <TITLE><%=resources.getString("GML.popupTitle")%></TITLE>
@@ -226,8 +212,8 @@ out.println("}");
 
 <FORM NAME="descriptionSite" ACTION="design.jsp" METHOD="POST">
   <input type="hidden" name="Action">
-  <input type="hidden" name="Id" value="<%=id%>">  
-  <input type="hidden" name="path" value="<%=path%>">  
+  <input type="hidden" name="Id" value="<%=id%>">
+  <input type="hidden" name="path" value="<%=path%>">
   <input type="hidden" name="ListeTopics">
 
 <%
@@ -235,29 +221,25 @@ out.println("}");
 
     // La barre de naviagtion
     BrowseBar browseBar = window.getBrowseBar();
-    //CBO : UPDATE
-	//browseBar.setDomainName(scc.getSpaceLabel());
-	browseBar.setDomainName(spaceLabel);
-    //CBO : UPDATE
-	//browseBar.setComponentName(scc.getComponentLabel(), "manage.jsp?Action=view");
-	browseBar.setComponentName(componentLabel, "manage.jsp?Action=view");
+	  browseBar.setDomainName(spaceLabel);
+    browseBar.setComponentName(componentLabel, "manage.jsp?Action=view");
     browseBar.setPath("<a href= \"manage.jsp?Action=view\"></a>"+infoPath);
-    
+
     //Le cadre
     Frame frame = gef.getFrame();
 
-       //D�but code
+       //Debut code
        out.println(window.printBefore());
        out.println(frame.printBefore());
 
 
-        //Recupere la liste des themes ou le site est deja publie 
+        //Recupere la liste des themes ou le site est deja publie
 
     ArrayPane arrayPane = gef.getArrayPane("siteList", "", request, session);
         arrayPane.setVisibleLineNumber(1000);
         arrayPane.setVisibleLineNumber(1000);
         arrayPane.setTitle(resources.getString("ClassificationSite")+" "+site.getName());
-    //D�finition des colonnes du tableau
+    //Definition des colonnes du tableau
         ArrayColumn arrayColumnTopic = arrayPane.addArrayColumn(resources.getString("NomThemes"));
         arrayColumnTopic.setSortable(false);
         ArrayColumn arrayColumnPub = arrayPane.addArrayColumn(resources.getString("GML.publish"));
@@ -274,19 +256,19 @@ out.println("}");
 
     //Boutons
     ButtonPane buttonPane = gef.getButtonPane();
-    Button validerButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK("+nbThemes("0", scc, 0)+");", false);
-    Button annulerButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=B_ANNULER_ONCLICK();", false);
+    Button validerButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK("+nbThemes("0", scc, 0)+");", false);
+    Button annulerButton = gef.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=B_ANNULER_ONCLICK();", false);
     buttonPane.addButton(validerButton);
     buttonPane.addButton(annulerButton);
-    buttonPane.setHorizontalPosition(); 
-    
+    buttonPane.setHorizontalPosition();
+
     out.println("<br><center>"+buttonPane.print()+"</center><br>");
 
     out.println(frame.printAfter());
     out.println(window.printAfter());
-    
+
 %>
 </form>
-</BODY>     
+</BODY>
 
 </HTML>

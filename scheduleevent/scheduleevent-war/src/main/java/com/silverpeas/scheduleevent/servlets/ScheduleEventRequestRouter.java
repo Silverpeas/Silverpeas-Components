@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -30,72 +30,87 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.silverpeas.scheduleevent.control.ScheduleEventSessionController;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventAddDateRequestHandler;
-import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventDescriptionNextRequestHandler;
-import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventSimpleFormRequestHandler;
-import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventTimeNextRequestHandler;
-import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventDateNextRequestHandler;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventAddRequestHandler;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventBackwardRequestHandler;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventCancelRequestHandler;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventConfirmRequestHandler;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventConfirmUsersRequestHandler;
+import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventDateNextRequestHandler;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventDeleteDateRequestHandler;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventDeleteRequestHandler;
+import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventDescriptionNextRequestHandler;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventDetailRequestHandler;
+import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventExportRequestHandler;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventMainRequestHandler;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventModifyStateRequestHandler;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventOpenUserRequestHandler;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventRequestHandler;
+import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventSimpleFormRequestHandler;
+import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventTimeNextRequestHandler;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventValidResponseRequestHandler;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
-public class ScheduleEventRequestRouter extends ComponentRequestRouter {
+public class ScheduleEventRequestRouter extends
+    ComponentRequestRouter<ScheduleEventSessionController> {
 
   private static final long serialVersionUID = 368205022700081777L;
 
   private static final HashMap<String, ScheduleEventRequestHandler> actions =
       new HashMap<String, ScheduleEventRequestHandler>();
   static {
-    ScheduleEventMainRequestHandler mainRequestHandler = new ScheduleEventMainRequestHandler("list.jsp");
-    ScheduleEventDeleteRequestHandler deleteRequestHandler = new ScheduleEventDeleteRequestHandler();
-    ScheduleEventModifyStateRequestHandler modifyStateRequestHandler = new ScheduleEventModifyStateRequestHandler();
-    ScheduleEventDetailRequestHandler detailRequestHandler = new ScheduleEventDetailRequestHandler("detail.jsp");
-    ScheduleEventValidResponseRequestHandler validResponseRequestHandler = new ScheduleEventValidResponseRequestHandler();
+    ScheduleEventMainRequestHandler mainRequestHandler =
+        new ScheduleEventMainRequestHandler("list.jsp");
+    ScheduleEventDeleteRequestHandler deleteRequestHandler =
+        new ScheduleEventDeleteRequestHandler();
+    ScheduleEventModifyStateRequestHandler modifyStateRequestHandler =
+        new ScheduleEventModifyStateRequestHandler();
+    ScheduleEventDetailRequestHandler detailRequestHandler =
+        new ScheduleEventDetailRequestHandler("detail.jsp");
+    ScheduleEventValidResponseRequestHandler validResponseRequestHandler =
+        new ScheduleEventValidResponseRequestHandler();
     ScheduleEventCancelRequestHandler cancelRequestHandler =
         new ScheduleEventCancelRequestHandler();
-    ScheduleEventAddRequestHandler addRequestHandler = new ScheduleEventAddRequestHandler("form/generalInfo.jsp");
+    ScheduleEventAddRequestHandler addRequestHandler =
+        new ScheduleEventAddRequestHandler("form/generalInfo.jsp");
     ScheduleEventDescriptionNextRequestHandler infoNextRequestHandler =
         new ScheduleEventDescriptionNextRequestHandler();
     ScheduleEventBackwardRequestHandler infoBackRequestHandler =
         new ScheduleEventBackwardRequestHandler();
-    ScheduleEventSimpleFormRequestHandler dateRequestHandler = new ScheduleEventSimpleFormRequestHandler("form/options.jsp");
+    ScheduleEventSimpleFormRequestHandler dateRequestHandler =
+        new ScheduleEventSimpleFormRequestHandler("form/options.jsp");
     ScheduleEventDeleteDateRequestHandler dateDeleteRequestHandler =
         new ScheduleEventDeleteDateRequestHandler();
     ScheduleEventAddDateRequestHandler dateAddRequestHandler =
         new ScheduleEventAddDateRequestHandler();
     ScheduleEventDateNextRequestHandler dateNextRequestHandler =
         new ScheduleEventDateNextRequestHandler();
-    ScheduleEventSimpleFormRequestHandler timeRequestHandler = new ScheduleEventSimpleFormRequestHandler("form/optionshour.jsp");
+    ScheduleEventSimpleFormRequestHandler timeRequestHandler =
+        new ScheduleEventSimpleFormRequestHandler("form/optionshour.jsp");
     ScheduleEventBackwardRequestHandler dateBackRequestHandler =
         new ScheduleEventBackwardRequestHandler();
     ScheduleEventTimeNextRequestHandler timeNextRequestHandler =
         new ScheduleEventTimeNextRequestHandler();
     ScheduleEventBackwardRequestHandler timeBackRequestHandler =
         new ScheduleEventBackwardRequestHandler();
-    ScheduleEventSimpleFormRequestHandler notifyRequestHandler = new ScheduleEventSimpleFormRequestHandler("form/notify.jsp");
-    ScheduleEventConfirmRequestHandler confirmRequestHandler = new ScheduleEventConfirmRequestHandler();
-    ScheduleEventConfirmUsersRequestHandler confirmUsersRequestHandler = new ScheduleEventConfirmUsersRequestHandler(true);
-    ScheduleEventConfirmUsersRequestHandler modifyUsersRequestHandler = new ScheduleEventConfirmUsersRequestHandler(false);
+    ScheduleEventSimpleFormRequestHandler notifyRequestHandler =
+        new ScheduleEventSimpleFormRequestHandler("form/notify.jsp");
+    ScheduleEventConfirmRequestHandler confirmRequestHandler =
+        new ScheduleEventConfirmRequestHandler();
+    ScheduleEventConfirmUsersRequestHandler confirmUsersRequestHandler =
+        new ScheduleEventConfirmUsersRequestHandler(true);
+    ScheduleEventConfirmUsersRequestHandler modifyUsersRequestHandler =
+        new ScheduleEventConfirmUsersRequestHandler(false);
+    ScheduleEventExportRequestHandler exportRequestHandler =
+        new ScheduleEventExportRequestHandler("exportIcalPopup.jsp");
 
     deleteRequestHandler.setForwardRequestHandler(mainRequestHandler);
     modifyStateRequestHandler.setForwardRequestHandler(mainRequestHandler);
 
     cancelRequestHandler.setForwardRequestHandler(mainRequestHandler);
-    
+
     infoBackRequestHandler.setBackRequestHandler(addRequestHandler);
     infoNextRequestHandler.setFirstStepRequestHandler(addRequestHandler);
     infoNextRequestHandler.setForwardRequestHandler(dateRequestHandler);
@@ -116,26 +131,28 @@ public class ScheduleEventRequestRouter extends ComponentRequestRouter {
 
     validResponseRequestHandler.setForwardRequestHandler(detailRequestHandler);
     
+
     actions.put("Main", mainRequestHandler);
     actions.put("Detail", detailRequestHandler);
     actions.put("ValidResponse", validResponseRequestHandler);
     actions.put("Add", addRequestHandler);
     actions.put("Delete", deleteRequestHandler);
     actions.put("ModifyState", modifyStateRequestHandler);
-    
+    actions.put("ExportToICal", exportRequestHandler);
+
     actions.put("Cancel", cancelRequestHandler);
-    
+
     actions.put("BackInfoGene", infoBackRequestHandler);
     actions.put("AddInfoGene", infoNextRequestHandler);
-    
+
     actions.put("BackDate", dateBackRequestHandler);
     actions.put("AddDate", dateAddRequestHandler);
     actions.put("DeleteDate", dateDeleteRequestHandler);
     actions.put("AddOptionsNext", dateNextRequestHandler);
-    
+
     actions.put("BackHour", timeBackRequestHandler);
     actions.put("AddOptionsHour", timeNextRequestHandler);
-    
+
     actions.put("OpenUserPopup", new ScheduleEventOpenUserRequestHandler());
     actions.put("ConfirmScreen", notifyRequestHandler);
     actions.put("ConfirmUsers", confirmUsersRequestHandler);
@@ -158,7 +175,7 @@ public class ScheduleEventRequestRouter extends ComponentRequestRouter {
    * @return
    * @see
    */
-  public ComponentSessionController createComponentSessionController(
+  public ScheduleEventSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new ScheduleEventSessionController(mainSessionCtrl, componentContext);
   }
@@ -167,16 +184,17 @@ public class ScheduleEventRequestRouter extends ComponentRequestRouter {
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialised.
+   * @param scheduleeventSC The component Session Control, build and initialised.
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
-  public String getDestination(String function, ComponentSessionController componentSC,
+  public String getDestination(String function, ScheduleEventSessionController scheduleeventSC,
       HttpServletRequest request) {
     String destination = "";
-    ScheduleEventSessionController scheduleeventSC = (ScheduleEventSessionController) componentSC;
-    SilverTrace.info("scheduleevent", "ScheduleEventRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + componentSC.getUserId() + " Function=" + function);
+    SilverTrace
+        .info("scheduleevent", "ScheduleEventRequestRouter.getDestination()",
+            "root.MSG_GEN_PARAM_VALUE", "User=" + scheduleeventSC.getUserId() + " Function=" +
+                function);
 
     try {
       ScheduleEventRequestHandler currentAction = actions.get(function);
@@ -199,5 +217,4 @@ public class ScheduleEventRequestRouter extends ComponentRequestRouter {
         "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
     return destination;
   }
-
 }

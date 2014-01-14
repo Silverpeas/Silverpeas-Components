@@ -1,25 +1,22 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.processManager;
 
@@ -85,6 +82,7 @@ import com.silverpeas.workflow.engine.WorkflowHub;
 import com.silverpeas.workflow.engine.dataRecord.ProcessInstanceRowRecord;
 import com.silverpeas.workflow.engine.instance.LockingUser;
 import com.silverpeas.workflow.engine.model.ItemImpl;
+
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -94,6 +92,8 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+
+import static org.silverpeas.attachment.AttachmentService.VERSION_MODE;
 
 /**
  * The ProcessManager Session controller
@@ -105,6 +105,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Builds and init a new session controller
+   *
    * @param mainSessionCtrl
    * @param context
    * @throws ProcessManagerException
@@ -140,7 +141,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
           mainSessionCtrl.getUserId(), peasId);
     } catch (WorkflowException we) {
       SilverTrace.warn("processManager", "SessionController",
-          "processManager.EX_ERR_GET_USERSETTINGS", we);
+          "processManager.GET_USERSETTINGS_FAILED", we);
     }
 
     SilverTrace.info("processManager", "ProcessManagerSessionController.constructor()",
@@ -151,6 +152,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * Builds a ill session controller. Initialization is skipped and this session controller can only
    * display the fatal exception. Used by the request router when a full session controller can't be
    * built.
+   *
    * @param mainSessionCtrl
    * @param context
    * @param fatal
@@ -166,6 +168,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Get the creation rights
+   *
    * @return true if user can do the "Creation" action
    */
   public boolean getCreationRights() {
@@ -181,8 +184,8 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     try {
       String[] roles = processModel.getCreationRoles();
 
-      for (int i = 0; i < roles.length; i++) {
-        if (roles[i].equals(currentRole)) {
+      for (String role : roles) {
+        if (role.equals(currentRole)) {
           creationRights = true;
         }
       }
@@ -214,6 +217,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Print button on an action can be disabled. So it's return the visibility status of that button.
+   *
    * @return true is print button is visible
    */
   public boolean isPrintButtonEnabled() {
@@ -222,6 +226,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Save button on an action can be disabled. So it's return the visibility status of that button.
+   *
    * @return true is save button is visible
    */
   public boolean isSaveButtonEnabled() {
@@ -319,13 +324,13 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    */
   public DataRecord[] resetCurrentProcessList() throws ProcessManagerException {
     try {
-      String[] groupIds = getOrganizationController().getAllGroupIdsOfUser(getUserId());
+      String[] groupIds = getOrganisationController().getAllGroupIdsOfUser(getUserId());
       ProcessInstance[] processList = Workflow.getProcessInstanceManager().getProcessInstances(
           peasId, currentUser, currentRole, getUserRoles(), groupIds);
       currentProcessList = getCurrentFilter().filter(processList, currentRole, getLanguage());
     } catch (WorkflowException e) {
       throw new ProcessManagerException("ProcessManagerSessionController",
-          "processManager.ERR_GET_PROCESS_LIST", peasId, e);
+          "processManager.GET_PROCESS_LIST_FAILED", peasId, e);
     }
     return currentProcessList;
   }
@@ -338,12 +343,13 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       return Workflow.getTaskManager().getRoleNameFromExternalTodoId(externalTodoId);
     } catch (WorkflowException e) {
       throw new ProcessManagerException("ProcessManagerSessionController",
-          "processManager.ERR_GET_ROLENAME_FROM_TODO", "externalTodoId : " + externalTodoId, e);
+          "processManager.GET_ROLENAME_FROM_TODO_FAILED", "externalTodoId : " + externalTodoId, e);
     }
   }
 
   /**
    * Get the process instance Id referred by the todo with the given todo id
+   *
    * @param externalTodoId
    * @return the process instance Id referred by the todo with the given todo id.
    * @throws ProcessManagerException
@@ -354,12 +360,26 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       return Workflow.getTaskManager().getProcessInstanceIdFromExternalTodoId(externalTodoId);
     } catch (WorkflowException e) {
       throw new ProcessManagerException("ProcessManagerSessionController",
-          "processManager.ERR_GET_PROCESS_FROM_TODO", "externalTodoId : " + externalTodoId, e);
+          "processManager.GET_PROCESS_FROM_TODO_FAILED", "externalTodoId : " + externalTodoId, e);
     }
+  }
+
+  public boolean isUserAllowedOnActiveStates() {
+    String[] states = currentProcessInstance.getActiveStates();
+    if (states == null) {
+      return false;
+    }
+    for (String state : states) {
+      if (getActiveUsers(state).contains(getUserId())) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
    * Get the active states.
+   *
    * @return the active states.
    */
   public String[] getActiveStates() {
@@ -444,7 +464,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
               if (item != null) {
                 String groupId = currentProcessInstance.getField(item.getName()).getStringValue();
                 if (groupId != null) {
-                  Group group = getOrganizationController().getGroup(groupId);
+                  Group group = getOrganisationController().getGroup(groupId);
                   if (group != null) {
                     role += group.getName();
                   }
@@ -496,8 +516,10 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   private List<String> getActiveUsers(String stateName) {
     List<String> activeUsers = new ArrayList<String>();
     State state = getState(stateName);
-    activeUsers.addAll(getUsers(state.getWorkingUsers()));
-    activeUsers.addAll(getUsers(state.getInterestedUsers()));
+    if (state != null) {
+      activeUsers.addAll(getUsers(state.getWorkingUsers()));
+      activeUsers.addAll(getUsers(state.getInterestedUsers()));
+    }
     return activeUsers;
   }
 
@@ -515,7 +537,11 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       // Process participants
       Participant participant = relatedUser.getParticipant();
       String relation = relatedUser.getRelation();
-      if (participant != null && relation != null) {
+      if (participant != null && relation == null) {
+        if (currentRole.equals(relatedUser.getRole())) {
+          users.add(getUserId());
+        }
+      } else if (participant != null && relation != null) {
         UserInfo userInfo = userSettings.getUserInfo(relation);
         if (userInfo != null) {
           users.add(userInfo.getValue());
@@ -558,7 +584,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
           "root.MSG_GEN_PARAM_VALUE", "roles après élagage : " + roles);
     }
 
-    String[] userIds = getOrganizationController().getUsersIdsByRoleNames(getComponentId(), roles);
+    String[] userIds = getOrganisationController().getUsersIdsByRoleNames(getComponentId(), roles);
     for (int u = 0; u < userIds.length; u++) {
       users.add(userIds[u]);
     }
@@ -567,16 +593,18 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     RelatedGroup[] relatedGroups = qualifiedUsers.getRelatedGroups();
     if (relatedGroups != null) {
       for (RelatedGroup relatedGroup : relatedGroups) {
-        // Process folder item
-        Item item = relatedGroup.getFolderItem();
-        if (item != null) {
-          try {
-            String groupId = currentProcessInstance.getField(item.getName()).getStringValue();
-            UserDetail[] usersOfGroup = getOrganizationController().getAllUsersOfGroup(groupId);
-            for (UserDetail userOfGroup : usersOfGroup) {
-              users.add(userOfGroup.getId());
+        if (relatedGroup != null) {
+          // Process folder item
+          Item item = relatedGroup.getFolderItem();
+          if (item != null) {
+            try {
+              String groupId = currentProcessInstance.getField(item.getName()).getStringValue();
+              UserDetail[] usersOfGroup = getOrganisationController().getAllUsersOfGroup(groupId);
+              for (UserDetail userOfGroup : usersOfGroup) {
+                users.add(userOfGroup.getId());
+              }
+            } catch (WorkflowException we) {// ignore it.
             }
-          } catch (WorkflowException we) {// ignore it.
           }
         }
       }
@@ -587,6 +615,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Returns the workflow user having the given id.
+   *
    * @param userId
    * @return the workflow user having the given id.
    * @throws ProcessManagerException
@@ -602,6 +631,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Returns the process model having the given id.
+   *
    * @param modelId
    * @return the process model having the given id.
    * @throws ProcessManagerException
@@ -617,6 +647,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Returns the current role name.
+   *
    * @return
    */
   public String getCurrentRole() {
@@ -625,6 +656,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Returns the current role name.
+   *
    * @param role
    * @throws ProcessManagerException
    */
@@ -747,12 +779,12 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    */
   public Form getCreationForm() throws ProcessManagerException {
     try {
-      Action creation = processModel.getCreateAction();
+      Action creation = processModel.getCreateAction(currentRole);
       return processModel.getPublicationForm(creation.getName(), currentRole,
           getLanguage());
     } catch (WorkflowException e) {
       throw new ProcessManagerException("SessionController",
-          "processManager.ERR_NO_CREATION_FORM", e);
+          "processManager.NO_CREATION_FORM", e);
     }
   }
 
@@ -761,7 +793,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    */
   public DataRecord getEmptyCreationRecord() throws ProcessManagerException {
     try {
-      Action creation = processModel.getCreateAction();
+      Action creation = processModel.getCreateAction(currentRole);
       return processModel.getNewActionRecord(creation.getName(), currentRole,
           getLanguage(), null);
     } catch (WorkflowException e) {
@@ -779,7 +811,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
           readonly));
     } catch (FormException fe) {
       throw new ProcessManagerException("ProcessManagerSessionController",
-          "processManager.ERR_GET_QUESTION_FORM", fe);
+          "processManager.GET_QUESTION_FORM_FAILED", fe);
     }
   }
 
@@ -792,6 +824,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * get the question with the given id
+   *
    * @param questionId question id
    * @return the found question
    */
@@ -841,10 +874,10 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       return rt;
     } catch (FormException ex) {
       throw new ProcessManagerException("ProcessManagerSessionController",
-          "processManager.ERR_GET_ASSIGN_TEMPLATE", ex);
+          "processManager.GET_ASSIGN_TEMPLATE_FAILED", ex);
     } catch (WorkflowException ex) {
       throw new ProcessManagerException("ProcessManagerSessionController",
-          "processManager.ERR_GET_ASSIGN_TEMPLATE", ex);
+          "processManager.GET_ASSIGN_TEMPLATE_FAILED", ex);
     }
   }
 
@@ -856,7 +889,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       return new XmlForm(getAssignTemplate());
     } catch (FormException ex) {
       throw new ProcessManagerException("ProcessManagerSessionController",
-          "processManager.ERR_GET_ASSIGN_FORM", ex);
+          "processManager.GET_ASSIGN_FORM_FAILED", ex);
     }
   }
 
@@ -886,15 +919,15 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       return data;
     } catch (WorkflowException e) {
       SilverTrace.warn("processManager", "SessionController.getAssignRecord",
-          "processManager.EX_ERR_GET_DATARECORD", e);
+          "processManager.GET_DATARECORD_FAILED", e);
       return null;
     } catch (ProcessManagerException e) {
       SilverTrace.warn("processManager", "SessionController.getAssignRecord",
-          "processManager.EX_ERR_GET_DATARECORD", e);
+          "processManager.GET_DATARECORD_FAILED", e);
       return null;
     } catch (FormException e) {
       SilverTrace.warn("processManager", "SessionController.getAssignRecord",
-          "processManager.EX_ERR_GET_FIELD");
+          "processManager.GET_FIELD_FAILED");
       return null;
     }
   }
@@ -936,15 +969,16 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
           currentUser);
     } catch (WorkflowException we) {
       throw new ProcessManagerException("ProcessManagerSessionController",
-          "processManager.EX_ERR_RE_ASSIGN", we);
+          "processManager.RE_ASSIGN_FAILED", we);
     } catch (FormException fe) {
       throw new ProcessManagerException("ProcessManagerSessionController",
-          "processManager.EX_ERR_RE_ASSIGN", fe);
+          "processManager.RE_ASSIGN_FAILED", fe);
     }
   }
 
   /**
    * Create a new process instance with the filled form.
+   *
    * @param data the form data
    * @param isDraft true if form has just been saved as draft
    * @param firstTimeSaved true if form is saved as draft for the first time
@@ -952,7 +986,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   public String createProcessInstance(DataRecord data, boolean isDraft, boolean firstTimeSaved)
       throws ProcessManagerException {
     try {
-      Action creation = processModel.getCreateAction();
+      Action creation = processModel.getCreateAction(currentRole);
       GenericEvent event = (isDraft) ? getCreationTask().buildTaskSavedEvent(creation.getName(),
           data) : getCreationTask().buildTaskDoneEvent(creation.getName(), data);
 
@@ -978,7 +1012,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     try {
       return Workflow.getTaskManager().getTasks(currentUser, currentRole, currentProcessInstance);
     } catch (WorkflowException e) {
-      throw new ProcessManagerException("SessionController", "processManager.ERR_GET_TASKS_FAILED",
+      throw new ProcessManagerException("SessionController", "processManager.GET_TASKS_FAILED",
           e);
     }
   }
@@ -986,6 +1020,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   /**
    * Search for an hypothetic action of kind "delete", allowed for the current user with the given
    * role
+   *
    * @return an array of 2 String { action.name, state.name }, null if no action found
    */
   public String[] getDeleteAction() {
@@ -1012,7 +1047,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       return null;
     } catch (ProcessManagerException e) {
       SilverTrace.warn("processManager", "SessionController",
-          "processManager.EX_CAN_BE_REMOVED_FAILED", e);
+          "processManager.GET_DELETE_ACTION_FAILED", e);
       return null;
     }
   }
@@ -1147,6 +1182,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Get locking users list
+   *
    * @throws ProcessManagerException
    */
   public List<LockVO> getLockingUsers() throws ProcessManagerException {
@@ -1160,8 +1196,10 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
           LockingUser lockingUser = currentProcessInstance.getLockingUser(stateName);
           if (lockingUser != null) {
             User user = WorkflowHub.getUserManager().getUser(lockingUser.getUserId());
-            boolean isDraftPending = ( currentProcessInstance.getSavedStep(lockingUser.getUserId()) != null);
-            lockingUsers.add(new LockVO(user, lockingUser.getLockDate(), lockingUser.getState(), !isDraftPending));
+            boolean isDraftPending = (currentProcessInstance.getSavedStep(lockingUser.getUserId())
+                != null);
+            lockingUsers.add(new LockVO(user, lockingUser.getLockDate(), lockingUser.getState(),
+                !isDraftPending));
             if (lockingUser.getUserId().equals(getUserId())) {
               this.currentUserIsLockingUser = true;
             }
@@ -1173,8 +1211,10 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       LockingUser lockingUser = currentProcessInstance.getLockingUser("");
       if (lockingUser != null) {
         User user = WorkflowHub.getUserManager().getUser(lockingUser.getUserId());
-        boolean isDraftPending = ( currentProcessInstance.getSavedStep(lockingUser.getUserId()) != null);
-        lockingUsers.add(new LockVO(user, lockingUser.getLockDate(), lockingUser.getState(), !isDraftPending));
+        boolean isDraftPending = (currentProcessInstance.getSavedStep(lockingUser.getUserId())
+            != null);
+        lockingUsers.add(new LockVO(user, lockingUser.getLockDate(), lockingUser.getState(),
+            !isDraftPending));
         if (lockingUser.getUserId().equals(getUserId())) {
           this.currentUserIsLockingUser = true;
         }
@@ -1183,13 +1223,14 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       return lockingUsers;
     } catch (WorkflowException e) {
       throw new ProcessManagerException("SessionController",
-          "processManager.ERR_GET_LOCKING_USERS_FAILED", e);
+          "processManager.GET_LOCKING_USERS_FAILED", e);
     }
 
   }
 
   /**
    * Lock the current instance for current user and given state
+   *
    * @param stateName state name
    */
   public void lock(String stateName) throws ProcessManagerException {
@@ -1199,12 +1240,13 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
           currentProcessInstance, state, currentUser);
     } catch (WorkflowException e) {
       throw new ProcessManagerException("SessionController",
-          "processManager.ERR_LOCK_FAILED", e);
+          "processManager.LOCK_FAILED", e);
     }
   }
 
   /**
    * Un-Lock the current instance for given user and given state
+   *
    * @param userId user Id
    * @param stateName state name
    */
@@ -1216,12 +1258,13 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
           currentProcessInstance, state, user);
     } catch (WorkflowException e) {
       throw new ProcessManagerException("SessionController",
-          "processManager.ERR_LOCK_FAILED", e);
+          "processManager.LOCK_FAILED", e);
     }
   }
 
   /**
    * Un-Lock the current instance for current user and given state
+   *
    * @param stateName state name
    */
   public void unlock(String stateName) throws ProcessManagerException {
@@ -1231,7 +1274,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
           currentProcessInstance, state, currentUser);
     } catch (WorkflowException e) {
       throw new ProcessManagerException("SessionController",
-          "processManager.ERR_LOCK_FAILED", e);
+          "processManager.LOCK_FAILED", e);
     }
   }
 
@@ -1330,13 +1373,13 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       } else {
         // action kind=create
         try {
-          Action createAction = processModel.getCreateAction();
+          Action createAction = processModel.getCreateAction(currentRole);
           QualifiedUsers qualifiedUsers = createAction.getAllowedUsers();
           if (getUsers(qualifiedUsers).contains(getUserId())) {
             visible = true;
           }
         } catch (WorkflowException we) {
-          // no action ok kind create
+          // no action of kind create
           visible = true;
         }
       }
@@ -1346,6 +1389,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Get the list of actors in History Step of current process instance
+   *
    * @return an array of string containing actors full name
    */
   public String getStepActor(HistoryStep step) {
@@ -1362,6 +1406,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Get the list of actions in History Step of current process instance
+   *
    * @return an array of string containing actions names
    */
   public String getStepAction(HistoryStep step) {
@@ -1388,6 +1433,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Returns the form used to display the i-th step. Returns null if the step is unkwown.
+   *
    * @throws ProcessManagerException
    */
   public Form getStepForm(HistoryStep step) throws ProcessManagerException {
@@ -1460,6 +1506,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Get step saved by given user id.
+   *
    * @throws ProcessManagerException
    */
   public HistoryStep getSavedStep() throws ProcessManagerException {
@@ -1467,12 +1514,13 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       return currentProcessInstance.getSavedStep(getUserId());
     } catch (WorkflowException e) {
       throw new ProcessManagerException("ProcessManagerSessionController",
-          "processManager.EX_GET_SAVED_STEP");
+          "processManager.GET_SAVED_STEP_FAILED");
     }
   }
 
   /**
    * Get step data record saved.
+   *
    * @throws ProcessManagerException
    * @throws ProcessManagerException
    */
@@ -1481,7 +1529,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       return savedStep.getActionRecord();
     } catch (WorkflowException e) {
       throw new ProcessManagerException("ProcessManagerSessionController",
-          "processManager.EX_GET_SAVED_STEP_DATARECORD");
+          "processManager.GET_SAVED_STEP_DATARECORD_FAILED");
     }
   }
 
@@ -1504,7 +1552,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       }
     } catch (Exception e) {
       throw new ProcessManagerException("ProcessManagerSessionController",
-          "processManager.EX_GET_PRINT_FORM", e);
+          "processManager.GET_PRINT_FORM_FAILED", e);
     }
   }
 
@@ -1516,12 +1564,13 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       return currentProcessInstance.getAllDataRecord(currentRole, getLanguage());
     } catch (WorkflowException we) {
       throw new ProcessManagerException("ProcessManagerSessionController",
-          "processManager.EX_GET_PRINT_RECORD", we);
+          "processManager.GET_PRINT_RECORD_FAILED", we);
     }
   }
 
   /**
    * Get the label of given action
+   *
    * @param actionName action name
    * @return action label
    */
@@ -1540,6 +1589,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Get the state with the given name
+   *
    * @param stateName state name
    * @return State object
    */
@@ -1549,6 +1599,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Get the named action
+   *
    * @param actionName action name
    * @return action
    */
@@ -1562,6 +1613,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Tests if there is some question for current user in current processInstance
+   *
    * @return true if there is one or more question
    */
   public boolean hasPendingQuestions() {
@@ -1598,10 +1650,10 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
           false));
     } catch (FormException we) {
       throw new ProcessManagerException("ProcessManagerSessionController",
-          "processManager.ERR_GET_USERSETTINGS_FORM", we);
+          "processManager.GET_USERSETTINGS_FORM_FAILED", we);
     } catch (WorkflowException fe) {
       throw new ProcessManagerException("ProcessManagerSessionController",
-          "processManager.ERR_GET_USERSETTINGS_FORM", fe);
+          "processManager.GET_USERSETTINGS_FORM_FAILED", fe);
     }
   }
 
@@ -1613,7 +1665,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       return processModel.getNewUserInfosRecord(currentRole, getLanguage());
     } catch (WorkflowException we) {
       throw new ProcessManagerException("ProcessManagerSessionController",
-          "processManager.ERR_GET_EMPTY_USERSETTINGS_RECORD");
+          "processManager.GET_EMPTY_USERSETTINGS_RECORD_FAILED");
     }
   }
 
@@ -1629,7 +1681,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       return data;
     } catch (WorkflowException we) {
       throw new ProcessManagerException("ProcessManagerSessionController",
-          "processManager.ERR_GET_EMPTY_USERSETTINGS_RECORD");
+          "processManager.GET_EMPTY_USERSETTINGS_RECORD_FAILED");
     }
   }
 
@@ -1645,7 +1697,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       Workflow.getUserManager().resetUserSettings(getUserId(), getComponentId());
     } catch (WorkflowException we) {
       throw new ProcessManagerException("ProcessManagerSessionController",
-          "processManager.ERR_SAVE_USERSETTINGS");
+          "processManager.SAVE_USERSETTINGS_FAILED");
     }
   }
 
@@ -1679,11 +1731,12 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    */
   public void removeProcess(String processId) throws ProcessManagerException {
     try {
-      ((UpdatableProcessInstanceManager) Workflow.getProcessInstanceManager()).removeProcessInstance(
+      ((UpdatableProcessInstanceManager) Workflow.getProcessInstanceManager())
+          .removeProcessInstance(
           processId);
     } catch (WorkflowException we) {
       throw new ProcessManagerException("ProcessManagerSessionController",
-          "processManager.ERR_REMOVE_PROCESS", we);
+          "processManager.REMOVE_PROCESS_FAILED", we);
     }
   }
 
@@ -1696,7 +1749,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       return Workflow.getErrorManager().getErrorsOfInstance(processId);
     } catch (WorkflowException we) {
       throw new ProcessManagerException("ProcessManagerSessionController",
-          "processManager.ERR_GET_PROCESS_ERRORS", we);
+          "processManager.GET_PROCESS_ERRORS_FAILED", we);
     }
   }
 
@@ -1723,9 +1776,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   }
 
   public boolean isVersionControlled() {
-    String strVersionControlled = this.getComponentParameterValue("versionControl");
-    return ((strVersionControlled != null)
-        && !("").equals(strVersionControlled) && !("no").equals(strVersionControlled.toLowerCase()));
+    return StringUtil.getBooleanValue(getComponentParameterValue(VERSION_MODE));
   }
 
   public boolean isAttachmentTabEnable() {
@@ -1733,8 +1784,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     if (param == null) {
       return true;
     }
-    return param != null && !("").equals(param)
-        && !("no").equals(param.toLowerCase());
+    return param != null && !("").equals(param) && !("no").equals(param.toLowerCase());
   }
 
   public boolean isProcessIdVisible() {
@@ -2039,6 +2089,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Is current user is part of the locking users for current process instance ?
+   *
    * @return true is current user is part of the locking users for current process instance
    */
   public boolean isCurrentUserIsLockingUser() {
@@ -2146,7 +2197,5 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * Current token Id prevents users to use several windows with the same session.
    */
   private String currentTokenId = null;
-
-
 
 }

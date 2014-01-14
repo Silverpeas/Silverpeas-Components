@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,56 +23,49 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="com.stratelia.webactiv.forums.sessionController.helpers.ForumListHelper"%>
-<%@page import="com.stratelia.webactiv.forums.sessionController.helpers.ForumActionHelper"%>
+<%@page import="com.stratelia.webactiv.forums.control.helpers.ForumListHelper"%>
+<%@page import="com.stratelia.webactiv.forums.control.helpers.ForumActionHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
     response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
     response.setHeader("Pragma", "no-cache"); //HTTP 1.0
     response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 <%@ include file="checkForums.jsp" %>
-<%@ include file="forumsListManagerPortlet.jsp" %>
 <%
-    String mailtoAdmin = context + "/util/icons/forums_mailtoAdmin.gif";
-
-    Collection categories = fsc.getAllCategories();
+    Collection<NodeDetail> categories = fsc.getAllCategories();
     boolean isModerator = false;
     ForumActionHelper.actionManagement(request, isAdmin, isModerator, userId, resource, out, fsc);
+    boolean isForumSubscriberByInheritance =
+      (Boolean) request.getAttribute("isForumSubscriberByInheritance");
 %>
-<html>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>_________________/ Silverpeas - Corporate portal organizer \_________________/</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><%
-
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <view:looknfeel />
+<%
     out.println(graphicFactory.getLookStyleSheet());
-    if (!graphicFactory.hasExternalStylesheet())
-    {
+    if (!graphicFactory.hasExternalStylesheet()) {
 %>
-    <link rel="stylesheet" type="text/css" href="styleSheets/forums.css"><%
-
-    }
-%>
-    <script type="text/javascript"><%
-
-    if (isAdmin)
-    {
-%>
+    <link rel="stylesheet" type="text/css" href="styleSheets/forums.css" />
+<% } %>
+<script type="text/javascript">
+<% if (isAdmin) { %>
         function confirmDeleteForum(forumId, spaceId, instanceId) {
             window.open("../../Rforums/jsp/main.jsp?Space=" + spaceId + "&Component=" + instanceId, "MyMain");
-        }<%
-
-    }
-%>
-        function goto_jsp(url)
-        {
-            window.open(url, "MyMain");
         }
-    </script>
+<% } %>
+function goto_jsp(url) {
+    window.open(url, "MyMain");
+}
+</script>
 </head>
-
-<body id="forum" marginheight="2" marginwidth="2" leftmargin="2" topmargin="2">
-    <center>
+<body id="forum">
         <table width="95%" border="0" align="center" cellpadding="4" cellspacing="1" class="testTableau">
             <tr class="enteteTableau">
                 <td colspan="2" nowrap="nowrap" align="center"><%=resources.getString("theme")%></td>
@@ -84,23 +77,20 @@
     // affichage des categories et de leurs forums
     if (categories != null)
     {
-        Iterator it = categories.iterator();
-        while (it.hasNext()) 
-        {
-            NodeDetail uneCategory = (NodeDetail) it.next();
-            int id = uneCategory.getId();
-            String nom = uneCategory.getName();
-            String description = uneCategory.getDescription();
-            ForumListHelper.displayForumsList(out, resources, isAdmin, isModerator, false, 0, "main",
-                fsc, Integer.toString(id), nom, description);
-        }
+      for (final NodeDetail uneCategory : categories) {
+        int id = uneCategory.getId();
+        String nom = uneCategory.getName();
+        String description = uneCategory.getDescription();
+        ForumListHelper
+            .displayForumsList(out, resources, isAdmin, isModerator, false, 0, "main", fsc,
+                Integer.toString(id), nom, description, isForumSubscriberByInheritance);
+      }
     } 
 
     // liste des forums sans categories
     ForumListHelper.displayForumsList( out, resources, isAdmin, isModerator, false, 0, "main", fsc,
-        null, "", "");
+        null, "", "", isForumSubscriberByInheritance);
 %>
         </table>
-    </center>
 </body>
 </html>

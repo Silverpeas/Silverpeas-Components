@@ -38,6 +38,10 @@
   border-right:1px solid #CCCCCC;
 }
 
+.ganttMois img {
+  border:0px;
+}
+
 #month_nav, #trimester_nav  {
   text-align:center;
   font-weight:bold; 

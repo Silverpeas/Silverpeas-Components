@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -51,13 +51,9 @@ public class OrganizationChartProcessor {
       OrganizationChartSessionController controller) {
     request.removeAttribute("error");
     String rootOu = request.getParameter("baseOu");
-
     String chartType = request.getParameter("chartType");
     ChartVO chart = controller.getChart(rootOu, OrganizationalChartType.fromString(chartType));
-
     request.getSession().setAttribute("organigramme", chart);
-    // request.getSession().setAttribute("organigramme", buildFakePersonUnit());
-
     return JSP_BASE + DESTINATION_DISPLAY_CHART;
   }
 
@@ -66,7 +62,10 @@ public class OrganizationChartProcessor {
     String login = request.getParameter("login");
 
     if (login != null) {
-      String userId = organizationchartSC.getUserIdFromLogin(login);
+      String userId = login;
+      if (organizationchartSC.isLDAP()) {
+        userId = organizationchartSC.getUserIdFromLogin(login);
+      }
 
       if (userId != null) {
         return "/Rprofil/jsp/Main?userId=" + userId;

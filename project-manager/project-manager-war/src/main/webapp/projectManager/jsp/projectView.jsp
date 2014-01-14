@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,19 +23,23 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.util.EncodeHelper"%>
+<%@page import="com.stratelia.webactiv.util.FileRepositoryManager"%>
+<%@page import="com.silverpeas.util.StringUtil"%>
+<%@page import="org.silverpeas.attachment.model.SimpleDocument"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="check.jsp" %>
 
 <%
-TaskDetail	project			= (TaskDetail) request.getAttribute("Project");
-Vector		vAttachments	= (Vector) request.getAttribute("Attachments");
-Iterator	attachments		= vAttachments.iterator();
+TaskDetail	project = (TaskDetail) request.getAttribute("Project");
+List<SimpleDocument> attachments = (List<SimpleDocument>) request.getAttribute("Attachments");
 
 String nom 			= project.getNom();
 String description 	= project.getDescription();
-if (description == null || description.equals("null"))
+if (description == null || description.equals("null")) {
 	description = "";
+}
 String dateDebut 	= resource.getOutputDate(project.getDateDebut());
 String dateFin 		= resource.getOutputDate(project.getDateFin());
 String orgaFullName	= project.getOrganisateurFullName();
@@ -81,7 +85,7 @@ out.println(board.printBefore());
 </tr>
 <tr>
 	<td class="txtlibform" valign="top"><%=resource.getString("projectManager.TacheDescription")%> :</td>
-    <td><%=Encode.javaStringToHtmlParagraphe(description)%></td>
+  <td><%=EncodeHelper.javaStringToHtmlParagraphe(description)%></td>
 </tr>
 <tr>
 	<td class="txtlibform"><%=resource.getString("projectManager.ProjetDateDebut")%> :</td>
@@ -98,44 +102,43 @@ out.println(board.printAfter());
 </td>
 <td valign="top">
 	<% 
-	  	if (attachments.hasNext())
-	  	{
+	  	if (attachments != null && ! attachments.isEmpty()) {
 	  		out.println(board.printBefore());
 	  		out.println("<table width=\"200\">");
-	        out.println("<tr><td align=\"center\"><img src=\""+m_context+"/util/icons/attachedFiles.gif\"></td></tr>");
-	        
-	        AttachmentDetail attachmentDetail = null;
-	        String author 	= "";
-	        String title	= "";
-	        String info		= "";
-	        while (attachments.hasNext()) {
-	            attachmentDetail = (AttachmentDetail) attachments.next();
-				title	= attachmentDetail.getTitle();
-				info	= attachmentDetail.getInfo();
-				if (attachmentDetail.getAuthor() != null && attachmentDetail.getAuthor().length() > 0) {
-					author = "<br><i>"+attachmentDetail.getAuthor()+"</i>";
-				}
-                out.println("<tr>");
-                out.println("<td><img alt=\"\" src=\""+attachmentDetail.getAttachmentIcon()+"\" width=20>&nbsp;");
-				out.println("<A href=\""+m_context+attachmentDetail.getAttachmentURL()+"\" target=\"_blank\">");
-				if (title != null && title.length()>0)
-					out.println(title);
-				else
-					out.println(attachmentDetail.getLogicalName());
-				out.println("</A> "+author+"<br>");
-				if (title != null && title.length()>0) {
-					out.println(attachmentDetail.getLogicalName());
-					out.println(" / ");
-				}
-                out.println(attachmentDetail.getAttachmentFileSize()+" / "+attachmentDetail.getAttachmentDownloadEstimation()+"<br>");
-				if (info != null && info.length()>0)
-					out.println("<i>"+info+"</i>");
-				out.println("</td></tr>");
-				out.println("<tr><td>&nbsp;</td></tr>");
-				author = "";
-	        }
-	        out.println("</table>");
-	        out.println(board.printAfter());
+	      out.println("<tr><td align=\"center\"><img src=\""+m_context+"/util/icons/attachedFiles.gif\"></td></tr>");	      
+        for(SimpleDocument attachmentDetail : attachments) {
+            String title = attachmentDetail.getTitle();
+            String info = attachmentDetail.getDescription();
+            String author = "";
+            if (attachmentDetail.getAuthor() != null && attachmentDetail.getAuthor().length() > 0) {
+              author = "<br/><i>" + attachmentDetail.getAuthor() + "</i>";
+            }
+            out.println("<tr>");
+            out.println("<td><img alt=\"\" src=\"" + FileRepositoryManager.
+                getFileIcon(attachmentDetail.getFilename()) + "\" width=20>&nbsp;");
+            out.println("<a href=\"" + m_context + attachmentDetail.getAttachmentURL()
+                + "\" target=\"_blank\">");
+            if (StringUtil.isDefined(title)) {
+              out.println(title);
+            } else {
+              out.println(attachmentDetail.getFilename());
+            }
+            out.println("</a> " + author + "<br/>");
+            if (title != null && title.length() > 0) {
+              out.println(attachmentDetail.getFilename());
+              out.println(" / ");
+            }
+            out.println(FileRepositoryManager.formatFileSize(attachmentDetail.getSize()) + " / "
+                + FileRepositoryManager.getFileDownloadTime(attachmentDetail.getSize()) + "<br/>");
+            if (info != null && info.length() > 0) {
+              out.println("<i>" + info + "</i>");
+            }
+            out.println("</td></tr>");
+            out.println("<tr><td>&nbsp;</td></tr>");
+            author = "";
+          }
+          out.println("</table>");
+          out.println(board.printAfter());
 	    }
 	%>
 </td>

@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,15 +25,16 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="check.jsp" %>
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="JavaScript">
+<script type="text/javascript">
 	function submitForm() {
 		if (!isValidTextArea(document.addmails.newmails)) {
 			window.alert("<%= resource.getString("infoLetter.makeMyDay") %>");
@@ -49,66 +50,45 @@ out.println(gef.getLookStyleSheet());
 	}
 </script>
 </head>
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
+<body>
 <%
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel, "Accueil");
-	browseBar.setPath("<a href=\"Accueil\">" + resource.getString("infoLetter.listParutions") + "</a> > " + resource.getString("infoLetter.externSubscribers")+ " > " + resource.getString("infoLetter.addExternSubscribers"));
-
-
+	browseBar.setPath(resource.getString("infoLetter.externSubscribers")+ " > " + resource.getString("infoLetter.addExternSubscribers"));
 
 	out.println(window.printBefore());
- 
-	//Instanciation du cadre avec le view generator
-
-    
-	out.println(frame.printBefore());	
-	
+	out.println(frame.printBefore());		
 %>
 
-<% // Ici debute le code de la page %>
-
-<center>
-<table width="98%" border="0" cellspacing="0" cellpadding="0" class=intfdcolor4><!--tablcontour-->
 <form name="addmails" action="" method="post">
+<table width="98%" border="0" cellspacing="0" cellpadding="0" class="intfdcolor4"><!--tablcontour-->
 	<tr> 
 		<td>
 			<table border="0" cellspacing="0" cellpadding="5" class="contourintfdcolor" width="100%"><!--tabl1-->
-				<tr align=center> 
-
-					<td  class="intfdcolor4" valign="top" align=left>
+				<tr align="center"> 
+					<td class="intfdcolor4" valign="top" align="left">
 						<span class="txtlibform"><%=resource.getString("infoLetter.emailExternSubscribers")%> :</span>
 					</td>
-					<td  class="intfdcolor4" valign="top" align=left>
-					<textarea cols="49" rows="8" name="newmails"></textarea>&nbsp;<img src="<%=resource.getIcon("infoLetter.mandatory")%>" width="5" height="5">
+					<td class="intfdcolor4" valign="top" align="left">
+					<textarea cols="49" rows="8" name="newmails"></textarea>&nbsp;<img src="<%=resource.getIcon("infoLetter.mandatory")%>" width="5" height="5"/>
 					</td>
 				</tr>
-				<tr align=center>				 
-					<td class="intfdcolor4" valign="baseline" align=left colspan=2><span class="txt">(<img src="<%=resource.getIcon("infoLetter.mandatory")%>" width="5" height="5"> : <%=resource.getString("infoLetter.infoComboEmail")%>)</span> 
+				<tr align="center">				 
+					<td class="intfdcolor4" valign="baseline" align="left" colspan="2"><span class="txt">(<img src="<%=resource.getIcon("infoLetter.mandatory")%>" width="5" height="5"/> : <%=resource.getString("infoLetter.infoComboEmail")%>)</span> 
 					</td>
 				</tr>
 			</table>
 		</td>
 	</tr>
-</form>
 </table>
-
-<br>
+</form>
+<br/>
 <%
     ButtonPane buttonPane = gef.getButtonPane();
-    buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:submitForm();", false));
-    buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"), "javascript:cancelForm();", false));
+    buttonPane.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:submitForm();", false));
+    buttonPane.addButton(gef.getFormButton(resource.getString("GML.cancel"), "javascript:cancelForm();", false));
     out.println(buttonPane.print());
-%>
-</center>
 
-
-<% // Ici se termine le code de la page %>
-
-<%
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
-
+</body>
+</html>

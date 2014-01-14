@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2009 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,16 +28,18 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
+<fmt:setLocale value="${sessionScope[sessionController].language}" />
+<%@ include file="form/dateFormat.jspf"%>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
+
 <%
 ScheduleEventSessionController seScc = (ScheduleEventSessionController) request.getAttribute("ScheduleEvent");
 %>
 <c:set var="userId" value="<%=seScc.getUserId()%>"/>
   
-<html>
-  <fmt:setLocale value="${sessionScope[sessionController].language}" />
-  <%@ include file="form/dateFormat.jspf"%>
-  <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
-  <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <view:looknfeel />
     <script type="text/javascript">
@@ -60,15 +62,13 @@ ScheduleEventSessionController seScc = (ScheduleEventSessionController) request.
 	    }
 
 	    function getDetail(id){
-	      document.utilForm.action="<c:url value="/Rscheduleevent/jsp/Detail"/>";
+	      	document.utilForm.action="<c:url value="/Rscheduleevent/jsp/Detail"/>";
 	    	document.utilForm.scheduleEventId.value=id;
 	    	document.utilForm.submit();
 	    }
   </script>
   </head>
-  
-  
-  <body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+  <body>
   
   <fmt:message key="scheduleevent" var="scheduleEventTitle" />
   <view:browseBar>
@@ -78,11 +78,9 @@ ScheduleEventSessionController seScc = (ScheduleEventSessionController) request.
   <fmt:message key="scheduleevent.icons.add.alt" var="addScheduleEventAlt" />
   <fmt:message key="scheduleevent.icons.add" var="addScheduleEventIconPath" bundle="${icons}" />
   <view:operationPane>
-    <view:operation altText="${addScheduleEventAlt}" icon="${addScheduleEventIconPath}" action="${'javascript: addScheduleEvent();'}" />
+    <view:operationOfCreation altText="${addScheduleEventAlt}" icon="${addScheduleEventIconPath}" action="${'javascript: addScheduleEvent();'}" />
   </view:operationPane>
   
-  <fmt:message key="scheduleevent.icons.see" var="seeIcon" bundle="${icons}" />
-  <fmt:message key="scheduleevent.icons.see.alt" var="seeIconAlt" />
   <fmt:message key="scheduleevent.icons.open" var="openIcon" bundle="${icons}" />
   <fmt:message key="scheduleevent.icons.open.alt" var="openIconAlt" />
   <fmt:message key="scheduleevent.icons.close" var="closeIcon" bundle="${icons}" />
@@ -100,6 +98,7 @@ ScheduleEventSessionController seScc = (ScheduleEventSessionController) request.
   	<form id="utilForm" name="utilForm" method="post">
   		<input type="hidden" name="scheduleEventId"/>
   	</form>
+  	<view:areaOfOperationOfCreation/>
   	<table id="scheduleEvents" class="tableArrayPane" width="98%" cellspacing="2" cellpadding="2" border="0">
   		<tr align="center">
   			<td valign="top" align="center" class="ArrayColumn"><fmt:message key="scheduleevent.column.title"/></td>
@@ -110,13 +109,12 @@ ScheduleEventSessionController seScc = (ScheduleEventSessionController) request.
   		<c:if test="${not empty requestScope.scheduleEventList}">
     		<c:forEach items="${requestScope.scheduleEventList}" var="event" varStatus="eventIndex">
       		<tr align="center">
-      			<td valign="top" align="center" class="ArrayCell"><a href="javascript:getDetail('${event.id}');">${event.title}</a>&nbsp;<a href="<c:url value="/ScheduleEvent/${event.id}"/>"><img src="${linkIcon}" border="0" align="bottom" alt="${linkIconAlt}" title="${linkIconAlt}"></a><c:if test="${event.status == 0}">&nbsp;<img alt="${closedIconAlt}" title="${closedIconAlt}" src="${closedIcon}" height="15" width="15"/></c:if></td>
+			<td valign="top" align="center" class="ArrayCell"><a href="javascript:getDetail('${event.id}');"><c:out value="${event.title}"/></a>&nbsp;<a href="<c:url value="/ScheduleEvent/${event.id}"/>"><img src="${linkIcon}" border="0" align="bottom" alt="${linkIconAlt}" title="${linkIconAlt}"/></a><c:if test="${event.status == 0}">&nbsp;<img alt="${closedIconAlt}" title="${closedIconAlt}" src="${closedIcon}" height="15" width="15"/></c:if></td>
       			<td valign="top" align="center" class="ArrayCell"><view:formatDate value="${event.creationDate}" /></td>
       			<%
       			ScheduleEvent currentSe = (ScheduleEvent) pageContext.getAttribute("event");
-      			UserDetail creator = seScc.getUserDetail(String.valueOf(currentSe.getAuthor()));
       			%>
-      			<td valign="top" align="center" class="ArrayCell"><%=creator.getDisplayedName()%></td>
+      			<td valign="top" align="center" class="ArrayCell"><view:username userId="<%=String.valueOf(currentSe.getAuthor())%>"/></td>
       			<td valign="top" align="center" class="ArrayCell">
         			<c:if test="${event.author == userId}">
 	        			<c:if test="${event.status == 0}">
@@ -131,9 +129,7 @@ ScheduleEventSessionController seScc = (ScheduleEventSessionController) request.
       		</tr>
     		</c:forEach>
   		</c:if>
-  	
-  	</table>
-  	
+  	</table>  	
   </view:window>
   </body>
 </html>

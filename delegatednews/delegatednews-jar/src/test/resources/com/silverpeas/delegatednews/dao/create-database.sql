@@ -6,7 +6,8 @@
         validatorId varchar(50) null,
         validationDate timestamp(0) null,
         beginDate timestamp(0) null,
-        endDate timestamp(0) null
+        endDate timestamp(0) null,
+        newsOrder int not null DEFAULT (0)
 	);
     
 	alter table sc_delegatednews_news 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -13,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -34,13 +34,14 @@
     <message lang="de">QuickInfo</message>
   </label>
   <description>
-    <message lang="fr">Permet de diffuser des brèves d'information. Les informations sont classées sur le Plan de Classement.</message>
+    <message lang="fr">Les actualités remontent automatiquement sur la page d’accueil. Elles sont constituées d’un titre et d’une description riche. 
+	</message>
     <message lang="en">Create and broadcast news. These pieces of information can be classified on the classification scheme.</message>
     <message lang="de">Erstellt und sendet Nachrichten. Diese Informationsstücke können auf dem KP klassifiziert werden.</message>
   </description>
   <suite>
     <message lang="fr">04 Gestion de contenu</message>
-    <message lang="en">04 Content management</message>
+    <message lang="en">04 Content Management</message>
     <message lang="de">04 Inhaltsverwaltung</message>
   </suite>
   <visible>true</visible>
@@ -98,8 +99,8 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Les brèves créées au sein de cette instance pourront Être classées sur le Plan de Classement.</message>
-        <message lang="en">News cerated in this component will be classified on the classification scheme.</message>
+        <message lang="fr">Les brèves créées au sein de cette instance pourront être classées sur le Plan de Classement.</message>
+        <message lang="en">News created in this application will be classified on the classification scheme.</message>
         <message lang="de">Nachrichten können auf dem KP klassifiziert werden</message>
       </help>
     </parameter>

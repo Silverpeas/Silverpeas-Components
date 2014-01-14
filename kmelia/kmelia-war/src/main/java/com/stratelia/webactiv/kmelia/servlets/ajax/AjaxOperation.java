@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,13 +23,17 @@
  */
 package com.stratelia.webactiv.kmelia.servlets.ajax;
 
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.BindToPubliHandler;
+import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.CopyPublicationsHandler;
+import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.CutPublicationsHandler;
 import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.DeleteHandler;
+import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.DeletePublicationsHandler;
 import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.EmptyTrashHandler;
 import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.GetProfileHandler;
 import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.GetTopicWysiwygHandler;
 import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.IsSubscriberHandler;
+import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.MovePublicationHandler;
+import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.PasteHandler;
 import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.RenameTopicHandler;
 import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.SortTopicsHandler;
 import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.SubscribeHandler;
@@ -37,6 +41,8 @@ import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.UnbindToPubliHandler
 import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.UnsubscribeHandler;
 import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.UpdateTopicStatusHandler;
 import javax.servlet.http.HttpServletRequest;
+
+import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
 
 public enum AjaxOperation {
 
@@ -51,7 +57,12 @@ public enum AjaxOperation {
   unbindToPub(new UnbindToPubliHandler(), false),
   Subscribe(new SubscribeHandler(), true),
   Unsubscribe(new UnsubscribeHandler(), true),
-  IsSubscriber(new IsSubscriberHandler(), true);
+  IsSubscriber(new IsSubscriberHandler(), true),
+  Paste(new PasteHandler(), true),
+  MovePublication(new MovePublicationHandler(), true),
+  DeletePublications(new DeletePublicationsHandler(), true),
+  CopyPublications(new CopyPublicationsHandler(), true),
+  CutPublications(new CutPublicationsHandler(), true);
 
   private AjaxHandler handler;
   private boolean controllerRequired;
@@ -65,7 +76,7 @@ public enum AjaxOperation {
     return this.controllerRequired;
   }
 
-  public String handleRequest(HttpServletRequest request, ComponentSessionController controller) {
+  public String handleRequest(HttpServletRequest request, KmeliaSessionController controller) {
     return this.handler.handleRequest(request, controller);
   }
 }

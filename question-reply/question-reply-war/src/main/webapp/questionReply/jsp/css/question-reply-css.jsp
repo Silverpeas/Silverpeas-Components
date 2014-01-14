@@ -1,15 +1,23 @@
 <%@page contentType="text/css; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-ul, li, h4, h3, h5{
+.hautFrame form > ul,
+ul.questions, 
+ul.questions > li, 
+li.category, 
+.answers > ul, 
+li.answer, 
+.questionTitle > h4, 
+.categoryTitle > h3, 
+h5.answerTitle{
   margin:0;
   padding:0;
   list-style-type:none;
-  line-height:11px;
 }
 
-.category {
-  margin-top:10px;}
+li.category {
+  margin-top:10px;
+}
 
 .categoryTitle{
   position:relative;
@@ -60,8 +68,7 @@ ul, li, h4, h3, h5{
   left:4px;
 }
 
-div.question{
-  cursor:pointer;		/* Cursor is like a hand when someone rolls the mouse over the question */
+div.question{	
   background-color:#EFF8E3;	
   position:relative;
   border:1px solid #CFCFCF;
@@ -76,7 +83,6 @@ div.question{
   right:0px;
 }
 
-
 .question .action a {
   position:absolute;
 }
@@ -90,20 +96,38 @@ div.question{
 .question .action .delete {	top:3px;	left:89px;	}
 .question .action .checkbox {position:absolute; top:7px;	left:118px;}
 
+.question .permalink {
+  margin-right: 5px;
+}
+
+.question .permalink img {
+  vertical-align: middle;
+}
 
 .questionTitle {
   line-height: 140%;
   margin: 6px 142px 5px 25px;
+  cursor:pointer;	/* Cursor is like a hand when someone rolls the mouse over the question */
 }
 
 .questionTitle h4 {
   font-weight:100;
 }
 
-.answer {
+li.answer {
   position:relative;    
   color: #333333;
   padding: 4px 0 10px 2px;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  box-shadow:5px 5px 10px #cccccc;
+  -moz-box-shadow:5px 5px 10px #cccccc;
+  -webkit-box-shadow:5px 5px 10px #cccccc;
+  background-color:#FFF;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 10px;
 }
 
 .answers{ 
@@ -120,16 +144,21 @@ div.question{
   padding:10px 0;
 }
 
-.answerTitle {
+h5.answerTitle {
   font-size:100%;
   padding:5px 50px 10px 24px;
 }
 
 .answerContent {
-  padding:8px 10px 8px 24px;
+  padding:0px 10px 8px 24px;
   overflow:auto;
 }
 
+/* pour que les listes de l'éditeur est le bon comportement */
+
+.answerContent  ul 			{ list-style-type:disc;}
+.answerContent  ul ul		{ list-style-type:circle;}
+.answerContent  ul ul ul	{ list-style-type:square;}
 
 .answerContent table.tableBoard {
   width:auto !important;
@@ -142,4 +171,28 @@ div.question{
   text-align:right;
   font-style:italic;
   font-size:11px;
+}
+
+.attachments {
+ float:right;
+ overflow:hidden;
+ display:inline;
+}
+
+* html .attachments  {
+ width:30%;
+}
+
+#portlet-faq .cellBrowseBar,
+#portlet-faq .cellOperation {
+  display: none;
+}
+
+#portlet-faq .questionTitle {
+  margin: 6px 25px 5px 25px;
+}
+
+.updateR input{
+	width:70%;
+	maw-width:500px;
 }

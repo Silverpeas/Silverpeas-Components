@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,12 +27,14 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+
 <c:set var="sessionController">Silverpeas_ScheduleEvent</c:set>
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <fmt:message key="scheduleevent.js.notitle" var="scheduleEventNoTitle" />
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel />
 <script type="text/javascript">
@@ -83,13 +85,13 @@
 								<tr>
 									<td class="txtlibform">${titleLabel} :</td>
 									<td>
-										<input id="title" type="text" name="title" maxlength="254" size="100" value="${currentTitle}" />&nbsp;${mandatoryImage}
+										<input id="title" type="text" name="title" maxlength="254" size="100" value="<c:out value='${currentTitle}'/>" />&nbsp;${mandatoryImage}
 									</td>
 								</tr>
 								<tr>
 									<td class="txtlibform">${descLabel} :</td>
 									<td>
-										<textarea id="description" rows="5" cols="100" name="description">${currentDescription}</textarea>
+										<textarea id="description" rows="5" cols="100" name="description"><c:out value="${currentDescription}"/></textarea>
 									</td>
 								</tr>
 								<tr>

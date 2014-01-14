@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,27 +27,28 @@
 
 package com.silverpeas.whitePages;
 
+import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
+import com.silverpeas.whitePages.control.CardManager;
+import com.silverpeas.whitePages.model.Card;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.silverpeas.whitePages.control.CardManager;
-import com.silverpeas.whitePages.model.Card;
-import com.stratelia.silverpeas.silverstatistics.control.ComponentStatisticsInterface;
-import com.stratelia.silverpeas.silverstatistics.control.UserIdCountVolumeCouple;
-
 /**
  * Class declaration
+ *
  * @author
  */
 public class WhitePagesStatistics implements ComponentStatisticsInterface {
 
+  @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
       throws Exception {
-    ArrayList<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>();
-    Collection<Card> c = getWhitePages(spaceId, componentId);
+    Collection<Card> c = getWhitePages(componentId);
+    ArrayList<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>(c.size());
     for (Card detail : c) {
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
-
       myCouple.setUserId(detail.getUserId());
       myCouple.setCountVolume(1);
       myArrayList.add(myCouple);
@@ -56,7 +57,7 @@ public class WhitePagesStatistics implements ComponentStatisticsInterface {
     return myArrayList;
   }
 
-  public Collection<Card> getWhitePages(String spaceId, String componentId)
+  public Collection<Card> getWhitePages(String componentId)
       throws WhitePagesException {
     return CardManager.getInstance().getCards(componentId);
   }

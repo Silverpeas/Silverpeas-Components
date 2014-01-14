@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,80 +24,35 @@
 
 /* tableau Doodle */
 body {
-	margin: 0 0 0 0;
+  margin: 0 0 0 0;
 }
-
-
-.questionResults th, .questionResults td, .questionResults tr {
-	padding:5px;
-	font-size:12px;
-}
-
-.questionResults .questionResults-top th {
-	background-color:#E4E4E4;
-	border:#CCC 1px solid;
-	width:150px;
-}
-
-.questionResults .questionResults-top .questionResults-vide, .questionResults tbody .questionResults-vide {
-	background-color:#FFFFFF;
-	border:none;
-	padding:3px;
-	
-}
-
-.questionResults tbody tr td:first-child {
-	
-	/*background-color:#E4E4E4;
-	border-bottom:#CCC 1px solid;
-	margin-right:5px;*/
-}
-
-#survey-result-C .questionResults tbody tr td {
-	background-color:#F9F9F9;
-	border-top:1px solid #DDDEEE;
-	min-height:33px;
-}
-
-
-.questionResults tbody .questionResults-Oui {
-	background-color:#D5FAC5;
-	border:1px solid #7CCC24;
-	text-align:center;
-	font-size:12px;
-}
-
-.questionResults tbody .questionResults-Non {
-	background-color:#FECBCB;
-	border:1px solid #FF928F;
-	text-align:center;
-	font-size:12px;
-}
-
 
 /* tableau Doodle */
-
 .questionResults th,.questionResults td,.questionResults tr {
-	padding: 5px;
-	font-size: 12px;
+  padding: 5px;
+  font-size: 12px;
 }
 
 .questionResults .questionResults-top th {
-	background-color: #E4E4E4;
-	width: 150px;
+  background-color: #E4E4E4;
+  border:#CCC 1px solid;
+  width: 150px;
 }
 
-.questionResults .questionResults-top .questionResults-vide,.questionResults tbody .questionResults-vide
-	{
-	background-color: #FFFFFF;
-	border: none;
-	padding: 3px;
-	
-	border-top:1px solid #CCCCCC;
+.questionResults .questionResults-top .questionResults-vide,.questionResults tbody .questionResults-vide  {
+  background-color: #FFFFFF;
+  border: none;
+  padding: 3px;
+}
+
+.questionSeparator {
+  border: none;
+  padding: 3px;
+  border-bottom:1px solid #CCCCCC;
 }
 
 .questionResults .displayUserName,.questionResults .displayUserName a {
-	background-color: #E4E4E4;
+  background-color: #E4E4E4;
     font-size: 11px;
     font-weight: 100;
     line-height: 29px;
@@ -106,31 +61,285 @@ body {
 }
 
 .questionResults tbody tr td {
-	background-color: #FFFFFF;
-	min-height: 33px;
+  /*min-height: 33px;*/
 }
 
 .questionResults tbody .questionResults-Oui {
-	background-color: #D5FAC5;
-	text-align: center;
-	font-size: 10px;
+  background-color: #D5FAC5;
+  border:1px solid #7CCC24;
+  text-align: center;
+  font-size: 10px;
 }
 
 .questionResults tbody .questionResults-Non {
-	background-color: #FECBCB;
-	text-align: center;
-	font-size: 10px;
+  background-color: #FECBCB;
+  border:1px solid #FF928F;
+  text-align: center;
+  font-size: 10px;
 }
 
 .questionResults .labelAnswer {
-	text-align: left;
-	padding-right:40px;
+  text-align: left;
+  padding-right:40px;
 }
 
 .questionResults .freeAnswer {
-	background-color: #EFEFEF;
+  background-color: #EFEFEF;
 }
 
 #surveyOperationId {
-	float:right;
+  float:right;
+}
+
+fieldset#dates legend {
+  background:transparent url(../../../util/icons/calendar_1.png) 11px 0px no-repeat;
+}
+
+fieldset#info legend {
+  background:transparent url(../../../util/icons/component/pollingStationSmall.gif) 11px 0px no-repeat;
+}
+
+.survey fieldset#info legend {
+  background:transparent url(../../../util/icons/component/surveySmall.gif) 11px 0px no-repeat;
+}
+
+fieldset#answers legend {
+  background:transparent url(../../../util/icons/question.gif) 11px 0px no-repeat;
+}
+
+#info .field, 
+#dates .field,
+#answers .field {
+  clear: both;
+    display: block;
+    float: none;
+    width: 98%;
+}
+
+#answers .fieldImage {
+  border-bottom: 1px solid #CCCCCC;
+  margin-bottom: 8px;
+  padding-right: 0;
+}
+
+#info #typeArea select,
+#info #nbAnswersArea input,
+#info #nbQuestionsArea input {
+  width: 46%;
+}
+
+#answers .thumbnailInputs select,
+#answers .thumbnailInputs input {
+  width: auto;
+}
+
+#answers .answerimage {
+    clear: both;
+}
+
+.thumbnailPreviewAndActions {
+  background-color:#EEEEEE;
+  border:1px solid #DDDDDD;
+  float:left;
+  margin-left:0;
+  padding:3px;
+  margin-bottom: 3px;
+  width: 98%;
+}
+
+.thumbnailPreview {
+  float: left;
+}
+
+.thumbnailPreview .thumbnail {
+  height: 50px;
+  border:1px solid #DDDDDD;
+}
+
+.thumbnailActions {
+  float: left;
+  margin-left: 4px; 
+}
+
+.thumbnailActions a {
+  margin-bottom: 5px;
+  display: block;
+}
+
+.thumbnailActions img {
+  vertical-align: middle;
+}
+
+.thumbnailInputs img, #thumbnailInputs input, #thumbnailInputs select {
+  vertical-align: middle;
+}
+
+#creation-page .classification .legende {
+  display: none;
+}
+
+
+/** 3269 **/
+.eventInfo {
+  background-color:#EFEFEF;
+  border:1px solid #CDCDCD;
+  border-radius:15px;
+  padding:15px 0;
+  display:table;
+  width:98%;
+  behavior: url("/silverpeas/util/styleSheets/PIE.htc");
+}
+
+
+.sousNavBulle {
+  float:none;
+}
+
+.eventName {
+    color: #333333;
+    font-size: 130%;
+    font-weight: bold;
+}
+
+.eventInfo div {
+  display:table-cell;
+  border-left:2px solid #DCDCDC;
+  min-height:16px;
+  vertical-align:middle;
+  text-align:left;
+  width:33%;
+}
+
+#eventInfoPublication {
+  padding-bottom:11px;
+}
+
+ *+html .eventInfo div {
+  float:left;
+  width:32%;
+}
+* html  .eventInfo div {
+  float:left;
+  width:32%;
+  border:0;
+}
+
+.eventInfo div:first-child {
+  border:0;
+}
+.eventInfo div div.bloc{
+  padding:0 10px 0 37px;
+  color:#333;
+  font-size:110%;
+  display:inline-block;
+  width:auto;
+  text-align:left;
+}
+
+* html  .eventInfo div div.bloc {
+  padding:0 10px 0 27px;
+  width:70%;
+}
+
+.eventInfo div span {
+  display:block;
+}
+.eventInfo div span a {
+  color:#333;
+  font-size:110%;
+  text-decoration:underline;
+}
+
+.surveyParticipation .bloc{
+   background:transparent url('/silverpeas/util/icons/groupe.gif') 17px center   no-repeat;
+}
+
+.surveyUserParticipation .bloc{
+   background:transparent url('/silverpeas/util/icons/ok.gif') 17px center   no-repeat;
+}
+
+.surveyDate .bloc{
+   background:transparent url('/silverpeas/util/icons/calendar_2.gif') 12px  center   no-repeat;
+}
+
+span.priority {
+  background-color:#F6DEDE;
+  border:1px solid #FDBABA;
+  border-radius:5px;
+  color:#F02929;
+  font-size:8px;
+  line-height:9px;
+  letter-spacing:0.11em;
+  display:inline;
+  padding:1px 4px;
+  behavior: url("/silverpeas/util/styleSheets/PIE.htc");
+}
+
+.surveyDesc {    
+  border-left: 6px solid #E4E4E4;
+    color: #666666;
+    font-weight: 100;
+    padding: 8px;
+  margin:10px 0;
+}
+
+ul#attachmentList li.attachmentListItem {
+	margin: 0;
+	padding: 0px 5px 0px 10px;
+}
+
+.bgDegradeGris p#permalinkInfo {
+	padding: 11px 17px 11px 17px;
+}
+
+.surveyResult {
+  clear:both;
+  padding:15px 0;
+}
+
+#publishResultDialog label {
+    float:left;
+    clear:both;
+    width:120px;
+}
+#publishResultDialog .champs {
+  float:left;
+  margin-left:20px;
+  width:400px;
+}
+
+#view-publishResultDialog label {
+  height:100px;
+}
+
+#view-publishResultDialog .champs-ui-dialog {
+    position:relative;
+    padding:0px 0 5px 5%;
+}
+
+#view-publishResultDialog .champs-ui-dialog input{
+    position:absolute;
+    top:3px;
+    left:0;
+}
+
+#synthesisFile-publishResultDialog label,
+#notification-publishResultDialog label {
+  height:50px;
+}
+ 
+#synthesisFile-publishResultDialog input,
+#notification-publishResultDialog select {
+  width:80%;
+}
+
+.inlineMessage, .inlineMessage-ok, .inlineMessage-nok {
+  float:none;
+  font-weight:bold;
+}
+
+.inlineMessage .linkFile  {
+  color:#0861ad;
+  font-weight:bold;
+  text-decoration:underline;
 }

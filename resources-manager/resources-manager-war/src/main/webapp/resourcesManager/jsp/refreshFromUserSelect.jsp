@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,45 +27,40 @@
 <%@ include file="check.jsp"%>
 
 <%
-Collection managers = (Collection) request.getAttribute("Managers");
+  Collection<UserDetail> managers = (Collection<UserDetail>) request.getAttribute("Managers");
 %>
 
 <HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-<%
-   out.println(gef.getLookStyleSheet());
-%>
-<script language="JavaScript">
+  <HEAD>
+    <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+    <%
+      out.println(gef.getLookStyleSheet());
+    %>
+    <script language="JavaScript">
 
-function refresh() 
-{
-	var tdManagers = window.opener.document.getElementById("managers");
-	tdManagers.innerHTML = "";
+      function refresh() 
+      {
+        var tdManagers = window.opener.document.getElementById("managers");
+        tdManagers.innerHTML = "";
 	
-	var inputManagerIds = window.opener.document.getElementById("managerIds");
+        var inputManagerIds = window.opener.document.getElementById("managerIds");
 	
-	<%
-	if (managers != null) {
-		Iterator it = managers.iterator();
-		String managerNames = "";
-		String managerIds = "";
-		while(it.hasNext())
-		{
-		  UserDetail manager = (UserDetail) it.next();
-      managerNames += manager.getDisplayedName()+"<br/>";
-      managerIds += manager.getId()+",";
-		}
-		%>
-		  tdManagers.innerHTML = "<%=managerNames%>";
-		  inputManagerIds.value = "<%=managerIds%>";
-		<%
-	}
-	%>
-	window.close();
-}
-</script>
-</HEAD>
-<BODY onLoad="refresh()">
-</BODY>
+      <%
+        String managerNames = "";
+        String managerIds = "";
+        if (managers != null) {
+          for (UserDetail manager : managers) {
+            managerNames += manager.getDisplayedName() + "<br/>";
+            managerIds += manager.getId() + ",";
+          }
+        }
+      %>
+          tdManagers.innerHTML = "<%=managerNames%>";
+          inputManagerIds.value = "<%=managerIds%>";
+          window.close();
+        }
+    </script>
+  </HEAD>
+  <BODY onLoad="refresh()">
+  </BODY>
 </HTML>

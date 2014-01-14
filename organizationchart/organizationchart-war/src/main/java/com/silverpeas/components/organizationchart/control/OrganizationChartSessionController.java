@@ -1,30 +1,28 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.silverpeas.components.organizationchart.control;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +34,7 @@ import com.silverpeas.components.organizationchart.model.OrganizationalRole;
 import com.silverpeas.components.organizationchart.model.OrganizationalUnit;
 import com.silverpeas.components.organizationchart.model.PersonCategory;
 import com.silverpeas.components.organizationchart.service.OrganizationChartConfiguration;
+import com.silverpeas.components.organizationchart.service.OrganizationChartLDAPConfiguration;
 import com.silverpeas.components.organizationchart.service.OrganizationChartService;
 import com.silverpeas.components.organizationchart.service.ServicesFactory;
 import com.silverpeas.components.organizationchart.view.CategoryBox;
@@ -45,9 +44,10 @@ import com.silverpeas.components.organizationchart.view.ChartVO;
 import com.silverpeas.components.organizationchart.view.OrganizationBox;
 import com.silverpeas.components.organizationchart.view.UserVO;
 import com.silverpeas.util.StringUtil;
+
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
 
@@ -68,6 +68,7 @@ public class OrganizationChartSessionController extends AbstractComponentSession
   private static final String PARAM_LDAP_ATT_ACCOUNT = "ldapAttAccount"; // champ ldap de
   // l'identifiant de compte
   // Silverpeas
+  private static final String PARAM_LDAP_ATT_CSS = "ldapAttCSS";
   private static final String PARAM_UNITSCHART_CENTRAL_LABEL = "unitsChartCentralLabel";
   private static final String PARAM_UNITSCHART_RIGHT_LABEL = "unitsChartRightLabel";
   private static final String PARAM_UNITSCHART_LEFT_LABEL = "unitsChartLeftLabel";
@@ -78,9 +79,12 @@ public class OrganizationChartSessionController extends AbstractComponentSession
   private static final String PARAM_LDAP_ATT_ACTIF = "ldapAttActif";
   private static final String PARAM_DOMAIN_ID = "chartDomainSilverpeas";
 
-  private OrganizationChartConfiguration config =null;
+  private OrganizationChartConfiguration config = null;
+  private OrganizationChartLDAPConfiguration ldapConfig = null;
+
   /**
    * Standard Session Controller Constructeur
+   *
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
    * @see
@@ -88,21 +92,34 @@ public class OrganizationChartSessionController extends AbstractComponentSession
   public OrganizationChartSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-        "com.silverpeas.components.organizationchart.multilang.OrganizationChartBundle",
-        "com.silverpeas.components.organizationchart.settings.OrganizationChartIcons");
+        "org.silverpeas.components.organizationchart.multilang.OrganizationChartBundle",
+        "org.silverpeas.components.organizationchart.settings.OrganizationChartIcons",
+        "org.silverpeas.components.organizationchart.settings.OrganizationChartSettings");
 
-    config = loadConfiguration();
-    service = ServicesFactory.getOrganizationChartService();
-    service.configure(config);
+    if (isLDAP()) {
+      ldapConfig = loadLDAPConfiguration();
+      service = ServicesFactory.getOrganizationChartService(ldapConfig);
+    } else {
+      config = loadGroupConfiguration();
+      service = ServicesFactory.getOrganizationChartService(config);
+    }
+  }
+
+  public final boolean isLDAP() {
+    return getComponentId().startsWith("organizationchart");
   }
 
   public ChartVO getChart(String baseDN, OrganizationalChartType chartType) {
-    OrganizationalChart chart = service.getOrganizationChart(baseDN, chartType);
+    String root = baseDN;
+    if (StringUtil.isNotDefined(root)) {
+      root = getComponentParameterValue(PARAM_LDAP_ROOT);
+    }
+    OrganizationalChart chart = service.getOrganizationChart(root, chartType);
     ChartVO chartVO = null;
 
     if (chart != null) {
       if ((chart.getUnits() != null) && (chart.getUnits().isEmpty())) {
-        chart = service.getOrganizationChart(baseDN, OrganizationalChartType.TYPE_PERSONNCHART);
+        chart = service.getOrganizationChart(root, OrganizationalChartType.TYPE_PERSONNCHART);
         chartType = OrganizationalChartType.TYPE_PERSONNCHART;
       }
 
@@ -125,8 +142,11 @@ public class OrganizationChartSessionController extends AbstractComponentSession
 
   private UserVO organizationalPerson2UserVO(OrganizationalPerson person, OrganizationalRole role) {
     String displayedRole = (role == null) ? "" : role.getLabel();
-    return new UserVO(person.getName(), person.getSilverpeasAccount(), displayedRole, person
-        .getDetail());
+    String loginOrId = person.getSilverpeasAccount();
+    if (!isLDAP()) {
+      loginOrId = String.valueOf(person.getId());
+    }
+    return new UserVO(person.getName(), loginOrId, displayedRole, person.getDetail());
   }
 
   private ChartVO buildChartUnitVO(OrganizationalChart chart) {
@@ -138,10 +158,11 @@ public class OrganizationChartSessionController extends AbstractComponentSession
     rootOrganization.setName(chart.getRoot().getName());
     rootOrganization.setDetailLinkActive(chart.getRoot().hasMembers());
     rootOrganization.setDn(chart.getRoot().getCompleteName());
-
+    rootOrganization.setSpecificCSSClass(chart.getRoot().getSpecificCSSClass());
+    rootOrganization.setDetails(chart.getRoot().getDetail());
 
     // Prevents user to go upper that the base DN
-    if (!config.getLdapRoot().equalsIgnoreCase( chart.getRoot().getCompleteName() )) {
+    if (!isRoot(chart)) {
       rootOrganization.setParentDn(chart.getRoot().getParentOu());
     }
 
@@ -153,13 +174,9 @@ public class OrganizationChartSessionController extends AbstractComponentSession
     for (OrganizationalPerson person : chart.getPersonns()) {
       if (person.isVisibleOnCenter()) {
         mainActors.add(organizationalPerson2UserVO(person, person.getVisibleCenterRole()));
-      }
-
-      else if (person.isVisibleOnLeft()) {
+      } else if (person.isVisibleOnLeft()) {
         leftUsers.add(organizationalPerson2UserVO(person, person.getVisibleLeftRole()));
-      }
-
-      else if (person.isVisibleOnRight()) {
+      } else if (person.isVisibleOnRight()) {
         rightUsers.add(organizationalPerson2UserVO(person, person.getVisibleRightRole()));
       }
     }
@@ -191,6 +208,8 @@ public class OrganizationChartSessionController extends AbstractComponentSession
       subUnit.setName(subOrganization.getName());
       subUnit.setCenterLinkActive(subOrganization.hasSubUnits());
       subUnit.setDetailLinkActive(subOrganization.hasMembers());
+      subUnit.setSpecificCSSClass(subOrganization.getSpecificCSSClass());
+      subUnit.setDetails(subOrganization.getDetail());
       // setting main actors of subunit
       List<UserVO> subUnitMainActors = new ArrayList<UserVO>();
       for (OrganizationalPerson person : subOrganization.getMainActors()) {
@@ -201,9 +220,19 @@ public class OrganizationChartSessionController extends AbstractComponentSession
       subUnit.setMainActors(subUnitMainActors);
       subOrganizations.add(subUnit);
     }
+    if (getSettings().getBoolean("sort.units.name", false)) {
+      Collections.sort(subOrganizations, UnitComparator.comparator);
+    }
     chartVO.setSubOrganizations(subOrganizations);
 
     return chartVO;
+  }
+
+  private boolean isRoot(OrganizationalChart chart) {
+    if (ldapConfig != null) {
+      return ldapConfig.getRoot().equalsIgnoreCase(chart.getRoot().getCompleteName());
+    }
+    return config.getRoot().equalsIgnoreCase(chart.getRoot().getCompleteName());
   }
 
   private ChartVO buildChartPersonsVO(OrganizationalChart chart) {
@@ -214,6 +243,8 @@ public class OrganizationChartSessionController extends AbstractComponentSession
     chartVO.setRootOrganization(rootOrganization);
     rootOrganization.setName(chart.getRoot().getName());
     rootOrganization.setParentDn(chart.getRoot().getParentOu());
+    rootOrganization.setSpecificCSSClass(chart.getRoot().getSpecificCSSClass());
+    rootOrganization.setDetails(chart.getRoot().getDetail());
 
     // Looks for specific users
     List<UserVO> mainActors = new ArrayList<UserVO>();
@@ -238,8 +269,7 @@ public class OrganizationChartSessionController extends AbstractComponentSession
           usersOfCurrentCategory = new ArrayList<UserVO>();
           usersByCategory.put(category.getName(), usersOfCurrentCategory);
         }
-        usersOfCurrentCategory.add(new UserVO(person.getName(), person.getSilverpeasAccount(),
-            person.getFonction(), person.getDetail()));
+        usersOfCurrentCategory.add(organizationalPerson2UserVO(person, null));
       }
     }
 
@@ -272,8 +302,8 @@ public class OrganizationChartSessionController extends AbstractComponentSession
 
   private OrganizationChartService service = null;
 
-  private OrganizationChartConfiguration loadConfiguration() {
-    OrganizationChartConfiguration config = new OrganizationChartConfiguration();
+  private OrganizationChartLDAPConfiguration loadLDAPConfiguration() {
+    OrganizationChartLDAPConfiguration config = new OrganizationChartLDAPConfiguration();
 
     config.setServerURL(getComponentParameterValue(PARAM_SERVERURL));
     config.setInitialContextFactory(getComponentParameterValue(PARAM_CTXFACTORY));
@@ -281,34 +311,34 @@ public class OrganizationChartSessionController extends AbstractComponentSession
     config.setPrincipal(getComponentParameterValue(PARAM_PRINCIPAL));
     config.setCredentials(getComponentParameterValue(PARAM_CREDENTIAL));
 
-    config.setLdapRoot(getComponentParameterValue(PARAM_LDAP_ROOT));
+    config.setRoot(getComponentParameterValue(PARAM_LDAP_ROOT));
     config.setLdapClassPerson(getComponentParameterValue(PARAM_LDAP_CLASS_PERSON));
     config.setLdapClassUnit(getComponentParameterValue(PARAM_LDAP_CLASS_UNIT));
-    config.setLdapAttUnit(getComponentParameterValue(PARAM_LDAP_ATT_UNIT));
-    config.setLdapAttName(getComponentParameterValue(PARAM_LDAP_ATT_NAME));
-    config.setLdapAttTitle(getComponentParameterValue(PARAM_LDAP_ATT_TITLE)); // champ LDAP du titre
-    config.setLdapAttDesc(getComponentParameterValue(PARAM_LDAP_ATT_DESC)); // champ ldap de la
+    config.setAttUnit(getComponentParameterValue(PARAM_LDAP_ATT_UNIT));
+    config.setAttName(getComponentParameterValue(PARAM_LDAP_ATT_NAME));
+    config.setAttTitle(getComponentParameterValue(PARAM_LDAP_ATT_TITLE)); // champ LDAP du titre
+    config.setAttDesc(getComponentParameterValue(PARAM_LDAP_ATT_DESC)); // champ ldap de la
     // description
     config.setLdapAttAccount(getComponentParameterValue(PARAM_LDAP_ATT_ACCOUNT)); // champ ldap de
-    // l'identifiant
-    // de compte
-    // Silverpeas
+    // l'identifiant de compte Silverpeas
+    config.setLdapAttCSSClass(getComponentParameterValue(PARAM_LDAP_ATT_CSS));
 
-    config
-        .setUnitsChartCentralLabel(getRoles(getComponentParameterValue(PARAM_UNITSCHART_CENTRAL_LABEL)));
-    config
-        .setUnitsChartRightLabel(getRoles(getComponentParameterValue(PARAM_UNITSCHART_RIGHT_LABEL)));
-    config
-        .setUnitsChartLeftLabel(getRoles(getComponentParameterValue(PARAM_UNITSCHART_LEFT_LABEL)));
+    config.setUnitsChartCentralLabel(getRoles(getComponentParameterValue(
+        PARAM_UNITSCHART_CENTRAL_LABEL)));
+    config.setUnitsChartRightLabel(
+        getRoles(getComponentParameterValue(PARAM_UNITSCHART_RIGHT_LABEL)));
+    config.setUnitsChartLeftLabel(getRoles(getComponentParameterValue(PARAM_UNITSCHART_LEFT_LABEL)));
 
+    config.setPersonnsChartCentralLabel(getRoles(getComponentParameterValue(
+        PARAM_PERSONNSCHART_CENTRAL_LABEL)));
     config
-        .setPersonnsChartCentralLabel(getRoles(getComponentParameterValue(PARAM_PERSONNSCHART_CENTRAL_LABEL)));
+        .setPersonnsChartCategoriesLabel(getRoles(getComponentParameterValue(
+        PARAM_PERSONNSCHART_CATEGORIES_LABEL)));
     config
-        .setPersonnsChartCategoriesLabel(getRoles(getComponentParameterValue(PARAM_PERSONNSCHART_CATEGORIES_LABEL)));
-    config
-        .setUnitsChartOthersInfosKeys(getKeysAndLabel(getComponentParameterValue(PARAM_UNITSCHART_OTHERSINFOS_KEYS)));
-    config
-        .setPersonnsChartOthersInfosKeys(getKeysAndLabel(getComponentParameterValue(PARAM_PERSONNSCHART_OTHERSINFOS_KEYS)));
+        .setUnitsChartOthersInfosKeys(getKeysAndLabel(getComponentParameterValue(
+        PARAM_UNITSCHART_OTHERSINFOS_KEYS)));
+    config.setPersonnsChartOthersInfosKeys(getKeysAndLabel(getComponentParameterValue(
+        PARAM_PERSONNSCHART_OTHERSINFOS_KEYS)));
     config.setLdapAttActif(getComponentParameterValue(PARAM_LDAP_ATT_ACTIF));
 
     config.setDomainId(getComponentParameterValue(PARAM_DOMAIN_ID));
@@ -316,8 +346,34 @@ public class OrganizationChartSessionController extends AbstractComponentSession
     return config;
   }
 
+  private OrganizationChartConfiguration loadGroupConfiguration() {
+    OrganizationChartConfiguration config = new OrganizationChartConfiguration();
+    config.setRoot(getComponentParameterValue(PARAM_LDAP_ROOT));
+    config.setAttUnit(getComponentParameterValue(PARAM_LDAP_ATT_UNIT));
+    config.setAttName(getComponentParameterValue(PARAM_LDAP_ATT_NAME));
+    config.setAttTitle(getComponentParameterValue(PARAM_LDAP_ATT_TITLE)); // champ LDAP du titre
+    config.setAttDesc(getComponentParameterValue(PARAM_LDAP_ATT_DESC)); // champ ldap de la
+    // description
+
+    config.setUnitsChartCentralLabel(getRoles(getComponentParameterValue(
+        PARAM_UNITSCHART_CENTRAL_LABEL)));
+    config.setUnitsChartRightLabel(
+        getRoles(getComponentParameterValue(PARAM_UNITSCHART_RIGHT_LABEL)));
+    config.setUnitsChartLeftLabel(getRoles(getComponentParameterValue(PARAM_UNITSCHART_LEFT_LABEL)));
+    config.setPersonnsChartCentralLabel(getRoles(getComponentParameterValue(
+        PARAM_PERSONNSCHART_CENTRAL_LABEL)));
+    config.setPersonnsChartCategoriesLabel(getRoles(getComponentParameterValue(
+        PARAM_PERSONNSCHART_CATEGORIES_LABEL)));
+    config.setUnitsChartOthersInfosKeys(getKeysAndLabel(getComponentParameterValue(
+        PARAM_UNITSCHART_OTHERSINFOS_KEYS)));
+    config.setPersonnsChartOthersInfosKeys(getKeysAndLabel(getComponentParameterValue(
+        PARAM_PERSONNSCHART_OTHERSINFOS_KEYS)));
+    return config;
+  }
+
   /**
    * Transformed a flat list of Roles to a List of OrganizationalRole objects.
+   *
    * @param rolesAsString flat list of Roles ("labelRole1=keyRole1;labelRole2=keyRole2")
    * @return a List of OrganizationalRole objects
    */
@@ -333,9 +389,8 @@ public class OrganizationChartSessionController extends AbstractComponentSession
         if (roleDetails.length == 2) {
           listRoles.add(new OrganizationalRole(roleDetails[0], roleDetails[1]));
         } else {
-          SilverTrace.info("organizationchart",
-              "OrganizationChartLdapServiceImpl.getRole()", "root.MSG_GEN_PARAM_VALUE",
-              "bad format for a role " + role);
+          SilverTrace.info("organizationchart", "OrganizationChartLdapServiceImpl.getRole()",
+              "root.MSG_GEN_PARAM_VALUE", "bad format for a role " + role);
         }
       }
     }
@@ -344,6 +399,7 @@ public class OrganizationChartSessionController extends AbstractComponentSession
 
   /**
    * Transformed a flat list of label/attributeName to a Map<key, value>.
+   *
    * @param attributesAsString flat list of Roles ("labelChamp1=keyLdap1;labelChamp2=keyLdap2")
    * @return a Map<key, value>.
    */
@@ -364,10 +420,11 @@ public class OrganizationChartSessionController extends AbstractComponentSession
   public String getLibelleAttribut(String attId) {
     String attName = "organizationchart.attribut." + attId;
     String libelle = getString(attName);
-    if (libelle == null || libelle.equalsIgnoreCase(attName))
+    if (libelle == null || libelle.equalsIgnoreCase(attName)) {
       return null;
-    else
+    } else {
       return libelle;
+    }
   }
 
   public String getDomainId() {

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,8 +21,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.formsonline;
 
+package com.silverpeas.formsonline;
 
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.InstanciationException;
@@ -47,16 +47,18 @@ public class FormsOnlineInstanciator implements ComponentsInstanciatorIntf {
   @Override
   public void create(Connection con, String spaceId, String componentId, String userId) throws
       InstanciationException {
-    SilverTrace.info("formsOnline", "FormsOnlineInstanciator.create()", "root.MSG_GEN_ENTER_METHOD",
-        "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
+    SilverTrace.info("formsOnline", "FormsOnlineInstanciator.create()",
+        "root.MSG_GEN_ENTER_METHOD", "space = " + spaceId + ", componentId = " + componentId +
+            ", userId =" + userId);
     SilverTrace.info("formsOnline", "FormsOnlineInstanciator.create()", "root.MSG_GEN_EXIT_METHOD");
   }
 
   @Override
   public void delete(Connection con, String spaceId, String componentId, String userId) throws
       InstanciationException {
-    SilverTrace.info("formsOnline", "FormsOnlineInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD",
-        "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
+    SilverTrace.info("formsOnline", "FormsOnlineInstanciator.delete()",
+        "root.MSG_GEN_ENTER_METHOD", "space = " + spaceId + ", componentId = " + componentId +
+            ", userId =" + userId);
     deleteFormsData(con, componentId);
     deleteDataOfInstance(con, componentId, "UserRights");
     deleteDataOfInstance(con, componentId, "GroupRights");
@@ -81,14 +83,14 @@ public class FormsOnlineInstanciator implements ComponentsInstanciatorIntf {
     } catch (SQLException se) {
       throw new InstanciationException("FormsOnlineInstanciator.deleteFormsData()",
           SilverpeasException.ERROR, "root.DELETING_DATA_OF_INSTANCE_FAILED", "componentId = "
-          + componentId + " deleteQuery = " + query, se);
+              + componentId + " deleteQuery = " + query, se);
     } finally {
       try {
         stmt.close();
       } catch (SQLException err_closeStatement) {
         throw new InstanciationException("FormsOnlineInstanciator.deleteFormsData()",
             SilverpeasException.ERROR, "root.EX_RESOURCE_CLOSE_FAILED", "componentId = "
-            + componentId + " deleteQuery = " + query, err_closeStatement);
+                + componentId + " deleteQuery = " + query, err_closeStatement);
       }
     }
     try {
@@ -96,8 +98,8 @@ public class FormsOnlineInstanciator implements ComponentsInstanciatorIntf {
       Iterator<String> it = xmlFormNames.iterator();
       while (it.hasNext()) {
         String xmlFormName = it.next();
-        String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.
-            indexOf('.'));
+        String xmlFormShortName =
+            xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
         PublicationTemplateManager.getInstance().removePublicationTemplate(
             componentId + ":" + xmlFormShortName);
       }
@@ -120,14 +122,14 @@ public class FormsOnlineInstanciator implements ComponentsInstanciatorIntf {
     } catch (SQLException se) {
       throw new InstanciationException("FormsOnlineInstanciator.removeInstanceData()",
           SilverpeasException.ERROR, "root.DELETING_DATA_OF_INSTANCE_FAILED", "componentId = "
-          + componentId + " deleteQuery = " + query, se);
+              + componentId + " deleteQuery = " + query, se);
     } finally {
       try {
         stmt.close();
       } catch (SQLException err_closeStatement) {
         throw new InstanciationException("FormsOnlineInstanciator.removeInstanceData()",
             SilverpeasException.ERROR, "root.EX_RESOURCE_CLOSE_FAILED", "componentId = "
-            + componentId + " deleteQuery = " + query, err_closeStatement);
+                + componentId + " deleteQuery = " + query, err_closeStatement);
       }
     }
   }

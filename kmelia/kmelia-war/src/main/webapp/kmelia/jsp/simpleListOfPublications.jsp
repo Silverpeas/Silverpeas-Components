@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,77 +25,90 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ include file="checkKmelia.jsp" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ include file="checkKmelia.jsp" %>
+
 <%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page import="com.stratelia.webactiv.SilverpeasRole"%>
+<%@page import="com.silverpeas.kmelia.SearchContext"%>
 
 <%
-String		rootId				= "0";
-String		description			= "";
-String		namePath			= "";
-String		urlTopic			= "";
+String id = "0";
+
+// création du nom pour les favoris
+String namePath = spaceLabel + " > " + componentLabel;
 
 //R?cup?ration des param?tres
 String 	profile			= (String) request.getAttribute("Profile");
 String  translation 	= (String) request.getAttribute("Language");
-boolean	isGuest			= ((Boolean) request.getAttribute("IsGuest")).booleanValue();
+boolean	isGuest			= (Boolean) request.getAttribute("IsGuest");
 Boolean displaySearch	= (Boolean) request.getAttribute("DisplaySearch");
-boolean updateChain		= ((Boolean) request.getAttribute("HaveDescriptor")).booleanValue();
+boolean updateChain		= (Boolean) request.getAttribute("HaveDescriptor");
+int		currentPageIndex = (Integer) request.getAttribute("PageIndex");
 
-TopicDetail currentTopic 		= (TopicDetail) request.getAttribute("CurrentTopic");
-
-String 		pathString 			= (String) request.getAttribute("PathString");
+SearchContext searchContext = (SearchContext) request.getAttribute("SearchContext");
+String query = "";
+if (searchContext != null) {
+  query = searchContext.getQuery();
+}
 
 String		pubIdToHighlight	= (String) request.getAttribute("PubIdToHighlight"); //used when we have found publication from search (only toolbox)
 
-String id = currentTopic.getNodeDetail().getNodePK().getId();
 String language = kmeliaScc.getLanguage();
 
-NodeDetail nodeDetail = currentTopic.getNodeDetail();
-
-List path = (List) kmeliaScc.getNodeBm().getPath(currentTopic.getNodePK());
-
-if (id == null) {
-	id = rootId;
-}
+String urlTopic	= URLManager.getSimpleURL(URLManager.URL_COMPONENT, componentId, true);;
 
 //For Drag And Drop
 boolean dragAndDropEnable = kmeliaScc.isDragAndDropEnable();
 
-String sRequestURL = request.getRequestURL().toString();
-String m_sAbsolute = sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().length());
-
 String userId = kmeliaScc.getUserId();
-
-ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
 
 boolean userCanCreatePublications = SilverpeasRole.admin.isInRole(profile) || SilverpeasRole.publisher.isInRole(profile) || SilverpeasRole.writer.isInRole(profile);
 boolean userCanValidatePublications = SilverpeasRole.admin.isInRole(profile) || SilverpeasRole.publisher.isInRole(profile);
 
+boolean userCanSeeStats =
+  SilverpeasRole.publisher.isInRole(profile) || SilverpeasRole.supervisor.isInRole(profile) ||
+  SilverpeasRole.admin.isInRole(profile) && !KmeliaHelper.isToolbox(kmeliaScc.getComponentId());
+
 %>
 
-<HTML>
-<HEAD>
-<meta http-equiv="content-type" content="text/html; charset=utf-8">
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/upload_applet.js"></script>
+<view:includePlugin name="userZoom"/>
+<view:includePlugin name="popup"/>
+<view:includePlugin name="preview"/>
 <script type="text/javascript" src="javaScript/dragAndDrop.js"></script>
 <script type="text/javascript" src="javaScript/navigation.js"></script>
 <script type="text/javascript" src="javaScript/searchInTopic.js"></script>
+<script type="text/javascript" src="javaScript/publications.js"></script>
 <script type="text/javascript">
 <% if (!profile.equals("user")) { %>
-function updateChain()
-{
+function updateChain() {
     document.updateChain.submit();
 }
 <% } %>
+  
+$.i18n.properties({
+  name: 'kmeliaBundle',
+  path: webContext + '/services/bundles/com/silverpeas/kmelia/multilang/',
+  language: '<%=language%>',
+  mode: 'map'
+});
+    
+function getString(key) {
+	return $.i18n.prop(key);
+}
 
 function getCurrentNodeId() {
 	return "0";
+}
+
+function getCurrentUserId() {
+  return "<%=userId%>";
 }
 
 function getWebContext() {
@@ -106,22 +119,18 @@ function getComponentId() {
 	return "<%=componentId%>";
 }
 
-function showDnD()
-{
+function showDnD() {
 	<%
-	ResourceLocator uploadSettings = new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings", "");
-	String maximumFileSize = uploadSettings.getString("MaximumFileSize", "10000000");
+	long maximumFileSize = FileRepositoryManager.getUploadMaximumFileSize();
 	%>
 	showHideDragDrop('<%=URLManager.getFullApplicationURL(request)%>/RImportDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&IgnoreFolders=1&SessionId=<%=session.getId()%>','<%=URLManager.getFullApplicationURL(request)%>/upload/ModeNormal_<%=language%>.html','<%=URLManager.getFullApplicationURL(request)%>/RImportDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&IgnoreFolders=1&Draft=1&SessionId=<%=session.getId()%>','<%=URLManager.getFullApplicationURL(request)%>/upload/ModeDraft_<%=language%>.html','<%=resources.getString("GML.applet.dnd.alt")%>','<%=maximumFileSize%>','<%=m_context%>','<%=resources.getString("GML.DragNDropExpand")%>','<%=resources.getString("GML.DragNDropCollapse")%>');
 }
 
-function fileUpload()
-{
+function fileUpload() {
     document.fupload.submit();
 }
 
-function displayPublications(id)
-{
+function displayPublications(id) {
 	//display publications of topic
 	var pubIdToHighlight = "<%=pubIdToHighlight%>";
 	var ieFix = new Date().getTime();
@@ -131,22 +140,7 @@ function displayPublications(id)
 			},"html");
 }
 
-function doPagination(index)
-{
-	var paramToValidate = "0";
-	if (getCurrentNodeId() == "tovalidate") {
-		paramToValidate = "1";
-	}
-	var topicQuery = getSearchQuery();
-	var ieFix = new Date().getTime();
-	$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Index:index,ComponentId:'<%=componentId%>',ToValidate:paramToValidate,Query:topicQuery,IEFix:ieFix},
-							function(data){
-								$('#pubList').html(data);
-							},"html");
-}
-
-function topicWysiwyg()
-{
+function topicWysiwyg() {
 	closeWindows();
 	document.topicDetailForm.action = "ToTopicWysiwyg";
 	document.topicDetailForm.ChildId.value = "0";
@@ -154,40 +148,45 @@ function topicWysiwyg()
 }
 
 function pasteFromOperations() {
-	$.progressMessage();
-	var ieFix = new Date().getTime();
-	$.get('<%=m_context%>/KmeliaJSONServlet', {Action:'Paste',ComponentId:'<%=componentId%>',Language:'<%=language%>',IEFix:ieFix},
-			function(data){
-				displayPublications("0");
-				$.closeProgressMessage();
-			},"json");
+  $.progressMessage();
+  var ieFix = new Date().getTime();
+  var url = getWebContext() + '/KmeliaAJAXServlet';
+  $.get(url, {ComponentId : getComponentId(), Action : 'Paste', Id : '0', IEFix : ieFix},
+      function(data) {
+        $.closeProgressMessage();
+        if (data === "ok") {
+          displayPublications("0");
+        } else {
+          notyError(data);
+        }
+      }, 'text');
 }
 
+var searchInProgress = <%=searchContext != null%>;
+
 $(document).ready(function() {
-	displayPublications("<%=id%>");
+	if (searchInProgress) {
+		doPagination(<%=currentPageIndex%>);
+	} else {
+		displayPublications("<%=id%>");
+	}
 	displayTopicDescription("0");
 });
 </script>
-</HEAD>
-<BODY id="kmelia" onUnload="closeWindows()" class="yui-skin-sam">
+</head>
+<body id="kmelia" onunload="closeWindows()" class="yui-skin-sam">
 <div id="<%=componentId %>">
 <%
-        urlTopic = nodeDetail.getLink();
-
         Window window = gef.getWindow();
         BrowseBar browseBar = window.getBrowseBar();
         browseBar.setI18N("GoToCurrentTopic", translation);
-
-        // cr?ation du nom pour les favoris
-        namePath = spaceLabel + " > " + componentLabel;
-         if (!pathString.equals(""))
-        	namePath = namePath + " > " + pathString;
 
         //Display operations
         OperationPane operationPane = window.getOperationPane();
         if (SilverpeasRole.admin.isInRole(profile)){
           	if (kmeliaScc.isPdcUsed()) {
 	        	operationPane.addOperation("useless", resources.getString("GML.PDCParam"), "javascript:onClick=openSPWindow('"+m_context+"/RpdcUtilization/jsp/Main?ComponentId="+kmeliaScc.getComponentId()+"','utilizationPdc1')");
+                operationPane.addOperation("useless", resources.getString("GML.PDCPredefinePositions"), "javascript:onClick=openPredefinedPdCClassification(" + id + ");");
           	}
           	if (kmeliaScc.isContentEnabled()) {
 	        	operationPane.addOperation(resources.getIcon("kmelia.modelUsed"), resources.getString("kmelia.ModelUsed"), "ModelUsed");
@@ -195,8 +194,11 @@ $(document).ready(function() {
           	if (kmeliaScc.isWysiwygOnTopicsEnabled()) {
 				operationPane.addOperation("useless", kmeliaScc.getString("TopicWysiwyg"), "javascript:onClick=topicWysiwyg('"+id+"')");
 			}
+          if (SilverpeasRole.admin.isInRole(profile)) {
+            operationPane.addOperation("useless", resources.getString("GML.manageSubscriptions"), "ManageSubscriptions");
+          }
           	if (kmeliaScc.isExportComponentAllowed() && kmeliaScc.isExportZipAllowed()) {
-	        	operationPane.addOperation("useless", kmeliaScc.getString("kmelia.ExportComponent"), "javascript:onClick=exportPublications()");
+	        	operationPane.addOperation("useless", kmeliaScc.getString("kmelia.ExportComponent"), "javascript:onClick=exportTopic()");
           	}
           	if (kmeliaScc.isExportComponentAllowed() && kmeliaScc.isExportPdfAllowed()) {
 	        	operationPane.addOperation("useless", kmeliaScc.getString("kmelia.ExportPDF"), "javascript:openExportPDFPopup()");
@@ -205,26 +207,30 @@ $(document).ready(function() {
 			operationPane.addLine();
         }
         if (userCanCreatePublications) {
-	        operationPane.addOperation("useless", kmeliaScc.getString("PubCreer"), "NewPublication");
+	        operationPane.addOperationOfCreation(resources.getIcon("kmelia.operation.addPubli"), kmeliaScc.getString("PubCreer"), "NewPublication");
 	        if (kmeliaScc.isWizardEnabled()) {
-	      		operationPane.addOperation(resources.getIcon("kmelia.wizard"), resources.getString("kmelia.Wizard"), "WizardStart");
+	      		operationPane.addOperationOfCreation(resources.getIcon("kmelia.wizard"), resources.getString("kmelia.Wizard"), "WizardStart");
 	        }
 	        if (kmeliaScc.isImportFileAllowed()) {
-	      		operationPane.addOperation("useless", kmeliaScc.getString("kmelia.ImportFile"), "javascript:onClick=importFile()");
+	      		operationPane.addOperationOfCreation(resources.getIcon("kmelia.operation.importFile"), kmeliaScc.getString("kmelia.ImportFile"), "javascript:onClick=importFile()");
 	        }
 	        if (kmeliaScc.isImportFilesAllowed()) {
-	        	operationPane.addOperation("useless", kmeliaScc.getString("kmelia.ImportFiles"), "javascript:onClick=importFiles()");
+	        	operationPane.addOperationOfCreation(resources.getIcon("kmelia.operation.importFiles"), kmeliaScc.getString("kmelia.ImportFiles"), "javascript:onClick=importFiles()");
 	        }
 	        if (updateChain) {
 	        	operationPane.addOperation(resources.getIcon("kmelia.updateByChain"), kmeliaScc.getString("kmelia.updateByChain"), "javascript:onClick=updateChain()");
 	        }
+	        operationPane.addOperation("useless", resources.getString("kmelia.operation.copyPublications"), "javascript:onclick=copyPublications()");
+	        operationPane.addOperation("useless", resources.getString("kmelia.operation.cutPublications"), "javascript:onclick=cutPublications()");
 	        operationPane.addOperation(resources.getIcon("kmelia.paste"), resources.getString("GML.paste"), "javascript:onClick=pasteFromOperations()");
+	        operationPane.addOperation("useless", resources.getString("kmelia.operation.deletePublications"), "javascript:onclick=deletePublications()");
 	        operationPane.addLine();
         }
                     	
     	if (!isGuest) {
+    	  	operationPane.addOperation("useless", resources.getString("kmelia.operation.exportSelection"), "javascript:onclick=exportPublications()");
     		operationPane.addOperation("useless", resources.getString("SubscriptionsAdd"), "javascript:onClick=addSubscription()");
-      		operationPane.addOperation("useless", resources.getString("FavoritesAdd1")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(namePath))+"','"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(description))+"','"+urlTopic+"')");
+      		operationPane.addOperation("useless", resources.getString("FavoritesAdd1")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(namePath))+"','','"+urlTopic+"')");
     	}
     	
     	if (userCanCreatePublications) {
@@ -234,28 +240,28 @@ $(document).ready(function() {
           		operationPane.addOperation("useless", resources.getString("ToValidate"), "ViewPublicationsToValidate");
           	}
   		}
-
-    //Instanciation du cadre avec le view generator
-	Frame frame = gef.getFrame();
-
+      if (userCanSeeStats) {
+        operationPane.addLine();
+        operationPane.addOperation("useless", resources.getString("kmelia.operation.statistics"), "javascript:showStats();");
+      }
+      
     out.println(window.printBefore());
-    out.println(frame.printBefore());
 %>
+<view:frame>
 					<% if (displaySearch.booleanValue()) {
-					  	Board board = gef.getBoard();
-						Button searchButton = gef.getFormButton(resources.getString("GML.search"), "javascript:onClick=searchInTopic();", false);
-						out.println("<div id=\"searchZone\">");
-						out.println(board.printBefore());
-						out.println("<table id=\"searchLine\">");
-						out.println("<tr><td><div id=\"searchLabel\">"+resources.getString("kmelia.SearchInTopics")+"</div>&nbsp;<input type=\"text\" id=\"topicQuery\" size=\"50\" onkeydown=\"checkSubmitToSearch(event)\"/></td><td>"+searchButton.print()+"</td></tr>");
-						out.println("</table>");
-						out.println(board.printAfter());
-						out.println("</div>");
-					} %>
+						Button searchButton = gef.getFormButton(resources.getString("GML.search"), "javascript:onClick=searchInTopic();", false); %>
+						<div id="searchZone">
+						<view:board>
+						<table id="searchLine">
+						<tr><td><div id="searchLabel"><%=resources.getString("kmelia.SearchInTopics") %></div>&nbsp;<input type="text" id="topicQuery" size="50" value="<%=query%>" onkeydown="checkSubmitToSearch(event)"/></td><td><%=searchButton.print() %></td></tr>
+						</table>
+						</view:board>
+						</div>
+					<% } %>					
 					<div id="topicDescription"></div>
+					<view:areaOfOperationOfCreation/>
 				<%
-					  if (dragAndDropEnable && userCanCreatePublications)
-					  {
+					  if (dragAndDropEnable && userCanCreatePublications) {
 						%>
 						<div id="DnD">
 						<table width="98%" cellpadding="0" cellspacing="0"><tr><td align="right">
@@ -265,17 +271,14 @@ $(document).ready(function() {
 						<tr>
 						<%
 							boolean appletDisplayed = false;
-							if (kmeliaScc.isDraftEnabled() && kmeliaScc.isPdcUsed() && kmeliaScc.isPDCClassifyingMandatory())
-							{
+							if (kmeliaScc.isDraftEnabled() && kmeliaScc.isPdcUsed() && kmeliaScc.isPDCClassifyingMandatory()) {
 								//Do not display applet in normal mode.
 								//Only display applet in draft mode
-							}
-							else
-							{
+							} else {
 								appletDisplayed = true;
 						%>
 								<td>
-									<div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding:0px; width:100%" valign="top"><img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/></div>
+									<div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; padding:0px; width:100%" valign="top"><img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/></div>
 								</td>
 						<% } %>
 						<% if (kmeliaScc.isDraftEnabled()) {
@@ -283,46 +286,42 @@ $(document).ready(function() {
 								out.println("<td width=\"5%\">&nbsp;</td>");
 							%>
 							<td>
-								<div id="DragAndDropDraft" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding:0px width:100%" valign="top"><img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/></div>
+								<div id="DragAndDropDraft" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; padding:0px; width:100%" valign="top"><img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/></div>
 							</td>
 						<% } %>
 						</tr></table>
 						</div>
 				<% }  %>
 					<div id="pubList">
-					<%
-						 Board board = gef.getBoard();
-						 out.println("<br/>");
-						 out.println(board.printBefore());
-						 out.println("<br/><center>"+resources.getString("kmelia.inProgressPublications")+"<br/><br/><img src=\""+resources.getIcon("kmelia.progress")+"\"/></center><br/>");
-						 out.println(board.printAfter());
-					 %>
+					<br/>
+					<view:board>
+					<br/><center><%=resources.getString("kmelia.inProgressPublications") %><br/><br/><img src="<%=resources.getIcon("kmelia.progress") %>"/></center><br/>
+					</view:board>
 					</div>
-					<div id="footer" class="txtBaseline">
+					<div id="footer" class="txtBaseline"></div>
+	</view:frame>
 	<%
-		out.println(frame.printAfter());
 		out.println(window.printAfter());
 	%>
 
-<FORM NAME="topicDetailForm" METHOD="POST">
-	<input type="hidden" name="Id" value="<%=id%>">
-	<input type="hidden" name="Path" value="<%=EncodeHelper.javaStringToHtmlString(pathString)%>">
-	<input type="hidden" name="ChildId">
-	<input type="hidden" name="Status"><input type="hidden" name="Recursive">
-</FORM>
+<form name="topicDetailForm" method="post">
+	<input type="hidden" name="Id" value="<%=id%>"/>
+	<input type="hidden" name="Path" value=""/>
+	<input type="hidden" name="ChildId"/>
+	<input type="hidden" name="Status"/><input type="hidden" name="Recursive"/>
+</form>
 
-<FORM NAME="pubForm" action="ViewPublication" METHOD="POST">
-	<input type="hidden" name="PubId">
-	<input type="hidden" name="CheckPath" value="1">
-</FORM>
+<form name="pubForm" action="ViewPublication" method="post">
+	<input type="hidden" name="PubId"/>
+</form>
 
-<FORM NAME="fupload" ACTION="fileUpload.jsp" METHOD="POST" enctype="multipart/form-data" accept-charset="UTF-8">
-	<input type="hidden" name="Action" value="initial">
-</FORM>
+<form name="fupload" action="fileUpload.jsp" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
+	<input type="hidden" name="Action" value="initial"/>
+</form>
 
 <form name="updateChain" action="UpdateChainInit">
 </form>
 </div>
 <view:progressMessage/>
-</BODY>
-</HTML>
+</body>
+</html>

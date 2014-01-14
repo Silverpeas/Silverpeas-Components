@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -13,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -87,33 +87,6 @@
         <display-name>WikiRequestRouter</display-name>
         <servlet-name>WikiRequestRouter</servlet-name>
         <servlet-class>com.silverpeas.wiki.servlets.WikiRequestRouter</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>XMLRPC</servlet-name>
-        <servlet-class>com.ecyrd.jspwiki.xmlrpc.RPCServlet</servlet-class>
-        <init-param>
-            <param-name>handler</param-name>
-            <param-value>com.ecyrd.jspwiki.xmlrpc.RPCHandler</param-value>
-        </init-param>
-        <init-param>
-            <param-name>prefix</param-name>
-            <param-value>wiki</param-value>
-        </init-param>
-    </servlet>
-    <!--
-       OK, this then defines that our UTF-8 -capable server.
-     -->
-    <servlet>
-        <servlet-name>XMLRPC-UTF8</servlet-name>
-        <servlet-class>com.ecyrd.jspwiki.xmlrpc.RPCServlet</servlet-class>
-        <init-param>
-            <param-name>handler</param-name>
-            <param-value>com.ecyrd.jspwiki.xmlrpc.RPCHandlerUTF8</param-value>
-        </init-param>
-        <init-param>
-            <param-name>prefix</param-name>
-            <param-value>wiki</param-value>
-        </init-param>
     </servlet>
     <!-- JSON AJAX API -->
     <servlet>

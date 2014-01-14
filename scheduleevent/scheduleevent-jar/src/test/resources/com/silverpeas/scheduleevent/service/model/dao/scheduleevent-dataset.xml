@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+
+  <sc_scheduleevent_list id="ff808081369cf58901369cf88a380000"
+                         title="Toto"
+                         description=""
+                         creationdate="2012-04-10 17:56:35.761"
+                         status="1"
+                         creatorid="0"/>
+
+  <sc_scheduleevent_list id="ff808081369cf58901369cf88a380001"
+                         title="Titi"
+                         description=""
+                         creationdate="2012-04-10 19:56:35.761"
+                         status="1"
+                         creatorid="0"/>
+
+  <sc_scheduleevent_contributor id="f808081369cf58901369cf88a3d0006"
+                                scheduleeventid="ff808081369cf58901369cf88a380001"
+                                userid="1"
+                                lastvalidation="2012-04-10 17:57:08.8"
+                                lastvisit="2012-04-10 17:57:08.818"/>
+
+  <sc_scheduleevent_contributor id="ff808081369cf58901369cf88a3d0003"
+                                scheduleeventid="ff808081369cf58901369cf88a380000"
+                                userid="1"
+                                lastvalidation="[NULL]"
+                                lastvisit="[NULL]"/>
+
+  <sc_scheduleevent_contributor id="f808081369cf58901369cf88a3d0004"
+                                scheduleeventid="ff808081369cf58901369cf88a380000"
+                                userid="2"
+                                lastvalidation="2012-04-10 17:57:08.8"
+                                lastvisit="2012-04-10 17:57:08.818"/>
+
+  <sc_scheduleevent_contributor id="ff808081369cf58901369cf88a3d0005"
+                                scheduleeventid="ff808081369cf58901369cf88a380000"
+                                userid="0"
+                                lastvalidation="2012-04-10 17:56:46.549"
+                                lastvisit="2012-04-10 17:56:46.574"/>
+
+  <sc_scheduleevent_options id="ff808081369cf58901369cf88a3d0001"
+                            scheduleeventid="ff808081369cf58901369cf88a380000"
+                            optionday="2012-04-24 00:00:00"
+                            optionhour="14"/>
+
+  <sc_scheduleevent_options id="f808081369cf58901369cf88a3d0002"
+                            scheduleeventid="ff808081369cf58901369cf88a380000"
+                            optionday="2012-04-25 00:00:00"
+                            optionhour="14"/>
+
+  <sc_scheduleevent_response id="ff808081369cf58901369cf8b45d0006"
+                             scheduleeventid="ff808081369cf58901369cf88a380000"
+                             userid="0"
+                             optionid="ff808081369cf58901369cf88a3d0001"/>
+
+  <sc_scheduleevent_response id="ff808081369cf58901369cf90b410009"
+                             scheduleeventid="ff808081369cf58901369cf88a380000"
+                             userid="2"
+                             optionid="ff808081369cf58901369cf88a3d0001"/>
+
+</dataset>

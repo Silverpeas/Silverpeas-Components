@@ -1,4 +1,4 @@
-<div style="font-family:Arial;font-size:11px">Un nouveau thème a été créé à l'emplacement suivant : 
+<div style="font-family:Arial;font-size:11px">Un nouveau dossier a été créé à l'emplacement suivant : 
 
 <b> $path$ > $topicName$</b>
 

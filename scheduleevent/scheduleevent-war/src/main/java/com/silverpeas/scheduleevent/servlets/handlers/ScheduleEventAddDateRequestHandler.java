@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.silverpeas.scheduleevent.control.ScheduleEventSessionController;
 import com.silverpeas.scheduleevent.service.model.beans.DateOption;
 import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
+import com.stratelia.webactiv.util.DateUtil;
 
 public class ScheduleEventAddDateRequestHandler extends ScheduleEventActionDateRequestHandler {
   private final static DateFormat JS_DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd");
@@ -57,8 +58,8 @@ public class ScheduleEventAddDateRequestHandler extends ScheduleEventActionDateR
       ScheduleEventSessionController scheduleeventSC, HttpServletRequest request) throws Exception {
     ScheduleEvent current = scheduleeventSC.getCurrentScheduleEvent();
     Set<DateOption> dates = current.getDates();
-    SimpleDateFormat formatter = getSimpleDateFormat(scheduleeventSC);
-    Date dateToAdd = formatter.parse(request.getParameter("dateToAdd"));
+    Date dateToAdd =
+        DateUtil.stringToDate(request.getParameter("dateToAdd"), scheduleeventSC.getLanguage());
     String dateIdSearch = formatterTmpId.format(dateToAdd);
     DateOption dateOption = getExistingDateOption(current.getDates(), dateIdSearch);
     if (dateOption == null) {
@@ -68,14 +69,6 @@ public class ScheduleEventAddDateRequestHandler extends ScheduleEventActionDateR
     }
     request.setAttribute(LAST_DATE, JS_DATE_FORMATTER.format(dateToAdd));
     return forwardRequestHandler.getDestination(function, scheduleeventSC, request);
-  }
-
-  private SimpleDateFormat getSimpleDateFormat(ScheduleEventSessionController scheduleeventSC){
-    String pattern = scheduleeventSC.getString("scheduleevent.form.dateformat");
-    if(pattern == null){
-      pattern = "dd/MM/yy";
-    }
-    return new SimpleDateFormat(pattern);
   }
 
   private Exception UndefinedForwardRequestHandlerException() {

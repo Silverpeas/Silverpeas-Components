@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,19 +24,24 @@
 package com.stratelia.webactiv.almanach.control.ejb;
 
 import com.silverpeas.calendar.Date;
-import org.junit.Before;
 import com.stratelia.webactiv.almanach.BaseAlmanachTest;
 import com.stratelia.webactiv.almanach.model.EventOccurrence;
 import com.stratelia.webactiv.almanach.model.Periodicity;
-import java.util.Calendar;
-import java.util.List;
 import net.fortuna.ical4j.model.Recur;
 import net.fortuna.ical4j.model.property.RRule;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
-import static com.stratelia.webactiv.almanach.model.EventDetailBuilder.*;
+import org.silverpeas.date.Period;
+import org.silverpeas.date.PeriodType;
+
+import java.util.Calendar;
+import java.util.List;
+
+import static com.stratelia.webactiv.almanach.model.EventDetailBuilder.NON_PERIODIC_EVENTS;
+import static com.stratelia.webactiv.almanach.model.EventDetailBuilder.PERIODIC_EVENTS;
 import static com.stratelia.webactiv.almanach.model.EventOccurrenceMatcher.*;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.*;
 
 /**
  * Unit tests on the implementation of some almanach EJB business operations.
@@ -85,14 +90,14 @@ public class AlmanachBmEJBTest extends BaseAlmanachTest {
   
   @Test
   public void eventOccurrencesInAGivenYearShouldBeCorrectlyObtained() throws Exception {
-    List<EventOccurrence> occurrences = almanachBmEJB.getEventOccurrencesInYear(year2011(),
+    List<EventOccurrence> occurrences = almanachBmEJB.getEventOccurrencesInPeriod(year2011(),
         almanachIds);
     assertThat(occurrences.size(), is(27));
   }
 
   @Test
   public void eventOccurrencesInAGivenMonthShouldBeCorrectlyObtained() throws Exception {
-    List<EventOccurrence> occurrences = almanachBmEJB.getEventOccurrencesInMonth(april2011(),
+    List<EventOccurrence> occurrences = almanachBmEJB.getEventOccurrencesInPeriod(april2011(),
         almanachIds);
     assertThat(occurrences.size(), is(5));
     assertThat(occurrences.get(0), is(anOccurrenceOfEvent(PERIODIC_EVENTS[0],
@@ -114,7 +119,7 @@ public class AlmanachBmEJBTest extends BaseAlmanachTest {
 
   @Test
   public void eventOccurrencesInAGivenWeekShouldBeCorrectlyObtained() throws Exception {
-    List<EventOccurrence> occurrences = almanachBmEJB.getEventOccurrencesInWeek(week15In2011(),
+    List<EventOccurrence> occurrences = almanachBmEJB.getEventOccurrencesInPeriod(week15In2011(),
         almanachIds);
     assertThat(occurrences.size(), is(3));
     assertThat(occurrences.get(0), is(anOccurrenceOfEvent(PERIODIC_EVENTS[0],
@@ -133,23 +138,23 @@ public class AlmanachBmEJBTest extends BaseAlmanachTest {
     List<EventOccurrence> occurrences = almanachBmEJB.getNextEventOccurrences(almanachIds);
     assertThat(occurrences.size(), is(13));
   }
-  
-  private Calendar year2011() {
+
+  private Period year2011() {
     Calendar year2011 = Calendar.getInstance();
     year2011.setTime(dateToUseInTests());
-    return year2011;
+    return Period.from(year2011.getTime(), PeriodType.year, "en");
   }
 
-  private Calendar april2011() {
+  private Period april2011() {
     Calendar april = Calendar.getInstance();
     april.setTime(dateToUseInTests());
-    return april;
+    return Period.from(april.getTime(), PeriodType.month, "en");
   }
 
-  private Calendar week15In2011() {
+  private Period week15In2011() {
     Calendar week15 = Calendar.getInstance();
     week15.setTime(dateToUseInTests());
-    return week15;
+    return Period.from(week15.getTime(), PeriodType.week, "en");
   }
   
   /**
@@ -157,7 +162,6 @@ public class AlmanachBmEJBTest extends BaseAlmanachTest {
    * context adapted to the tests.
    */
   private static class AlmanachBmEJBForTest extends AlmanachBmEJB {
-    private static final long serialVersionUID = 3216349856012963787L;
 
     @Override
     protected Date today() {

@@ -1,51 +1,54 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.almanach.model;
 
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.UtilException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-
+import static com.silverpeas.util.StringUtil.isDefined;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
-import java.util.Calendar;
 import static com.stratelia.webactiv.util.DateUtil.*;
-import static com.silverpeas.util.StringUtil.*;
+import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.exception.UtilException;
+import org.silverpeas.date.Period;
+
+import java.sql.*;
+import java.text.MessageFormat;
+import java.util.Date;
+import java.util.*;
 
 public class EventDAO {
 
   private static final String EVENT_COLUMNNAMES =
           "eventId, eventName, eventDelegatorId, eventStartDay, eventEndDay, eventStartHour, "
           + "eventEndHour, eventPriority, eventTitle, eventPlace, eventUrl, instanceId";
+  private static final String EVENTS_IN_RANGE_QUERY = "select distinct * from " + EventPK.TABLE_NAME
+          + " left outer join " + Periodicity.getTableName() + " on " + EventPK.TABLE_NAME
+          + ".eventId = " + Periodicity.getTableName() + ".eventId where ((eventStartDay <= ''{0}'' "
+          + "and eventEndDay >= ''{0}'') or (eventStartDay >= ''{0}'' and eventStartDay <= ''{1}'') or "
+          + "(id is not null and eventStartDay < ''{1}'' and (untildateperiod >= ''{0}'' or "
+          + "untildateperiod is null))) and instanceId in ({2}) order by eventStartDay";
+  private static final String EVENTS_FROM_DATE = "select distinct * from " + EventPK.TABLE_NAME
+          + " left outer join " + Periodicity.getTableName() + " on " + EventPK.TABLE_NAME
+          + ".eventId = " + Periodicity.getTableName() + ".eventId where ((eventStartDay >= ''{0}'') "
+          + "or (eventEndDay >= ''{0}'') or (id is not null and (untildateperiod >= ''{0}'' or "
+          + "untildateperiod is null))) and instanceId in ({1}) order by eventStartDay";
 
   public void updateEvent(final EventDetail event) throws SQLException, Exception {
     Connection connection = openConnection();
@@ -92,7 +95,7 @@ public class EventDAO {
     String insertQuery = "insert into " + event.getPK().getTableName();
     insertQuery += " (" + EVENT_COLUMNNAMES + ") ";
     insertQuery += " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    PreparedStatement insertStmt = null;
+    PreparedStatement insertStmt;
 
     int id = 0;
     try {
@@ -145,8 +148,9 @@ public class EventDAO {
 
   /**
    * Find all events that can occur in the specified range and for the specified almanachs.
-   * @param startDate the start date of the range. It has to be in the format yyyy/MM/dd.
-   * @param endDate the end date of the range. It has to be in the format yyyy/MM/dd. If the end
+   *
+   * @param startDay the start date of the range. It has to be in the format yyyy/MM/dd.
+   * @param endDay the end date of the range. It has to be in the format yyyy/MM/dd. If the end
    * date is null or empty, then there is no end date and all events from startDay are taken into
    * account.
    * @param almanachIds the identifiers of the almanachs.
@@ -160,33 +164,22 @@ public class EventDAO {
 
     ResultSet rs = null;
     Statement selectStmt = null;
-    String paramInstanceIds = "";
+    StringBuilder paramInstanceIds = new StringBuilder();
     if (almanachIds != null && almanachIds.length > 0) {
-      paramInstanceIds = " and (instanceId='" + almanachIds[0] + "'";
+      paramInstanceIds.append("'").append(almanachIds[0]).append("'");
       for (int i = 1; i < almanachIds.length; i++) {
-        paramInstanceIds += " or instanceId='" + almanachIds[i] + "'";
+        paramInstanceIds.append(",'").append(almanachIds[i]).append("'");
       }
-      paramInstanceIds += ")";
     } else {
       throw new SQLException("Missing instance identifiers");
     }
 
-    String selectQuery = "select distinct *"
-            + " from " + EventPK.TABLE_NAME + " left outer join " + Periodicity.getTableName()
-            + " on " + EventPK.TABLE_NAME + ".eventId = " + Periodicity.getTableName() + ".eventId";
+    String selectQuery;
     if (isDefined(endDay)) {
-      selectQuery += " where ((eventStartDay < '" + endDay + "' and eventEndDay >= '" + endDay
-              + "')"
-              + " or (eventStartDay < '" + endDay + "' and eventStartDay >= '" + startDay + "')"
-              + " or (eventEndDay < '" + endDay + "' and eventEndDay >= '" + startDay + "')"
-              + " or (id is not null and eventStartDay < '" + endDay + "'"
-              + " and (untildateperiod >= '" + startDay + "' or untildateperiod is null)))";
+      selectQuery  = MessageFormat.format(EVENTS_IN_RANGE_QUERY, startDay, endDay, paramInstanceIds.toString());
     } else {
-      selectQuery += " where ((eventStartDay >= '" + startDay + "') or (eventEndDay >= '"
-              + startDay + "') or (id is not null and (untildateperiod >= '" + startDay
-              + "' or untildateperiod is null)))";
+      selectQuery = MessageFormat.format(EVENTS_FROM_DATE, startDay, paramInstanceIds.toString());
     }
-    selectQuery += paramInstanceIds + " order by eventStartDay";
     try {
       selectStmt = connection.createStatement();
       rs = selectStmt.executeQuery(selectQuery);
@@ -202,44 +195,10 @@ public class EventDAO {
     }
   }
 
-  public Collection<EventDetail> findAllEventsInYear(final Date date, String... instanceIds)
-          throws SQLException, Exception {
-    String year = formatDate(date);
-    year = year.substring(0, 4);
-    String startDay = year + "/01/01";
-    String endDay = year + "/12/31";
-    return findAllEventsInRange(startDay, endDay, instanceIds);
-  }
-
-  public Collection<EventDetail> findAllEventsInMonth(final Date date, String... instanceIds)
-          throws SQLException, Exception {
-    String month = formatDate(date);
-    month = month.substring(0, month.length() - 2);
-    String startDay = month + "01";
-    String endDay = month + "31";
-    return findAllEventsInRange(startDay, endDay, instanceIds);
-  }
-
-  public Collection<EventDetail> findAllEventsInWeek(final Date week, String... instanceIds)
-          throws SQLException, Exception {
-    Calendar firstDayWeek = Calendar.getInstance();
-    firstDayWeek.setTime(week);
-    firstDayWeek.set(java.util.Calendar.DAY_OF_WEEK, firstDayWeek.getFirstDayOfWeek());
-    firstDayWeek.set(java.util.Calendar.HOUR_OF_DAY, 0);
-    firstDayWeek.set(java.util.Calendar.MINUTE, 0);
-    firstDayWeek.set(java.util.Calendar.SECOND, 0);
-    firstDayWeek.set(java.util.Calendar.MILLISECOND, 0);
-    Calendar lastDayWeek = Calendar.getInstance();
-    lastDayWeek.setTime(week);
-    lastDayWeek.set(java.util.Calendar.HOUR_OF_DAY, 0);
-    lastDayWeek.set(java.util.Calendar.MINUTE, 0);
-    lastDayWeek.set(java.util.Calendar.SECOND, 0);
-    lastDayWeek.set(java.util.Calendar.MILLISECOND, 0);
-    lastDayWeek.set(java.util.Calendar.DAY_OF_WEEK, lastDayWeek.getFirstDayOfWeek());
-    lastDayWeek.add(java.util.Calendar.WEEK_OF_YEAR, 1);
-    String startDay = formatDate(firstDayWeek.getTime());
-    String endDay = formatDate(lastDayWeek.getTime());
-
+  public Collection<EventDetail> findAllEventsInPeriod(final Period period, String... instanceIds)
+          throws Exception {
+    String startDay = formatDate(period.getBeginDate());
+    String endDay = formatDate(period.getEndDate());
     return findAllEventsInRange(startDay, endDay, instanceIds);
   }
 
@@ -334,8 +293,8 @@ public class EventDAO {
   }
 
   protected EventDetail decodeEventDetailFromResultSet(final ResultSet rs)
-          throws SQLException, Exception {
-    String id = "";
+          throws Exception {
+    String id;
     try {
       id = rs.getString(EventPK.TABLE_NAME + ".eventId");
     } catch (Exception ex) {
@@ -395,29 +354,4 @@ public class EventDAO {
   protected void closeConnection(final Connection connection) {
     DBUtil.close(connection);
   }
-//  public static Collection<EventDetail> getNextEvents(Connection con, EventPK pk,
-//      int nbReturned) throws SQLException, Exception {
-//    ResultSet rs = null;
-//    PreparedStatement prepStmt = null;
-//    String selectQuery = "SELECT DISTINCT *"
-//        + " FROM " + pk.getTableName() + " LEFT OUTER JOIN " + Periodicity.getTableName()
-//        + " ON " + pk.getTableName() + ".eventId = " + Periodicity.getTableName() + ".eventId"
-//        + " WHERE instanceId= ? AND eventStartDay >= ? ORDER BY eventStartDay";
-//    try {
-//      SilverTrace.info("almanach", "EventDAO.getNextEvents()", "almanach.MSG_SQL_REQUEST",
-//          "selectRequest = " + selectQuery);
-//      prepStmt = con.prepareStatement(selectQuery);
-//      prepStmt.setString(1, pk.getComponentName());
-//      prepStmt.setString(2, formatDate(new Date()));
-//      rs = prepStmt.executeQuery();
-//      List<EventDetail> list = new ArrayList<EventDetail>();
-//      while (rs.next() && nbReturned != 0) {
-//        list.add(getEventDetailFromResultSet(rs));
-//        nbReturned--;
-//      }
-//      return list;
-//    } finally {
-//      DBUtil.close(rs, prepStmt);
-//    }
-//  }
 }

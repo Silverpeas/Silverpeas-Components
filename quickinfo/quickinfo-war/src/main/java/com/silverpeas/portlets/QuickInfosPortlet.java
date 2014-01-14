@@ -1,33 +1,33 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.portlets;
 
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.quickinfo.control.QuickInfoTransversalSC;
+import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.portlet.GenericPortlet;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequestDispatcher;
@@ -35,48 +35,46 @@ import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.quickinfo.control.QuickInfoTransversalSC;
-
 public class QuickInfosPortlet extends GenericPortlet implements FormNames {
 
-  public void doView(RenderRequest request, RenderResponse response)
-      throws PortletException, IOException {
+  @Override
+  public void doView(RenderRequest request, RenderResponse response) throws PortletException,
+      IOException {
     PortletSession session = request.getPortletSession();
-    MainSessionController m_MainSessionCtrl = (MainSessionController) session
-        .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT,
-        PortletSession.APPLICATION_SCOPE);
+    MainSessionController m_MainSessionCtrl =
+        (MainSessionController) session.getAttribute(
+        MainSessionController.MAIN_SESSION_CONTROLLER_ATT, PortletSession.APPLICATION_SCOPE);
 
     QuickInfoTransversalSC quickinfoTransversal = new QuickInfoTransversalSC();
     quickinfoTransversal.init(m_MainSessionCtrl);
-    List quickinfos = new ArrayList();
+    List<PublicationDetail> quickinfos = new ArrayList<PublicationDetail>();
     try {
-      quickinfos = (List) quickinfoTransversal.getAllQuickInfos();
+      quickinfos = new ArrayList<PublicationDetail>(quickinfoTransversal.getAllQuickInfos());
     } catch (Exception e) {
       SilverTrace.error("portlet", "QuickInfosPortlet", "portlet.ERROR", e);
     }
-
     request.setAttribute("QuickInfos", quickinfos.iterator());
-
     include(request, response, "portlet.jsp");
   }
 
-  public void doEdit(RenderRequest request, RenderResponse response)
-      throws PortletException {
+  @Override
+  public void doEdit(RenderRequest request, RenderResponse response) throws PortletException {
     include(request, response, "edit.jsp");
   }
 
-  /** Include "help" JSP. */
-  public void doHelp(RenderRequest request, RenderResponse response)
-      throws PortletException {
+  /**
+   * Include "help" JSP.
+   */
+  @Override
+  public void doHelp(RenderRequest request, RenderResponse response) throws PortletException {
     include(request, response, "help.jsp");
   }
 
-  /** Include a page. */
-  private void include(RenderRequest request, RenderResponse response,
-      String pageName) throws PortletException {
+  /**
+   * Include a page.
+   */
+  private void include(RenderRequest request, RenderResponse response, String pageName)
+      throws PortletException {
     response.setContentType(request.getResponseContentType());
     if (!StringUtil.isDefined(pageName)) {
       // assert

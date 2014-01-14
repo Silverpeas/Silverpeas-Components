@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,6 +26,8 @@ package com.silverpeas.rssAgregator.control;
 
 import java.util.List;
 
+import javax.inject.Named;
+
 import com.silverpeas.rssAgregator.model.RssAgregatorException;
 import com.silverpeas.rssAgregator.model.SPChannel;
 import com.silverpeas.rssAgregator.model.SPChannelPK;
@@ -38,9 +40,10 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 /**
  * @author neysseri
  */
+@Named("rssAgregatorBm")
 public class RssAgregatorBmImpl implements RssAgregatorBm {
 
-  private static SilverpeasBeanDAO rssDAO;
+  private static SilverpeasBeanDAO<SPChannel> rssDAO;
 
   public RssAgregatorBmImpl() {
   }
@@ -55,8 +58,8 @@ public class RssAgregatorBmImpl implements RssAgregatorBm {
       WAPrimaryKey pk = getDAO().add(channel);
       channel.setPK(pk);
     } catch (PersistenceException pe) {
-      throw new RssAgregatorException("RssAgregatorBmImpl.addChannel()",
-          SilverpeasException.ERROR, "rssAgregator.ADDING_CHANNEL_FAILED", pe);
+      throw new RssAgregatorException("RssAgregatorBmImpl.addChannel()", SilverpeasException.ERROR,
+          "rssAgregator.ADDING_CHANNEL_FAILED", pe);
     }
     return channel;
   }
@@ -98,8 +101,7 @@ public class RssAgregatorBmImpl implements RssAgregatorBm {
       getDAO().removeWhere(pk, "instanceId = '" + instanceId + "'");
     } catch (PersistenceException pe) {
       throw new RssAgregatorException("RssAgregatorBmImpl.deleteChannels()",
-          SilverpeasException.ERROR, "rssAgregator.DELETING_CHANNELS_FAILED",
-          pe);
+          SilverpeasException.ERROR, "rssAgregator.DELETING_CHANNELS_FAILED", pe);
     }
   }
 
@@ -117,14 +119,12 @@ public class RssAgregatorBmImpl implements RssAgregatorBm {
     }
   }
 
-  private SilverpeasBeanDAO getDAO() throws RssAgregatorException {
+  private SilverpeasBeanDAO<SPChannel> getDAO() throws RssAgregatorException {
     if (rssDAO == null) {
       try {
-        rssDAO = SilverpeasBeanDAOFactory
-            .getDAO("com.silverpeas.rssAgregator.model.SPChannel");
+        rssDAO = SilverpeasBeanDAOFactory.getDAO("com.silverpeas.rssAgregator.model.SPChannel");
       } catch (PersistenceException pe) {
-        throw new RssAgregatorException("RssAgregatorBmImpl.getDAO()",
-            SilverpeasException.ERROR,
+        throw new RssAgregatorException("RssAgregatorBmImpl.getDAO()", SilverpeasException.ERROR,
             "rssAgregator.GETTING_SILVERPEASBEANDAO_FAILED", pe);
       }
     }

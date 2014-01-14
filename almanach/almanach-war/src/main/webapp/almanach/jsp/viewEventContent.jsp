@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -38,21 +38,21 @@
 	ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(almanach.getLanguage());
 
 	String user = request.getParameter("flag");
-	
-	EventDetail event = (EventDetail) request.getAttribute("CompleteEvent");
-	Date dateDebutIteration = (Date) request.getAttribute("DateDebutIteration");
-	Date dateFinIteration = (Date) request.getAttribute("DateFinIteration");
+
+	EventDetail event = (EventDetail) request.getAttribute("Event");
+	Date startDate = (Date) request.getAttribute("EventStartDate");
+	Date endDate = (Date) request.getAttribute("EventEndDate");
 	String from = (String) request.getAttribute("From");
 	UserDetail contributor = (UserDetail) request.getAttribute("Contributor");
 
-	String dateDebutIterationString = DateUtil.date2SQLDate(dateDebutIteration);
+	String startDateString = DateUtil.date2SQLDate(startDate);
 
 	Periodicity periodicity = event.getPeriodicity();
 	String id = event.getPK().getId();
 
   //initialisation de l'objet event
 	String title = null;
-	String link = null; 
+	String link = null;
 	String description = "";
 	try{
 		event = almanach.getEventDetail(id);
@@ -78,13 +78,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=generalMessage.getString("GML.popupTitle")%></title>
-<% out.println(graphicFactory.getLookStyleSheet());%>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 
 var notifyWindow = window;
 
-function goToNotify(url) 
+function goToNotify(url)
 {
 	windowName = "notifyWindow";
 	larg = "740";
@@ -128,12 +128,12 @@ $(document).ready(function(){
 </script>
 </head>
 <body class="viewEvent" id="<%=instanceId%>">
-  <% 
+  <%
     Window 	window 	= graphicFactory.getWindow();
     Frame 	frame	= graphicFactory.getFrame();
     Board 	board 	= graphicFactory.getBoard();
     OperationPane operationPane = window.getOperationPane();
-        
+
 	BrowseBar browseBar = window.getBrowseBar();
 	if (StringUtil.isDefined(from)) {
 	  	if (from.equals("ViewYearEvents")) {
@@ -143,7 +143,7 @@ $(document).ready(function(){
 	  	}
 	}
 	browseBar.setExtraInformation(title);
-	    
+
     String url = "ToAlertUser?Id="+id;
     operationPane.addOperation(m_context+"/util/icons/alert.gif", resources.getString("GML.notify"),"javaScript:onClick=goToNotify('"+url+"')") ;
     if (!"user".equals(user))
@@ -153,25 +153,28 @@ $(document).ready(function(){
     }
 
     out.println(window.printBefore());
-    
+
     if (!"user".equals(user))
     {
     	TabbedPane tabbedPane = graphicFactory.getTabbedPane();
-		tabbedPane.addTab(almanach.getString("evenement"), "viewEventContent.jsp?Id="+id+"&Date="+dateDebutIterationString, true);
-		tabbedPane.addTab(almanach.getString("entete"), "editEvent.jsp?Id="+id+"&Date="+dateDebutIterationString, false);
-		tabbedPane.addTab(resources.getString("GML.attachments"), "editAttFiles.jsp?Id="+id+"&Date="+dateDebutIterationString, false);
+		tabbedPane.addTab(almanach.getString("evenement"), "viewEventContent.jsp?Id="+id+"&Date="+startDateString, true);
+		tabbedPane.addTab(almanach.getString("entete"), "editEvent.jsp?Id="+id+"&Date="+startDateString, false);
 		out.println(tabbedPane.print());
     }
-    
+
     out.println(frame.printBefore());
 %>
 
 <div class="rightContent">
-	<!--  Attachments -->  
-	<%
-  		out.flush();
-  		getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachments.jsp?Id="+event.getId()+"&ComponentId="+instanceId+"&Context=Images").include(request, response);
-  	%>
+	<!--  Attachments -->
+  <%
+    out.flush();
+    String profile = (!"user".equals(user)) ? "admin" : "user";
+    getServletConfig().getServletContext().getRequestDispatcher(
+        "/attachment/jsp/displayAttachedFiles.jsp?Id=" + event.getId() + "&Profile=" + profile +
+            "&ComponentId=" + instanceId + "&Context=attachment&addFileMenu=true")
+        .include(request, response);
+  %>
   	<!-- Periodicity -->
 	<% if(event.isPeriodic()) { %>
 	<div id="eventPeriodicity" class="bgDegradeGris">
@@ -192,12 +195,12 @@ $(document).ready(function(){
 				}
 			%>
 			</b>
-			
+
 			<% if (periodicity.getUnity() == Periodicity.UNIT_WEEK) { %>
-				<br /><span class="eventPeriodicityDaysWeek"><%=resources.getString("choiceDaysWeek")%>&nbsp;:&nbsp;<b>		 
+				<br /><span class="eventPeriodicityDaysWeek"><%=resources.getString("choiceDaysWeek")%>&nbsp;:&nbsp;<b>
 			<%
 					String days = "";
-					if(periodicity.getDaysWeekBinary().charAt(0) == '1') { 
+					if(periodicity.getDaysWeekBinary().charAt(0) == '1') {
 						days += resources.getString("GML.jour2")+", ";//Monday
 					}
 					if(periodicity.getDaysWeekBinary().charAt(1) == '1') {
@@ -240,7 +243,7 @@ $(document).ready(function(){
 							out.print(resources.getString("third"));
 						} else if (periodicity.getNumWeek() == -1) {
 							out.print(resources.getString("fifth"));
-						} 
+						}
 						out.print(" ");
 						if(periodicity.getDay() == 2) {
 							out.print(resources.getString("GML.jour2"));
@@ -261,20 +264,20 @@ $(document).ready(function(){
 			</b>  </span>
 			<%
 					}
-				} 
-						
+				}
+
 			 if (event.getStartDate() != null && periodicity.getUntilDatePeriod() != null) {
 						%>
 						<br />
-						<span class="eventPeriodicityDate"> 
-						<% if (event.getStartDate() != null) { 
+						<span class="eventPeriodicityDate">
+						<% if (event.getStartDate() != null) {
 							out.println(resources.getString("GML.fromDate"));
 							out.println("<b>");
 							out.print(resources.getInputDate(event.getStartDate()));
 						    out.println("</b> ");
 						}
 						%>
-						
+
 						<% if (periodicity.getUntilDatePeriod() != null) {
 							out.println(resources.getString("GML.toDate"));
 							out.println("<b>");
@@ -285,26 +288,26 @@ $(document).ready(function(){
 						</span>
 						<%
 			 }
-			
-			   
+
+
 			 if (periodicity.getFrequency() != 1) { %>
 				<br />
-				<span class="eventPeriodicityFrequency"> <%=resources.getString("frequency")%> :  <b><% out.print(periodicity.getFrequency());  %> </b></span> 
-			<%	
+				<span class="eventPeriodicityFrequency"> <%=resources.getString("frequency")%> :  <b><% out.print(periodicity.getFrequency());  %> </b></span>
+			<%
 			}
 			%>
 		</p>
 	</div>
 <%	}   %>
-			
-	
-		
+
+
+
 		   <div id="eventInfoPublication" class="bgDegradeGris">
 		   	<div class="paragraphe">
-		   		<b><%=resources.getString("almanach.createdBy")%></b> <%=contributor.getDisplayedName() %>
+		   		<b><%=resources.getString("almanach.createdBy")%></b> <view:username userId="<%=contributor.getId()%>" />
 		   		<div class="profilPhoto"><img src="<%=m_context %><%=contributor.getAvatar() %>" alt="" class="defaultAvatar"/></div>
 	   		</div>
-		   		
+
 			<%	if (StringUtil.isDefined(link)) {	%>
 				<p id="permalinkInfo">
 					<a href="<%=link%>" title='<%=resources.getString("CopyEventLink")%>'><img src="<%=m_context%>/util/icons/link.gif" border="0" alt='<%=resources.getString("CopyEventLink")%>'/></a>
@@ -313,8 +316,8 @@ $(document).ready(function(){
 				</p>
 			<% } %>
 		   </div>
-		   
-		   <view:pdcClassification componentId="<%= instanceId %>" contentId="<%= id %>" />
+
+		   <view:pdcClassificationPreview componentId="<%= instanceId %>" contentId="<%= id %>" />
 </div>
 
 
@@ -322,11 +325,11 @@ $(document).ready(function(){
 	<h2 class="eventName">
 			<%=EncodeHelper.javaStringToHtmlString(event.getTitle())%>
 			 <%if (event.getPriority() != 0){ %>
-       			 <span class="eventPriorityHight"> ! <%=almanach.getString("prioriteImportante")%></span>
+       			 <span class="eventPriorityHight"><img src='<%= m_context %>/util/icons/important.gif' alt='<%=almanach.getString("prioriteImportante")%>'/></span>
 			<% } %>
 	</h2>
-	
-	<div class="eventInfo">	
+
+	<div class="eventInfo">
 		<% if (StringUtil.isDefined(event.getPlace())) { %>
 			<div class="eventPlace">
 				<div class="bloc">
@@ -337,18 +340,18 @@ $(document).ready(function(){
 		<div class="eventDate">
 			<div class="bloc">
 				<span class="eventBeginDate">
-					<%=resources.getString("GML.fromDate")%> 
-					<%=resources.getOutputDate(dateDebutIteration)%>
+					<%=resources.getString("GML.fromDate")%>
+					<%=resources.getOutputDate(startDate)%>
 					<%if (event.getStartHour() != null && event.getStartHour().length() != 0) {%>
-						<%=almanach.getString("ToHour")%> 
+						<%=almanach.getString("ToHour")%>
 						<%=EncodeHelper.javaStringToHtmlString(event.getStartHour())%>
 					<%}%>
 					</span>
-					
-					<span class="eventEndDate">  
+
+					<span class="eventEndDate">
 					<%
 						out.println(resources.getString("GML.toDate"));
-						out.println(resources.getOutputDate(dateFinIteration));
+						out.println(resources.getOutputDate(endDate));
 						if (event.getEndHour() != null && event.getEndHour().length() != 0) {
 							out.println(almanach.getString("ToHour"));
 							out.println(EncodeHelper.javaStringToHtmlString(event.getEndHour()));
@@ -356,13 +359,13 @@ $(document).ready(function(){
 					</span>
 				</div>
 		</div>
-			
+
     	<% if (StringUtil.isDefined(event.getEventUrl())) {
 	    		String eventURL = event.getEventUrl();
 	    		if (eventURL.indexOf("://") == -1){
 	    			eventURL = "http://"+eventURL;
 	    		}
-	    			
+
 	    		%>
 	    		<div class="eventURL">
 	    			<div class="bloc">
@@ -371,16 +374,16 @@ $(document).ready(function(){
 						</span>
 					</div>
 				</div>
-    		<%    			
+    		<%
     		}
     		%>
     <br clear="left"/>&nbsp;
 	</div>
-	
-	
+
+
 	<div class="eventDesc"><%=description%></div>
-		
- </div>   
+
+ </div>
 
   <%
 		out.println("<br/>");
@@ -392,19 +395,19 @@ $(document).ready(function(){
 		buttonPane.addButton(graphicFactory.getFormButton(resources.getString("GML.back"), backURL, false));
 		out.println("<center>"+buttonPane.print()+"</center>");
 		out.println("<br/>");
-		out.println(frame.printAfter());				
+		out.println(frame.printAfter());
 		out.println(window.printAfter());
 	%>
 	<form name="eventForm" action="RemoveEvent" method="post">
 		<input type="hidden" name="Action"/>
    		<input type="hidden" name="Id" value="<%=id%>"/>
    		<% if (periodicity != null) { %>
-   			<input type="hidden" name="DateDebutIteration" value="<%=dateDebutIterationString%>"/>
-   			<input type="hidden" name="DateFinIteration" value="<%=DateUtil.date2SQLDate(dateFinIteration)%>"/>
+   			<input type="hidden" name="EventStartDate" value="<%=startDateString%>"/>
+   			<input type="hidden" name="EventEndDate" value="<%=DateUtil.date2SQLDate(endDate)%>"/>
    		<% } %>
 	</form>
 <div id="modalDialogOnDelete" style="display: none">
-	<% 
+	<%
 	ButtonPane buttonPaneOnDelete = graphicFactory.getButtonPane();
 	buttonPaneOnDelete.addButton(graphicFactory.getFormButton(resources.getString("occurenceOnly"), "javascript:onClick=sendEvent('RemoveEvent', 'ReallyDeleteOccurence')", false));
 	buttonPaneOnDelete.addButton(graphicFactory.getFormButton(resources.getString("allEvents"), "javascript:onClick=sendEvent('RemoveEvent', 'ReallyDelete')", false));
@@ -414,6 +417,6 @@ $(document).ready(function(){
 	<br/><br/>
 	<center><%=buttonPaneOnDelete.print()%></center>
 	</td></tr></table>
-</div>	
+</div>
 </body>
 </html>

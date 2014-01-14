@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -30,79 +30,53 @@ response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 <%@ include file="check.jsp" %>
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-<%
-out.println(gef.getLookStyleSheet());
-%>
-</HEAD>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
+<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><fmt:message key="GML.popupTitle" /></title>
+<view:looknfeel />
+</head>
 
 <%
-	String hostSpaceName = (String) request.getAttribute("SpaceName");
-	String hostComponentName = (String) request.getAttribute("ComponentName");
   String[] emailErrors = (String[])request.getAttribute("EmailErrors");
 	String returnUrl = "Accueil";
-  if (request.getAttribute("ReturnUrl") != null)
+  if (request.getAttribute("ReturnUrl") != null) {
 	  returnUrl = (String) request.getAttribute("ReturnUrl");
+  }
 %>
 
-<BODY marginwidth=5 marginheight=5 leftmargin=5 topmargin=5>
-
+<body>
+    <view:window>
+    <view:frame>
+<div class="inlineMessage">
+  <fmt:message var="messageSent" key="infoLetter.sended"/>
+  <view:encodeJs string="${messageSent}"/>
+</div>
+<br clear="all"/>
+<% if (emailErrors.length > 0) { %>
+	<div class="inlineMessage-nok">
+		<%=EncodeHelper.javaStringToHtmlString(resource.getString("infoLetter.emailErrors"))%> : <br/>
+		<ul>
+		<% for (int i = 0; i < emailErrors.length; i++) { %>
+			<li><%=EncodeHelper.javaStringToHtmlString(emailErrors[i])%></li>
+		<% } %>
+		</ul>
+	</div>
+<% } %>
+<br clear="all"/>
 <%
-	browseBar.setDomainName(hostSpaceName);
-	browseBar.setComponentName(hostComponentName);
-
-	out.println(window.printBefore());
-	out.println(frame.printBefore());
-%>
-
-<%
-Button closeButton = (Button) gef.getFormButton(resource.getString("GML.ok"), returnUrl, false);
-%>
-
-<TABLE ALIGN=CENTER CELLPADDING=2 CELLSPACING=0 BORDER=0 WIDTH="98%" CLASS=intfdcolor>
-	<tr><td>
-		<TABLE ALIGN=CENTER CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%" CLASS=intfdcolor4>
-			<tr><td>
-				<TABLE border=0 cellPadding=1 cellSpacing=1 align="center">
-					<TR>
-						<TD align="left" class="textePetitBold"><%=Encode.javaStringToHtmlString(resource.getString("infoLetter.sended"))%></TD>
-					</TR>
-                    <% 
-                        if (emailErrors.length > 0)
-                        {
-                    %>
-					<TR><td><br></td>
-					</TR>
-					<TR>
-						<TD align="left"><%=Encode.javaStringToHtmlString(resource.getString("infoLetter.emailErrors"))%></TD>
-					</TR>
-                    <% 
-                            for (int i = 0; i < emailErrors.length; i++)
-                            {
-                    %>
-					<TR>
-						<TD align="left"><%=Encode.javaStringToHtmlString(emailErrors[i])%></TD>
-					</TR>
-                    <% 
-                            }
-                        }
-                    %>
-				</TABLE>
-			</td></tr>
-		</table>
-	</td></tr>
-</table>
-<%		
 	ButtonPane buttonPane = gef.getButtonPane();
-	buttonPane.addButton(closeButton);
-	buttonPane.setHorizontalPosition();
-	out.println(frame.printMiddle());
-	out.println("<BR><center>"+buttonPane.print()+"<br></center>");
-	out.println(frame.printAfter());
-	out.println(window.printAfter());
-%>
-
-</BODY>
-</HTML>
+	buttonPane.addButton(gef.getFormButton(resource.getString("GML.ok"), returnUrl, false));
+	out.println("<center>"+buttonPane.print()+"</center>");
+%>      </view:frame>
+    </view:window>
+</body>
+</html>

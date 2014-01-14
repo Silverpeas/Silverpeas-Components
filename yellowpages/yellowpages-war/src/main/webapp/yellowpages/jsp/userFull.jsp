@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -70,20 +70,20 @@ out.println(board.printBefore());
 </tr>
 <tr>
 	<td valign=baseline align=left class=txtlibform><%=resources.getString("GML.eMail")%> :</td>
-	<td align=left><a href=mailto:<%=Encode.javaStringToHtmlString(user.geteMail())%>><%=Encode.javaStringToHtmlString(Encode.javaStringToHtmlString(user.geteMail()))%></A></td>
+	<td align=left><a href=mailto:<%=EncodeHelper.javaStringToHtmlString(user.geteMail())%>><%=EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToHtmlString(user.geteMail()))%></A></td>
 </tr>
 <%
   String[] properties = user.getPropertiesNames();
 	String property = null;
 	for (int p=0; p<properties.length; p++)
 	{
-		property = (String) properties[p];
+		property = properties[p];
 		if (!property.startsWith("password"))
 		{
 			%>
 			<tr>
 				<td valign="baseline" align=left class="txtlibform"><%=user.getSpecificLabel(resources.getLanguage(), property) %> :</td>
-				<td align="left" valign="baseline"><%=Encode.javaStringToHtmlString(user.getValue(property))%></td>     
+				<td align="left" valign="baseline"><%=EncodeHelper.javaStringToHtmlString(user.getValue(property))%></td>     
 			</tr>
 			<%
 		}

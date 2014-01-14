@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -39,7 +39,8 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.indexEngine.model.RepositoryIndexer;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.search.indexEngine.model.RepositoryIndexer;
 
 public class ScheduledIndexFiles
     implements SchedulerEventListener {
@@ -68,7 +69,7 @@ public class ScheduledIndexFiles
 
     try {
       // indexation des fichiers du composant
-      OrganizationController orga = new OrganizationController();
+      OrganisationController orga = new OrganizationController();
       String[] instanceIds = orga.getCompoId("silverCrawler");
       for (int i = 0; instanceIds != null && i < instanceIds.length; i++) {
         ComponentInst instance = orga.getComponentInst("silverCrawler"
@@ -78,7 +79,7 @@ public class ScheduledIndexFiles
           RepositoryIndexer repositoryIndexer = new RepositoryIndexer(null,
               instance.getId());
 
-          List profiles = new ArrayList();
+          List<String> profiles = new ArrayList<String>();
           profiles.add("admin");
           String[] adminIds = orga.getUsersIdsByRoleNames(instance.getId(),
               profiles);

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,22 +23,24 @@
  */
 package com.silverpeas.gallery;
 
-import java.util.Comparator;
-
 import com.silverpeas.gallery.model.PhotoDetail;
+
+import java.util.Comparator;
 
 public class GSCSizeComparatorAsc implements Comparator<PhotoDetail> {
   static public GSCSizeComparatorAsc comparator = new GSCSizeComparatorAsc();
 
+  /**
+   * Compare photos on their sizes. if the sizes are identical, use the creation date.
+   * @param photo1
+   * @param photo2
+   * @return
+   */
   public int compare(PhotoDetail photo1, PhotoDetail photo2) {
-    int compareResult = new Long(photo1.getImageSize()).compareTo(new Long(
-        photo2.getImageSize()));
-    if (compareResult == 0) {
-      // les 2 photos on la même taille, comparer les dates
-      compareResult = photo1.getCreationDate().compareTo(
-          photo2.getCreationDate());
+    if (photo1.getImageSize() == photo2.getImageSize()) {
+      return photo1.getCreationDate().compareTo(photo2.getCreationDate());
     }
-    return compareResult;
+    return Long.valueOf(photo1.getImageSize()).compareTo(photo2.getImageSize());
   }
 
   public boolean equals(Object o) {

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -13,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -32,8 +32,11 @@
     <message lang="de">Gelbe Seiten Verzeichnis</message>
   </label>
   <description>
-    <message lang="fr">Permet de créer un annuaire de contact. Un formulaire XML associé décrit l'identité
-  de chaque membre de l'annuaire, ainsi que tout autre caractéristique.
+    <message lang="fr">L’application permet de créer des contacts et des entreprises (utilisateurs
+      de la plate-forme ou non). Chaque contact peut être défini grâce à un formulaire
+      personnalisé. Une arborescence de catégories permet de les organiser en
+      toute liberté. Ils peuvent être importés et exportés au format CSV. Les contacts
+      peuvent être associés à une entreprise.
     </message>
     <message lang="en">Create a contact directory whith an XML form describing all the inos on every member of the directory.</message>
     <message lang="de">Erstellt ein Kontakt Verzeichnis mit der Hilfe eines XML-Formulars dass alle Infos über jedes Mitglied des Verzeichnisses beschreibt </message>
@@ -44,7 +47,7 @@
     <message lang="de">02 kollaborative Verwaltung</message>
   </suite>
   <visible>true</visible>
-  <visibleInPersonalSpace>no</visibleInPersonalSpace>
+  <visibleInPersonalSpace>false</visibleInPersonalSpace>
   <portlet>true</portlet>
   <instanceClassName>com.stratelia.webactiv.yellowpages.YellowpagesInstanciator</instanceClassName>
   <profiles>

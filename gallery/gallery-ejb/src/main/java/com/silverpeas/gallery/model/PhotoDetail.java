@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,18 +29,23 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
+import com.silverpeas.gallery.ImageType;
+import com.silverpeas.gallery.process.photo.GalleryLoadMetaDataProcess;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileServerUtils;
 
 public class PhotoDetail implements SilverContentInterface, Serializable {
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 1L;
+  private static final String TYPE = "Photo";
   PhotoPK photoPK;
   String title;
   String description;
@@ -64,7 +69,7 @@ public class PhotoDetail implements SilverContentInterface, Serializable {
   Date beginDate;
   Date endDate;
   String permalink;
-  LinkedHashMap<String, MetaData> metaData = new LinkedHashMap<String, MetaData>();
+  LinkedHashMap<String, MetaData> metaData = null;
   String keyWord;
   Date beginDownloadDate;
   Date endDownloadDate;
@@ -85,7 +90,7 @@ public class PhotoDetail implements SilverContentInterface, Serializable {
   }
 
   public void setSilverObjectId(int silverObjectId) {
-    this.silverObjectId = new Integer(silverObjectId).toString();
+    this.silverObjectId = Integer.toString(silverObjectId);
   }
 
   public String getSilverObjectId() {
@@ -378,17 +383,29 @@ public class PhotoDetail implements SilverContentInterface, Serializable {
     this.permalink = permalink;
   }
 
+  private Map<String, MetaData> getAllMetaData() {
+    if (metaData == null) {
+      metaData = new LinkedHashMap<String, MetaData>();
+      try {
+        GalleryLoadMetaDataProcess.load(this);
+      } catch (Exception e) {
+        SilverTrace.error("gallery", "PhotoDetail.getAllMetaData",
+            "gallery.MSG_NOT_ADD_METADATA", "photoId =  " + getId());
+      }
+    }
+    return metaData;
+  }
+
   public void addMetaData(MetaData data) {
-    metaData.put(data.getProperty(), data);
+    getAllMetaData().put(data.getProperty(), data);
   }
 
   public MetaData getMetaData(String property) {
-    return (MetaData) metaData.get(property);
+    return getAllMetaData().get(property);
   }
 
   public Collection<String> getMetaDataProperties() {
-    //return metaData.keySet();
-    Collection<MetaData> values = metaData.values();
+    Collection<MetaData> values = getAllMetaData().values();
     Collection<String> properties = new ArrayList<String>();
     for (MetaData meta : values) {
       if (meta != null) {
@@ -422,7 +439,7 @@ public class PhotoDetail implements SilverContentInterface, Serializable {
     return getName();
   }
 
-  public Iterator getLanguages() {
+  public Iterator<String> getLanguages() {
     return null;
   }
 
@@ -451,34 +468,50 @@ public class PhotoDetail implements SilverContentInterface, Serializable {
 
   /**
    * Get url to access photo from a web site.
-   * 
+   *
    * @param size  the expecting size of photo (tiny, small, normal, preview, original)
-   * 
+   *
    * @return the url
    */
   public String getWebURL(String size) {
     PhotoSize photoSize = PhotoSize.get(size);
-    
+
     return getWebURL(photoSize);
   }
-   
+
   /**
    * Get url to access photo from a web site.
-   * 
+   *
    * @param size  the expecting size of photo
-   * 
+   *
    * @return the url
    */
   public String getWebURL(PhotoSize size) {
     String idPhoto = photoPK.getId();
-    String path = "image" + idPhoto;    
+    String path = "image" + idPhoto;
     String name = getImageName();
     if (name != null)
     {
       name = (size.getPrefix().equals(".jpg")) ? name : (getId() + size.getPrefix());
-      return FileServerUtils.getWebUrl(photoPK.getSpaceId(), photoPK.getInstanceId(), name, name, getImageMimeType(), path);
+      return FileServerUtils.getWebUrl(photoPK.getInstanceId(), name, name, getImageMimeType(), path);
     }
-    
+
     return null;
+  }
+
+  public String getContributionType() {
+    return TYPE;
+  }
+
+  /**
+   * The type of this resource
+   * @return the same value returned by getContributionType()
+   */
+  public static String getResourceType() {
+    return TYPE;
+  }
+  
+  public boolean isPreviewable() {
+    return ImageType.isPreviewable(getImageName());
   }
 }
