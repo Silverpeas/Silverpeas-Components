@@ -1,0 +1,1 @@
+<html><head></head><body>Dear $firstName$ $lastName$,<br/>Click <a href="$link$">here</a> to get access to Silverpeas login page.<br/>Your connection informations<ul><li>login : $login$</li><li>password : $password$</li></ul><br/>Best regards,<br/>Silverpeas team</body></html>
