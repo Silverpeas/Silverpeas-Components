@@ -80,6 +80,7 @@ function bindQuestionsEvent() {
 						$.each(data, function(key, answer) {
 						  $('#a'+ id + ' > ul').append(displayAnswer(answer));
 						});
+						$('html, body').animate({scrollTop:$("#q" + id).parent().offset().top}, 500);
 					}
 				});
 

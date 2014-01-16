@@ -1,0 +1,1 @@
+<html><head></head><body>Bonjour $firstName$ $lastName$,<br/>Vous pouvez vous connecter à Silverpeas en cliquant <a href="$link$">ici</a>.<br/>Vos informations de connexion<ul><li>identifiant : $login$</li><li>mot de passe : $password$</li></ul><br/>Cordialement,<br/>$adminFirstName$ $adminLastName$</body></html>
