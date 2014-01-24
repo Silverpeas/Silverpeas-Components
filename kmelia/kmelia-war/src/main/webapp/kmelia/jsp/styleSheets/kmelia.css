@@ -524,6 +524,20 @@ a.button.refuse span {
      padding: 2px 0px 2px 24px;
 }
 
+.yui-skin-sam .dimensionTable #pubList ul li {
+   	position:relative;
+}
+ 
+.yui-skin-sam .dimensionTable #pubList ul li .firstColumn .selection input{
+  	position:absolute;
+   	top:0;
+   	left:0;
+}
+ 
+.yui-skin-sam .dimensionTable #pubList .publication .line1 {
+ 	padding-left: 32px;
+}
+
 .rightContent{
 	width:310px;
 	clear:right;
