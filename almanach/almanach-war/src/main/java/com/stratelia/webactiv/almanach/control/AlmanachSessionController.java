@@ -20,6 +20,28 @@
  */
 package com.stratelia.webactiv.almanach.control;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.calendar.CalendarViewType;
+import org.silverpeas.date.Period;
+import org.silverpeas.date.PeriodType;
+import org.silverpeas.upload.UploadedFile;
+import org.silverpeas.wysiwyg.WysiwygException;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
 import com.silverpeas.calendar.CalendarEvent;
 import com.silverpeas.export.ExportException;
 import com.silverpeas.export.Exporter;
@@ -1096,8 +1118,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    * @param eventDetails details about some events in one or several almanachs.
    * @return the calendar events corresponding to the almanach events.
    */
-  private List<CalendarEvent> asCalendarEvents(final List<EventDetail> eventDetails)
-      throws WysiwygException, MalformedURLException {
+  private List<CalendarEvent> asCalendarEvents(final List<EventDetail> eventDetails) {
     CalendarEventEncoder encoder = new CalendarEventEncoder();
     return encoder.encode(eventDetails);
   }
