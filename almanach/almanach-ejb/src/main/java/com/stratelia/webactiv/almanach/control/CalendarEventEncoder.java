@@ -25,26 +25,33 @@ package com.stratelia.webactiv.almanach.control;
 
 import static com.silverpeas.calendar.CalendarEvent.anEventAt;
 import static com.silverpeas.calendar.CalendarEventRecurrence.every;
-import com.silverpeas.calendar.*;
 import static com.silverpeas.util.StringUtil.isDefined;
-import org.silverpeas.wysiwyg.WysiwygException;
-import com.stratelia.webactiv.almanach.control.ejb.AlmanachRuntimeException;
-import com.stratelia.webactiv.almanach.model.EventDetail;
-import com.stratelia.webactiv.almanach.model.Periodicity;
-import com.stratelia.webactiv.almanach.model.PeriodicityException;
-import com.stratelia.webactiv.persistence.IdPK;
-import com.stratelia.webactiv.persistence.PersistenceException;
-import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
-import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
 import static com.stratelia.webactiv.util.DateUtil.asDatable;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
-import java.util.*;
+import java.util.List;
+import java.util.Set;
+import java.util.TimeZone;
+
 import net.fortuna.ical4j.model.TimeZoneRegistry;
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
+
+import com.silverpeas.calendar.CalendarEvent;
+import com.silverpeas.calendar.CalendarEventRecurrence;
+import com.silverpeas.calendar.Datable;
+import com.silverpeas.calendar.DateTime;
+import com.silverpeas.calendar.DayOfWeek;
+import com.silverpeas.calendar.DayOfWeekOccurrence;
+import com.silverpeas.calendar.TimeUnit;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.almanach.model.EventDetail;
+import com.stratelia.webactiv.almanach.model.Periodicity;
+import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * An encoder of EventDetail instances to EventCalendar instances.
@@ -52,24 +59,17 @@ import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
 public class CalendarEventEncoder {
 
   private static ResourceLocator settings = new ResourceLocator(
-          "com.stratelia.webactiv.almanach.settings.almanachSettings", "");
-
-  private static ResourceLocator getSettings() {
-    return settings;
-  }
+          "org.silverpeas.almanach.settings.almanachSettings", "");
 
   /**
    * Encodes the specified details on almanach events into a calendar event.
    *
    * @param eventDetails details about some events in one or several almanachs.
    * @return the calendar events corresponding to the almanach events.
-   * @throws MalformedURLException if the URL of an event is invalid.
-   * @throws WysiwygException if an error occurs while fetching the WYSIWYG description of an event.
    */
-  public List<CalendarEvent> encode(final List<EventDetail> eventDetails)
-          throws WysiwygException, MalformedURLException {
+  public List<CalendarEvent> encode(final List<EventDetail> eventDetails) {
     List<CalendarEvent> events = new ArrayList<CalendarEvent>();
-    TimeZone timeZone = TimeZone.getTimeZone(getSettings().getString("almanach.timezone"));
+    TimeZone timeZone = TimeZone.getTimeZone(settings.getString("almanach.timezone"));
     for (EventDetail eventDetail : eventDetails) {
       Datable<?> startDate = createDatable(eventDetail.getStartDate(), eventDetail.getStartHour()).
               inTimeZone(timeZone);
@@ -89,8 +89,17 @@ public class CalendarEventEncoder {
       if (isDefined(eventDetail.getPlace())) {
         event.withLocation(eventDetail.getPlace());
       }
-      if (isDefined(eventDetail.getEventUrl())) {
-        event.withUrl(new URL(eventDetail.getEventUrl()));
+      String url = eventDetail.getEventUrl();
+      if (isDefined(url)) {
+        if (!StringUtil.startsWithIgnoreCase(url, "http")) {
+          url = "http://" + url;
+        }
+        try {
+          event.withUrl(new URL(url));
+        } catch (MalformedURLException e) {
+          SilverTrace.warn("almanach", "CalendarEventEncoder.encode", "root.ERROR",
+              "Following URL '" + url + "' is malformed !");
+        }
       }
       if (eventDetail.getPeriodicity() != null) {
         event.recur(withTheRecurrenceRuleOf(eventDetail));
@@ -104,9 +113,7 @@ public class CalendarEventEncoder {
   private CalendarEventRecurrence withTheRecurrenceRuleOf(final EventDetail event) {
     CalendarEventRecurrence recurrence = asCalendarEventRecurrence(event.getPeriodicity());
     TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
-    ResourceLocator almanachSettings =
-            new ResourceLocator("com.stratelia.webactiv.almanach.settings.almanachSettings", "");
-    TimeZone timeZone = registry.getTimeZone(almanachSettings.getString("almanach.timezone"));
+    TimeZone timeZone = registry.getTimeZone(settings.getString("almanach.timezone"));
     ExceptionDatesGenerator generator = new ExceptionDatesGenerator();
     Set<Date> exceptionDates = generator.generateExceptionDates(event);
     for (Date anExceptionDate : exceptionDates) {
@@ -232,25 +239,5 @@ public class CalendarEventEncoder {
       datable = asDatable(date, false);
     }
     return datable;
-  }
-
-  /**
-   * Gets all the exceptions of the specified periodicity.
-   *
-   * @param periodicity an event periodicity
-   * @return a collection of exceptions that were applied to the specified periodicity.
-   */
-  private Collection<PeriodicityException> getPeriodicityExceptions(final Periodicity periodicity) {
-    try {
-      IdPK pk = new IdPK();
-      SilverpeasBeanDAO<PeriodicityException> dao = SilverpeasBeanDAOFactory.getDAO(
-              "com.stratelia.webactiv.almanach.model.PeriodicityException");
-      return dao.findByWhereClause(pk, "periodicityId = " + periodicity.getPK().getId());
-    } catch (PersistenceException e) {
-      throw new AlmanachRuntimeException(
-              "AlmanachBmEJB.getListPeriodicityException()",
-              SilverpeasRuntimeException.ERROR,
-              "almanach.EX_GET_PERIODICITY_EXCEPTION", e);
-    }
   }
 }
