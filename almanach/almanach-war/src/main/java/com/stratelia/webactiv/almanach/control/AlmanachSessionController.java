@@ -23,7 +23,6 @@ package com.stratelia.webactiv.almanach.control;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1087,8 +1086,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    * @param eventDetails details about some events in one or several almanachs.
    * @return the calendar events corresponding to the almanach events.
    */
-  private List<CalendarEvent> asCalendarEvents(final List<EventDetail> eventDetails)
-      throws WysiwygException, MalformedURLException {
+  private List<CalendarEvent> asCalendarEvents(final List<EventDetail> eventDetails) {
     CalendarEventEncoder encoder = new CalendarEventEncoder();
     return encoder.encode(eventDetails);
   }
