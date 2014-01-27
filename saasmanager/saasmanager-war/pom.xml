@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.silverpeas.components</groupId>
+    <artifactId>saasmanager</artifactId>
+    <version>5.7-SNAPSHOT</version>
+  </parent>
+	
+  <groupId>com.silverpeas.components.saasmanager</groupId>
+  <artifactId>saasmanager-war</artifactId>
+  <packaging>war</packaging>
+  <name>saasmanager Webapp</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>saasmanager-jar</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.silverpeas.core</groupId>
+      <artifactId>web-core</artifactId>
+      <version>${core.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.silverpeas.core</groupId>
+      <artifactId>lib-core</artifactId>
+      <version>${core.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <!--
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+    </dependency>
+    -->
+    <!--
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-j2ee_1.4_spec</artifactId>
+    </dependency>
+    -->
+  </dependencies>
+
+</project>
