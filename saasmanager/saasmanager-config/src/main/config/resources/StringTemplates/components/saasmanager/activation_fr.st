@@ -1,1 +1,0 @@
-<html><head></head><body>Bonjour $firstName$ $lastName$,<br/>Vous pouvez activer l'ouverture de votre accès à Silverpeas en cliquant <a href="$link$">ici</a>.<br/>Cordialement,<br/>L'équipe Silverpeas</body></html>

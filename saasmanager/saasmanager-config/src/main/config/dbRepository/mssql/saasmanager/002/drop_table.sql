@@ -1,1 +1,0 @@
-drop table SC_SaasManager_Access;

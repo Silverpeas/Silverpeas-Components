@@ -1,2 +1,0 @@
-alter table SC_SaasManager_Access
-drop constraint PK_SC_SaasManager_Access;
