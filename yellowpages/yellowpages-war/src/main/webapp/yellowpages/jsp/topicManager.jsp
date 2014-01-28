@@ -129,13 +129,15 @@ function deleteBasketContent()
 
 function groupDeleteConfirm(childId, name) {
     if(window.confirm("<%=resources.getString("ConfirmDeleteTopic")%> '" + name + "' ?")){
-   		location.href = "RemoveGroup?ToDeleteId="+childId;
+      document.topicDetailForm.action = "RemoveGroup";
+      document.topicDetailForm.ToDeleteId.value = childId;
+      document.topicDetailForm.submit();
     }
 }
 <% } %>
 
 function closeWindows() {
-    if (!userAddWindow.closed && userAddWindow.name == "userAddWindow")
+    if (!userAddWindow.closed && userAddWindow.name === "userAddWindow")
         userAddWindow.close();
 }
 
@@ -176,7 +178,7 @@ function toAddOrUpdateFolder(action, id) {
 		dataType: "html",
 		success: function(data) {
 			  $('#folderDialog').html(data);
-			  if (action == 'ToUpdateFolder') {
+			  if (action === 'ToUpdateFolder') {
 			  	$('#folderDialog').attr('title', '<%=EncodeHelper.javaStringToJsString(resources.getString("TopicUpdateTitle"))%>');
 			  } else {
 				$('#folderDialog').attr('title', '<%=EncodeHelper.javaStringToJsString(resources.getString("TopicCreationTitle"))%>');

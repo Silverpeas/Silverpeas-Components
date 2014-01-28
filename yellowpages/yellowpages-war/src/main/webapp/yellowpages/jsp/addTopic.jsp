@@ -25,6 +25,7 @@
 --%>
 <%@page import="com.silverpeas.publicationTemplate.PublicationTemplate"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ include file="checkYellowpages.jsp" %>
 
 <%
@@ -44,6 +45,7 @@ if (node != null) {
   action = "UpdateFolder";
 }
 %>
+<view:includePlugin name="tkn"/>
 <form name="AddAndUpdateFolderForm" action="<%=action %>" method="post">
             <table cellpadding="5" cellspacing="0">
                 <tr>            
