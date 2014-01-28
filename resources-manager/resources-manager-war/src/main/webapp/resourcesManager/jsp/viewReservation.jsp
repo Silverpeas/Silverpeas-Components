@@ -71,22 +71,34 @@ if (!isOwner) {
 <script type="text/javascript">
 function deleteReservation(){
 	if(confirm("<%=resource.getString("resourcesManager.suppressionConfirmation")%>")){
-		location.href="DeleteReservation?id="+<%=reservationId%>;
+		//location.href="DeleteReservation?id="+<%=reservationId%>;
+    $('#id').val('<%=reservationId%>');
+    $('#reservationForm').attr('action', 'DeleteReservation').submit();
 	}
 }
 
 function getResource(resourceId, objectView){
 	location.href="ViewResource?resourceId="+resourceId+"&provenance=reservation&reservationId="+<%=maReservation.getId()%> + "&objectView=" + objectView;
+
 }
 
 function valideResource(resourceId, objectView) {
 	if(confirm("<%=resource.getString("resourcesManager.confirmValideResource")%>")){
-       location.href="ValidateResource?ResourceId=" + resourceId + "&reservationId=" + <%=reservationId%> + "&objectView=" + objectView;
+       //location.href="ValidateResource?ResourceId=" + resourceId + "&reservationId=" + <%=reservationId%> + "&objectView=" + objectView;
+       $('#ResourceId').val(resourceId);
+       $('#reservationId').val('<%=reservationId%>');
+       $('#objectView').val(objectView);
+       $('#reservationForm').attr('action', 'ValidateResource').submit();
     }
 }
 
 function refuseResource(resourceId, resourceName, objectView) {
-    window.location.href = "ForRefuseResource?ResourceId=" + resourceId + "&ResourceName=" + resourceName+ "&reservationId=" + <%=reservationId%> + "&objectView=" + objectView;
+    //window.location.href = "ForRefuseResource?ResourceId=" + resourceId + "&ResourceName=" + resourceName+ "&reservationId=" + <%=reservationId%> + "&objectView=" + objectView;
+    $('#ResourceId').val(resourceId);
+    $('#reservationId').val('<%=reservationId%>');
+    $('#reservationName').val(resourceName);
+    $('#objectView').val(objectView);
+    $('#reservationForm').attr('action', 'ForRefuseResource').submit();
 }
 
 </script>
@@ -222,5 +234,13 @@ function refuseResource(resourceId, resourceName, objectView) {
 <%
 	out.println(window.printAfter());
 %>
+<form id="reservationForm" action="" method="POST">
+  <input type="hidden" name="id" id="id"/>
+  <input type="hidden" name="reservationId" id="reservationId"/>
+  <input type="hidden" name="resourceId" id="resourceId"/>
+  <input type="hidden" name="ResourceId" id="ResourceId"/>
+  <input type="hidden" name="ResourceName" id="ResourceName"/>
+  <input type="hidden" name="objectView" id="objectView"/>
+</form>
 </body>
 </html>

@@ -323,7 +323,7 @@ function resetNbPublis(nodeId) {
 function emptyTrash() {
 	if(window.confirm("<%=kmeliaScc.getString("ConfirmFlushTrashBean")%>")) {
 		$.progressMessage();
-		$.get('<%=m_context%>/KmeliaAJAXServlet', {ComponentId:'<%=componentId%>',Action:'EmptyTrash'},
+		$.post('<%=m_context%>/KmeliaAJAXServlet', {ComponentId:'<%=componentId%>',Action:'EmptyTrash'},
 				function(data){
 					$.closeProgressMessage();
 					if (data == "ok") {
