@@ -169,7 +169,7 @@
 
         function addFavorite(m_sAbsolute,m_context,name,description,url)
         {
-          urlWindow = m_sAbsolute + m_context + "/RmyLinksPeas/jsp/CreateLinkFromComponent?Name="+name+"&Description="+description+"&Url="+url+"&Visible=true";
+          urlWindow = m_sAbsolute + m_context + "/RmyLinksPeas/jsp/AddLinkFromComponent?Name="+name+"&Description="+description+"&Url="+url+"&Visible=true";
           windowName = "albumWindow";
           larg = "550";
           haut = "250";

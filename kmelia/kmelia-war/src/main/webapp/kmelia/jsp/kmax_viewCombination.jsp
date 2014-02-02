@@ -84,7 +84,10 @@ out.println(gef.getLookStyleSheet());
 	function search() {
 	    z = "";
 	    nbSelectedAxis = 0;
-	    for (var i=0; i<document.axisForm.length; i++) {
+      // -1 because of security tokens
+      // before, it was :
+      //  - i < document.axisForm.length
+	    for (var i=0; i<(document.axisForm.length-1); i++) {
 	        if (document.axisForm.elements[i].value.length != 0) {
 	            if (nbSelectedAxis != 0)
 	                z += ",";

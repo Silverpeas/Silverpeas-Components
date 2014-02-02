@@ -6,7 +6,7 @@ var exportComponentWindow = window;
 
 function addFavorite(name, description, url)
 {
-  urlWindow = getWebContext() + "/RmyLinksPeas/jsp/CreateLinkFromComponent?Name=" + name + "&Description=" + description + "&Url=" + url + "&Visible=true";
+  urlWindow = getWebContext() + "/RmyLinksPeas/jsp/AddLinkFromComponent?Name=" + name + "&Description=" + description + "&Url=" + url + "&Visible=true";
   windowName = "favoriteWindow";
   larg = "550";
   haut = "250";

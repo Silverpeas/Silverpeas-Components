@@ -66,7 +66,7 @@ public class ForumsRequestRouter extends ComponentRequestRouter<ForumsSessionCon
     try {
       if ((function.startsWith("Main")) || (function.startsWith("main"))) {
         String forumId = request.getParameter("forumId");
-        if (forumId != null && Integer.parseInt(forumId) > 0) {
+        if (StringUtil.isInteger(forumId) && Integer.parseInt(forumId) > 0) {
           return ROOT_DEST + ActionUrl.getUrl("viewForum", "main", Integer.parseInt(forumId));
         }
         destination = ROOT_DEST + "main.jsp";

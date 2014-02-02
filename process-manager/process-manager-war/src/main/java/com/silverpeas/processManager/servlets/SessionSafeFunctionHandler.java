@@ -40,7 +40,10 @@ public abstract class SessionSafeFunctionHandler implements FunctionHandler {
     if (request.isContentInMultipart()) {
       try {
         items = new ArrayList<FileItem>();
-        items.addAll(request.getFileItems());
+        if (request.getAttribute("ALREADY_PROCESSED") == null) {
+          items.addAll(request.getFileItems());
+          request.setAttribute("ALREADY_PROCESSED", true);
+        }
       } catch (UtilException e) {
         SilverTrace.error("processManager", "SessionSafeFunctionHandler.getDestination()",
             "processManager.TOKENID_CHECK_FAILURE", e);

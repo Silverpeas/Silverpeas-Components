@@ -120,7 +120,7 @@ out.println(board.printBefore());
 			<%=I18NHelper.getFormLine(resources, null, kmeliaScc.getLanguage())%>
 		  <TR><TD class="txtlibform"><%=kmeliaScc.getString("ComponentTitle")%> :</TD>
 		      <TD><input type="hidden" name="AxisId" value="<%=axisId%>">
-		      	<input type="text" id="nodeName" name="Name" value="" size="60" maxlength="60"> <img border="0" src="<%=mandatoryField%>" width="5" height="5"></TD></TR>
+			<input type="text" id="nodeNameValue" name="Name" value="" size="60" maxlength="60"> <img border="0" src="<%=mandatoryField%>" width="5" height="5"></TD></TR>
 		  <TR><TD class="txtlibform"><%=kmeliaScc.getString("ComponentDescription")%> :</TD>
 		      <TD><input type="text" id="nodeDesc" name="Description" value="" size="60" maxlength="200"></TD></TR>
 		  <TR><TD colspan="2">( <img border="0" src="<%=mandatoryField%>" width="5" height="5"> = <%=kmeliaScc.getString("ChampsObligatoires")%> )</TD></TR>

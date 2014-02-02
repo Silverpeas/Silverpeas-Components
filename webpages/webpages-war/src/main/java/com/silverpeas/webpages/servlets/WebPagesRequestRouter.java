@@ -25,15 +25,17 @@ import com.silverpeas.webpages.control.WebPagesSessionController;
 import com.silverpeas.webpages.model.WebPagesException;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import java.net.URLEncoder;
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang3.CharEncoding;
 import org.owasp.encoder.Encode;
 import org.silverpeas.servlet.HttpRequest;
+
+import javax.servlet.http.HttpServletRequest;
+import java.net.URLEncoder;
+import java.util.List;
 
 /**
  * @author sdevolder
@@ -108,7 +110,8 @@ public class WebPagesRequestRouter extends ComponentRequestRouter<WebPagesSessio
           request.setAttribute("BrowseInfo", Encode.forHtml(webPagesSC.getComponentLabel()));
           request.setAttribute("ObjectId", webPagesSC.getComponentId());
           request.setAttribute("Language", webPagesSC.getLanguage());
-          request.setAttribute("ReturnUrl", webPagesSC.getComponentUrl() + "Preview");
+          request.setAttribute("ReturnUrl",
+              URLManager.getApplicationURL() + webPagesSC.getComponentUrl() + "Preview");
           request.setAttribute("UserId", webPagesSC.getUserId());
           request.setAttribute("IndexIt", "false");
           destination = "/wysiwyg/jsp/htmlEditor.jsp";

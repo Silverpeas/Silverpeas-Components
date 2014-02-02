@@ -264,7 +264,7 @@ function positionDelete() {
 
 function showTranslation(lang)
 {
-	showFieldTranslation('nodeName', 'name_'+lang);
+	showFieldTranslation('nodeNameValue', 'name_'+lang);
 	showFieldTranslation('nodeDesc', 'desc_'+lang);
 }
 

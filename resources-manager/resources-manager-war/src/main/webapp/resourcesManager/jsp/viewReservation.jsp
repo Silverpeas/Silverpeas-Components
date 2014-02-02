@@ -71,9 +71,9 @@ if (!isOwner) {
 <script type="text/javascript">
 function deleteReservation(){
 	if(confirm("<%=resource.getString("resourcesManager.suppressionConfirmation")%>")){
-		//location.href="DeleteReservation?id="+<%=reservationId%>;
-    $('#id').val('<%=reservationId%>');
-    $('#reservationForm').attr('action', 'DeleteReservation').submit();
+    var $form = $('#reservationForm');
+    $('#id', $form).val('<%=reservationId%>');
+    $form.attr('action', 'DeleteReservation').submit();
 	}
 }
 

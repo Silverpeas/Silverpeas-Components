@@ -590,7 +590,7 @@
 
         function addFavorite(name,description,url)
         {
-        	urlWindow = "<%=m_context%>/RmyLinksPeas/jsp/CreateLinkFromComponent?Name="+name+"&Description="+description+"&Url="+url+"&Visible=true";
+		urlWindow = "<%=m_context%>/RmyLinksPeas/jsp/AddLinkFromComponent?Name="+name+"&Description="+description+"&Url="+url+"&Visible=true";
             windowName = "favoriteWindow";
         	larg = "550";
         	haut = "250";
@@ -636,7 +636,7 @@
         }
 
         function deleteThumbnail() {
-        	location.href="<%=httpServerBase + m_context%>/Thumbnail/jsp/thumbnailManager.jsp?Action=Delete<%=standardParamaters%>";
+          jQuery('#genericForm').attr('action', "<%=httpServerBase + m_context%>/Thumbnail/jsp/thumbnailManager.jsp?Action=Delete<%=standardParamaters%>").submit();
         }
 
         function closeThumbnailDialog() {
@@ -1015,5 +1015,6 @@
       document.pubForm.Name.focus();
      });
   </script>
+<form id="genericForm" action="" method="POST"></form>
 </body>
 </html>

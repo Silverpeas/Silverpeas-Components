@@ -71,10 +71,10 @@
 <script type="text/javascript">
 function deleteResource(resourceId, name,categoryId) {
 	if (confirm("<%=resource.getString("resourcesManager.deleteResource")%>" + " " + name + " ?")) {
-		//location.href="DeleteRessource?resourceId="+resourceId+"&categoryId="+categoryId;
-    $('#resourceId').val(resourceId);
-    $('#categoryId').val(categoryId);
-    $('#resourceForm').submit();
+    var $form = $('#resourceForm');
+    $('#resourceId', $form).val(resourceId);
+    $('#categoryId', $form).val(categoryId);
+    $form.submit();
 	}
 }
 </script>
