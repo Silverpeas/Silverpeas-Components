@@ -873,3 +873,17 @@ a.button.refuse span {
 	text-decoration:underline;
 	clear: both;
 }
+
+.yui-skin-sam .dimensionTable #pubList ul li {
+	position:relative;
+}
+
+.yui-skin-sam .dimensionTable #pubList ul li .firstColumn .selection input{
+	position:absolute;
+	top:0;
+	left:0;
+}
+
+.yui-skin-sam .dimensionTable #pubList .publication .line1 {
+    padding-left: 32px;
+}
