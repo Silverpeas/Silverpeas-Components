@@ -34,14 +34,13 @@ import com.silverpeas.formsonline.model.FormDetail;
 import com.silverpeas.formsonline.model.FormInstance;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.servlet.HttpRequest;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnlineSessionController> {
@@ -72,13 +71,15 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param formsOnlineSC The component Session Control, build and initialised.
+   * @param request
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   public String getDestination(String function, FormsOnlineSessionController formsOnlineSC,
-      HttpServletRequest request) {
+      HttpRequest request) {
     String destination = "";
     SilverTrace.info("formsOnline", "FormsOnlineRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "User=" + formsOnlineSC.getUserId() + " Function=" + function);
@@ -367,7 +368,7 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
 
       else if (function.equals("SaveNewInstance")) {
         // recuperation des donnees saisies dans le formulaire
-        List<FileItem> items = FileUploadUtil.parseRequest(request);
+        List<FileItem> items = request.getFileItems();
 
         // Sauvegarde des donnees
         formsOnlineSC.saveNewInstance(items);

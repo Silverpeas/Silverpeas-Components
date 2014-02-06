@@ -25,9 +25,9 @@ import com.silverpeas.blog.model.Category;
 import com.silverpeas.blog.model.PostDetail;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
@@ -35,13 +35,15 @@ import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Event;
+import java.net.URLEncoder;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.lang3.CharEncoding;
+import org.silverpeas.servlet.HttpRequest;
 
 public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionController> {
 
@@ -88,14 +90,16 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    *
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param blogSC The component Session Control, build and initialised.
+   * @param request
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
   public String getDestination(String function, BlogSessionController blogSC,
-      HttpServletRequest request) {
+      HttpRequest request) {
     String destination = "";
     SilverTrace.info("blog", "BlogRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
         "User=" + blogSC.getUserId() + " Function=" + function);
@@ -147,8 +151,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
 
         // Classification
         String positions = request.getParameter("Positions");
-        PdcClassificationEntity classification =
-            PdcClassificationEntity.undefinedClassification();
+        PdcClassificationEntity classification = PdcClassificationEntity.undefinedClassification();
         if (StringUtil.isDefined(positions)) {
           classification = PdcClassificationEntity.fromJSON(positions);
         }
@@ -199,10 +202,21 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
 
         PostDetail post = blogSC.getPost(postId);
         PublicationDetail pub = post.getPublication();
-        request.setAttribute("CurrentPublicationDetail", pub);
+        request.setAttribute("SpaceId", blogSC.getSpaceId());
+        request.setAttribute("SpaceName", URLEncoder.encode(blogSC.getSpaceLabel(),
+            CharEncoding.UTF_8));
+        request.setAttribute("ComponentId", blogSC.getComponentId());
+        request.setAttribute("ComponentName", URLEncoder.encode(blogSC.getComponentLabel(),
+            CharEncoding.UTF_8));
+        request.setAttribute("ObjectId", pub.getId());
+        request.setAttribute("Language", blogSC.getLanguage());
+        request.setAttribute("ReturnUrl", URLManager.getApplicationURL()
+            + URLManager.getURL("blog", "useless", blogSC.getComponentId()) + "FromWysiwyg?PostId="
+            + pub.getId());
         request.setAttribute("UserId", blogSC.getUserId());
+        request.setAttribute("IndexIt", "false");
         // visualisation et modification du contenu Wysiwyg du billet
-        destination = rootDest + "toWysiwyg.jsp";
+        destination = "/wysiwyg/jsp/htmlEditor.jsp";
       } else if (function.equals("FromWysiwyg")) {
         destination = getDestination("ViewPost", blogSC, request);
       } else if (function.equals("ViewPost")) {
@@ -306,8 +320,8 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         // récupération des paramètres
         String name = request.getParameter("Name");
         String description = request.getParameter("Description");
-        NodeDetail node =
-            new NodeDetail("unknown", name, description, null, null, null, "0", "unknown");
+        NodeDetail node = new NodeDetail("unknown", name, description, null, null, null, "0",
+            "unknown");
         Category category = new Category(node);
         blogSC.createCategory(category);
 
@@ -386,7 +400,19 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         destination = getDestination("Main", blogSC, request);
       } else if (function.equals("UpdateFooter")) {
         // mise à jour du pied de page
-        destination = rootDest + "footer.jsp";
+        request.setAttribute("SpaceId", blogSC.getSpaceId());
+        request.setAttribute("SpaceName", URLEncoder.encode(blogSC.getSpaceLabel(),
+            CharEncoding.UTF_8));
+        request.setAttribute("ComponentId", blogSC.getComponentId());
+        request.setAttribute("ComponentName", URLEncoder.encode(blogSC.getComponentLabel(),
+            CharEncoding.UTF_8));
+        request.setAttribute("ObjectId", blogSC.getComponentId());
+        request.setAttribute("Language", blogSC.getLanguage());
+        request.setAttribute("ReturnUrl", URLManager.getApplicationURL()
+            + URLManager.getURL("blog", "useless", blogSC.getComponentId()) + "Main");
+        request.setAttribute("UserId", blogSC.getUserId());
+        request.setAttribute("IndexIt", "false");
+        destination = "/wysiwyg/jsp/htmlEditor.jsp";
       } else if (function.equals("DraftOutPost")) {
         // sortir du mode brouillon
         String postId = request.getParameter("PostId");
@@ -394,11 +420,10 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         request.setAttribute("PostId", postId);
         destination = getDestination("ViewPost", blogSC, request);
       } else if (function.equals("Customize")) {
-        List<FileItem> items = FileUploadUtil.parseRequest(request);
-        String removeWallPaperFile = FileUploadUtil.getParameter(items, "removeWallPaperFile");
-        String removeStyleSheetFile = FileUploadUtil.getParameter(items, "removeStyleSheetFile");
-        FileItem fileWallPaper = FileUploadUtil.getFile(items, "wallPaper");
-        FileItem fileStyleSheet = FileUploadUtil.getFile(items, "styleSheet");
+        String removeWallPaperFile = request.getParameter("removeWallPaperFile");
+        String removeStyleSheetFile = request.getParameter("removeStyleSheetFile");
+        FileItem fileWallPaper = request.getFile("wallPaper");
+        FileItem fileStyleSheet = request.getFile("styleSheet");
 
         if (fileWallPaper != null && StringUtil.isDefined(fileWallPaper.getName())) {//Update
           blogSC.saveWallPaperFile(fileWallPaper);
@@ -436,9 +461,9 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
       } catch (RemoteException e) {
         dateEvent = post.getPublication().getCreationDate();
       }
-      Event event =
-          new Event(post.getPublication().getPK().getId(), post.getPublication().getName(),
-          dateEvent, dateEvent, null, 0);
+      Event event
+          = new Event(post.getPublication().getPK().getId(), post.getPublication().getName(),
+              dateEvent, dateEvent, null, 0);
       events.add(event);
     }
 

@@ -78,6 +78,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.xc.JaxbAnnotationIntrospector;
 import org.silverpeas.node.web.NodeEntity;
 import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.util.NotifierUtil;
 
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
@@ -344,10 +345,12 @@ public final class BlogSessionController extends AbstractComponentSessionControl
 
   public synchronized void addUserSubscription() throws RemoteException {
     getBlogService().addSubscription(getUserId(), getComponentId());
+    NotifierUtil.addSuccess(getString("blog.addSubscriptionOk"));
   }
 
   public synchronized void removeUserSubscription() throws RemoteException {
     getBlogService().removeSubscription(getUserId(), getComponentId());
+    NotifierUtil.addSuccess(getString("blog.removeSubscriptionOk"));
   }
 
   public synchronized boolean isUserSubscribed() throws RemoteException {

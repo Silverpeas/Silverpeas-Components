@@ -20,7 +20,6 @@
  */
 package com.silverpeas.projectManager.servlets;
 
-import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -48,6 +47,7 @@ import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.servlet.HttpRequest;
 
 public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectManagerSessionController> {
 
@@ -75,14 +75,16 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    *
+   *
    * @param function The entering request function (ex : "Main")
    * @param projectManagerSC The component Session Control, build and initialised.
+   * @param request
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
   public String getDestination(String function, ProjectManagerSessionController projectManagerSC,
-      HttpServletRequest request) {
+      HttpRequest request) {
     String destination = "";
     String rootDestination = "/projectManager/jsp/";
     SilverTrace.

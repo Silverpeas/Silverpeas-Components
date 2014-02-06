@@ -26,8 +26,6 @@ package com.silverpeas.scheduleevent.servlets;
 
 import java.util.HashMap;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.silverpeas.scheduleevent.control.ScheduleEventSessionController;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventAddDateRequestHandler;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventAddRequestHandler;
@@ -52,6 +50,7 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.servlet.HttpRequest;
 
 public class ScheduleEventRequestRouter extends
     ComponentRequestRouter<ScheduleEventSessionController> {
@@ -183,13 +182,15 @@ public class ScheduleEventRequestRouter extends
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param scheduleeventSC The component Session Control, build and initialised.
+   * @param request
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   public String getDestination(String function, ScheduleEventSessionController scheduleeventSC,
-      HttpServletRequest request) {
+      HttpRequest request) {
     String destination = "";
     SilverTrace
         .info("scheduleevent", "ScheduleEventRequestRouter.getDestination()",

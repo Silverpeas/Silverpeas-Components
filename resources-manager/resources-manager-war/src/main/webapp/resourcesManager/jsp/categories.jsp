@@ -44,7 +44,8 @@
 	<script type="text/javascript">
 	function deleteCategory(categoryId, name) {
 		  if (confirm("<%=resource.getString("resourcesManager.deleteCategorie")%>" + " " + name + " ?")) {
-			location.href="DeleteCategory?id="+categoryId;
+        $('input[name="id"]').val(categoryId);
+        $('form[name="categoryForm"]').submit();
 		  }
 	}
 	</script>
@@ -109,5 +110,8 @@
 <%
 		out.println(window.printAfter());
 %>
+<form name="categoryForm" action="DeleteCategory" method="POST">
+  <input type="hidden" name="id"/>
+</form>
 </body>
 </html>

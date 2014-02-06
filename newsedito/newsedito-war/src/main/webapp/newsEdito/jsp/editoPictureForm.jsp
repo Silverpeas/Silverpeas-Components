@@ -27,8 +27,9 @@
 <%@ include file="imports.jsp"%>
 <%@ include file="declarations.jsp.inc"%>
 <%@ include file="init.jsp.inc"%>
-<%@ page import="com.silverpeas.util.web.servlet.FileUploadUtil"%>
+<%@ page import="org.silverpeas.servlet.FileUploadUtil"%>
 <%@ page import="org.apache.commons.fileupload.FileItem"%>
+<%@ page import="org.silverpeas.servlet.HttpRequest" %>
 
 <%
   //Icons
@@ -43,7 +44,7 @@
 			String error = null;
 
 			if (action.equals("Add")) {
-				List items = FileUploadUtil.parseRequest(request);
+				List items = HttpRequest.decorate(request).getFileItems();
 				Iterator itemIter = items.iterator();
 				while (itemIter.hasNext()) {
 					FileItem item = (FileItem) itemIter.next();

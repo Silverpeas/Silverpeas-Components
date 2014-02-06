@@ -56,6 +56,12 @@
       SP_openWindow(url,'publication','800','600','scrollbars=yes, noresize, alwaysRaised');
     }
     
+    function validateDelegatedNews(pubId) {
+      document.listDelegatedNews.action = "ValidateDelegatedNews";
+      document.listDelegatedNews.PubId.value = pubId;
+      document.listDelegatedNews.submit();
+    }
+
     function refuseDelegatedNews(pubId) {
       document.listDelegatedNews.PubId.value = pubId;
       $("#refuseDialog").dialog("open");
@@ -191,7 +197,7 @@
               for (var j=0; j<listDelegatedNewsJSON.length; j++)
               {
                 var delegatedNewsJSON = listDelegatedNewsJSON[j];
-                if(pubId == delegatedNewsJSON.pubId) {
+                if(pubId === delegatedNewsJSON.pubId) {
                   updatedDelegatedNews[i] = delegatedNewsJSON;
                 }
               }
@@ -411,7 +417,7 @@
         iconUpdate.setProperties(m_context+"/util/icons/update.gif", resources.getString("GML.modify"), "javascript:onClick=updateDateDelegatedNews('"+pubId+"', '"+beginDate+"', '"+beginHour+"', '"+endDate+"', '"+endHour+"');");
         
         Icon iconValidate = iconPane.addIcon();
-        iconValidate.setProperties(m_context+"/util/icons/ok.gif", resources.getString("delegatednews.action.validate"), "ValidateDelegatedNews?PubId="+pubId);
+        iconValidate.setProperties(m_context+"/util/icons/ok.gif", resources.getString("delegatednews.action.validate"), "javascript:onClick=validateDelegatedNews('"+pubId+"');");
         
         Icon iconRefused = iconPane.addIcon();
         iconRefused.setProperties(m_context+"/util/icons/wrong.gif", resources.getString("delegatednews.action.refuse"), "javascript:onClick=refuseDelegatedNews('"+pubId+"');");

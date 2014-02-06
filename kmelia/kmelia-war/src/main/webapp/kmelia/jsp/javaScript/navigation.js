@@ -6,7 +6,7 @@ var exportComponentWindow = window;
 
 function addFavorite(name, description, url)
 {
-  urlWindow = getWebContext() + "/RmyLinksPeas/jsp/CreateLinkFromComponent?Name=" + name + "&Description=" + description + "&Url=" + url + "&Visible=true";
+  urlWindow = getWebContext() + "/RmyLinksPeas/jsp/AddLinkFromComponent?Name=" + name + "&Description=" + description + "&Url=" + url + "&Visible=true";
   windowName = "favoriteWindow";
   larg = "550";
   haut = "250";
@@ -596,7 +596,7 @@ function deleteFolder(nodeId, nodeLabel) {
   if (window.confirm(getString('ConfirmDeleteTopic') + " '" + nodeLabel + "' ?")) {
     var componentId = getComponentId();
     var url = getWebContext() + '/KmeliaAJAXServlet';
-    $.get(url, {Id: nodeId, ComponentId: componentId, Action: 'Delete'},
+    $.post(url, {Id: nodeId, ComponentId: componentId, Action: 'Delete'},
     function(data) {
       if ((data - 0) == data && data.length > 0) {
         // fires event
@@ -765,7 +765,7 @@ function emptyTrash() {
     $.progressMessage();
     var componentId = getComponentId();
     var url = getWebContext() + '/KmeliaAJAXServlet';
-    $.get(url, {ComponentId: componentId, Action: 'EmptyTrash'},
+    $.post(url, {ComponentId: componentId, Action: 'EmptyTrash'},
     function(data) {
       $.closeProgressMessage();
       if (data === "ok") {
@@ -821,7 +821,7 @@ function pasteNode(id) {
   $.progressMessage();
 
   var url = getWebContext() + '/KmeliaAJAXServlet';
-  $.get(url, {ComponentId: getComponentId(), Action: 'Paste', Id: id, IEFix: new Date().getTime()},
+  $.post(url, {ComponentId: getComponentId(), Action: 'Paste', Id: id, IEFix: new Date().getTime()},
   function(data) {
     $.closeProgressMessage();
     if (data === "ok") {
@@ -928,7 +928,7 @@ function changeStatus(nodeId, currentStatus) {
 }
 
 function _updateTopicStatus(nodeId, status, recursive) {
-  $.get(getWebContext() + '/KmeliaAJAXServlet', {ComponentId: getComponentId(), Action: 'UpdateTopicStatus', Id: nodeId, Status: status, Recursive: recursive},
+  $.post(getWebContext() + '/KmeliaAJAXServlet', {ComponentId: getComponentId(), Action: 'UpdateTopicStatus', Id: nodeId, Status: status, Recursive: recursive},
   function(data) {
     if (data === "ok") {
       updateUIStatus(nodeId, status, recursive);
@@ -941,7 +941,7 @@ function _updateTopicStatus(nodeId, status, recursive) {
 function movePublication(id, sourceId, targetId) {
   var componentId = getComponentId();
   var url = getWebContext() + '/KmeliaAJAXServlet';
-  $.get(url, {Id: id, SourceNodeId: sourceId, TargetNodeId: targetId, ComponentId: componentId, Action: 'MovePublication'},
+  $.post(url, {Id: id, SourceNodeId: sourceId, TargetNodeId: targetId, ComponentId: componentId, Action: 'MovePublication'},
   function(data) {
     //data = "erreur en votre faveur zlekfj kjf kjh kjsdh fkjshdjfkhsdjkhf fjkshd kjfhsd kjfhsdkjhf"
     if (data === "ok") {

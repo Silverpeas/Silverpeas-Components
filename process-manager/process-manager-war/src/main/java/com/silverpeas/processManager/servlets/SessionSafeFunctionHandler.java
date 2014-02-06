@@ -11,9 +11,10 @@ import org.apache.commons.fileupload.FileItem;
 import com.silverpeas.processManager.ProcessManagerException;
 import com.silverpeas.processManager.ProcessManagerSessionController;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
+import org.silverpeas.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.UtilException;
+import org.silverpeas.servlet.HttpRequest;
 
 /**
  * A SessionSafeFunctionHandler must be used to prevent conflicts in HTTP Session when user navigate using several windows sharing the same session.
@@ -28,18 +29,21 @@ public abstract class SessionSafeFunctionHandler implements FunctionHandler {
 
   @Override
   final public String getDestination(String function, ProcessManagerSessionController session,
-      HttpServletRequest request) throws ProcessManagerException {
-
+      HttpServletRequest req) throws ProcessManagerException {
+    HttpRequest request = HttpRequest.decorate(req);
     List<FileItem> items = null;
 
     // Retrieves current token Id
     String currentTokenId = session.getCurrentTokenId();
 
     // Retrieves items in case of multipart request
-    if (FileUploadUtil.isRequestMultipart(request)) {
+    if (request.isContentInMultipart()) {
       try {
         items = new ArrayList<FileItem>();
-        items.addAll(FileUploadUtil.parseRequest(request));
+        if (request.getAttribute("ALREADY_PROCESSED") == null) {
+          items.addAll(request.getFileItems());
+          request.setAttribute("ALREADY_PROCESSED", true);
+        }
       } catch (UtilException e) {
         SilverTrace.error("processManager", "SessionSafeFunctionHandler.getDestination()",
             "processManager.TOKENID_CHECK_FAILURE", e);
@@ -65,13 +69,13 @@ public abstract class SessionSafeFunctionHandler implements FunctionHandler {
    * @return false is parameter is not present or different from given token id
    */
   private boolean checkTokenId(ProcessManagerSessionController session, String currentTokenId,
-      HttpServletRequest request, List<FileItem> items) {
+      HttpRequest request, List<FileItem> items) {
 
     String givenTokenId = null;
     boolean isCancellation = false;
 
     // multipart form submission.
-    if ( (FileUploadUtil.isRequestMultipart(request)) && (items != null) ) {
+    if ( (request.isContentInMultipart()) && (items != null) ) {
       String cancel = FileUploadUtil.getParameter(items, CANCEL_PARAMETER);
       isCancellation = StringUtil.getBooleanValue(cancel);
 
@@ -124,7 +128,6 @@ public abstract class SessionSafeFunctionHandler implements FunctionHandler {
    * how to detect :  no current token ID in session controller and no token ID present in request
    *
    * @param currentTokenId
-   * @param current
    * @param isCancellation
    * @return
    */

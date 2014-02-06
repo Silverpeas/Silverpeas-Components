@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.fileupload.FileItem;
 
 import com.silverpeas.classifieds.control.ClassifiedsRole;
@@ -18,7 +16,7 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
+import org.silverpeas.servlet.HttpRequest;
 
 /**
  * Use Case : for all users, show all adds of given category
@@ -28,21 +26,22 @@ public class ClassifiedCreationHandler extends FunctionHandler {
 
   @Override
   public String getDestination(ClassifiedsSessionController classifiedsSC,
-      HttpServletRequest request) throws Exception {
+      HttpRequest request) throws Exception {
 
     ClassifiedsRole highestRole = (isAnonymousAccess(request)) ? ClassifiedsRole.ANONYMOUS : ClassifiedsRole.getRole(classifiedsSC.getUserRoles());
 
-    if (FileUploadUtil.isRequestMultipart(request)) {
-      // Retrieves parameters
-      List<FileItem> items = FileUploadUtil.parseRequest(request);
-      String title = FileUploadUtil.getParameter(items, "Title");
-      String description = FileUploadUtil.getParameter(items, "Description");
-      String price = FileUploadUtil.getParameter(items, "Price");
-      FileItem fileImage1 = FileUploadUtil.getFile(items, "Image1");
-      FileItem fileImage2 = FileUploadUtil.getFile(items, "Image2");
-      FileItem fileImage3 = FileUploadUtil.getFile(items, "Image3");
-      FileItem fileImage4 = FileUploadUtil.getFile(items, "Image4");
-      
+
+    if (request.isContentInMultipart()) {
+      // Retrieves parameters from the multipart stream
+      List<FileItem> items = request.getFileItems();
+      String title = request.getParameter("Title");
+      String description = request.getParameter("Description");
+      String price = request.getParameter("Price");
+      FileItem fileImage1 = request.getFile("Image1");
+      FileItem fileImage2 = request.getFile("Image2");
+      FileItem fileImage3 = request.getFile("Image3");
+      FileItem fileImage4 = request.getFile("Image4");
+
       //Classified
       ClassifiedDetail classified = new ClassifiedDetail(title, description);
       if (price != null && ! price.isEmpty()) {

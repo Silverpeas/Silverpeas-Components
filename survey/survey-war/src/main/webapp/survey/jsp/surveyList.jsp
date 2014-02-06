@@ -139,12 +139,12 @@
             Icon closeIcon = iconPane.addIcon();
             closeIcon.setProperties(lockSrc, resources.getString("GML.lock") + " '" +
                 EncodeHelper.javaStringToHtmlString(survey.getTitle()) + "'",
-                "surveyList.jsp?Action=CloseSurvey&SurveyId=" + survey.getPK().getId());
+                "javascript: closeSurvey('" + survey.getPK().getId() + "');");
           } else {
             Icon openIcon = iconPane.addIcon();
             openIcon.setProperties(unlockSrc, resources.getString("GML.unlock") + " '" +
                 EncodeHelper.javaStringToHtmlString(survey.getTitle()) + "'",
-                "surveyList.jsp?Action=OpenSurvey&SurveyId=" + survey.getPK().getId());
+                "javascript: openSurvey('" + survey.getPK().getId() + "');");
           }
           // mise à jour
           Icon updateIcon = iconPane.addIcon();
@@ -397,12 +397,26 @@ function deleteSurvey(surveyId, name) {
 function updateSurvey(surveyId, name, nbVotes)
 {
   var voteNumbers = parseInt(nbVotes);
-  if(voteNumbers == 0 || window.confirm("<view:encodeJs string="${surveyConfirmUpdateLabel}" /> '" + name + "' ?")) {
+  if(voteNumbers === 0 || window.confirm("<view:encodeJs string="${surveyConfirmUpdateLabel}" /> '" + name + "' ?")) {
     document.updateForm.action = "UpdateSurvey";
     document.updateForm.Action.value = "UpdateSurveyHeader";
     document.updateForm.SurveyId.value = surveyId;
     document.updateForm.submit();
   }
+}
+
+function openSurvey(surveyId) {
+  document.updateForm.action = "surveyList.jsp";
+  document.updateForm.Action.value = "OpenSurvey";
+  document.updateForm.SurveyId.value = surveyId;
+  document.updateForm.submit();
+}
+
+function closeSurvey(surveyId) {
+  document.updateForm.action = "surveyList.jsp";
+  document.updateForm.Action.value = "CloseSurvey";
+  document.updateForm.SurveyId.value = surveyId;
+  document.updateForm.submit();
 }
 
 function clipboardPaste() {     

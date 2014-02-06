@@ -26,7 +26,8 @@ import com.silverpeas.gallery.model.GalleryRuntimeException;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.ZipManager;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
+import org.silverpeas.servlet.FileUploadUtil;
+import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.web.util.SilverpeasTransverseWebErrorUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
@@ -78,10 +79,11 @@ public class GalleryDragAndDrop extends HttpServlet {
   }
 
   @Override
-  public void doPost(HttpServletRequest request, HttpServletResponse res)
+  public void doPost(HttpServletRequest req, HttpServletResponse res)
     throws ServletException, IOException {
     SilverTrace.info("gallery", "GalleryDragAndDrop.doPost", "root.MSG_GEN_ENTER_METHOD");
     String userId = null;
+    HttpRequest request = HttpRequest.decorate(req);
     try {
       request.setCharacterEncoding("UTF-8");
       String componentId = request.getParameter("ComponentId");
@@ -91,7 +93,7 @@ public class GalleryDragAndDrop extends HttpServlet {
         "componentId = " + componentId + " albumId = " + albumId + " userId = " + userId);
       String savePath = FileRepositoryManager.getTemporaryPath() + File.separatorChar + userId
         + System.currentTimeMillis() + File.separatorChar;
-      List<FileItem> items = FileUploadUtil.parseRequest(request);
+      List<FileItem> items = request.getFileItems();
       String parentPath = getParameterValue(items, "userfile_parent");
       SilverTrace.info("gallery", "GalleryDragAndDrop.doPost.doPost",
         "root.MSG_GEN_PARAM_VALUE", "parentPath = " + parentPath);

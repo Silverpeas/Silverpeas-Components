@@ -91,16 +91,36 @@
         function confirmDeleteForum(forumId) {
           if (confirm("<view:encodeJs string="${confirmationSuppressionForum}"/>"))
           {
-            window.location.href = "viewForum.jsp?action=4&params=" + forumId + "&forumId=<%=forumId%>";
+            document.forms['forumForm'].elements['action'].value = 4;
+            document.forms['forumForm'].elements['params'].value = forumId;
+            document.forms['forumForm'].elements['forumId'].value=<%=forumId%>;
+            document.forms['forumForm'].submit();
           }
         }
         function deleteMessage(messageId, parentId, scroll) {
           if (confirm("<view:encodeJs string="${confirmationSuppressionMessage}"/>"))
           {
-            window.location.href = "viewForum.jsp?action=9&params=" + messageId + "&forumId=<%=forumId%>";
+            document.forms['forumForm'].elements['action'].value = 9;
+            document.forms['forumForm'].elements['params'].value = messageId;
+            document.forms['forumForm'].elements['forumId'].value=<%=forumId%>;
+            document.forms['forumForm'].submit();
           }
         }
       <% } %>
+
+        function subscribeOneForum(forumId, parentForumId) {
+          document.forms['forumForm'].elements['action'].value = 18;
+          document.forms['forumForm'].elements['params'].value = forumId;
+          document.forms['forumForm'].elements['forumId'].value=parentForumId;
+          document.forms['forumForm'].submit();
+        }
+
+        function unsubscribeOneForum(forumId, parentForumId) {
+          document.forms['forumForm'].elements['action'].value = 17;
+          document.forms['forumForm'].elements['params'].value = forumId;
+          document.forms['forumForm'].elements['forumId'].value=parentForumId;
+          document.forms['forumForm'].submit();
+        }
 
         function loadNotation()
         {
@@ -278,5 +298,10 @@ ForumHelper.displayMessagesList(out, resource, userId, isAdmin, isModerator, isR
         loadNotation();
       </script>
     </c:if>
+    <form id="forumForm" name="forumForm" action="viewForum.jsp" method="POST">
+      <input id="action" name="action" type="hidden"/>
+      <input id="params" name="params" type="hidden"/>
+      <input id="forumId" name="forumId" type="hidden"/>
+    </form>
   </body>
 </html>

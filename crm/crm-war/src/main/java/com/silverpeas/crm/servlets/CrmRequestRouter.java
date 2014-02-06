@@ -38,6 +38,7 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import org.silverpeas.servlet.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -69,12 +70,14 @@ public class CrmRequestRouter extends ComponentRequestRouter<CrmSessionControlle
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param crmSC The component Session Control, build and initialised.
+   * @param request
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
-  public String getDestination(String function, CrmSessionController crmSC, HttpServletRequest request) {
+  public String getDestination(String function, CrmSessionController crmSC, HttpRequest request) {
     String destination = "";
     SilverTrace.info("crm", "CrmRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
         "User=" + crmSC.getUserId() + " Function=" + function);

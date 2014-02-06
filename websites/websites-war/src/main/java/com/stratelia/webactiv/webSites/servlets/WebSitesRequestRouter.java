@@ -22,7 +22,7 @@ package com.stratelia.webactiv.webSites.servlets;
 
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
+import org.silverpeas.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -43,6 +43,7 @@ import java.util.Iterator;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.servlet.HttpRequest;
 
 /**
  * Class declaration
@@ -83,6 +84,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
    * This method has to be implemented by the component request router it has to compute a
    * destination page
    *
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param scc The component Session Control, build and initialised.
    * @param request The entering request. The request router need it to get parameters
@@ -91,7 +93,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
    */
   @Override
   public String getDestination(String function, WebSiteSessionController scc,
-      HttpServletRequest request) {
+      HttpRequest request) {
 
     SilverTrace.info("webSites", "WebSitesRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "fonction = " + function);
@@ -1010,7 +1012,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
 
         destination = "/webSites/jsp/design.jsp?Action=design&path=" + currentPath + "&Id=" + id;
       } else if (function.equals("EffectiveUploadFile")) {
-        List<FileItem> items = FileUploadUtil.parseRequest(request);
+        List<FileItem> items = request.getFileItems();
         boolean status = true;
         String thePath = FileUploadUtil.getParameter(items, "path");
         scc.checkPath(thePath);
@@ -1026,7 +1028,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
         request.setAttribute("AllIcons", scc.getAllIcons());
         destination = "/webSites/jsp/descUpload.jsp";
       } else if (function.equals("EffectiveUploadSiteZip")) {
-        List<FileItem> items = FileUploadUtil.parseRequest(request);
+        List<FileItem> items = request.getFileItems();
 
         String nomSite = FileUploadUtil.getParameter(items, "nomSite");
         String description = FileUploadUtil.getParameter(items, "description");
