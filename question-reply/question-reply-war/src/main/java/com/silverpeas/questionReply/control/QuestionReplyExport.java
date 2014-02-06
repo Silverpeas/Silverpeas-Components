@@ -23,7 +23,6 @@
  */
 package com.silverpeas.questionReply.control;
 
-import org.silverpeas.importExport.attachment.AttachmentImportExport;
 import com.silverpeas.questionReply.QuestionReplyException;
 import com.silverpeas.questionReply.model.Question;
 import com.silverpeas.questionReply.model.Reply;
@@ -33,6 +32,7 @@ import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import org.silverpeas.importExport.attachment.AttachmentDetail;
+import org.silverpeas.importExport.attachment.AttachmentImportExport;
 import org.silverpeas.util.UnitUtil;
 
 import java.io.File;
@@ -113,7 +113,7 @@ public class QuestionReplyExport {
       Reply reply = itR.next();
       if (isReplyVisible(question, reply, scc)) {
         reply.getPK().setComponentName(question.getInstanceId());
-        exportReply(reply, sb);
+        exportReply(scc, reply, sb);
       }
     }
     if (existe) {
@@ -126,8 +126,8 @@ public class QuestionReplyExport {
 
   }
 
-  protected void exportReply(Reply reply, StringBuilder sb) throws QuestionReplyException,
-      ParseException {
+  protected void exportReply(final QuestionReplySessionController qRSC, Reply reply,
+      StringBuilder sb) throws QuestionReplyException, ParseException {
     sb.append("<br>\n");
     sb.append("<center>\n");
     sb.append(
@@ -150,7 +150,7 @@ public class QuestionReplyExport {
     sb.append(reply.readCurrentWysiwygContent());
     sb.append("</td>\n");
     // récupération des fichiers joints : copie de ces fichiers dans le dossier "files"
-    AttachmentImportExport attachmentIE = new AttachmentImportExport();
+    AttachmentImportExport attachmentIE = new AttachmentImportExport(qRSC.getUserDetail());
     Collection<AttachmentDetail> attachments = null;
     try {
       String filePath = file.getParentFile().getPath() + File.separator + "files";
