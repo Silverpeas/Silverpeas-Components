@@ -33,15 +33,16 @@ package com.stratelia.silverpeas.chat;
 import java.io.Serializable;
 import java.util.Iterator;
 
+import com.silverpeas.util.i18n.AbstractBean;
 import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.stratelia.silverpeas.contentManager.*;
 
-public class ChatRoomDetail extends AbstractI18NBean implements SilverContentInterface,
+public class ChatRoomDetail extends AbstractBean implements SilverContentInterface,
     Serializable {
+  private static final long serialVersionUID = -4530181976960104956L;
+
   private String instanceId = null;
   private String id = null;
-  private String name = null;
-  private String comment = null;
   private String iconUrl = "chatSmall.gif";
   private String creatorId = null;
 
@@ -50,20 +51,12 @@ public class ChatRoomDetail extends AbstractI18NBean implements SilverContentInt
       String comment, String creatorId) {
     this.instanceId = instanceId;
     this.id = id;
-    this.name = name;
-    this.comment = comment;
+    setName(name);
+    setDescription(comment);
     this.creatorId = creatorId;
   }
 
   // methods to be implemented by SilverContentInterface
-
-  public String getName() {
-    return name;
-  }
-
-  public String getDescription() {
-    return comment;
-  }
 
   public String getURL() {
     return "searchResult?Id=" + getId();
@@ -107,17 +100,4 @@ public class ChatRoomDetail extends AbstractI18NBean implements SilverContentInt
   public void setId(String string) {
     id = string;
   }
-
-  public String getDescription(String language) {
-    return getDescription();
-  }
-
-  public String getName(String language) {
-    return getName();
-  }
-
-  public Iterator getLanguages() {
-    return null;
-  }
-
 }

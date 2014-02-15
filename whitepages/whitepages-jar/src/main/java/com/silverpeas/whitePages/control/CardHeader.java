@@ -26,7 +26,7 @@ package com.silverpeas.whitePages.control;
 
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
-import com.silverpeas.util.i18n.AbstractI18NBean;
+import com.silverpeas.util.i18n.AbstractBean;
 import com.silverpeas.whitePages.model.Card;
 import com.silverpeas.whitePages.record.UserRecord;
 import com.silverpeas.whitePages.record.UserTemplate;
@@ -36,22 +36,18 @@ import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
  * The fileboxplus implementation of SilverContentInterface
  */
-public final class CardHeader extends AbstractI18NBean implements SilverContentInterface,
-    Comparable {
-  
+public final class CardHeader extends AbstractBean implements SilverContentInterface, Comparable {
+
   private static final long serialVersionUID = -8781512864589764317L;
   private long id;
-  private String label;
   private String instanceId;
   private String date;
   private String creatorId;
-  private String description;
   private final static ResourceLocator whitePagesIcons = new ResourceLocator(
       "com.silverpeas.whitePages.settings.whitePagesIcons", "");
 
@@ -76,16 +72,16 @@ public final class CardHeader extends AbstractI18NBean implements SilverContentI
          */
         String isMailHidden = getParam("isEmailHidden", instanceId);
         if ((isMailHidden != null) && (isMailHidden.equals("yes"))) {
-          this.description = buildMailLink(instanceId, card.getPK().getId());
+          setDescription(buildMailLink(instanceId, card.getPK().getId()));
         } else {
-          this.description = ((Field) user.getField("Mail")).getValue("");
+          setDescription(user.getField("Mail").getValue(""));
         }
 
       }
     } catch (FormException e) {
       label = "user(" + id + ")";
     }
-    this.label = label;
+    setName(label);
     this.instanceId = card.getInstanceId();
   }
 
@@ -115,14 +111,6 @@ public final class CardHeader extends AbstractI18NBean implements SilverContentI
     this.date = date;
     this.creatorId = creatorId;
     init(id, card);
-  }
-
-  public String getName() {
-    return label;
-  }
-
-  public String getDescription() {
-    return this.description;
   }
 
   public String getURL() {
@@ -172,7 +160,7 @@ public final class CardHeader extends AbstractI18NBean implements SilverContentI
   }
 
   public String getTitle() {
-    return this.label;
+    return getName();
   }
 
   public String getDate() {
@@ -191,22 +179,10 @@ public final class CardHeader extends AbstractI18NBean implements SilverContentI
     return this.date;
   }
 
-  public String getDescription(String language) {
-    return getDescription();
-  }
-
-  public String getName(String language) {
-    return getName();
-  }
-
-  public Iterator getLanguages() {
-    return null;
-  }
-
   public int compareTo(Object other) {
     if (other instanceof CardHeader) {
       CardHeader otherCard = (CardHeader) other;
-      return this.label.compareTo(otherCard.label);
+      return this.getName().compareTo(otherCard.getName());
     } else
       return 1;
   }
