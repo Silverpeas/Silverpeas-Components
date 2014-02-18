@@ -31,6 +31,7 @@ import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.fieldType.TextFieldImpl;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public class QuestionRecord implements DataRecord {
 
@@ -85,6 +86,17 @@ public class QuestionRecord implements DataRecord {
     else
       throw new FormException("QuestionRecord",
           "workflowEngine.ERR_FIELD_NOT_FOUND");
+  }
+  
+  @Override
+  public Field getField(String fieldName, int occurrence) {
+    try {
+      return getField(fieldName);
+    } catch (FormException e) {
+      SilverTrace.warn("processManager", "QuestionRecord.getField",
+          "form.EXP_UNKNOWN_FIELD", e);
+    }
+    return null;
   }
 
   /**
