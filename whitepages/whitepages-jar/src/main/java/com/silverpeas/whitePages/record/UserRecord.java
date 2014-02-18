@@ -113,6 +113,11 @@ public class UserRecord implements DataRecord {
 
     return text;
   }
+  
+  @Override
+  public Field getField(String fieldName, int occurrence) {
+    return null;
+  }
 
   /**
    * Returns the field at the index position in the record.
