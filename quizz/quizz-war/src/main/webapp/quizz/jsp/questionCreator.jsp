@@ -1,3 +1,4 @@
+<%@ page import="org.silverpeas.servlet.HttpRequest" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -59,7 +60,7 @@ Button cancelButton = null;
 Button finishButton = null;
 ButtonPane buttonPane = null;
 
-List<FileItem> items = FileUploadUtil.parseRequest(request);
+List<FileItem> items = HttpRequest.decorate(request).getFileItems();
 boolean file = false;
 int nb = 0;
 int attachmentSuffix = 0;

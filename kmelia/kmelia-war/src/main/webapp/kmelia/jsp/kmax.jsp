@@ -91,8 +91,12 @@ function search() {
     timeCriteria = "X";
     timeCriteriaUsed = 0;
 	<% if (kmeliaScc.isTimeAxisUsed()) { %>
-	    timeCriteria = document.axisForm.elements[document.axisForm.length - 1].value;
-	    timeCriteriaUsed = 1;
+      // -2 instead of -1 because of security tokens
+      // before, it was :
+      //  - document.axisForm.elements[document.axisForm.length - 1].value
+      //  - timeCriteriaUsed = 1;
+	    timeCriteria = document.axisForm.elements[document.axisForm.length - 2].value;
+	    timeCriteriaUsed = 2;
 	<% } %>
 	for (var i=0; i<document.axisForm.length - timeCriteriaUsed; i++) {
     	if (document.axisForm.elements[i].value.length != 0) {

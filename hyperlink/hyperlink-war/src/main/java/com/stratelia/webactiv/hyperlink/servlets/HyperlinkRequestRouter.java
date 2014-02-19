@@ -38,6 +38,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.hyperlink.control.HyperlinkSessionController;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import org.silverpeas.servlet.HttpRequest;
 
 public class HyperlinkRequestRouter extends ComponentRequestRouter<HyperlinkSessionController> {
 
@@ -74,14 +75,16 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter<HyperlinkSess
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param hyperlinkSCC The component Session Control, build and initialised.
+   * @param request
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
   public String getDestination(String function, HyperlinkSessionController hyperlinkSCC,
-      HttpServletRequest request) {
+      HttpRequest request) {
     SilverTrace.info("hyperlink", "HyperlinkRequestRooter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "function = " + function);
     String destination = "";

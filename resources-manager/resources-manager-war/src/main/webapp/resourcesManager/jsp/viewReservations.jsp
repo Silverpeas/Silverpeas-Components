@@ -46,7 +46,9 @@ ArrayLine arrayLine;
 	
 	function deleteReservation(reservationId, event) {
 		  if (confirm("Etes vous sûr de vouloir supprimer la réservation liée à l'évènement "+event+"?")) {
-			location.href="DeleteReservation?id="+reservationId;
+        var $form = $('#ReservationDeletion');
+        $('#id', $form).val(reservationId);
+        $form.submit();
 		  }
 	}
 	
@@ -110,6 +112,8 @@ while(!listOfReservation.isEmpty()){
 		out.println(frame.printAfter());
 		out.println(window.printAfter());
 %>
-
+<form id="ReservationDeletion" action="DeleteReservation" method="POST">
+  <input name="id" type="hidden"/>
+</form>
 </body>
 </html>

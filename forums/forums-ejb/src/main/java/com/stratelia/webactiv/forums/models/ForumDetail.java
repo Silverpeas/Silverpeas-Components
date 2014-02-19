@@ -24,32 +24,31 @@
 
 package com.stratelia.webactiv.forums.models;
 
-import java.io.Serializable;
-import java.util.Date;
-import java.util.Iterator;
-
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.AccessControllerProvider;
-import com.silverpeas.util.i18n.AbstractI18NBean;
+import com.silverpeas.util.i18n.AbstractBean;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.forums.ForumsContentManager;
 import com.stratelia.webactiv.util.DateUtil;
 
+import java.io.Serializable;
+import java.util.Date;
+import java.util.Iterator;
+
 /**
  * This object contains the description of a forum
  * @author Marc Guillemin
  * @version 1.0
  */
-public class ForumDetail extends AbstractI18NBean implements SilverContentInterface, Serializable, SilverpeasContent {
+public class ForumDetail extends AbstractBean
+    implements SilverContentInterface, Serializable, SilverpeasContent {
 
   private static final long serialVersionUID = -5500661559879178630L;
   private static final String TYPE = "forum";  
   private ForumPK pk;
-  private String name;
-  private String description;
   private Date creationDate;
   private String creatorId;
   private String silverObjectId; // added for the components - PDC integration
@@ -58,30 +57,14 @@ public class ForumDetail extends AbstractI18NBean implements SilverContentInterf
   public ForumDetail(ForumPK pk, String name, String description,
       String creatorId, Date creationDate) {
     this.pk = pk;
-    this.name = name;
-    this.description = description;
+    setName(name);
+    setDescription(description);
     this.creatorId = creatorId;
     this.creationDate = creationDate;
   }
 
   public ForumPK getPK() {
     return pk;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public String getDescription() {
-    return description;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
   }
 
   public void setCreatorId(String creatorId) {
@@ -165,18 +148,6 @@ public class ForumDetail extends AbstractI18NBean implements SilverContentInterf
     return getDate();
   }
 
-  public String getDescription(String language) {
-    return getDescription();
-  }
-
-  public String getName(String language) {
-    return getName();
-  }
-
-  public Iterator<String> getLanguages() {
-    return null;
-  }
-
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -195,13 +166,14 @@ public class ForumDetail extends AbstractI18NBean implements SilverContentInterf
     if (creatorId != null ? !creatorId.equals(that.creatorId) : that.creatorId != null) {
       return false;
     }
-    if (description != null ? !description.equals(that.description) : that.description != null) {
+    if (getDescription() != null ? !getDescription().equals(that.getDescription()) :
+        that.getDescription() != null) {
       return false;
     }
     if (iconUrl != null ? !iconUrl.equals(that.iconUrl) : that.iconUrl != null) {
       return false;
     }
-    if (name != null ? !name.equals(that.name) : that.name != null) {
+    if (getName() != null ? !getName().equals(that.getName()) : that.getName() != null) {
       return false;
     }
     if (pk != null ? !pk.equals(that.pk) : that.pk != null) {
@@ -218,8 +190,8 @@ public class ForumDetail extends AbstractI18NBean implements SilverContentInterf
   @Override
   public int hashCode() {
     int result = pk != null ? pk.hashCode() : 0;
-    result = 31 * result + (name != null ? name.hashCode() : 0);
-    result = 31 * result + (description != null ? description.hashCode() : 0);
+    result = 31 * result + (getName() != null ? getName().hashCode() : 0);
+    result = 31 * result + (getDescription() != null ? getDescription().hashCode() : 0);
     result = 31 * result + (creationDate != null ? creationDate.hashCode() : 0);
     result = 31 * result + (creatorId != null ? creatorId.hashCode() : 0);
     result = 31 * result + (silverObjectId != null ? silverObjectId.hashCode() : 0);

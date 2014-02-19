@@ -9,6 +9,7 @@ import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
+import org.silverpeas.servlet.HttpRequest;
 
 /**
  * Use Case : for all users, show all adds of given category
@@ -18,7 +19,7 @@ public class ClassifiedUpdateFormHandler extends FunctionHandler {
 
   @Override
   public String getDestination(ClassifiedsSessionController classifiedsSC,
-      HttpServletRequest request) throws Exception {
+      HttpRequest request) throws Exception {
 
     // Retrieves parameters
     String classifiedId = request.getParameter("ClassifiedId");

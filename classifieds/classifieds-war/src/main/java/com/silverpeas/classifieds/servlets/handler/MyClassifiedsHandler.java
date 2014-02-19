@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.silverpeas.classifieds.control.ClassifiedsSessionController;
 import com.silverpeas.classifieds.model.ClassifiedDetail;
 import com.silverpeas.classifieds.servlets.FunctionHandler;
+import org.silverpeas.servlet.HttpRequest;
 
 /**
  * Use Case : for publisher, show own classifieds
@@ -18,7 +19,7 @@ public class MyClassifiedsHandler extends FunctionHandler {
 
   @Override
   public String getDestination(ClassifiedsSessionController classifiedsSC,
-      HttpServletRequest request) throws Exception{
+      HttpRequest request) throws Exception{
 
     // Retrieve user own classifieds
     Collection<ClassifiedDetail> classifieds = classifiedsSC.getClassifiedsByUser();

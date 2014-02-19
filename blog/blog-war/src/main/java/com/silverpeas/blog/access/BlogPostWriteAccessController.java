@@ -23,7 +23,8 @@
  */
 package com.silverpeas.blog.access;
 
-import com.silverpeas.accesscontrol.AccessController;
+import com.silverpeas.accesscontrol.AbstractAccessController;
+import com.silverpeas.accesscontrol.AccessControlContext;
 import com.silverpeas.accesscontrol.ComponentAccessController;
 import com.stratelia.webactiv.SilverpeasRole;
 import org.silverpeas.core.admin.OrganisationController;
@@ -37,10 +38,11 @@ import org.silverpeas.core.admin.OrganisationControllerFactory;
  *
  * @author mmoquillon
  */
-public class BlogPostWriteAccessController implements AccessController<String> {
+public class BlogPostWriteAccessController extends AbstractAccessController<String> {
 
   @Override
-  public boolean isUserAuthorized(String userId, String blogId) {
+  public boolean isUserAuthorized(String userId, String blogId,
+      final AccessControlContext context) {
     ComponentAccessController componentAccessController = new ComponentAccessController();
     OrganisationController organisationController = OrganisationControllerFactory.
         getOrganisationController();

@@ -35,6 +35,7 @@ import com.stratelia.webactiv.forums.models.Forum;
 import com.stratelia.webactiv.forums.models.Message;
 import com.stratelia.webactiv.forums.url.ActionUrl;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
+import org.silverpeas.servlet.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -60,12 +61,12 @@ public class ForumsRequestRouter extends ComponentRequestRouter<ForumsSessionCon
 
   @Override
   public String getDestination(String function, ForumsSessionController forumsSC,
-      HttpServletRequest request) {
+      HttpRequest request) {
     String destination;
     try {
       if ((function.startsWith("Main")) || (function.startsWith("main"))) {
         String forumId = request.getParameter("forumId");
-        if (forumId != null && Integer.parseInt(forumId) > 0) {
+        if (StringUtil.isInteger(forumId) && Integer.parseInt(forumId) > 0) {
           return ROOT_DEST + ActionUrl.getUrl("viewForum", "main", Integer.parseInt(forumId));
         }
         destination = ROOT_DEST + "main.jsp";

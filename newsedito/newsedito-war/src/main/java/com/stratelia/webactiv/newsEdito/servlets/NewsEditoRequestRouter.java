@@ -35,7 +35,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.clipboard.ClipboardSelection;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
+import org.silverpeas.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -47,6 +47,7 @@ import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationSelection;
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.servlet.HttpRequest;
 
 import javax.ejb.EJBException;
 import javax.servlet.http.HttpServletRequest;
@@ -93,6 +94,7 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter<NewsEditoSess
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    *
+   *
    * @param function  The entering request function (ex : "Main.jsp")
    * @param newsEdito The component Session Controller, build and initialised.
    * @param request   The entering request. The request rooter need it to get parameters
@@ -100,7 +102,7 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter<NewsEditoSess
    */
   @Override
   public String getDestination(String function, NewsEditoSessionController newsEdito,
-      HttpServletRequest request) {
+      HttpRequest request) {
     String destination = "";
     String rootDest = "/newsEdito/jsp/";
     SilverTrace.debug("NewsEdito", "NewsEditoRequestRooter.getDestination",
@@ -199,7 +201,7 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter<NewsEditoSess
     } else if (function.equals("ReallyUpdatePublication")) {
       try {
         // mise à jour de l'entête de la publication
-        List<FileItem> items = FileUploadUtil.parseRequest(request);
+        List<FileItem> items = request.getFileItems();
 
         String name = FileUploadUtil.getParameter(items, "Name");
         String description = FileUploadUtil.getParameter(items, "Description");
@@ -214,7 +216,7 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter<NewsEditoSess
       destination = getDestination("publication", newsEdito, request);
     } else if (function.equals("UpdateXMLForm")) {
       try {
-        List<FileItem> items = FileUploadUtil.parseRequest(request);
+        List<FileItem> items = request.getFileItems();
         updateXmlForm(items, newsEdito);
       } catch (Exception e) {
         SilverTrace.warn("NewsEdito", "NewsEditoRequestRooter.getDestination",

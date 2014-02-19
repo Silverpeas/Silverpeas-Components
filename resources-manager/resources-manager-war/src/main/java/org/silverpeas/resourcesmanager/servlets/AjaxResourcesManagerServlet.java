@@ -34,7 +34,7 @@ import javax.servlet.http.HttpSession;
 import org.silverpeas.resourcemanager.model.Resource;
 import org.silverpeas.resourcemanager.util.ResourceUtil;
 import org.silverpeas.resourcesmanager.control.ResourcesManagerSessionController;
-import org.silverpeas.servlet.ServletRequestWrapper;
+import org.silverpeas.servlet.HttpRequest;
 
 public class AjaxResourcesManagerServlet extends HttpServlet {
 
@@ -42,34 +42,35 @@ public class AjaxResourcesManagerServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException,
-          IOException {
+      IOException {
     doPost(req, res);
   }
 
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException,
-          IOException {
+      IOException {
     HttpSession session = req.getSession(true);
     String componentId = req.getParameter("ComponentId");
-    ResourcesManagerSessionController sessionController = (ResourcesManagerSessionController) session.
-            getAttribute("Silverpeas_" + "ResourcesManager" + "_" + componentId);
+    ResourcesManagerSessionController sessionController
+        = (ResourcesManagerSessionController) session.
+        getAttribute("Silverpeas_" + "ResourcesManager" + "_" + componentId);
 
     if (sessionController != null) {
-      ServletRequestWrapper requestWrapper =
-          new ServletRequestWrapper(req, sessionController.getLanguage());
+      HttpRequest requestWrapper = (HttpRequest) req;
       try {
         Long reservationId = requestWrapper.getParameterAsLong("reservationId");
         SilverTrace.info("resourcesManager", "AjaxResourcesManagerServlet",
-                "root.MSG_GEN_PARAM_VALUE", "reservationId=" + reservationId);
+            "root.MSG_GEN_PARAM_VALUE", "reservationId=" + reservationId);
         String beginDate = req.getParameter("beginDate");
         String beginHour = req.getParameter("beginHour");
         String endDate = req.getParameter("endDate");
         String endHour = req.getParameter("endHour");
 
-        List<Resource> listResourceEverReserved =
-            sessionController.getResourcesofReservation(reservationId);
-        Date dateDebut = DateUtil.stringToDate(beginDate, beginHour, requestWrapper.getLanguage());
-        Date dateFin = DateUtil.stringToDate(endDate, endHour, requestWrapper.getLanguage());
+        List<Resource> listResourceEverReserved = sessionController.getResourcesofReservation(
+            reservationId);
+        Date dateDebut = DateUtil.stringToDate(beginDate, beginHour, requestWrapper.
+            getUserLanguage());
+        Date dateFin = DateUtil.stringToDate(endDate, endHour, requestWrapper.getUserLanguage());
         List<Resource> listResources = sessionController
             .verifyUnavailableResources(ResourceUtil.toIdList(listResourceEverReserved), dateDebut,
                 dateFin, reservationId);
@@ -90,7 +91,7 @@ public class AjaxResourcesManagerServlet extends HttpServlet {
         }
 
         SilverTrace.info("resourcesManager", "AjaxResourcesManagerServlet",
-                "root.MSG_GEN_PARAM_VALUE", "listResourceName= " + resourceNames.toString());
+            "root.MSG_GEN_PARAM_VALUE", "listResourceName= " + resourceNames.toString());
         res.setHeader("charset", "UTF-8");
 
         Writer writer = res.getWriter();

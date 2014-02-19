@@ -29,7 +29,8 @@
 <%@ include file="newsUtils.jsp.inc" %>
 <%@ include file="init.jsp.inc" %>
 <%@ page import="org.apache.commons.fileupload.FileItem" %>
-<%@ page import="com.silverpeas.util.web.servlet.FileUploadUtil" %>
+<%@ page import="org.silverpeas.servlet.FileUploadUtil" %>
+<%@ page import="org.silverpeas.servlet.HttpRequest" %>
 <%!
 private ResourceLocator uploadSettings = new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings", "fr");
 
@@ -322,7 +323,7 @@ String name = "";
 String description = "";
 String modelId = "";
 String modelName = "";
-List items = FileUploadUtil.parseRequest(request);
+List items = HttpRequest.decorate(request).getFileItems();
 
 String infoId = null;
 int textCount = 0;
@@ -378,7 +379,7 @@ while (itemIter.hasNext()) {
 	    dir = new File(FileRepositoryManager.getAbsolutePath(news.getComponentId())+settings.getString("imagesSubDirectory")+ File.separator +physicalName);
 	    if ("gif".equals(type) || "jpg".equals(type) || "jpeg".equals(type)) {
 	      // the part actually contained a file
-	      FileUploadUtil.saveToFile(dir, item);
+	      org.silverpeas.servlet.FileUploadUtil.saveToFile(dir, item);
         size = item.getSize();
 				if (size > 0) {
 		      imageOrder++;

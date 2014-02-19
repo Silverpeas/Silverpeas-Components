@@ -35,10 +35,9 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
-
 import com.silverpeas.annotation.Authorized;
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
 import com.silverpeas.rssAgregator.control.RSSServiceFactory;
 import com.silverpeas.rssAgregator.model.RSSItem;
 import com.silverpeas.rssAgregator.model.RssAgregatorException;
@@ -46,7 +45,7 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.web.RESTWebService;
 
 @Service
-@Scope("request")
+@RequestScoped
 @Path("rss/{componentId}")
 @Authorized
 public class RSSResource extends RESTWebService {

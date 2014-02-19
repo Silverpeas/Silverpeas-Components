@@ -36,7 +36,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.attachment.model.SimpleDocument;
 
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
+import org.silverpeas.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -50,6 +50,7 @@ import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerDetail;
 import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerHeader;
+import org.silverpeas.servlet.HttpRequest;
 
 public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionController> {
 
@@ -94,14 +95,16 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param surveySC The component Session Control, build and initialized.
+   * @param request
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
   public String getDestination(String function, SurveySessionController surveySC,
-      HttpServletRequest request) {
+      HttpRequest request) {
     SilverTrace.info(COMPONENT_NAME, "SurveyRequestRouter.getDestination",
         "Survey.MSG_ENTRY_METHOD");
 
@@ -269,7 +272,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
       destination = rootDest + view;
     } else if (function.equals("PublishResult")) {
       // récupération des paramètres
-      List<FileItem> items = FileUploadUtil.parseRequest(request);
+      List<FileItem> items = request.getFileItems();
 
       String checkedViewC = FileUploadUtil.getParameter(items, "checkedViewC");
       String checkedViewD = FileUploadUtil.getParameter(items, "checkedViewD");

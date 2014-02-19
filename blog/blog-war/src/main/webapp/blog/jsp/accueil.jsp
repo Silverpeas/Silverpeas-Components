@@ -101,13 +101,11 @@ function sendData() {
 }
 
 function addSubscription() {
-  window.alert("<%=resource.getString("blog.addSubscriptionOk")%>");
   window.document.subscriptionForm.action = "AddSubscription";
   window.document.subscriptionForm.submit();
 }
 
 function removeSubscription() {
-  window.alert("<%=resource.getString("blog.removeSubscriptionOk")%>");
   window.document.subscriptionForm.action = "RemoveSubscription";
   window.document.subscriptionForm.submit();
 }

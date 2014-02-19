@@ -31,6 +31,7 @@ import java.util.Iterator;
 import javax.ejb.CreateException;
 import javax.servlet.http.HttpServletRequest;
 
+import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.wysiwyg.WysiwygException;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
@@ -68,6 +69,7 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    *
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param quickInfo The component Session Control, build and initialised.
    * @param request The entering request. The request rooter need it to get parameters
@@ -76,7 +78,7 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
    */
   @Override
   public String getDestination(String function, QuickInfoSessionController quickInfo,
-      HttpServletRequest request) {
+      HttpRequest request) {
     String destination = null;
     String flag = getFlag(quickInfo.getUserRoles());
     if (flag == null) {

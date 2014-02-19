@@ -28,8 +28,7 @@ import com.silverpeas.mailinglist.control.MailingListSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
-
-import javax.servlet.http.HttpServletRequest;
+import org.silverpeas.servlet.HttpRequest;
 
 public class MailingListRequestRouter extends ComponentRequestRouter<MailingListSessionController> implements MailingListRoutage {
   /**
@@ -58,13 +57,15 @@ public class MailingListRequestRouter extends ComponentRequestRouter<MailingList
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param componentSC The component Session Control, build and initialised.
+   * @param request
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
-  public String getDestination(String function, MailingListSessionController componentSC, HttpServletRequest request) {
+  public String getDestination(String function, MailingListSessionController componentSC, HttpRequest request) {
     String type = request.getParameter("Type");
     try {
       RestRequest rest = new RestRequest(request);

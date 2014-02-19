@@ -35,8 +35,8 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.servlet.FileUploadUtil;
 
 /**
  * @author Yohann Chastagnier

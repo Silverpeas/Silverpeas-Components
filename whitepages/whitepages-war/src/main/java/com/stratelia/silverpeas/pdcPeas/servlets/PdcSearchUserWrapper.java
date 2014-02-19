@@ -32,8 +32,8 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.servlet.HttpRequest;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -64,7 +64,7 @@ public class PdcSearchUserWrapper
    * Do the requested function and return the destination url.
    */
   public String getDestination(String function,
-      PdcSearchUserWrapperSessionController pdcSearchUserWrapperScc, HttpServletRequest request) {
+      PdcSearchUserWrapperSessionController pdcSearchUserWrapperScc, HttpRequest request) {
     SilverTrace.info("pdcPeas", "PdcSearchUserWrapper.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", " Function=" + function);
     try {

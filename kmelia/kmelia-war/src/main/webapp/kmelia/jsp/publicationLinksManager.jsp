@@ -57,11 +57,11 @@ if(request.getAttribute("NbLinks")!=null){
 }
 </style>
 <%-- load the css and js file used by tree menu --%>
-<menuTree:head displayCssFile="true" displayJavascriptFile="true" displayIconsStyles="true" contextName="<%=m_context%>"></menuTree:head>
+<menuTree:head displayCssFile="true" displayJavascriptFile="true" displayIconsStyles="false" contextName="<%=m_context%>"></menuTree:head>
 <%-- personalizable Javascript for  YUI treeView menu --%>
 <script type="text/javascript" src="<%=m_context %>/util/javaScript/treeMenu/menu.js"></script>
 
-<Script language="JavaScript">
+<script type="text/javascript">
 var context ='<%=m_context %>';
 var currentNodeId;
 var currentNodeIndex;
@@ -162,12 +162,19 @@ function displayHomeMessage(){
 	document.getElementById('pubList').innerHTML = '<p align="center" ><%= kmeliaScc.getString("kmelia.linkManager.home.title")%></p> <p align="center"> <br><br><%=kmeliaScc.getString("kmelia.linkManager.home.description") %>';
 }
 
+function showPublicationOperations() {
+	// not implemented but necessary to prevent javascript errors
+}
+
+function hidePublicationOperations () {
+	// not implemented but necessary to prevent javascript errors
+}
 </script>
 </head>
 <body class="yui-skin-sam" <%=closeWindow%> > 
 <table class="dimensionTable">
-	<tr valign="top" >
-		<td class="firstTd">
+	<tr valign="top">
+		<td>
 			<div id="treeDiv1" class="treeDivDisplay"> </div>
 		</td>
 		<td class="secondTd">	

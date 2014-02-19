@@ -20,22 +20,10 @@
  */
 package com.stratelia.webactiv.almanach.model;
 
-import java.io.Serializable;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import com.silverpeas.SilverpeasContent;
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.AccessControllerProvider;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-
-import com.silverpeas.SilverpeasContent;
-import com.silverpeas.util.i18n.AbstractI18NBean;
-
+import com.silverpeas.util.i18n.AbstractBean;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -48,7 +36,6 @@ import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-
 import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.TimeZone;
 import net.fortuna.ical4j.model.TimeZoneRegistry;
@@ -57,23 +44,30 @@ import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.Description;
 import net.fortuna.ical4j.model.property.ExDate;
 import net.fortuna.ical4j.model.property.Uid;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
+import java.io.Serializable;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static com.silverpeas.util.StringUtil.isDefined;
 
-public class EventDetail extends AbstractI18NBean
+public class EventDetail extends AbstractBean
     implements SilverContentInterface, Serializable, SilverpeasContent {
 
   private static final long serialVersionUID = 9077018265272108291L;
   public static ResourceLocator almanachSettings =
       new ResourceLocator("org.silverpeas.almanach.settings.almanachSettings", "");
   private static final String TYPE = "Event";
-  private String _name = null;
   private EventPK _pk = null;
   private Date _startDate = null;
   private Date _endDate = null;
   private String _delegatorId = null;
   private int _priority = 0;
-  private String _title = null;
   private String _iconUrl = "";
   private String startHour = "";
   private String endHour = "";
@@ -99,7 +93,7 @@ public class EventDetail extends AbstractI18NBean
           "The end date cannot be before the start date of the event");
     }
     this._pk = pk;
-    this._title = title;
+    setTitle(title);
     this._startDate = new Date(startDate.getTime());
     this._endDate = new Date(endDate.getTime());
   }
@@ -121,16 +115,11 @@ public class EventDetail extends AbstractI18NBean
   }
 
   public String getNameDescription() {
-    return _name;
+    return getDescription();
   }
 
-  @Override
-  public String getName() {
-    return _title;
-  }
-
-  public void setNameDescription(String name) {
-    _name = (name != null ? name : "");
+  public void setNameDescription(String description) {
+    setDescription(description != null ? description : "");
   }
 
   public String getDelegatorId() {
@@ -194,16 +183,11 @@ public class EventDetail extends AbstractI18NBean
 
   @Override
   public String getTitle() {
-    return _title;
+    return getName();
   }
 
   public void setTitle(String title) {
-    _title = (title == null ? "" : title);
-  }
-
-  @Override
-  public String getDescription() {
-    return getNameDescription();
+    setName(title == null ? "" : title);
   }
 
   @Override
@@ -281,21 +265,6 @@ public class EventDetail extends AbstractI18NBean
     return null;
   }
 
-  @Override
-  public String getDescription(String language) {
-    return getDescription();
-  }
-
-  @Override
-  public String getName(String language) {
-    return getName();
-  }
-
-  @Override
-  public Iterator<String> getLanguages() {
-    return null;
-  }
-
   public String getWysiwyg() {
     return WysiwygController.load(getPK().getComponentName(), getPK().getId(), getLanguage());
   }
@@ -342,7 +311,7 @@ public class EventDetail extends AbstractI18NBean
   public VEvent icalConversion(ExDate exDate) {
     net.fortuna.ical4j.model.Date dtStart = toIcalDate(getStartDate(), getStartHour());
     net.fortuna.ical4j.model.Date dtEnd = toIcalDate(getEndDate(), getEndHour());
-    VEvent iCalEvent = new VEvent(dtStart, dtEnd, _title);
+    VEvent iCalEvent = new VEvent(dtStart, dtEnd, getTitle());
 
     if (_pk != null) {
       Uid uid = new Uid(_pk.getId());

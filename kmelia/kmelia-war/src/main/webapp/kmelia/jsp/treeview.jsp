@@ -323,7 +323,7 @@ function resetNbPublis(nodeId) {
 function emptyTrash() {
 	if(window.confirm("<%=kmeliaScc.getString("ConfirmFlushTrashBean")%>")) {
 		$.progressMessage();
-		$.get('<%=m_context%>/KmeliaAJAXServlet', {ComponentId:'<%=componentId%>',Action:'EmptyTrash'},
+		$.post('<%=m_context%>/KmeliaAJAXServlet', {ComponentId:'<%=componentId%>',Action:'EmptyTrash'},
 				function(data){
 					$.closeProgressMessage();
 					if (data == "ok") {
@@ -779,7 +779,14 @@ $(document).ready(
 			//alert("TREE IS LOADED");
 		}).bind("select_node.jstree", function (e, data) {
     		// data.inst is the instance which triggered this event
-    		displayTopicContent(data.rslt.obj.attr("id"));
+    		var nodeId = $(data.rslt.obj).attr('id');
+    		
+    		// open topic in treeview
+    		var idSelector = "#"+nodeId;
+    		$.jstree._reference(idSelector).open_node(idSelector);
+    		
+    		// display topic content in right panel 
+    		displayTopicContent(nodeId);
     	})
     	.jstree({
     	"core" : {

@@ -264,7 +264,7 @@ String displayAxisManageView(KmeliaSessionController kmeliaScc, GraphicElementFa
 	            result.append("<tr>");
 					result.append("<td width=\"20%\" class=\"txtlibform\">"+kmeliaScc.getString("AxisTitle")+" : </td>");
 					result.append("<td>"); 
-						result.append("<input type=\"text\" id=\"nodeName\" name=\"Name\" value=\""+Encode.javaStringToHtmlString(axis.getName(translation))+"\" size=\"61\" maxlength=\"50\">&nbsp;<img alt=\"\" src=\""+mandatoryFieldSrc+"\" border=\"0\"  width=\"5px\"  height=\"5px\" />");
+						result.append("<input type=\"text\" id=\"nodeNameValue\" name=\"Name\" value=\""+Encode.javaStringToHtmlString(axis.getName(translation))+"\" size=\"61\" maxlength=\"50\">&nbsp;<img alt=\"\" src=\""+mandatoryFieldSrc+"\" border=\"0\"  width=\"5px\"  height=\"5px\" />");
 					result.append("</td>");
 					result.append("<td>&nbsp;</td>");
 					result.append("<td>&nbsp;</td>");
@@ -338,7 +338,7 @@ String displayComponentManageView(KmeliaSessionController kmelia, GraphicElement
             result.append("<tr>"); 
 				result.append("<td width=\"20%\" class=\"txtlibform\">"+kmelia.getString("ComponentTitle")+" : </td>");
 				result.append("<td>"); 
-					result.append("<input type=\"text\" id=\"nodeName\" name=\"Name\" value=\""+Encode.javaStringToHtmlString(nodeDetail.getName(translation))+"\" size=\"61\" maxlength=\"50\">&nbsp;<img alt=\"  \" src=\""+mandatoryFieldSrc+"\" border=\"0\"  width=\"5px\" height=\"5px\" />");
+					result.append("<input type=\"text\" id=\"nodeNameValue\" name=\"Name\" value=\""+Encode.javaStringToHtmlString(nodeDetail.getName(translation))+"\" size=\"61\" maxlength=\"50\">&nbsp;<img alt=\"  \" src=\""+mandatoryFieldSrc+"\" border=\"0\"  width=\"5px\" height=\"5px\" />");
 				result.append("</td>");
 				result.append("<td>&nbsp;</td>");
 				result.append("<td>&nbsp;</td>");

@@ -32,6 +32,7 @@
 <%@ page import="java.io.ObjectInputStream"%>
 <%@ page import="com.stratelia.webactiv.survey.control.FileHelper" %>
 <%@ page import="java.text.ParsePosition"%>
+<%@ page import="org.silverpeas.servlet.HttpRequest" %>
 
 <%@ include file="checkSurvey.jsp" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
@@ -80,7 +81,7 @@ void displayAnswer(int i, String style, ResourcesWrapper resources, List<Compone
 %>
 
 <%
-    List<FileItem> items = FileUploadUtil.parseRequest(request);
+    List<FileItem> items = HttpRequest.decorate(request).getFileItems();
     String action = FileUploadUtil.getOldParameter(items, "Action");
     String pollId = FileUploadUtil.getOldParameter(items, "PollId");
     String title = FileUploadUtil.getOldParameter(items, "title");

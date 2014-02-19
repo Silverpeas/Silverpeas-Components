@@ -31,6 +31,7 @@
 <%@ page import="java.io.FileInputStream"%>
 <%@ page import="java.io.ObjectInputStream"%>
 <%@ page import="com.stratelia.webactiv.survey.control.FileHelper" %>
+<%@ page import="org.silverpeas.servlet.HttpRequest" %>
 <%@ include file="checkSurvey.jsp" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -93,7 +94,7 @@
   ArrayList imageList = new ArrayList();
   List<Answer> answers = new ArrayList<Answer>();
   Answer answer = null;
-  List<FileItem> items = FileUploadUtil.parseRequest(request);
+  List<FileItem> items = HttpRequest.decorate(request).getFileItems();
   Iterator<FileItem> itemIter = items.iterator();
   while (itemIter.hasNext()) {
     FileItem item = (FileItem) itemIter.next();

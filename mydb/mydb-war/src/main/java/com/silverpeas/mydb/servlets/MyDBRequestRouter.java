@@ -42,6 +42,7 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.servlet.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -74,11 +75,13 @@ public class MyDBRequestRouter extends ComponentRequestRouter<MyDBSessionControl
   /**
    * This method has to be implemented by the component request rooter. It has to compute a
    * destination page.
+   *
    * @param function The entering request function.
    * @param myDBSC The session control component.
+   * @param request
    * @return The complete destination URL for a forward.
    */
-  public String getDestination(String function, MyDBSessionController myDBSC, HttpServletRequest request) {
+  public String getDestination(String function, MyDBSessionController myDBSC, HttpRequest request) {
     String destination = "";
     SilverTrace.info("myDB", "MyDBRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "User=" + myDBSC.getUserId()

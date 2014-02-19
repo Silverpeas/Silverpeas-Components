@@ -38,6 +38,7 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.servlet.HttpRequest;
 
 public class RssAgregatorRequestRouter extends
     ComponentRequestRouter<RssAgregatorSessionController> {
@@ -55,7 +56,7 @@ public class RssAgregatorRequestRouter extends
   }
 
   public String getDestination(String function, RssAgregatorSessionController rssSC,
-      HttpServletRequest request) {
+      HttpRequest request) {
     String destination = "";
     SilverTrace.info(getSessionControlBeanName(), "rssAgregatorRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "User=" + rssSC.getUserId() + " Function=" + function);
