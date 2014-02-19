@@ -50,10 +50,8 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
 <c:set var="isPolling" value="${requestScope['PollingStationMode']}" />
-<fmt:message var="surveyConfirmUpdateLabel" key="survey.confirmUpdateSurvey" />
 <fmt:message var="surveyConfirmDeleteLabel" key="ConfirmDeleteSurvey" />
 <c:if test="${isPolling}">
-  <fmt:message var="surveyConfirmUpdateLabel" key="survey.confirmUpdatePoll"/>
   <fmt:message var="surveyConfirmDeleteLabel" key="ConfirmDeletePollingStation"/>
 </c:if>
 
@@ -396,13 +394,10 @@ function deleteSurvey(surveyId, name) {
 
 function updateSurvey(surveyId, name, nbVotes)
 {
-  var voteNumbers = parseInt(nbVotes);
-  if(voteNumbers == 0 || window.confirm("<view:encodeJs string="${surveyConfirmUpdateLabel}" /> '" + name + "' ?")) {
     document.updateForm.action = "UpdateSurvey";
     document.updateForm.Action.value = "UpdateSurveyHeader";
     document.updateForm.SurveyId.value = surveyId;
     document.updateForm.submit();
-  }
 }
 
 function clipboardPaste() {     
