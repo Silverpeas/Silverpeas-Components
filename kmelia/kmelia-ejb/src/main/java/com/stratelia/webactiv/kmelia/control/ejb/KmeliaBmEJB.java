@@ -3144,11 +3144,13 @@ public class KmeliaBmEJB implements KmeliaBm {
     List<HistoryObjectDetail> lastAccess = new ArrayList<HistoryObjectDetail>();
 
     for (HistoryObjectDetail access : allAccess) {
-      if ((!StringUtil.isDefined(excludedUserId) || !excludedUserId.equals(access.getUserId())) &&
-          (userIds == null || userIds.contains(access.getUserId())) &&
-          !readerIds.contains(access.getUserId())) {
-        readerIds.add(access.getUserId());
-        lastAccess.add(access);
+      String readerId = access.getUserId();
+      if ((!StringUtil.isDefined(excludedUserId) || !excludedUserId.equals(readerId)) &&
+          (userIds == null || userIds.contains(readerId)) && !readerIds.contains(readerId)) {
+        readerIds.add(readerId);
+        if (!UserDetail.getById(readerId).isAnonymous()) {
+          lastAccess.add(access);
+        }
       }
     }
 
