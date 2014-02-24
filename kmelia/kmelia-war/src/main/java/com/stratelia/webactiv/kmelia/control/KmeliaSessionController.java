@@ -138,6 +138,23 @@ import com.stratelia.webactiv.util.statistic.model.HistoryObjectDetail;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
+import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.DocumentType;
@@ -1265,61 +1282,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   private void applyVisibilityFilter() throws RemoteException {
     List<KmeliaPublication> publications = getSessionPublicationsList();
-    List<KmeliaPublication> filteredPublications = new ArrayList<KmeliaPublication>();
 
-    Calendar calendar = Calendar.getInstance();
-
-    calendar.set(Calendar.SECOND, 0);
-    calendar.set(Calendar.MILLISECOND, 0);
-    Date today = calendar.getTime();
-
-    for (KmeliaPublication userPub : publications) {
-      PublicationDetail detail = userPub.getDetail();
-      if (detail.getStatus() != null) {
-        if (detail.isValid()) {
-          Date dBegin = DateUtil.getDate(detail.getBeginDate(), detail.getBeginHour());
-          Date dEnd = DateUtil.getDate(detail.getEndDate(), detail.getEndHour());
-
-          detail.setBeginDateAndHour(dBegin);
-          detail.setEndDateAndHour(dEnd);
-
-          if (dBegin != null && dBegin.after(today)) {
-            detail.setNotYetVisible(true);
-          } else if (dEnd != null && dEnd.before(today)) {
-            detail.setNoMoreVisible(true);
-          }
-          if (detail.isVisible()) {
-            filteredPublications.add(userPub);
-          } else {
-            if (getProfile().equals("admin") || getUserId().equals(detail.getUpdaterId())
-                || (!getProfile().equals("user") && isCoWritingEnable())) {
-              filteredPublications.add(userPub);
-            }
-          }
-        } else {
-          if (detail.isDraft()) {
-            // si le theme est en co-rédaction et si on autorise le mode brouillon visible par tous
-            // toutes les publications en mode brouillon sont visibles par tous, sauf les lecteurs
-            // sinon, seule les publications brouillon de l'utilisateur sont visibles
-            if (getUserId().equals(detail.getUpdaterId())
-                || (isCoWritingEnable() && isDraftVisibleWithCoWriting() && !getProfile().equals(
-                "user"))) {
-              filteredPublications.add(userPub);
-            }
-          } else {
-            // si le thème est en co-rédaction, toutes les publications sont visibles par tous,
-            // sauf les lecteurs
-            if (getProfile().equals("admin") || getProfile().equals("publisher")
-                || getUserId().equals(detail.getUpdaterId())
-                || (!getProfile().equals("user") && isCoWritingEnable())) {
-              filteredPublications.add(userPub);
-            }
-          }
-        }
-      }
-    }
-
-    setSessionPublicationsList(filteredPublications);
+    setSessionPublicationsList(getKmeliaBm().filterPublications(publications, getComponentId(),
+        SilverpeasRole.from(getProfile()), getUserId()));
   }
 
   private synchronized void orderPubs(int sortType) {
