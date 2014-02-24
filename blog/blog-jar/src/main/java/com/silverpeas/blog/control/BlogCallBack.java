@@ -28,6 +28,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import com.silverpeas.blog.model.BlogRuntimeException;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBack;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -65,7 +66,7 @@ public class BlogCallBack implements CallBack {
       return;
     }
 
-    if (componentId != null && (componentId.startsWith("blog"))) {
+    if (componentId != null && componentId.startsWith("blog")) {
       try {
         // extraction userId
         String sUserId = Integer.toString(iParam);
@@ -97,11 +98,9 @@ public class BlogCallBack implements CallBack {
   }
 
   private boolean isPublicationModified(String pubId, int action) {
-    if (!pubId.startsWith("Node")
-        && action == CallBackManager.ACTION_ON_WYSIWYG) {
+    if (StringUtil.isInteger(pubId) && action == CallBackManager.ACTION_ON_WYSIWYG) {
       return true;
-    } else {
-      return false;
     }
+    return false;
   }
 }
