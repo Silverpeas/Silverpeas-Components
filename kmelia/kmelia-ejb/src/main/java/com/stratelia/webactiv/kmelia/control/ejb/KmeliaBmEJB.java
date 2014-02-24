@@ -1893,7 +1893,7 @@ public class KmeliaBmEJB implements KmeliaBm {
       final boolean sendOnlyToAliases) {
     NodePK oneFather = null;
     // We alert subscribers only if publication is Valid
-    if (!pubDetail.haveGotClone() && pubDetail.isValid()) {
+    if (!pubDetail.haveGotClone() && pubDetail.isValid() && pubDetail.isVisible()) {
       // Topic subscriptions
       Collection<NodePK> fathers = getPublicationFathers(pubDetail.getPK());
       if (!sendOnlyToAliases) {
@@ -5143,6 +5143,58 @@ public class KmeliaBmEJB implements KmeliaBm {
 
     new PdcBmImpl().copyPositions(fromSilverObjectId, fromPK.getInstanceId(), toSilverObjectId,
         toPK.getInstanceId());
+  }
+  
+  public List<KmeliaPublication> filterPublications(List<KmeliaPublication> publications,
+      String instanceId, SilverpeasRole profile, String userId) {
+    boolean coWriting = isCoWritingEnable(instanceId);
+    List<KmeliaPublication> filteredPublications = new ArrayList<KmeliaPublication>();
+    for (KmeliaPublication userPub : publications) {
+      if (isPublicationVisible(userPub.getDetail(), profile, userId, coWriting)) {
+        filteredPublications.add(userPub);
+      }
+    }
+    return filteredPublications;
+  }
+  
+  public boolean isPublicationVisible(PublicationDetail detail, SilverpeasRole profile, String userId) {
+    boolean coWriting = isCoWritingEnable(detail.getInstanceId());
+    return isPublicationVisible(detail, profile, userId, coWriting);
+  }
+  
+  private boolean isPublicationVisible(PublicationDetail detail, SilverpeasRole profile,
+      String userId, boolean coWriting) {
+    if (detail.getStatus() != null) {
+      if (detail.isValid()) {
+        if (detail.isVisible()) {
+          return true;
+        } else {
+          if (profile == SilverpeasRole.admin || userId.equals(detail.getUpdaterId())
+              || (profile != SilverpeasRole.user && coWriting)) {
+            return true;
+          }
+        }
+      } else {
+        if (detail.isDraft()) {
+          // si le theme est en co-rédaction et si on autorise le mode brouillon visible par tous
+          // toutes les publications en mode brouillon sont visibles par tous, sauf les lecteurs
+          // sinon, seule les publications brouillon de l'utilisateur sont visibles
+          if (userId.equals(detail.getUpdaterId())
+              || (coWriting && isDraftVisibleWithCoWriting() && profile != SilverpeasRole.user)) {
+            return true;
+          }
+        } else {
+          // si le thème est en co-rédaction, toutes les publications sont visibles par tous,
+          // sauf les lecteurs
+          if (profile == SilverpeasRole.admin || profile == SilverpeasRole.publisher
+              || userId.equals(detail.getUpdaterId())
+              || (profile != SilverpeasRole.user && coWriting)) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
   }
 
 }
