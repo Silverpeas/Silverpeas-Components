@@ -48,6 +48,18 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
 <%
+	if (! surveyScc.isPollingStationMode()) {
+%>
+<fmt:message var="surveyConfirmUpdateLabel" key="survey.confirmUpdateSurvey" />
+<% 
+	} else { 
+%>
+  <fmt:message var="surveyConfirmUpdateLabel" key="survey.confirmUpdatePoll"/>
+<%
+	}
+%>
+
+<%
 //Retrieve parameter
 String action = request.getParameter("Action");
 String surveyId = request.getParameter("SurveyId");
@@ -58,6 +70,11 @@ String creationDate = "";
 String beginDate = request.getParameter("beginDate");
 String endDate = request.getParameter("endDate");
 String nbQuestions = request.getParameter("nbQuestions");
+String nbVotersString = request.getParameter("nbVoters");
+int nbVoters = 0;
+if(nbVotersString != null) {
+  nbVoters = Integer.parseInt(nbVotersString);
+}
 
 String appName = "survey";
 if (surveyScc.isPollingStationMode()) {
@@ -108,7 +125,7 @@ if ("SendSurveyHeader".equals(action)) {
 	        resultViewInt = QuestionContainerHeader.NOTHING_DISPLAY_RESULTS;
 	      }
       }
-      QuestionContainerHeader surveyHeader = new QuestionContainerHeader(null, title, description, null, null, beginDate, endDate, false, 0, new Integer(nbQuestions).intValue(), anonymous, resultModeInt, resultViewInt);
+      QuestionContainerHeader surveyHeader = new QuestionContainerHeader(null, title, description, null, null, beginDate, endDate, false, nbVoters, new Integer(nbQuestions).intValue(), anonymous, resultModeInt, resultViewInt);
       surveyScc.updateSurveyHeader(surveyHeader, surveyId);
       action = "UpdateSurveyHeader";
       request.setAttribute("UpdateSucceed", "true");
@@ -151,7 +168,7 @@ if ("UpdateSurveyHeader".equals(action))
 <script type="text/javascript">
 function sendData() {
     if (isCorrectForm()) {
-    	  document.surveyForm.anonymous.disabled = false;
+		document.surveyForm.anonymous.disabled = false;
         document.surveyForm.submit();
     }
 }
@@ -188,13 +205,13 @@ function isCorrectForm() {
          } else {
              if (!isWhitespace(beginDate) && !isWhitespace(endDate)) {
                if (beginDateOK && !isDate1AfterDate2(endDate, beginDate, '<%=resources.getLanguage()%>')) {
-                 errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationEndDate")%>' <%=resources.getString("MustContainsPostDateToBeginDate")%>\n";
+                 errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationEndDate")%>' <%=resources.getString("GML.MustContainsPostDateTo")%> '<%=resources.getString("SurveyCreationBeginDate")%>'\n";
                  errorNb++;
                }
              } else {
                if (isWhitespace(beginDate) && !isWhitespace(endDate)) {
                  if (!isFuture(endDate, '<%=resources.getLanguage()%>')) {
-                   errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationEndDate")%>' <%=resources.getString("MustContainsPostDate")%>\n";
+                   errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationEndDate")%>' <%=resources.getString("GML.MustContainsPostDate")%>\n";
                    errorNb++;
                  }
                }
@@ -239,6 +256,17 @@ function isCorrectForm() {
      return result;
 }
 
+function updateQuestions(surveyId, name, nbVotes)
+{
+  var voteNumbers = parseInt(nbVotes);
+  if(voteNumbers == 0 || window.confirm("<view:encodeJs string="${surveyConfirmUpdateLabel}" /> '" + name + "' ?")) {
+    document.surveyForm.action = "QuestionsUpdate";
+    document.surveyForm.Action.value = "UpdateQuestions";
+    document.surveyForm.SurveyId.value = surveyId;
+    document.surveyForm.submit();
+  }
+}
+
 </script>
 </head>
 <body class="<%=appName%>">
@@ -260,7 +288,9 @@ function isCorrectForm() {
         if (surveyScc.isPollingStationMode()) {
           surveyTabPanelLabel = resources.getString("SurveyQuestion");
         }
-        tabbedPane.addTab(surveyTabPanelLabel, "questionsUpdate.jsp?Action=UpdateQuestions&SurveyId="+surveyId, action.equals("UpdateQuestions"), true);
+        tabbedPane.addTab(surveyTabPanelLabel, "javascript:updateQuestions('"+surveyId+"', '" +
+            EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(surveyHeader.getTitle())) + "', '" + 
+        	surveyHeader.getNbVoters() + "')", action.equals("UpdateQuestions"), true);
         out.println(tabbedPane.print());
         %>
 <c:choose>
@@ -350,10 +380,11 @@ function isCorrectForm() {
         </div>
     </div>
     <%} %>
-		<input type="hidden" name="Action" value="SendSurveyHeader"/>
+	<input type="hidden" name="Action" value="SendSurveyHeader"/>
     <input type="hidden" name="NextAction"/>
     <input type="hidden" name="SurveyId" value="<%=surveyId%>"/>
     <input type="hidden" name="resultView" value="<%=resultView%>"/>
+    <input type="hidden" name="nbVoters" value="<%=surveyHeader.getNbVoters()%>"/>
 	</div>
 </fieldset>
 
@@ -363,7 +394,7 @@ function isCorrectForm() {
 			<div class="field" id="beginArea">
 				<label for="beginDate" class="txtlibform"><%=resources.getString("SurveyCreationBeginDate")%></label>
 				<div class="champs">
-					<input type="text" class="dateToPick" name="beginDate" size="12" value="<%=beginDate%>" maxlength="<%=DBUtil.getDateFieldLength()%>"/>
+					<input type="text" class="dateToPick" name="beginDate" size="12" value="<%=beginDate%>" maxlength="<%=DBUtil.getDateFieldLength()%>"/>	
 				</div>
 			</div>
 			<div class="field" id="endArea">

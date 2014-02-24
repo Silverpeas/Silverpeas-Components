@@ -307,7 +307,7 @@
 </head>
 <body>
 <%
-  Window window = gef.getWindow();
+    Window window = gef.getWindow();
     BrowseBar browseBar = window.getBrowseBar();
     browseBar.setDomainName(surveyScc.getSpaceLabel());
     browseBar.setComponentName(surveyScc.getComponentLabel(), "surveyList.jsp?Action=View");

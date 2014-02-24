@@ -1301,7 +1301,7 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
                                         r += "<tr><td class=txtnav><B>"+resources.getString("survey.Comments")+"</B><BR></td></tr>";
                                   r += "<tr>";
                                   r += "<td valign=\"top\"><blockquote>";
-                                  if (comment.isAnonymous() || surveyScc.isAnonymousModeEnabled()) {
+                                  if (comment.isAnonymous() || surveyScc.isAnonymousModeEnabled() || surveyHeader.isAnonymous()) {
                                       userName = resources.getString("survey.AnonymousComment");
                                   } else {
                                       user = surveyScc.getUserDetail(comment.getUserId());

@@ -147,15 +147,6 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
       }
     } else if (function.equals("UpdateSurvey")) {
       String surveyId = request.getParameter("SurveyId");
-      try {
-        // vérouiller l'enquête
-        surveySC.closeSurvey(surveyId);
-        // supprimer les participations
-        surveySC.deleteVotes(surveyId);
-      } catch (Exception e) {
-        SilverTrace.warn(COMPONENT_NAME, "SurveyRequestRouter.getDestination()",
-            "Survey.EX_PROBLEM_TO_CLOSE_SURVEYD", "function = " + function, e);
-      }
       destination = rootDest + "surveyUpdate.jsp?Action=UpdateSurveyHeader&SurveyId=" + surveyId;
     } else if (function.equals("ViewListResult")) {
       String answerId = request.getParameter("AnswerId");
@@ -249,14 +240,28 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
             "root.EX_CLIPBOARD_PASTE_FAILED", "function = " + function, e);
       }
       destination = URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null) + "Idle.jsp";
-    } else if ("questionsUpdate.jsp".equals(function)) {
+    } else if ("QuestionsUpdate".equals(function) || "questionsUpdate.jsp".equals(function)) {
+      String surveyId = request.getParameter("SurveyId");
+      
+      if("QuestionsUpdate".equals(function)) {
+        try {
+          // vérouiller l'enquête
+          surveySC.closeSurvey(surveyId);
+          // supprimer les participations
+          surveySC.deleteVotes(surveyId);
+        } catch (Exception e) {
+          SilverTrace.warn(COMPONENT_NAME, "SurveyRequestRouter.getDestination()",
+              "Survey.EX_PROBLEM_TO_CLOSE_SURVEY", "function = " + function, e);
+        }
+      }
+      
       // Retrieve current action
       surveySC.questionsUpdateBusinessModel(request);
 
       request.setAttribute("SurveyName", surveySC.getSessionSurveyName());
       request.setAttribute("Questions", surveySC.getSessionQuestions());
       request.setAttribute("Profile", flag);
-      destination = rootDest + function;
+      destination = rootDest + "questionsUpdate.jsp?Action=UpdateQuestions&SurveyId="+surveyId;
     } else if ("questionCreatorBis.jsp".equals(function) || "manageQuestions.jsp".equals(function)) {
       request.setAttribute("Gallery", surveySC.getGalleries());
       request.setAttribute("QuestionStyles", surveySC.getListQuestionStyle());

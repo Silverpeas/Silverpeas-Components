@@ -121,13 +121,13 @@ function isCorrectForm() {
          } else {
              if (!isWhitespace(beginDate) && !isWhitespace(endDate)) {
                if (beginDateOK && !isDate1AfterDate2(endDate, beginDate, '<%=resources.getLanguage()%>')) {
-                 errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationEndDate")%>' <%=resources.getString("MustContainsPostDateToBeginDate")%>\n";
+                 errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationEndDate")%>' <%=resources.getString("GML.MustContainsPostDateTo")%> '<%=resources.getString("SurveyCreationBeginDate")%>'\n";
                  errorNb++;
                }
              } else {
                if (isWhitespace(beginDate) && !isWhitespace(endDate)) {
                  if (!isFuture(endDate, '<%=resources.getLanguage()%>')) {
-                   errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationEndDate")%>' <%=resources.getString("MustContainsPostDate")%>\n";
+                   errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationEndDate")%>' <%=resources.getString("GML.MustContainsPostDate")%>\n";
                    errorNb++;
                  }
                }
