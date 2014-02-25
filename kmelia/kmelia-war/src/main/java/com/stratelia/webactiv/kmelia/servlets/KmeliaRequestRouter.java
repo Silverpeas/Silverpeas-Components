@@ -98,7 +98,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.CharEncoding;
-import org.owasp.encoder.Encode;
 import org.silverpeas.importExport.versioning.DocumentVersion;
 import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.servlet.HttpRequest;
@@ -1792,16 +1791,16 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       KmeliaSessionController kmelia) throws Exception {
     String id = FileUploadUtil.getParameter(parameters, "PubId");
     String status = FileUploadUtil.getParameter(parameters, "Status");
-    String name = Encode.forHtml(FileUploadUtil.getParameter(parameters, "Name"));
-    String description = Encode.forHtml(FileUploadUtil.getParameter(parameters, "Description"));
-    String keywords = Encode.forHtml(FileUploadUtil.getParameter(parameters, "Keywords"));
+    String name = FileUploadUtil.getParameter(parameters, "Name");
+    String description = FileUploadUtil.getParameter(parameters, "Description");
+    String keywords = FileUploadUtil.getParameter(parameters, "Keywords");
     String beginDate = FileUploadUtil.getParameter(parameters, "BeginDate");
     String endDate = FileUploadUtil.getParameter(parameters, "EndDate");
     String version = FileUploadUtil.getParameter(parameters, "Version");
     String importance = FileUploadUtil.getParameter(parameters, "Importance");
     String beginHour = FileUploadUtil.getParameter(parameters, "BeginHour");
     String endHour = FileUploadUtil.getParameter(parameters, "EndHour");
-    String author = Encode.forHtml(FileUploadUtil.getParameter(parameters, "Author"));
+    String author = FileUploadUtil.getParameter(parameters, "Author");
     String targetValidatorId = FileUploadUtil.getParameter(parameters, "ValideurId");
     String tempId = FileUploadUtil.getParameter(parameters, "TempId");
     String infoId = FileUploadUtil.getParameter(parameters, "InfoId");
@@ -2621,4 +2620,5 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     }
     return pks;
   }
+
 }

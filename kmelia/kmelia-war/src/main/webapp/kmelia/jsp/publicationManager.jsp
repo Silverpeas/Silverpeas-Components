@@ -194,8 +194,8 @@
         }
       }
 
-      name = pubDetail.getName(language);
-      description = StringUtil.defaultIfBlank(pubDetail.getDescription(language), "");
+      name = EncodeHelper.javaStringToHtmlString(pubDetail.getName(language));
+      description = EncodeHelper.javaStringToHtmlString(StringUtil.defaultIfBlank(pubDetail.getDescription(language), ""));
       creationDate = resources.getOutputDate(pubDetail.getCreationDate());
       if (pubDetail.getBeginDate() != null) {
         beginDate = resources.getInputDate(pubDetail.getBeginDate());
@@ -667,12 +667,12 @@
             operationPane.addOperation(alertSrc, resources.getString("GML.notify"), "javaScript:alertUsers();");
           }
           String urlPublication = URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId());
-	      pathString = pubDetail.getName(language);
+	      pathString = EncodeHelper.javaStringToHtmlString(pubDetail.getName(language));
 	      String namePath = spaceLabel + " > " + componentLabel;
 	      if (!pathString.equals("")) {
 	      	namePath = namePath + " > " + pathString;
 	      }
-		  operationPane.addOperation(favoriteAddSrc, resources.getString("FavoritesAddPublication")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(namePath))+"','"+pubDetail.getDescription(language)+"','"+urlPublication+"')");
+		  operationPane.addOperation(favoriteAddSrc, resources.getString("FavoritesAddPublication")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(namePath))+"','"+EncodeHelper.javaStringToHtmlString(pubDetail.getDescription(language))+"','"+urlPublication+"')");
           operationPane.addLine();
 
           if (!"supervisor".equals(profile)) {

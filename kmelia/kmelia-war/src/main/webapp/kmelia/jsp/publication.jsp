@@ -750,7 +750,7 @@
 				        /*********************************************************************************************************************/
 				        out.print("<h2 class=\"publiName\">");
 
-						   out.print(pubDetail.getName(language));
+						   out.print(EncodeHelper.javaStringToHtmlString(pubDetail.getName(language)));
 
 				     		   if (!"user".equals(profile)) {
 						          if (pubDetail.isValidationRequired()) {
@@ -767,7 +767,7 @@
 
 				        out.println("</h2>");
 
-				        String description = EncodeHelper.convertWhiteSpacesForHTMLDisplay(pubDetail.getDescription(language));
+				        String description = EncodeHelper.convertWhiteSpacesForHTMLDisplay(EncodeHelper.javaStringToHtmlString(pubDetail.getDescription(language)));
 				        if (StringUtil.isDefined(description)) {
 				        	out.println("<p class=\"publiDesc text2\">" + description + "</p>");
 				        }
