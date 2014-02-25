@@ -98,7 +98,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.CharEncoding;
-import org.owasp.encoder.Encode;
 import org.silverpeas.importExport.versioning.DocumentVersion;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 import org.xml.sax.SAXException;
@@ -106,8 +105,8 @@ import org.xml.sax.SAXException;
 public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionController> {
 
   private static final long serialVersionUID = 1L;
-  private static final StatisticRequestHandler statisticRequestHandler =
-      new StatisticRequestHandler();
+  private static final StatisticRequestHandler statisticRequestHandler
+      = new StatisticRequestHandler();
 
   /**
    * This method creates a KmeliaSessionController instance
@@ -423,7 +422,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         NodeDetail node = kmelia.getSubTopicDetail(id);
         if (!SilverpeasRole.admin.isInRole(kmelia.getUserTopicProfile(id))
             && !SilverpeasRole.admin.isInRole(kmelia.getUserTopicProfile(node.getFatherPK().
-            getId()))) {
+                    getId()))) {
           destination = "/admin/jsp/accessForbidden.jsp";
         } else {
           request.setAttribute("NodeDetail", node);
@@ -508,7 +507,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         if (kmelia.isRightsOnTopicsEnabled()) {
           int rightsUsed = Integer.parseInt(request.getParameter("RightsUsed"));
           topic.setRightsDependsOn(rightsUsed);
-          
+
           // process destination
           NodeDetail oldTopic = kmelia.getNodeHeader(id);
           if (oldTopic.getRightsDependsOn() != rightsUsed) {
@@ -520,7 +519,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           }
         }
         kmelia.updateTopicHeader(topic, alertType);
-        
+
         if (goToProfilesDefinition) {
           request.setAttribute("NodeId", id);
           destination = getDestination("ViewTopicProfiles", kmelia, request);
@@ -1259,7 +1258,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         } else {
           if (kmelia.getSessionClone() != null
               && id.equals(kmelia.getSessionClone().getDetail().getPK().
-              getId())) {
+                  getId())) {
             destination = getDestination("ViewClone", kmelia, request);
           } else {
             destination = getDestination("ViewPublication", kmelia, request);
@@ -1760,16 +1759,16 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       KmeliaSessionController kmelia) throws Exception {
     String id = FileUploadUtil.getParameter(parameters, "PubId");
     String status = FileUploadUtil.getParameter(parameters, "Status");
-    String name = Encode.forHtml(FileUploadUtil.getParameter(parameters, "Name"));
-    String description = Encode.forHtml(FileUploadUtil.getParameter(parameters, "Description"));
-    String keywords = Encode.forHtml(FileUploadUtil.getParameter(parameters, "Keywords"));
+    String name = FileUploadUtil.getParameter(parameters, "Name");
+    String description = FileUploadUtil.getParameter(parameters, "Description");
+    String keywords = FileUploadUtil.getParameter(parameters, "Keywords");
     String beginDate = FileUploadUtil.getParameter(parameters, "BeginDate");
     String endDate = FileUploadUtil.getParameter(parameters, "EndDate");
     String version = FileUploadUtil.getParameter(parameters, "Version");
     String importance = FileUploadUtil.getParameter(parameters, "Importance");
     String beginHour = FileUploadUtil.getParameter(parameters, "BeginHour");
     String endHour = FileUploadUtil.getParameter(parameters, "EndHour");
-    String author = Encode.forHtml(FileUploadUtil.getParameter(parameters, "Author"));
+    String author = FileUploadUtil.getParameter(parameters, "Author");
     String targetValidatorId = FileUploadUtil.getParameter(parameters, "ValideurId");
     String tempId = FileUploadUtil.getParameter(parameters, "TempId");
     String infoId = FileUploadUtil.getParameter(parameters, "InfoId");
@@ -2100,9 +2099,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     String infoId = pubDetail.getInfoId();
     String pubId = pubDetail.getPK().getId();
     if (!StringUtil.isInteger(infoId)) {
-      PublicationTemplateImpl pubTemplate =
-          (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
-          pubDetail.getPK().getInstanceId() + ":" + infoId);
+      PublicationTemplateImpl pubTemplate
+          = (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
+              pubDetail.getPK().getInstanceId() + ":" + infoId);
 
       // RecordTemplate recordTemplate = pubTemplate.getRecordTemplate();
       Form formView = pubTemplate.getViewForm();
@@ -2586,7 +2585,4 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     return pks;
   }
 
-  private void setAttributesToPublicationHeader(KmeliaSessionController kmelia,
-      HttpServletRequest request) {
-  }
 }

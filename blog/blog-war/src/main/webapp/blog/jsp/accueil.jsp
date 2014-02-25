@@ -272,7 +272,7 @@ function hideStyleSheetFile() {
 
           <div id="post<%=postId%>" class="<%=blocClass%>">
           <div class="titreTicket">
-            <a href="<%="ViewPost?PostId=" + postId%>"><%=post.getPublication().getName()%></a> <span class="status">(<%=status%>)</span>
+            <a href="<%="ViewPost?PostId=" + postId%>"><%=EncodeHelper.javaStringToHtmlString(post.getPublication().getName())%></a> <span class="status">(<%=status%>)</span>
                 <%  if ( link != null && !link.equals("")) {  %>
                   <span class="permalink"><a href="<%=link%>"><img src="<%=resource.getIcon("blog.link")%>" border="0" alt='<%=resource.getString("blog.CopyPostLink")%>' title='<%=resource.getString("blog.CopyPostLink")%>'/></a></span>
                 <%  } %>

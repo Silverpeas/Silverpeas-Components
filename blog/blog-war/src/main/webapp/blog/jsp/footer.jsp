@@ -53,7 +53,7 @@ function closeWindows() {
 	<input type="hidden" name="SpaceId" value="<%=spaceId%>"/>
     <input type="hidden" name="SpaceName" value="<%=spaceLabel%>"/>
     <input type="hidden" name="ComponentId" value="<%=instanceId%>"/>
-    <input type="hidden" name="ComponentName" value="<%=Encode.javaStringToHtmlString(componentLabel)%>"/>
+    <input type="hidden" name="ComponentName" value="<%=EncodeHelper.javaStringToHtmlString(componentLabel)%>"/>
     <input type="hidden" name="ObjectId" value="<%=instanceId%>"/>
     <input type="hidden" name="Language" value="<%=resource.getLanguage()%>"/>
     <input type="hidden" name="ReturnUrl" value="<%=m_context+URLManager.getURL("blog", "useless", instanceId)%>Main"/>

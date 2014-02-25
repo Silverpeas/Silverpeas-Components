@@ -114,9 +114,9 @@ out.println(gef.getLookStyleSheet());
 %>
 	<table border="0" width="98%" align=center>
 		<tr>
-			<td align="left"><span class=txtnav><b><%=detail.getName(kmeliaScc.getCurrentLanguage())%></b></span><BR>
+			<td align="left"><span class=txtnav><b><%=EncodeHelper.javaStringToHtmlString(detail.getName(kmeliaScc.getCurrentLanguage()))%></b></span><BR>
 
-				<b><%=detail.getDescription(kmeliaScc.getCurrentLanguage())%><b>
+          <b><%=EncodeHelper.javaStringToHtmlString(detail.getDescription(kmeliaScc.getCurrentLanguage()))%><b>
 				<br />
 				<br /> 
 <%

@@ -27,7 +27,6 @@
 <%@ include file="check.jsp" %>
 
 <% 
-// r�cup�ration des param�tres
 Collection	posts		= (Collection) request.getAttribute("Posts");
 %>
 
