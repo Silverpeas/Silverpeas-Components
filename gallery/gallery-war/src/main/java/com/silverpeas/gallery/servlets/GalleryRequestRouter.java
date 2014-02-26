@@ -1587,20 +1587,17 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
   private void updateSelectedPhoto(HttpRequest request, GallerySessionController gallerySC,
       Collection<String> photoIds, String encoding) throws Exception {
 
-    // tri des paramètres entre ceux de l'entête et ceux propres au formulaire
+    // Getting all HTTP parameters
     final List<FileItem> parameters = new ArrayList<FileItem>();
     for (FileItem param : request.getFileItems()) {
-      if (param.getFieldName().startsWith("Im$")) {
-        // c'est un paramètre de l'entête
         parameters.add(param);
-      }
     }
 
     final PhotoDataUpdateDelegate delegate =
         new PhotoDataUpdateDelegate(gallerySC.getLanguage(), gallerySC.getCurrentAlbumId(),
             parameters);
 
-    // 1. Récupération des données de l'entête
+    // Setting header data
     delegate.getHeaderData().setTitle(
         FileUploadUtil.getParameter(parameters, "Im$Title", null, encoding));
     delegate.getHeaderData().setDescription(
@@ -1620,7 +1617,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
     delegate.getHeaderData().setEndDate(
         FileUploadUtil.getParameter(parameters, "Im$EndDate", null, encoding));
 
-    // 2. Récupération des données du formulaire
+    // Setting form
     final String xmlFormName = gallerySC.getXMLFormName();
     if (isDefined(xmlFormName)) {
       final String xmlFormShortName =
@@ -1632,10 +1629,10 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
       delegate.setForm(pub.getRecordSet(), pub.getUpdateForm());
     }
 
-    // Enregistrement des informations des photos
+    // Process data
     gallerySC.updatePhotoByUser(photoIds, delegate);
 
-    // Les informations de l'album courant sont rechargées
+    // Reload images of current album
     gallerySC.loadCurrentAlbum();
   }
 
