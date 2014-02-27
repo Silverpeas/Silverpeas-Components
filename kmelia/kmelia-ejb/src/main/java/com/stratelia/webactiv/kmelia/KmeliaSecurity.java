@@ -44,6 +44,7 @@ import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
@@ -241,7 +242,8 @@ public class KmeliaSecurity implements ComponentSecurity {
       return false;
     }
     if (isInBasket(fatherPKs)) {
-      SilverpeasRole profile = SilverpeasRole.from(KmeliaHelper.getProfile(getAppProfiles(userId, pk.getInstanceId())));
+      SilverpeasRole profile = SilverpeasRole.from(KmeliaHelper.getProfile(getAppProfiles(userId,
+          pk.getInstanceId())));
       if (SilverpeasRole.READER_ROLES.contains(profile)) {
         // readers do not see basket content
         return false;
@@ -282,7 +284,7 @@ public class KmeliaSecurity implements ComponentSecurity {
     writeInCache(pk.getId(), PUBLICATION_TYPE, pk.getInstanceId(), objectAvailable);
     return objectAvailable;
   }
-  
+
   private Collection<NodePK> getPublicationFolderPKs(PublicationPK pk) {
     Collection<NodePK> fatherPKs = null;
     try {
@@ -293,14 +295,14 @@ public class KmeliaSecurity implements ComponentSecurity {
     }
     return fatherPKs;
   }
-  
+
   private boolean isInBasket(Collection<NodePK> pks) {
     for (NodePK pk : pks) {
       return pk.isTrash();
     }
     return false;
   }
-  
+
   private PublicationDetail getPublicationDetail(PublicationPK pk) {
     try {
       return getPublicationBm().getDetail(pk);
@@ -362,7 +364,7 @@ public class KmeliaSecurity implements ComponentSecurity {
     }
     return KmeliaHelper.getProfile(profiles);
   }
-  
+
   private String[] getAppProfiles(String userId, String appId) {
     return controller.getUserProfiles(userId, appId);
   }
@@ -372,7 +374,7 @@ public class KmeliaSecurity implements ComponentSecurity {
       try {
         setPublicationBm(EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
             PublicationBm.class));
-      } catch (Exception e) {
+      } catch (UtilException e) {
         throw new KmeliaRuntimeException("KmeliaSecurity.getPublicationBm()",
             SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_PUBLICATIONBM_HOME",
             e);
@@ -385,19 +387,19 @@ public class KmeliaSecurity implements ComponentSecurity {
     if (nodeBm == null) {
       try {
         setNodeBm(EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class));
-      } catch (Exception e) {
+      } catch (UtilException e) {
         throw new KmeliaRuntimeException("KmeliaSecurity.getNodeBm()",
             SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_NODEBM_HOME", e);
       }
     }
     return nodeBm;
   }
-  
+
   public KmeliaBm getKmeliaBm() {
     if (kmeliaBm == null) {
       try {
-        kmeliaBm = EJBUtilitaire.getEJBObjectRef(JNDINames.KMELIABM_EJBHOME, KmeliaBm.class);
-      } catch (Exception e) {
+        setKmeliaBm(EJBUtilitaire.getEJBObjectRef(JNDINames.KMELIABM_EJBHOME, KmeliaBm.class));
+      } catch (UtilException e) {
         throw new KmeliaRuntimeException("KmeliaSecurity.getKmeliaBm()",
             SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_KMELIABM_HOME", e);
       }
@@ -421,5 +423,12 @@ public class KmeliaSecurity implements ComponentSecurity {
    */
   void setNodeBm(NodeBm nodeBm) {
     this.nodeBm = nodeBm;
+  }
+
+  /**
+   * @param kmeliaBm the KmeliaBm to set
+   */
+  void setKmeliaBm(KmeliaBm kmeliaBm) {
+    this.kmeliaBm = kmeliaBm;
   }
 }
