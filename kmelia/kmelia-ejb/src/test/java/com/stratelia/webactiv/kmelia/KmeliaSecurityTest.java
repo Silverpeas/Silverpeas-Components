@@ -1,25 +1,22 @@
 /**
  * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 
 /*
@@ -31,6 +28,7 @@ package com.stratelia.webactiv.kmelia;
 import com.silverpeas.jcrutil.RandomGenerator;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
@@ -92,6 +90,7 @@ public class KmeliaSecurityTest {
 
   /**
    * Test of isAccessAuthorized method, of class KmeliaSecurity.
+   *
    * @throws Exception
    */
   @Test
@@ -102,9 +101,9 @@ public class KmeliaSecurityTest {
     when(controller.isComponentAvailable(eq(instanceId), anyString())).thenReturn(Boolean.TRUE);
     when(controller.isComponentAvailable(instanceId, "10")).thenReturn(Boolean.FALSE);
     when(controller.getComponentParameterValue(instanceId, KmeliaSecurity.RIGHTS_ON_TOPIC_PARAM)).
-      thenReturn(null);
+        thenReturn(null);
     when(controller.getUserProfiles(adminId, instanceId)).thenReturn(new String[]{
-        SilverpeasRole.admin.toString(), SilverpeasRole.user.toString()});
+      SilverpeasRole.admin.toString(), SilverpeasRole.user.toString()});
     KmeliaSecurity instance = new KmeliaSecurity(controller);
     NodeBm nodeBm = mock(NodeBm.class);
     instance.setNodeBm(nodeBm);
@@ -114,12 +113,17 @@ public class KmeliaSecurityTest {
     PublicationPK validPk = new PublicationPK("2000", null, instanceId);
     when(validBm.getDetail(validPk)).thenReturn(validPublication);
     instance.setPublicationBm(validBm);
+    KmeliaBm kmeliaBm = mock(KmeliaBm.class);
+    when(kmeliaBm.isPublicationVisible(validPublication, SilverpeasRole.admin, adminId)).thenReturn(
+        true);
+    instance.setKmeliaBm(kmeliaBm);
+
     assertFalse("If component is not avilable, no access is granted", instance.isAccessAuthorized(
-      instanceId, "10", "1000"));
+        instanceId, "10", "1000"));
     assertTrue("Valid publication are accessible with no rights on topic", instance.
-      isAccessAuthorized(instanceId, adminId, "1000"));
+        isAccessAuthorized(instanceId, adminId, "1000"));
     assertTrue("Valid publication are accessible with no rights on topic", instance.
-      isAccessAuthorized(instanceId, adminId, "2000"));
+        isAccessAuthorized(instanceId, adminId, "2000"));
   }
 
   @Test
@@ -133,17 +137,17 @@ public class KmeliaSecurityTest {
     OrganisationController controller = mock(OrganizationController.class);
     when(controller.isComponentAvailable(eq(instanceId), anyString())).thenReturn(Boolean.TRUE);
     when(controller.getComponentParameterValue(instanceId, KmeliaSecurity.RIGHTS_ON_TOPIC_PARAM)).
-      thenReturn(null);
+        thenReturn(null);
     when(controller.getUserProfiles(adminId, instanceId)).thenReturn(new String[]{
-        SilverpeasRole.admin.toString(), SilverpeasRole.user.toString()});
+      SilverpeasRole.admin.toString(), SilverpeasRole.user.toString()});
     when(controller.getUserProfiles(userId, instanceId)).thenReturn(new String[]{
-        SilverpeasRole.user.toString(), SilverpeasRole.reader.toString()});
+      SilverpeasRole.user.toString(), SilverpeasRole.reader.toString()});
     when(controller.getUserProfiles(publisherId, instanceId)).thenReturn(new String[]{
-        SilverpeasRole.user.toString(), SilverpeasRole.publisher.toString()});
+      SilverpeasRole.user.toString(), SilverpeasRole.publisher.toString()});
     when(controller.getUserProfiles(authorWriterId, instanceId)).thenReturn(new String[]{
-        SilverpeasRole.user.toString(), SilverpeasRole.writer.toString()});
+      SilverpeasRole.user.toString(), SilverpeasRole.writer.toString()});
     when(controller.getUserProfiles(notAuthorizedWriterId, instanceId)).thenReturn(new String[]{
-        SilverpeasRole.user.toString(), SilverpeasRole.writer.toString()});
+      SilverpeasRole.user.toString(), SilverpeasRole.writer.toString()});
     KmeliaSecurity instance = new KmeliaSecurity(controller);
     NodeBm nodeBm = mock(NodeBm.class);
     instance.setNodeBm(nodeBm);
@@ -156,16 +160,21 @@ public class KmeliaSecurityTest {
     PublicationPK toValidatePk = new PublicationPK("3000", null, instanceId);
     when(validBm.getDetail(toValidatePk)).thenReturn(toValidatePublication);
     instance.setPublicationBm(validBm);
+    KmeliaBm kmeliaBm = mock(KmeliaBm.class);
+    when(kmeliaBm.isPublicationVisible(eq(toValidatePublication), any(SilverpeasRole.class),
+        anyString())).thenReturn(true);
+    instance.setKmeliaBm(kmeliaBm);
+
     assertTrue("Admin, publisher, creator or updater has access", instance.isAccessAuthorized(
-      instanceId, adminId, "3000"));
+        instanceId, adminId, "3000"));
     assertFalse("Admin, publisher, creator or updater has access", instance.isAccessAuthorized(
-      instanceId, userId, "3000"));
+        instanceId, userId, "3000"));
     assertTrue("Admin, publisher, creator or updater has access", instance.isAccessAuthorized(
-      instanceId, publisherId, "3000"));
+        instanceId, publisherId, "3000"));
     assertTrue("Admin, publisher, creator or updater has access", instance.isAccessAuthorized(
-      instanceId, authorWriterId, "3000"));
+        instanceId, authorWriterId, "3000"));
     assertFalse("Admin, publisher, creator or updater has access", instance.isAccessAuthorized(
-      instanceId, notAuthorizedWriterId, "3000"));
+        instanceId, notAuthorizedWriterId, "3000"));
   }
 
   @Test
@@ -179,57 +188,62 @@ public class KmeliaSecurityTest {
     OrganisationController controller = mock(OrganizationController.class);
     when(controller.isComponentAvailable(eq(instanceId), anyString())).thenReturn(Boolean.TRUE);
     when(controller.getComponentParameterValue(instanceId, KmeliaSecurity.RIGHTS_ON_TOPIC_PARAM)).
-      thenReturn(null);
+        thenReturn(null);
     when(controller.getUserProfiles(adminId, instanceId)).thenReturn(new String[]{
-        SilverpeasRole.admin.toString(), SilverpeasRole.user.toString()});
+      SilverpeasRole.admin.toString(), SilverpeasRole.user.toString()});
     when(controller.getUserProfiles(userId, instanceId)).thenReturn(new String[]{
-        SilverpeasRole.user.toString(), SilverpeasRole.reader.toString()});
+      SilverpeasRole.user.toString(), SilverpeasRole.reader.toString()});
     when(controller.getUserProfiles(publisherId, instanceId)).thenReturn(new String[]{
-        SilverpeasRole.user.toString(), SilverpeasRole.publisher.toString()});
+      SilverpeasRole.user.toString(), SilverpeasRole.publisher.toString()});
     when(controller.getUserProfiles(authorWriterId, instanceId)).thenReturn(new String[]{
-        SilverpeasRole.user.toString(), SilverpeasRole.writer.toString()});
+      SilverpeasRole.user.toString(), SilverpeasRole.writer.toString()});
     when(controller.getUserProfiles(notAuthorizedWriterId, instanceId)).thenReturn(new String[]{
-        SilverpeasRole.user.toString(), SilverpeasRole.writer.toString()});
+      SilverpeasRole.user.toString(), SilverpeasRole.writer.toString()});
     KmeliaSecurity instance = new KmeliaSecurity(controller);
     NodeBm nodeBm = mock(NodeBm.class);
     instance.setNodeBm(nodeBm);
     PublicationBm validBm = mock(PublicationBm.class);
     PublicationDetail toValidatePublication = mock(PublicationDetail.class);
     when(toValidatePublication.getStatus()).thenReturn(PublicationDetail.DRAFT);
-     when(toValidatePublication.isDraft()).thenReturn(Boolean.TRUE);
+    when(toValidatePublication.isDraft()).thenReturn(Boolean.TRUE);
     when(toValidatePublication.isPublicationEditor(authorWriterId)).thenReturn(Boolean.TRUE);
     PublicationPK toValidatePk = new PublicationPK("4000", null, instanceId);
     when(validBm.getDetail(toValidatePk)).thenReturn(toValidatePublication);
     instance.setPublicationBm(validBm);
+    KmeliaBm kmeliaBm = mock(KmeliaBm.class);
+    when(kmeliaBm.isPublicationVisible(eq(toValidatePublication), any(SilverpeasRole.class),
+        anyString())).thenReturn(true);
+    instance.setKmeliaBm(kmeliaBm);
+
     assertFalse("Only the creator or updater has access", instance.isAccessAuthorized(instanceId,
-      adminId, "4000"));
+        adminId, "4000"));
     assertFalse("Only the creator or updater has access", instance.isAccessAuthorized(instanceId,
-      userId, "4000"));
+        userId, "4000"));
     assertFalse("Only the creator or updater has access", instance.isAccessAuthorized(instanceId,
-      publisherId, "4000"));
+        publisherId, "4000"));
     assertTrue("Only the creator or updater has access", instance.isAccessAuthorized(instanceId,
-      authorWriterId, "4000"));
+        authorWriterId, "4000"));
     assertFalse("Only the creator or updater has access", instance.isAccessAuthorized(instanceId,
-      notAuthorizedWriterId, "4000"));
+        notAuthorizedWriterId, "4000"));
   }
 
   /**
    * Test of isAccessAuthorized method, of class KmeliaSecurity.
    */
   /*@Test
-  public void testIsAccessAuthorizedForAnyObject() {
-  System.out.println("isAccessAuthorized");
-  String componentId = "";
-  String userId = "";
-  String objectId = "";
-  String objectType = "";
-  KmeliaSecurity instance = new KmeliaSecurity();
-  boolean expResult = false;
-  boolean result = instance.isAccessAuthorized(componentId, userId, objectId, objectType);
-  assertEquals(expResult, result);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+   public void testIsAccessAuthorizedForAnyObject() {
+   System.out.println("isAccessAuthorized");
+   String componentId = "";
+   String userId = "";
+   String objectId = "";
+   String objectType = "";
+   KmeliaSecurity instance = new KmeliaSecurity();
+   boolean expResult = false;
+   boolean result = instance.isAccessAuthorized(componentId, userId, objectId, objectType);
+   assertEquals(expResult, result);
+   // TODO review the generated test code and remove the default call to fail.
+   fail("The test case is a prototype.");
+   }*/
   /**
    * Test of isObjectAvailable method, of class KmeliaSecurity.
    */
@@ -263,24 +277,23 @@ public class KmeliaSecurityTest {
   public void testIsRightsOnTopicsEnabled() {
     OrganisationController controller = mock(OrganizationController.class);
     when(controller.getComponentParameterValue("100", KmeliaSecurity.RIGHTS_ON_TOPIC_PARAM)).
-      thenReturn("yes");
+        thenReturn("yes");
     when(controller.getComponentParameterValue("101", KmeliaSecurity.RIGHTS_ON_TOPIC_PARAM)).
-      thenReturn("Yes");
+        thenReturn("Yes");
     when(controller.getComponentParameterValue("102", KmeliaSecurity.RIGHTS_ON_TOPIC_PARAM)).
-      thenReturn("Y");
+        thenReturn("Y");
     when(controller.getComponentParameterValue("103", KmeliaSecurity.RIGHTS_ON_TOPIC_PARAM)).
-      thenReturn("1");
+        thenReturn("1");
 
     when(controller.getComponentParameterValue("200", KmeliaSecurity.RIGHTS_ON_TOPIC_PARAM)).
-      thenReturn(null);
+        thenReturn(null);
     when(controller.getComponentParameterValue("201", KmeliaSecurity.RIGHTS_ON_TOPIC_PARAM)).
-      thenReturn("no");
+        thenReturn("no");
     when(controller.getComponentParameterValue("202", KmeliaSecurity.RIGHTS_ON_TOPIC_PARAM)).
-      thenReturn("0");
+        thenReturn("0");
     when(controller.getComponentParameterValue("203", KmeliaSecurity.RIGHTS_ON_TOPIC_PARAM)).
-      thenReturn("");
+        thenReturn("");
     KmeliaSecurity instance = new KmeliaSecurity(controller);
-
 
     assertTrue(instance.isRightsOnTopicsEnabled("100"));
     assertTrue(instance.isRightsOnTopicsEnabled("101"));
@@ -297,15 +310,15 @@ public class KmeliaSecurityTest {
    * Test of isPublicationAvailable method, of class KmeliaSecurity.
    */
   /*@Test
-  public void testIsPublicationAvailable() {
-  System.out.println("isPublicationAvailable");
-  PublicationPK pk = null;
-  String userId = "";
-  KmeliaSecurity instance = new KmeliaSecurity();
-  boolean expResult = false;
-  boolean result = instance.isPublicationAvailable(pk, userId);
-  assertEquals(expResult, result);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+   public void testIsPublicationAvailable() {
+   System.out.println("isPublicationAvailable");
+   PublicationPK pk = null;
+   String userId = "";
+   KmeliaSecurity instance = new KmeliaSecurity();
+   boolean expResult = false;
+   boolean result = instance.isPublicationAvailable(pk, userId);
+   assertEquals(expResult, result);
+   // TODO review the generated test code and remove the default call to fail.
+   fail("The test case is a prototype.");
+   }*/
 }
