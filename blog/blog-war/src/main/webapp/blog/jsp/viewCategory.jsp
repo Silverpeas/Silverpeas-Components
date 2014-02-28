@@ -212,7 +212,7 @@ function sortNode(updatedNodeJSON)
 		Icon updateIcon = iconPane.addIcon();
    		updateIcon.setProperties(resource.getIcon("blog.updateCategory"), resource.getString("blog.updateCategory"), "javaScript:editCategory('"+id+"')");
 		Icon deleteIcon = iconPane.addIcon();
-		deleteIcon.setProperties(resource.getIcon("blog.deleteCategory"), resource.getString("blog.deleteCategory"), "javaScript:deleteConfirm('"+id+"','"+Encode.javaStringToHtmlString(Encode.javaStringToJsString(nom))+"')");
+		deleteIcon.setProperties(resource.getIcon("blog.deleteCategory"), resource.getString("blog.deleteCategory"), "javaScript:deleteConfirm('"+id+"','"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(nom))+"')");
 		iconPane.setSpacing("30");
 		ligne.addArrayCellIconPane(iconPane);
 	}	
