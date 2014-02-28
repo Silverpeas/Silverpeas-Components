@@ -35,7 +35,9 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.security.ComponentSecurity;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.ObjectType;
+import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -64,6 +66,7 @@ public class KmeliaSecurity implements ComponentSecurity {
   public static final String RIGHTS_ON_TOPIC_PARAM = "rightsOnTopics";
   private PublicationBm publicationBm;
   private NodeBm nodeBm;
+  private KmeliaBm kmeliaBm;
   private OrganisationController controller = null;
   private Map<String, Boolean> cache = Collections.synchronizedMap(new HashMap<String, Boolean>());
   private volatile boolean cacheEnabled = false;
@@ -136,20 +139,17 @@ public class KmeliaSecurity implements ComponentSecurity {
       if (!isPublicationAvailable(pk, userId)) {
         return false;
       }
-      // Then, check the publication's status
-      PublicationDetail publication = null;
-      try {
-        publication = getPublicationBm().getDetail(pk);
-      } catch (Exception e) {
-        throw new KmeliaRuntimeException("KmeliaSecurity.isAccessAuthorized()",
-            SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DOBTENIR_LA_PUBLICATION", e);
-      }
+      // Then, check the publication's status and visibility period
+      PublicationDetail publication = getPublicationDetail(pk);
       if (publication != null) {
+        String profile = getProfile(userId, pk);
+        if (!getKmeliaBm().isPublicationVisible(publication, SilverpeasRole.from(profile), userId)) {
+          return false;
+        }
         if (publication.isValid()) {
           return true;
         }
         if (publication.isValidationRequired()) {
-          String profile = getProfile(userId, pk);
           if (user.isInRole(profile)) {
             return false;
           }
@@ -159,7 +159,6 @@ public class KmeliaSecurity implements ComponentSecurity {
           return true;
         }
         if (publication.isRefused()) {
-          String profile = getProfile(userId, pk);
           if (!user.isInRole(profile)) {
             return publication.isPublicationEditor(userId) || admin.isInRole(profile)
                 || publisher.isInRole(profile);
@@ -167,7 +166,6 @@ public class KmeliaSecurity implements ComponentSecurity {
           return false;
         }
         if (publication.isDraft()) {
-          String profile = getProfile(userId, pk);
           if (!user.isInRole(profile)) {
             if (isCoWritingEnable(componentId)
                 && isDraftVisibleWithCoWriting()
@@ -238,15 +236,26 @@ public class KmeliaSecurity implements ComponentSecurity {
     }
 
     boolean objectAvailable = false;
-    if (isRightsOnTopicsEnabled(pk.getInstanceId())) {
-      Collection<NodePK> fatherPKs = null;
-      try {
-        fatherPKs = getPublicationBm().getAllFatherPK(pk);
-      } catch (Exception e) {
-        SilverTrace.info("kmelia", "KmeliaSecurity.isPublicationAvailable",
-            "kmelia.EX_IMPOSSIBLE_DOBTENIR_LA_PUBLICATION", "PubId = " + pk.toString());
-        objectAvailable = false;
+    Collection<NodePK> fatherPKs = getPublicationFolderPKs(pk);
+    if (fatherPKs == null) {
+      return false;
+    }
+    if (isInBasket(fatherPKs)) {
+      SilverpeasRole profile = SilverpeasRole.from(KmeliaHelper.getProfile(getAppProfiles(userId, pk.getInstanceId())));
+      if (SilverpeasRole.READER_ROLES.contains(profile)) {
+        // readers do not see basket content
+        return false;
+      } else if (SilverpeasRole.admin == profile) {
+        // admins see basket content
+        return true;
+      } else {
+        // others profiles see only theirs publications
+        PublicationDetail publication = getPublicationDetail(pk);
+        if (publication != null) {
+          return publication.isPublicationEditor(userId);
+        }
       }
+    } else if (isRightsOnTopicsEnabled(pk.getInstanceId())) {
       for (NodePK fatherPK : fatherPKs) {
         if (!fatherPK.isTrash()) {
           try {
@@ -272,6 +281,33 @@ public class KmeliaSecurity implements ComponentSecurity {
     }
     writeInCache(pk.getId(), PUBLICATION_TYPE, pk.getInstanceId(), objectAvailable);
     return objectAvailable;
+  }
+  
+  private Collection<NodePK> getPublicationFolderPKs(PublicationPK pk) {
+    Collection<NodePK> fatherPKs = null;
+    try {
+      fatherPKs = getPublicationBm().getAllFatherPK(pk);
+    } catch (Exception e) {
+      SilverTrace.warn("kmelia", "KmeliaSecurity.getPublicationFolderPKs",
+          "kmelia.EX_IMPOSSIBLE_DOBTENIR_LA_PUBLICATION", "PubId = " + pk.toString());
+    }
+    return fatherPKs;
+  }
+  
+  private boolean isInBasket(Collection<NodePK> pks) {
+    for (NodePK pk : pks) {
+      return pk.isTrash();
+    }
+    return false;
+  }
+  
+  private PublicationDetail getPublicationDetail(PublicationPK pk) {
+    try {
+      return getPublicationBm().getDetail(pk);
+    } catch (Exception e) {
+      throw new KmeliaRuntimeException("KmeliaSecurity.getPublicationDetail()",
+          SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DOBTENIR_LA_PUBLICATION", e);
+    }
   }
 
   private boolean isNodeAvailable(NodePK nodePK, String userId) {
@@ -304,7 +340,7 @@ public class KmeliaSecurity implements ComponentSecurity {
     String[] profiles;
     if (!isRightsOnTopicsEnabled(pubPK.getInstanceId())) {
       // get component-level profiles
-      profiles = controller.getUserProfiles(userId, pubPK.getInstanceId());
+      profiles = getAppProfiles(userId, pubPK.getInstanceId());
     } else {
       // get topic-level profiles
       Collection<NodePK> nodePKs = getPublicationBm().getAllFatherPK(pubPK);
@@ -315,8 +351,7 @@ public class KmeliaSecurity implements ComponentSecurity {
           SilverTrace.debug("kmelia", "KmeliaSecurity.getProfile",
               "root.MSG_GEN_PARAM_VALUE", "nodePK = " + nodePK.toString());
           if (!node.haveRights()) {
-            lProfiles.addAll(
-                Arrays.asList(controller.getUserProfiles(userId, pubPK.getInstanceId())));
+            lProfiles.addAll(Arrays.asList(getAppProfiles(userId, pubPK.getInstanceId())));
           } else {
             lProfiles.addAll(Arrays.asList(controller.getUserProfiles(userId,
                 pubPK.getInstanceId(), node.getRightsDependsOn(), ObjectType.NODE)));
@@ -326,6 +361,10 @@ public class KmeliaSecurity implements ComponentSecurity {
       profiles = lProfiles.toArray(new String[lProfiles.size()]);
     }
     return KmeliaHelper.getProfile(profiles);
+  }
+  
+  private String[] getAppProfiles(String userId, String appId) {
+    return controller.getUserProfiles(userId, appId);
   }
 
   private PublicationBm getPublicationBm() {
@@ -352,6 +391,18 @@ public class KmeliaSecurity implements ComponentSecurity {
       }
     }
     return nodeBm;
+  }
+  
+  public KmeliaBm getKmeliaBm() {
+    if (kmeliaBm == null) {
+      try {
+        kmeliaBm = EJBUtilitaire.getEJBObjectRef(JNDINames.KMELIABM_EJBHOME, KmeliaBm.class);
+      } catch (Exception e) {
+        throw new KmeliaRuntimeException("KmeliaSecurity.getKmeliaBm()",
+            SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_KMELIABM_HOME", e);
+      }
+    }
+    return kmeliaBm;
   }
 
   public synchronized boolean isCacheEnabled() {
