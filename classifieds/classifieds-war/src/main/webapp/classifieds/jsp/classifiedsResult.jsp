@@ -121,8 +121,7 @@ function viewClassifieds(fieldNumber, fieldValue) {
 						<ul id="classifieds_rich_list">
 			              <c:forEach items="${classifieds}" var="classified"
 			                varStatus="loopStatus">
-			                <!-- <li onclick="location.href='ViewClassified?ClassifiedId=${classified.classifiedId}'"> -->
-			                <li>
+			                <li onclick="location.href='ViewClassified?ClassifiedId=${classified.classifiedId}'">
 			                  <c:if test="${not empty classified.images}">
 					                <div class="classified_thumb">
 					                <c:forEach var="image" items="${classified.images}" begin="0" end="0">
