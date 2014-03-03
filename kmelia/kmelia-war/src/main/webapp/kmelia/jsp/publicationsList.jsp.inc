@@ -119,7 +119,7 @@ void displaySameSubjectPublications(Collection pubs, String publicationLabel, Km
                       	if (checkboxAllowed)
                       		out.print("<td align=\"center\"><input type=\"checkbox\" name=\"PubIds\" value=\""+pub.getPK().getId()+"-"+pub.getPK().getInstanceId()+"\"></td>");
 						out.print("<td width=\"1\">&#149;&nbsp;</td><td nowrap>");
-						out.print("<a href=\""+URLManager.getSimpleURL(URLManager.URL_PUBLI, pub.getPK().getId(), pub.getPK().getInstanceId())+"\"><b>"+pub.getName(language)+"</b></a>");
+						out.print("<a href=\""+URLManager.getSimpleURL(URLManager.URL_PUBLI, pub.getPK().getId(), pub.getPK().getInstanceId())+"\"><b>"+EncodeHelper.javaStringToHtmlString(pub.getName(language))+"</b></a>");
 						out.print("&nbsp;</td><td width=\"100%\">");
 						if (showImportance)
 							out.print(displayImportance(new Integer(pub.getImportance()).intValue(), 5, resources, out));
@@ -132,7 +132,7 @@ void displaySameSubjectPublications(Collection pubs, String publicationLabel, Km
 							out.println("<td width=\"1\">&nbsp;</td>");
 						out.println("<td width=\"1\">&nbsp;</td>");
 						out.println("<td colspan=\"3\">"+getUserName(kmeliaPub, kmeliaScc)+" - "+resources.getOutputDate(pub.getUpdateDate())+"<br/>");
-						out.println(pub.getDescription(language)+"<br/><br/></td>");
+						out.println(EncodeHelper.javaStringToHtmlString(pub.getDescription(language))+"<br/><br/></td>");
 						out.println("</td></tr></table>");
 						out.println("</td>");
                       out.println("</tr>");

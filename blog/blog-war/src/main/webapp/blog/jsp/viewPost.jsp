@@ -143,7 +143,7 @@ out.println(window.printBefore());
 		  </div>
 		 
 		  <div id="<%=blocClass%>">
-		   	<div class="titreTicket"><%=post.getPublication().getName()%> <span class="status">(<%=status%>)</span>
+        <div class="titreTicket"><%=EncodeHelper.javaStringToHtmlString(post.getPublication().getName())%> <span class="status">(<%=status%>)</span>
 			   	<%if (link != null && !link.equals("")) 
 			   	{	%>
 				  	<a href="<%=link%>"><img src="<%=resource.getIcon("blog.link")%>" border="0" alt='<%=resource.getString("blog.CopyPostLink")%>' title='<%=resource.getString("blog.CopyPostLink")%>' /></a>
