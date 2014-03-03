@@ -55,6 +55,19 @@ import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import com.stratelia.webactiv.util.viewGenerator.html.UserNameGenerator;
 import com.stratelia.webactiv.util.viewGenerator.html.board.Board;
 import com.stratelia.webactiv.util.viewGenerator.html.pagination.Pagination;
+import org.apache.commons.io.FilenameUtils;
+import org.owasp.encoder.Encode;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.viewer.ViewerFactory;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
@@ -64,18 +77,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import org.apache.commons.io.FilenameUtils;
-import org.owasp.encoder.Encode;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.viewer.ViewerFactory;
 
 import static com.stratelia.webactiv.SilverpeasRole.*;
 import static com.stratelia.webactiv.util.publication.model.PublicationDetail.*;
@@ -550,8 +551,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     template.setAttribute("showDescription",
         StringUtil.isDefined(description) && !description.equals(name));
     template.setAttribute("importance", displayImportance(pub.getImportance(), resources));
-    template.setAttribute("showImportance", fragmentSettings.showImportance
-        && !fragmentSettings.linkAttachment);
+    template.setAttribute("showImportance",
+        fragmentSettings.showImportance && !fragmentSettings.linkAttachment);
     template.setAttribute("date", displayDate(pub, kmeliaScc, resources));
     template.setAttribute("creationDate", resources.getOutputDate(pub.getCreationDate()));
     template.setAttribute("updateDate", resources.getOutputDate(pub.getUpdateDate()));

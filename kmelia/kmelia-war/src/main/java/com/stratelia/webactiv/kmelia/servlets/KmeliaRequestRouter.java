@@ -81,6 +81,18 @@ import com.stratelia.webactiv.util.publication.model.Alias;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.CharEncoding;
+import org.owasp.encoder.Encode;
+import org.silverpeas.importExport.versioning.DocumentVersion;
+import org.silverpeas.servlet.FileUploadUtil;
+import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -93,16 +105,6 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
-import javax.xml.parsers.ParserConfigurationException;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.CharEncoding;
-import org.silverpeas.importExport.versioning.DocumentVersion;
-import org.silverpeas.servlet.FileUploadUtil;
-import org.silverpeas.servlet.HttpRequest;
-import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
-import org.silverpeas.wysiwyg.control.WysiwygController;
 
 public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionController> {
 
