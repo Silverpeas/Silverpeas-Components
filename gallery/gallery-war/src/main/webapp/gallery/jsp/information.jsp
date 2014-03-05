@@ -476,7 +476,7 @@ function hideTip() {
 	if (photo != null)
 	{
 		tabbedPane.addTab(resource.getString("gallery.photo"), "PreviewPhoto?PhotoId="+photoId, false);
-		tabbedPane.addTab(resource.getString("gallery.info"), "#", true, false);
+		tabbedPane.addTab(resource.getString("gallery.info"), "#", true);
 		if (showComments)
 			tabbedPane.addTab(resource.getString("gallery.comments")+" ("+nbCom.intValue()+")", "Comments?PhotoId="+photoId, false);
 		tabbedPane.addTab(resource.getString("gallery.accessPath"), "AccessPath?PhotoId="+photoId, false);

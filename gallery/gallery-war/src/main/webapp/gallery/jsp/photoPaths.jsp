@@ -27,7 +27,6 @@
 <%@ include file="check.jsp" %>
 
 <%
-	// récupération des paramètres :
 	PhotoDetail photo			= (PhotoDetail) request.getAttribute("Photo");
 	List 	path 			= (List) request.getAttribute("Path");
 	Integer		nbCom			= (Integer) request.getAttribute("NbComments");
@@ -37,13 +36,11 @@
 	Boolean		isUsePdc		= (Boolean) request.getAttribute("IsUsePdc");
 	boolean		showComments	= ((Boolean) request.getAttribute("ShowCommentsTab")).booleanValue();
 	
-	// déclaration des variables :
 	String 		photoId			= new Integer(photo.getPhotoPK().getId()).toString();
 	String 		nbComments 		= nbCom.toString();
 
-	// déclaration des boutons
-	Button validateButton = (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
-	Button cancelButton = (Button) gef.getFormButton(resource.getString("GML.cancel"), "PreviewPhoto?PhotoId="+photoId, false);
+	Button validateButton = gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
+	Button cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "PreviewPhoto?PhotoId="+photoId, false);
 %>
 
 <html>
@@ -71,7 +68,7 @@ function sendData()
 	tabbedPane.addTab(resource.getString("gallery.info"), "EditInformation?PhotoId="+photoId, false);
 	if (showComments)
 		tabbedPane.addTab(resource.getString("gallery.comments")+" ("+nbComments+")", "Comments?PhotoId="+photoId, false);
-	tabbedPane.addTab(resource.getString("gallery.accessPath"), "#", true, false);
+	tabbedPane.addTab(resource.getString("gallery.accessPath"), "#", true);
 	if (isUsePdc.booleanValue())
 		tabbedPane.addTab(resource.getString("GML.PDC"), "PdcPositions?PhotoId="+photoId, false);
 	

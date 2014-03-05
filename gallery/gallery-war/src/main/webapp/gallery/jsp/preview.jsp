@@ -214,7 +214,7 @@ function goToNotify(url)
     }
 
     TabbedPane tabbedPane = gef.getTabbedPane();
-    tabbedPane.addTab(resource.getString("gallery.photo"), "#", true, false);
+    tabbedPane.addTab(resource.getString("gallery.photo"), "#", true);
     if (updateAllowed) {
       tabbedPane.addTab(resource.getString("gallery.info"), "EditInformation?PhotoId=" + photoId,
           false);
