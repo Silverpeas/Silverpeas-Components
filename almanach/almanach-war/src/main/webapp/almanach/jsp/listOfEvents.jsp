@@ -271,7 +271,7 @@
             .append($("<h2>").addClass("eventName")
             .append($("<a>").addClass(event.className.join(' ')).attr({
               "href": "javascript:viewEvent(" + event.id + ", '" + formatDate(startDate) + "' , '" + event.instanceId + "');",
-              "title": "<fmt:message key='almanach.openEvent'/>"}).html(event.title))).appendTo(monthSection);
+              "title": "<fmt:message key='almanach.openEvent'/>"}).text(event.title))).appendTo(monthSection);
 
             if (event.location.length > 0 || startTime.length > 0 || endTime.length > 0 ||
               (event.eventURL != null && event.eventURL.length > 0)) {

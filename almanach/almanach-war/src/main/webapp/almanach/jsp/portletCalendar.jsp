@@ -176,7 +176,7 @@
             append($("<div>").addClass("eventName").
             append($("<a>", {
               "href": "javascript:viewEvent(" + event.id + ", '" + formatDate(startDate) + "' , '" + event.instanceId + "');",
-              "title": "<fmt:message key='almanach.openEvent'/>"}).addClass(eventCss).html(event.title)).
+              "title": "<fmt:message key='almanach.openEvent'/>"}).addClass(eventCss).text(event.title)).
             append(startTimeOf(event))).
             append(locationOf(event)));
         }
