@@ -55,7 +55,6 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.subscribe.service.NodeSubscriptionResource;
 import com.silverpeas.thumbnail.service.ThumbnailService;
 import com.silverpeas.thumbnail.service.ThumbnailServiceFactory;
-import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
@@ -138,12 +137,6 @@ import com.stratelia.webactiv.util.statistic.model.HistoryObjectDetail;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -154,7 +147,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
-import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.DocumentType;
@@ -182,7 +174,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.util.*;
+import org.owasp.encoder.Encode;
 
 import static com.silverpeas.kmelia.export.KmeliaPublicationExporter.*;
 import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
@@ -1438,7 +1430,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       throws RemoteException {
     Collection<PublicationDetail> result = getPublicationBm().
         getDetailsByFatherIdsAndStatus((ArrayList<String>) fatherIds, pubPK,
-        "P.pubUpdateDate desc, P.pubId desc", PublicationDetail.VALID);
+            "P.pubUpdateDate desc, P.pubId desc", PublicationDetail.VALID);
     SilverTrace.info("kmelia", "KmeliaSessionController.getAllPublicationsByTopic()",
         "root.MSG_PARAM_VALUE", "publis=" + result.toString());
     return result;
@@ -2071,9 +2063,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public boolean isCurrentPublicationHaveContent() throws WysiwygException {
     return (getSessionPublication().getCompleteDetail().getModelDetail() != null
         || StringUtil.isDefined(WysiwygController.load(getComponentId(), getSessionPublication().
-        getId(), getCurrentLanguage())) || !isInteger(getSessionPublication()
-        .getCompleteDetail().
-        getPublicationDetail().getInfoId()));
+                getId(), getCurrentLanguage())) || !isInteger(getSessionPublication()
+            .getCompleteDetail().
+            getPublicationDetail().getInfoId()));
   }
 
   public boolean isPDCClassifyingMandatory() {
@@ -2351,7 +2343,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       throws RemoteException {
     this.sessionPublicationsList = new ArrayList<KmeliaPublication>(getKmeliaBm()
         .search(combination, nbDays,
-        getComponentId()));
+            getComponentId()));
     applyVisibilityFilter();
     return getSessionPublicationsList();
   }
@@ -3382,8 +3374,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
           }
           linkedPathString.append("<a href=\"javascript:onClick=topicGoTo('").append(
               nodeInPath.getNodePK().getId()).append("')\">").append(
-              EncodeHelper.javaStringToHtmlString(nodeName)).append("</a>");
-          pathString.append(EncodeHelper.javaStringToHtmlString(nodeName));
+                  Encode.forHtml(nodeName)).append("</a>");
+          pathString.append(nodeName);
           if (iterator.hasNext()) {
             linkedPathString.append(" > ");
             pathString.append(" > ");
@@ -3887,8 +3879,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         "org.silverpeas.util.uploads.uploadSettings", "");
     long maximumFileSize = FileRepositoryManager.getUploadMaximumFileSize();
     String maximumFileSizeMo = UnitUtil.formatMemSize(maximumFileSize);
-    return messages.getString("attachment.dialog.errorAtLeastOneFileSize") + " " +
-        messages.getString("attachment.dialog.maximumFileSize") + " (" + maximumFileSizeMo + ")";
+    return messages.getString("attachment.dialog.errorAtLeastOneFileSize") + " " + messages.
+        getString("attachment.dialog.maximumFileSize") + " (" + maximumFileSizeMo + ")";
   }
 
   public List<HistoryObjectDetail> getLastAccess(PublicationPK pk) {

@@ -84,7 +84,6 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.CharEncoding;
-import org.owasp.encoder.Encode;
 import org.silverpeas.importExport.versioning.DocumentVersion;
 import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.servlet.HttpRequest;
@@ -917,12 +916,11 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         request.setAttribute("ComponentId", kmelia.getComponentId());
         request.setAttribute("ComponentName", URLEncoder.encode(kmelia.getComponentLabel(),
             CharEncoding.UTF_8));
-        String browseInfo = URLEncoder.encode(kmelia.getSessionPathString(), CharEncoding.UTF_8);
+        String browseInfo = kmelia.getSessionPathString();
         if (!browseInfo.contains(topic.getName())) {
-          browseInfo += Encode.forHtml(topic.getName());
+          browseInfo += topic.getName();
         }
-        request.setAttribute("BrowseInfo", browseInfo + " > " + Encode.forHtml(kmelia.getString(
-            "TopicWysiwyg")));
+        request.setAttribute("BrowseInfo", browseInfo + " > " + kmelia.getString("TopicWysiwyg"));
         request.setAttribute("ObjectId", "Node_" + subTopicId);
         request.setAttribute("Language", kmelia.getLanguage());
         request.setAttribute("ContentLanguage", kmelia.getCurrentLanguage());
@@ -1266,10 +1264,10 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         request.setAttribute("ComponentName", URLEncoder.encode(kmelia.getComponentLabel(),
             CharEncoding.UTF_8));
         if (kmaxMode) {
-          request.setAttribute("BrowseInfo", Encode.forHtml(publication.getName()));
+          request.setAttribute("BrowseInfo", publication.getName());
         } else {
-          request.setAttribute("BrowseInfo", URLEncoder.encode(kmelia.getSessionPathString(),
-              CharEncoding.UTF_8) + " > " + Encode.forHtml(publication.getName()));
+          request.setAttribute("BrowseInfo", kmelia.getSessionPathString() + " > " + publication.
+              getName());
         }
         request.setAttribute("ObjectId", publication.getId());
         request.setAttribute("Language", kmelia.getLanguage());
