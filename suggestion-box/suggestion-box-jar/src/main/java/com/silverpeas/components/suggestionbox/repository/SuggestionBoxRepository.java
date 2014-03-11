@@ -30,8 +30,9 @@ import org.silverpeas.persistence.repository.jpa.AbstractJpaEntityRepository;
 import javax.inject.Named;
 
 /**
- * User: Yohann Chastagnier
- * Date: 20/11/13
+ * This entity repository provides all necessary methods in order to handle the persistence of
+ * suggestion boxes.
+ * @author Yohann Chastagnier
  */
 @Named
 public class SuggestionBoxRepository

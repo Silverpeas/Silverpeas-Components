@@ -34,8 +34,7 @@ import javax.persistence.Table;
 
 /**
  * This entity represents a suggestion associated to a suggestion box.
- * User: Yohann Chastagnier
- * Date: 11/03/14
+ * @author Yohann Chastagnier
  */
 @Entity
 @Table(name = "sc_suggestion")

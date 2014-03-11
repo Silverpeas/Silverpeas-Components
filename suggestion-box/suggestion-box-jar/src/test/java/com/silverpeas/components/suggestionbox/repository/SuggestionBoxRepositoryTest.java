@@ -78,8 +78,7 @@ public class SuggestionBoxRepositoryTest {
   }
 
   /**
-   * Complete reload of Spring context is explicitly implemented here by methods behind {@link
-   * org.junit.Before} and {@link org.junit.After} annotations.
+   * Because of the need of transaction, complete reload of Spring context is not possible.
    * @throws Exception
    */
   @Before

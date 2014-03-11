@@ -34,6 +34,7 @@ import org.silverpeas.servlet.HttpRequest;
 import javax.servlet.http.HttpServletRequest;
 
 public class SuggestionBoxRequestRouter extends ComponentRequestRouter<ComponentSessionController> {
+  private static final long serialVersionUID = -7378638602035981580L;
 
   /**
    * This method has to be implemented in the component request rooter class.
@@ -77,6 +78,8 @@ public class SuggestionBoxRequestRouter extends ComponentRequestRouter<Component
     try {
       if (function.equals("Main")) {
         destination = home(suggestionBoxSC, request);
+      } else if (function.equals("edito/modify")) {
+        destination = modifyEdito(request);
       } else {
         destination = home(suggestionBoxSC, request);
       }
@@ -100,5 +103,9 @@ public class SuggestionBoxRequestRouter extends ComponentRequestRouter<Component
   private String home(SuggestionBoxSessionController componentSC, HttpServletRequest request) {
     // Insert the homepage code here
     return "welcome.jsp";
+  }
+
+  private String modifyEdito(HttpServletRequest request) {
+    return "";
   }
 }
