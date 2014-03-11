@@ -28,19 +28,26 @@
     xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>suggestion-box</name>
   <label>
-    <message lang="fr">suggestion-box</message>
-    <message lang="en">suggestion-box</message>
-    <message lang="de">suggestion-box</message>
+    <message lang="fr">Boite à idées</message>
+    <message lang="en">Suggestion Box</message>
+    <message lang="de">Kummerkasten</message>
   </label>
     <description>
-    <message lang="fr">suggestion-box</message>
-    <message lang="en">suggestion-box</message>
-    <message lang="de">suggestion-box</message>
+    <message lang="fr">La collaboration commence par l'obtention des avis des parties
+      prenantes d'un projet. L'application boite à idées permet justement à chacun de participer en
+      y proposant ses idées, de commenter les avis des autres et de voter ceux-ci
+    </message>
+    <message lang="en">Collaboration begins by obtaining the opinions of the stakeholders of a project.
+      The suggestion box allows for everyone to participate by offering their ideas, by commenting on
+      other reviews and by voting them</message>
+    <message lang="de">Collaboration begins by obtaining the opinions of the stakeholders of a project.
+      The suggestion box allows for everyone to participate by offering their ideas, by commenting on
+      other reviews and by voting them</message>
   </description>
    <suite>
-    <message lang="fr">80 Nouveaux Composants</message>
-    <message lang="en">80 New Components </message>
-    <message lang="de">80 Neue Komponenten</message>
+     <message lang="fr">02 Gestion Collaborative</message>
+     <message lang="en">02 Collaborative Management</message>
+     <message lang="de">02 kollaborative Verwaltung</message>
   </suite>
   <visible>true</visible>
   <portlet>false</portlet>
