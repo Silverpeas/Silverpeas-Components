@@ -40,7 +40,6 @@ import java.util.List;
 /**
  * This entity represents a suggestion box.
  * @author Yohann Chastagnier
- * Date: 11/03/14
  */
 @Entity
 @Table(name = "sc_suggestion_box")

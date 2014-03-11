@@ -32,8 +32,9 @@ import javax.inject.Named;
 import java.util.List;
 
 /**
- * User: Yohann Chastagnier
- * Date: 20/11/13
+ * This entity repository provides all necessary methods in order to handle the persistence of
+ * suggestion associated to suggestion boxes.
+ * @author Yohann Chastagnier
  */
 @Named
 public class SuggestionRepository extends AbstractJpaEntityRepository<Suggestion, UuidIdentifier> {
