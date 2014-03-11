@@ -86,7 +86,7 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
    */
   private ComponentInstLight getComponentInst() {
     if (componentInst == null) {
-      OrganisationControllerFactory.getOrganisationController()
+      componentInst = OrganisationControllerFactory.getOrganisationController()
           .getComponentInstLight(getComponentInstanceId());
     }
     return componentInst;
