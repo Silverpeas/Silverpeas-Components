@@ -38,5 +38,15 @@ import javax.inject.Named;
 public class SuggestionBoxRepository
     extends AbstractJpaEntityRepository<SuggestionBox, UuidIdentifier> {
 
-  // For now, all needed methods are already provided by the extended class.
+  /**
+   * Gets the suggestion box represented by the specified component instance identifier.
+   * @param componentInstanceId the component instance id associated to the required suggestion
+   * box.
+   * @return the suggestion box instance if exists, null otherwise.
+   */
+  public SuggestionBox getByComponentInstanceId(String componentInstanceId) {
+    String jpqlQuery = "from SuggestionBox s where s.instanceId = :componentInstanceId";
+    return getFromJpqlString(jpqlQuery,
+        initializeNamedParameters().add("componentInstanceId", componentInstanceId));
+  }
 }

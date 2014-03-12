@@ -24,7 +24,6 @@
 package org.silverpeas.components.suggestionbox.repository;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
@@ -32,82 +31,73 @@ import org.dbunit.dataset.ITable;
 import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
+import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.silverpeas.components.suggestionbox.mock.OrganisationControllerMockWrapper;
+import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.persistence.repository.OperationContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import javax.inject.Inject;
-import javax.inject.Named;
 import javax.sql.DataSource;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 /**
  * User: Yohann Chastagnier
  * Date: 11/03/14
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(
-    locations = {"/spring-suggestion-box-jpa.xml", "/spring-suggestion-box-embedded-datasource.xml"})
 public class SuggestionBoxRepositoryTest {
+
+  // Spring context
+  private ClassPathXmlApplicationContext context;
 
   private final static String SUGGESTION_BOX_ID_1 = "suggestion-box_1";
   private final static String SUGGESTION_BOX_INSTANCE_ID = "suggestion-box1";
 
-  @Inject
-  private SuggestionBoxRepository suggestionBoxRepository;
-
-  @Inject
-  private SuggestionRepository suggestionRepository;
-
-  @Inject
-  SuggestionBoxPersister persister;
-
-  @Inject
-  @Named("jpaDataSource")
+  private SuggestionBoxPersister persister;
   private DataSource dataSource;
 
-  @PersistenceContext
-  private EntityManager entityManager;
+  @Before
+  public void setUp() throws Exception {
 
-  private static ReplacementDataSet dataSet;
+    // Spring
+    context = new ClassPathXmlApplicationContext("spring-suggestion-box-jpa.xml",
+        "spring-suggestion-box-embedded-datasource.xml");
 
-  @BeforeClass
-  public static void prepareDataSet() throws Exception {
-    dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(
+    // Beans
+    dataSource = (DataSource) context.getBean("jpaDataSource");
+    persister = context.getBean(SuggestionBoxPersister.class);
+
+    // Database
+    DatabaseOperation.INSERT
+        .execute(new DatabaseConnection(dataSource.getConnection()), getDataSet());
+  }
+
+  public ReplacementDataSet getDataSet() throws Exception {
+    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(
         SuggestionBoxRepositoryTest.class.getClassLoader().getResourceAsStream(
             "org/silverpeas/components/suggestionbox/suggestion-box-dataset.xml")));
     dataSet.addReplacementObject("[NULL]", null);
+    return dataSet;
   }
 
-  /**
-   * Because of the need of transaction, complete reload of Spring context is not possible.
-   * @throws Exception
-   */
-  @Before
-  public void setUp() throws Exception {
-    final IDatabaseConnection myConnection = new DatabaseConnection(dataSource.getConnection());
-    DatabaseOperation.CLEAN_INSERT.execute(myConnection, dataSet);
+  @After
+  public void tearDown() throws Exception {
+    context.close();
   }
+
 
   @Test
   public void saveSuggestionBox() throws Exception {
     UserDetail creator = aUser();
-    SuggestionBox box
-        = new SuggestionBox(SUGGESTION_BOX_INSTANCE_ID, null);
+    SuggestionBox box = new SuggestionBox(SUGGESTION_BOX_INSTANCE_ID);
     OperationContext ctx = OperationContext.fromUser(creator.getId());
     persister.save(ctx, box);
 
@@ -123,8 +113,7 @@ public class SuggestionBoxRepositoryTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void saveSuggestionBoxWithAnInvalidOperationContext() throws Exception {
-    SuggestionBox box
-        = new SuggestionBox(SUGGESTION_BOX_INSTANCE_ID, null);
+    SuggestionBox box = new SuggestionBox(SUGGESTION_BOX_INSTANCE_ID);
     OperationContext ctx = OperationContext.createInstance();
     persister.save(ctx, box);
 

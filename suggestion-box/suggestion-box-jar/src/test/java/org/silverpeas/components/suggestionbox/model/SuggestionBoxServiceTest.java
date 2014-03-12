@@ -82,7 +82,7 @@ public class SuggestionBoxServiceTest {
    */
   @Test
   public void saveASuggestionBox() {
-    SuggestionBox box = new SuggestionBox(appInstanceId, null);
+    SuggestionBox box = new SuggestionBox(appInstanceId);
     box.setCreatedBy(userId);
 
     service.saveSuggestionBox(box);

@@ -128,5 +128,8 @@ public class SuggestionBoxRepositoryMockWrapper extends SuggestionBoxRepository 
     return mock.deleteByIdentifier(ids);
   }
 
-
+  @Override
+  public SuggestionBox getByComponentInstanceId(final String componentInstanceId) {
+    return mock.getByComponentInstanceId(componentInstanceId);
+  }
 }

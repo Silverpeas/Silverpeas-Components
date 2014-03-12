@@ -45,8 +45,8 @@ public class SuggestionBoxInstanciator implements ComponentsInstanciatorIntf {
         .info("suggestion-box", "SuggestionBoxInstanciator.create()", "root.MSG_GEN_ENTER_METHOD",
             "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
 
-    // the title of the suggestion box is the one of the spawned component instance
-    SuggestionBox newBox = new SuggestionBox(componentId, "");
+    // The title of the suggestion box is the one of the spawned component instance
+    SuggestionBox newBox = new SuggestionBox(componentId);
     newBox.setCreatedBy(userId);
     SuggestionBoxService suggestionBoxService = SuggestionBoxServiceFactory.getServiceInstance();
     suggestionBoxService.saveSuggestionBox(newBox);
@@ -62,7 +62,11 @@ public class SuggestionBoxInstanciator implements ComponentsInstanciatorIntf {
         .info("suggestion-box", "SuggestionBoxInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD",
             "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
 
-    //insert your code here !
+    // Getting the suggestion box entity
+    SuggestionBox suggestionBoxToDelete = SuggestionBox.getByComponentInstanceId(componentId);
+
+    // Deleting the suggestion box
+    SuggestionBoxServiceFactory.getServiceInstance().deleteSuggestionBox(suggestionBoxToDelete);
 
     SilverTrace
         .info("suggestion-box", "SuggestionBoxInstanciator.delete()", "root.MSG_GEN_EXIT_METHOD");

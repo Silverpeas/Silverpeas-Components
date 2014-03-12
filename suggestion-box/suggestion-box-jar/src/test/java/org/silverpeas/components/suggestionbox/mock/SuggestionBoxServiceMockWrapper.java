@@ -48,4 +48,8 @@ public class SuggestionBoxServiceMockWrapper extends SuggestionBoxService {
     mock.saveSuggestionBox(box);
   }
 
+  @Override
+  public void deleteSuggestionBox(SuggestionBox box) {
+    mock.deleteSuggestionBox(box);
+  }
 }

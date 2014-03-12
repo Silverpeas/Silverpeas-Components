@@ -28,19 +28,22 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.silverpeas.components.suggestionbox.mock.SuggestionBoxRepositoryMockWrapper;
 import org.silverpeas.components.suggestionbox.mock.SuggestionBoxServiceMockWrapper;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.model.SuggestionBoxService;
 import org.silverpeas.components.suggestionbox.model.SuggestionBoxServiceFactory;
+import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepository;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-
 import java.sql.Connection;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.*;
 
 
 /**
@@ -74,7 +77,7 @@ public class SuggestionBoxInstanciatorTest {
     Connection connection = getConnection();
     final String appInstanceId = "suggestion-box1";
     final String userId = "0";
-    SuggestionBoxService service = getSuggestionServiceBox();
+    SuggestionBoxService service = getSuggestionBoxService();
     SuggestionBoxInstanciator instanciator = new SuggestionBoxInstanciator();
     instanciator.create(connection, "WA1", appInstanceId, userId);
 
@@ -85,13 +88,47 @@ public class SuggestionBoxInstanciatorTest {
     assertThat(actualBox.getComponentInstanceId(), is(appInstanceId));
   }
 
+  /**
+   * Validates a SuggestionBox instance is deleted from persistence at the application deletion.
+   * @throws InstanciationException
+   */
+  @Test
+  public void deleteASuggestionBoxInstance() throws InstanciationException {
+    Connection connection = getConnection();
+    final String appInstanceId = "suggestion-box1";
+    final String userId = "0";
+    final SuggestionBox suggestionBoxToDelete = new SuggestionBox(appInstanceId);
+    when(getSuggestionBoxRepository().getByComponentInstanceId(anyString()))
+        .then(new Answer<SuggestionBox>() {
+
+          @Override
+          public SuggestionBox answer(final InvocationOnMock invocation) throws Throwable {
+            return suggestionBoxToDelete;
+          }
+        });
+    SuggestionBoxInstanciator instanciator = new SuggestionBoxInstanciator();
+    SuggestionBoxService service = getSuggestionBoxService();
+    instanciator.delete(connection, "WA1", appInstanceId, userId);
+
+    ArgumentCaptor<SuggestionBox> box = ArgumentCaptor.forClass(SuggestionBox.class);
+    verify(service).deleteSuggestionBox(box.capture());
+    SuggestionBox actualBox = box.getValue();
+    assertThat(actualBox, is(suggestionBoxToDelete));
+  }
+
   private Connection getConnection() {
     return mock(Connection.class);
   }
 
-  private SuggestionBoxService getSuggestionServiceBox() {
+  private SuggestionBoxService getSuggestionBoxService() {
     SuggestionBoxServiceMockWrapper mockWrapper
         = (SuggestionBoxServiceMockWrapper) SuggestionBoxServiceFactory.getServiceInstance();
+    return mockWrapper.getMock();
+  }
+
+  private SuggestionBoxRepository getSuggestionBoxRepository() {
+    SuggestionBoxRepositoryMockWrapper mockWrapper =
+        context.getBean(SuggestionBoxRepositoryMockWrapper.class);
     return mockWrapper.getMock();
   }
 }

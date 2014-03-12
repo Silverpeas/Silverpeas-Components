@@ -57,12 +57,21 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
   private ComponentInstLight componentInst;
 
   /**
+   * Gets the suggestion box represented by the specified identifier.
+   * @param suggestionBoxId the identifier of the required suggestion box.
+   * @return the suggestion box instance if exists, null otherwise.
+   */
+  public static SuggestionBox getByComponentInstanceId(String suggestionBoxId) {
+    return SuggestionBoxServiceFactory.getServiceInstance().getByComponentInstanceId(
+        suggestionBoxId);
+  }
+
+  /**
    * Creates a new suggestion box with the specified title and with the specified short description.
    * @param componentInstanceId the unique identifier of the application to which the suggestion box
    * belongs.
-   * @param title the title of the suggestion box. It is mandatory.
    */
-  public SuggestionBox(String componentInstanceId, String title) {
+  public SuggestionBox(String componentInstanceId) {
     // actually, the title and description are set in the ComponentInst object representing the
     // application suggestion box (for instance, a suggestion box application is made up of one and
     // only one suggestion box.
