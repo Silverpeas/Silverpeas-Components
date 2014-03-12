@@ -46,6 +46,7 @@ import javax.sql.DataSource;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
 
@@ -59,6 +60,7 @@ public class SuggestionBoxRepositoryTest {
   private ClassPathXmlApplicationContext context;
 
   private final static String SUGGESTION_BOX_ID_1 = "suggestion-box_1";
+  private final static String SUGGESTION_BOX_ID_1_INSTANCE_ID = "suggestionBox1";
   private final static String SUGGESTION_BOX_INSTANCE_ID = "suggestion-box1";
 
   private SuggestionBoxPersister persister;
@@ -91,6 +93,12 @@ public class SuggestionBoxRepositoryTest {
   @After
   public void tearDown() throws Exception {
     context.close();
+  }
+
+  @Test
+  public void getByComponentInstanceId() {
+    assertThat(persister.getByComponentInstanceId("dummyId"), nullValue());
+    assertThat(persister.getByComponentInstanceId(SUGGESTION_BOX_ID_1_INSTANCE_ID), notNullValue());
   }
 
 
