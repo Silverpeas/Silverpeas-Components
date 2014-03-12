@@ -24,19 +24,22 @@
 package org.silverpeas.components.suggestionbox;
 
 import com.silverpeas.admin.components.InstanciationException;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.silverpeas.components.suggestionbox.mock.SuggestionBoxServiceMockWrapper;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.model.SuggestionBoxService;
 import org.silverpeas.components.suggestionbox.model.SuggestionBoxServiceFactory;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import static org.mockito.Matchers.eq;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+
 import java.sql.Connection;
 
 
@@ -69,13 +72,17 @@ public class SuggestionBoxInstanciatorTest {
   @Test
   public void createASuggestionBoxInstance() throws InstanciationException {
     Connection connection = getConnection();
+    final String appInstanceId = "suggestion-box1";
+    final String userId = "0";
     SuggestionBoxService service = getSuggestionServiceBox();
     SuggestionBoxInstanciator instanciator = new SuggestionBoxInstanciator();
-    instanciator.create(connection, "WA1", "suggestion-box1", "0");
+    instanciator.create(connection, "WA1", appInstanceId, userId);
 
-    SuggestionBox box = new SuggestionBox("suggestion-box1", "");
-    box.setCreatedBy("0");
-    verify(service).saveSuggestionBox(eq(box));
+    ArgumentCaptor<SuggestionBox> box = ArgumentCaptor.forClass(SuggestionBox.class);
+    verify(service).saveSuggestionBox(box.capture());
+    SuggestionBox actualBox = box.getValue();
+    assertThat(actualBox.getCreatedBy(), is(userId));
+    assertThat(actualBox.getComponentInstanceId(), is(appInstanceId));
   }
 
   private Connection getConnection() {
