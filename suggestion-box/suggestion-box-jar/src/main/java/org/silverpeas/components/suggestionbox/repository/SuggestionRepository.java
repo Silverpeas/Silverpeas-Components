@@ -41,7 +41,7 @@ public class SuggestionRepository extends AbstractJpaEntityRepository<Suggestion
 
   /**
    * Lists all suggestions related to a suggestion box.
-   * @param suggestionBox
+   * @param suggestionBox the parent suggestion box of required suggestion list.
    * @return the suggestion list related to the given suggestion box.
    */
   public List<Suggestion> listBySuggestionBox(SuggestionBox suggestionBox) {

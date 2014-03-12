@@ -24,8 +24,12 @@
 package org.silverpeas.components.suggestionbox.model;
 
 import com.silverpeas.annotation.Service;
+import org.silverpeas.attachment.AttachmentService;
+import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepository;
 import org.silverpeas.persistence.repository.OperationContext;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 
@@ -45,10 +49,46 @@ public class SuggestionBoxService {
   private SuggestionBoxRepository repository;
 
   /**
+   * @see org.silverpeas.components.suggestionbox.model.SuggestionBox#getByComponentInstanceId
+   * (String)
+   */
+  SuggestionBox getByComponentInstanceId(String componentInstanceId) {
+    return repository.getByComponentInstanceId(componentInstanceId);
+  }
+
+  /**
    * Saves the specified suggestion box.
    * @param box the box to save in Silverpeas.
    */
+  @Transactional
   public void saveSuggestionBox(final SuggestionBox box) {
     repository.save(OperationContext.fromUser(box.getCreatedBy()), box);
+  }
+
+  /**
+   * Deletes the specified suggestion box.
+   * @param box the box to delete from Silverpeas.
+   */
+  @Transactional
+  public void deleteSuggestionBox(final SuggestionBox box) {
+
+    // TODO Deletion of all data attached to the box and its suggestions :
+    // - comments
+    // - votes
+    // - suggestion attachments
+
+    // Deletion of box edito
+    WysiwygController.deleteWysiwygAttachments(box.getComponentInstanceId(), box.getId());
+
+    // Finally deleting the box and its suggestions from the persistence.
+    repository.delete(box);
+  }
+
+  /**
+   * Gets the instance of attachement services.
+   * @return
+   */
+  private AttachmentService getAttachmentService() {
+    return AttachmentServiceFactory.getAttachmentService();
   }
 }
