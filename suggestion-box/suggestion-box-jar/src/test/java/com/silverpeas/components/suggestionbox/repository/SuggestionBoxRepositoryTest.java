@@ -52,7 +52,7 @@ import static org.hamcrest.Matchers.*;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(
-    locations = {"/spring-suggestion-box.xml", "/spring-suggestion-box-embedded-datasource.xml"})
+    locations = {"/spring-suggestion-box-jpa.xml", "/spring-suggestion-box-embedded-datasource.xml"})
 public class SuggestionBoxRepositoryTest {
 
   private final static String SUGGESTION_BOX_ID_1 = "suggestion-box_1";
@@ -98,8 +98,8 @@ public class SuggestionBoxRepositoryTest {
     assertThat(existentSuggestionBox, notNullValue());
     assertThat(existentSuggestionBox.getId(), is(SUGGESTION_BOX_ID_1));
 
-    List<Suggestion> associatedSuggestions =
-        suggestionRepository.listBySuggestionBox(existentSuggestionBox);
+    List<Suggestion> associatedSuggestions = suggestionRepository.listBySuggestionBox(
+        existentSuggestionBox);
     assertThat(associatedSuggestions, hasSize(1));
 
     // The suggestion box deletion

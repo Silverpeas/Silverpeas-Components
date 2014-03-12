@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-~ Copyright (C) 2000 - 2013 Silverpeas
+~ Copyright (C) 2000 - 2014 Silverpeas
 ~
 ~ This program is free software: you can redistribute it and/or modify
 ~ it under the terms of the GNU Affero General Public License as
@@ -22,21 +22,28 @@
 ~ You should have received a copy of the GNU Affero General Public License
 ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:tx="http://www.springframework.org/schema/tx"
-       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xmlns:util="http://www.springframework.org/schema/util"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
        xsi:schemaLocation="
-	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
-	http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
+  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+  http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
 
-  <jdbc:embedded-database id="jpaDataSource" type="H2">
-    <jdbc:script location="classpath:/org/silverpeas/components/suggestionbox/repository/create-empty-database.sql" />
-  </jdbc:embedded-database>
+  <import resource="spring-jpa.xml"/>
+  <context:component-scan base-package="com.silverpeas.components.suggestionbox.model"/>
+  <context:component-scan base-package="com.silverpeas.components.suggestionbox.repository"/>
+
+  <context:annotation-config/>
+
+  <jpa:repositories base-package="com.silverpeas.components.suggestionbox.repository"
+                    transaction-manager-ref="jpaTransactionManager"/>
+
+  <util:list id="entities">
+    <value>com.silverpeas.components.suggestionbox.model</value>
+  </util:list>
 
 </beans>
