@@ -1,0 +1,1 @@
+DROP INDEX sc_suggestion_box.idx_suggestion_box, sc_suggestion.idx_suggestion;
