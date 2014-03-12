@@ -31,7 +31,7 @@
     <servlet-name>SuggestionBoxRequestRouter</servlet-name>
     <display-name>SuggestionBoxRequestRouter</display-name>
     <description>no description</description>
-    <servlet-class>com.silverpeas.components.suggestionbox.servlets.SuggestionBoxRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.components.suggestionbox.servlets.SuggestionBoxRequestRouter</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>SuggestionBoxRequestRouter</servlet-name>

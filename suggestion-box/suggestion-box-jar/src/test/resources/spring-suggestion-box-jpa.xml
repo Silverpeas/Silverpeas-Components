@@ -34,16 +34,16 @@
   http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
 
   <import resource="spring-jpa.xml"/>
-  <context:component-scan base-package="com.silverpeas.components.suggestionbox.model"/>
-  <context:component-scan base-package="com.silverpeas.components.suggestionbox.repository"/>
+  <context:component-scan base-package="org.silverpeas.components.suggestionbox.model"/>
+  <context:component-scan base-package="org.silverpeas.components.suggestionbox.repository"/>
 
   <context:annotation-config/>
 
-  <jpa:repositories base-package="com.silverpeas.components.suggestionbox.repository"
+  <jpa:repositories base-package="org.silverpeas.components.suggestionbox.repository"
                     transaction-manager-ref="jpaTransactionManager"/>
 
   <util:list id="entities">
-    <value>com.silverpeas.components.suggestionbox.model</value>
+    <value>org.silverpeas.components.suggestionbox.model</value>
   </util:list>
 
 </beans>
