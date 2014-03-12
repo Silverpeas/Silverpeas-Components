@@ -41,6 +41,8 @@ import javax.persistence.Table;
 @Table(name = "sc_suggestion")
 public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier> {
 
+  private static final long serialVersionUID = -8559980140411995766L;
+
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "suggestionBoxId", referencedColumnName = "id", nullable = false)
   private SuggestionBox suggestionBox;

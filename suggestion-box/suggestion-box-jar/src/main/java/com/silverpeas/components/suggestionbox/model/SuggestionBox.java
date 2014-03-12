@@ -39,14 +39,16 @@ import java.util.List;
 
 /**
  * This entity represents a suggestion box.
- * User: Yohann Chastagnier
+ * @author Yohann Chastagnier
  * Date: 11/03/14
  */
 @Entity
 @Table(name = "sc_suggestion_box")
 public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifier> {
 
-  @Column(name = "componentInstanceId", nullable = false)
+  private static final long serialVersionUID = -3216638631298619076L;
+
+  @Column(name = "instanceId", nullable = false)
   private String componentInstanceId;
 
   @OneToMany(mappedBy = "suggestionBox", fetch = FetchType.LAZY, cascade = {CascadeType.REMOVE})
@@ -54,6 +56,19 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
 
   @Transient
   private ComponentInstLight componentInst;
+
+  /**
+   * Creates a new suggestion box with the specified title and with the specified short description.
+   * @param componentInstanceId the unique identifier of the application to which the suggestion box
+   * belongs.
+   * @param title the title of the suggestion box. It is mandatory.
+   */
+  public SuggestionBox(String componentInstanceId, String title) {
+    // actually, the title and description are set in the ComponentInst object representing the
+    // application suggestion box (for instance, a suggestion box application is made up of one and
+    // only one suggestion box.
+    this.componentInstanceId = componentInstanceId;
+  }
 
   /**
    * Gets the component instance identifier which is the identifier of a suggestion box.
@@ -65,6 +80,7 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
 
   /**
    * Gets the title of the suggestion box according to requested language.
+   * @param language the language at which the title has to be returned.
    * @return the suggestion box title according to requested language.
    */
   public String getTitle(String language) {
@@ -73,10 +89,15 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
 
   /**
    * Gets the description of the suggestion box according to requested language.
+   * @param language the language at which the title has to be returned.
    * @return the description box description according to requested language.
    */
   public String getDescription(String language) {
     return getComponentInst().getDescription(language);
+  }
+
+  protected SuggestionBox() {
+
   }
 
   /**
