@@ -23,22 +23,29 @@
  */
 package org.silverpeas.components.suggestionbox.model;
 
+import com.silverpeas.util.CollectionUtil;
+import com.silverpeas.util.ForeignPK;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.silverpeas.attachment.AttachmentService;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.components.suggestionbox.mock.AttachmentServiceMockWrapper;
 import org.silverpeas.components.suggestionbox.mock.SuggestionBoxRepositoryMockWrapper;
 import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepository;
+import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.persistence.repository.OperationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 /**
  * Unit test on the SuggestionBoxService features. For doing, the test mocks all of the
@@ -91,9 +98,37 @@ public class SuggestionBoxServiceTest {
     verify(repository).save(any(OperationContext.class), eq(box));
   }
 
+  /**
+   * Test of deleteSuggestionBox method, of class SuggestionBoxService.
+   */
+  @Test
+  public void deleteASuggestionBox() {
+    SuggestionBox box = new SuggestionBox(appInstanceId);
+    box.setCreatedBy(userId);
+    ReflectionTestUtils
+        .setField(box, "id", new UuidIdentifier().fromString("suggestionBoxIdToDelete"));
+    AttachmentService attachmentService = getAttachmentService();
+    ForeignPK foreignPK = new ForeignPK("suggestionBoxIdToDelete", appInstanceId);
+    when(attachmentService.listAllDocumentsByForeignKey(foreignPK, null))
+        .thenReturn(CollectionUtil.asList(new SimpleDocument(), new SimpleDocument()));
+
+    service.deleteSuggestionBox(box);
+
+    SuggestionBoxRepository repository = getSuggestionBoxRepository();
+    verify(attachmentService, times(1)).listAllDocumentsByForeignKey(eq(foreignPK), anyString());
+    verify(attachmentService, times(2)).deleteAttachment(any(SimpleDocument.class));
+    verify(repository, times(1)).delete(eq(box));
+  }
+
   private SuggestionBoxRepository getSuggestionBoxRepository() {
-    SuggestionBoxRepositoryMockWrapper mockWrapper = (SuggestionBoxRepositoryMockWrapper) context.
-        getBean(SuggestionBoxRepository.class);
+    SuggestionBoxRepositoryMockWrapper mockWrapper = context.
+        getBean(SuggestionBoxRepositoryMockWrapper.class);
+    return mockWrapper.getMock();
+  }
+
+  private AttachmentService getAttachmentService() {
+    AttachmentServiceMockWrapper mockWrapper = context.
+        getBean(AttachmentServiceMockWrapper.class);
     return mockWrapper.getMock();
   }
 
