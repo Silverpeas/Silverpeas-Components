@@ -45,7 +45,7 @@ public class SuggestionBoxRepository
    * @return the suggestion box instance if exists, null otherwise.
    */
   public SuggestionBox getByComponentInstanceId(String componentInstanceId) {
-    String jpqlQuery = "from SuggestionBox s where s.instanceId = :componentInstanceId";
+    String jpqlQuery = "from SuggestionBox s where s.componentInstanceId = :componentInstanceId";
     return getFromJpqlString(jpqlQuery,
         initializeNamedParameters().add("componentInstanceId", componentInstanceId));
   }

@@ -54,4 +54,7 @@ public class SuggestionBoxPersister {
     return repository.getById(id);
   }
 
+  public SuggestionBox getByComponentInstanceId(String componentInstanceId) {
+    return repository.getByComponentInstanceId(componentInstanceId);
+  }
 }
