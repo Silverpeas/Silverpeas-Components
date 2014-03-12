@@ -1,12 +1,12 @@
 /* Table */
 CREATE TABLE sc_suggestion_box (
-  id                  VARCHAR(40) NOT NULL,
-  componentInstanceId VARCHAR(30) NOT NULL,
-  createDate          TIMESTAMP   NOT NULL,
-  createdBy           VARCHAR(40) NOT NULL,
-  lastUpdateDate      TIMESTAMP,
-  lastUpdatedBy       VARCHAR(40),
-  version             INT8        NOT NULL
+  id              VARCHAR(40) NOT NULL,
+  instanceId      VARCHAR(30) NOT NULL,
+  createDate      TIMESTAMP   NOT NULL,
+  createdBy       VARCHAR(40) NOT NULL,
+  lastUpdateDate  TIMESTAMP,
+  lastUpdatedBy   VARCHAR(40),
+  version         INT8        NOT NULL
 );
 
 /* Table constraints */

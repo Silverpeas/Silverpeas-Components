@@ -28,12 +28,11 @@ import com.silverpeas.components.suggestionbox.mock.SuggestionBoxServiceMockWrap
 import com.silverpeas.components.suggestionbox.model.SuggestionBox;
 import com.silverpeas.components.suggestionbox.model.SuggestionBoxService;
 import com.silverpeas.components.suggestionbox.model.SuggestionBoxServiceFactory;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -45,20 +44,22 @@ import java.sql.Connection;
  * Test the creation and the remove of the application Suggestion Box.
  * @author mmoquillon
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/spring-suggestionbox.xml", "/spring-empty-datasource.xml"})
 public class SuggestionBoxInstanciatorTest {
+
+  private static AbstractApplicationContext context;
 
   public SuggestionBoxInstanciatorTest() {
   }
 
-  @Before
-  public void setUp() {
-
+  @BeforeClass
+  public static void bootstrapSpringContext() {
+    context = new ClassPathXmlApplicationContext(
+        "/spring-suggestion-box-mock.xml", "/spring-suggestion-box-embedded-datasource.xml");
   }
 
-  @After
-  public void tearDown() {
+  @AfterClass
+  public static void shutdownSpringContext() {
+    context.close();
   }
 
   /**
