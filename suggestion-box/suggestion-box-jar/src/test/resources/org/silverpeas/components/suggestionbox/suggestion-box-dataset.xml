@@ -37,6 +37,3 @@
                  lastUpdateDate="[NULL]" lastUpdatedBy="[NULL]" version="0"/>
 
 </dataset>
-
-insert into sc_suggestion_box (id, instanceId, createDate, createdBy, version) values ('suggestion-box_1', 'suggestionBox1', '2014-03-11 17:34:00.0', '1', '0');
-insert into sc_suggestion (id, suggestionBoxId, createDate, createdBy, version) values ('suggestion_1', 'suggestion-box_1', '2014-03-11 17:34:00.0', '1', '0');

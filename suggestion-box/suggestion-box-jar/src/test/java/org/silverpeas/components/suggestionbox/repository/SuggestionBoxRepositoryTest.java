@@ -23,10 +23,12 @@
  */
 package org.silverpeas.components.suggestionbox.repository;
 
-import org.silverpeas.components.suggestionbox.model.Suggestion;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
+import org.dbunit.dataset.IDataSet;
+import org.dbunit.dataset.ITable;
 import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
@@ -34,17 +36,24 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.components.suggestionbox.mock.OrganisationControllerMockWrapper;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.persistence.repository.OperationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.sql.DataSource;
-import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.when;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 /**
  * User: Yohann Chastagnier
@@ -56,6 +65,7 @@ import static org.hamcrest.Matchers.*;
 public class SuggestionBoxRepositoryTest {
 
   private final static String SUGGESTION_BOX_ID_1 = "suggestion-box_1";
+  private final static String SUGGESTION_BOX_INSTANCE_ID = "suggestion-box1";
 
   @Inject
   private SuggestionBoxRepository suggestionBoxRepository;
@@ -64,8 +74,14 @@ public class SuggestionBoxRepositoryTest {
   private SuggestionRepository suggestionRepository;
 
   @Inject
+  SuggestionBoxPersister persister;
+
+  @Inject
   @Named("jpaDataSource")
   private DataSource dataSource;
+
+  @PersistenceContext
+  private EntityManager entityManager;
 
   private static ReplacementDataSet dataSet;
 
@@ -87,25 +103,72 @@ public class SuggestionBoxRepositoryTest {
     DatabaseOperation.CLEAN_INSERT.execute(myConnection, dataSet);
   }
 
+  @Test
+  public void saveSuggestionBox() throws Exception {
+    UserDetail creator = aUser();
+    SuggestionBox box
+        = new SuggestionBox(SUGGESTION_BOX_INSTANCE_ID, null);
+    OperationContext ctx = OperationContext.fromUser(creator.getId());
+    persister.save(ctx, box);
+
+    // Verification
+    IDataSet actualDataSet = getActualDataSet();
+    ITable table = actualDataSet.getTable("sc_suggestion_box");
+    assertThat(table.getRowCount(), is(2));
+    String createdBy = (String) table.getValue(0, "createdBy");
+    String instanceId = (String) table.getValue(0, "instanceId");
+    assertThat(createdBy, is(creator.getId()));
+    assertThat(instanceId, is(SUGGESTION_BOX_INSTANCE_ID));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void saveSuggestionBoxWithAnInvalidOperationContext() throws Exception {
+    SuggestionBox box
+        = new SuggestionBox(SUGGESTION_BOX_INSTANCE_ID, null);
+    OperationContext ctx = OperationContext.createInstance();
+    persister.save(ctx, box);
+
+    fail("An exception should be raised!");
+  }
+
   /**
    * Deletion of a suggestion box, at a repository level, must delete all associated suggestions.
+   * @throws java.lang.Exception
    */
   @Test
-  @Transactional
-  public void deleteSuggestionBox() {
-    SuggestionBox existentSuggestionBox = suggestionBoxRepository.getById(SUGGESTION_BOX_ID_1);
+  public void deleteSuggestionBox() throws Exception {
+    SuggestionBox existentSuggestionBox = persister.getById(SUGGESTION_BOX_ID_1);
     assertThat(existentSuggestionBox, notNullValue());
     assertThat(existentSuggestionBox.getId(), is(SUGGESTION_BOX_ID_1));
 
-    List<Suggestion> associatedSuggestions = suggestionRepository.listBySuggestionBox(
-        existentSuggestionBox);
-    assertThat(associatedSuggestions, hasSize(1));
-
     // The suggestion box deletion
-    suggestionBoxRepository.delete(existentSuggestionBox);
+    persister.delete(existentSuggestionBox);
 
     // Verifications
-    assertThat(suggestionBoxRepository.getById(SUGGESTION_BOX_ID_1), nullValue());
-    assertThat(suggestionRepository.listBySuggestionBox(existentSuggestionBox), hasSize(0));
+    IDataSet actualDataSet = getActualDataSet();
+    ITable table = actualDataSet.getTable("sc_suggestion_box");
+    assertThat(table.getRowCount(), is(0));
+    table = actualDataSet.getTable("sc_suggestion");
+    assertThat(table.getRowCount(), is(0));
+  }
+
+  private OrganisationController getOrganisationController() {
+    OrganisationController organisationController = OrganisationControllerFactory.
+        getOrganisationController();
+    return ((OrganisationControllerMockWrapper) organisationController).getMock();
+  }
+
+  private UserDetail aUser() {
+    UserDetail user = new UserDetail();
+    user.setId("1");
+    OrganisationController organisationController = getOrganisationController();
+    when(organisationController.getUserDetail("1")).thenReturn(user);
+
+    return user;
+  }
+
+  private IDataSet getActualDataSet() throws Exception {
+    IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
+    return connection.createDataSet();
   }
 }
