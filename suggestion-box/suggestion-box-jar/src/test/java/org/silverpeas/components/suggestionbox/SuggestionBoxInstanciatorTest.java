@@ -57,7 +57,7 @@ public class SuggestionBoxInstanciatorTest {
   @BeforeClass
   public static void bootstrapSpringContext() {
     context = new ClassPathXmlApplicationContext(
-        "/spring-suggestion-box-mock.xml", "/spring-suggestion-box-embedded-datasource.xml");
+        "/spring-suggestion-box-mockall.xml", "/spring-suggestion-box-embedded-datasource.xml");
   }
 
   @AfterClass

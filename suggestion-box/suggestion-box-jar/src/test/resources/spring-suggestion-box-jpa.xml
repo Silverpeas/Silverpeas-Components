@@ -34,10 +34,16 @@
   http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
 
   <import resource="spring-jpa.xml"/>
+
+  <context:annotation-config/>
+
   <context:component-scan base-package="org.silverpeas.components.suggestionbox.model"/>
   <context:component-scan base-package="org.silverpeas.components.suggestionbox.repository"/>
 
-  <context:annotation-config/>
+  <bean id="organizationController" class="org.silverpeas.components.suggestionbox.mock.OrganisationControllerMockWrapper"/>
+
+  <bean id="organisationControllerFactory" class="org.silverpeas.core.admin.OrganisationControllerFactory"
+        factory-method="getFactory"/>
 
   <jpa:repositories base-package="org.silverpeas.components.suggestionbox.repository"
                     transaction-manager-ref="jpaTransactionManager"/>

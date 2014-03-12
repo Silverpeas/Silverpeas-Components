@@ -21,31 +21,37 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.components.suggestionbox.mock;
+package org.silverpeas.components.suggestionbox.repository;
 
+import com.silverpeas.annotation.Service;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
-import org.silverpeas.components.suggestionbox.model.SuggestionBoxService;
+import org.silverpeas.persistence.repository.OperationContext;
+import org.springframework.transaction.annotation.Transactional;
 
-import static org.mockito.Mockito.mock;
-
-import javax.inject.Named;
+import javax.inject.Inject;
 
 /**
- *
+ * A simple persister for testing purpose and with which the transactions are managed
+ * <p>
  * @author mmoquillon
  */
-@Named("suggestionService")
-public class SuggestionBoxServiceMockWrapper extends SuggestionBoxService {
+@Transactional
+@Service
+public class SuggestionBoxPersister {
 
-  private SuggestionBoxService mock = mock(SuggestionBoxService.class);
+  @Inject
+  private SuggestionBoxRepository repository;
 
-  public SuggestionBoxService getMock() {
-    return mock;
+  public void save(final OperationContext ctx, final SuggestionBox box) {
+    repository.save(ctx, box);
   }
 
-  @Override
-  public void saveSuggestionBox(SuggestionBox box) {
-    mock.saveSuggestionBox(box);
+  public void delete(final SuggestionBox box) {
+    repository.delete(box);
+  }
+
+  public SuggestionBox getById(String id) {
+    return repository.getById(id);
   }
 
 }
