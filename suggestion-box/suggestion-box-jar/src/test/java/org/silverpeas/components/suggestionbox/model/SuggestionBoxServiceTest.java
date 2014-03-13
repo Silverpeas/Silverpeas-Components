@@ -43,8 +43,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
 /**
@@ -76,7 +74,7 @@ public class SuggestionBoxServiceTest {
 
   @Before
   public void setUp() {
-    service = SuggestionBoxServiceFactory.getServiceInstance();
+    service = SuggestionBoxService.getInstance();
     assertThat(service, notNullValue());
   }
 

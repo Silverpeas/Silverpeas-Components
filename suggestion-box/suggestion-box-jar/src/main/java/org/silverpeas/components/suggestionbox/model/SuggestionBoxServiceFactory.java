@@ -50,17 +50,6 @@ public class SuggestionBoxServiceFactory {
 
   /**
    * Gets a {@link SuggestionBoxService} instance.
-   * <p>
-   * It is a convenient method to invoke directly a SuggestionBoxService instance to a factory
-   * instance.
-   * @return a SuggestionBoxService instance.
-   */
-  public static SuggestionBoxService getServiceInstance() {
-    return getFactory().getSuggestionBoxService();
-  }
-
-  /**
-   * Gets a {@link SuggestionBoxService} instance.
    * @return a SuggestionBoxService instance.
    */
   public SuggestionBoxService getSuggestionBoxService() {
