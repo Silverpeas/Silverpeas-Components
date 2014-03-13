@@ -60,7 +60,7 @@
         <message lang="de">Administrator</message>
       </label>
       <help>
-        <message lang="fr">Les gestionnaires paramètrent le boite à idée. Ils y précisent, via
+        <message lang="fr">Les gestionnaires paramètrent la boite à idées. Ils y précisent, via
           l'édito, l'objectif de la boite à idées et quelles sont les règles en vigueur dans la
           participation.</message>
         <message lang="en">The administrators parameterize the suggestion box idea. They specify, via
@@ -78,7 +78,7 @@
       <help>
         <message lang="fr">Les publieurs ont pour rôle de valider les idées des participants.
           Lorsqu'une idée est validée, celle-ci est alors publiée dans la boite à idées. Toute idée,
-          qu'elle soit validée ou refusée, est annotée par le publieur. La note d'un idée validée donne
+          qu'elle soit validée ou refusée, est annotée par le publieur. La note d'une idée validée donne
           des informations supplémentaires, et la note d'une idée refusée informe au participant
           les raisons du refus. Le publieur peut modérer l'idée avant sa publication.</message>
         <message lang="en">The role of the publieurs is to validate the suggestions of the participants.
@@ -102,7 +102,7 @@
         <message lang="de">Redaktor</message>
       </label>
       <help>
-        <message lang="fr">Les rédacteurs sont les participants d'une boite à idée. Ils proposent des
+        <message lang="fr">Les rédacteurs sont les participants d'une boite à idées. Ils proposent des
           idées, commentent et votent celles des autres.</message>
         <message lang="en">The writers are the participants in a suggestion box. They propose suggestions,
           they vote and comment on those of others.</message>
