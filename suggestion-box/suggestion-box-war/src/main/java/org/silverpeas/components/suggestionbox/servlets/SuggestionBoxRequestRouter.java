@@ -23,17 +23,23 @@
  */
 package org.silverpeas.components.suggestionbox.servlets;
 
-import org.silverpeas.components.suggestionbox.control.SuggestionBoxSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.apache.commons.lang3.CharEncoding;
+import org.silverpeas.components.suggestionbox.control.SuggestionBoxSessionController;
+import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
-public class SuggestionBoxRequestRouter extends ComponentRequestRouter<ComponentSessionController> {
+public class SuggestionBoxRequestRouter
+    extends ComponentRequestRouter<SuggestionBoxSessionController> {
   private static final long serialVersionUID = -7378638602035981580L;
 
   /**
@@ -54,7 +60,7 @@ public class SuggestionBoxRequestRouter extends ComponentRequestRouter<Component
    * @see
    */
   @Override
-  public ComponentSessionController createComponentSessionController(
+  public SuggestionBoxSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new SuggestionBoxSessionController(mainSessionCtrl, componentContext);
   }
@@ -63,25 +69,36 @@ public class SuggestionBoxRequestRouter extends ComponentRequestRouter<Component
    * This method has to be implemented by the component request rooter
    * it has to compute a destination page
    * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialised.
+   * @param suggestionBoxSC The component Session Control, build and initialised.
    * @return The complete destination URL for a forward (ex : "/almanach/jsp/almanach
    * .jsp?flag=user")
    */
   @Override
-  public String getDestination(String function, ComponentSessionController componentSC,
+  public String getDestination(String function, SuggestionBoxSessionController suggestionBoxSC,
       HttpRequest request) {
-    String destination = "";
-    SuggestionBoxSessionController suggestionBoxSC = (SuggestionBoxSessionController) componentSC;
+    String destination;
     SilverTrace.info("suggestion-box", "SuggestionBoxRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + componentSC.getUserId() + " Function=" + function);
+        "root.MSG_GEN_PARAM_VALUE",
+        "User=" + suggestionBoxSC.getUserId() + " Function=" + function);
+
+    // Suggestion box is reloaded at each request to ensure that the entity is always the last
+    // persisted one.
+    SuggestionBox suggestionBox =
+        SuggestionBox.getByComponentInstanceId(suggestionBoxSC.getComponentId());
+    request.setAttribute("suggestionBox", suggestionBox);
 
     try {
+
+      // External destinations
+      if (function.equals("edito/modify")) {
+        return modifyEdito(request, suggestionBoxSC, suggestionBox);
+      }
+
+      // Internal JSP destinations
       if (function.equals("Main")) {
-        destination = home(suggestionBoxSC, request);
-      } else if (function.equals("edito/modify")) {
-        destination = modifyEdito(request);
+        destination = home(request, suggestionBoxSC, suggestionBox);
       } else {
-        destination = home(suggestionBoxSC, request);
+        destination = home(request, suggestionBoxSC, suggestionBox);
       }
       destination = "/suggestion-box/jsp/" + destination;
     } catch (Exception e) {
@@ -96,16 +113,49 @@ public class SuggestionBoxRequestRouter extends ComponentRequestRouter<Component
 
   /**
    * Perform homepage
-   * @param componentSC
    * @param request
+   * @param componentSC
+   * @param suggestionBox
    * @return destination
    */
-  private String home(SuggestionBoxSessionController componentSC, HttpServletRequest request) {
-    // Insert the homepage code here
-    return "welcome.jsp";
+  private String home(HttpServletRequest request, SuggestionBoxSessionController componentSC,
+      final SuggestionBox suggestionBox) {
+
+    // Edito
+    if (WysiwygController
+        .haveGotWysiwyg(suggestionBox.getComponentInstanceId(), suggestionBox.getId(), null)) {
+      request.setAttribute("isEdito", true);
+    }
+
+    // Destination
+    return "suggestionBox.jsp";
   }
 
-  private String modifyEdito(HttpServletRequest request) {
-    return "";
+  /**
+   * Handles the navigation to the edition of the edito.
+   * @param request
+   * @param suggestionBoxSC
+   * @param suggestionBox
+   * @return
+   * @throws UnsupportedEncodingException
+   */
+  private String modifyEdito(HttpServletRequest request,
+      SuggestionBoxSessionController suggestionBoxSC, SuggestionBox suggestionBox)
+      throws UnsupportedEncodingException {
+    request.setAttribute("SpaceId", suggestionBoxSC.getSpaceId());
+    request.setAttribute("SpaceName",
+        URLEncoder.encode(suggestionBoxSC.getSpaceLabel(), CharEncoding.UTF_8));
+    request.setAttribute("ComponentId", suggestionBoxSC.getComponentId());
+    request.setAttribute("ComponentName",
+        URLEncoder.encode(suggestionBoxSC.getComponentLabel(), CharEncoding.UTF_8));
+    request.setAttribute("ObjectId", suggestionBox.getId());
+    request.setAttribute("Language", null);
+    request.setAttribute("ReturnUrl", URLManager.getApplicationURL() +
+        URLManager.getURL("suggestion-box", "useless", suggestionBoxSC.getComponentId()) +
+        "fromWysiwyg");
+    request.setAttribute("UserId", suggestionBoxSC.getUserId());
+    request.setAttribute("IndexIt", "false");
+    // Destination
+    return "/wysiwyg/jsp/htmlEditor.jsp";
   }
 }
