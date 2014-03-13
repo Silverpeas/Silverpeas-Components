@@ -5,7 +5,7 @@ CREATE TABLE sc_suggestion_box (
   createdBy       VARCHAR(40) NOT NULL,
   lastUpdateDate  TIMESTAMP,
   lastUpdatedBy   VARCHAR(40),
-  version         int        NOT NULL
+  version         INT8        NOT NULL
 );
 
 CREATE TABLE sc_suggestion (
@@ -15,5 +15,5 @@ CREATE TABLE sc_suggestion (
   createdBy       VARCHAR(40) NOT NULL,
   lastUpdateDate  TIMESTAMP,
   lastUpdatedBy   VARCHAR(40),
-  version         int        NOT NULL
+  version         INT8        NOT NULL
 );
