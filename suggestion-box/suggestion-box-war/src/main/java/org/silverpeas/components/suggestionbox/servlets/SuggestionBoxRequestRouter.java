@@ -38,8 +38,6 @@ import org.silverpeas.wysiwyg.control.WysiwygController;
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
 
 public class SuggestionBoxRequestRouter
     extends ComponentRequestRouter<SuggestionBoxSessionController> {
@@ -84,20 +82,21 @@ public class SuggestionBoxRequestRouter
         "root.MSG_GEN_PARAM_VALUE",
         "User=" + suggestionBoxSC.getUserId() + " Function=" + function);
 
-    // User roles
-    List<SilverpeasRole> userRoles =
-        new ArrayList<SilverpeasRole>(SilverpeasRole.from(suggestionBoxSC.getUserRoles()));
+    // Greater user role
+    SilverpeasRole greaterUserRole =
+        SilverpeasRole.getGreaterFrom(SilverpeasRole.from(suggestionBoxSC.getUserRoles()));
 
     // Suggestion box is reloaded at each request to ensure that the entity is always the last
     // persisted one.
     SuggestionBox suggestionBox =
         SuggestionBox.getByComponentInstanceId(suggestionBoxSC.getComponentId());
     request.setAttribute("suggestionBox", suggestionBox);
-    request.setAttribute("userProfiles", userRoles);
+    request.setAttribute("greaterUserRole", greaterUserRole);
 
     try {
       // External destinations
-      if (function.equals("edito/modify") && userRoles.contains(SilverpeasRole.admin)) {
+      if (function.equals("edito/modify") &&
+          greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.admin)) {
         return modifyEdito(request, suggestionBoxSC, suggestionBox);
       }
 

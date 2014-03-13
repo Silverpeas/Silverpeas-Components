@@ -33,7 +33,7 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
-<c:set var="userProfiles" value="${requestScope.userProfiles}"/>
+<c:set var="greaterUserRole" value="${requestScope.greaterUserRole}"/>
 <c:set var="suggestionBoxId" value="${requestScope.suggestionBox.id}"/>
 <c:set var="isEdito" value="${requestScope.isEdito}"/>
 
@@ -50,7 +50,7 @@
 </head>
 <body>
 <view:operationPane>
-  <c:if test="${userProfiles.contains(adminRole)}">
+  <c:if test="${greaterUserRole.isGreaterThanOrEquals(adminRole)}">
     <view:operation action="edito/modify" altText="${modifyEditoLabel}"/>
   </c:if>
 </view:operationPane>
