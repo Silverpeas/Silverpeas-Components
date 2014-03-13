@@ -23,34 +23,38 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@ include file="check.jsp"%>
+<%@ include file="check.jsp" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
-<fmt:setLocale value="${sessionScope[sessionController].language}" />
-<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
-<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
-<c:set var="componentId" value="${requestScope.componentId}" />
-<c:set var="sessionController">Silverpeas_SuggestionBox_<c:out value="${componentId}" /></c:set>
-<c:set var="browseContext" value="${requestScope.browseContext}" />
+<fmt:setLocale value="${requestScope.resources.language}"/>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
+<c:set var="componentId" value="${requestScope.browseContext[3]}"/>
+
+<c:set var="suggestionBoxId" value="${requestScope.suggestionBox.id}"/>
+<c:set var="isEdito" value="${requestScope.isEdito}"/>
+
+<fmt:message var="modifyEditoLabel" key="suggestionBox.menu.item.edito.modify"/>
+
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
 <html>
-  <head>
-    <view:looknfeel />
-  </head>
-  <body>
-    <view:window>
-      <view:frame>
-        Bienvenue sur l'application suggestion-box.
-      </view:frame>
-      <view:frame>
-        <view:board>
-          Cette instance s'appelle <span class="suggestion-boxName"><c:out value="${browseContext[1]}" /></span>.<br/>
-          Elle se situe dans l'espace <span class="suggestion-boxName"><c:out value="${browseContext[0]}" /></span>.
-        </view:board>
-      </view:frame>
-    </view:window>
-  </body>
+<head>
+  <view:looknfeel/>
+  <view:includePlugin name="wysiwyg"/>
+</head>
+<body>
+<view:operationPane>
+  <view:operation action="edito/modify" altText="${modifyEditoLabel}"/>
+</view:operationPane>
+<view:window>
+  <view:frame>
+    <c:if test="${isEdito}">
+      <view:displayWysiwyg objectId="${suggestionBoxId}" componentId="${componentId}" language="${null}"/>
+    </c:if>
+  </view:frame>
+</view:window>
+</body>
 </html>

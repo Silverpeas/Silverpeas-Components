@@ -25,9 +25,9 @@ package org.silverpeas.components.suggestionbox;
 
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.InstanciationException;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.model.SuggestionBoxService;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 import java.sql.Connection;
 
@@ -60,12 +60,13 @@ public class SuggestionBoxInstanciator implements ComponentsInstanciatorIntf {
     SilverTrace
         .info("suggestion-box", "SuggestionBoxInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD",
             "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
+    SuggestionBoxService suggestionBoxService = SuggestionBoxService.getInstance();
 
     // Getting the suggestion box entity
-    SuggestionBox suggestionBoxToDelete = SuggestionBox.getByComponentInstanceId(componentId);
+    SuggestionBox suggestionBoxToDelete =
+        suggestionBoxService.getByComponentInstanceId(componentId);
 
     // Deleting the suggestion box
-    SuggestionBoxService suggestionBoxService = SuggestionBoxService.getInstance();
     suggestionBoxService.deleteSuggestionBox(suggestionBoxToDelete);
 
     SilverTrace

@@ -43,7 +43,6 @@ import javax.inject.Inject;
  * @author mmoquillon
  */
 @Service
-@Transactional
 public class SuggestionBoxService {
 
   @Inject
@@ -56,7 +55,7 @@ public class SuggestionBoxService {
    * instance that it returns directly.
    * @return a SuggestionBoxService instance.
    */
-  public static final SuggestionBoxService getInstance() {
+  public static SuggestionBoxService getInstance() {
     SuggestionBoxServiceFactory factory = SuggestionBoxServiceFactory.getFactory();
     return factory.getSuggestionBoxService();
   }
@@ -73,6 +72,7 @@ public class SuggestionBoxService {
    * Saves the specified suggestion box.
    * @param box the box to save in Silverpeas.
    */
+  @Transactional
   public void saveSuggestionBox(final SuggestionBox box) {
     repository.save(OperationContext.fromUser(box.getCreatedBy()), box);
   }
@@ -81,6 +81,7 @@ public class SuggestionBoxService {
    * Deletes the specified suggestion box.
    * @param box the box to delete from Silverpeas.
    */
+  @Transactional
   public void deleteSuggestionBox(final SuggestionBox box) {
 
     // TODO Deletion of all data attached to the box and its suggestions :
@@ -93,13 +94,5 @@ public class SuggestionBoxService {
 
     // Finally deleting the box and its suggestions from the persistence.
     repository.delete(box);
-  }
-
-  /**
-   * Gets the instance of attachment services.
-   * @return
-   */
-  private AttachmentService getAttachmentService() {
-    return AttachmentServiceFactory.getAttachmentService();
   }
 }
