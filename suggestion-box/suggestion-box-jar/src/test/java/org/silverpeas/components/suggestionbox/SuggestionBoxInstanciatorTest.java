@@ -34,7 +34,6 @@ import org.silverpeas.components.suggestionbox.mock.SuggestionBoxRepositoryMockW
 import org.silverpeas.components.suggestionbox.mock.SuggestionBoxServiceMockWrapper;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.model.SuggestionBoxService;
-import org.silverpeas.components.suggestionbox.model.SuggestionBoxServiceFactory;
 import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepository;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -122,13 +121,13 @@ public class SuggestionBoxInstanciatorTest {
 
   private SuggestionBoxService getSuggestionBoxService() {
     SuggestionBoxServiceMockWrapper mockWrapper
-        = (SuggestionBoxServiceMockWrapper) SuggestionBoxServiceFactory.getServiceInstance();
+        = (SuggestionBoxServiceMockWrapper) SuggestionBoxService.getInstance();
     return mockWrapper.getMock();
   }
 
   private SuggestionBoxRepository getSuggestionBoxRepository() {
-    SuggestionBoxRepositoryMockWrapper mockWrapper =
-        context.getBean(SuggestionBoxRepositoryMockWrapper.class);
+    SuggestionBoxRepositoryMockWrapper mockWrapper = context.getBean(
+        SuggestionBoxRepositoryMockWrapper.class);
     return mockWrapper.getMock();
   }
 }

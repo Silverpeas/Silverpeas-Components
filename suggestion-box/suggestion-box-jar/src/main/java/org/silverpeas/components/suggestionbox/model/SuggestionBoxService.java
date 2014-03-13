@@ -43,16 +43,29 @@ import javax.inject.Inject;
  * @author mmoquillon
  */
 @Service
+@Transactional
 public class SuggestionBoxService {
 
   @Inject
   private SuggestionBoxRepository repository;
 
   /**
+   * Gets an instance of a SuggestionBoxService.
+   * <p>
+   * This method is a convenient one. It uses the {@link SuggestionBoxServiceFactory} to produce an
+   * instance that it returns directly.
+   * @return a SuggestionBoxService instance.
+   */
+  public static final SuggestionBoxService getInstance() {
+    SuggestionBoxServiceFactory factory = SuggestionBoxServiceFactory.getFactory();
+    return factory.getSuggestionBoxService();
+  }
+
+  /**
    * @see org.silverpeas.components.suggestionbox.model.SuggestionBox#getByComponentInstanceId
    * (String)
    */
-  SuggestionBox getByComponentInstanceId(String componentInstanceId) {
+  public SuggestionBox getByComponentInstanceId(String componentInstanceId) {
     return repository.getByComponentInstanceId(componentInstanceId);
   }
 
@@ -60,7 +73,6 @@ public class SuggestionBoxService {
    * Saves the specified suggestion box.
    * @param box the box to save in Silverpeas.
    */
-  @Transactional
   public void saveSuggestionBox(final SuggestionBox box) {
     repository.save(OperationContext.fromUser(box.getCreatedBy()), box);
   }
@@ -69,7 +81,6 @@ public class SuggestionBoxService {
    * Deletes the specified suggestion box.
    * @param box the box to delete from Silverpeas.
    */
-  @Transactional
   public void deleteSuggestionBox(final SuggestionBox box) {
 
     // TODO Deletion of all data attached to the box and its suggestions :
@@ -85,7 +96,7 @@ public class SuggestionBoxService {
   }
 
   /**
-   * Gets the instance of attachement services.
+   * Gets the instance of attachment services.
    * @return
    */
   private AttachmentService getAttachmentService() {

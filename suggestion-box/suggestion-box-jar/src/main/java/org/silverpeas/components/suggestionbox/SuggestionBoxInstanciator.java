@@ -27,7 +27,6 @@ import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.InstanciationException;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.model.SuggestionBoxService;
-import org.silverpeas.components.suggestionbox.model.SuggestionBoxServiceFactory;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 import java.sql.Connection;
@@ -48,7 +47,7 @@ public class SuggestionBoxInstanciator implements ComponentsInstanciatorIntf {
     // The title of the suggestion box is the one of the spawned component instance
     SuggestionBox newBox = new SuggestionBox(componentId);
     newBox.setCreatedBy(userId);
-    SuggestionBoxService suggestionBoxService = SuggestionBoxServiceFactory.getServiceInstance();
+    SuggestionBoxService suggestionBoxService = SuggestionBoxService.getInstance();
     suggestionBoxService.saveSuggestionBox(newBox);
 
     SilverTrace
@@ -66,7 +65,8 @@ public class SuggestionBoxInstanciator implements ComponentsInstanciatorIntf {
     SuggestionBox suggestionBoxToDelete = SuggestionBox.getByComponentInstanceId(componentId);
 
     // Deleting the suggestion box
-    SuggestionBoxServiceFactory.getServiceInstance().deleteSuggestionBox(suggestionBoxToDelete);
+    SuggestionBoxService suggestionBoxService = SuggestionBoxService.getInstance();
+    suggestionBoxService.deleteSuggestionBox(suggestionBoxToDelete);
 
     SilverTrace
         .info("suggestion-box", "SuggestionBoxInstanciator.delete()", "root.MSG_GEN_EXIT_METHOD");

@@ -62,8 +62,7 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
    * @return the suggestion box instance if exists, null otherwise.
    */
   public static SuggestionBox getByComponentInstanceId(String suggestionBoxId) {
-    return SuggestionBoxServiceFactory.getServiceInstance().getByComponentInstanceId(
-        suggestionBoxId);
+    return SuggestionBoxService.getInstance().getByComponentInstanceId(suggestionBoxId);
   }
 
   /**
