@@ -26,15 +26,18 @@
 <%@ include file="check.jsp" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
 <fmt:setLocale value="${requestScope.resources.language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
-
+<c:set var="userProfiles" value="${requestScope.userProfiles}"/>
 <c:set var="suggestionBoxId" value="${requestScope.suggestionBox.id}"/>
 <c:set var="isEdito" value="${requestScope.isEdito}"/>
+
+<view:setConstant var="adminRole" constant="com.stratelia.webactiv.SilverpeasRole.admin" />
 
 <fmt:message var="modifyEditoLabel" key="suggestionBox.menu.item.edito.modify"/>
 
@@ -47,7 +50,9 @@
 </head>
 <body>
 <view:operationPane>
-  <view:operation action="edito/modify" altText="${modifyEditoLabel}"/>
+  <c:if test="${userProfiles.contains(adminRole)}">
+    <view:operation action="edito/modify" altText="${modifyEditoLabel}"/>
+  </c:if>
 </view:operationPane>
 <view:window>
   <view:frame>
