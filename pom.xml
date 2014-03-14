@@ -42,7 +42,7 @@
     <test.jdbc.user>postgres</test.jdbc.user>
     <test.jdbc.password>postgres</test.jdbc.password>
     <!-- Version of Silverpeas-Core on which it depends -->
-    <core.version>5.14</core.version>
+    <core.version>5.15-SNAPSHOT</core.version>
   </properties>
 
   <dependencies>
