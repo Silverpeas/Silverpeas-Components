@@ -11,7 +11,7 @@
     <connection>scm:git:git@github.com:Silverpeas/Silverpeas-Components.git</connection>
     <developerConnection>scm:git:git@github.com:Silverpeas/Silverpeas-Components.git</developerConnection>
     <url>http://github.com/Silverpeas/Silverpeas-Components</url>
-    <tag>components-5.12.8</tag>
+    <tag>components-5.12</tag>
   </scm>
 
   <repositories>
@@ -31,7 +31,7 @@
 
   <groupId>com.silverpeas</groupId>
   <artifactId>components</artifactId>
-  <version>5.12.8</version>
+  <version>5.12.9-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Silverpeas Components</name>
 
