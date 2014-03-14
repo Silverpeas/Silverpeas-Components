@@ -26,7 +26,7 @@
 -->
 <WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
-  <name>suggestion-box</name>
+  <name>suggestionBox</name>
   <label>
     <message lang="fr">Boite à idées</message>
     <message lang="en">Suggestion Box</message>

@@ -78,7 +78,7 @@ public class SuggestionBoxRequestRouter
   public String getDestination(String function, SuggestionBoxSessionController suggestionBoxSC,
       HttpRequest request) {
     String destination;
-    SilverTrace.info("suggestion-box", "SuggestionBoxRequestRouter.getDestination()",
+    SilverTrace.info("suggestionBox", "SuggestionBoxRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE",
         "User=" + suggestionBoxSC.getUserId() + " Function=" + function);
 
@@ -106,13 +106,13 @@ public class SuggestionBoxRequestRouter
       } else {
         destination = home(request, suggestionBoxSC, suggestionBox);
       }
-      destination = "/suggestion-box/jsp/" + destination;
+      destination = "/suggestionBox/jsp/" + destination;
     } catch (Exception e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 
-    SilverTrace.info("suggestion-box", "SuggestionBoxRequestRouter.getDestination()",
+    SilverTrace.info("suggestionBox", "SuggestionBoxRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
     return destination;
   }
@@ -129,7 +129,7 @@ public class SuggestionBoxRequestRouter
 
     // Edito
     if (WysiwygController
-        .haveGotWysiwyg(suggestionBox.getComponentInstanceId(), suggestionBox.getId(), null)) {
+        .haveGotWysiwyg(componentSC.getComponentId(), suggestionBox.getId(), null)) {
       request.setAttribute("isEdito", true);
     }
 
@@ -157,7 +157,7 @@ public class SuggestionBoxRequestRouter
     request.setAttribute("ObjectId", suggestionBox.getId());
     request.setAttribute("Language", null);
     request.setAttribute("ReturnUrl", URLManager.getApplicationURL() +
-        URLManager.getURL("suggestion-box", "useless", suggestionBoxSC.getComponentId()) +
+        URLManager.getURL("suggestionBox", "useless", suggestionBoxSC.getComponentId()) +
         "fromWysiwyg");
     request.setAttribute("UserId", suggestionBoxSC.getUserId());
     request.setAttribute("IndexIt", "false");

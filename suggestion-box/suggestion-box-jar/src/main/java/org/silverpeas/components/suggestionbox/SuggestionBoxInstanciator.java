@@ -41,7 +41,7 @@ public class SuggestionBoxInstanciator implements ComponentsInstanciatorIntf {
   public void create(Connection con, String spaceId, String componentId, String userId)
       throws InstanciationException {
     SilverTrace
-        .info("suggestion-box", "SuggestionBoxInstanciator.create()", "root.MSG_GEN_ENTER_METHOD",
+        .info("suggestionBox", "SuggestionBoxInstanciator.create()", "root.MSG_GEN_ENTER_METHOD",
             "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
 
     // The title of the suggestion box is the one of the spawned component instance
@@ -51,14 +51,14 @@ public class SuggestionBoxInstanciator implements ComponentsInstanciatorIntf {
     suggestionBoxService.saveSuggestionBox(newBox);
 
     SilverTrace
-        .info("suggestion-box", "SuggestionBoxInstanciator.create()", "root.MSG_GEN_EXIT_METHOD");
+        .info("suggestionBox", "SuggestionBoxInstanciator.create()", "root.MSG_GEN_EXIT_METHOD");
   }
 
   @Override
   public void delete(Connection con, String spaceId, String componentId, String userId)
       throws InstanciationException {
     SilverTrace
-        .info("suggestion-box", "SuggestionBoxInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD",
+        .info("suggestionBox", "SuggestionBoxInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD",
             "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
     SuggestionBoxService suggestionBoxService = SuggestionBoxService.getInstance();
 
@@ -70,6 +70,6 @@ public class SuggestionBoxInstanciator implements ComponentsInstanciatorIntf {
     suggestionBoxService.deleteSuggestionBox(suggestionBoxToDelete);
 
     SilverTrace
-        .info("suggestion-box", "SuggestionBoxInstanciator.delete()", "root.MSG_GEN_EXIT_METHOD");
+        .info("suggestionBox", "SuggestionBoxInstanciator.delete()", "root.MSG_GEN_EXIT_METHOD");
   }
 }
