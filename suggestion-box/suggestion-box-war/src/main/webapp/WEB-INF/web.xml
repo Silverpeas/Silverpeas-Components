@@ -35,6 +35,6 @@
   </servlet>
   <servlet-mapping>
     <servlet-name>SuggestionBoxRequestRouter</servlet-name>
-    <url-pattern>/Rsuggestion-box/*</url-pattern>
+    <url-pattern>/RsuggestionBox/*</url-pattern>
   </servlet-mapping>
 </web-app>

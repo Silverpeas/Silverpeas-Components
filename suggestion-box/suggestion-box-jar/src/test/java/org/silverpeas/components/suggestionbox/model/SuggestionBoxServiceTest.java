@@ -55,7 +55,7 @@ public class SuggestionBoxServiceTest {
   private static AbstractApplicationContext context;
   private SuggestionBoxService service = null;
 
-  private static final String appInstanceId = "suggestion-box1";
+  private static final String appInstanceId = "suggestionBox1";
   private static final String userId = "0";
 
   public SuggestionBoxServiceTest() {
