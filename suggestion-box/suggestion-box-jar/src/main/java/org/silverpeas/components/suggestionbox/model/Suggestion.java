@@ -31,9 +31,13 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * This entity represents a suggestion associated to a suggestion box.
+ * A suggestion is described by a title and by a rich content. The rich content is managed by
+ * the {@link org.silverpeas.wysiwyg.control.WysiwygController} object and it is not persisted
+ * into the database.
  * @author Yohann Chastagnier
  */
 @Entity
@@ -45,6 +49,20 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier> {
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "suggestionBoxId", referencedColumnName = "id", nullable = false)
   private SuggestionBox suggestionBox;
+  private String title;
+  @Transient
+  private String content;
+
+  protected Suggestion() {
+  }
+
+  /**
+   * Constructs a new suggestion with the specified title.
+   * @param title the suggestion title.
+   */
+  public Suggestion(String title) {
+    this.title = title;
+  }
 
   /**
    * Gets the foreign suggestion box of the suggestion.
@@ -52,5 +70,29 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier> {
    */
   public SuggestionBox getSuggestionBox() {
     return suggestionBox;
+  }
+
+  /**
+   * Gets the title of this suggestion.
+   * @return the suggestion title.
+   */
+  public String getTitle() {
+    return this.title;
+  }
+
+  /**
+   * Sets the specified content to this suggestion.
+   * @param content the suggestion's content to set.
+   */
+  public void setContent(String content) {
+    this.content = content;
+  }
+
+  /**
+   * Sets the suggestion box to which this suggestion belongs.
+   * @param box a suggestion box.
+   */
+  protected void setSuggestionBox(final SuggestionBox box) {
+    this.suggestionBox = box;
   }
 }

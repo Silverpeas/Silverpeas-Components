@@ -41,6 +41,7 @@
 
   <bean id="organizationController" class="org.silverpeas.components.suggestionbox.mock.OrganisationControllerMockWrapper"/>
   <bean id="suggestionBoxRepository" class="org.silverpeas.components.suggestionbox.mock.SuggestionBoxRepositoryMockWrapper"/>
+  <bean id="suggestionRepository" class="org.silverpeas.components.suggestionbox.mock.SuggestionRepositoryMockWrapper"/>
   <bean id="attachmentService" class="org.silverpeas.components.suggestionbox.mock.AttachmentServiceMockWrapper"/>
 
   <bean id="suggestionBoxServiceFactory" class="org.silverpeas.components.suggestionbox.model.SuggestionBoxServiceFactory"

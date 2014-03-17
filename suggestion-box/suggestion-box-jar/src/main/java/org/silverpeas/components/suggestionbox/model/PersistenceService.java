@@ -21,40 +21,52 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.components.suggestionbox.repository;
+package org.silverpeas.components.suggestionbox.model;
 
 import com.silverpeas.annotation.Service;
-import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.persistence.repository.OperationContext;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
+
+import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepository;
+import org.silverpeas.components.suggestionbox.repository.SuggestionRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * A simple persister for testing purpose and with which the transactions are managed
  * <p>
  * @author mmoquillon
  */
-@Transactional
 @Service
-public class SuggestionBoxPersister {
+public class PersistenceService {
 
   @Inject
-  private SuggestionBoxRepository repository;
+  private SuggestionBoxRepository suggestionBoxRepository;
+  @Inject
+  private SuggestionRepository suggestionRepository;
 
+  @Transactional
   public void save(final OperationContext ctx, final SuggestionBox box) {
-    repository.save(ctx, box);
+    if (box.getAddedSuggestions().isEmpty()) {
+      suggestionBoxRepository.save(ctx, box);
+    } else {
+      suggestionRepository.save(ctx, box.getAddedSuggestions());
+    }
   }
 
+  @Transactional
   public void delete(final SuggestionBox box) {
-    repository.delete(box);
+    suggestionBoxRepository.delete(box);
   }
 
   public SuggestionBox getById(String id) {
-    return repository.getById(id);
+    return suggestionBoxRepository.getById(id);
   }
 
   public SuggestionBox getByComponentInstanceId(String componentInstanceId) {
-    return repository.getByComponentInstanceId(componentInstanceId);
+    return suggestionBoxRepository.getByComponentInstanceId(componentInstanceId);
+  }
+
+  protected PersistenceService() {
   }
 }

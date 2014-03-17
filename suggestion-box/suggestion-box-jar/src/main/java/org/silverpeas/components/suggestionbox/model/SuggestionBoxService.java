@@ -24,9 +24,7 @@
 package org.silverpeas.components.suggestionbox.model;
 
 import com.silverpeas.annotation.Service;
-import org.silverpeas.attachment.AttachmentService;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepository;
+import com.silverpeas.util.StringUtil;
 import org.silverpeas.persistence.repository.OperationContext;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +36,9 @@ import javax.inject.Inject;
  * and of the suggestions.
  * <p>
  * This service isn't intended to be used as such but within the business objects SuggestionBox and
- * Suggestion.
+ * Suggestion. All the operations requiring interaction with other business services or persistence
+ * repositories are delegated to this service by the SuggestionBox objects and by the Suggestion
+ * objects.
  * <p>
  * @author mmoquillon
  */
@@ -46,7 +46,7 @@ import javax.inject.Inject;
 public class SuggestionBoxService {
 
   @Inject
-  private SuggestionBoxRepository repository;
+  private PersistenceService persister;
 
   /**
    * Gets an instance of a SuggestionBoxService.
@@ -65,7 +65,7 @@ public class SuggestionBoxService {
    * (String)
    */
   public SuggestionBox getByComponentInstanceId(String componentInstanceId) {
-    return repository.getByComponentInstanceId(componentInstanceId);
+    return persister.getByComponentInstanceId(componentInstanceId);
   }
 
   /**
@@ -74,7 +74,23 @@ public class SuggestionBoxService {
    */
   @Transactional
   public void saveSuggestionBox(final SuggestionBox box) {
-    repository.save(OperationContext.fromUser(box.getCreatedBy()), box);
+    String author;
+    // the save is on new suggestions
+    if (box.getAddedSuggestions().isEmpty()) {
+      author = box.getLastUpdatedBy();
+      if (!StringUtil.isDefined(author)) {
+        author = box.getCreatedBy();
+      }
+      // the save is on the suggestion box itself
+    } else {
+      Suggestion suggestion = box.getAddedSuggestions().get(0);
+      author = suggestion.getLastUpdatedBy();
+      if (!StringUtil.isDefined(author)) {
+        author = suggestion.getCreatedBy();
+      }
+    }
+
+    persister.save(OperationContext.fromUser(author), box);
   }
 
   /**
@@ -93,6 +109,7 @@ public class SuggestionBoxService {
     WysiwygController.deleteWysiwygAttachments(box.getComponentInstanceId(), box.getId());
 
     // Finally deleting the box and its suggestions from the persistence.
-    repository.delete(box);
+    persister.delete(box);
   }
+
 }
