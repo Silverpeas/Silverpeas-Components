@@ -21,38 +21,22 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.components.suggestionbox.servlets;
+package org.silverpeas.components.suggestionbox.control;
 
-import com.stratelia.silverpeas.peasCore.servlets.WebComponentContext;
-import org.silverpeas.components.suggestionbox.control.SuggestionBoxSessionController;
+import com.stratelia.silverpeas.peasCore.servlets.WebComponentRequestContext;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
-import org.silverpeas.servlet.HttpRequest;
-
-import javax.servlet.http.HttpServletResponse;
-import java.lang.annotation.Annotation;
 
 /**
  * @author: Yohann Chastagnier
  */
-public class SuggestionBoxWebContext
-    extends WebComponentContext<SuggestionBoxSessionController> {
+public class SuggestionBoxWebRequestContext
+    extends WebComponentRequestContext<SuggestionBoxWebController> {
 
   private SuggestionBox suggestionBox;
 
   @Override
-  public void initialize() {
+  public void beforeRequestInitialize() {
     suggestionBox = SuggestionBox.getByComponentInstanceId(getComponentInstanceId());
-  }
-
-  /**
-   * Default hidden constructor.
-   * @param httpMethodClass
-   * @param request
-   * @param response
-   */
-  public SuggestionBoxWebContext(final Class<? extends Annotation> httpMethodClass,
-      final HttpRequest request, final HttpServletResponse response) {
-    super(httpMethodClass, request, response);
   }
 
   /**

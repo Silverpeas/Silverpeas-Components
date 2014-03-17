@@ -31,7 +31,11 @@
     <servlet-name>SuggestionBoxRequestRouter</servlet-name>
     <display-name>SuggestionBoxRequestRouter</display-name>
     <description>no description</description>
-    <servlet-class>org.silverpeas.components.suggestionbox.servlets.SuggestionBoxRequestRouter</servlet-class>
+    <servlet-class>com.stratelia.silverpeas.peasCore.servlets.WebComponentRequestRouter</servlet-class>
+    <init-param>
+      <param-name>WebComponentController</param-name>
+      <param-value>org.silverpeas.components.suggestionbox.control.SuggestionBoxWebController</param-value>
+    </init-param>
   </servlet>
   <servlet-mapping>
     <servlet-name>SuggestionBoxRequestRouter</servlet-name>
