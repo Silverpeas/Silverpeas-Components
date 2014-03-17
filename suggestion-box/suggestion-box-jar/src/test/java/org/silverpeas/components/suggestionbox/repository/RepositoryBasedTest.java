@@ -23,47 +23,36 @@
  */
 package org.silverpeas.components.suggestionbox.repository;
 
+import org.silverpeas.components.suggestionbox.model.PersistenceService;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.ITable;
 import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 import org.silverpeas.components.suggestionbox.mock.OrganisationControllerMockWrapper;
-import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
-import org.silverpeas.persistence.repository.OperationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import javax.sql.DataSource;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
 
 /**
- * User: Yohann Chastagnier
- * Date: 11/03/14
+ * Abstract class for tests that are based on the behavior of a JPA repository. These tests are not
+ * about the repository itself but on the persistence characteristics of a business object using a
+ * JPA repository.
  */
-public class SuggestionBoxRepositoryTest {
+public abstract class RepositoryBasedTest {
 
   // Spring context
   private ClassPathXmlApplicationContext context;
 
-  private final static String SUGGESTION_BOX_ID_1 = "suggestion-box_1";
-  private final static String SUGGESTION_BOX_ID_1_INSTANCE_ID = "suggestionBox1";
-  private final static String SUGGESTION_BOX_INSTANCE_ID = "suggestion-box1";
-
-  private SuggestionBoxPersister persister;
+  private PersistenceService persistanceService;
   private DataSource dataSource;
 
   @Before
@@ -75,7 +64,7 @@ public class SuggestionBoxRepositoryTest {
 
     // Beans
     dataSource = (DataSource) context.getBean("jpaDataSource");
-    persister = context.getBean(SuggestionBoxPersister.class);
+    persistanceService = context.getBean(PersistenceService.class);
 
     // Database
     DatabaseOperation.INSERT
@@ -84,8 +73,7 @@ public class SuggestionBoxRepositoryTest {
 
   public ReplacementDataSet getDataSet() throws Exception {
     ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(
-        SuggestionBoxRepositoryTest.class.getClassLoader().getResourceAsStream(
-            "org/silverpeas/components/suggestionbox/suggestion-box-dataset.xml")));
+        RepositoryBasedTest.class.getClassLoader().getResourceAsStream(getDataSetPath())));
     dataSet.addReplacementObject("[NULL]", null);
     return dataSet;
   }
@@ -95,67 +83,20 @@ public class SuggestionBoxRepositoryTest {
     context.close();
   }
 
-  @Test
-  public void getByComponentInstanceId() {
-    assertThat(persister.getByComponentInstanceId("dummyId"), nullValue());
-    assertThat(persister.getByComponentInstanceId(SUGGESTION_BOX_ID_1_INSTANCE_ID), notNullValue());
-  }
-
-
-  @Test
-  public void saveSuggestionBox() throws Exception {
-    UserDetail creator = aUser();
-    SuggestionBox box = new SuggestionBox(SUGGESTION_BOX_INSTANCE_ID);
-    OperationContext ctx = OperationContext.fromUser(creator.getId());
-    persister.save(ctx, box);
-
-    // Verification
-    IDataSet actualDataSet = getActualDataSet();
-    ITable table = actualDataSet.getTable("sc_suggestion_box");
-    assertThat(table.getRowCount(), is(2));
-    String createdBy = (String) table.getValue(0, "createdBy");
-    String instanceId = (String) table.getValue(0, "instanceId");
-    assertThat(createdBy, is(creator.getId()));
-    assertThat(instanceId, is(SUGGESTION_BOX_INSTANCE_ID));
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void saveSuggestionBoxWithAnInvalidOperationContext() throws Exception {
-    SuggestionBox box = new SuggestionBox(SUGGESTION_BOX_INSTANCE_ID);
-    OperationContext ctx = OperationContext.createInstance();
-    persister.save(ctx, box);
-
-    fail("An exception should be raised!");
-  }
-
   /**
-   * Deletion of a suggestion box, at a repository level, must delete all associated suggestions.
-   * @throws java.lang.Exception
+   * Gets the path of the XML file in which are defined the data to insert into the database
+   * before the running of a test.
+   * @return the path of the XML data set.
    */
-  @Test
-  public void deleteSuggestionBox() throws Exception {
-    SuggestionBox existentSuggestionBox = persister.getById(SUGGESTION_BOX_ID_1);
-    assertThat(existentSuggestionBox, notNullValue());
-    assertThat(existentSuggestionBox.getId(), is(SUGGESTION_BOX_ID_1));
+  public abstract String getDataSetPath();
 
-    // The suggestion box deletion
-    persister.delete(existentSuggestionBox);
-
-    // Verifications
-    IDataSet actualDataSet = getActualDataSet();
-    ITable table = actualDataSet.getTable("sc_suggestion_box");
-    assertThat(table.getRowCount(), is(0));
-    table = actualDataSet.getTable("sc_suggestion");
-    assertThat(table.getRowCount(), is(0));
-  }
-
-  private OrganisationController getOrganisationController() {
+  public OrganisationController getOrganisationController() {
     OrganisationController organisationController = OrganisationControllerFactory.
         getOrganisationController();
     return ((OrganisationControllerMockWrapper) organisationController).getMock();
   }
 
-  private UserDetail aUser() {
+  public UserDetail aUser() {
     UserDetail user = new UserDetail();
     user.setId("1");
     OrganisationController organisationController = getOrganisationController();
@@ -164,8 +105,12 @@ public class SuggestionBoxRepositoryTest {
     return user;
   }
 
-  private IDataSet getActualDataSet() throws Exception {
+  public IDataSet getActualDataSet() throws Exception {
     IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
     return connection.createDataSet();
+  }
+
+  public PersistenceService getPersistenceService() {
+    return this.persistanceService;
   }
 }

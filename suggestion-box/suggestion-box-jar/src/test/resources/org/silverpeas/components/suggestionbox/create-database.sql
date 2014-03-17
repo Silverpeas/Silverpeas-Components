@@ -16,6 +16,7 @@ ALTER TABLE sc_suggestion_box ADD CONSTRAINT const_sc_suggestion_box_pk PRIMARY 
 CREATE TABLE sc_suggestion (
   id              VARCHAR(40) NOT NULL,
   suggestionBoxId VARCHAR(40) NOT NULL,
+  title           VARCHAR(255) NOT NULL,
   createDate      TIMESTAMP   NOT NULL,
   createdBy       VARCHAR(40) NOT NULL,
   lastUpdateDate  TIMESTAMP,

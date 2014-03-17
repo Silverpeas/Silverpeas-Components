@@ -28,6 +28,7 @@ import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.persistence.model.jpa.AbstractJpaEntity;
 
+import java.util.ArrayList;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -56,6 +57,9 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
   @Transient
   private ComponentInstLight componentInst;
 
+  @Transient
+  private List<Suggestion> newSuggestions = new ArrayList<Suggestion>();
+
   /**
    * Gets the suggestion box represented by the specified identifier.
    * @param suggestionBoxId the identifier of the required suggestion box.
@@ -75,6 +79,7 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
     // application suggestion box (for instance, a suggestion box application is made up of one and
     // only one suggestion box.
     this.componentInstanceId = componentInstanceId;
+    this.suggestions = new ArrayList<Suggestion>();
   }
 
   /**
@@ -104,7 +109,6 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
   }
 
   protected SuggestionBox() {
-
   }
 
   /**
@@ -118,5 +122,31 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
           .getComponentInstLight(getComponentInstanceId());
     }
     return componentInst;
+  }
+
+  /**
+   * Adds the specified suggestion into this suggestion box. The added suggestions will be persisted
+   * once the {@link SuggestionBox#save()} is invoked.
+   * @param suggestion the suggestion to add.
+   */
+  public void add(final Suggestion suggestion) {
+    suggestion.setSuggestionBox(this);
+    this.newSuggestions.add(suggestion);
+  }
+
+  /**
+   * Saves or updates this suggestion box in Silverpeas.
+   */
+  public void save() {
+    SuggestionBoxService service = SuggestionBoxService.getInstance();
+    service.saveSuggestionBox(this);
+  }
+
+  protected void persistSuggestions(final List<Suggestion> suggestions) {
+    this.suggestions.addAll(suggestions);
+  }
+
+  protected List<Suggestion> getAddedSuggestions() {
+    return this.newSuggestions;
   }
 }
