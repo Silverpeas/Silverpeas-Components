@@ -57,10 +57,9 @@ public class SuggestionSavingTest extends RepositoryBasedTest {
     suggestion.setContent("This is my content");
     // add the suggestion into the suggestion box
     SuggestionBox box = getPersistenceService().getById(SUGGESTION_BOX_ID_1);
-    box.add(suggestion);
 
     // save the suggestion
-    getPersistenceService().save(OperationContext.fromUser(author.getId()), box);
+    getPersistenceService().save(OperationContext.fromUser(author), box, suggestion);
 
     // check the suggestion in database
     IDataSet actualDataSet = getActualDataSet();

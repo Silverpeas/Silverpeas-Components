@@ -28,6 +28,7 @@ import com.silverpeas.admin.components.InstanciationException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.model.SuggestionBoxService;
+import org.silverpeas.components.suggestionbox.model.SuggestionBoxServiceFactory;
 
 import java.sql.Connection;
 
@@ -47,7 +48,7 @@ public class SuggestionBoxInstanciator implements ComponentsInstanciatorIntf {
     // The title of the suggestion box is the one of the spawned component instance
     SuggestionBox newBox = new SuggestionBox(componentId);
     newBox.setCreatedBy(userId);
-    SuggestionBoxService suggestionBoxService = SuggestionBoxService.getInstance();
+    SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
     suggestionBoxService.saveSuggestionBox(newBox);
 
     SilverTrace
@@ -60,16 +61,20 @@ public class SuggestionBoxInstanciator implements ComponentsInstanciatorIntf {
     SilverTrace
         .info("suggestionBox", "SuggestionBoxInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD",
             "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
-    SuggestionBoxService suggestionBoxService = SuggestionBoxService.getInstance();
+    SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
 
     // Getting the suggestion box entity
-    SuggestionBox suggestionBoxToDelete =
-        suggestionBoxService.getByComponentInstanceId(componentId);
+    SuggestionBox suggestionBoxToDelete = suggestionBoxService.getByComponentInstanceId(componentId);
 
     // Deleting the suggestion box
     suggestionBoxService.deleteSuggestionBox(suggestionBoxToDelete);
 
     SilverTrace
         .info("suggestionBox", "SuggestionBoxInstanciator.delete()", "root.MSG_GEN_EXIT_METHOD");
+  }
+
+  private SuggestionBoxService getSuggestionBoxService() {
+    SuggestionBoxServiceFactory serviceFactory = SuggestionBoxServiceFactory.getFactory();
+    return serviceFactory.getSuggestionBoxService();
   }
 }

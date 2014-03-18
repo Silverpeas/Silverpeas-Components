@@ -591,19 +591,3 @@ $(document).ready(function(){
 </div>
 </body>
 </html>
-<%
-out.println("<script language=\"JavaScript\">");
-out.println("var oFCKeditor = new FCKeditor('Description');");
-out.println("oFCKeditor.Width = \"500\";");
-out.println("oFCKeditor.Height = \"300\";");
-out.println("oFCKeditor.BasePath = \""+URLManager.getApplicationURL()+"/wysiwyg/jsp/FCKeditor/\" ;");
-out.println("oFCKeditor.DisplayErrors = true;");
-out.println("oFCKeditor.Config[\"AutoDetectLanguage\"] = false");
-out.println("oFCKeditor.Config[\"DefaultLanguage\"] = \""+language+"\";");
-String configFile = settings.getString("configFile", URLManager.getApplicationURL() +"/wysiwyg/jsp/javaScript/myconfig.js");
-out.println("oFCKeditor.Config[\"CustomConfigurationsPath\"] = \""+configFile+"\";");
-out.println("oFCKeditor.ToolbarSet = 'almanach';");
-out.println("oFCKeditor.Config[\"ToolbarStartExpanded\"] = true;");
-out.println("oFCKeditor.ReplaceTextarea();");
-out.println("</script>");
-%>

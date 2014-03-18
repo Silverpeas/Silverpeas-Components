@@ -23,44 +23,43 @@
  */
 package org.silverpeas.components.suggestionbox.mock;
 
-import org.silverpeas.components.suggestionbox.model.Suggestion;
-import org.silverpeas.components.suggestionbox.model.SuggestionBox;
-import org.silverpeas.components.suggestionbox.model.SuggestionBoxService;
+import javax.inject.Named;
+
+import com.silverpeas.personalization.UserPreferences;
+import com.silverpeas.personalization.service.PersonalizationService;
+import com.silverpeas.util.Default;
 
 import static org.mockito.Mockito.mock;
 
-import javax.inject.Named;
-
 /**
- *
- * @author mmoquillon
+ * A wrapper around a PersonalizationController mock for testing purpose. It is managed by the IoC
+ * container and it plays the role of a PersonalizationController instance for the business objects
+ * involved in a test. For doing, it delegates the invoked methods to the wrapped mock. You can get
+ * the wrapped mock for registering some behaviors an PersonalizationController instance should
+ * have in the tests.
  */
-@Named("suggestionService")
-public class SuggestionBoxServiceMockWrapper implements SuggestionBoxService {
+@Named("personalizationService")
+@Default
+public class PersonalizationServiceMockWrapper implements PersonalizationService {
 
-  private final SuggestionBoxService mock = mock(SuggestionBoxService.class);
+  private final PersonalizationService mock = mock(PersonalizationService.class);
 
-  public SuggestionBoxService getMock() {
+  public PersonalizationService getMock() {
     return mock;
   }
 
   @Override
-  public void saveSuggestionBox(SuggestionBox box) {
-    mock.saveSuggestionBox(box);
+  public void saveUserSettings(UserPreferences userPreferences) {
+    mock.saveUserSettings(userPreferences);
   }
 
   @Override
-  public void deleteSuggestionBox(SuggestionBox box) {
-    mock.deleteSuggestionBox(box);
+  public UserPreferences getUserSettings(String userId) {
+    return mock.getUserSettings(userId);
   }
 
   @Override
-  public SuggestionBox getByComponentInstanceId(String componentInstanceId) {
-    return mock.getByComponentInstanceId(componentInstanceId);
-  }
-
-  @Override
-  public void addSuggestion(SuggestionBox box, Suggestion suggestion) {
-    mock.addSuggestion(box, suggestion);
+  public void resetDefaultSpace(String spaceId) {
+    mock.resetDefaultSpace(spaceId);
   }
 }

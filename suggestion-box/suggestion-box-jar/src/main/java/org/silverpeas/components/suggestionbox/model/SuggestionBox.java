@@ -51,14 +51,12 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
   @Column(name = "instanceId", nullable = false)
   private String componentInstanceId;
 
-  @OneToMany(mappedBy = "suggestionBox", fetch = FetchType.LAZY, cascade = {CascadeType.REMOVE})
+  @OneToMany(mappedBy = "suggestionBox", fetch = FetchType.LAZY, cascade = {CascadeType.ALL},
+      orphanRemoval = true)
   private List<Suggestion> suggestions;
 
   @Transient
   private ComponentInstLight componentInst;
-
-  @Transient
-  private List<Suggestion> newSuggestions = new ArrayList<Suggestion>();
 
   /**
    * Gets the suggestion box represented by the specified identifier.
@@ -66,7 +64,8 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
    * @return the suggestion box instance if exists, null otherwise.
    */
   public static SuggestionBox getByComponentInstanceId(String suggestionBoxId) {
-    return SuggestionBoxService.getInstance().getByComponentInstanceId(suggestionBoxId);
+    SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
+    return suggestionBoxService.getByComponentInstanceId(suggestionBoxId);
   }
 
   /**
@@ -108,6 +107,10 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
     return getComponentInst().getDescription(language);
   }
 
+  public Suggestions getSuggestions() {
+    return new Suggestions();
+  }
+
   protected SuggestionBox() {
   }
 
@@ -125,28 +128,25 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
   }
 
   /**
-   * Adds the specified suggestion into this suggestion box. The added suggestions will be persisted
-   * once the {@link SuggestionBox#save()} is invoked.
-   * @param suggestion the suggestion to add.
+   * Adds the specified suggestions into this suggestion box.
+   * @param newSuggestion the suggestion to add.
    */
-  public void add(final Suggestion suggestion) {
-    suggestion.setSuggestionBox(this);
-    this.newSuggestions.add(suggestion);
+  protected void addSuggestion(final Suggestion newSuggestion) {
+    newSuggestion.setSuggestionBox(this);
+    this.suggestions.add(newSuggestion);
   }
 
-  /**
-   * Saves or updates this suggestion box in Silverpeas.
-   */
-  public void save() {
-    SuggestionBoxService service = SuggestionBoxService.getInstance();
-    service.saveSuggestionBox(this);
+  public class Suggestions {
+
+    public void add(final Suggestion suggestion) {
+      SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
+      suggestionBoxService.addSuggestion(SuggestionBox.this, suggestion);
+    }
   }
 
-  protected void persistSuggestions(final List<Suggestion> suggestions) {
-    this.suggestions.addAll(suggestions);
+  private static SuggestionBoxService getSuggestionBoxService() {
+    SuggestionBoxServiceFactory serviceFactory = SuggestionBoxServiceFactory.getFactory();
+    return serviceFactory.getSuggestionBoxService();
   }
 
-  protected List<Suggestion> getAddedSuggestions() {
-    return this.newSuggestions;
-  }
 }

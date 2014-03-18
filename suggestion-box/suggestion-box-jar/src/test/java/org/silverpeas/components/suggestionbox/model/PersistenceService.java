@@ -33,10 +33,11 @@ import org.silverpeas.components.suggestionbox.repository.SuggestionRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * A simple persister for testing purpose and with which the transactions are managed
+ * A simple persister for testing purpose and with which the transactions are managed.
  * <p>
  * @author mmoquillon
  */
+@Transactional
 @Service
 public class PersistenceService {
 
@@ -45,16 +46,16 @@ public class PersistenceService {
   @Inject
   private SuggestionRepository suggestionRepository;
 
-  @Transactional
   public void save(final OperationContext ctx, final SuggestionBox box) {
-    if (box.getAddedSuggestions().isEmpty()) {
-      suggestionBoxRepository.save(ctx, box);
-    } else {
-      suggestionRepository.save(ctx, box.getAddedSuggestions());
-    }
+    suggestionBoxRepository.save(ctx, box);
   }
 
-  @Transactional
+  public void save(final OperationContext ctx, final SuggestionBox box, final Suggestion suggestion) {
+    SuggestionBox actualBox = suggestionBoxRepository.getById(box.getId());
+    actualBox.addSuggestion(suggestion);
+    suggestionRepository.save(ctx, suggestion);
+  }
+
   public void delete(final SuggestionBox box) {
     suggestionBoxRepository.delete(box);
   }

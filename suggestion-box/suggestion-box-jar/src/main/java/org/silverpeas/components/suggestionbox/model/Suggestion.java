@@ -89,6 +89,14 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier> {
   }
 
   /**
+   * Gets the content of this suggestion.
+   * @return the suggestion's content;
+   */
+  public String getContent() {
+    return this.content;
+  }
+
+  /**
    * Sets the suggestion box to which this suggestion belongs.
    * @param box a suggestion box.
    */

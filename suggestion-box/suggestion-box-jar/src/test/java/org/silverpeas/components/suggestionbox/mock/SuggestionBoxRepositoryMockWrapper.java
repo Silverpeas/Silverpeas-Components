@@ -42,7 +42,7 @@ import javax.inject.Named;
 @Named("suggestionBoxRepository")
 public class SuggestionBoxRepositoryMockWrapper extends SuggestionBoxRepository {
 
-  private SuggestionBoxRepository mock = mock(SuggestionBoxRepository.class);
+  private final SuggestionBoxRepository mock = mock(SuggestionBoxRepository.class);
 
   public SuggestionBoxRepository getMock() {
     return mock;

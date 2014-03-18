@@ -59,6 +59,21 @@
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <artifactId>clipboard</artifactId>
+      <classifier>client</classifier>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <artifactId>pdc</artifactId>
+      <classifier>client</classifier>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
 </project>

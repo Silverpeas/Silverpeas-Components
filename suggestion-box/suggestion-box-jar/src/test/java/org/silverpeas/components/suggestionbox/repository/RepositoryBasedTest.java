@@ -36,6 +36,7 @@ import org.junit.Before;
 import org.silverpeas.components.suggestionbox.mock.OrganisationControllerMockWrapper;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import javax.sql.DataSource;
@@ -59,7 +60,7 @@ public abstract class RepositoryBasedTest {
   public void setUp() throws Exception {
 
     // Spring
-    context = new ClassPathXmlApplicationContext("spring-suggestion-box-jpa.xml",
+    context = new ClassPathXmlApplicationContext(getApplicationContextPath(),
         "spring-suggestion-box-embedded-datasource.xml");
 
     // Beans
@@ -90,6 +91,16 @@ public abstract class RepositoryBasedTest {
    */
   public abstract String getDataSetPath();
 
+  /**
+   * Gets the XML Spring configuration file from which the context will be bootstrapped for the
+   * test. By default, the context is loaded from the XML file spring-suggestion-box-jpa.xml.
+   * Overrides this method to specify another XML configuration file.
+   * @return the location of the Spring XML configuration file.
+   */
+  public String getApplicationContextPath() {
+    return "spring-suggestion-box-jpa.xml";
+  }
+
   public OrganisationController getOrganisationController() {
     OrganisationController organisationController = OrganisationControllerFactory.
         getOrganisationController();
@@ -112,5 +123,9 @@ public abstract class RepositoryBasedTest {
 
   public PersistenceService getPersistenceService() {
     return this.persistanceService;
+  }
+
+  public ApplicationContext getApplicationContext() {
+    return this.context;
   }
 }
