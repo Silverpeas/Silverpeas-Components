@@ -38,8 +38,10 @@
 <c:set var="isEdito" value="${requestScope.isEdito}"/>
 
 <view:setConstant var="adminRole" constant="com.stratelia.webactiv.SilverpeasRole.admin" />
+<view:setConstant var="publishRole" constant="com.stratelia.webactiv.SilverpeasRole.publisher" />
 
 <fmt:message var="modifyEditoLabel" key="suggestionBox.menu.item.edito.modify"/>
+<fmt:message var="addSuggestionLabel" key="suggestionBox.menu.item.suggestion.add"/>
 
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
@@ -49,11 +51,15 @@
   <view:includePlugin name="wysiwyg"/>
 </head>
 <body>
+<c:if test="${greaterUserRole.isGreaterThanOrEquals(publishRole)}">
 <view:operationPane>
   <c:if test="${greaterUserRole.isGreaterThanOrEquals(adminRole)}">
     <view:operation action="edito/modify" altText="${modifyEditoLabel}"/>
+    <view:operationSeparator/>
   </c:if>
+  <view:operation action="suggestion/new" altText="${addSuggestionLabel}"/>
 </view:operationPane>
+</c:if>
 <view:window>
   <view:frame>
     <c:if test="${isEdito}">

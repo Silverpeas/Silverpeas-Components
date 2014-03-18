@@ -35,7 +35,11 @@
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
-  <import resource="/spring-suggestion-box-mock.xml"/>
+  <ctx:annotation-config/>
+
+  <bean id="suggestionBoxServiceFactory" class="org.silverpeas.components.suggestionbox.model.SuggestionBoxServiceFactory"
+        factory-method="getFactory"/>
 
   <bean id="suggestionBoxService" class="org.silverpeas.components.suggestionbox.mock.SuggestionBoxServiceMockWrapper"/>
+
 </beans>

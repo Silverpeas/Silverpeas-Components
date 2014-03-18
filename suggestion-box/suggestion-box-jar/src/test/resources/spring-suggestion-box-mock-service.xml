@@ -37,30 +37,8 @@
 
   <ctx:annotation-config/>
 
-  <ctx:component-scan base-package="org.silverpeas.components.suggestionbox.model"/>
-
-  <bean id="organizationController" class="org.silverpeas.components.suggestionbox.mock.OrganisationControllerMockWrapper"/>
-  <bean id="suggestionBoxRepository" class="org.silverpeas.components.suggestionbox.mock.SuggestionBoxRepositoryMockWrapper"/>
-  <bean id="suggestionRepository" class="org.silverpeas.components.suggestionbox.mock.SuggestionRepositoryMockWrapper"/>
-  <bean id="attachmentService" class="org.silverpeas.components.suggestionbox.mock.AttachmentServiceMockWrapper"/>
-  <bean id="personalizationService" class="org.silverpeas.components.suggestionbox.mock.PersonalizationServiceMockWrapper"/>
+  <bean id="suggestionBoxService" class="org.silverpeas.components.suggestionbox.mock.SuggestionBoxServiceMockWrapper"/>
 
   <bean id="suggestionBoxServiceFactory" class="org.silverpeas.components.suggestionbox.model.SuggestionBoxServiceFactory"
         factory-method="getFactory"/>
-
-  <bean id="organisationControllerFactory" class="org.silverpeas.core.admin.OrganisationControllerFactory"
-        factory-method="getFactory"/>
-
-  <bean id="attachmentServiceFactory" class="org.silverpeas.attachment.AttachmentServiceFactory"
-        factory-method="getInstance"/>
-
-  <bean id="personalizationServiceFactory" class="com.silverpeas.personalization.service.PersonalizationServiceFactory"
-        factory-method="getFactory"/>
-
-  <util:list id="entities">
-    <value>org.silverpeas.components.suggestionbox.model.SuggestionBox</value>
-  </util:list>
-
-  <import resource="spring-jpa.xml"/>
-
 </beans>

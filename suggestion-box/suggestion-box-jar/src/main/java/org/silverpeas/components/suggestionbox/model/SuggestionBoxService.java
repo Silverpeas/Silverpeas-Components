@@ -23,14 +23,6 @@
  */
 package org.silverpeas.components.suggestionbox.model;
 
-import com.silverpeas.annotation.Service;
-import com.silverpeas.util.StringUtil;
-import org.silverpeas.persistence.repository.OperationContext;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.inject.Inject;
-
 /**
  * A business service to provide a high level interface in the management of the suggestion boxes
  * and of the suggestions.
@@ -42,74 +34,33 @@ import javax.inject.Inject;
  * <p>
  * @author mmoquillon
  */
-@Service
-public class SuggestionBoxService {
-
-  @Inject
-  private PersistenceService persister;
-
-  /**
-   * Gets an instance of a SuggestionBoxService.
-   * <p>
-   * This method is a convenient one. It uses the {@link SuggestionBoxServiceFactory} to produce an
-   * instance that it returns directly.
-   * @return a SuggestionBoxService instance.
-   */
-  public static SuggestionBoxService getInstance() {
-    SuggestionBoxServiceFactory factory = SuggestionBoxServiceFactory.getFactory();
-    return factory.getSuggestionBoxService();
-  }
+public interface SuggestionBoxService {
 
   /**
    * @see org.silverpeas.components.suggestionbox.model.SuggestionBox#getByComponentInstanceId
    * (String)
+   * @param componentInstanceId the identifier of a suggestion box instance.
+   * @return the suggestion box belonging to the specified component instance.
    */
-  public SuggestionBox getByComponentInstanceId(String componentInstanceId) {
-    return persister.getByComponentInstanceId(componentInstanceId);
-  }
+  public SuggestionBox getByComponentInstanceId(String componentInstanceId);
 
   /**
    * Saves the specified suggestion box.
    * @param box the box to save in Silverpeas.
    */
-  @Transactional
-  public void saveSuggestionBox(final SuggestionBox box) {
-    String author;
-    // the save is on new suggestions
-    if (box.getAddedSuggestions().isEmpty()) {
-      author = box.getLastUpdatedBy();
-      if (!StringUtil.isDefined(author)) {
-        author = box.getCreatedBy();
-      }
-      // the save is on the suggestion box itself
-    } else {
-      Suggestion suggestion = box.getAddedSuggestions().get(0);
-      author = suggestion.getLastUpdatedBy();
-      if (!StringUtil.isDefined(author)) {
-        author = suggestion.getCreatedBy();
-      }
-    }
+  public void saveSuggestionBox(final SuggestionBox box);
 
-    persister.save(OperationContext.fromUser(author), box);
-  }
+  /**
+   * Adds into the specified suggestion box the new specified suggestion.
+   * @param box a suggestion box
+   * @param suggestion a new suggestions to add into the suggestion box.
+   */
+  public void addSuggestion(final SuggestionBox box, final Suggestion suggestion);
 
   /**
    * Deletes the specified suggestion box.
    * @param box the box to delete from Silverpeas.
    */
-  @Transactional
-  public void deleteSuggestionBox(final SuggestionBox box) {
-
-    // TODO Deletion of all data attached to the box and its suggestions :
-    // - comments
-    // - votes
-    // - suggestion attachments
-
-    // Deletion of box edito
-    WysiwygController.deleteWysiwygAttachments(box.getComponentInstanceId(), box.getId());
-
-    // Finally deleting the box and its suggestions from the persistence.
-    persister.delete(box);
-  }
+  public void deleteSuggestionBox(final SuggestionBox box);
 
 }

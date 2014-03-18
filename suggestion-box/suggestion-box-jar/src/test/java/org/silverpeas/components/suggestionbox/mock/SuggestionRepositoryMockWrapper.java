@@ -43,7 +43,7 @@ import java.util.List;
 @Named("suggestionRepository")
 public class SuggestionRepositoryMockWrapper extends SuggestionRepository {
 
-  private SuggestionRepository mock = mock(SuggestionRepository.class);
+  private final SuggestionRepository mock = mock(SuggestionRepository.class);
 
   public SuggestionRepository getMock() {
     return mock;

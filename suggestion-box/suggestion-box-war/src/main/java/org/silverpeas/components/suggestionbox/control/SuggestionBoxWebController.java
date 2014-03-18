@@ -9,17 +9,17 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.components.suggestionbox.control;
 
@@ -30,9 +30,12 @@ import com.stratelia.silverpeas.peasCore.servlets.annotation.Homepage;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.Invokable;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.InvokeAfter;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.LowestRoleAccess;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternal;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternalJsp;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.WebComponentController;
 import com.stratelia.webactiv.SilverpeasRole;
+import org.silverpeas.components.suggestionbox.model.Suggestion;
+import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import javax.ws.rs.GET;
@@ -40,8 +43,7 @@ import javax.ws.rs.Path;
 
 @WebComponentController("SuggestionBox")
 public class SuggestionBoxWebController extends
-    com.stratelia.silverpeas.peasCore.servlets
-        .WebComponentController<SuggestionBoxWebRequestContext> {
+    com.stratelia.silverpeas.peasCore.servlets.WebComponentController<SuggestionBoxWebRequestContext> {
 
   /**
    * Standard Session Controller Constructor
@@ -64,9 +66,8 @@ public class SuggestionBoxWebController extends
   }
 
   /**
-   * Perform homepage
-   * @param context
-   * @return destination
+   * Prepares the rendering of the home page.
+   * @param context the context of the incoming request.
    */
   @GET
   @Homepage
@@ -76,6 +77,14 @@ public class SuggestionBoxWebController extends
     // Nothing to do for now...
   }
 
+  /**
+   * Asks for the modification of the edito of the current suggestion box. The modification itself
+   * is redirected to the WYSIWYG editor.
+   * @param context the context of the incoming request.
+   * @return the navigation information within which the next resource to which the control will be
+   * passed is indicated.
+   * @throws UnsupportedEncodingException
+   */
   @GET
   @Path("edito/modify")
   @LowestRoleAccess(SilverpeasRole.admin)
@@ -85,7 +94,7 @@ public class SuggestionBoxWebController extends
 
   /**
    * Sets into request attributes the isEdito constant.
-   * @param context
+   * @param context the context of the incoming request.
    */
   @Invokable("isEdito")
   public void setIsEditoIntoRequest(SuggestionBoxWebRequestContext context) {
@@ -94,5 +103,37 @@ public class SuggestionBoxWebController extends
             null)) {
       context.getRequest().setAttribute("isEdito", true);
     }
+  }
+
+  /**
+   * Asks for purposing a new suggestion. It renders an HTML page to input the content of a new
+   * suggestion.
+   * @param context the context of the incoming request.
+   */
+  @GET
+  @Path("suggestion/new")
+  @RedirectToInternalJsp("suggestion.jsp")
+  @LowestRoleAccess(SilverpeasRole.writer)
+  public void newSuggestion(SuggestionBoxWebRequestContext context) {
+  }
+
+  /**
+   * Adds a new suggestion into the current suggestion box. The suggestion's data are
+   * carried within the request's context.
+   * @param context the context of the incoming request.
+   */
+  @GET
+  @Path("suggestion/add")
+  @RedirectToInternal("Main")
+  @LowestRoleAccess(SilverpeasRole.writer)
+  public void addSuggestion(SuggestionBoxWebRequestContext context) {
+    SuggestionBox suggestionBox = SuggestionBox.getByComponentInstanceId(context.
+        getComponentInstanceId());
+    String title = context.getRequest().getParameter("title");
+    String content = context.getRequest().getParameter("content");
+    Suggestion suggestion = new Suggestion(title);
+    suggestion.setContent(content);
+    suggestion.setCreator(context.getUser());
+    suggestionBox.getSuggestions().add(suggestion);
   }
 }

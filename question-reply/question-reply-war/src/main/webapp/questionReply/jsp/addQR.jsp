@@ -105,7 +105,7 @@ function save() {
 }
 
 $(document).ready(function() {
-	<view:wysiwyg replace="contentR" language="<%=language%>" width="600" height="300" toolbar="questionreply"/>
+	<view:wysiwyg replace="contentR" language="<%=language%>" width="600" height="300" toolbar="questionReply"/>
 });
 //-->
 </script>

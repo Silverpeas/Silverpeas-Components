@@ -174,10 +174,6 @@
 
         String folderName = EncodeHelper.javaStringToHtmlString(fsc.getForumName(folderId > 0 ? folderId : params));
 
-        ResourceLocator settings = fsc.getSettings();
-        String configFile = settings.getString("configFile",
-            URLManager.getApplicationURL() + "/wysiwyg/jsp/javaScript/myconfig.js");
-
         // Messages
         currentMessageId = messageId;
         int parent = fsc.getMessageParentId(currentMessageId);
@@ -236,7 +232,7 @@
 
         function initCKeditor() {
           if (wysiwygEditorInstance == null) {
-            wysiwygEditorInstance = <view:wysiwyg replace="messageText" language="<%=fsc.getLanguage()%>" width="600" height="300" toolbar="forums"/>;
+            wysiwygEditorInstance = <view:wysiwyg replace="messageText" language="<%=fsc.getLanguage()%>" width="600" height="300" toolbar="forum"/>;
           }
         }
 

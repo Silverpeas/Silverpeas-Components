@@ -23,22 +23,26 @@
  */
 package org.silverpeas.components.suggestionbox.model;
 
-import com.silverpeas.util.CollectionUtil;
-import com.silverpeas.util.ForeignPK;
+import com.silverpeas.personalization.UserPreferences;
+import com.silverpeas.personalization.service.PersonalizationService;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.silverpeas.attachment.AttachmentService;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.components.suggestionbox.mock.AttachmentServiceMockWrapper;
+import org.junit.runner.RunWith;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+import org.silverpeas.components.suggestionbox.mock.PersonalizationServiceMockWrapper;
 import org.silverpeas.components.suggestionbox.mock.SuggestionBoxRepositoryMockWrapper;
 import org.silverpeas.components.suggestionbox.mock.SuggestionRepositoryMockWrapper;
 import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepository;
 import org.silverpeas.components.suggestionbox.repository.SuggestionRepository;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.persistence.repository.OperationContext;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -47,13 +51,14 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 
-import java.util.Arrays;
 
 /**
  * Unit test on the SuggestionBoxService features. For doing, the test mocks all of the
  * service dependencies.
  * @author mmoquillon
  */
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(WysiwygController.class)
 public class SuggestionBoxServiceTest {
 
   private static AbstractApplicationContext context;
@@ -78,8 +83,10 @@ public class SuggestionBoxServiceTest {
 
   @Before
   public void setUp() {
-    service = SuggestionBoxService.getInstance();
+    SuggestionBoxServiceFactory serviceFactory = SuggestionBoxServiceFactory.getFactory();
+    service = serviceFactory.getSuggestionBoxService();
     assertThat(service, notNullValue());
+    PowerMockito.mockStatic(WysiwygController.class);
   }
 
   @After
@@ -106,17 +113,12 @@ public class SuggestionBoxServiceTest {
   @Test
   public void deleteASuggestionBox() {
     SuggestionBox box = prepareASuggestionBox();
-    AttachmentService attachmentService = getAttachmentService();
-    ForeignPK foreignPK = new ForeignPK(box.getId(), appInstanceId);
-    when(attachmentService.listAllDocumentsByForeignKey(foreignPK, null))
-        .thenReturn(CollectionUtil.asList(new SimpleDocument(), new SimpleDocument()));
-
     service.deleteSuggestionBox(box);
 
-    SuggestionBoxRepository repository = getSuggestionBoxRepository();
-    verify(attachmentService, times(1)).listAllDocumentsByForeignKey(eq(foreignPK), anyString());
-    verify(attachmentService, times(2)).deleteAttachment(any(SimpleDocument.class));
-    verify(repository, times(1)).delete(eq(box));
+    PowerMockito.verifyStatic(times(1));
+    WysiwygController.deleteWysiwygAttachments(box.getComponentInstanceId(), box.getId());
+    SuggestionBoxRepository suggestionBoxRepository = getSuggestionBoxRepository();
+    verify(suggestionBoxRepository, times(1)).delete(box);
   }
 
   @Test
@@ -124,13 +126,24 @@ public class SuggestionBoxServiceTest {
     SuggestionBox box = prepareASuggestionBox();
     Suggestion suggestion = new Suggestion("My suggestion");
     suggestion.setContent("the content of my suggestion");
-    suggestion.setCreatedBy("1");
-    box.add(suggestion);
+    suggestion.setCreator(box.getCreator());
 
-    box.save();
+    SuggestionBoxRepository suggestionBoxRepository = getSuggestionBoxRepository();
+    when(suggestionBoxRepository.getById(box.getId())).thenReturn(box);
+    PersonalizationService personalizationService = getPersonalizationService();
+    UserPreferences preferences = new UserPreferences();
+    preferences.setLanguage("fr");
+    when(personalizationService.getUserSettings(box.getCreator().getId())).thenReturn(preferences);
 
-    SuggestionRepository repository = getSuggestionRepository();
-    verify(repository, times(1)).save(any(OperationContext.class), eq(Arrays.asList(suggestion)));
+    service.addSuggestion(box, suggestion);
+
+    SuggestionRepository suggestionRepository = getSuggestionRepository();
+    verify(suggestionBoxRepository, times(1)).getById(box.getId());
+    verify(suggestionRepository, times(1)).save(any(OperationContext.class), eq(suggestion));
+    PowerMockito.verifyStatic(times(1));
+    WysiwygController.
+        save(suggestion.getContent(), box.getComponentInstanceId(), suggestion.getId(), userId,
+            "fr", false);
   }
 
   private SuggestionBoxRepository getSuggestionBoxRepository() {
@@ -145,15 +158,19 @@ public class SuggestionBoxServiceTest {
     return mockWrapper.getMock();
   }
 
-  private AttachmentService getAttachmentService() {
-    AttachmentServiceMockWrapper mockWrapper = context.
-        getBean(AttachmentServiceMockWrapper.class);
+  private PersonalizationService getPersonalizationService() {
+    PersonalizationServiceMockWrapper mockWrapper = context.getBean(
+        PersonalizationServiceMockWrapper.class);
     return mockWrapper.getMock();
   }
 
   private SuggestionBox prepareASuggestionBox() {
+    UserDetail user = new UserDetail();
+    user.setId(userId);
+    user.setFirstName("Toto");
+    user.setLastName("Chez-les-papoos");
     SuggestionBox box = new SuggestionBox(appInstanceId);
-    box.setCreatedBy(userId);
+    box.setCreator(user);
     ReflectionTestUtils
         .setField(box, "id", new UuidIdentifier().fromString("suggestionBox2"));
     return box;
