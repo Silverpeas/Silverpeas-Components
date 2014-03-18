@@ -37,7 +37,6 @@ import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import java.io.UnsupportedEncodingException;
 
 @WebComponentController("SuggestionBox")
 public class SuggestionBoxWebController extends
@@ -80,8 +79,7 @@ public class SuggestionBoxWebController extends
   @GET
   @Path("edito/modify")
   @LowestRoleAccess(SilverpeasRole.admin)
-  public Navigation modifyEdito(SuggestionBoxWebRequestContext context)
-      throws UnsupportedEncodingException {
+  public Navigation modifyEdito(SuggestionBoxWebRequestContext context) {
     return context.redirectToHtmlEditor(context.getSuggestionBox().getId(), "fromWysiwyg", false);
   }
 
