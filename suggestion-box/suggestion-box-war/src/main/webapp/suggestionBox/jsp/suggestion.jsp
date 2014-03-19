@@ -42,6 +42,7 @@
 <c:set var="language" value="${requestScope.resources.language}"/>
 <c:url var="mandatoryIcons" value="/util/icons/mandatoryField.gif"/>
 <c:url var="formValidator" value="/util/javaScript/checkForm.js"/>
+<c:set var="componentUriBase"><c:url value="${requestScope.componentUriBase}"/></c:set>
 
 <fmt:message var="save" key="GML.validate"/>
 <fmt:message var="cancel" key="GML.cancel"/>
@@ -88,7 +89,7 @@
     }
 
     function cancel() {
-      $('#suggestion').attr('action', 'Main').submit();
+      $('#suggestion').attr('action', '${componentUriBase}Main').submit();
     }
 
     $(document).ready(function() {
@@ -102,19 +103,19 @@
 <view:window>
   <view:frame>
     <div id="error" style="display: none;"></div>
-    <form id="suggestion" name="suggestion" action="suggestion/add" method="POST">
+    <form id="suggestion" name="suggestion" action="${componentUriBase}suggestion/add" method="POST">
       <div class="fields">
         <div class="field" id="suggestionName">
           <label for="title" class="txtlibform"><fmt:message key='GML.title'/>&nbsp;<img alt="mandatory" src="${mandatoryIcons}" width="5" height="5"/></label>
-		      <div class="champs">
-            <input id="title" type="text" name="Title" size="100%" maxlength="2000" value=""/>
-		      </div>
+          <div class="champs">
+            <input id="title" type="text" name="title" size="100%" maxlength="2000" value=""/>
+          </div>
         </div>
         <br clear="all"/>
         <div class="field" id="eventDescriptionArea">
           <label for="Content" class="txtlibform"><fmt:message key='GML.description'/></label>
           <div class="champs">
-            <textarea rows="5" cols="10" name="Content" id="Content"></textarea>
+            <textarea rows="5" cols="10" name="content" id="Content"></textarea>
           </div>
         </div>
       </div>
