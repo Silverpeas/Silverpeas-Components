@@ -39,6 +39,7 @@ import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
 @WebComponentController("SuggestionBox")
@@ -83,7 +84,6 @@ public class SuggestionBoxWebController extends
    * @param context the context of the incoming request.
    * @return the navigation information within which the next resource to which the control will be
    * passed is indicated.
-   * @throws UnsupportedEncodingException
    */
   @GET
   @Path("edito/modify")
@@ -122,7 +122,7 @@ public class SuggestionBoxWebController extends
    * carried within the request's context.
    * @param context the context of the incoming request.
    */
-  @GET
+  @POST
   @Path("suggestion/add")
   @RedirectToInternal("Main")
   @LowestRoleAccess(SilverpeasRole.writer)
