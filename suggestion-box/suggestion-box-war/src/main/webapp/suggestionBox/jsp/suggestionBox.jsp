@@ -34,6 +34,7 @@
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
 <c:set var="greaterUserRole" value="${requestScope.greaterUserRole}"/>
+<c:set var="componentUriBase"><c:url value="${requestScope.componentUriBase}"/></c:set>
 <c:set var="suggestionBoxId" value="${requestScope.suggestionBox.id}"/>
 <c:set var="isEdito" value="${requestScope.isEdito}"/>
 
@@ -54,10 +55,10 @@
 <c:if test="${greaterUserRole.isGreaterThanOrEquals(publishRole)}">
 <view:operationPane>
   <c:if test="${greaterUserRole.isGreaterThanOrEquals(adminRole)}">
-    <view:operation action="edito/modify" altText="${modifyEditoLabel}"/>
+    <view:operation action="${componentUriBase}edito/modify" altText="${modifyEditoLabel}"/>
     <view:operationSeparator/>
   </c:if>
-  <view:operation action="suggestion/new" altText="${addSuggestionLabel}"/>
+  <view:operation action="${componentUriBase}suggestion/new" altText="${addSuggestionLabel}"/>
 </view:operationPane>
 </c:if>
 <view:window>
