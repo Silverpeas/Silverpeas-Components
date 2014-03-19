@@ -23,10 +23,19 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"
+	isELIgnored="false"%>
 <%@ include file="check.jsp" %>
 <%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
+<%
+	response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
+	response.setHeader("Pragma", "no-cache"); //HTTP 1.0
+	response.setDateHeader("Expires", -1); //prevents caching at the proxy server
+%>
+<fmt:setLocale value="${requestScope.Language}"/>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
 <% 
 	PostDetail 	post			= (PostDetail) request.getAttribute("Post");
@@ -44,32 +53,30 @@
 	String 		action 			= "CreatePost";
 	browseBar.setExtraInformation(resource.getString("blog.newPost"));
 	
-	if (post != null) {
-		title 			= post.getPublication().getName();
-		postId			= post.getPublication().getPK().getId();
-		if (post.getCategory() != null) {
-			categoryId	= post.getCategory().getNodePK().getId();
-		}
-		creationDate 	= resource.getOutputDate(post.getPublication().getCreationDate());
-		updateDate		= resource.getOutputDate(post.getPublication().getUpdateDate());
-		creatorId 		= post.getPublication().getCreatorId();
-		dateEvent 		= post.getDateEvent();
-		action 			= "UpdatePost";
+	title 			= post.getPublication().getName();
+	postId			= post.getPublication().getPK().getId();
+	if (post.getCategory() != null) {
+		categoryId	= post.getCategory().getNodePK().getId();
+	}
+	creationDate 	= resource.getOutputDate(post.getPublication().getCreationDate());
+	updateDate		= resource.getOutputDate(post.getPublication().getUpdateDate());
+	creatorId 		= post.getPublication().getCreatorId();
+	dateEvent 		= post.getDateEvent();
+	if(updater != null) {
+	  	action 			= "UpdatePost";
 		browseBar.setExtraInformation(resource.getString("blog.updatePost"));
 	}
 	
-	// declaration des boutons
-	Button validateButton 	= gef.getFormButton(resource.getString("GML.validate"), "javascript:onclick=sendData();", false);
-	Button cancelButton 	= gef.getFormButton(resource.getString("GML.cancel"), "Main", false);
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<title></title>
+	<title><fmt:message key="GML.popupTitle"/></title>
 	<link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
     <view:looknfeel/>
     <view:includePlugin name="datepicker"/>
+    <view:includePlugin name="wysiwyg"/>
 	<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 	<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
     <script type="text/javascript">
@@ -109,21 +116,37 @@
 	     	} 
 	     	return result;
 		}
+		
+		function sendDataAndDraftOut() {
+			if (isCorrectForm()) {
+				<view:pdcPositions setIn="document.postForm.Positions.value"/>
+				document.postForm.action = "UpdatePostAndDraftOut";
+				document.postForm.submit();
+    		}
+		}
+		
+		function deletePost()
+		{
+	    	document.postForm.action = "DeletePost";
+	    	document.postForm.PostId.value = <%=postId%>;
+			document.postForm.submit();
+		}
+		
+		function cancel()
+		{
+	    	document.postForm.action = "Main";
+			document.postForm.submit();
+		}
+		
+		$(document).ready(function() {
+			<view:wysiwyg replace="Content" language="${language}" width="600" height="300" toolbar="Default"/>
+		});
 	</script>
 </head>
 <body id="blog">
 <div id="<%=instanceId %>">
-<%
-	TabbedPane tabbedPane = gef.getTabbedPane();
-	tabbedPane.addTab(resource.getString("GML.head"), "#", true);
-	if (action == "UpdatePost") {
-		tabbedPane.addTab(resource.getString("blog.content"), "ViewContent?PostId=" + postId, false);
-	} else {
-	  	tabbedPane.addTab(resource.getString("blog.content"), "#", false, false);
-	}
-	out.println(window.printBefore());
-	out.println(tabbedPane.print());
-%>
+<view:browseBar componentId="${instanceId}" />
+<view:window>
 <view:frame>
 <div id="header">
 <form name="postForm" action="<%=action%>" method="post">
@@ -140,6 +163,13 @@
         <input type="text" name="Title" size="60" maxlength="150" value="<%=title%>" />&nbsp;<img alt="mandatory" src="<%=resource.getIcon("blog.obligatoire")%>" width="5" height="5" border="0"/>
       </div>
     </div>
+    
+    <div class="field" id="contentArea">
+		<label for="Content" class="txtlibform"><fmt:message key='blog.content'/></label>
+		<div class="champs">
+			<textarea rows="5" cols="10" name="Content" id="Content"></textarea>
+		</div>
+	</div>
     
     <div class="field" id="dateArea">
       <label class="txtlibform" for="DateEvent"><%=resource.getString("blog.dateEvent")%></label>
@@ -203,16 +233,31 @@
 
 </form>
 </div>
-<% 
-	ButtonPane buttonPane = gef.getButtonPane();
-    buttonPane.addButton(validateButton);
-    buttonPane.addButton(cancelButton);
-%>
-<br/><center><%=buttonPane.print() %></center>
+	<br/>
+    <center>
+    <fmt:message key="GML.validate" var="validateLabel"/>
+    <fmt:message key="GML.publish" var="publishLabel"/>
+    <fmt:message key="blog.draftPost" var="draftLabel"/>
+    <fmt:message key="GML.cancel" var="cancelLabel"/>
+    <view:buttonPane>
+      <view:button action="javascript:onClick=sendDataAndDraftOut();" disabled="false"
+                   label="${publishLabel}"/>
+	  <view:button action="javascript:onClick=sendData();" disabled="false"
+                   label="${draftLabel}"/>    
+      <% if ("CreatePost".equals(action)) {
+      %>               
+      <view:button action="javascript:onClick=deletePost();" disabled="false" label="${cancelLabel}"/>
+      <%
+      } else {
+      %>
+      <view:button action="javascript:onClick=cancel();" disabled="false" label="${cancelLabel}"/>
+      <%
+      }
+      %>
+    </view:buttonPane>
+    </center>
 </view:frame>
-<%
-	out.println(window.printAfter());
-%>
+</view:window>
 </div>
 </body>
 </html>

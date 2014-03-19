@@ -33,7 +33,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Event;
 import java.net.URLEncoder;
 import java.rmi.RemoteException;
@@ -133,34 +132,18 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         // appel de la page d'accueil
         destination = rootDest + "accueil.jsp";
       } else if (function.equals("NewPost")) {
+        //save a new post untitled, in draft mode
+        String title = blogSC.getString("blog.postUntitled");
+        String categoryId = "";
+        Date dateEvent = new Date();
+        PdcClassificationEntity classification = PdcClassificationEntity.undefinedClassification();
+        String postId = blogSC.createPost(title, categoryId, dateEvent, classification);
+        
+        PostDetail post = blogSC.getPost(postId);
+        request.setAttribute("Post", post);
         request.setAttribute("AllCategories", blogSC.getAllCategories());
 
-        // appel de la page de création
         destination = rootDest + "postManager.jsp";
-      } else if (function.equals("CreatePost")) {
-        // récupération des paramètres pour création
-        String title = request.getParameter("Title");
-        String categoryId = request.getParameter("CategoryId");
-        String date = request.getParameter("DateEvent");
-        Date dateEvent;
-        if (StringUtil.isDefined(date)) {
-          dateEvent = DateUtil.stringToDate(date, blogSC.getLanguage());
-        } else {
-          dateEvent = new Date();
-        }
-
-        // Classification
-        String positions = request.getParameter("Positions");
-        PdcClassificationEntity classification = PdcClassificationEntity.undefinedClassification();
-        if (StringUtil.isDefined(positions)) {
-          classification = PdcClassificationEntity.fromJSON(positions);
-        }
-
-        String postId = blogSC.createPost(title, categoryId, dateEvent, classification);
-
-        // appel de la page pour saisir le contenu du billet
-        request.setAttribute("PostId", postId);
-        destination = getDestination("ViewContent", blogSC, request);
       } else if (function.equals("EditPost")) {
         blogSC.checkWriteAccessOnBlogPost();
         String postId = request.getParameter("PostId");
@@ -173,9 +156,10 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         request.setAttribute("Updater", blogSC.getUserDetail(post.getPublication().getUpdaterId()));
         // appel de la page de modification
         destination = rootDest + "postManager.jsp";
-      } else if (function.equals("UpdatePost")) {
+      } else if (function.startsWith("UpdatePost")) {
         String postId = request.getParameter("PostId");
         String title = request.getParameter("Title");
+        String content = request.getParameter("Content");
         String categoryId = request.getParameter("CategoryId");
         String date = request.getParameter("DateEvent");
         Date dateEvent;
@@ -185,40 +169,20 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
           dateEvent = new Date();
         }
 
-        // MAJ base
-        blogSC.updatePost(postId, title, categoryId, dateEvent);
+        if(function.equals("UpdatePost")) {
+          // save post
+          blogSC.updatePost(postId, title, content, categoryId, dateEvent);
+        } else if (function.equals("UpdatePostAndDraftOut")) {
+          // save and draft out the post
+          blogSC.updatePostAndDraftOut(postId, title, content, categoryId, dateEvent);
+        }
 
-        destination = getDestination("ViewContent", blogSC, request);
+        destination = getDestination("Main", blogSC, request);
       } else if (function.equals("DeletePost")) {
         String postId = request.getParameter("PostId");
         blogSC.deletePost(postId);
 
         destination = getDestination("Main", blogSC, request);
-      } else if (function.equals("ViewContent")) {
-        String postId = request.getParameter("PostId");
-        if (!StringUtil.isDefined(postId)) {
-          postId = (String) request.getAttribute("PostId");
-        }
-
-        PostDetail post = blogSC.getPost(postId);
-        PublicationDetail pub = post.getPublication();
-        request.setAttribute("SpaceId", blogSC.getSpaceId());
-        request.setAttribute("SpaceName", URLEncoder.encode(blogSC.getSpaceLabel(),
-            CharEncoding.UTF_8));
-        request.setAttribute("ComponentId", blogSC.getComponentId());
-        request.setAttribute("ComponentName", URLEncoder.encode(blogSC.getComponentLabel(),
-            CharEncoding.UTF_8));
-        request.setAttribute("ObjectId", pub.getId());
-        request.setAttribute("Language", blogSC.getLanguage());
-        request.setAttribute("ReturnUrl", URLManager.getApplicationURL()
-            + URLManager.getURL("blog", "useless", blogSC.getComponentId()) + "FromWysiwyg?PostId="
-            + pub.getId());
-        request.setAttribute("UserId", blogSC.getUserId());
-        request.setAttribute("IndexIt", "false");
-        // visualisation et modification du contenu Wysiwyg du billet
-        destination = "/wysiwyg/jsp/htmlEditor.jsp";
-      } else if (function.equals("FromWysiwyg")) {
-        destination = getDestination("ViewPost", blogSC, request);
       } else if (function.equals("ViewPost")) {
         // visualisation d'un billet avec les commentaires
         String postId = request.getParameter("PostId");
