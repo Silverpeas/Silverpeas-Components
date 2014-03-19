@@ -57,7 +57,7 @@
   <script type="text/javascript" src="${formValidator}"></script>
   <script type="text/javascript">
     function getSuggestionContent() {
-      return CKEDITOR.instances.Content;
+      return CKEDITOR.instances.content;
     }
 
     function validate(suggestion) {
@@ -93,7 +93,7 @@
     }
 
     $(document).ready(function() {
-      <view:wysiwyg replace="Content" language="${language}" toolbar="suggestionBox"/>
+      <view:wysiwyg replace="content" language="${null}" toolbar="suggestionBox"/>
       $('#title').focus();
     });
   </script>
@@ -113,9 +113,9 @@
         </div>
         <br clear="all"/>
         <div class="field" id="eventDescriptionArea">
-          <label for="Content" class="txtlibform"><fmt:message key='GML.description'/></label>
+          <label for="content" class="txtlibform"><fmt:message key='GML.description'/></label>
           <div class="champs">
-            <textarea rows="5" cols="10" name="content" id="Content"></textarea>
+            <textarea rows="5" cols="10" name="content" id="content"></textarea>
           </div>
         </div>
       </div>

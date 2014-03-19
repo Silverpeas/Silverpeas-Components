@@ -23,8 +23,6 @@
  */
 package org.silverpeas.components.suggestionbox.model;
 
-import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.personalization.service.PersonalizationService;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -35,7 +33,6 @@ import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.silverpeas.components.suggestionbox.mock.PersonalizationServiceMockWrapper;
 import org.silverpeas.components.suggestionbox.mock.SuggestionBoxRepositoryMockWrapper;
 import org.silverpeas.components.suggestionbox.mock.SuggestionRepositoryMockWrapper;
 import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepository;
@@ -130,10 +127,6 @@ public class SuggestionBoxServiceTest {
 
     SuggestionBoxRepository suggestionBoxRepository = getSuggestionBoxRepository();
     when(suggestionBoxRepository.getById(box.getId())).thenReturn(box);
-    PersonalizationService personalizationService = getPersonalizationService();
-    UserPreferences preferences = new UserPreferences();
-    preferences.setLanguage("fr");
-    when(personalizationService.getUserSettings(box.getCreator().getId())).thenReturn(preferences);
 
     service.addSuggestion(box, suggestion);
 
@@ -143,7 +136,7 @@ public class SuggestionBoxServiceTest {
     PowerMockito.verifyStatic(times(1));
     WysiwygController.
         save(suggestion.getContent(), box.getComponentInstanceId(), suggestion.getId(), userId,
-            "fr", false);
+            null, false);
   }
 
   private SuggestionBoxRepository getSuggestionBoxRepository() {
@@ -155,12 +148,6 @@ public class SuggestionBoxServiceTest {
   private SuggestionRepository getSuggestionRepository() {
     SuggestionRepositoryMockWrapper mockWrapper = context.
         getBean(SuggestionRepositoryMockWrapper.class);
-    return mockWrapper.getMock();
-  }
-
-  private PersonalizationService getPersonalizationService() {
-    PersonalizationServiceMockWrapper mockWrapper = context.getBean(
-        PersonalizationServiceMockWrapper.class);
     return mockWrapper.getMock();
   }
 

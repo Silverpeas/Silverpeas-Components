@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2000 - 2009 Silverpeas
+    Copyright (C) 2000 - 2014 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -24,8 +24,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-
-
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:p="http://www.springframework.org/schema/p"
@@ -38,5 +36,8 @@
   <ctx:component-scan base-package="org.silverpeas.components.suggestionbox"/>
 
   <bean id="suggestionBoxServiceFactory" class="org.silverpeas.components.suggestionbox.model.SuggestionBoxServiceFactory"
+        factory-method="getFactory"/>
+
+  <bean id="transactionFactory" class="org.silverpeas.components.suggestionbox.persistence.TransactionFactory"
         factory-method="getFactory"/>
 </beans>

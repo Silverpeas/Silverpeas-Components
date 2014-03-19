@@ -23,8 +23,8 @@
  */
 package org.silverpeas.components.suggestionbox.model;
 
+import org.silverpeas.components.suggestionbox.persistence.Transaction;
 import com.silverpeas.annotation.Service;
-import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepository;
 import org.silverpeas.components.suggestionbox.repository.SuggestionRepository;
@@ -72,9 +72,6 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
   @Override
   public void saveSuggestionBox(final SuggestionBox box) {
     String author = box.getLastUpdatedBy();
-    if (!StringUtil.isDefined(author)) {
-      author = box.getCreatedBy();
-    }
     suggestionBoxRepository.save(OperationContext.fromUser(author), box);
   }
 
@@ -83,22 +80,23 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
    * @param box a suggestion box
    * @param suggestion a new suggestions to add into the suggestion box.
    */
-  @Transactional
   @Override
   public void addSuggestion(final SuggestionBox box, final Suggestion suggestion) {
-    UserDetail author = suggestion.getLastUpdater();
-    if (author == null) {
-      author = suggestion.getCreator();
-    }
-    String language = author.getUserPreferences().getLanguage();
+    final UserDetail author = suggestion.getLastUpdater();
+    Transaction transaction = Transaction.getTransaction();
+    transaction.perform(new Runnable() {
 
-    SuggestionBox actualBox = suggestionBoxRepository.getById(box.getId());
-    actualBox.addSuggestion(suggestion);
-    suggestionRepository.save(OperationContext.fromUser(author), suggestion);
+      @Override
+      public void run() {
+        SuggestionBox actualBox = suggestionBoxRepository.getById(box.getId());
+        actualBox.addSuggestion(suggestion);
+        suggestionRepository.save(OperationContext.fromUser(author), suggestion);
+      }
+    });
 
     WysiwygController.
         save(suggestion.getContent(), box.getComponentInstanceId(), suggestion.getId(), author.
-            getId(), language, false);
+            getId(), null, false);
   }
 
   /**

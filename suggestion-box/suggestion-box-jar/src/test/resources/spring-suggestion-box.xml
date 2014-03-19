@@ -40,7 +40,6 @@
   <import resource="spring-suggestion-box-jpa.xml"/>
 
   <bean id="attachmentService" class="org.silverpeas.components.suggestionbox.mock.AttachmentServiceMockWrapper"/>
-  <bean id="personalizationService" class="org.silverpeas.components.suggestionbox.mock.PersonalizationServiceMockWrapper"/>
 
   <bean id="suggestionBoxServiceFactory" class="org.silverpeas.components.suggestionbox.model.SuggestionBoxServiceFactory"
         factory-method="getFactory"/>
@@ -48,7 +47,7 @@
   <bean id="attachmentServiceFactory" class="org.silverpeas.attachment.AttachmentServiceFactory"
         factory-method="getInstance"/>
 
-  <bean id="personalizationServiceFactory" class="com.silverpeas.personalization.service.PersonalizationServiceFactory"
+  <bean id="transactionFactory" class="org.silverpeas.components.suggestionbox.persistence.TransactionFactory"
         factory-method="getFactory"/>
 
 </beans>

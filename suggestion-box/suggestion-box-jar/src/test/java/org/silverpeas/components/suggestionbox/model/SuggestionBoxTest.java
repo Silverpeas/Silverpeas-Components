@@ -23,8 +23,6 @@
  */
 package org.silverpeas.components.suggestionbox.model;
 
-import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.personalization.service.PersonalizationService;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
@@ -33,13 +31,11 @@ import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.silverpeas.components.suggestionbox.mock.PersonalizationServiceMockWrapper;
 import org.silverpeas.components.suggestionbox.repository.RepositoryBasedTest;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.when;
 
 /**
  * Unit test on the business operations of the SuggestionBox objects.
@@ -65,10 +61,6 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
   public void testAddASuggestionIntoASuggestionBox() throws Exception {
     PowerMockito.mockStatic(WysiwygController.class);
     UserDetail author = aUser();
-    PersonalizationService personalizationService = getPersonalizationService();
-    UserPreferences preferences = new UserPreferences();
-    preferences.setLanguage("fr");
-    when(personalizationService.getUserSettings(author.getId())).thenReturn(preferences);
     SuggestionBox box = SuggestionBox.getByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID);
     Suggestion newSuggestion = new Suggestion("This is my suggestion");
     newSuggestion.setContent("This is the content of my suggestion");
@@ -80,11 +72,5 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     assertThat(table.getRowCount(), is(2));
     String actualTitle = (String) table.getValue(0, "title");
     assertThat(actualTitle, is(newSuggestion.getTitle()));
-  }
-
-  private PersonalizationService getPersonalizationService() {
-    PersonalizationServiceMockWrapper mockWrapper = getApplicationContext().getBean(
-        PersonalizationServiceMockWrapper.class);
-    return mockWrapper.getMock();
   }
 }
