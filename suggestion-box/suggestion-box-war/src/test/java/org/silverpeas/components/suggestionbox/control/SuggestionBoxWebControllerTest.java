@@ -25,6 +25,7 @@ package org.silverpeas.components.suggestionbox.control;
 
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.servlets.WebMessager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -92,6 +93,8 @@ public class SuggestionBoxWebControllerTest {
     when(context.getRequest()).thenReturn(request);
     when(context.getUser()).thenReturn(aUser());
     when(context.getComponentInstanceId()).thenReturn(COMPONENT_INSTANCE_ID);
+    when(context.getMessager()).thenReturn(WebMessager.getInstance());
+    when(context.getSuggestionBox()).thenReturn(aSuggestionBox());
     return context;
   }
 

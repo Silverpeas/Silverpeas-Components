@@ -127,13 +127,14 @@ public class SuggestionBoxWebController extends
   @RedirectToInternal("Main")
   @LowestRoleAccess(SilverpeasRole.writer)
   public void addSuggestion(SuggestionBoxWebRequestContext context) {
-    SuggestionBox suggestionBox = SuggestionBox.getByComponentInstanceId(context.
-        getComponentInstanceId());
+    SuggestionBox suggestionBox = context.getSuggestionBox();
     String title = context.getRequest().getParameter("title");
     String content = context.getRequest().getParameter("content");
     Suggestion suggestion = new Suggestion(title);
     suggestion.setContent(content);
     suggestion.setCreator(context.getUser());
     suggestionBox.getSuggestions().add(suggestion);
+    context.getMessager().addSuccess(getMultilang().getString(
+        "suggestionBox.message.suggestion.created"));
   }
 }
