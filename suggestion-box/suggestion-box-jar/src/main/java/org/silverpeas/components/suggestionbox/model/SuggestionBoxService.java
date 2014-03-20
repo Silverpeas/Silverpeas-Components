@@ -63,4 +63,20 @@ public interface SuggestionBoxService {
    */
   public void deleteSuggestionBox(final SuggestionBox box);
 
+  /**
+   * Updates the state of the specified suggestion.
+   * @param suggestion to update.
+   */
+  public void updateSuggestion(final Suggestion suggestion);
+
+  /**
+   * Gets the suggestion uniquely identified by the specified identifier from the specified
+   * suggestion box.
+   * @param box the suggestion box the suggestion should belong to.
+   * @param suggestionId the unique identifier of the suggestion to get.
+   * @return the suggestion having the specified suggestion identifier of NONE if no such suggestion
+   * exists in the specified suggestion box.
+   */
+  public Suggestion getSuggestionById(final SuggestionBox box, final String suggestionId);
+
 }

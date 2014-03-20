@@ -35,8 +35,11 @@ import org.silverpeas.components.suggestionbox.repository.RepositoryBasedTest;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
+
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.times;
+
 
 /**
  * Unit test on the business operations of the SuggestionBox objects.
@@ -44,8 +47,9 @@ import static org.mockito.Mockito.times;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(WysiwygController.class)
-public class SuggestionBoxTest extends RepositoryBasedTest {
+public class SuggestionTest extends RepositoryBasedTest {
 
+  private final static String SUGGESTION_ID = "suggestion_1";
   private final static String SUGGESTION_BOX_INSTANCE_ID = "suggestionBox1";
 
   @Override
@@ -59,24 +63,64 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
   }
 
   @Test
-  public void addASuggestionIntoASuggestionBox() throws Exception {
+  public void updateAnExistingSuggestion() throws Exception {
     PowerMockito.mockStatic(WysiwygController.class);
     UserDetail author = aUser();
     SuggestionBox box = SuggestionBox.getByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID);
-    Suggestion newSuggestion = new Suggestion("This is my suggestion");
-    newSuggestion.setContent("This is the content of my suggestion");
-    newSuggestion.setCreator(author);
-    box.getSuggestions().add(newSuggestion);
+    Suggestion suggestion = box.getSuggestions().get(SUGGESTION_ID);
+    assertThat(suggestion, not(is(Suggestion.NONE)));
+
+    final String newTitle = "This is a new title";
+    final String newContent = "This is a new content";
+    suggestion.setTitle(newTitle);
+    suggestion.setContent(newContent);
+    suggestion.setLastUpdater(author);
+    suggestion.save();
 
     IDataSet actualDataSet = getActualDataSet();
     ITable table = actualDataSet.getTable("sc_suggestion");
-    assertThat(table.getRowCount(), is(2));
+    assertThat(table.getRowCount(), is(1));
     String actualTitle = (String) table.getValue(0, "title");
-    assertThat(actualTitle, is(newSuggestion.getTitle()));
+    assertThat(actualTitle, is(newTitle));
 
     PowerMockito.verifyStatic(times(1));
     WysiwygController.
-        save(newSuggestion.getContent(), box.getComponentInstanceId(), newSuggestion.getId(),
-            author.getId(), null, false);
+        save(newContent, box.getId(), suggestion.getId(), author.getId(), null, false);
+  }
+
+  @Test
+  public void updateAnExistingSuggestionWithAnInvalidTitle() throws Exception {
+    PowerMockito.mockStatic(WysiwygController.class);
+    UserDetail author = aUser();
+    SuggestionBox box = SuggestionBox.getByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID);
+    Suggestion suggestion = box.getSuggestions().get(SUGGESTION_ID);
+    assertThat(suggestion, not(is(Suggestion.NONE)));
+
+    final String oldTitle = suggestion.getTitle();
+    final String newContent = "This is a new content";
+    suggestion.setTitle(null);
+    suggestion.setContent(newContent);
+    suggestion.setLastUpdater(author);
+    try {
+      suggestion.save();
+      fail("An exception should be thrown");
+    } catch (Exception ex) {
+      IDataSet actualDataSet = getActualDataSet();
+      ITable table = actualDataSet.getTable("sc_suggestion");
+      assertThat(table.getRowCount(), is(1));
+      String actualTitle = (String) table.getValue(0, "title");
+      assertThat(actualTitle, is(oldTitle));
+
+      PowerMockito.verifyStatic(times(0));
+      WysiwygController.
+          save(newContent, box.getId(), suggestion.getId(), author.getId(), null, false);
+    }
+  }
+
+  @Test
+  public void getAnUnExistingSuggestion() throws Exception {
+    SuggestionBox box = SuggestionBox.getByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID);
+    Suggestion suggestion = box.getSuggestions().get("toto");
+    assertThat(suggestion, is(Suggestion.NONE));
   }
 }

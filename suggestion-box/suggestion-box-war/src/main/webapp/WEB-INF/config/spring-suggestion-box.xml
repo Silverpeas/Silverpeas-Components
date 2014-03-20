@@ -38,6 +38,4 @@
   <bean id="suggestionBoxServiceFactory" class="org.silverpeas.components.suggestionbox.model.SuggestionBoxServiceFactory"
         factory-method="getFactory"/>
 
-  <bean id="transactionFactory" class="org.silverpeas.components.suggestionbox.persistence.TransactionFactory"
-        factory-method="getFactory"/>
 </beans>

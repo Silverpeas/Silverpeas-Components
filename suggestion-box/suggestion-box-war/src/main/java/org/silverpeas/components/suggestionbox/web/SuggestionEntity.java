@@ -21,56 +21,59 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.components.suggestionbox.mock;
+package org.silverpeas.components.suggestionbox.web;
 
 import org.silverpeas.components.suggestionbox.model.Suggestion;
-import org.silverpeas.components.suggestionbox.model.SuggestionBox;
-import org.silverpeas.components.suggestionbox.model.SuggestionBoxService;
 
-import static org.mockito.Mockito.mock;
-
-import javax.inject.Named;
+import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- *
+ * It represents the state of a suggestion in a suggestion box as transmitted within the body of
+ * an HTTP response or an HTTP request.
  * @author mmoquillon
  */
-@Named("suggestionService")
-public class SuggestionBoxServiceMockWrapper implements SuggestionBoxService {
+@XmlRootElement
+public class SuggestionEntity {
 
-  private final SuggestionBoxService mock = mock(SuggestionBoxService.class);
-
-  public SuggestionBoxService getMock() {
-    return mock;
+  public static SuggestionEntity fromSuggestion(final Suggestion suggestion) {
+    return new SuggestionEntity().withId(suggestion.getId()).withTitle(suggestion.getTitle()).
+        withContent(suggestion.getContent());
   }
 
-  @Override
-  public void saveSuggestionBox(SuggestionBox box) {
-    mock.saveSuggestionBox(box);
+  @XmlElement
+  private String id;
+  @XmlElement(nillable = false, required = true)
+  @NotNull
+  private String title;
+  @XmlElement
+  private String content;
+
+  public String getTitle() {
+    return title;
   }
 
-  @Override
-  public void deleteSuggestionBox(SuggestionBox box) {
-    mock.deleteSuggestionBox(box);
+  public String getContent() {
+    return content;
   }
 
-  @Override
-  public SuggestionBox getByComponentInstanceId(String componentInstanceId) {
-    return mock.getByComponentInstanceId(componentInstanceId);
+  private SuggestionEntity withTitle(String title) {
+    this.title = title;
+    return this;
   }
 
-  @Override
-  public void addSuggestion(SuggestionBox box, Suggestion suggestion) {
-    mock.addSuggestion(box, suggestion);
+  private SuggestionEntity withContent(String content) {
+    this.content = content;
+    return this;
   }
 
-  @Override
-  public void updateSuggestion(Suggestion suggestion) {
-    mock.updateSuggestion(suggestion);
+  private SuggestionEntity withId(String id) {
+    this.id = id;
+    return this;
   }
 
-  @Override
-  public Suggestion getSuggestionById(SuggestionBox box, String suggestionId) {
-    return mock.getSuggestionById(box, suggestionId);
+  protected SuggestionEntity() {
+
   }
 }

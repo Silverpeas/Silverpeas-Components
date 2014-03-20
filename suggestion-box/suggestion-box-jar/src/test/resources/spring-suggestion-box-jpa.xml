@@ -39,7 +39,6 @@
 
   <context:component-scan base-package="org.silverpeas.components.suggestionbox.model"/>
   <context:component-scan base-package="org.silverpeas.components.suggestionbox.repository"/>
-  <context:component-scan base-package="org.silverpeas.components.suggestionbox.persistence"/>
 
   <bean id="organizationController" class="org.silverpeas.components.suggestionbox.mock.OrganisationControllerMockWrapper"/>
 

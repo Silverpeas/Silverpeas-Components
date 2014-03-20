@@ -128,4 +128,9 @@ public class SuggestionRepositoryMockWrapper extends SuggestionRepository {
   public long deleteByIdentifier(Collection<UuidIdentifier> ids) {
     return mock.deleteByIdentifier(ids);
   }
+
+  @Override
+  public void flush() {
+    mock.flush();
+  }
 }

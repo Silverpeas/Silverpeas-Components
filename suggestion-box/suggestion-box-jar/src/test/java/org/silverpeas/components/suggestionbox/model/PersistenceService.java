@@ -46,26 +46,31 @@ public class PersistenceService {
   @Inject
   private SuggestionRepository suggestionRepository;
 
-  public void save(final OperationContext ctx, final SuggestionBox box) {
+  public void saveSuggestionBox(final OperationContext ctx, final SuggestionBox box) {
     suggestionBoxRepository.save(ctx, box);
   }
 
-  public void save(final OperationContext ctx, final SuggestionBox box, final Suggestion suggestion) {
+  public void saveSuggestion(final OperationContext ctx, final SuggestionBox box,
+      final Suggestion suggestion) {
     SuggestionBox actualBox = suggestionBoxRepository.getById(box.getId());
     actualBox.addSuggestion(suggestion);
     suggestionRepository.save(ctx, suggestion);
   }
 
-  public void delete(final SuggestionBox box) {
+  public void deleteSuggestionBox(final SuggestionBox box) {
     suggestionBoxRepository.delete(box);
   }
 
-  public SuggestionBox getById(String id) {
+  public SuggestionBox getSuggestionBoxById(String id) {
     return suggestionBoxRepository.getById(id);
   }
 
-  public SuggestionBox getByComponentInstanceId(String componentInstanceId) {
+  public SuggestionBox getSuggestionBoxByComponentInstanceId(String componentInstanceId) {
     return suggestionBoxRepository.getByComponentInstanceId(componentInstanceId);
+  }
+
+  public Suggestion getSuggestionById(String suggestionId) {
+    return suggestionRepository.getById(suggestionId);
   }
 
   protected PersistenceService() {

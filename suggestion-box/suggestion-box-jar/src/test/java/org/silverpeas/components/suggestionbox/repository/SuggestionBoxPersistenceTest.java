@@ -55,8 +55,10 @@ public class SuggestionBoxPersistenceTest extends RepositoryBasedTest {
   @Test
   public void getByComponentInstanceId() {
     PersistenceService persister = getPersistenceService();
-    assertThat(persister.getByComponentInstanceId("dummyId"), nullValue());
-    assertThat(persister.getByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID), notNullValue());
+    assertThat(persister.getSuggestionBoxByComponentInstanceId("dummyId"), nullValue());
+    assertThat(persister.getSuggestionBoxByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID),
+        notNullValue()
+    );
   }
 
 
@@ -65,7 +67,7 @@ public class SuggestionBoxPersistenceTest extends RepositoryBasedTest {
     UserDetail creator = aUser();
     SuggestionBox box = new SuggestionBox(SUGGESTION_BOX_INSTANCE_ID);
     OperationContext ctx = OperationContext.fromUser(creator.getId());
-    getPersistenceService().save(ctx, box);
+    getPersistenceService().saveSuggestionBox(ctx, box);
 
     // Verification
     IDataSet actualDataSet = getActualDataSet();
@@ -81,24 +83,25 @@ public class SuggestionBoxPersistenceTest extends RepositoryBasedTest {
   public void saveSuggestionBoxWithAnInvalidOperationContext() throws Exception {
     SuggestionBox box = new SuggestionBox(SUGGESTION_BOX_INSTANCE_ID);
     OperationContext ctx = OperationContext.createInstance();
-    getPersistenceService().save(ctx, box);
+    getPersistenceService().saveSuggestionBox(ctx, box);
 
     fail("An exception should be raised!");
   }
 
   /**
-   * Deletion of a suggestion box, at a repository level, must delete all associated suggestions.
+   * Deletion of a suggestion box, at a repository level, must deleteSuggestionBox all associated
+   * suggestions.
    * @throws java.lang.Exception
    */
   @Test
   public void deleteSuggestionBox() throws Exception {
     PersistenceService persister = getPersistenceService();
-    SuggestionBox existentSuggestionBox = persister.getById(SUGGESTION_BOX_ID_1);
+    SuggestionBox existentSuggestionBox = persister.getSuggestionBoxById(SUGGESTION_BOX_ID_1);
     assertThat(existentSuggestionBox, notNullValue());
     assertThat(existentSuggestionBox.getId(), is(SUGGESTION_BOX_ID_1));
 
     // The suggestion box deletion
-    persister.delete(existentSuggestionBox);
+    persister.deleteSuggestionBox(existentSuggestionBox);
 
     // Verifications
     IDataSet actualDataSet = getActualDataSet();

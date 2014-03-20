@@ -139,6 +139,20 @@ public class SuggestionBoxServiceTest {
             null, false);
   }
 
+  @Test
+  public void updateAnExistingSuggestion() {
+    Suggestion suggestion = prepareASuggestion();
+
+    service.updateSuggestion(suggestion);
+
+    SuggestionRepository suggestionRepository = getSuggestionRepository();
+    verify(suggestionRepository, times(1)).save(any(OperationContext.class), eq(suggestion));
+    PowerMockito.verifyStatic(times(1));
+    WysiwygController.
+        save(suggestion.getContent(), suggestion.getSuggestionBox().getId(), suggestion.getId(),
+            userId, null, false);
+  }
+
   private SuggestionBoxRepository getSuggestionBoxRepository() {
     SuggestionBoxRepositoryMockWrapper mockWrapper = context.
         getBean(SuggestionBoxRepositoryMockWrapper.class);
@@ -152,15 +166,32 @@ public class SuggestionBoxServiceTest {
   }
 
   private SuggestionBox prepareASuggestionBox() {
+    SuggestionBox box = new SuggestionBox(appInstanceId);
+    box.setCreator(aUser());
+    ReflectionTestUtils
+        .setField(box, "id", new UuidIdentifier().fromString("suggestionBox2"));
+    return box;
+  }
+
+  private Suggestion prepareASuggestion() {
+    UserDetail author = aUser();
+    SuggestionBox box = prepareASuggestionBox();
+    Suggestion suggestion = new Suggestion("My suggestion");
+    suggestion.setSuggestionBox(box);
+    suggestion.setContent("the content of my suggestion");
+    suggestion.setCreator(author);
+    suggestion.setLastUpdater(author);
+    ReflectionTestUtils
+        .setField(suggestion, "id", new UuidIdentifier().fromString("suggestion1"));
+    return suggestion;
+  }
+
+  private UserDetail aUser() {
     UserDetail user = new UserDetail();
     user.setId(userId);
     user.setFirstName("Toto");
     user.setLastName("Chez-les-papoos");
-    SuggestionBox box = new SuggestionBox(appInstanceId);
-    box.setCreator(user);
-    ReflectionTestUtils
-        .setField(box, "id", new UuidIdentifier().fromString("suggestionBox2"));
-    return box;
+    return user;
   }
 
 }
