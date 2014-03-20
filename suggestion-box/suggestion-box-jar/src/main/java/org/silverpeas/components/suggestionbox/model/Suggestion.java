@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.suggestionbox.model;
 
+import org.silverpeas.contribution.ContributionStatus;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.persistence.model.jpa.AbstractJpaEntity;
 
@@ -62,6 +63,10 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier> {
   @Size(min = 2)
   @NotNull
   private String title;
+
+  @Column(name = "state", nullable = false)
+  private String state = ContributionStatus.DRAFT.name();
+
   @Transient
   private String content = "";
   @Transient
@@ -159,6 +164,22 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier> {
    */
   protected boolean isContentModified() {
     return this.contentModified;
+  }
+
+  /**
+   * Sets the specified contribution status to this suggestion.
+   * @param status the suggestion's contribution status to set.
+   */
+  public void setStatus(final ContributionStatus status) {
+    this.state = status.name();
+  }
+
+  /**
+   * Gets the contribution status of this suggestion.
+   * @return the suggestion's contribution status;
+   */
+  public ContributionStatus getStatus() {
+    return ContributionStatus.from(state);
   }
 
   private SuggestionBoxService getSuggestionBoxService() {

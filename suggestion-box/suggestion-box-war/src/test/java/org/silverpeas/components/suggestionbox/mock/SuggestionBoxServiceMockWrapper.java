@@ -26,10 +26,12 @@ package org.silverpeas.components.suggestionbox.mock;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.model.SuggestionBoxService;
+import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
 
 import static org.mockito.Mockito.mock;
 
 import javax.inject.Named;
+import java.util.List;
 
 /**
  *
@@ -42,6 +44,11 @@ public class SuggestionBoxServiceMockWrapper implements SuggestionBoxService {
 
   public SuggestionBoxService getMock() {
     return mock;
+  }
+
+  @Override
+  public List<Suggestion> findByCriteria(final SuggestionCriteria criteria) {
+    return mock.findByCriteria(criteria);
   }
 
   @Override

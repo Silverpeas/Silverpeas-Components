@@ -50,11 +50,6 @@ public class SuggestionRepositoryMockWrapper extends SuggestionRepository {
   }
 
   @Override
-  public List<Suggestion> listBySuggestionBox(SuggestionBox suggestionBox) {
-    return mock.listBySuggestionBox(suggestionBox);
-  }
-
-  @Override
   public List<Suggestion> getAll() {
     return mock.getAll();
   }

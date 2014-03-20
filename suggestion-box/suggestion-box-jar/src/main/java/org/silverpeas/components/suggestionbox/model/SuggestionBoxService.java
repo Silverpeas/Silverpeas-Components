@@ -23,6 +23,8 @@
  */
 package org.silverpeas.components.suggestionbox.model;
 
+import java.util.List;
+
 /**
  * A business service to provide a high level interface in the management of the suggestion boxes
  * and of the suggestions.
@@ -45,6 +47,13 @@ public interface SuggestionBoxService {
   public SuggestionBox getByComponentInstanceId(String componentInstanceId);
 
   /**
+   * Finds suggestions according to the given suggestion criteria.
+   * @param criteria the suggestion criteria.
+   * @return the suggestion list corresponding to the given suggestion criteria.
+   */
+  public List<Suggestion> findByCriteria(SuggestionCriteria criteria);
+
+  /**
    * Saves the specified suggestion box.
    * @param box the box to save in Silverpeas.
    */
@@ -62,7 +71,6 @@ public interface SuggestionBoxService {
    * @param box the box to delete from Silverpeas.
    */
   public void deleteSuggestionBox(final SuggestionBox box);
-
   /**
    * Updates the state of the specified suggestion.
    * @param suggestion to update.

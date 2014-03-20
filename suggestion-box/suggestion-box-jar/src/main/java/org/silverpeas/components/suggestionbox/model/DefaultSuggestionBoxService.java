@@ -25,6 +25,8 @@ package org.silverpeas.components.suggestionbox.model;
 
 import com.silverpeas.annotation.Service;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.attachment.AttachmentService;
+import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepository;
 import org.silverpeas.components.suggestionbox.repository.SuggestionRepository;
 import org.silverpeas.persistence.repository.OperationContext;
@@ -34,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.List;
 
 /**
  * The default implementation of the {@link SuggestionBoxService} interface.
@@ -66,6 +69,11 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
   @Override
   public SuggestionBox getByComponentInstanceId(String componentInstanceId) {
     return suggestionBoxRepository.getByComponentInstanceId(componentInstanceId);
+  }
+
+  @Override
+  public List<Suggestion> findByCriteria(final SuggestionCriteria criteria) {
+    return suggestionRepository.findByCriteria(criteria);
   }
 
   /**
@@ -117,7 +125,8 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
     suggestionBoxRepository.flush();
 
     // Deletion of box edito
-    WysiwygController.deleteWysiwygAttachments(box.getComponentInstanceId(), box.getId());
+    AttachmentService attachmentService = AttachmentServiceFactory.getAttachmentService();
+    attachmentService.deleteAllAttachments(box.getComponentInstanceId());
   }
 
   @Override
