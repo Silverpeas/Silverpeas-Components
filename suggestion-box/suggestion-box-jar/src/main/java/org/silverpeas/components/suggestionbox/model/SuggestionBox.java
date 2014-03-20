@@ -138,9 +138,26 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
 
   public class Suggestions {
 
+    /**
+     * Adds the specified suggestion among the other suggestions of the suggestion box.
+     * <p>
+     * The suggestion will be persisted automatically once added.
+     * @param suggestion the suggestion to add.
+     */
     public void add(final Suggestion suggestion) {
       SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
       suggestionBoxService.addSuggestion(SuggestionBox.this, suggestion);
+    }
+
+    /**
+     * Gets the suggestion with the specified identifier from the suggestions of the suggestion box.
+     * @param suggestionId the unique identifier of the suggestion to get.
+     * @return the suggestion matching the specified identifier or NONE if no such suggestion exists
+     * in the suggestions of the suggestion box.
+     */
+    public Suggestion get(String suggestionId) {
+      SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
+      return suggestionBoxService.getSuggestionById(SuggestionBox.this, suggestionId);
     }
   }
 

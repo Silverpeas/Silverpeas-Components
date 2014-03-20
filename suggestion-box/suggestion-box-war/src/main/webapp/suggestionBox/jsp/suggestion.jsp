@@ -43,6 +43,7 @@
 <c:url var="mandatoryIcons" value="/util/icons/mandatoryField.gif"/>
 <c:url var="formValidator" value="/util/javaScript/checkForm.js"/>
 <c:set var="componentUriBase"><c:url value="${requestScope.componentUriBase}"/></c:set>
+<c:set var="suggestion" value="${requestScope.suggestion}"/>
 
 <fmt:message var="save" key="GML.validate"/>
 <fmt:message var="cancel" key="GML.cancel"/>
@@ -95,7 +96,7 @@
     $(document).ready(function() {
       <view:wysiwyg replace="content" language="${null}" toolbar="suggestionBox"/>
       $('#title').focus();
-    });
+     });
   </script>
 </head>
 <body>
@@ -103,19 +104,26 @@
 <view:window>
   <view:frame>
     <div id="error" style="display: none;"></div>
-    <form id="suggestion" name="suggestion" action="${componentUriBase}suggestion/add" method="POST">
+    <c:choose>
+      <c:when test="${suggestion == null}">
+    <form id="suggestion" name="suggestion" action="${componentUriBase}suggestion/add" method="POST">   
+      </c:when>
+      <c:otherwise>
+    <form id="suggestion" name="suggestion" action="${componentUriBase}suggestion/${suggestion.id}" method="PUT">    
+      </c:otherwise>
+    </c:choose>
       <div class="fields">
         <div class="field" id="suggestionName">
           <label for="title" class="txtlibform"><fmt:message key='GML.title'/>&nbsp;<img alt="mandatory" src="${mandatoryIcons}" width="5" height="5"/></label>
           <div class="champs">
-            <input id="title" type="text" name="title" size="100%" maxlength="2000" value=""/>
+            <input id="title" type="text" name="title" size="100%" maxlength="2000" value="${title}"/>
           </div>
         </div>
         <br clear="all"/>
         <div class="field" id="eventDescriptionArea">
           <label for="content" class="txtlibform"><fmt:message key='GML.description'/></label>
           <div class="champs">
-            <textarea rows="5" cols="10" name="content" id="content"></textarea>
+            <textarea rows="5" cols="10" name="content" id="content">${content}</textarea>
           </div>
         </div>
       </div>

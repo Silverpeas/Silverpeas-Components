@@ -47,7 +47,4 @@
   <bean id="attachmentServiceFactory" class="org.silverpeas.attachment.AttachmentServiceFactory"
         factory-method="getInstance"/>
 
-  <bean id="transactionFactory" class="org.silverpeas.components.suggestionbox.persistence.TransactionFactory"
-        factory-method="getFactory"/>
-
 </beans>

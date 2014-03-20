@@ -36,11 +36,15 @@ import com.stratelia.silverpeas.peasCore.servlets.annotation.WebComponentControl
 import com.stratelia.webactiv.SilverpeasRole;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
+import org.silverpeas.components.suggestionbox.web.SuggestionEntity;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response.Status;
 
 @WebComponentController("SuggestionBox")
 public class SuggestionBoxWebController extends
@@ -111,10 +115,21 @@ public class SuggestionBoxWebController extends
    * @param context the context of the incoming request.
    */
   @GET
-  @Path("suggestion/new")
+  @Path("suggestion/{id}")
   @RedirectToInternalJsp("suggestion.jsp")
   @LowestRoleAccess(SilverpeasRole.writer)
-  public void newSuggestion(SuggestionBoxWebRequestContext context) {
+  public void editSuggestion(SuggestionBoxWebRequestContext context) {
+    String suggestionId = context.getPathVariables().get("id");
+    if (!"new".equalsIgnoreCase(suggestionId)) {
+      SuggestionBox suggestionBox = context.getSuggestionBox();
+      Suggestion suggestion = suggestionBox.getSuggestions().get(suggestionId);
+      if (suggestion.isDefined()) {
+        SuggestionEntity entity = SuggestionEntity.fromSuggestion(suggestion);
+        context.getRequest().setAttribute("suggestion", entity);
+      } else {
+        throw new WebApplicationException(Status.NOT_FOUND);
+      }
+    }
   }
 
   /**
@@ -136,5 +151,30 @@ public class SuggestionBoxWebController extends
     suggestionBox.getSuggestions().add(suggestion);
     context.getMessager().addSuccess(getMultilang().getString(
         "suggestionBox.message.suggestion.created"));
+  }
+
+  /**
+   * Updates the specified suggestion in the current suggestion box. The suggestion's data are
+   * carried within the request's context.
+   * @param context the context of the incoming request.
+   */
+  @PUT
+  @Path("suggestion/${id}")
+  @RedirectToInternal("Main")
+  @LowestRoleAccess(SilverpeasRole.writer)
+  public void updateSuggestion(SuggestionBoxWebRequestContext context) {
+    String id = context.getPathVariables().get("id");
+    SuggestionBox suggestionBox = context.getSuggestionBox();
+    Suggestion suggestion = suggestionBox.getSuggestions().get(id);
+    if (suggestion.isDefined()) {
+      suggestion.setTitle(context.getRequest().getParameter("title"));
+      suggestion.setContent(context.getRequest().getParameter("content"));
+      suggestion.setLastUpdater(context.getUser());
+      suggestion.save();
+      context.getMessager().addSuccess(getMultilang().getString(
+          "suggestionBox.message.suggestion.modified"));
+    } else {
+      throw new WebApplicationException(Status.NOT_FOUND);
+    }
   }
 }

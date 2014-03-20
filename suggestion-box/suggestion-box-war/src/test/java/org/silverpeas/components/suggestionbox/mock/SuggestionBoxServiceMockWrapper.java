@@ -63,4 +63,14 @@ public class SuggestionBoxServiceMockWrapper implements SuggestionBoxService {
   public void addSuggestion(SuggestionBox box, Suggestion suggestion) {
     mock.addSuggestion(box, suggestion);
   }
+
+  @Override
+  public void updateSuggestion(Suggestion suggestion) {
+    mock.updateSuggestion(suggestion);
+  }
+
+  @Override
+  public Suggestion getSuggestionById(SuggestionBox box, String suggestionId) {
+    return mock.getSuggestionById(box, suggestionId);
+  }
 }

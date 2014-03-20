@@ -132,4 +132,9 @@ public class SuggestionBoxRepositoryMockWrapper extends SuggestionBoxRepository 
   public SuggestionBox getByComponentInstanceId(final String componentInstanceId) {
     return mock.getByComponentInstanceId(componentInstanceId);
   }
+
+  @Override
+  public void flush() {
+    mock.flush();
+  }
 }

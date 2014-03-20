@@ -26,12 +26,15 @@ package org.silverpeas.components.suggestionbox.model;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.persistence.model.jpa.AbstractJpaEntity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * This entity represents a suggestion associated to a suggestion box.
@@ -46,12 +49,23 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier> {
 
   private static final long serialVersionUID = -8559980140411995766L;
 
+  /**
+   * The NONE suggestion. It represents no suggestions and it is dedicated to be used in place of
+   * null.
+   */
+  public static final Suggestion NONE = new Suggestion();
+
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "suggestionBoxId", referencedColumnName = "id", nullable = false)
   private SuggestionBox suggestionBox;
+  @Column(nullable = false)
+  @Size(min = 2)
+  @NotNull
   private String title;
   @Transient
-  private String content;
+  private String content = "";
+  @Transient
+  private boolean contentModified = false;
 
   protected Suggestion() {
   }
@@ -81,11 +95,22 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier> {
   }
 
   /**
+   * Sets a new title to this suggestion.
+   * @param newTitle the new title. Cannot be null or empty.
+   */
+  public void setTitle(String newTitle) {
+    this.title = newTitle;
+  }
+
+  /**
    * Sets the specified content to this suggestion.
    * @param content the suggestion's content to set.
    */
   public void setContent(String content) {
-    this.content = content;
+    if (!this.content.equals(content)) {
+      this.content = content;
+      this.contentModified = true;
+    }
   }
 
   /**
@@ -93,7 +118,31 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier> {
    * @return the suggestion's content;
    */
   public String getContent() {
-    return this.content;
+    return (this.content == null ? "" : this.content);
+  }
+
+  /**
+   * Is this suggestion defined? It is defined if and only if it isn't NONE.
+   * @return true if this suggestion is defined and thus not NONE.
+   */
+  public boolean isDefined() {
+    return this != NONE;
+  }
+
+  /**
+   * Is this suggestion NONE?
+   * @return true if this suggestion isn't defined and thus it is NONE.
+   */
+  public boolean isNotDefined() {
+    return this == NONE;
+  }
+
+  /**
+   * Saves the state of this suggestion so that is will persist over the current context of use.
+   */
+  public void save() {
+    SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
+    suggestionBoxService.updateSuggestion(this);
   }
 
   /**
@@ -102,5 +151,18 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier> {
    */
   protected void setSuggestionBox(final SuggestionBox box) {
     this.suggestionBox = box;
+  }
+
+  /**
+   * Is the content of this suggestion was modified?
+   * @return true if the suggestion's content was modified.
+   */
+  protected boolean isContentModified() {
+    return this.contentModified;
+  }
+
+  private SuggestionBoxService getSuggestionBoxService() {
+    SuggestionBoxServiceFactory serviceFactory = SuggestionBoxServiceFactory.getFactory();
+    return serviceFactory.getSuggestionBoxService();
   }
 }

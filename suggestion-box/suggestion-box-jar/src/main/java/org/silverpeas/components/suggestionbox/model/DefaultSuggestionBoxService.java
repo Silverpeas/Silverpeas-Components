@@ -23,7 +23,6 @@
  */
 package org.silverpeas.components.suggestionbox.model;
 
-import org.silverpeas.components.suggestionbox.persistence.Transaction;
 import com.silverpeas.annotation.Service;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepository;
@@ -33,6 +32,8 @@ import org.silverpeas.wysiwyg.control.WysiwygController;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 /**
  * The default implementation of the {@link SuggestionBoxService} interface.
@@ -46,6 +47,9 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
 
   @Inject
   private SuggestionRepository suggestionRepository;
+
+  @PersistenceContext
+  private EntityManager entityManager;
 
   /**
    * Gets an instance of a SuggestionBoxService.
@@ -80,19 +84,15 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
    * @param box a suggestion box
    * @param suggestion a new suggestions to add into the suggestion box.
    */
+  @Transactional
   @Override
   public void addSuggestion(final SuggestionBox box, final Suggestion suggestion) {
     final UserDetail author = suggestion.getLastUpdater();
-    Transaction transaction = Transaction.getTransaction();
-    transaction.perform(new Runnable() {
+    SuggestionBox actualBox = suggestionBoxRepository.getById(box.getId());
+    actualBox.addSuggestion(suggestion);
 
-      @Override
-      public void run() {
-        SuggestionBox actualBox = suggestionBoxRepository.getById(box.getId());
-        actualBox.addSuggestion(suggestion);
-        suggestionRepository.save(OperationContext.fromUser(author), suggestion);
-      }
-    });
+    suggestionRepository.save(OperationContext.fromUser(author), suggestion);
+    suggestionRepository.flush();
 
     WysiwygController.
         save(suggestion.getContent(), box.getComponentInstanceId(), suggestion.getId(), author.
@@ -112,10 +112,33 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
     // - votes
     // - suggestion attachments
 
-    // Deletion of box edito
-    WysiwygController.deleteWysiwygAttachments(box.getComponentInstanceId(), box.getId());
-
     // Finally deleting the box and its suggestions from the persistence.
     suggestionBoxRepository.delete(box);
+    suggestionBoxRepository.flush();
+
+    // Deletion of box edito
+    WysiwygController.deleteWysiwygAttachments(box.getComponentInstanceId(), box.getId());
+  }
+
+  @Override
+  @Transactional
+  public void updateSuggestion(final Suggestion suggestion) {
+    suggestionRepository.
+        save(OperationContext.fromUser(suggestion.getLastUpdater()), suggestion);
+    suggestionRepository.flush();
+
+    if (suggestion.isContentModified()) {
+      WysiwygController.save(suggestion.getContent(), suggestion.getSuggestionBox().getId(),
+          suggestion.getId(), suggestion.getLastUpdatedBy(), null, false);
+    }
+  }
+
+  @Override
+  public Suggestion getSuggestionById(SuggestionBox box, String suggestionId) {
+    Suggestion suggestion = suggestionRepository.getById(suggestionId);
+    if (suggestion == null || !suggestion.getSuggestionBox().equals(box)) {
+      suggestion = Suggestion.NONE;
+    }
+    return suggestion;
   }
 }
