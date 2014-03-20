@@ -24,9 +24,10 @@
 package org.silverpeas.components.suggestionbox.repository;
 
 import org.silverpeas.components.suggestionbox.model.Suggestion;
-import org.silverpeas.components.suggestionbox.model.SuggestionBox;
+import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.persistence.repository.jpa.AbstractJpaEntityRepository;
+import org.silverpeas.persistence.repository.jpa.NamedParameters;
 
 import javax.inject.Named;
 import java.util.List;
@@ -40,13 +41,44 @@ import java.util.List;
 public class SuggestionRepository extends AbstractJpaEntityRepository<Suggestion, UuidIdentifier> {
 
   /**
-   * Lists all suggestions related to a suggestion box.
-   * @param suggestionBox the parent suggestion box of required suggestion list.
-   * @return the suggestion list related to the given suggestion box.
+   * Finds suggestions according to the given suggestion criteria.
+   * @param criteria the suggestion criteria.
+   * @return the suggestion list corresponding to the given suggestion criteria.
    */
-  public List<Suggestion> listBySuggestionBox(SuggestionBox suggestionBox) {
-    String jpqlQuery = "from Suggestion s where s.suggestionBox = :suggestionBox";
-    return listFromJpqlString(jpqlQuery,
-        initializeNamedParameters().add("suggestionBox", suggestionBox));
+  public List<Suggestion> findByCriteria(final SuggestionCriteria criteria) {
+    NamedParameters params = initializeNamedParameters();
+
+    // Suggestion box
+    StringBuilder jpqlQuery = new StringBuilder("from Suggestion s where s.suggestionBox = :");
+    jpqlQuery
+        .append(params.add("suggestionBox", criteria.getSuggestionBox()).getLastParameterName());
+
+    // Suggestion creator
+    if (criteria.getCreator() != null) {
+      jpqlQuery.append(" and s.createdBy = :");
+      jpqlQuery
+          .append(params.add("createdBy", criteria.getCreator().getId()).getLastParameterName());
+    }
+
+    // Suggestion status
+    if (!criteria.getStatuses().isEmpty()) {
+      jpqlQuery.append(" and s.state in :");
+      jpqlQuery.append(params.add("states", criteria.getStatuses()).getLastParameterName());
+    }
+
+    // Order by
+    if (!criteria.getOrderByList().isEmpty()) {
+      jpqlQuery.append(" order by ");
+      int i = 0;
+      for (SuggestionCriteria.ORDER_BY orderBy : criteria.getOrderByList()) {
+        if (i > 0) {
+
+        }
+        i++;
+      }
+    }
+
+    // Playing th query and returning the requested result
+    return listFromJpqlString(jpqlQuery.toString(), params);
   }
 }

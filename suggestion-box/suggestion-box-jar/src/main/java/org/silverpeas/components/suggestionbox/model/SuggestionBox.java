@@ -24,11 +24,11 @@
 package org.silverpeas.components.suggestionbox.model;
 
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.persistence.model.jpa.AbstractJpaEntity;
 
-import java.util.ArrayList;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -36,7 +36,11 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.util.ArrayList;
 import java.util.List;
+
+import static org.silverpeas.contribution.ContributionStatus.DRAFT;
+import static org.silverpeas.contribution.ContributionStatus.REFUSED;
 
 /**
  * This entity represents a suggestion box.

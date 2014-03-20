@@ -33,6 +33,8 @@ import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.silverpeas.attachment.AttachmentService;
+import org.silverpeas.components.suggestionbox.mock.AttachmentServiceMockWrapper;
 import org.silverpeas.components.suggestionbox.mock.SuggestionBoxRepositoryMockWrapper;
 import org.silverpeas.components.suggestionbox.mock.SuggestionRepositoryMockWrapper;
 import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepository;
@@ -46,6 +48,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
 
@@ -112,10 +115,9 @@ public class SuggestionBoxServiceTest {
     SuggestionBox box = prepareASuggestionBox();
     service.deleteSuggestionBox(box);
 
-    PowerMockito.verifyStatic(times(1));
-    WysiwygController.deleteWysiwygAttachments(box.getComponentInstanceId(), box.getId());
     SuggestionBoxRepository suggestionBoxRepository = getSuggestionBoxRepository();
     verify(suggestionBoxRepository, times(1)).delete(box);
+    verify(getAttachmentService(), times(1)).deleteAllAttachments(eq(box.getComponentInstanceId()));
   }
 
   @Test
@@ -194,4 +196,9 @@ public class SuggestionBoxServiceTest {
     return user;
   }
 
+  private AttachmentService getAttachmentService() {
+    AttachmentServiceMockWrapper mockWrapper = context.
+        getBean(AttachmentServiceMockWrapper.class);
+    return mockWrapper.getMock();
+  }
 }

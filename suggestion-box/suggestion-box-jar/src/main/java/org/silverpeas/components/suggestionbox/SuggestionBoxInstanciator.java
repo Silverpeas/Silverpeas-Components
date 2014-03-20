@@ -64,7 +64,8 @@ public class SuggestionBoxInstanciator implements ComponentsInstanciatorIntf {
     SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
 
     // Getting the suggestion box entity
-    SuggestionBox suggestionBoxToDelete = suggestionBoxService.getByComponentInstanceId(componentId);
+    SuggestionBox suggestionBoxToDelete =
+        suggestionBoxService.getByComponentInstanceId(componentId);
 
     // Deleting the suggestion box
     suggestionBoxService.deleteSuggestionBox(suggestionBoxToDelete);
