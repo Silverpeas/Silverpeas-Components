@@ -3,8 +3,8 @@ CREATE TABLE sc_suggestion_box (
   instanceId     VARCHAR(30) NOT NULL,
   createDate     DATETIME    NOT NULL,
   createdBy      VARCHAR(40) NOT NULL,
-  lastUpdateDate DATETIME,
-  lastUpdatedBy  VARCHAR(40),
+  lastUpdateDate DATETIME    NOT NULL,
+  lastUpdatedBy  VARCHAR(40) NOT NULL,
   version        BIGINT      NOT NULL
 );
 
@@ -15,7 +15,7 @@ CREATE TABLE sc_suggestion (
   state           VARCHAR(20)   NOT NULL,
   createDate      DATETIME      NOT NULL,
   createdBy       VARCHAR(40)   NOT NULL,
-  lastUpdateDate  DATETIME,
-  lastUpdatedBy   VARCHAR(40),
+  lastUpdateDate  DATETIME      NOT NULL,
+  lastUpdatedBy   VARCHAR(40)   NOT NULL,
   version         BIGINT        NOT NULL
 );
