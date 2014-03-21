@@ -36,13 +36,13 @@ import java.util.List;
  */
 public class SuggestionCriteria {
 
-  public enum ORDER_BY {
-    LAST_UPDATE_DATE_ASC("createdBy", true);
+  public enum QUERY_ORDER_BY {
+    LAST_UPDATE_DATE_ASC("lastUpdateDate", true);
 
     private final String propertyName;
     private final boolean asc;
 
-    private ORDER_BY(final String propertyName, final boolean asc) {
+    private QUERY_ORDER_BY(final String propertyName, final boolean asc) {
       this.propertyName = propertyName;
       this.asc = asc;
     }
@@ -59,7 +59,7 @@ public class SuggestionCriteria {
   private SuggestionBox suggestionBox;
   private UserDetail creator;
   private List<ContributionStatus> statuses = new ArrayList<ContributionStatus>();
-  private List<ORDER_BY> orderByList = new ArrayList<ORDER_BY>();
+  private List<QUERY_ORDER_BY> orderByList = new ArrayList<QUERY_ORDER_BY>();
 
   private SuggestionCriteria() {
 
@@ -102,7 +102,7 @@ public class SuggestionCriteria {
    * @param orderBies the list of order by directives.
    * @return the instance of the suggestion criteria with order by list set.
    */
-  public SuggestionCriteria orderedBy(ORDER_BY... orderBies) {
+  public SuggestionCriteria orderedBy(QUERY_ORDER_BY... orderBies) {
     Collections.addAll(this.orderByList, orderBies);
     return this;
   }
@@ -138,7 +138,7 @@ public class SuggestionCriteria {
    * Gets the order by directive list.
    * @return the order by directives.
    */
-  public List<ORDER_BY> getOrderByList() {
+  public List<QUERY_ORDER_BY> getOrderByList() {
     return orderByList;
   }
 }

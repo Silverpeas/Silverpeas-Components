@@ -25,6 +25,7 @@ package org.silverpeas.components.suggestionbox.mock;
 
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
+import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
 import org.silverpeas.components.suggestionbox.repository.SuggestionRepository;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.persistence.repository.OperationContext;
@@ -127,5 +128,10 @@ public class SuggestionRepositoryMockWrapper extends SuggestionRepository {
   @Override
   public void flush() {
     mock.flush();
+  }
+
+  @Override
+  public List<Suggestion> findByCriteria(final SuggestionCriteria criteria) {
+    return mock.findByCriteria(criteria);
   }
 }

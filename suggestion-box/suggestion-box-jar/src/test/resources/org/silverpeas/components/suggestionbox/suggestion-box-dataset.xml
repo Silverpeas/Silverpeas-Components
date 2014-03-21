@@ -25,16 +25,45 @@
 
 <dataset>
 
-  <!-- Suggestion Box -->
+  <!-- Suggestion Boxes -->
   <sc_suggestion_box id="suggestion-box_1" instanceId="suggestionBox1"
                      createDate="2014-03-11 17:34:00.0" createdBy="1"
                      lastUpdateDate="2014-03-11 17:34:00.0" lastUpdatedBy="1" version="0"/>
 
+  <sc_suggestion_box id="suggestion-box_2" instanceId="suggestionBox2"
+                     createDate="2014-03-11 17:34:00.0" createdBy="1"
+                     lastUpdateDate="2014-03-11 17:34:00.0" lastUpdatedBy="1" version="0"/>
 
-  <!-- Suggestion -->
+
+  <!-- Suggestions -->
   <sc_suggestion id="suggestion_1" suggestionBoxId="suggestion-box_1" title="suggestion 1"
                  state="DRAFT"
                  createDate="2014-03-11 17:34:00.0" createdBy="1"
+                 lastUpdateDate="2014-03-16 17:34:00.0" lastUpdatedBy="1" version="2"/>
+
+  <sc_suggestion id="suggestion_1_a" suggestionBoxId="suggestion-box_1" title="suggestion 1 / A"
+                 state="REFUSED"
+                 createDate="2014-03-11 17:34:00.0" createdBy="1"
+                 lastUpdateDate="2014-03-15 17:34:00.0" lastUpdatedBy="26" version="1"/>
+
+  <sc_suggestion id="suggestion_2" suggestionBoxId="suggestion-box_2" title="suggestion 2"
+                 state="DRAFT"
+                 createDate="2014-03-11 17:34:00.0" createdBy="1"
                  lastUpdateDate="2014-03-11 17:34:00.0" lastUpdatedBy="1" version="0"/>
+
+  <sc_suggestion id="suggestion_1_b" suggestionBoxId="suggestion-box_1" title="suggestion 1 / B"
+                 state="DRAFT"
+                 createDate="2014-03-11 17:34:00.0" createdBy="1"
+                 lastUpdateDate="2014-03-20 17:34:00.0" lastUpdatedBy="1" version="50"/>
+
+  <sc_suggestion id="suggestion_1_c" suggestionBoxId="suggestion-box_1" title="suggestion 1 / C"
+                 state="PENDING_VALIDATION"
+                 createDate="2014-03-11 17:34:00.0" createdBy="1"
+                 lastUpdateDate="2014-03-13 17:34:00.0" lastUpdatedBy="1" version="2"/>
+
+  <sc_suggestion id="suggestion_1_d" suggestionBoxId="suggestion-box_1" title="suggestion 1 / D"
+                 state="DRAFT"
+                 createDate="2014-03-11 17:34:00.0" createdBy="2"
+                 lastUpdateDate="2014-03-11 17:34:00.0" lastUpdatedBy="2" version="0"/>
 
 </dataset>

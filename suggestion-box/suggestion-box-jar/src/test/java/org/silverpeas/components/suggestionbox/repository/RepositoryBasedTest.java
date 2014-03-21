@@ -23,7 +23,6 @@
  */
 package org.silverpeas.components.suggestionbox.repository;
 
-import org.silverpeas.components.suggestionbox.model.PersistenceService;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
@@ -33,7 +32,10 @@ import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.After;
 import org.junit.Before;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.silverpeas.components.suggestionbox.mock.OrganisationControllerMockWrapper;
+import org.silverpeas.components.suggestionbox.model.PersistenceService;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.springframework.context.ApplicationContext;
@@ -41,6 +43,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import javax.sql.DataSource;
 
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 /**
@@ -70,6 +73,17 @@ public abstract class RepositoryBasedTest {
     // Database
     DatabaseOperation.INSERT
         .execute(new DatabaseConnection(dataSource.getConnection()), getDataSet());
+
+    // Getting a user by its id
+    when(getOrganisationController().getUserDetail(anyString())).then(new Answer<UserDetail>() {
+
+      @Override
+      public UserDetail answer(final InvocationOnMock invocation) throws Throwable {
+        UserDetail user = new UserDetail();
+        user.setId((String) invocation.getArguments()[0]);
+        return user;
+      }
+    });
   }
 
   public ReplacementDataSet getDataSet() throws Exception {
