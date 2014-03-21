@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2014 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -37,6 +37,7 @@
 <c:set var="componentUriBase"><c:url value="${requestScope.componentUriBase}"/></c:set>
 <c:set var="suggestionBoxId" value="${requestScope.suggestionBox.id}"/>
 <c:set var="isEdito" value="${requestScope.isEdito}"/>
+<c:set var="currentUserId" value="${sessionScope['SilverSessionController'].userId}"/>
 
 <view:setConstant var="adminRole" constant="com.stratelia.webactiv.SilverpeasRole.admin" />
 <view:setConstant var="publishRole" constant="com.stratelia.webactiv.SilverpeasRole.publisher" />
@@ -44,12 +45,16 @@
 <fmt:message var="modifyEditoLabel" key="suggestionBox.menu.item.edito.modify"/>
 <fmt:message var="addSuggestionLabel" key="suggestionBox.menu.item.suggestion.add"/>
 
+<c:url var="suggestionBoxJS" value="/util/javaScript/angularjs/suggestionbox.js"/>
+<c:url var="suggestionBoxServicesJS" value="/util/javaScript/angularjs/services/suggestionbox.js"/>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.suggestionBox">
 <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <view:looknfeel/>
   <view:includePlugin name="wysiwyg"/>
+  <script type="text/javascript" src="${suggestionBoxServicesJS}"></script>
 </head>
 <body>
 <c:if test="${greaterUserRole.isGreaterThanOrEquals(publishRole)}">
@@ -66,7 +71,21 @@
     <c:if test="${isEdito}">
       <view:displayWysiwyg objectId="${suggestionBoxId}" componentId="${componentId}" language="${null}"/>
     </c:if>
+    <div ng-controller="mainController">
+      <ul id="my_suggestions_list" class="container">
+        <li ng-repeat="suggestion in suggestions">
+          <a ng-href="${componentUriBase}suggestion/{{ suggestion.id }}"><span class="suggestion_title">{{ suggestion.title }}</span></a>
+        </li>
+      </ul>
+    </div>
   </view:frame>
 </view:window>
+  <script type="text/javascript">
+    angular.module('silverpeas').value('context', {
+          currentUserId: '${currentUserId}',
+          component: '${componentId}'});
+
+  </script>
+  <script type="text/javascript" src="${suggestionBoxJS}"></script>
 </body>
 </html>
