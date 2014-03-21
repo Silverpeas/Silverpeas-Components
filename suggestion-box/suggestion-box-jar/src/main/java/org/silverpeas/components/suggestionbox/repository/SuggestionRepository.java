@@ -30,6 +30,7 @@ import org.silverpeas.persistence.repository.jpa.AbstractJpaEntityRepository;
 import org.silverpeas.persistence.repository.jpa.NamedParameters;
 
 import javax.inject.Named;
+
 import java.util.List;
 
 /**
@@ -47,42 +48,10 @@ public class SuggestionRepository extends AbstractJpaEntityRepository<Suggestion
    */
   public List<Suggestion> findByCriteria(final SuggestionCriteria criteria) {
     NamedParameters params = initializeNamedParameters();
-
-    // Suggestion box
-    StringBuilder jpqlQuery = new StringBuilder("from Suggestion s where s.suggestionBox = :");
-    jpqlQuery
-        .append(params.add("suggestionBox", criteria.getSuggestionBox()).getLastParameterName());
-
-    // Suggestion creator
-    if (criteria.getCreator() != null) {
-      jpqlQuery.append(" and s.createdBy = :");
-      jpqlQuery
-          .append(params.add("createdBy", criteria.getCreator().getId()).getLastParameterName());
-    }
-
-    // Suggestion status
-    if (!criteria.getStatuses().isEmpty()) {
-      jpqlQuery.append(" and s.state in :");
-      jpqlQuery.append(params.add("states", criteria.getStatuses()).getLastParameterName());
-    }
-
-    // Order by
-    if (!criteria.getOrderByList().isEmpty()) {
-      jpqlQuery.append(" order by ");
-      int i = 0;
-      for (SuggestionCriteria.QUERY_ORDER_BY orderBy : criteria.getOrderByList()) {
-        if (i > 0) {
-          jpqlQuery.append(", ");
-        }
-        jpqlQuery.append("s.");
-        jpqlQuery.append(orderBy.getPropertyName());
-        jpqlQuery.append(" ");
-        jpqlQuery.append(orderBy.isAsc() ? "asc" : "desc");
-        i++;
-      }
-    }
+    JPQLQueryBuilder queryBuilder = new JPQLQueryBuilder(params);
+    criteria.processWith(queryBuilder);
 
     // Playing th query and returning the requested result
-    return listFromJpqlString(jpqlQuery.toString(), params);
+    return listFromJpqlString(queryBuilder.result(), params);
   }
 }

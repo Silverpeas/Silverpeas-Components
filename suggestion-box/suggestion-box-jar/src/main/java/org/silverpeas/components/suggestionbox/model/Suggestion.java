@@ -60,7 +60,7 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier> {
   @JoinColumn(name = "suggestionBoxId", referencedColumnName = "id", nullable = false)
   private SuggestionBox suggestionBox;
   @Column(nullable = false)
-  @Size(min = 2)
+  @Size(min = 1)
   @NotNull
   private String title;
 
@@ -112,8 +112,9 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier> {
    * @param content the suggestion's content to set.
    */
   public void setContent(String content) {
-    if (!this.content.equals(content)) {
-      this.content = content;
+    String contentToSet = (content == null ? "" : content);
+    if (!contentToSet.equals(this.content)) {
+      this.content = contentToSet;
       this.contentModified = true;
     }
   }

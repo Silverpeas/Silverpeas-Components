@@ -51,7 +51,7 @@ public interface SuggestionBoxService {
    * @param criteria the suggestion criteria.
    * @return the suggestion list corresponding to the given suggestion criteria.
    */
-  public List<Suggestion> findByCriteria(SuggestionCriteria criteria);
+  public List<Suggestion> findSuggestionsByCriteria(SuggestionCriteria criteria);
 
   /**
    * Saves the specified suggestion box.
@@ -85,6 +85,6 @@ public interface SuggestionBoxService {
    * @return the suggestion having the specified suggestion identifier of NONE if no such suggestion
    * exists in the specified suggestion box.
    */
-  public Suggestion getSuggestionById(final SuggestionBox box, final String suggestionId);
+  public Suggestion findSuggestionById(final SuggestionBox box, final String suggestionId);
 
 }

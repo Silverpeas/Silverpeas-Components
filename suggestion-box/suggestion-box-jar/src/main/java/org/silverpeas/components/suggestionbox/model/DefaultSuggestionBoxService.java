@@ -72,7 +72,7 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
   }
 
   @Override
-  public List<Suggestion> findByCriteria(final SuggestionCriteria criteria) {
+  public List<Suggestion> findSuggestionsByCriteria(final SuggestionCriteria criteria) {
     return suggestionRepository.findByCriteria(criteria);
   }
 
@@ -83,7 +83,7 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
   @Transactional
   @Override
   public void saveSuggestionBox(final SuggestionBox box) {
-    String author = box.getLastUpdatedBy();
+    final UserDetail author = box.getLastUpdater();
     suggestionBoxRepository.save(OperationContext.fromUser(author), box);
   }
 
@@ -143,10 +143,14 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
   }
 
   @Override
-  public Suggestion getSuggestionById(SuggestionBox box, String suggestionId) {
-    Suggestion suggestion = suggestionRepository.getById(suggestionId);
-    if (suggestion == null || !suggestion.getSuggestionBox().equals(box)) {
-      suggestion = Suggestion.NONE;
+  public Suggestion findSuggestionById(SuggestionBox box, String suggestionId) {
+    Suggestion suggestion = Suggestion.NONE;
+    SuggestionCriteria criteria = SuggestionCriteria.from(box).identifierIsOneOf(suggestionId);
+    List<Suggestion> suggestions = suggestionRepository.findByCriteria(criteria);
+    if (suggestions.size() == 1) {
+      suggestion = suggestions.get(0);
+      String content = WysiwygController.load(box.getComponentInstanceId(), suggestionId, null);
+      suggestion.setContent(content);
     }
     return suggestion;
   }

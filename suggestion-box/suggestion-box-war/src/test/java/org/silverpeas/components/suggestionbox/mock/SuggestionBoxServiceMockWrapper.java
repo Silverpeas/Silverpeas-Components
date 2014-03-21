@@ -47,8 +47,8 @@ public class SuggestionBoxServiceMockWrapper implements SuggestionBoxService {
   }
 
   @Override
-  public List<Suggestion> findByCriteria(final SuggestionCriteria criteria) {
-    return mock.findByCriteria(criteria);
+  public List<Suggestion> findSuggestionsByCriteria(final SuggestionCriteria criteria) {
+    return mock.findSuggestionsByCriteria(criteria);
   }
 
   @Override
@@ -77,7 +77,7 @@ public class SuggestionBoxServiceMockWrapper implements SuggestionBoxService {
   }
 
   @Override
-  public Suggestion getSuggestionById(SuggestionBox box, String suggestionId) {
-    return mock.getSuggestionById(box, suggestionId);
+  public Suggestion findSuggestionById(SuggestionBox box, String suggestionId) {
+    return mock.findSuggestionById(box, suggestionId);
   }
 }

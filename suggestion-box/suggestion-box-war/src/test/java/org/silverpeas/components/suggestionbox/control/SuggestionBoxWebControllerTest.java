@@ -27,20 +27,20 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.WebMessager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
+import org.mockito.ArgumentCaptor;
 import org.silverpeas.components.suggestionbox.mock.SuggestionBoxServiceMockWrapper;
+import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.model.SuggestionBoxService;
 import org.silverpeas.servlet.HttpRequest;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.*;
+
 
 /**
  * Unit test on some operations of the SuggestionBoxWebController instance.
@@ -80,11 +80,16 @@ public class SuggestionBoxWebControllerTest {
     when(context.getRequest().getParameter("title")).thenReturn("A suggestion title");
     when(context.getRequest().getParameter("content")).thenReturn("A suggestion content");
     SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
-    when(suggestionBoxService.getByComponentInstanceId(COMPONENT_INSTANCE_ID)).thenReturn(
-        aSuggestionBox());
+    SuggestionBox box = context.getSuggestionBox();
 
     controller.addSuggestion(context);
 
+    ArgumentCaptor<Suggestion> suggestionArgument = ArgumentCaptor.forClass(Suggestion.class);
+    verify(suggestionBoxService).
+        addSuggestion(eq(box), suggestionArgument.capture());
+    Suggestion suggestion = suggestionArgument.getValue();
+    assertThat(suggestion.getTitle(), is("A suggestion title"));
+    assertThat(suggestion.getContent(), is("A suggestion content"));
   }
 
   private SuggestionBoxWebRequestContext aSuggestionBoxWebRequestContext() {
