@@ -70,7 +70,7 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
 
     IDataSet actualDataSet = getActualDataSet();
     ITable table = actualDataSet.getTable("sc_suggestion");
-    assertThat(table.getRowCount(), is(2));
+    assertThat(table.getRowCount(), is(7));
     String actualTitle = (String) table.getValue(0, "title");
     assertThat(actualTitle, is(newSuggestion.getTitle()));
 

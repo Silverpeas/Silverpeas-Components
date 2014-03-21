@@ -70,10 +70,14 @@ public class SuggestionRepository extends AbstractJpaEntityRepository<Suggestion
     if (!criteria.getOrderByList().isEmpty()) {
       jpqlQuery.append(" order by ");
       int i = 0;
-      for (SuggestionCriteria.ORDER_BY orderBy : criteria.getOrderByList()) {
+      for (SuggestionCriteria.QUERY_ORDER_BY orderBy : criteria.getOrderByList()) {
         if (i > 0) {
-
+          jpqlQuery.append(", ");
         }
+        jpqlQuery.append("s.");
+        jpqlQuery.append(orderBy.getPropertyName());
+        jpqlQuery.append(" ");
+        jpqlQuery.append(orderBy.isAsc() ? "asc" : "desc");
         i++;
       }
     }

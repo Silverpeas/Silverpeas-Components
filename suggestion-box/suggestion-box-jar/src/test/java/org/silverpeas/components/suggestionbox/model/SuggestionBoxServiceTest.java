@@ -155,6 +155,16 @@ public class SuggestionBoxServiceTest {
             userId, null, false);
   }
 
+  @Test
+  public void findBySuggestionCriteria() {
+    SuggestionCriteria criteria = SuggestionCriteria.from(prepareASuggestionBox());
+
+    service.findByCriteria(criteria);
+
+    SuggestionRepository suggestionRepository = getSuggestionRepository();
+    verify(suggestionRepository, times(1)).findByCriteria(eq(criteria));
+  }
+
   private SuggestionBoxRepository getSuggestionBoxRepository() {
     SuggestionBoxRepositoryMockWrapper mockWrapper = context.
         getBean(SuggestionBoxRepositoryMockWrapper.class);

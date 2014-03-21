@@ -72,7 +72,7 @@ public class SuggestionBoxPersistenceTest extends RepositoryBasedTest {
     // Verification
     IDataSet actualDataSet = getActualDataSet();
     ITable table = actualDataSet.getTable("sc_suggestion_box");
-    assertThat(table.getRowCount(), is(2));
+    assertThat(table.getRowCount(), is(3));
     String createdBy = (String) table.getValue(0, "createdBy");
     String instanceId = (String) table.getValue(0, "instanceId");
     assertThat(createdBy, is(creator.getId()));
@@ -106,8 +106,8 @@ public class SuggestionBoxPersistenceTest extends RepositoryBasedTest {
     // Verifications
     IDataSet actualDataSet = getActualDataSet();
     ITable table = actualDataSet.getTable("sc_suggestion_box");
-    assertThat(table.getRowCount(), is(0));
+    assertThat(table.getRowCount(), is(1));
     table = actualDataSet.getTable("sc_suggestion");
-    assertThat(table.getRowCount(), is(0));
+    assertThat(table.getRowCount(), is(1));
   }
 }

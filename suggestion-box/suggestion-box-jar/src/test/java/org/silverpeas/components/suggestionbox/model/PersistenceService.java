@@ -32,6 +32,8 @@ import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepositor
 import org.silverpeas.components.suggestionbox.repository.SuggestionRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * A simple persister for testing purpose and with which the transactions are managed.
  * <p>
@@ -71,6 +73,10 @@ public class PersistenceService {
 
   public Suggestion getSuggestionById(String suggestionId) {
     return suggestionRepository.getById(suggestionId);
+  }
+
+  public List<Suggestion> findByCriteria(SuggestionCriteria criteria) {
+    return suggestionRepository.findByCriteria(criteria);
   }
 
   protected PersistenceService() {

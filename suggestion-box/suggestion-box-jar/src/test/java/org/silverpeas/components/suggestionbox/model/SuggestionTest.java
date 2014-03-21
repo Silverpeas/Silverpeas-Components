@@ -34,11 +34,13 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.silverpeas.components.suggestionbox.repository.RepositoryBasedTest;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
+import java.util.List;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.times;
+import static org.silverpeas.contribution.ContributionStatus.DRAFT;
 
 
 /**
@@ -51,6 +53,7 @@ public class SuggestionTest extends RepositoryBasedTest {
 
   private final static String SUGGESTION_ID = "suggestion_1";
   private final static String SUGGESTION_BOX_INSTANCE_ID = "suggestionBox1";
+  private final static String SECOND_SUGGESTION_BOX_INSTANCE_ID = "suggestionBox2";
 
   @Override
   public String getDataSetPath() {
@@ -79,7 +82,7 @@ public class SuggestionTest extends RepositoryBasedTest {
 
     IDataSet actualDataSet = getActualDataSet();
     ITable table = actualDataSet.getTable("sc_suggestion");
-    assertThat(table.getRowCount(), is(1));
+    assertThat(table.getRowCount(), is(6));
     String actualTitle = (String) table.getValue(0, "title");
     assertThat(actualTitle, is(newTitle));
 
@@ -107,7 +110,7 @@ public class SuggestionTest extends RepositoryBasedTest {
     } catch (Exception ex) {
       IDataSet actualDataSet = getActualDataSet();
       ITable table = actualDataSet.getTable("sc_suggestion");
-      assertThat(table.getRowCount(), is(1));
+      assertThat(table.getRowCount(), is(6));
       String actualTitle = (String) table.getValue(0, "title");
       assertThat(actualTitle, is(oldTitle));
 
@@ -122,5 +125,33 @@ public class SuggestionTest extends RepositoryBasedTest {
     SuggestionBox box = SuggestionBox.getByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID);
     Suggestion suggestion = box.getSuggestions().get("toto");
     assertThat(suggestion, is(Suggestion.NONE));
+  }
+
+  @Test
+  public void findBySuggestionCriteria() {
+
+    // Only the mandatory filter of the suggestion box itself
+    SuggestionBox box = SuggestionBox.getByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID);
+    List<Suggestion> suggestions =
+        getPersistenceService().findByCriteria(SuggestionCriteria.from(box));
+    assertThat(suggestions, hasSize(5));
+
+    // Filtering on an existing creator
+    UserDetail creator = UserDetail.getById("1");
+    suggestions =
+        getPersistenceService().findByCriteria(SuggestionCriteria.from(box).createdBy(creator));
+    assertThat(suggestions, hasSize(4));
+
+    // Filtering on an creator that doesn't exist
+    creator = UserDetail.getById("999");
+    suggestions =
+        getPersistenceService().findByCriteria(SuggestionCriteria.from(box).createdBy(creator));
+    assertThat(suggestions, hasSize(0));
+
+    // Filtering on an existing creator and one contribution status
+    creator = UserDetail.getById("1");
+    suggestions = getPersistenceService()
+        .findByCriteria(SuggestionCriteria.from(box).createdBy(creator).statusIsOneOf(DRAFT));
+    assertThat(suggestions, hasSize(2));
   }
 }
