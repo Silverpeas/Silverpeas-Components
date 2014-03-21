@@ -41,7 +41,7 @@
                  createDate="2014-03-11 17:34:00.0" createdBy="1"
                  lastUpdateDate="2014-03-16 17:34:00.0" lastUpdatedBy="1" version="2"/>
 
-  <sc_suggestion id="suggestion_1_a" suggestionBoxId="suggestion-box_1" title="suggestion 1 / A"
+  <sc_suggestion id="suggestion_1_a" suggestionBoxId="suggestion-box_1" title="suggestion 1 IDEM"
                  state="REFUSED"
                  createDate="2014-03-11 17:34:00.0" createdBy="1"
                  lastUpdateDate="2014-03-15 17:34:00.0" lastUpdatedBy="26" version="1"/>
@@ -56,7 +56,7 @@
                  createDate="2014-03-11 17:34:00.0" createdBy="1"
                  lastUpdateDate="2014-03-20 17:34:00.0" lastUpdatedBy="1" version="50"/>
 
-  <sc_suggestion id="suggestion_1_c" suggestionBoxId="suggestion-box_1" title="suggestion 1 / C"
+  <sc_suggestion id="suggestion_1_c" suggestionBoxId="suggestion-box_1" title="suggestion 1 IDEM"
                  state="PENDING_VALIDATION"
                  createDate="2014-03-11 17:34:00.0" createdBy="1"
                  lastUpdateDate="2014-03-13 17:34:00.0" lastUpdatedBy="1" version="2"/>
