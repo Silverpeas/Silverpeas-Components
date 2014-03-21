@@ -40,8 +40,7 @@ import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_ORDER_BY
-    .LAST_UPDATE_DATE_ASC;
+import static org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_ORDER_BY.LAST_UPDATE_DATE_ASC;
 import static org.silverpeas.contribution.ContributionStatus.DRAFT;
 import static org.silverpeas.contribution.ContributionStatus.REFUSED;
 
@@ -157,6 +156,17 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
     }
 
     /**
+     * Removes the specified suggestion from the suggestion box.
+     * <p>
+     * If the suggestion doesn't exist in the suggestion box, then nothing is done.
+     * @param suggestion the suggestion to remove.
+     */
+    public void remove(final Suggestion suggestion) {
+      SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
+      suggestionBoxService.removeSuggestion(SuggestionBox.this, suggestion);
+    }
+
+    /**
      * Gets the suggestion with the specified identifier from the suggestions of the suggestion box.
      * @param suggestionId the unique identifier of the suggestion to get.
      * @return the suggestion matching the specified identifier or NONE if no such suggestion exists
@@ -173,11 +183,11 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
      * @param user the creator of the returned suggestions.
      * @return the list of suggestions as described above and ordered by ascending last update date.
      */
-    public List<Suggestion> findNotPublishedFor(UserDetail user) {
+    public List<Suggestion> findNotPublishedFor(final UserDetail user) {
       SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
-      SuggestionCriteria criteria =
-          SuggestionCriteria.from(SuggestionBox.this).createdBy(user).statusIsOneOf(DRAFT, REFUSED)
-              .orderedBy(LAST_UPDATE_DATE_ASC);
+      SuggestionCriteria criteria = SuggestionCriteria.from(SuggestionBox.this).createdBy(user).
+          statusIsOneOf(DRAFT, REFUSED)
+          .orderedBy(LAST_UPDATE_DATE_ASC);
       return suggestionBoxService.findSuggestionsByCriteria(criteria);
     }
   }

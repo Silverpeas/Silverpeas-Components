@@ -60,6 +60,7 @@ public class SuggestionTest extends RepositoryBasedTest {
   private final static String SUGGESTION_ID = "suggestion_1";
   private final static String SUGGESTION_BOX_INSTANCE_ID = "suggestionBox1";
   private final static String SECOND_SUGGESTION_BOX_INSTANCE_ID = "suggestionBox2";
+  private final static int SUGGESTIONS_COUNT = 6;
 
   @Override
   public String getDataSetPath() {
@@ -88,7 +89,7 @@ public class SuggestionTest extends RepositoryBasedTest {
 
     IDataSet actualDataSet = getActualDataSet();
     ITable table = actualDataSet.getTable("sc_suggestion");
-    assertThat(table.getRowCount(), is(6));
+    assertThat(table.getRowCount(), is(SUGGESTIONS_COUNT));
     String actualTitle = (String) table.getValue(0, "title");
     assertThat(actualTitle, is(newTitle));
 
@@ -117,7 +118,7 @@ public class SuggestionTest extends RepositoryBasedTest {
     } catch (Exception ex) {
       IDataSet actualDataSet = getActualDataSet();
       ITable table = actualDataSet.getTable("sc_suggestion");
-      assertThat(table.getRowCount(), is(6));
+      assertThat(table.getRowCount(), is(SUGGESTIONS_COUNT));
       String actualTitle = (String) table.getValue(0, "title");
       assertThat(actualTitle, is(oldTitle));
 

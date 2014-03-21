@@ -128,7 +128,7 @@ public class SuggestionBoxWebController extends
     String suggestionId = context.getPathVariables().get("id");
     SuggestionBox suggestionBox = context.getSuggestionBox();
     Suggestion suggestion = suggestionBox.getSuggestions().get(suggestionId);
-    if (suggestion.isDefined()) {
+    if (suggestion.isDefined() && suggestion.isInDraft()) {
       SuggestionEntity entity = SuggestionEntity.fromSuggestion(suggestion);
       context.getRequest().setAttribute("suggestion", entity);
     } else {
@@ -170,13 +170,30 @@ public class SuggestionBoxWebController extends
     String id = context.getPathVariables().get("id");
     SuggestionBox suggestionBox = context.getSuggestionBox();
     Suggestion suggestion = suggestionBox.getSuggestions().get(id);
-    if (suggestion.isDefined()) {
+    if (suggestion.isDefined() && suggestion.isInDraft()) {
       suggestion.setTitle(context.getRequest().getParameter("title"));
       suggestion.setContent(context.getRequest().getParameter("content"));
       suggestion.setLastUpdater(context.getUser());
       suggestion.save();
       context.getMessager().addSuccess(getMultilang().getString(
           "suggestionBox.message.suggestion.modified"));
+    } else {
+      throw new WebApplicationException(Status.NOT_FOUND);
+    }
+  }
+
+  @POST
+  @Path("suggestion/delete/{id}")
+  @RedirectToInternal("Main")
+  @LowestRoleAccess(SilverpeasRole.writer)
+  public void deleteSuggestion(SuggestionBoxWebRequestContext context) {
+    String id = context.getPathVariables().get("id");
+    SuggestionBox suggestionBox = context.getSuggestionBox();
+    Suggestion suggestion = suggestionBox.getSuggestions().get(id);
+    if (suggestion.isDefined() && suggestion.isInDraft()) {
+      suggestionBox.getSuggestions().remove(suggestion);
+      context.getMessager().addSuccess(getMultilang().getString(
+          "suggestionBox.message.suggestion.removed"));
     } else {
       throw new WebApplicationException(Status.NOT_FOUND);
     }

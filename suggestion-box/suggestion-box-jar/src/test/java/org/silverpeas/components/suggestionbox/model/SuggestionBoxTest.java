@@ -47,6 +47,8 @@ import static org.mockito.Mockito.times;
 public class SuggestionBoxTest extends RepositoryBasedTest {
 
   private final static String SUGGESTION_BOX_INSTANCE_ID = "suggestionBox1";
+  private final static String SUGGESTION_ID = "suggestion_1";
+  private final static int SUGGESTIONS_COUNT = 6;
 
   @Override
   public String getDataSetPath() {
@@ -70,7 +72,7 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
 
     IDataSet actualDataSet = getActualDataSet();
     ITable table = actualDataSet.getTable("sc_suggestion");
-    assertThat(table.getRowCount(), is(7));
+    assertThat(table.getRowCount(), is(SUGGESTIONS_COUNT + 1));
     String actualTitle = (String) table.getValue(0, "title");
     assertThat(actualTitle, is(newSuggestion.getTitle()));
 
@@ -78,5 +80,20 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     WysiwygController.
         save(newSuggestion.getContent(), box.getComponentInstanceId(), newSuggestion.getId(),
             author.getId(), null, false);
+  }
+
+  @Test
+  public void removeASuggestionFromASuggestionBox() throws Exception {
+    PowerMockito.mockStatic(WysiwygController.class);
+    SuggestionBox box = SuggestionBox.getByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID);
+    Suggestion suggestion = box.getSuggestions().get(SUGGESTION_ID);
+    box.getSuggestions().remove(suggestion);
+
+    IDataSet actualDataSet = getActualDataSet();
+    ITable table = actualDataSet.getTable("sc_suggestion");
+    assertThat(table.getRowCount(), is(SUGGESTIONS_COUNT - 1));
+
+    PowerMockito.verifyStatic(times(1));
+    WysiwygController.deleteWysiwygAttachments(SUGGESTION_BOX_INSTANCE_ID, SUGGESTION_ID);
   }
 }
