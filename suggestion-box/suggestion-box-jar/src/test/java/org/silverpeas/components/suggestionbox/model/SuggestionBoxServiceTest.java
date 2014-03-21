@@ -48,7 +48,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
 
@@ -151,8 +150,8 @@ public class SuggestionBoxServiceTest {
     verify(suggestionRepository, times(1)).save(any(OperationContext.class), eq(suggestion));
     PowerMockito.verifyStatic(times(1));
     WysiwygController.
-        save(suggestion.getContent(), suggestion.getSuggestionBox().getId(), suggestion.getId(),
-            userId, null, false);
+        save(suggestion.getContent(), suggestion.getSuggestionBox().getComponentInstanceId(),
+            suggestion.getId(), userId, null, false);
   }
 
   @Test

@@ -26,13 +26,7 @@ package org.silverpeas.components.suggestionbox.control;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.Navigation;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.Homepage;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.Invokable;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.InvokeAfter;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.LowestRoleAccess;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternal;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternalJsp;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.WebComponentController;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.*;
 import com.stratelia.webactiv.SilverpeasRole;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
@@ -41,7 +35,6 @@ import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
@@ -116,20 +109,30 @@ public class SuggestionBoxWebController extends
    * @param context the context of the incoming request.
    */
   @GET
+  @Path("suggestion/new")
+  @RedirectToInternalJsp("suggestion.jsp")
+  @LowestRoleAccess(SilverpeasRole.writer)
+  public void newSuggestion(SuggestionBoxWebRequestContext context) {
+  }
+
+  /**
+   * Asks for editing an existing suggestion. It renders an HTML page to modify the content of the
+   * suggestion.
+   * @param context the context of the incoming request.
+   */
+  @GET
   @Path("suggestion/{id}")
   @RedirectToInternalJsp("suggestion.jsp")
   @LowestRoleAccess(SilverpeasRole.writer)
   public void editSuggestion(SuggestionBoxWebRequestContext context) {
     String suggestionId = context.getPathVariables().get("id");
-    if (!"new".equalsIgnoreCase(suggestionId)) {
-      SuggestionBox suggestionBox = context.getSuggestionBox();
-      Suggestion suggestion = suggestionBox.getSuggestions().get(suggestionId);
-      if (suggestion.isDefined()) {
-        SuggestionEntity entity = SuggestionEntity.fromSuggestion(suggestion);
-        context.getRequest().setAttribute("suggestion", entity);
-      } else {
-        throw new WebApplicationException(Status.NOT_FOUND);
-      }
+    SuggestionBox suggestionBox = context.getSuggestionBox();
+    Suggestion suggestion = suggestionBox.getSuggestions().get(suggestionId);
+    if (suggestion.isDefined()) {
+      SuggestionEntity entity = SuggestionEntity.fromSuggestion(suggestion);
+      context.getRequest().setAttribute("suggestion", entity);
+    } else {
+      throw new WebApplicationException(Status.NOT_FOUND);
     }
   }
 
@@ -159,8 +162,8 @@ public class SuggestionBoxWebController extends
    * carried within the request's context.
    * @param context the context of the incoming request.
    */
-  @PUT
-  @Path("suggestion/${id}")
+  @POST
+  @Path("suggestion/{id}")
   @RedirectToInternal("Main")
   @LowestRoleAccess(SilverpeasRole.writer)
   public void updateSuggestion(SuggestionBoxWebRequestContext context) {

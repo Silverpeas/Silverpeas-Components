@@ -137,8 +137,8 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
     suggestionRepository.flush();
 
     if (suggestion.isContentModified()) {
-      WysiwygController.save(suggestion.getContent(), suggestion.getSuggestionBox().getId(),
-          suggestion.getId(), suggestion.getLastUpdatedBy(), null, false);
+      WysiwygController.save(suggestion.getContent(), suggestion.getSuggestionBox().
+          getComponentInstanceId(), suggestion.getId(), suggestion.getLastUpdatedBy(), null, false);
     }
   }
 
