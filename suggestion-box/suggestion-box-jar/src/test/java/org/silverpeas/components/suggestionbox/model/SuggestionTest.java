@@ -245,6 +245,18 @@ public class SuggestionTest extends RepositoryBasedTest {
     ));
   }
 
+  @Test
+  public void findNotPublishedForAUser() {
+    SuggestionBox box = SuggestionBox.getByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID);
+    List<Suggestion> suggestions = box.getSuggestions().findNotPublishedFor(UserDetail.getById("1"));
+    assertThat(suggestions, hasSize(3));
+    assertThat(suggestions, contains(
+        matches("suggestion_1_a", "suggestion 1 IDEM", REFUSED, timestamp("2014-03-15 17:34:00.0")),
+        matches("suggestion_1", "suggestion 1", DRAFT, timestamp("2014-03-16 17:34:00.0")),
+        matches("suggestion_1_b", "suggestion 1 / B", DRAFT, timestamp("2014-03-20 17:34:00.0"))
+    ));
+  }
+
   private Timestamp timestamp(String timestamp) {
     return java.sql.Timestamp.valueOf(timestamp);
   }

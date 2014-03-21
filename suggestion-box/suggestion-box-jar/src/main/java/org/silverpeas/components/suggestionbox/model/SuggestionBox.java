@@ -39,6 +39,11 @@ import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_ORDER_BY
+    .LAST_UPDATE_DATE_ASC;
+import static org.silverpeas.contribution.ContributionStatus.DRAFT;
+import static org.silverpeas.contribution.ContributionStatus.REFUSED;
+
 /**
  * This entity represents a suggestion box.
  * @author Yohann Chastagnier
@@ -159,6 +164,20 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
     public Suggestion get(String suggestionId) {
       SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
       return suggestionBoxService.findSuggestionById(SuggestionBox.this, suggestionId);
+    }
+
+    /**
+     * Finds the list of suggestions that are not published (draft end refused status) and which
+     * the creator is those specified.
+     * @param user the creator of the returned suggestions.
+     * @return the list of suggestions as described above and ordered by ascending last update date.
+     */
+    public List<Suggestion> findNotPublishedFor(UserDetail user) {
+      SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
+      SuggestionCriteria criteria =
+          SuggestionCriteria.from(SuggestionBox.this).createdBy(user).statusIsOneOf(DRAFT, REFUSED)
+              .orderedBy(LAST_UPDATE_DATE_ASC);
+      return suggestionBoxService.findByCriteria(criteria);
     }
   }
 
