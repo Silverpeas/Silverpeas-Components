@@ -23,11 +23,14 @@
  */
 package org.silverpeas.components.suggestionbox.web;
 
+import com.silverpeas.web.Exposable;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
+import org.silverpeas.contribution.ContributionStatus;
 
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.net.URI;
 
 /**
  * It represents the state of a suggestion in a suggestion box as transmitted within the body of
@@ -35,20 +38,40 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author mmoquillon
  */
 @XmlRootElement
-public class SuggestionEntity {
+public class SuggestionEntity implements Exposable {
+  private static final long serialVersionUID = 4234619816264612213L;
 
   public static SuggestionEntity fromSuggestion(final Suggestion suggestion) {
     return new SuggestionEntity().withId(suggestion.getId()).withTitle(suggestion.getTitle()).
         withContent(suggestion.getContent());
   }
 
+  @XmlElement(defaultValue = "")
+  private URI uri;
   @XmlElement
   private String id;
   @XmlElement(nillable = false, required = true)
   @NotNull
   private String title;
+  @NotNull
+  private ContributionStatus status;
   @XmlElement
   private String content;
+
+  /**
+   * Sets a URI to this entity. With this URI, it can then be accessed through the Web.
+   * @param uri the web entity URI.
+   * @return itself.
+   */
+  public SuggestionEntity withURI(final URI uri) {
+    this.uri = uri;
+    return this;
+  }
+
+  @Override
+  public URI getURI() {
+    return uri;
+  }
 
   public String getId() {
     return id;
@@ -60,6 +83,15 @@ public class SuggestionEntity {
 
   public String getContent() {
     return content;
+  }
+
+  public ContributionStatus getStatus() {
+    return status;
+  }
+
+  private SuggestionEntity withStatus(ContributionStatus status) {
+    this.status = status;
+    return this;
   }
 
   private SuggestionEntity withTitle(String title) {
