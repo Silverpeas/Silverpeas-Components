@@ -149,7 +149,7 @@ public class SuggestionCriteria {
   }
 
   /**
-   * Gets the statuses criteria value.
+   * Gets the indentifiers criteria value.
    * {@link #identifierIsOneOf(java.lang.String...)}
    * @return the criterion on the identifiers the suggestions should match.
    */

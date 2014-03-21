@@ -75,6 +75,7 @@ public class SuggestionBoxWebController extends
    * @param context the context of the incoming request.
    */
   @GET
+  @Path("Main")
   @Homepage
   @RedirectToInternalJsp("suggestionBox.jsp")
   @InvokeAfter("isEdito")
@@ -93,7 +94,7 @@ public class SuggestionBoxWebController extends
   @Path("edito/modify")
   @LowestRoleAccess(SilverpeasRole.admin)
   public Navigation modifyEdito(SuggestionBoxWebRequestContext context) {
-    return context.redirectToHtmlEditor(context.getSuggestionBox().getId(), "fromWysiwyg", false);
+    return context.redirectToHtmlEditor(context.getSuggestionBox().getId(), "Main", false);
   }
 
   /**
