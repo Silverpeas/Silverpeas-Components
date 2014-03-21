@@ -24,6 +24,7 @@
 package org.silverpeas.components.suggestionbox.model;
 
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.persistence.model.jpa.AbstractJpaEntity;
@@ -177,7 +178,7 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
       SuggestionCriteria criteria =
           SuggestionCriteria.from(SuggestionBox.this).createdBy(user).statusIsOneOf(DRAFT, REFUSED)
               .orderedBy(LAST_UPDATE_DATE_ASC);
-      return suggestionBoxService.findByCriteria(criteria);
+      return suggestionBoxService.findSuggestionsByCriteria(criteria);
     }
   }
 

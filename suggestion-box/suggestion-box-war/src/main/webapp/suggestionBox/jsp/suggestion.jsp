@@ -90,7 +90,7 @@
     }
 
     function cancel() {
-      $('#suggestion').attr('action', '${componentUriBase}Main').submit();
+      $('#suggestion').attr('method','GET').attr('action', '${componentUriBase}Main').submit();
     }
 
     $(document).ready(function() {
