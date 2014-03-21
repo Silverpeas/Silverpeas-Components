@@ -80,4 +80,9 @@ public class SuggestionBoxServiceMockWrapper implements SuggestionBoxService {
   public Suggestion findSuggestionById(SuggestionBox box, String suggestionId) {
     return mock.findSuggestionById(box, suggestionId);
   }
+
+  @Override
+  public void removeSuggestion(SuggestionBox box, Suggestion suggestion) {
+    mock.removeSuggestion(box, suggestion);
+  }
 }

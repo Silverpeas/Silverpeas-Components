@@ -47,6 +47,7 @@
 
 <c:url var="suggestionBoxJS" value="/util/javaScript/angularjs/suggestionbox.js"/>
 <c:url var="suggestionBoxServicesJS" value="/util/javaScript/angularjs/services/suggestionbox.js"/>
+<c:url var="deleteIcon" value="/util/icons/delete.gif"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.suggestionBox">
@@ -75,9 +76,13 @@
       <ul id="my_suggestions_list" class="container">
         <li ng-repeat="suggestion in suggestions">
           <a ng-href="${componentUriBase}suggestion/{{ suggestion.id }}"><span class="suggestion_title">{{ suggestion.title }}</span></a>
+          <!-- TODO once the deletion by web service is implemented, replace the argument by: suggestion.id -->
+          <img ng-click="delete('${componentUriBase}suggestion/delete/'+ suggestion.id)" src="${deleteIcon}" alt="remove" class="remove"/>
         </li>
       </ul>
     </div>
+    <!-- TODO delete this form once the web service to delete a given suggestion is done -->
+    <form id="deletion" action="" method="POST"></form>
   </view:frame>
 </view:window>
   <script type="text/javascript">

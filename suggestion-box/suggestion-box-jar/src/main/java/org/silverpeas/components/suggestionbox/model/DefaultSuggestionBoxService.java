@@ -154,4 +154,16 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
     }
     return suggestion;
   }
+
+  @Override
+  @Transactional
+  public void removeSuggestion(SuggestionBox box, Suggestion suggestion) {
+    Suggestion actual = suggestionRepository.getById(suggestion.getId());
+    if (suggestion.getSuggestionBox().equals(box)) {
+      suggestionRepository.delete(actual);
+      suggestionRepository.flush();
+
+      WysiwygController.deleteWysiwygAttachments(box.getComponentInstanceId(), suggestion.getId());
+    }
+  }
 }

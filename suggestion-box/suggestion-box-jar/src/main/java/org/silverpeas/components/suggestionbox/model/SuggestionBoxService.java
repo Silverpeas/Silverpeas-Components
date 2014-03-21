@@ -71,6 +71,7 @@ public interface SuggestionBoxService {
    * @param box the box to delete from Silverpeas.
    */
   public void deleteSuggestionBox(final SuggestionBox box);
+
   /**
    * Updates the state of the specified suggestion.
    * @param suggestion to update.
@@ -86,5 +87,12 @@ public interface SuggestionBoxService {
    * exists in the specified suggestion box.
    */
   public Suggestion findSuggestionById(final SuggestionBox box, final String suggestionId);
+
+  /**
+   * Removes from the specified suggestion box the specified suggestion.
+   * @param box the suggestion box to which the suggestion belongs.
+   * @param suggestion the suggestion to remove.
+   */
+  public void removeSuggestion(final SuggestionBox box, final Suggestion suggestion);
 
 }

@@ -176,6 +176,14 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier> {
   }
 
   /**
+   * Is this suggestion in draft?
+   * @return true if this suggestion is in draft, false otherwise.
+   */
+  public boolean isInDraft() {
+    return getStatus() == ContributionStatus.DRAFT;
+  }
+
+  /**
    * Gets the contribution status of this suggestion.
    * @return the suggestion's contribution status;
    */
