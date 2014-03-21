@@ -32,15 +32,20 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.silverpeas.components.suggestionbox.repository.RepositoryBasedTest;
+import org.silverpeas.contribution.ContributionStatus;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.times;
-import static org.silverpeas.contribution.ContributionStatus.DRAFT;
+import static org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_ORDER_BY.*;
+import static org.silverpeas.components.suggestionbox.model.SuggestionMatcher.PROPERTY.*;
+import static org.silverpeas.contribution.ContributionStatus.*;
 
 
 /**
@@ -153,5 +158,99 @@ public class SuggestionTest extends RepositoryBasedTest {
     suggestions = getPersistenceService()
         .findByCriteria(SuggestionCriteria.from(box).createdBy(creator).statusIsOneOf(DRAFT));
     assertThat(suggestions, hasSize(2));
+
+    // Filtering on an existing creator and one other contribution status
+    creator = UserDetail.getById("1");
+    suggestions = getPersistenceService().findByCriteria(
+        SuggestionCriteria.from(box).createdBy(creator).statusIsOneOf(PENDING_VALIDATION));
+    assertThat(suggestions, hasSize(1));
+
+    // Filtering on an existing creator and the two contribution status above used
+    creator = UserDetail.getById("1");
+    suggestions = getPersistenceService().findByCriteria(
+        SuggestionCriteria.from(box).createdBy(creator).statusIsOneOf(PENDING_VALIDATION, DRAFT));
+    assertThat(suggestions, hasSize(3));
+
+    // Filtering on an existing creator and ordering by ascending last update date
+    creator = UserDetail.getById("1");
+    suggestions = getPersistenceService().findByCriteria(
+        SuggestionCriteria.from(box).createdBy(creator).orderedBy(LAST_UPDATE_DATE_ASC));
+    assertThat(suggestions, hasSize(4));
+    assertThat(suggestions, contains(
+        matches("suggestion_1_c", "suggestion 1 IDEM", PENDING_VALIDATION,
+            timestamp("2014-03-13 17:34:00.0")),
+        matches("suggestion_1_a", "suggestion 1 IDEM", REFUSED, timestamp("2014-03-15 17:34:00.0")),
+        matches("suggestion_1", "suggestion 1", DRAFT, timestamp("2014-03-16 17:34:00.0")),
+        matches("suggestion_1_b", "suggestion 1 / B", DRAFT, timestamp("2014-03-20 17:34:00.0"))
+    ));
+
+    // Filtering on an existing creator and ordering by descending last update date
+    creator = UserDetail.getById("1");
+    suggestions = getPersistenceService().findByCriteria(
+        SuggestionCriteria.from(box).createdBy(creator).orderedBy(LAST_UPDATE_DATE_DESC));
+    assertThat(suggestions, hasSize(4));
+    assertThat(suggestions, contains(
+        matches("suggestion_1_b", "suggestion 1 / B", DRAFT, timestamp("2014-03-20 17:34:00.0")),
+        matches("suggestion_1", "suggestion 1", DRAFT, timestamp("2014-03-16 17:34:00.0")),
+        matches("suggestion_1_a", "suggestion 1 IDEM", REFUSED, timestamp("2014-03-15 17:34:00.0")),
+        matches("suggestion_1_c", "suggestion 1 IDEM", PENDING_VALIDATION,
+            timestamp("2014-03-13 17:34:00.0"))
+    ));
+
+    // Filtering on an existing creator and ordering by descending title,
+    // then by descending last update date
+    creator = UserDetail.getById("1");
+    suggestions = getPersistenceService().findByCriteria(
+        SuggestionCriteria.from(box).createdBy(creator).orderedBy(TITLE_DESC, LAST_UPDATE_DATE_DESC)
+    );
+    assertThat(suggestions, hasSize(4));
+    assertThat(suggestions, contains(
+        matches("suggestion_1_a", "suggestion 1 IDEM", REFUSED, timestamp("2014-03-15 17:34:00.0")),
+        matches("suggestion_1_c", "suggestion 1 IDEM", PENDING_VALIDATION,
+            timestamp("2014-03-13 17:34:00.0")),
+        matches("suggestion_1_b", "suggestion 1 / B", DRAFT, timestamp("2014-03-20 17:34:00.0")),
+        matches("suggestion_1", "suggestion 1", DRAFT, timestamp("2014-03-16 17:34:00.0"))
+    ));
+
+    // Filtering on an existing creator and ordering by ascending title,
+    // then by descending last update date
+    creator = UserDetail.getById("1");
+    suggestions = getPersistenceService().findByCriteria(
+        SuggestionCriteria.from(box).createdBy(creator).orderedBy(TITLE_ASC, LAST_UPDATE_DATE_DESC)
+    );
+    assertThat(suggestions, hasSize(4));
+    assertThat(suggestions,
+        contains(matches("suggestion_1", "suggestion 1", DRAFT, timestamp("2014-03-16 17:34:00.0")),
+            matches("suggestion_1_b", "suggestion 1 / B", DRAFT,
+                timestamp("2014-03-20 17:34:00.0")),
+            matches("suggestion_1_a", "suggestion 1 IDEM", REFUSED,
+                timestamp("2014-03-15 17:34:00.0")),
+            matches("suggestion_1_c", "suggestion 1 IDEM", PENDING_VALIDATION,
+                timestamp("2014-03-13 17:34:00.0"))
+        ));
+
+    // Filtering on an existing creator and PENDING_VALIDATION or REFUSED status
+    // and ordering by ascending title, then by ascending last update date
+    creator = UserDetail.getById("1");
+    suggestions = getPersistenceService().findByCriteria(
+        SuggestionCriteria.from(box).createdBy(creator).statusIsOneOf(PENDING_VALIDATION, REFUSED)
+            .orderedBy(TITLE_ASC, LAST_UPDATE_DATE_ASC)
+    );
+    assertThat(suggestions, hasSize(2));
+    assertThat(suggestions, contains(
+        matches("suggestion_1_c", "suggestion 1 IDEM", PENDING_VALIDATION,
+            timestamp("2014-03-13 17:34:00.0")),
+        matches("suggestion_1_a", "suggestion 1 IDEM", REFUSED, timestamp("2014-03-15 17:34:00.0"))
+    ));
+  }
+
+  private Timestamp timestamp(String timestamp) {
+    return java.sql.Timestamp.valueOf(timestamp);
+  }
+
+  private SuggestionMatcher matches(String id, String title, ContributionStatus status,
+      Date lastUpdateDate) {
+    return SuggestionMatcher.init().value(ID, id).value(TITLE, title).value(STATUS, status)
+        .value(LAST_UPDATE_DATE, lastUpdateDate);
   }
 }
