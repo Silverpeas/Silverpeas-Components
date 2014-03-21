@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2014 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -44,7 +44,10 @@
 <c:url var="formValidator" value="/util/javaScript/checkForm.js"/>
 <c:set var="componentUriBase"><c:url value="${requestScope.componentUriBase}"/></c:set>
 <c:set var="suggestion" value="${requestScope.suggestion}"/>
-
+<c:set var="target" value="add"/>
+<c:if test="${suggestion != null}">
+  <c:set var="target" value="${suggestion.id}"/>
+</c:if>
 <fmt:message var="save" key="GML.validate"/>
 <fmt:message var="cancel" key="GML.cancel"/>
 <fmt:message var="addSuggestionLabel" key="suggestionBox.menu.item.suggestion.add"/>
@@ -104,14 +107,7 @@
 <view:window>
   <view:frame>
     <div id="error" style="display: none;"></div>
-    <c:choose>
-      <c:when test="${suggestion == null}">
-    <form id="suggestion" name="suggestion" action="${componentUriBase}suggestion/add" method="POST">   
-      </c:when>
-      <c:otherwise>
-    <form id="suggestion" name="suggestion" action="${componentUriBase}suggestion/${suggestion.id}" method="PUT">    
-      </c:otherwise>
-    </c:choose>
+    <form id="suggestion" name="suggestion" action="${componentUriBase}suggestion/${target}" method="POST">
       <div class="fields">
         <div class="field" id="suggestionName">
           <label for="title" class="txtlibform"><fmt:message key='GML.title'/>&nbsp;<img alt="mandatory" src="${mandatoryIcons}" width="5" height="5"/></label>

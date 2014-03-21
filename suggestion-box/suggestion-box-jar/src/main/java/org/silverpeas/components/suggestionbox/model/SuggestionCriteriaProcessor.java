@@ -30,7 +30,7 @@ import org.silverpeas.contribution.ContributionStatus;
 import java.util.List;
 
 /**
- * A processor of a suggestion criteria. The aim of a such processor is to process each of the
+ * A processor of a suggestion criteria. The aim of a such processor is to process each
  * criterion of the criteria in the order expected by the caller in order to perform some specific
  * works.
  * @author mmoquillon

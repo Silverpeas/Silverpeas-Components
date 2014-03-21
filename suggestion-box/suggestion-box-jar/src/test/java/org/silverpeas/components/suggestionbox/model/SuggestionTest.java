@@ -94,7 +94,8 @@ public class SuggestionTest extends RepositoryBasedTest {
 
     PowerMockito.verifyStatic(times(1));
     WysiwygController.
-        save(newContent, box.getId(), suggestion.getId(), author.getId(), null, false);
+        save(newContent, box.getComponentInstanceId(), suggestion.getId(), author.getId(), null,
+            false);
   }
 
   @Test
