@@ -37,6 +37,7 @@ import java.util.List;
 public class SuggestionCriteria {
 
   public enum QUERY_ORDER_BY {
+
     TITLE_ASC("title", true), LAST_UPDATE_DATE_ASC("lastUpdateDate", true),
     TITLE_DESC("title", false), LAST_UPDATE_DATE_DESC("lastUpdateDate", false);
 
@@ -59,8 +60,9 @@ public class SuggestionCriteria {
 
   private SuggestionBox suggestionBox;
   private UserDetail creator;
-  private List<ContributionStatus> statuses = new ArrayList<ContributionStatus>();
-  private List<QUERY_ORDER_BY> orderByList = new ArrayList<QUERY_ORDER_BY>();
+  private final List<ContributionStatus> statuses = new ArrayList<ContributionStatus>();
+  private final List<QUERY_ORDER_BY> orderByList = new ArrayList<QUERY_ORDER_BY>();
+  private final List<String> identifiers = new ArrayList<String>();
 
   private SuggestionCriteria() {
 
@@ -69,7 +71,7 @@ public class SuggestionCriteria {
   /**
    * Initializes suggestion search criteria axed on the given suggestion box.
    * @param suggestionBox the base suggestion box of suggestion criteria.
-   * @return an instance of suggestion criteria with the given suggestion box set.
+   * @return an instance of suggestion criteria based on the specified suggestion box.
    */
   public static SuggestionCriteria from(SuggestionBox suggestionBox) {
     SuggestionCriteria criteria = new SuggestionCriteria();
@@ -78,9 +80,9 @@ public class SuggestionCriteria {
   }
 
   /**
-   * Sets the creator criteria to find suggestion created by the given user.
+   * Sets the creator criterion to find suggestion created by the given user.
    * @param user the user that must be the creator of the suggestion(s).
-   * @return the instance of the suggestion criteria with the creator set.
+   * @return the suggestion criteria itself with the new criterion on the suggestion creator.
    */
   public SuggestionCriteria createdBy(UserDetail user) {
     this.creator = user;
@@ -88,10 +90,10 @@ public class SuggestionCriteria {
   }
 
   /**
-   * Sets the list of status criteria to find suggestions which have their status equals to one of
+   * Sets the list of status criterion to find suggestions which have their status equals to one of
    * the given ones.
    * @param statuses the status list that the suggestion statuses must verify.
-   * @return the instance of the suggestion criteria with statuses set.
+   * @return the suggestion criteria itself with the new criterion on the suggestion statuses.
    */
   public SuggestionCriteria statusIsOneOf(ContributionStatus... statuses) {
     Collections.addAll(this.statuses, statuses);
@@ -101,7 +103,7 @@ public class SuggestionCriteria {
   /**
    * Configures the order of the suggestion list.
    * @param orderBies the list of order by directives.
-   * @return the instance of the suggestion criteria with order by list set.
+   * @return the suggestion criteria itself with the list ordering criterion.
    */
   public SuggestionCriteria orderedBy(QUERY_ORDER_BY... orderBies) {
     Collections.addAll(this.orderByList, orderBies);
@@ -109,9 +111,20 @@ public class SuggestionCriteria {
   }
 
   /**
+   * Sets the identifiers criterion to find the suggestions with an identifier equals to one of the
+   * specified ones.
+   * @param identifiers a list of identifiers the suggestions to find should have.
+   * @return the suggestion criteria itself with the new criterion on the suggestion identifiers.
+   */
+  public SuggestionCriteria identifierIsOneOf(String... identifiers) {
+    Collections.addAll(this.identifiers, identifiers);
+    return this;
+  }
+
+  /**
    * Gets the suggestion box criteria value.
    * {@link #from(SuggestionBox)}
-   * @return the suggestion box criteria.
+   * @return the criterion on the suggestion box to which the suggestions should belong.
    */
   public SuggestionBox getSuggestionBox() {
     return suggestionBox;
@@ -120,26 +133,58 @@ public class SuggestionCriteria {
   /**
    * Gets the creator criteria value.
    * {@link #createdBy(com.stratelia.webactiv.beans.admin.UserDetail)}
-   * @return the suggestion box criteria.
+   * @return the criterion on the creator of the suggestions.
    */
-  public UserDetail getCreator() {
+  private UserDetail getCreator() {
     return creator;
   }
 
   /**
    * Gets the statuses criteria value.
    * {@link #statusIsOneOf(org.silverpeas.contribution.ContributionStatus...)}
-   * @return the suggestion box criteria.
+   * @return the criterion on the status the suggestions should match.
    */
-  public List<ContributionStatus> getStatuses() {
+  private List<ContributionStatus> getStatuses() {
     return statuses;
+  }
+
+  /**
+   * Gets the statuses criteria value.
+   * {@link #identifierIsOneOf(java.lang.String...)}
+   * @return the criterion on the identifiers the suggestions should match.
+   */
+  private List<String> getIdentifiers() {
+    return identifiers;
   }
 
   /**
    * Gets the order by directive list.
    * @return the order by directives.
    */
-  public List<QUERY_ORDER_BY> getOrderByList() {
+  private List<QUERY_ORDER_BY> getOrderByList() {
     return orderByList;
+  }
+
+  /**
+   * Processes this criteria with the specified processor.
+   * It chains in a given order the different criterion to process.
+   * @param processor the processor to use for processing each criterion in this criteria.
+   */
+  public void processWith(final SuggestionCriteriaProcessor processor) {
+    processor.startProcessing();
+    processor.processSuggestionBox(getSuggestionBox());
+    if (!getIdentifiers().isEmpty()) {
+      processor.then().processIdentifiers(getIdentifiers());
+    }
+    if (getCreator() != null) {
+      processor.then().processCreator(getCreator());
+    }
+    if (!getStatuses().isEmpty()) {
+      processor.then().processStatus(getStatuses());
+    }
+    if (!getOrderByList().isEmpty()) {
+      processor.then().processOrdering(getOrderByList());
+    }
+    processor.endProcessing();
   }
 }

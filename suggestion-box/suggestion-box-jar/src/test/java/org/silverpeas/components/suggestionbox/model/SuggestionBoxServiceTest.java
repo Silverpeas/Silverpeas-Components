@@ -159,7 +159,7 @@ public class SuggestionBoxServiceTest {
   public void findBySuggestionCriteria() {
     SuggestionCriteria criteria = SuggestionCriteria.from(prepareASuggestionBox());
 
-    service.findByCriteria(criteria);
+    service.findSuggestionsByCriteria(criteria);
 
     SuggestionRepository suggestionRepository = getSuggestionRepository();
     verify(suggestionRepository, times(1)).findByCriteria(eq(criteria));

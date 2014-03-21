@@ -46,6 +46,7 @@ import static org.mockito.Mockito.times;
 import static org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_ORDER_BY.*;
 import static org.silverpeas.components.suggestionbox.model.SuggestionMatcher.PROPERTY.*;
 import static org.silverpeas.contribution.ContributionStatus.*;
+import static org.powermock.api.mockito.PowerMockito.when;
 
 
 /**
@@ -137,20 +138,20 @@ public class SuggestionTest extends RepositoryBasedTest {
 
     // Only the mandatory filter of the suggestion box itself
     SuggestionBox box = SuggestionBox.getByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID);
-    List<Suggestion> suggestions =
-        getPersistenceService().findByCriteria(SuggestionCriteria.from(box));
+    List<Suggestion> suggestions = getPersistenceService().findByCriteria(SuggestionCriteria.from(
+        box));
     assertThat(suggestions, hasSize(5));
 
     // Filtering on an existing creator
     UserDetail creator = UserDetail.getById("1");
-    suggestions =
-        getPersistenceService().findByCriteria(SuggestionCriteria.from(box).createdBy(creator));
+    suggestions = getPersistenceService().findByCriteria(SuggestionCriteria.from(box).createdBy(
+        creator));
     assertThat(suggestions, hasSize(4));
 
     // Filtering on an creator that doesn't exist
     creator = UserDetail.getById("999");
-    suggestions =
-        getPersistenceService().findByCriteria(SuggestionCriteria.from(box).createdBy(creator));
+    suggestions = getPersistenceService().findByCriteria(SuggestionCriteria.from(box).createdBy(
+        creator));
     assertThat(suggestions, hasSize(0));
 
     // Filtering on an existing creator and one contribution status
@@ -234,7 +235,7 @@ public class SuggestionTest extends RepositoryBasedTest {
     creator = UserDetail.getById("1");
     suggestions = getPersistenceService().findByCriteria(
         SuggestionCriteria.from(box).createdBy(creator).statusIsOneOf(PENDING_VALIDATION, REFUSED)
-            .orderedBy(TITLE_ASC, LAST_UPDATE_DATE_ASC)
+        .orderedBy(TITLE_ASC, LAST_UPDATE_DATE_ASC)
     );
     assertThat(suggestions, hasSize(2));
     assertThat(suggestions, contains(
@@ -252,5 +253,22 @@ public class SuggestionTest extends RepositoryBasedTest {
       Date lastUpdateDate) {
     return SuggestionMatcher.init().value(ID, id).value(TITLE, title).value(STATUS, status)
         .value(LAST_UPDATE_DATE, lastUpdateDate);
+  }
+
+  @Test
+  public void getAnExistingSuggestion() throws Exception {
+    PowerMockito.mockStatic(WysiwygController.class);
+    final String title = "suggestion 1";
+    final String content = "This is a content";
+    when(WysiwygController.load(SUGGESTION_BOX_INSTANCE_ID, SUGGESTION_ID, null)).
+        thenReturn(content);
+    SuggestionBox box = SuggestionBox.getByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID);
+    Suggestion suggestion = box.getSuggestions().get(SUGGESTION_ID);
+    assertThat(suggestion, not(is(Suggestion.NONE)));
+    assertThat(suggestion.getTitle(), is(title));
+    assertThat(suggestion.getContent(), is(content));
+
+    PowerMockito.verifyStatic(times(1));
+    WysiwygController.load(SUGGESTION_BOX_INSTANCE_ID, SUGGESTION_ID, null);
   }
 }

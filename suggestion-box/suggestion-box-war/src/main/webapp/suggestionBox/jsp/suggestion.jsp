@@ -116,14 +116,14 @@
         <div class="field" id="suggestionName">
           <label for="title" class="txtlibform"><fmt:message key='GML.title'/>&nbsp;<img alt="mandatory" src="${mandatoryIcons}" width="5" height="5"/></label>
           <div class="champs">
-            <input id="title" type="text" name="title" size="100%" maxlength="2000" value="${title}"/>
+            <input id="title" type="text" name="title" size="100%" maxlength="2000" value="<c:out value='${suggestion.title}'/>"/>
           </div>
         </div>
         <br clear="all"/>
         <div class="field" id="eventDescriptionArea">
           <label for="content" class="txtlibform"><fmt:message key='GML.description'/></label>
           <div class="champs">
-            <textarea rows="5" cols="10" name="content" id="content">${content}</textarea>
+            <textarea rows="5" cols="10" name="content" id="content">${suggestion.content}</textarea>
           </div>
         </div>
       </div>
