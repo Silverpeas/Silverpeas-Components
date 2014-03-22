@@ -84,6 +84,7 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
       @Override
       public Void execute() {
         final Suggestion suggestion = getSuggestionBox().getSuggestions().get(suggestionId);
+        assertSuggestionIsDefined(suggestion);
         getSuggestionBox().getSuggestions().remove(suggestion);
         return null;
       }
