@@ -76,18 +76,16 @@
       <ul id="my_suggestions_list" class="container">
         <li ng-repeat="suggestion in suggestions">
           <a ng-href="${componentUriBase}suggestion/{{ suggestion.id }}"><span class="suggestion_title">{{ suggestion.title }}</span></a>
-          <!-- TODO once the deletion by web service is implemented, replace the argument by: suggestion.id -->
-          <img ng-click="delete('${componentUriBase}suggestion/delete/'+ suggestion.id)" src="${deleteIcon}" alt="remove" class="remove"/>
+          <img ng-click="delete(suggestion)" src="${deleteIcon}" alt="remove" class="remove"/>
         </li>
       </ul>
     </div>
-    <!-- TODO delete this form once the web service to delete a given suggestion is done -->
-    <form id="deletion" action="" method="POST"></form>
   </view:frame>
 </view:window>
   <script type="text/javascript">
     angular.module('silverpeas').value('context', {
           currentUserId: '${currentUserId}',
+          suggestionBoxId: '${suggestionBoxId}',
           component: '${componentId}'});
 
   </script>

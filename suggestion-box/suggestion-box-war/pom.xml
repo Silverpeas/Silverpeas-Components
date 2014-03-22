@@ -64,6 +64,12 @@
       <artifactId>validation-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.silverpeas.core</groupId>
+      <artifactId>ws-test-core</artifactId>
+      <version>${core.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
       <artifactId>clipboard</artifactId>
       <classifier>client</classifier>
