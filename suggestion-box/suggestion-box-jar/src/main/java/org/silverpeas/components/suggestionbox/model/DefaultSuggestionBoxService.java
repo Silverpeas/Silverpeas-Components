@@ -34,8 +34,7 @@ import org.silverpeas.wysiwyg.control.WysiwygController;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+
 import java.util.List;
 
 /**
@@ -50,9 +49,6 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
 
   @Inject
   private SuggestionRepository suggestionRepository;
-
-  @PersistenceContext
-  private EntityManager entityManager;
 
   /**
    * Gets an instance of a SuggestionBoxService.

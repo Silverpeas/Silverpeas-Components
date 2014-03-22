@@ -39,11 +39,12 @@ import java.net.URI;
  */
 @XmlRootElement
 public class SuggestionEntity implements Exposable {
+
   private static final long serialVersionUID = 4234619816264612213L;
 
   public static SuggestionEntity fromSuggestion(final Suggestion suggestion) {
     return new SuggestionEntity().withId(suggestion.getId()).withTitle(suggestion.getTitle()).
-        withContent(suggestion.getContent());
+        withContent(suggestion.getContent()).withStatus(suggestion.getStatus());
   }
 
   @XmlElement(defaultValue = "")
@@ -111,5 +112,11 @@ public class SuggestionEntity implements Exposable {
 
   protected SuggestionEntity() {
 
+  }
+
+  @Override
+  public String toString() {
+    return "SuggestionEntity{" + "uri=" + uri + ", id=" + id + ", title=" + title + ", status="
+        + status + ", content=" + content + '}';
   }
 }

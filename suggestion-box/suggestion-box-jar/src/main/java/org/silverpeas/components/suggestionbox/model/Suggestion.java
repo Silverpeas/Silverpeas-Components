@@ -195,4 +195,12 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier> {
     SuggestionBoxServiceFactory serviceFactory = SuggestionBoxServiceFactory.getFactory();
     return serviceFactory.getSuggestionBoxService();
   }
+
+  @Override
+  public String toString() {
+    return "Suggestion{" + "suggestionBox=" + suggestionBox.getId() + ", title=" + title
+        + ", state=" + state + ", content=" + content + ", contentModified=" + contentModified + '}';
+  }
+
+
 }

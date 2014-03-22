@@ -36,8 +36,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs.BOX_BASE_URI;
-import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs
-    .BOX_SUGGESTION_URI_PART;
+import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs.BOX_SUGGESTION_URI_PART;
 
 /**
  * @author Yohann Chastagnier
@@ -64,6 +63,9 @@ public abstract class AbstractSuggestionBoxResource extends RESTWebService {
   public SuggestionBox getSuggestionBox() {
     if (suggestionBox == null) {
       suggestionBox = SuggestionBox.getByComponentInstanceId(getComponentId());
+      if (suggestionBox == null || !suggestionBox.getId().endsWith(suggestionBoxId)) {
+        throw new WebApplicationException(Status.NOT_FOUND);
+      }
     }
     return suggestionBox;
   }
@@ -82,12 +84,14 @@ public abstract class AbstractSuggestionBoxResource extends RESTWebService {
   }
 
   /**
-   * Converts the suggestion into its corresponding web entity.
+   * Converts the suggestion into its corresponding web entity. If the specified suggestion isn't
+   * defined, then an HTTP 404 error is sent back instead of the entity representation of the
+   * suggestion.
    * @param suggestion the suggestion to convert.
    * @return the corresponding suggestion entity.
    */
   protected SuggestionEntity asWebEntity(Suggestion suggestion) {
-    checkNotFoundStatus(suggestion);
+    assertSuggestionIsDefined(suggestion);
     return SuggestionEntity.fromSuggestion(suggestion).withURI(buildSuggestionURI(suggestion));
   }
 
@@ -106,11 +110,11 @@ public abstract class AbstractSuggestionBoxResource extends RESTWebService {
   }
 
   /**
-   * Centralization
-   * @param object any object
+   * Asserts the specified suggestion is well defined, otherwise an HTTP 404 error is sent back.
+   * @param suggestion the suggestion to check.
    */
-  private void checkNotFoundStatus(Object object) {
-    if (object == null) {
+  protected void assertSuggestionIsDefined(final Suggestion suggestion) {
+    if (suggestion.isNotDefined()) {
       throw new WebApplicationException(Status.NOT_FOUND);
     }
   }
