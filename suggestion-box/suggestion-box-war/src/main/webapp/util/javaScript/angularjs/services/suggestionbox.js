@@ -49,28 +49,37 @@ services.factory('Suggestion', ['RESTAdapter', function(RESTAdapter) {
       };
 
       /**
-       * Gets the suggestion collector for the suggestion box identified by the specified identifier.
-       * @param {String} suggestionBoxId the unique identifier of a suggestion box.
-       * @returns {object} a collector of suggestions from which queries can be performed.
+       * Gets the suggestion collector for the suggestion box identified by the specified URI.
+       * @param {string} suggestionBoxuri the URI identifying uniquely the suggestion box.
+       * @returns {Object} a collector of suggestions from which queries can be performed.
        */
-      this.suggestions = function(suggestionBoxId) {
-        var adapter = RESTAdapter.get(webContext + '/services/suggestionbox/' + suggestionBoxId +
-                  '/suggestions', converter);
+      this.suggestions = function(suggestionBoxUri) {
+        return new function() {
+          var adapter = RESTAdapter.get(suggestionBoxUri + '/suggestions', converter);
 
-        /**
-         * Gets one or more suggestions according to the argument.
-         * @param {Array} criteria an array of key-value pairs that made the different criterion.
-         * @returns {Array} the asked suggestion boxes.
-         */
-        this.get = function(criteria) {
-          if (criteria.length === 1 && (typeof criteria[0] === 'number' || typeof criteria[0] === 'string')) {
-            return adapter.find(criteria[0]);
-          } else {
-            return adapter.find({
-              url: adapter.url,
-              criteria: adapter.criteria(criteria[0], {})
-            });
-          }
+          /**
+          * Gets one or more suggestions according to the argument.
+          * @param {Array} criteria an array of key-value pairs that made the different criterion.
+          * @returns {Array} the asked suggestion boxes.
+          */
+          this.get = function(criteria) {
+            if (criteria.length === 1 && (typeof criteria[0] === 'number' || typeof criteria[0] === 'string')) {
+              return adapter.find(criteria[0]);
+            } else {
+              return adapter.find({
+               url: adapter.url,
+                criteria: adapter.criteria(criteria[0], {})
+              });
+            }
+          };
+          /**
+           * Removes the suggestion identified by the specified identifier from the suggestions of the
+           * suggestion box.
+           * @param {string} id the identifier of the suggestion to remove
+           */
+          this.remove = function(id) {
+            adapter.delete(id);
+          };
         };
       };
     };
@@ -78,15 +87,10 @@ services.factory('Suggestion', ['RESTAdapter', function(RESTAdapter) {
 
 services.factory('SuggestionBox', ['context', 'Suggestion', 'RESTAdapter', function(context, Suggestion, RESTAdapter) {
     return new function() {
-      var defaultParameters = {};
-      if (context) {
-        defaultParameters = {
-          componentInstanceId: context.component
-        };
-      }
+      var baseUri = webContext + '/services/suggestionbox/' + context.component;
 
       // the adapter over the remote REST service used to get one or more suggestions boxes
-      var adapter = RESTAdapter.get(webContext + '/services/suggestionbox', function(data) {
+      var adapter = RESTAdapter.get(webContext + '/services/suggestionbox/' + context.component, function(data) {
           var suggestionboxes;
           if (data instanceof Array) {
             suggestionboxes = [];
@@ -108,6 +112,7 @@ services.factory('SuggestionBox', ['context', 'Suggestion', 'RESTAdapter', funct
             this[prop] = arguments[0][prop];
           }
         }
+        this.suggestions =  Suggestion.suggestions(baseUri + '/' + this.id);
       };
 
       /**
@@ -116,14 +121,18 @@ services.factory('SuggestionBox', ['context', 'Suggestion', 'RESTAdapter', funct
        * @returns {Array|SuggestionBox} the asked suggestion boxes.
        */
       this.get = function() {
-          if (arguments.length === 1 && (typeof arguments[0] === 'number' || typeof arguments[0] === 'string')) {
+          /* TODO uncomment the code below once the web service is available */
+          /*if (arguments.length === 1 && (typeof arguments[0] === 'number' || typeof arguments[0] === 'string')) {
             return adapter.find(arguments[0]);
           } else {
             return adapter.find({
               url: adapter.url,
               criteria: adapter.criteria(arguments[0], defaultParameters)
             });
-          }
+          }*/
+
+          /* TODO remove the code below once the web service is available */
+          return new SuggestionBox(arguments[0]);
         };
     };
 }]);

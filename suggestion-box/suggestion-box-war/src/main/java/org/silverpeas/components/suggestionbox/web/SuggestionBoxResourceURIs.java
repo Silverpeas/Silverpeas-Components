@@ -31,6 +31,6 @@ package org.silverpeas.components.suggestionbox.web;
  */
 public final class SuggestionBoxResourceURIs {
 
-  public static final String BOX_BASE_URI = "suggestionBox";
+  public static final String BOX_BASE_URI = "suggestionbox";
   public static final String BOX_SUGGESTION_URI_PART = "suggestions";
 }

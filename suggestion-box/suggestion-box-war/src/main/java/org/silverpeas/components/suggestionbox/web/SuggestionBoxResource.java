@@ -33,11 +33,13 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+
 import java.util.List;
 
 import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs.BOX_BASE_URI;
-import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs
-    .BOX_SUGGESTION_URI_PART;
+import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs.BOX_SUGGESTION_URI_PART;
+
+import javax.ws.rs.DELETE;
 
 /**
  * A REST Web resource giving suggestion data.
@@ -66,6 +68,24 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
       public SuggestionEntity execute() {
         final Suggestion suggestion = getSuggestionBox().getSuggestions().get(suggestionId);
         return asWebEntity(suggestion);
+      }
+    }).execute();
+  }
+
+  /**
+   * Deletes the suggestion identified by the specified identifier.
+   * If it doesn't exist, a 404 HTTP code is returned.
+   * @param suggestionId the identifier of the suggestion.
+   */
+  @DELETE
+  @Path(BOX_SUGGESTION_URI_PART + "/{suggestionId}")
+  public void deleteSuggestion(@PathParam("suggestionId") final String suggestionId) {
+    process(new WebTreatment<Void>() {
+      @Override
+      public Void execute() {
+        final Suggestion suggestion = getSuggestionBox().getSuggestions().get(suggestionId);
+        getSuggestionBox().getSuggestions().remove(suggestion);
+        return null;
       }
     }).execute();
   }

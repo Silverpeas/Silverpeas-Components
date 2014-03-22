@@ -28,16 +28,19 @@ var suggestionBox = angular.module('silverpeas.suggestionBox',
 
 /* the main controller of the application */
 suggestionBox.controller('mainController', ['context', 'SuggestionBox', '$scope', function(context, SuggestionBox, $scope) {
-    var suggestionBox = null;
+    var suggestionBox = SuggestionBox.get({
+      id: context.suggestionBoxId,
+      componentInstanceId: context.component});
+
     $scope.delete = function(suggestion) {
-      // TODO replace this instruction by the Ajax requesting of deletion by using the Suggestion angularjs service
-      $('#deletion').attr('action', suggestion).submit();
+      suggestionBox.suggestions.remove(suggestion.id);
     };
-    $scope.suggestions = [{id: '09c5a97e-9c89-4593-8978-18b6e8efd84e', title: 'idée test', content: 'contenu test'}];
-    /*SuggestionBox.get().then(function(theBox) {
-      suggestionBox = theBox;
-      $scope.suggestions = suggestionBox.suggestions.get();
+
+    $scope.suggestions = [{id: 'b28c4d6d-ed51-4dad-bfd9-5a330d574575', title: 'idée test', content: 'contenu test'}];
+    /*suggestionBox.suggestions().get().then(function(theSuggestions) {
+      $scope.suggestions = theSuggestions;
     });*/
+
 }]);
 
 
