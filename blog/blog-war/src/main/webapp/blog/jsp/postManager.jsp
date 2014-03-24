@@ -27,7 +27,6 @@
 	isELIgnored="false"%>
 <%@ include file="check.jsp" %>
 <%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%
 	response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
@@ -38,22 +37,24 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
 <% 
-	PostDetail 	post			= (PostDetail) request.getAttribute("Post");
+	PostDetail 	post			= (PostDetail) request.getAttribute("Post"); //never null
 	Collection<NodeDetail> 	categories		= (Collection) request.getAttribute("AllCategories");
 	UserDetail  updater			= (UserDetail) request.getAttribute("Updater");
 	
 	String 		         title			= "";
+	String				 content		= "";
 	String 		         postId			= "";
 	String 		         categoryId		= "";
 	String 		         creationDate	= resource.getOutputDate(new Date());
 	String 		         creatorId		= "";
-	Date		          dateEvent		= new Date();
+	Date		         dateEvent		= new Date();
 	String 		         updateDate		= null;
 	
 	String 		action 			= "CreatePost";
 	browseBar.setExtraInformation(resource.getString("blog.newPost"));
 	
 	title 			= post.getPublication().getName();
+	content			= post.getContent();
 	postId			= post.getPublication().getPK().getId();
 	if (post.getCategory() != null) {
 		categoryId	= post.getCategory().getNodePK().getId();
@@ -83,6 +84,7 @@
 		function sendData() {
 			if (isCorrectForm()) {
 				<view:pdcPositions setIn="document.postForm.Positions.value"/>
+				document.postForm.action = "UpdatePost";
 				document.postForm.submit();
     		}
 		}
@@ -134,7 +136,7 @@
 		
 		function cancel()
 		{
-	    	document.postForm.action = "Main";
+	    	document.postForm.action = "ViewPost";
 			document.postForm.submit();
 		}
 		
@@ -167,7 +169,7 @@
     <div class="field" id="contentArea">
 		<label for="Content" class="txtlibform"><fmt:message key='blog.content'/></label>
 		<div class="champs">
-			<textarea rows="5" cols="10" name="Content" id="Content"></textarea>
+			<textarea rows="5" cols="10" name="Content" id="Content"><%=content %></textarea>
 		</div>
 	</div>
     
@@ -200,32 +202,26 @@
       </div>
     </div>
     
-    <% if (post != null) { %>
-    	<div class="field" id="updateArea">
-			<label class="txtlibform"><%=resource.getString("blog.header.contributors") %></label>
-			<% if (StringUtil.isDefined(updateDate) && updater != null) {%>
-			<div class="champs">
-				<%=resource.getString("GML.updateDate")%> <br /><b><%=updateDate%></b> <%=resource.getString("GML.By")%> <view:username userId="<%=updater.getId()%>"/>
-				<div class="profilPhoto"><img src="<%=m_context+updater.getAvatar() %>" alt="" class="defaultAvatar"/></div>
-			</div>
-			<% } %>
+   	<div class="field" id="updateArea">
+		<label class="txtlibform"><%=resource.getString("blog.header.contributors") %></label>
+		<% if (StringUtil.isDefined(updateDate) && updater != null) {%>
+		<div class="champs">
+			<%=resource.getString("GML.updateDate")%> <br /><b><%=updateDate%></b> <%=resource.getString("GML.By")%> <view:username userId="<%=updater.getId()%>"/>
+			<div class="profilPhoto"><img src="<%=m_context+updater.getAvatar() %>" alt="" class="defaultAvatar"/></div>
 		</div>
-		<div class="field" id="creationArea">
-			<div class="champs">
-				<%=resource.getString("GML.creationDate")%> <br /><b><%=creationDate%></b> <%=resource.getString("GML.By")%> <view:username userId="<%=post.getCreator().getId()%>"/>
-				<div class="profilPhoto"><img src="<%=m_context+post.getCreator().getAvatar() %>" alt="" class="defaultAvatar"/></div>
-			</div>
+		<% } %>
+	</div>
+	<div class="field" id="creationArea">
+		<div class="champs">
+			<%=resource.getString("GML.creationDate")%> <br /><b><%=creationDate%></b> <%=resource.getString("GML.By")%> <view:username userId="<%=post.getCreator().getId()%>"/>
+			<div class="profilPhoto"><img src="<%=m_context+post.getCreator().getAvatar() %>" alt="" class="defaultAvatar"/></div>
 		</div>
-    <% } %>
-    
+	</div>
+
   </div>
 </fieldset>
 
-<% if (post == null) { %>
-  <view:pdcNewContentClassification componentId="<%=instanceId%>" />
-<% } else { %>
-  <view:pdcClassification componentId="<%=instanceId%>" contentId="<%=post.getId() %>" editable="true" />
-<% } %>
+<view:pdcClassification componentId="<%=instanceId%>" contentId="<%=post.getId() %>" editable="true" />
 
 <div class="legend">
 	<img alt="mandatory" border="0" src="<%=resource.getIcon("blog.obligatoire")%>" width="5" height="5"/> : <%=resource.getString("GML.requiredField")%>
@@ -234,26 +230,38 @@
 </form>
 </div>
 	<br/>
-    <center>
-    <fmt:message key="GML.validate" var="validateLabel"/>
+	<center>
+	<fmt:message key="GML.validate" var="validateLabel"/>
     <fmt:message key="GML.publish" var="publishLabel"/>
     <fmt:message key="blog.draftPost" var="draftLabel"/>
     <fmt:message key="GML.cancel" var="cancelLabel"/>
     <view:buttonPane>
-      <view:button action="javascript:onClick=sendDataAndDraftOut();" disabled="false"
+    <% if("CreatePost".equals(action) || 
+        ("UpdatePost".equals(action) && PublicationDetail.DRAFT.equals(post.getPublication().getStatus()))) { 
+    %>
+		<view:button action="javascript:onClick=sendDataAndDraftOut();" disabled="false"
                    label="${publishLabel}"/>
-	  <view:button action="javascript:onClick=sendData();" disabled="false"
+		<view:button action="javascript:onClick=sendData();" disabled="false"
                    label="${draftLabel}"/>    
-      <% if ("CreatePost".equals(action)) {
-      %>               
-      <view:button action="javascript:onClick=deletePost();" disabled="false" label="${cancelLabel}"/>
-      <%
-      } else {
-      %>
-      <view:button action="javascript:onClick=cancel();" disabled="false" label="${cancelLabel}"/>
-      <%
-      }
-      %>
+    <%
+    } else if ("UpdatePost".equals(action) && PublicationDetail.VALID.equals(post.getPublication().getStatus())) {
+    %>
+		<view:button action="javascript:onClick=sendData();" disabled="false"
+                   label="${validateLabel}"/>
+    <%
+    }
+    %>
+	  
+	<% if ("CreatePost".equals(action)) {
+    %>               
+		<view:button action="javascript:onClick=deletePost();" disabled="false" label="${cancelLabel}"/>
+	<%
+    } else {
+    %>
+		<view:button action="javascript:onClick=cancel();" disabled="false" label="${cancelLabel}"/>
+	<%
+	}
+	%>
     </view:buttonPane>
     </center>
 </view:frame>
