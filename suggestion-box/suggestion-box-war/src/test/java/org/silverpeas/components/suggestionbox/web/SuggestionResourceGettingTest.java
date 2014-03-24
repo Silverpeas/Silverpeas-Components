@@ -24,6 +24,11 @@
 package org.silverpeas.components.suggestionbox.web;
 
 import com.silverpeas.web.ResourceGettingTest;
+import com.silverpeas.web.mock.UserDetailWithProfiles;
+import com.stratelia.webactiv.SilverpeasRole;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.sun.jersey.api.client.UniformInterfaceException;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.internal.stubbing.answers.Returns;
@@ -31,12 +36,17 @@ import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBoxService;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
 
+import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.silverpeas.web.TestResources.getTestResources;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.silverpeas.components.suggestionbox.web.SuggestionBoxTestResources.*;
 import static org.silverpeas.components.suggestionbox.web.SuggestionMatcher.matches;
 
@@ -47,6 +57,7 @@ import static org.silverpeas.components.suggestionbox.web.SuggestionMatcher.matc
 public class SuggestionResourceGettingTest extends ResourceGettingTest<SuggestionBoxTestResources> {
 
   private String sessionKey;
+  private UserDetailWithProfiles authenticatedUser;
 
   public SuggestionResourceGettingTest() {
     super(JAVA_PACKAGE, SPRING_CONTEXT);
@@ -54,7 +65,8 @@ public class SuggestionResourceGettingTest extends ResourceGettingTest<Suggestio
 
   @Before
   public void prepareTest() {
-    sessionKey = authenticate(aUser());
+    authenticatedUser = aUser();
+    sessionKey = authenticate(authenticatedUser);
   }
 
   @Test
@@ -65,7 +77,29 @@ public class SuggestionResourceGettingTest extends ResourceGettingTest<Suggestio
   }
 
   @Test
-  public void gettingNotPublishedSuggestions() {
+  public void gettingNotPublishedSuggestionsByReaderUser() {
+    authenticatedUser.addProfile(COMPONENT_INSTANCE_ID, SilverpeasRole.reader);
+    try {
+      gettingNotPublishedSuggestions();
+      fail("User must be a writer to get a list of not published suggestions");
+    } catch (UniformInterfaceException ex) {
+      int receivedStatus = ex.getResponse().getStatus();
+      int forbidden = Response.Status.FORBIDDEN.getStatusCode();
+      assertThat(receivedStatus, Matchers.is(forbidden));
+    }
+  }
+
+  @Test
+  public void gettingNotPublishedSuggestionsByWriterUser() {
+    authenticatedUser.addProfile(COMPONENT_INSTANCE_ID, SilverpeasRole.writer);
+    SuggestionEntity[] entities = gettingNotPublishedSuggestions();
+    assertThat(entities, notNullValue());
+    assertThat(entities.length, is(3));
+    verify(getTestResources().getSuggestionBoxService(), times(1)).
+        findSuggestionsByCriteria(any(SuggestionCriteria.class));
+  }
+
+  private SuggestionEntity[] gettingNotPublishedSuggestions() {
     SuggestionBoxService service = getTestResources().getSuggestionBoxService();
     List<Suggestion> notPublished = new ArrayList<Suggestion>();
     notPublished.add(getTestResources().aRandomSuggestion());
@@ -73,9 +107,7 @@ public class SuggestionResourceGettingTest extends ResourceGettingTest<Suggestio
     notPublished.add(getTestResources().aRandomSuggestion());
     when(service.findSuggestionsByCriteria(any(SuggestionCriteria.class)))
         .thenAnswer(new Returns(notPublished));
-    SuggestionEntity entity = getAt(aResourceURI(), getWebEntityClass());
-    Suggestion suggestion = getTestResources().aSuggestion();
-    assertThat(entity, matches(suggestion));
+    return getAt(SUGGESTIONS_URI_BASE + "notPublished", SuggestionEntity[].class);
   }
 
   @Override

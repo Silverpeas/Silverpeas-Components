@@ -51,6 +51,7 @@
 <fmt:message var="save" key="GML.validate"/>
 <fmt:message var="cancel" key="GML.cancel"/>
 <fmt:message var="addSuggestionLabel" key="suggestionBox.menu.item.suggestion.add"/>
+<fmt:message var="deleteSuggestionLabel" key="GML.delete"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -97,6 +98,10 @@
       $('#suggestion').attr('method','GET').attr('action', '${componentUriBase}Main').submit();
     }
 
+    function remove() {
+      $('#suggestion').attr('action', '${componentUriBase}suggestion/delete/${target}').submit();
+    }
+
     $(document).ready(function() {
       <view:wysiwyg replace="content" language="${null}" toolbar="suggestionBox"/>
       $('#title').focus();
@@ -105,6 +110,11 @@
 </head>
 <body>
 <view:browseBar componentId="${componentId}" extraInformations="${addSuggestionLabel}"/>
+<c:if test="${greaterUserRole.isGreaterThanOrEquals(publishRole)}">
+  <view:operationPane>
+    <view:operation action="javascript:remove();" altText="${deleteSuggestionLabel}"/>
+  </view:operationPane>
+</c:if>
 <view:window>
   <view:frame>
     <div id="error" style="display: none;"></div>
