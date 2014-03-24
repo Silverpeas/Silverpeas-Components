@@ -118,4 +118,16 @@ public abstract class AbstractSuggestionBoxResource extends RESTWebService {
       throw new WebApplicationException(Status.NOT_FOUND);
     }
   }
+
+  /**
+   * Centralization of checking if the user behind the service call is the creator of the specified
+   * suggestion.
+   * @param suggestion the suggestion to check.
+   */
+  protected void checkUserIsCreatorOrAdministrator(Suggestion suggestion) {
+    assertSuggestionIsDefined(suggestion);
+    if (!getUserDetail().isAccessAdmin() && !getUserDetail().equals(suggestion.getCreator())) {
+      throw new WebApplicationException(Status.FORBIDDEN);
+    }
+  }
 }

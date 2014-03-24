@@ -26,9 +26,17 @@ package org.silverpeas.components.suggestionbox.web;
 import com.silverpeas.web.ResourceGettingTest;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.internal.stubbing.answers.Returns;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
+import org.silverpeas.components.suggestionbox.model.SuggestionBoxService;
+import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.when;
 import static org.silverpeas.components.suggestionbox.web.SuggestionBoxTestResources.*;
 import static org.silverpeas.components.suggestionbox.web.SuggestionMatcher.matches;
 
@@ -51,6 +59,20 @@ public class SuggestionResourceGettingTest extends ResourceGettingTest<Suggestio
 
   @Test
   public void gettingAnExistingSuggestion() {
+    SuggestionEntity entity = getAt(aResourceURI(), getWebEntityClass());
+    Suggestion suggestion = getTestResources().aSuggestion();
+    assertThat(entity, matches(suggestion));
+  }
+
+  @Test
+  public void gettingNotPublishedSuggestions() {
+    SuggestionBoxService service = getTestResources().getSuggestionBoxService();
+    List<Suggestion> notPublished = new ArrayList<Suggestion>();
+    notPublished.add(getTestResources().aRandomSuggestion());
+    notPublished.add(getTestResources().aRandomSuggestion());
+    notPublished.add(getTestResources().aRandomSuggestion());
+    when(service.findSuggestionsByCriteria(any(SuggestionCriteria.class)))
+        .thenAnswer(new Returns(notPublished));
     SuggestionEntity entity = getAt(aResourceURI(), getWebEntityClass());
     Suggestion suggestion = getTestResources().aSuggestion();
     assertThat(entity, matches(suggestion));

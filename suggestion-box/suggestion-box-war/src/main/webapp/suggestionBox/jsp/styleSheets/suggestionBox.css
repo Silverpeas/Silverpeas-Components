@@ -25,3 +25,7 @@
 .suggestionBoxName {
 	font-weight: bold;
 }
+
+.action {
+  cursor: pointer;
+}

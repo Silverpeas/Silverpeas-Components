@@ -40,6 +40,7 @@ import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceU
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.UUID;
 
 /**
  * The resources required to run unit tests on the REST-based web services.
@@ -84,6 +85,15 @@ public class SuggestionBoxTestResources extends TestResources {
   public Suggestion aSuggestion() {
     Suggestion suggestion = new Suggestion("A suggestion title");
     ReflectionTestUtils.setField(suggestion, "id", new UuidIdentifier().fromString(SUGGESTION_ID));
+    ReflectionTestUtils.setField(suggestion, "suggestionBox", aSuggestionBox());
+    suggestion.setCreator(aUser());
+    suggestion.setContent("A suggestion content");
+    return suggestion;
+  }
+
+  public Suggestion aRandomSuggestion() {
+    Suggestion suggestion = new Suggestion("A suggestion title");
+    ReflectionTestUtils.setField(suggestion, "id", UUID.randomUUID().toString());
     ReflectionTestUtils.setField(suggestion, "suggestionBox", aSuggestionBox());
     suggestion.setCreator(aUser());
     suggestion.setContent("A suggestion content");
