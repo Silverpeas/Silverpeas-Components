@@ -27,27 +27,43 @@ var suggestionBox = angular.module('silverpeas.suggestionBox',
     ['silverpeas.services', 'silverpeas.directives']);
 
 /* the main controller of the application */
-suggestionBox.controller('mainController',
-    ['context', 'SuggestionBox', '$scope', function(context, SuggestionBox, $scope) {
-      var suggestionBox = SuggestionBox.get({
-        id : context.suggestionBoxId,
-        componentInstanceId : context.component});
+suggestionBox.controller('mainController', ['context', 'SuggestionBox', '$scope', '$rootScope',
+  function(context, SuggestionBox, $scope, $rootScope) {
+    var suggestionBox = SuggestionBox.get({
+      id : context.suggestionBoxId,
+      componentInstanceId : context.component});
 
-      $scope.delete = function(suggestion) {
-        suggestionBox.suggestions.remove(suggestion.id);
-      };
+    $scope.delete = function(suggestion) {
+      jQuery('#confirmation').html(context.deleteSuggestionConfirmMessage.replace('@name@',
+          suggestion.title));
+      jQuery('#confirmation').popup('confirmation', {
+        callback : function() {
+          suggestionBox.suggestions.remove(suggestion.id).then(function() {
+            $rootScope.$broadcast('suggestionModified', suggestion.id)
+          });
+          return true;
+        }
+      });
+    };
 
-      $scope.suggestions = [
-        {id : 'b28c4d6d-ed51-4dad-bfd9-5a330d574575', title : 'idée test', content : 'contenu test'}
-      ];
-      /*suggestionBox.suggestions().get().then(function(theSuggestions) {
-       $scope.suggestions = theSuggestions;
-       });*/
+    $scope.suggestions = [
+      {id : 'b28c4d6d-ed51-4dad-bfd9-5a330d574575', title : 'idée test', content : 'contenu test'}
+    ];
+    /*suggestionBox.suggestions().get().then(function(theSuggestions) {
+     $scope.suggestions = theSuggestions;
+     });*/
 
+    $scope.loadNotPublished = function() {
       suggestionBox.suggestions.get(['notPublished']).then(function(theSuggestions) {
         $scope.notPublishedSuggestions = theSuggestions;
       });
+    };
 
-    }]);
+    $scope.loadNotPublished();
+
+    $scope.$on("suggestionModified", function(theSuggestionId) {
+      $scope.loadNotPublished();
+    });
+  }]);
 
 

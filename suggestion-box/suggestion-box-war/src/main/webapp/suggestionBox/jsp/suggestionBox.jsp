@@ -44,6 +44,9 @@
 
 <fmt:message var="modifyEditoLabel" key="suggestionBox.menu.item.edito.modify"/>
 <fmt:message var="addSuggestionLabel" key="suggestionBox.menu.item.suggestion.add"/>
+<fmt:message var="deleteSuggestionConfirmMessage" key="suggestionBox.message.suggestion.confirm">
+  <fmt:param value="<b>@name@</b>" />
+</fmt:message>
 
 <c:url var="suggestionBoxJS" value="/util/javaScript/angularjs/suggestionbox.js"/>
 <c:url var="suggestionBoxServicesJS" value="/util/javaScript/angularjs/services/suggestionbox.js"/>
@@ -55,6 +58,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <view:looknfeel/>
   <view:includePlugin name="wysiwyg"/>
+  <view:includePlugin name="popup"/>
   <script type="text/javascript" src="${suggestionBoxServicesJS}"></script>
 </head>
 <body>
@@ -69,6 +73,7 @@
 </c:if>
 <view:window>
   <view:frame>
+    <div id="confirmation" style="display: none;"></div>
     <c:if test="${isEdito}">
       <view:displayWysiwyg objectId="${suggestionBoxId}" componentId="${componentId}" language="${null}"/>
     </c:if>
@@ -99,7 +104,8 @@
     angular.module('silverpeas').value('context', {
           currentUserId: '${currentUserId}',
           suggestionBoxId: '${suggestionBoxId}',
-          component: '${componentId}'});
+          component: '${componentId}',
+          deleteSuggestionConfirmMessage: "${deleteSuggestionConfirmMessage} ?"});
   </script>
   <script type="text/javascript" src="${suggestionBoxJS}"></script>
 </body>
