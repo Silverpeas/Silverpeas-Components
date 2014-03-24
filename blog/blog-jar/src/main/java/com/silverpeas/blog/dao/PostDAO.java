@@ -109,31 +109,11 @@ public class PostDAO {
     }
   }
 
-  public static String getOldestEvent(Connection con, String instanceId) throws SQLException {
-    // récupérer le dernier post par date d'évènement
-    String query = "select pubId from SC_Blog_Post where instanceId = ? order by dateEvent ASC";
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    String pubId = "";
-    try {
-      prepStmt = con.prepareStatement(query);
-      prepStmt.setString(1, instanceId);
-      rs = prepStmt.executeQuery();
-      if (rs.next()) {
-        pubId = "" + rs.getInt("pubId");
-      }
-    } finally {
-      // fermeture
-      DBUtil.close(rs, prepStmt);
-    }
-    return pubId;
-  }
-
   public static Collection<String> getAllEvents(Connection con, String instanceId)
       throws SQLException {
     // récupérer les derniers posts par date d'évènement
     List<String> listEvents = new ArrayList<String>();
-    String query = "select pubId from SC_Blog_Post where instanceId = ? order by dateEvent DESC";
+    String query = "select pubId from SC_Blog_Post where instanceId = ? order by dateEvent DESC, pubId DESC";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
