@@ -76,9 +76,10 @@ services.factory('Suggestion', ['RESTAdapter', function(RESTAdapter) {
            * Removes the suggestion identified by the specified identifier from the suggestions of the
            * suggestion box.
            * @param {string} id the identifier of the suggestion to remove
+           * @returns {string} the id of the deleted suggestion.
            */
           this.remove = function(id) {
-            adapter.delete(id);
+            return adapter.delete(id);
           };
         };
       };

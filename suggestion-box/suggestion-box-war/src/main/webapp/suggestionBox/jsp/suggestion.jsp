@@ -29,7 +29,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
-<view:setConstant var="publishRole" constant="com.stratelia.webactiv.SilverpeasRole.publisher" />
+<view:setConstant var="publishRole" constant="com.stratelia.webactiv.SilverpeasRole.publisher"/>
 <c:set var="greaterUserRole" value="${requestScope.greaterUserRole}"/>
 <c:if test="${! greaterUserRole.isGreaterThanOrEquals(publishRole)}">
   <c:redirect url="/Error403.jsp"/>
@@ -52,6 +52,9 @@
 <fmt:message var="cancel" key="GML.cancel"/>
 <fmt:message var="addSuggestionLabel" key="suggestionBox.menu.item.suggestion.add"/>
 <fmt:message var="deleteSuggestionLabel" key="GML.delete"/>
+<fmt:message var="deleteSuggestionConfirmMessage" key="suggestionBox.message.suggestion.confirm">
+  <fmt:param value=""/>
+</fmt:message>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -68,26 +71,26 @@
 
     function validate(suggestion) {
       var error = {
-        msg: '',
-        count: 0
+        msg : '',
+        count : 0
       };
       if (isWhitespace(suggestion.title)) {
-          error.msg += " - '<fmt:message key='GML.title'/>' <fmt:message key='GML.MustBeFilled'/>\n";
-          error.count++;
+        error.msg += " - '<fmt:message key='GML.title'/>' <fmt:message key='GML.MustBeFilled'/>\n";
+        error.count++;
       }
       return error;
     }
 
     function save() {
       var suggestion = {
-        title: $('#title').val(),
-        content: getSuggestionContent()
+        title : $('#title').val(),
+        content : getSuggestionContent()
       };
       var error = validate(suggestion);
       if (error.count > 0) {
         $('#error').html(error.msg);
-        $('#error').popup('information', {
-          title: '<fmt:message key="GML.errors"/>'
+        $('#error').popup('error', {
+          title : '<fmt:message key="GML.errors"/>'
         });
       } else {
         $('#suggestion').submit();
@@ -95,48 +98,60 @@
     }
 
     function cancel() {
-      $('#suggestion').attr('method','GET').attr('action', '${componentUriBase}Main').submit();
+      $('#suggestion').attr('method', 'GET').attr('action', '${componentUriBase}Main').submit();
     }
 
     function remove() {
-      $('#suggestion').attr('action', '${componentUriBase}suggestion/delete/${target}').submit();
+      $('#confirmation').html("${deleteSuggestionConfirmMessage} ?");
+      $('#confirmation').popup('confirmation', {
+        callback : function() {
+          $('#suggestion').attr('action',
+              '${componentUriBase}suggestion/delete/${target}').submit();
+        }
+      });
     }
 
     $(document).ready(function() {
       <view:wysiwyg replace="content" language="${null}" toolbar="suggestionBox"/>
       $('#title').focus();
-     });
+    });
   </script>
 </head>
 <body>
 <view:browseBar componentId="${componentId}" extraInformations="${addSuggestionLabel}"/>
-<c:if test="${greaterUserRole.isGreaterThanOrEquals(publishRole)}">
+<c:if test="${greaterUserRole.isGreaterThanOrEquals(publishRole) and suggestion != null}">
   <view:operationPane>
     <view:operation action="javascript:remove();" altText="${deleteSuggestionLabel}"/>
   </view:operationPane>
 </c:if>
 <view:window>
   <view:frame>
+    <div id="confirmation" style="display: none;"></div>
     <div id="error" style="display: none;"></div>
     <form id="suggestion" name="suggestion" action="${componentUriBase}suggestion/${target}" method="POST">
       <div class="fields">
         <div class="field" id="suggestionName">
           <label for="title" class="txtlibform"><fmt:message key='GML.title'/>&nbsp;<img alt="mandatory" src="${mandatoryIcons}" width="5" height="5"/></label>
+
           <div class="champs">
             <input id="title" type="text" name="title" size="100%" maxlength="2000" value="<c:out value='${suggestion.title}'/>"/>
           </div>
         </div>
         <br clear="all"/>
+
         <div class="field" id="eventDescriptionArea">
           <label for="content" class="txtlibform"><fmt:message key='GML.description'/></label>
+
           <div class="champs">
             <textarea rows="5" cols="10" name="content" id="content">${suggestion.content}</textarea>
           </div>
         </div>
       </div>
       <input type="hidden" value="${componentId}"/>
+
       <div class="legend">
-        <img alt="mandatory" src="${mandatoryIcons}" width="5" height="5"/>&nbsp; <fmt:message key='GML.requiredField'/>
+        <img alt="mandatory" src="${mandatoryIcons}" width="5" height="5"/>&nbsp;
+        <fmt:message key='GML.requiredField'/>
       </div>
       <view:buttonPane>
         <view:button label="${save}" action="javascript:save();"/>

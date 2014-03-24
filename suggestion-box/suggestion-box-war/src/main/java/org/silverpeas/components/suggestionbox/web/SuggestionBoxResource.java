@@ -28,6 +28,7 @@ import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.stratelia.webactiv.SilverpeasRole;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
+import org.silverpeas.util.NotifierUtil;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -87,6 +88,7 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
         final Suggestion suggestion = getSuggestionBox().getSuggestions().get(suggestionId);
         checkAdminAccessOrUserIsCreator(suggestion);
         getSuggestionBox().getSuggestions().remove(suggestion);
+        NotifierUtil.addSuccess(getBundle().getString("suggestionBox.message.suggestion.removed"));
         return null;
       }
     }).lowestAccessRole(SilverpeasRole.publisher).execute();
