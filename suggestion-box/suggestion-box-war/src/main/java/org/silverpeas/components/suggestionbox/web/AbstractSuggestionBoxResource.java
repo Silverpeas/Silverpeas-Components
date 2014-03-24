@@ -24,6 +24,7 @@
 package org.silverpeas.components.suggestionbox.web;
 
 import com.silverpeas.web.RESTWebService;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 
@@ -113,7 +114,7 @@ public abstract class AbstractSuggestionBoxResource extends RESTWebService {
    * Asserts the specified suggestion is well defined, otherwise an HTTP 404 error is sent back.
    * @param suggestion the suggestion to check.
    */
-  protected void assertSuggestionIsDefined(final Suggestion suggestion) {
+  protected static void assertSuggestionIsDefined(final Suggestion suggestion) {
     if (suggestion.isNotDefined()) {
       throw new WebApplicationException(Status.NOT_FOUND);
     }
@@ -124,9 +125,18 @@ public abstract class AbstractSuggestionBoxResource extends RESTWebService {
    * suggestion.
    * @param suggestion the suggestion to check.
    */
-  protected void checkUserIsCreatorOrAdministrator(Suggestion suggestion) {
+  protected void checkAdminAccessOrUserIsCreator(Suggestion suggestion) {
+    checkAdminAccessOrUserIsCreator(getUserDetail(), suggestion);
+  }
+
+  /**
+   * Centralization of checking if the specified user is the creator of the specified suggestion.
+   * @param user the user to verify.
+   * @param suggestion the suggestion to check.
+   */
+  public static void checkAdminAccessOrUserIsCreator(UserDetail user, Suggestion suggestion) {
     assertSuggestionIsDefined(suggestion);
-    if (!getUserDetail().isAccessAdmin() && !getUserDetail().equals(suggestion.getCreator())) {
+    if (!user.isAccessAdmin() && !user.equals(suggestion.getCreator())) {
       throw new WebApplicationException(Status.FORBIDDEN);
     }
   }

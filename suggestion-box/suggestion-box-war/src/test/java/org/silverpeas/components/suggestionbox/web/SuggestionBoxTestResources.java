@@ -24,9 +24,7 @@
 package org.silverpeas.components.suggestionbox.web;
 
 import com.silverpeas.web.TestResources;
-
-import static org.mockito.Matchers.*;
-
+import com.silverpeas.web.mock.UserDetailWithProfiles;
 import org.silverpeas.components.suggestionbox.mock.SuggestionBoxServiceMockWrapper;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
@@ -34,13 +32,15 @@ import org.silverpeas.components.suggestionbox.model.SuggestionBoxService;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import static org.mockito.Mockito.when;
-import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs.*;
-
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.UUID;
+
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.when;
+import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs.BOX_BASE_URI;
 
 /**
  * The resources required to run unit tests on the REST-based web services.
@@ -56,10 +56,13 @@ public class SuggestionBoxTestResources extends TestResources {
   public static final String SUGGESTION_ID = "suggestion_1";
   public static final String SUGGESTION_BOX_URI = BOX_BASE_URI + "/" + COMPONENT_INSTANCE_ID + "/"
       + SUGGESTION_BOX_ID;
-  public static final String SUGGESTION_URI = SUGGESTION_BOX_URI + "/suggestions/" + SUGGESTION_ID;
+  public static final String SUGGESTIONS_URI_BASE = SUGGESTION_BOX_URI + "/suggestions/";
+  public static final String SUGGESTION_URI = SUGGESTIONS_URI_BASE + SUGGESTION_ID;
 
   @Inject
   private SuggestionBoxServiceMockWrapper mockWrapper;
+
+  private UserDetailWithProfiles creator;
 
   @PostConstruct
   public void prepareMocks() {
@@ -75,10 +78,18 @@ public class SuggestionBoxTestResources extends TestResources {
     return mockWrapper.getMock();
   }
 
+  public UserDetailWithProfiles aUserCreator() {
+    if (creator == null) {
+      creator = aUser();
+      creator.setId("creatorId");
+    }
+    return creator;
+  }
+
   public SuggestionBox aSuggestionBox() {
     SuggestionBox box = new SuggestionBox(COMPONENT_INSTANCE_ID);
     ReflectionTestUtils.setField(box, "id", new UuidIdentifier().fromString(SUGGESTION_BOX_ID));
-    box.setCreator(aUser());
+    box.setCreator(aUserCreator());
     return box;
   }
 
@@ -86,16 +97,17 @@ public class SuggestionBoxTestResources extends TestResources {
     Suggestion suggestion = new Suggestion("A suggestion title");
     ReflectionTestUtils.setField(suggestion, "id", new UuidIdentifier().fromString(SUGGESTION_ID));
     ReflectionTestUtils.setField(suggestion, "suggestionBox", aSuggestionBox());
-    suggestion.setCreator(aUser());
+    suggestion.setCreator(aUserCreator());
     suggestion.setContent("A suggestion content");
     return suggestion;
   }
 
   public Suggestion aRandomSuggestion() {
     Suggestion suggestion = new Suggestion("A suggestion title");
-    ReflectionTestUtils.setField(suggestion, "id", UUID.randomUUID().toString());
+    ReflectionTestUtils
+        .setField(suggestion, "id", new UuidIdentifier().fromString(UUID.randomUUID().toString()));
     ReflectionTestUtils.setField(suggestion, "suggestionBox", aSuggestionBox());
-    suggestion.setCreator(aUser());
+    suggestion.setCreator(aUserCreator());
     suggestion.setContent("A suggestion content");
     return suggestion;
   }

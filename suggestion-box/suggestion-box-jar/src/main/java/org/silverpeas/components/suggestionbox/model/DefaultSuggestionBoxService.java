@@ -34,7 +34,6 @@ import org.silverpeas.wysiwyg.control.WysiwygController;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
-
 import java.util.List;
 
 /**
@@ -69,7 +68,13 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
 
   @Override
   public List<Suggestion> findSuggestionsByCriteria(final SuggestionCriteria criteria) {
-    return suggestionRepository.findByCriteria(criteria);
+    List<Suggestion> suggestions = suggestionRepository.findByCriteria(criteria);
+    for (Suggestion suggestion : suggestions) {
+      String content = WysiwygController
+          .load(suggestion.getSuggestionBox().getComponentInstanceId(), suggestion.getId(), null);
+      suggestion.setContent(content);
+    }
+    return suggestions;
   }
 
   /**
@@ -142,11 +147,9 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
   public Suggestion findSuggestionById(SuggestionBox box, String suggestionId) {
     Suggestion suggestion = Suggestion.NONE;
     SuggestionCriteria criteria = SuggestionCriteria.from(box).identifierIsOneOf(suggestionId);
-    List<Suggestion> suggestions = suggestionRepository.findByCriteria(criteria);
+    List<Suggestion> suggestions = findSuggestionsByCriteria(criteria);
     if (suggestions.size() == 1) {
       suggestion = suggestions.get(0);
-      String content = WysiwygController.load(box.getComponentInstanceId(), suggestionId, null);
-      suggestion.setContent(content);
     }
     return suggestion;
   }

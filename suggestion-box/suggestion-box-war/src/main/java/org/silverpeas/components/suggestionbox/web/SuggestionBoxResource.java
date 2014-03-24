@@ -35,6 +35,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.util.Collection;
 import java.util.List;
 
 import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs.BOX_BASE_URI;
@@ -84,11 +85,11 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
       @Override
       public Void execute() {
         final Suggestion suggestion = getSuggestionBox().getSuggestions().get(suggestionId);
-        checkUserIsCreatorOrAdministrator(suggestion);
+        checkAdminAccessOrUserIsCreator(suggestion);
         getSuggestionBox().getSuggestions().remove(suggestion);
         return null;
       }
-    }).lowestAccessRole(SilverpeasRole.writer).execute();
+    }).lowestAccessRole(SilverpeasRole.publisher).execute();
   }
 
   /**
@@ -103,14 +104,14 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
   @GET
   @Path(BOX_SUGGESTION_URI_PART + "/notPublished")
   @Produces(MediaType.APPLICATION_JSON)
-  public List<SuggestionEntity> getNotPublished() {
-    return process(new WebTreatment<List<SuggestionEntity>>() {
+  public Collection<SuggestionEntity> getNotPublished() {
+    return process(new WebTreatment<Collection<SuggestionEntity>>() {
       @Override
       public List<SuggestionEntity> execute() {
         final List<Suggestion> suggestionNotPublished =
             getSuggestionBox().getSuggestions().findNotPublishedFor(getUserDetail());
         return asWebEntities(suggestionNotPublished);
       }
-    }).lowestAccessRole(SilverpeasRole.writer).execute();
+    }).lowestAccessRole(SilverpeasRole.publisher).execute();
   }
 }

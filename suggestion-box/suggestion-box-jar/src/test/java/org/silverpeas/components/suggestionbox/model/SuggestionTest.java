@@ -26,8 +26,10 @@ package org.silverpeas.components.suggestionbox.model;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.internal.stubbing.answers.Returns;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -42,6 +44,8 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.fail;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.times;
 import static org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_ORDER_BY.*;
 import static org.silverpeas.components.suggestionbox.model.SuggestionMatcher.PROPERTY.*;
@@ -59,7 +63,6 @@ public class SuggestionTest extends RepositoryBasedTest {
 
   private final static String SUGGESTION_ID = "suggestion_1";
   private final static String SUGGESTION_BOX_INSTANCE_ID = "suggestionBox1";
-  private final static String SECOND_SUGGESTION_BOX_INSTANCE_ID = "suggestionBox2";
   private final static int SUGGESTIONS_COUNT = 6;
 
   @Override
@@ -249,6 +252,10 @@ public class SuggestionTest extends RepositoryBasedTest {
 
   @Test
   public void findNotPublishedForAUser() {
+    PowerMockito.mockStatic(WysiwygController.class);
+    final String content = "This is a content";
+    when(WysiwygController.load(eq(SUGGESTION_BOX_INSTANCE_ID), anyString(), anyString())).
+        then(new Returns(content));
     SuggestionBox box = SuggestionBox.getByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID);
     List<Suggestion> suggestions = box.getSuggestions().findNotPublishedFor(UserDetail.getById("1"));
     assertThat(suggestions, hasSize(3));
@@ -257,6 +264,9 @@ public class SuggestionTest extends RepositoryBasedTest {
         matches("suggestion_1", "suggestion 1", DRAFT, timestamp("2014-03-16 17:34:00.0")),
         matches("suggestion_1_b", "suggestion 1 / B", DRAFT, timestamp("2014-03-20 17:34:00.0"))
     ));
+    assertThat(suggestions.get(0).getContent(), is(content));
+    PowerMockito.verifyStatic(times(3));
+    WysiwygController.load(eq(SUGGESTION_BOX_INSTANCE_ID), anyString(), anyString());
   }
 
   private Timestamp timestamp(String timestamp) {

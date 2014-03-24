@@ -24,9 +24,12 @@
 package org.silverpeas.components.suggestionbox.web;
 
 import com.silverpeas.web.ResourceDeletionTest;
+import com.silverpeas.web.mock.UserDetailWithProfiles;
+import com.stratelia.webactiv.SilverpeasRole;
 import org.junit.Before;
 import org.junit.Test;
 
+import static com.silverpeas.web.TestResources.getTestResources;
 import static org.mockito.Mockito.*;
 
 import org.silverpeas.components.suggestionbox.model.Suggestion;
@@ -44,6 +47,7 @@ import static org.silverpeas.components.suggestionbox.web.SuggestionBoxTestResou
 public class SuggestionResourceDeletionTest extends ResourceDeletionTest<SuggestionBoxTestResources> {
 
   private String sessionKey;
+  private UserDetailWithProfiles authenticatedUser;
 
   public SuggestionResourceDeletionTest() {
     super(JAVA_PACKAGE, SPRING_CONTEXT);
@@ -51,11 +55,15 @@ public class SuggestionResourceDeletionTest extends ResourceDeletionTest<Suggest
 
   @Before
   public void prepareTest() {
-    sessionKey = authenticate(aUser());
+    authenticatedUser = getTestResources().aUserCreator();
+    sessionKey = authenticate(authenticatedUser);
+    authenticatedUser.addProfile(COMPONENT_INSTANCE_ID, SilverpeasRole.writer);
   }
 
   @Test
   public void deletionOfAnExistingSuggestion() {
+    when(getOrganizationControllerMock().getUserDetail(anyString())).thenReturn(authenticatedUser);
+
     deleteAt(aResourceURI());
 
     SuggestionBoxService service = getTestResources().getSuggestionBoxService();
