@@ -50,7 +50,7 @@ services.factory('Suggestion', ['RESTAdapter', function(RESTAdapter) {
 
       /**
        * Gets the suggestion collector for the suggestion box identified by the specified URI.
-       * @param {string} suggestionBoxuri the URI identifying uniquely the suggestion box.
+       * @param {string} suggestionBoxUri the URI identifying uniquely the suggestion box.
        * @returns {Object} a collector of suggestions from which queries can be performed.
        */
       this.suggestions = function(suggestionBoxUri) {
@@ -117,7 +117,7 @@ services.factory('SuggestionBox', ['context', 'Suggestion', 'RESTAdapter', funct
 
       /**
        * Gets one or more suggestion boxes according to the argument. The argument is either a
-       * suggestion boix identifier or a criteria the suggestion boxes has to match.
+       * suggestion box identifier or a criteria the suggestion boxes has to match.
        * @returns {Array|SuggestionBox} the asked suggestion boxes.
        */
       this.get = function() {

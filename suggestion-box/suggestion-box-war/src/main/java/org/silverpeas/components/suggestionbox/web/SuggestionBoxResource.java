@@ -26,20 +26,20 @@ package org.silverpeas.components.suggestionbox.web;
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
+import com.stratelia.webactiv.SilverpeasRole;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-
 import java.util.List;
 
 import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs.BOX_BASE_URI;
-import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs.BOX_SUGGESTION_URI_PART;
-
-import javax.ws.rs.DELETE;
+import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs
+    .BOX_SUGGESTION_URI_PART;
 
 /**
  * A REST Web resource giving suggestion data.
@@ -84,11 +84,11 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
       @Override
       public Void execute() {
         final Suggestion suggestion = getSuggestionBox().getSuggestions().get(suggestionId);
-        assertSuggestionIsDefined(suggestion);
+        checkUserIsCreatorOrAdministrator(suggestion);
         getSuggestionBox().getSuggestions().remove(suggestion);
         return null;
       }
-    }).execute();
+    }).lowestAccessRole(SilverpeasRole.writer).execute();
   }
 
   /**
@@ -107,9 +107,10 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
     return process(new WebTreatment<List<SuggestionEntity>>() {
       @Override
       public List<SuggestionEntity> execute() {
-        return asWebEntities(
-            getSuggestionBox().getSuggestions().findNotPublishedFor(getUserDetail()));
+        final List<Suggestion> suggestionNotPublished =
+            getSuggestionBox().getSuggestions().findNotPublishedFor(getUserDetail());
+        return asWebEntities(suggestionNotPublished);
       }
-    }).execute();
+    }).lowestAccessRole(SilverpeasRole.writer).execute();
   }
 }

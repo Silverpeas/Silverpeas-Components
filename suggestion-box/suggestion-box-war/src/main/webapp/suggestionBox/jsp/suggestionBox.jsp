@@ -76,7 +76,18 @@
       <ul id="my_suggestions_list" class="container">
         <li ng-repeat="suggestion in suggestions">
           <a ng-href="${componentUriBase}suggestion/{{ suggestion.id }}"><span class="suggestion_title">{{ suggestion.title }}</span></a>
-          <img ng-click="delete(suggestion)" src="${deleteIcon}" alt="remove" class="remove"/>
+          <img ng-click="delete(suggestion)" src="${deleteIcon}" alt="remove" class="action remove"/>
+        </li>
+      </ul>
+    </div>
+  </view:frame>
+
+  <view:frame>
+    <div ng-controller="mainController">
+      <ul id="my_notPublished_suggestions_list" class="container">
+        <li ng-repeat="suggestion in notPublishedSuggestions">
+          <a ng-href="${componentUriBase}suggestion/{{ suggestion.id }}"><span class="suggestion_title">{{ suggestion.title }}</span></a>
+          <img ng-click="delete(suggestion)" src="${deleteIcon}" alt="remove" class="action remove"/>
         </li>
       </ul>
     </div>
@@ -87,7 +98,6 @@
           currentUserId: '${currentUserId}',
           suggestionBoxId: '${suggestionBoxId}',
           component: '${componentId}'});
-
   </script>
   <script type="text/javascript" src="${suggestionBoxJS}"></script>
 </body>
