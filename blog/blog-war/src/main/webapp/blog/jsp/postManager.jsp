@@ -33,8 +33,10 @@
 	response.setHeader("Pragma", "no-cache"); //HTTP 1.0
 	response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
+<c:set var="language" value="${requestScope.resources.language}"/>
 <fmt:setLocale value="${requestScope.Language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
 <% 
 	PostDetail 	post			= (PostDetail) request.getAttribute("Post"); //never null
@@ -51,7 +53,6 @@
 	String 		         updateDate		= null;
 	
 	String 		action 			= "CreatePost";
-	browseBar.setExtraInformation(resource.getString("blog.newPost"));
 	
 	title 			= post.getPublication().getName();
 	content			= post.getContent();
@@ -65,7 +66,6 @@
 	dateEvent 		= post.getDateEvent();
 	if(updater != null) {
 	  	action 			= "UpdatePost";
-		browseBar.setExtraInformation(resource.getString("blog.updatePost"));
 	}
 	
 %>
@@ -80,6 +80,12 @@
     <view:includePlugin name="wysiwyg"/>
 	<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 	<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+	
+	<fmt:message var="GML_title" key="GML.title"/>
+	<fmt:message var="GML_MustBeFilled" key="GML.MustBeFilled"/>
+	<fmt:message var="GML_ThisFormContains" key="GML.ThisFormContains"/>
+	<fmt:message var="GML_error" key="GML.error"/>
+	<fmt:message var="GML_errors" key="GML.errors"/>
     <script type="text/javascript">
 		function sendData() {
 			if (isCorrectForm()) {
@@ -95,7 +101,7 @@
 	     	var title = stripInitialWhitespace(document.postForm.Title.value);
 
 	     	if (title == "") { 
-				errorMsg+="  - '<%=resource.getString("GML.title")%>'  <%=resource.getString("GML.MustBeFilled")%>\n";
+				errorMsg+="  - '${GML_title}'  ${GML_MustBeFilled}\n";
 	           	errorNb++;
 	     	}
 	     	
@@ -106,12 +112,12 @@
 	            	result = true;
 	            	break;
 	        	case 1 :
-	            	errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
+	            	errorMsg = "${GML_ThisFormContains} 1 ${GML_error} : \n" + errorMsg;
 	            	window.alert(errorMsg);
 	            	result = false;
 	            	break;
 	        	default :
-	            	errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
+	            	errorMsg = "${GML_ThisFormContains} " + errorNb + " ${GML_errors} :\n" + errorMsg;
 	            	window.alert(errorMsg);
 	            	result = false;
 	            	break;
@@ -147,7 +153,19 @@
 </head>
 <body id="blog">
 <div id="<%=instanceId %>">
-<view:browseBar componentId="${instanceId}" />
+<% if("CreatePost".equals(action)) { 
+%>
+<fmt:message var="actionBrowseBar" key="blog.newPost" />
+<%
+} else {
+%>
+<fmt:message var="actionBrowseBar" key="blog.updatePost" />
+<%
+}
+%>
+<view:browseBar componentId="${instanceId}">
+	<view:browseBarElt label="${actionBrowseBar}" link="#" />
+</view:browseBar>
 <view:window>
 <view:frame>
 <div id="header">
@@ -156,13 +174,13 @@
 	<input type="hidden" name="Positions" value=""/>
 	
 <fieldset id="infoFieldset" class="skinFieldset">
-  <legend><%=resource.getString("blog.header.fieldset.main") %></legend>
+  <legend><fmt:message key="blog.header.fieldset.main" /></legend>
   <div class="fields">
     
     <div class="field" id="titleArea">
-      <label class="txtlibform" for="titleName"><%=resource.getString("GML.title")%></label>
+      <label class="txtlibform" for="titleName"><fmt:message key="GML.title" /></label>
       <div class="champs">
-        <input type="text" name="Title" size="60" maxlength="150" value="<%=title%>" />&nbsp;<img alt="mandatory" src="<%=resource.getIcon("blog.obligatoire")%>" width="5" height="5" border="0"/>
+        <input type="text" name="Title" size="60" maxlength="150" value="<%=title%>" />&nbsp;<img alt="mandatory" src="${pageContext.request.contextPath}<fmt:message key="blog.obligatoire" bundle="${icons}"/>" width="5" height="5" border="0"/>
       </div>
     </div>
     
@@ -174,17 +192,17 @@
 	</div>
     
     <div class="field" id="dateArea">
-      <label class="txtlibform" for="DateEvent"><%=resource.getString("blog.dateEvent")%></label>
+      <label class="txtlibform" for="DateEvent"><fmt:message key="blog.dateEvent" /></label>
       <div class="champs">
-        <input type="text" class="dateToPick" id="eventDate" name="DateEvent" size="12" maxlength="10" value="<%=resource.getOutputDate(dateEvent)%>"/><span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)</span>
+        <input type="text" class="dateToPick" id="eventDate" name="DateEvent" size="12" maxlength="10" value="<%=resource.getOutputDate(dateEvent)%>"/><span class="txtnote">(<fmt:message key="GML.dateFormatExemple" />)</span>
       </div>
     </div>
     
     <div class="field" id="categoryArea">
-      <label class="txtlibform" for="CategoryId"><%=resource.getString("GML.category")%></label>
+      <label class="txtlibform" for="CategoryId"><fmt:message key="GML.category" /></label>
       <div class="champs">
         <select name="CategoryId">
-			<option value="" selected="selected"><%=resource.getString("GML.category")%></option>
+			<option value="" selected="selected"><fmt:message key="GML.category" /></option>
 			<option value="">-------------------------------</option>
 			<% if (categories != null) {
 				String selected = "";
@@ -203,17 +221,17 @@
     </div>
     
    	<div class="field" id="updateArea">
-		<label class="txtlibform"><%=resource.getString("blog.header.contributors") %></label>
+		<label class="txtlibform"><fmt:message key="blog.header.contributors" /></label>
 		<% if (StringUtil.isDefined(updateDate) && updater != null) {%>
 		<div class="champs">
-			<%=resource.getString("GML.updateDate")%> <br /><b><%=updateDate%></b> <%=resource.getString("GML.By")%> <view:username userId="<%=updater.getId()%>"/>
+			<fmt:message key="GML.updateDate" /> <br /><b><%=updateDate%></b> <fmt:message key="GML.by" /> <view:username userId="<%=updater.getId()%>"/>
 			<div class="profilPhoto"><img src="<%=m_context+updater.getAvatar() %>" alt="" class="defaultAvatar"/></div>
 		</div>
 		<% } %>
 	</div>
 	<div class="field" id="creationArea">
 		<div class="champs">
-			<%=resource.getString("GML.creationDate")%> <br /><b><%=creationDate%></b> <%=resource.getString("GML.By")%> <view:username userId="<%=post.getCreator().getId()%>"/>
+			<fmt:message key="GML.creationDate" /> <br /><b><%=creationDate%></b> <fmt:message key="GML.by" /> <view:username userId="<%=post.getCreator().getId()%>"/>
 			<div class="profilPhoto"><img src="<%=m_context+post.getCreator().getAvatar() %>" alt="" class="defaultAvatar"/></div>
 		</div>
 	</div>
@@ -224,7 +242,7 @@
 <view:pdcClassification componentId="<%=instanceId%>" contentId="<%=post.getId() %>" editable="true" />
 
 <div class="legend">
-	<img alt="mandatory" border="0" src="<%=resource.getIcon("blog.obligatoire")%>" width="5" height="5"/> : <%=resource.getString("GML.requiredField")%>
+	<img alt="mandatory" border="0" src="${pageContext.request.contextPath}<fmt:message key="blog.obligatoire" bundle="${icons}"/>" width="5" height="5"/> : <fmt:message key="GML.requiredField" />
 </div>
 
 </form>
