@@ -176,8 +176,8 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
           // save and draft out the post
           blogSC.updatePostAndDraftOut(postId, title, content, categoryId, dateEvent);
         }
-
-        destination = getDestination("Main", blogSC, request);
+        request.setAttribute("PostId", postId);
+        destination = getDestination("ViewPost", blogSC, request);
       } else if (function.equals("DeletePost")) {
         String postId = request.getParameter("PostId");
         blogSC.deletePost(postId);
