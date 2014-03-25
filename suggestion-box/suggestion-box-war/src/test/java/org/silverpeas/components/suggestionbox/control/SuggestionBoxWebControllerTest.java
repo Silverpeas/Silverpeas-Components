@@ -53,24 +53,15 @@ import javax.ws.rs.WebApplicationException;
  */
 public class SuggestionBoxWebControllerTest {
 
-  private static AbstractApplicationContext appContext;
+  private AbstractApplicationContext appContext;
   private SuggestionBoxWebController controller;
 
   private static final String COMPONENT_INSTANCE_ID = "suggestionBox1";
   private static final String SUGGESTION_ID = "suggestion_1";
 
-  @BeforeClass
-  public static void bootstrapSpringContext() {
-    appContext = new ClassPathXmlApplicationContext("/spring-suggestion-box.xml");
-  }
-
-  @AfterClass
-  public static void shutdownSpringContext() {
-    appContext.close();
-  }
-
   @Before
   public void setUp() {
+    appContext = new ClassPathXmlApplicationContext("/spring-suggestion-box.xml");
     MainSessionController sessionController = mock(MainSessionController.class);
     ComponentContext componentContext = mock(ComponentContext.class);
     controller = new SuggestionBoxWebController(sessionController, componentContext);
@@ -78,6 +69,7 @@ public class SuggestionBoxWebControllerTest {
 
   @After
   public void tearDown() {
+    appContext.close();
   }
 
   @Test
@@ -139,7 +131,21 @@ public class SuggestionBoxWebControllerTest {
   }
 
   @Test
-  public void updateASuggestion() {
+  public void updateASuggestionInDraft() {
+    assertUpdateASuggestion(ContributionStatus.DRAFT);
+  }
+
+  @Test
+  public void updateASuggestionRefused() {
+    assertUpdateASuggestion(ContributionStatus.REFUSED);
+  }
+
+  @Test(expected = WebApplicationException.class)
+  public void updateANonDraftOrRefusedSuggestionInAGivenSuggestionBox() {
+    assertUpdateASuggestion(ContributionStatus.UNKNOWN);
+  }
+
+  private void assertUpdateASuggestion(ContributionStatus withStatus) {
     final String modifiedTitle = "A modified title";
     final String modifiedContent = "A modified content";
     SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
@@ -149,7 +155,7 @@ public class SuggestionBoxWebControllerTest {
     SuggestionBox box = context.getSuggestionBox();
     SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
     when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(
-        aSuggestion());
+        aSuggestionWithStatus(withStatus));
 
     controller.updateSuggestion(context);
 
@@ -171,22 +177,6 @@ public class SuggestionBoxWebControllerTest {
     SuggestionBox box = context.getSuggestionBox();
     SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
     when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(Suggestion.NONE);
-
-    controller.updateSuggestion(context);
-  }
-
-  @Test(expected = WebApplicationException.class)
-  public void updateANonDraftSuggestionInAGivenSuggestionBox() {
-    final String modifiedTitle = "A modified title";
-    final String modifiedContent = "A modified content";
-    SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
-    when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
-    when(context.getRequest().getParameter("title")).thenReturn(modifiedTitle);
-    when(context.getRequest().getParameter("content")).thenReturn(modifiedContent);
-    SuggestionBox box = context.getSuggestionBox();
-    SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
-    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(
-        aSuggestionWithStatus(ContributionStatus.VALIDATED));
 
     controller.updateSuggestion(context);
   }

@@ -40,7 +40,7 @@
 <c:set var="currentUserId" value="${sessionScope['SilverSessionController'].userId}"/>
 
 <view:setConstant var="adminRole" constant="com.stratelia.webactiv.SilverpeasRole.admin" />
-<view:setConstant var="publishRole" constant="com.stratelia.webactiv.SilverpeasRole.publisher" />
+<view:setConstant var="writerRole" constant="com.stratelia.webactiv.SilverpeasRole.writer" />
 
 <fmt:message var="modifyEditoLabel" key="suggestionBox.menu.item.edito.modify"/>
 <fmt:message var="addSuggestionLabel" key="suggestionBox.menu.item.suggestion.add"/>
@@ -62,7 +62,7 @@
   <script type="text/javascript" src="${suggestionBoxServicesJS}"></script>
 </head>
 <body>
-<c:if test="${greaterUserRole.isGreaterThanOrEquals(publishRole)}">
+<c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
 <view:operationPane>
   <c:if test="${greaterUserRole.isGreaterThanOrEquals(adminRole)}">
     <view:operation action="${componentUriBase}edito/modify" altText="${modifyEditoLabel}"/>
@@ -77,9 +77,9 @@
     <c:if test="${isEdito}">
       <view:displayWysiwyg objectId="${suggestionBoxId}" componentId="${componentId}" language="${null}"/>
     </c:if>
-    <div ng-controller="mainController">
+    <div ng-controller="publishedController">
       <ul id="my_suggestions_list" class="container">
-        <li ng-repeat="suggestion in suggestions">
+        <li ng-repeat="suggestion in publishedSuggestions">
           <a ng-href="${componentUriBase}suggestion/{{ suggestion.id }}"><span class="suggestion_title">{{ suggestion.title }}</span></a>
           <img ng-click="delete(suggestion)" src="${deleteIcon}" alt="remove" class="action remove"/>
         </li>
@@ -88,7 +88,7 @@
   </view:frame>
 
   <view:frame>
-    <div ng-controller="mainController">
+    <div ng-controller="notPublishedController">
       <ul id="my_notPublished_suggestions_list" class="container">
         <li ng-repeat="suggestion in notPublishedSuggestions">
           <a ng-href="${componentUriBase}suggestion/{{ suggestion.id }}"><span class="suggestion_title">{{ suggestion.title }}</span></a><br/>

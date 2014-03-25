@@ -36,7 +36,6 @@ import com.stratelia.silverpeas.peasCore.servlets.annotation.WebComponentControl
 import com.stratelia.webactiv.SilverpeasRole;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
-import org.silverpeas.components.suggestionbox.web.AbstractSuggestionBoxResource;
 import org.silverpeas.components.suggestionbox.web.SuggestionEntity;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
@@ -46,9 +45,13 @@ import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
+import static org.silverpeas.components.suggestionbox.web.AbstractSuggestionBoxResource
+    .checkAdminAccessOrUserIsCreator;
+
 @WebComponentController("SuggestionBox")
 public class SuggestionBoxWebController extends
-    com.stratelia.silverpeas.peasCore.servlets.WebComponentController<SuggestionBoxWebRequestContext> {
+    com.stratelia.silverpeas.peasCore.servlets
+        .WebComponentController<SuggestionBoxWebRequestContext> {
 
   /**
    * Standard Session Controller Constructor
@@ -65,8 +68,8 @@ public class SuggestionBoxWebController extends
   }
 
   @Override
-  protected void commonRequestContextInitialization(final SuggestionBoxWebRequestContext context) {
-    super.commonRequestContextInitialization(context);
+  protected void beforeRequestProcessing(final SuggestionBoxWebRequestContext context) {
+    super.beforeRequestProcessing(context);
     context.getRequest().setAttribute("suggestionBox", context.getSuggestionBox());
   }
 
@@ -118,7 +121,7 @@ public class SuggestionBoxWebController extends
   @GET
   @Path("suggestion/new")
   @RedirectToInternalJsp("suggestion.jsp")
-  @LowestRoleAccess(SilverpeasRole.publisher)
+  @LowestRoleAccess(SilverpeasRole.writer)
   public void newSuggestion(SuggestionBoxWebRequestContext context) {
   }
 
@@ -130,13 +133,13 @@ public class SuggestionBoxWebController extends
   @GET
   @Path("suggestion/{id}")
   @RedirectToInternalJsp("suggestion.jsp")
-  @LowestRoleAccess(SilverpeasRole.publisher)
+  @LowestRoleAccess(SilverpeasRole.writer)
   public void editSuggestion(SuggestionBoxWebRequestContext context) {
     String suggestionId = context.getPathVariables().get("id");
     SuggestionBox suggestionBox = context.getSuggestionBox();
     Suggestion suggestion = suggestionBox.getSuggestions().get(suggestionId);
-    if (suggestion.isDefined() && suggestion.isInDraft()) {
-      AbstractSuggestionBoxResource.checkAdminAccessOrUserIsCreator(context.getUser(), suggestion);
+    if (suggestion.isDefined() && (suggestion.isInDraft() || suggestion.isRefused())) {
+      checkAdminAccessOrUserIsCreator(context.getUser(), suggestion);
       SuggestionEntity entity = SuggestionEntity.fromSuggestion(suggestion);
       context.getRequest().setAttribute("suggestion", entity);
     } else {
@@ -152,7 +155,7 @@ public class SuggestionBoxWebController extends
   @POST
   @Path("suggestion/add")
   @RedirectToInternal("Main")
-  @LowestRoleAccess(SilverpeasRole.publisher)
+  @LowestRoleAccess(SilverpeasRole.writer)
   public void addSuggestion(SuggestionBoxWebRequestContext context) {
     SuggestionBox suggestionBox = context.getSuggestionBox();
     String title = context.getRequest().getParameter("title");
@@ -161,8 +164,8 @@ public class SuggestionBoxWebController extends
     suggestion.setContent(content);
     suggestion.setCreator(context.getUser());
     suggestionBox.getSuggestions().add(suggestion);
-    context.getMessager().addSuccess(getMultilang().getString(
-        "suggestionBox.message.suggestion.created"));
+    context.getMessager()
+        .addSuccess(getMultilang().getString("suggestionBox.message.suggestion.created"));
   }
 
   /**
@@ -173,19 +176,19 @@ public class SuggestionBoxWebController extends
   @POST
   @Path("suggestion/{id}")
   @RedirectToInternal("Main")
-  @LowestRoleAccess(SilverpeasRole.publisher)
+  @LowestRoleAccess(SilverpeasRole.writer)
   public void updateSuggestion(SuggestionBoxWebRequestContext context) {
     String id = context.getPathVariables().get("id");
     SuggestionBox suggestionBox = context.getSuggestionBox();
     Suggestion suggestion = suggestionBox.getSuggestions().get(id);
-    if (suggestion.isDefined() && suggestion.isInDraft()) {
-      AbstractSuggestionBoxResource.checkAdminAccessOrUserIsCreator(context.getUser(), suggestion);
+    if (suggestion.isDefined() && (suggestion.isInDraft() || suggestion.isRefused())) {
+      checkAdminAccessOrUserIsCreator(context.getUser(), suggestion);
       suggestion.setTitle(context.getRequest().getParameter("title"));
       suggestion.setContent(context.getRequest().getParameter("content"));
       suggestion.setLastUpdater(context.getUser());
       suggestion.save();
-      context.getMessager().addSuccess(getMultilang().getString(
-          "suggestionBox.message.suggestion.modified"));
+      context.getMessager()
+          .addSuccess(getMultilang().getString("suggestionBox.message.suggestion.modified"));
     } else {
       throw new WebApplicationException(Status.NOT_FOUND);
     }
@@ -194,16 +197,16 @@ public class SuggestionBoxWebController extends
   @POST
   @Path("suggestion/delete/{id}")
   @RedirectToInternal("Main")
-  @LowestRoleAccess(SilverpeasRole.publisher)
+  @LowestRoleAccess(SilverpeasRole.writer)
   public void deleteSuggestion(SuggestionBoxWebRequestContext context) {
     String id = context.getPathVariables().get("id");
     SuggestionBox suggestionBox = context.getSuggestionBox();
     Suggestion suggestion = suggestionBox.getSuggestions().get(id);
-    if (suggestion.isDefined() && suggestion.isInDraft()) {
-      AbstractSuggestionBoxResource.checkAdminAccessOrUserIsCreator(context.getUser(), suggestion);
+    if (suggestion.isDefined() && (suggestion.isInDraft() || suggestion.isRefused())) {
+      checkAdminAccessOrUserIsCreator(context.getUser(), suggestion);
       suggestionBox.getSuggestions().remove(suggestion);
-      context.getMessager().addSuccess(getMultilang().getString(
-          "suggestionBox.message.suggestion.removed"));
+      context.getMessager()
+          .addSuccess(getMultilang().getString("suggestionBox.message.suggestion.removed"));
     } else {
       throw new WebApplicationException(Status.NOT_FOUND);
     }

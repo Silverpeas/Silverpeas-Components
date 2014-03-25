@@ -184,6 +184,14 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier> {
   }
 
   /**
+   * Is this suggestion is refused?
+   * @return true if this suggestion is refused, false otherwise.
+   */
+  public boolean isRefused() {
+    return getStatus() == ContributionStatus.REFUSED;
+  }
+
+  /**
    * Gets the contribution status of this suggestion.
    * @return the suggestion's contribution status;
    */

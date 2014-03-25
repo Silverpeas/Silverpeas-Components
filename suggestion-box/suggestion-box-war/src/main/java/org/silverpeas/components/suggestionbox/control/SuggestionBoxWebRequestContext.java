@@ -35,7 +35,7 @@ public class SuggestionBoxWebRequestContext
   private SuggestionBox suggestionBox;
 
   @Override
-  public void beforeRequestInitialize() {
+  public void beforeRequestProcessing() {
     suggestionBox = SuggestionBox.getByComponentInstanceId(getComponentInstanceId());
   }
 

@@ -29,9 +29,9 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
-<view:setConstant var="publishRole" constant="com.stratelia.webactiv.SilverpeasRole.publisher"/>
+<view:setConstant var="writerRole" constant="com.stratelia.webactiv.SilverpeasRole.writer"/>
 <c:set var="greaterUserRole" value="${requestScope.greaterUserRole}"/>
-<c:if test="${! greaterUserRole.isGreaterThanOrEquals(publishRole)}">
+<c:if test="${! greaterUserRole.isGreaterThanOrEquals(writerRole)}">
   <c:redirect url="/Error403.jsp"/>
 </c:if>
 
@@ -98,14 +98,14 @@
     }
 
     function cancel() {
-      $('#suggestion').attr('method', 'GET').attr('action', '${componentUriBase}Main').submit();
+      $('#actions').attr('method', 'GET').attr('action', '${componentUriBase}Main').submit();
     }
 
     function remove() {
       $('#confirmation').html("${deleteSuggestionConfirmMessage} ?");
       $('#confirmation').popup('confirmation', {
         callback : function() {
-          $('#suggestion').attr('action',
+          $('#actions').attr('action',
               '${componentUriBase}suggestion/delete/${target}').submit();
         }
       });
@@ -119,7 +119,7 @@
 </head>
 <body>
 <view:browseBar componentId="${componentId}" extraInformations="${addSuggestionLabel}"/>
-<c:if test="${greaterUserRole.isGreaterThanOrEquals(publishRole) and suggestion != null}">
+<c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole) and suggestion != null}">
   <view:operationPane>
     <view:operation action="javascript:remove();" altText="${deleteSuggestionLabel}"/>
   </view:operationPane>
@@ -160,5 +160,6 @@
     </form>
   </view:frame>
 </view:window>
+<form id="actions" name="actions" action="#" method="POST" style="display: none"></form>
 </body>
 </html>
