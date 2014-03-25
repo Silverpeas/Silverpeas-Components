@@ -23,6 +23,11 @@
  */
 package org.silverpeas.components.suggestionbox.model;
 
+import com.silverpeas.SilverpeasContent;
+import com.silverpeas.accesscontrol.AccessController;
+import com.silverpeas.accesscontrol.AccessControllerProvider;
+import com.stratelia.webactiv.SilverpeasRole;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.contribution.ContributionStatus;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.persistence.model.jpa.AbstractJpaEntity;
@@ -36,6 +41,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.Date;
 
 /**
  * This entity represents a suggestion associated to a suggestion box.
@@ -46,9 +52,12 @@ import javax.validation.constraints.Size;
  */
 @Entity
 @Table(name = "sc_suggestion")
-public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier> {
+public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
+    implements SilverpeasContent {
 
   private static final long serialVersionUID = -8559980140411995766L;
+
+  public static final String TYPE = "Suggestion";
 
   /**
    * The NONE suggestion. It represents no suggestions and it is dedicated to be used in place of
@@ -95,6 +104,7 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier> {
    * Gets the title of this suggestion.
    * @return the suggestion title.
    */
+  @Override
   public String getTitle() {
     return this.title;
   }
@@ -192,11 +202,77 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier> {
   }
 
   /**
+   * Is this suggestion is pending validation?
+   * @return true if this suggestion is pending validation, false otherwise.
+   */
+  public boolean isPendingValidation() {
+    return getStatus() == ContributionStatus.PENDING_VALIDATION;
+  }
+
+  /**
+   * Is this suggestion is published?
+   * @return true if this suggestion is published, false otherwise.
+   */
+  public boolean isPublished() {
+    return getStatus() == ContributionStatus.VALIDATED;
+  }
+
+  /**
+   * Is this suggestion publishable by the specified user?
+   * @param user the aimed user.
+   * @return true if the suggestion is publishable by the specified user, false otherwise.
+   */
+  public boolean isPublishableBy(UserDetail user) {
+    return (isInDraft() || isRefused()) && (user.isAccessAdmin() || (getCreator().equals(user) &&
+        getSuggestionBox().getGreaterUserRole(user).isGreaterThanOrEquals(SilverpeasRole.writer)));
+  }
+
+  /**
    * Gets the contribution status of this suggestion.
    * @return the suggestion's contribution status;
    */
   public ContributionStatus getStatus() {
     return ContributionStatus.from(state);
+  }
+
+  @Override
+  public String getComponentInstanceId() {
+    return getSuggestionBox().getComponentInstanceId();
+  }
+
+  @Override
+  public String getSilverpeasContentId() {
+    return null;
+  }
+
+  @Override
+  public Date getCreationDate() {
+    return getCreateDate();
+  }
+
+  @Override
+  public String getDescription() {
+    return getContent();
+  }
+
+  @Override
+  public String getContributionType() {
+    return TYPE;
+  }
+
+  /**
+   * Is the specified user can access this post?
+   * <p/>
+   * A user can access a post if it has enough rights to access the suggestion box instance in
+   * which is managed this suggestion.
+   * @param user a user in Silverpeas.
+   * @return true if the user can access this suggestion, false otherwise.
+   */
+  @Override
+  public boolean canBeAccessedBy(final UserDetail user) {
+    AccessController<String> accessController =
+        AccessControllerProvider.getAccessController("componentAccessController");
+    return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
   }
 
   private SuggestionBoxService getSuggestionBoxService() {
@@ -209,6 +285,4 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier> {
     return "Suggestion{" + "suggestionBox=" + suggestionBox.getId() + ", title=" + title
         + ", state=" + state + ", content=" + content + ", contentModified=" + contentModified + '}';
   }
-
-
 }

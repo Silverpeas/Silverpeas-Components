@@ -32,17 +32,19 @@
 <fmt:setLocale value="${requestScope.resources.language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
+<c:set var="currentUser" value="${requestScope.currentUser}"/>
+<c:set var="currentUserId" value="${currentUser.id}"/>
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
 <c:set var="greaterUserRole" value="${requestScope.greaterUserRole}"/>
 <c:set var="componentUriBase"><c:url value="${requestScope.componentUriBase}"/></c:set>
 <c:set var="suggestionBoxId" value="${requestScope.suggestionBox.id}"/>
 <c:set var="isEdito" value="${requestScope.isEdito}"/>
-<c:set var="currentUserId" value="${sessionScope['SilverSessionController'].userId}"/>
 
 <view:setConstant var="adminRole" constant="com.stratelia.webactiv.SilverpeasRole.admin" />
 <view:setConstant var="writerRole" constant="com.stratelia.webactiv.SilverpeasRole.writer" />
 
 <fmt:message var="modifyEditoLabel" key="suggestionBox.menu.item.edito.modify"/>
+<fmt:message var="publishSuggestionLabel" key="GML.publish"/>
 <fmt:message var="addSuggestionLabel" key="suggestionBox.menu.item.suggestion.add"/>
 <fmt:message var="deleteSuggestionConfirmMessage" key="suggestionBox.message.suggestion.confirm">
   <fmt:param value="<b>@name@</b>" />
@@ -86,19 +88,21 @@
       </ul>
     </div>
   </view:frame>
-
-  <view:frame>
-    <div ng-controller="notPublishedController">
-      <ul id="my_notPublished_suggestions_list" class="container">
-        <li ng-repeat="suggestion in notPublishedSuggestions">
-          <a ng-href="${componentUriBase}suggestion/{{ suggestion.id }}"><span class="suggestion_title">{{ suggestion.title }}</span></a><br/>
-          <div>{{ suggestion.status }}</div>
-          <div ng-bind-html="suggestion.content"></div>
-          <img ng-click="delete(suggestion)" src="${deleteIcon}" alt="remove" class="action remove"/>
-        </li>
-      </ul>
-    </div>
-  </view:frame>
+  <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
+    <view:frame>
+      <div ng-controller="notPublishedController">
+        <ul id="my_notPublished_suggestions_list" class="container">
+          <li ng-repeat="suggestion in notPublishedSuggestions">
+            <a ng-href="${componentUriBase}suggestion/{{ suggestion.id }}"><span class="suggestion_title">{{ suggestion.title }}</span></a><br/>
+            <div>{{ suggestion.status }}</div>
+            <div ng-bind-html="suggestion.content"></div>
+            <img ng-click="delete(suggestion)" src="${deleteIcon}" alt="remove" class="action remove"/>
+            <a href="#" ng-click="publish(suggestion)"><span>${publishSuggestionLabel}</span></a><br/>
+          </li>
+        </ul>
+      </div>
+    </view:frame>
+  </c:if>
 </view:window>
   <script type="text/javascript">
     angular.module('silverpeas').value('context', {

@@ -95,4 +95,15 @@ public interface SuggestionBoxService {
    */
   public void removeSuggestion(final SuggestionBox box, final Suggestion suggestion);
 
+  /**
+   * Publishes from the specified suggestion box the specified suggestion.
+   * <p/>
+   * The publication of a suggestion consists in changing its status from DRAFT to
+   * PENDING_VALIDATION.
+   * <p/>
+   * @param box the suggestion box to which the suggestion belongs.
+   * @param suggestion the suggestion to publish.
+   * @return the suggestion updated.
+   */
+  public Suggestion publishSuggestion(final SuggestionBox box, final Suggestion suggestion);
 }

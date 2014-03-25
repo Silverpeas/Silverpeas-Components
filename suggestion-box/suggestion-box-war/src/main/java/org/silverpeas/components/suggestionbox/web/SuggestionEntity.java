@@ -24,12 +24,14 @@
 package org.silverpeas.components.suggestionbox.web;
 
 import com.silverpeas.web.Exposable;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.contribution.ContributionStatus;
 
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import java.net.URI;
 
 /**
@@ -43,8 +45,11 @@ public class SuggestionEntity implements Exposable {
   private static final long serialVersionUID = 4234619816264612213L;
 
   public static SuggestionEntity fromSuggestion(final Suggestion suggestion) {
-    return new SuggestionEntity().withId(suggestion.getId()).withTitle(suggestion.getTitle()).
-        withContent(suggestion.getContent()).withStatus(suggestion.getStatus());
+    SuggestionEntity entity =
+        new SuggestionEntity().withId(suggestion.getId()).withTitle(suggestion.getTitle()).
+            withContent(suggestion.getContent()).withStatus(suggestion.getStatus());
+    entity.suggestion = suggestion;
+    return entity;
   }
 
   @XmlElement(defaultValue = "")
@@ -54,10 +59,14 @@ public class SuggestionEntity implements Exposable {
   @XmlElement(nillable = false, required = true)
   @NotNull
   private String title;
+  @XmlElement(nillable = false, required = true)
   @NotNull
   private ContributionStatus status;
   @XmlElement
   private String content;
+
+  @XmlTransient
+  private Suggestion suggestion;
 
   /**
    * Sets a URI to this entity. With this URI, it can then be accessed through the Web.
@@ -84,6 +93,11 @@ public class SuggestionEntity implements Exposable {
 
   public String getContent() {
     return content;
+  }
+
+  @XmlTransient
+  public boolean isPublishableBy(UserDetail user) {
+    return suggestion.isPublishableBy(user);
   }
 
   public ContributionStatus getStatus() {

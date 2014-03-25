@@ -24,7 +24,6 @@
 package org.silverpeas.components.suggestionbox.web;
 
 import com.silverpeas.web.RESTWebService;
-import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 
@@ -36,8 +35,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static org.silverpeas.components.suggestionbox.common.SuggestionBoxWebServiceProvider
+    .assertSuggestionIsDefined;
 import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs.BOX_BASE_URI;
-import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs.BOX_SUGGESTION_URI_PART;
+import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs
+    .BOX_SUGGESTION_URI_PART;
 
 /**
  * @author Yohann Chastagnier
@@ -113,36 +115,5 @@ public abstract class AbstractSuggestionBoxResource extends RESTWebService {
     return getUriInfo().getBaseUriBuilder().path(BOX_BASE_URI).path(getComponentId())
         .path(suggestion.getSuggestionBox().getId()).path(BOX_SUGGESTION_URI_PART)
         .path(suggestion.getId()).build();
-  }
-
-  /**
-   * Asserts the specified suggestion is well defined, otherwise an HTTP 404 error is sent back.
-   * @param suggestion the suggestion to check.
-   */
-  protected static void assertSuggestionIsDefined(final Suggestion suggestion) {
-    if (suggestion.isNotDefined()) {
-      throw new WebApplicationException(Status.NOT_FOUND);
-    }
-  }
-
-  /**
-   * Centralization of checking if the user behind the service call is the creator of the specified
-   * suggestion.
-   * @param suggestion the suggestion to check.
-   */
-  protected void checkAdminAccessOrUserIsCreator(Suggestion suggestion) {
-    checkAdminAccessOrUserIsCreator(getUserDetail(), suggestion);
-  }
-
-  /**
-   * Centralization of checking if the specified user is the creator of the specified suggestion.
-   * @param user the user to verify.
-   * @param suggestion the suggestion to check.
-   */
-  public static void checkAdminAccessOrUserIsCreator(UserDetail user, Suggestion suggestion) {
-    assertSuggestionIsDefined(suggestion);
-    if (!user.isAccessAdmin() && !user.equals(suggestion.getCreator())) {
-      throw new WebApplicationException(Status.FORBIDDEN);
-    }
   }
 }

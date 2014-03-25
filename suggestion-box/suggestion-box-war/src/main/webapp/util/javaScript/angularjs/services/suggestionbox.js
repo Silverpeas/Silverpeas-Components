@@ -81,6 +81,15 @@ services.factory('Suggestion', ['RESTAdapter', function(RESTAdapter) {
           this.remove = function(id) {
             return adapter.delete(id);
           };
+          /**
+           * Publishes the suggestion identified by the specified identifier from the suggestions
+           * of the suggestion box.
+           * @param {string} suggestion the suggestion to publish
+           * @returns {Object} the updated suggestion.
+           */
+          this.publish = function(suggestion) {
+            return adapter.update(suggestion.id, 'publish', suggestion);
+          };
         };
       };
     };
