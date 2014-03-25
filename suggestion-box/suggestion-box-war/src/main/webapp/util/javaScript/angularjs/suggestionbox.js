@@ -27,31 +27,44 @@ var suggestionBox = angular.module('silverpeas.suggestionBox',
     ['silverpeas.services', 'silverpeas.directives']);
 
 /* the main controller of the application */
-suggestionBox.controller('mainController', ['context', 'SuggestionBox', '$scope', '$rootScope',
+suggestionBox.controller('publishedController', ['context', 'SuggestionBox', '$scope', '$rootScope',
   function(context, SuggestionBox, $scope, $rootScope) {
     var suggestionBox = SuggestionBox.get({
       id : context.suggestionBoxId,
       componentInstanceId : context.component});
 
     $scope.delete = function(suggestion) {
-      jQuery('#confirmation').html(context.deleteSuggestionConfirmMessage.replace('@name@',
-          suggestion.title));
-      jQuery('#confirmation').popup('confirmation', {
-        callback : function() {
-          suggestionBox.suggestions.remove(suggestion.id).then(function() {
-            $rootScope.$broadcast('suggestionModified', suggestion.id)
-          });
-          return true;
-        }
-      });
+      __internal_delete(suggestion, suggestionBox, context, $rootScope);
     };
 
-    $scope.suggestions = [
-      {id : 'b28c4d6d-ed51-4dad-bfd9-5a330d574575', title : 'idée test', content : 'contenu test'}
-    ];
-    /*suggestionBox.suggestions().get().then(function(theSuggestions) {
-     $scope.suggestions = theSuggestions;
-     });*/
+    $scope.loadPublished = function() {
+      $scope.publishedSuggestions = [
+        {id : 'b28c4d6d-ed51-4dad-bfd9-5a330d574575', title : 'idée test', content : 'contenu test'}
+      ];
+
+      /*suggestionBox.suggestions.get(['published']).then(function(theSuggestions) {
+        $scope.publishedSuggestions = theSuggestions;
+      });*/
+    };
+
+    $scope.loadPublished();
+
+    $scope.$on("suggestionModified", function(theSuggestionId) {
+      $scope.loadPublished();
+    });
+  }]);
+
+
+/* the not published controller of the application */
+suggestionBox.controller('notPublishedController', ['context', 'SuggestionBox', '$scope', '$rootScope',
+  function(context, SuggestionBox, $scope, $rootScope) {
+    var suggestionBox = SuggestionBox.get({
+      id : context.suggestionBoxId,
+      componentInstanceId : context.component});
+
+    $rootScope.delete = function(suggestion) {
+      __internal_delete(suggestion, suggestionBox, context, $rootScope);
+    };
 
     $scope.loadNotPublished = function() {
       suggestionBox.suggestions.get(['notPublished']).then(function(theSuggestions) {
@@ -66,4 +79,22 @@ suggestionBox.controller('mainController', ['context', 'SuggestionBox', '$scope'
     });
   }]);
 
-
+/**
+ * Centralization of the suggestion delete action processing.
+ * @param suggestion the suggestion to delete.
+ * @param context the context of the Silverpeas Suggestion Box Angular application.
+ * @param $rootScope the root scope of all angular controllers instancied.
+ * @private
+ */
+function __internal_delete(suggestion, suggestionBox, context, $rootScope) {
+  jQuery('#confirmation').html(context.deleteSuggestionConfirmMessage.replace('@name@',
+      suggestion.title));
+  jQuery('#confirmation').popup('confirmation', {
+    callback : function() {
+      suggestionBox.suggestions.remove(suggestion.id).then(function() {
+        $rootScope.$broadcast('suggestionModified', suggestion.id)
+      });
+      return true;
+    }
+  });
+}

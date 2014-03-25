@@ -91,7 +91,7 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
         NotifierUtil.addSuccess(getBundle().getString("suggestionBox.message.suggestion.removed"));
         return null;
       }
-    }).lowestAccessRole(SilverpeasRole.publisher).execute();
+    }).lowestAccessRole(SilverpeasRole.writer).execute();
   }
 
   /**
@@ -114,6 +114,6 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
             getSuggestionBox().getSuggestions().findNotPublishedFor(getUserDetail());
         return asWebEntities(suggestionNotPublished);
       }
-    }).lowestAccessRole(SilverpeasRole.publisher).execute();
+    }).lowestAccessRole(SilverpeasRole.writer).execute();
   }
 }
