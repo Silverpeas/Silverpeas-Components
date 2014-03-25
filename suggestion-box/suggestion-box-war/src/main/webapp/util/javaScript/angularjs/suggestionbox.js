@@ -62,8 +62,14 @@ suggestionBox.controller('notPublishedController', ['context', 'SuggestionBox', 
       id : context.suggestionBoxId,
       componentInstanceId : context.component});
 
-    $rootScope.delete = function(suggestion) {
+    $scope.delete = function(suggestion) {
       __internal_delete(suggestion, suggestionBox, context, $rootScope);
+    };
+
+    $scope.publish = function(suggestion) {
+      suggestionBox.suggestions.publish(suggestion).then(function(suggestionUpdated) {
+        $rootScope.$broadcast('suggestionModified', suggestionUpdated)
+      });
     };
 
     $scope.loadNotPublished = function() {

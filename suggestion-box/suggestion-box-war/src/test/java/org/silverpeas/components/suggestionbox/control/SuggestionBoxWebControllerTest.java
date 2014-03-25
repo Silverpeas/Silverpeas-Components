@@ -23,12 +23,24 @@
  */
 package org.silverpeas.components.suggestionbox.control;
 
+import com.silverpeas.notification.builder.helper.UserNotificationHelper;
+import com.silverpeas.personalization.UserMenuDisplay;
+import com.silverpeas.personalization.UserPreferences;
+import com.silverpeas.personalization.service.PersonalizationService;
+import com.silverpeas.web.TestResources;
+import com.silverpeas.web.mock.PersonalizationServiceMockWrapper;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.WebMessager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 import org.silverpeas.components.suggestionbox.mock.SuggestionBoxServiceMockWrapper;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
@@ -38,19 +50,20 @@ import org.silverpeas.servlet.HttpRequest;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import javax.ws.rs.WebApplicationException;
+import java.util.Map;
+
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
-
-import java.util.Map;
-
-import javax.ws.rs.WebApplicationException;
 
 
 /**
  * Unit test on some operations of the SuggestionBoxWebController instance.
  * @author mmoquillon
  */
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({UserNotificationHelper.class})
 public class SuggestionBoxWebControllerTest {
 
   private AbstractApplicationContext appContext;
@@ -65,6 +78,10 @@ public class SuggestionBoxWebControllerTest {
     MainSessionController sessionController = mock(MainSessionController.class);
     ComponentContext componentContext = mock(ComponentContext.class);
     controller = new SuggestionBoxWebController(sessionController, componentContext);
+    PersonalizationService mock = getPersonalizationService();
+    UserPreferences preferences = new UserPreferences(TestResources.DEFAULT_LANGUAGE, "", "", false,
+        true, true, UserMenuDisplay.DISABLE);
+    when(mock.getUserSettings(anyString())).thenReturn(preferences);
   }
 
   @After
@@ -112,8 +129,7 @@ public class SuggestionBoxWebControllerTest {
     when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
     SuggestionBox box = context.getSuggestionBox();
     SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
-    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(
-        Suggestion.NONE);
+    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(Suggestion.NONE);
 
     controller.editSuggestion(context);
   }
@@ -201,7 +217,6 @@ public class SuggestionBoxWebControllerTest {
     SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
     when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
     SuggestionBox box = context.getSuggestionBox();
-    Suggestion suggestion = aSuggestion();
     SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
     when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(Suggestion.NONE);
 
@@ -220,6 +235,49 @@ public class SuggestionBoxWebControllerTest {
     controller.deleteSuggestion(context);
   }
 
+  @Test
+  public void publishASuggestionInDraftWithUserRoleAccess() {
+    assertPublishASuggestion(ContributionStatus.DRAFT);
+  }
+
+  @Test
+  public void publishASuggestionRefusedWithUserRoleAccess() {
+    assertPublishASuggestion(ContributionStatus.REFUSED);
+  }
+
+  @Test(expected = WebApplicationException.class)
+  public void publishANonDraftOrRefusedSuggestionInAGivenSuggestionBoxWithUserRoleAccess() {
+    assertPublishASuggestion(ContributionStatus.UNKNOWN);
+  }
+
+  private void assertPublishASuggestion(ContributionStatus withStatus) {
+    SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
+    when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
+    SuggestionBox box = context.getSuggestionBox();
+    SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
+    Suggestion suggestion = aSuggestionWithStatus(withStatus);
+    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(suggestion);
+    when(suggestionBoxService.publishSuggestion(eq(box), eq(suggestion)))
+        .thenReturn(Suggestion.NONE);
+
+    PowerMockito.mockStatic(UserNotificationHelper.class);
+    controller.publishSuggestion(context);
+
+    verify(suggestionBoxService, times(1)).publishSuggestion(eq(box), eq(suggestion));
+  }
+
+  @Test(expected = WebApplicationException.class)
+  public void publishAnUnexistingSuggestionInAGivenSuggestionBox() {
+    SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
+    when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
+    SuggestionBox box = context.getSuggestionBox();
+    SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
+    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(Suggestion.NONE);
+
+    controller.publishSuggestion(context);
+  }
+
+  @SuppressWarnings("unchecked")
   private SuggestionBoxWebRequestContext aSuggestionBoxWebRequestContext() {
     SuggestionBoxWebRequestContext context = mock(SuggestionBoxWebRequestContext.class);
     HttpRequest request = mock(HttpRequest.class);
@@ -237,6 +295,12 @@ public class SuggestionBoxWebControllerTest {
     SuggestionBoxServiceMockWrapper mockWrapper = appContext.getBean(
         SuggestionBoxServiceMockWrapper.class);
     return mockWrapper.getMock();
+  }
+
+  private PersonalizationService getPersonalizationService() {
+    PersonalizationServiceMockWrapper mockWrapper = appContext.
+        getBean(PersonalizationServiceMockWrapper.class);
+    return mockWrapper.getPersonalizationServiceMock();
   }
 
   private SuggestionBox aSuggestionBox() {

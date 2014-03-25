@@ -23,8 +23,12 @@
  */
 package org.silverpeas.components.suggestionbox.model;
 
+import com.silverpeas.notification.builder.helper.UserNotificationHelper;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.components.suggestionbox.notification
+    .SuggestionPendingValidationUserNotification;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.persistence.model.jpa.AbstractJpaEntity;
@@ -36,11 +40,13 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
-import static org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_ORDER_BY.LAST_UPDATE_DATE_ASC;
+import static org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_ORDER_BY
+    .LAST_UPDATE_DATE_ASC;
 import static org.silverpeas.contribution.ContributionStatus.DRAFT;
 import static org.silverpeas.contribution.ContributionStatus.REFUSED;
 
@@ -142,6 +148,18 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
     this.suggestions.add(newSuggestion);
   }
 
+  /**
+   * Gets the greater role of the specified user on the suggestion box.
+   * @param user the aimed user.
+   * @return a {@link SilverpeasRole} instance.
+   */
+  public SilverpeasRole getGreaterUserRole(UserDetail user) {
+    String[] profiles = OrganisationControllerFactory.getOrganisationController()
+        .getUserProfiles(user.getId(), getComponentInstanceId());
+    Set<SilverpeasRole> userRoles = SilverpeasRole.from(profiles);
+    return SilverpeasRole.getGreaterFrom(userRoles);
+  }
+
   public class Suggestions {
 
     /**
@@ -190,11 +208,35 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
           .orderedBy(LAST_UPDATE_DATE_ASC);
       return suggestionBoxService.findSuggestionsByCriteria(criteria);
     }
+
+    /**
+     * Publishes from the specified suggestion box the specified suggestion.
+     * <p/>
+     * The publication of a suggestion consists in changing its status from DRAFT to
+     * PENDING_VALIDATION and sending a notification to the moderator if the updater is at most a
+     * writer on the suggestion box.
+     * <p/>
+     * If the suggestion doesn't exist in the suggestion box, then nothing is done.
+     * @param suggestion the suggestion to publish.
+     * @return the suggestion updated.
+     */
+    public Suggestion publish(final Suggestion suggestion) {
+      SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
+      Suggestion actual = suggestionBoxService.publishSuggestion(SuggestionBox.this, suggestion);
+      switch (actual.getStatus()) {
+        case PENDING_VALIDATION:
+          UserNotificationHelper
+              .buildAndSend(new SuggestionPendingValidationUserNotification(actual));
+          break;
+        case VALIDATED:
+          break;
+      }
+      return actual;
+    }
   }
 
   private static SuggestionBoxService getSuggestionBoxService() {
     SuggestionBoxServiceFactory serviceFactory = SuggestionBoxServiceFactory.getFactory();
     return serviceFactory.getSuggestionBoxService();
   }
-
 }

@@ -85,4 +85,9 @@ public class SuggestionBoxServiceMockWrapper implements SuggestionBoxService {
   public void removeSuggestion(SuggestionBox box, Suggestion suggestion) {
     mock.removeSuggestion(box, suggestion);
   }
+
+  @Override
+  public Suggestion publishSuggestion(final SuggestionBox box, final Suggestion suggestion) {
+    return mock.publishSuggestion(box ,suggestion);
+  }
 }

@@ -28,10 +28,10 @@ import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.stratelia.webactiv.SilverpeasRole;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
-import org.silverpeas.util.NotifierUtil;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -39,6 +39,8 @@ import javax.ws.rs.core.MediaType;
 import java.util.Collection;
 import java.util.List;
 
+import static org.silverpeas.components.suggestionbox.common.SuggestionBoxWebServiceProvider
+    .getWebServiceProvider;
 import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs.BOX_BASE_URI;
 import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs
     .BOX_SUGGESTION_URI_PART;
@@ -86,10 +88,28 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
       @Override
       public Void execute() {
         final Suggestion suggestion = getSuggestionBox().getSuggestions().get(suggestionId);
-        checkAdminAccessOrUserIsCreator(suggestion);
-        getSuggestionBox().getSuggestions().remove(suggestion);
-        NotifierUtil.addSuccess(getBundle().getString("suggestionBox.message.suggestion.removed"));
+        getWebServiceProvider().deleteSuggestion(getSuggestionBox(), suggestion, getUserDetail());
         return null;
+      }
+    }).lowestAccessRole(SilverpeasRole.writer).execute();
+  }
+
+  /**
+   * Publishes the suggestion identified by the specified identifier.
+   * If it doesn't exist, a 404 HTTP code is returned.
+   * @param suggestionId the identifier of the suggestion.
+   */
+  @PUT
+  @Path(BOX_SUGGESTION_URI_PART + "/{suggestionId}/publish")
+  @Produces(MediaType.APPLICATION_JSON)
+  public SuggestionEntity publishSuggestion(@PathParam("suggestionId") final String suggestionId) {
+    return process(new WebTreatment<SuggestionEntity>() {
+      @Override
+      public SuggestionEntity execute() {
+        final Suggestion suggestion = getSuggestionBox().getSuggestions().get(suggestionId);
+        Suggestion actual = getWebServiceProvider()
+            .publishSuggestion(getSuggestionBox(), suggestion, getUserDetail());
+        return asWebEntity(actual);
       }
     }).lowestAccessRole(SilverpeasRole.writer).execute();
   }

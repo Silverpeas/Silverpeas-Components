@@ -24,11 +24,13 @@
 package org.silverpeas.components.suggestionbox.model;
 
 import com.silverpeas.annotation.Service;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepository;
 import org.silverpeas.components.suggestionbox.repository.SuggestionRepository;
+import org.silverpeas.contribution.ContributionStatus;
 import org.silverpeas.persistence.repository.OperationContext;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 import org.springframework.transaction.annotation.Transactional;
@@ -164,5 +166,24 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
 
       WysiwygController.deleteWysiwygAttachments(box.getComponentInstanceId(), suggestion.getId());
     }
+  }
+
+  @Override
+  @Transactional
+  public Suggestion publishSuggestion(final SuggestionBox box, final Suggestion suggestion) {
+    Suggestion actual = suggestionRepository.getById(suggestion.getId());
+    if (suggestion.getSuggestionBox().equals(box)) {
+      UserDetail updater = suggestion.getLastUpdater();
+      SilverpeasRole greaterUserRole = box.getGreaterUserRole(updater);
+      if (greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.publisher)) {
+        actual.setStatus(ContributionStatus.VALIDATED);
+      } else if (greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.writer)) {
+        actual.setStatus(ContributionStatus.PENDING_VALIDATION);
+      }
+      suggestionRepository.save(OperationContext.fromUser(updater), actual);
+      suggestionRepository.flush();
+    }
+
+    return actual;
   }
 }

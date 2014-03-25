@@ -29,15 +29,17 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
+<c:set var="webServiceProvider" value="${requestScope.webServiceProvider}"/>
 <view:setConstant var="writerRole" constant="com.stratelia.webactiv.SilverpeasRole.writer"/>
 <c:set var="greaterUserRole" value="${requestScope.greaterUserRole}"/>
-<c:if test="${! greaterUserRole.isGreaterThanOrEquals(writerRole)}">
+<c:if test="${!greaterUserRole.isGreaterThanOrEquals(writerRole)}">
   <c:redirect url="/Error403.jsp"/>
 </c:if>
 
 <fmt:setLocale value="${requestScope.resources.language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
+<c:set var="currentUser" value="${requestScope.currentUser}"/>
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
 <c:set var="language" value="${requestScope.resources.language}"/>
 <c:url var="mandatoryIcons" value="/util/icons/mandatoryField.gif"/>
@@ -45,13 +47,17 @@
 <c:set var="componentUriBase"><c:url value="${requestScope.componentUriBase}"/></c:set>
 <c:set var="suggestion" value="${requestScope.suggestion}"/>
 <c:set var="target" value="add"/>
+<c:set var="isPublishable" value="false"/>
 <c:if test="${suggestion != null}">
   <c:set var="target" value="${suggestion.id}"/>
+  <c:set var="isPublishable" value="${suggestion.isPublishableBy(currentUser)}"/>
 </c:if>
+<c:set var="isReadOnly" value="${!isPublishable}"/>
 <fmt:message var="save" key="GML.validate"/>
 <fmt:message var="cancel" key="GML.cancel"/>
 <fmt:message var="addSuggestionLabel" key="suggestionBox.menu.item.suggestion.add"/>
-<fmt:message var="deleteSuggestionLabel" key="GML.delete"/>
+<fmt:message var="publishSuggestionMenuLabel" key="GML.publish"/>
+<fmt:message var="deleteSuggestionMenuLabel" key="GML.delete"/>
 <fmt:message var="deleteSuggestionConfirmMessage" key="suggestionBox.message.suggestion.confirm">
   <fmt:param value=""/>
 </fmt:message>
@@ -101,6 +107,11 @@
       $('#actions').attr('method', 'GET').attr('action', '${componentUriBase}Main').submit();
     }
 
+    <c:if test="${isPublishable}">
+    function publish() {
+      $('#actions').attr('action', '${componentUriBase}suggestion/publish/${target}').submit();
+    }
+
     function remove() {
       $('#confirmation').html("${deleteSuggestionConfirmMessage} ?");
       $('#confirmation').popup('confirmation', {
@@ -110,6 +121,7 @@
         }
       });
     }
+    </c:if>
 
     $(document).ready(function() {
       <view:wysiwyg replace="content" language="${null}" toolbar="suggestionBox"/>
@@ -119,9 +131,10 @@
 </head>
 <body>
 <view:browseBar componentId="${componentId}" extraInformations="${addSuggestionLabel}"/>
-<c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole) and suggestion != null}">
+<c:if test="${isPublishable}">
   <view:operationPane>
-    <view:operation action="javascript:remove();" altText="${deleteSuggestionLabel}"/>
+    <view:operation action="javascript:publish();" altText="${publishSuggestionMenuLabel}"/>
+    <view:operation action="javascript:remove();" altText="${deleteSuggestionMenuLabel}"/>
   </view:operationPane>
 </c:if>
 <view:window>

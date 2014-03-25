@@ -45,8 +45,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
-import static org.silverpeas.components.suggestionbox.web.AbstractSuggestionBoxResource
+import static org.silverpeas.components.suggestionbox.common.SuggestionBoxWebServiceProvider
     .checkAdminAccessOrUserIsCreator;
+import static org.silverpeas.components.suggestionbox.common.SuggestionBoxWebServiceProvider
+    .getWebServiceProvider;
 
 @WebComponentController("SuggestionBox")
 public class SuggestionBoxWebController extends
@@ -70,6 +72,7 @@ public class SuggestionBoxWebController extends
   @Override
   protected void beforeRequestProcessing(final SuggestionBoxWebRequestContext context) {
     super.beforeRequestProcessing(context);
+    context.getRequest().setAttribute("webServiceProvider", getWebServiceProvider());
     context.getRequest().setAttribute("suggestionBox", context.getSuggestionBox());
   }
 
@@ -84,6 +87,17 @@ public class SuggestionBoxWebController extends
   @InvokeAfter("isEdito")
   public void home(SuggestionBoxWebRequestContext context) {
     // Nothing to do for now...
+  }
+
+  /**
+   * Handles the incoming from a search result URL.
+   * @param context the context of the incoming request.
+   */
+  @GET
+  @Path("searchResult")
+  @RedirectToInternal("suggestion/{id}")
+  public void searchResult(SuggestionBoxWebRequestContext context) {
+    context.addRedirectVariable("id", context.getRequest().getParameter("Id"));
   }
 
   /**
@@ -202,13 +216,17 @@ public class SuggestionBoxWebController extends
     String id = context.getPathVariables().get("id");
     SuggestionBox suggestionBox = context.getSuggestionBox();
     Suggestion suggestion = suggestionBox.getSuggestions().get(id);
-    if (suggestion.isDefined() && (suggestion.isInDraft() || suggestion.isRefused())) {
-      checkAdminAccessOrUserIsCreator(context.getUser(), suggestion);
-      suggestionBox.getSuggestions().remove(suggestion);
-      context.getMessager()
-          .addSuccess(getMultilang().getString("suggestionBox.message.suggestion.removed"));
-    } else {
-      throw new WebApplicationException(Status.NOT_FOUND);
-    }
+    getWebServiceProvider().deleteSuggestion(suggestionBox, suggestion, context.getUser());
+  }
+
+  @POST
+  @Path("suggestion/publish/{id}")
+  @RedirectToInternal("Main")
+  @LowestRoleAccess(SilverpeasRole.writer)
+  public void publishSuggestion(SuggestionBoxWebRequestContext context) {
+    String id = context.getPathVariables().get("id");
+    SuggestionBox suggestionBox = context.getSuggestionBox();
+    Suggestion suggestion = suggestionBox.getSuggestions().get(id);
+    getWebServiceProvider().publishSuggestion(suggestionBox, suggestion, context.getUser());
   }
 }

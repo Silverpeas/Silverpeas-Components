@@ -23,6 +23,9 @@
  */
 package org.silverpeas.components.suggestionbox.model;
 
+import com.silverpeas.notification.builder.UserNotificationBuider;
+import com.silverpeas.notification.builder.helper.UserNotificationHelper;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
@@ -31,19 +34,27 @@ import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.silverpeas.components.suggestionbox.notification
+    .SuggestionPendingValidationUserNotification;
 import org.silverpeas.components.suggestionbox.repository.RepositoryBasedTest;
+import org.silverpeas.contribution.ContributionStatus;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
+import java.util.Date;
+
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit test on the business operations of the SuggestionBox objects.
  * @author mmoquillon
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(WysiwygController.class)
+@PrepareForTest({WysiwygController.class, UserNotificationHelper.class})
 public class SuggestionBoxTest extends RepositoryBasedTest {
 
   private final static String SUGGESTION_BOX_INSTANCE_ID = "suggestionBox1";
@@ -95,5 +106,99 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
 
     PowerMockito.verifyStatic(times(1));
     WysiwygController.deleteWysiwygAttachments(SUGGESTION_BOX_INSTANCE_ID, SUGGESTION_ID);
+  }
+
+  @Test
+  public void publishASuggestionOfASuggestionBoxWithUserAccessRole() throws Exception {
+    IDataSet actualDataSet = getActualDataSet();
+    ITable table = actualDataSet.getTable("sc_suggestion");
+    assertThat((String) table.getValue(0, "id"), is(SUGGESTION_ID));
+    assertThat((String) table.getValue(0, "state"), is(ContributionStatus.DRAFT.name()));
+    assertThat((String) table.getValue(0, "lastUpdatedBy"), is("1"));
+    Date lastUpdateDate = (Date) table.getValue(0, "lastUpdateDate");
+
+    PowerMockito.mockStatic(UserNotificationHelper.class);
+    SuggestionBox box = SuggestionBox.getByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID);
+    Suggestion suggestion = box.getSuggestions().get(SUGGESTION_ID);
+    UserDetail updater = aUser();
+    updater.setId("26");
+    suggestion.setLastUpdater(updater);
+    when(getOrganisationController()
+        .getUserProfiles(suggestion.getLastUpdatedBy(), box.getComponentInstanceId()))
+        .thenReturn(new String[]{SilverpeasRole.user.name()});
+    box.getSuggestions().publish(suggestion);
+
+    actualDataSet = getActualDataSet();
+    table = actualDataSet.getTable("sc_suggestion");
+    assertThat((String) table.getValue(0, "id"), is(SUGGESTION_ID));
+    assertThat((String) table.getValue(0, "state"), is(ContributionStatus.DRAFT.name()));
+    assertThat((String) table.getValue(0, "lastUpdatedBy"), is("1"));
+    assertThat((Date) table.getValue(0, "lastUpdateDate"), is(lastUpdateDate));
+
+    PowerMockito.verifyStatic(times(0));
+    UserNotificationHelper.buildAndSend(any(UserNotificationBuider.class));
+  }
+
+  @Test
+  public void publishASuggestionOfASuggestionBoxWithWriterAccessRole() throws Exception {
+    IDataSet actualDataSet = getActualDataSet();
+    ITable table = actualDataSet.getTable("sc_suggestion");
+    assertThat((String) table.getValue(0, "id"), is(SUGGESTION_ID));
+    assertThat((String) table.getValue(0, "state"), is(ContributionStatus.DRAFT.name()));
+    assertThat((String) table.getValue(0, "lastUpdatedBy"), is("1"));
+    Date lastUpdateDate = (Date) table.getValue(0, "lastUpdateDate");
+
+    PowerMockito.mockStatic(UserNotificationHelper.class);
+    SuggestionBox box = SuggestionBox.getByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID);
+    Suggestion suggestion = box.getSuggestions().get(SUGGESTION_ID);
+    UserDetail updater = aUser();
+    updater.setId("26");
+    suggestion.setLastUpdater(updater);
+    when(getOrganisationController()
+        .getUserProfiles(suggestion.getLastUpdatedBy(), box.getComponentInstanceId()))
+        .thenReturn(new String[]{SilverpeasRole.writer.name()});
+    box.getSuggestions().publish(suggestion);
+
+    actualDataSet = getActualDataSet();
+    table = actualDataSet.getTable("sc_suggestion");
+    assertThat((String) table.getValue(0, "id"), is(SUGGESTION_ID));
+    assertThat((String) table.getValue(0, "state"),
+        is(ContributionStatus.PENDING_VALIDATION.name()));
+    assertThat((String) table.getValue(0, "lastUpdatedBy"), is("26"));
+    assertThat((Date) table.getValue(0, "lastUpdateDate"), greaterThan(lastUpdateDate));
+
+    PowerMockito.verifyStatic(times(1));
+    UserNotificationHelper.buildAndSend(any(SuggestionPendingValidationUserNotification.class));
+  }
+
+  @Test
+  public void publishASuggestionOfASuggestionBoxWithPublisherAccessRole() throws Exception {
+    IDataSet actualDataSet = getActualDataSet();
+    ITable table = actualDataSet.getTable("sc_suggestion");
+    assertThat((String) table.getValue(0, "id"), is(SUGGESTION_ID));
+    assertThat((String) table.getValue(0, "state"), is(ContributionStatus.DRAFT.name()));
+    assertThat((String) table.getValue(0, "lastUpdatedBy"), is("1"));
+    Date lastUpdateDate = (Date) table.getValue(0, "lastUpdateDate");
+
+    PowerMockito.mockStatic(UserNotificationHelper.class);
+    SuggestionBox box = SuggestionBox.getByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID);
+    Suggestion suggestion = box.getSuggestions().get(SUGGESTION_ID);
+    UserDetail updater = aUser();
+    updater.setId("26");
+    suggestion.setLastUpdater(updater);
+    when(getOrganisationController()
+        .getUserProfiles(suggestion.getLastUpdatedBy(), box.getComponentInstanceId()))
+        .thenReturn(new String[]{SilverpeasRole.publisher.name()});
+    box.getSuggestions().publish(suggestion);
+
+    actualDataSet = getActualDataSet();
+    table = actualDataSet.getTable("sc_suggestion");
+    assertThat((String) table.getValue(0, "id"), is(SUGGESTION_ID));
+    assertThat((String) table.getValue(0, "state"), is(ContributionStatus.VALIDATED.name()));
+    assertThat((String) table.getValue(0, "lastUpdatedBy"), is("26"));
+    assertThat((Date) table.getValue(0, "lastUpdateDate"), greaterThan(lastUpdateDate));
+
+    PowerMockito.verifyStatic(times(0));
+    UserNotificationHelper.buildAndSend(any(UserNotificationBuider.class));
   }
 }

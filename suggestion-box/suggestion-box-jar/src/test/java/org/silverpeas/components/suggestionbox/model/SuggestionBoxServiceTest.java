@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.suggestionbox.model;
 
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -35,10 +36,13 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.components.suggestionbox.mock.AttachmentServiceMockWrapper;
+import org.silverpeas.components.suggestionbox.mock.OrganisationControllerMockWrapper;
 import org.silverpeas.components.suggestionbox.mock.SuggestionBoxRepositoryMockWrapper;
 import org.silverpeas.components.suggestionbox.mock.SuggestionRepositoryMockWrapper;
 import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepository;
 import org.silverpeas.components.suggestionbox.repository.SuggestionRepository;
+import org.silverpeas.contribution.ContributionStatus;
+import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.persistence.repository.OperationContext;
 import org.silverpeas.wysiwyg.control.WysiwygController;
@@ -46,6 +50,7 @@ import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
@@ -162,6 +167,78 @@ public class SuggestionBoxServiceTest {
 
     SuggestionRepository suggestionRepository = getSuggestionRepository();
     verify(suggestionRepository, times(1)).findByCriteria(eq(criteria));
+  }
+
+  @Test
+  public void publishASuggestionOfASuggestionBoxWithUserAccessRole() {
+    SuggestionBox box = prepareASuggestionBox();
+    Suggestion suggestion = new Suggestion("My suggestion");
+    suggestion.setSuggestionBox(box);
+    suggestion.setContent("the content of my suggestion");
+    suggestion.setCreator(box.getCreator());
+
+    OrganisationController organisationController = getOrganisationController();
+    when(organisationController
+        .getUserProfiles(box.getCreator().getId(), box.getComponentInstanceId()))
+        .thenReturn(new String[]{SilverpeasRole.user.name()});
+
+    SuggestionRepository suggestionRepository = getSuggestionRepository();
+    when(suggestionRepository.getById(suggestion.getId())).thenReturn(suggestion);
+
+    Suggestion actual = service.publishSuggestion(box, suggestion);
+
+    verify(suggestionRepository, times(1)).save(any(OperationContext.class), eq(suggestion));
+    assertThat(actual.getStatus(), is(ContributionStatus.DRAFT));
+  }
+
+  @Test
+  public void publishASuggestionOfASuggestionBoxWithWriterAccessRole() {
+    SuggestionBox box = prepareASuggestionBox();
+    Suggestion suggestion = new Suggestion("My suggestion");
+    suggestion.setSuggestionBox(box);
+    suggestion.setContent("the content of my suggestion");
+    suggestion.setCreator(box.getCreator());
+
+    OrganisationController organisationController = getOrganisationController();
+    when(organisationController
+        .getUserProfiles(box.getCreator().getId(), box.getComponentInstanceId()))
+        .thenReturn(new String[]{SilverpeasRole.writer.name()});
+
+    SuggestionRepository suggestionRepository = getSuggestionRepository();
+    when(suggestionRepository.getById(suggestion.getId())).thenReturn(suggestion);
+
+    Suggestion actual = service.publishSuggestion(box, suggestion);
+
+    verify(suggestionRepository, times(1)).save(any(OperationContext.class), eq(suggestion));
+    assertThat(actual.getStatus(), is(ContributionStatus.PENDING_VALIDATION));
+  }
+
+  @Test
+  public void publishASuggestionOfASuggestionBoxWithPublisherAccessRole() {
+    SuggestionBox box = prepareASuggestionBox();
+    Suggestion suggestion = new Suggestion("My suggestion");
+    suggestion.setSuggestionBox(box);
+    suggestion.setContent("the content of my suggestion");
+    suggestion.setCreator(box.getCreator());
+
+    OrganisationController organisationController = getOrganisationController();
+    when(organisationController
+        .getUserProfiles(box.getCreator().getId(), box.getComponentInstanceId()))
+        .thenReturn(new String[]{SilverpeasRole.publisher.name()});
+
+    SuggestionRepository suggestionRepository = getSuggestionRepository();
+    when(suggestionRepository.getById(suggestion.getId())).thenReturn(suggestion);
+
+    Suggestion actual = service.publishSuggestion(box, suggestion);
+
+    verify(suggestionRepository, times(1)).save(any(OperationContext.class), eq(suggestion));
+    assertThat(actual.getStatus(), is(ContributionStatus.VALIDATED));
+  }
+
+  private OrganisationController getOrganisationController() {
+    OrganisationControllerMockWrapper mockWrapper = context.
+        getBean(OrganisationControllerMockWrapper.class);
+    return mockWrapper.getMock();
   }
 
   private SuggestionBoxRepository getSuggestionBoxRepository() {

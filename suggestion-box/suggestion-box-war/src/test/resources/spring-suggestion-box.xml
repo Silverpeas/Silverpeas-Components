@@ -36,10 +36,14 @@
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
   <ctx:annotation-config/>
+  <ctx:component-scan base-package="com.silverpeas.web"/>
 
   <bean id="suggestionBoxServiceFactory" class="org.silverpeas.components.suggestionbox.model.SuggestionBoxServiceFactory"
         factory-method="getFactory"/>
 
   <bean id="suggestionBoxService" class="org.silverpeas.components.suggestionbox.mock.SuggestionBoxServiceMockWrapper"/>
+
+  <bean name="personalizationServiceFactory"
+        class="com.silverpeas.personalization.service.PersonalizationServiceFactory" factory-method="getFactory"/>
 
 </beans>
