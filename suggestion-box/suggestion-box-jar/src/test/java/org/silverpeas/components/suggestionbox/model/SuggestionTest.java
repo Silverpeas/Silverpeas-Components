@@ -201,8 +201,7 @@ public class SuggestionTest extends RepositoryBasedTest {
     suggestions = getPersistenceService().findByCriteria(
         SuggestionCriteria.from(box).createdBy(creator).orderedBy(LAST_UPDATE_DATE_DESC));
     assertThat(suggestions, hasSize(BOX_1_SUGGESTIONS_COUNT - 1));
-    assertThat(suggestions, contains(
-        matches("suggestion_1_v_1", "suggestion 1 V1", VALIDATED,
+    assertThat(suggestions, contains(matches("suggestion_1_v_1", "suggestion 1 V1", VALIDATED,
             timestamp("2014-03-26 17:34:00.0")),
         matches("suggestion_1_v_2", "suggestion 1 V2", VALIDATED,
             timestamp("2014-03-25 17:34:00.0")),
@@ -219,11 +218,10 @@ public class SuggestionTest extends RepositoryBasedTest {
     // then by descending last update date
     creator = UserDetail.getById("1");
     suggestions = getPersistenceService().findByCriteria(
-        SuggestionCriteria.from(box).createdBy(creator)
-            .orderedBy(TITLE_DESC, LAST_UPDATE_DATE_DESC));
+        SuggestionCriteria.from(box).createdBy(creator).orderedBy(TITLE_DESC, LAST_UPDATE_DATE_DESC)
+    );
     assertThat(suggestions, hasSize(BOX_1_SUGGESTIONS_COUNT - 1));
-    assertThat(suggestions, contains(
-        matches("suggestion_1_v_2", "suggestion 1 V2", VALIDATED,
+    assertThat(suggestions, contains(matches("suggestion_1_v_2", "suggestion 1 V2", VALIDATED,
             timestamp("2014-03-25 17:34:00.0")),
         matches("suggestion_1_v_1", "suggestion 1 V1", VALIDATED,
             timestamp("2014-03-26 17:34:00.0")),
@@ -240,8 +238,8 @@ public class SuggestionTest extends RepositoryBasedTest {
     // then by descending last update date
     creator = UserDetail.getById("1");
     suggestions = getPersistenceService().findByCriteria(
-        SuggestionCriteria.from(box).createdBy(creator)
-            .orderedBy(TITLE_ASC, LAST_UPDATE_DATE_DESC));
+        SuggestionCriteria.from(box).createdBy(creator).orderedBy(TITLE_ASC, LAST_UPDATE_DATE_DESC)
+    );
     assertThat(suggestions, hasSize(BOX_1_SUGGESTIONS_COUNT - 1));
     assertThat(suggestions,
         contains(matches("suggestion_1", "suggestion 1", DRAFT, timestamp("2014-03-16 17:34:00.0")),
@@ -325,8 +323,7 @@ public class SuggestionTest extends RepositoryBasedTest {
     SuggestionBox box = SuggestionBox.getByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID);
     List<Suggestion> suggestions = box.getSuggestions().findPublished();
     assertThat(suggestions, hasSize(2));
-    assertThat(suggestions, contains(
-        matches("suggestion_1_v_2", "suggestion 1 V2", VALIDATED,
+    assertThat(suggestions, contains(matches("suggestion_1_v_2", "suggestion 1 V2", VALIDATED,
             timestamp("2014-03-25 17:34:00.0")),
         matches("suggestion_1_v_1", "suggestion 1 V1", VALIDATED,
             timestamp("2014-03-26 17:34:00.0"))

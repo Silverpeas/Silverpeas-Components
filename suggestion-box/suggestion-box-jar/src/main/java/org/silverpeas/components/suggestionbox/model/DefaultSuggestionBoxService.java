@@ -54,7 +54,7 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
 
   /**
    * Gets an instance of a SuggestionBoxService.
-   * <p>
+   * <p/>
    * This method is a convenient one. It uses the {@link SuggestionBoxServiceFactory} to produce an
    * instance that it returns directly.
    * @return a SuggestionBoxService instance.
@@ -178,7 +178,7 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
       SilverpeasRole greaterUserRole = box.getGreaterUserRole(updater);
       if (greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.publisher)) {
         actual.setStatus(ContributionStatus.VALIDATED);
-        actual.setApprobationDate(new Date());
+        actual.setValidationDate(new Date());
       } else if (greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.writer)) {
         actual.setStatus(ContributionStatus.PENDING_VALIDATION);
       }

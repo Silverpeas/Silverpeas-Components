@@ -78,8 +78,8 @@ public class SuggestionBoxServiceTest {
 
   @BeforeClass
   public static void bootstrapSpringContext() {
-    context = new ClassPathXmlApplicationContext(
-        "/spring-suggestion-box-mock.xml", "/spring-suggestion-box-embedded-datasource.xml");
+    context = new ClassPathXmlApplicationContext("/spring-suggestion-box-mock.xml",
+        "/spring-suggestion-box-embedded-datasource.xml");
   }
 
   @AfterClass
@@ -185,8 +185,8 @@ public class SuggestionBoxServiceTest {
         .thenReturn(new String[]{SilverpeasRole.user.name()});
 
     SuggestionRepository suggestionRepository = getSuggestionRepository();
-    when(suggestionRepository.findByCriteria(any(SuggestionCriteria.class))).then(
-        new Returns(CollectionUtil.asList(suggestion)));
+    when(suggestionRepository.findByCriteria(any(SuggestionCriteria.class)))
+        .then(new Returns(CollectionUtil.asList(suggestion)));
 
     Suggestion actual = service.publishSuggestion(box, suggestion);
 
@@ -208,8 +208,8 @@ public class SuggestionBoxServiceTest {
         .thenReturn(new String[]{SilverpeasRole.writer.name()});
 
     SuggestionRepository suggestionRepository = getSuggestionRepository();
-    when(suggestionRepository.findByCriteria(any(SuggestionCriteria.class))).then(
-        new Returns(CollectionUtil.asList(suggestion)));
+    when(suggestionRepository.findByCriteria(any(SuggestionCriteria.class)))
+        .then(new Returns(CollectionUtil.asList(suggestion)));
 
     Suggestion actual = service.publishSuggestion(box, suggestion);
 
@@ -231,8 +231,8 @@ public class SuggestionBoxServiceTest {
         .thenReturn(new String[]{SilverpeasRole.publisher.name()});
 
     SuggestionRepository suggestionRepository = getSuggestionRepository();
-    when(suggestionRepository.findByCriteria(any(SuggestionCriteria.class))).then(
-        new Returns(CollectionUtil.asList(suggestion)));
+    when(suggestionRepository.findByCriteria(any(SuggestionCriteria.class)))
+        .then(new Returns(CollectionUtil.asList(suggestion)));
 
     Suggestion actual = service.publishSuggestion(box, suggestion);
 
@@ -261,8 +261,7 @@ public class SuggestionBoxServiceTest {
   private SuggestionBox prepareASuggestionBox() {
     SuggestionBox box = new SuggestionBox(appInstanceId);
     box.setCreator(aUser());
-    ReflectionTestUtils
-        .setField(box, "id", new UuidIdentifier().fromString("suggestionBox2"));
+    ReflectionTestUtils.setField(box, "id", new UuidIdentifier().fromString("suggestionBox2"));
     return box;
   }
 
@@ -274,8 +273,7 @@ public class SuggestionBoxServiceTest {
     suggestion.setContent("the content of my suggestion");
     suggestion.setCreator(author);
     suggestion.setLastUpdater(author);
-    ReflectionTestUtils
-        .setField(suggestion, "id", new UuidIdentifier().fromString("suggestion1"));
+    ReflectionTestUtils.setField(suggestion, "id", new UuidIdentifier().fromString("suggestion1"));
     return suggestion;
   }
 

@@ -24,17 +24,21 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-<web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+<web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
   <display-name>suggestion-box War</display-name>
   <description>no description</description>
   <servlet>
     <servlet-name>SuggestionBoxRequestRouter</servlet-name>
     <display-name>SuggestionBoxRequestRouter</display-name>
     <description>no description</description>
-    <servlet-class>com.stratelia.silverpeas.peasCore.servlets.WebComponentRequestRouter</servlet-class>
+    <servlet-class>com.stratelia.silverpeas.peasCore.servlets.WebComponentRequestRouter
+    </servlet-class>
     <init-param>
       <param-name>WebComponentController</param-name>
-      <param-value>org.silverpeas.components.suggestionbox.control.SuggestionBoxWebController</param-value>
+      <param-value>org.silverpeas.components.suggestionbox.control.SuggestionBoxWebController
+      </param-value>
     </init-param>
   </servlet>
   <servlet-mapping>

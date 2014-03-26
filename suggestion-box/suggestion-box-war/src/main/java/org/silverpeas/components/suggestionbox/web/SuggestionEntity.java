@@ -130,7 +130,7 @@ public class SuggestionEntity implements Exposable {
 
   @Override
   public String toString() {
-    return "SuggestionEntity{" + "uri=" + uri + ", id=" + id + ", title=" + title + ", status="
-        + status + ", content=" + content + '}';
+    return "SuggestionEntity{" + "uri=" + uri + ", id=" + id + ", title=" + title + ", status=" +
+        status + ", content=" + content + '}';
   }
 }

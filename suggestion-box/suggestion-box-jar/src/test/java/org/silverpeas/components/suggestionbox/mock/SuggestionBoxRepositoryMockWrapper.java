@@ -28,11 +28,11 @@ import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepositor
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.persistence.repository.OperationContext;
 
-import static org.mockito.Mockito.mock;
+import javax.inject.Named;
 import java.util.Collection;
 import java.util.List;
 
-import javax.inject.Named;
+import static org.mockito.Mockito.mock;
 
 /**
  * A wrapper of the SuggestionBoxRepository mock for testing purpose and to be managed by the IoC

@@ -42,10 +42,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A wrapper of a mock of an {@code AttachmentService} instance dedicated to the tests. This wrapper
+ * A wrapper of a mock of an {@code AttachmentService} instance dedicated to the tests. This
+ * wrapper
  * decorates the mock and it is used to be managed by an IoC container as an
  * {@code AttachmentService} instance.
- *
  * @author mmoquillon
  */
 public class AttachmentServiceMockWrapper implements AttachmentService {
@@ -98,8 +98,8 @@ public class AttachmentServiceMockWrapper implements AttachmentService {
   }
 
   @Override
-  public SimpleDocument createAttachment(SimpleDocument document, InputStream content) throws
-      AttachmentException {
+  public SimpleDocument createAttachment(SimpleDocument document, InputStream content)
+      throws AttachmentException {
     return mock.createAttachment(document, content);
   }
 
@@ -116,8 +116,8 @@ public class AttachmentServiceMockWrapper implements AttachmentService {
   }
 
   @Override
-  public SimpleDocument createAttachment(SimpleDocument document, File content) throws
-      AttachmentException {
+  public SimpleDocument createAttachment(SimpleDocument document, File content)
+      throws AttachmentException {
     return mock.createAttachment(document, content);
   }
 
@@ -247,8 +247,8 @@ public class AttachmentServiceMockWrapper implements AttachmentService {
   }
 
   @Override
-  public SimpleDocument findExistingDocument(SimpleDocumentPK pk, String fileName, ForeignPK foreign,
-      String lang) {
+  public SimpleDocument findExistingDocument(SimpleDocumentPK pk, String fileName,
+      ForeignPK foreign, String lang) {
     return mock.findExistingDocument(pk, fileName, foreign, lang);
   }
 

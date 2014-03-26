@@ -79,9 +79,9 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
   @Column(name = "state", nullable = false)
   private String state = ContributionStatus.DRAFT.name();
 
-  @Column(name = "approbationDate")
+  @Column(name = "validationDate")
   @Temporal(value = TemporalType.TIMESTAMP)
-  private Date approbationDate;
+  private Date validationDate;
 
   @Transient
   private String content = "";
@@ -153,19 +153,19 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
   }
 
   /**
-   * Gets the approbation date of this suggestion.
-   * @return the suggestion's approbation date.
+   * Gets the validation date of this suggestion.
+   * @return the suggestion's validation date.
    */
-  public Date getApprobationDate() {
-    return approbationDate;
+  public Date getValidationDate() {
+    return validationDate;
   }
 
   /**
-   * Sets the approbation date of this suggestion.
-   * @param approbationDate the approbation date to set.
+   * Sets the validation date of this suggestion.
+   * @param validationDate the validation date to set.
    */
-  void setApprobationDate(final Date approbationDate) {
-    this.approbationDate = approbationDate;
+  void setValidationDate(final Date validationDate) {
+    this.validationDate = validationDate;
   }
 
   /**
@@ -315,7 +315,7 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
   public String toString() {
     return "Suggestion{" + "suggestionBox=" + suggestionBox.getId() + ", title=" + title +
         ", state=" + state + ", content=" + content + ", contentModified=" + contentModified +
-        ", approbationDate=" + approbationDate + ", creationDate=" + getCreationDate() +
+        ", validationDate=" + validationDate + ", creationDate=" + getCreationDate() +
         ", lastUpdateDate=" + getLastUpdateDate() + '}';
   }
 }

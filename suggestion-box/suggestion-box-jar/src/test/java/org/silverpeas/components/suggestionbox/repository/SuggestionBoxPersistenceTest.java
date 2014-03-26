@@ -23,18 +23,16 @@
  */
 package org.silverpeas.components.suggestionbox.repository;
 
-import org.silverpeas.components.suggestionbox.model.PersistenceService;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
-
-import static org.hamcrest.Matchers.*;
-
 import org.junit.Test;
+import org.silverpeas.components.suggestionbox.model.PersistenceService;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.persistence.repository.OperationContext;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.fail;
 
 /**
@@ -57,8 +55,7 @@ public class SuggestionBoxPersistenceTest extends RepositoryBasedTest {
     PersistenceService persister = getPersistenceService();
     assertThat(persister.getSuggestionBoxByComponentInstanceId("dummyId"), nullValue());
     assertThat(persister.getSuggestionBoxByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID),
-        notNullValue()
-    );
+        notNullValue());
   }
 
 

@@ -116,7 +116,7 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     assertThat((String) table.getValue(0, "state"), is(ContributionStatus.DRAFT.name()));
     assertThat((String) table.getValue(0, "lastUpdatedBy"), is("1"));
     Date lastUpdateDate = (Date) table.getValue(0, "lastUpdateDate");
-    assertThat(table.getValue(0, "approbationDate"), is(nullValue()));
+    assertThat(table.getValue(0, "validationDate"), is(nullValue()));
 
     PowerMockito.mockStatic(UserNotificationHelper.class);
     SuggestionBox box = SuggestionBox.getByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID);
@@ -135,7 +135,7 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     assertThat((String) table.getValue(0, "state"), is(ContributionStatus.DRAFT.name()));
     assertThat((String) table.getValue(0, "lastUpdatedBy"), is("1"));
     assertThat((Date) table.getValue(0, "lastUpdateDate"), is(lastUpdateDate));
-    assertThat(table.getValue(0, "approbationDate"), is(nullValue()));
+    assertThat(table.getValue(0, "validationDate"), is(nullValue()));
 
     PowerMockito.verifyStatic(times(0));
     UserNotificationHelper.buildAndSend(any(UserNotificationBuider.class));
@@ -149,7 +149,7 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     assertThat((String) table.getValue(0, "state"), is(ContributionStatus.DRAFT.name()));
     assertThat((String) table.getValue(0, "lastUpdatedBy"), is("1"));
     Date lastUpdateDate = (Date) table.getValue(0, "lastUpdateDate");
-    assertThat(table.getValue(0, "approbationDate"), is(nullValue()));
+    assertThat(table.getValue(0, "validationDate"), is(nullValue()));
 
     PowerMockito.mockStatic(UserNotificationHelper.class);
     SuggestionBox box = SuggestionBox.getByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID);
@@ -169,7 +169,7 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
         is(ContributionStatus.PENDING_VALIDATION.name()));
     assertThat((String) table.getValue(0, "lastUpdatedBy"), is("26"));
     assertThat((Date) table.getValue(0, "lastUpdateDate"), greaterThan(lastUpdateDate));
-    assertThat(table.getValue(0, "approbationDate"), is(nullValue()));
+    assertThat(table.getValue(0, "validationDate"), is(nullValue()));
 
     PowerMockito.verifyStatic(times(1));
     UserNotificationHelper.buildAndSend(any(SuggestionPendingValidationUserNotification.class));
@@ -183,7 +183,7 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     assertThat((String) table.getValue(0, "state"), is(ContributionStatus.DRAFT.name()));
     assertThat((String) table.getValue(0, "lastUpdatedBy"), is("1"));
     Date lastUpdateDate = (Date) table.getValue(0, "lastUpdateDate");
-    assertThat(table.getValue(0, "approbationDate"), is(nullValue()));
+    assertThat(table.getValue(0, "validationDate"), is(nullValue()));
 
     PowerMockito.mockStatic(UserNotificationHelper.class);
     SuggestionBox box = SuggestionBox.getByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID);
@@ -202,7 +202,7 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     assertThat((String) table.getValue(0, "state"), is(ContributionStatus.VALIDATED.name()));
     assertThat((String) table.getValue(0, "lastUpdatedBy"), is("26"));
     assertThat((Date) table.getValue(0, "lastUpdateDate"), greaterThan(lastUpdateDate));
-    assertThat(DateUtil.resetHour((Date) table.getValue(0, "approbationDate")),
+    assertThat(DateUtil.resetHour((Date) table.getValue(0, "validationDate")),
         is(DateUtil.getDate()));
 
     PowerMockito.verifyStatic(times(0));

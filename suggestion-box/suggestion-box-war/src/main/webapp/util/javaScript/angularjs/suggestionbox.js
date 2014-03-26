@@ -27,54 +27,56 @@ var suggestionBox = angular.module('silverpeas.suggestionBox',
     ['silverpeas.services', 'silverpeas.directives']);
 
 /* the not published controller of the application */
-suggestionBox.controller('notPublishedController', ['context', 'SuggestionBox', '$scope', '$rootScope',
-  function(context, SuggestionBox, $scope, $rootScope) {
-    var suggestionBox = SuggestionBox.get({
-      id : context.suggestionBoxId,
-      componentInstanceId : context.component});
+suggestionBox.controller('notPublishedController',
+    ['context', 'SuggestionBox', '$scope', '$rootScope',
+      function(context, SuggestionBox, $scope, $rootScope) {
+        var suggestionBox = SuggestionBox.get({
+          id : context.suggestionBoxId,
+          componentInstanceId : context.component});
 
-    $scope.delete = function(suggestion) {
-      __internal_delete(suggestion, suggestionBox, context, $rootScope);
-    };
+        $scope.delete = function(suggestion) {
+          __internal_delete(suggestion, suggestionBox, context, $rootScope);
+        };
 
-    $scope.publish = function(suggestion) {
-      suggestionBox.suggestions.publish(suggestion).then(function(suggestionUpdated) {
-        $rootScope.$broadcast('suggestionModified', suggestionUpdated)
-      });
-    };
+        $scope.publish = function(suggestion) {
+          suggestionBox.suggestions.publish(suggestion).then(function(suggestionUpdated) {
+            $rootScope.$broadcast('suggestionModified', suggestionUpdated)
+          });
+        };
 
-    $scope.loadNotPublished = function() {
-      suggestionBox.suggestions.get(['notPublished']).then(function(theSuggestions) {
-        $scope.notPublishedSuggestions = theSuggestions;
-      });
-    };
+        $scope.loadNotPublished = function() {
+          suggestionBox.suggestions.get(['notPublished']).then(function(theSuggestions) {
+            $scope.notPublishedSuggestions = theSuggestions;
+          });
+        };
 
-    $scope.loadNotPublished();
+        $scope.loadNotPublished();
 
-    $scope.$on("suggestionModified", function(theSuggestionId) {
-      $scope.loadNotPublished();
-    });
-  }]);
+        $scope.$on("suggestionModified", function(theSuggestionId) {
+          $scope.loadNotPublished();
+        });
+      }]);
 
 /* the pending validation controller of the application */
-suggestionBox.controller('pendingValidationController', ['context', 'SuggestionBox', '$scope', '$rootScope',
-  function(context, SuggestionBox, $scope, $rootScope) {
-    var suggestionBox = SuggestionBox.get({
-      id : context.suggestionBoxId,
-      componentInstanceId : context.component});
+suggestionBox.controller('pendingValidationController',
+    ['context', 'SuggestionBox', '$scope', '$rootScope',
+      function(context, SuggestionBox, $scope, $rootScope) {
+        var suggestionBox = SuggestionBox.get({
+          id : context.suggestionBoxId,
+          componentInstanceId : context.component});
 
-    $scope.loadPendingValidation = function() {
-      suggestionBox.suggestions.get(['pendingValidation']).then(function(theSuggestions) {
-        $scope.pendingValidationSuggestions = theSuggestions;
-      });
-    };
+        $scope.loadPendingValidation = function() {
+          suggestionBox.suggestions.get(['pendingValidation']).then(function(theSuggestions) {
+            $scope.pendingValidationSuggestions = theSuggestions;
+          });
+        };
 
-    $scope.loadPendingValidation();
+        $scope.loadPendingValidation();
 
-    $scope.$on("suggestionModified", function(theSuggestionId) {
-      $scope.loadPendingValidation();
-    });
-  }]);
+        $scope.$on("suggestionModified", function(theSuggestionId) {
+          $scope.loadPendingValidation();
+        });
+      }]);
 
 /* the published controller of the application */
 suggestionBox.controller('publishedController', ['context', 'SuggestionBox', '$scope', '$rootScope',
