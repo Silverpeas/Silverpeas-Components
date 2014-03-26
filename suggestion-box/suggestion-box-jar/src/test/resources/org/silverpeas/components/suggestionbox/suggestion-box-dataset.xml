@@ -37,7 +37,7 @@
 
   <!-- Suggestions -->
   <sc_suggestion id="suggestion_1" suggestionBoxId="suggestion-box_1" title="suggestion 1"
-                 state="DRAFT" approbationDate="[NULL]"
+                 state="DRAFT" validationDate="[NULL]" validationComment="[NULL]"
                  createDate="2014-03-11 17:34:00.0" createdBy="1"
                  lastUpdateDate="2014-03-16 17:34:00.0" lastUpdatedBy="1" version="2"/>
 
@@ -47,7 +47,7 @@
                  lastUpdateDate="2014-03-15 17:34:00.0" lastUpdatedBy="26" version="1"/>
 
   <sc_suggestion id="suggestion_1_v_1" suggestionBoxId="suggestion-box_1" title="suggestion 1 V1"
-                 state="VALIDATED" approbationDate="2014-03-20 12:30:00.0"
+                 state="VALIDATED" validationDate="2014-03-20 12:30:00.0"
                  createDate="2014-03-11 17:34:00.0" createdBy="1"
                  lastUpdateDate="2014-03-26 17:34:00.0" lastUpdatedBy="26" version="1"/>
 
@@ -72,7 +72,7 @@
                  lastUpdateDate="2014-03-11 17:34:00.0" lastUpdatedBy="2" version="0"/>
 
   <sc_suggestion id="suggestion_1_v_2" suggestionBoxId="suggestion-box_1" title="suggestion 1 V2"
-                 state="VALIDATED" approbationDate="2014-03-30 12:30:00.0"
+                 state="VALIDATED" validationDate="2014-03-30 12:30:00.0"
                  createDate="2014-03-11 17:34:00.0" createdBy="1"
                  lastUpdateDate="2014-03-25 17:34:00.0" lastUpdatedBy="26" version="1"/>
 

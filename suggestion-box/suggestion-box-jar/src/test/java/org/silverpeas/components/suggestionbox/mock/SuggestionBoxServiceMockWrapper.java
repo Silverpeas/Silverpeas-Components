@@ -28,13 +28,12 @@ import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.model.SuggestionBoxService;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
 
-import static org.mockito.Mockito.mock;
-
 import javax.inject.Named;
 import java.util.List;
 
+import static org.mockito.Mockito.mock;
+
 /**
- *
  * @author mmoquillon
  */
 @Named("suggestionService")
@@ -88,6 +87,6 @@ public class SuggestionBoxServiceMockWrapper implements SuggestionBoxService {
 
   @Override
   public Suggestion publishSuggestion(final SuggestionBox box, final Suggestion suggestion) {
-    return mock.publishSuggestion(box ,suggestion);
+    return mock.publishSuggestion(box, suggestion);
   }
 }

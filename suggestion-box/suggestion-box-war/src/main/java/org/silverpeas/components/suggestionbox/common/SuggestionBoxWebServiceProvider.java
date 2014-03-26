@@ -72,18 +72,19 @@ public class SuggestionBoxWebServiceProvider {
    * the creator is those specified.
    * @param suggestionBox the suggestion box the current user is working on.
    * @param creator the user that must be the creator of the returned suggestions.
-   * @see SuggestionBox.Suggestions#findNotPublishedFor(UserDetail)
    * @return the aimed suggestion entities.
+   * @see SuggestionBox.Suggestions#findNotPublishedFor(UserDetail)
    */
-  public List<SuggestionEntity> getNotPublishedFor(SuggestionBox suggestionBox, UserDetail creator) {
+  public List<SuggestionEntity> getNotPublishedFor(SuggestionBox suggestionBox,
+      UserDetail creator) {
     return asWebEntities(suggestionBox.getSuggestions().findNotPublishedFor(creator));
   }
 
   /**
    * Gets the list of suggestions that are pending validation and which.
    * @param suggestionBox the suggestion box the current user is working on.
-   * @see SuggestionBox.Suggestions#findPendingValidation()
    * @return the aimed suggestion entities.
+   * @see SuggestionBox.Suggestions#findPendingValidation()
    */
   public List<SuggestionEntity> getPendingValidation(SuggestionBox suggestionBox) {
     return asWebEntities(suggestionBox.getSuggestions().findPendingValidation());
@@ -92,8 +93,8 @@ public class SuggestionBoxWebServiceProvider {
   /**
    * Gets the list of suggestions that are published.
    * @param suggestionBox the suggestion box the current user is working on.
-   * @see SuggestionBox.Suggestions#findPublished()
    * @return the aimed suggestion entities.
+   * @see SuggestionBox.Suggestions#findPublished()
    */
   public List<SuggestionEntity> getPublished(SuggestionBox suggestionBox) {
     return asWebEntities(suggestionBox.getSuggestions().findPublished());
@@ -184,8 +185,7 @@ public class SuggestionBoxWebServiceProvider {
     ResourceLocator rl = multilang.get(language);
     if (rl == null) {
       rl = new ResourceLocator(
-          "org.silverpeas.components.suggestionbox.multilang.SuggestionBoxBundle",
-          language);
+          "org.silverpeas.components.suggestionbox.multilang.SuggestionBoxBundle", language);
       multilang.put(language, rl);
     }
     return rl.getString(key, null);

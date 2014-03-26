@@ -27,7 +27,6 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:p="http://www.springframework.org/schema/p"
        xmlns:ctx="http://www.springframework.org/schema/context"
        xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="
@@ -39,15 +38,21 @@
 
   <ctx:component-scan base-package="org.silverpeas.components.suggestionbox.model"/>
 
-  <bean id="organizationController" class="org.silverpeas.components.suggestionbox.mock.OrganisationControllerMockWrapper"/>
-  <bean id="suggestionBoxRepository" class="org.silverpeas.components.suggestionbox.mock.SuggestionBoxRepositoryMockWrapper"/>
-  <bean id="suggestionRepository" class="org.silverpeas.components.suggestionbox.mock.SuggestionRepositoryMockWrapper"/>
-  <bean id="attachmentService" class="org.silverpeas.components.suggestionbox.mock.AttachmentServiceMockWrapper"/>
+  <bean id="organizationController"
+        class="org.silverpeas.components.suggestionbox.mock.OrganisationControllerMockWrapper"/>
+  <bean id="suggestionBoxRepository"
+        class="org.silverpeas.components.suggestionbox.mock.SuggestionBoxRepositoryMockWrapper"/>
+  <bean id="suggestionRepository"
+        class="org.silverpeas.components.suggestionbox.mock.SuggestionRepositoryMockWrapper"/>
+  <bean id="attachmentService"
+        class="org.silverpeas.components.suggestionbox.mock.AttachmentServiceMockWrapper"/>
 
-  <bean id="suggestionBoxServiceFactory" class="org.silverpeas.components.suggestionbox.model.SuggestionBoxServiceFactory"
+  <bean id="suggestionBoxServiceFactory"
+        class="org.silverpeas.components.suggestionbox.model.SuggestionBoxServiceFactory"
         factory-method="getFactory"/>
 
-  <bean id="organisationControllerFactory" class="org.silverpeas.core.admin.OrganisationControllerFactory"
+  <bean id="organisationControllerFactory"
+        class="org.silverpeas.core.admin.OrganisationControllerFactory"
         factory-method="getFactory"/>
 
   <bean id="attachmentServiceFactory" class="org.silverpeas.attachment.AttachmentServiceFactory"

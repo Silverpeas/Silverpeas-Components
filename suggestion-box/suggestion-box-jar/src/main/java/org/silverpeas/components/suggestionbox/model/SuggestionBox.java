@@ -45,9 +45,9 @@ import java.util.List;
 import java.util.Set;
 
 import static org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_ORDER_BY
-    .APPROBATION_DATE_DESC;
-import static org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_ORDER_BY
     .LAST_UPDATE_DATE_ASC;
+import static org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_ORDER_BY
+    .VALIDATION_DATE_DESC;
 import static org.silverpeas.contribution.ContributionStatus.*;
 
 /**
@@ -81,8 +81,10 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
   }
 
   /**
-   * Creates a new suggestion box with the specified title and with the specified short description.
-   * @param componentInstanceId the unique identifier of the application to which the suggestion box
+   * Creates a new suggestion box with the specified title and with the specified short
+   * description.
+   * @param componentInstanceId the unique identifier of the application to which the suggestion
+   * box
    * belongs.
    */
   public SuggestionBox(String componentInstanceId) {
@@ -164,7 +166,7 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
 
     /**
      * Adds the specified suggestion among the other suggestions of the suggestion box.
-     * <p>
+     * <p/>
      * The suggestion will be persisted automatically once added.
      * @param suggestion the suggestion to add.
      */
@@ -175,7 +177,7 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
 
     /**
      * Removes the specified suggestion from the suggestion box.
-     * <p>
+     * <p/>
      * If the suggestion doesn't exist in the suggestion box, then nothing is done.
      * @param suggestion the suggestion to remove.
      */
@@ -185,7 +187,8 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
     }
 
     /**
-     * Gets the suggestion with the specified identifier from the suggestions of the suggestion box.
+     * Gets the suggestion with the specified identifier from the suggestions of the suggestion
+     * box.
      * @param suggestionId the unique identifier of the suggestion to get.
      * @return the suggestion matching the specified identifier or NONE if no such suggestion exists
      * in the suggestions of the suggestion box.
@@ -204,8 +207,7 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
     public List<Suggestion> findNotPublishedFor(final UserDetail user) {
       SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
       SuggestionCriteria criteria = SuggestionCriteria.from(SuggestionBox.this).createdBy(user).
-          statusIsOneOf(DRAFT, REFUSED)
-          .orderedBy(LAST_UPDATE_DATE_ASC);
+          statusIsOneOf(DRAFT, REFUSED).orderedBy(LAST_UPDATE_DATE_ASC);
       return suggestionBoxService.findSuggestionsByCriteria(criteria);
     }
 
@@ -222,13 +224,13 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
 
     /**
      * Finds the list of suggestions that are published (validated status).
-     * @return the list of suggestions as described above and ordered by descending approbation
+     * @return the list of suggestions as described above and ordered by descending validation
      * date.
      */
     public List<Suggestion> findPublished() {
       SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
       SuggestionCriteria criteria = SuggestionCriteria.from(SuggestionBox.this).
-          statusIsOneOf(VALIDATED).orderedBy(APPROBATION_DATE_DESC);
+          statusIsOneOf(VALIDATED).orderedBy(VALIDATION_DATE_DESC);
       return suggestionBoxService.findSuggestionsByCriteria(criteria);
     }
 

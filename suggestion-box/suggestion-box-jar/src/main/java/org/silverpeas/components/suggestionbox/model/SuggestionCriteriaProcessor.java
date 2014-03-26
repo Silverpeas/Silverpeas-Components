@@ -46,9 +46,10 @@ public interface SuggestionCriteriaProcessor {
 
   /**
    * Informs the processor the process is ended. The processor use this method to deallocate all
-   * the resources that were used during the processing. It uses it to tear down the processor state
+   * the resources that were used during the processing. It uses it to tear down the processor
+   * state
    * machine or to finalize some treatments.
-   * <p>
+   * <p/>
    * The processing has to stop once this method is called. Hence, the call of process methods
    * should result to nothing or to an exception.
    */

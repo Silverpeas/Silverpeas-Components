@@ -57,8 +57,8 @@ public class SuggestionBoxTestResources extends TestResources {
   public static final String COMPONENT_INSTANCE_ID = "suggestionBox119";
   public static final String SUGGESTION_BOX_ID = "suggestion-box-1";
   public static final String SUGGESTION_ID = "suggestion_1";
-  public static final String SUGGESTION_BOX_URI = BOX_BASE_URI + "/" + COMPONENT_INSTANCE_ID + "/"
-      + SUGGESTION_BOX_ID;
+  public static final String SUGGESTION_BOX_URI =
+      BOX_BASE_URI + "/" + COMPONENT_INSTANCE_ID + "/" + SUGGESTION_BOX_ID;
   public static final String SUGGESTIONS_URI_BASE = SUGGESTION_BOX_URI + "/suggestions/";
   public static final String SUGGESTION_URI = SUGGESTIONS_URI_BASE + SUGGESTION_ID;
 

@@ -29,10 +29,9 @@ import org.mockito.Mockito;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.util.ListSlice;
 
+import javax.inject.Named;
 import java.util.List;
 import java.util.Map;
-
-import javax.inject.Named;
 
 
 /**
@@ -338,14 +337,15 @@ public class OrganisationControllerMockWrapper implements OrganisationController
   }
 
   @Override
-  public String[] getAllComponentIdsRecur(String sSpaceId, String sUserId, String sComponentRootName,
-      boolean inCurrentSpace, boolean inAllSpaces) {
+  public String[] getAllComponentIdsRecur(String sSpaceId, String sUserId,
+      String sComponentRootName, boolean inCurrentSpace, boolean inAllSpaces) {
     return mock.getAllComponentIdsRecur(sSpaceId, sUserId, sComponentRootName, inCurrentSpace,
         inAllSpaces);
   }
 
   @Override
-  public List<SpaceInstLight> getRootSpacesContainingComponent(String userId, String componentName) {
+  public List<SpaceInstLight> getRootSpacesContainingComponent(String userId,
+      String componentName) {
     return mock.getRootSpacesContainingComponent(userId, componentName);
   }
 

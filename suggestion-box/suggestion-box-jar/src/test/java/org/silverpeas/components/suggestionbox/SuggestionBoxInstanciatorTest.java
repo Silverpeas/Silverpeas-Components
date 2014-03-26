@@ -111,8 +111,8 @@ public class SuggestionBoxInstanciatorTest {
 
   private SuggestionBoxService getSuggestionBoxService() {
     SuggestionBoxServiceFactory serviceFactory = SuggestionBoxServiceFactory.getFactory();
-    SuggestionBoxServiceMockWrapper mockWrapper
-        = (SuggestionBoxServiceMockWrapper) serviceFactory.getSuggestionBoxService();
+    SuggestionBoxServiceMockWrapper mockWrapper =
+        (SuggestionBoxServiceMockWrapper) serviceFactory.getSuggestionBoxService();
     return mockWrapper.getMock();
   }
 

@@ -28,15 +28,12 @@ import com.silverpeas.web.mock.UserDetailWithProfiles;
 import com.stratelia.webactiv.SilverpeasRole;
 import org.junit.Before;
 import org.junit.Test;
-
-import static com.silverpeas.web.TestResources.getTestResources;
-import static org.mockito.Mockito.*;
-
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.model.SuggestionBoxService;
 
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
 import static org.silverpeas.components.suggestionbox.web.SuggestionBoxTestResources.*;
 
 
@@ -44,7 +41,8 @@ import static org.silverpeas.components.suggestionbox.web.SuggestionBoxTestResou
  * Unit tests on the deletion of suggestions from the REST-based web service SuggestionBoxResource.
  * @author mmoquillon
  */
-public class SuggestionResourceDeletionTest extends ResourceDeletionTest<SuggestionBoxTestResources> {
+public class SuggestionResourceDeletionTest
+    extends ResourceDeletionTest<SuggestionBoxTestResources> {
 
   private String sessionKey;
   private UserDetailWithProfiles authenticatedUser;

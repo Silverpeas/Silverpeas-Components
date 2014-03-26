@@ -116,8 +116,7 @@
       $('#confirmation').html("${deleteSuggestionConfirmMessage} ?");
       $('#confirmation').popup('confirmation', {
         callback : function() {
-          $('#actions').attr('action',
-              '${componentUriBase}suggestion/delete/${target}').submit();
+          $('#actions').attr('action', '${componentUriBase}suggestion/delete/${target}').submit();
         }
       });
     }

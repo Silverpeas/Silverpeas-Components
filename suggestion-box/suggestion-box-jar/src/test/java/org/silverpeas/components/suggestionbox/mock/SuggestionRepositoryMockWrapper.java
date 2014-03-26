@@ -24,17 +24,16 @@
 package org.silverpeas.components.suggestionbox.mock;
 
 import org.silverpeas.components.suggestionbox.model.Suggestion;
-import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
 import org.silverpeas.components.suggestionbox.repository.SuggestionRepository;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.persistence.repository.OperationContext;
+
 import javax.inject.Named;
-
-import static org.mockito.Mockito.mock;
-
 import java.util.Collection;
 import java.util.List;
+
+import static org.mockito.Mockito.mock;
 
 /**
  * A wrapper of the SuggestionRepository mock for testing purpose and to be managed by the IoC

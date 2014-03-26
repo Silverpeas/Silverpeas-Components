@@ -24,22 +24,11 @@
 package org.silverpeas.components.suggestionbox.web;
 
 import com.silverpeas.web.RESTWebService;
-import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 
 import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import static org.silverpeas.components.suggestionbox.common.SuggestionBoxWebServiceProvider
-    .assertSuggestionIsDefined;
-import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs.BOX_BASE_URI;
-import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs
-    .BOX_SUGGESTION_URI_PART;
 
 /**
  * @author Yohann Chastagnier

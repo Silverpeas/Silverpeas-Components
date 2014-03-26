@@ -40,9 +40,11 @@
   <context:component-scan base-package="org.silverpeas.components.suggestionbox.model"/>
   <context:component-scan base-package="org.silverpeas.components.suggestionbox.repository"/>
 
-  <bean id="organizationController" class="org.silverpeas.components.suggestionbox.mock.OrganisationControllerMockWrapper"/>
+  <bean id="organizationController"
+        class="org.silverpeas.components.suggestionbox.mock.OrganisationControllerMockWrapper"/>
 
-  <bean id="organisationControllerFactory" class="org.silverpeas.core.admin.OrganisationControllerFactory"
+  <bean id="organisationControllerFactory"
+        class="org.silverpeas.core.admin.OrganisationControllerFactory"
         factory-method="getFactory"/>
 
   <jpa:repositories base-package="org.silverpeas.components.suggestionbox.repository"

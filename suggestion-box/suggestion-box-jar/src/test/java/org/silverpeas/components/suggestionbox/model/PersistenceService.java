@@ -24,19 +24,17 @@
 package org.silverpeas.components.suggestionbox.model;
 
 import com.silverpeas.annotation.Service;
-import org.silverpeas.persistence.repository.OperationContext;
-
-import javax.inject.Inject;
-
 import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepository;
 import org.silverpeas.components.suggestionbox.repository.SuggestionRepository;
+import org.silverpeas.persistence.repository.OperationContext;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.inject.Inject;
 import java.util.List;
 
 /**
  * A simple persister for testing purpose and with which the transactions are managed.
- * <p>
+ * <p/>
  * @author mmoquillon
  */
 @Transactional

@@ -30,7 +30,6 @@ import org.silverpeas.persistence.repository.jpa.AbstractJpaEntityRepository;
 import org.silverpeas.persistence.repository.jpa.NamedParameters;
 
 import javax.inject.Named;
-
 import java.util.List;
 
 /**

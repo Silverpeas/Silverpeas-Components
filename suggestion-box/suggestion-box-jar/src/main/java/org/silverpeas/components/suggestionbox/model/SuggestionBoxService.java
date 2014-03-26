@@ -28,21 +28,21 @@ import java.util.List;
 /**
  * A business service to provide a high level interface in the management of the suggestion boxes
  * and of the suggestions.
- * <p>
+ * <p/>
  * This service isn't intended to be used as such but within the business objects SuggestionBox and
  * Suggestion. All the operations requiring interaction with other business services or persistence
  * repositories are delegated to this service by the SuggestionBox objects and by the Suggestion
  * objects.
- * <p>
+ * <p/>
  * @author mmoquillon
  */
 public interface SuggestionBoxService {
 
   /**
-   * @see org.silverpeas.components.suggestionbox.model.SuggestionBox#getByComponentInstanceId
-   * (String)
    * @param componentInstanceId the identifier of a suggestion box instance.
    * @return the suggestion box belonging to the specified component instance.
+   * @see org.silverpeas.components.suggestionbox.model.SuggestionBox#getByComponentInstanceId
+   * (String)
    */
   public SuggestionBox getByComponentInstanceId(String componentInstanceId);
 

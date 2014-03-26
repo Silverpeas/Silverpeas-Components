@@ -23,7 +23,6 @@
  */
 package org.silverpeas.components.suggestionbox.notification;
 
-import com.silverpeas.util.CollectionUtil;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 

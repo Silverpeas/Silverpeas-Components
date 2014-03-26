@@ -27,8 +27,6 @@ import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 
-import static com.silverpeas.util.StringUtil.isDefined;
-
 /**
  * @author Yohann Chastagnier
  */

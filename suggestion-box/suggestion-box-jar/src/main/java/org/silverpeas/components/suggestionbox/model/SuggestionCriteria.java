@@ -40,7 +40,7 @@ public class SuggestionCriteria {
 
     TITLE_ASC("title", true), LAST_UPDATE_DATE_ASC("lastUpdateDate", true),
     TITLE_DESC("title", false), LAST_UPDATE_DATE_DESC("lastUpdateDate", false),
-    APPROBATION_DATE_DESC("approbationDate", false);
+    VALIDATION_DATE_DESC("validationDate", false);
 
     private final String propertyName;
     private final boolean asc;

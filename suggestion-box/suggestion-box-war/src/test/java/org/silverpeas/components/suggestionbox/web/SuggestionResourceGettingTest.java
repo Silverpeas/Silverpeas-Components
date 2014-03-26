@@ -26,7 +26,6 @@ package org.silverpeas.components.suggestionbox.web;
 import com.silverpeas.web.ResourceGettingTest;
 import com.silverpeas.web.mock.UserDetailWithProfiles;
 import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import org.hamcrest.Matchers;
 import org.junit.Before;
@@ -40,7 +39,6 @@ import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.silverpeas.web.TestResources.getTestResources;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;

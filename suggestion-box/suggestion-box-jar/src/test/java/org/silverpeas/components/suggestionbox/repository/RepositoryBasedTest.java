@@ -87,8 +87,8 @@ public abstract class RepositoryBasedTest {
   }
 
   public ReplacementDataSet getDataSet() throws Exception {
-    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(
-        RepositoryBasedTest.class.getClassLoader().getResourceAsStream(getDataSetPath())));
+    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder()
+        .build(RepositoryBasedTest.class.getClassLoader().getResourceAsStream(getDataSetPath())));
     dataSet.addReplacementObject("[NULL]", null);
     return dataSet;
   }
