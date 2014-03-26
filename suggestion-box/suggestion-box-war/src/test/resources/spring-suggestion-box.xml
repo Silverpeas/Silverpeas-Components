@@ -34,6 +34,10 @@
   <ctx:annotation-config/>
   <ctx:component-scan base-package="com.silverpeas.web"/>
 
+  <bean id="organizationControllerFactory"
+        class="org.silverpeas.core.admin.OrganisationControllerFactory"
+        factory-method="getFactory" />
+
   <bean id="suggestionBoxServiceFactory"
         class="org.silverpeas.components.suggestionbox.model.SuggestionBoxServiceFactory"
         factory-method="getFactory"/>

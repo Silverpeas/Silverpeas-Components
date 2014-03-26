@@ -100,10 +100,23 @@ public interface SuggestionBoxService {
    * <p/>
    * The publication of a suggestion consists in changing its status from DRAFT to
    * PENDING_VALIDATION.
+   * The service sets automatically the date and the validator of the validation.
    * <p/>
    * @param box the suggestion box to which the suggestion belongs.
    * @param suggestion the suggestion to publish.
    * @return the suggestion updated.
    */
   public Suggestion publishSuggestion(final SuggestionBox box, final Suggestion suggestion);
+
+  /**
+   * Validates from the specified suggestion box the specified suggestion.
+   * <p/>
+   * The service sets automatically the date and the validator of the validation. It takes from the
+   * specified suggestion the comment of the validation.
+   * <p/>
+   * @param box the suggestion box to which the suggestion belongs.
+   * @param suggestion the suggestion to validate.
+   * @return the suggestion updated.
+   */
+  public Suggestion validateSuggestion(final SuggestionBox box, final Suggestion suggestion);
 }

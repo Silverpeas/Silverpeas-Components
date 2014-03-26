@@ -211,22 +211,22 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
 
   @Override
   public boolean isInDraft() {
-    return getStatus() == ContributionStatus.DRAFT;
+    return getStatus().isInDraft();
   }
 
   @Override
   public boolean isRefused() {
-    return getStatus() == ContributionStatus.REFUSED;
+    return getStatus().isRefused();
   }
 
   @Override
   public boolean isPendingValidation() {
-    return getStatus() == ContributionStatus.PENDING_VALIDATION;
+    return getStatus().isPendingValidation();
   }
 
   @Override
   public boolean isValidated() {
-    return getStatus() == ContributionStatus.VALIDATED;
+    return getStatus().isValidated();
   }
 
   /**

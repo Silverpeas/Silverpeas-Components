@@ -45,10 +45,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
-import static org.silverpeas.components.suggestionbox.common.SuggestionBoxWebServiceProvider
-    .checkAdminAccessOrUserIsCreator;
-import static org.silverpeas.components.suggestionbox.common.SuggestionBoxWebServiceProvider
-    .getWebServiceProvider;
+import static org.silverpeas.components.suggestionbox.common.SuggestionBoxWebServiceProvider.*;
 
 @WebComponentController("SuggestionBox")
 public class SuggestionBoxWebController extends
@@ -140,35 +137,13 @@ public class SuggestionBoxWebController extends
   }
 
   /**
-   * Asks for editing an existing suggestion. It renders an HTML page to modify the content of the
-   * suggestion.
-   * @param context the context of the incoming request.
-   */
-  @GET
-  @Path("suggestion/{id}")
-  @RedirectToInternalJsp("suggestion.jsp")
-  @LowestRoleAccess(SilverpeasRole.writer)
-  public void editSuggestion(SuggestionBoxWebRequestContext context) {
-    String suggestionId = context.getPathVariables().get("id");
-    SuggestionBox suggestionBox = context.getSuggestionBox();
-    Suggestion suggestion = suggestionBox.getSuggestions().get(suggestionId);
-    if (suggestion.isDefined() && (suggestion.isInDraft() || suggestion.isRefused())) {
-      checkAdminAccessOrUserIsCreator(context.getUser(), suggestion);
-      SuggestionEntity entity = SuggestionEntity.fromSuggestion(suggestion);
-      context.getRequest().setAttribute("suggestion", entity);
-    } else {
-      throw new WebApplicationException(Status.NOT_FOUND);
-    }
-  }
-
-  /**
    * Adds a new suggestion into the current suggestion box. The suggestion's data are
    * carried within the request's context.
    * @param context the context of the incoming request.
    */
   @POST
   @Path("suggestion/add")
-  @RedirectToInternal("Main")
+  @RedirectToInternal("suggestion/{id}")
   @LowestRoleAccess(SilverpeasRole.writer)
   public void addSuggestion(SuggestionBoxWebRequestContext context) {
     SuggestionBox suggestionBox = context.getSuggestionBox();
@@ -180,6 +155,56 @@ public class SuggestionBoxWebController extends
     suggestionBox.getSuggestions().add(suggestion);
     context.getMessager()
         .addSuccess(getMultilang().getString("suggestionBox.message.suggestion.created"));
+    context.addRedirectVariable("id", suggestion.getId());
+  }
+
+  /**
+   * Asks for editing an existing suggestion. It renders an HTML page to modify the content of the
+   * suggestion.
+   * @param context the context of the incoming request.
+   */
+  @GET
+  @Path("suggestion/{id}")
+  @RedirectToInternalJsp("suggestion.jsp")
+  public void viewSuggestion(SuggestionBoxWebRequestContext context) {
+    String suggestionId = context.getPathVariables().get("id");
+    SuggestionBox suggestionBox = context.getSuggestionBox();
+    Suggestion suggestion = suggestionBox.getSuggestions().get(suggestionId);
+    if (suggestion.isDefined()) {
+      SuggestionEntity entity = getWebServiceProvider().asWebEntity(suggestion);
+      context.getRequest().setAttribute("suggestion", entity);
+    } else {
+      throw new WebApplicationException(Status.NOT_FOUND);
+    }
+  }
+
+  /**
+   * Asks for editing an existing suggestion. It renders an HTML page to modify the content of the
+   * suggestion.
+   * @param context the context of the incoming request.
+   */
+  @GET
+  @Path("suggestion/{id}/edit")
+  @RedirectToInternalJsp("suggestion.jsp")
+  @LowestRoleAccess(SilverpeasRole.writer)
+  public void editSuggestion(SuggestionBoxWebRequestContext context) {
+    String suggestionId = context.getPathVariables().get("id");
+    SuggestionBox suggestionBox = context.getSuggestionBox();
+    Suggestion suggestion = suggestionBox.getSuggestions().get(suggestionId);
+    if (suggestion.isDefined()) {
+      if ((suggestion.isInDraft() || suggestion.isRefused())) {
+        checkAdminAccessOrUserIsCreator(context.getUser(), suggestion);
+      } else if (suggestion.isPendingValidation()) {
+        checkAdminAccessOrUserIsModerator(context.getUser(), suggestionBox);
+      } else {
+        throw new WebApplicationException(Status.FORBIDDEN);
+      }
+      SuggestionEntity entity = getWebServiceProvider().asWebEntity(suggestion);
+      context.getRequest().setAttribute("suggestion", entity);
+      context.getRequest().setAttribute("edit", "edit");
+    } else {
+      throw new WebApplicationException(Status.NOT_FOUND);
+    }
   }
 
   /**
@@ -189,14 +214,20 @@ public class SuggestionBoxWebController extends
    */
   @POST
   @Path("suggestion/{id}")
-  @RedirectToInternal("Main")
+  @RedirectToInternal("suggestion/{id}")
   @LowestRoleAccess(SilverpeasRole.writer)
   public void updateSuggestion(SuggestionBoxWebRequestContext context) {
     String id = context.getPathVariables().get("id");
     SuggestionBox suggestionBox = context.getSuggestionBox();
     Suggestion suggestion = suggestionBox.getSuggestions().get(id);
-    if (suggestion.isDefined() && (suggestion.isInDraft() || suggestion.isRefused())) {
-      checkAdminAccessOrUserIsCreator(context.getUser(), suggestion);
+    if (suggestion.isDefined()) {
+      if ((suggestion.isInDraft() || suggestion.isRefused())) {
+        checkAdminAccessOrUserIsCreator(context.getUser(), suggestion);
+      } else if (suggestion.isPendingValidation()) {
+        checkAdminAccessOrUserIsModerator(context.getUser(), suggestionBox);
+      } else {
+        throw new WebApplicationException(Status.FORBIDDEN);
+      }
       suggestion.setTitle(context.getRequest().getParameter("title"));
       suggestion.setContent(context.getRequest().getParameter("content"));
       suggestion.setLastUpdater(context.getUser());
@@ -209,7 +240,7 @@ public class SuggestionBoxWebController extends
   }
 
   @POST
-  @Path("suggestion/delete/{id}")
+  @Path("suggestion/{id}/delete")
   @RedirectToInternal("Main")
   @LowestRoleAccess(SilverpeasRole.writer)
   public void deleteSuggestion(SuggestionBoxWebRequestContext context) {
@@ -220,7 +251,7 @@ public class SuggestionBoxWebController extends
   }
 
   @POST
-  @Path("suggestion/publish/{id}")
+  @Path("suggestion/{id}/publish")
   @RedirectToInternal("Main")
   @LowestRoleAccess(SilverpeasRole.writer)
   public void publishSuggestion(SuggestionBoxWebRequestContext context) {
@@ -228,5 +259,31 @@ public class SuggestionBoxWebController extends
     SuggestionBox suggestionBox = context.getSuggestionBox();
     Suggestion suggestion = suggestionBox.getSuggestions().get(id);
     getWebServiceProvider().publishSuggestion(suggestionBox, suggestion, context.getUser());
+  }
+
+  @POST
+  @Path("suggestion/{id}/approve")
+  @RedirectToInternal("Main")
+  @LowestRoleAccess(SilverpeasRole.publisher)
+  public void approveSuggestion(SuggestionBoxWebRequestContext context) {
+    String id = context.getPathVariables().get("id");
+    SuggestionBox suggestionBox = context.getSuggestionBox();
+    Suggestion suggestion = suggestionBox.getSuggestions().get(id);
+    String validationComment = context.getRequest().getParameter("comment");
+    getWebServiceProvider()
+        .approveSuggestion(suggestionBox, suggestion, validationComment, context.getUser());
+  }
+
+  @POST
+  @Path("suggestion/{id}/refuse")
+  @RedirectToInternal("Main")
+  @LowestRoleAccess(SilverpeasRole.publisher)
+  public void refuseSuggestion(SuggestionBoxWebRequestContext context) {
+    String id = context.getPathVariables().get("id");
+    SuggestionBox suggestionBox = context.getSuggestionBox();
+    Suggestion suggestion = suggestionBox.getSuggestions().get(id);
+    String validationComment = context.getRequest().getParameter("comment");
+    getWebServiceProvider()
+        .refuseSuggestion(suggestionBox, suggestion, validationComment, context.getUser());
   }
 }

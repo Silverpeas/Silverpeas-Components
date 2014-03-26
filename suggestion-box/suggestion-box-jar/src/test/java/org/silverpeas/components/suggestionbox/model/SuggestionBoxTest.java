@@ -37,6 +37,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.silverpeas.components.suggestionbox.notification
     .SuggestionPendingValidationUserNotification;
+import org.silverpeas.components.suggestionbox.notification.SuggestionValidationUserNotification;
 import org.silverpeas.components.suggestionbox.repository.RepositoryBasedTest;
 import org.silverpeas.contribution.ContributionStatus;
 import org.silverpeas.wysiwyg.control.WysiwygController;
@@ -59,6 +60,7 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
 
   private final static String SUGGESTION_BOX_INSTANCE_ID = "suggestionBox1";
   private final static String SUGGESTION_ID = "suggestion_1";
+  private final static String SUGGESTION_ID_PENDING_VALIDATION = "suggestion_1_c";
   private final static int SUGGESTIONS_COUNT = 9;
 
   @Override
@@ -219,5 +221,169 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
 
     PowerMockito.verifyStatic(times(0));
     UserNotificationHelper.buildAndSend(any(UserNotificationBuider.class));
+  }
+
+  @Test
+  public void validateAInDraftSuggestionOfASuggestionBoxWithWriterAccessRole() throws Exception {
+    IDataSet actualDataSet = getActualDataSet();
+    ITable table = actualDataSet.getTable("sc_suggestion");
+    assertThat((String) table.getValue(0, "id"), is(SUGGESTION_ID));
+    assertThat((String) table.getValue(0, "state"), is(ContributionStatus.DRAFT.name()));
+    assertThat((String) table.getValue(0, "lastUpdatedBy"), is("1"));
+    Date lastUpdateDate = (Date) table.getValue(0, "lastUpdateDate");
+    assertThat(table.getValue(0, "validationDate"), is(nullValue()));
+    assertThat(table.getValue(0, "validationComment"), is(nullValue()));
+    assertThat(table.getValue(0, "validationBy"), is(nullValue()));
+
+    PowerMockito.mockStatic(UserNotificationHelper.class);
+    SuggestionBox box = SuggestionBox.getByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID);
+    Suggestion suggestion = box.getSuggestions().get(SUGGESTION_ID);
+    UserDetail updater = aUser();
+    updater.setId("38");
+    suggestion.setLastUpdater(updater);
+    suggestion.setStatus(ContributionStatus.VALIDATED);
+    when(getOrganisationController()
+        .getUserProfiles(suggestion.getLastUpdatedBy(), box.getComponentInstanceId()))
+        .thenReturn(new String[]{SilverpeasRole.writer.name()});
+    box.getSuggestions().validate(suggestion);
+
+    actualDataSet = getActualDataSet();
+    table = actualDataSet.getTable("sc_suggestion");
+    assertThat((String) table.getValue(0, "id"), is(SUGGESTION_ID));
+    assertThat((String) table.getValue(0, "state"), is(ContributionStatus.DRAFT.name()));
+    assertThat((String) table.getValue(0, "lastUpdatedBy"), is("1"));
+    assertThat((Date) table.getValue(0, "lastUpdateDate"), is(lastUpdateDate));
+    assertThat(table.getValue(0, "validationDate"), is(nullValue()));
+    assertThat(table.getValue(0, "validationComment"), is(nullValue()));
+    assertThat(table.getValue(0, "validationBy"), is(nullValue()));
+
+    PowerMockito.verifyStatic(times(0));
+    UserNotificationHelper.buildAndSend(any(UserNotificationBuider.class));
+  }
+
+  @Test
+  public void validateAInDraftSuggestionOfASuggestionBoxWithPublisherAccessRole() throws Exception {
+    IDataSet actualDataSet = getActualDataSet();
+    ITable table = actualDataSet.getTable("sc_suggestion");
+    assertThat((String) table.getValue(0, "id"), is(SUGGESTION_ID));
+    assertThat((String) table.getValue(0, "state"), is(ContributionStatus.DRAFT.name()));
+    assertThat((String) table.getValue(0, "lastUpdatedBy"), is("1"));
+    Date lastUpdateDate = (Date) table.getValue(0, "lastUpdateDate");
+    assertThat(table.getValue(0, "validationDate"), is(nullValue()));
+    assertThat(table.getValue(0, "validationComment"), is(nullValue()));
+    assertThat(table.getValue(0, "validationBy"), is(nullValue()));
+
+    PowerMockito.mockStatic(UserNotificationHelper.class);
+    SuggestionBox box = SuggestionBox.getByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID);
+    Suggestion suggestion = box.getSuggestions().get(SUGGESTION_ID);
+    UserDetail updater = aUser();
+    updater.setId("38");
+    suggestion.setLastUpdater(updater);
+    suggestion.setStatus(ContributionStatus.VALIDATED);
+    when(getOrganisationController()
+        .getUserProfiles(suggestion.getLastUpdatedBy(), box.getComponentInstanceId()))
+        .thenReturn(new String[]{SilverpeasRole.publisher.name()});
+    box.getSuggestions().validate(suggestion);
+
+    actualDataSet = getActualDataSet();
+    table = actualDataSet.getTable("sc_suggestion");
+    assertThat((String) table.getValue(0, "id"), is(SUGGESTION_ID));
+    assertThat((String) table.getValue(0, "state"), is(ContributionStatus.DRAFT.name()));
+    assertThat((String) table.getValue(0, "lastUpdatedBy"), is("1"));
+    assertThat((Date) table.getValue(0, "lastUpdateDate"), is(lastUpdateDate));
+    assertThat(table.getValue(0, "validationDate"), is(nullValue()));
+    assertThat(table.getValue(0, "validationComment"), is(nullValue()));
+    assertThat(table.getValue(0, "validationBy"), is(nullValue()));
+
+    PowerMockito.verifyStatic(times(0));
+    UserNotificationHelper.buildAndSend(any(UserNotificationBuider.class));
+  }
+
+  @Test
+  public void validateAPendingValidationSuggestionOfASuggestionBoxWithPublisherAccessRole()
+      throws Exception {
+    IDataSet actualDataSet = getActualDataSet();
+    ITable table = actualDataSet.getTable("sc_suggestion");
+    int index = getTableIndexForId(table, SUGGESTION_ID_PENDING_VALIDATION);
+    assertThat((String) table.getValue(index, "id"), is(SUGGESTION_ID_PENDING_VALIDATION));
+    assertThat((String) table.getValue(index, "state"),
+        is(ContributionStatus.PENDING_VALIDATION.name()));
+    assertThat((String) table.getValue(index, "lastUpdatedBy"), is("1"));
+    Date lastUpdateDate = (Date) table.getValue(index, "lastUpdateDate");
+    assertThat(table.getValue(index, "validationDate"), is(nullValue()));
+    assertThat(table.getValue(index, "validationComment"), is(nullValue()));
+    assertThat(table.getValue(index, "validationBy"), is(nullValue()));
+
+    PowerMockito.mockStatic(UserNotificationHelper.class);
+    SuggestionBox box = SuggestionBox.getByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID);
+    Suggestion suggestion = box.getSuggestions().get(SUGGESTION_ID_PENDING_VALIDATION);
+    UserDetail updater = aUser();
+    updater.setId("38");
+    suggestion.setLastUpdater(updater);
+    suggestion.setStatus(ContributionStatus.VALIDATED);
+    when(getOrganisationController()
+        .getUserProfiles(suggestion.getLastUpdatedBy(), box.getComponentInstanceId()))
+        .thenReturn(new String[]{SilverpeasRole.publisher.name()});
+    box.getSuggestions().validate(suggestion);
+
+    actualDataSet = getActualDataSet();
+    table = actualDataSet.getTable("sc_suggestion");
+    assertThat((String) table.getValue(index, "id"), is(SUGGESTION_ID_PENDING_VALIDATION));
+    assertThat((String) table.getValue(index, "state"), is(ContributionStatus.VALIDATED.name()));
+    assertThat((String) table.getValue(index, "lastUpdatedBy"), is("38"));
+    assertThat((Date) table.getValue(index, "lastUpdateDate"), greaterThan(lastUpdateDate));
+    assertThat(DateUtil.resetHour((Date) table.getValue(index, "validationDate")),
+        is(DateUtil.getDate()));
+    assertThat(table.getValue(index, "validationComment"), is(nullValue()));
+    assertThat((String) table.getValue(index, "validationBy"), is("38"));
+
+    PowerMockito.verifyStatic(times(1));
+    UserNotificationHelper.buildAndSend(any(SuggestionValidationUserNotification.class));
+  }
+
+  @Test
+  public void refuseAPendingValidationSuggestionOfASuggestionBoxWithPublisherAccessRole()
+      throws Exception {
+    IDataSet actualDataSet = getActualDataSet();
+    ITable table = actualDataSet.getTable("sc_suggestion");
+    int index = getTableIndexForId(table, SUGGESTION_ID_PENDING_VALIDATION);
+    assertThat((String) table.getValue(index, "id"), is(SUGGESTION_ID_PENDING_VALIDATION));
+    assertThat((String) table.getValue(index, "title"), is("suggestion 1 IDEM"));
+    assertThat((String) table.getValue(index, "state"),
+        is(ContributionStatus.PENDING_VALIDATION.name()));
+    assertThat((String) table.getValue(index, "lastUpdatedBy"), is("1"));
+    Date lastUpdateDate = (Date) table.getValue(index, "lastUpdateDate");
+    assertThat(table.getValue(index, "validationDate"), is(nullValue()));
+    assertThat(table.getValue(index, "validationComment"), is(nullValue()));
+    assertThat(table.getValue(index, "validationBy"), is(nullValue()));
+
+    PowerMockito.mockStatic(UserNotificationHelper.class);
+    SuggestionBox box = SuggestionBox.getByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID);
+    Suggestion suggestion = box.getSuggestions().get(SUGGESTION_ID_PENDING_VALIDATION);
+    UserDetail updater = aUser();
+    updater.setId("38");
+    suggestion.setLastUpdater(updater);
+    suggestion.setStatus(ContributionStatus.REFUSED);
+    suggestion.getValidation().setComment("Comment filled");
+    suggestion.setTitle("the title");
+    when(getOrganisationController()
+        .getUserProfiles(suggestion.getLastUpdatedBy(), box.getComponentInstanceId()))
+        .thenReturn(new String[]{SilverpeasRole.publisher.name()});
+    box.getSuggestions().validate(suggestion);
+
+    actualDataSet = getActualDataSet();
+    table = actualDataSet.getTable("sc_suggestion");
+    assertThat((String) table.getValue(index, "id"), is(SUGGESTION_ID_PENDING_VALIDATION));
+    assertThat((String) table.getValue(index, "title"), is("suggestion 1 IDEM"));
+    assertThat((String) table.getValue(index, "state"), is(ContributionStatus.REFUSED.name()));
+    assertThat((String) table.getValue(index, "lastUpdatedBy"), is("38"));
+    assertThat((Date) table.getValue(index, "lastUpdateDate"), greaterThan(lastUpdateDate));
+    assertThat(DateUtil.resetHour((Date) table.getValue(index, "validationDate")),
+        is(DateUtil.getDate()));
+    assertThat((String) table.getValue(index, "validationComment"), is("Comment filled"));
+    assertThat((String) table.getValue(index, "validationBy"), is("38"));
+
+    PowerMockito.verifyStatic(times(1));
+    UserNotificationHelper.buildAndSend(any(SuggestionValidationUserNotification.class));
   }
 }

@@ -104,6 +104,26 @@ public class SuggestionEntity implements Exposable {
     return status;
   }
 
+  @XmlElement
+  public boolean isInDraft() {
+    return getStatus().isInDraft();
+  }
+
+  @XmlElement
+  public boolean isRefused() {
+    return getStatus().isRefused();
+  }
+
+  @XmlElement
+  public boolean isPendingValidation() {
+    return getStatus().isPendingValidation();
+  }
+
+  @XmlElement
+  public boolean isValidated() {
+    return getStatus().isValidated();
+  }
+
   private SuggestionEntity withStatus(ContributionStatus status) {
     this.status = status;
     return this;

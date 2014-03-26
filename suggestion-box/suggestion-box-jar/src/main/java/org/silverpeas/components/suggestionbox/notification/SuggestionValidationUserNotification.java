@@ -23,43 +23,58 @@
  */
 package org.silverpeas.components.suggestionbox.notification;
 
+import com.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * @author Yohann Chastagnier
  */
-public class SuggestionPendingValidationUserNotification
-    extends AbstractSuggestionActionUserNotification {
+public class SuggestionValidationUserNotification extends AbstractSuggestionActionUserNotification {
 
-  public SuggestionPendingValidationUserNotification(final Suggestion resource) {
-    super(resource, NotifAction.PENDING_VALIDATION);
+  public SuggestionValidationUserNotification(final Suggestion resource) {
+    super(resource, null);
   }
 
   @Override
   protected String getBundleSubjectKey() {
-    return "suggestionBox.suggestion.notification.pendingValidation.subject";
+    return getResource().isValidated() ? "suggestionBox.suggestion.notification.validated.subject" :
+        "suggestionBox.suggestion.notification.refused.subject";
   }
 
   @Override
   protected String getFileName() {
-    return "pendingValidationNotification";
+    return getResource().isValidated() ? "validatedNotification" : "refusedNotification";
+  }
+
+  @Override
+  protected void perform(final Suggestion resource) {
+    super.perform(resource);
+    getNotificationMetaData().setOriginalExtraMessage(resource.getValidation().getComment());
+  }
+
+  @Override
+  protected void performTemplateData(final String language, final Suggestion resource,
+      final SilverpeasTemplate template) {
+    super.performTemplateData(language, resource, template);
+    template.setAttribute("validationComment", resource.getValidation().getComment());
   }
 
   @Override
   protected Collection<String> getUserIdsToNotify() {
-    return getSuggestionBoxModerators();
+    return Collections.singleton(getResource().getCreatedBy());
   }
 
   @Override
-  protected String getSenderName() {
-    return getSender();
+  protected String getSender() {
+    return getResource().getValidation().getValidator().getId();
   }
 
   @Override
-  protected boolean isSendImmediatly() {
-    return true;
+  protected NotifAction getAction() {
+    return getResource().isValidated() ? NotifAction.VALIDATE : NotifAction.REFUSE;
   }
 }

@@ -24,24 +24,31 @@
 package org.silverpeas.components.suggestionbox.common;
 
 import com.silverpeas.personalization.UserPreferences;
+import com.silverpeas.util.CollectionUtil;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.web.SuggestionEntity;
+import org.silverpeas.contribution.ContributionStatus;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.util.NotifierUtil;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs.BOX_BASE_URI;
 import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs
@@ -154,6 +161,78 @@ public class SuggestionBoxWebServiceProvider {
   }
 
   /**
+   * Approves a suggestion.
+   * @param suggestionBox the suggestion box the current user is working on.
+   * @param suggestion the suggestion to approve.
+   * @param validationComment the comment associated to the approval.
+   * @param fromUser the current user.
+   * @return the suggestion entity.
+   * @see #validateSuggestion(SuggestionBox, Suggestion, ContributionStatus, String, UserDetail)
+   */
+  public SuggestionEntity approveSuggestion(SuggestionBox suggestionBox, Suggestion suggestion,
+      String validationComment, UserDetail fromUser) {
+    return validateSuggestion(suggestionBox, suggestion, ContributionStatus.VALIDATED,
+        validationComment, fromUser);
+  }
+
+  /**
+   * Refuses a suggestion.
+   * @param suggestionBox the suggestion box the current user is working on.
+   * @param suggestion the suggestion to refuse.
+   * @param validationComment the comment associated to the refusal.
+   * @param fromUser the current user.
+   * @return the suggestion entity.
+   * @see #validateSuggestion(SuggestionBox, Suggestion, ContributionStatus, String, UserDetail)
+   */
+  public SuggestionEntity refuseSuggestion(SuggestionBox suggestionBox, Suggestion suggestion,
+      String validationComment, UserDetail fromUser) {
+    return validateSuggestion(suggestionBox, suggestion, ContributionStatus.REFUSED,
+        validationComment, fromUser);
+  }
+
+  /**
+   * Validate a suggestion.
+   * @param suggestionBox the suggestion box the current user is working on.
+   * @param suggestion the suggestion to validate.
+   * @param newStatus the new status of approval or refusal.
+   * @param validationComment the optional comment related to the approval or refusal.
+   * @param fromUser the current user.
+   * @return the suggestion entity.
+   * @see SuggestionBox.Suggestions#validate(Suggestion)
+   */
+  private SuggestionEntity validateSuggestion(SuggestionBox suggestionBox, Suggestion suggestion,
+      ContributionStatus newStatus, String validationComment, UserDetail fromUser) {
+    if (suggestion.isDefined() && (suggestion.isPendingValidation())) {
+      checkAdminAccessOrUserIsModerator(fromUser, suggestionBox);
+      UserPreferences userPreferences = fromUser.getUserPreferences();
+      if (newStatus.isRefused() && StringUtil.isNotDefined(validationComment)) {
+        throw new WebApplicationException(Response.Status.PRECONDITION_FAILED);
+      }
+      suggestion.setStatus(newStatus);
+      suggestion.getValidation().setComment(validationComment);
+      suggestion.setLastUpdater(fromUser);
+      Suggestion actual = suggestionBox.getSuggestions().validate(suggestion);
+      switch (actual.getStatus()) {
+        case REFUSED:
+          NotifierUtil.addInfo(MessageFormat.format(
+              getStringTranslation("suggestionBox.message.suggestion.refused",
+                  userPreferences.getLanguage()), suggestion.getTitle()
+          ));
+          break;
+        case VALIDATED:
+          NotifierUtil.addSuccess(MessageFormat.format(
+              getStringTranslation("suggestionBox.message.suggestion.validated",
+                  userPreferences.getLanguage()), suggestion.getTitle()
+          ));
+          break;
+      }
+      return asWebEntity(actual);
+    } else {
+      throw new WebApplicationException(Response.Status.NOT_FOUND);
+    }
+  }
+
+  /**
    * Asserts the specified suggestion is well defined, otherwise an HTTP 404 error is sent back.
    * @param suggestion the suggestion to check.
    */
@@ -176,6 +255,23 @@ public class SuggestionBoxWebServiceProvider {
   }
 
   /**
+   * Centralization of checking if the specified user is a moderator of the specified suggestion.
+   * @param user the user to verify.
+   * @param suggestionBox the suggestion box the user is working on.
+   */
+  public static void checkAdminAccessOrUserIsModerator(UserDetail user,
+      SuggestionBox suggestionBox) {
+    Set<String> moderatorIds = CollectionUtil.asSet(
+        OrganisationControllerFactory.getOrganisationController()
+            .getUsersIdsByRoleNames(suggestionBox.getComponentInstanceId(),
+                CollectionUtil.asList(SilverpeasRole.admin.name(), SilverpeasRole.publisher.name()))
+    );
+    if (!user.isAccessAdmin() && !moderatorIds.contains(user.getId())) {
+      throw new WebApplicationException(Response.Status.FORBIDDEN);
+    }
+  }
+
+  /**
    * Gets the translation of an element
    * @param key
    * @param language
@@ -188,7 +284,7 @@ public class SuggestionBoxWebServiceProvider {
           "org.silverpeas.components.suggestionbox.multilang.SuggestionBoxBundle", language);
       multilang.put(language, rl);
     }
-    return rl.getString(key, null);
+    return rl.getResourceBundle().getString(key);
   }
 
   /**
