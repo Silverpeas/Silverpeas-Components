@@ -27,6 +27,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
+import org.dbunit.dataset.ITable;
 import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
@@ -133,6 +134,15 @@ public abstract class RepositoryBasedTest {
   public IDataSet getActualDataSet() throws Exception {
     IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
     return connection.createDataSet();
+  }
+
+  public int getTableIndexForId(ITable table, Object id) throws Exception {
+    for (int i = 0; i < table.getRowCount(); i++) {
+      if (id.equals(table.getValue(i, "id"))) {
+        return i;
+      }
+    }
+    return -1;
   }
 
   public PersistenceService getPersistenceService() {

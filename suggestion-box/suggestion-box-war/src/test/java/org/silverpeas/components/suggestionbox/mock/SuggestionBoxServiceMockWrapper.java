@@ -89,4 +89,9 @@ public class SuggestionBoxServiceMockWrapper implements SuggestionBoxService {
   public Suggestion publishSuggestion(final SuggestionBox box, final Suggestion suggestion) {
     return mock.publishSuggestion(box, suggestion);
   }
+
+  @Override
+  public Suggestion validateSuggestion(final SuggestionBox box, final Suggestion suggestion) {
+    return mock.validateSuggestion(box, suggestion);
+  }
 }

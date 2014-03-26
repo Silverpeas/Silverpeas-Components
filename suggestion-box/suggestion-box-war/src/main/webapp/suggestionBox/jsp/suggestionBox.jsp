@@ -46,13 +46,17 @@
 
 <fmt:message var="modifyEditoLabel" key="suggestionBox.menu.item.edito.modify"/>
 <fmt:message var="publishSuggestionLabel" key="GML.publish"/>
-<fmt:message var="addSuggestionLabel" key="suggestionBox.menu.item.suggestion.add"/>
-<fmt:message var="deleteSuggestionConfirmMessage" key="suggestionBox.message.suggestion.confirm">
+<fmt:message var="approveSuggestionLabel" key="GML.validate"/>
+<fmt:message var="refuseSuggestionLabel" key="GML.refuse"/>
+<fmt:message var="browseBarPathSuggestionLabel" key="suggestionBox.menu.item.suggestion.add"/>
+<fmt:message var="deleteSuggestionConfirmMessage" key="suggestionBox.message.suggestion.remove.confirm">
   <fmt:param value="<b>@name@</b>"/>
 </fmt:message>
 
 <c:url var="suggestionBoxJS" value="/util/javaScript/angularjs/suggestionbox.js"/>
 <c:url var="suggestionBoxServicesJS" value="/util/javaScript/angularjs/services/suggestionbox.js"/>
+<c:url var="suggestionBoxValidationDirectiveJS" value="/util/javaScript/angularjs/directives/suggestionbox-validation.js"/>
+<c:url var="suggestionBoxDeletionDirectiveJS" value="/util/javaScript/angularjs/directives/suggestionbox-deletion.js"/>
 <c:url var="deleteIcon" value="/util/icons/delete.gif"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -63,26 +67,28 @@
   <view:includePlugin name="wysiwyg"/>
   <view:includePlugin name="popup"/>
   <script type="text/javascript" src="${suggestionBoxServicesJS}"></script>
+  <script type="text/javascript" src="${suggestionBoxValidationDirectiveJS}"></script>
+  <script type="text/javascript" src="${suggestionBoxDeletionDirectiveJS}"></script>
 </head>
-<body>
+<body ng-controller="mainController">
 <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
   <view:operationPane>
     <c:if test="${greaterUserRole.isGreaterThanOrEquals(adminRole)}">
       <view:operation action="${componentUriBase}edito/modify" altText="${modifyEditoLabel}"/>
       <view:operationSeparator/>
     </c:if>
-    <view:operation action="${componentUriBase}suggestion/new" altText="${addSuggestionLabel}"/>
+    <view:operation action="${componentUriBase}suggestion/new" altText="${browseBarPathSuggestionLabel}"/>
   </view:operationPane>
 </c:if>
 <view:window>
   <view:frame>
-    <div id="confirmation" style="display: none;"></div>
     <c:if test="${isEdito}">
       <view:displayWysiwyg objectId="${suggestionBoxId}" componentId="${componentId}" language="${null}"/>
     </c:if>
     <div class="table">
       <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
         <div ng-controller="notPublishedController" class="cell">
+          <div suggestionbox-deletion></div>
           <ul id="my_notPublished_suggestions_list" class="container">
             <li ng-repeat="suggestion in notPublishedSuggestions">
               <a ng-href="${componentUriBase}suggestion/{{ suggestion.id }}"><span class="suggestion_title">{{ suggestion.title }}</span></a><br/>
@@ -96,6 +102,7 @@
         </div>
       </c:if>
       <c:if test="${greaterUserRole.isGreaterThanOrEquals(publisherRole)}">
+        <div suggestionbox-validation></div>
         <div ng-controller="pendingValidationController" class="cell">
           <ul id="my_pending_validation_suggestions_list" class="container">
             <li ng-repeat="suggestion in pendingValidationSuggestions">
@@ -103,6 +110,8 @@
 
               <div>{{ suggestion.status }}</div>
               <div ng-bind-html="suggestion.content"></div>
+              <a href="#" ng-click="refuse(suggestion)"><span>${refuseSuggestionLabel}</span></a><br/>
+              <a href="#" ng-click="approve(suggestion)"><span>${approveSuggestionLabel}</span></a><br/>
             </li>
           </ul>
         </div>
@@ -125,7 +134,8 @@
     currentUserId : '${currentUserId}',
     suggestionBoxId : '${suggestionBoxId}',
     component : '${componentId}',
-    deleteSuggestionConfirmMessage : "${deleteSuggestionConfirmMessage} ?"});
+    componentUriBase : '${componentUriBase}'
+  });
 </script>
 <script type="text/javascript" src="${suggestionBoxJS}"></script>
 </body>

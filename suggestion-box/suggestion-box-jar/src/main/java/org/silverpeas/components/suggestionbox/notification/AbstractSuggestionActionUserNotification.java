@@ -24,7 +24,6 @@
 package org.silverpeas.components.suggestionbox.notification;
 
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
-import com.stratelia.webactiv.util.node.model.NodePK;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 
 /**
@@ -33,8 +32,7 @@ import org.silverpeas.components.suggestionbox.model.Suggestion;
 public abstract class AbstractSuggestionActionUserNotification
     extends AbstractSuggestionUserNotification {
 
-  public AbstractSuggestionActionUserNotification(NodePK nodePK, Suggestion resource,
-      NotifAction action) {
+  public AbstractSuggestionActionUserNotification(Suggestion resource, NotifAction action) {
     super(resource, action);
   }
 

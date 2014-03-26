@@ -27,11 +27,15 @@ import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.personalization.service.PersonalizationService;
+import com.silverpeas.util.CollectionUtil;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.web.TestResources;
+import com.silverpeas.web.mock.OrganizationControllerMockWrapper;
 import com.silverpeas.web.mock.PersonalizationServiceMockWrapper;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.WebMessager;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.junit.After;
 import org.junit.Before;
@@ -46,6 +50,7 @@ import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.model.SuggestionBoxService;
 import org.silverpeas.contribution.ContributionStatus;
+import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.servlet.HttpRequest;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -275,6 +280,149 @@ public class SuggestionBoxWebControllerTest {
     controller.publishSuggestion(context);
   }
 
+  @Test(expected = WebApplicationException.class)
+  public void approveASuggestionRefusedWithWriterRoleAccess() {
+    assertApproveASuggestion(SilverpeasRole.writer, ContributionStatus.REFUSED);
+  }
+
+  @Test(expected = WebApplicationException.class)
+  public void approveASuggestionInDraftWithWriterRoleAccess() {
+    assertApproveASuggestion(SilverpeasRole.writer, ContributionStatus.DRAFT);
+  }
+
+  @Test(expected = WebApplicationException.class)
+  public void approveANonDraftOrRefusedSuggestionInAGivenSuggestionBoxWithWriterRoleAccess() {
+    assertApproveASuggestion(SilverpeasRole.writer, ContributionStatus.UNKNOWN);
+  }
+
+  @Test(expected = WebApplicationException.class)
+  public void approveASuggestionPendingValidationWithWriterRoleAccess() {
+    assertApproveASuggestion(SilverpeasRole.writer, ContributionStatus.PENDING_VALIDATION);
+  }
+
+  @Test(expected = WebApplicationException.class)
+  public void approveASuggestionRefusedWithPublisherRoleAccess() {
+    assertApproveASuggestion(SilverpeasRole.publisher, ContributionStatus.REFUSED);
+  }
+
+  @Test(expected = WebApplicationException.class)
+  public void approveASuggestionInDraftWithPublisherRoleAccess() {
+    assertApproveASuggestion(SilverpeasRole.publisher, ContributionStatus.DRAFT);
+  }
+
+  @Test
+  public void approveASuggestionPendingValidationWithPublisherRoleAccess() {
+    assertApproveASuggestion(SilverpeasRole.publisher, ContributionStatus.PENDING_VALIDATION);
+  }
+
+  private void assertApproveASuggestion(SilverpeasRole userRoleAccess,
+      ContributionStatus withStatus) {
+    SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
+    when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
+    SuggestionBox box = context.getSuggestionBox();
+    SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
+    Suggestion suggestion = aSuggestionWithStatus(withStatus);
+    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(suggestion);
+    when(suggestionBoxService.validateSuggestion(eq(box), eq(suggestion))).thenReturn(suggestion);
+    String userId = context.getUser().getId();
+    when(getOrganisationController().getUsersIdsByRoleNames(box.getComponentInstanceId(),
+        CollectionUtil.asList(SilverpeasRole.admin.name(), SilverpeasRole.publisher.name())))
+        .thenReturn(new String[]{
+            (userRoleAccess.isGreaterThanOrEquals(SilverpeasRole.publisher) ? userId : "otherId")});
+
+    PowerMockito.mockStatic(UserNotificationHelper.class);
+    controller.approveSuggestion(context);
+
+    verify(suggestionBoxService, times(1)).validateSuggestion(eq(box), eq(suggestion));
+  }
+
+  @Test(expected = WebApplicationException.class)
+  public void approveAnUnexistingSuggestionInAGivenSuggestionBox() {
+    SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
+    when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
+    SuggestionBox box = context.getSuggestionBox();
+    SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
+    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(Suggestion.NONE);
+
+    controller.approveSuggestion(context);
+  }
+
+  @Test(expected = WebApplicationException.class)
+  public void refuseASuggestionRefusedWithWriterRoleAccess() {
+    assertRefuseASuggestion(SilverpeasRole.writer, ContributionStatus.REFUSED, null);
+  }
+
+  @Test(expected = WebApplicationException.class)
+  public void refuseASuggestionInDraftWithWriterRoleAccess() {
+    assertRefuseASuggestion(SilverpeasRole.writer, ContributionStatus.DRAFT, null);
+  }
+
+  @Test(expected = WebApplicationException.class)
+  public void refuseANonDraftOrRefusedSuggestionInAGivenSuggestionBoxWithWriterRoleAccess() {
+    assertRefuseASuggestion(SilverpeasRole.writer, ContributionStatus.UNKNOWN, null);
+  }
+
+  @Test(expected = WebApplicationException.class)
+  public void refuseASuggestionPendingValidationWithWriterRoleAccess() {
+    assertRefuseASuggestion(SilverpeasRole.writer, ContributionStatus.PENDING_VALIDATION, null);
+  }
+
+  @Test(expected = WebApplicationException.class)
+  public void refuseASuggestionRefusedWithPublisherRoleAccess() {
+    assertRefuseASuggestion(SilverpeasRole.publisher, ContributionStatus.REFUSED, null);
+  }
+
+  @Test(expected = WebApplicationException.class)
+  public void refuseASuggestionInDraftWithPublisherRoleAccess() {
+    assertRefuseASuggestion(SilverpeasRole.publisher, ContributionStatus.DRAFT, null);
+  }
+
+  @Test(expected = WebApplicationException.class)
+  public void refuseWithoutCommentASuggestionPendingValidationWithPublisherRoleAccess() {
+    assertRefuseASuggestion(SilverpeasRole.publisher, ContributionStatus.PENDING_VALIDATION, null);
+  }
+
+  @Test
+  public void refuseWithCommentASuggestionPendingValidationWithPublisherRoleAccess() {
+    assertRefuseASuggestion(SilverpeasRole.publisher, ContributionStatus.PENDING_VALIDATION,
+        "A comment.");
+  }
+
+  private void assertRefuseASuggestion(SilverpeasRole userRoleAccess, ContributionStatus withStatus,
+      final String withComment) {
+    SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
+    when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
+    SuggestionBox box = context.getSuggestionBox();
+    SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
+    Suggestion suggestion = aSuggestionWithStatus(withStatus);
+    if (StringUtil.isDefined(withComment)) {
+      when(context.getRequest().getParameter("comment")).thenReturn(withComment);
+    }
+    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(suggestion);
+    when(suggestionBoxService.validateSuggestion(eq(box), eq(suggestion))).thenReturn(suggestion);
+    String userId = context.getUser().getId();
+    when(getOrganisationController().getUsersIdsByRoleNames(box.getComponentInstanceId(),
+        CollectionUtil.asList(SilverpeasRole.admin.name(), SilverpeasRole.publisher.name())))
+        .thenReturn(new String[]{
+            (userRoleAccess.isGreaterThanOrEquals(SilverpeasRole.publisher) ? userId : "otherId")});
+
+    PowerMockito.mockStatic(UserNotificationHelper.class);
+    controller.refuseSuggestion(context);
+
+    verify(suggestionBoxService, times(1)).validateSuggestion(eq(box), eq(suggestion));
+  }
+
+  @Test(expected = WebApplicationException.class)
+  public void refuseAnUnexistingSuggestionInAGivenSuggestionBox() {
+    SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
+    when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
+    SuggestionBox box = context.getSuggestionBox();
+    SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
+    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(Suggestion.NONE);
+
+    controller.refuseSuggestion(context);
+  }
+
   @SuppressWarnings("unchecked")
   private SuggestionBoxWebRequestContext aSuggestionBoxWebRequestContext() {
     SuggestionBoxWebRequestContext context = mock(SuggestionBoxWebRequestContext.class);
@@ -287,6 +435,12 @@ public class SuggestionBoxWebControllerTest {
     when(context.getMessager()).thenReturn(WebMessager.getInstance());
     when(context.getSuggestionBox()).thenReturn(aSuggestionBox());
     return context;
+  }
+
+  private OrganisationController getOrganisationController() {
+    OrganizationControllerMockWrapper mockWrapper =
+        appContext.getBean(OrganizationControllerMockWrapper.class);
+    return mockWrapper.getOrganizationControllerMock();
   }
 
   private SuggestionBoxService getSuggestionBoxService() {

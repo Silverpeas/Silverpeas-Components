@@ -29,6 +29,7 @@ import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.components.suggestionbox.notification
     .SuggestionPendingValidationUserNotification;
+import org.silverpeas.components.suggestionbox.notification.SuggestionValidationUserNotification;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.persistence.model.jpa.AbstractJpaEntity;
@@ -254,6 +255,28 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
               .buildAndSend(new SuggestionPendingValidationUserNotification(actual));
           break;
         case VALIDATED:
+          break;
+      }
+      return actual;
+    }
+
+    /**
+     * Validates from the specified suggestion box the specified suggestion.
+     * <p/>
+     * The publication of a suggestion consists in changing its status to VALIDATED or REFUSED
+     * and sending a notification to the creator in order to inform him about the validation result.
+     * <p/>
+     * If the suggestion doesn't exist in the suggestion box, then nothing is done.
+     * @param suggestion the suggestion to publish.
+     * @return the suggestion updated.
+     */
+    public Suggestion validate(final Suggestion suggestion) {
+      SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
+      Suggestion actual = suggestionBoxService.validateSuggestion(SuggestionBox.this, suggestion);
+      switch (actual.getStatus()) {
+        case VALIDATED:
+        case REFUSED:
+          UserNotificationHelper.buildAndSend(new SuggestionValidationUserNotification(actual));
           break;
       }
       return actual;

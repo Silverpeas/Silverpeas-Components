@@ -240,6 +240,75 @@ public class SuggestionBoxServiceTest {
     assertThat(actual.getStatus(), is(ContributionStatus.VALIDATED));
   }
 
+  @Test
+  public void validateASuggestionInDraftOfASuggestionBox() {
+    SuggestionBox box = prepareASuggestionBox();
+    Suggestion suggestion = new Suggestion("My suggestion");
+    suggestion.setSuggestionBox(box);
+    suggestion.setContent("the content of my suggestion");
+    suggestion.setCreator(box.getCreator());
+    suggestion.setStatus(ContributionStatus.DRAFT);
+
+    OrganisationController organisationController = getOrganisationController();
+    when(organisationController
+        .getUserProfiles(box.getCreator().getId(), box.getComponentInstanceId()))
+        .thenReturn(new String[]{SilverpeasRole.writer.name()});
+
+    SuggestionRepository suggestionRepository = getSuggestionRepository();
+    when(suggestionRepository.findByCriteria(any(SuggestionCriteria.class)))
+        .then(new Returns(CollectionUtil.asList(suggestion)));
+
+    Suggestion actual = service.validateSuggestion(box, suggestion);
+
+    verify(suggestionRepository, times(0)).save(any(OperationContext.class), eq(actual));
+  }
+
+  @Test
+  public void validateASuggestionRefusedOfASuggestionBox() {
+    SuggestionBox box = prepareASuggestionBox();
+    Suggestion suggestion = new Suggestion("My suggestion");
+    suggestion.setSuggestionBox(box);
+    suggestion.setContent("the content of my suggestion");
+    suggestion.setCreator(box.getCreator());
+    suggestion.setStatus(ContributionStatus.REFUSED);
+
+    OrganisationController organisationController = getOrganisationController();
+    when(organisationController
+        .getUserProfiles(box.getCreator().getId(), box.getComponentInstanceId()))
+        .thenReturn(new String[]{SilverpeasRole.writer.name()});
+
+    SuggestionRepository suggestionRepository = getSuggestionRepository();
+    when(suggestionRepository.findByCriteria(any(SuggestionCriteria.class)))
+        .then(new Returns(CollectionUtil.asList(suggestion)));
+
+    Suggestion actual = service.validateSuggestion(box, suggestion);
+
+    verify(suggestionRepository, times(0)).save(any(OperationContext.class), eq(actual));
+  }
+
+  @Test
+  public void validateASuggestionPendingValidationOfASuggestionBox() {
+    SuggestionBox box = prepareASuggestionBox();
+    Suggestion suggestion = new Suggestion("My suggestion");
+    suggestion.setSuggestionBox(box);
+    suggestion.setContent("the content of my suggestion");
+    suggestion.setCreator(box.getCreator());
+    suggestion.setStatus(ContributionStatus.PENDING_VALIDATION);
+
+    OrganisationController organisationController = getOrganisationController();
+    when(organisationController
+        .getUserProfiles(box.getCreator().getId(), box.getComponentInstanceId()))
+        .thenReturn(new String[]{SilverpeasRole.publisher.name()});
+
+    SuggestionRepository suggestionRepository = getSuggestionRepository();
+    when(suggestionRepository.findByCriteria(any(SuggestionCriteria.class)))
+        .then(new Returns(CollectionUtil.asList(suggestion)));
+
+    Suggestion actual = service.validateSuggestion(box, suggestion);
+
+    verify(suggestionRepository, times(1)).save(any(OperationContext.class), eq(actual));
+  }
+
   private OrganisationController getOrganisationController() {
     OrganisationControllerMockWrapper mockWrapper = context.
         getBean(OrganisationControllerMockWrapper.class);

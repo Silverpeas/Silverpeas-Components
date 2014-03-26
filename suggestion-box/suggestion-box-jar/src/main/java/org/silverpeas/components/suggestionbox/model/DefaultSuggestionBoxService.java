@@ -161,7 +161,7 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
   @Transactional
   public void removeSuggestion(SuggestionBox box, Suggestion suggestion) {
     Suggestion actual = suggestionRepository.getById(suggestion.getId());
-    if (suggestion.getSuggestionBox().equals(box)) {
+    if (suggestion.getSuggestionBox().equals(box) && (actual.isInDraft() || actual.isRefused())) {
       suggestionRepository.delete(actual);
       suggestionRepository.flush();
 
@@ -173,7 +173,7 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
   @Transactional
   public Suggestion publishSuggestion(final SuggestionBox box, final Suggestion suggestion) {
     Suggestion actual = findSuggestionById(box, suggestion.getId());
-    if (suggestion.getSuggestionBox().equals(box)) {
+    if (suggestion.getSuggestionBox().equals(box) && (actual.isInDraft() || actual.isRefused())) {
       UserDetail updater = suggestion.getLastUpdater();
       SilverpeasRole greaterUserRole = box.getGreaterUserRole(updater);
       if (greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.publisher)) {
@@ -186,7 +186,25 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
       suggestionRepository.save(OperationContext.fromUser(updater), actual);
       suggestionRepository.flush();
     }
+    return actual;
+  }
 
+  @Override
+  @Transactional
+  public Suggestion validateSuggestion(final SuggestionBox box, final Suggestion suggestion) {
+    Suggestion actual = findSuggestionById(box, suggestion.getId());
+    if (suggestion.getSuggestionBox().equals(box) && actual.isPendingValidation()) {
+      UserDetail updater = suggestion.getLastUpdater();
+      SilverpeasRole greaterUserRole = box.getGreaterUserRole(updater);
+      if (greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.publisher)) {
+        actual.setStatus(suggestion.getStatus());
+        actual.getValidation().setComment(suggestion.getValidation().getComment());
+        actual.getValidation().setDate(new Date());
+        actual.getValidation().setValidator(updater);
+      }
+      suggestionRepository.save(OperationContext.fromUser(updater), actual);
+      suggestionRepository.flush();
+    }
     return actual;
   }
 }
