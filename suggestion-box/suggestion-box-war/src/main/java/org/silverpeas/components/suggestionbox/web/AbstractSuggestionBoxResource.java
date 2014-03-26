@@ -77,43 +77,4 @@ public abstract class AbstractSuggestionBoxResource extends RESTWebService {
     }
     return suggestionBox;
   }
-
-  /**
-   * Converts the list of suggestion into list of suggestion web entities.
-   * @param suggestions the suggestions to convert.
-   * @return the suggestion web entities.
-   */
-  protected List<SuggestionEntity> asWebEntities(Collection<Suggestion> suggestions) {
-    List<SuggestionEntity> entities = new ArrayList<SuggestionEntity>(suggestions.size());
-    for (Suggestion suggestion : suggestions) {
-      entities.add(asWebEntity(suggestion));
-    }
-    return entities;
-  }
-
-  /**
-   * Converts the suggestion into its corresponding web entity. If the specified suggestion isn't
-   * defined, then an HTTP 404 error is sent back instead of the entity representation of the
-   * suggestion.
-   * @param suggestion the suggestion to convert.
-   * @return the corresponding suggestion entity.
-   */
-  protected SuggestionEntity asWebEntity(Suggestion suggestion) {
-    assertSuggestionIsDefined(suggestion);
-    return SuggestionEntity.fromSuggestion(suggestion).withURI(buildSuggestionURI(suggestion));
-  }
-
-  /**
-   * Centralized the build of a suggestion URI.
-   * @param suggestion the aimed suggestion.
-   * @return the URI of specified suggestion.
-   */
-  protected URI buildSuggestionURI(Suggestion suggestion) {
-    if (suggestion == null) {
-      return null;
-    }
-    return getUriInfo().getBaseUriBuilder().path(BOX_BASE_URI).path(getComponentId())
-        .path(suggestion.getSuggestionBox().getId()).path(BOX_SUGGESTION_URI_PART)
-        .path(suggestion.getId()).build();
-  }
 }

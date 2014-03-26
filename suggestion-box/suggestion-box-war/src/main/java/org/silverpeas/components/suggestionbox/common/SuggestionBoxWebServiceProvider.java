@@ -24,16 +24,28 @@
 package org.silverpeas.components.suggestionbox.common;
 
 import com.silverpeas.personalization.UserPreferences;
+import com.silverpeas.web.RESTWebService;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
+import org.silverpeas.components.suggestionbox.web.SuggestionEntity;
 import org.silverpeas.util.NotifierUtil;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs.BOX_BASE_URI;
+import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs
+    .BOX_SUGGESTION_URI_PART;
 
 /**
  * @author: Yohann Chastagnier
@@ -56,11 +68,43 @@ public class SuggestionBoxWebServiceProvider {
   }
 
   /**
+   * Gets the list of suggestions that are not published (draft end refused status) and which
+   * the creator is those specified.
+   * @param suggestionBox the suggestion box the current user is working on.
+   * @param creator the user that must be the creator of the returned suggestions.
+   * @see SuggestionBox.Suggestions#findNotPublishedFor(UserDetail)
+   * @return the aimed suggestion entities.
+   */
+  public List<SuggestionEntity> getNotPublishedFor(SuggestionBox suggestionBox, UserDetail creator) {
+    return asWebEntities(suggestionBox.getSuggestions().findNotPublishedFor(creator));
+  }
+
+  /**
+   * Gets the list of suggestions that are pending validation and which.
+   * @param suggestionBox the suggestion box the current user is working on.
+   * @see SuggestionBox.Suggestions#findPendingValidation()
+   * @return the aimed suggestion entities.
+   */
+  public List<SuggestionEntity> getPendingValidation(SuggestionBox suggestionBox) {
+    return asWebEntities(suggestionBox.getSuggestions().findPendingValidation());
+  }
+
+  /**
+   * Gets the list of suggestions that are published.
+   * @param suggestionBox the suggestion box the current user is working on.
+   * @see SuggestionBox.Suggestions#findPublished()
+   * @return the aimed suggestion entities.
+   */
+  public List<SuggestionEntity> getPublished(SuggestionBox suggestionBox) {
+    return asWebEntities(suggestionBox.getSuggestions().findPublished());
+  }
+
+  /**
    * Deletes a suggestion.
-   * @param suggestionBox the suggestion box the current user is workin on.
+   * @param suggestionBox the suggestion box the current user is working on.
    * @param suggestion the suggestion to delete.
    * @param fromUser the current user.
-   * @see SuggestionBox.Suggestions#publish(Suggestion)
+   * @see SuggestionBox.Suggestions#remove(Suggestion)
    */
   public void deleteSuggestion(SuggestionBox suggestionBox, Suggestion suggestion,
       UserDetail fromUser) {
@@ -77,13 +121,13 @@ public class SuggestionBoxWebServiceProvider {
 
   /**
    * Publishes a suggestion.
-   * @param suggestionBox the suggestion box the current user is workin on.
+   * @param suggestionBox the suggestion box the current user is working on.
    * @param suggestion the suggestion to publish.
    * @param fromUser the current user.
-   * @return the updated suggestion.
+   * @return the suggestion entity.
    * @see SuggestionBox.Suggestions#publish(Suggestion)
    */
-  public Suggestion publishSuggestion(SuggestionBox suggestionBox, Suggestion suggestion,
+  public SuggestionEntity publishSuggestion(SuggestionBox suggestionBox, Suggestion suggestion,
       UserDetail fromUser) {
     if (suggestion.isDefined() && (suggestion.isInDraft() || suggestion.isRefused())) {
       checkAdminAccessOrUserIsCreator(fromUser, suggestion);
@@ -102,7 +146,7 @@ public class SuggestionBoxWebServiceProvider {
               userPreferences.getLanguage()));
           break;
       }
-      return actual;
+      return asWebEntity(actual);
     } else {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
     }
@@ -145,5 +189,46 @@ public class SuggestionBoxWebServiceProvider {
       multilang.put(language, rl);
     }
     return rl.getString(key, null);
+  }
+
+  /**
+   * Converts the list of suggestion into list of suggestion web entities.
+   * @param suggestions the suggestions to convert.
+   * @return the suggestion web entities.
+   */
+  public List<SuggestionEntity> asWebEntities(Collection<Suggestion> suggestions) {
+    List<SuggestionEntity> entities = new ArrayList<SuggestionEntity>(suggestions.size());
+    for (Suggestion suggestion : suggestions) {
+      entities.add(asWebEntity(suggestion));
+    }
+    return entities;
+  }
+
+  /**
+   * Converts the suggestion into its corresponding web entity. If the specified suggestion isn't
+   * defined, then an HTTP 404 error is sent back instead of the entity representation of the
+   * suggestion.
+   * @param suggestion the suggestion to convert.
+   * @return the corresponding suggestion entity.
+   */
+  public SuggestionEntity asWebEntity(Suggestion suggestion) {
+    assertSuggestionIsDefined(suggestion);
+    return SuggestionEntity.fromSuggestion(suggestion).withURI(buildSuggestionURI(suggestion));
+  }
+
+  /**
+   * Centralized the build of a suggestion URI.
+   * @param suggestion the aimed suggestion.
+   * @return the URI of specified suggestion.
+   */
+  protected URI buildSuggestionURI(Suggestion suggestion) {
+    if (suggestion == null || suggestion.getSuggestionBox() == null) {
+      return null;
+    }
+    return UriBuilder.fromUri(URLManager.getApplicationURL())
+        .path(RESTWebService.REST_WEB_SERVICES_URI_BASE).path(BOX_BASE_URI)
+        .path(suggestion.getSuggestionBox().getComponentInstanceId())
+        .path(suggestion.getSuggestionBox().getId()).path(BOX_SUGGESTION_URI_PART)
+        .path(suggestion.getId()).build();
   }
 }

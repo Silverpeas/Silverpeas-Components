@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.suggestionbox.model;
 
+import com.silverpeas.util.CollectionUtil;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.junit.After;
@@ -31,6 +32,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.internal.stubbing.answers.Returns;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -183,7 +185,8 @@ public class SuggestionBoxServiceTest {
         .thenReturn(new String[]{SilverpeasRole.user.name()});
 
     SuggestionRepository suggestionRepository = getSuggestionRepository();
-    when(suggestionRepository.getById(suggestion.getId())).thenReturn(suggestion);
+    when(suggestionRepository.findByCriteria(any(SuggestionCriteria.class))).then(
+        new Returns(CollectionUtil.asList(suggestion)));
 
     Suggestion actual = service.publishSuggestion(box, suggestion);
 
@@ -205,7 +208,8 @@ public class SuggestionBoxServiceTest {
         .thenReturn(new String[]{SilverpeasRole.writer.name()});
 
     SuggestionRepository suggestionRepository = getSuggestionRepository();
-    when(suggestionRepository.getById(suggestion.getId())).thenReturn(suggestion);
+    when(suggestionRepository.findByCriteria(any(SuggestionCriteria.class))).then(
+        new Returns(CollectionUtil.asList(suggestion)));
 
     Suggestion actual = service.publishSuggestion(box, suggestion);
 
@@ -227,7 +231,8 @@ public class SuggestionBoxServiceTest {
         .thenReturn(new String[]{SilverpeasRole.publisher.name()});
 
     SuggestionRepository suggestionRepository = getSuggestionRepository();
-    when(suggestionRepository.getById(suggestion.getId())).thenReturn(suggestion);
+    when(suggestionRepository.findByCriteria(any(SuggestionCriteria.class))).then(
+        new Returns(CollectionUtil.asList(suggestion)));
 
     Suggestion actual = service.publishSuggestion(box, suggestion);
 

@@ -36,6 +36,7 @@ import org.silverpeas.wysiwyg.control.WysiwygController;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -74,7 +75,7 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
     for (Suggestion suggestion : suggestions) {
       String content = WysiwygController
           .load(suggestion.getSuggestionBox().getComponentInstanceId(), suggestion.getId(), null);
-      suggestion.setContent(content);
+      suggestion.initializeContent(content);
     }
     return suggestions;
   }
@@ -171,12 +172,13 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
   @Override
   @Transactional
   public Suggestion publishSuggestion(final SuggestionBox box, final Suggestion suggestion) {
-    Suggestion actual = suggestionRepository.getById(suggestion.getId());
+    Suggestion actual = findSuggestionById(box, suggestion.getId());
     if (suggestion.getSuggestionBox().equals(box)) {
       UserDetail updater = suggestion.getLastUpdater();
       SilverpeasRole greaterUserRole = box.getGreaterUserRole(updater);
       if (greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.publisher)) {
         actual.setStatus(ContributionStatus.VALIDATED);
+        actual.setApprobationDate(new Date());
       } else if (greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.writer)) {
         actual.setStatus(ContributionStatus.PENDING_VALIDATION);
       }

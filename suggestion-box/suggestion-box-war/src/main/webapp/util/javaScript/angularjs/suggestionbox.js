@@ -26,35 +26,6 @@
 var suggestionBox = angular.module('silverpeas.suggestionBox',
     ['silverpeas.services', 'silverpeas.directives']);
 
-/* the main controller of the application */
-suggestionBox.controller('publishedController', ['context', 'SuggestionBox', '$scope', '$rootScope',
-  function(context, SuggestionBox, $scope, $rootScope) {
-    var suggestionBox = SuggestionBox.get({
-      id : context.suggestionBoxId,
-      componentInstanceId : context.component});
-
-    $scope.delete = function(suggestion) {
-      __internal_delete(suggestion, suggestionBox, context, $rootScope);
-    };
-
-    $scope.loadPublished = function() {
-      $scope.publishedSuggestions = [
-        {id : 'b28c4d6d-ed51-4dad-bfd9-5a330d574575', title : 'idée test', content : 'contenu test'}
-      ];
-
-      /*suggestionBox.suggestions.get(['published']).then(function(theSuggestions) {
-        $scope.publishedSuggestions = theSuggestions;
-      });*/
-    };
-
-    $scope.loadPublished();
-
-    $scope.$on("suggestionModified", function(theSuggestionId) {
-      $scope.loadPublished();
-    });
-  }]);
-
-
 /* the not published controller of the application */
 suggestionBox.controller('notPublishedController', ['context', 'SuggestionBox', '$scope', '$rootScope',
   function(context, SuggestionBox, $scope, $rootScope) {
@@ -82,6 +53,46 @@ suggestionBox.controller('notPublishedController', ['context', 'SuggestionBox', 
 
     $scope.$on("suggestionModified", function(theSuggestionId) {
       $scope.loadNotPublished();
+    });
+  }]);
+
+/* the pending validation controller of the application */
+suggestionBox.controller('pendingValidationController', ['context', 'SuggestionBox', '$scope', '$rootScope',
+  function(context, SuggestionBox, $scope, $rootScope) {
+    var suggestionBox = SuggestionBox.get({
+      id : context.suggestionBoxId,
+      componentInstanceId : context.component});
+
+    $scope.loadPendingValidation = function() {
+      suggestionBox.suggestions.get(['pendingValidation']).then(function(theSuggestions) {
+        $scope.pendingValidationSuggestions = theSuggestions;
+      });
+    };
+
+    $scope.loadPendingValidation();
+
+    $scope.$on("suggestionModified", function(theSuggestionId) {
+      $scope.loadPendingValidation();
+    });
+  }]);
+
+/* the published controller of the application */
+suggestionBox.controller('publishedController', ['context', 'SuggestionBox', '$scope', '$rootScope',
+  function(context, SuggestionBox, $scope, $rootScope) {
+    var suggestionBox = SuggestionBox.get({
+      id : context.suggestionBoxId,
+      componentInstanceId : context.component});
+
+    $scope.loadPublished = function() {
+      suggestionBox.suggestions.get(['published']).then(function(theSuggestions) {
+        $scope.publishedSuggestions = theSuggestions;
+      });
+    };
+
+    $scope.loadPublished();
+
+    $scope.$on("suggestionModified", function(theSuggestionId) {
+      $scope.loadPublished();
     });
   }]);
 

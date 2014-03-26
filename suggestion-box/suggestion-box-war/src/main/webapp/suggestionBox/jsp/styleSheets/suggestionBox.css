@@ -29,3 +29,16 @@
 .action {
   cursor: pointer;
 }
+
+.table {
+  display: table;
+}
+
+.column {
+  display: table-column;
+}
+
+.cell {
+  display: table-cell;
+  min-width: 150px;
+}

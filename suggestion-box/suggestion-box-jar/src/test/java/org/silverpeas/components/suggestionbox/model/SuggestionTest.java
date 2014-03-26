@@ -62,7 +62,8 @@ public class SuggestionTest extends RepositoryBasedTest {
 
   private final static String SUGGESTION_ID = "suggestion_1";
   private final static String SUGGESTION_BOX_INSTANCE_ID = "suggestionBox1";
-  private final static int SUGGESTIONS_COUNT = 6;
+  private final static int SUGGESTIONS_COUNT = 9;
+  private final static int BOX_1_SUGGESTIONS_COUNT = 8;
 
   @Override
   public String getDataSetPath() {
@@ -144,13 +145,13 @@ public class SuggestionTest extends RepositoryBasedTest {
     SuggestionBox box = SuggestionBox.getByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID);
     List<Suggestion> suggestions =
         getPersistenceService().findByCriteria(SuggestionCriteria.from(box));
-    assertThat(suggestions, hasSize(5));
+    assertThat(suggestions, hasSize(BOX_1_SUGGESTIONS_COUNT));
 
     // Filtering on an existing creator
     UserDetail creator = UserDetail.getById("1");
     suggestions =
         getPersistenceService().findByCriteria(SuggestionCriteria.from(box).createdBy(creator));
-    assertThat(suggestions, hasSize(4));
+    assertThat(suggestions, hasSize(BOX_1_SUGGESTIONS_COUNT - 1));
 
     // Filtering on an creator that doesn't exist
     creator = UserDetail.getById("999");
@@ -168,38 +169,50 @@ public class SuggestionTest extends RepositoryBasedTest {
     creator = UserDetail.getById("1");
     suggestions = getPersistenceService().findByCriteria(
         SuggestionCriteria.from(box).createdBy(creator).statusIsOneOf(PENDING_VALIDATION));
-    assertThat(suggestions, hasSize(1));
+    assertThat(suggestions, hasSize(2));
 
     // Filtering on an existing creator and the two contribution status above used
     creator = UserDetail.getById("1");
     suggestions = getPersistenceService().findByCriteria(
         SuggestionCriteria.from(box).createdBy(creator).statusIsOneOf(PENDING_VALIDATION, DRAFT));
-    assertThat(suggestions, hasSize(3));
+    assertThat(suggestions, hasSize(4));
 
     // Filtering on an existing creator and ordering by ascending last update date
     creator = UserDetail.getById("1");
     suggestions = getPersistenceService().findByCriteria(
         SuggestionCriteria.from(box).createdBy(creator).orderedBy(LAST_UPDATE_DATE_ASC));
-    assertThat(suggestions, hasSize(4));
+    assertThat(suggestions, hasSize(BOX_1_SUGGESTIONS_COUNT - 1));
     assertThat(suggestions, contains(
+        matches("suggestion_1_c_2", "suggestion 1 IDEM", PENDING_VALIDATION,
+            timestamp("2014-03-12 17:34:00.0")),
         matches("suggestion_1_c", "suggestion 1 IDEM", PENDING_VALIDATION,
             timestamp("2014-03-13 17:34:00.0")),
         matches("suggestion_1_a", "suggestion 1 IDEM", REFUSED, timestamp("2014-03-15 17:34:00.0")),
         matches("suggestion_1", "suggestion 1", DRAFT, timestamp("2014-03-16 17:34:00.0")),
-        matches("suggestion_1_b", "suggestion 1 / B", DRAFT, timestamp("2014-03-20 17:34:00.0"))
+        matches("suggestion_1_b", "suggestion 1 / B", DRAFT, timestamp("2014-03-20 17:34:00.0")),
+        matches("suggestion_1_v_2", "suggestion 1 V2", VALIDATED,
+            timestamp("2014-03-25 17:34:00.0")),
+        matches("suggestion_1_v_1", "suggestion 1 V1", VALIDATED,
+            timestamp("2014-03-26 17:34:00.0"))
     ));
 
     // Filtering on an existing creator and ordering by descending last update date
     creator = UserDetail.getById("1");
     suggestions = getPersistenceService().findByCriteria(
         SuggestionCriteria.from(box).createdBy(creator).orderedBy(LAST_UPDATE_DATE_DESC));
-    assertThat(suggestions, hasSize(4));
+    assertThat(suggestions, hasSize(BOX_1_SUGGESTIONS_COUNT - 1));
     assertThat(suggestions, contains(
+        matches("suggestion_1_v_1", "suggestion 1 V1", VALIDATED,
+            timestamp("2014-03-26 17:34:00.0")),
+        matches("suggestion_1_v_2", "suggestion 1 V2", VALIDATED,
+            timestamp("2014-03-25 17:34:00.0")),
         matches("suggestion_1_b", "suggestion 1 / B", DRAFT, timestamp("2014-03-20 17:34:00.0")),
         matches("suggestion_1", "suggestion 1", DRAFT, timestamp("2014-03-16 17:34:00.0")),
         matches("suggestion_1_a", "suggestion 1 IDEM", REFUSED, timestamp("2014-03-15 17:34:00.0")),
         matches("suggestion_1_c", "suggestion 1 IDEM", PENDING_VALIDATION,
-            timestamp("2014-03-13 17:34:00.0"))
+            timestamp("2014-03-13 17:34:00.0")),
+        matches("suggestion_1_c_2", "suggestion 1 IDEM", PENDING_VALIDATION,
+            timestamp("2014-03-12 17:34:00.0"))
     ));
 
     // Filtering on an existing creator and ordering by descending title,
@@ -208,11 +221,17 @@ public class SuggestionTest extends RepositoryBasedTest {
     suggestions = getPersistenceService().findByCriteria(
         SuggestionCriteria.from(box).createdBy(creator)
             .orderedBy(TITLE_DESC, LAST_UPDATE_DATE_DESC));
-    assertThat(suggestions, hasSize(4));
+    assertThat(suggestions, hasSize(BOX_1_SUGGESTIONS_COUNT - 1));
     assertThat(suggestions, contains(
+        matches("suggestion_1_v_2", "suggestion 1 V2", VALIDATED,
+            timestamp("2014-03-25 17:34:00.0")),
+        matches("suggestion_1_v_1", "suggestion 1 V1", VALIDATED,
+            timestamp("2014-03-26 17:34:00.0")),
         matches("suggestion_1_a", "suggestion 1 IDEM", REFUSED, timestamp("2014-03-15 17:34:00.0")),
         matches("suggestion_1_c", "suggestion 1 IDEM", PENDING_VALIDATION,
             timestamp("2014-03-13 17:34:00.0")),
+        matches("suggestion_1_c_2", "suggestion 1 IDEM", PENDING_VALIDATION,
+            timestamp("2014-03-12 17:34:00.0")),
         matches("suggestion_1_b", "suggestion 1 / B", DRAFT, timestamp("2014-03-20 17:34:00.0")),
         matches("suggestion_1", "suggestion 1", DRAFT, timestamp("2014-03-16 17:34:00.0"))
     ));
@@ -223,7 +242,7 @@ public class SuggestionTest extends RepositoryBasedTest {
     suggestions = getPersistenceService().findByCriteria(
         SuggestionCriteria.from(box).createdBy(creator)
             .orderedBy(TITLE_ASC, LAST_UPDATE_DATE_DESC));
-    assertThat(suggestions, hasSize(4));
+    assertThat(suggestions, hasSize(BOX_1_SUGGESTIONS_COUNT - 1));
     assertThat(suggestions,
         contains(matches("suggestion_1", "suggestion 1", DRAFT, timestamp("2014-03-16 17:34:00.0")),
             matches("suggestion_1_b", "suggestion 1 / B", DRAFT,
@@ -231,7 +250,13 @@ public class SuggestionTest extends RepositoryBasedTest {
             matches("suggestion_1_a", "suggestion 1 IDEM", REFUSED,
                 timestamp("2014-03-15 17:34:00.0")),
             matches("suggestion_1_c", "suggestion 1 IDEM", PENDING_VALIDATION,
-                timestamp("2014-03-13 17:34:00.0"))
+                timestamp("2014-03-13 17:34:00.0")),
+            matches("suggestion_1_c_2", "suggestion 1 IDEM", PENDING_VALIDATION,
+                timestamp("2014-03-12 17:34:00.0")),
+            matches("suggestion_1_v_1", "suggestion 1 V1", VALIDATED,
+                timestamp("2014-03-26 17:34:00.0")),
+            matches("suggestion_1_v_2", "suggestion 1 V2", VALIDATED,
+                timestamp("2014-03-25 17:34:00.0"))
         )
     );
 
@@ -242,8 +267,10 @@ public class SuggestionTest extends RepositoryBasedTest {
         SuggestionCriteria.from(box).createdBy(creator).statusIsOneOf(PENDING_VALIDATION, REFUSED)
             .orderedBy(TITLE_ASC, LAST_UPDATE_DATE_ASC)
     );
-    assertThat(suggestions, hasSize(2));
+    assertThat(suggestions, hasSize(3));
     assertThat(suggestions, contains(
+        matches("suggestion_1_c_2", "suggestion 1 IDEM", PENDING_VALIDATION,
+            timestamp("2014-03-12 17:34:00.0")),
         matches("suggestion_1_c", "suggestion 1 IDEM", PENDING_VALIDATION,
             timestamp("2014-03-13 17:34:00.0")),
         matches("suggestion_1_a", "suggestion 1 IDEM", REFUSED, timestamp("2014-03-15 17:34:00.0"))
@@ -266,6 +293,46 @@ public class SuggestionTest extends RepositoryBasedTest {
         matches("suggestion_1_b", "suggestion 1 / B", DRAFT, timestamp("2014-03-20 17:34:00.0"))));
     assertThat(suggestions.get(0).getContent(), is(content));
     PowerMockito.verifyStatic(times(3));
+    WysiwygController.load(eq(SUGGESTION_BOX_INSTANCE_ID), anyString(), anyString());
+  }
+
+  @Test
+  public void findPendingValidation() {
+    PowerMockito.mockStatic(WysiwygController.class);
+    final String content = "This is a content";
+    when(WysiwygController.load(eq(SUGGESTION_BOX_INSTANCE_ID), anyString(), anyString())).
+        then(new Returns(content));
+    SuggestionBox box = SuggestionBox.getByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID);
+    List<Suggestion> suggestions = box.getSuggestions().findPendingValidation();
+    assertThat(suggestions, hasSize(2));
+    assertThat(suggestions, contains(
+        matches("suggestion_1_c_2", "suggestion 1 IDEM", PENDING_VALIDATION,
+            timestamp("2014-03-12 17:34:00.0")),
+        matches("suggestion_1_c", "suggestion 1 IDEM", PENDING_VALIDATION,
+            timestamp("2014-03-13 17:34:00.0"))
+    ));
+    assertThat(suggestions.get(0).getContent(), is(content));
+    PowerMockito.verifyStatic(times(2));
+    WysiwygController.load(eq(SUGGESTION_BOX_INSTANCE_ID), anyString(), anyString());
+  }
+
+  @Test
+  public void findPublished() {
+    PowerMockito.mockStatic(WysiwygController.class);
+    final String content = "This is a content";
+    when(WysiwygController.load(eq(SUGGESTION_BOX_INSTANCE_ID), anyString(), anyString())).
+        then(new Returns(content));
+    SuggestionBox box = SuggestionBox.getByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID);
+    List<Suggestion> suggestions = box.getSuggestions().findPublished();
+    assertThat(suggestions, hasSize(2));
+    assertThat(suggestions, contains(
+        matches("suggestion_1_v_2", "suggestion 1 V2", VALIDATED,
+            timestamp("2014-03-25 17:34:00.0")),
+        matches("suggestion_1_v_1", "suggestion 1 V1", VALIDATED,
+            timestamp("2014-03-26 17:34:00.0"))
+    ));
+    assertThat(suggestions.get(0).getContent(), is(content));
+    PowerMockito.verifyStatic(times(2));
     WysiwygController.load(eq(SUGGESTION_BOX_INSTANCE_ID), anyString(), anyString());
   }
 

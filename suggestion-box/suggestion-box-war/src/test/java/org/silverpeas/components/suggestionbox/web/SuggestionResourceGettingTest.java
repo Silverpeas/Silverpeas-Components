@@ -110,6 +110,71 @@ public class SuggestionResourceGettingTest extends ResourceGettingTest<Suggestio
     return getAt(SUGGESTIONS_URI_BASE + "notPublished", SuggestionEntity[].class);
   }
 
+  @Test
+  public void gettingPendingValidationSuggestionsByReaderUser() {
+    authenticatedUser.addProfile(COMPONENT_INSTANCE_ID, SilverpeasRole.reader);
+    try {
+      gettingPendingValidationSuggestions();
+      fail("User must be a publisher to get a list of pending validation suggestions");
+    } catch (UniformInterfaceException ex) {
+      int receivedStatus = ex.getResponse().getStatus();
+      int forbidden = Response.Status.FORBIDDEN.getStatusCode();
+      assertThat(receivedStatus, Matchers.is(forbidden));
+    }
+  }
+
+  @Test
+  public void gettingPendingValidationSuggestionsByWriterUser() {
+    authenticatedUser.addProfile(COMPONENT_INSTANCE_ID, SilverpeasRole.writer);
+    try {
+      gettingPendingValidationSuggestions();
+      fail("User must be a publisher to get a list of pending validation suggestions");
+    } catch (UniformInterfaceException ex) {
+      int receivedStatus = ex.getResponse().getStatus();
+      int forbidden = Response.Status.FORBIDDEN.getStatusCode();
+      assertThat(receivedStatus, Matchers.is(forbidden));
+    }
+  }
+
+  @Test
+  public void gettingPendingValidationSuggestionsByPublisherUser() {
+    authenticatedUser.addProfile(COMPONENT_INSTANCE_ID, SilverpeasRole.publisher);
+    SuggestionEntity[] entities = gettingPendingValidationSuggestions();
+    assertThat(entities, notNullValue());
+    assertThat(entities.length, is(2));
+    verify(getTestResources().getSuggestionBoxService(), times(1)).
+        findSuggestionsByCriteria(any(SuggestionCriteria.class));
+  }
+
+  private SuggestionEntity[] gettingPendingValidationSuggestions() {
+    SuggestionBoxService service = getTestResources().getSuggestionBoxService();
+    List<Suggestion> pendingValidation = new ArrayList<Suggestion>();
+    pendingValidation.add(getTestResources().aRandomSuggestion());
+    pendingValidation.add(getTestResources().aRandomSuggestion());
+    when(service.findSuggestionsByCriteria(any(SuggestionCriteria.class)))
+        .thenAnswer(new Returns(pendingValidation));
+    return getAt(SUGGESTIONS_URI_BASE + "pendingValidation", SuggestionEntity[].class);
+  }
+
+  @Test
+  public void gettingPublishedSuggestionsByReaderUser() {
+    authenticatedUser.addProfile(COMPONENT_INSTANCE_ID, SilverpeasRole.user);
+    SuggestionEntity[] entities = gettingPublishedSuggestions();
+    assertThat(entities, notNullValue());
+    assertThat(entities.length, is(1));
+    verify(getTestResources().getSuggestionBoxService(), times(1)).
+        findSuggestionsByCriteria(any(SuggestionCriteria.class));
+  }
+
+  private SuggestionEntity[] gettingPublishedSuggestions() {
+    SuggestionBoxService service = getTestResources().getSuggestionBoxService();
+    List<Suggestion> pendingValidation = new ArrayList<Suggestion>();
+    pendingValidation.add(getTestResources().aRandomSuggestion());
+    when(service.findSuggestionsByCriteria(any(SuggestionCriteria.class)))
+        .thenAnswer(new Returns(pendingValidation));
+    return getAt(SUGGESTIONS_URI_BASE + "published", SuggestionEntity[].class);
+  }
+
   @Override
   public String[] getExistingComponentInstances() {
     return new String[]{COMPONENT_INSTANCE_ID};

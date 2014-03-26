@@ -27,7 +27,10 @@ import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.stratelia.webactiv.SilverpeasRole;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.components.suggestionbox.common.SuggestionBoxWebServiceProvider;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
+import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -39,8 +42,6 @@ import javax.ws.rs.core.MediaType;
 import java.util.Collection;
 import java.util.List;
 
-import static org.silverpeas.components.suggestionbox.common.SuggestionBoxWebServiceProvider
-    .getWebServiceProvider;
 import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs.BOX_BASE_URI;
 import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs
     .BOX_SUGGESTION_URI_PART;
@@ -71,7 +72,7 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
       @Override
       public SuggestionEntity execute() {
         final Suggestion suggestion = getSuggestionBox().getSuggestions().get(suggestionId);
-        return asWebEntity(suggestion);
+        return getWebServiceProvider().asWebEntity(suggestion);
       }
     }).execute();
   }
@@ -107,9 +108,8 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
       @Override
       public SuggestionEntity execute() {
         final Suggestion suggestion = getSuggestionBox().getSuggestions().get(suggestionId);
-        Suggestion actual = getWebServiceProvider()
+        return getWebServiceProvider()
             .publishSuggestion(getSuggestionBox(), suggestion, getUserDetail());
-        return asWebEntity(actual);
       }
     }).lowestAccessRole(SilverpeasRole.writer).execute();
   }
@@ -119,9 +119,8 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
    * behind the service call.
    * @return the response to the HTTP GET request with the JSON representation of the asked
    * list of suggestions.
-   * @see org.silverpeas.components.suggestionbox.model.SuggestionBox
-   * .Suggestions#findNotPublishedFor(com.stratelia.webactiv.beans.admin.UserDetail)
-   * @see com.silverpeas.web.RESTWebService.WebProcess#execute()
+   * @see SuggestionBoxWebServiceProvider#getNotPublishedFor(SuggestionBox, UserDetail)
+   * @see WebProcess#execute()
    */
   @GET
   @Path(BOX_SUGGESTION_URI_PART + "/notPublished")
@@ -130,10 +129,50 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
     return process(new WebTreatment<Collection<SuggestionEntity>>() {
       @Override
       public List<SuggestionEntity> execute() {
-        final List<Suggestion> suggestionNotPublished =
-            getSuggestionBox().getSuggestions().findNotPublishedFor(getUserDetail());
-        return asWebEntities(suggestionNotPublished);
+        return getWebServiceProvider().getNotPublishedFor(getSuggestionBox(), getUserDetail());
       }
     }).lowestAccessRole(SilverpeasRole.writer).execute();
+  }
+
+  /**
+   * Gets the JSON representation of a list of suggestion that are pending validation.
+   * @return the response to the HTTP GET request with the JSON representation of the asked
+   * list of suggestions.
+   * @see SuggestionBoxWebServiceProvider#getPendingValidation(SuggestionBox)
+   * @see WebProcess#execute()
+   */
+  @GET
+  @Path(BOX_SUGGESTION_URI_PART + "/pendingValidation")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Collection<SuggestionEntity> getPendingValidation() {
+    return process(new WebTreatment<Collection<SuggestionEntity>>() {
+      @Override
+      public List<SuggestionEntity> execute() {
+        return getWebServiceProvider().getPendingValidation(getSuggestionBox());
+      }
+    }).lowestAccessRole(SilverpeasRole.publisher).execute();
+  }
+
+  /**
+   * Gets the JSON representation of a list of suggestion that are published.
+   * @return the response to the HTTP GET request with the JSON representation of the asked
+   * list of suggestions.
+   * @see SuggestionBoxWebServiceProvider#getPublished(SuggestionBox)
+   * @see WebProcess#execute()
+   */
+  @GET
+  @Path(BOX_SUGGESTION_URI_PART + "/published")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Collection<SuggestionEntity> getPublished() {
+    return process(new WebTreatment<Collection<SuggestionEntity>>() {
+      @Override
+      public List<SuggestionEntity> execute() {
+        return getWebServiceProvider().getPublished(getSuggestionBox());
+      }
+    }).execute();
+  }
+
+  private SuggestionBoxWebServiceProvider getWebServiceProvider() {
+    return SuggestionBoxWebServiceProvider.getWebServiceProvider();
   }
 }

@@ -23,6 +23,9 @@
  */
 package org.silverpeas.components.suggestionbox.web;
 
+import com.silverpeas.personalization.UserMenuDisplay;
+import com.silverpeas.personalization.UserPreferences;
+import com.silverpeas.personalization.service.PersonalizationService;
 import com.silverpeas.web.TestResources;
 import com.silverpeas.web.mock.UserDetailWithProfiles;
 import org.silverpeas.components.suggestionbox.mock.SuggestionBoxServiceMockWrapper;
@@ -71,6 +74,11 @@ public class SuggestionBoxTestResources extends TestResources {
     when(service.getByComponentInstanceId(COMPONENT_INSTANCE_ID)).thenReturn(box);
     when(service.findSuggestionById(eq(box), anyString())).thenReturn(Suggestion.NONE);
     when(service.findSuggestionById(box, SUGGESTION_ID)).thenReturn(aSuggestion());
+    PersonalizationService mock = getPersonalizationServiceMock();
+    UserPreferences preferences =
+        new UserPreferences(TestResources.DEFAULT_LANGUAGE, "", "", false, true, true,
+            UserMenuDisplay.DISABLE);
+    when(mock.getUserSettings(anyString())).thenReturn(preferences);
   }
 
 

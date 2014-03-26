@@ -13,6 +13,7 @@ CREATE TABLE sc_suggestion (
   suggestionBoxId VARCHAR(40)   NOT NULL,
   title           VARCHAR(2000) NOT NULL,
   state           VARCHAR(20)   NOT NULL,
+  approbationDate TIMESTAMP,
   createDate      TIMESTAMP     NOT NULL,
   createdBy       VARCHAR(40)   NOT NULL,
   lastUpdateDate  TIMESTAMP     NOT NULL,

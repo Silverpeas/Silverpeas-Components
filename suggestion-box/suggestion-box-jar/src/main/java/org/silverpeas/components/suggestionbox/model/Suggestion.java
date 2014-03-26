@@ -38,6 +38,8 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -68,13 +70,18 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "suggestionBoxId", referencedColumnName = "id", nullable = false)
   private SuggestionBox suggestionBox;
-  @Column(nullable = false)
+
+  @Column(name = "title", nullable = false)
   @Size(min = 1)
   @NotNull
   private String title;
 
   @Column(name = "state", nullable = false)
   private String state = ContributionStatus.DRAFT.name();
+
+  @Column(name = "approbationDate")
+  @Temporal(value = TemporalType.TIMESTAMP)
+  private Date approbationDate;
 
   @Transient
   private String content = "";
@@ -118,6 +125,14 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
   }
 
   /**
+   * Technical method to initialize the content of the suggestion.
+   * @param content the content to initialize
+   */
+  void initializeContent(String content) {
+    this.content = content;
+  }
+
+  /**
    * Sets the specified content to this suggestion.
    * @param content the suggestion's content to set.
    */
@@ -131,10 +146,26 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
 
   /**
    * Gets the content of this suggestion.
-   * @return the suggestion's content;
+   * @return the suggestion's content.
    */
   public String getContent() {
     return (this.content == null ? "" : this.content);
+  }
+
+  /**
+   * Gets the approbation date of this suggestion.
+   * @return the suggestion's approbation date.
+   */
+  public Date getApprobationDate() {
+    return approbationDate;
+  }
+
+  /**
+   * Sets the approbation date of this suggestion.
+   * @param approbationDate the approbation date to set.
+   */
+  void setApprobationDate(final Date approbationDate) {
+    this.approbationDate = approbationDate;
   }
 
   /**
@@ -282,7 +313,9 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
 
   @Override
   public String toString() {
-    return "Suggestion{" + "suggestionBox=" + suggestionBox.getId() + ", title=" + title
-        + ", state=" + state + ", content=" + content + ", contentModified=" + contentModified + '}';
+    return "Suggestion{" + "suggestionBox=" + suggestionBox.getId() + ", title=" + title +
+        ", state=" + state + ", content=" + content + ", contentModified=" + contentModified +
+        ", approbationDate=" + approbationDate + ", creationDate=" + getCreationDate() +
+        ", lastUpdateDate=" + getLastUpdateDate() + '}';
   }
 }
