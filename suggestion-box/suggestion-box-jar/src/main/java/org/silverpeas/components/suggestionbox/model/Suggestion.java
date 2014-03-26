@@ -23,23 +23,23 @@
  */
 package org.silverpeas.components.suggestionbox.model;
 
-import com.silverpeas.SilverpeasContent;
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.contribution.ContributionStatus;
+import org.silverpeas.contribution.ValidableContribution;
+import org.silverpeas.contribution.model.ContributionValidation;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.persistence.model.jpa.AbstractJpaEntity;
 
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -55,7 +55,7 @@ import java.util.Date;
 @Entity
 @Table(name = "sc_suggestion")
 public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
-    implements SilverpeasContent {
+    implements ValidableContribution {
 
   private static final long serialVersionUID = -8559980140411995766L;
 
@@ -79,9 +79,8 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
   @Column(name = "state", nullable = false)
   private String state = ContributionStatus.DRAFT.name();
 
-  @Column(name = "validationDate")
-  @Temporal(value = TemporalType.TIMESTAMP)
-  private Date validationDate;
+  @Embedded
+  private ContributionValidation validation;
 
   @Transient
   private String content = "";
@@ -152,20 +151,12 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
     return (this.content == null ? "" : this.content);
   }
 
-  /**
-   * Gets the validation date of this suggestion.
-   * @return the suggestion's validation date.
-   */
-  public Date getValidationDate() {
-    return validationDate;
-  }
-
-  /**
-   * Sets the validation date of this suggestion.
-   * @param validationDate the validation date to set.
-   */
-  void setValidationDate(final Date validationDate) {
-    this.validationDate = validationDate;
+  @Override
+  public ContributionValidation getValidation() {
+    if (validation == null) {
+      validation = new ContributionValidation();
+    }
+    return validation;
   }
 
   /**
@@ -208,43 +199,33 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
     return this.contentModified;
   }
 
-  /**
-   * Sets the specified contribution status to this suggestion.
-   * @param status the suggestion's contribution status to set.
-   */
+  @Override
   public void setStatus(final ContributionStatus status) {
     this.state = status.name();
   }
 
-  /**
-   * Is this suggestion in draft?
-   * @return true if this suggestion is in draft, false otherwise.
-   */
+  @Override
+  public ContributionStatus getStatus() {
+    return ContributionStatus.from(state);
+  }
+
+  @Override
   public boolean isInDraft() {
     return getStatus() == ContributionStatus.DRAFT;
   }
 
-  /**
-   * Is this suggestion is refused?
-   * @return true if this suggestion is refused, false otherwise.
-   */
+  @Override
   public boolean isRefused() {
     return getStatus() == ContributionStatus.REFUSED;
   }
 
-  /**
-   * Is this suggestion is pending validation?
-   * @return true if this suggestion is pending validation, false otherwise.
-   */
+  @Override
   public boolean isPendingValidation() {
     return getStatus() == ContributionStatus.PENDING_VALIDATION;
   }
 
-  /**
-   * Is this suggestion is published?
-   * @return true if this suggestion is published, false otherwise.
-   */
-  public boolean isPublished() {
+  @Override
+  public boolean isValidated() {
     return getStatus() == ContributionStatus.VALIDATED;
   }
 
@@ -256,14 +237,6 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
   public boolean isPublishableBy(UserDetail user) {
     return (isInDraft() || isRefused()) && (user.isAccessAdmin() || (getCreator().equals(user) &&
         getSuggestionBox().getGreaterUserRole(user).isGreaterThanOrEquals(SilverpeasRole.writer)));
-  }
-
-  /**
-   * Gets the contribution status of this suggestion.
-   * @return the suggestion's contribution status;
-   */
-  public ContributionStatus getStatus() {
-    return ContributionStatus.from(state);
   }
 
   @Override
@@ -315,7 +288,7 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
   public String toString() {
     return "Suggestion{" + "suggestionBox=" + suggestionBox.getId() + ", title=" + title +
         ", state=" + state + ", content=" + content + ", contentModified=" + contentModified +
-        ", validationDate=" + validationDate + ", creationDate=" + getCreationDate() +
+        ", validation=" + getValidation() + ", creationDate=" + getCreationDate() +
         ", lastUpdateDate=" + getLastUpdateDate() + '}';
   }
 }

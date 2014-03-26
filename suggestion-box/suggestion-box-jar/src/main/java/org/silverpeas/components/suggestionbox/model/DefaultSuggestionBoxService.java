@@ -178,7 +178,8 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
       SilverpeasRole greaterUserRole = box.getGreaterUserRole(updater);
       if (greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.publisher)) {
         actual.setStatus(ContributionStatus.VALIDATED);
-        actual.setValidationDate(new Date());
+        actual.getValidation().setDate(new Date());
+        actual.getValidation().setValidator(updater);
       } else if (greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.writer)) {
         actual.setStatus(ContributionStatus.PENDING_VALIDATION);
       }
