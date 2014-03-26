@@ -32,7 +32,7 @@ import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.persistence.repository.OperationContext;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
 
 /**
  * Unit test on the saving of a suggestion into an existing suggestion box in Silverpeas.
@@ -42,6 +42,7 @@ import static org.hamcrest.Matchers.*;
 public class SuggestionSavingTest extends RepositoryBasedTest {
 
   private final static String SUGGESTION_BOX_ID_1 = "suggestion-box_1";
+  private final static int SUGGESTIONS_COUNT = 9;
 
   @Override
   public String getDataSetPath() {
@@ -64,7 +65,7 @@ public class SuggestionSavingTest extends RepositoryBasedTest {
     // check the suggestion in database
     IDataSet actualDataSet = getActualDataSet();
     ITable table = actualDataSet.getTable("sc_suggestion");
-    assertThat(table.getRowCount(), is(7));
+    assertThat(table.getRowCount(), is(SUGGESTIONS_COUNT + 1));
     String actualTitle = (String) table.getValue(0, "title");
     assertThat(actualTitle, is(suggestion.getTitle()));
   }

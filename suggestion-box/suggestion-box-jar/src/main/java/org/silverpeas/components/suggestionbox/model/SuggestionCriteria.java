@@ -39,7 +39,8 @@ public class SuggestionCriteria {
   public enum QUERY_ORDER_BY {
 
     TITLE_ASC("title", true), LAST_UPDATE_DATE_ASC("lastUpdateDate", true),
-    TITLE_DESC("title", false), LAST_UPDATE_DATE_DESC("lastUpdateDate", false);
+    TITLE_DESC("title", false), LAST_UPDATE_DATE_DESC("lastUpdateDate", false),
+    APPROBATION_DATE_DESC("approbationDate", false);
 
     private final String propertyName;
     private final boolean asc;

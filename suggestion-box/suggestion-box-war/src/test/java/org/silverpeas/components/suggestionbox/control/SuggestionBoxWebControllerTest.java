@@ -79,8 +79,9 @@ public class SuggestionBoxWebControllerTest {
     ComponentContext componentContext = mock(ComponentContext.class);
     controller = new SuggestionBoxWebController(sessionController, componentContext);
     PersonalizationService mock = getPersonalizationService();
-    UserPreferences preferences = new UserPreferences(TestResources.DEFAULT_LANGUAGE, "", "", false,
-        true, true, UserMenuDisplay.DISABLE);
+    UserPreferences preferences =
+        new UserPreferences(TestResources.DEFAULT_LANGUAGE, "", "", false, true, true,
+            UserMenuDisplay.DISABLE);
     when(mock.getUserSettings(anyString())).thenReturn(preferences);
   }
 
@@ -115,8 +116,7 @@ public class SuggestionBoxWebControllerTest {
     when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
     SuggestionBox box = context.getSuggestionBox();
     SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
-    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(
-        aSuggestion());
+    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(aSuggestion());
 
     controller.editSuggestion(context);
 
@@ -140,8 +140,8 @@ public class SuggestionBoxWebControllerTest {
     when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
     SuggestionBox box = context.getSuggestionBox();
     SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
-    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(
-        aSuggestionWithStatus(ContributionStatus.PENDING_VALIDATION));
+    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID))
+        .thenReturn(aSuggestionWithStatus(ContributionStatus.PENDING_VALIDATION));
 
     controller.editSuggestion(context);
   }
@@ -170,8 +170,8 @@ public class SuggestionBoxWebControllerTest {
     when(context.getRequest().getParameter("content")).thenReturn(modifiedContent);
     SuggestionBox box = context.getSuggestionBox();
     SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
-    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(
-        aSuggestionWithStatus(withStatus));
+    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID))
+        .thenReturn(aSuggestionWithStatus(withStatus));
 
     controller.updateSuggestion(context);
 
@@ -204,8 +204,7 @@ public class SuggestionBoxWebControllerTest {
     SuggestionBox box = context.getSuggestionBox();
     Suggestion suggestion = aSuggestion();
     SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
-    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(
-        suggestion);
+    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(suggestion);
 
     controller.deleteSuggestion(context);
 
@@ -229,8 +228,8 @@ public class SuggestionBoxWebControllerTest {
     when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
     SuggestionBox box = context.getSuggestionBox();
     SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
-    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(
-        aSuggestionWithStatus(ContributionStatus.VALIDATED));
+    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID))
+        .thenReturn(aSuggestionWithStatus(ContributionStatus.VALIDATED));
 
     controller.deleteSuggestion(context);
   }
@@ -257,8 +256,7 @@ public class SuggestionBoxWebControllerTest {
     SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
     Suggestion suggestion = aSuggestionWithStatus(withStatus);
     when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(suggestion);
-    when(suggestionBoxService.publishSuggestion(eq(box), eq(suggestion)))
-        .thenReturn(Suggestion.NONE);
+    when(suggestionBoxService.publishSuggestion(eq(box), eq(suggestion))).thenReturn(suggestion);
 
     PowerMockito.mockStatic(UserNotificationHelper.class);
     controller.publishSuggestion(context);
@@ -292,8 +290,8 @@ public class SuggestionBoxWebControllerTest {
   }
 
   private SuggestionBoxService getSuggestionBoxService() {
-    SuggestionBoxServiceMockWrapper mockWrapper = appContext.getBean(
-        SuggestionBoxServiceMockWrapper.class);
+    SuggestionBoxServiceMockWrapper mockWrapper =
+        appContext.getBean(SuggestionBoxServiceMockWrapper.class);
     return mockWrapper.getMock();
   }
 

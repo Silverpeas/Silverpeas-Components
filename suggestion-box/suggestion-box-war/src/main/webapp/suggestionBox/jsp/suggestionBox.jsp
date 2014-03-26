@@ -40,14 +40,15 @@
 <c:set var="suggestionBoxId" value="${requestScope.suggestionBox.id}"/>
 <c:set var="isEdito" value="${requestScope.isEdito}"/>
 
-<view:setConstant var="adminRole" constant="com.stratelia.webactiv.SilverpeasRole.admin" />
-<view:setConstant var="writerRole" constant="com.stratelia.webactiv.SilverpeasRole.writer" />
+<view:setConstant var="adminRole" constant="com.stratelia.webactiv.SilverpeasRole.admin"/>
+<view:setConstant var="publisherRole" constant="com.stratelia.webactiv.SilverpeasRole.publisher"/>
+<view:setConstant var="writerRole" constant="com.stratelia.webactiv.SilverpeasRole.writer"/>
 
 <fmt:message var="modifyEditoLabel" key="suggestionBox.menu.item.edito.modify"/>
 <fmt:message var="publishSuggestionLabel" key="GML.publish"/>
 <fmt:message var="addSuggestionLabel" key="suggestionBox.menu.item.suggestion.add"/>
 <fmt:message var="deleteSuggestionConfirmMessage" key="suggestionBox.message.suggestion.confirm">
-  <fmt:param value="<b>@name@</b>" />
+  <fmt:param value="<b>@name@</b>"/>
 </fmt:message>
 
 <c:url var="suggestionBoxJS" value="/util/javaScript/angularjs/suggestionbox.js"/>
@@ -65,13 +66,13 @@
 </head>
 <body>
 <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
-<view:operationPane>
-  <c:if test="${greaterUserRole.isGreaterThanOrEquals(adminRole)}">
-    <view:operation action="${componentUriBase}edito/modify" altText="${modifyEditoLabel}"/>
-    <view:operationSeparator/>
-  </c:if>
-  <view:operation action="${componentUriBase}suggestion/new" altText="${addSuggestionLabel}"/>
-</view:operationPane>
+  <view:operationPane>
+    <c:if test="${greaterUserRole.isGreaterThanOrEquals(adminRole)}">
+      <view:operation action="${componentUriBase}edito/modify" altText="${modifyEditoLabel}"/>
+      <view:operationSeparator/>
+    </c:if>
+    <view:operation action="${componentUriBase}suggestion/new" altText="${addSuggestionLabel}"/>
+  </view:operationPane>
 </c:if>
 <view:window>
   <view:frame>
@@ -79,38 +80,53 @@
     <c:if test="${isEdito}">
       <view:displayWysiwyg objectId="${suggestionBoxId}" componentId="${componentId}" language="${null}"/>
     </c:if>
-    <div ng-controller="publishedController">
-      <ul id="my_suggestions_list" class="container">
-        <li ng-repeat="suggestion in publishedSuggestions">
-          <a ng-href="${componentUriBase}suggestion/{{ suggestion.id }}"><span class="suggestion_title">{{ suggestion.title }}</span></a>
-          <img ng-click="delete(suggestion)" src="${deleteIcon}" alt="remove" class="action remove"/>
-        </li>
-      </ul>
-    </div>
-  </view:frame>
-  <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
-    <view:frame>
-      <div ng-controller="notPublishedController">
-        <ul id="my_notPublished_suggestions_list" class="container">
-          <li ng-repeat="suggestion in notPublishedSuggestions">
+    <div class="table">
+      <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
+        <div ng-controller="notPublishedController" class="cell">
+          <ul id="my_notPublished_suggestions_list" class="container">
+            <li ng-repeat="suggestion in notPublishedSuggestions">
+              <a ng-href="${componentUriBase}suggestion/{{ suggestion.id }}"><span class="suggestion_title">{{ suggestion.title }}</span></a><br/>
+
+              <div>{{ suggestion.status }}</div>
+              <div ng-bind-html="suggestion.content"></div>
+              <img ng-click="delete(suggestion)" src="${deleteIcon}" alt="remove" class="action remove"/>
+              <a href="#" ng-click="publish(suggestion)"><span>${publishSuggestionLabel}</span></a><br/>
+            </li>
+          </ul>
+        </div>
+      </c:if>
+      <c:if test="${greaterUserRole.isGreaterThanOrEquals(publisherRole)}">
+        <div ng-controller="pendingValidationController" class="cell">
+          <ul id="my_pending_validation_suggestions_list" class="container">
+            <li ng-repeat="suggestion in pendingValidationSuggestions">
+              <a ng-href="${componentUriBase}suggestion/{{ suggestion.id }}"><span class="suggestion_title">{{ suggestion.title }}</span></a><br/>
+
+              <div>{{ suggestion.status }}</div>
+              <div ng-bind-html="suggestion.content"></div>
+            </li>
+          </ul>
+        </div>
+      </c:if>
+      <div ng-controller="publishedController" class="cell">
+        <ul id="my_published_suggestions_list" class="container">
+          <li ng-repeat="suggestion in publishedSuggestions">
             <a ng-href="${componentUriBase}suggestion/{{ suggestion.id }}"><span class="suggestion_title">{{ suggestion.title }}</span></a><br/>
+
             <div>{{ suggestion.status }}</div>
             <div ng-bind-html="suggestion.content"></div>
-            <img ng-click="delete(suggestion)" src="${deleteIcon}" alt="remove" class="action remove"/>
-            <a href="#" ng-click="publish(suggestion)"><span>${publishSuggestionLabel}</span></a><br/>
           </li>
         </ul>
       </div>
-    </view:frame>
-  </c:if>
+    </div>
+  </view:frame>
 </view:window>
-  <script type="text/javascript">
-    angular.module('silverpeas').value('context', {
-          currentUserId: '${currentUserId}',
-          suggestionBoxId: '${suggestionBoxId}',
-          component: '${componentId}',
-          deleteSuggestionConfirmMessage: "${deleteSuggestionConfirmMessage} ?"});
-  </script>
-  <script type="text/javascript" src="${suggestionBoxJS}"></script>
+<script type="text/javascript">
+  angular.module('silverpeas').value('context', {
+    currentUserId : '${currentUserId}',
+    suggestionBoxId : '${suggestionBoxId}',
+    component : '${componentId}',
+    deleteSuggestionConfirmMessage : "${deleteSuggestionConfirmMessage} ?"});
+</script>
+<script type="text/javascript" src="${suggestionBoxJS}"></script>
 </body>
 </html>

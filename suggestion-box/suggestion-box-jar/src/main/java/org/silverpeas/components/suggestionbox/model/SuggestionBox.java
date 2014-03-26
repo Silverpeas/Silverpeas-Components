@@ -41,14 +41,14 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 import static org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_ORDER_BY
+    .APPROBATION_DATE_DESC;
+import static org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_ORDER_BY
     .LAST_UPDATE_DATE_ASC;
-import static org.silverpeas.contribution.ContributionStatus.DRAFT;
-import static org.silverpeas.contribution.ContributionStatus.REFUSED;
+import static org.silverpeas.contribution.ContributionStatus.*;
 
 /**
  * This entity represents a suggestion box.
@@ -206,6 +206,29 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
       SuggestionCriteria criteria = SuggestionCriteria.from(SuggestionBox.this).createdBy(user).
           statusIsOneOf(DRAFT, REFUSED)
           .orderedBy(LAST_UPDATE_DATE_ASC);
+      return suggestionBoxService.findSuggestionsByCriteria(criteria);
+    }
+
+    /**
+     * Finds the list of suggestions that are pending validation.
+     * @return the list of suggestions as described above and ordered by ascending last update date.
+     */
+    public List<Suggestion> findPendingValidation() {
+      SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
+      SuggestionCriteria criteria = SuggestionCriteria.from(SuggestionBox.this).
+          statusIsOneOf(PENDING_VALIDATION).orderedBy(LAST_UPDATE_DATE_ASC);
+      return suggestionBoxService.findSuggestionsByCriteria(criteria);
+    }
+
+    /**
+     * Finds the list of suggestions that are published (validated status).
+     * @return the list of suggestions as described above and ordered by descending approbation
+     * date.
+     */
+    public List<Suggestion> findPublished() {
+      SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
+      SuggestionCriteria criteria = SuggestionCriteria.from(SuggestionBox.this).
+          statusIsOneOf(VALIDATED).orderedBy(APPROBATION_DATE_DESC);
       return suggestionBoxService.findSuggestionsByCriteria(criteria);
     }
 
