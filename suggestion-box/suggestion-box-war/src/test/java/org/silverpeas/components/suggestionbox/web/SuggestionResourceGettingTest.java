@@ -75,10 +75,10 @@ public class SuggestionResourceGettingTest extends ResourceGettingTest<Suggestio
   }
 
   @Test
-  public void gettingNotPublishedSuggestionsByReaderUser() {
+  public void gettingInDraftSuggestionsByReaderUser() {
     authenticatedUser.addProfile(COMPONENT_INSTANCE_ID, SilverpeasRole.reader);
     try {
-      gettingNotPublishedSuggestions();
+      gettingInDraftSuggestions();
       fail("User must be a writer to get a list of not published suggestions");
     } catch (UniformInterfaceException ex) {
       int receivedStatus = ex.getResponse().getStatus();
@@ -88,24 +88,58 @@ public class SuggestionResourceGettingTest extends ResourceGettingTest<Suggestio
   }
 
   @Test
-  public void gettingNotPublishedSuggestionsByWriterUser() {
+  public void gettingInDraftSuggestionsByWriterUser() {
     authenticatedUser.addProfile(COMPONENT_INSTANCE_ID, SilverpeasRole.writer);
-    SuggestionEntity[] entities = gettingNotPublishedSuggestions();
+    SuggestionEntity[] entities = gettingInDraftSuggestions();
     assertThat(entities, notNullValue());
     assertThat(entities.length, is(3));
     verify(getTestResources().getSuggestionBoxService(), times(1)).
         findSuggestionsByCriteria(any(SuggestionCriteria.class));
   }
 
-  private SuggestionEntity[] gettingNotPublishedSuggestions() {
+  private SuggestionEntity[] gettingInDraftSuggestions() {
     SuggestionBoxService service = getTestResources().getSuggestionBoxService();
-    List<Suggestion> notPublished = new ArrayList<Suggestion>();
-    notPublished.add(getTestResources().aRandomSuggestion());
-    notPublished.add(getTestResources().aRandomSuggestion());
-    notPublished.add(getTestResources().aRandomSuggestion());
+    List<Suggestion> inDraft = new ArrayList<Suggestion>();
+    inDraft.add(getTestResources().aRandomSuggestion());
+    inDraft.add(getTestResources().aRandomSuggestion());
+    inDraft.add(getTestResources().aRandomSuggestion());
     when(service.findSuggestionsByCriteria(any(SuggestionCriteria.class)))
-        .thenAnswer(new Returns(notPublished));
-    return getAt(SUGGESTIONS_URI_BASE + "notPublished", SuggestionEntity[].class);
+        .thenAnswer(new Returns(inDraft));
+    return getAt(SUGGESTIONS_URI_BASE + "inDraft", SuggestionEntity[].class);
+  }
+
+  @Test
+  public void gettingOutOfDraftSuggestionsByReaderUser() {
+    authenticatedUser.addProfile(COMPONENT_INSTANCE_ID, SilverpeasRole.reader);
+    try {
+      gettingOutOfDraftSuggestions();
+      fail("User must be a writer to get a list of not published suggestions");
+    } catch (UniformInterfaceException ex) {
+      int receivedStatus = ex.getResponse().getStatus();
+      int forbidden = Response.Status.FORBIDDEN.getStatusCode();
+      assertThat(receivedStatus, Matchers.is(forbidden));
+    }
+  }
+
+  @Test
+  public void gettingOutOfDraftSuggestionsByWriterUser() {
+    authenticatedUser.addProfile(COMPONENT_INSTANCE_ID, SilverpeasRole.writer);
+    SuggestionEntity[] entities = gettingOutOfDraftSuggestions();
+    assertThat(entities, notNullValue());
+    assertThat(entities.length, is(3));
+    verify(getTestResources().getSuggestionBoxService(), times(1)).
+        findSuggestionsByCriteria(any(SuggestionCriteria.class));
+  }
+
+  private SuggestionEntity[] gettingOutOfDraftSuggestions() {
+    SuggestionBoxService service = getTestResources().getSuggestionBoxService();
+    List<Suggestion> outOfDraft = new ArrayList<Suggestion>();
+    outOfDraft.add(getTestResources().aRandomSuggestion());
+    outOfDraft.add(getTestResources().aRandomSuggestion());
+    outOfDraft.add(getTestResources().aRandomSuggestion());
+    when(service.findSuggestionsByCriteria(any(SuggestionCriteria.class)))
+        .thenAnswer(new Returns(outOfDraft));
+    return getAt(SUGGESTIONS_URI_BASE + "outOfDraft", SuggestionEntity[].class);
   }
 
   @Test

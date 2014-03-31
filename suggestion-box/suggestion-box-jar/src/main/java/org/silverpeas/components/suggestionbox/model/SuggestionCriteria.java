@@ -64,6 +64,7 @@ public class SuggestionCriteria {
   private final List<ContributionStatus> statuses = new ArrayList<ContributionStatus>();
   private final List<QUERY_ORDER_BY> orderByList = new ArrayList<QUERY_ORDER_BY>();
   private final List<String> identifiers = new ArrayList<String>();
+  private boolean loadWysiwygContent = false;
 
   private SuggestionCriteria() {
 
@@ -123,6 +124,14 @@ public class SuggestionCriteria {
   }
 
   /**
+   * Indicates that the content of the suggestions must be load before returning the result.
+   */
+  public SuggestionCriteria setLoadWysiwygContent() {
+    this.loadWysiwygContent = true;
+    return this;
+  }
+
+  /**
    * Gets the suggestion box criteria value.
    * {@link #from(SuggestionBox)}
    * @return the criterion on the suggestion box to which the suggestions should belong.
@@ -164,6 +173,14 @@ public class SuggestionCriteria {
    */
   private List<QUERY_ORDER_BY> getOrderByList() {
     return orderByList;
+  }
+
+  /**
+   * Indicates if suggestion contents must be loaded.
+   * @return true if suggestion contents mus be loaded.
+   */
+  public boolean mustLoadWysiwygContent() {
+    return loadWysiwygContent;
   }
 
   /**

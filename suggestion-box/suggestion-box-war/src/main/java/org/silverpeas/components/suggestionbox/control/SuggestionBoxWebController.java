@@ -90,6 +90,18 @@ public class SuggestionBoxWebController extends
   }
 
   /**
+   * Prepares the rendering of the published suggestions screen.
+   * @param context the context of the incoming request.
+   */
+  @GET
+  @Path("suggestions/published")
+  @RedirectToInternalJsp("publishedSuggestions.jsp")
+  @InvokeAfter({"isEdito"})
+  public void publishedSuggestions(SuggestionBoxWebRequestContext context) {
+    // Nothing to do for now...
+  }
+
+  /**
    * Handles the incoming from a search result URL.
    * @param context the context of the incoming request.
    */

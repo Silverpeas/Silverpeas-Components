@@ -27,9 +27,11 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
-<fmt:setLocale value="${requestScope.resources.language}"/>
+<c:set var="currentUserLanguage" value="${requestScope.resources.language}"/>
+<fmt:setLocale value="${currentUserLanguage}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 <c:set var="currentUser" value="${requestScope.currentUser}"/>
@@ -38,12 +40,14 @@
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
 <c:set var="greaterUserRole" value="${requestScope.greaterUserRole}"/>
 <c:set var="componentUriBase"><c:url value="${requestScope.componentUriBase}"/></c:set>
-<c:set var="suggestionBoxId" value="${requestScope.suggestionBox.id}"/>
+<c:set var="suggestionBox" value="${requestScope.suggestionBox}"/>
+<c:set var="suggestionBoxId" value="${suggestionBox.id}"/>
 <c:set var="isEdito" value="${requestScope.isEdito}"/>
 
 <view:setConstant var="adminRole" constant="com.stratelia.webactiv.SilverpeasRole.admin"/>
-<view:setConstant var="publisherRole" constant="com.stratelia.webactiv.SilverpeasRole.publisher"/>
 <view:setConstant var="writerRole" constant="com.stratelia.webactiv.SilverpeasRole.writer"/>
+
+<view:setConstant var="STATUS_REFUSED" constant="org.silverpeas.contribution.ContributionStatus.REFUSED"/>
 
 <fmt:message var="modifyEditoLabel" key="suggestionBox.menu.item.edito.modify"/>
 <fmt:message var="publishSuggestionLabel" key="GML.publish"/>
@@ -111,54 +115,91 @@
       </c:otherwise>
     </c:choose>
     <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
-      <view:operation action="${componentUriBase}suggestion/new" altText="${browseBarPathSuggestionLabel}"/>
+      <fmt:message key="suggestionBox.proposeSuggestion" var="tmpIcon" bundle="${icons}"/>
+      <c:url var="tmpIcon" value="${tmpIcon}"/>
+      <view:operationOfCreation action="${componentUriBase}suggestion/new" altText="${browseBarPathSuggestionLabel}" icon="${tmpIcon}"/>
     </c:if>
   </c:if>
 </view:operationPane>
 <view:window>
   <view:frame>
+    <h2 class="suggestionBox-title">${suggestionBox.getTitle(currentUserLanguage)}</h2>
     <c:if test="${isEdito}">
-      <view:displayWysiwyg objectId="${suggestionBoxId}" componentId="${componentId}" language="${null}"/>
+      <div class="suggestionBox-description">
+        <view:displayWysiwyg objectId="${suggestionBoxId}" componentId="${componentId}" language="${null}"/>
+      </div>
     </c:if>
-    <div class="table">
-      <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
-        <div ng-controller="notPublishedController" class="cell">
+    <div id="my-suggestionBox">
+      <view:areaOfOperationOfCreation/>
+      <fmt:message key="suggestionBox.label.suggestions.mine" var="labelMySuggestions"/>
+      <div class="secteur-container my-suggestionBox-draft">
+        <div class="header">
+          <h3 class="my-suggestionBox-inProgress-title">
+            <c:out value="${labelMySuggestions} "/>
+            <strong><fmt:message key="suggestionBox.label.suggestions.inDraft"/></strong></h3>
+        </div>
+        <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
           <div suggestionbox-deletion></div>
-          <ul id="my_notPublished_suggestions_list" class="container">
-            <li ng-repeat="suggestion in notPublishedSuggestions">
-              <a ng-href="${componentUriBase}suggestion/{{ suggestion.id }}"><span class="suggestion_title">{{ suggestion.title }}</span></a><br/>
-
-              <div>{{ suggestion.status }}</div>
-              <div ng-bind-html="suggestion.content"></div>
-              <img ng-click="delete(suggestion)" src="${deleteIcon}" alt="remove" class="action remove"/>
+          <ul ng-controller="inDraftController">
+            <li ng-repeat="suggestion in inDraftSuggestions">
+              <a ng-href="${componentUriBase}suggestion/{{ suggestion.id }}">{{suggestion.title}}</a>
+                <%--TODO BEGIN REMOVE AFTER DEV--%>
+              <img ng-click="delete(suggestion)" src="${deleteIcon}" alt="remove" style="cursor: pointer"/>
               <a href="#" ng-click="publish(suggestion)"><span>${publishSuggestionLabel}</span></a><br/>
+                <%--TODO END REMOVE AFTER DEV--%>
             </li>
           </ul>
+        </c:if>
+      </div>
+      <div class="secteur-container my-suggestionBox-inProgress">
+        <div class="header">
+          <h3 class="my-suggestionBox-inProgress-title">
+            <strong><fmt:message key="suggestionBox.label.suggestions.progress"/></strong>
+            <c:out value="${fn:toLowerCase(labelMySuggestions)}"/></h3>
         </div>
-      </c:if>
-      <c:if test="${greaterUserRole.isGreaterThanOrEquals(publisherRole)}">
-        <div suggestionbox-validation></div>
-        <div ng-controller="pendingValidationController" class="cell">
-          <ul id="my_pending_validation_suggestions_list" class="container">
-            <li ng-repeat="suggestion in pendingValidationSuggestions">
-              <a ng-href="${componentUriBase}suggestion/{{ suggestion.id }}"><span class="suggestion_title">{{ suggestion.title }}</span></a><br/>
-
-              <div>{{ suggestion.status }}</div>
-              <div ng-bind-html="suggestion.content"></div>
-              <a href="#" ng-click="refuse(suggestion)"><span>${refuseSuggestionLabel}</span></a><br/>
-              <a href="#" ng-click="approve(suggestion)"><span>${approveSuggestionLabel}</span></a><br/>
+        <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
+          <div suggestionbox-deletion></div>
+          <ul ng-controller="outOfDraftController">
+            <li ng-repeat="suggestion in outOfDraftSuggestions">
+              <a ng-href="${componentUriBase}suggestion/{{ suggestion.id }}">{{suggestion.title}}</a>
+                <%--TODO BEGIN REMOVE AFTER DEV--%>
+              <span>{{suggestion.status}}</span>
+              <img ng-if="'${STATUS_REFUSED}'==suggestion.status" ng-click="delete(suggestion)" src="${deleteIcon}" alt="remove" style="cursor: pointer"/>
+              <a href="#" ng-click="publish(suggestion)"><span>${publishSuggestionLabel}</span></a><br/>
+                <%--TODO END REMOVE AFTER DEV--%>
             </li>
           </ul>
+        </c:if>
+      </div>
+    </div>
+    <div id="all-suggestionBox">
+      <div class="secteur-container lastSuggestion">
+        <div class="header">
+          <h3 class="lastSuggestion-title">
+            <fmt:message key="suggestionBox.label.suggestions.last"/></h3>
         </div>
-      </c:if>
-      <div ng-controller="publishedController" class="cell">
-        <ul id="my_published_suggestions_list" class="container">
-          <li ng-repeat="suggestion in publishedSuggestions">
-            <a ng-href="${componentUriBase}suggestion/{{ suggestion.id }}"><span class="suggestion_title">{{ suggestion.title }}</span></a><br/>
-
-            <div>{{ suggestion.status }}</div>
-            <div ng-bind-html="suggestion.content"></div>
+        <ul ng-controller="publishedController">
+          <li ng-repeat="suggestion in publishedSuggestions" ng-if="$index < 5">
+            <a ng-href="${componentUriBase}suggestion/{{ suggestion.id }}"><span class="date">{{suggestion.validation.date | date: 'shortDate'}}</span>{{suggestion.title}}</a>
           </li>
+        </ul>
+        <a href="#" class="more"><fmt:message key="suggestionBox.label.suggestions.more"/></a>
+      </div>
+      <div class="secteur-container buzzSuggestion">
+        <div class="header">
+          <h3 class="buzzSuggestion-title"><fmt:message key="suggestionBox.label.suggestions.buzz"/></h3>
+        </div>
+        <ul ng-controller="buzzPublishedController">
+          <li ng-repeat="suggestion in buzzPublishedSuggestions" ng-if="$index < 5">
+            <a ng-href="${componentUriBase}suggestion/{{ suggestion.id }}">{{suggestion.title}}</a>
+          </li>
+        </ul>
+      </div>
+      <div class="secteur-container lastCommentSuggestion">
+        <div class="header">
+          <h3 class="lastCommentSuggestion-title"><fmt:message key="suggestionBox.label.suggestions.comments.last"/></h3>
+        </div>
+        <ul>
         </ul>
       </div>
     </div>

@@ -78,16 +78,27 @@ public class SuggestionBoxWebServiceProvider {
   }
 
   /**
-   * Gets the list of suggestions that are not published (draft end refused status) and which
-   * the creator is those specified.
+   * Gets the list of suggestions that are in draft and which the creator is those specified.
    * @param suggestionBox the suggestion box the current user is working on.
    * @param creator the user that must be the creator of the returned suggestions.
    * @return the aimed suggestion entities.
-   * @see SuggestionBox.Suggestions#findNotPublishedFor(UserDetail)
+   * @see SuggestionBox.Suggestions#findInDraftFor(UserDetail)
    */
-  public List<SuggestionEntity> getNotPublishedFor(SuggestionBox suggestionBox,
+  public List<SuggestionEntity> getSuggestionsInDraftFor(SuggestionBox suggestionBox,
       UserDetail creator) {
-    return asWebEntities(suggestionBox.getSuggestions().findNotPublishedFor(creator));
+    return asWebEntities(suggestionBox.getSuggestions().findInDraftFor(creator));
+  }
+
+  /**
+   * Gets the list of suggestions that are out of draft and which the creator is those specified.
+   * @param suggestionBox the suggestion box the current user is working on.
+   * @param creator the user that must be the creator of the returned suggestions.
+   * @return the aimed suggestion entities.
+   * @see SuggestionBox.Suggestions#findInDraftFor(UserDetail)
+   */
+  public List<SuggestionEntity> getSuggestionsOutOfDraftFor(SuggestionBox suggestionBox,
+      UserDetail creator) {
+    return asWebEntities(suggestionBox.getSuggestions().findOutOfDraftFor(creator));
   }
 
   /**
