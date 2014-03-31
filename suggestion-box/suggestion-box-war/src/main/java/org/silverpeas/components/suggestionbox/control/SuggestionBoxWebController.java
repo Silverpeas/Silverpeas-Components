@@ -23,6 +23,9 @@
  */
 package org.silverpeas.components.suggestionbox.control;
 
+import com.silverpeas.subscribe.SubscriptionService;
+import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.Navigation;
@@ -81,7 +84,7 @@ public class SuggestionBoxWebController extends
   @Path("Main")
   @Homepage
   @RedirectToInternalJsp("suggestionBox.jsp")
-  @InvokeAfter("isEdito")
+  @InvokeAfter({"isEdito", "isUserSubscribed"})
   public void home(SuggestionBoxWebRequestContext context) {
     // Nothing to do for now...
   }
@@ -121,6 +124,21 @@ public class SuggestionBoxWebController extends
         .haveGotWysiwyg(context.getComponentInstanceId(), context.getSuggestionBox().getId(),
             null)) {
       context.getRequest().setAttribute("isEdito", true);
+    }
+  }
+
+  /**
+   * Sets into request attributes the isUserSubscribed constant.
+   * @param context the context of the incoming request.
+   */
+  @Invokable("isUserSubscribed")
+  public void setIsUserSubscribed(SuggestionBoxWebRequestContext context) {
+    if (!getUserDetail().isAccessGuest()) {
+      SubscriptionService subscriptionService =
+          SubscriptionServiceFactory.getFactory().getSubscribeService();
+      boolean isUserSubscribed = subscriptionService.existsSubscription(
+          new ComponentSubscription(context.getUser().getId(), context.getComponentInstanceId()));
+      context.getRequest().setAttribute("isUserSubscribed", isUserSubscribed);
     }
   }
 

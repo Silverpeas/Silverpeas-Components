@@ -23,33 +23,52 @@
  */
 package org.silverpeas.components.suggestionbox.notification;
 
+import com.silverpeas.subscribe.constant.SubscriberType;
+import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
+import com.silverpeas.subscribe.util.SubscriptionUtil;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * @author Yohann Chastagnier
  */
-public class SuggestionPendingValidationUserNotification
-    extends AbstractSuggestionActionUserNotification {
+public class SuggestionBoxSubscriptionUserNotification extends AbstractSuggestionUserNotification {
 
-  public SuggestionPendingValidationUserNotification(final Suggestion resource) {
-    super(resource, NotifAction.PENDING_VALIDATION);
+  private Map<SubscriberType, Collection<String>> subscriberIdsByTypes =
+      SubscriptionUtil.indexSubscriberIdsByType(null);
+
+  public SuggestionBoxSubscriptionUserNotification(final Suggestion resource) {
+    super(resource, NotifAction.CREATE);
+  }
+
+  @Override
+  protected void initialize() {
+    super.initialize();
+    SubscriptionUtil.indexSubscriberIdsByType(subscriberIdsByTypes, getSubscribeBm().getSubscribers(
+        ComponentSubscriptionResource.from(getResource().getComponentInstanceId())));
+    subscriberIdsByTypes.get(SubscriberType.USER).remove(getSender());
   }
 
   @Override
   protected String getBundleSubjectKey() {
-    return "suggestionBox.suggestion.notification.pendingValidation.subject";
+    return "GML.subscription";
   }
 
   @Override
   protected String getFileName() {
-    return "pendingValidationNotification";
+    return "suggestionPublishedSubscriptionNotification";
   }
 
   @Override
   protected Collection<String> getUserIdsToNotify() {
-    return getSuggestionBoxModerators();
+    return subscriberIdsByTypes.get(SubscriberType.USER);
+  }
+
+  @Override
+  protected Collection<String> getGroupIdsToNotify() {
+    return subscriberIdsByTypes.get(SubscriberType.GROUP);
   }
 }

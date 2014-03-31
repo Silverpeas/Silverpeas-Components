@@ -35,18 +35,11 @@ public abstract class AbstractSuggestionUserNotification
     extends AbstractSuggestionBoxUserNotification<Suggestion> {
 
   private final NotifAction action;
-  private final String senderName;
 
   protected AbstractSuggestionUserNotification(final Suggestion resource,
       final NotifAction action) {
-    this(resource, action, null);
-  }
-
-  protected AbstractSuggestionUserNotification(final Suggestion resource, final NotifAction action,
-      final String senderName) {
-    super(resource, null, null);
+    super(resource);
     this.action = action;
-    this.senderName = senderName;
   }
 
   @Override
@@ -70,10 +63,6 @@ public abstract class AbstractSuggestionUserNotification
   @Override
   protected boolean stopWhenNoUserToNotify() {
     return (!NotifAction.REPORT.equals(action));
-  }
-
-  protected String getSenderName() {
-    return senderName;
   }
 
   @Override

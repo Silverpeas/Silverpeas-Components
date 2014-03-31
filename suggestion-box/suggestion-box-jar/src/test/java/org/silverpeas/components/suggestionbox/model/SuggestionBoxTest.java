@@ -36,6 +36,8 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.silverpeas.components.suggestionbox.notification
+    .SuggestionBoxSubscriptionUserNotification;
+import org.silverpeas.components.suggestionbox.notification
     .SuggestionPendingValidationUserNotification;
 import org.silverpeas.components.suggestionbox.notification.SuggestionValidationUserNotification;
 import org.silverpeas.components.suggestionbox.repository.RepositoryBasedTest;
@@ -219,8 +221,8 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     assertThat(table.getValue(0, "validationComment"), is(nullValue()));
     assertThat((String) table.getValue(0, "validationBy"), is("26"));
 
-    PowerMockito.verifyStatic(times(0));
-    UserNotificationHelper.buildAndSend(any(UserNotificationBuider.class));
+    PowerMockito.verifyStatic(times(1));
+    UserNotificationHelper.buildAndSend(any(SuggestionBoxSubscriptionUserNotification.class));
   }
 
   @Test
@@ -337,7 +339,8 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     assertThat(table.getValue(index, "validationComment"), is(nullValue()));
     assertThat((String) table.getValue(index, "validationBy"), is("38"));
 
-    PowerMockito.verifyStatic(times(1));
+    PowerMockito.verifyStatic(times(2));
+    UserNotificationHelper.buildAndSend(any(SuggestionBoxSubscriptionUserNotification.class));
     UserNotificationHelper.buildAndSend(any(SuggestionValidationUserNotification.class));
   }
 

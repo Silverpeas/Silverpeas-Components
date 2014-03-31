@@ -27,17 +27,13 @@ import com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuild
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.util.CollectionUtil;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.SpaceInst;
-import org.silverpeas.core.admin.OrganisationController;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * @author Yohann Chastagnier
@@ -75,36 +71,26 @@ public abstract class AbstractSuggestionBoxUserNotification<T>
             Collections.singletonList(SilverpeasRole.admin.name())));
   }
 
-  protected OrganisationController getOrganisationController() {
-    // Must return a new instance each time.
-    // This is to resolve Serializable problems
-    return new OrganizationController();
-  }
-
+  /**
+   * Gets the service instance of subscription management.
+   * @return the subscriptions service instance.
+   */
   protected SubscriptionService getSubscribeBm() {
     return SubscriptionServiceFactory.getFactory().getSubscribeService();
   }
 
-  private String getSpacesPath(final String componentId, final String language) {
-    String spacesPath = "";
-    final List<SpaceInst> spaces = getOrganisationController().getSpacePathToComponent(componentId);
-    final Iterator<SpaceInst> iSpaces = spaces.iterator();
-    SpaceInst spaceInst;
-    while (iSpaces.hasNext()) {
-      spaceInst = iSpaces.next();
-      spacesPath += spaceInst.getName(language);
-      spacesPath += " > ";
+  /**
+   * Gets the name of the sender.
+   * @return
+   */
+  protected String getSenderName() {
+    String senderId = getSender();
+    if (StringUtil.isDefined(senderId)) {
+      UserDetail userDetail = UserDetail.getById(senderId);
+      if (userDetail != null) {
+        return userDetail.getDisplayedName();
+      }
     }
-    return spacesPath;
-  }
-
-  private String getComponentLabel(final String componentId, final String language) {
-    final ComponentInstLight component = getOrganisationController().getComponentInstLight(
-        componentId);
-    String componentLabel = "";
-    if (component != null) {
-      componentLabel = component.getLabel(language);
-    }
-    return componentLabel;
+    return getSender();
   }
 }

@@ -34,6 +34,7 @@
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 <c:set var="currentUser" value="${requestScope.currentUser}"/>
 <c:set var="currentUserId" value="${currentUser.id}"/>
+<c:set var="isUserSubscribed" value="${requestScope.isUserSubscribed}"/>
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
 <c:set var="greaterUserRole" value="${requestScope.greaterUserRole}"/>
 <c:set var="componentUriBase"><c:url value="${requestScope.componentUriBase}"/></c:set>
@@ -52,6 +53,8 @@
 <fmt:message var="deleteSuggestionConfirmMessage" key="suggestionBox.message.suggestion.remove.confirm">
   <fmt:param value="<b>@name@</b>"/>
 </fmt:message>
+<fmt:message key="suggestionBox.menu.item.subscribe" var="subscribeToSuggestionBoxLabel"/>
+<fmt:message key="suggestionBox.menu.item.unsubscribe" var="unsubscribeFromSuggestionBoxLabel"/>
 
 <c:url var="suggestionBoxJS" value="/util/javaScript/angularjs/suggestionbox.js"/>
 <c:url var="suggestionBoxServicesJS" value="/util/javaScript/angularjs/services/suggestionbox.js"/>
@@ -69,17 +72,49 @@
   <script type="text/javascript" src="${suggestionBoxServicesJS}"></script>
   <script type="text/javascript" src="${suggestionBoxValidationDirectiveJS}"></script>
   <script type="text/javascript" src="${suggestionBoxDeletionDirectiveJS}"></script>
+  <script type="application/javascript">
+    function successUnsubscribe() {
+      $("#yui-gen1").empty().append($('<a>').addClass('yuimenuitemlabel').attr('href',
+          "javascript:subscribe();").attr('title',
+          '<view:encodeJs string="${subscribeToSuggestionBoxLabel}" />').append('<view:encodeJs string="${subscribeToSuggestionBoxLabel}" />'));
+    }
+
+    function successSubscribe() {
+      $("#yui-gen1").empty().append($('<a>').addClass('yuimenuitemlabel').attr('href',
+          "javascript:unsubscribe();").attr('title',
+          '<view:encodeJs string="${unsubscribeFromSuggestionBoxLabel}" />').append('<view:encodeJs string="${unsubscribeFromSuggestionBoxLabel}" />'));
+    }
+
+    function unsubscribe() {
+      $.post('<c:url value="/services/unsubscribe/${componentId}" />', successUnsubscribe(),
+          'json');
+    }
+
+    function subscribe() {
+      $.post('<c:url value="/services/subscribe/${componentId}" />', successSubscribe(), 'json');
+    }
+  </script>
 </head>
 <body ng-controller="mainController">
-<c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
-  <view:operationPane>
-    <c:if test="${greaterUserRole.isGreaterThanOrEquals(adminRole)}">
-      <view:operation action="${componentUriBase}edito/modify" altText="${modifyEditoLabel}"/>
-      <view:operationSeparator/>
+<view:operationPane>
+  <c:if test="${greaterUserRole.isGreaterThanOrEquals(adminRole)}">
+    <view:operation action="${componentUriBase}edito/modify" altText="${modifyEditoLabel}"/>
+    <view:operationSeparator/>
+  </c:if>
+  <c:if test="${isUserSubscribed != null}">
+    <c:choose>
+      <c:when test="${isUserSubscribed}">
+        <view:operation altText="${unsubscribeFromSuggestionBoxLabel}" icon="" action="javascript:unsubscribe();"/>
+      </c:when>
+      <c:otherwise>
+        <view:operation altText="${subscribeToSuggestionBoxLabel}" icon="" action="javascript:subscribe();"/>
+      </c:otherwise>
+    </c:choose>
+    <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
+      <view:operation action="${componentUriBase}suggestion/new" altText="${browseBarPathSuggestionLabel}"/>
     </c:if>
-    <view:operation action="${componentUriBase}suggestion/new" altText="${browseBarPathSuggestionLabel}"/>
-  </view:operationPane>
-</c:if>
+  </c:if>
+</view:operationPane>
 <view:window>
   <view:frame>
     <c:if test="${isEdito}">

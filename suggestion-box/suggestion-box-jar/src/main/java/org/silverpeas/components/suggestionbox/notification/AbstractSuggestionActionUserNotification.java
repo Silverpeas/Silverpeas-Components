@@ -37,7 +37,7 @@ public abstract class AbstractSuggestionActionUserNotification
   }
 
   @Override
-  protected String getSender() {
-    return getResource().getLastUpdatedBy();
+  protected boolean isSendImmediatly() {
+    return true;
   }
 }
