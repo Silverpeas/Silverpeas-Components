@@ -51,15 +51,19 @@ import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.model.SuggestionBoxService;
 import org.silverpeas.contribution.ContributionStatus;
 import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.servlet.HttpRequest;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import javax.ws.rs.WebApplicationException;
+import java.net.URISyntaxException;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
 
@@ -75,6 +79,7 @@ public class SuggestionBoxWebControllerTest {
   private SuggestionBoxWebController controller;
 
   private static final String COMPONENT_INSTANCE_ID = "suggestionBox1";
+  private static final String SUGGESTIONBOX_ID = "suggestionBox_1";
   private static final String SUGGESTION_ID = "suggestion_1";
 
   @Before
@@ -116,16 +121,110 @@ public class SuggestionBoxWebControllerTest {
   }
 
   @Test
-  public void editASuggestion() {
+  public void viewASuggestion() throws URISyntaxException {
     SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
     when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
     SuggestionBox box = context.getSuggestionBox();
     SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
-    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(aSuggestion());
+    Suggestion theSuggestion = aSuggestion();
+    ReflectionTestUtils.setField(theSuggestion, "suggestionBox", box);
+    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(theSuggestion);
+
+    controller.viewSuggestion(context);
+
+    verify(suggestionBoxService, times(1)).findSuggestionById(box, SUGGESTION_ID);
+
+    verify(context.getRequest(), times(0)).setAttribute("edit", "edit");
+  }
+
+  @Test(expected = WebApplicationException.class)
+  public void viewAnUnexistingSuggestionInAGivenSuggestionBox() {
+    SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
+    when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
+    SuggestionBox box = context.getSuggestionBox();
+    SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
+    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(Suggestion.NONE);
+
+    controller.viewSuggestion(context);
+  }
+
+  @Test
+  public void viewANonDraftSuggestionInAGivenSuggestionBoxUserIsNotModerator() {
+    SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
+    when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
+    SuggestionBox box = context.getSuggestionBox();
+    SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
+    Suggestion theSuggestion = aSuggestionWithStatus(ContributionStatus.PENDING_VALIDATION);
+    ReflectionTestUtils.setField(theSuggestion, "suggestionBox", box);
+    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(theSuggestion);
+    when(getOrganisationController().getUsersIdsByRoleNames(box.getComponentInstanceId(),
+        CollectionUtil.asList(SilverpeasRole.admin.name(), SilverpeasRole.publisher.name())))
+        .thenReturn(new String[]{"otherId"});
+
+    controller.viewSuggestion(context);
+
+    verify(suggestionBoxService, times(1)).findSuggestionById(box, SUGGESTION_ID);
+
+    verify(context.getRequest(), times(0)).setAttribute("edit", "edit");
+  }
+
+  @Test
+  public void viewANonDraftSuggestionInAGivenSuggestionBoxUserIsModerator() {
+    SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
+    when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
+    SuggestionBox box = context.getSuggestionBox();
+    SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
+    Suggestion theSuggestion = aSuggestionWithStatus(ContributionStatus.PENDING_VALIDATION);
+    ReflectionTestUtils.setField(theSuggestion, "suggestionBox", box);
+    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(theSuggestion);
+    String userId = context.getUser().getId();
+    when(getOrganisationController().getUsersIdsByRoleNames(box.getComponentInstanceId(),
+        CollectionUtil.asList(SilverpeasRole.admin.name(), SilverpeasRole.publisher.name())))
+        .thenReturn(new String[]{userId});
+
+    controller.viewSuggestion(context);
+
+    verify(suggestionBoxService, times(1)).findSuggestionById(box, SUGGESTION_ID);
+
+    verify(context.getRequest(), times(0)).setAttribute("edit", "edit");
+  }
+
+  @Test
+  public void viewAValidatedSuggestionInAGivenSuggestionBoxUserIsModerator() {
+    SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
+    when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
+    SuggestionBox box = context.getSuggestionBox();
+    SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
+    Suggestion theSuggestion = aSuggestionWithStatus(ContributionStatus.VALIDATED);
+    ReflectionTestUtils.setField(theSuggestion, "suggestionBox", box);
+    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(theSuggestion);
+    String userId = context.getUser().getId();
+    when(getOrganisationController().getUsersIdsByRoleNames(box.getComponentInstanceId(),
+        CollectionUtil.asList(SilverpeasRole.admin.name(), SilverpeasRole.publisher.name())))
+        .thenReturn(new String[]{userId});
+
+    controller.viewSuggestion(context);
+
+    verify(suggestionBoxService, times(1)).findSuggestionById(box, SUGGESTION_ID);
+
+    verify(context.getRequest(), times(0)).setAttribute("edit", "edit");
+  }
+
+  @Test
+  public void editASuggestion() throws URISyntaxException {
+    SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
+    when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
+    SuggestionBox box = context.getSuggestionBox();
+    SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
+    Suggestion theSuggestion = aSuggestion();
+    ReflectionTestUtils.setField(theSuggestion, "suggestionBox", box);
+    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(theSuggestion);
 
     controller.editSuggestion(context);
 
     verify(suggestionBoxService, times(1)).findSuggestionById(box, SUGGESTION_ID);
+
+    verify(context.getRequest(), times(1)).setAttribute("edit", "edit");
   }
 
   @Test(expected = WebApplicationException.class)
@@ -140,13 +239,53 @@ public class SuggestionBoxWebControllerTest {
   }
 
   @Test(expected = WebApplicationException.class)
-  public void editANonDraftSuggestionInAGivenSuggestionBox() {
+  public void editANonDraftSuggestionInAGivenSuggestionBoxUserIsNotModerator() {
     SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
     when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
     SuggestionBox box = context.getSuggestionBox();
     SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
     when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID))
         .thenReturn(aSuggestionWithStatus(ContributionStatus.PENDING_VALIDATION));
+    when(getOrganisationController().getUsersIdsByRoleNames(box.getComponentInstanceId(),
+        CollectionUtil.asList(SilverpeasRole.admin.name(), SilverpeasRole.publisher.name())))
+        .thenReturn(new String[]{"otherId"});
+
+    controller.editSuggestion(context);
+  }
+
+  @Test
+  public void editANonDraftSuggestionInAGivenSuggestionBoxUserIsModerator() {
+    SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
+    when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
+    SuggestionBox box = context.getSuggestionBox();
+    SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
+    Suggestion theSuggestion = aSuggestionWithStatus(ContributionStatus.PENDING_VALIDATION);
+    ReflectionTestUtils.setField(theSuggestion, "suggestionBox", box);
+    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(theSuggestion);
+    String userId = context.getUser().getId();
+    when(getOrganisationController().getUsersIdsByRoleNames(box.getComponentInstanceId(),
+        CollectionUtil.asList(SilverpeasRole.admin.name(), SilverpeasRole.publisher.name())))
+        .thenReturn(new String[]{userId});
+
+    controller.editSuggestion(context);
+
+    verify(suggestionBoxService, times(1)).findSuggestionById(box, SUGGESTION_ID);
+
+    verify(context.getRequest(), times(1)).setAttribute("edit", "edit");
+  }
+
+  @Test(expected = WebApplicationException.class)
+  public void editAValidatedSuggestionInAGivenSuggestionBoxUserIsModerator() {
+    SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
+    when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
+    SuggestionBox box = context.getSuggestionBox();
+    SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
+    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID))
+        .thenReturn(aSuggestionWithStatus(ContributionStatus.VALIDATED));
+    String userId = context.getUser().getId();
+    when(getOrganisationController().getUsersIdsByRoleNames(box.getComponentInstanceId(),
+        CollectionUtil.asList(SilverpeasRole.admin.name(), SilverpeasRole.publisher.name())))
+        .thenReturn(new String[]{userId});
 
     controller.editSuggestion(context);
   }
@@ -457,6 +596,7 @@ public class SuggestionBoxWebControllerTest {
 
   private SuggestionBox aSuggestionBox() {
     SuggestionBox box = new SuggestionBox(COMPONENT_INSTANCE_ID);
+    ReflectionTestUtils.setField(box, "id", new UuidIdentifier().fromString(SUGGESTIONBOX_ID));
     box.setCreator(aUser());
     return box;
   }
@@ -469,6 +609,7 @@ public class SuggestionBoxWebControllerTest {
 
   private Suggestion aSuggestion() {
     Suggestion suggestion = new Suggestion("A suggestion title");
+    ReflectionTestUtils.setField(suggestion, "id", new UuidIdentifier().fromString(SUGGESTION_ID));
     suggestion.setCreator(aUser());
     suggestion.setContent("A suggestion content");
     return suggestion;
