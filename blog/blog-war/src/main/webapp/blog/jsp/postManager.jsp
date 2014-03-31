@@ -147,7 +147,9 @@
 		}
 		
 		$(document).ready(function() {
-			<view:wysiwyg replace="Content" language="${language}" width="600" height="300" toolbar="Default"/>
+			<view:wysiwyg replace="Content" language="${language}" width="600" height="300" toolbar="Default" 
+				spaceId="<%=spaceId%>" spaceName="<%=spaceLabel%>" componentId="<%=instanceId%>" componentName="<%=componentLabel%>" 
+				browseInfo="<%=title%>" objectId="<%=post.getId()%>" fileStorage="true" />
 		});
 	</script>
 </head>
