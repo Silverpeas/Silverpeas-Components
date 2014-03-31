@@ -455,13 +455,13 @@ function confirmDeleteCategory(categoryId) {
 <fmt:message key="GML.subscribe" var="labelSubscribe"/>
 <fmt:message key="GML.unsubscribe" var="labelUnsubscribe"/>
 function successUnsubscribe() {
-   $("#yui-gen1").empty().append($('<a>').addClass('yuimenuitemlabel').attr('href',
+   $("#yui-gen2").empty().append($('<a>').addClass('yuimenuitemlabel').attr('href',
    "javascript:subscribe();").attr('title',
-   '<view:encodeJs string="${labelUnsubscribe}" />').append('<view:encodeJs string="${labelSubscribe}" />') );
+   '<view:encodeJs string="${labelSubscribe}" />').append('<view:encodeJs string="${labelSubscribe}" />') );
 }
 
 function successSubscribe() {
-   $("#yui-gen1").empty().append($('<a>').addClass('yuimenuitemlabel').attr(
+   $("#yui-gen2").empty().append($('<a>').addClass('yuimenuitemlabel').attr(
    'href', "javascript:unsubscribe();").attr('title',
    '<view:encodeJs string="${labelUnsubscribe}" />').append('<view:encodeJs string="${labelUnsubscribe}" />') );
 }

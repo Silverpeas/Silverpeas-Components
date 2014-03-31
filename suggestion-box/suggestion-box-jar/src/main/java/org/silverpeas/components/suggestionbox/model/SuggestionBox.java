@@ -28,6 +28,8 @@ import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.components.suggestionbox.notification
+    .SuggestionBoxSubscriptionUserNotification;
+import org.silverpeas.components.suggestionbox.notification
     .SuggestionPendingValidationUserNotification;
 import org.silverpeas.components.suggestionbox.notification.SuggestionValidationUserNotification;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
@@ -255,6 +257,8 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
               .buildAndSend(new SuggestionPendingValidationUserNotification(actual));
           break;
         case VALIDATED:
+          UserNotificationHelper
+              .buildAndSend(new SuggestionBoxSubscriptionUserNotification(actual));
           break;
       }
       return actual;
@@ -264,7 +268,8 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
      * Validates from the specified suggestion box the specified suggestion.
      * <p/>
      * The publication of a suggestion consists in changing its status to VALIDATED or REFUSED
-     * and sending a notification to the creator in order to inform him about the validation result.
+     * and sending a notification to the creator in order to inform him about the validation
+     * result.
      * <p/>
      * If the suggestion doesn't exist in the suggestion box, then nothing is done.
      * @param suggestion the suggestion to publish.
@@ -275,7 +280,10 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
       Suggestion actual = suggestionBoxService.validateSuggestion(SuggestionBox.this, suggestion);
       switch (actual.getStatus()) {
         case VALIDATED:
+          UserNotificationHelper
+              .buildAndSend(new SuggestionBoxSubscriptionUserNotification(actual));
         case REFUSED:
+          // The below notification is sent on VALIDATED or REFUSED status.
           UserNotificationHelper.buildAndSend(new SuggestionValidationUserNotification(actual));
           break;
       }
