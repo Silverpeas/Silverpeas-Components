@@ -23,6 +23,8 @@
  */
 package org.silverpeas.components.suggestionbox.model;
 
+import com.silverpeas.subscribe.SubscriptionService;
+import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.silverpeas.util.CollectionUtil;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -39,6 +41,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.components.suggestionbox.mock.AttachmentServiceMockWrapper;
 import org.silverpeas.components.suggestionbox.mock.OrganisationControllerMockWrapper;
+import org.silverpeas.components.suggestionbox.mock.SubscriptionServiceMockWrapper;
 import org.silverpeas.components.suggestionbox.mock.SuggestionBoxRepositoryMockWrapper;
 import org.silverpeas.components.suggestionbox.mock.SuggestionRepositoryMockWrapper;
 import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepository;
@@ -124,6 +127,8 @@ public class SuggestionBoxServiceTest {
     SuggestionBoxRepository suggestionBoxRepository = getSuggestionBoxRepository();
     verify(suggestionBoxRepository, times(1)).delete(box);
     verify(getAttachmentService(), times(1)).deleteAllAttachments(eq(box.getComponentInstanceId()));
+    verify(getSubscriptionService(), times(1)).unsubscribeByResource(eq(
+        ComponentSubscriptionResource.from(box.getComponentInstanceId())));
   }
 
   @Test
@@ -357,6 +362,12 @@ public class SuggestionBoxServiceTest {
   private AttachmentService getAttachmentService() {
     AttachmentServiceMockWrapper mockWrapper = context.
         getBean(AttachmentServiceMockWrapper.class);
+    return mockWrapper.getMock();
+  }
+
+  private SubscriptionService getSubscriptionService() {
+    SubscriptionServiceMockWrapper mockWrapper = context.
+        getBean(SubscriptionServiceMockWrapper.class);
     return mockWrapper.getMock();
   }
 }

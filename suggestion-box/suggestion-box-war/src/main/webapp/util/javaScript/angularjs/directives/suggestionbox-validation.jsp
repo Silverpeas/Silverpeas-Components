@@ -1,5 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
 <c:url var="mandatoryIcons" value="/util/icons/mandatoryField.gif"/>
@@ -8,11 +9,15 @@
 <c:set var="language" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
 <fmt:setLocale value="${language}"/>
 <view:setBundle basename="org.silverpeas.multilang.generalMultilang"/>
+<view:setBundle basename="org.silverpeas.components.suggestionbox.multilang.SuggestionBoxBundle" var="suggestionBundle"/>
 
+<fmt:message var="theSuggestionLabel" key="suggestionBox.label.suggestion.the"/>
 <fmt:message var="approveSuggestionConfirmMessage" key="GML.contribution.validation.approve.confirm">
+  <fmt:param value="${fn:toLowerCase(theSuggestionLabel)}"/>
   <fmt:param value="@name@"/>
 </fmt:message>
 <fmt:message var="refuseSuggestionConfirmMessage" key="GML.contribution.validation.refuse.confirm">
+  <fmt:param value="${fn:toLowerCase(theSuggestionLabel)}"/>
   <fmt:param value="@name@"/>
 </fmt:message>
 <fmt:message var="commentLabel" key="GML.contribution.validation.comment"/>

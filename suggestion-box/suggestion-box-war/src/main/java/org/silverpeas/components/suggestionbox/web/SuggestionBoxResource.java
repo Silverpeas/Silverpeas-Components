@@ -116,21 +116,43 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
   }
 
   /**
-   * Gets the JSON representation of a list of suggestion that are not published for the user
+   * Gets the JSON representation of a list of suggestion that are in draft for the user
    * behind the service call.
    * @return the response to the HTTP GET request with the JSON representation of the asked
    * list of suggestions.
-   * @see SuggestionBoxWebServiceProvider#getNotPublishedFor(SuggestionBox, UserDetail)
+   * @see SuggestionBoxWebServiceProvider#getSuggestionsInDraftFor(SuggestionBox, UserDetail)
    * @see WebProcess#execute()
    */
   @GET
-  @Path(BOX_SUGGESTION_URI_PART + "/notPublished")
+  @Path(BOX_SUGGESTION_URI_PART + "/inDraft")
   @Produces(MediaType.APPLICATION_JSON)
-  public Collection<SuggestionEntity> getNotPublished() {
+  public Collection<SuggestionEntity> getSuggestionsInDraft() {
     return process(new WebTreatment<Collection<SuggestionEntity>>() {
       @Override
       public List<SuggestionEntity> execute() {
-        return getWebServiceProvider().getNotPublishedFor(getSuggestionBox(), getUserDetail());
+        return getWebServiceProvider()
+            .getSuggestionsInDraftFor(getSuggestionBox(), getUserDetail());
+      }
+    }).lowestAccessRole(SilverpeasRole.writer).execute();
+  }
+
+  /**
+   * Gets the JSON representation of a list of suggestion that are out of draft for the user
+   * behind the service call.
+   * @return the response to the HTTP GET request with the JSON representation of the asked
+   * list of suggestions.
+   * @see SuggestionBoxWebServiceProvider#getSuggestionsInDraftFor(SuggestionBox, UserDetail)
+   * @see WebProcess#execute()
+   */
+  @GET
+  @Path(BOX_SUGGESTION_URI_PART + "/outOfDraft")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Collection<SuggestionEntity> getSuggestionsOutOfDraft() {
+    return process(new WebTreatment<Collection<SuggestionEntity>>() {
+      @Override
+      public List<SuggestionEntity> execute() {
+        return getWebServiceProvider()
+            .getSuggestionsOutOfDraftFor(getSuggestionBox(), getUserDetail());
       }
     }).lowestAccessRole(SilverpeasRole.writer).execute();
   }

@@ -40,8 +40,8 @@ suggestionBox.controller('mainController',
       }
     }]);
 
-/* the not published controller of the application */
-suggestionBox.controller('notPublishedController',
+/* the in draft controller of the application */
+suggestionBox.controller('inDraftController',
     ['context', '$scope', '$rootScope', function(context, $scope, $rootScope) {
       var suggestionBox = $scope.suggestionBox;
 
@@ -51,16 +51,40 @@ suggestionBox.controller('notPublishedController',
         });
       };
 
-      $scope.loadNotPublished = function() {
-        suggestionBox.suggestions.get(['notPublished']).then(function(theSuggestions) {
-          $scope.notPublishedSuggestions = theSuggestions;
+      $scope.loadInDraft = function() {
+        suggestionBox.suggestions.get(['inDraft']).then(function(theSuggestions) {
+          $scope.inDraftSuggestions = theSuggestions;
         });
       };
 
-      $scope.loadNotPublished();
+      $scope.loadInDraft();
 
       $scope.$on("suggestionModified", function(theSuggestionId) {
-        $scope.loadNotPublished();
+        $scope.loadInDraft();
+      });
+    }]);
+
+/* the out of draft controller of the application */
+suggestionBox.controller('outOfDraftController',
+    ['context', '$scope', '$rootScope', function(context, $scope, $rootScope) {
+      var suggestionBox = $scope.suggestionBox;
+
+      $scope.publish = function(suggestion) {
+        suggestionBox.suggestions.publish(suggestion).then(function(suggestionUpdated) {
+          $rootScope.$broadcast('suggestionModified', suggestionUpdated)
+        });
+      };
+
+      $scope.loadOutOfDraft = function() {
+        suggestionBox.suggestions.get(['outOfDraft']).then(function(theSuggestions) {
+          $scope.outOfDraftSuggestions = theSuggestions;
+        });
+      };
+
+      $scope.loadOutOfDraft();
+
+      $scope.$on("suggestionModified", function(theSuggestionId) {
+        $scope.loadOutOfDraft();
       });
     }]);
 
@@ -97,5 +121,28 @@ suggestionBox.controller('publishedController',
 
       $scope.$on("suggestionModified", function(theSuggestionId) {
         $scope.loadPublished();
+      });
+    }]);
+
+/* the buzz controller of the application */
+suggestionBox.controller('buzzPublishedController',
+    ['context', '$scope', '$rootScope', function(context, $scope, $rootScope) {
+      var suggestionBox = $scope.suggestionBox;
+
+      $scope.loadBuzzPublished = function() {
+        // TOTO Delete this call after the buzz web service works
+        suggestionBox.suggestions.get(['published']).then(function(theSuggestions) {
+          $scope.buzzPublishedSuggestions = theSuggestions;
+        });
+//        To uncomment after the existence of the web service
+//        suggestionBox.suggestions.get(['published/buzz']).then(function(theSuggestions) {
+//          $scope.buzzPublishedSuggestions = theSuggestions;
+//        });
+      };
+
+      $scope.loadBuzzPublished();
+
+      $scope.$on("suggestionModified", function(theSuggestionId) {
+        $scope.loadBuzzPublished();
       });
     }]);

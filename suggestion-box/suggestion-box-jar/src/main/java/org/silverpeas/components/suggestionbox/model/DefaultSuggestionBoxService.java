@@ -24,6 +24,8 @@
 package org.silverpeas.components.suggestionbox.model;
 
 import com.silverpeas.annotation.Service;
+import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.attachment.AttachmentService;
@@ -74,10 +76,12 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
   @Override
   public List<Suggestion> findSuggestionsByCriteria(final SuggestionCriteria criteria) {
     List<Suggestion> suggestions = suggestionRepository.findByCriteria(criteria);
-    for (Suggestion suggestion : suggestions) {
-      String content = WysiwygController
-          .load(suggestion.getSuggestionBox().getComponentInstanceId(), suggestion.getId(), null);
-      suggestion.initializeContent(content);
+    if (criteria.mustLoadWysiwygContent()) {
+      for (Suggestion suggestion : suggestions) {
+        String content = WysiwygController
+            .load(suggestion.getSuggestionBox().getComponentInstanceId(), suggestion.getId(), null);
+        suggestion.initializeContent(content);
+      }
     }
     return suggestions;
   }
@@ -124,7 +128,6 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
     // TODO Deletion of all data attached to the box and its suggestions :
     // - comments
     // - votes
-    // - suggestion attachments
 
     // Finally deleting the box and its suggestions from the persistence.
     suggestionBoxRepository.delete(box);
@@ -133,6 +136,10 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
     // Deletion of box edito
     AttachmentService attachmentService = AttachmentServiceFactory.getAttachmentService();
     attachmentService.deleteAllAttachments(box.getComponentInstanceId());
+
+    // Deleting all component subscriptions
+    SubscriptionServiceFactory.getFactory().getSubscribeService()
+        .unsubscribeByResource(ComponentSubscriptionResource.from(box.getComponentInstanceId()));
   }
 
   @Override
@@ -152,7 +159,7 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
   public Suggestion findSuggestionById(SuggestionBox box, String suggestionId) {
     Suggestion suggestion = Suggestion.NONE;
     SuggestionCriteria criteria = SuggestionCriteria.from(box).identifierIsOneOf(suggestionId);
-    List<Suggestion> suggestions = findSuggestionsByCriteria(criteria);
+    List<Suggestion> suggestions = findSuggestionsByCriteria(criteria.setLoadWysiwygContent());
     if (suggestions.size() == 1) {
       suggestion = suggestions.get(0);
     }
