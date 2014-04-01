@@ -50,6 +50,7 @@ import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.model.SuggestionBoxService;
 import org.silverpeas.contribution.ContributionStatus;
+import org.silverpeas.contribution.model.ContributionValidation;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.servlet.HttpRequest;
@@ -462,7 +463,8 @@ public class SuggestionBoxWebControllerTest {
     SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
     Suggestion suggestion = aSuggestionWithStatus(withStatus);
     when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(suggestion);
-    when(suggestionBoxService.validateSuggestion(eq(box), eq(suggestion))).thenReturn(suggestion);
+    when(suggestionBoxService.validateSuggestion(eq(box), eq(suggestion), any(
+        ContributionValidation.class))).thenReturn(suggestion);
     String userId = context.getUser().getId();
     when(getOrganisationController().getUsersIdsByRoleNames(box.getComponentInstanceId(),
         CollectionUtil.asList(SilverpeasRole.admin.name(), SilverpeasRole.publisher.name())))
@@ -472,7 +474,8 @@ public class SuggestionBoxWebControllerTest {
     PowerMockito.mockStatic(UserNotificationHelper.class);
     controller.approveSuggestion(context);
 
-    verify(suggestionBoxService, times(1)).validateSuggestion(eq(box), eq(suggestion));
+    verify(suggestionBoxService, times(1)).validateSuggestion(eq(box), eq(suggestion), any(
+        ContributionValidation.class));
   }
 
   @Test(expected = WebApplicationException.class)
@@ -538,7 +541,8 @@ public class SuggestionBoxWebControllerTest {
       when(context.getRequest().getParameter("comment")).thenReturn(withComment);
     }
     when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(suggestion);
-    when(suggestionBoxService.validateSuggestion(eq(box), eq(suggestion))).thenReturn(suggestion);
+    when(suggestionBoxService.validateSuggestion(eq(box), eq(suggestion), any(
+        ContributionValidation.class))).thenReturn(suggestion);
     String userId = context.getUser().getId();
     when(getOrganisationController().getUsersIdsByRoleNames(box.getComponentInstanceId(),
         CollectionUtil.asList(SilverpeasRole.admin.name(), SilverpeasRole.publisher.name())))
@@ -548,7 +552,8 @@ public class SuggestionBoxWebControllerTest {
     PowerMockito.mockStatic(UserNotificationHelper.class);
     controller.refuseSuggestion(context);
 
-    verify(suggestionBoxService, times(1)).validateSuggestion(eq(box), eq(suggestion));
+    verify(suggestionBoxService, times(1)).validateSuggestion(eq(box), eq(suggestion), any(
+        ContributionValidation.class));
   }
 
   @Test(expected = WebApplicationException.class)
@@ -603,7 +608,7 @@ public class SuggestionBoxWebControllerTest {
 
   private Suggestion aSuggestionWithStatus(ContributionStatus status) {
     Suggestion suggestion = aSuggestion();
-    suggestion.setStatus(status);
+    suggestion.getValidation().setStatus(status);
     return suggestion;
   }
 

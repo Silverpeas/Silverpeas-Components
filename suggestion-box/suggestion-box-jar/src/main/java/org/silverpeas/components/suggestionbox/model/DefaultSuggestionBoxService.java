@@ -24,22 +24,28 @@
 package org.silverpeas.components.suggestionbox.model;
 
 import com.silverpeas.annotation.Service;
+import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.components.suggestionbox.notification
+    .SuggestionBoxSubscriptionUserNotification;
+import org.silverpeas.components.suggestionbox.notification
+    .SuggestionPendingValidationUserNotification;
+import org.silverpeas.components.suggestionbox.notification.SuggestionValidationUserNotification;
 import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepository;
 import org.silverpeas.components.suggestionbox.repository.SuggestionRepository;
 import org.silverpeas.contribution.ContributionStatus;
 import org.silverpeas.contribution.model.ContributionValidation;
+import org.silverpeas.persistence.Transaction;
 import org.silverpeas.persistence.repository.OperationContext;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
-
 import java.util.Date;
 import java.util.List;
 
@@ -170,7 +176,8 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
   @Transactional
   public void removeSuggestion(SuggestionBox box, Suggestion suggestion) {
     Suggestion actual = suggestionRepository.getById(suggestion.getId());
-    if (suggestion.getSuggestionBox().equals(box) && (actual.isInDraft() || actual.isRefused())) {
+    if (suggestion.getSuggestionBox().equals(box) &&
+        (actual.getValidation().isInDraft() || actual.getValidation().isRefused())) {
       suggestionRepository.delete(actual);
       suggestionRepository.flush();
 
@@ -179,59 +186,98 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
   }
 
   @Override
-  @Transactional
   public Suggestion publishSuggestion(final SuggestionBox box, final Suggestion suggestion) {
-    Suggestion actual = findSuggestionById(box, suggestion.getId());
-    if (suggestion.getSuggestionBox().equals(box) && (actual.isInDraft() || actual.isRefused())) {
-      UserDetail updater = suggestion.getLastUpdater();
-      SilverpeasRole greaterUserRole = box.getGreaterUserRole(updater);
-      if (greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.writer)) {
-        if (greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.publisher)) {
-          actual.setStatus(ContributionStatus.VALIDATED);
-          ContributionValidation validation = contributionValidationFor(actual);
-          validation.setDate(new Date());
-          validation.setValidator(updater);
-        } else {
-          actual.setStatus(ContributionStatus.PENDING_VALIDATION);
-        }
-        suggestionRepository.save(OperationContext.fromUser(updater), actual);
-        suggestionRepository.flush();
+
+    // Persisting the publishing.
+    Transaction transaction = Transaction.getTransaction();
+    final Transaction.Indicators indicators = transaction.newIndicators();
+    Suggestion updatedSuggestion =
+        transaction.performRequired(new Transaction.Process<Suggestion>() {
+          @Override
+          public Suggestion execute() {
+            Suggestion actual = findSuggestionById(box, suggestion.getId());
+            if (suggestion.getSuggestionBox().equals(box) &&
+                (actual.getValidation().isInDraft() || actual.getValidation().isRefused())) {
+              UserDetail updater = suggestion.getLastUpdater();
+              SilverpeasRole greaterUserRole = box.getGreaterUserRole(updater);
+              if (greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.writer)) {
+                ContributionValidation validation = actual.getValidation();
+                if (greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.publisher)) {
+                  validation.setStatus(ContributionStatus.VALIDATED);
+                  validation.setDate(new Date());
+                  validation.setValidator(updater);
+                } else {
+                  validation.setStatus(ContributionStatus.PENDING_VALIDATION);
+                }
+                suggestionRepository.save(OperationContext.fromUser(updater), actual);
+                suggestionRepository.flush();
+                indicators.savePerformed();
+              }
+            }
+            return actual;
+          }
+        });
+
+    // Sending notification after the persistence is successfully committed.
+    if (indicators.isSavePerformed()) {
+      switch (updatedSuggestion.getValidation().getStatus()) {
+        case PENDING_VALIDATION:
+          UserNotificationHelper
+              .buildAndSend(new SuggestionPendingValidationUserNotification(updatedSuggestion));
+          break;
+        case VALIDATED:
+          UserNotificationHelper
+              .buildAndSend(new SuggestionBoxSubscriptionUserNotification(updatedSuggestion));
+          break;
       }
     }
-    return actual;
+    return updatedSuggestion;
   }
 
   @Override
-  @Transactional
-  public Suggestion validateSuggestion(final SuggestionBox box, final Suggestion suggestion) {
-    Suggestion actual = findSuggestionById(box, suggestion.getId());
-    if (suggestion.getSuggestionBox().equals(box) && actual.isPendingValidation()) {
-      UserDetail updater = suggestion.getLastUpdater();
-      SilverpeasRole greaterUserRole = box.getGreaterUserRole(updater);
-      if (greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.publisher)) {
-        actual.setStatus(suggestion.getStatus());
-        ContributionValidation validation = contributionValidationFor(actual);
-        validation.setComment(suggestion.getValidation().getComment());
-        validation.setDate(new Date());
-        validation.setValidator(updater);
-      }
-      suggestionRepository.save(OperationContext.fromUser(updater), actual);
-      suggestionRepository.flush();
-    }
-    return actual;
-  }
+  public Suggestion validateSuggestion(final SuggestionBox box, final Suggestion suggestion,
+      final ContributionValidation validation) {
 
-  /**
-   * Gets the validation for the specified suggestion. If the suggestion was not previously
-   * validated, then creates a new contribution validation for it before returning it.
-   * @param suggestion the suggestion for which a validation has to get be get.
-   * @return a validation on the suggestion.
-   */
-  private ContributionValidation contributionValidationFor(final Suggestion suggestion) {
-    if (suggestion.getValidation() == ContributionValidation.NONE_VALIDATION) {
-      ContributionValidation validation = new ContributionValidation();
-      suggestion.setValidation(validation);
+    // Persisting the validation.
+    Transaction transaction = Transaction.getTransaction();
+    final Transaction.Indicators indicators = transaction.newIndicators();
+    Suggestion updatedSuggestion =
+        transaction.performRequired(new Transaction.Process<Suggestion>() {
+          @Override
+          public Suggestion execute() {
+            Suggestion actual = findSuggestionById(box, suggestion.getId());
+            if (suggestion.getSuggestionBox().equals(box) &&
+                actual.getValidation().isPendingValidation()) {
+              UserDetail updater = suggestion.getLastUpdater();
+              SilverpeasRole greaterUserRole = box.getGreaterUserRole(updater);
+              if (greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.publisher)) {
+                ContributionValidation actualValidation = actual.getValidation();
+                actualValidation.setStatus(validation.getStatus());
+                actualValidation.setComment(validation.getComment());
+                actualValidation.setDate(new Date());
+                actualValidation.setValidator(updater);
+              }
+              suggestionRepository.save(OperationContext.fromUser(updater), actual);
+              suggestionRepository.flush();
+              indicators.savePerformed();
+            }
+            return actual;
+          }
+        });
+
+    // Sending notification(s) after the persistence is successfully committed.
+    if (indicators.isSavePerformed()) {
+      switch (updatedSuggestion.getValidation().getStatus()) {
+        case VALIDATED:
+          UserNotificationHelper
+              .buildAndSend(new SuggestionBoxSubscriptionUserNotification(updatedSuggestion));
+        case REFUSED:
+          // The below notification is sent on VALIDATED or REFUSED status.
+          UserNotificationHelper
+              .buildAndSend(new SuggestionValidationUserNotification(updatedSuggestion));
+          break;
+      }
     }
-    return suggestion.getValidation();
+    return updatedSuggestion;
   }
 }

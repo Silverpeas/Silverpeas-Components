@@ -23,6 +23,8 @@
  */
 package org.silverpeas.components.suggestionbox.model;
 
+import com.silverpeas.notification.builder.UserNotificationBuider;
+import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.silverpeas.util.CollectionUtil;
@@ -44,9 +46,15 @@ import org.silverpeas.components.suggestionbox.mock.OrganisationControllerMockWr
 import org.silverpeas.components.suggestionbox.mock.SubscriptionServiceMockWrapper;
 import org.silverpeas.components.suggestionbox.mock.SuggestionBoxRepositoryMockWrapper;
 import org.silverpeas.components.suggestionbox.mock.SuggestionRepositoryMockWrapper;
+import org.silverpeas.components.suggestionbox.notification
+    .SuggestionBoxSubscriptionUserNotification;
+import org.silverpeas.components.suggestionbox.notification
+    .SuggestionPendingValidationUserNotification;
+import org.silverpeas.components.suggestionbox.notification.SuggestionValidationUserNotification;
 import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepository;
 import org.silverpeas.components.suggestionbox.repository.SuggestionRepository;
 import org.silverpeas.contribution.ContributionStatus;
+import org.silverpeas.contribution.model.ContributionValidation;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.persistence.repository.OperationContext;
@@ -54,6 +62,8 @@ import org.silverpeas.wysiwyg.control.WysiwygController;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import java.util.Date;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -67,7 +77,7 @@ import static org.mockito.Mockito.*;
  * @author mmoquillon
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(WysiwygController.class)
+@PrepareForTest({WysiwygController.class, UserNotificationHelper.class})
 public class SuggestionBoxServiceTest {
 
   private static AbstractApplicationContext context;
@@ -193,10 +203,14 @@ public class SuggestionBoxServiceTest {
     when(suggestionRepository.findByCriteria(any(SuggestionCriteria.class)))
         .then(new Returns(CollectionUtil.asList(suggestion)));
 
+    PowerMockito.mockStatic(UserNotificationHelper.class);
     Suggestion actual = service.publishSuggestion(box, suggestion);
 
     verify(suggestionRepository, times(0)).save(any(OperationContext.class), eq(suggestion));
-    assertThat(actual.getStatus(), is(ContributionStatus.DRAFT));
+    assertThat(actual.getValidation().getStatus(), is(ContributionStatus.DRAFT));
+
+    PowerMockito.verifyStatic(times(0));
+    UserNotificationHelper.buildAndSend(any(UserNotificationBuider.class));
   }
 
   @Test
@@ -216,10 +230,14 @@ public class SuggestionBoxServiceTest {
     when(suggestionRepository.findByCriteria(any(SuggestionCriteria.class)))
         .then(new Returns(CollectionUtil.asList(suggestion)));
 
+    PowerMockito.mockStatic(UserNotificationHelper.class);
     Suggestion actual = service.publishSuggestion(box, suggestion);
 
     verify(suggestionRepository, times(1)).save(any(OperationContext.class), eq(suggestion));
-    assertThat(actual.getStatus(), is(ContributionStatus.PENDING_VALIDATION));
+    assertThat(actual.getValidation().getStatus(), is(ContributionStatus.PENDING_VALIDATION));
+
+    PowerMockito.verifyStatic(times(1));
+    UserNotificationHelper.buildAndSend(any(SuggestionPendingValidationUserNotification.class));
   }
 
   @Test
@@ -239,20 +257,24 @@ public class SuggestionBoxServiceTest {
     when(suggestionRepository.findByCriteria(any(SuggestionCriteria.class)))
         .then(new Returns(CollectionUtil.asList(suggestion)));
 
+    PowerMockito.mockStatic(UserNotificationHelper.class);
     Suggestion actual = service.publishSuggestion(box, suggestion);
 
     verify(suggestionRepository, times(1)).save(any(OperationContext.class), eq(suggestion));
-    assertThat(actual.getStatus(), is(ContributionStatus.VALIDATED));
+    assertThat(actual.getValidation().getStatus(), is(ContributionStatus.VALIDATED));
+
+    PowerMockito.verifyStatic(times(1));
+    UserNotificationHelper.buildAndSend(any(SuggestionBoxSubscriptionUserNotification.class));
   }
 
   @Test
-  public void validateASuggestionInDraftOfASuggestionBox() {
+  public void approveASuggestionInDraftOfASuggestionBox() {
     SuggestionBox box = prepareASuggestionBox();
     Suggestion suggestion = new Suggestion("My suggestion");
     suggestion.setSuggestionBox(box);
     suggestion.setContent("the content of my suggestion");
     suggestion.setCreator(box.getCreator());
-    suggestion.setStatus(ContributionStatus.DRAFT);
+    suggestion.getValidation().setStatus(ContributionStatus.DRAFT);
 
     OrganisationController organisationController = getOrganisationController();
     when(organisationController
@@ -263,19 +285,25 @@ public class SuggestionBoxServiceTest {
     when(suggestionRepository.findByCriteria(any(SuggestionCriteria.class)))
         .then(new Returns(CollectionUtil.asList(suggestion)));
 
-    Suggestion actual = service.validateSuggestion(box, suggestion);
+    PowerMockito.mockStatic(UserNotificationHelper.class);
+    ContributionValidation validation =
+        new ContributionValidation(ContributionStatus.VALIDATED, aUser(), new Date(), "A comment");
+    Suggestion actual = service.validateSuggestion(box, suggestion, validation);
 
     verify(suggestionRepository, times(0)).save(any(OperationContext.class), eq(actual));
+
+    PowerMockito.verifyStatic(times(0));
+    UserNotificationHelper.buildAndSend(any(UserNotificationBuider.class));
   }
 
   @Test
-  public void validateASuggestionRefusedOfASuggestionBox() {
+  public void approveASuggestionRefusedOfASuggestionBox() {
     SuggestionBox box = prepareASuggestionBox();
     Suggestion suggestion = new Suggestion("My suggestion");
     suggestion.setSuggestionBox(box);
     suggestion.setContent("the content of my suggestion");
     suggestion.setCreator(box.getCreator());
-    suggestion.setStatus(ContributionStatus.REFUSED);
+    suggestion.getValidation().setStatus(ContributionStatus.REFUSED);
 
     OrganisationController organisationController = getOrganisationController();
     when(organisationController
@@ -286,32 +314,74 @@ public class SuggestionBoxServiceTest {
     when(suggestionRepository.findByCriteria(any(SuggestionCriteria.class)))
         .then(new Returns(CollectionUtil.asList(suggestion)));
 
-    Suggestion actual = service.validateSuggestion(box, suggestion);
+    PowerMockito.mockStatic(UserNotificationHelper.class);
+    ContributionValidation validation =
+        new ContributionValidation(ContributionStatus.VALIDATED, aUser(), new Date(), "A comment");
+    Suggestion actual = service.validateSuggestion(box, suggestion, validation);
 
     verify(suggestionRepository, times(0)).save(any(OperationContext.class), eq(actual));
+
+    PowerMockito.verifyStatic(times(0));
+    UserNotificationHelper.buildAndSend(any(UserNotificationBuider.class));
   }
 
   @Test
-  public void validateASuggestionPendingValidationOfASuggestionBox() {
+  public void approveASuggestionPendingValidationOfASuggestionBox() {
     SuggestionBox box = prepareASuggestionBox();
     Suggestion suggestion = new Suggestion("My suggestion");
     suggestion.setSuggestionBox(box);
     suggestion.setContent("the content of my suggestion");
     suggestion.setCreator(box.getCreator());
-    suggestion.setStatus(ContributionStatus.PENDING_VALIDATION);
+    suggestion.getValidation().setStatus(ContributionStatus.PENDING_VALIDATION);
 
     OrganisationController organisationController = getOrganisationController();
     when(organisationController
         .getUserProfiles(box.getCreator().getId(), box.getComponentInstanceId()))
         .thenReturn(new String[]{SilverpeasRole.publisher.name()});
 
+    PowerMockito.mockStatic(UserNotificationHelper.class);
     SuggestionRepository suggestionRepository = getSuggestionRepository();
     when(suggestionRepository.findByCriteria(any(SuggestionCriteria.class)))
         .then(new Returns(CollectionUtil.asList(suggestion)));
 
-    Suggestion actual = service.validateSuggestion(box, suggestion);
+    ContributionValidation validation =
+        new ContributionValidation(ContributionStatus.VALIDATED, aUser(), new Date(), "A comment");
+    Suggestion actual = service.validateSuggestion(box, suggestion, validation);
 
     verify(suggestionRepository, times(1)).save(any(OperationContext.class), eq(actual));
+
+    PowerMockito.verifyStatic(times(2));
+    UserNotificationHelper.buildAndSend(any(SuggestionBoxSubscriptionUserNotification.class));
+    UserNotificationHelper.buildAndSend(any(SuggestionValidationUserNotification.class));
+  }
+
+  @Test
+  public void refuseASuggestionPendingValidationOfASuggestionBox() {
+    SuggestionBox box = prepareASuggestionBox();
+    Suggestion suggestion = new Suggestion("My suggestion");
+    suggestion.setSuggestionBox(box);
+    suggestion.setContent("the content of my suggestion");
+    suggestion.setCreator(box.getCreator());
+    suggestion.getValidation().setStatus(ContributionStatus.PENDING_VALIDATION);
+
+    OrganisationController organisationController = getOrganisationController();
+    when(organisationController
+        .getUserProfiles(box.getCreator().getId(), box.getComponentInstanceId()))
+        .thenReturn(new String[]{SilverpeasRole.publisher.name()});
+
+    PowerMockito.mockStatic(UserNotificationHelper.class);
+    SuggestionRepository suggestionRepository = getSuggestionRepository();
+    when(suggestionRepository.findByCriteria(any(SuggestionCriteria.class)))
+        .then(new Returns(CollectionUtil.asList(suggestion)));
+
+    ContributionValidation validation =
+        new ContributionValidation(ContributionStatus.REFUSED, aUser(), new Date(), "A comment");
+    Suggestion actual = service.validateSuggestion(box, suggestion, validation);
+
+    verify(suggestionRepository, times(1)).save(any(OperationContext.class), eq(actual));
+
+    PowerMockito.verifyStatic(times(1));
+    UserNotificationHelper.buildAndSend(any(SuggestionValidationUserNotification.class));
   }
 
   private OrganisationController getOrganisationController() {

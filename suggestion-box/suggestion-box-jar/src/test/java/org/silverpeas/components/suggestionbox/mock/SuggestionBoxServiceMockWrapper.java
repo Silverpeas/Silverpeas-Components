@@ -27,6 +27,7 @@ import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.model.SuggestionBoxService;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
+import org.silverpeas.contribution.model.ContributionValidation;
 
 import javax.inject.Named;
 import java.util.List;
@@ -91,7 +92,8 @@ public class SuggestionBoxServiceMockWrapper implements SuggestionBoxService {
   }
 
   @Override
-  public Suggestion validateSuggestion(final SuggestionBox box, final Suggestion suggestion) {
-    return mock.validateSuggestion(box, suggestion);
+  public Suggestion validateSuggestion(final SuggestionBox box, final Suggestion suggestion,
+      final ContributionValidation validation) {
+    return mock.validateSuggestion(box, suggestion, validation);
   }
 }

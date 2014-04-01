@@ -23,6 +23,8 @@
  */
 package org.silverpeas.components.suggestionbox.model;
 
+import org.silverpeas.contribution.model.ContributionValidation;
+
 import java.util.List;
 
 /**
@@ -116,7 +118,9 @@ public interface SuggestionBoxService {
    * <p/>
    * @param box the suggestion box to which the suggestion belongs.
    * @param suggestion the suggestion to validate.
+   * @param validation the validation information.
    * @return the suggestion updated.
    */
-  public Suggestion validateSuggestion(final SuggestionBox box, final Suggestion suggestion);
+  public Suggestion validateSuggestion(final SuggestionBox box, final Suggestion suggestion,
+      final ContributionValidation validation);
 }

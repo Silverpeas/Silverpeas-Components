@@ -24,22 +24,12 @@
 package org.silverpeas.components.suggestionbox.repository;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.dbunit.database.DatabaseConnection;
-import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.ITable;
-import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
-import org.dbunit.operation.DatabaseOperation;
-import org.junit.After;
-import org.junit.Before;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.silverpeas.components.suggestionbox.mock.OrganisationControllerMockWrapper;
 import org.silverpeas.components.suggestionbox.model.PersistenceService;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import javax.sql.DataSource;
@@ -52,28 +42,15 @@ import static org.mockito.Mockito.when;
  * about the repository itself but on the persistence characteristics of a business object using a
  * JPA repository.
  */
-public abstract class RepositoryBasedTest {
-
-  // Spring context
-  private ClassPathXmlApplicationContext context;
+public abstract class RepositoryBasedTest
+    extends org.silverpeas.persistence.jpa.RepositoryBasedTest {
 
   private PersistenceService persistanceService;
-  private DataSource dataSource;
 
-  @Before
+  @Override
   public void setUp() throws Exception {
-
-    // Spring
-    context = new ClassPathXmlApplicationContext(getApplicationContextPath(),
-        "spring-suggestion-box-embedded-datasource.xml");
-
-    // Beans
-    dataSource = (DataSource) context.getBean("jpaDataSource");
-    persistanceService = context.getBean(PersistenceService.class);
-
-    // Database
-    DatabaseOperation.INSERT
-        .execute(new DatabaseConnection(dataSource.getConnection()), getDataSet());
+    super.setUp();
+    persistanceService = getApplicationContext().getBean(PersistenceService.class);
 
     // Getting a user by its id
     when(getOrganisationController().getUserDetail(anyString())).then(new Answer<UserDetail>() {
@@ -87,32 +64,19 @@ public abstract class RepositoryBasedTest {
     });
   }
 
-  public ReplacementDataSet getDataSet() throws Exception {
-    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder()
-        .build(RepositoryBasedTest.class.getClassLoader().getResourceAsStream(getDataSetPath())));
-    dataSet.addReplacementObject("[NULL]", null);
-    return dataSet;
+  @Override
+  public String[] getApplicationContextPath() {
+    return new String[]{getSuggestionBoxContextPath(),
+        "spring-suggestion-box-embedded-datasource.xml"};
   }
-
-  @After
-  public void tearDown() throws Exception {
-    context.close();
-  }
-
-  /**
-   * Gets the path of the XML file in which are defined the data to insert into the database
-   * before the running of a test.
-   * @return the path of the XML data set.
-   */
-  public abstract String getDataSetPath();
 
   /**
    * Gets the XML Spring configuration file from which the context will be bootstrapped for the
-   * test. By default, the context is loaded from the XML file spring-suggestion-box-jpa.xml.
+   * test. By default, the context is loaded from the XML file spring-jpa.xml.
    * Overrides this method to specify another XML configuration file.
    * @return the location of the Spring XML configuration file.
    */
-  public String getApplicationContextPath() {
+  public String getSuggestionBoxContextPath() {
     return "spring-suggestion-box-jpa.xml";
   }
 
@@ -131,25 +95,7 @@ public abstract class RepositoryBasedTest {
     return user;
   }
 
-  public IDataSet getActualDataSet() throws Exception {
-    IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
-    return connection.createDataSet();
-  }
-
-  public int getTableIndexForId(ITable table, Object id) throws Exception {
-    for (int i = 0; i < table.getRowCount(); i++) {
-      if (id.equals(table.getValue(i, "id"))) {
-        return i;
-      }
-    }
-    return -1;
-  }
-
   public PersistenceService getPersistenceService() {
     return this.persistanceService;
-  }
-
-  public ApplicationContext getApplicationContext() {
-    return this.context;
   }
 }

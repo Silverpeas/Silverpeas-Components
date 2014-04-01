@@ -70,10 +70,10 @@
 <c:set var="isSuggestionReadOnly" value="false"/>
 <c:if test="${suggestion != null}">
   <c:set var="target" value="${suggestion.id}"/>
-  <c:set var="isEditable" value="${not suggestion.validated}"/>
   <c:set var="isPublishable" value="${suggestion.isPublishableBy(currentUser)}"/>
-  <c:set var="isSuggestionReadOnly" value="${not isEditable or empty requestScope.edit}"/>
-  <c:set var="isModeratorView" value="${suggestion.pendingValidation and greaterUserRole.isGreaterThanOrEquals(publisherRole)}"/>
+  <c:set var="isModeratorView" value="${suggestion.validation.pendingValidation and greaterUserRole.isGreaterThanOrEquals(publisherRole)}"/>
+  <c:set var="isEditable" value="${isPublishable or isModeratorView}"/>
+  <c:set var="isSuggestionReadOnly" value="${empty requestScope.edit or not isEditable}"/>
   <c:set var="canModeratorModifying" value="${isModeratorView and isSuggestionReadOnly}"/>
   <c:set var="isModeratorModifying" value="${isModeratorView and not isSuggestionReadOnly}"/>
 </c:if>
@@ -243,7 +243,7 @@
           </div>
         </div>
 
-        <c:if test="${isSuggestionReadOnly && (suggestion.validated || suggestion.refused)}">
+        <c:if test="${isSuggestionReadOnly && (suggestion.validation.validated || suggestion.validation.refused)}">
         <div class="field" id="eventDescriptionArea">
           <label for="validation_comment" class="txtlibform"><fmt:message key='GML.contribution.validation.comment'/></label>
 

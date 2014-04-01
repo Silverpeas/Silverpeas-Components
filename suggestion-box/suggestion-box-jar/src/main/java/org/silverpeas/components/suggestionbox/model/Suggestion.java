@@ -27,7 +27,6 @@ import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.contribution.ContributionStatus;
 import org.silverpeas.contribution.ValidableContribution;
 import org.silverpeas.contribution.model.ContributionValidation;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
@@ -76,19 +75,16 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
   @NotNull
   private String title;
 
-  @Column(name = "status", nullable = false)
-  private String status = ContributionStatus.DRAFT.name();
-
   @Embedded
-  private ContributionValidation validation;
+  private ContributionValidation validation = new ContributionValidation();
 
   @Transient
   private String content = "";
+
   @Transient
   private boolean contentModified = false;
 
   protected Suggestion() {
-    this.validation = ContributionValidation.NONE_VALIDATION;
   }
 
   /**
@@ -96,7 +92,6 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
    * @param title the suggestion title.
    */
   public Suggestion(String title) {
-    this.validation = ContributionValidation.NONE_VALIDATION;
     this.title = title;
   }
 
@@ -158,11 +153,6 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
     return validation;
   }
 
-  @Override
-  public void setValidation(ContributionValidation validation) {
-    this.validation = validation;
-  }
-
   /**
    * Is this suggestion defined? It is defined if and only if it isn't NONE.
    * @return true if this suggestion is defined and thus not NONE.
@@ -203,44 +193,15 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
     return this.contentModified;
   }
 
-  @Override
-  public void setStatus(final ContributionStatus status) {
-    this.status = status.name();
-  }
-
-  @Override
-  public ContributionStatus getStatus() {
-    return ContributionStatus.from(status);
-  }
-
-  @Override
-  public boolean isInDraft() {
-    return getStatus().isInDraft();
-  }
-
-  @Override
-  public boolean isRefused() {
-    return getStatus().isRefused();
-  }
-
-  @Override
-  public boolean isPendingValidation() {
-    return getStatus().isPendingValidation();
-  }
-
-  @Override
-  public boolean isValidated() {
-    return getStatus().isValidated();
-  }
-
   /**
    * Is this suggestion publishable by the specified user?
    * @param user the aimed user.
    * @return true if the suggestion is publishable by the specified user, false otherwise.
    */
   public boolean isPublishableBy(UserDetail user) {
-    return (isInDraft() || isRefused()) && (user.isAccessAdmin() || (getCreator().equals(user)
-        && getSuggestionBox().getGreaterUserRole(user).isGreaterThanOrEquals(SilverpeasRole.writer)));
+    return (getValidation().isInDraft() || getValidation().isRefused()) && (user.isAccessAdmin() ||
+        (getCreator().equals(user) && getSuggestionBox().getGreaterUserRole(user)
+            .isGreaterThanOrEquals(SilverpeasRole.writer)));
   }
 
   @Override
@@ -278,8 +239,8 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
    */
   @Override
   public boolean canBeAccessedBy(final UserDetail user) {
-    AccessController<String> accessController = AccessControllerProvider.getAccessController(
-        "componentAccessController");
+    AccessController<String> accessController =
+        AccessControllerProvider.getAccessController("componentAccessController");
     return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
   }
 
@@ -290,9 +251,9 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
 
   @Override
   public String toString() {
-    return "Suggestion{" + "suggestionBox=" + suggestionBox.getId() + ", title=" + title
-        + ", state=" + status + ", content=" + content + ", contentModified=" + contentModified
-        + ", validation=" + getValidation() + ", creationDate=" + getCreationDate()
-        + ", lastUpdateDate=" + getLastUpdateDate() + '}';
+    return "Suggestion{" + "suggestionBox=" + suggestionBox.getId() + ", title=" + title +
+        ", content=" + content + ", contentModified=" + contentModified + ", validation=" +
+        getValidation() + ", creationDate=" + getCreationDate() + ", lastUpdateDate=" +
+        getLastUpdateDate() + '}';
   }
 }

@@ -52,7 +52,7 @@ public class SuggestionMatcher extends TypeSafeMatcher<SuggestionEntity> {
     matcher.append(actual.getId(), expected.getId());
     matcher.append(actual.getTitle(), expected.getTitle());
     matcher.append(actual.getContent(), expected.getContent());
-    matcher.append(actual.getStatus(), expected.getStatus());
+    matcher.append(actual.getValidation().getStatus(), expected.getValidation().getStatus());
     return matcher.isEquals();
   }
 

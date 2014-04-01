@@ -11,7 +11,7 @@
 <view:setBundle basename="org.silverpeas.multilang.generalMultilang"/>
 <view:setBundle basename="org.silverpeas.components.suggestionbox.multilang.SuggestionBoxBundle" var="suggestionBundle"/>
 
-<fmt:message var="theSuggestionLabel" key="suggestionBox.label.suggestion.the"/>
+<fmt:message var="theSuggestionLabel" key="suggestionBox.label.suggestion.the" bundle="${suggestionBundle}"/>
 <fmt:message var="approveSuggestionConfirmMessage" key="GML.contribution.validation.approve.confirm">
   <fmt:param value="${fn:toLowerCase(theSuggestionLabel)}"/>
   <fmt:param value="@name@"/>
