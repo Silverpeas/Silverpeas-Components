@@ -35,13 +35,12 @@ import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.silverpeas.components.suggestionbox.notification
-    .SuggestionBoxSubscriptionUserNotification;
-import org.silverpeas.components.suggestionbox.notification
-    .SuggestionPendingValidationUserNotification;
+import org.silverpeas.components.suggestionbox.notification.SuggestionBoxSubscriptionUserNotification;
+import org.silverpeas.components.suggestionbox.notification.SuggestionPendingValidationUserNotification;
 import org.silverpeas.components.suggestionbox.notification.SuggestionValidationUserNotification;
 import org.silverpeas.components.suggestionbox.repository.RepositoryBasedTest;
 import org.silverpeas.contribution.ContributionStatus;
+import org.silverpeas.contribution.model.ContributionValidation;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import java.util.Date;
@@ -117,7 +116,7 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     IDataSet actualDataSet = getActualDataSet();
     ITable table = actualDataSet.getTable("sc_suggestion");
     assertThat((String) table.getValue(0, "id"), is(SUGGESTION_ID));
-    assertThat((String) table.getValue(0, "state"), is(ContributionStatus.DRAFT.name()));
+    assertThat((String) table.getValue(0, "status"), is(ContributionStatus.DRAFT.name()));
     assertThat((String) table.getValue(0, "lastUpdatedBy"), is("1"));
     Date lastUpdateDate = (Date) table.getValue(0, "lastUpdateDate");
     assertThat(table.getValue(0, "validationDate"), is(nullValue()));
@@ -138,7 +137,7 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     actualDataSet = getActualDataSet();
     table = actualDataSet.getTable("sc_suggestion");
     assertThat((String) table.getValue(0, "id"), is(SUGGESTION_ID));
-    assertThat((String) table.getValue(0, "state"), is(ContributionStatus.DRAFT.name()));
+    assertThat((String) table.getValue(0, "status"), is(ContributionStatus.DRAFT.name()));
     assertThat((String) table.getValue(0, "lastUpdatedBy"), is("1"));
     assertThat((Date) table.getValue(0, "lastUpdateDate"), is(lastUpdateDate));
     assertThat(table.getValue(0, "validationDate"), is(nullValue()));
@@ -154,7 +153,7 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     IDataSet actualDataSet = getActualDataSet();
     ITable table = actualDataSet.getTable("sc_suggestion");
     assertThat((String) table.getValue(0, "id"), is(SUGGESTION_ID));
-    assertThat((String) table.getValue(0, "state"), is(ContributionStatus.DRAFT.name()));
+    assertThat((String) table.getValue(0, "status"), is(ContributionStatus.DRAFT.name()));
     assertThat((String) table.getValue(0, "lastUpdatedBy"), is("1"));
     Date lastUpdateDate = (Date) table.getValue(0, "lastUpdateDate");
     assertThat(table.getValue(0, "validationDate"), is(nullValue()));
@@ -175,7 +174,7 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     actualDataSet = getActualDataSet();
     table = actualDataSet.getTable("sc_suggestion");
     assertThat((String) table.getValue(0, "id"), is(SUGGESTION_ID));
-    assertThat((String) table.getValue(0, "state"),
+    assertThat((String) table.getValue(0, "status"),
         is(ContributionStatus.PENDING_VALIDATION.name()));
     assertThat((String) table.getValue(0, "lastUpdatedBy"), is("26"));
     assertThat((Date) table.getValue(0, "lastUpdateDate"), greaterThan(lastUpdateDate));
@@ -192,7 +191,7 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     IDataSet actualDataSet = getActualDataSet();
     ITable table = actualDataSet.getTable("sc_suggestion");
     assertThat((String) table.getValue(0, "id"), is(SUGGESTION_ID));
-    assertThat((String) table.getValue(0, "state"), is(ContributionStatus.DRAFT.name()));
+    assertThat((String) table.getValue(0, "status"), is(ContributionStatus.DRAFT.name()));
     assertThat((String) table.getValue(0, "lastUpdatedBy"), is("1"));
     Date lastUpdateDate = (Date) table.getValue(0, "lastUpdateDate");
     assertThat(table.getValue(0, "validationDate"), is(nullValue()));
@@ -213,7 +212,7 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     actualDataSet = getActualDataSet();
     table = actualDataSet.getTable("sc_suggestion");
     assertThat((String) table.getValue(0, "id"), is(SUGGESTION_ID));
-    assertThat((String) table.getValue(0, "state"), is(ContributionStatus.VALIDATED.name()));
+    assertThat((String) table.getValue(0, "status"), is(ContributionStatus.VALIDATED.name()));
     assertThat((String) table.getValue(0, "lastUpdatedBy"), is("26"));
     assertThat((Date) table.getValue(0, "lastUpdateDate"), greaterThan(lastUpdateDate));
     assertThat(DateUtil.resetHour((Date) table.getValue(0, "validationDate")),
@@ -230,7 +229,7 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     IDataSet actualDataSet = getActualDataSet();
     ITable table = actualDataSet.getTable("sc_suggestion");
     assertThat((String) table.getValue(0, "id"), is(SUGGESTION_ID));
-    assertThat((String) table.getValue(0, "state"), is(ContributionStatus.DRAFT.name()));
+    assertThat((String) table.getValue(0, "status"), is(ContributionStatus.DRAFT.name()));
     assertThat((String) table.getValue(0, "lastUpdatedBy"), is("1"));
     Date lastUpdateDate = (Date) table.getValue(0, "lastUpdateDate");
     assertThat(table.getValue(0, "validationDate"), is(nullValue()));
@@ -247,12 +246,12 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     when(getOrganisationController()
         .getUserProfiles(suggestion.getLastUpdatedBy(), box.getComponentInstanceId()))
         .thenReturn(new String[]{SilverpeasRole.writer.name()});
-    box.getSuggestions().validate(suggestion);
+    box.getSuggestions().validate(suggestion, new ContributionValidation(updater, new Date()));
 
     actualDataSet = getActualDataSet();
     table = actualDataSet.getTable("sc_suggestion");
     assertThat((String) table.getValue(0, "id"), is(SUGGESTION_ID));
-    assertThat((String) table.getValue(0, "state"), is(ContributionStatus.DRAFT.name()));
+    assertThat((String) table.getValue(0, "status"), is(ContributionStatus.DRAFT.name()));
     assertThat((String) table.getValue(0, "lastUpdatedBy"), is("1"));
     assertThat((Date) table.getValue(0, "lastUpdateDate"), is(lastUpdateDate));
     assertThat(table.getValue(0, "validationDate"), is(nullValue()));
@@ -268,7 +267,7 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     IDataSet actualDataSet = getActualDataSet();
     ITable table = actualDataSet.getTable("sc_suggestion");
     assertThat((String) table.getValue(0, "id"), is(SUGGESTION_ID));
-    assertThat((String) table.getValue(0, "state"), is(ContributionStatus.DRAFT.name()));
+    assertThat((String) table.getValue(0, "status"), is(ContributionStatus.DRAFT.name()));
     assertThat((String) table.getValue(0, "lastUpdatedBy"), is("1"));
     Date lastUpdateDate = (Date) table.getValue(0, "lastUpdateDate");
     assertThat(table.getValue(0, "validationDate"), is(nullValue()));
@@ -285,12 +284,12 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     when(getOrganisationController()
         .getUserProfiles(suggestion.getLastUpdatedBy(), box.getComponentInstanceId()))
         .thenReturn(new String[]{SilverpeasRole.publisher.name()});
-    box.getSuggestions().validate(suggestion);
+    box.getSuggestions().validate(suggestion, new ContributionValidation(updater, new Date()));
 
     actualDataSet = getActualDataSet();
     table = actualDataSet.getTable("sc_suggestion");
     assertThat((String) table.getValue(0, "id"), is(SUGGESTION_ID));
-    assertThat((String) table.getValue(0, "state"), is(ContributionStatus.DRAFT.name()));
+    assertThat((String) table.getValue(0, "status"), is(ContributionStatus.DRAFT.name()));
     assertThat((String) table.getValue(0, "lastUpdatedBy"), is("1"));
     assertThat((Date) table.getValue(0, "lastUpdateDate"), is(lastUpdateDate));
     assertThat(table.getValue(0, "validationDate"), is(nullValue()));
@@ -308,7 +307,7 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     ITable table = actualDataSet.getTable("sc_suggestion");
     int index = getTableIndexForId(table, SUGGESTION_ID_PENDING_VALIDATION);
     assertThat((String) table.getValue(index, "id"), is(SUGGESTION_ID_PENDING_VALIDATION));
-    assertThat((String) table.getValue(index, "state"),
+    assertThat((String) table.getValue(index, "status"),
         is(ContributionStatus.PENDING_VALIDATION.name()));
     assertThat((String) table.getValue(index, "lastUpdatedBy"), is("1"));
     Date lastUpdateDate = (Date) table.getValue(index, "lastUpdateDate");
@@ -326,16 +325,17 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     when(getOrganisationController()
         .getUserProfiles(suggestion.getLastUpdatedBy(), box.getComponentInstanceId()))
         .thenReturn(new String[]{SilverpeasRole.publisher.name()});
-    box.getSuggestions().validate(suggestion);
+    Date acceptDate = DateUtil.getDate();
+    box.getSuggestions().validate(suggestion, new ContributionValidation(updater, acceptDate));
 
     actualDataSet = getActualDataSet();
     table = actualDataSet.getTable("sc_suggestion");
     assertThat((String) table.getValue(index, "id"), is(SUGGESTION_ID_PENDING_VALIDATION));
-    assertThat((String) table.getValue(index, "state"), is(ContributionStatus.VALIDATED.name()));
+    assertThat((String) table.getValue(index, "status"), is(ContributionStatus.VALIDATED.name()));
     assertThat((String) table.getValue(index, "lastUpdatedBy"), is("38"));
     assertThat((Date) table.getValue(index, "lastUpdateDate"), greaterThan(lastUpdateDate));
     assertThat(DateUtil.resetHour((Date) table.getValue(index, "validationDate")),
-        is(DateUtil.getDate()));
+        is(acceptDate));
     assertThat(table.getValue(index, "validationComment"), is(nullValue()));
     assertThat((String) table.getValue(index, "validationBy"), is("38"));
 
@@ -352,7 +352,7 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     int index = getTableIndexForId(table, SUGGESTION_ID_PENDING_VALIDATION);
     assertThat((String) table.getValue(index, "id"), is(SUGGESTION_ID_PENDING_VALIDATION));
     assertThat((String) table.getValue(index, "title"), is("suggestion 1 IDEM"));
-    assertThat((String) table.getValue(index, "state"),
+    assertThat((String) table.getValue(index, "status"),
         is(ContributionStatus.PENDING_VALIDATION.name()));
     assertThat((String) table.getValue(index, "lastUpdatedBy"), is("1"));
     Date lastUpdateDate = (Date) table.getValue(index, "lastUpdateDate");
@@ -367,22 +367,23 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     updater.setId("38");
     suggestion.setLastUpdater(updater);
     suggestion.setStatus(ContributionStatus.REFUSED);
-    suggestion.getValidation().setComment("Comment filled");
     suggestion.setTitle("the title");
     when(getOrganisationController()
         .getUserProfiles(suggestion.getLastUpdatedBy(), box.getComponentInstanceId()))
         .thenReturn(new String[]{SilverpeasRole.publisher.name()});
-    box.getSuggestions().validate(suggestion);
+    Date refusalDate = DateUtil.getDate();
+    box.getSuggestions().validate(suggestion, new ContributionValidation(updater, refusalDate,
+        "Comment filled"));
 
     actualDataSet = getActualDataSet();
     table = actualDataSet.getTable("sc_suggestion");
     assertThat((String) table.getValue(index, "id"), is(SUGGESTION_ID_PENDING_VALIDATION));
     assertThat((String) table.getValue(index, "title"), is("suggestion 1 IDEM"));
-    assertThat((String) table.getValue(index, "state"), is(ContributionStatus.REFUSED.name()));
+    assertThat((String) table.getValue(index, "status"), is(ContributionStatus.REFUSED.name()));
     assertThat((String) table.getValue(index, "lastUpdatedBy"), is("38"));
     assertThat((Date) table.getValue(index, "lastUpdateDate"), greaterThan(lastUpdateDate));
     assertThat(DateUtil.resetHour((Date) table.getValue(index, "validationDate")),
-        is(DateUtil.getDate()));
+        is(refusalDate));
     assertThat((String) table.getValue(index, "validationComment"), is("Comment filled"));
     assertThat((String) table.getValue(index, "validationBy"), is("38"));
 

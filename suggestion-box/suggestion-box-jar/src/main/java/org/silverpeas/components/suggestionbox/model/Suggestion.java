@@ -76,8 +76,8 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
   @NotNull
   private String title;
 
-  @Column(name = "state", nullable = false)
-  private String state = ContributionStatus.DRAFT.name();
+  @Column(name = "status", nullable = false)
+  private String status = ContributionStatus.DRAFT.name();
 
   @Embedded
   private ContributionValidation validation;
@@ -88,6 +88,7 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
   private boolean contentModified = false;
 
   protected Suggestion() {
+    this.validation = ContributionValidation.NONE_VALIDATION;
   }
 
   /**
@@ -95,6 +96,7 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
    * @param title the suggestion title.
    */
   public Suggestion(String title) {
+    this.validation = ContributionValidation.NONE_VALIDATION;
     this.title = title;
   }
 
@@ -153,10 +155,12 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
 
   @Override
   public ContributionValidation getValidation() {
-    if (validation == null) {
-      validation = new ContributionValidation();
-    }
     return validation;
+  }
+
+  @Override
+  public void setValidation(ContributionValidation validation) {
+    this.validation = validation;
   }
 
   /**
@@ -201,12 +205,12 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
 
   @Override
   public void setStatus(final ContributionStatus status) {
-    this.state = status.name();
+    this.status = status.name();
   }
 
   @Override
   public ContributionStatus getStatus() {
-    return ContributionStatus.from(state);
+    return ContributionStatus.from(status);
   }
 
   @Override
@@ -235,8 +239,8 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
    * @return true if the suggestion is publishable by the specified user, false otherwise.
    */
   public boolean isPublishableBy(UserDetail user) {
-    return (isInDraft() || isRefused()) && (user.isAccessAdmin() || (getCreator().equals(user) &&
-        getSuggestionBox().getGreaterUserRole(user).isGreaterThanOrEquals(SilverpeasRole.writer)));
+    return (isInDraft() || isRefused()) && (user.isAccessAdmin() || (getCreator().equals(user)
+        && getSuggestionBox().getGreaterUserRole(user).isGreaterThanOrEquals(SilverpeasRole.writer)));
   }
 
   @Override
@@ -274,8 +278,8 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
    */
   @Override
   public boolean canBeAccessedBy(final UserDetail user) {
-    AccessController<String> accessController =
-        AccessControllerProvider.getAccessController("componentAccessController");
+    AccessController<String> accessController = AccessControllerProvider.getAccessController(
+        "componentAccessController");
     return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
   }
 
@@ -286,9 +290,9 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
 
   @Override
   public String toString() {
-    return "Suggestion{" + "suggestionBox=" + suggestionBox.getId() + ", title=" + title +
-        ", state=" + state + ", content=" + content + ", contentModified=" + contentModified +
-        ", validation=" + getValidation() + ", creationDate=" + getCreationDate() +
-        ", lastUpdateDate=" + getLastUpdateDate() + '}';
+    return "Suggestion{" + "suggestionBox=" + suggestionBox.getId() + ", title=" + title
+        + ", state=" + status + ", content=" + content + ", contentModified=" + contentModified
+        + ", validation=" + getValidation() + ", creationDate=" + getCreationDate()
+        + ", lastUpdateDate=" + getLastUpdateDate() + '}';
   }
 }

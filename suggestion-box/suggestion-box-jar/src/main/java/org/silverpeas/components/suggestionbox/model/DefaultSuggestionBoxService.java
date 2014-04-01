@@ -31,11 +31,13 @@ import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepository;
 import org.silverpeas.components.suggestionbox.repository.SuggestionRepository;
 import org.silverpeas.contribution.ContributionStatus;
+import org.silverpeas.contribution.model.ContributionValidation;
 import org.silverpeas.persistence.repository.OperationContext;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
+
 import java.util.Date;
 import java.util.List;
 
@@ -176,15 +178,18 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
     if (suggestion.getSuggestionBox().equals(box) && (actual.isInDraft() || actual.isRefused())) {
       UserDetail updater = suggestion.getLastUpdater();
       SilverpeasRole greaterUserRole = box.getGreaterUserRole(updater);
-      if (greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.publisher)) {
-        actual.setStatus(ContributionStatus.VALIDATED);
-        actual.getValidation().setDate(new Date());
-        actual.getValidation().setValidator(updater);
-      } else if (greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.writer)) {
-        actual.setStatus(ContributionStatus.PENDING_VALIDATION);
+      if (greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.writer)) {
+        if (greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.publisher)) {
+          actual.setStatus(ContributionStatus.VALIDATED);
+          ContributionValidation validation = contributionValidationFor(actual);
+          validation.setDate(new Date());
+          validation.setValidator(updater);
+        } else {
+          actual.setStatus(ContributionStatus.PENDING_VALIDATION);
+        }
+        suggestionRepository.save(OperationContext.fromUser(updater), actual);
+        suggestionRepository.flush();
       }
-      suggestionRepository.save(OperationContext.fromUser(updater), actual);
-      suggestionRepository.flush();
     }
     return actual;
   }
@@ -198,13 +203,28 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
       SilverpeasRole greaterUserRole = box.getGreaterUserRole(updater);
       if (greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.publisher)) {
         actual.setStatus(suggestion.getStatus());
-        actual.getValidation().setComment(suggestion.getValidation().getComment());
-        actual.getValidation().setDate(new Date());
-        actual.getValidation().setValidator(updater);
+        ContributionValidation validation = contributionValidationFor(actual);
+        validation.setComment(suggestion.getValidation().getComment());
+        validation.setDate(new Date());
+        validation.setValidator(updater);
       }
       suggestionRepository.save(OperationContext.fromUser(updater), actual);
       suggestionRepository.flush();
     }
     return actual;
+  }
+
+  /**
+   * Gets the validation for the specified suggestion. If the suggestion was not previously
+   * validated, then creates a new contribution validation for it before returning it.
+   * @param suggestion the suggestion for which a validation has to get be get.
+   * @return a validation on the suggestion.
+   */
+  private ContributionValidation contributionValidationFor(final Suggestion suggestion) {
+    if (suggestion.getValidation() == ContributionValidation.NONE_VALIDATION) {
+      ContributionValidation validation = new ContributionValidation();
+      suggestion.setValidation(validation);
+    }
+    return suggestion.getValidation();
   }
 }

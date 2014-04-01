@@ -27,12 +27,14 @@ import com.silverpeas.web.Exposable;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.contribution.ContributionStatus;
+import org.silverpeas.persistence.model.identifier.UuidIdentifier;
+import org.silverpeas.validation.web.ContributionValidationEntity;
+import org.springframework.util.ReflectionUtils;
 
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import java.lang.reflect.Field;
 import java.net.URI;
+
+import javax.xml.bind.annotation.*;
 
 /**
  * It represents the state of a suggestion in a suggestion box as transmitted within the body of
@@ -40,32 +42,16 @@ import java.net.URI;
  * @author mmoquillon
  */
 @XmlRootElement
+@XmlAccessorType(XmlAccessType.PROPERTY)
 public class SuggestionEntity implements Exposable {
 
   private static final long serialVersionUID = 4234619816264612213L;
 
   public static SuggestionEntity fromSuggestion(final Suggestion suggestion) {
-    SuggestionEntity entity =
-        new SuggestionEntity().withId(suggestion.getId()).withTitle(suggestion.getTitle()).
-            withContent(suggestion.getContent()).withStatus(suggestion.getStatus());
-    entity.suggestion = suggestion;
-    return entity;
+    return new SuggestionEntity().decorate(suggestion);
   }
 
-  @XmlElement(defaultValue = "")
   private URI uri;
-  @XmlElement
-  private String id;
-  @XmlElement(nillable = false, required = true)
-  @NotNull
-  private String title;
-  @XmlElement(nillable = false, required = true)
-  @NotNull
-  private ContributionStatus status;
-  @XmlElement
-  private String content;
-
-  @XmlTransient
   private Suggestion suggestion;
 
   /**
@@ -79,20 +65,24 @@ public class SuggestionEntity implements Exposable {
   }
 
   @Override
+  @XmlElement(defaultValue = "")
   public URI getURI() {
     return uri;
   }
 
+  @XmlElement
   public String getId() {
-    return id;
+    return suggestion.getId();
   }
 
+  @XmlElement
   public String getTitle() {
-    return title;
+    return suggestion.getTitle();
   }
 
+  @XmlElement
   public String getContent() {
-    return content;
+    return suggestion.getContent();
   }
 
   @XmlTransient
@@ -100,8 +90,14 @@ public class SuggestionEntity implements Exposable {
     return suggestion.isPublishableBy(user);
   }
 
+  @XmlElement
   public ContributionStatus getStatus() {
-    return status;
+    return suggestion.getStatus();
+  }
+
+  @XmlElement(nillable = true)
+  public ContributionValidationEntity getValidation() {
+    return ContributionValidationEntity.fromContributionValidation(suggestion.getValidation());
   }
 
   @XmlTransient
@@ -124,33 +120,50 @@ public class SuggestionEntity implements Exposable {
     return getStatus().isValidated();
   }
 
-  private SuggestionEntity withStatus(ContributionStatus status) {
-    this.status = status;
-    return this;
+  protected void setURI(final URI uri) {
+    withURI(uri);
   }
 
-  private SuggestionEntity withTitle(String title) {
-    this.title = title;
-    return this;
+  protected void setStatus(ContributionStatus status) {
+    suggestion.setStatus(status);
   }
 
-  private SuggestionEntity withContent(String content) {
-    this.content = content;
-    return this;
+  protected void setTitle(String title) {
+    suggestion.setTitle(title);
   }
 
-  private SuggestionEntity withId(String id) {
-    this.id = id;
+  protected void setContent(String content) {
+    suggestion.setContent(content);
+  }
+
+  protected void setValidation(ContributionValidationEntity validation) {
+    if (validation != null) {
+      suggestion.setValidation(validation.toContributionValidation());
+    }
+  }
+
+  protected void setId(String id) {
+    try {
+      Field idField = ReflectionUtils.findField(Suggestion.class, "id");
+      idField.setAccessible(true);
+      ReflectionUtils.setField(idField, suggestion, new UuidIdentifier().fromString(id));
+    } catch (Exception ex) {
+      throw new RuntimeException(ex.getMessage(), ex);
+    }
+  }
+
+  protected SuggestionEntity decorate(final Suggestion suggestion) {
+    this.suggestion = suggestion;
     return this;
   }
 
   protected SuggestionEntity() {
-
+    this.suggestion = new Suggestion("");
   }
 
   @Override
   public String toString() {
-    return "SuggestionEntity{" + "uri=" + uri + ", id=" + id + ", title=" + title + ", status=" +
-        status + ", content=" + content + '}';
+    return "SuggestionEntity{" + "uri=" + uri + ", id=" + getId() + ", title=" + getTitle()
+        + ", status=" + getStatus() + ", content=" + getContent() + '}';
   }
 }

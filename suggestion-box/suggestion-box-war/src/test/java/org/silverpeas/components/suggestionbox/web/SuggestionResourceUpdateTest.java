@@ -34,7 +34,6 @@ import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.model.SuggestionBoxService;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 import static org.silverpeas.components.suggestionbox.web.SuggestionBoxTestResources.*;
 

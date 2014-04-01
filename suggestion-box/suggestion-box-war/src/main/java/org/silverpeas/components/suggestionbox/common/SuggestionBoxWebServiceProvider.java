@@ -35,12 +35,14 @@ import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.web.SuggestionEntity;
 import org.silverpeas.contribution.ContributionStatus;
+import org.silverpeas.contribution.model.ContributionValidation;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.util.NotifierUtil;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
+
 import java.net.URI;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -51,8 +53,9 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs.BOX_BASE_URI;
-import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs
-    .BOX_SUGGESTION_URI_PART;
+import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs.BOX_SUGGESTION_URI_PART;
+
+import java.util.Date;
 
 /**
  * @author: Yohann Chastagnier
@@ -63,8 +66,8 @@ public class SuggestionBoxWebServiceProvider {
    * Multilang
    */
   private final Map<String, ResourceLocator> multilang = new HashMap<String, ResourceLocator>();
-  private final static SuggestionBoxWebServiceProvider SUGGESTION_BOX_WEB_SERVICE_PROVIDER =
-      new SuggestionBoxWebServiceProvider();
+  private final static SuggestionBoxWebServiceProvider SUGGESTION_BOX_WEB_SERVICE_PROVIDER
+      = new SuggestionBoxWebServiceProvider();
 
   public static SuggestionBoxWebServiceProvider getWebServiceProvider() {
     return SUGGESTION_BOX_WEB_SERVICE_PROVIDER;
@@ -209,9 +212,10 @@ public class SuggestionBoxWebServiceProvider {
         throw new WebApplicationException(Response.Status.PRECONDITION_FAILED);
       }
       suggestion.setStatus(newStatus);
-      suggestion.getValidation().setComment(validationComment);
+      ContributionValidation validation = new ContributionValidation(fromUser, new Date(),
+          validationComment);
       suggestion.setLastUpdater(fromUser);
-      Suggestion actual = suggestionBox.getSuggestions().validate(suggestion);
+      Suggestion actual = suggestionBox.getSuggestions().validate(suggestion, validation);
       switch (actual.getStatus()) {
         case REFUSED:
           NotifierUtil.addInfo(MessageFormat.format(
@@ -263,8 +267,8 @@ public class SuggestionBoxWebServiceProvider {
       SuggestionBox suggestionBox) {
     Set<String> moderatorIds = CollectionUtil.asSet(
         OrganisationControllerFactory.getOrganisationController()
-            .getUsersIdsByRoleNames(suggestionBox.getComponentInstanceId(),
-                CollectionUtil.asList(SilverpeasRole.admin.name(), SilverpeasRole.publisher.name()))
+        .getUsersIdsByRoleNames(suggestionBox.getComponentInstanceId(),
+            CollectionUtil.asList(SilverpeasRole.admin.name(), SilverpeasRole.publisher.name()))
     );
     if (!user.isAccessAdmin() && !moderatorIds.contains(user.getId())) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);

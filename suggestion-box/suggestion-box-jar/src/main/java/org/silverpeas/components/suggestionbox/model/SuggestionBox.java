@@ -27,11 +27,10 @@ import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.components.suggestionbox.notification
-    .SuggestionBoxSubscriptionUserNotification;
-import org.silverpeas.components.suggestionbox.notification
-    .SuggestionPendingValidationUserNotification;
+import org.silverpeas.components.suggestionbox.notification.SuggestionBoxSubscriptionUserNotification;
+import org.silverpeas.components.suggestionbox.notification.SuggestionPendingValidationUserNotification;
 import org.silverpeas.components.suggestionbox.notification.SuggestionValidationUserNotification;
+import org.silverpeas.contribution.model.ContributionValidation;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.persistence.model.jpa.AbstractJpaEntity;
@@ -43,14 +42,13 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_ORDER_BY
-    .LAST_UPDATE_DATE_ASC;
-import static org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_ORDER_BY
-    .VALIDATION_DATE_DESC;
+import static org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_ORDER_BY.LAST_UPDATE_DATE_ASC;
+import static org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_ORDER_BY.VALIDATION_DATE_DESC;
 import static org.silverpeas.contribution.ContributionStatus.*;
 
 /**
@@ -265,18 +263,21 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
     }
 
     /**
-     * Validates from the specified suggestion box the specified suggestion.
+     * Validates the specified suggestion in the current suggestion box with the specified
+     * validation information.
      * <p/>
      * The publication of a suggestion consists in changing its status to VALIDATED or REFUSED
      * and sending a notification to the creator in order to inform him about the validation
      * result.
      * <p/>
      * If the suggestion doesn't exist in the suggestion box, then nothing is done.
-     * @param suggestion the suggestion to publish.
-     * @return the suggestion updated.
+     * @param suggestion the suggestion to validate.
+     * @param validation the validation information.
+     * @return the updated suggestion.
      */
-    public Suggestion validate(final Suggestion suggestion) {
+    public Suggestion validate(final Suggestion suggestion, final ContributionValidation validation) {
       SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
+      suggestion.setValidation(validation);
       Suggestion actual = suggestionBoxService.validateSuggestion(SuggestionBox.this, suggestion);
       switch (actual.getStatus()) {
         case VALIDATED:
