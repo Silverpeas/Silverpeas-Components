@@ -41,6 +41,7 @@ import java.util.List;
 
 /**
  * @author Yohann Chastagnier
+ * @param <T> the type of resource concerned by the notification.
  */
 public abstract class AbstractSuggestionBoxUserNotification<T>
     extends AbstractTemplateUserNotificationBuilder<T> {
@@ -61,7 +62,7 @@ public abstract class AbstractSuggestionBoxUserNotification<T>
 
   @Override
   protected String getTemplatePath() {
-    return "suggestionBox";
+    return "suggestionbox";
   }
 
   /**
@@ -98,8 +99,8 @@ public abstract class AbstractSuggestionBoxUserNotification<T>
   }
 
   private String getComponentLabel(final String componentId, final String language) {
-    final ComponentInstLight component =
-        getOrganisationController().getComponentInstLight(componentId);
+    final ComponentInstLight component = getOrganisationController().getComponentInstLight(
+        componentId);
     String componentLabel = "";
     if (component != null) {
       componentLabel = component.getLabel(language);

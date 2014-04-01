@@ -43,8 +43,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs.BOX_BASE_URI;
-import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs
-    .BOX_SUGGESTION_URI_PART;
+import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs.BOX_SUGGESTION_URI_PART;
 
 /**
  * A REST Web resource giving suggestion data.
@@ -99,6 +98,8 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
    * Publishes the suggestion identified by the specified identifier.
    * If it doesn't exist, a 404 HTTP code is returned.
    * @param suggestionId the identifier of the suggestion.
+   * @return the response to the HTTP PUT request with the JSON representation of the published
+   * suggestion.
    */
   @PUT
   @Path(BOX_SUGGESTION_URI_PART + "/{suggestionId}/publish")
