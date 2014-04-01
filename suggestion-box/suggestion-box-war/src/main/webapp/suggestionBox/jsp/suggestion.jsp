@@ -184,7 +184,7 @@
     }
   </script>
 </head>
-<body ng-controller="mainController">
+<body ng-controller="mainController" id="${componentId}">
 <view:browseBar componentId="${componentId}" path="${browseBarPathSuggestionLabel}"/>
 <view:operationPane>
   <c:if test="${isSuggestionReadOnly and isEditable}">
@@ -205,6 +205,11 @@
 <view:window>
   <view:frame>
     <div id="error" style="display: none;"></div>
+    <c:if test="${not suggestion.validated and isSuggestionReadOnly}">
+    <div class="rightContent">
+      <view:attachmentPane componentId="${componentId}" resourceId="${suggestion.id}"></view:attachmentPane>
+    </div>
+    </c:if>
     <form id="suggestion" name="suggestion" action="${componentUriBase}suggestion/${target}" method="POST">
       <div class="fields">
         <div class="field" id="suggestionName">
@@ -222,7 +227,7 @@
           </div>
         </div>
         <br clear="all"/>
-
+        
         <div class="field" id="eventDescriptionArea">
           <label for="content" class="txtlibform"><fmt:message key='GML.description'/></label>
 
