@@ -46,8 +46,11 @@
 
 <view:setConstant var="adminRole" constant="com.stratelia.webactiv.SilverpeasRole.admin"/>
 <view:setConstant var="writerRole" constant="com.stratelia.webactiv.SilverpeasRole.writer"/>
+<view:setConstant var="publisherRole" constant="com.stratelia.webactiv.SilverpeasRole.publisher"/>
 
 <view:setConstant var="STATUS_REFUSED" constant="org.silverpeas.contribution.ContributionStatus.REFUSED"/>
+<view:setConstant var="STATUS_PENDING_VALIDATION" constant="org.silverpeas.contribution.ContributionStatus.PENDING_VALIDATION"/>
+<view:setConstant var="STATUS_VALIDATED" constant="org.silverpeas.contribution.ContributionStatus.VALIDATED"/>
 
 <fmt:message var="modifyEditoLabel" key="suggestionBox.menu.item.edito.modify"/>
 <fmt:message var="publishSuggestionLabel" key="GML.publish"/>
@@ -163,14 +166,32 @@
             <li ng-repeat="suggestion in outOfDraftSuggestions">
               <a ng-href="${componentUriBase}suggestion/{{ suggestion.id }}">{{suggestion.title}}</a>
                 <%--TODO BEGIN REMOVE AFTER DEV--%>
-              <span>{{suggestion.status}}</span>
-              <img ng-if="'${STATUS_REFUSED}'==suggestion.status" ng-click="delete(suggestion)" src="${deleteIcon}" alt="remove" style="cursor: pointer"/>
-              <a href="#" ng-click="publish(suggestion)"><span>${publishSuggestionLabel}</span></a><br/>
+              <span>{{suggestion.validation.status}}</span>
+              <img ng-if="'${STATUS_REFUSED}'==suggestion.validation.status" ng-click="delete(suggestion)" src="${deleteIcon}" alt="remove" style="cursor: pointer"/>
+              <a ng-if="'${STATUS_PENDING_VALIDATION}'!=suggestion.validation.status && '${STATUS_VALIDATED}'!=suggestion.validation.status" href="#" ng-click="publish(suggestion)"><span>${publishSuggestionLabel}</span></a><br/>
                 <%--TODO END REMOVE AFTER DEV--%>
             </li>
           </ul>
         </c:if>
       </div>
+
+        <%--TODO BEGIN REMOVE AFTER DEV--%>
+      <c:if test="${greaterUserRole.isGreaterThanOrEquals(publisherRole)}">
+        <div suggestionbox-validation></div>
+        <div ng-controller="pendingValidationController" class="cell">
+          <ul id="my_pending_validation_suggestions_list" class="container">
+            <li ng-repeat="suggestion in pendingValidationSuggestions">
+              <a ng-href="${componentUriBase}suggestion/{{ suggestion.id }}"><span class="suggestion_title">{{ suggestion.title }}</span></a><br/>
+
+              <div>{{ suggestion.validation.status }}</div>
+              <div ng-bind-html="suggestion.content"></div>
+              <a href="#" ng-click="refuse(suggestion)"><span>${refuseSuggestionLabel}</span></a><br/>
+              <a href="#" ng-click="approve(suggestion)"><span>${approveSuggestionLabel}</span></a><br/>
+            </li>
+          </ul>
+        </div>
+      </c:if>
+        <%--TODO END REMOVE AFTER DEV--%>
     </div>
     <div id="all-suggestionBox">
       <div class="secteur-container lastSuggestion">

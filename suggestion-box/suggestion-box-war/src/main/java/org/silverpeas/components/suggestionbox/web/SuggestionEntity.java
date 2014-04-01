@@ -26,15 +26,17 @@ package org.silverpeas.components.suggestionbox.web;
 import com.silverpeas.web.Exposable;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
-import org.silverpeas.contribution.ContributionStatus;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.validation.web.ContributionValidationEntity;
 import org.springframework.util.ReflectionUtils;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import java.lang.reflect.Field;
 import java.net.URI;
-
-import javax.xml.bind.annotation.*;
 
 /**
  * It represents the state of a suggestion in a suggestion box as transmitted within the body of
@@ -53,6 +55,7 @@ public class SuggestionEntity implements Exposable {
 
   private URI uri;
   private Suggestion suggestion;
+  private ContributionValidationEntity validationEntity;
 
   /**
    * Sets a URI to this entity. With this URI, it can then be accessed through the Web.
@@ -91,41 +94,19 @@ public class SuggestionEntity implements Exposable {
   }
 
   @XmlElement
-  public ContributionStatus getStatus() {
-    return suggestion.getStatus();
-  }
-
-  @XmlElement(nillable = true)
   public ContributionValidationEntity getValidation() {
-    return ContributionValidationEntity.fromContributionValidation(suggestion.getValidation());
+    if (validationEntity == null) {
+      validationEntity = ContributionValidationEntity.fromContributionValidation(suggestion.getValidation());
+    }
+    return validationEntity;
   }
 
-  @XmlTransient
-  public boolean isInDraft() {
-    return getStatus().isInDraft();
-  }
-
-  @XmlTransient
-  public boolean isRefused() {
-    return getStatus().isRefused();
-  }
-
-  @XmlTransient
-  public boolean isPendingValidation() {
-    return getStatus().isPendingValidation();
-  }
-
-  @XmlTransient
-  public boolean isValidated() {
-    return getStatus().isValidated();
+  protected void setValidation(ContributionValidationEntity validation) {
+    validationEntity = validation;
   }
 
   protected void setURI(final URI uri) {
     withURI(uri);
-  }
-
-  protected void setStatus(ContributionStatus status) {
-    suggestion.setStatus(status);
   }
 
   protected void setTitle(String title) {
@@ -134,12 +115,6 @@ public class SuggestionEntity implements Exposable {
 
   protected void setContent(String content) {
     suggestion.setContent(content);
-  }
-
-  protected void setValidation(ContributionValidationEntity validation) {
-    if (validation != null) {
-      suggestion.setValidation(validation.toContributionValidation());
-    }
   }
 
   protected void setId(String id) {
@@ -163,7 +138,7 @@ public class SuggestionEntity implements Exposable {
 
   @Override
   public String toString() {
-    return "SuggestionEntity{" + "uri=" + uri + ", id=" + getId() + ", title=" + getTitle()
-        + ", status=" + getStatus() + ", content=" + getContent() + '}';
+    return "SuggestionEntity{" + "uri=" + uri + ", id=" + getId() + ", title=" + getTitle() +
+        ", content=" + getContent() + ", validation=" + getValidation() + '}';
   }
 }

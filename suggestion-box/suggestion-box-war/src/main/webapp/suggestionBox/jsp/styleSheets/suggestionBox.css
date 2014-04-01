@@ -54,7 +54,7 @@
 }
 
 h3.lastSuggestion-title {
-  background: transparent url(util/icons/pastille-new.png) top right no-repeat;
+  background: transparent url(../../../util/icons/pastille-new.png) top right no-repeat;
   z-index: 100;
   position: absolute;
   width: 100%;
@@ -232,7 +232,7 @@ h3.lastSuggestion-title {
 }
 
 .lastCommentSuggestion a.a-suggestion {
-  background: transparent url(suggestionBox/jsp/icons/suggestion.png) top left no-repeat;
+  background: transparent url(../icons/suggestion.png) top left no-repeat;
   padding-left: 20px;
   line-height: 16px;
   display: block;
@@ -269,12 +269,12 @@ h3.lastSuggestion-title {
   width: 190px;
   line-height: 33px;
   height: 50px;
-  background: transparent url(suggestionBox/jsp/icons/sep.png) top left no-repeat;
+  background: transparent url(../icons/sep.png) top left no-repeat;
   text-align: center;
 }
 
 .my-suggestionBox-inProgress .counter-comments span {
-  background: transparent url(util/icons/talk2user.gif) top left no-repeat;
+  background: transparent url(../../../util/icons/talk2user.gif) top left no-repeat;
   padding-left: 20px;
 }
 

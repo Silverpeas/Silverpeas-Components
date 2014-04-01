@@ -70,7 +70,7 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
   }
 
   @Override
-  public String getApplicationContextPath() {
+  public String getSuggestionBoxContextPath() {
     return "spring-suggestion-box.xml";
   }
 
@@ -242,11 +242,11 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     UserDetail updater = aUser();
     updater.setId("38");
     suggestion.setLastUpdater(updater);
-    suggestion.setStatus(ContributionStatus.VALIDATED);
     when(getOrganisationController()
         .getUserProfiles(suggestion.getLastUpdatedBy(), box.getComponentInstanceId()))
         .thenReturn(new String[]{SilverpeasRole.writer.name()});
-    box.getSuggestions().validate(suggestion, new ContributionValidation(updater, new Date()));
+    box.getSuggestions().validate(suggestion,
+        new ContributionValidation(ContributionStatus.VALIDATED, updater, new Date()));
 
     actualDataSet = getActualDataSet();
     table = actualDataSet.getTable("sc_suggestion");
@@ -280,11 +280,11 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     UserDetail updater = aUser();
     updater.setId("38");
     suggestion.setLastUpdater(updater);
-    suggestion.setStatus(ContributionStatus.VALIDATED);
     when(getOrganisationController()
         .getUserProfiles(suggestion.getLastUpdatedBy(), box.getComponentInstanceId()))
         .thenReturn(new String[]{SilverpeasRole.publisher.name()});
-    box.getSuggestions().validate(suggestion, new ContributionValidation(updater, new Date()));
+    box.getSuggestions().validate(suggestion,
+        new ContributionValidation(ContributionStatus.VALIDATED, updater, new Date()));
 
     actualDataSet = getActualDataSet();
     table = actualDataSet.getTable("sc_suggestion");
@@ -321,12 +321,12 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     UserDetail updater = aUser();
     updater.setId("38");
     suggestion.setLastUpdater(updater);
-    suggestion.setStatus(ContributionStatus.VALIDATED);
     when(getOrganisationController()
         .getUserProfiles(suggestion.getLastUpdatedBy(), box.getComponentInstanceId()))
         .thenReturn(new String[]{SilverpeasRole.publisher.name()});
     Date acceptDate = DateUtil.getDate();
-    box.getSuggestions().validate(suggestion, new ContributionValidation(updater, acceptDate));
+    box.getSuggestions().validate(suggestion,
+        new ContributionValidation(ContributionStatus.VALIDATED, updater, acceptDate));
 
     actualDataSet = getActualDataSet();
     table = actualDataSet.getTable("sc_suggestion");
@@ -366,14 +366,14 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     UserDetail updater = aUser();
     updater.setId("38");
     suggestion.setLastUpdater(updater);
-    suggestion.setStatus(ContributionStatus.REFUSED);
     suggestion.setTitle("the title");
     when(getOrganisationController()
         .getUserProfiles(suggestion.getLastUpdatedBy(), box.getComponentInstanceId()))
         .thenReturn(new String[]{SilverpeasRole.publisher.name()});
     Date refusalDate = DateUtil.getDate();
-    box.getSuggestions().validate(suggestion, new ContributionValidation(updater, refusalDate,
-        "Comment filled"));
+    box.getSuggestions().validate(suggestion,
+        new ContributionValidation(ContributionStatus.REFUSED, updater, refusalDate,
+            "Comment filled"));
 
     actualDataSet = getActualDataSet();
     table = actualDataSet.getTable("sc_suggestion");

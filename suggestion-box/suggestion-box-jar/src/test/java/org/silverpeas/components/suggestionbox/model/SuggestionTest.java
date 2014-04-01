@@ -71,7 +71,7 @@ public class SuggestionTest extends RepositoryBasedTest {
   }
 
   @Override
-  public String getApplicationContextPath() {
+  public String getSuggestionBoxContextPath() {
     return "spring-suggestion-box.xml";
   }
 

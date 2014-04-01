@@ -41,13 +41,15 @@ public class SuggestionValidationUserNotification extends AbstractSuggestionActi
 
   @Override
   protected String getBundleSubjectKey() {
-    return getResource().isValidated() ? "suggestionBox.suggestion.notification.validated.subject" :
+    return getResource().getValidation().isValidated() ?
+        "suggestionBox.suggestion.notification.validated.subject" :
         "suggestionBox.suggestion.notification.refused.subject";
   }
 
   @Override
   protected String getFileName() {
-    return getResource().isValidated() ? "validatedNotification" : "refusedNotification";
+    return getResource().getValidation().isValidated() ? "validatedNotification" :
+        "refusedNotification";
   }
 
   @Override
@@ -75,6 +77,6 @@ public class SuggestionValidationUserNotification extends AbstractSuggestionActi
 
   @Override
   protected NotifAction getAction() {
-    return getResource().isValidated() ? NotifAction.VALIDATE : NotifAction.REFUSE;
+    return getResource().getValidation().isValidated() ? NotifAction.VALIDATE : NotifAction.REFUSE;
   }
 }

@@ -42,20 +42,19 @@ import org.silverpeas.util.NotifierUtil;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
-
 import java.net.URI;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs.BOX_BASE_URI;
-import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs.BOX_SUGGESTION_URI_PART;
-
-import java.util.Date;
+import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs
+    .BOX_SUGGESTION_URI_PART;
 
 /**
  * @author: Yohann Chastagnier
@@ -130,7 +129,8 @@ public class SuggestionBoxWebServiceProvider {
    */
   public void deleteSuggestion(SuggestionBox suggestionBox, Suggestion suggestion,
       UserDetail fromUser) {
-    if (suggestion.isDefined() && (suggestion.isInDraft() || suggestion.isRefused())) {
+    if (suggestion.isDefined() &&
+        (suggestion.getValidation().isInDraft() || suggestion.getValidation().isRefused())) {
       checkAdminAccessOrUserIsCreator(fromUser, suggestion);
       suggestionBox.getSuggestions().remove(suggestion);
       UserPreferences userPreferences = fromUser.getUserPreferences();
@@ -151,12 +151,13 @@ public class SuggestionBoxWebServiceProvider {
    */
   public SuggestionEntity publishSuggestion(SuggestionBox suggestionBox, Suggestion suggestion,
       UserDetail fromUser) {
-    if (suggestion.isDefined() && (suggestion.isInDraft() || suggestion.isRefused())) {
+    if (suggestion.isDefined() &&
+        (suggestion.getValidation().isInDraft() || suggestion.getValidation().isRefused())) {
       checkAdminAccessOrUserIsCreator(fromUser, suggestion);
       suggestion.setLastUpdater(fromUser);
       Suggestion actual = suggestionBox.getSuggestions().publish(suggestion);
       UserPreferences userPreferences = fromUser.getUserPreferences();
-      switch (actual.getStatus()) {
+      switch (actual.getValidation().getStatus()) {
         case PENDING_VALIDATION:
           NotifierUtil.addInfo(
               getStringTranslation("suggestionBox.message.suggestion.pendingValidation",
@@ -212,22 +213,21 @@ public class SuggestionBoxWebServiceProvider {
    * @param validationComment the optional comment related to the approval or refusal.
    * @param fromUser the current user.
    * @return the suggestion entity.
-   * @see SuggestionBox.Suggestions#validate(Suggestion)
+   * @see SuggestionBox.Suggestions#validate(Suggestion, ContributionValidation)
    */
   private SuggestionEntity validateSuggestion(SuggestionBox suggestionBox, Suggestion suggestion,
       ContributionStatus newStatus, String validationComment, UserDetail fromUser) {
-    if (suggestion.isDefined() && (suggestion.isPendingValidation())) {
+    if (suggestion.isDefined() && suggestion.getValidation().isPendingValidation()) {
       checkAdminAccessOrUserIsModerator(fromUser, suggestionBox);
       UserPreferences userPreferences = fromUser.getUserPreferences();
       if (newStatus.isRefused() && StringUtil.isNotDefined(validationComment)) {
         throw new WebApplicationException(Response.Status.PRECONDITION_FAILED);
       }
-      suggestion.setStatus(newStatus);
-      ContributionValidation validation = new ContributionValidation(fromUser, new Date(),
-          validationComment);
+      ContributionValidation validation =
+          new ContributionValidation(newStatus, fromUser, new Date(), validationComment);
       suggestion.setLastUpdater(fromUser);
       Suggestion actual = suggestionBox.getSuggestions().validate(suggestion, validation);
-      switch (actual.getStatus()) {
+      switch (actual.getValidation().getStatus()) {
         case REFUSED:
           NotifierUtil.addInfo(MessageFormat.format(
               getStringTranslation("suggestionBox.message.suggestion.refused",

@@ -23,13 +23,9 @@
  */
 package org.silverpeas.components.suggestionbox.model;
 
-import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.components.suggestionbox.notification.SuggestionBoxSubscriptionUserNotification;
-import org.silverpeas.components.suggestionbox.notification.SuggestionPendingValidationUserNotification;
-import org.silverpeas.components.suggestionbox.notification.SuggestionValidationUserNotification;
 import org.silverpeas.contribution.model.ContributionValidation;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
@@ -42,17 +38,11 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_ORDER_BY
-    .LAST_UPDATE_DATE_ASC;
-import static org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_ORDER_BY
-    .LAST_UPDATE_DATE_DESC;
-import static org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_ORDER_BY
-    .VALIDATION_DATE_DESC;
+import static org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_ORDER_BY.*;
 import static org.silverpeas.contribution.ContributionStatus.*;
 
 /**
@@ -263,18 +253,7 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
      */
     public Suggestion publish(final Suggestion suggestion) {
       SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
-      Suggestion actual = suggestionBoxService.publishSuggestion(SuggestionBox.this, suggestion);
-      switch (actual.getStatus()) {
-        case PENDING_VALIDATION:
-          UserNotificationHelper
-              .buildAndSend(new SuggestionPendingValidationUserNotification(actual));
-          break;
-        case VALIDATED:
-          UserNotificationHelper
-              .buildAndSend(new SuggestionBoxSubscriptionUserNotification(actual));
-          break;
-      }
-      return actual;
+      return suggestionBoxService.publishSuggestion(SuggestionBox.this, suggestion);
     }
 
     /**
@@ -292,18 +271,7 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
      */
     public Suggestion validate(final Suggestion suggestion, final ContributionValidation validation) {
       SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
-      suggestion.setValidation(validation);
-      Suggestion actual = suggestionBoxService.validateSuggestion(SuggestionBox.this, suggestion);
-      switch (actual.getStatus()) {
-        case VALIDATED:
-          UserNotificationHelper
-              .buildAndSend(new SuggestionBoxSubscriptionUserNotification(actual));
-        case REFUSED:
-          // The below notification is sent on VALIDATED or REFUSED status.
-          UserNotificationHelper.buildAndSend(new SuggestionValidationUserNotification(actual));
-          break;
-      }
-      return actual;
+      return suggestionBoxService.validateSuggestion(SuggestionBox.this, suggestion, validation);
     }
   }
 

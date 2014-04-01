@@ -222,9 +222,9 @@ public class SuggestionBoxWebController extends
     SuggestionBox suggestionBox = context.getSuggestionBox();
     Suggestion suggestion = suggestionBox.getSuggestions().get(suggestionId);
     if (suggestion.isDefined()) {
-      if ((suggestion.isInDraft() || suggestion.isRefused())) {
+      if ((suggestion.getValidation().isInDraft() || suggestion.getValidation().isRefused())) {
         checkAdminAccessOrUserIsCreator(context.getUser(), suggestion);
-      } else if (suggestion.isPendingValidation()) {
+      } else if (suggestion.getValidation().isPendingValidation()) {
         checkAdminAccessOrUserIsModerator(context.getUser(), suggestionBox);
       } else {
         throw new WebApplicationException(Status.FORBIDDEN);
@@ -251,9 +251,9 @@ public class SuggestionBoxWebController extends
     SuggestionBox suggestionBox = context.getSuggestionBox();
     Suggestion suggestion = suggestionBox.getSuggestions().get(id);
     if (suggestion.isDefined()) {
-      if ((suggestion.isInDraft() || suggestion.isRefused())) {
+      if ((suggestion.getValidation().isInDraft() || suggestion.getValidation().isRefused())) {
         checkAdminAccessOrUserIsCreator(context.getUser(), suggestion);
-      } else if (suggestion.isPendingValidation()) {
+      } else if (suggestion.getValidation().isPendingValidation()) {
         checkAdminAccessOrUserIsModerator(context.getUser(), suggestionBox);
       } else {
         throw new WebApplicationException(Status.FORBIDDEN);

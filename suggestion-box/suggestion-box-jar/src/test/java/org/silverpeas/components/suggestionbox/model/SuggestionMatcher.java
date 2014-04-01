@@ -72,7 +72,7 @@ public class SuggestionMatcher extends BaseMatcher<Suggestion> {
       }
 
       if (expected.containsKey(PROPERTY.STATUS)) {
-        matcher.append(actual.getStatus(), expected.get(PROPERTY.STATUS));
+        matcher.append(actual.getValidation().getStatus(), expected.get(PROPERTY.STATUS));
       }
 
       if (expected.containsKey(PROPERTY.LAST_UPDATE_DATE)) {
