@@ -17,7 +17,7 @@ CREATE TABLE sc_suggestion (
   id                VARCHAR(40)   NOT NULL,
   suggestionBoxId   VARCHAR(40)   NOT NULL,
   title             VARCHAR(2000) NOT NULL,
-  state             VARCHAR(20)   NOT NULL,
+  status            VARCHAR(20)   NOT NULL,
   validationDate    TIMESTAMP,
   validationComment VARCHAR(2000),
   validationBy      VARCHAR(40),

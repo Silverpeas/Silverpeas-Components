@@ -112,7 +112,7 @@ public interface SuggestionBoxService {
    * Validates from the specified suggestion box the specified suggestion.
    * <p/>
    * The service sets automatically the date and the validator of the validation. It takes from the
-   * specified suggestion the comment of the validation.
+   * specified suggestion the information about the validation.
    * <p/>
    * @param box the suggestion box to which the suggestion belongs.
    * @param suggestion the suggestion to validate.

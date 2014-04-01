@@ -193,15 +193,13 @@
   </c:if>
   <c:if test="${isSuggestionReadOnly and isPublishable}">
     <view:operation action="javascript:publish();" altText="${publishSuggestionMenuLabel}"/>
-    <view:operation action="javascript:remove();" altText="${deleteSuggestionMenuLabel}"/>
-    <div id="delete" suggestionbox-deletion ng-click="delete(suggestion,true)" style="display: none"></div>
+    <view:operation action="angularjs:delete(suggestion, true)" altText="${deleteSuggestionMenuLabel}"/>
+    <div suggestionbox-deletion style="display: none"></div>
   </c:if>
   <c:if test="${isSuggestionReadOnly and canModeratorModifying}">
-    <view:operation action="javascript:refuse();" altText="${refuseSuggestionMenuLabel}"/>
-    <view:operation action="javascript:approve();" altText="${validateSuggestionMenuLabel}"/>
+    <view:operation action="angularjs:refuse(suggestion)" altText="${refuseSuggestionMenuLabel}"/>
+    <view:operation action="angularjs:approve(suggestion)" altText="${validateSuggestionMenuLabel}"/>
     <div suggestionbox-validation style="display: none"></div>
-    <div id="refuse" ng-click="refuse(suggestion)" style="display: none"></div>
-    <div id="approve" ng-click="approve(suggestion)" style="display: none"></div>
   </c:if>
 </view:operationPane>
 <view:window>
@@ -239,6 +237,17 @@
             </c:choose>
           </div>
         </div>
+
+        <c:if test="${isSuggestionReadOnly && (suggestion.validated || suggestion.refused)}">
+        <div class="field" id="eventDescriptionArea">
+          <label for="validation_comment" class="txtlibform"><fmt:message key='GML.contribution.validation.comment'/></label>
+
+          <div class="champs">
+            <span id="validation_comment">${suggestion.validation.comment}</span>
+          </div>
+        </div>
+        </c:if>
+
       </div>
       <input type="hidden" value="${componentId}"/>
 

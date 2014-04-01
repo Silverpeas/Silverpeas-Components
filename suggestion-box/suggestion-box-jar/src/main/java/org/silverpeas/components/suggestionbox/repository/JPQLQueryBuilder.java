@@ -101,7 +101,8 @@ public class JPQLQueryBuilder implements SuggestionCriteriaProcessor {
   @Override
   public SuggestionCriteriaProcessor processStatus(List<ContributionStatus> status) {
     if (!done) {
-      query.append("s.state in :").append(parameters.add("states", status).getLastParameterName());
+      query.append("s.status in :").
+          append(parameters.add("statuses", status).getLastParameterName());
     }
     return this;
   }

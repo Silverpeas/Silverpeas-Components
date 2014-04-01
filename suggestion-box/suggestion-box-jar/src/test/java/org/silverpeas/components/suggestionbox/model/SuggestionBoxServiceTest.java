@@ -190,7 +190,7 @@ public class SuggestionBoxServiceTest {
 
     Suggestion actual = service.publishSuggestion(box, suggestion);
 
-    verify(suggestionRepository, times(1)).save(any(OperationContext.class), eq(suggestion));
+    verify(suggestionRepository, times(0)).save(any(OperationContext.class), eq(suggestion));
     assertThat(actual.getStatus(), is(ContributionStatus.DRAFT));
   }
 
