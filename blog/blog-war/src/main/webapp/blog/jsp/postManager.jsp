@@ -25,8 +25,8 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"
 	isELIgnored="false"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>	
 <%@ include file="check.jsp" %>
-<%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 
 <%
 	response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
@@ -149,7 +149,7 @@
 		$(document).ready(function() {
 			<view:wysiwyg replace="Content" language="${language}" width="600" height="300" toolbar="Default" 
 				spaceId="<%=spaceId%>" spaceName="<%=spaceLabel%>" componentId="<%=instanceId%>" componentName="<%=componentLabel%>" 
-				browseInfo="<%=title%>" objectId="<%=post.getId()%>" fileStorage="true" />
+				browseInfo="<%=title%>" objectId="<%=post.getId()%>" />
 		});
 	</script>
 </head>
@@ -165,7 +165,7 @@
 <%
 }
 %>
-<view:browseBar componentId="${instanceId}">
+<view:browseBar componentId="<%=instanceId%>">
 	<view:browseBarElt label="${actionBrowseBar}" link="#" />
 </view:browseBar>
 <view:window>
@@ -189,6 +189,13 @@
     <div class="field" id="contentArea">
 		<label for="Content" class="txtlibform"><fmt:message key='blog.content'/></label>
 		<div class="champs">
+			
+   			<viewTags:displayToolBarWysiwyg
+		        context="<%=m_context%>"
+		        editorName="Content"
+		        componentId="<%=instanceId%>" 
+		        objectId="<%=post.getId()%>" />
+			
 			<textarea rows="5" cols="10" name="Content" id="Content"><%=content %></textarea>
 		</div>
 	</div>
