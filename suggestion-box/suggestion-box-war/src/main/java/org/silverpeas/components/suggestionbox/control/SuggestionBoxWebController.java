@@ -161,7 +161,7 @@ public class SuggestionBoxWebController extends
    */
   @GET
   @Path("suggestion/new")
-  @RedirectToInternalJsp("suggestion.jsp")
+  @RedirectToInternalJsp("suggestionEdit.jsp")
   @LowestRoleAccess(SilverpeasRole.writer)
   public void newSuggestion(SuggestionBoxWebRequestContext context) {
   }
@@ -195,7 +195,7 @@ public class SuggestionBoxWebController extends
    */
   @GET
   @Path("suggestion/{id}")
-  @RedirectToInternalJsp("suggestion.jsp")
+  @RedirectToInternalJsp("suggestionView.jsp")
   public void viewSuggestion(SuggestionBoxWebRequestContext context) {
     String suggestionId = context.getPathVariables().get("id");
     SuggestionBox suggestionBox = context.getSuggestionBox();
@@ -203,6 +203,12 @@ public class SuggestionBoxWebController extends
     if (suggestion.isDefined()) {
       SuggestionEntity entity = getWebServiceProvider().asWebEntity(suggestion);
       context.getRequest().setAttribute("suggestion", entity);
+      boolean isPublishable = entity.isPublishableBy(context.getUser());
+      boolean isModeratorView = entity.getValidation().isPendingValidation() &&
+          context.getGreaterUserRole().isGreaterThanOrEquals(SilverpeasRole.publisher);
+      context.getRequest().setAttribute("isModeratorView", isModeratorView);
+      context.getRequest().setAttribute("isPublishable", isPublishable);
+      context.getRequest().setAttribute("isEditable", (isPublishable || isModeratorView));
     } else {
       throw new WebApplicationException(Status.NOT_FOUND);
     }
@@ -215,7 +221,7 @@ public class SuggestionBoxWebController extends
    */
   @GET
   @Path("suggestion/{id}/edit")
-  @RedirectToInternalJsp("suggestion.jsp")
+  @RedirectToInternalJsp("suggestionEdit.jsp")
   @LowestRoleAccess(SilverpeasRole.writer)
   public void editSuggestion(SuggestionBoxWebRequestContext context) {
     String suggestionId = context.getPathVariables().get("id");
@@ -231,7 +237,6 @@ public class SuggestionBoxWebController extends
       }
       SuggestionEntity entity = getWebServiceProvider().asWebEntity(suggestion);
       context.getRequest().setAttribute("suggestion", entity);
-      context.getRequest().setAttribute("edit", "edit");
     } else {
       throw new WebApplicationException(Status.NOT_FOUND);
     }
