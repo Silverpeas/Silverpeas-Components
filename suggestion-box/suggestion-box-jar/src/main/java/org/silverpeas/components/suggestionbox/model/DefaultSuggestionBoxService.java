@@ -29,6 +29,7 @@ import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.components.suggestionbox.notification
@@ -190,11 +191,11 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
 
     // Persisting the publishing.
     Transaction transaction = Transaction.getTransaction();
-    final Transaction.Indicators indicators = transaction.newIndicators();
-    Suggestion updatedSuggestion =
-        transaction.performRequired(new Transaction.Process<Suggestion>() {
+    Pair<Suggestion, Boolean> result =
+        transaction.perform(new Transaction.Process<Pair<Suggestion, Boolean>>() {
           @Override
-          public Suggestion execute() {
+          public Pair<Suggestion, Boolean> execute() {
+            boolean triggerNotif = false;
             Suggestion actual = findSuggestionById(box, suggestion.getId());
             if (suggestion.getSuggestionBox().equals(box) &&
                 (actual.getValidation().isInDraft() || actual.getValidation().isRefused())) {
@@ -211,15 +212,16 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
                 }
                 suggestionRepository.save(OperationContext.fromUser(updater), actual);
                 suggestionRepository.flush();
-                indicators.savePerformed();
+                triggerNotif = true;
               }
             }
-            return actual;
+            return Pair.of(actual, triggerNotif);
           }
         });
 
     // Sending notification after the persistence is successfully committed.
-    if (indicators.isSavePerformed()) {
+    Suggestion updatedSuggestion = result.getLeft();
+    if (result.getRight()) {
       switch (updatedSuggestion.getValidation().getStatus()) {
         case PENDING_VALIDATION:
           UserNotificationHelper
@@ -240,11 +242,11 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
 
     // Persisting the validation.
     Transaction transaction = Transaction.getTransaction();
-    final Transaction.Indicators indicators = transaction.newIndicators();
-    Suggestion updatedSuggestion =
-        transaction.performRequired(new Transaction.Process<Suggestion>() {
+    Pair<Suggestion, Boolean> result =
+        transaction.perform(new Transaction.Process<Pair<Suggestion, Boolean>>() {
           @Override
-          public Suggestion execute() {
+          public Pair<Suggestion, Boolean> execute() {
+            boolean triggerNotif = false;
             Suggestion actual = findSuggestionById(box, suggestion.getId());
             if (suggestion.getSuggestionBox().equals(box) &&
                 actual.getValidation().isPendingValidation()) {
@@ -259,14 +261,15 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
               }
               suggestionRepository.save(OperationContext.fromUser(updater), actual);
               suggestionRepository.flush();
-              indicators.savePerformed();
+              triggerNotif = true;
             }
-            return actual;
+            return Pair.of(actual, triggerNotif);
           }
         });
 
     // Sending notification(s) after the persistence is successfully committed.
-    if (indicators.isSavePerformed()) {
+    Suggestion updatedSuggestion = result.getLeft();
+    if (result.getRight()) {
       switch (updatedSuggestion.getValidation().getStatus()) {
         case VALIDATED:
           UserNotificationHelper
