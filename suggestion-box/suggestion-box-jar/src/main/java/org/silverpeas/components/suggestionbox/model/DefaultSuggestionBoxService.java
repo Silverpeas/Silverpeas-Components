@@ -23,19 +23,21 @@
  */
 package org.silverpeas.components.suggestionbox.model;
 
+import com.silverpeas.SilverpeasComponentService;
 import com.silverpeas.annotation.Service;
+import com.silverpeas.comment.service.CommentUserNotificationService;
 import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.ResourceLocator;
 import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.components.suggestionbox.notification
-    .SuggestionBoxSubscriptionUserNotification;
-import org.silverpeas.components.suggestionbox.notification
-    .SuggestionPendingValidationUserNotification;
+import org.silverpeas.components.suggestionbox.SuggestionBoxComponentSettings;
+import org.silverpeas.components.suggestionbox.notification.SuggestionBoxSubscriptionUserNotification;
+import org.silverpeas.components.suggestionbox.notification.SuggestionPendingValidationUserNotification;
 import org.silverpeas.components.suggestionbox.notification.SuggestionValidationUserNotification;
 import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepository;
 import org.silverpeas.components.suggestionbox.repository.SuggestionRepository;
@@ -46,22 +48,30 @@ import org.silverpeas.persistence.repository.OperationContext;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.inject.Inject;
 import java.util.Date;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+
 /**
- * The default implementation of the {@link SuggestionBoxService} interface.
+ * The default implementation of the {@link SuggestionBoxService} interface and of the
+ * {@link SilverpeasComponentService} interface.
  * @author mmoquillon
  */
 @Service
-public class DefaultSuggestionBoxService implements SuggestionBoxService {
+public class DefaultSuggestionBoxService implements SuggestionBoxService,
+    SilverpeasComponentService<Suggestion> {
 
   @Inject
   private SuggestionBoxRepository suggestionBoxRepository;
 
   @Inject
   private SuggestionRepository suggestionRepository;
+
+  @Inject
+  private CommentUserNotificationService commentUserNotificationService;
 
   /**
    * Gets an instance of a SuggestionBoxService.
@@ -73,6 +83,24 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
   public static SuggestionBoxService getInstance() {
     SuggestionBoxServiceFactory factory = SuggestionBoxServiceFactory.getFactory();
     return factory.getSuggestionBoxService();
+  }
+
+  /**
+   * Initializes the Suggestion Box component by setting some transversal core services for their
+   * use by the component instances. One of these services is the user comment notification.
+   */
+  @PostConstruct
+  public void initialize() {
+    commentUserNotificationService.register(SuggestionBoxComponentSettings.COMPONENT_NAME, this);
+  }
+
+  /**
+   * Releases the uses of the transversal core services that were used by the instances of the
+   * Suggestion Box component.
+   */
+  @PreDestroy
+  public void release() {
+    commentUserNotificationService.unregister(SuggestionBoxComponentSettings.COMPONENT_NAME);
   }
 
   @Override
@@ -177,8 +205,8 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
   @Transactional
   public void removeSuggestion(SuggestionBox box, Suggestion suggestion) {
     Suggestion actual = suggestionRepository.getById(suggestion.getId());
-    if (suggestion.getSuggestionBox().equals(box) &&
-        (actual.getValidation().isInDraft() || actual.getValidation().isRefused())) {
+    if (suggestion.getSuggestionBox().equals(box) && (actual.getValidation().isInDraft() || actual.
+        getValidation().isRefused())) {
       suggestionRepository.delete(actual);
       suggestionRepository.flush();
 
@@ -191,14 +219,14 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
 
     // Persisting the publishing.
     Transaction transaction = Transaction.getTransaction();
-    Pair<Suggestion, Boolean> result =
-        transaction.perform(new Transaction.Process<Pair<Suggestion, Boolean>>() {
+    Pair<Suggestion, Boolean> result = transaction.
+        perform(new Transaction.Process<Pair<Suggestion, Boolean>>() {
           @Override
           public Pair<Suggestion, Boolean> execute() {
             boolean triggerNotif = false;
             Suggestion actual = findSuggestionById(box, suggestion.getId());
-            if (suggestion.getSuggestionBox().equals(box) &&
-                (actual.getValidation().isInDraft() || actual.getValidation().isRefused())) {
+            if (suggestion.getSuggestionBox().equals(box) && (actual.getValidation().isInDraft()
+            || actual.getValidation().isRefused())) {
               UserDetail updater = suggestion.getLastUpdater();
               SilverpeasRole greaterUserRole = box.getGreaterUserRole(updater);
               if (greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.writer)) {
@@ -237,19 +265,20 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
   }
 
   @Override
+
   public Suggestion validateSuggestion(final SuggestionBox box, final Suggestion suggestion,
       final ContributionValidation validation) {
 
     // Persisting the validation.
     Transaction transaction = Transaction.getTransaction();
-    Pair<Suggestion, Boolean> result =
-        transaction.perform(new Transaction.Process<Pair<Suggestion, Boolean>>() {
+    Pair<Suggestion, Boolean> result = transaction.
+        perform(new Transaction.Process<Pair<Suggestion, Boolean>>() {
           @Override
           public Pair<Suggestion, Boolean> execute() {
             boolean triggerNotif = false;
             Suggestion actual = findSuggestionById(box, suggestion.getId());
-            if (suggestion.getSuggestionBox().equals(box) &&
-                actual.getValidation().isPendingValidation()) {
+            if (suggestion.getSuggestionBox().equals(box) && actual.getValidation().
+            isPendingValidation()) {
               UserDetail updater = suggestion.getLastUpdater();
               SilverpeasRole greaterUserRole = box.getGreaterUserRole(updater);
               if (greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.publisher)) {
@@ -282,5 +311,21 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
       }
     }
     return updatedSuggestion;
+  }
+
+  @Override
+
+  public Suggestion getContentById(String contentId) {
+    return suggestionRepository.getById(contentId);
+  }
+
+  @Override
+  public ResourceLocator getComponentSettings() {
+    return SuggestionBoxComponentSettings.getSettings();
+  }
+
+  @Override
+  public ResourceLocator getComponentMessages(String language) {
+    return SuggestionBoxComponentSettings.getMessagesIn(language);
   }
 }
