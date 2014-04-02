@@ -314,7 +314,6 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService,
   }
 
   @Override
-
   public Suggestion getContentById(String contentId) {
     return suggestionRepository.getById(contentId);
   }

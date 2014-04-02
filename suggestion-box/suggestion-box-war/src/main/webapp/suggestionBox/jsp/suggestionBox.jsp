@@ -132,16 +132,16 @@
         <view:displayWysiwyg objectId="${suggestionBoxId}" componentId="${componentId}" language="${null}"/>
       </div>
     </c:if>
-    <div id="my-suggestionBox">
-      <view:areaOfOperationOfCreation/>
-      <fmt:message key="suggestionBox.label.suggestions.mine" var="labelMySuggestions"/>
-      <div class="secteur-container my-suggestionBox-draft">
-        <div class="header">
-          <h3 class="my-suggestionBox-inProgress-title">
-            <c:out value="${labelMySuggestions} "/>
-            <strong><fmt:message key="suggestionBox.label.suggestions.inDraft"/></strong></h3>
-        </div>
-        <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
+    <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
+      <div id="my-suggestionBox">
+        <view:areaOfOperationOfCreation/>
+        <fmt:message key="suggestionBox.label.suggestions.mine" var="labelMySuggestions"/>
+        <div class="secteur-container my-suggestionBox-draft">
+          <div class="header">
+            <h3 class="my-suggestionBox-inProgress-title">
+              <c:out value="${labelMySuggestions} "/>
+              <strong><fmt:message key="suggestionBox.label.suggestions.inDraft"/></strong></h3>
+          </div>
           <div suggestionbox-deletion></div>
           <ul ng-controller="inDraftController">
             <li ng-repeat="suggestion in inDraftSuggestions">
@@ -152,47 +152,47 @@
                 <%--TODO END REMOVE AFTER DEV--%>
             </li>
           </ul>
-        </c:if>
-      </div>
-      <div class="secteur-container my-suggestionBox-inProgress">
-        <div class="header">
-          <h3 class="my-suggestionBox-inProgress-title">
-            <strong><fmt:message key="suggestionBox.label.suggestions.progress"/></strong>
-            <c:out value="${fn:toLowerCase(labelMySuggestions)}"/></h3>
         </div>
-        <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
-          <div suggestionbox-deletion></div>
-          <ul ng-controller="outOfDraftController">
-            <li ng-repeat="suggestion in outOfDraftSuggestions">
-              <a ng-href="${componentUriBase}suggestion/{{ suggestion.id }}">{{suggestion.title}}</a>
-                <%--TODO BEGIN REMOVE AFTER DEV--%>
-              <span>{{suggestion.validation.status}}</span>
-              <img ng-if="'${STATUS_REFUSED}'==suggestion.validation.status" ng-click="delete(suggestion)" src="${deleteIcon}" alt="remove" style="cursor: pointer"/>
-              <a ng-if="'${STATUS_PENDING_VALIDATION}'!=suggestion.validation.status && '${STATUS_VALIDATED}'!=suggestion.validation.status" href="#" ng-click="publish(suggestion)"><span>${publishSuggestionLabel}</span></a><br/>
-                <%--TODO END REMOVE AFTER DEV--%>
-            </li>
-          </ul>
-        </c:if>
-      </div>
-
-        <%--TODO BEGIN REMOVE AFTER DEV--%>
-      <c:if test="${greaterUserRole.isGreaterThanOrEquals(publisherRole)}">
-        <div suggestionbox-validation></div>
-        <div ng-controller="pendingValidationController" class="cell">
-          <ul id="my_pending_validation_suggestions_list" class="container">
-            <li ng-repeat="suggestion in pendingValidationSuggestions">
-              <a ng-href="${componentUriBase}suggestion/{{ suggestion.id }}"><span class="suggestion_title">{{ suggestion.title }}</span></a><br/>
-
-              <div>{{ suggestion.validation.status }}</div>
-              <div ng-bind-html="suggestion.content"></div>
-              <a href="#" ng-click="refuse(suggestion)"><span>${refuseSuggestionLabel}</span></a><br/>
-              <a href="#" ng-click="approve(suggestion)"><span>${approveSuggestionLabel}</span></a><br/>
-            </li>
-          </ul>
+        <div class="secteur-container my-suggestionBox-inProgress">
+          <div class="header">
+            <h3 class="my-suggestionBox-inProgress-title">
+              <strong><fmt:message key="suggestionBox.label.suggestions.progress"/></strong>
+              <c:out value="${fn:toLowerCase(labelMySuggestions)}"/></h3>
+          </div>
+          <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
+            <div suggestionbox-deletion></div>
+            <ul ng-controller="outOfDraftController">
+              <li ng-repeat="suggestion in outOfDraftSuggestions">
+                <a ng-href="${componentUriBase}suggestion/{{ suggestion.id }}">{{suggestion.title}}</a>
+                  <%--TODO BEGIN REMOVE AFTER DEV--%>
+                <span>{{suggestion.validation.status}}</span>
+                <img ng-if="'${STATUS_REFUSED}'==suggestion.validation.status" ng-click="delete(suggestion)" src="${deleteIcon}" alt="remove" style="cursor: pointer"/>
+                <a ng-if="'${STATUS_PENDING_VALIDATION}'!=suggestion.validation.status && '${STATUS_VALIDATED}'!=suggestion.validation.status" href="#" ng-click="publish(suggestion)"><span>${publishSuggestionLabel}</span></a><br/>
+                  <%--TODO END REMOVE AFTER DEV--%>
+              </li>
+            </ul>
+          </c:if>
         </div>
-      </c:if>
-        <%--TODO END REMOVE AFTER DEV--%>
-    </div>
+
+          <%--TODO BEGIN REMOVE AFTER DEV--%>
+        <c:if test="${greaterUserRole.isGreaterThanOrEquals(publisherRole)}">
+          <div suggestionbox-validation></div>
+          <div ng-controller="pendingValidationController" class="cell">
+            <ul id="my_pending_validation_suggestions_list" class="container">
+              <li ng-repeat="suggestion in pendingValidationSuggestions">
+                <a ng-href="${componentUriBase}suggestion/{{ suggestion.id }}"><span class="suggestion_title">{{ suggestion.title }}</span></a><br/>
+
+                <div>{{ suggestion.validation.status }}</div>
+                <div ng-bind-html="suggestion.content"></div>
+                <a href="#" ng-click="refuse(suggestion)"><span>${refuseSuggestionLabel}</span></a><br/>
+                <a href="#" ng-click="approve(suggestion)"><span>${approveSuggestionLabel}</span></a><br/>
+              </li>
+            </ul>
+          </div>
+        </c:if>
+          <%--TODO END REMOVE AFTER DEV--%>
+      </div>
+    </c:if>
     <div id="all-suggestionBox">
       <div class="secteur-container lastSuggestion">
         <div class="header">
@@ -208,7 +208,8 @@
       </div>
       <div class="secteur-container buzzSuggestion">
         <div class="header">
-          <h3 class="buzzSuggestion-title"><fmt:message key="suggestionBox.label.suggestions.buzz"/></h3>
+          <h3 class="buzzSuggestion-title">
+            <fmt:message key="suggestionBox.label.suggestions.buzz"/></h3>
         </div>
         <ul ng-controller="buzzPublishedController">
           <li ng-repeat="suggestion in buzzPublishedSuggestions" ng-if="$index < 5">
@@ -218,7 +219,8 @@
       </div>
       <div class="secteur-container lastCommentSuggestion">
         <div class="header">
-          <h3 class="lastCommentSuggestion-title"><fmt:message key="suggestionBox.label.suggestions.comments.last"/></h3>
+          <h3 class="lastCommentSuggestion-title">
+            <fmt:message key="suggestionBox.label.suggestions.comments.last"/></h3>
         </div>
         <ul>
         </ul>

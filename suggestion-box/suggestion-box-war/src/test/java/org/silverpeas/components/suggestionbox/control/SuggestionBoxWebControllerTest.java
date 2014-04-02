@@ -59,7 +59,6 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import javax.ws.rs.WebApplicationException;
-
 import java.net.URISyntaxException;
 import java.util.Map;
 
@@ -121,23 +120,6 @@ public class SuggestionBoxWebControllerTest {
     assertThat(suggestion.getContent(), is(content));
   }
 
-  @Test
-  public void viewASuggestion() throws URISyntaxException {
-    SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
-    when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
-    SuggestionBox box = context.getSuggestionBox();
-    SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
-    Suggestion theSuggestion = aSuggestion();
-    ReflectionTestUtils.setField(theSuggestion, "suggestionBox", box);
-    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(theSuggestion);
-
-    controller.viewSuggestion(context);
-
-    verify(suggestionBoxService, times(1)).findSuggestionById(box, SUGGESTION_ID);
-
-    verify(context.getRequest(), times(0)).setAttribute("edit", "edit");
-  }
-
   @Test(expected = WebApplicationException.class)
   public void viewAnUnexistingSuggestionInAGivenSuggestionBox() {
     SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
@@ -149,66 +131,251 @@ public class SuggestionBoxWebControllerTest {
     controller.viewSuggestion(context);
   }
 
-  @Test
-  public void viewANonDraftSuggestionInAGivenSuggestionBoxUserIsNotModerator() {
+  private SuggestionBoxWebRequestContext prepareViewSuggestionTest(SilverpeasRole greaterUserRole,
+      ContributionStatus suggestionStatus) {
     SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
     when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
+    when(context.getGreaterUserRole())
+        .thenReturn(greaterUserRole != null ? greaterUserRole : SilverpeasRole.reader);
     SuggestionBox box = context.getSuggestionBox();
     SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
-    Suggestion theSuggestion = aSuggestionWithStatus(ContributionStatus.PENDING_VALIDATION);
+    Suggestion theSuggestion = aSuggestionWithStatus(suggestionStatus);
     ReflectionTestUtils.setField(theSuggestion, "suggestionBox", box);
     when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(theSuggestion);
-    when(getOrganisationController().getUsersIdsByRoleNames(box.getComponentInstanceId(),
-        CollectionUtil.asList(SilverpeasRole.admin.name(), SilverpeasRole.publisher.name())))
-        .thenReturn(new String[]{"otherId"});
-
-    controller.viewSuggestion(context);
-
-    verify(suggestionBoxService, times(1)).findSuggestionById(box, SUGGESTION_ID);
-
-    verify(context.getRequest(), times(0)).setAttribute("edit", "edit");
+    final String[] roles;
+    if (greaterUserRole != null) {
+      roles = new String[]{greaterUserRole.getName()};
+    } else {
+      roles = new String[0];
+    }
+    when(getOrganisationController()
+        .getUserProfiles(context.getUser().getId(), box.getComponentInstanceId()))
+        .thenReturn(roles);
+    return context;
   }
 
   @Test
-  public void viewANonDraftSuggestionInAGivenSuggestionBoxUserIsModerator() {
-    SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
-    when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
-    SuggestionBox box = context.getSuggestionBox();
-    SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
-    Suggestion theSuggestion = aSuggestionWithStatus(ContributionStatus.PENDING_VALIDATION);
-    ReflectionTestUtils.setField(theSuggestion, "suggestionBox", box);
-    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(theSuggestion);
-    String userId = context.getUser().getId();
-    when(getOrganisationController().getUsersIdsByRoleNames(box.getComponentInstanceId(),
-        CollectionUtil.asList(SilverpeasRole.admin.name(), SilverpeasRole.publisher.name())))
-        .thenReturn(new String[]{userId});
+  public void viewAInDraftSuggestionByUnknownUser() throws URISyntaxException {
+    SuggestionBoxWebRequestContext context =
+        prepareViewSuggestionTest(null, ContributionStatus.DRAFT);
 
     controller.viewSuggestion(context);
 
-    verify(suggestionBoxService, times(1)).findSuggestionById(box, SUGGESTION_ID);
-
-    verify(context.getRequest(), times(0)).setAttribute("edit", "edit");
+    verify(getSuggestionBoxService(), times(1))
+        .findSuggestionById(context.getSuggestionBox(), SUGGESTION_ID);
+    verify(context.getRequest(), times(1)).setAttribute("isModeratorView", false);
+    verify(context.getRequest(), times(1)).setAttribute("isPublishable", false);
+    verify(context.getRequest(), times(1)).setAttribute("isEditable", false);
   }
 
   @Test
-  public void viewAValidatedSuggestionInAGivenSuggestionBoxUserIsModerator() {
-    SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
-    when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
-    SuggestionBox box = context.getSuggestionBox();
-    SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
-    Suggestion theSuggestion = aSuggestionWithStatus(ContributionStatus.VALIDATED);
-    ReflectionTestUtils.setField(theSuggestion, "suggestionBox", box);
-    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(theSuggestion);
-    String userId = context.getUser().getId();
-    when(getOrganisationController().getUsersIdsByRoleNames(box.getComponentInstanceId(),
-        CollectionUtil.asList(SilverpeasRole.admin.name(), SilverpeasRole.publisher.name())))
-        .thenReturn(new String[]{userId});
+  public void viewAInDraftSuggestionByReaderUser() throws URISyntaxException {
+    SuggestionBoxWebRequestContext context =
+        prepareViewSuggestionTest(SilverpeasRole.reader, ContributionStatus.DRAFT);
 
     controller.viewSuggestion(context);
 
-    verify(suggestionBoxService, times(1)).findSuggestionById(box, SUGGESTION_ID);
+    verify(getSuggestionBoxService(), times(1))
+        .findSuggestionById(context.getSuggestionBox(), SUGGESTION_ID);
+    verify(context.getRequest(), times(1)).setAttribute("isModeratorView", false);
+    verify(context.getRequest(), times(1)).setAttribute("isPublishable", false);
+    verify(context.getRequest(), times(1)).setAttribute("isEditable", false);
+  }
 
-    verify(context.getRequest(), times(0)).setAttribute("edit", "edit");
+  @Test
+  public void viewAInDraftSuggestionByParticipantUser() throws URISyntaxException {
+    SuggestionBoxWebRequestContext context =
+        prepareViewSuggestionTest(SilverpeasRole.writer, ContributionStatus.DRAFT);
+
+    controller.viewSuggestion(context);
+
+    verify(getSuggestionBoxService(), times(1))
+        .findSuggestionById(context.getSuggestionBox(), SUGGESTION_ID);
+    verify(context.getRequest(), times(1)).setAttribute("isModeratorView", false);
+    verify(context.getRequest(), times(1)).setAttribute("isPublishable", true);
+    verify(context.getRequest(), times(1)).setAttribute("isEditable", true);
+  }
+
+  @Test
+  public void viewAInDraftSuggestionByModeratorUser() throws URISyntaxException {
+    SuggestionBoxWebRequestContext context =
+        prepareViewSuggestionTest(SilverpeasRole.publisher, ContributionStatus.DRAFT);
+
+    controller.viewSuggestion(context);
+
+    verify(getSuggestionBoxService(), times(1))
+        .findSuggestionById(context.getSuggestionBox(), SUGGESTION_ID);
+    verify(context.getRequest(), times(1)).setAttribute("isModeratorView", false);
+    verify(context.getRequest(), times(1)).setAttribute("isPublishable", true);
+    verify(context.getRequest(), times(1)).setAttribute("isEditable", true);
+  }
+
+  @Test
+  public void viewARefusedSuggestionByUnknownUser() throws URISyntaxException {
+    SuggestionBoxWebRequestContext context =
+        prepareViewSuggestionTest(null, ContributionStatus.REFUSED);
+
+    controller.viewSuggestion(context);
+
+    verify(getSuggestionBoxService(), times(1))
+        .findSuggestionById(context.getSuggestionBox(), SUGGESTION_ID);
+    verify(context.getRequest(), times(1)).setAttribute("isModeratorView", false);
+    verify(context.getRequest(), times(1)).setAttribute("isPublishable", false);
+    verify(context.getRequest(), times(1)).setAttribute("isEditable", false);
+  }
+
+  @Test
+  public void viewARefusedSuggestionByReaderUser() throws URISyntaxException {
+    SuggestionBoxWebRequestContext context =
+        prepareViewSuggestionTest(SilverpeasRole.reader, ContributionStatus.REFUSED);
+
+    controller.viewSuggestion(context);
+
+    verify(getSuggestionBoxService(), times(1))
+        .findSuggestionById(context.getSuggestionBox(), SUGGESTION_ID);
+    verify(context.getRequest(), times(1)).setAttribute("isModeratorView", false);
+    verify(context.getRequest(), times(1)).setAttribute("isPublishable", false);
+    verify(context.getRequest(), times(1)).setAttribute("isEditable", false);
+  }
+
+  @Test
+  public void viewARefusedSuggestionByParticipantUser() throws URISyntaxException {
+    SuggestionBoxWebRequestContext context =
+        prepareViewSuggestionTest(SilverpeasRole.writer, ContributionStatus.REFUSED);
+
+    controller.viewSuggestion(context);
+
+    verify(getSuggestionBoxService(), times(1))
+        .findSuggestionById(context.getSuggestionBox(), SUGGESTION_ID);
+    verify(context.getRequest(), times(1)).setAttribute("isModeratorView", false);
+    verify(context.getRequest(), times(1)).setAttribute("isPublishable", true);
+    verify(context.getRequest(), times(1)).setAttribute("isEditable", true);
+  }
+
+  @Test
+  public void viewARefusedSuggestionByModeratorUser() throws URISyntaxException {
+    SuggestionBoxWebRequestContext context =
+        prepareViewSuggestionTest(SilverpeasRole.publisher, ContributionStatus.REFUSED);
+
+    controller.viewSuggestion(context);
+
+    verify(getSuggestionBoxService(), times(1))
+        .findSuggestionById(context.getSuggestionBox(), SUGGESTION_ID);
+    verify(context.getRequest(), times(1)).setAttribute("isModeratorView", false);
+    verify(context.getRequest(), times(1)).setAttribute("isPublishable", true);
+    verify(context.getRequest(), times(1)).setAttribute("isEditable", true);
+  }
+
+  @Test
+  public void viewAPendingValidationSuggestionByUnknownUser() throws URISyntaxException {
+    SuggestionBoxWebRequestContext context =
+        prepareViewSuggestionTest(null, ContributionStatus.PENDING_VALIDATION);
+
+    controller.viewSuggestion(context);
+
+    verify(getSuggestionBoxService(), times(1))
+        .findSuggestionById(context.getSuggestionBox(), SUGGESTION_ID);
+    verify(context.getRequest(), times(1)).setAttribute("isModeratorView", false);
+    verify(context.getRequest(), times(1)).setAttribute("isPublishable", false);
+    verify(context.getRequest(), times(1)).setAttribute("isEditable", false);
+  }
+
+  @Test
+  public void viewAPendingValidationSuggestionByReaderUser() throws URISyntaxException {
+    SuggestionBoxWebRequestContext context =
+        prepareViewSuggestionTest(SilverpeasRole.reader, ContributionStatus.PENDING_VALIDATION);
+
+    controller.viewSuggestion(context);
+
+    verify(getSuggestionBoxService(), times(1))
+        .findSuggestionById(context.getSuggestionBox(), SUGGESTION_ID);
+    verify(context.getRequest(), times(1)).setAttribute("isModeratorView", false);
+    verify(context.getRequest(), times(1)).setAttribute("isPublishable", false);
+    verify(context.getRequest(), times(1)).setAttribute("isEditable", false);
+  }
+
+  @Test
+  public void viewAPendingValidationSuggestionByParticipantUser() throws URISyntaxException {
+    SuggestionBoxWebRequestContext context =
+        prepareViewSuggestionTest(SilverpeasRole.writer, ContributionStatus.PENDING_VALIDATION);
+
+    controller.viewSuggestion(context);
+
+    verify(getSuggestionBoxService(), times(1))
+        .findSuggestionById(context.getSuggestionBox(), SUGGESTION_ID);
+    verify(context.getRequest(), times(1)).setAttribute("isModeratorView", false);
+    verify(context.getRequest(), times(1)).setAttribute("isPublishable", false);
+    verify(context.getRequest(), times(1)).setAttribute("isEditable", false);
+  }
+
+  @Test
+  public void viewAPendingValidationSuggestionByModeratorUser() throws URISyntaxException {
+    SuggestionBoxWebRequestContext context =
+        prepareViewSuggestionTest(SilverpeasRole.publisher, ContributionStatus.PENDING_VALIDATION);
+
+    controller.viewSuggestion(context);
+
+    verify(getSuggestionBoxService(), times(1))
+        .findSuggestionById(context.getSuggestionBox(), SUGGESTION_ID);
+    verify(context.getRequest(), times(1)).setAttribute("isModeratorView", true);
+    verify(context.getRequest(), times(1)).setAttribute("isPublishable", false);
+    verify(context.getRequest(), times(1)).setAttribute("isEditable", true);
+  }
+
+  @Test
+  public void viewValidatedSuggestionByUnknownUser() throws URISyntaxException {
+    SuggestionBoxWebRequestContext context =
+        prepareViewSuggestionTest(null, ContributionStatus.VALIDATED);
+
+    controller.viewSuggestion(context);
+
+    verify(getSuggestionBoxService(), times(1))
+        .findSuggestionById(context.getSuggestionBox(), SUGGESTION_ID);
+    verify(context.getRequest(), times(1)).setAttribute("isModeratorView", false);
+    verify(context.getRequest(), times(1)).setAttribute("isPublishable", false);
+    verify(context.getRequest(), times(1)).setAttribute("isEditable", false);
+  }
+
+  @Test
+  public void viewValidatedSuggestionByReaderUser() throws URISyntaxException {
+    SuggestionBoxWebRequestContext context =
+        prepareViewSuggestionTest(SilverpeasRole.reader, ContributionStatus.VALIDATED);
+
+    controller.viewSuggestion(context);
+
+    verify(getSuggestionBoxService(), times(1))
+        .findSuggestionById(context.getSuggestionBox(), SUGGESTION_ID);
+    verify(context.getRequest(), times(1)).setAttribute("isModeratorView", false);
+    verify(context.getRequest(), times(1)).setAttribute("isPublishable", false);
+    verify(context.getRequest(), times(1)).setAttribute("isEditable", false);
+  }
+
+  @Test
+  public void viewValidatedSuggestionByParticipantUser() throws URISyntaxException {
+    SuggestionBoxWebRequestContext context =
+        prepareViewSuggestionTest(SilverpeasRole.writer, ContributionStatus.VALIDATED);
+
+    controller.viewSuggestion(context);
+
+    verify(getSuggestionBoxService(), times(1))
+        .findSuggestionById(context.getSuggestionBox(), SUGGESTION_ID);
+    verify(context.getRequest(), times(1)).setAttribute("isModeratorView", false);
+    verify(context.getRequest(), times(1)).setAttribute("isPublishable", false);
+    verify(context.getRequest(), times(1)).setAttribute("isEditable", false);
+  }
+
+  @Test
+  public void viewValidatedSuggestionByModeratorUser() throws URISyntaxException {
+    SuggestionBoxWebRequestContext context =
+        prepareViewSuggestionTest(SilverpeasRole.publisher, ContributionStatus.VALIDATED);
+
+    controller.viewSuggestion(context);
+
+    verify(getSuggestionBoxService(), times(1))
+        .findSuggestionById(context.getSuggestionBox(), SUGGESTION_ID);
+    verify(context.getRequest(), times(1)).setAttribute("isModeratorView", false);
+    verify(context.getRequest(), times(1)).setAttribute("isPublishable", false);
+    verify(context.getRequest(), times(1)).setAttribute("isEditable", false);
   }
 
   @Test
@@ -224,8 +391,6 @@ public class SuggestionBoxWebControllerTest {
     controller.editSuggestion(context);
 
     verify(suggestionBoxService, times(1)).findSuggestionById(box, SUGGESTION_ID);
-
-    verify(context.getRequest(), times(1)).setAttribute("edit", "edit");
   }
 
   @Test(expected = WebApplicationException.class)
@@ -271,8 +436,6 @@ public class SuggestionBoxWebControllerTest {
     controller.editSuggestion(context);
 
     verify(suggestionBoxService, times(1)).findSuggestionById(box, SUGGESTION_ID);
-
-    verify(context.getRequest(), times(1)).setAttribute("edit", "edit");
   }
 
   @Test(expected = WebApplicationException.class)

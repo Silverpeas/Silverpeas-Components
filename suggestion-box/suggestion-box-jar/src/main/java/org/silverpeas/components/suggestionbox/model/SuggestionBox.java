@@ -154,7 +154,8 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
     String[] profiles = OrganisationControllerFactory.getOrganisationController()
         .getUserProfiles(user.getId(), getComponentInstanceId());
     Set<SilverpeasRole> userRoles = SilverpeasRole.from(profiles);
-    return SilverpeasRole.getGreaterFrom(userRoles);
+    SilverpeasRole role = SilverpeasRole.getGreaterFrom(userRoles);
+    return role != null ? role : SilverpeasRole.reader;
   }
 
   public class Suggestions {
