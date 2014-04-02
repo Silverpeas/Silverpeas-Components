@@ -27,7 +27,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
-<view:setConstant var="readerRole" constant="com.stratelia.webactiv.SilverpeasRole.reader"/>
 <view:setConstant var="writerRole" constant="com.stratelia.webactiv.SilverpeasRole.writer"/>
 <c:set var="greaterUserRole" value="${requestScope.greaterUserRole}"/>
 
@@ -51,10 +50,6 @@
 <c:set var="isEditable" value="${requestScope.isEditable}"/>
 <c:set var="isPublishable" value="${requestScope.isPublishable}"/>
 <c:set var="isModeratorView" value="${requestScope.isModeratorView}"/>
-
-<c:if test="${not greaterUserRole.isGreaterThanOrEquals(readerRole)}">
-  <c:redirect url="/Error403.jsp"/>
-</c:if>
 
 <c:choose>
   <c:when test="${isModeratorView}">
