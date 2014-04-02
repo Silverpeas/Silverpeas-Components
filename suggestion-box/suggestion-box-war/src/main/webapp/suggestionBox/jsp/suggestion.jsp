@@ -163,17 +163,6 @@
     function publish() {
       $('#actions').attr('action', '${componentUriBase}suggestion/${target}/publish').submit();
     }
-    function remove() {
-      $('#delete').trigger('click');
-    }
-    </c:if>
-    <c:if test="${isSuggestionReadOnly and canModeratorModifying}">
-    function approve() {
-      $('#approve').trigger('click');
-    }
-    function refuse() {
-      $('#refuse').trigger('click');
-    }
     </c:if>
 
     function cancel() {
@@ -210,81 +199,82 @@
 <view:window>
   <view:frame>
     <div id="error" style="display: none;"></div>
-    <c:if test="${not suggestion.validation.validated and isSuggestionReadOnly}">
-    <div class="rightContent">
-      <view:attachmentPane componentId="${componentId}" resourceId="${suggestion.id}"></view:attachmentPane>
-    </div>
-    </c:if>
-    <form id="suggestion" name="suggestion" action="${componentUriBase}suggestion/${target}" method="POST">
-      <div class="fields">
-        <div class="field" id="suggestionName">
-          <label for="title" class="txtlibform"><fmt:message key='GML.title'/><c:if test="${not isSuggestionReadOnly}">&nbsp;<img alt="mandatory" src="${mandatoryIcons}" width="5" height="5"/></c:if></label>
-
-          <div class="champs">
-            <c:choose>
-              <c:when test="${isSuggestionReadOnly}">
-                <span id="title"><c:out value='${suggestion.title}'/></span>
-              </c:when>
-              <c:otherwise>
-                <input id="title" type="text" name="title" size="100%" maxlength="2000" value="<c:out value='${suggestion.title}'/>"/>
-              </c:otherwise>
-            </c:choose>
-          </div>
+    <c:choose>
+      <c:when test="${isSuggestionReadOnly}">
+        <div class="rightContent">
+          <view:attachmentPane componentId="${componentId}" resourceId="${suggestion.id}" readOnly="${suggestion.validation.validated}"></view:attachmentPane>
         </div>
+        <div class="fields">
+          <label for="title" class="txtlibform"><fmt:message key='GML.title'/></label>
+
+          <div class="champs"><c:out value='${suggestion.title}'/></div>
+          <c:if test="${not empty suggestion.content}">
+            <br clear="all"/>
+
+            <div class="field">
+              <label class="txtlibform"><fmt:message key='GML.description'/></label>
+              <span>${suggestion.content}</span>
+            </div>
+          </c:if>
+          <c:if test="${not empty suggestion.validation.comment && (suggestion.validation.validated || suggestion.validation.refused)}">
+            <br clear="all"/>
+            
+            <div class="field" id="validationCommentArea">
+              <label class="txtlibform"><fmt:message key='GML.contribution.validation.comment'/></label>
+
+              <div class="champs">
+                <span>${suggestion.validation.comment}</span>
+              </div>
+            </div>
+          </c:if>
+        </div>
+
         <br clear="all"/>
-        
-        <div class="field" id="eventDescriptionArea">
-          <label for="content" class="txtlibform"><fmt:message key='GML.description'/></label>
+        <view:buttonPane>
+          <view:button label="${back}" action="javascript:cancel();"/>
+        </view:buttonPane>
 
-          <div class="champs">
-            <c:choose>
-              <c:when test="${isSuggestionReadOnly}">
-                <span id="content">${suggestion.content}</span>
-              </c:when>
-              <c:otherwise>
-                <textarea rows="5" cols="10" name="content" id="content">${suggestion.content}</textarea>
-              </c:otherwise>
-            </c:choose>
-          </div>
-        </div>
-
-        <c:if test="${isSuggestionReadOnly && (suggestion.validation.validated || suggestion.validation.refused)}">
-        <div class="field" id="eventDescriptionArea">
-          <label for="validation_comment" class="txtlibform"><fmt:message key='GML.contribution.validation.comment'/></label>
-
-          <div class="champs">
-            <span id="validation_comment">${suggestion.validation.comment}</span>
-          </div>
-        </div>
-        </c:if>
-
-      </div>
-      <input type="hidden" value="${componentId}"/>
-
-      <c:if test="${not isSuggestionReadOnly}">
-      <div class="legend">
-        <img alt="mandatory" src="${mandatoryIcons}" width="5" height="5"/>&nbsp;
-        <fmt:message key='GML.requiredField'/>
-      </div>
-      </c:if>
-      <view:buttonPane>
         <c:choose>
-          <c:when test="${isSuggestionReadOnly}">
-            <view:button label="${back}" action="javascript:cancel();"/>
+          <c:when test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
+            <view:comments componentId="${componentId}" resourceId="${suggestion.id}" userId="${currentUser.id}" resourceType="${suggestion.contributionType}"/>
           </c:when>
           <c:otherwise>
-            <view:button label="${save}" action="javascript:save();"/>
-            <view:button label="${cancel}" action="javascript:cancel();"/>
+            <view:commentListing componentId="${componentId}" resourceId="${suggestion.id}" userId="${currentUser.id}"/>
           </c:otherwise>
         </c:choose>
-      </view:buttonPane>
-    </form>
-    <c:choose>
-      <c:when test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
-        <view:comments componentId="${componentId}" resourceId="${suggestion.id}" userId="${currentUser.id}" resourceType="${suggestion.contributionType}"/>
       </c:when>
       <c:otherwise>
-        <view:commentListing componentId="${componentId}" resourceId="${suggestion.id}" userId="${currentUser.id}"/>
+        <form id="suggestion" name="suggestion" action="${componentUriBase}suggestion/${target}" method="POST">
+          <div class="fields">
+            <div class="field" id="suggestionName">
+              <label for="title" class="txtlibform"><fmt:message key='GML.title'/>&nbsp;<img alt="mandatory" src="${mandatoryIcons}" width="5" height="5"/></label>
+
+              <div class="champs">
+                <input id="title" type="text" name="title" size="100%" maxlength="2000" value="<c:out value='${suggestion.title}'/>"/>
+              </div>
+            </div>
+            <br clear="all"/>
+
+            <div class="field" id="eventDescriptionArea">
+              <label for="content" class="txtlibform"><fmt:message key='GML.description'/></label>
+
+              <div class="champs">
+                <textarea rows="5" cols="10" name="content" id="content">${suggestion.content}</textarea>
+              </div>
+            </div>
+          </div>
+          <input type="hidden" value="${componentId}"/>
+
+          <div class="legend">
+            <img alt="mandatory" src="${mandatoryIcons}" width="5" height="5"/>&nbsp;
+            <fmt:message key='GML.requiredField'/>
+          </div>
+
+          <view:buttonPane>
+            <view:button label="${save}" action="javascript:save();"/>
+            <view:button label="${cancel}" action="javascript:cancel();"/>
+          </view:buttonPane>
+        </form>
       </c:otherwise>
     </c:choose>
   </view:frame>
