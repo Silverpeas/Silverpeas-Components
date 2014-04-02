@@ -205,7 +205,7 @@
 <view:window>
   <view:frame>
     <div id="error" style="display: none;"></div>
-    <c:if test="${not suggestion.validated and isSuggestionReadOnly}">
+    <c:if test="${not suggestion.validation.validated and isSuggestionReadOnly}">
     <div class="rightContent">
       <view:attachmentPane componentId="${componentId}" resourceId="${suggestion.id}"></view:attachmentPane>
     </div>
