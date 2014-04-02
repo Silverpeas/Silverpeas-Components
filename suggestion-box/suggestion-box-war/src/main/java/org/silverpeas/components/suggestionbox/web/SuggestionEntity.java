@@ -88,6 +88,11 @@ public class SuggestionEntity implements Exposable {
     return suggestion.getContent();
   }
 
+  @XmlElement(nillable = true)
+  public String getContributionType() {
+    return suggestion.getContributionType();
+  }
+
   @XmlTransient
   public boolean isPublishableBy(UserDetail user) {
     return suggestion.isPublishableBy(user);
@@ -96,7 +101,8 @@ public class SuggestionEntity implements Exposable {
   @XmlElement
   public ContributionValidationEntity getValidation() {
     if (validationEntity == null) {
-      validationEntity = ContributionValidationEntity.fromContributionValidation(suggestion.getValidation());
+      validationEntity = ContributionValidationEntity.fromContributionValidation(suggestion.
+          getValidation());
     }
     return validationEntity;
   }
@@ -115,6 +121,10 @@ public class SuggestionEntity implements Exposable {
 
   protected void setContent(String content) {
     suggestion.setContent(content);
+  }
+
+  protected void setContributionType(String type) {
+
   }
 
   protected void setId(String id) {
@@ -138,7 +148,7 @@ public class SuggestionEntity implements Exposable {
 
   @Override
   public String toString() {
-    return "SuggestionEntity{" + "uri=" + uri + ", id=" + getId() + ", title=" + getTitle() +
-        ", content=" + getContent() + ", validation=" + getValidation() + '}';
+    return "SuggestionEntity{" + "uri=" + uri + ", id=" + getId() + ", title=" + getTitle()
+        + ", content=" + getContent() + ", validation=" + getValidation() + '}';
   }
 }

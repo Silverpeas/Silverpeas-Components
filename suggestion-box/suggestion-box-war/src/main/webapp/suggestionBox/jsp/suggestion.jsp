@@ -30,12 +30,10 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
 <c:set var="webServiceProvider" value="${requestScope.webServiceProvider}"/>
+<view:setConstant var="userRole" constant="com.stratelia.webactiv.SilverpeasRole.user"/>
 <view:setConstant var="writerRole" constant="com.stratelia.webactiv.SilverpeasRole.writer"/>
 <view:setConstant var="publisherRole" constant="com.stratelia.webactiv.SilverpeasRole.publisher"/>
 <c:set var="greaterUserRole" value="${requestScope.greaterUserRole}"/>
-<c:if test="${!greaterUserRole.isGreaterThanOrEquals(writerRole)}">
-  <c:redirect url="/Error403.jsp"/>
-</c:if>
 
 <fmt:setLocale value="${requestScope.resources.language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
@@ -76,6 +74,13 @@
   <c:set var="isSuggestionReadOnly" value="${empty requestScope.edit or not isEditable}"/>
   <c:set var="canModeratorModifying" value="${isModeratorView and isSuggestionReadOnly}"/>
   <c:set var="isModeratorModifying" value="${isModeratorView and not isSuggestionReadOnly}"/>
+</c:if>
+
+<c:if test="${isEditable and not greaterUserRole.isGreaterThanOrEquals(writerRole)}">
+  <c:redirect url="/Error403.jsp"/>
+</c:if>
+<c:if test="${not isEditable and not greaterUserRole.isGreaterThanOrEquals(userRole)}">
+  <c:redirect url="/Error403.jsp"/>
 </c:if>
 
 <c:choose>
@@ -274,6 +279,14 @@
         </c:choose>
       </view:buttonPane>
     </form>
+    <c:choose>
+      <c:when test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
+        <view:comments componentId="${componentId}" resourceId="${suggestion.id}" userId="${currentUser.id}" resourceType="${suggestion.contributionType}"/>
+      </c:when>
+      <c:otherwise>
+        <view:commentListing componentId="${componentId}" resourceId="${suggestion.id}" userId="${currentUser.id}"/>
+      </c:otherwise>
+    </c:choose>
   </view:frame>
 </view:window>
 <form id="actions" name="actions" action="#" method="POST" style="display: none"></form>
