@@ -40,7 +40,7 @@
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
 <c:set var="greaterUserRole" value="${requestScope.greaterUserRole}"/>
 <c:set var="componentUriBase"><c:url value="${requestScope.componentUriBase}"/></c:set>
-<c:set var="suggestionBox" value="${requestScope.suggestionBox}"/>
+<c:set var="suggestionBox" value="${requestScope.currentSuggestionBox}"/>
 <c:set var="suggestionBoxId" value="${suggestionBox.id}"/>
 <c:set var="isEdito" value="${requestScope.isEdito}"/>
 

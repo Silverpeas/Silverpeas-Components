@@ -48,6 +48,9 @@
         class="org.silverpeas.core.admin.OrganisationControllerFactory"
         factory-method="getFactory"/>
 
+  <bean id="commentUserNotificationService"
+        class="org.silverpeas.components.suggestionbox.mock.CommentUserNotificationServiceMockWrapper"/>
+
   <bean id="transactionFactory" class="org.silverpeas.persistence.TransactionFactory"
         factory-method="getFactory"/>
 

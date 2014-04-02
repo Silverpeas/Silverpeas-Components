@@ -35,6 +35,8 @@ import java.sql.Connection;
 
 public class SuggestionBoxInstanciator implements ComponentsInstanciatorIntf {
 
+  private static final String COMPONENT_NAME = SuggestionBoxComponentSettings.COMPONENT_NAME;
+
   public SuggestionBoxInstanciator() {
   }
 
@@ -42,7 +44,7 @@ public class SuggestionBoxInstanciator implements ComponentsInstanciatorIntf {
   public void create(Connection con, String spaceId, String componentId, String userId)
       throws InstanciationException {
     SilverTrace
-        .info("suggestionBox", "SuggestionBoxInstanciator.create()", "root.MSG_GEN_ENTER_METHOD",
+        .info(COMPONENT_NAME, "SuggestionBoxInstanciator.create()", "root.MSG_GEN_ENTER_METHOD",
             "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
 
     // The title of the suggestion box is the one of the spawned component instance
@@ -52,26 +54,25 @@ public class SuggestionBoxInstanciator implements ComponentsInstanciatorIntf {
     suggestionBoxService.saveSuggestionBox(newBox);
 
     SilverTrace
-        .info("suggestionBox", "SuggestionBoxInstanciator.create()", "root.MSG_GEN_EXIT_METHOD");
+        .info(COMPONENT_NAME, "SuggestionBoxInstanciator.create()", "root.MSG_GEN_EXIT_METHOD");
   }
 
   @Override
   public void delete(Connection con, String spaceId, String componentId, String userId)
       throws InstanciationException {
     SilverTrace
-        .info("suggestionBox", "SuggestionBoxInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD",
+        .info(COMPONENT_NAME, "SuggestionBoxInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD",
             "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
     SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
 
     // Getting the suggestion box entity
-    SuggestionBox suggestionBoxToDelete =
-        suggestionBoxService.getByComponentInstanceId(componentId);
+    SuggestionBox suggestionBoxToDelete = suggestionBoxService.getByComponentInstanceId(componentId);
 
     // Deleting the suggestion box
     suggestionBoxService.deleteSuggestionBox(suggestionBoxToDelete);
 
     SilverTrace
-        .info("suggestionBox", "SuggestionBoxInstanciator.delete()", "root.MSG_GEN_EXIT_METHOD");
+        .info(COMPONENT_NAME, "SuggestionBoxInstanciator.delete()", "root.MSG_GEN_EXIT_METHOD");
   }
 
   private SuggestionBoxService getSuggestionBoxService() {

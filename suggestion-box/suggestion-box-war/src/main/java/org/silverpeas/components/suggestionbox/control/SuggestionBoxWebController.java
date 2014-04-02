@@ -37,6 +37,7 @@ import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternal;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternalJsp;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.WebComponentController;
 import com.stratelia.webactiv.SilverpeasRole;
+import org.silverpeas.components.suggestionbox.SuggestionBoxComponentSettings;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.web.SuggestionEntity;
@@ -50,10 +51,9 @@ import javax.ws.rs.core.Response.Status;
 
 import static org.silverpeas.components.suggestionbox.common.SuggestionBoxWebServiceProvider.*;
 
-@WebComponentController("SuggestionBox")
+@WebComponentController(SuggestionBoxComponentSettings.COMPONENT_NAME)
 public class SuggestionBoxWebController extends
-    com.stratelia.silverpeas.peasCore.servlets
-        .WebComponentController<SuggestionBoxWebRequestContext> {
+    com.stratelia.silverpeas.peasCore.servlets.WebComponentController<SuggestionBoxWebRequestContext> {
 
   /**
    * Standard Session Controller Constructor
@@ -64,16 +64,16 @@ public class SuggestionBoxWebController extends
   public SuggestionBoxWebController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-        "org.silverpeas.components.suggestionbox.multilang.SuggestionBoxBundle",
-        "org.silverpeas.components.suggestionbox.settings.SuggestionBoxIcons",
-        "org.silverpeas.components.suggestionbox.settings.SuggestionBoxSettings");
+        SuggestionBoxComponentSettings.MESSAGES_PATH,
+        SuggestionBoxComponentSettings.ICONS_PATH,
+        SuggestionBoxComponentSettings.SETTINGS_PATH);
   }
 
   @Override
   protected void beforeRequestProcessing(final SuggestionBoxWebRequestContext context) {
     super.beforeRequestProcessing(context);
     context.getRequest().setAttribute("webServiceProvider", getWebServiceProvider());
-    context.getRequest().setAttribute("suggestionBox", context.getSuggestionBox());
+    context.getRequest().setAttribute("currentSuggestionBox", context.getSuggestionBox());
   }
 
   /**
@@ -146,8 +146,8 @@ public class SuggestionBoxWebController extends
   @Invokable("isUserSubscribed")
   public void setIsUserSubscribed(SuggestionBoxWebRequestContext context) {
     if (!getUserDetail().isAccessGuest()) {
-      SubscriptionService subscriptionService =
-          SubscriptionServiceFactory.getFactory().getSubscribeService();
+      SubscriptionService subscriptionService = SubscriptionServiceFactory.getFactory().
+          getSubscribeService();
       boolean isUserSubscribed = subscriptionService.existsSubscription(
           new ComponentSubscription(context.getUser().getId(), context.getComponentInstanceId()));
       context.getRequest().setAttribute("isUserSubscribed", isUserSubscribed);

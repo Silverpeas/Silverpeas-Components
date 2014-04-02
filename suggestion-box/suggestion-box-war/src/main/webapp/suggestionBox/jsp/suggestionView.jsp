@@ -45,7 +45,7 @@
 <c:set var="currentUser" value="${requestScope.currentUser}"/>
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
 <c:set var="componentUriBase"><c:url value="${requestScope.componentUriBase}"/></c:set>
-<c:set var="suggestionBoxId" value="${requestScope.suggestionBox.id}"/>
+<c:set var="suggestionBoxId" value="${requestScope.currentSuggestionBox.id}"/>
 <c:set var="suggestion" value="${requestScope.suggestion}"/>
 <c:set var="target" value="${suggestion.id}"/>
 <c:set var="isEditable" value="${requestScope.isEditable}"/>
@@ -119,7 +119,7 @@
   <view:frame>
     <div id="error" style="display: none;"></div>
     <div class="rightContent">
-      <view:attachmentPane componentId="${componentId}" resourceId="${suggestion.id}" readOnly="${suggestion.validation.validated}"></view:attachmentPane>
+      <view:attachmentPane componentId="${componentId}" resourceId="${suggestion.id}" readOnly="${suggestion.validation.validated}"/>
     </div>
     <div class="fields">
       <label class="txtlibform"><fmt:message key='GML.title'/></label>

@@ -37,8 +37,8 @@ import java.util.Map;
  */
 public class SuggestionBoxSubscriptionUserNotification extends AbstractSuggestionUserNotification {
 
-  private Map<SubscriberType, Collection<String>> subscriberIdsByTypes =
-      SubscriptionUtil.indexSubscriberIdsByType(null);
+  private final Map<SubscriberType, Collection<String>> subscriberIdsByTypes = SubscriptionUtil.
+      indexSubscriberIdsByType(null);
 
   public SuggestionBoxSubscriptionUserNotification(final Suggestion resource) {
     super(resource, NotifAction.CREATE);
