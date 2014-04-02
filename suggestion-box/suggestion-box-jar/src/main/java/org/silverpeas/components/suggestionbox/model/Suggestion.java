@@ -42,6 +42,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
 import java.util.Date;
 
 /**
@@ -76,7 +77,7 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
   private String title;
 
   @Embedded
-  private ContributionValidation validation = new ContributionValidation();
+  private final ContributionValidation validation = new ContributionValidation();
 
   @Transient
   private String content = "";
@@ -199,9 +200,9 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
    * @return true if the suggestion is publishable by the specified user, false otherwise.
    */
   public boolean isPublishableBy(UserDetail user) {
-    return (getValidation().isInDraft() || getValidation().isRefused()) && (user.isAccessAdmin() ||
-        (getCreator().equals(user) && getSuggestionBox().getGreaterUserRole(user)
-            .isGreaterThanOrEquals(SilverpeasRole.writer)));
+    return (getValidation().isInDraft() || getValidation().isRefused()) && (user.isAccessAdmin()
+        || (getCreator().equals(user) && getSuggestionBox().getGreaterUserRole(user)
+        .isGreaterThanOrEquals(SilverpeasRole.writer)));
   }
 
   @Override
@@ -239,8 +240,8 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
    */
   @Override
   public boolean canBeAccessedBy(final UserDetail user) {
-    AccessController<String> accessController =
-        AccessControllerProvider.getAccessController("componentAccessController");
+    AccessController<String> accessController = AccessControllerProvider.getAccessController(
+        "componentAccessController");
     return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
   }
 
@@ -251,9 +252,9 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
 
   @Override
   public String toString() {
-    return "Suggestion{" + "suggestionBox=" + suggestionBox.getId() + ", title=" + title +
-        ", content=" + content + ", contentModified=" + contentModified + ", validation=" +
-        getValidation() + ", creationDate=" + getCreationDate() + ", lastUpdateDate=" +
-        getLastUpdateDate() + '}';
+    return "Suggestion{" + "suggestionBox=" + suggestionBox.getId() + ", title=" + title
+        + ", content=" + content + ", contentModified=" + contentModified + ", validation="
+        + getValidation() + ", creationDate=" + getCreationDate() + ", lastUpdateDate="
+        + getLastUpdateDate() + '}';
   }
 }
