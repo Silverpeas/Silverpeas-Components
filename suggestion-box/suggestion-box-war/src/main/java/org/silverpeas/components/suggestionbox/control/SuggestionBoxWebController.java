@@ -26,6 +26,7 @@ package org.silverpeas.components.suggestionbox.control;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.service.ComponentSubscription;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.Navigation;
@@ -74,6 +75,7 @@ public class SuggestionBoxWebController extends
     super.beforeRequestProcessing(context);
     context.getRequest().setAttribute("webServiceProvider", getWebServiceProvider());
     context.getRequest().setAttribute("currentSuggestionBox", context.getSuggestionBox());
+    context.getRequest().setAttribute("backUrl", backURL(context.getComponentUriBase(), "Main"));
   }
 
   /**
@@ -197,6 +199,11 @@ public class SuggestionBoxWebController extends
   @RedirectToInternalJsp("suggestionView.jsp")
   public void viewSuggestion(SuggestionBoxWebRequestContext context) {
     String suggestionId = context.getPathVariables().get("id");
+    String callerPage = context.getRequest().getParameter("from");
+    if (StringUtil.isDefined(callerPage)) {
+      context.getRequest().setAttribute("backUrl",
+          backURL(context.getComponentUriBase(), callerPage));
+    }
     SuggestionBox suggestionBox = context.getSuggestionBox();
     Suggestion suggestion = suggestionBox.getSuggestions().get(suggestionId);
     if (suggestion.isDefined()) {
@@ -319,5 +326,13 @@ public class SuggestionBoxWebController extends
     String validationComment = context.getRequest().getParameter("comment");
     getWebServiceProvider()
         .refuseSuggestion(suggestionBox, suggestion, validationComment, context.getUser());
+  }
+
+  private String backURL(String componentURL, String key) {
+    if (key.equals("list")) {
+      return componentURL + "suggestions/published";
+    } else {
+      return componentURL + "Main";
+    }
   }
 }

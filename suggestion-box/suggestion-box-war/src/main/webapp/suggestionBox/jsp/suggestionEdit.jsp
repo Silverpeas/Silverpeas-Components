@@ -43,7 +43,8 @@
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
 <c:url var="mandatoryIcons" value="/util/icons/mandatoryField.gif"/>
 <c:url var="formValidator" value="/util/javaScript/checkForm.js"/>
-<c:set var="componentUriBase"><c:url value="${requestScope.componentUriBase}"/></c:set>
+<c:url var="componentUriBase" value="${requestScope.componentUriBase}"/>
+<c:url var="backUri" value="${requestScope.backUrl}"/>
 <c:set var="suggestion" value="${requestScope.suggestion}"/>
 <c:set var="target" value="add"/>
 <c:if test="${suggestion != null}">
@@ -109,7 +110,7 @@
     function cancel() {
       <c:choose>
       <c:when test="${suggestion == null}">
-      $('#actions').attr('method', 'GET').attr('action', '${componentUriBase}Main').submit();
+      $('#actions').attr('method', 'GET').attr('action', '${backUri}').submit();
       </c:when>
       <c:otherwise>
       $('#actions').attr('method', 'GET').attr('action',
