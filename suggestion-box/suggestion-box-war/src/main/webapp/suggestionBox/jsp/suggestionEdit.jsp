@@ -113,7 +113,7 @@
       </c:when>
       <c:otherwise>
       $('#actions').attr('method', 'GET').attr('action',
-          '${componentUriBase}suggestion/${target}').submit();
+          '${componentUriBase}suggestions/${target}').submit();
       </c:otherwise>
       </c:choose>
     }
@@ -124,7 +124,7 @@
 <view:window>
   <view:frame>
     <div id="error" style="display: none;"></div>
-    <form id="suggestion" name="suggestion" action="${componentUriBase}suggestion/${target}" method="POST">
+    <form id="suggestion" name="suggestion" action="${componentUriBase}suggestions/${target}" method="POST">
       <div class="fields">
         <div class="field" id="suggestionName">
           <label for="title" class="txtlibform"><fmt:message key='GML.title'/>&nbsp;<img alt="mandatory" src="${mandatoryIcons}" width="5" height="5"/></label>

@@ -38,6 +38,10 @@ suggestionBox.controller('mainController',
           $scope.suggestion = suggestion;
         });
       }
+
+      $scope.goAt = function(url) {
+        window.location = url;
+      };
     }]);
 
 /* the in draft controller of the application */
@@ -146,3 +150,22 @@ suggestionBox.controller('buzzPublishedController',
         $scope.loadBuzzPublished();
       });
     }]);
+
+  suggestionBox.controller('suggestionListController', ['$scope', function($scope) {
+      var suggestionBox = $scope.suggestionBox;
+
+      suggestionBox.suggestions.get(['published']).then(function(theSuggestions) {
+        $scope.suggestions = theSuggestions;
+      });
+
+      $scope.changePage = function(page) {
+      };
+
+      $scope.sortByValidationDate = function() {
+
+      };
+
+      $scope.sortByRating = function() {
+
+      };
+  }]);

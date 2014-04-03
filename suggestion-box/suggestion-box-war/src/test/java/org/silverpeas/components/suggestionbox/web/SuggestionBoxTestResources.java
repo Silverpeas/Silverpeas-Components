@@ -27,7 +27,12 @@ import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.personalization.service.PersonalizationService;
 import com.silverpeas.web.TestResources;
+import com.silverpeas.web.mock.OrganizationControllerMockWrapper;
 import com.silverpeas.web.mock.UserDetailWithProfiles;
+import org.silverpeas.core.admin.OrganisationController;
+
+import static org.mockito.Matchers.*;
+
 import org.silverpeas.components.suggestionbox.mock.SuggestionBoxServiceMockWrapper;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
@@ -35,15 +40,14 @@ import org.silverpeas.components.suggestionbox.model.SuggestionBoxService;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import static org.mockito.Mockito.when;
+import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs.BOX_BASE_URI;
+
+import java.util.UUID;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.UUID;
-
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.when;
-import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs.BOX_BASE_URI;
 
 /**
  * The resources required to run unit tests on the REST-based web services.
@@ -57,13 +61,16 @@ public class SuggestionBoxTestResources extends TestResources {
   public static final String COMPONENT_INSTANCE_ID = "suggestionBox119";
   public static final String SUGGESTION_BOX_ID = "suggestion-box-1";
   public static final String SUGGESTION_ID = "suggestion_1";
-  public static final String SUGGESTION_BOX_URI =
-      BOX_BASE_URI + "/" + COMPONENT_INSTANCE_ID + "/" + SUGGESTION_BOX_ID;
+  public static final String SUGGESTION_BOX_URI = BOX_BASE_URI + "/" + COMPONENT_INSTANCE_ID + "/"
+      + SUGGESTION_BOX_ID;
   public static final String SUGGESTIONS_URI_BASE = SUGGESTION_BOX_URI + "/suggestions/";
   public static final String SUGGESTION_URI = SUGGESTIONS_URI_BASE + SUGGESTION_ID;
 
   @Inject
-  private SuggestionBoxServiceMockWrapper mockWrapper;
+  private SuggestionBoxServiceMockWrapper suggestionBoxServiceMockWrapper;
+
+  @Inject
+  private OrganizationControllerMockWrapper organizationControllerMockWrapper;
 
   private UserDetailWithProfiles creator;
 
@@ -75,21 +82,23 @@ public class SuggestionBoxTestResources extends TestResources {
     when(service.findSuggestionById(eq(box), anyString())).thenReturn(Suggestion.NONE);
     when(service.findSuggestionById(box, SUGGESTION_ID)).thenReturn(aSuggestion());
     PersonalizationService mock = getPersonalizationServiceMock();
-    UserPreferences preferences =
-        new UserPreferences(TestResources.DEFAULT_LANGUAGE, "", "", false, true, true,
-            UserMenuDisplay.DISABLE);
+    UserPreferences preferences = new UserPreferences(TestResources.DEFAULT_LANGUAGE, "", "", false,
+        true, true,
+        UserMenuDisplay.DISABLE);
     when(mock.getUserSettings(anyString())).thenReturn(preferences);
   }
 
 
   public SuggestionBoxService getSuggestionBoxService() {
-    return mockWrapper.getMock();
+    return suggestionBoxServiceMockWrapper.getMock();
   }
 
   public UserDetailWithProfiles aUserCreator() {
     if (creator == null) {
       creator = aUser();
       creator.setId("creatorId");
+      OrganisationController organisationController = getOrganisationController();
+      when(organisationController.getUserDetail(creator.getId())).thenReturn(creator);
     }
     return creator;
   }
@@ -118,5 +127,9 @@ public class SuggestionBoxTestResources extends TestResources {
     suggestion.setCreator(aUserCreator());
     suggestion.setContent("A suggestion content");
     return suggestion;
+  }
+
+  public OrganisationController getOrganisationController() {
+    return organizationControllerMockWrapper.getOrganizationControllerMock();
   }
 }
