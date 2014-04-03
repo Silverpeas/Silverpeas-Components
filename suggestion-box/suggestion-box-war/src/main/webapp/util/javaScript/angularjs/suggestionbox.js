@@ -34,7 +34,7 @@ suggestionBox.controller('mainController',
         componentInstanceId : context.component});
       $scope.suggestionBox = suggestionBox;
       if (context.suggestionId) {
-        suggestionBox.suggestions.get([context.suggestionId]).then(function(suggestion){
+        suggestionBox.suggestions.get(context.suggestionId).then(function(suggestion){
           $scope.suggestion = suggestion;
         });
       }
@@ -51,12 +51,12 @@ suggestionBox.controller('inDraftController',
 
       $scope.publish = function(suggestion) {
         suggestionBox.suggestions.publish(suggestion).then(function(suggestionUpdated) {
-          $rootScope.$broadcast('suggestionModified', suggestionUpdated)
+          $rootScope.$broadcast('suggestionModified', suggestionUpdated);
         });
       };
 
       $scope.loadInDraft = function() {
-        suggestionBox.suggestions.get(['inDraft']).then(function(theSuggestions) {
+        suggestionBox.suggestions.get('inDraft').then(function(theSuggestions) {
           $scope.inDraftSuggestions = theSuggestions;
         });
       };
@@ -75,12 +75,12 @@ suggestionBox.controller('outOfDraftController',
 
       $scope.publish = function(suggestion) {
         suggestionBox.suggestions.publish(suggestion).then(function(suggestionUpdated) {
-          $rootScope.$broadcast('suggestionModified', suggestionUpdated)
+          $rootScope.$broadcast('suggestionModified', suggestionUpdated);
         });
       };
 
       $scope.loadOutOfDraft = function() {
-        suggestionBox.suggestions.get(['outOfDraft']).then(function(theSuggestions) {
+        suggestionBox.suggestions.get('outOfDraft').then(function(theSuggestions) {
           $scope.outOfDraftSuggestions = theSuggestions;
         });
       };
@@ -98,7 +98,7 @@ suggestionBox.controller('pendingValidationController',
       var suggestionBox = $scope.suggestionBox;
 
       $scope.loadPendingValidation = function() {
-        suggestionBox.suggestions.get(['pendingValidation']).then(function(theSuggestions) {
+        suggestionBox.suggestions.get('pendingValidation').then(function(theSuggestions) {
           $scope.pendingValidationSuggestions = theSuggestions;
         });
       };
@@ -116,7 +116,7 @@ suggestionBox.controller('publishedController',
       var suggestionBox = $scope.suggestionBox;
 
       $scope.loadPublished = function() {
-        suggestionBox.suggestions.get(['published']).then(function(theSuggestions) {
+        suggestionBox.suggestions.get('published').then(function(theSuggestions) {
           $scope.publishedSuggestions = theSuggestions;
         });
       };
@@ -135,7 +135,7 @@ suggestionBox.controller('buzzPublishedController',
 
       $scope.loadBuzzPublished = function() {
         // TOTO Delete this call after the buzz web service works
-        suggestionBox.suggestions.get(['published']).then(function(theSuggestions) {
+        suggestionBox.suggestions.get('published').then(function(theSuggestions) {
           $scope.buzzPublishedSuggestions = theSuggestions;
         });
 //        To uncomment after the existence of the web service
@@ -154,7 +154,7 @@ suggestionBox.controller('buzzPublishedController',
   suggestionBox.controller('suggestionListController', ['$scope', function($scope) {
       var suggestionBox = $scope.suggestionBox;
 
-      suggestionBox.suggestions.get(['published']).then(function(theSuggestions) {
+      suggestionBox.suggestions.get('published').then(function(theSuggestions) {
         $scope.suggestions = theSuggestions;
       });
 

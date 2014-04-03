@@ -38,7 +38,6 @@
 
 <c:set var="currentUser" value="${requestScope.currentUser}"/>
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
-<c:set var="componentUriBase"><c:url value="${requestScope.componentUriBase}"/></c:set>
 <c:set var="suggestionBoxId" value="${requestScope.currentSuggestionBox.id}"/>
 <c:set var="suggestion" value="${requestScope.suggestion}"/>
 <c:set var="target" value="${suggestion.id}"/>
@@ -50,6 +49,8 @@
   <c:redirect url="/Error403.jsp"/>
 </c:if>
 
+<c:url var="componentUriBase" value="${requestScope.componentUriBase}"/>
+<c:url var="backUri" value="${requestScope.backUrl}"/>
 <c:url var="suggestionBoxJS" value="/util/javaScript/angularjs/suggestionbox.js"/>
 <c:url var="suggestionBoxServicesJS" value="/util/javaScript/angularjs/services/suggestionbox.js"/>
 <c:url var="silverpeasPaginationJS" value="/util/javaScript/angularjs/directives/silverpeas-pagination.js"/>
@@ -75,7 +76,7 @@
         </thead>
         <tbody>
           <tr ng-repeat="suggestion in suggestions" ng-class-odd="" ng-class-even="">
-            <td><a ng-href="${componentUriBase}suggestions/{{suggestion.id}}">{{suggestion.title}}</a></td>
+            <td><a ng-href="${componentUriBase}suggestions/{{suggestion.id}}?from=list">{{suggestion.title}}</a></td>
             <td>{{suggestion.author}}</td>
             <td>{{suggestion.validation.date | date: 'shortDate'}}</td>
             <td></td>
@@ -85,7 +86,7 @@
     </table>
     </div>
     <br clear="all"/>
-    <silverpeas-button ng-click="goAt('${componentUriBase}Main')">${back}</silverpeas-button>
+    <silverpeas-button ng-click="goAt('${backUri}')">${back}</silverpeas-button>
   </view:frame>
 </view:window>
 <script type="text/javascript">

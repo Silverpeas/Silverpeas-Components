@@ -58,18 +58,26 @@ services.factory('Suggestion', ['RESTAdapter', function(RESTAdapter) {
         var adapter = RESTAdapter.get(suggestionBoxUri + '/suggestions', converter);
 
         /**
-         * Gets one or more suggestions according to the argument.
-         * @param {Array} criteria an array of key-value pairs that made the different criterion.
+         * Gets one or more suggestions according to the arguments.
+         *
+         * If the argument is just a number or a string, then it is considered as a resource
+         * identifier. For example, this can be an identifier of a suggestions or an identifier of
+         * all of the published resources. The reserved identifiers are:
+         * - published for the published suggestions,
+         * - pendingValidation for the suggestions in pending validation,
+         * - inDraft for the suggestions in draft (in redaction),
+         * - outOfDraft for the suggestions that were validated (published and refused)
+         *
          * @returns {Array} the asked suggestion boxes.
          */
-        this.get = function(criteria) {
-          if (criteria.length === 1 &&
-              (typeof criteria[0] === 'number' || typeof criteria[0] === 'string')) {
-            return adapter.find(criteria[0]);
+        this.get = function() {
+          if (arguments.length === 1 &&
+              (typeof arguments[0] === 'number' || typeof arguments[0] === 'string')) {
+            return adapter.find(arguments[0]);
           } else {
             return adapter.find({
               url : adapter.url,
-              criteria : adapter.criteria(criteria[0], {})
+              criteria : adapter.criteria(arguments[0], {})
             });
           }
         };

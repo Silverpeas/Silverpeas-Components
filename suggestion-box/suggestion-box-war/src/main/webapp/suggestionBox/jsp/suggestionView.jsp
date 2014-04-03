@@ -43,7 +43,6 @@
 
 <c:set var="currentUser" value="${requestScope.currentUser}"/>
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
-<c:set var="componentUriBase"><c:url value="${requestScope.componentUriBase}"/></c:set>
 <c:set var="suggestionBoxId" value="${requestScope.currentSuggestionBox.id}"/>
 <c:set var="suggestion" value="${requestScope.suggestion}"/>
 <c:set var="target" value="${suggestion.id}"/>
@@ -60,6 +59,8 @@
   </c:otherwise>
 </c:choose>
 
+<c:url var="componentUriBase" value="${requestScope.componentUriBase}"/>
+<c:url var="backUri" value="${requestScope.backUrl}"/>
 <c:url var="suggestionBoxJS" value="/util/javaScript/angularjs/suggestionbox.js"/>
 <c:url var="suggestionBoxServicesJS" value="/util/javaScript/angularjs/services/suggestionbox.js"/>
 <c:url var="suggestionBoxValidationDirectiveJS" value="/util/javaScript/angularjs/directives/suggestionbox-validation.js"/>
@@ -88,7 +89,7 @@
     </c:if>
 
     function cancel() {
-      $('#actions').attr('method', 'GET').attr('action', '${componentUriBase}Main').submit();
+      $('#actions').attr('method', 'GET').attr('action', '${backUri}').submit();
     }
   </script>
 </head>

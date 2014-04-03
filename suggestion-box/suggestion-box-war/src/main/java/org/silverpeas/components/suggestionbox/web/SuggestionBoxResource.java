@@ -167,7 +167,7 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
   @GET
   @Path(BOX_SUGGESTION_URI_PART + "/pendingValidation")
   @Produces(MediaType.APPLICATION_JSON)
-  public Collection<SuggestionEntity> getPendingValidation() {
+  public Collection<SuggestionEntity> getSuggestionsInPendingValidation() {
     return process(new WebTreatment<Collection<SuggestionEntity>>() {
       @Override
       public List<SuggestionEntity> execute() {
@@ -186,7 +186,7 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
   @GET
   @Path(BOX_SUGGESTION_URI_PART + "/published")
   @Produces(MediaType.APPLICATION_JSON)
-  public Collection<SuggestionEntity> getPublished() {
+  public Collection<SuggestionEntity> getPublishedSuggestions() {
     return process(new WebTreatment<Collection<SuggestionEntity>>() {
       @Override
       public List<SuggestionEntity> execute() {
