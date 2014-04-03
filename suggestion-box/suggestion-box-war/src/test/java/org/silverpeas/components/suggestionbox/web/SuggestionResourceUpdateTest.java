@@ -98,7 +98,8 @@ public class SuggestionResourceUpdateTest extends ResourceUpdateTest<SuggestionB
 
   @Override
   public SuggestionEntity aResource() {
-    return new SuggestionEntity();
+    Suggestion suggestion = getTestResources().aSuggestion();
+    return SuggestionEntity.fromSuggestion(suggestion);
   }
 
   @Ignore

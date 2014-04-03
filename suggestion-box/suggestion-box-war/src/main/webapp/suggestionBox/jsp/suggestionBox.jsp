@@ -120,7 +120,7 @@
     <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
       <fmt:message key="suggestionBox.proposeSuggestion" var="tmpIcon" bundle="${icons}"/>
       <c:url var="tmpIcon" value="${tmpIcon}"/>
-      <view:operationOfCreation action="${componentUriBase}suggestion/new" altText="${browseBarPathSuggestionLabel}" icon="${tmpIcon}"/>
+      <view:operationOfCreation action="${componentUriBase}suggestions/new" altText="${browseBarPathSuggestionLabel}" icon="${tmpIcon}"/>
     </c:if>
   </c:if>
 </view:operationPane>
@@ -145,7 +145,7 @@
           <div suggestionbox-deletion></div>
           <ul ng-controller="inDraftController">
             <li ng-repeat="suggestion in inDraftSuggestions">
-              <a ng-href="${componentUriBase}suggestion/{{ suggestion.id }}">{{suggestion.title}}</a>
+              <a ng-href="${componentUriBase}suggestions/{{ suggestion.id }}">{{suggestion.title}}</a>
                 <%--TODO BEGIN REMOVE AFTER DEV--%>
               <img ng-click="delete(suggestion)" src="${deleteIcon}" alt="remove" style="cursor: pointer"/>
               <a href="#" ng-click="publish(suggestion)"><span>${publishSuggestionLabel}</span></a><br/>
@@ -163,7 +163,7 @@
             <div suggestionbox-deletion></div>
             <ul ng-controller="outOfDraftController">
               <li ng-repeat="suggestion in outOfDraftSuggestions">
-                <a ng-href="${componentUriBase}suggestion/{{ suggestion.id }}">{{suggestion.title}}</a>
+                <a ng-href="${componentUriBase}suggestions/{{ suggestion.id }}">{{suggestion.title}}</a>
                   <%--TODO BEGIN REMOVE AFTER DEV--%>
                 <span>{{suggestion.validation.status}}</span>
                 <img ng-if="'${STATUS_REFUSED}'==suggestion.validation.status" ng-click="delete(suggestion)" src="${deleteIcon}" alt="remove" style="cursor: pointer"/>
@@ -180,7 +180,7 @@
           <div ng-controller="pendingValidationController" class="cell">
             <ul id="my_pending_validation_suggestions_list" class="container">
               <li ng-repeat="suggestion in pendingValidationSuggestions">
-                <a ng-href="${componentUriBase}suggestion/{{ suggestion.id }}"><span class="suggestion_title">{{ suggestion.title }}</span></a><br/>
+                <a ng-href="${componentUriBase}suggestions/{{ suggestion.id }}"><span class="suggestion_title">{{ suggestion.title }}</span></a><br/>
 
                 <div>{{ suggestion.validation.status }}</div>
                 <div ng-bind-html="suggestion.content"></div>
@@ -196,12 +196,11 @@
     <div id="all-suggestionBox">
       <div class="secteur-container lastSuggestion">
         <div class="header">
-          <h3 class="lastSuggestion-title">
-            <fmt:message key="suggestionBox.label.suggestions.last"/></h3>
+          <h3 class="lastSuggestion-title"><fmt:message key="suggestionBox.label.suggestions.last"/>&nbsp;<a href="${componentUriBase}suggestions/published">...</a></h3>
         </div>
         <ul ng-controller="publishedController">
           <li ng-repeat="suggestion in publishedSuggestions" ng-if="$index < 5">
-            <a ng-href="${componentUriBase}suggestion/{{ suggestion.id }}"><span class="date">{{suggestion.validation.date | date: 'shortDate'}}</span>{{suggestion.title}}</a>
+            <a ng-href="${componentUriBase}suggestions/{{ suggestion.id }}"><span class="date">{{suggestion.validation.date | date: 'shortDate'}}</span>{{suggestion.title}}</a>
           </li>
         </ul>
         <a href="#" class="more"><fmt:message key="suggestionBox.label.suggestions.more"/></a>
@@ -213,7 +212,7 @@
         </div>
         <ul ng-controller="buzzPublishedController">
           <li ng-repeat="suggestion in buzzPublishedSuggestions" ng-if="$index < 5">
-            <a ng-href="${componentUriBase}suggestion/{{ suggestion.id }}">{{suggestion.title}}</a>
+            <a ng-href="${componentUriBase}suggestions/{{ suggestion.id }}">{{suggestion.title}}</a>
           </li>
         </ul>
       </div>

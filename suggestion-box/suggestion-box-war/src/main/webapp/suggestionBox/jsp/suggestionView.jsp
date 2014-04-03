@@ -77,13 +77,13 @@
     <c:if test="${isEditable}">
     function modify() {
       $('#actions').attr('method', 'GET').attr('action',
-          '${componentUriBase}suggestion/${target}/edit').submit();
+          '${componentUriBase}suggestions/${target}/edit').submit();
     }
     </c:if>
 
     <c:if test="${isPublishable}">
     function publish() {
-      $('#actions').attr('action', '${componentUriBase}suggestion/${target}/publish').submit();
+      $('#actions').attr('action', '${componentUriBase}suggestions/${target}/publish').submit();
     }
     </c:if>
 

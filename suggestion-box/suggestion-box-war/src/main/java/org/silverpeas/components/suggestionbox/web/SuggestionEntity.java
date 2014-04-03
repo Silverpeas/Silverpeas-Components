@@ -35,6 +35,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+
 import java.lang.reflect.Field;
 import java.net.URI;
 
@@ -88,6 +89,11 @@ public class SuggestionEntity implements Exposable {
     return suggestion.getContent();
   }
 
+  @XmlElement
+  public String getAuthor() {
+    return suggestion.getCreator().getDisplayedName();
+  }
+
   @XmlElement(nillable = true)
   public String getContributionType() {
     return suggestion.getContributionType();
@@ -124,6 +130,14 @@ public class SuggestionEntity implements Exposable {
   }
 
   protected void setContributionType(String type) {
+
+  }
+
+  protected void setAuthor(String author) {
+
+  }
+
+  protected void setApprobationDate(final String dateInISO8601) {
 
   }
 
