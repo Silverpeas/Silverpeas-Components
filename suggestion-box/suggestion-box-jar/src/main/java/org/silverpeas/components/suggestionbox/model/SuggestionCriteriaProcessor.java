@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.suggestionbox.model;
 
+import com.stratelia.webactiv.beans.admin.PaginationPage;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_ORDER_BY;
 import org.silverpeas.contribution.ContributionStatus;
@@ -96,6 +97,13 @@ public interface SuggestionCriteriaProcessor {
    * @return the processor itself.
    */
   SuggestionCriteriaProcessor processIdentifiers(final List<String> identifiers);
+
+  /**
+   * Processes the criterion on the pagination to apply on the suggestions to return.
+   * @param pagination a pagination definition.
+   * @return the processor itself.
+   */
+  SuggestionCriteriaProcessor processPagination(final PaginationPage pagination);
 
   /**
    * Gets the result of the processing. Warning, the result can be incomplete if called before the

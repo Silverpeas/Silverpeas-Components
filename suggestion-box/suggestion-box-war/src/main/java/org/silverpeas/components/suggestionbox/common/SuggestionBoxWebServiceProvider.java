@@ -33,6 +33,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
+import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
 import org.silverpeas.components.suggestionbox.web.SuggestionEntity;
 import org.silverpeas.contribution.ContributionStatus;
 import org.silverpeas.contribution.model.ContributionValidation;
@@ -53,8 +54,10 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs.BOX_BASE_URI;
-import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs
-    .BOX_SUGGESTION_URI_PART;
+import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs.BOX_SUGGESTION_URI_PART;
+
+import java.util.concurrent.ConcurrentHashMap;
+
 
 /**
  * @author: Yohann Chastagnier
@@ -67,6 +70,9 @@ public class SuggestionBoxWebServiceProvider {
   private final Map<String, ResourceLocator> multilang = new HashMap<String, ResourceLocator>();
   private final static SuggestionBoxWebServiceProvider SUGGESTION_BOX_WEB_SERVICE_PROVIDER
       = new SuggestionBoxWebServiceProvider();
+
+  private static final Map<String, List<SuggestionEntity>> perUserSuggestions
+      = new ConcurrentHashMap<String, List<SuggestionEntity>>();
 
   public static SuggestionBoxWebServiceProvider getWebServiceProvider() {
     return SUGGESTION_BOX_WEB_SERVICE_PROVIDER;
@@ -106,17 +112,41 @@ public class SuggestionBoxWebServiceProvider {
    * @return the aimed suggestion entities.
    * @see SuggestionBox.Suggestions#findPendingValidation()
    */
-  public List<SuggestionEntity> getPendingValidation(SuggestionBox suggestionBox) {
+  public List<SuggestionEntity> getSuggestionsInPendingValidation(SuggestionBox suggestionBox) {
     return asWebEntities(suggestionBox.getSuggestions().findPendingValidation());
+  }
+
+  /**
+   * Gets the list of suggestions that are published and that match the specified criteria.
+   * The criteria are applying in web level and aren't propagated downto the business level and
+   * hence the persistence level.
+   * <p>
+   * The user asking for the suggestions is required in the criteria as some caching is performed
+   * for the given user for better performence.
+   * @param suggestionBox the suggestion box the current user is working on.
+   * @param criteria the criteria the suggestions to return must match.
+   * @return the published suggestion entities matching the specified criteria.
+   * @see SuggestionBox.Suggestions#findPublished()
+   */
+  public List<SuggestionEntity> getPublishedSuggestions(SuggestionBox suggestionBox,
+      final SuggestionCriteria criteria) {
+    List<SuggestionEntity> suggestions = perUserSuggestions.get(criteria.getCaller().getId());
+    if (suggestions == null) {
+      suggestions = asWebEntities(suggestionBox.getSuggestions().findPublished());
+      perUserSuggestions.put(criteria.getCaller().getId(), suggestions);
+    }
+    SuggestionCriteriaApplier applier = new SuggestionCriteriaApplier(suggestions);
+    criteria.processWith(applier);
+    return applier.result();
   }
 
   /**
    * Gets the list of suggestions that are published.
    * @param suggestionBox the suggestion box the current user is working on.
-   * @return the aimed suggestion entities.
+   * @return the published suggestion entities.
    * @see SuggestionBox.Suggestions#findPublished()
    */
-  public List<SuggestionEntity> getPublished(SuggestionBox suggestionBox) {
+  public List<SuggestionEntity> getPublishedSuggestions(SuggestionBox suggestionBox) {
     return asWebEntities(suggestionBox.getSuggestions().findPublished());
   }
 
@@ -129,8 +159,8 @@ public class SuggestionBoxWebServiceProvider {
    */
   public void deleteSuggestion(SuggestionBox suggestionBox, Suggestion suggestion,
       UserDetail fromUser) {
-    if (suggestion.isDefined() &&
-        (suggestion.getValidation().isInDraft() || suggestion.getValidation().isRefused())) {
+    if (suggestion.isDefined() && (suggestion.getValidation().isInDraft() || suggestion.
+        getValidation().isRefused())) {
       checkAdminAccessOrUserIsCreator(fromUser, suggestion);
       suggestionBox.getSuggestions().remove(suggestion);
       UserPreferences userPreferences = fromUser.getUserPreferences();
@@ -151,8 +181,8 @@ public class SuggestionBoxWebServiceProvider {
    */
   public SuggestionEntity publishSuggestion(SuggestionBox suggestionBox, Suggestion suggestion,
       UserDetail fromUser) {
-    if (suggestion.isDefined() &&
-        (suggestion.getValidation().isInDraft() || suggestion.getValidation().isRefused())) {
+    if (suggestion.isDefined() && (suggestion.getValidation().isInDraft() || suggestion.
+        getValidation().isRefused())) {
       checkAdminAccessOrUserIsCreator(fromUser, suggestion);
       suggestion.setLastUpdater(fromUser);
       Suggestion actual = suggestionBox.getSuggestions().publish(suggestion);
@@ -165,6 +195,7 @@ public class SuggestionBoxWebServiceProvider {
           );
           break;
         case VALIDATED:
+          perUserSuggestions.clear();
           NotifierUtil.addSuccess(getStringTranslation("suggestionBox.message.suggestion.published",
               userPreferences.getLanguage()));
           break;
@@ -223,8 +254,8 @@ public class SuggestionBoxWebServiceProvider {
       if (newStatus.isRefused() && StringUtil.isNotDefined(validationComment)) {
         throw new WebApplicationException(Response.Status.PRECONDITION_FAILED);
       }
-      ContributionValidation validation =
-          new ContributionValidation(newStatus, fromUser, new Date(), validationComment);
+      ContributionValidation validation
+          = new ContributionValidation(newStatus, fromUser, new Date(), validationComment);
       suggestion.setLastUpdater(fromUser);
       Suggestion actual = suggestionBox.getSuggestions().validate(suggestion, validation);
       switch (actual.getValidation().getStatus()) {

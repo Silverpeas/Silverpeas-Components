@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.suggestionbox.repository;
 
+import com.stratelia.webactiv.beans.admin.PaginationPage;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_ORDER_BY;
@@ -44,6 +45,7 @@ public class JPQLQueryBuilder implements SuggestionCriteriaProcessor {
   private final NamedParameters parameters;
   private StringBuilder orderBy = null;
   private boolean done = false;
+  private PaginationPage pagination;
 
   public JPQLQueryBuilder(final NamedParameters parameters) {
     this.parameters = parameters;
@@ -136,6 +138,20 @@ public class JPQLQueryBuilder implements SuggestionCriteriaProcessor {
       query.append("s.id in :").append(parameters.add("ids", uuids).getLastParameterName());
     }
     return this;
+  }
+
+  @Override
+  public SuggestionCriteriaProcessor processPagination(PaginationPage pagination) {
+    this.pagination = pagination;
+    return this;
+  }
+
+  /**
+   * Gets the pagination to apply on the results.
+   * @return the pagination.
+   */
+  public PaginationPage getPaginationToApply() {
+    return pagination;
   }
 
 }

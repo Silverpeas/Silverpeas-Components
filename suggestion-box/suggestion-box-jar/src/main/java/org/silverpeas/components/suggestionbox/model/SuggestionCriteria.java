@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.suggestionbox.model;
 
+import com.stratelia.webactiv.beans.admin.PaginationPage;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.contribution.ContributionStatus;
 
@@ -61,10 +62,12 @@ public class SuggestionCriteria {
 
   private SuggestionBox suggestionBox;
   private UserDetail creator;
+  private UserDetail forUser;
   private final List<ContributionStatus> statuses = new ArrayList<ContributionStatus>();
   private final List<QUERY_ORDER_BY> orderByList = new ArrayList<QUERY_ORDER_BY>();
   private final List<String> identifiers = new ArrayList<String>();
   private boolean loadWysiwygContent = false;
+  private PaginationPage pagination;
 
   private SuggestionCriteria() {
 
@@ -92,7 +95,28 @@ public class SuggestionCriteria {
   }
 
   /**
-   * Sets the list of status criterion to find suggestions which have their status equals to one of
+   * Sets the user requesting the suggestions matching the criteria.
+   * @param user the user asking the suggestions.
+   * @return the suggestion criteria itself set with the caller.
+   */
+  public SuggestionCriteria forUser(UserDetail user) {
+    this.forUser = user;
+    return this;
+  }
+
+  /**
+   * Sets the pagination criterion on the result of the criteria.
+   * @param pagination the pagination to apply on the result.
+   * @return the suggestion criteria itself set with the criterion on the pagination.
+   */
+  public SuggestionCriteria paginatedBy(PaginationPage pagination) {
+    this.pagination = pagination;
+    return this;
+  }
+
+  /**
+   * Sets the list of status criterion to find suggestions which have their status equals to one
+   * of
    * the given ones.
    * @param statuses the status list that the suggestion statuses must verify.
    * @return the suggestion criteria itself with the new criterion on the suggestion statuses.
@@ -124,9 +148,10 @@ public class SuggestionCriteria {
   }
 
   /**
-   * Indicates that the content of the suggestions must be load before returning the result.
+   * Indicates that the content of the suggestions must be loaded before returning the result.
+   * @return the suggestion criteria itself with the criterion on the WYSIWYG content loading.
    */
-  public SuggestionCriteria setLoadWysiwygContent() {
+  public SuggestionCriteria withWysiwygContent() {
     this.loadWysiwygContent = true;
     return this;
   }
@@ -175,6 +200,18 @@ public class SuggestionCriteria {
     return orderByList;
   }
 
+  private PaginationPage getPagination() {
+    return this.pagination;
+  }
+
+  /**
+   * Gets the user that has asked for the suggestions matching these criteria.
+   * @return the caller.
+   */
+  public UserDetail getCaller() {
+    return forUser;
+  }
+
   /**
    * Indicates if suggestion contents must be loaded.
    * @return true if suggestion contents mus be loaded.
@@ -200,9 +237,13 @@ public class SuggestionCriteria {
     if (!getStatuses().isEmpty()) {
       processor.then().processStatus(getStatuses());
     }
+    if (getPagination() != null) {
+      processor.then().processPagination(getPagination());
+    }
     if (!getOrderByList().isEmpty()) {
       processor.then().processOrdering(getOrderByList());
     }
+
     processor.endProcessing();
   }
 }

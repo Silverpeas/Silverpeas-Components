@@ -68,6 +68,8 @@ services.factory('Suggestion', ['RESTAdapter', function(RESTAdapter) {
          * - inDraft for the suggestions in draft (in redaction),
          * - outOfDraft for the suggestions that were validated (published and refused)
          *
+         * If the argument is an object or it mades up of an identifier following by an object, then
+         * the object is taken as a criteria to apply to requested resource.
          * @returns {Array} the asked suggestion boxes.
          */
         this.get = function() {
@@ -75,9 +77,15 @@ services.factory('Suggestion', ['RESTAdapter', function(RESTAdapter) {
               (typeof arguments[0] === 'number' || typeof arguments[0] === 'string')) {
             return adapter.find(arguments[0]);
           } else {
+            var url = adapter.url;
+            var criteria = arguments[0];
+            if (arguments.length > 1) {
+              url += '/' + arguments[0];
+              criteria = arguments[1];
+            }
             return adapter.find({
-              url : adapter.url,
-              criteria : adapter.criteria(arguments[0], {})
+              url: url,
+              criteria: adapter.criteria(criteria)
             });
           }
         };

@@ -194,7 +194,7 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService,
   public Suggestion findSuggestionById(SuggestionBox box, String suggestionId) {
     Suggestion suggestion = Suggestion.NONE;
     SuggestionCriteria criteria = SuggestionCriteria.from(box).identifierIsOneOf(suggestionId);
-    List<Suggestion> suggestions = findSuggestionsByCriteria(criteria.setLoadWysiwygContent());
+    List<Suggestion> suggestions = findSuggestionsByCriteria(criteria.withWysiwygContent());
     if (suggestions.size() == 1) {
       suggestion = suggestions.get(0);
     }

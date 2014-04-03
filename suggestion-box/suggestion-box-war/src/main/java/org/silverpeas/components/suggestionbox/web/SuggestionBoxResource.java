@@ -27,10 +27,13 @@ import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.stratelia.webactiv.SilverpeasRole;
+import com.stratelia.webactiv.beans.admin.PaginationPage;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.components.suggestionbox.common.PaginatedList;
 import org.silverpeas.components.suggestionbox.common.SuggestionBoxWebServiceProvider;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
+import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -44,6 +47,8 @@ import java.util.List;
 
 import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs.BOX_BASE_URI;
 import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs.BOX_SUGGESTION_URI_PART;
+
+import javax.ws.rs.QueryParam;
 
 /**
  * A REST Web resource giving suggestion data.
@@ -161,7 +166,7 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
    * Gets the JSON representation of a list of suggestion that are pending validation.
    * @return the response to the HTTP GET request with the JSON representation of the asked
    * list of suggestions.
-   * @see SuggestionBoxWebServiceProvider#getPendingValidation(SuggestionBox)
+   * @see SuggestionBoxWebServiceProvider#getSuggestionsInPendingValidation(SuggestionBox)
    * @see WebProcess#execute()
    */
   @GET
@@ -171,26 +176,44 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
     return process(new WebTreatment<Collection<SuggestionEntity>>() {
       @Override
       public List<SuggestionEntity> execute() {
-        return getWebServiceProvider().getPendingValidation(getSuggestionBox());
+        return getWebServiceProvider().getSuggestionsInPendingValidation(getSuggestionBox());
       }
     }).lowestAccessRole(SilverpeasRole.publisher).execute();
   }
 
   /**
-   * Gets the JSON representation of a list of suggestion that are published.
+   * Gets the JSON representation of a list of suggestions that are published, sorted by date of
+   * validation (from the newer to the older).
+   * @param page if this parameter is set, then the pagination is activated and only the published
+   * suggestions matching the specified pagination criterion are sent back. The parameter is
+   * semicolon-separated criterion: the first part is the page number and the second part is the
+   * count of suggestions to sent back.
    * @return the response to the HTTP GET request with the JSON representation of the asked
    * list of suggestions.
-   * @see SuggestionBoxWebServiceProvider#getPublished(SuggestionBox)
+   * @see SuggestionBoxWebServiceProvider#getPublishedSuggestions(SuggestionBox)
    * @see WebProcess#execute()
    */
   @GET
   @Path(BOX_SUGGESTION_URI_PART + "/published")
   @Produces(MediaType.APPLICATION_JSON)
-  public Collection<SuggestionEntity> getPublishedSuggestions() {
+  public Collection<SuggestionEntity> getPublishedSuggestions(@QueryParam("page") final String page) {
     return process(new WebTreatment<Collection<SuggestionEntity>>() {
       @Override
       public List<SuggestionEntity> execute() {
-        return getWebServiceProvider().getPublished(getSuggestionBox());
+        PaginationPage pagination = fromPage(page);
+        if (pagination != null) {
+          List<SuggestionEntity> suggestions = getWebServiceProvider().
+              getPublishedSuggestions(getSuggestionBox(),
+                  SuggestionCriteria.from(getSuggestionBox())
+                  .forUser(getUserDetail())
+                  .paginatedBy(pagination));
+          if (suggestions instanceof PaginatedList) {
+            String maxlength = String.valueOf(((PaginatedList) suggestions).maxSize());
+            getHttpServletResponse().setHeader(RESPONSE_HEADER_ARRAYSIZE, maxlength);
+          }
+          return suggestions;
+        }
+        return getWebServiceProvider().getPublishedSuggestions(getSuggestionBox());
       }
     }).execute();
   }
@@ -198,4 +221,18 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
   private SuggestionBoxWebServiceProvider getWebServiceProvider() {
     return SuggestionBoxWebServiceProvider.getWebServiceProvider();
   }
+
+  private PaginationPage fromPage(String page) {
+    PaginationPage paginationPage = null;
+    if (page != null && !page.isEmpty()) {
+      String[] pageAttributes = page.split(";");
+      int nth = Integer.valueOf(pageAttributes[0]);
+      int count = Integer.valueOf(pageAttributes[1]);
+      if (count > 0) {
+        paginationPage = new PaginationPage(nth, count);
+      }
+    }
+    return paginationPage;
+  }
+
 }
