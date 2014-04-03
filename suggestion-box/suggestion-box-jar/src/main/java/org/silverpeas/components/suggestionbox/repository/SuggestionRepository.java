@@ -50,7 +50,7 @@ public class SuggestionRepository extends AbstractJpaEntityRepository<Suggestion
     JPQLQueryBuilder queryBuilder = new JPQLQueryBuilder(params);
     criteria.processWith(queryBuilder);
 
-    // Playing th query and returning the requested result
-    return listFromJpqlString(queryBuilder.result(), params);
+    // Playing the query and returning the requested result
+    return listFromJpqlString(queryBuilder.result(), params, queryBuilder.getPaginationToApply());
   }
 }

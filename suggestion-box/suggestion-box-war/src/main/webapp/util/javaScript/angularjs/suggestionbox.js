@@ -154,12 +154,18 @@ suggestionBox.controller('buzzPublishedController',
   suggestionBox.controller('suggestionListController', ['$scope', function($scope) {
       var suggestionBox = $scope.suggestionBox;
 
-      suggestionBox.suggestions.get('published').then(function(theSuggestions) {
-        $scope.suggestions = theSuggestions;
-      });
-
-      $scope.changePage = function(page) {
+      var fetchSuggestionsAtPage = function(page) {
+          suggestionBox.suggestions.get('published', {page: {number: page, size: $scope.suggestionsPerPage}})
+                  .then(function(theSuggestions) {
+          $scope.suggestions = theSuggestions;
+        });
       };
+
+      $scope.suggestionsPerPage = 5;
+
+      fetchSuggestionsAtPage(1);
+
+      $scope.changePage = fetchSuggestionsAtPage;
 
       $scope.sortByValidationDate = function() {
 

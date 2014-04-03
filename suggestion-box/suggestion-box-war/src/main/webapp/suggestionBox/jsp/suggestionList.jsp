@@ -59,8 +59,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.suggestionBox">
 <head>
   <view:looknfeel/>
+  <view:includePlugin name="pagination"/>
   <script type="text/javascript" src="${suggestionBoxServicesJS}"></script>
-  <script type="text/javascript" src="${silverpeasPaginationJS}"></script>
 </head>
 <body ng-controller="mainController" id="${componentId}">
 <view:browseBar componentId="${componentId}"/>
@@ -69,10 +69,11 @@
     <div ng-controller="suggestionListController" id="suggestion_list">
       <table>
         <thead>
-          <tr><th>Suggestion</th>
-            <th>Author</th>
-            <th ng-click="sortByValidationDate()">Approved at</th>
-            <th ng-click="sortByRating()">Rating</th></tr>
+          <tr>
+            <th><fmt:message key="suggestionBox.label.suggestions"/></th>
+            <th><fmt:message key="suggestionBox.label.suggestion.author"/></th>
+            <th ng-click="sortByValidationDate()"><fmt:message key="GML.contribution.validation.date"/></th>
+            <th ng-click="sortByRating()"><fmt:message key="GML.rating"/></th></tr>
         </thead>
         <tbody>
           <tr ng-repeat="suggestion in suggestions" ng-class-odd="" ng-class-even="">
@@ -81,9 +82,9 @@
             <td>{{suggestion.validation.date | date: 'shortDate'}}</td>
             <td></td>
           </tr>
-          <silverpeas-pagination page-size="10" items-size="suggestions.maxlength" on-page="changePage(page)"></silverpeas-pagination>
         </tbody>
     </table>
+    <silverpeas-pagination page-size="suggestionsPerPage" items-size="suggestions.maxlength" on-page="changePage(page)"></silverpeas-pagination>
     </div>
     <br clear="all"/>
     <silverpeas-button ng-click="goAt('${backUri}')">${back}</silverpeas-button>
