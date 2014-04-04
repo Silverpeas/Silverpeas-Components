@@ -212,7 +212,6 @@ public class ForumsRequestRouter extends ComponentRequestRouter<ForumsSessionCon
       }
     }
     request.setAttribute("currentForum", forumsSC.getForum(currentForumId));
-    request.setAttribute("notation", forumsSC.getForumNotation(currentForumId));
     request.setAttribute("parents", forumsSC.getForumAncestors(currentForumId));
     request.setAttribute("nbChildrens", forumsSC.getForumSonsNb(currentForumId));
     return ROOT_DEST +

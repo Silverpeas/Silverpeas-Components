@@ -20,7 +20,6 @@
  */
 package com.stratelia.webactiv.forums.control.helpers;
 
-import com.silverpeas.notation.model.NotationDetail;
 import com.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
@@ -31,6 +30,8 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import java.io.IOException;
 import java.util.Date;
 import javax.servlet.jsp.JspWriter;
+
+import org.silverpeas.rating.Rating;
 
 /**
  *
@@ -146,10 +147,10 @@ public class ForumListHelper {
       out.println("</span></td>");
 
       // 6ème colonne : notation
-      NotationDetail notation = fsc.getForumNotation(forumId);
-      int globalNote = notation.getRoundGlobalNote();
-      int userNote = notation.getUserNote();
-      String cellLabel = notation.getNotesCount() + " " + resources.getString("forums.note");
+      Rating notation = fsc.getForumNotation(forumId);
+      int globalNote = notation.getRoundedOverallRating();
+      int userNote = notation.getUserRating();
+      String cellLabel = notation.getNumberOfReviews() + " " + resources.getString("forums.note");
       if (userNote > 0) {
         cellLabel += " - " + resources.getString("forums.yourNote") + " : " + userNote;
       }

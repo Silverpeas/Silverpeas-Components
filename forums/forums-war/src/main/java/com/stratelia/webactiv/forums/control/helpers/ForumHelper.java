@@ -23,7 +23,6 @@
  */
 package com.stratelia.webactiv.forums.control.helpers;
 
-import com.silverpeas.notation.model.NotationDetail;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.web.RequestHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -35,6 +34,9 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspWriter;
+
+import org.silverpeas.rating.Rating;
+
 import java.io.IOException;
 import java.util.Date;
 
@@ -230,10 +232,10 @@ public class ForumHelper {
           out.println("</span></td>");
 
           // Notation
-          NotationDetail notation = fsc.getMessageNotation(messageId);
-          int globalNote = notation.getRoundGlobalNote();
-          int userNote = notation.getUserNote();
-          String cellLabel = notation.getNotesCount() + " " + resources.getString("forums.note");
+          Rating notation = fsc.getMessageNotation(messageId);
+          int globalNote = notation.getRoundedOverallRating();
+          int userNote = notation.getUserRating();
+          String cellLabel = notation.getNumberOfReviews() + " " + resources.getString("forums.note");
           if (userNote > 0) {
             cellLabel += " - " + resources.getString("forums.yourNote") + " : " + userNote;
           }
@@ -426,36 +428,5 @@ public class ForumHelper {
       }
     }
     return false;
-  }
-
-  public static int[] displayMessageNotation(JspWriter out, ResourcesWrapper resources,
-      int messageId,
-      ForumsSessionController fsc, boolean reader) {
-    try {
-      NotationDetail notation = fsc.getMessageNotation(messageId);
-      int globalNote = notation.getRoundGlobalNote();
-      int userNote = notation.getUserNote();
-      out.print("<span class=\"txtnote\">" + resources.getString("forums.messageNote") + " : ");
-      for (int i = 1; i <= 5; i++) {
-        out.print("<img");
-        if (!reader) {
-          out.print(" id=\"notationImg" + i + "\"");
-        }
-        out.print(" style=\"margin-bottom: 0px\" class=\"notation_" +
-            (i <= globalNote ? "on" : "off")
-            + "\" src=\"" + IMAGE_NOTATION_EMPTY + "\"/>");
-      }
-      out.print(" (" + notation.getNotesCount() + " " + resources.getString("forums.note"));
-      if (userNote > 0) {
-        out.print(" - " + resources.getString("forums.yourNote") + " : " + userNote);
-      }
-      out.println(")</span>");
-      return new int[] { globalNote, userNote };
-    } catch (IOException ioe) {
-      SilverTrace
-          .info("forums", "JSPforumsListManager.displayMessageNotation()", "root.EX_NO_MESSAGE",
-              null, ioe);
-      return new int[0];
-    }
   }
 }

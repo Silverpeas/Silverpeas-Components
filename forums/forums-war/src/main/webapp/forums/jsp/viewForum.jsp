@@ -74,14 +74,13 @@
 <c:set var="isModerator" value="<%=isModerator%>" />
 <c:set var="currentForum" value="${requestScope.currentForum}" />
 <c:set var="isActive"  value="${requestScope.currentForum.active}" />
-<c:set var="globalNote" value="${requestScope.notation.roundGlobalNote}" />
-<c:set var="userNote" value="${requestScope.notation.userNote}" />
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.forums">
   <head>
     <title><c:out value="${currentForum.name}" /></title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <view:looknfeel />
+    <view:includePlugin name="rating" />
     <script type="text/javascript" src="<c:url value="/forums/jsp/javaScript/forums.js" />" ></script>
     <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js" />" ></script>
     <script type="text/javascript">
@@ -120,47 +119,6 @@
           document.forms['forumForm'].elements['params'].value = forumId;
           document.forms['forumForm'].elements['forumId'].value=parentForumId;
           document.forms['forumForm'].submit();
-        }
-
-        function loadNotation()
-        {
-          if (document.getElementById(NOTATION_PREFIX + "1") == undefined)  {
-            setTimeout("loadNotation()", 200);
-          }
-          else {
-            var img;
-            var i;
-            for (i = 1; i <= NOTATIONS_COUNT; i++) {
-              notationFlags[i - 1] = false;
-              img = document.getElementById(NOTATION_PREFIX + i);
-              img.alt = "<%=resource.getString("forums.giveNote")%> " + i + "/" + NOTATIONS_COUNT;
-              img.title = "<%=resource.getString("forums.giveNote")%> " + i + "/" + NOTATIONS_COUNT;
-              if (!readOnly) {
-                img.onclick = function() {notationNote(this);};
-                img.onmouseover = function() {notationOver(this);};
-                img.onmouseout = function() {notationOut(this);};
-              }
-            }
-          }
-        }
-
-        function notationNote(image) {
-          var index = getNotationIndex(image);
-          var updateNote = false;
-          if (userNote > 0) {
-            if (index == userNote) {
-              alert("<%=resource.getString("forums.sameNote")%> " + userNote + ".");
-            } else {
-              updateNote = confirm("<%=resource.getString("forums.replaceNote")%> " + userNote + " <%=resource.getString("forums.by")%> " + index + ".");
-            }
-          } else {
-            updateNote = true;
-          }
-          if (updateNote) {
-            currentNote = index;
-            document.forms["notationForm"].elements["note"].value = currentNote;
-            document.forms["notationForm"].submit();
-          }
         }
     </script>
   </head>
@@ -238,13 +196,7 @@
           </c:if>
           <tr class="notationLine">
             <td align="right">
-              <c:url var="starIcon" value="/util/icons/shim.gif"/>
-              <span class="txtnote"><fmt:message key="forums.forumNote"/> :
-                <c:forEach var="i" begin="1" end="5">
-                  <img src="<c:out value="${starIcon}"/>" style="margin-bottom: 0px;" <c:if test="${!isReader}">id="notationImg<c:out value="${i}"/>"</c:if>
-                       class="<c:choose><c:when test="${i <= globalNote}">notation_on</c:when><c:otherwise>notation_off</c:otherwise></c:choose>" />
-                </c:forEach>
-              </span>
+              <silverpeas-rating componentid="${componentId}" resourcetype="Forum" resourceid="${currentForum.id}" readonly="${isReader}"></silverpeas-rating>
             </td>
           </tr>
           <tr>
@@ -285,23 +237,14 @@ ForumHelper.displayMessagesList(out, resource, userId, isAdmin, isModerator, isR
         </div>
       </view:frame>
     </view:window>
-    <c:if test="${!isReader}">
-      <form name="notationForm" action="viewForum" method="post">
-        <input name="action" type="hidden" value="16"/>
-        <input name="forumId" type="hidden" value="<c:out value="${param.forumId}" />"/>
-        <input name="note" type="hidden" value=""/>
-      </form>
-      <script type="text/javascript">
-        readOnly = <c:out value="${isReader}"/>;
-        currentNote = <c:out value="${globalNote}"/>;
-        userNote = <c:out value="${userNote}"/>;
-        loadNotation();
-      </script>
-    </c:if>
-    <form id="forumForm" name="forumForm" action="viewForum.jsp" method="POST">
+    <form id="forumForm" name="forumForm" action="viewForum.jsp" method="post">
       <input id="action" name="action" type="hidden"/>
       <input id="params" name="params" type="hidden"/>
       <input id="forumId" name="forumId" type="hidden"/>
     </form>
+    <script type="text/javascript">
+ 	  /* declare the module myapp and its dependencies (here in the silverpeas module) */
+ 	  var myapp = angular.module('silverpeas.forums', ['silverpeas.services', 'silverpeas.directives']);
+ 	</script>
   </body>
 </html>

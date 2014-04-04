@@ -284,15 +284,6 @@ public class ForumActionHelper {
             fsc.updateMessageKeywords(messageId, keywords);
             break;
           }
-          case EVALUATE_FORUM: {
-            int forumId = ForumHelper.getIntParameter(request, "forumId");
-            int note = ForumHelper.getIntParameter(request, "note", -1);
-            if (note > 0) {
-              fsc.updateForumNotation(forumId, note);
-              request.setAttribute("notation", fsc.getForumNotation(forumId));
-            }
-            break;
-          }
         }
       } catch (NumberFormatException nfe) {
         SilverTrace.info("forums", "JSPforumsListActionManager", "root.EX_NO_MESSAGE", null, nfe);

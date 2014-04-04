@@ -22,9 +22,6 @@ package com.stratelia.webactiv.forums.control;
 
 import com.silverpeas.notation.ejb.NotationBm;
 import com.silverpeas.notation.ejb.NotationRuntimeException;
-import com.silverpeas.notation.model.Notation;
-import com.silverpeas.notation.model.NotationDetail;
-import com.silverpeas.notation.model.NotationPK;
 import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
@@ -68,11 +65,12 @@ import org.silverpeas.components.forum.notification.ForumsForumSubscriptionUserN
 import org.silverpeas.components.forum.notification.ForumsMessagePendingValidationUserNotification;
 import org.silverpeas.components.forum.notification.ForumsMessageSubscriptionUserNotification;
 import org.silverpeas.components.forum.notification.ForumsMessageValidationUserNotification;
+import org.silverpeas.rating.Rating;
+import org.silverpeas.rating.RatingPK;
 import org.silverpeas.upload.UploadedFile;
 import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
 
 import javax.ejb.EJBException;
-import javax.servlet.ServletRequest;
 import javax.xml.bind.JAXBException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -124,7 +122,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   // Constructeur
   public ForumsSessionController(MainSessionController mainSessionCtrl, ComponentContext context) {
-    super(mainSessionCtrl, context, "com.stratelia.webactiv.forums.multilang.forumsBundle",
+    super(mainSessionCtrl, context, "org.silverpeas.forums.multilang.forumsBundle",
         "org.silverpeas.forums.settings.forumsIcons");
     deployedMessages = new ArrayList<Integer>();
     deployedForums = new ArrayList<Integer>();
@@ -868,20 +866,12 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     return getForumsBM().getMessageTags(getMessagePK(messageId));
   }
 
-  public NotationDetail getForumNotation(int forumId) {
-    return getNotationBm().getNotation(getForumNotationPk(forumId));
+  public Rating getForumNotation(int forumId) {
+    return getNotationBm().getRating(getForumNotationPk(forumId));
   }
 
-  public NotationDetail getMessageNotation(int messageId) {
-    return getNotationBm().getNotation(getMessageNotationPk(messageId));
-  }
-
-  public void updateForumNotation(int forumId, int note) {
-    getNotationBm().updateNotation(getForumNotationPk(forumId), note);
-  }
-
-  public void updateMessageNotation(int messageId, int note) {
-    getNotationBm().updateNotation(getMessageNotationPk(messageId), note);
+  public Rating getMessageNotation(int messageId) {
+    return getNotationBm().getRating(getMessageNotationPk(messageId));
   }
 
   public void validateMessage(int messageId) {
@@ -970,13 +960,12 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     return new MessagePK(getComponentId(), String.valueOf(messageId));
   }
 
-  private NotationPK getForumNotationPk(int forumId) {
-    return new NotationPK(String.valueOf(forumId), getComponentId(), Notation.TYPE_FORUM,
-        getUserId());
+  private RatingPK getForumNotationPk(int forumId) {
+    return new RatingPK(String.valueOf(forumId), getComponentId(), "Forum", getUserId());
   }
 
-  private NotationPK getMessageNotationPk(int messageId) {
-    return new NotationPK(String.valueOf(messageId), getComponentId(), Notation.TYPE_MESSAGE,
+  private RatingPK getMessageNotationPk(int messageId) {
+    return new RatingPK(String.valueOf(messageId), getComponentId(), "ForumMessage",
         getUserId());
   }
 
