@@ -63,6 +63,7 @@ import java.net.URISyntaxException;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -100,6 +101,7 @@ public class SuggestionBoxWebControllerTest {
     appContext.close();
   }
 
+  @SuppressWarnings("unchecked")
   @Test
   public void addANewSuggestionToAGivenSuggestionBox() {
     final String title = "A suggestion title";
@@ -114,7 +116,7 @@ public class SuggestionBoxWebControllerTest {
 
     ArgumentCaptor<Suggestion> suggestionArgument = ArgumentCaptor.forClass(Suggestion.class);
     verify(suggestionBoxService, times(1)).
-        addSuggestion(eq(box), suggestionArgument.capture());
+        addSuggestion(eq(box), suggestionArgument.capture(), anyCollection());
     Suggestion suggestion = suggestionArgument.getValue();
     assertThat(suggestion.getTitle(), is(title));
     assertThat(suggestion.getContent(), is(content));

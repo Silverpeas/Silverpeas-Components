@@ -29,6 +29,8 @@ import com.silverpeas.comment.service.CommentUserNotificationService;
 import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
+import com.silverpeas.util.CollectionUtil;
+import com.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -36,8 +38,10 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.components.suggestionbox.SuggestionBoxComponentSettings;
-import org.silverpeas.components.suggestionbox.notification.SuggestionBoxSubscriptionUserNotification;
-import org.silverpeas.components.suggestionbox.notification.SuggestionPendingValidationUserNotification;
+import org.silverpeas.components.suggestionbox.notification
+    .SuggestionBoxSubscriptionUserNotification;
+import org.silverpeas.components.suggestionbox.notification
+    .SuggestionPendingValidationUserNotification;
 import org.silverpeas.components.suggestionbox.notification.SuggestionValidationUserNotification;
 import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepository;
 import org.silverpeas.components.suggestionbox.repository.SuggestionRepository;
@@ -45,15 +49,16 @@ import org.silverpeas.contribution.ContributionStatus;
 import org.silverpeas.contribution.model.ContributionValidation;
 import org.silverpeas.persistence.Transaction;
 import org.silverpeas.persistence.repository.OperationContext;
+import org.silverpeas.upload.UploadedFile;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Date;
-import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 /**
  * The default implementation of the {@link SuggestionBoxService} interface and of the
@@ -136,10 +141,12 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService,
    * Adds into the specified suggestion box the new specified suggestion.
    * @param box a suggestion box
    * @param suggestion a new suggestions to add into the suggestion box.
+   * @param uploadedFiles a collection of file to attach to the suggestion.
    */
   @Transactional
   @Override
-  public void addSuggestion(final SuggestionBox box, final Suggestion suggestion) {
+  public void addSuggestion(final SuggestionBox box, final Suggestion suggestion,
+      final Collection<UploadedFile> uploadedFiles) {
     final UserDetail author = suggestion.getLastUpdater();
     SuggestionBox actualBox = suggestionBoxRepository.getById(box.getId());
     actualBox.addSuggestion(suggestion);
@@ -147,9 +154,20 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService,
     suggestionRepository.save(OperationContext.fromUser(author), suggestion);
     suggestionRepository.flush();
 
+    // Description
     WysiwygController.
         save(suggestion.getContent(), box.getComponentInstanceId(), suggestion.getId(), author.
             getId(), null, false);
+
+    // Attach uploaded files
+    if (CollectionUtil.isNotEmpty(uploadedFiles)) {
+      for (UploadedFile uploadedFile : uploadedFiles) {
+        // Register attachment
+        uploadedFile
+            .registerAttachment(new ForeignPK(suggestion.getId(), box.getComponentInstanceId()),
+                null, false);
+      }
+    }
   }
 
   /**

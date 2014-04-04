@@ -61,7 +61,7 @@
                 callback : function() {
                   if (validate(true)) {
                     jQuery('#suggestionValidationForm').attr('action',
-                            context.componentUriBase + 'suggestion/' + suggestion.id +
+                            context.componentUriBase + 'suggestions/' + suggestion.id +
                             '/approve').submit();
                     return true;
                   }
@@ -78,7 +78,7 @@
                 callback : function() {
                   if (validate(false)) {
                     jQuery('#suggestionValidationForm').attr('action',
-                            context.componentUriBase + 'suggestion/' + suggestion.id +
+                            context.componentUriBase + 'suggestions/' + suggestion.id +
                             '/refuse').submit();
                     return true;
                   }

@@ -27,10 +27,10 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
-<view:setConstant var="readerRole" constant="com.stratelia.webactiv.SilverpeasRole.reader"/>
 <c:set var="greaterUserRole" value="${requestScope.greaterUserRole}"/>
 
-<fmt:setLocale value="${requestScope.resources.language}"/>
+<c:set var="currentUserLanguage" value="${requestScope.resources.language}"/>
+<fmt:setLocale value="${currentUserLanguage}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
@@ -38,16 +38,14 @@
 
 <c:set var="currentUser" value="${requestScope.currentUser}"/>
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
-<c:set var="suggestionBoxId" value="${requestScope.currentSuggestionBox.id}"/>
+<c:set var="suggestionBox" value="${requestScope.currentSuggestionBox}"/>
+<c:set var="suggestionBoxId" value="${suggestionBox.id}"/>
+<c:set var="isEdito" value="${requestScope.isEdito}"/>
 <c:set var="suggestion" value="${requestScope.suggestion}"/>
 <c:set var="target" value="${suggestion.id}"/>
 <c:set var="isEditable" value="${requestScope.isEditable}"/>
 <c:set var="isPublishable" value="${requestScope.isPublishable}"/>
 <c:set var="isModeratorView" value="${requestScope.isModeratorView}"/>
-
-<c:if test="${not greaterUserRole.isGreaterThanOrEquals(readerRole)}">
-  <c:redirect url="/Error403.jsp"/>
-</c:if>
 
 <c:url var="componentUriBase" value="${requestScope.componentUriBase}"/>
 <c:url var="backUri" value="${requestScope.backUrl}"/>
@@ -66,25 +64,36 @@
 <view:browseBar componentId="${componentId}"/>
 <view:window>
   <view:frame>
+    <h2 class="suggestionBox-title">${suggestionBox.getTitle(currentUserLanguage)}</h2>
+    <c:if test="${isEdito}">
+      <div class="suggestionBox-description">
+        <view:displayWysiwyg objectId="${suggestionBoxId}" componentId="${componentId}" language="${null}"/>
+      </div>
+    </c:if>
     <div ng-controller="suggestionListController" id="suggestion_list">
-      <table>
+      <table width="100%" border="0" cellspacing="0" cellpadding="2" summary="null" class="tableArrayPane" id="suggestionBoxList">
         <thead>
-          <tr>
-            <th><fmt:message key="suggestionBox.label.suggestions"/></th>
-            <th><fmt:message key="suggestionBox.label.suggestion.author"/></th>
-            <th ng-click="sortByValidationDate()"><fmt:message key="GML.contribution.validation.date"/></th>
-            <th ng-click="sortByRating()"><fmt:message key="GML.rating"/></th></tr>
+        <tr>
+          <th ng-click="sortByValidationDate()"><fmt:message key="GML.contribution.validation.date"/></th>
+          <th><fmt:message key="GML.title"/></th>
+          <th><fmt:message key="suggestionBox.label.suggestion.author"/></th>
+          <th ng-click="sortByRating()"><fmt:message key="GML.rating"/></th>
+          <th ng-click="sortByRatingParticipation()"><fmt:message key="GML.rating.participation.number"/></th>
+          <th ng-click="sortByCommentParticipation()"><fmt:message key="GML.comment.number"/></th>
+        </tr>
         </thead>
         <tbody>
-          <tr ng-repeat="suggestion in suggestions" ng-class-odd="" ng-class-even="">
-            <td><a ng-href="${componentUriBase}suggestions/{{suggestion.id}}?from=list">{{suggestion.title}}</a></td>
-            <td>{{suggestion.author}}</td>
-            <td>{{suggestion.validation.date | date: 'shortDate'}}</td>
-            <td></td>
-          </tr>
+        <tr ng-repeat="suggestion in suggestions" ng-class-odd="" ng-class-even="">
+          <td>{{suggestion.validation.date | date: 'shortDate'}}</td>
+          <td><a ng-href="${componentUriBase}suggestions/{{suggestion.id}}?from=list">{{suggestion.title}}</a></td>
+          <td>{{suggestion.authorName}}</td>
+          <td>-</td>
+          <td>-</td>
+          <td>-</td>
+        </tr>
         </tbody>
-    </table>
-    <silverpeas-pagination page-size="suggestionsPerPage" items-size="suggestions.maxlength" on-page="changePage(page)"></silverpeas-pagination>
+      </table>
+      <silverpeas-pagination page-size="suggestionsPerPage" items-size="suggestions.maxlength" on-page="changePage(page)"></silverpeas-pagination>
     </div>
     <br clear="all"/>
     <silverpeas-button ng-click="goAt('${backUri}')">${back}</silverpeas-button>

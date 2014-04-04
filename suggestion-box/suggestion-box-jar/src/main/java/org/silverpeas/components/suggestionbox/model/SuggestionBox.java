@@ -30,6 +30,7 @@ import org.silverpeas.contribution.model.ContributionValidation;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.persistence.model.jpa.AbstractJpaEntity;
+import org.silverpeas.upload.UploadedFile;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -39,6 +40,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -165,10 +167,11 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
      * <p/>
      * The suggestion will be persisted automatically once added.
      * @param suggestion the suggestion to add.
+     * @param uploadedFiles a collection of file to attach to the suggestion.
      */
-    public void add(final Suggestion suggestion) {
+    public void add(final Suggestion suggestion, final Collection<UploadedFile> uploadedFiles) {
       SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
-      suggestionBoxService.addSuggestion(SuggestionBox.this, suggestion);
+      suggestionBoxService.addSuggestion(SuggestionBox.this, suggestion, uploadedFiles);
     }
 
     /**

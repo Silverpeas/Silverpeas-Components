@@ -58,7 +58,7 @@
                     return true;
                   } else {
                     jQuery('#suggestionDeletionForm').attr('action',
-                            context.componentUriBase + 'suggestion/' + suggestion.id +
+                            context.componentUriBase + 'suggestions/' + suggestion.id +
                             '/delete').submit();
                     return true;
                   }

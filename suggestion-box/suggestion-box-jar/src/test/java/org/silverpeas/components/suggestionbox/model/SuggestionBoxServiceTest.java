@@ -151,7 +151,7 @@ public class SuggestionBoxServiceTest {
     SuggestionBoxRepository suggestionBoxRepository = getSuggestionBoxRepository();
     when(suggestionBoxRepository.getById(box.getId())).thenReturn(box);
 
-    service.addSuggestion(box, suggestion);
+    service.addSuggestion(box, suggestion, null);
 
     SuggestionRepository suggestionRepository = getSuggestionRepository();
     verify(suggestionBoxRepository, times(1)).getById(box.getId());

@@ -70,6 +70,7 @@
   <view:looknfeel/>
   <view:includePlugin name="wysiwyg"/>
   <view:includePlugin name="popup"/>
+  <link type="text/css" href="<c:url value='/util/styleSheets/fieldset.css'/>" rel="stylesheet"/>
   <script type="text/javascript" src="${formValidator}"></script>
   <script type="text/javascript">
     $(document).ready(function() {
@@ -126,25 +127,38 @@
   <view:frame>
     <div id="error" style="display: none;"></div>
     <form id="suggestion" name="suggestion" action="${componentUriBase}suggestions/${target}" method="POST">
-      <div class="fields">
-        <div class="field" id="suggestionName">
-          <label for="title" class="txtlibform"><fmt:message key='GML.title'/>&nbsp;<img alt="mandatory" src="${mandatoryIcons}" width="5" height="5"/></label>
+      <input type="hidden" value="${componentId}"/>
 
-          <div class="champs">
-            <input id="title" type="text" name="title" size="100%" maxlength="2000" value="<c:out value='${suggestion.title}'/>"/>
-          </div>
+      <div class="table">
+        <div class="cell">
+          <fieldset class="skinFieldset" id="suggestionInformation">
+            <legend><fmt:message key="GML.bloc.information.principal"/></legend>
+            <div class="fields">
+              <div id="suggestionNameArea" class="field">
+                <label for="title" class="txtlibform"><fmt:message key='GML.title'/>&nbsp;<img alt="mandatory" src="${mandatoryIcons}" width="5" height="5"/></label>
+
+                <div class="champs">
+                  <input id="title" type="text" name="title" size="70%" maxlength="2000" value="<c:out value='${suggestion.title}'/>" style="width: auto"/>
+                </div>
+              </div>
+            </div>
+          </fieldset>
         </div>
-        <br clear="all"/>
-
-        <div class="field" id="eventDescriptionArea">
-          <label for="content" class="txtlibform"><fmt:message key='GML.description'/></label>
+        <c:if test="${suggestion == null}">
+          <div style="width: 50%" class="cell">
+            <view:fileUpload fieldset="true" jqueryFormSelector="form[name='suggestion']"/>
+          </div>
+        </c:if>
+      </div>
+      <div class="fields">
+        <div id="suggestionDescriptionArea" class="field">
+          <label class="txtlibform" for="suggestionDescription"><fmt:message key='GML.description'/></label>
 
           <div class="champs">
-            <textarea rows="5" cols="10" name="content" id="content">${suggestion.content}</textarea>
+            <textarea rows="5" cols="10" name="content" id="suggestionDescription">${suggestion.content}</textarea>
           </div>
         </div>
       </div>
-      <input type="hidden" value="${componentId}"/>
 
       <div class="legend">
         <img alt="mandatory" src="${mandatoryIcons}" width="5" height="5"/>&nbsp;

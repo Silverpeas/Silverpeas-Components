@@ -118,11 +118,11 @@
         <view:operation altText="${subscribeToSuggestionBoxLabel}" icon="" action="javascript:subscribe();"/>
       </c:otherwise>
     </c:choose>
-    <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
-      <fmt:message key="suggestionBox.proposeSuggestion" var="tmpIcon" bundle="${icons}"/>
-      <c:url var="tmpIcon" value="${tmpIcon}"/>
-      <view:operationOfCreation action="${componentUriBase}suggestions/new" altText="${browseBarPathSuggestionLabel}" icon="${tmpIcon}"/>
-    </c:if>
+  </c:if>
+  <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
+    <fmt:message key="suggestionBox.proposeSuggestion" var="tmpIcon" bundle="${icons}"/>
+    <c:url var="tmpIcon" value="${tmpIcon}"/>
+    <view:operationOfCreation action="${componentUriBase}suggestions/new" altText="${browseBarPathSuggestionLabel}" icon="${tmpIcon}"/>
   </c:if>
 </view:operationPane>
 <view:window>
@@ -197,14 +197,14 @@
     <div id="all-suggestionBox">
       <div class="secteur-container lastSuggestion">
         <div class="header">
-          <h3 class="lastSuggestion-title"><fmt:message key="suggestionBox.label.suggestions.last"/>&nbsp;<a href="${componentUriBase}suggestions/published">...</a></h3>
+          <h3 class="lastSuggestion-title"><fmt:message key="suggestionBox.label.suggestions.last"/></h3>
         </div>
         <ul ng-controller="publishedController">
           <li ng-repeat="suggestion in publishedSuggestions" ng-if="$index < 5">
             <a ng-href="${componentUriBase}suggestions/{{ suggestion.id }}"><span class="date">{{suggestion.validation.date | date: 'shortDate'}}</span>{{suggestion.title}}</a>
           </li>
         </ul>
-        <a href="#" class="more"><fmt:message key="suggestionBox.label.suggestions.more"/></a>
+        <a href="${componentUriBase}suggestions/published" class="more"><fmt:message key="suggestionBox.label.suggestions.more"/></a>
       </div>
       <div class="secteur-container buzzSuggestion">
         <div class="header">
