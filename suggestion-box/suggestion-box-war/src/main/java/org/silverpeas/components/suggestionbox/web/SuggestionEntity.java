@@ -38,6 +38,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import java.lang.reflect.Field;
 import java.net.URI;
+import java.util.Date;
 
 /**
  * It represents the state of a suggestion in a suggestion box as transmitted within the body of
@@ -90,8 +91,13 @@ public class SuggestionEntity implements Exposable {
   }
 
   @XmlElement
-  public String getAuthor() {
+  public String getAuthorName() {
     return suggestion.getCreator().getDisplayedName();
+  }
+
+  @XmlElement
+  public Date getCreateDate() {
+    return suggestion.getCreateDate();
   }
 
   @XmlElement(nillable = true)
@@ -111,6 +117,11 @@ public class SuggestionEntity implements Exposable {
           getValidation());
     }
     return validationEntity;
+  }
+
+  @XmlTransient
+  public UserDetail getAuthor() {
+    return suggestion.getCreator();
   }
 
   protected void setValidation(ContributionValidationEntity validation) {
@@ -133,7 +144,11 @@ public class SuggestionEntity implements Exposable {
 
   }
 
-  protected void setAuthor(String author) {
+  protected void setAuthorName(String author) {
+
+  }
+
+  protected void setCreateDate(Date validationDate) {
 
   }
 

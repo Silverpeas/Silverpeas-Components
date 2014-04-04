@@ -262,12 +262,14 @@ public class SuggestionBoxWebServiceProvider {
       Suggestion actual = suggestionBox.getSuggestions().validate(suggestion, validation);
       switch (actual.getValidation().getStatus()) {
         case REFUSED:
+          getSortedAndPublishedSuggestionsPerUser().clear();
           NotifierUtil.addInfo(MessageFormat.format(
               getStringTranslation("suggestionBox.message.suggestion.refused",
                   userPreferences.getLanguage()), suggestion.getTitle()
           ));
           break;
         case VALIDATED:
+          getSortedAndPublishedSuggestionsPerUser().clear();
           NotifierUtil.addSuccess(MessageFormat.format(
               getStringTranslation("suggestionBox.message.suggestion.validated",
                   userPreferences.getLanguage()), suggestion.getTitle()

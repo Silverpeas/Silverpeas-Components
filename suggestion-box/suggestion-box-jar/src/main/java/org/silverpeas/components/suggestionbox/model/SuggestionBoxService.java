@@ -24,7 +24,9 @@
 package org.silverpeas.components.suggestionbox.model;
 
 import org.silverpeas.contribution.model.ContributionValidation;
+import org.silverpeas.upload.UploadedFile;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -65,8 +67,10 @@ public interface SuggestionBoxService {
    * Adds into the specified suggestion box the new specified suggestion.
    * @param box a suggestion box
    * @param suggestion a new suggestions to add into the suggestion box.
+   * @param uploadedFiles a collection of file to attach to the suggestion.
    */
-  public void addSuggestion(final SuggestionBox box, final Suggestion suggestion);
+  public void addSuggestion(final SuggestionBox box, final Suggestion suggestion,
+      final Collection<UploadedFile> uploadedFiles);
 
   /**
    * Deletes the specified suggestion box.

@@ -82,7 +82,7 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     Suggestion newSuggestion = new Suggestion("This is my suggestion");
     newSuggestion.setContent("This is the content of my suggestion");
     newSuggestion.setCreator(author);
-    box.getSuggestions().add(newSuggestion);
+    box.getSuggestions().add(newSuggestion, null);
 
     IDataSet actualDataSet = getActualDataSet();
     ITable table = actualDataSet.getTable("sc_suggestion");

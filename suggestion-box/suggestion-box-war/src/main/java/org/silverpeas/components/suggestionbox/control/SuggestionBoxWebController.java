@@ -75,7 +75,6 @@ public class SuggestionBoxWebController extends
     super.beforeRequestProcessing(context);
     context.getRequest().setAttribute("webServiceProvider", getWebServiceProvider());
     context.getRequest().setAttribute("currentSuggestionBox", context.getSuggestionBox());
-    context.getRequest().setAttribute("backUrl", backURL(context.getComponentUriBase(), "Main"));
   }
 
   /**
@@ -98,6 +97,7 @@ public class SuggestionBoxWebController extends
   @GET
   @Path("suggestions/published")
   @RedirectToInternalJsp("suggestionList.jsp")
+  @InvokeAfter("isEdito")
   public void listPublishedSuggestions(SuggestionBoxWebRequestContext context) {
     // Nothing to do for now...
   }
@@ -183,7 +183,7 @@ public class SuggestionBoxWebController extends
     Suggestion suggestion = new Suggestion(title);
     suggestion.setContent(content);
     suggestion.setCreator(context.getUser());
-    suggestionBox.getSuggestions().add(suggestion);
+    suggestionBox.getSuggestions().add(suggestion, context.getRequest().getUploadedFiles());
     context.getMessager()
         .addSuccess(getMultilang().getString("suggestionBox.message.suggestion.created"));
     context.addRedirectVariable("id", suggestion.getId());
@@ -199,11 +199,6 @@ public class SuggestionBoxWebController extends
   @RedirectToInternalJsp("suggestionView.jsp")
   public void viewSuggestion(SuggestionBoxWebRequestContext context) {
     String suggestionId = context.getPathVariables().get("id");
-    String callerPage = context.getRequest().getParameter("from");
-    if (StringUtil.isDefined(callerPage)) {
-      context.getRequest().setAttribute("backUrl",
-          backURL(context.getComponentUriBase(), callerPage));
-    }
     SuggestionBox suggestionBox = context.getSuggestionBox();
     Suggestion suggestion = suggestionBox.getSuggestions().get(suggestionId);
     if (suggestion.isDefined()) {
@@ -328,9 +323,12 @@ public class SuggestionBoxWebController extends
         .refuseSuggestion(suggestionBox, suggestion, validationComment, context.getUser());
   }
 
-  private String backURL(String componentURL, String key) {
-    if (key.equals("list")) {
-      return componentURL + "suggestions/published";
+  @Override
+  protected String backUrlFromCallerKey(final SuggestionBoxWebRequestContext context,
+      final String componentURL) {
+    String componentUriBase = context.getComponentUriBase();
+    if (componentURL.equals("list")) {
+      return componentUriBase + "suggestions/published";
     } else {
       return componentURL + "Main";
     }

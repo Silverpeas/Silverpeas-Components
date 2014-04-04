@@ -25,12 +25,15 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
 <view:setConstant var="writerRole" constant="com.stratelia.webactiv.SilverpeasRole.writer"/>
 <c:set var="greaterUserRole" value="${requestScope.greaterUserRole}"/>
 
-<fmt:setLocale value="${requestScope.resources.language}"/>
+<c:set var="currentUserLanguage" value="${requestScope.resources.language}"/>
+<fmt:setLocale value="${currentUserLanguage}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
@@ -43,7 +46,8 @@
 
 <c:set var="currentUser" value="${requestScope.currentUser}"/>
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
-<c:set var="suggestionBoxId" value="${requestScope.currentSuggestionBox.id}"/>
+<c:set var="suggestionBox" value="${requestScope.currentSuggestionBox}"/>
+<c:set var="suggestionBoxId" value="${suggestionBox.id}"/>
 <c:set var="suggestion" value="${requestScope.suggestion}"/>
 <c:set var="target" value="${suggestion.id}"/>
 <c:set var="isEditable" value="${requestScope.isEditable}"/>
@@ -115,28 +119,26 @@
   <view:frame>
     <div id="error" style="display: none;"></div>
     <div class="rightContent">
+      <viewTags:displayLastUserCRUD createDate="${suggestion.createDate}" createdBy="${suggestion.author}"/>
       <view:attachmentPane componentId="${componentId}" resourceId="${suggestion.id}" readOnly="${suggestion.validation.validated}"/>
     </div>
-    <div class="fields">
-      <label class="txtlibform"><fmt:message key='GML.title'/></label>
-
-      <div class="champs"><c:out value='${suggestion.title}'/></div>
+    <div class="principalContent">
+      <h2 class="suggestionBox-title"><c:out value='${suggestion.title}'/></h2>
       <c:if test="${not empty suggestion.content}">
-        <br clear="all"/>
-
-        <div class="field">
-          <label class="txtlibform"><fmt:message key='GML.description'/></label>
-          <span>${suggestion.content}</span>
+        <div id="richContent">
+            ${suggestion.content}
         </div>
       </c:if>
       <c:if test="${not empty suggestion.validation.comment && (suggestion.validation.validated || suggestion.validation.refused)}">
-        <br clear="all"/>
+        <div id="suggestionApprobationDetail">
+          <p id="suggestionApprobationDetail-info"><span class="libelle"><fmt:message key="suggestionBox.label.suggestion.approbator.comment">
+            <fmt:param><strong class="author"><c:out value="${suggestion.validation.validatorName}"/></strong></fmt:param>
+            <fmt:param><span class="date"><c:out value="${silfn:formatDate(suggestion.validation.date, currentUserLanguage)}"/></span></fmt:param>
+          </fmt:message></span></p>
 
-        <div class="field" id="validationCommentArea">
-          <label class="txtlibform"><fmt:message key='GML.contribution.validation.comment'/></label>
-
-          <div class="champs">
-            <span>${suggestion.validation.comment}</span>
+          <div id="suggestionApprobationDetail-text" class="inlineMessage">
+            <c:set var="validationComment" value="${suggestion.validation.comment}"/>
+            ${silfn:escapeHtmlWhitespaces(validationComment)}
           </div>
         </div>
       </c:if>

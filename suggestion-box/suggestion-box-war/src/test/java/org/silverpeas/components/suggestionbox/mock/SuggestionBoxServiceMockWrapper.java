@@ -28,8 +28,10 @@ import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.model.SuggestionBoxService;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
 import org.silverpeas.contribution.model.ContributionValidation;
+import org.silverpeas.upload.UploadedFile;
 
 import javax.inject.Named;
+import java.util.Collection;
 import java.util.List;
 
 import static org.mockito.Mockito.mock;
@@ -67,8 +69,9 @@ public class SuggestionBoxServiceMockWrapper implements SuggestionBoxService {
   }
 
   @Override
-  public void addSuggestion(SuggestionBox box, Suggestion suggestion) {
-    mock.addSuggestion(box, suggestion);
+  public void addSuggestion(SuggestionBox box, Suggestion suggestion,
+      final Collection<UploadedFile> uploadedFiles) {
+    mock.addSuggestion(box, suggestion, uploadedFiles);
   }
 
   @Override
