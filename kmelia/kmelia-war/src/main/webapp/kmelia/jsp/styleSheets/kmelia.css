@@ -88,6 +88,16 @@
 	padding-bottom:11px;
 }
 
+#statPublication silverpeas-rating {
+ float:right; 
+}
+
+#statPublication .rating-votes {
+ display:block;
+ text-align:right;
+ color: #999;
+}
+
 #permalinkInfo input {
 	width:90%;
 	border:1px solid #cacaca;

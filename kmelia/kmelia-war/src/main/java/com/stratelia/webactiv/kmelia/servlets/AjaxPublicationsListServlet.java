@@ -61,6 +61,8 @@ import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
 import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.rating.Rating;
+import org.silverpeas.rating.web.RatingEntity;
 import org.silverpeas.viewer.ViewerFactory;
 
 import javax.servlet.ServletException;
@@ -649,6 +651,11 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       out.write(displayImportance(pub.getImportance(), resources));
       out.write("</nobr></span>");
     }
+    
+    Rating rating = pub.getRating(userId);
+    RatingEntity ratingEntity = RatingEntity.fromRating(rating);
+    out.write(ratingEntity.toJSonScript("ratingEntity_" + ratingEntity.getResourceId()));
+    out.write("<silverpeas-rating componentid=\""+pub.getInstanceId()+"\" resourcetype=\"Publication\" resourceid=\""+pub.getId()+"\" readonly=\"true\" rating=\"ratingEntity_"+ratingEntity.getResourceId()+"\"></silverpeas-rating>");
 
     //Gestion actualités décentralisées
     if (fragmentSettings.showDelegatedNewsInfo) {
