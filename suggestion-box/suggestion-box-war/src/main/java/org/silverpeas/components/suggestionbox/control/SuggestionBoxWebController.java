@@ -23,9 +23,11 @@
  */
 package org.silverpeas.components.suggestionbox.control;
 
+import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.service.ComponentSubscription;
+import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.Navigation;
@@ -36,10 +38,14 @@ import com.stratelia.silverpeas.peasCore.servlets.annotation.LowestRoleAccess;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternal;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternalJsp;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.WebComponentController;
+import com.stratelia.silverpeas.selection.SelectionUsersGroups;
+import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.webactiv.SilverpeasRole;
 import org.silverpeas.components.suggestionbox.SuggestionBoxComponentSettings;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
+import org.silverpeas.components.suggestionbox.notification
+    .SuggestionNotifyManuallyUserNotification;
 import org.silverpeas.components.suggestionbox.web.SuggestionEntity;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
@@ -48,14 +54,14 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
+import java.util.List;
 
 import static org.silverpeas.components.suggestionbox.common.SuggestionBoxWebServiceProvider.*;
 
-import java.util.List;
-
 @WebComponentController(SuggestionBoxComponentSettings.COMPONENT_NAME)
 public class SuggestionBoxWebController extends
-    com.stratelia.silverpeas.peasCore.servlets.WebComponentController<SuggestionBoxWebRequestContext> {
+    com.stratelia.silverpeas.peasCore.servlets
+        .WebComponentController<SuggestionBoxWebRequestContext> {
 
   /**
    * Standard Session Controller Constructor
@@ -65,10 +71,8 @@ public class SuggestionBoxWebController extends
    */
   public SuggestionBoxWebController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
-    super(mainSessionCtrl, componentContext,
-        SuggestionBoxComponentSettings.MESSAGES_PATH,
-        SuggestionBoxComponentSettings.ICONS_PATH,
-        SuggestionBoxComponentSettings.SETTINGS_PATH);
+    super(mainSessionCtrl, componentContext, SuggestionBoxComponentSettings.MESSAGES_PATH,
+        SuggestionBoxComponentSettings.ICONS_PATH, SuggestionBoxComponentSettings.SETTINGS_PATH);
   }
 
   @Override
@@ -324,6 +328,32 @@ public class SuggestionBoxWebController extends
     String validationComment = context.getRequest().getParameter("comment");
     getWebServiceProvider()
         .refuseSuggestion(suggestionBox, suggestion, validationComment, context.getUser());
+  }
+
+  @GET
+  @Path("suggestions/{id}/notify")
+  public Navigation notifyManuallyUsersGroups(SuggestionBoxWebRequestContext context) {
+    String id = context.getPathVariables().get("id");
+    SuggestionBox suggestionBox = context.getSuggestionBox();
+    Suggestion suggestion = suggestionBox.getSuggestions().get(id);
+
+    AlertUser sel = context.getUserManualNotificationForParameterization();
+    sel.resetAll();
+
+    // Browsebar settings
+    sel.setHostSpaceName(context.getSpaceLabel());
+    sel.setHostComponentId(context.getComponentInstanceId());
+    PairObject hostComponentName = new PairObject(context.getComponentInstanceLabel(), null);
+    sel.setHostComponentName(hostComponentName);
+
+    // The notification
+    sel.setNotificationMetaData(UserNotificationHelper
+        .build(new SuggestionNotifyManuallyUserNotification(suggestion, context.getUser())));
+
+    SelectionUsersGroups sug = new SelectionUsersGroups();
+    sug.setComponentId(context.getComponentInstanceId());
+    sel.setSelectionUsersGroups(sug);
+    return context.redirectToNotifyManuallyUsers();
   }
 
   @Override
