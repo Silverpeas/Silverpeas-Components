@@ -866,10 +866,6 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     return getForumsBM().getMessageTags(getMessagePK(messageId));
   }
 
-  public Rating getForumNotation(int forumId) {
-    return getNotationBm().getRating(getForumNotationPk(forumId));
-  }
-
   public Rating getMessageNotation(int messageId) {
     return getNotationBm().getRating(getMessageNotationPk(messageId));
   }

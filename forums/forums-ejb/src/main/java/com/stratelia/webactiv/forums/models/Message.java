@@ -26,13 +26,22 @@ package com.stratelia.webactiv.forums.models;
 import java.io.Serializable;
 import java.util.Date;
 
-public class Message implements Serializable {
-  private static final String TYPE = "forum_message";
+import org.silverpeas.rating.Rateable;
+import org.silverpeas.rating.Rating;
+import org.silverpeas.rating.RatingPK;
 
+import com.silverpeas.notation.ejb.NotationBm;
+import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.JNDINames;
+
+public class Message implements Rateable, Serializable {
+  private static final String TYPE = "forum_message";
+  
   public static final String STATUS_VALIDATE = "V";
   public static final String STATUS_FOR_VALIDATION = "A";
   public static final String STATUS_REFUSED = "R";
   
+  public static final String RESOURCE_TYPE = "ForumMessage";
   
   private static final long serialVersionUID = 705520417746270396L;
   private int id;
@@ -250,6 +259,15 @@ public class Message implements Serializable {
 
   @Override
   public String toString() {
-    return "Message{" + "id=" + id + ", title=" + title + ", author=" + author + ", date=" + date + ", forumId=" + forumId + ", parentId=" + parentId + ", text=" + text + ", instanceId=" + instanceId + ", pk=" + pk + ", status=" + status + '}';
+    return "Message{" + "id=" + id + ", title=" + title + ", author=" + author + ", date=" + date +
+        ", forumId=" + forumId + ", parentId=" + parentId + ", text=" + text + ", instanceId=" +
+        instanceId + ", pk=" + pk + ", status=" + status + '}';
+  }
+
+  @Override
+  public Rating getRating(String userId) {
+    NotationBm notationBm = EJBUtilitaire.getEJBObjectRef(JNDINames.NOTATIONBM_EJBHOME, NotationBm.class);
+    RatingPK pk = new RatingPK(String.valueOf(id), getInstanceId(), RESOURCE_TYPE, userId);
+    return notationBm.getRating(pk);
   }
 }

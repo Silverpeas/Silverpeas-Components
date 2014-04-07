@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.stratelia.webactiv.forums.models.Forum"%>
 <%
     response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
     response.setHeader("Pragma", "no-cache"); //HTTP 1.0
@@ -196,7 +197,7 @@
           </c:if>
           <tr class="notationLine">
             <td align="right">
-              <silverpeas-rating componentid="${componentId}" resourcetype="Forum" resourceid="${currentForum.id}" readonly="${isReader}"></silverpeas-rating>
+              <silverpeas-rating componentid="${componentId}" resourcetype="<%=Forum.RESOURCE_TYPE %>" resourceid="${currentForum.id}" readonly="${isReader}"></silverpeas-rating>
             </td>
           </tr>
           <tr>

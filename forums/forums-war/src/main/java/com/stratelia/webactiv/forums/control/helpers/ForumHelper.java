@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspWriter;
 
 import org.silverpeas.rating.Rating;
+import org.silverpeas.rating.web.RatingEntity;
 
 import java.io.IOException;
 import java.util.Date;
@@ -232,19 +233,12 @@ public class ForumHelper {
           out.println("</span></td>");
 
           // Notation
-          Rating notation = fsc.getMessageNotation(messageId);
-          int globalNote = notation.getRoundedOverallRating();
-          int userNote = notation.getUserRating();
-          String cellLabel = notation.getNumberOfReviews() + " " + resources.getString("forums.note");
-          if (userNote > 0) {
-            cellLabel += " - " + resources.getString("forums.yourNote") + " : " + userNote;
-          }
-          out.print("<td align=\"center\"  title=\"" + cellLabel + "\"><span class=\"txtnote\">");
-          for (int i = 1; i <= 5; i++) {
-            out.print("<img class=\"notation_" + (i <= globalNote ? "on" : "off")
-                + "\" src=\"" + IMAGE_NOTATION_EMPTY + "\"/>");
-          }
-          out.println("</span></td>");
+          Rating rating = message.getRating(fsc.getUserId());
+          RatingEntity ratingEntity = RatingEntity.fromRating(rating);
+          out.print("<td  align=\"center\">");
+          out.write(ratingEntity.toJSonScript("ratingEntity_" + ratingEntity.getResourceId()));
+          out.write("<silverpeas-rating readonly=\"true\" rating=\"ratingEntity_"+ratingEntity.getResourceId()+"\" shownbratings=\"false\"></silverpeas-rating>");
+          out.println("</td>");
         }
       }
       // Opérations
