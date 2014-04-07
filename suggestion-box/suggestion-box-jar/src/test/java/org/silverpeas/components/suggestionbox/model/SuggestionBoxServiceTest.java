@@ -23,11 +23,13 @@
  */
 package org.silverpeas.components.suggestionbox.model;
 
+import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.notification.builder.UserNotificationBuider;
 import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.silverpeas.util.CollectionUtil;
+import com.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.junit.After;
@@ -42,6 +44,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.components.suggestionbox.mock.AttachmentServiceMockWrapper;
+import org.silverpeas.components.suggestionbox.mock.CommentServiceMockWrapper;
 import org.silverpeas.components.suggestionbox.mock.OrganisationControllerMockWrapper;
 import org.silverpeas.components.suggestionbox.mock.SubscriptionServiceMockWrapper;
 import org.silverpeas.components.suggestionbox.mock.SuggestionBoxRepositoryMockWrapper;
@@ -58,16 +61,21 @@ import org.silverpeas.contribution.model.ContributionValidation;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.persistence.repository.OperationContext;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
 
@@ -77,7 +85,7 @@ import static org.mockito.Mockito.*;
  * @author mmoquillon
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({WysiwygController.class, UserNotificationHelper.class})
+@PrepareForTest({WysiwygController.class, UserNotificationHelper.class, IndexEngineProxy.class})
 public class SuggestionBoxServiceTest {
 
   private static AbstractApplicationContext context;
@@ -137,8 +145,73 @@ public class SuggestionBoxServiceTest {
     SuggestionBoxRepository suggestionBoxRepository = getSuggestionBoxRepository();
     verify(suggestionBoxRepository, times(1)).delete(box);
     verify(getAttachmentService(), times(1)).deleteAllAttachments(eq(box.getComponentInstanceId()));
-    verify(getSubscriptionService(), times(1)).unsubscribeByResource(eq(
-        ComponentSubscriptionResource.from(box.getComponentInstanceId())));
+    verify(getSubscriptionService(), times(1)).unsubscribeByResource(
+        eq(ComponentSubscriptionResource.from(box.getComponentInstanceId())));
+    verify(getCommentService(), times(1))
+        .deleteAllCommentsByComponentInstanceId(eq(box.getComponentInstanceId()));
+  }
+
+  /**
+   * Test of indexSuggestionBox method, of class SuggestionBoxService.
+   */
+  @Test
+  public void indexASuggestionBox() {
+    SuggestionBox box = prepareASuggestionBox();
+    List<Suggestion> suggestions = new ArrayList<Suggestion>();
+
+    suggestions.add(prepareASuggestion());
+    Suggestion currentSuggestion = suggestions.get(0);
+    currentSuggestion.getValidation().setStatus(ContributionStatus.DRAFT);
+    ReflectionTestUtils.setField(currentSuggestion, "id",
+        new UuidIdentifier().fromString(currentSuggestion.getId() + "-nok-1"));
+
+    suggestions.add(prepareASuggestion());
+    currentSuggestion = suggestions.get(1);
+    currentSuggestion.getValidation().setStatus(ContributionStatus.VALIDATED);
+    ReflectionTestUtils.setField(currentSuggestion, "id",
+        new UuidIdentifier().fromString(currentSuggestion.getId() + "-ok-1"));
+
+    suggestions.add(prepareASuggestion());
+    currentSuggestion = suggestions.get(2);
+    currentSuggestion.getValidation().setStatus(ContributionStatus.REFUSED);
+    ReflectionTestUtils.setField(currentSuggestion, "id",
+        new UuidIdentifier().fromString(currentSuggestion.getId() + "-nok-2"));
+
+    suggestions.add(prepareASuggestion());
+    currentSuggestion = suggestions.get(3);
+    currentSuggestion.getValidation().setStatus(ContributionStatus.VALIDATED);
+    ReflectionTestUtils.setField(currentSuggestion, "id",
+        new UuidIdentifier().fromString(currentSuggestion.getId() + "-ok-1"));
+
+    suggestions.add(prepareASuggestion());
+    currentSuggestion = suggestions.get(4);
+    currentSuggestion.getValidation().setStatus(ContributionStatus.PENDING_VALIDATION);
+    ReflectionTestUtils.setField(currentSuggestion, "id",
+        new UuidIdentifier().fromString(currentSuggestion.getId() + "-nok-3"));
+
+    when(getSuggestionRepository().findByCriteria(any(SuggestionCriteria.class)))
+        .thenReturn(suggestions);
+
+    PowerMockito.mockStatic(WysiwygController.class);
+    PowerMockito.mockStatic(IndexEngineProxy.class);
+    service.indexSuggestionBox(box);
+
+    verify(getSuggestionRepository(), times(1)).findByCriteria(any(SuggestionCriteria.class));
+
+    FullIndexEntry indexEntyOk1 =
+        new FullIndexEntry(box.getComponentInstanceId(), "Suggestion", "suggestion1-ok-1");
+    FullIndexEntry indexEntyOk2 =
+        new FullIndexEntry(box.getComponentInstanceId(), "Suggestion", "suggestion1-ok-2");
+
+    PowerMockito.verifyStatic(times(2));
+    WysiwygController.addToIndex(eq(indexEntyOk1),
+        eq(new ForeignPK("suggestion1-ok-1", box.getComponentInstanceId())), anyString());
+    WysiwygController.addToIndex(eq(indexEntyOk2),
+        eq(new ForeignPK("suggestion1-ok-2", box.getComponentInstanceId())), anyString());
+
+    PowerMockito.verifyStatic(times(2));
+    IndexEngineProxy.addIndexEntry(eq(indexEntyOk1));
+    IndexEngineProxy.addIndexEntry(eq(indexEntyOk1));
   }
 
   @Test
@@ -151,6 +224,8 @@ public class SuggestionBoxServiceTest {
     SuggestionBoxRepository suggestionBoxRepository = getSuggestionBoxRepository();
     when(suggestionBoxRepository.getById(box.getId())).thenReturn(box);
 
+    PowerMockito.mockStatic(WysiwygController.class);
+    PowerMockito.mockStatic(IndexEngineProxy.class);
     service.addSuggestion(box, suggestion, null);
 
     SuggestionRepository suggestionRepository = getSuggestionRepository();
@@ -160,12 +235,16 @@ public class SuggestionBoxServiceTest {
     WysiwygController.
         save(suggestion.getContent(), box.getComponentInstanceId(), suggestion.getId(), userId,
             null, false);
+    PowerMockito.verifyStatic(times(0));
+    IndexEngineProxy.addIndexEntry(any(FullIndexEntry.class));
   }
 
   @Test
   public void updateAnExistingSuggestion() {
     Suggestion suggestion = prepareASuggestion();
 
+    PowerMockito.mockStatic(WysiwygController.class);
+    PowerMockito.mockStatic(IndexEngineProxy.class);
     service.updateSuggestion(suggestion);
 
     SuggestionRepository suggestionRepository = getSuggestionRepository();
@@ -174,6 +253,8 @@ public class SuggestionBoxServiceTest {
     WysiwygController.
         save(suggestion.getContent(), suggestion.getSuggestionBox().getComponentInstanceId(),
             suggestion.getId(), userId, null, false);
+    PowerMockito.verifyStatic(times(0));
+    IndexEngineProxy.addIndexEntry(any(FullIndexEntry.class));
   }
 
   @Test
@@ -203,6 +284,8 @@ public class SuggestionBoxServiceTest {
     when(suggestionRepository.findByCriteria(any(SuggestionCriteria.class)))
         .then(new Returns(CollectionUtil.asList(suggestion)));
 
+    PowerMockito.mockStatic(WysiwygController.class);
+    PowerMockito.mockStatic(IndexEngineProxy.class);
     PowerMockito.mockStatic(UserNotificationHelper.class);
     Suggestion actual = service.publishSuggestion(box, suggestion);
 
@@ -211,6 +294,10 @@ public class SuggestionBoxServiceTest {
 
     PowerMockito.verifyStatic(times(0));
     UserNotificationHelper.buildAndSend(any(UserNotificationBuider.class));
+    PowerMockito.verifyStatic(times(0));
+    WysiwygController.addToIndex(any(FullIndexEntry.class), any(ForeignPK.class), anyString());
+    PowerMockito.verifyStatic(times(0));
+    IndexEngineProxy.addIndexEntry(any(FullIndexEntry.class));
   }
 
   @Test
@@ -230,6 +317,8 @@ public class SuggestionBoxServiceTest {
     when(suggestionRepository.findByCriteria(any(SuggestionCriteria.class)))
         .then(new Returns(CollectionUtil.asList(suggestion)));
 
+    PowerMockito.mockStatic(WysiwygController.class);
+    PowerMockito.mockStatic(IndexEngineProxy.class);
     PowerMockito.mockStatic(UserNotificationHelper.class);
     Suggestion actual = service.publishSuggestion(box, suggestion);
 
@@ -238,6 +327,10 @@ public class SuggestionBoxServiceTest {
 
     PowerMockito.verifyStatic(times(1));
     UserNotificationHelper.buildAndSend(any(SuggestionPendingValidationUserNotification.class));
+    PowerMockito.verifyStatic(times(0));
+    WysiwygController.addToIndex(any(FullIndexEntry.class), any(ForeignPK.class), anyString());
+    PowerMockito.verifyStatic(times(0));
+    IndexEngineProxy.addIndexEntry(any(FullIndexEntry.class));
   }
 
   @Test
@@ -257,6 +350,8 @@ public class SuggestionBoxServiceTest {
     when(suggestionRepository.findByCriteria(any(SuggestionCriteria.class)))
         .then(new Returns(CollectionUtil.asList(suggestion)));
 
+    PowerMockito.mockStatic(WysiwygController.class);
+    PowerMockito.mockStatic(IndexEngineProxy.class);
     PowerMockito.mockStatic(UserNotificationHelper.class);
     Suggestion actual = service.publishSuggestion(box, suggestion);
 
@@ -265,6 +360,10 @@ public class SuggestionBoxServiceTest {
 
     PowerMockito.verifyStatic(times(1));
     UserNotificationHelper.buildAndSend(any(SuggestionBoxSubscriptionUserNotification.class));
+    PowerMockito.verifyStatic(times(1));
+    WysiwygController.addToIndex(any(FullIndexEntry.class), any(ForeignPK.class), anyString());
+    PowerMockito.verifyStatic(times(1));
+    IndexEngineProxy.addIndexEntry(any(FullIndexEntry.class));
   }
 
   @Test
@@ -285,6 +384,8 @@ public class SuggestionBoxServiceTest {
     when(suggestionRepository.findByCriteria(any(SuggestionCriteria.class)))
         .then(new Returns(CollectionUtil.asList(suggestion)));
 
+    PowerMockito.mockStatic(WysiwygController.class);
+    PowerMockito.mockStatic(IndexEngineProxy.class);
     PowerMockito.mockStatic(UserNotificationHelper.class);
     ContributionValidation validation =
         new ContributionValidation(ContributionStatus.VALIDATED, aUser(), new Date(), "A comment");
@@ -294,6 +395,10 @@ public class SuggestionBoxServiceTest {
 
     PowerMockito.verifyStatic(times(0));
     UserNotificationHelper.buildAndSend(any(UserNotificationBuider.class));
+    PowerMockito.verifyStatic(times(0));
+    WysiwygController.addToIndex(any(FullIndexEntry.class), any(ForeignPK.class), anyString());
+    PowerMockito.verifyStatic(times(0));
+    IndexEngineProxy.addIndexEntry(any(FullIndexEntry.class));
   }
 
   @Test
@@ -314,6 +419,8 @@ public class SuggestionBoxServiceTest {
     when(suggestionRepository.findByCriteria(any(SuggestionCriteria.class)))
         .then(new Returns(CollectionUtil.asList(suggestion)));
 
+    PowerMockito.mockStatic(WysiwygController.class);
+    PowerMockito.mockStatic(IndexEngineProxy.class);
     PowerMockito.mockStatic(UserNotificationHelper.class);
     ContributionValidation validation =
         new ContributionValidation(ContributionStatus.VALIDATED, aUser(), new Date(), "A comment");
@@ -323,6 +430,10 @@ public class SuggestionBoxServiceTest {
 
     PowerMockito.verifyStatic(times(0));
     UserNotificationHelper.buildAndSend(any(UserNotificationBuider.class));
+    PowerMockito.verifyStatic(times(0));
+    WysiwygController.addToIndex(any(FullIndexEntry.class), any(ForeignPK.class), anyString());
+    PowerMockito.verifyStatic(times(0));
+    IndexEngineProxy.addIndexEntry(any(FullIndexEntry.class));
   }
 
   @Test
@@ -339,6 +450,8 @@ public class SuggestionBoxServiceTest {
         .getUserProfiles(box.getCreator().getId(), box.getComponentInstanceId()))
         .thenReturn(new String[]{SilverpeasRole.publisher.name()});
 
+    PowerMockito.mockStatic(WysiwygController.class);
+    PowerMockito.mockStatic(IndexEngineProxy.class);
     PowerMockito.mockStatic(UserNotificationHelper.class);
     SuggestionRepository suggestionRepository = getSuggestionRepository();
     when(suggestionRepository.findByCriteria(any(SuggestionCriteria.class)))
@@ -353,6 +466,10 @@ public class SuggestionBoxServiceTest {
     PowerMockito.verifyStatic(times(2));
     UserNotificationHelper.buildAndSend(any(SuggestionBoxSubscriptionUserNotification.class));
     UserNotificationHelper.buildAndSend(any(SuggestionValidationUserNotification.class));
+    PowerMockito.verifyStatic(times(1));
+    WysiwygController.addToIndex(any(FullIndexEntry.class), any(ForeignPK.class), anyString());
+    PowerMockito.verifyStatic(times(1));
+    IndexEngineProxy.addIndexEntry(any(FullIndexEntry.class));
   }
 
   @Test
@@ -369,6 +486,8 @@ public class SuggestionBoxServiceTest {
         .getUserProfiles(box.getCreator().getId(), box.getComponentInstanceId()))
         .thenReturn(new String[]{SilverpeasRole.publisher.name()});
 
+    PowerMockito.mockStatic(WysiwygController.class);
+    PowerMockito.mockStatic(IndexEngineProxy.class);
     PowerMockito.mockStatic(UserNotificationHelper.class);
     SuggestionRepository suggestionRepository = getSuggestionRepository();
     when(suggestionRepository.findByCriteria(any(SuggestionCriteria.class)))
@@ -382,6 +501,10 @@ public class SuggestionBoxServiceTest {
 
     PowerMockito.verifyStatic(times(1));
     UserNotificationHelper.buildAndSend(any(SuggestionValidationUserNotification.class));
+    PowerMockito.verifyStatic(times(0));
+    WysiwygController.addToIndex(any(FullIndexEntry.class), any(ForeignPK.class), anyString());
+    PowerMockito.verifyStatic(times(0));
+    IndexEngineProxy.addIndexEntry(any(FullIndexEntry.class));
   }
 
   private OrganisationController getOrganisationController() {
@@ -438,6 +561,12 @@ public class SuggestionBoxServiceTest {
   private SubscriptionService getSubscriptionService() {
     SubscriptionServiceMockWrapper mockWrapper = context.
         getBean(SubscriptionServiceMockWrapper.class);
+    return mockWrapper.getMock();
+  }
+
+  private CommentService getCommentService() {
+    CommentServiceMockWrapper mockWrapper = context.
+        getBean(CommentServiceMockWrapper.class);
     return mockWrapper.getMock();
   }
 }

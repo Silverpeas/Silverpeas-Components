@@ -54,6 +54,8 @@
         class="org.silverpeas.components.suggestionbox.mock.SubscriptionServiceMockWrapper"/>
   <bean id="commentUserNotificationService"
         class="org.silverpeas.components.suggestionbox.mock.CommentUserNotificationServiceMockWrapper"/>
+  <bean id="commentService"
+        class="org.silverpeas.components.suggestionbox.mock.CommentServiceMockWrapper"/>
 
   <bean id="suggestionBoxServiceFactory"
         class="org.silverpeas.components.suggestionbox.model.SuggestionBoxServiceFactory"
@@ -67,6 +69,9 @@
         factory-method="getInstance"/>
 
   <bean id="subscriptionServiceFactory" class="com.silverpeas.subscribe.SubscriptionServiceFactory"
+        factory-method="getFactory"/>
+
+  <bean id="commentServiceFactory" class="com.silverpeas.comment.service.CommentServiceFactory"
         factory-method="getFactory"/>
 
   <util:list id="entities">

@@ -25,12 +25,15 @@ package org.silverpeas.components.suggestionbox.model;
 
 import com.silverpeas.SilverpeasComponentService;
 import com.silverpeas.annotation.Service;
+import com.silverpeas.comment.service.CommentService;
+import com.silverpeas.comment.service.CommentServiceFactory;
 import com.silverpeas.comment.service.CommentUserNotificationService;
 import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.silverpeas.util.CollectionUtil;
 import com.silverpeas.util.ForeignPK;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -49,6 +52,8 @@ import org.silverpeas.contribution.ContributionStatus;
 import org.silverpeas.contribution.model.ContributionValidation;
 import org.silverpeas.persistence.Transaction;
 import org.silverpeas.persistence.repository.OperationContext;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.upload.UploadedFile;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 import org.springframework.transaction.annotation.Transactional;
@@ -111,6 +116,15 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService,
   @Override
   public SuggestionBox getByComponentInstanceId(String componentInstanceId) {
     return suggestionBoxRepository.getByComponentInstanceId(componentInstanceId);
+  }
+
+  @Override
+  public void indexSuggestionBox(final SuggestionBox suggestionBox) {
+    List<Suggestion> suggestions = findSuggestionsByCriteria(
+        SuggestionCriteria.from(suggestionBox).statusIsOneOf(ContributionStatus.VALIDATED));
+    for (Suggestion suggestion : suggestions) {
+      createSuggestionIndex(suggestion);
+    }
   }
 
   @Override
@@ -179,12 +193,15 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService,
   public void deleteSuggestionBox(final SuggestionBox box) {
 
     // TODO Deletion of all data attached to the box and its suggestions :
-    // - comments
     // - votes
 
     // Finally deleting the box and its suggestions from the persistence.
     suggestionBoxRepository.delete(box);
     suggestionBoxRepository.flush();
+
+    // Deletion of comments
+    CommentService commentService = CommentServiceFactory.getFactory().getCommentService();
+    commentService.deleteAllCommentsByComponentInstanceId(box.getComponentInstanceId());
 
     // Deletion of box edito
     AttachmentService attachmentService = AttachmentServiceFactory.getAttachmentService();
@@ -274,6 +291,7 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService,
               .buildAndSend(new SuggestionPendingValidationUserNotification(updatedSuggestion));
           break;
         case VALIDATED:
+          createSuggestionIndex(updatedSuggestion);
           UserNotificationHelper
               .buildAndSend(new SuggestionBoxSubscriptionUserNotification(updatedSuggestion));
           break;
@@ -319,6 +337,7 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService,
     if (result.getRight()) {
       switch (updatedSuggestion.getValidation().getStatus()) {
         case VALIDATED:
+          createSuggestionIndex(updatedSuggestion);
           UserNotificationHelper
               .buildAndSend(new SuggestionBoxSubscriptionUserNotification(updatedSuggestion));
         case REFUSED:
@@ -329,6 +348,28 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService,
       }
     }
     return updatedSuggestion;
+  }
+
+  /**
+   * Creates a suggestion index.
+   * The suggestion validation must be at validated status. Otherwise the index creation is
+   * ignored.
+   * @param suggestion the suggestion for which the indexation must be performed.
+   */
+  private void createSuggestionIndex(Suggestion suggestion) {
+    SilverTrace.info("suggestionBox", "suggestionBoxService.createSuggestionIndex()",
+        "root.MSG_GEN_ENTER_METHOD", "suggestion id = " + suggestion.getId());
+    if (suggestion != null && suggestion.getValidation().isValidated()) {
+      FullIndexEntry indexEntry =
+          new FullIndexEntry(suggestion.getComponentInstanceId(), Suggestion.TYPE,
+              suggestion.getId());
+      indexEntry.setTitle(suggestion.getTitle());
+      indexEntry.setCreationDate(suggestion.getValidation().getDate());
+      indexEntry.setCreationUser(suggestion.getCreatedBy());
+      WysiwygController.addToIndex(indexEntry,
+          new ForeignPK(suggestion.getId(), suggestion.getComponentInstanceId()), null);
+      IndexEngineProxy.addIndexEntry(indexEntry);
+    }
   }
 
   @Override
