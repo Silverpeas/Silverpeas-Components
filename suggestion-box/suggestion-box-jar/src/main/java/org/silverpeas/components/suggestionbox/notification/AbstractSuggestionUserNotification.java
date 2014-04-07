@@ -26,6 +26,7 @@ package org.silverpeas.components.suggestionbox.notification;
 import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 
 /**
@@ -50,6 +51,7 @@ public abstract class AbstractSuggestionUserNotification
             "");
     template.setAttribute("title", resource.getTitle());
     template.setAttribute("content", resource.getContent());
+    template.setAttribute("authorName", resource.getCreator().getDisplayedName());
     template.setAttribute("senderName", getSenderName());
     template.setAttribute("silverpeasURL", getResourceURL(resource));
   }
@@ -76,9 +78,18 @@ public abstract class AbstractSuggestionUserNotification
   }
 
   @Override
-  protected String getSender() {
+  protected UserDetail getSenderDetail() {
     if (NotifAction.REPORT.equals(action)) {
       return null;
+    }
+    return getResource().getCreator();
+  }
+
+  @Override
+  protected final String getSender() {
+    UserDetail sender = getSenderDetail();
+    if (sender != null) {
+      return sender.getId();
     }
     return getResource().getCreatedBy();
   }

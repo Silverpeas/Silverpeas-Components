@@ -23,61 +23,43 @@
  */
 package org.silverpeas.components.suggestionbox.notification;
 
-import com.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 
 import java.util.Collection;
-import java.util.Collections;
 
 /**
  * @author Yohann Chastagnier
  */
-public class SuggestionValidationUserNotification extends AbstractSuggestionActionUserNotification {
+public class SuggestionNotifyManuallyUserNotification extends AbstractSuggestionUserNotification {
 
-  public SuggestionValidationUserNotification(final Suggestion resource) {
-    super(resource, null);
-  }
+  private UserDetail sender;
 
-  @Override
-  protected String getBundleSubjectKey() {
-    return getResource().getValidation().isValidated() ?
-        "suggestionBox.suggestion.notification.validated.subject" :
-        "suggestionBox.suggestion.notification.refused.subject";
-  }
-
-  @Override
-  protected String getFileName() {
-    return getResource().getValidation().isValidated() ? "validatedNotification" :
-        "refusedNotification";
-  }
-
-  @Override
-  protected void perform(final Suggestion resource) {
-    super.perform(resource);
-    getNotificationMetaData().setOriginalExtraMessage(resource.getValidation().getComment());
-  }
-
-  @Override
-  protected void performTemplateData(final String language, final Suggestion resource,
-      final SilverpeasTemplate template) {
-    super.performTemplateData(language, resource, template);
-    template.setAttribute("validationComment", resource.getValidation().getComment());
+  public SuggestionNotifyManuallyUserNotification(final Suggestion resource,
+      final UserDetail sender) {
+    super(resource, NotifAction.REPORT);
+    this.sender = sender;
   }
 
   @Override
   protected Collection<String> getUserIdsToNotify() {
-    return Collections.singleton(getResource().getCreatedBy());
+    // Users to notify are not handled here.
+    return null;
+  }
+
+  @Override
+  protected String getBundleSubjectKey() {
+    return "GML.st.notification.from";
+  }
+
+  @Override
+  protected String getFileName() {
+    return "notification";
   }
 
   @Override
   protected UserDetail getSenderDetail() {
-    return getResource().getValidation().getValidator();
-  }
-
-  @Override
-  protected NotifAction getAction() {
-    return getResource().getValidation().isValidated() ? NotifAction.VALIDATE : NotifAction.REFUSE;
+    return sender;
   }
 }

@@ -27,7 +27,6 @@ import com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuild
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.util.CollectionUtil;
-import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
@@ -36,8 +35,8 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * @author Yohann Chastagnier
  * @param <T> the type of resource concerned by the notification.
+ * @author Yohann Chastagnier
  */
 public abstract class AbstractSuggestionBoxUserNotification<T>
     extends AbstractTemplateUserNotificationBuilder<T> {
@@ -84,13 +83,16 @@ public abstract class AbstractSuggestionBoxUserNotification<T>
    * @return
    */
   protected String getSenderName() {
-    String senderId = getSender();
-    if (StringUtil.isDefined(senderId)) {
-      UserDetail userDetail = UserDetail.getById(senderId);
-      if (userDetail != null) {
-        return userDetail.getDisplayedName();
-      }
+    UserDetail sender = getSenderDetail();
+    if (sender != null) {
+      return sender.getDisplayedName();
     }
     return getSender();
   }
+
+  /**
+   * Gets the {@link UserDetail} instance of the sender.
+   * @return
+   */
+  protected abstract UserDetail getSenderDetail();
 }

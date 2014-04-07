@@ -43,6 +43,7 @@
 <fmt:message var="deleteSuggestionMenuLabel" key="GML.delete"/>
 <fmt:message var="validateSuggestionMenuLabel" key="GML.validate"/>
 <fmt:message var="refuseSuggestionMenuLabel" key="GML.refuse"/>
+<fmt:message var="notifyLabel" key="GML.notify"/>
 
 <c:set var="currentUser" value="${requestScope.currentUser}"/>
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
@@ -69,6 +70,7 @@
 <c:url var="suggestionBoxServicesJS" value="/util/javaScript/angularjs/services/suggestionbox.js"/>
 <c:url var="suggestionBoxValidationDirectiveJS" value="/util/javaScript/angularjs/directives/suggestionbox-validation.js"/>
 <c:url var="suggestionBoxDeletionDirectiveJS" value="/util/javaScript/angularjs/directives/suggestionbox-deletion.js"/>
+<c:url var="SilverpeasAnimationJS" value="/util/javaScript/animation.js"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.suggestionBox">
@@ -78,6 +80,7 @@
   <script type="text/javascript" src="${suggestionBoxServicesJS}"></script>
   <script type="text/javascript" src="${suggestionBoxValidationDirectiveJS}"></script>
   <script type="text/javascript" src="${suggestionBoxDeletionDirectiveJS}"></script>
+  <script type="text/javascript" src="${SilverpeasAnimationJS}"></script>
   <script type="text/javascript">
     <c:if test="${isEditable}">
     function modify() {
@@ -94,6 +97,12 @@
 
     function cancel() {
       $('#actions').attr('method', 'GET').attr('action', '${backUri}').submit();
+    }
+    function notify() {
+      var url = "${componentUriBase}suggestions/${target}/notify";
+      var windowName = "userPanelWindow";
+      var windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars,resizable";
+      SP_openWindow(url, windowName, "740", "600", windowParams, false);
     }
   </script>
 </head>
@@ -113,6 +122,9 @@
     <view:operation action="angularjs:refuse(suggestion)" altText="${refuseSuggestionMenuLabel}"/>
     <view:operation action="angularjs:approve(suggestion)" altText="${validateSuggestionMenuLabel}"/>
     <div suggestionbox-validation style="display: none"></div>
+  </c:if>
+  <c:if test="${suggestion.validation.validated}">
+    <view:operation action="javascript:notify()" altText="${notifyLabel}"/>
   </c:if>
 </view:operationPane>
 <view:window>
