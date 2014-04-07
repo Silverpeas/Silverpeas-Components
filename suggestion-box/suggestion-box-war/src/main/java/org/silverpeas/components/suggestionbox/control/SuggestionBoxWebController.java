@@ -26,7 +26,6 @@ package org.silverpeas.components.suggestionbox.control;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.service.ComponentSubscription;
-import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.Navigation;
@@ -51,6 +50,8 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
 import static org.silverpeas.components.suggestionbox.common.SuggestionBoxWebServiceProvider.*;
+
+import java.util.List;
 
 @WebComponentController(SuggestionBoxComponentSettings.COMPONENT_NAME)
 public class SuggestionBoxWebController extends
@@ -99,7 +100,9 @@ public class SuggestionBoxWebController extends
   @RedirectToInternalJsp("suggestionList.jsp")
   @InvokeAfter("isEdito")
   public void listPublishedSuggestions(SuggestionBoxWebRequestContext context) {
-    // Nothing to do for now...
+    List<SuggestionEntity> suggestions = getWebServiceProvider().getPublishedSuggestions(context.
+        getSuggestionBox());
+    context.getRequest().setAttribute("suggestions", suggestions);
   }
 
   /**

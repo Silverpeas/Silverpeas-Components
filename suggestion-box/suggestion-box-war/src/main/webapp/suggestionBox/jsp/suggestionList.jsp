@@ -34,33 +34,35 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
-<fmt:message var="back" key="GML.back"/>
+<fmt:message var="back"         key="GML.back"/>
+<fmt:message var="date"         key="GML.contribution.validation.date"/>
+<fmt:message var="title"        key="GML.title"/>
+<fmt:message var="author"       key="suggestionBox.label.suggestion.author"/>
+<fmt:message var="rating"       key="GML.rating"/>
+<fmt:message var="ratingCount"  key="GML.rating.participation.number"/>
+<fmt:message var="commentCount" key="GML.comment.number"/>
 
 <c:set var="currentUser" value="${requestScope.currentUser}"/>
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
 <c:set var="suggestionBox" value="${requestScope.currentSuggestionBox}"/>
 <c:set var="suggestionBoxId" value="${suggestionBox.id}"/>
 <c:set var="isEdito" value="${requestScope.isEdito}"/>
-<c:set var="suggestion" value="${requestScope.suggestion}"/>
-<c:set var="target" value="${suggestion.id}"/>
-<c:set var="isEditable" value="${requestScope.isEditable}"/>
-<c:set var="isPublishable" value="${requestScope.isPublishable}"/>
-<c:set var="isModeratorView" value="${requestScope.isModeratorView}"/>
+<c:set var="suggestions" value="${requestScope.suggestions}"/>
 
 <c:url var="componentUriBase" value="${requestScope.componentUriBase}"/>
 <c:url var="backUri" value="${requestScope.backUrl}"/>
-<c:url var="suggestionBoxJS" value="/util/javaScript/angularjs/suggestionbox.js"/>
-<c:url var="suggestionBoxServicesJS" value="/util/javaScript/angularjs/services/suggestionbox.js"/>
-<c:url var="silverpeasPaginationJS" value="/util/javaScript/angularjs/directives/silverpeas-pagination.js"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.suggestionBox">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <view:looknfeel/>
-  <view:includePlugin name="pagination"/>
-  <script type="text/javascript" src="${suggestionBoxServicesJS}"></script>
+  <script type="text/javascript">
+    function goBack() {
+      document.location = "${componentUriBase}Main";
+    }
+  </script>
 </head>
-<body ng-controller="mainController" id="${componentId}">
+<body id="${componentId}">
 <view:browseBar componentId="${componentId}"/>
 <view:window>
   <view:frame>
@@ -70,44 +72,29 @@
         <view:displayWysiwyg objectId="${suggestionBoxId}" componentId="${componentId}" language="${null}"/>
       </div>
     </c:if>
-    <div ng-controller="suggestionListController" id="suggestion_list">
-      <table width="100%" border="0" cellspacing="0" cellpadding="2" summary="null" class="tableArrayPane" id="suggestionBoxList">
-        <thead>
-        <tr>
-          <th ng-click="sortByValidationDate()"><fmt:message key="GML.contribution.validation.date"/></th>
-          <th><fmt:message key="GML.title"/></th>
-          <th><fmt:message key="suggestionBox.label.suggestion.author"/></th>
-          <th ng-click="sortByRating()"><fmt:message key="GML.rating"/></th>
-          <th ng-click="sortByRatingParticipation()"><fmt:message key="GML.rating.participation.number"/></th>
-          <th ng-click="sortByCommentParticipation()"><fmt:message key="GML.comment.number"/></th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr ng-repeat="suggestion in suggestions" ng-class-odd="" ng-class-even="">
-          <td>{{suggestion.validation.date | date: 'shortDate'}}</td>
-          <td><a ng-href="${componentUriBase}suggestions/{{suggestion.id}}?from=list">{{suggestion.title}}</a></td>
-          <td>{{suggestion.authorName}}</td>
-          <td>-</td>
-          <td>-</td>
-          <td>-</td>
-        </tr>
-        </tbody>
-      </table>
-      <silverpeas-pagination page-size="suggestionsPerPage" items-size="suggestions.maxlength" on-page="changePage(page)"></silverpeas-pagination>
-    </div>
+    <view:arrayPane var="" routingAddress="${componentUriBase}suggestions/published">
+      <view:arrayColumn title="${date}" sortable="true"/>
+      <view:arrayColumn title="${title}" sortable="true"/>
+      <view:arrayColumn title="${author}" sortable="true"/>
+      <view:arrayColumn title="${rating}" sortable="true"/>
+      <view:arrayColumn title="${ratingCount}" sortable="true"/>
+      <view:arrayColumn title="${commentCount}" sortable="true"/>
+      <c:forEach var="suggestion" items="${suggestions}">
+        <view:arrayLine>
+          <view:arrayCellText text="${suggestion.validation.date}"/>
+          <view:arrayCellText text="<a href=\"${componentUriBase}suggestions/${suggestion.id}?from=list\">${suggestion.title}</a>"/>
+          <view:arrayCellText text="${suggestion.authorName}"/>
+          <view:arrayCellText text="0"/>
+          <view:arrayCellText text="0"/>
+          <view:arrayCellText text="0"/>
+        </view:arrayLine>
+      </c:forEach>
+    </view:arrayPane>
     <br clear="all"/>
-    <silverpeas-button ng-click="goAt('${backUri}')">${back}</silverpeas-button>
+    <view:buttonPane>
+      <view:button label="${back}" action="javascript:goBack();"/>
+    </view:buttonPane>
   </view:frame>
 </view:window>
-<script type="text/javascript">
-  angular.module('silverpeas').value('context', {
-    currentUserId : '${currentUser.id}',
-    suggestionBoxId : '${suggestionBoxId}',
-    suggestionId : '${suggestion.id}',
-    component : '${componentId}',
-    componentUriBase : '${componentUriBase}'
-  });
-</script>
-<script type="text/javascript" src="${suggestionBoxJS}"></script>
 </body>
 </html>
