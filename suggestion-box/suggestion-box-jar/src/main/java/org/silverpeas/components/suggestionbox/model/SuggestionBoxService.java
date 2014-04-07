@@ -51,6 +51,12 @@ public interface SuggestionBoxService {
   public SuggestionBox getByComponentInstanceId(String componentInstanceId);
 
   /**
+   * Indexes all the validated suggestions of the specified suggestion box.
+   * @param suggestionBox the suggestion box on which the indexation is performed.
+   */
+  public void indexSuggestionBox(SuggestionBox suggestionBox);
+
+  /**
    * Finds suggestions according to the given suggestion criteria.
    * @param criteria the suggestion criteria.
    * @return the suggestion list corresponding to the given suggestion criteria.

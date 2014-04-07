@@ -49,6 +49,11 @@ public class SuggestionBoxServiceMockWrapper implements SuggestionBoxService {
   }
 
   @Override
+  public void indexSuggestionBox(final SuggestionBox suggestionBox) {
+    mock.indexSuggestionBox(suggestionBox);
+  }
+
+  @Override
   public List<Suggestion> findSuggestionsByCriteria(final SuggestionCriteria criteria) {
     return mock.findSuggestionsByCriteria(criteria);
   }
