@@ -103,28 +103,6 @@ a.txtnote:hover {
   margin-top:1em;
 }
 
-.notation_on {
-  background-image:url(../icons/starFilled.gif);
-  background-position:center;
-  background-repeat:no-repeat;
-  width: 18px;
-  height: 17px;
-  border: 0px;
-}
-
-.notation_off {
-  background-image:url(../icons/starEmpty.gif);
-  background-position:center;
-  background-repeat:no-repeat;
-  width: 18px;
-  height: 17px;
-  border: 0px;
-}
-
-#notationImg1, #notationImg2, #notationImg3, #notationImg4, #notationImg5 {
-  cursor: pointer;
-}
-
 .ArrayCell .txtnote {
   min-width:108px;
   display:block;

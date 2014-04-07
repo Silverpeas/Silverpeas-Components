@@ -61,6 +61,8 @@ import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
 import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.rating.Rating;
+import org.silverpeas.rating.web.RatingEntity;
 import org.silverpeas.viewer.ViewerFactory;
 
 import javax.servlet.ServletException;
@@ -302,6 +304,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         "showTopicPathNameinSearchResult", true);
     fragmentSettings.showDelegatedNewsInfo = kmeliaScc.isNewsManage() && !user.isInRole(profile);
     fragmentSettings.toSearch = toSearch;
+    fragmentSettings.rateable = kmeliaScc.isRatingAllowed();
 
     int nbPubsPerPage = kmeliaScc.getNbPublicationsPerPage();
     int firstDisplayedItemIndex = kmeliaScc.getIndexOfFirstPubToDisplay();
@@ -394,18 +397,18 @@ public class AjaxPublicationsListServlet extends HttpServlet {
           pubState = resources.getString("kmelia.Shortcut");
         }
 
-        String cssClass = "";
+        String cssClasses = "important"+pub.getImportance();
         if (toSearch) {
           if (aPub.read) {
-            cssClass = " class=\"read\"";
+            cssClasses += " read";
           } else {
-            cssClass = " class=\"unread\"";
+            cssClasses += " unread";
           }
         }
 
-        out.write("<li");
-        out.write(cssClass);
-        out.write(" onmouseover=\"showPublicationOperations(this);\"");
+        out.write("<li class=\"");
+        out.write(cssClasses);
+        out.write("\" onmouseover=\"showPublicationOperations(this);\"");
         out.write(" onmouseout=\"hidePublicationOperations(this);\">");
 
         out.write("<div class=\"firstColumn\">");
@@ -550,7 +553,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         forHtml(description)));
     template.setAttribute("showDescription",
         StringUtil.isDefined(description) && !description.equals(name));
-    template.setAttribute("importance", displayImportance(pub.getImportance(), resources));
+    template.setAttribute("importance", pub.getImportance());
     template.setAttribute("showImportance",
         fragmentSettings.showImportance && !fragmentSettings.linkAttachment);
     template.setAttribute("date", displayDate(pub, kmeliaScc, resources));
@@ -610,7 +613,6 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     PublicationDetail pub = aPub.getDetail();
     String name = Encode.forHtml(pub.getName(language));
     out.write("<div class=\"line1\">");
-    out.write("<span class=\"bullet\">&#8226;</span>");
     if (fragmentSettings.linksAllowed) {
       out.write("<font color=\"");
       out.write(fragmentSettings.pubColor);
@@ -644,12 +646,15 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       out.write("\">(");
       out.write(fragmentSettings.pubState);
       out.write(")</span>");
-    } else if (fragmentSettings.showImportance && !fragmentSettings.linkAttachment) {
-      out.write("<span class=\"importance\"><nobr>");
-      out.write(displayImportance(pub.getImportance(), resources));
-      out.write("</nobr></span>");
     }
-
+    
+    if (fragmentSettings.rateable) {
+      Rating rating = pub.getRating(userId);
+      RatingEntity ratingEntity = RatingEntity.fromRating(rating);
+      out.write(ratingEntity.toJSonScript("ratingEntity_" + ratingEntity.getResourceId()));
+      out.write("<silverpeas-rating readonly=\"true\" shownbratings=\"false\" starsize=\"small\" rating=\"ratingEntity_"+ratingEntity.getResourceId()+"\"></silverpeas-rating>");
+    }
+     
     //Gestion actualités décentralisées
     if (fragmentSettings.showDelegatedNewsInfo) {
       DelegatedNews delegatedNews = kmeliaScc.getDelegatedNews(pub.getPK().getId());
@@ -896,23 +901,6 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       return UserNameGenerator.toString(updater, kmeliaScc.getUserId());
     }
     return kmeliaScc.getString("kmelia.UnknownUser");
-  }
-
-  private String displayImportance(int importance, ResourcesWrapper resources) {
-    int maxImportance = 5;
-    String fullStar = resources.getIcon("kmelia.fullStar");
-    String emptyStar = resources.getIcon("kmelia.emptyStar");
-    StringBuilder stars = new StringBuilder();
-
-    // display full Stars
-    for (int i = 0; i < importance; i++) {
-      stars.append("<img src=\"").append(fullStar).append("\" align=\"absmiddle\" alt=\"\"/>");
-    }
-    // display empty stars
-    for (int i = importance + 1; i <= maxImportance; i++) {
-      stars.append("<img src=\"").append(emptyStar).append("\" align=\"absmiddle\" alt=\"\"/>");
-    }
-    return stars.toString();
   }
 
   @SuppressWarnings("unchecked")

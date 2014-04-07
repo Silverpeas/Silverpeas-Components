@@ -95,7 +95,8 @@ function refreshPublications()
   var componentId = getComponentId();
   $.get(getWebContext() + '/RAjaxPublicationsListServlet', {Id: nodeId, ComponentId: componentId, IEFix: ieFix},
   function(data) {
-    $('#pubList').html(data);
+    //$('#pubList').html(data);
+	updateHtmlContainingAngularDirectives($('#pubList'), data);
     activateUserZoom();
   }, "html");
 }
@@ -131,7 +132,8 @@ function sortGoTo(selectedIndex) {
     var componentId = getComponentId();
     $.get(getWebContext() + '/RAjaxPublicationsListServlet', {Index: 0, Sort: sort, ComponentId: componentId, Query: topicQuery, IEFix: ieFix},
     function(data) {
-      $('#pubList').html(data);
+      //$('#pubList').html(data);
+      updateHtmlContainingAngularDirectives($('#pubList'), data);
       activateUserZoom();
     }, "html");
     return;
@@ -159,7 +161,8 @@ function displayPublications(id) {
   var url = getWebContext() + "/RAjaxPublicationsListServlet";
   $.get(url, {Id: id, ComponentId: componentId, PubIdToHighlight: pubIdToHighlight, IEFix: ieFix},
   function(data) {
-    $('#pubList').html(data);
+    //$('#pubList').html(data);
+	updateHtmlContainingAngularDirectives($('#pubList'), data);
     activateUserZoom();
   }, "html");
 }
@@ -870,7 +873,8 @@ function doPagination(index) {
   var url = getWebContext() + '/RAjaxPublicationsListServlet';
   $.get(url, {Index: index, ComponentId: componentId, Query: topicQuery, SelectedPubIds: selectedPublicationIds, NotSelectedPubIds: notSelectedPublicationIds, IEFix: ieFix},
   function(data) {
-    $('#pubList').html(data);
+    //$('#pubList').html(data);
+	updateHtmlContainingAngularDirectives($('#pubList'), data);
     activateUserZoom();
     showPublicationCheckedBoxes();
     location.href = "#pubList";

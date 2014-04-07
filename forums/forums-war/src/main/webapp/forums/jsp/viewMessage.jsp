@@ -149,16 +149,6 @@
                     "forums.message.subscribe.success";
                 NotifierUtil.addSuccess(resource.getStringWithParam(bundleKey, message.getTitle()));
                 break;
-
-            case 15 :
-                // Notation d'un message.
-                int note = getIntParameter(request, "note", -1);
-                if (note > 0)
-                {
-                    fsc.updateMessageNotation(params, note);
-                }
-                messageId = params;
-                break;
         }
     }
     catch (NumberFormatException nfe) {
@@ -173,7 +163,6 @@
 
     boolean forumActive = false;
 
-    int[] forumNotes = new int[0];
     if(message != null) {
         int reqForum = (forumId != -1 ? forumId : 0);
         int folderId = message.getForumId();
@@ -205,13 +194,14 @@
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.forums">
 <head>
     <title><c:out value="${pageScope.title}" /></title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <view:looknfeel />
     <view:includePlugin name="wysiwyg"/>
     <view:includePlugin name="popup"/>
+    <view:includePlugin name="rating" />
     <link type="text/css" href="<c:url value='/util/styleSheets/fieldset.css'/>" rel="stylesheet" />
     <script type="text/javascript" src="<c:url value='/util/javaScript/checkForm.js'/>" ></script>
     <script type="text/javascript" src="<c:url value='/forums/jsp/javaScript/forums.js'/>" ></script>
@@ -252,46 +242,6 @@
 
         function callResizeFrame() {
             <%addJsResizeFrameCall(out, fsc);%>
-        }
-
-        function loadNotation() {
-            if (document.getElementById(NOTATION_PREFIX + "1") == undefined) {
-                setTimeout("loadNotation()", 200);
-            }
-            else {
-                var img;
-                var i;
-                for (i = 1; i <= NOTATIONS_COUNT; i++) {
-                    notationFlags[i - 1] = false;
-                    img = document.getElementById(NOTATION_PREFIX + i);
-                    img.alt = "<%=resource.getString("forums.giveNote")%> " + i + "/" + NOTATIONS_COUNT;
-                    img.title = "<%=resource.getString("forums.giveNote")%> " + i + "/" + NOTATIONS_COUNT;
-                    if (!readOnly) {
-                        img.onclick = function() {notationNote(this);};
-                        img.onmouseover = function() {notationOver(this);};
-                        img.onmouseout = function() {notationOut(this);};
-                    }
-                }
-            }
-        }
-
-        function notationNote(image) {
-            var index = getNotationIndex(image);
-            var updateNote = false;
-            if (userNote > 0) {
-                if (index == userNote) {
-                    alert("<%=resource.getString("forums.sameNote")%> " + userNote + ".");
-                } else {
-                    updateNote = confirm("<%=resource.getString("forums.replaceNote")%> " + userNote + " <%=resource.getString("forums.by")%> " + index + ".");
-                }
-            } else {
-                updateNote = true;
-            }
-            if (updateNote) {
-                currentNote = index;
-                document.forms["notationForm"].elements["note"].value = currentNote;
-                document.forms["notationForm"].submit();
-            }
         }
 
         function editMessage(messageId)
@@ -355,9 +305,8 @@
             ? ActionUrl.getUrl("viewMessage", 8, forumId) : ActionUrl.getUrl("main", 8, -1));
 %>
             <div class="notationLine">
-                <%
-        forumNotes = ForumHelper.displayMessageNotation(out, resources, currentMessageId, fsc, isReader);
-              %></div>
+            	<silverpeas-rating componentid="${componentId}" resourcetype="<%=Message.RESOURCE_TYPE %>" resourceid="<%=messageId%>" readonly="${isReader}"></silverpeas-rating>
+            </div>
             <%
               ForumHelper
                   .displaySingleMessageList(out, resource, userId, isAdmin, isModerator, isReader,
@@ -567,21 +516,6 @@
         out.println(window.printAfter());
     }
 %>
-<% if (!isReader && forumNotes.length > 0) { %>
-<form name="notationForm" action="viewMessage" method="post" style="height: 0">
-  <input name="call" type="hidden" value="viewForum"/>
-  <input name="action" type="hidden" value="15"/>
-  <input name="forumId" type="hidden" value="<%=forumId%>"/>
-  <input name="params" type="hidden" value="<%=currentMessageId%>"/>
-  <input name="note" type="hidden" value=""/>
-</form>
-<script type="text/javascript">
-  readOnly = <%=isReader%>;
-  currentNote = <%=forumNotes[0]%>;
-  userNote = <%=forumNotes[1]%>;
-  loadNotation();
-</script>
-<% } %>
 <script type="text/javascript">
   jQuery(document).ready(function() {
     init();
@@ -590,6 +524,9 @@
     scrollMessage(<%=messageId%>);
     <% } %>
   });
+  
+  /* declare the module myapp and its dependencies (here in the silverpeas module) */
+  var myapp = angular.module('silverpeas.forums', ['silverpeas.services', 'silverpeas.directives']);
 </script>
 </body>
 </html>

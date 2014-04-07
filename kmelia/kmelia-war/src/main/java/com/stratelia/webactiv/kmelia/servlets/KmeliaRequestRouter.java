@@ -681,6 +681,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           }
 
           request.setAttribute("LastAccess", kmelia.getLastAccess(kmeliaPublication.getPk()));
+          request.setAttribute("RatingsAllowed", kmelia.isRatingAllowed());
 
           destination = rootDestination + "publication.jsp";
         }

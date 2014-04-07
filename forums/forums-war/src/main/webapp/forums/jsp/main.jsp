@@ -84,10 +84,11 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
 <fmt:message key="confirmDeleteForum" var="removeForum" />
 <fmt:message key="confirmDeleteCategory" var="removeCategory" />
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.forums">
   <head>
   	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <view:looknfeel />
+    <view:includePlugin name="rating" />
     <script type="text/javascript" src="<c:url value='/forums/jsp/javaScript/forums.js' />"></script>
     <script type="text/javascript" src="<c:url value='/util/javaScript/animation.js' />"></script>
     <script type="text/javascript">
@@ -231,11 +232,15 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
           </c:if>
       </view:frame>
     </view:window>
-    <form id="forumForm" name="forumForm" action="" method="POST">
+    <form id="forumForm" name="forumForm" action="" method="post">
       <input id="action" name="action" type="hidden"/>
       <input id="params" name="params" type="hidden"/>
       <input id="forumId" name="forumId" type="hidden"/>
       <input id="CategoryId" name="CategoryId" type="hidden"/>
     </form>
+    <script type="text/javascript">
+ 	  /* declare the module myapp and its dependencies (here in the silverpeas module) */
+ 	  var myapp = angular.module('silverpeas.forums', ['silverpeas.services', 'silverpeas.directives']);
+ 	</script>
   </body>
 </html>

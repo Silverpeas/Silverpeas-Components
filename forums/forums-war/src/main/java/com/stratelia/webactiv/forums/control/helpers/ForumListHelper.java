@@ -20,7 +20,6 @@
  */
 package com.stratelia.webactiv.forums.control.helpers;
 
-import com.silverpeas.notation.model.NotationDetail;
 import com.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
@@ -31,6 +30,9 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import java.io.IOException;
 import java.util.Date;
 import javax.servlet.jsp.JspWriter;
+
+import org.silverpeas.rating.Rating;
+import org.silverpeas.rating.web.RatingEntity;
 
 /**
  *
@@ -146,20 +148,13 @@ public class ForumListHelper {
       out.println("</span></td>");
 
       // 6ème colonne : notation
-      NotationDetail notation = fsc.getForumNotation(forumId);
-      int globalNote = notation.getRoundGlobalNote();
-      int userNote = notation.getUserNote();
-      String cellLabel = notation.getNotesCount() + " " + resources.getString("forums.note");
-      if (userNote > 0) {
-        cellLabel += " - " + resources.getString("forums.yourNote") + " : " + userNote;
-      }
-      out.print("<td class=\"ArrayCell\" title=\"" + cellLabel + "\"><span class=\"txtnote\">");
-      for (int i = 1; i <= 5; i++) {
-        out.print("<img class=\"notation_" + (i <= globalNote ? "on" : "off")
-            + "\" src=\"" + ForumHelper.IMAGE_NOTATION_EMPTY + "\"/>");
-      }
-      out.println("</span></td>");
-
+      Rating rating = forum.getRating(fsc.getUserId());
+      RatingEntity ratingEntity = RatingEntity.fromRating(rating);
+      out.print("<td class=\"ArrayCell\">");
+      out.write(ratingEntity.toJSonScript("ratingEntity_" + ratingEntity.getResourceId()));
+      out.write("<silverpeas-rating readonly=\"true\" rating=\"ratingEntity_"+ratingEntity.getResourceId()+"\" shownbratings=\"false\"></silverpeas-rating>");
+      out.println("</td>");
+      
       // 7ème colonne : abonnement
       boolean isSubscriber = fsc.isForumSubscriber(forumId);
       out.print("<td class=\"ArrayCell\" style=\"text-align: center\" title=\"" + resources.

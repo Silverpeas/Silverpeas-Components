@@ -733,7 +733,7 @@ public class ForumsDAO {
       selectStmt.setInt(1, Integer.parseInt(forumPK.getId()));
       rs = selectStmt.executeQuery();
       while (rs.next()) {
-        messages.add(resultSet2Message(rs));
+        messages.add(resultSet2Message(rs, forumPK.getInstanceId()));
       }
     } finally {
       DBUtil.close(rs, selectStmt);
@@ -1289,7 +1289,7 @@ public class ForumsDAO {
       selectStmt.setInt(1, Integer.parseInt(messagePK.getId()));
       rs = selectStmt.executeQuery();
       if (rs.next()) {
-        Message message = resultSet2Message(rs);
+        Message message = resultSet2Message(rs, messagePK.getInstanceId());
         message.setInstanceId(messagePK.getComponentName());
         message.setPk(messagePK);
         return message;
@@ -1383,7 +1383,7 @@ public class ForumsDAO {
       selectStmt.setInt(2, 0);
       rs = selectStmt.executeQuery();
       if (rs.next()) {
-        Message message = resultSet2Message(rs);
+        Message message = resultSet2Message(rs, messagePK.getInstanceId());
         message.setPk(messagePK);
         return message;
       }
@@ -1954,14 +1954,14 @@ public class ForumsDAO {
    * @return The message corresponding to the primary key (Message).
    * @throws SQLException An SQL exception.
    */
-  private static Message resultSet2Message(ResultSet rs) throws SQLException {
+  private static Message resultSet2Message(ResultSet rs, String instanceId) throws SQLException {
     Timestamp timestamp = rs.getTimestamp(MESSAGE_COLUMN_MESSAGE_DATE);
     Date date = (timestamp != null ? new Date(timestamp.getTime()) : null);
     return new Message(rs.getInt(MESSAGE_COLUMN_MESSAGE_ID),
         rs.getString(MESSAGE_COLUMN_MESSAGE_TITLE).trim(),
         rs.getString(MESSAGE_COLUMN_MESSAGE_AUTHOR), date,
         rs.getInt(MESSAGE_COLUMN_FORUM_ID),
-        rs.getInt(MESSAGE_COLUMN_MESSAGE_PARENT_ID), "",
+        rs.getInt(MESSAGE_COLUMN_MESSAGE_PARENT_ID), instanceId,
         rs.getString(MESSAGE_COLUMN_STATUS));
   }
 }

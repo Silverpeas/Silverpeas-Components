@@ -67,6 +67,7 @@
   int validationType = ((Integer) request.getAttribute("ValidationType")).intValue();
   boolean isWriterApproval = (Boolean) request.getAttribute("WriterApproval");
   boolean notificationAllowed = (Boolean) request.getAttribute("NotificationAllowed");
+  boolean ratingsAllowed = (Boolean) request.getAttribute("RatingsAllowed");
   boolean attachmentsEnabled = (Boolean) request.getAttribute("AttachmentsEnabled");
   boolean draftOutTaxonomyOK = (Boolean) request.getAttribute("TaxonomyOK");
   boolean draftOutValidatorsOK = (Boolean) request.getAttribute("ValidatorsOK");
@@ -207,7 +208,7 @@
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.kmelia">
   <head>
     <view:looknfeel/>
     <title></title>
@@ -215,6 +216,7 @@
     <link type="text/css" rel="stylesheet" href='<c:url value="/kmelia/jsp/styleSheets/kmelia-print.css" />' media="print"/>
     <view:includePlugin name="wysiwyg"/>
     <view:includePlugin name="popup"/>
+    <view:includePlugin name="rating" />
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
     <script type="text/javascript" src="<%=m_context%>/kmelia/jsp/javaScript/glossaryHighlight.js"></script>
     <script type="text/javascript">
@@ -570,6 +572,28 @@
 	  	</div>
 
       <div class="rightContent">
+      	<div id="statPublication" class="bgDegradeGris">
+      		<p id="statInfo">
+      			<b><%= kmeliaPublication.getNbAccess()%> vues</b>
+      			<% if (ratingsAllowed) { %>
+					<silverpeas-rating componentid="<%=componentId %>" resourcetype="Publication" resourceid="<%=id %>"></silverpeas-rating>
+				<% } %>
+			</p>
+
+		    <% if (URLManager.displayUniversalLinks()) {
+		            String link = null;
+		            if (!pubDetail.getPK().getInstanceId().equals(contextComponentId)) {
+		              link = URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId(),
+		                  contextComponentId);
+		            } else {
+		              link = URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId());
+		            }%>
+		        <p id="permalinkInfo">
+		        	<a href="<%=link%>" title="<%=Encode.convertHTMLEntities(resources.getString("kmelia.CopyPublicationLink"))%>"><img src="<%=resources.getIcon("kmelia.link")%>" alt="<%=Encode.convertHTMLEntities(resources.getString("kmelia.CopyPublicationLink"))%>" /></a> <%=resources.getString("GML.permalink")%> <br />
+		            <input type="text" onfocus="select();" onmouseup="return false" value="<%=URLManager.getServerURL(request)+link%>" />
+		        </p>
+	            <% }%>
+      	</div>
       <%
 
         /*********************************************************************************************************************/
@@ -670,25 +694,6 @@
 							    <%
 							      }
 							    %>
-        					<p id="statInfo">
-        						<%=resources.getString("kmelia.consulted")%><br/>
-        						<b><%= kmeliaPublication.getNbAccess()%> <%=resources.getString("kmelia.time")%></b></p>
-
-					        <% if (URLManager.displayUniversalLinks()) {
-					            String link = null;
-					            if (!pubDetail.getPK().getInstanceId().equals(contextComponentId)) {
-					              link = URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId(),
-					                  contextComponentId);
-					            } else {
-					              link = URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId());
-					            }%>
-					        <p id="permalinkInfo">
-					        	<a href="<%=link%>" title="<%=Encode.convertHTMLEntities(resources.getString(
-					                                                                     "kmelia.CopyPublicationLink"))%>"><img src="<%=resources.getIcon("kmelia.link")%>" alt="<%=Encode.convertHTMLEntities(resources.getString(
-					                                                                 "kmelia.CopyPublicationLink"))%>" /></a> <%=resources.getString("GML.permalink")%> <br />
-					            <input type="text" onfocus="select();" onmouseup="return false" value="<%=URLManager.getServerURL(request)+link%>" />
-					        </p>
-				            <% }%>
 					</div>
 					<!-- consultation -->
                     <div id="lastReader" class="bgDegradeGris">
@@ -878,5 +883,9 @@
         <input type="hidden" name="ComponentId" value="<%=componentId%>"/>
       </form>
     </div>
+ <script type="text/javascript">
+ /* declare the module myapp and its dependencies (here in the silverpeas module) */
+ var myapp = angular.module('silverpeas.kmelia', ['silverpeas.services', 'silverpeas.directives']);
+ </script>
   </body>
 </html>
