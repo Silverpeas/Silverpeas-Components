@@ -190,11 +190,13 @@
 		<label for="Content" class="txtlibform"><fmt:message key='blog.content'/></label>
 		<div class="champs">
 			
-   			<viewTags:displayToolBarWysiwyg
-		        context="<%=m_context%>"
-		        editorName="Content"
-		        componentId="<%=instanceId%>" 
-		        objectId="<%=post.getId()%>" />
+			<div class="container-wysiwyg wysiwyg-fileStorage">
+			
+   				<viewTags:displayToolBarWysiwyg
+			        editorName="Content"
+			        componentId="<%=instanceId%>" 
+			        objectId="<%=post.getId()%>" />
+			</div>
 			
 			<textarea rows="5" cols="10" name="Content" id="Content"><%=content %></textarea>
 		</div>
