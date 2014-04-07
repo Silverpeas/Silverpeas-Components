@@ -194,7 +194,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   private static final String[] AVAILABLE_EXPORT_FORMATS = {"zip", "pdf", "odt", "doc"};
 
   /* EJBs used by sessionController */
-  private ThumbnailService thumbnailService = null;
   private CommentService commentService = null;
   private PdcBm pdcBm = null;
   private StatisticBm statisticBm = null;
@@ -538,6 +537,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       return false;
     }
     return StringUtil.getBooleanValue(parameterValue);
+  }
+  
+  public boolean isRatingAllowed() {
+    return StringUtil.getBooleanValue(getComponentParameterValue("rating"));
   }
 
   public boolean showUserNameInList() {
@@ -3875,8 +3878,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   private String getMaxSizeErrorMessage(ResourceLocator messages) {
-    ResourceLocator uploadSettings = new ResourceLocator(
-        "org.silverpeas.util.uploads.uploadSettings", "");
     long maximumFileSize = FileRepositoryManager.getUploadMaximumFileSize();
     String maximumFileSizeMo = UnitUtil.formatMemSize(maximumFileSize);
     return messages.getString("attachment.dialog.errorAtLeastOneFileSize") + " " + messages.

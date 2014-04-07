@@ -67,6 +67,7 @@
   int validationType = ((Integer) request.getAttribute("ValidationType")).intValue();
   boolean isWriterApproval = (Boolean) request.getAttribute("WriterApproval");
   boolean notificationAllowed = (Boolean) request.getAttribute("NotificationAllowed");
+  boolean ratingsAllowed = (Boolean) request.getAttribute("RatingsAllowed");
   boolean attachmentsEnabled = (Boolean) request.getAttribute("AttachmentsEnabled");
   boolean draftOutTaxonomyOK = (Boolean) request.getAttribute("TaxonomyOK");
   boolean draftOutValidatorsOK = (Boolean) request.getAttribute("ValidatorsOK");
@@ -574,7 +575,9 @@
       	<div id="statPublication" class="bgDegradeGris">
       		<p id="statInfo">
       			<b><%= kmeliaPublication.getNbAccess()%> vues</b>
-				<silverpeas-rating componentid="<%=componentId %>" resourcetype="Publication" resourceid="<%=id %>"></silverpeas-rating>
+      			<% if (ratingsAllowed) { %>
+					<silverpeas-rating componentid="<%=componentId %>" resourcetype="Publication" resourceid="<%=id %>"></silverpeas-rating>
+				<% } %>
 			</p>
 
 		    <% if (URLManager.displayUniversalLinks()) {

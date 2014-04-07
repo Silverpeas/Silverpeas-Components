@@ -73,7 +73,7 @@ boolean userCanSeeStats =
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.kmelia">
 <head>
 <view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
@@ -81,6 +81,7 @@ boolean userCanSeeStats =
 <view:includePlugin name="userZoom"/>
 <view:includePlugin name="popup"/>
 <view:includePlugin name="preview"/>
+<view:includePlugin name="rating" />
 <script type="text/javascript" src="javaScript/dragAndDrop.js"></script>
 <script type="text/javascript" src="javaScript/navigation.js"></script>
 <script type="text/javascript" src="javaScript/searchInTopic.js"></script>
@@ -119,6 +120,10 @@ function getComponentId() {
 	return "<%=componentId%>";
 }
 
+function getPubIdToHighlight() {
+  return "<%=pubIdToHighlight%>";
+}
+
 function showDnD() {
 	<%
 	long maximumFileSize = FileRepositoryManager.getUploadMaximumFileSize();
@@ -128,16 +133,6 @@ function showDnD() {
 
 function fileUpload() {
     document.fupload.submit();
-}
-
-function displayPublications(id) {
-	//display publications of topic
-	var pubIdToHighlight = "<%=pubIdToHighlight%>";
-	var ieFix = new Date().getTime();
-	$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Id:id,ComponentId:'<%=componentId%>',PubIdToHighlight:pubIdToHighlight,IEFix:ieFix},
-			function(data){
-				$('#pubList').html(data);
-			},"html");
 }
 
 function topicWysiwyg() {
@@ -175,6 +170,7 @@ $(document).ready(function() {
 </script>
 </head>
 <body id="kmelia" onunload="closeWindows()" class="yui-skin-sam">
+<div compile-directive style="display: none"></div>
 <div id="<%=componentId %>">
 <%
         Window window = gef.getWindow();
@@ -323,5 +319,9 @@ $(document).ready(function() {
 </form>
 </div>
 <view:progressMessage/>
+<script type="text/javascript">
+/* declare the module myapp and its dependencies (here in the silverpeas module) */
+var myapp = angular.module('silverpeas.kmelia', ['silverpeas.services', 'silverpeas.directives']);
+</script>
 </body>
 </html>
