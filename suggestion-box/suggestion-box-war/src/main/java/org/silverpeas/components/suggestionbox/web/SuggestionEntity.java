@@ -96,6 +96,11 @@ public class SuggestionEntity implements Exposable {
   }
 
   @XmlElement
+  public int getCommentCount() {
+    return suggestion.getCommentCount();
+  }
+
+  @XmlElement
   public Date getCreateDate() {
     return suggestion.getCreateDate();
   }
@@ -138,6 +143,9 @@ public class SuggestionEntity implements Exposable {
 
   protected void setContent(String content) {
     suggestion.setContent(content);
+  }
+
+  protected void setCommentCount(int count) {
   }
 
   protected void setContributionType(String type) {

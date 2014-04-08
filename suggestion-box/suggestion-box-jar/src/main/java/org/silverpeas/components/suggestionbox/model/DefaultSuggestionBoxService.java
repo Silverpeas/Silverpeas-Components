@@ -41,10 +41,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.components.suggestionbox.SuggestionBoxComponentSettings;
-import org.silverpeas.components.suggestionbox.notification
-    .SuggestionBoxSubscriptionUserNotification;
-import org.silverpeas.components.suggestionbox.notification
-    .SuggestionPendingValidationUserNotification;
+import org.silverpeas.components.suggestionbox.notification.SuggestionBoxSubscriptionUserNotification;
+import org.silverpeas.components.suggestionbox.notification.SuggestionPendingValidationUserNotification;
 import org.silverpeas.components.suggestionbox.notification.SuggestionValidationUserNotification;
 import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepository;
 import org.silverpeas.components.suggestionbox.repository.SuggestionRepository;
@@ -360,9 +358,9 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService,
     SilverTrace.info("suggestionBox", "suggestionBoxService.createSuggestionIndex()",
         "root.MSG_GEN_ENTER_METHOD", "suggestion id = " + suggestion.getId());
     if (suggestion != null && suggestion.getValidation().isValidated()) {
-      FullIndexEntry indexEntry =
-          new FullIndexEntry(suggestion.getComponentInstanceId(), Suggestion.TYPE,
-              suggestion.getId());
+      FullIndexEntry indexEntry = new FullIndexEntry(suggestion.getComponentInstanceId(),
+          Suggestion.TYPE,
+          suggestion.getId());
       indexEntry.setTitle(suggestion.getTitle());
       indexEntry.setCreationDate(suggestion.getValidation().getDate());
       indexEntry.setCreationUser(suggestion.getCreatedBy());

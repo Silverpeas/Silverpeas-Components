@@ -1,17 +1,17 @@
 /*
- * Copyright (C) 2000 - 2014 Silverpeas
+ * Copyright (C) 2000-2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
+ * the GPL, you may redistribute this Program in connection with Writer Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,13 +29,15 @@ import com.silverpeas.comment.model.CommentedPublicationInfo;
 import com.silverpeas.comment.service.CommentService;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAPrimaryKey;
+import static org.mockito.Mockito.mock;
 
 import java.util.List;
 
-import static org.mockito.Mockito.mock;
-
 /**
- * @author: Yohann Chastagnier
+ * A wrapper of a mock of an {@code CommentService} instance dedicated to the tests. This
+ * wrapper decorates the mock and it is used to be managed by an IoC container as an
+ * {@code CommentService} instance.
+ * @author mmoquillon
  */
 public class CommentServiceMockWrapper implements CommentService {
 
@@ -45,19 +47,18 @@ public class CommentServiceMockWrapper implements CommentService {
     return mock;
   }
 
-
   @Override
-  public void createComment(final Comment cmt) {
+  public void createComment(Comment cmt) {
     mock.createComment(cmt);
   }
 
   @Override
-  public void createAndIndexComment(final Comment cmt) {
+  public void createAndIndexComment(Comment cmt) {
     mock.createAndIndexComment(cmt);
   }
 
   @Override
-  public void deleteComment(final CommentPK pk) {
+  public void deleteComment(CommentPK pk) {
     mock.deleteComment(pk);
   }
 
@@ -67,52 +68,54 @@ public class CommentServiceMockWrapper implements CommentService {
   }
 
   @Override
-  public void deleteAllCommentsByComponentInstanceId(final String instanceId) {
+  public void deleteAllCommentsByComponentInstanceId(String instanceId) {
     mock.deleteAllCommentsByComponentInstanceId(instanceId);
   }
 
   @Override
-  public void deleteComment(final Comment comment) {
+  public void deleteComment(Comment comment) {
     mock.deleteComment(comment);
   }
 
   @Override
-  public void moveComments(final String resourceType, final WAPrimaryKey fromPK,
-      final WAPrimaryKey toPK) {
+  public void moveComments(String resourceType, WAPrimaryKey fromPK, WAPrimaryKey toPK) {
     mock.moveComments(resourceType, fromPK, toPK);
   }
 
   @Override
-  public void moveAndReindexComments(final String resourceType, final WAPrimaryKey fromPK,
-      final WAPrimaryKey toPK) {
+  public void moveAndReindexComments(String resourceType, WAPrimaryKey fromPK, WAPrimaryKey toPK) {
     mock.moveAndReindexComments(resourceType, fromPK, toPK);
   }
 
   @Override
-  public void updateComment(final Comment cmt) {
+  public void updateComment(Comment cmt) {
     mock.updateComment(cmt);
   }
 
   @Override
-  public void updateAndIndexComment(final Comment cmt) {
+  public void updateAndIndexComment(Comment cmt) {
     mock.updateAndIndexComment(cmt);
   }
 
   @Override
-  public Comment getComment(final CommentPK pk) {
+  public Comment getComment(CommentPK pk) {
     return mock.getComment(pk);
   }
 
   @Override
-  public List<Comment> getAllCommentsOnPublication(final String resourceType,
-      final WAPrimaryKey pk) {
+  public List<Comment> getAllCommentsOnPublication(String resourceType, WAPrimaryKey pk) {
     return mock.getAllCommentsOnPublication(resourceType, pk);
   }
 
   @Override
-  public List<CommentedPublicationInfo> getMostCommentedPublicationsInfo(final String resourceType,
-      final List<WAPrimaryKey> pks) {
+  public List<CommentedPublicationInfo> getMostCommentedPublicationsInfo(String resourceType,
+      List<WAPrimaryKey> pks) {
     return mock.getMostCommentedPublicationsInfo(resourceType, pks);
+  }
+
+  @Override
+  public List<CommentedPublicationInfo> getMostCommentedPublicationsInfo(String resourceType) {
+    return mock.getMostCommentedPublicationsInfo(resourceType);
   }
 
   @Override
@@ -121,17 +124,17 @@ public class CommentServiceMockWrapper implements CommentService {
   }
 
   @Override
-  public int getCommentsCountOnPublication(final String resourceType, final WAPrimaryKey pk) {
+  public int getCommentsCountOnPublication(String resourceType, WAPrimaryKey pk) {
     return mock.getCommentsCountOnPublication(resourceType, pk);
   }
 
   @Override
-  public void indexAllCommentsOnPublication(final String resourceType, final WAPrimaryKey pk) {
+  public void indexAllCommentsOnPublication(String resourceType, WAPrimaryKey pk) {
     mock.indexAllCommentsOnPublication(resourceType, pk);
   }
 
   @Override
-  public void unindexAllCommentsOnPublication(final String resourceType, final WAPrimaryKey pk) {
+  public void unindexAllCommentsOnPublication(String resourceType, WAPrimaryKey pk) {
     mock.unindexAllCommentsOnPublication(resourceType, pk);
   }
 
@@ -146,7 +149,7 @@ public class CommentServiceMockWrapper implements CommentService {
   }
 
   @Override
-  public ResourceLocator getComponentMessages(final String language) {
+  public ResourceLocator getComponentMessages(String language) {
     return mock.getComponentMessages(language);
   }
 }

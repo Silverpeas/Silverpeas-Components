@@ -135,13 +135,9 @@ suggestionBox.controller('buzzPublishedController',
 
       $scope.loadBuzzPublished = function() {
         // TOTO Delete this call after the buzz web service works
-        suggestionBox.suggestions.get('published').then(function(theSuggestions) {
+        suggestionBox.suggestions.get('published', {page: {number: 0, count: 3}, sortby: 'commentCount'}).then(function(theSuggestions) {
           $scope.buzzPublishedSuggestions = theSuggestions;
         });
-//        To uncomment after the existence of the web service
-//        suggestionBox.suggestions.get(['published/buzz']).then(function(theSuggestions) {
-//          $scope.buzzPublishedSuggestions = theSuggestions;
-//        });
       };
 
       $scope.loadBuzzPublished();

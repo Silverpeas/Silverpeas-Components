@@ -41,10 +41,25 @@ public class SuggestionCriteria {
 
     TITLE_ASC("title", true), LAST_UPDATE_DATE_ASC("lastUpdateDate", true),
     TITLE_DESC("title", false), LAST_UPDATE_DATE_DESC("lastUpdateDate", false),
-    VALIDATION_DATE_DESC("validation.validationDate", false);
+    VALIDATION_DATE_DESC("validation.validationDate", false),
+    COMMENT_COUNT_DESC("commentCount", false);
 
     private final String propertyName;
     private final boolean asc;
+
+    public static QUERY_ORDER_BY fromPropertyName(String property) {
+      QUERY_ORDER_BY type = null;
+      if ("commentCount".equals(property)) {
+        type = COMMENT_COUNT_DESC;
+      } else if ("validation.validationDate".equals(property)) {
+        type = VALIDATION_DATE_DESC;
+      } else if ("lastUpdateDate".equals(property)) {
+        type = LAST_UPDATE_DATE_DESC;
+      } else if ("title".equals(property)) {
+        type = TITLE_DESC;
+      }
+      return type;
+    }
 
     private QUERY_ORDER_BY(final String propertyName, final boolean asc) {
       this.propertyName = propertyName;
@@ -237,11 +252,11 @@ public class SuggestionCriteria {
     if (!getStatuses().isEmpty()) {
       processor.then().processStatus(getStatuses());
     }
-    if (getPagination() != null) {
-      processor.then().processPagination(getPagination());
-    }
     if (!getOrderByList().isEmpty()) {
       processor.then().processOrdering(getOrderByList());
+    }
+    if (getPagination() != null) {
+      processor.then().processPagination(getPagination());
     }
 
     processor.endProcessing();

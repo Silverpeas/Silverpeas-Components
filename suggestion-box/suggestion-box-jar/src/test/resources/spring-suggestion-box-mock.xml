@@ -50,12 +50,12 @@
         class="org.silverpeas.components.suggestionbox.mock.SuggestionRepositoryMockWrapper"/>
   <bean id="attachmentService"
         class="org.silverpeas.components.suggestionbox.mock.AttachmentServiceMockWrapper"/>
+  <bean id="commentService"
+        class="org.silverpeas.components.suggestionbox.mock.CommentServiceMockWrapper"/>
   <bean id="subscriptionService"
         class="org.silverpeas.components.suggestionbox.mock.SubscriptionServiceMockWrapper"/>
   <bean id="commentUserNotificationService"
         class="org.silverpeas.components.suggestionbox.mock.CommentUserNotificationServiceMockWrapper"/>
-  <bean id="commentService"
-        class="org.silverpeas.components.suggestionbox.mock.CommentServiceMockWrapper"/>
 
   <bean id="suggestionBoxServiceFactory"
         class="org.silverpeas.components.suggestionbox.model.SuggestionBoxServiceFactory"
@@ -68,10 +68,10 @@
   <bean id="attachmentServiceFactory" class="org.silverpeas.attachment.AttachmentServiceFactory"
         factory-method="getInstance"/>
 
-  <bean id="subscriptionServiceFactory" class="com.silverpeas.subscribe.SubscriptionServiceFactory"
+  <bean id="commentServiceFactory" class="com.silverpeas.comment.service.CommentServiceFactory"
         factory-method="getFactory"/>
 
-  <bean id="commentServiceFactory" class="com.silverpeas.comment.service.CommentServiceFactory"
+  <bean id="subscriptionServiceFactory" class="com.silverpeas.subscribe.SubscriptionServiceFactory"
         factory-method="getFactory"/>
 
   <util:list id="entities">

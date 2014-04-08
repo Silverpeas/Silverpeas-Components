@@ -51,6 +51,6 @@ public class SuggestionRepository extends AbstractJpaEntityRepository<Suggestion
     criteria.processWith(queryBuilder);
 
     // Playing the query and returning the requested result
-    return listFromJpqlString(queryBuilder.result(), params, queryBuilder.getPaginationToApply());
+    return listByCriteria(queryBuilder.result());
   }
 }

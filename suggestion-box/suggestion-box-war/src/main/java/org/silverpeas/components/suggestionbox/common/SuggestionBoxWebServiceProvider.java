@@ -31,8 +31,6 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
-import org.silverpeas.cache.service.CacheService;
-import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
@@ -58,8 +56,6 @@ import java.util.Set;
 import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs.BOX_BASE_URI;
 import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs.BOX_SUGGESTION_URI_PART;
 
-import java.util.concurrent.ConcurrentHashMap;
-
 
 /**
  * @author: Yohann Chastagnier
@@ -72,8 +68,6 @@ public class SuggestionBoxWebServiceProvider {
   private final Map<String, ResourceLocator> multilang = new HashMap<String, ResourceLocator>();
   private final static SuggestionBoxWebServiceProvider SUGGESTION_BOX_WEB_SERVICE_PROVIDER
       = new SuggestionBoxWebServiceProvider();
-
-  private String publishedSuggestionsCache;
 
   public static SuggestionBoxWebServiceProvider getWebServiceProvider() {
     return SUGGESTION_BOX_WEB_SERVICE_PROVIDER;
@@ -117,7 +111,7 @@ public class SuggestionBoxWebServiceProvider {
   }
 
   /**
-   * Gets the list of suggestions that are published and that match the specified criteria.
+   * Gets the list of suggestions that match the specified criteria.
    * The criteria are applying in web level and aren't propagated downto the business level and
    * hence the persistence level.
    * <p>
@@ -128,18 +122,11 @@ public class SuggestionBoxWebServiceProvider {
    * @return the published suggestion entities matching the specified criteria.
    * @see SuggestionBox.Suggestions#findPublished()
    */
-  public List<SuggestionEntity> getPublishedSuggestions(SuggestionBox suggestionBox,
+  public List<SuggestionEntity> getSuggestionsByCriteria(SuggestionBox suggestionBox,
       final SuggestionCriteria criteria) {
-    Map<String, List<SuggestionEntity>> perUserSuggestions
-        = getSortedAndPublishedSuggestionsPerUser();
-    List<SuggestionEntity> suggestions = perUserSuggestions.get(criteria.getCaller().getId());
-    if (suggestions == null) {
-      suggestions = asWebEntities(suggestionBox.getSuggestions().findPublished());
-      perUserSuggestions.put(criteria.getCaller().getId(), suggestions);
-    }
-    SuggestionCriteriaApplier applier = new SuggestionCriteriaApplier(suggestions);
-    criteria.processWith(applier);
-    return applier.result();
+    SuggestionFinderByCriteria suggestionsFinder = new SuggestionFinderByCriteria();
+    criteria.processWith(suggestionsFinder);
+    return asWebEntities(suggestionsFinder.result());
   }
 
   /**
@@ -197,7 +184,6 @@ public class SuggestionBoxWebServiceProvider {
           );
           break;
         case VALIDATED:
-          getSortedAndPublishedSuggestionsPerUser().clear();
           NotifierUtil.addSuccess(getStringTranslation("suggestionBox.message.suggestion.published",
               userPreferences.getLanguage()));
           break;
@@ -262,14 +248,12 @@ public class SuggestionBoxWebServiceProvider {
       Suggestion actual = suggestionBox.getSuggestions().validate(suggestion, validation);
       switch (actual.getValidation().getStatus()) {
         case REFUSED:
-          getSortedAndPublishedSuggestionsPerUser().clear();
           NotifierUtil.addInfo(MessageFormat.format(
               getStringTranslation("suggestionBox.message.suggestion.refused",
                   userPreferences.getLanguage()), suggestion.getTitle()
           ));
           break;
         case VALIDATED:
-          getSortedAndPublishedSuggestionsPerUser().clear();
           NotifierUtil.addSuccess(MessageFormat.format(
               getStringTranslation("suggestionBox.message.suggestion.validated",
                   userPreferences.getLanguage()), suggestion.getTitle()
@@ -376,22 +360,5 @@ public class SuggestionBoxWebServiceProvider {
         .path(suggestion.getSuggestionBox().getComponentInstanceId())
         .path(suggestion.getSuggestionBox().getId()).path(BOX_SUGGESTION_URI_PART)
         .path(suggestion.getId()).build();
-  }
-
-  private Map<String, List<SuggestionEntity>> getSortedAndPublishedSuggestionsPerUser() {
-    CacheService cache = CacheServiceFactory.getApplicationCacheService();
-    Map<String, List<SuggestionEntity>> perUserSuggestions = cache.get(publishedSuggestionsCache,
-        Map.class);
-    if (perUserSuggestions == null) {
-      initSortedAndPublishedSuggestionsPerUserIn(cache);
-      perUserSuggestions = cache.get(publishedSuggestionsCache, Map.class);
-    }
-    return perUserSuggestions;
-  }
-
-  private void initSortedAndPublishedSuggestionsPerUserIn(CacheService cache) {
-    Map<String, List<SuggestionEntity>> perUserSuggestions
-        = new ConcurrentHashMap<String, List<SuggestionEntity>>();
-    publishedSuggestionsCache = cache.add(perUserSuggestions, 10800); // 3 hours of live
   }
 }
