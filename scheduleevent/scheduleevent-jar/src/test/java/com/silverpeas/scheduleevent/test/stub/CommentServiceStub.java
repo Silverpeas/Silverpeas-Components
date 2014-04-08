@@ -137,4 +137,9 @@ public class CommentServiceStub implements CommentService {
   public ResourceLocator getComponentMessages(String language) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
+
+  @Override
+  public List<CommentedPublicationInfo> getMostCommentedPublicationsInfo(String resourceType) {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
 }

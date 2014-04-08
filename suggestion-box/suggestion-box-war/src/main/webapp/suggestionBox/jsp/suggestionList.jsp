@@ -86,7 +86,7 @@
           <view:arrayCellText text="${suggestion.authorName}"/>
           <view:arrayCellText text="0"/>
           <view:arrayCellText text="0"/>
-          <view:arrayCellText text="0"/>
+          <view:arrayCellText text="${suggestion.commentCount}"/>
         </view:arrayLine>
       </c:forEach>
     </view:arrayPane>

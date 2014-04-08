@@ -30,9 +30,6 @@ import org.silverpeas.components.suggestionbox.mock.OrganisationControllerMockWr
 import org.silverpeas.components.suggestionbox.model.PersistenceService;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-
-import javax.sql.DataSource;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
@@ -67,7 +64,7 @@ public abstract class RepositoryBasedTest
   @Override
   public String[] getApplicationContextPath() {
     return new String[]{getSuggestionBoxContextPath(),
-        "spring-suggestion-box-embedded-datasource.xml"};
+      "spring-suggestion-box-embedded-datasource.xml"};
   }
 
   /**

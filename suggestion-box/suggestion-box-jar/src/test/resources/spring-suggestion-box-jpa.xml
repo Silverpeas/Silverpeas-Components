@@ -51,6 +51,12 @@
   <bean id="commentUserNotificationService"
         class="org.silverpeas.components.suggestionbox.mock.CommentUserNotificationServiceMockWrapper"/>
 
+  <bean id="commentService"
+        class="org.silverpeas.components.suggestionbox.mock.CommentServiceMockWrapper"/>
+
+  <bean id="commentServiceFactory" class="com.silverpeas.comment.service.CommentServiceFactory"
+        factory-method="getFactory"/>
+
   <bean id="transactionFactory" class="org.silverpeas.persistence.TransactionFactory"
         factory-method="getFactory"/>
 

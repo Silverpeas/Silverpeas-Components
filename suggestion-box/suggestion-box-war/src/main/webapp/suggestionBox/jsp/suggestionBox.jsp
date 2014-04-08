@@ -164,11 +164,14 @@
             <div suggestionbox-deletion></div>
             <ul ng-controller="outOfDraftController">
               <li ng-repeat="suggestion in outOfDraftSuggestions">
-                <a ng-href="${componentUriBase}suggestions/{{ suggestion.id }}">{{suggestion.title}}</a>
+                <a ng-href="${componentUriBase}suggestions/{{suggestion.id}}">{{suggestion.title}}</a>
+                <span class="vote">  </span>
+                <span class="counter-comments"><span>{{suggestion.commentCount}} <fmt:message key="GML.comments"/></span></span>
                   <%--TODO BEGIN REMOVE AFTER DEV--%>
                 <span>{{suggestion.validation.status}}</span>
-                <img ng-if="'${STATUS_REFUSED}'==suggestion.validation.status" ng-click="delete(suggestion)" src="${deleteIcon}" alt="remove" style="cursor: pointer"/>
-                <a ng-if="'${STATUS_PENDING_VALIDATION}'!=suggestion.validation.status && '${STATUS_VALIDATED}'!=suggestion.validation.status" href="#" ng-click="publish(suggestion)"><span>${publishSuggestionLabel}</span></a><br/>
+                <span></span>
+                <img ng-if="'${STATUS_REFUSED}'=== suggestion.validation.status" ng-click="delete(suggestion)" src="${deleteIcon}" alt="remove" style="cursor: pointer"/>
+                <span><a ng-if="'${STATUS_PENDING_VALIDATION}'!== suggestion.validation.status && '${STATUS_VALIDATED}'!== suggestion.validation.status" href="#" ng-click="publish(suggestion)"><span>${publishSuggestionLabel}</span></a></span><br/>
                   <%--TODO END REMOVE AFTER DEV--%>
               </li>
             </ul>
@@ -212,7 +215,7 @@
             <fmt:message key="suggestionBox.label.suggestions.buzz"/></h3>
         </div>
         <ul ng-controller="buzzPublishedController">
-          <li ng-repeat="suggestion in buzzPublishedSuggestions" ng-if="$index < 5">
+          <li ng-repeat="suggestion in buzzPublishedSuggestions">
             <a ng-href="${componentUriBase}suggestions/{{ suggestion.id }}">{{suggestion.title}}</a>
           </li>
         </ul>

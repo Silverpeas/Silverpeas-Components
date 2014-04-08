@@ -84,6 +84,8 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
 
   @Transient
   private boolean contentModified = false;
+  @Transient
+  private int commentCount;
 
   protected Suggestion() {
   }
@@ -147,6 +149,24 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
    */
   public String getContent() {
     return (this.content == null ? "" : this.content);
+  }
+
+  /**
+   * Sets the number of comment that were posted on this suggestion.
+   * @param count the number of comments.
+   */
+  protected void setCommentCount(int count) {
+    if (count >= 0) {
+      this.commentCount = count;
+    }
+  }
+
+  /**
+   * Gets the count of comments on this suggestion.
+   * @return the number of comments.
+   */
+  public int getCommentCount() {
+    return this.commentCount;
   }
 
   @Override
