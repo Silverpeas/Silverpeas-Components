@@ -26,6 +26,7 @@ package org.silverpeas.components.suggestionbox.common;
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.comment.model.CommentedPublicationInfo;
 import com.silverpeas.comment.service.CommentService;
+import com.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.beans.admin.PaginationPage;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
@@ -37,6 +38,7 @@ import org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_OR
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteriaProcessor;
 import org.silverpeas.contribution.ContributionStatus;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -97,7 +99,8 @@ public class SuggestionFinderByCriteria implements SuggestionCriteriaProcessor {
         orderings.remove(QUERY_ORDER_BY.COMMENT_COUNT_DESC);
         CommentService commentService = SilverpeasServiceProvider.getCommentService();
         List<CommentedPublicationInfo> suggestionInfos = commentService.
-            getMostCommentedPublicationsInfo(Suggestion.TYPE);
+            getMostCommentedPublicationsInfo(Suggestion.TYPE, Arrays.asList(new ForeignPK(null,
+                        criteria.getSuggestionBox().getComponentInstanceId())));
 
         for (CommentedPublicationInfo info : suggestionInfos) {
           criteria.identifierIsOneOf(info.getPublicationId());

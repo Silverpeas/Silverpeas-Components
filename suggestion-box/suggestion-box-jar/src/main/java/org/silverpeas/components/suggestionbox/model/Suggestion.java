@@ -124,14 +124,6 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
   }
 
   /**
-   * Technical method to initialize the content of the suggestion.
-   * @param content the content to initialize
-   */
-  void initializeContent(String content) {
-    this.content = content;
-  }
-
-  /**
    * Sets the specified content to this suggestion.
    * @param content the suggestion's content to set.
    */
