@@ -26,7 +26,6 @@ package org.silverpeas.components.suggestionbox.model;
 import com.silverpeas.SilverpeasComponentService;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.comment.service.CommentService;
-import com.silverpeas.comment.service.CommentServiceFactory;
 import com.silverpeas.comment.service.CommentUserNotificationService;
 import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
@@ -81,6 +80,9 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService,
   @Inject
   private CommentUserNotificationService commentUserNotificationService;
 
+  @Inject
+  private CommentService commentService;
+
   /**
    * Gets an instance of a SuggestionBoxService.
    * <p/>
@@ -132,10 +134,10 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService,
       for (Suggestion suggestion : suggestions) {
         String content = WysiwygController
             .load(suggestion.getSuggestionBox().getComponentInstanceId(), suggestion.getId(), null);
-        suggestion.initializeContent(content);
+        suggestion.setContent(content);
       }
     }
-    return suggestions;
+    return withCommentCount(suggestions);
   }
 
   /**
@@ -198,7 +200,6 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService,
     suggestionBoxRepository.flush();
 
     // Deletion of comments
-    CommentService commentService = CommentServiceFactory.getFactory().getCommentService();
     commentService.deleteAllCommentsByComponentInstanceId(box.getComponentInstanceId());
 
     // Deletion of box edito
@@ -229,7 +230,7 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService,
     SuggestionCriteria criteria = SuggestionCriteria.from(box).identifierIsOneOf(suggestionId);
     List<Suggestion> suggestions = findSuggestionsByCriteria(criteria.withWysiwygContent());
     if (suggestions.size() == 1) {
-      suggestion = suggestions.get(0);
+      suggestion = withCommentCount(suggestions.get(0));
     }
     return suggestion;
   }
@@ -372,7 +373,11 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService,
 
   @Override
   public Suggestion getContentById(String contentId) {
-    return suggestionRepository.getById(contentId);
+    Suggestion suggestion = suggestionRepository.getById(contentId);
+    if (suggestion != null) {
+      suggestion = withCommentCount(suggestion);
+    }
+    return suggestion;
   }
 
   @Override
@@ -383,5 +388,19 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService,
   @Override
   public ResourceLocator getComponentMessages(String language) {
     return SuggestionBoxComponentSettings.getMessagesIn(language);
+  }
+
+  private Suggestion withCommentCount(final Suggestion suggestion) {
+    int count = commentService.getCommentsCountOnPublication(suggestion.getContributionType(),
+        new ForeignPK(suggestion.getId(), suggestion.getComponentInstanceId()));
+    suggestion.setCommentCount(count);
+    return suggestion;
+  }
+
+  private List<Suggestion> withCommentCount(final List<Suggestion> suggestions) {
+    for (Suggestion suggestion : suggestions) {
+      withCommentCount(suggestion);
+    }
+    return suggestions;
   }
 }

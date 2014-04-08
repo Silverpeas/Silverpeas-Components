@@ -109,7 +109,7 @@ public class CommentServiceMockWrapper implements CommentService {
 
   @Override
   public List<CommentedPublicationInfo> getMostCommentedPublicationsInfo(String resourceType,
-      List<WAPrimaryKey> pks) {
+      List<? extends WAPrimaryKey> pks) {
     return mock.getMostCommentedPublicationsInfo(resourceType, pks);
   }
 
@@ -151,5 +151,10 @@ public class CommentServiceMockWrapper implements CommentService {
   @Override
   public ResourceLocator getComponentMessages(String language) {
     return mock.getComponentMessages(language);
+  }
+
+  @Override
+  public List<Comment> getLastComments(String resourceType, int count) {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
 }
