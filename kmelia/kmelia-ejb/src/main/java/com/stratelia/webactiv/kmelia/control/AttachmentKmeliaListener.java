@@ -70,7 +70,6 @@ public class AttachmentKmeliaListener extends DefaultNotificationSubscriber {
       if (attachment != null) {
         PublicationPK pubPK =  new PublicationPK(attachment.getForeignId(), attachment.getInstanceId());
         anExternalPublicationElementHaveChanged(pubPK);
-
       }
     }
   }

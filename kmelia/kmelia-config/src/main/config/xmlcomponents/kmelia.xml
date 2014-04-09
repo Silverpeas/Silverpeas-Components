@@ -1257,8 +1257,8 @@
         </message>
       </help>
     </parameter>
-	<parameter>
-      <name>rating</name>
+    <parameter>
+      <name>publicationRating</name>
       <label>
         <message lang="fr">Notes</message>
         <message lang="en">Ratings</message>
@@ -1270,9 +1270,9 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Permet aux lecteurs de donner une note de 1 à 5 à chaque publication</message>
-        <message lang="en">Allows readers to give a rating from 1 to 5 to each publication</message>
-        <message lang="de">Ermöglicht den Leser auf eine Note von 1 bis 5 auf jede Veröffentlichung geben</message>
+        <message lang="fr">Permet aux lecteurs de donner une note à chaque publication</message>
+        <message lang="en">Allows readers to give a rating to each publication</message>
+        <message lang="de">Ermöglicht den Leser auf eine Note auf jede Veröffentlichung geben</message>
       </help>
     </parameter>
   </parameters>

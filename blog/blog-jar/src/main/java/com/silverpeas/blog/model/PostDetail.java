@@ -43,7 +43,7 @@ public final class PostDetail implements SilverpeasContent {
   private String creatorName;
   private Date dateEvent;
   
-  private static final String TYPE = "Publication";
+  private static final String TYPE = PublicationDetail.TYPE;
 
   public PostDetail(PublicationDetail publication, String categoryId) {
     setPublication(publication);

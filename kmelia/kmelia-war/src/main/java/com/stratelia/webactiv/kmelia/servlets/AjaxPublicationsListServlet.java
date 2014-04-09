@@ -304,7 +304,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         "showTopicPathNameinSearchResult", true);
     fragmentSettings.showDelegatedNewsInfo = kmeliaScc.isNewsManage() && !user.isInRole(profile);
     fragmentSettings.toSearch = toSearch;
-    fragmentSettings.rateable = kmeliaScc.isRatingAllowed();
+    fragmentSettings.rateable = kmeliaScc.isPublicationRatingAllowed();
 
     int nbPubsPerPage = kmeliaScc.getNbPublicationsPerPage();
     int firstDisplayedItemIndex = kmeliaScc.getIndexOfFirstPubToDisplay();

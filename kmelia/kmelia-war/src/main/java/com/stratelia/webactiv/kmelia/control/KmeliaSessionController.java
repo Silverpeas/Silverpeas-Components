@@ -539,8 +539,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     return StringUtil.getBooleanValue(parameterValue);
   }
   
-  public boolean isRatingAllowed() {
-    return StringUtil.getBooleanValue(getComponentParameterValue("rating"));
+  public boolean isPublicationRatingAllowed() {
+    return StringUtil.getBooleanValue(getComponentParameterValue("publicationRating"));
   }
 
   public boolean showUserNameInList() {

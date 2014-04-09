@@ -64,10 +64,10 @@
   String singleFileURL = (String) request.getAttribute("SingleAttachmentURL");
   boolean userCanValidate = (Boolean) request.getAttribute("UserCanValidate");
   ValidationStep validation = (ValidationStep) request.getAttribute("ValidationStep");
-  int validationType = ((Integer) request.getAttribute("ValidationType")).intValue();
+  int validationType = (Integer) request.getAttribute("ValidationType");
   boolean isWriterApproval = (Boolean) request.getAttribute("WriterApproval");
   boolean notificationAllowed = (Boolean) request.getAttribute("NotificationAllowed");
-  boolean ratingsAllowed = (Boolean) request.getAttribute("RatingsAllowed");
+  boolean ratingsAllowed = (Boolean) request.getAttribute("PublicationRatingsAllowed");
   boolean attachmentsEnabled = (Boolean) request.getAttribute("AttachmentsEnabled");
   boolean draftOutTaxonomyOK = (Boolean) request.getAttribute("TaxonomyOK");
   boolean draftOutValidatorsOK = (Boolean) request.getAttribute("ValidatorsOK");
@@ -77,7 +77,7 @@
   boolean isBasket = false;
   if (isNewsManage) {
     delegatedNews = (DelegatedNews) request.getAttribute("DelegatedNews");
-    isBasket = ((Boolean) request.getAttribute("IsBasket")).booleanValue();
+    isBasket = (Boolean) request.getAttribute("IsBasket");
   }
   String indexIt = "0";
   if (kmeliaScc.isIndexable(kmeliaPublication.getDetail())) {
