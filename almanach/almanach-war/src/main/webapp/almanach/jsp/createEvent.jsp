@@ -229,7 +229,7 @@ $(document).ready(function() {
 	$('#eventFrequencyArea').hide();
 	$('.eventPeriodicityDateArea').hide();
 	
-	<view:wysiwyg replace="Description" language="${language}" width="600" height="300" toolbar="almanach"/>
+	<view:wysiwyg replace="Description" language="${language}" width="600" height="300" toolbar="almanach" displayFileBrowser="${false}"/>
 });
 </script>
 </head>
