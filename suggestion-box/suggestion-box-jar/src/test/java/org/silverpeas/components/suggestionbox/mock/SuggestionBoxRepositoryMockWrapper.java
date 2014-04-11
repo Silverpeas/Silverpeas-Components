@@ -69,21 +69,6 @@ public class SuggestionBoxRepositoryMockWrapper extends SuggestionBoxRepository 
   }
 
   @Override
-  public SuggestionBox getByIdentifier(UuidIdentifier id) {
-    return mock.getByIdentifier(id);
-  }
-
-  @Override
-  public List<SuggestionBox> getByIdentifier(UuidIdentifier... ids) {
-    return mock.getByIdentifier(ids);
-  }
-
-  @Override
-  public List<SuggestionBox> getByIdentifier(Collection<UuidIdentifier> ids) {
-    return mock.getByIdentifier(ids);
-  }
-
-  @Override
   public SuggestionBox save(OperationContext context, SuggestionBox entity) {
     return mock.save(context, entity);
   }
@@ -99,8 +84,8 @@ public class SuggestionBoxRepositoryMockWrapper extends SuggestionBoxRepository 
   }
 
   @Override
-  public void delete(SuggestionBox... entity) {
-    mock.delete(entity);
+  public void delete(SuggestionBox... suggestionBoxes) {
+    mock.delete(suggestionBoxes);
   }
 
   @Override
@@ -116,16 +101,6 @@ public class SuggestionBoxRepositoryMockWrapper extends SuggestionBoxRepository 
   @Override
   public long deleteById(Collection<String> ids) {
     return mock.deleteById(ids);
-  }
-
-  @Override
-  public long deleteByIdentifier(UuidIdentifier... ids) {
-    return mock.deleteByIdentifier(ids);
-  }
-
-  @Override
-  public long deleteByIdentifier(Collection<UuidIdentifier> ids) {
-    return mock.deleteByIdentifier(ids);
   }
 
   @Override

@@ -36,6 +36,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -52,6 +53,8 @@ import static org.silverpeas.contribution.ContributionStatus.*;
  * @author Yohann Chastagnier
  */
 @Entity
+@NamedQuery(name = "suggestionBoxFromComponentInstance",
+    query = "from SuggestionBox s where s.componentInstanceId = :componentInstanceId")
 @Table(name = "sc_suggestion_box")
 public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifier> {
 

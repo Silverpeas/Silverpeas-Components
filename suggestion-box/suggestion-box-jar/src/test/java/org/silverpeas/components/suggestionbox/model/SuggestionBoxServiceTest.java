@@ -192,7 +192,7 @@ public class SuggestionBoxServiceTest {
     when(getSuggestionRepository().findByCriteria(any(SuggestionCriteria.class)))
         .thenReturn(suggestions);
 
-    PowerMockito.mockStatic(WysiwygController.class);
+    //PowerMockito.mockStatic(WysiwygController.class);
     PowerMockito.mockStatic(IndexEngineProxy.class);
     service.indexSuggestionBox(box);
 
@@ -203,11 +203,11 @@ public class SuggestionBoxServiceTest {
     FullIndexEntry indexEntyOk2 =
         new FullIndexEntry(box.getComponentInstanceId(), "Suggestion", "suggestion1-ok-2");
 
-    PowerMockito.verifyStatic(times(2));
-    WysiwygController.addToIndex(eq(indexEntyOk1),
+    //PowerMockito.verifyStatic(times(2));
+    /*WysiwygController.addToIndex(eq(indexEntyOk1),
         eq(new ForeignPK("suggestion1-ok-1", box.getComponentInstanceId())), anyString());
     WysiwygController.addToIndex(eq(indexEntyOk2),
-        eq(new ForeignPK("suggestion1-ok-2", box.getComponentInstanceId())), anyString());
+        eq(new ForeignPK("suggestion1-ok-2", box.getComponentInstanceId())), anyString());*/
 
     PowerMockito.verifyStatic(times(2));
     IndexEngineProxy.addIndexEntry(eq(indexEntyOk1));
@@ -224,17 +224,12 @@ public class SuggestionBoxServiceTest {
     SuggestionBoxRepository suggestionBoxRepository = getSuggestionBoxRepository();
     when(suggestionBoxRepository.getById(box.getId())).thenReturn(box);
 
-    PowerMockito.mockStatic(WysiwygController.class);
     PowerMockito.mockStatic(IndexEngineProxy.class);
     service.addSuggestion(box, suggestion, null);
 
     SuggestionRepository suggestionRepository = getSuggestionRepository();
     verify(suggestionBoxRepository, times(1)).getById(box.getId());
     verify(suggestionRepository, times(1)).save(any(OperationContext.class), eq(suggestion));
-    PowerMockito.verifyStatic(times(1));
-    WysiwygController.
-        save(suggestion.getContent(), box.getComponentInstanceId(), suggestion.getId(), userId,
-            null, false);
     PowerMockito.verifyStatic(times(0));
     IndexEngineProxy.addIndexEntry(any(FullIndexEntry.class));
   }
@@ -243,16 +238,11 @@ public class SuggestionBoxServiceTest {
   public void updateAnExistingSuggestion() {
     Suggestion suggestion = prepareASuggestion();
 
-    PowerMockito.mockStatic(WysiwygController.class);
     PowerMockito.mockStatic(IndexEngineProxy.class);
     service.updateSuggestion(suggestion);
 
     SuggestionRepository suggestionRepository = getSuggestionRepository();
     verify(suggestionRepository, times(1)).save(any(OperationContext.class), eq(suggestion));
-    PowerMockito.verifyStatic(times(1));
-    WysiwygController.
-        save(suggestion.getContent(), suggestion.getSuggestionBox().getComponentInstanceId(),
-            suggestion.getId(), userId, null, false);
     PowerMockito.verifyStatic(times(0));
     IndexEngineProxy.addIndexEntry(any(FullIndexEntry.class));
   }
