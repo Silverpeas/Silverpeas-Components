@@ -23,20 +23,28 @@
  */
 package org.silverpeas.components.suggestionbox.repository;
 
+import edu.emory.mathcs.backport.java.util.Arrays;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
-import org.silverpeas.persistence.repository.jpa.AbstractJpaEntityRepository;
+import org.silverpeas.persistence.repository.jpa.NamedParameters;
+import org.silverpeas.persistence.repository.jpa.SilverpeasJpaEntityManager;
 
+import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.Collection;
+import java.util.List;
 
 /**
- * This entity repository provides all necessary methods in order to handle the persistence of
- * suggestion boxes.
+ * This entity suggestionRepository provides all necessary methods in order to handle the
+ * persistence of suggestion boxes, whatever the data sources used underlying.
  * @author Yohann Chastagnier
  */
 @Named
 public class SuggestionBoxRepository
-    extends AbstractJpaEntityRepository<SuggestionBox, UuidIdentifier> {
+    extends SilverpeasJpaEntityManager<SuggestionBox, UuidIdentifier> {
+
+  @Inject
+  private SuggestionRepository suggestionRepository;
 
   /**
    * Gets the suggestion box represented by the specified component instance identifier.
@@ -45,8 +53,8 @@ public class SuggestionBoxRepository
    * @return the suggestion box instance if exists, null otherwise.
    */
   public SuggestionBox getByComponentInstanceId(String componentInstanceId) {
-    String jpqlQuery = "from SuggestionBox s where s.componentInstanceId = :componentInstanceId";
-    return getFromJpqlString(jpqlQuery,
-        initializeNamedParameters().add("componentInstanceId", componentInstanceId));
+    NamedParameters parameters = newNamedParameters();
+    return findOneByNamedQuery("suggestionBoxFromComponentInstance",
+        parameters.add("componentInstanceId", componentInstanceId));
   }
 }

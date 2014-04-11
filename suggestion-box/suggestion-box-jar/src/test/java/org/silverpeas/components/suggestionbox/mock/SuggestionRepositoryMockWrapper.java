@@ -70,21 +70,6 @@ public class SuggestionRepositoryMockWrapper extends SuggestionRepository {
   }
 
   @Override
-  public Suggestion getByIdentifier(UuidIdentifier id) {
-    return mock.getByIdentifier(id);
-  }
-
-  @Override
-  public List<Suggestion> getByIdentifier(UuidIdentifier... ids) {
-    return mock.getByIdentifier(ids);
-  }
-
-  @Override
-  public List<Suggestion> getByIdentifier(Collection<UuidIdentifier> ids) {
-    return mock.getByIdentifier(ids);
-  }
-
-  @Override
   public Suggestion save(OperationContext context, Suggestion entity) {
     return mock.save(context, entity);
   }
@@ -112,21 +97,6 @@ public class SuggestionRepositoryMockWrapper extends SuggestionRepository {
   @Override
   public long deleteById(String... ids) {
     return mock.deleteById(ids);
-  }
-
-  @Override
-  public long deleteByIdentifier(UuidIdentifier... ids) {
-    return mock.deleteByIdentifier(ids);
-  }
-
-  @Override
-  public long deleteByIdentifier(Collection<UuidIdentifier> ids) {
-    return mock.deleteByIdentifier(ids);
-  }
-
-  @Override
-  public void flush() {
-    mock.flush();
   }
 
   @Override

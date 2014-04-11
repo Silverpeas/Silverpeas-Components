@@ -123,21 +123,8 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService,
     List<Suggestion> suggestions = findSuggestionsByCriteria(
         SuggestionCriteria.from(suggestionBox).statusIsOneOf(ContributionStatus.VALIDATED));
     for (Suggestion suggestion : suggestions) {
-      createSuggestionIndex(suggestion);
+      suggestionRepository.index(suggestion);
     }
-  }
-
-  @Override
-  public List<Suggestion> findSuggestionsByCriteria(final SuggestionCriteria criteria) {
-    List<Suggestion> suggestions = suggestionRepository.findByCriteria(criteria);
-    if (criteria.mustLoadWysiwygContent()) {
-      for (Suggestion suggestion : suggestions) {
-        String content = WysiwygController
-            .load(suggestion.getSuggestionBox().getComponentInstanceId(), suggestion.getId(), null);
-        suggestion.setContent(content);
-      }
-    }
-    return withCommentCount(suggestions);
   }
 
   /**
@@ -149,39 +136,6 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService,
   public void saveSuggestionBox(final SuggestionBox box) {
     final UserDetail author = box.getLastUpdater();
     suggestionBoxRepository.save(OperationContext.fromUser(author), box);
-  }
-
-  /**
-   * Adds into the specified suggestion box the new specified suggestion.
-   * @param box a suggestion box
-   * @param suggestion a new suggestions to add into the suggestion box.
-   * @param uploadedFiles a collection of file to attach to the suggestion.
-   */
-  @Transactional
-  @Override
-  public void addSuggestion(final SuggestionBox box, final Suggestion suggestion,
-      final Collection<UploadedFile> uploadedFiles) {
-    final UserDetail author = suggestion.getLastUpdater();
-    SuggestionBox actualBox = suggestionBoxRepository.getById(box.getId());
-    actualBox.addSuggestion(suggestion);
-
-    suggestionRepository.save(OperationContext.fromUser(author), suggestion);
-    suggestionRepository.flush();
-
-    // Description
-    WysiwygController.
-        save(suggestion.getContent(), box.getComponentInstanceId(), suggestion.getId(), author.
-            getId(), null, false);
-
-    // Attach uploaded files
-    if (CollectionUtil.isNotEmpty(uploadedFiles)) {
-      for (UploadedFile uploadedFile : uploadedFiles) {
-        // Register attachment
-        uploadedFile
-            .registerAttachment(new ForeignPK(suggestion.getId(), box.getComponentInstanceId()),
-                null, false);
-      }
-    }
   }
 
   /**
@@ -202,7 +156,7 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService,
     // Deletion of comments
     commentService.deleteAllCommentsByComponentInstanceId(box.getComponentInstanceId());
 
-    // Deletion of box edito
+    // Deletion of all attachments, WYSIWYG comprised.
     AttachmentService attachmentService = AttachmentServiceFactory.getAttachmentService();
     attachmentService.deleteAllAttachments(box.getComponentInstanceId());
 
@@ -212,16 +166,41 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService,
   }
 
   @Override
+  public List<Suggestion> findSuggestionsByCriteria(final SuggestionCriteria criteria) {
+    return suggestionRepository.findByCriteria(criteria);
+  }
+
+  /**
+   * Adds into the specified suggestion box the new specified suggestion.
+   * @param box a suggestion box
+   * @param suggestion a new suggestions to add into the suggestion box.
+   * @param uploadedFiles a collection of file to attach to the suggestion.
+   */
+  @Transactional
+  @Override
+  public void addSuggestion(final SuggestionBox box, final Suggestion suggestion,
+      final Collection<UploadedFile> uploadedFiles) {
+    final UserDetail author = suggestion.getLastUpdater();
+    SuggestionBox actualBox = suggestionBoxRepository.getById(box.getId());
+    actualBox.addSuggestion(suggestion);
+    suggestionRepository.save(OperationContext.fromUser(author), suggestion);
+
+    // Attach uploaded files
+    if (CollectionUtil.isNotEmpty(uploadedFiles)) {
+      for (UploadedFile uploadedFile : uploadedFiles) {
+        // Register attachment
+        uploadedFile
+            .registerAttachment(new ForeignPK(suggestion.getId(), box.getComponentInstanceId()),
+                null, false);
+      }
+    }
+  }
+
+  @Override
   @Transactional
   public void updateSuggestion(final Suggestion suggestion) {
     suggestionRepository.
         save(OperationContext.fromUser(suggestion.getLastUpdater()), suggestion);
-    suggestionRepository.flush();
-
-    if (suggestion.isContentModified()) {
-      WysiwygController.save(suggestion.getContent(), suggestion.getSuggestionBox().
-          getComponentInstanceId(), suggestion.getId(), suggestion.getLastUpdatedBy(), null, false);
-    }
   }
 
   @Override
@@ -230,7 +209,7 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService,
     SuggestionCriteria criteria = SuggestionCriteria.from(box).identifierIsOneOf(suggestionId);
     List<Suggestion> suggestions = findSuggestionsByCriteria(criteria.withWysiwygContent());
     if (suggestions.size() == 1) {
-      suggestion = withCommentCount(suggestions.get(0));
+      suggestion = suggestions.get(0);
     }
     return suggestion;
   }
@@ -242,9 +221,6 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService,
     if (suggestion.getSuggestionBox().equals(box) && (actual.getValidation().isInDraft() || actual.
         getValidation().isRefused())) {
       suggestionRepository.delete(actual);
-      suggestionRepository.flush();
-
-      WysiwygController.deleteWysiwygAttachments(box.getComponentInstanceId(), suggestion.getId());
     }
   }
 
@@ -273,7 +249,6 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService,
                   validation.setStatus(ContributionStatus.PENDING_VALIDATION);
                 }
                 suggestionRepository.save(OperationContext.fromUser(updater), actual);
-                suggestionRepository.flush();
                 triggerNotif = true;
               }
             }
@@ -290,7 +265,7 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService,
               .buildAndSend(new SuggestionPendingValidationUserNotification(updatedSuggestion));
           break;
         case VALIDATED:
-          createSuggestionIndex(updatedSuggestion);
+          suggestionRepository.index(updatedSuggestion);
           UserNotificationHelper
               .buildAndSend(new SuggestionBoxSubscriptionUserNotification(updatedSuggestion));
           break;
@@ -324,7 +299,6 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService,
                 actualValidation.setValidator(updater);
               }
               suggestionRepository.save(OperationContext.fromUser(updater), actual);
-              suggestionRepository.flush();
               triggerNotif = true;
             }
             return Pair.of(actual, triggerNotif);
@@ -336,7 +310,7 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService,
     if (result.getRight()) {
       switch (updatedSuggestion.getValidation().getStatus()) {
         case VALIDATED:
-          createSuggestionIndex(updatedSuggestion);
+          suggestionRepository.index(updatedSuggestion);
           UserNotificationHelper
               .buildAndSend(new SuggestionBoxSubscriptionUserNotification(updatedSuggestion));
         case REFUSED:
@@ -349,35 +323,9 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService,
     return updatedSuggestion;
   }
 
-  /**
-   * Creates a suggestion index.
-   * The suggestion validation must be at validated status. Otherwise the index creation is
-   * ignored.
-   * @param suggestion the suggestion for which the indexation must be performed.
-   */
-  private void createSuggestionIndex(Suggestion suggestion) {
-    SilverTrace.info("suggestionBox", "suggestionBoxService.createSuggestionIndex()",
-        "root.MSG_GEN_ENTER_METHOD", "suggestion id = " + suggestion.getId());
-    if (suggestion != null && suggestion.getValidation().isValidated()) {
-      FullIndexEntry indexEntry = new FullIndexEntry(suggestion.getComponentInstanceId(),
-          Suggestion.TYPE,
-          suggestion.getId());
-      indexEntry.setTitle(suggestion.getTitle());
-      indexEntry.setCreationDate(suggestion.getValidation().getDate());
-      indexEntry.setCreationUser(suggestion.getCreatedBy());
-      WysiwygController.addToIndex(indexEntry,
-          new ForeignPK(suggestion.getId(), suggestion.getComponentInstanceId()), null);
-      IndexEngineProxy.addIndexEntry(indexEntry);
-    }
-  }
-
   @Override
   public Suggestion getContentById(String contentId) {
-    Suggestion suggestion = suggestionRepository.getById(contentId);
-    if (suggestion != null) {
-      suggestion = withCommentCount(suggestion);
-    }
-    return suggestion;
+    return suggestionRepository.getById(contentId);
   }
 
   @Override
@@ -388,19 +336,5 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService,
   @Override
   public ResourceLocator getComponentMessages(String language) {
     return SuggestionBoxComponentSettings.getMessagesIn(language);
-  }
-
-  private Suggestion withCommentCount(final Suggestion suggestion) {
-    int count = commentService.getCommentsCountOnPublication(suggestion.getContributionType(),
-        new ForeignPK(suggestion.getId(), suggestion.getComponentInstanceId()));
-    suggestion.setCommentCount(count);
-    return suggestion;
-  }
-
-  private List<Suggestion> withCommentCount(final List<Suggestion> suggestions) {
-    for (Suggestion suggestion : suggestions) {
-      withCommentCount(suggestion);
-    }
-    return suggestions;
   }
 }

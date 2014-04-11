@@ -147,7 +147,7 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
    * Sets the number of comment that were posted on this suggestion.
    * @param count the number of comments.
    */
-  protected void setCommentCount(int count) {
+  public void setCommentCount(int count) {
     if (count >= 0) {
       this.commentCount = count;
     }
@@ -202,7 +202,7 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
    * Is the content of this suggestion was modified?
    * @return true if the suggestion's content was modified.
    */
-  protected boolean isContentModified() {
+  public boolean isContentModified() {
     return this.contentModified;
   }
 
