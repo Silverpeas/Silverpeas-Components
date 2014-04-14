@@ -197,7 +197,7 @@
           </c:if>
           <tr class="notationLine">
             <td align="right">
-              <silverpeas-rating componentid="${componentId}" resourcetype="<%=Forum.RESOURCE_TYPE %>" resourceid="${currentForum.id}" readonly="${isReader}"></silverpeas-rating>
+              <silverpeas-rating componentid="${componentId}" contributiontype="<%=Forum.RESOURCE_TYPE %>" contributionid="${currentForum.id}" readonly="${not(isAdmin or isUser)}" canuserrating="${isAdmin or isUser}"></silverpeas-rating>
             </td>
           </tr>
           <tr>

@@ -301,7 +301,7 @@
             ? ActionUrl.getUrl("viewMessage", 8, forumId) : ActionUrl.getUrl("main", 8, -1));
 %>
             <div class="notationLine">
-            	<silverpeas-rating componentid="${componentId}" resourcetype="<%=Message.RESOURCE_TYPE %>" resourceid="<%=messageId%>" readonly="${isReader}"></silverpeas-rating>
+            	<silverpeas-rating componentid="${componentId}" contributiontype="<%=Message.RESOURCE_TYPE %>" contributionid="<%=messageId%>" readonly="${not(isAdmin or isUser)}" canuserrating="${isAdmin or isUser}"></silverpeas-rating>
             </div>
             <%
               ForumHelper
