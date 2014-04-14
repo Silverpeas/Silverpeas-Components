@@ -37,6 +37,9 @@
   <ctx:annotation-config/>
   <ctx:component-scan base-package="org.silverpeas.components.suggestionbox.web"/>
 
+  <bean id="commentService"
+        class="org.silverpeas.components.suggestionbox.mock.CommentServiceMockWrapper"/>
+
   <import resource="spring-webservice.xml"/>
 
 </beans>

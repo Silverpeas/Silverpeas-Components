@@ -26,6 +26,8 @@ package org.silverpeas.components.suggestionbox.web;
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
+import com.silverpeas.comment.model.Comment;
+import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.PaginationPage;
@@ -38,20 +40,22 @@ import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_ORDER_BY;
 import org.silverpeas.contribution.ContributionStatus;
 
+import javax.inject.Inject;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs.BOX_BASE_URI;
-import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs.BOX_SUGGESTION_URI_PART;
-
-import javax.ws.rs.QueryParam;
+import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs
+    .BOX_SUGGESTION_URI_PART;
 
 /**
  * A REST Web resource giving suggestion data.
@@ -62,6 +66,9 @@ import javax.ws.rs.QueryParam;
 @Path(BOX_BASE_URI + "/{componentInstanceId}/{suggestionBoxId}")
 @Authorized
 public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
+
+  @Inject
+  private CommentService commentService;
 
   /**
    * Gets the JSON representation of an suggestion.
@@ -226,6 +233,33 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
     }).execute();
   }
 
+
+  /**
+   * Gets the JSON representation of a list of the last comments that were posted on the
+   * suggestions
+   * of the current suggestion box. The comments are sorted in descent order, that is to say from
+   * the newer to the older one.
+   * @param count the number of comments to return. If this parameter isn't set, then only the
+   * first
+   * 5 last comments are sent back.
+   * @return a collection of comments on the suggestions, ready to be serialized in JSON.
+   */
+  @GET
+  @Path(BOX_SUGGESTION_URI_PART + "/lastComments")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Collection<SuggestionCommentEntity> getLastComments(@QueryParam("count") final int count) {
+    SuggestionBox suggestionBox = getSuggestionBox();
+    List<Comment> comments = commentService
+        .getLastComments(suggestionBox.getComponentInstanceId(), (count <= 0 ? 5 : count));
+    List<SuggestionCommentEntity> commentEntities =
+        new ArrayList<SuggestionCommentEntity>(comments.size());
+    for (Comment comment : comments) {
+      Suggestion suggestion = suggestionBox.getSuggestions().get(comment.getForeignKey().getId());
+      commentEntities.add(SuggestionCommentEntity.fromComment(comment).onSuggestion(suggestion));
+    }
+    return commentEntities;
+  }
+
   private SuggestionBoxWebServiceProvider getWebServiceProvider() {
     return SuggestionBoxWebServiceProvider.getWebServiceProvider();
   }
@@ -242,5 +276,6 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
     }
     return paginationPage;
   }
+
 
 }

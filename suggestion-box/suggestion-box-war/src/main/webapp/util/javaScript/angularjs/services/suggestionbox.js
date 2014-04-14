@@ -27,20 +27,37 @@ services.factory('Suggestion', ['RESTAdapter', function(RESTAdapter) {
   return new function() {
     // the converter of Suggestion objects from a json stream */
     var converter = function(data) {
-      var suggestions;
+      var objects;
       if (data instanceof Array) {
-        suggestions = [];
-        for (var i = 0; i < data.length; i++) {
-          suggestions.push(new Suggestion(data[i]));
+        objects = [];
+        if (data.length > 0 && typeof data[0].suggestionTitle === 'undefined') {
+          for (var i = 0; i < data.length; i++) {
+            objects.push(new Suggestion(data[i]));
+          }
+        } else {
+          for (var i = 0; i < data.length; i++) {
+            objects.push(new SuggestionComment(data[i]));
+          }
         }
       } else {
-        suggestions = new Suggestion(data);
+        objects = (typeof 'data.suggestionTitle' === undefined ? new Suggestion(data):new Comment(data));
       }
-      return suggestions;
+      return objects;
     };
 
-    // the type SuggestionBox
+    // the type Suggestion
     var Suggestion = function() {
+      this.type = 'Suggestion';
+      if (arguments.length > 0) {
+        for (var prop in arguments[0]) {
+          this[prop] = arguments[0][prop];
+        }
+      }
+    };
+
+    // the type SuggestionComment
+    var SuggestionComment = function() {
+      this.type = 'SuggestionComment';
       if (arguments.length > 0) {
         for (var prop in arguments[0]) {
           this[prop] = arguments[0][prop];
@@ -90,7 +107,7 @@ services.factory('Suggestion', ['RESTAdapter', function(RESTAdapter) {
           }
         };
         /**
-         * Removes the suggestion identified by the specified identifier from the suggestions of the
+         * Removes the suggestion identified by the specified identifier from the suggestions in the
          * suggestion box.
          * @param {string} id the identifier of the suggestion to remove
          * @returns {string} the id of the deleted suggestion.
@@ -100,12 +117,22 @@ services.factory('Suggestion', ['RESTAdapter', function(RESTAdapter) {
         };
         /**
          * Publishes the suggestion identified by the specified identifier from the suggestions
-         * of the suggestion box.
+         * in the suggestion box.
          * @param {string} suggestion the suggestion to publish
-         * @returns {Object} the updated suggestion.
+         * @returns {Suggestion} the updated suggestion.
          */
         this.publish = function(suggestion) {
           return adapter.update(suggestion.id, 'publish', suggestion);
+        };
+        /**
+         * Gets the last comments that were posted on some of the suggestions in the suggestion
+         * box.
+         * @param {integer} [count] the number of comments to get.
+         * @returns {Comment} the last comments on the suggestions.
+         */
+        this.lastComments = function(count) {
+          var howMany = (typeof count === 'number' ? {count: count}:{});
+          return this.get("lastComments", howMany);
         };
       };
     };

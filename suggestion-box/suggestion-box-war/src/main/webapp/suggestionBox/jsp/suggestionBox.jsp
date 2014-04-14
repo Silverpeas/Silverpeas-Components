@@ -225,7 +225,17 @@
           <h3 class="lastCommentSuggestion-title">
             <fmt:message key="suggestionBox.label.suggestions.comments.last"/></h3>
         </div>
-        <ul>
+        <ul ng-controller="lastCommentsController">
+          <li ng-repeat="comment in lastComments">
+            <a class="a-suggestion" ng-href="${componentUriBase}suggestions/{{ comment.resourceId }}">{{comment.suggestionTitle}}</a>
+            <div class="commentaires">
+              <div>
+                <div class="avatar"><img alt="{{ comment.author.fullName }}" ng-src="{{ comment.author.avatar }}" /></div>
+                <pre class="text">{{ comment.text }}</pre>
+                <p class="author"><span>{{ comment.author.fullName }}</span>, <span class="date">{{ comment.creationDate }}</span></p>
+              </div>
+            </div>
+          </li>
         </ul>
       </div>
     </div>
