@@ -27,17 +27,16 @@ import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.web.RequestHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.forums.control.ForumsSessionController;
 import com.stratelia.webactiv.forums.models.Message;
 import com.stratelia.webactiv.forums.url.ActionUrl;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.rating.RaterRating;
+import org.silverpeas.rating.web.RaterRatingEntity;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspWriter;
-
-import org.silverpeas.rating.Rating;
-import org.silverpeas.rating.web.RatingEntity;
-
 import java.io.IOException;
 import java.util.Date;
 
@@ -233,11 +232,19 @@ public class ForumHelper {
           out.println("</span></td>");
 
           // Notation
-          Rating rating = message.getRating(fsc.getUserId());
-          RatingEntity ratingEntity = RatingEntity.fromRating(rating);
+          SilverpeasRole greaterUserRole =
+              SilverpeasRole.getGreaterFrom(SilverpeasRole.from(fsc.getUserRoles()));
+          boolean canUserRating =
+              greaterUserRole != null && greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.user);
+          RaterRating raterRating = message.getRating().getRaterRating(fsc.getUserDetail());
+          RaterRatingEntity raterRatingEntity = RaterRatingEntity.fromRaterRating(raterRating);
           out.print("<td  align=\"center\">");
-          out.write(ratingEntity.toJSonScript("ratingEntity_" + ratingEntity.getResourceId()));
-          out.write("<silverpeas-rating readonly=\"true\" rating=\"ratingEntity_"+ratingEntity.getResourceId()+"\" shownbratings=\"false\"></silverpeas-rating>");
+          out.write(raterRatingEntity
+              .toJSonScript("raterRatingEntity_" + raterRatingEntity.getContributionId()));
+          out.write("<silverpeas-rating readonly=\"true\" raterRating=\"raterRatingEntity_" +
+              raterRatingEntity.getContributionId() +
+              "\" shownbraterratings=\"false\" canuserrating=\"" + canUserRating +
+              "\"></silverpeas-rating>");
           out.println("</td>");
         }
       }

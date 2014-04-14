@@ -25,13 +25,10 @@ package com.stratelia.webactiv.forums.models;
 
 import java.io.Serializable;
 
+import com.silverpeas.notation.ejb.RatingServiceFactory;
 import org.silverpeas.rating.Rateable;
-import org.silverpeas.rating.Rating;
-import org.silverpeas.rating.RatingPK;
-
-import com.silverpeas.notation.ejb.NotationBm;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
+import org.silverpeas.rating.ContributionRating;
+import org.silverpeas.rating.ContributionRatingPK;
 
 public class Forum implements Rateable, Serializable {
 
@@ -46,6 +43,7 @@ public class Forum implements Rateable, Serializable {
   private String creationDate;
   private String instanceId;
   private ForumPK pk;
+  private ContributionRating contributionRating;
 
   public Forum(int id, String name, String description, boolean active, int parentId, String category) {
     this.id = id;
@@ -211,9 +209,11 @@ public class Forum implements Rateable, Serializable {
   }
 
   @Override
-  public Rating getRating(String userId) {
-    NotationBm notationBm = EJBUtilitaire.getEJBObjectRef(JNDINames.NOTATIONBM_EJBHOME, NotationBm.class);
-    RatingPK pk = new RatingPK(String.valueOf(id), getInstanceId(), RESOURCE_TYPE, userId);
-    return notationBm.getRating(pk);
+  public ContributionRating getRating() {
+    if (contributionRating == null) {
+      contributionRating = RatingServiceFactory.getRatingService()
+          .getRating(new ContributionRatingPK(String.valueOf(id), getInstanceId(), RESOURCE_TYPE));
+    }
+    return contributionRating;
   }
 }

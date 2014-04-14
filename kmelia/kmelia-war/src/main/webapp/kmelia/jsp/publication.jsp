@@ -576,7 +576,7 @@
       		<p id="statInfo">
       			<b><%= kmeliaPublication.getNbAccess()%> vues</b>
       			<% if (ratingsAllowed) { %>
-					<silverpeas-rating componentid="<%=componentId %>" resourcetype="Publication" resourceid="<%=id %>"></silverpeas-rating>
+					<silverpeas-rating componentid="<%=componentId %>" contributiontype="Publication" contributionid="<%=id %>"></silverpeas-rating>
 				<% } %>
 			</p>
 
