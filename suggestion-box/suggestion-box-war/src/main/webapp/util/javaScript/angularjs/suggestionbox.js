@@ -128,9 +128,9 @@ suggestionBox.controller('publishedController',
       });
     }]);
 
-/* the buzz controller of the application */
-suggestionBox.controller('buzzPublishedController',
-    ['context', '$scope', '$rootScope', function(context, $scope, $rootScope) {
+  /* the buzz controller of the application */
+  suggestionBox.controller('buzzPublishedController',
+    ['context', '$scope', function(context, $scope) {
       var suggestionBox = $scope.suggestionBox;
 
       $scope.loadBuzzPublished = function() {
@@ -144,6 +144,14 @@ suggestionBox.controller('buzzPublishedController',
 
       $scope.$on("suggestionModified", function(theSuggestionId) {
         $scope.loadBuzzPublished();
+      });
+    }]);
+
+  suggestionBox.controller('lastCommentsController',
+    ['context', '$scope', function(context, $scope) {
+      var suggestionBox = $scope.suggestionBox;
+      suggestionBox.suggestions.lastComments(3).then(function(theComments) {
+        $scope.lastComments = theComments;
       });
     }]);
 
@@ -163,11 +171,4 @@ suggestionBox.controller('buzzPublishedController',
 
       $scope.changePage = fetchSuggestionsAtPage;
 
-      $scope.sortByValidationDate = function() {
-
-      };
-
-      $scope.sortByRating = function() {
-
-      };
   }]);
