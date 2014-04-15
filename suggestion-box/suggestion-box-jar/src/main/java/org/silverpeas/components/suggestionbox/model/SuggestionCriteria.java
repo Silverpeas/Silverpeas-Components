@@ -81,7 +81,6 @@ public class SuggestionCriteria {
 
   private SuggestionBox suggestionBox;
   private UserDetail creator;
-  private UserDetail forUser;
   private final List<ContributionStatus> statuses = new ArrayList<ContributionStatus>();
   private final List<QUERY_ORDER_BY> orderByList = new ArrayList<QUERY_ORDER_BY>();
   private final List<String> identifiers = new ArrayList<String>();
@@ -110,16 +109,6 @@ public class SuggestionCriteria {
    */
   public SuggestionCriteria createdBy(UserDetail user) {
     this.creator = user;
-    return this;
-  }
-
-  /**
-   * Sets the user requesting the suggestions matching the criteria.
-   * @param user the user asking the suggestions.
-   * @return the suggestion criteria itself set with the caller.
-   */
-  public SuggestionCriteria forUser(UserDetail user) {
-    this.forUser = user;
     return this;
   }
 
@@ -221,14 +210,6 @@ public class SuggestionCriteria {
 
   private PaginationPage getPagination() {
     return this.pagination;
-  }
-
-  /**
-   * Gets the user that has asked for the suggestions matching these criteria.
-   * @return the caller.
-   */
-  public UserDetail getCaller() {
-    return forUser;
   }
 
   /**

@@ -24,6 +24,8 @@
 package org.silverpeas.components.suggestionbox.model;
 
 import com.silverpeas.comment.service.CommentService;
+import com.silverpeas.notation.ejb.RatingBm;
+import com.silverpeas.notation.ejb.RatingServiceFactory;
 import com.silverpeas.notification.builder.UserNotificationBuider;
 import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.subscribe.SubscriptionService;
@@ -39,6 +41,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.internal.stubbing.answers.Returns;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -85,7 +89,8 @@ import static org.mockito.Mockito.*;
  * @author mmoquillon
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({WysiwygController.class, UserNotificationHelper.class, IndexEngineProxy.class})
+@PrepareForTest({WysiwygController.class, UserNotificationHelper.class, IndexEngineProxy.class,
+    RatingServiceFactory.class})
 public class SuggestionBoxServiceTest {
 
   private static AbstractApplicationContext context;
@@ -139,6 +144,13 @@ public class SuggestionBoxServiceTest {
    */
   @Test
   public void deleteASuggestionBox() {
+    final RatingBm ratingBm = mock(RatingBm.class);
+    PowerMockito.mockStatic(RatingServiceFactory.class, new Answer() {
+      @Override
+      public Object answer(final InvocationOnMock invocation) throws Throwable {
+        return ratingBm;
+      }
+    });
     SuggestionBox box = prepareASuggestionBox();
     service.deleteSuggestionBox(box);
 
@@ -149,6 +161,10 @@ public class SuggestionBoxServiceTest {
         eq(ComponentSubscriptionResource.from(box.getComponentInstanceId())));
     verify(getCommentService(), times(1))
         .deleteAllCommentsByComponentInstanceId(eq(box.getComponentInstanceId()));
+
+    PowerMockito.verifyStatic(times(1));
+    RatingServiceFactory.getRatingService();
+    verify(ratingBm, times(1)).deleteComponentRatings(eq(box.getComponentInstanceId()));
   }
 
   /**

@@ -236,8 +236,7 @@ public class ForumHelper {
               SilverpeasRole.getGreaterFrom(SilverpeasRole.from(fsc.getUserRoles()));
           boolean canUserRating =
               greaterUserRole != null && greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.user);
-          RaterRating raterRating = message.getRating().getRaterRating(fsc.getUserDetail());
-          RaterRatingEntity raterRatingEntity = RaterRatingEntity.fromRaterRating(raterRating);
+          RaterRatingEntity raterRatingEntity = RaterRatingEntity.fromRateable(message);
           out.print("<td  align=\"center\">");
           out.write(raterRatingEntity
               .toJSonScript("raterRatingEntity_" + raterRatingEntity.getContributionId()));

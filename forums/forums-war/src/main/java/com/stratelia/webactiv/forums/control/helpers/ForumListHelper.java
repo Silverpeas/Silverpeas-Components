@@ -153,8 +153,7 @@ public class ForumListHelper {
           SilverpeasRole.getGreaterFrom(SilverpeasRole.from(fsc.getUserRoles()));
       boolean canUserRating =
           greaterUserRole != null && greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.user);
-      RaterRating raterRating = forum.getRating().getRaterRating(fsc.getUserDetail());
-      RaterRatingEntity raterRatingEntity = RaterRatingEntity.fromRaterRating(raterRating);
+      RaterRatingEntity raterRatingEntity = RaterRatingEntity.fromRateable(forum);
       out.print("<td class=\"ArrayCell\">");
       out.write(raterRatingEntity
           .toJSonScript("raterRatingEntity_" + raterRatingEntity.getContributionId()));

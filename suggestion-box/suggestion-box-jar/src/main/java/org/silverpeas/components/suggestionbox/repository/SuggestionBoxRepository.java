@@ -23,7 +23,6 @@
  */
 package org.silverpeas.components.suggestionbox.repository;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.persistence.repository.jpa.NamedParameters;
@@ -31,8 +30,6 @@ import org.silverpeas.persistence.repository.jpa.SilverpeasJpaEntityManager;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * This entity suggestionRepository provides all necessary methods in order to handle the

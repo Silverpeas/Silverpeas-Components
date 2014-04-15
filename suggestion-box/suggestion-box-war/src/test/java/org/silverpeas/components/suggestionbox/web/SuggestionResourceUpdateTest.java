@@ -26,9 +26,11 @@ package org.silverpeas.components.suggestionbox.web;
 import com.silverpeas.web.ResourceUpdateTest;
 import com.silverpeas.web.mock.UserDetailWithProfiles;
 import com.stratelia.webactiv.SilverpeasRole;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.model.SuggestionBoxService;
@@ -61,7 +63,10 @@ public class SuggestionResourceUpdateTest extends ResourceUpdateTest<SuggestionB
     Suggestion suggestion = getTestResources().aSuggestion();
     when(getTestResources().getSuggestionBoxService().publishSuggestion(eq(box), eq(suggestion)))
         .thenReturn(getTestResources().aSuggestion());
-    suggestionEntity = SuggestionEntity.fromSuggestion(getTestResources().aSuggestion());
+    suggestionEntity =
+        SuggestionEntity.fromSuggestion(getTestResources().aSuggestion());
+    CacheServiceFactory.getRequestCacheService()
+        .put(UserDetail.CURRENT_REQUESTER_KEY, authenticatedUser);
   }
 
   @Test

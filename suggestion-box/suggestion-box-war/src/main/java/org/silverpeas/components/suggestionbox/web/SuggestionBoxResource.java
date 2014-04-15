@@ -223,7 +223,6 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
           List<SuggestionEntity> suggestions = getWebServiceProvider().
               getSuggestionsByCriteria(getSuggestionBox(),
                   SuggestionCriteria.from(getSuggestionBox())
-                  .forUser(getUserDetail())
                   .createdBy(author)
                   .statusIsOneOf(ContributionStatus.VALIDATED)
                   .paginatedBy(pagination)

@@ -100,6 +100,7 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
    * Gets the component instance identifier which is the identifier of a suggestion box.
    * @return the suggestion box component identifier.
    */
+  @Override
   public String getComponentInstanceId() {
     return componentInstanceId;
   }

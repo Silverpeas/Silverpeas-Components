@@ -27,12 +27,12 @@ import com.silverpeas.SilverpeasComponentService;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentUserNotificationService;
+import com.silverpeas.notation.ejb.RatingServiceFactory;
 import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.silverpeas.util.CollectionUtil;
 import com.silverpeas.util.ForeignPK;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -49,10 +49,7 @@ import org.silverpeas.contribution.ContributionStatus;
 import org.silverpeas.contribution.model.ContributionValidation;
 import org.silverpeas.persistence.Transaction;
 import org.silverpeas.persistence.repository.OperationContext;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.upload.UploadedFile;
-import org.silverpeas.wysiwyg.control.WysiwygController;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
@@ -146,9 +143,6 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService,
   @Override
   public void deleteSuggestionBox(final SuggestionBox box) {
 
-    // TODO Deletion of all data attached to the box and its suggestions :
-    // - votes
-
     // Finally deleting the box and its suggestions from the persistence.
     suggestionBoxRepository.delete(box);
     suggestionBoxRepository.flush();
@@ -163,6 +157,9 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService,
     // Deleting all component subscriptions
     SubscriptionServiceFactory.getFactory().getSubscribeService()
         .unsubscribeByResource(ComponentSubscriptionResource.from(box.getComponentInstanceId()));
+
+    // Deleting all user ratings
+    RatingServiceFactory.getRatingService().deleteComponentRatings(box.getComponentInstanceId());
   }
 
   @Override

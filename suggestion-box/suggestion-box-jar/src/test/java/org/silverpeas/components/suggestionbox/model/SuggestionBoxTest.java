@@ -23,6 +23,8 @@
  */
 package org.silverpeas.components.suggestionbox.model;
 
+import com.silverpeas.notation.ejb.RatingBm;
+import com.silverpeas.notation.ejb.RatingServiceFactory;
 import com.silverpeas.notification.builder.UserNotificationBuider;
 import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.util.ForeignPK;
@@ -33,6 +35,8 @@ import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -52,6 +56,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
@@ -60,7 +65,8 @@ import static org.mockito.Mockito.when;
  * @author mmoquillon
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({WysiwygController.class, UserNotificationHelper.class, IndexEngineProxy.class})
+@PrepareForTest({WysiwygController.class, UserNotificationHelper.class, IndexEngineProxy.class,
+    RatingServiceFactory.class})
 public class SuggestionBoxTest extends RepositoryBasedTest {
 
   private final static String SUGGESTION_BOX_INSTANCE_ID = "suggestionBox1";
@@ -107,6 +113,13 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
 
   @Test
   public void removeASuggestionFromASuggestionBox() throws Exception {
+    final RatingBm ratingBm = mock(RatingBm.class);
+    PowerMockito.mockStatic(RatingServiceFactory.class, new Answer() {
+      @Override
+      public Object answer(final InvocationOnMock invocation) throws Throwable {
+        return ratingBm;
+      }
+    });
     PowerMockito.mockStatic(WysiwygController.class);
     SuggestionBox box = SuggestionBox.getByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID);
     Suggestion suggestion = box.getSuggestions().get(SUGGESTION_ID);
@@ -122,6 +135,14 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
 
   @Test
   public void publishASuggestionOfASuggestionBoxWithUserAccessRole() throws Exception {
+    final RatingBm ratingBm = mock(RatingBm.class);
+    PowerMockito.mockStatic(RatingServiceFactory.class, new Answer() {
+      @Override
+      public Object answer(final InvocationOnMock invocation) throws Throwable {
+        return ratingBm;
+      }
+    });
+
     IDataSet actualDataSet = getActualDataSet();
     ITable table = actualDataSet.getTable("sc_suggestion");
     assertThat((String) table.getValue(0, "id"), is(SUGGESTION_ID));
@@ -165,6 +186,14 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
 
   @Test
   public void publishASuggestionOfASuggestionBoxWithWriterAccessRole() throws Exception {
+    final RatingBm ratingBm = mock(RatingBm.class);
+    PowerMockito.mockStatic(RatingServiceFactory.class, new Answer() {
+      @Override
+      public Object answer(final InvocationOnMock invocation) throws Throwable {
+        return ratingBm;
+      }
+    });
+
     IDataSet actualDataSet = getActualDataSet();
     ITable table = actualDataSet.getTable("sc_suggestion");
     assertThat((String) table.getValue(0, "id"), is(SUGGESTION_ID));
@@ -209,6 +238,14 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
 
   @Test
   public void publishASuggestionOfASuggestionBoxWithPublisherAccessRole() throws Exception {
+    final RatingBm ratingBm = mock(RatingBm.class);
+    PowerMockito.mockStatic(RatingServiceFactory.class, new Answer() {
+      @Override
+      public Object answer(final InvocationOnMock invocation) throws Throwable {
+        return ratingBm;
+      }
+    });
+
     IDataSet actualDataSet = getActualDataSet();
     ITable table = actualDataSet.getTable("sc_suggestion");
     assertThat((String) table.getValue(0, "id"), is(SUGGESTION_ID));
@@ -253,6 +290,14 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
 
   @Test
   public void validateAInDraftSuggestionOfASuggestionBoxWithWriterAccessRole() throws Exception {
+    final RatingBm ratingBm = mock(RatingBm.class);
+    PowerMockito.mockStatic(RatingServiceFactory.class, new Answer() {
+      @Override
+      public Object answer(final InvocationOnMock invocation) throws Throwable {
+        return ratingBm;
+      }
+    });
+
     IDataSet actualDataSet = getActualDataSet();
     ITable table = actualDataSet.getTable("sc_suggestion");
     assertThat((String) table.getValue(0, "id"), is(SUGGESTION_ID));
@@ -297,6 +342,14 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
 
   @Test
   public void validateAInDraftSuggestionOfASuggestionBoxWithPublisherAccessRole() throws Exception {
+    final RatingBm ratingBm = mock(RatingBm.class);
+    PowerMockito.mockStatic(RatingServiceFactory.class, new Answer() {
+      @Override
+      public Object answer(final InvocationOnMock invocation) throws Throwable {
+        return ratingBm;
+      }
+    });
+
     IDataSet actualDataSet = getActualDataSet();
     ITable table = actualDataSet.getTable("sc_suggestion");
     assertThat((String) table.getValue(0, "id"), is(SUGGESTION_ID));
@@ -342,6 +395,14 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
   @Test
   public void validateAPendingValidationSuggestionOfASuggestionBoxWithPublisherAccessRole()
       throws Exception {
+    final RatingBm ratingBm = mock(RatingBm.class);
+    PowerMockito.mockStatic(RatingServiceFactory.class, new Answer() {
+      @Override
+      public Object answer(final InvocationOnMock invocation) throws Throwable {
+        return ratingBm;
+      }
+    });
+
     IDataSet actualDataSet = getActualDataSet();
     ITable table = actualDataSet.getTable("sc_suggestion");
     int index = getTableIndexForId(table, SUGGESTION_ID_PENDING_VALIDATION);
@@ -392,6 +453,14 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
   @Test
   public void refuseAPendingValidationSuggestionOfASuggestionBoxWithPublisherAccessRole()
       throws Exception {
+    final RatingBm ratingBm = mock(RatingBm.class);
+    PowerMockito.mockStatic(RatingServiceFactory.class, new Answer() {
+      @Override
+      public Object answer(final InvocationOnMock invocation) throws Throwable {
+        return ratingBm;
+      }
+    });
+
     IDataSet actualDataSet = getActualDataSet();
     ITable table = actualDataSet.getTable("sc_suggestion");
     int index = getTableIndexForId(table, SUGGESTION_ID_PENDING_VALIDATION);
