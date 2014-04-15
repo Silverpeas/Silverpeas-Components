@@ -47,10 +47,8 @@
 	String				 content		= "";
 	String 		         postId			= "";
 	String 		         categoryId		= "";
-	String 		         creationDate	= resource.getOutputDate(new Date());
 	String 		         creatorId		= "";
 	Date		         dateEvent		= new Date();
-	String 		         updateDate		= null;
 	
 	String 		action 			= "CreatePost";
 	
@@ -60,8 +58,6 @@
 	if (post.getCategory() != null) {
 		categoryId	= post.getCategory().getNodePK().getId();
 	}
-	creationDate 	= resource.getOutputDate(post.getPublication().getCreationDate());
-	updateDate		= resource.getOutputDate(post.getPublication().getUpdateDate());
 	creatorId 		= post.getPublication().getCreatorId();
 	dateEvent 		= post.getDateEvent();
 	if(updater != null) {
@@ -86,6 +82,7 @@
 	<fmt:message var="GML_ThisFormContains" key="GML.ThisFormContains"/>
 	<fmt:message var="GML_error" key="GML.error"/>
 	<fmt:message var="GML_errors" key="GML.errors"/>
+	<fmt:message var="blog_postUntitled" key="blog.postUntitled"/>
     <script type="text/javascript">
 		function sendData() {
 			if (isCorrectForm()) {
@@ -147,10 +144,23 @@
 		}
 		
 		$(document).ready(function() {
-			<view:wysiwyg replace="Content" language="${language}" width="600" height="300" toolbar="Default" 
+			<view:wysiwyg replace="Content" language="${language}" width="90%" height="300" toolbar="blog" 
 				spaceId="<%=spaceId%>" spaceName="<%=spaceLabel%>" componentId="<%=instanceId%>" componentName="<%=componentLabel%>" 
 				browseInfo="<%=title%>" objectId="<%=post.getId()%>" />
 		});
+		
+		<% if ("CreatePost".equals(action)) {
+		%>     
+		$(document).ready(function() {
+			$("#Title").click(function() {
+				if ($('#Title').attr('value') === "${blog_postUntitled}") {
+					$("#Title").attr('value','');
+				}
+			});
+		});
+		<%
+		}
+		%>
 	</script>
 </head>
 <body id="blog">
@@ -182,12 +192,12 @@
     <div class="field" id="titleArea">
       <label class="txtlibform" for="titleName"><fmt:message key="GML.title" /></label>
       <div class="champs">
-        <input type="text" name="Title" size="60" maxlength="150" value="<%=title%>" />&nbsp;<img alt="mandatory" src="${pageContext.request.contextPath}<fmt:message key="blog.obligatoire" bundle="${icons}"/>" width="5" height="5" border="0"/>
+        <input type="text" id="Title" name="Title" size="60" maxlength="150" value="<%=title%>" />&nbsp;<img alt="mandatory" src="${pageContext.request.contextPath}<fmt:message key="blog.obligatoire" bundle="${icons}"/>" width="5" height="5" border="0"/>
       </div>
     </div>
     
     <div class="field" id="contentArea">
-		<label for="Content" class="txtlibform"><fmt:message key='blog.content'/></label>
+		<label for="Content" class="txtlibform"><fmt:message key="blog.content"/></label>
 		<div class="champs">
 			
 			<div class="container-wysiwyg wysiwyg-fileStorage">
@@ -230,23 +240,6 @@
 		</select>
       </div>
     </div>
-    
-   	<div class="field" id="updateArea">
-		<label class="txtlibform"><fmt:message key="blog.header.contributors" /></label>
-		<% if (StringUtil.isDefined(updateDate) && updater != null) {%>
-		<div class="champs">
-			<fmt:message key="GML.updateDate" /> <br /><b><%=updateDate%></b> <fmt:message key="GML.by" /> <view:username userId="<%=updater.getId()%>"/>
-			<div class="profilPhoto"><img src="<%=m_context+updater.getAvatar() %>" alt="" class="defaultAvatar"/></div>
-		</div>
-		<% } %>
-	</div>
-	<div class="field" id="creationArea">
-		<div class="champs">
-			<fmt:message key="GML.creationDate" /> <br /><b><%=creationDate%></b> <fmt:message key="GML.by" /> <view:username userId="<%=post.getCreator().getId()%>"/>
-			<div class="profilPhoto"><img src="<%=m_context+post.getCreator().getAvatar() %>" alt="" class="defaultAvatar"/></div>
-		</div>
-	</div>
-
   </div>
 </fieldset>
 
