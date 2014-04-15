@@ -648,8 +648,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     }
 
     if (fragmentSettings.rateable) {
-      RaterRating raterRating = pub.getRating().getRaterRating(kmeliaScc.getUserDetail());
-      RaterRatingEntity raterRatingEntity = RaterRatingEntity.fromRaterRating(raterRating);
+      RaterRatingEntity raterRatingEntity = RaterRatingEntity.fromRateable(pub);
       out.write(raterRatingEntity
           .toJSonScript("raterRatingEntity_" + raterRatingEntity.getContributionId()));
       out.write("<silverpeas-rating readonly=\"true\" shownbraterratings=\"false\" starsize=\"small\" " +

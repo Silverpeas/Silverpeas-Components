@@ -28,6 +28,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <%
   response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
   response.setHeader("Pragma", "no-cache"); //HTTP 1.0
@@ -46,6 +47,7 @@
 <%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@page import="com.silverpeas.delegatednews.model.DelegatedNews"%>
 <%@page import="org.silverpeas.component.kmelia.KmeliaPublicationHelper"%>
+<%@ page import="org.silverpeas.rating.web.RaterRatingEntity" %>
 
 <%
   ResourceLocator publicationSettings = new ResourceLocator("org.silverpeas.util.publication.publicationSettings", resources.getLanguage());
@@ -206,6 +208,9 @@
   //  - if current user can modified publication
   boolean attachmentsUpdatable = attachmentsEnabled && isOwner && !pubDetail.haveGotClone();
 %>
+
+<c:set var="publication" value="<%=pubDetail%>"/>
+<c:set var="publicationRaterRatingEntity" value="<%=RaterRatingEntity.fromRateable(pubDetail)%>"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.kmelia">
@@ -576,7 +581,7 @@
       		<p id="statInfo">
       			<b><%= kmeliaPublication.getNbAccess()%> vues</b>
       			<% if (ratingsAllowed) { %>
-					<silverpeas-rating componentid="<%=componentId %>" contributiontype="Publication" contributionid="<%=id %>"></silverpeas-rating>
+            <viewTags:displayContributionRating raterRating="${publicationRaterRatingEntity}"/>
 				<% } %>
 			</p>
 

@@ -38,6 +38,8 @@ import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.model.SuggestionBoxService;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
+import org.silverpeas.rating.ContributionRating;
+import org.silverpeas.rating.ContributionRatingPK;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.mockito.Mockito.when;
@@ -116,6 +118,8 @@ public class SuggestionBoxTestResources extends TestResources {
     ReflectionTestUtils.setField(suggestion, "suggestionBox", aSuggestionBox());
     suggestion.setCreator(aUserCreator());
     suggestion.setContent("A suggestion content");
+    suggestion.setRating(new ContributionRating(
+        new ContributionRatingPK(SUGGESTION_ID, SUGGESTION_BOX_ID, Suggestion.TYPE)));
     return suggestion;
   }
 
@@ -126,6 +130,8 @@ public class SuggestionBoxTestResources extends TestResources {
     ReflectionTestUtils.setField(suggestion, "suggestionBox", aSuggestionBox());
     suggestion.setCreator(aUserCreator());
     suggestion.setContent("A suggestion content");
+    suggestion.setRating(new ContributionRating(
+        new ContributionRatingPK(SUGGESTION_ID, SUGGESTION_BOX_ID, Suggestion.TYPE)));
     return suggestion;
   }
 

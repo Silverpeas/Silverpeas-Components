@@ -45,6 +45,7 @@ import org.mockito.ArgumentCaptor;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.components.suggestionbox.mock.SuggestionBoxServiceMockWrapper;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
@@ -53,6 +54,8 @@ import org.silverpeas.contribution.ContributionStatus;
 import org.silverpeas.contribution.model.ContributionValidation;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
+import org.silverpeas.rating.ContributionRating;
+import org.silverpeas.rating.ContributionRatingPK;
 import org.silverpeas.servlet.HttpRequest;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -63,7 +66,6 @@ import java.net.URISyntaxException;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -94,6 +96,8 @@ public class SuggestionBoxWebControllerTest {
         true, true,
         UserMenuDisplay.DISABLE);
     when(mock.getUserSettings(anyString())).thenReturn(preferences);
+    CacheServiceFactory.getRequestCacheService()
+        .put(UserDetail.CURRENT_REQUESTER_KEY, new UserDetail());
   }
 
   @After
@@ -782,6 +786,8 @@ public class SuggestionBoxWebControllerTest {
     ReflectionTestUtils.setField(suggestion, "id", new UuidIdentifier().fromString(SUGGESTION_ID));
     suggestion.setCreator(aUser());
     suggestion.setContent("A suggestion content");
+    suggestion.setRating(new ContributionRating(
+        new ContributionRatingPK(SUGGESTION_ID, SUGGESTIONBOX_ID, Suggestion.TYPE)));
     return suggestion;
   }
 

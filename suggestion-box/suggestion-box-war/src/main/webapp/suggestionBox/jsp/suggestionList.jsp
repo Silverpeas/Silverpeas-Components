@@ -26,6 +26,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
 <c:set var="greaterUserRole"     value="${requestScope.greaterUserRole}"/>
 <c:set var="currentUserLanguage" value="${requestScope.resources.language}"/>
@@ -61,9 +62,10 @@
 <c:url var="backUri"          value="${requestScope.backUrl}"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.suggestionBox">
 <head>
   <view:looknfeel/>
+  <view:includePlugin name="rating"/>
   <script type="text/javascript">
     function goBack() {
       document.location = "${componentUriBase}Main";
@@ -80,7 +82,7 @@
         <view:displayWysiwyg objectId="${suggestionBoxId}" componentId="${componentId}" language="${null}"/>
       </div>
     </c:if>
-    <view:arrayPane var="" routingAddress="${componentUriBase}suggestions/published">
+    <view:arrayPane var="" routingAddress="${componentUriBase}suggestions/published" sortableLines="true">
       <view:arrayColumn title="${status}" sortable="false"/>
       <view:arrayColumn title="${date}" sortable="true"/>
       <view:arrayColumn title="${title}" sortable="true"/>
@@ -113,13 +115,14 @@
           <view:arrayCellText text="<img src='${statusIcon}' alt='${statusLabel}' title='${suggestionStatus}'/>"/>
           <!-- the last update date is the validation date for refused and accepted suggestions -->
           <view:arrayCellText text="${suggestion.lastUpdateDate}"/>
-          <view:arrayCellText text="<a href=\"${componentUriBase}suggestions/${suggestion.id}?from=${page}\">${suggestion.title}</a>"/>
+          <view:arrayCellText text="<!-- ${suggestion.title} --><a href=\"${componentUriBase}suggestions/${suggestion.id}?from=${page}\">${suggestion.title}</a>"/>
           <view:arrayCellText text="${suggestion.authorName}"/>
           <c:if test="${viewContext != SuggestionBoxWebController.ViewContext.SuggestionsInValidation}">
             <c:choose>
               <c:when test="${suggestion.validation.validated}">
-                <view:arrayCellText text="0"/>
-                <view:arrayCellText text="0"/>
+                <c:set var="_currentRaterRating"><viewTags:displayContributionRating readOnly="${true}" showNbRaterRatings="${false}" raterRating="${suggestion.raterRating}"/></c:set>
+                <view:arrayCellText text="${_currentRaterRating}"/>
+                <view:arrayCellText text="${suggestion.raterRating.numberOfRaterRatings}"/>
                 <view:arrayCellText text="${suggestion.commentCount}"/>
               </c:when>
               <c:otherwise>
@@ -138,5 +141,8 @@
     </view:buttonPane>
   </view:frame>
 </view:window>
+<script type="text/javascript">
+  var myapp = angular.module('silverpeas.suggestionBox', ['silverpeas.services', 'silverpeas.directives']);
+</script>
 </body>
 </html>

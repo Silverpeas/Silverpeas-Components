@@ -26,8 +26,6 @@ package org.silverpeas.components.suggestionbox.common;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.util.CollectionUtil;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.web.RESTWebService;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -42,8 +40,6 @@ import org.silverpeas.util.NotifierUtil;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
-import java.net.URI;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -53,12 +49,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs.BOX_BASE_URI;
-import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs
-    .BOX_SUGGESTION_URI_PART;
 import static org.silverpeas.contribution.ContributionStatus.PENDING_VALIDATION;
 import static org.silverpeas.contribution.ContributionStatus.REFUSED;
-
 
 /**
  * @author: Yohann Chastagnier
@@ -69,8 +61,8 @@ public class SuggestionBoxWebServiceProvider {
    * Multilang
    */
   private final Map<String, ResourceLocator> multilang = new HashMap<String, ResourceLocator>();
-  private final static SuggestionBoxWebServiceProvider SUGGESTION_BOX_WEB_SERVICE_PROVIDER
-      = new SuggestionBoxWebServiceProvider();
+  private final static SuggestionBoxWebServiceProvider SUGGESTION_BOX_WEB_SERVICE_PROVIDER =
+      new SuggestionBoxWebServiceProvider();
 
   public static SuggestionBoxWebServiceProvider getWebServiceProvider() {
     return SUGGESTION_BOX_WEB_SERVICE_PROVIDER;
@@ -153,7 +145,7 @@ public class SuggestionBoxWebServiceProvider {
    * Gets the list of suggestions that match the specified criteria.
    * The criteria are applying in web level and aren't propagated downto the business level and
    * hence the persistence level.
-   * <p>
+   * <p/>
    * The user asking for the suggestions is required in the criteria as some caching is performed
    * for the given user for better performence.
    * @param suggestionBox the suggestion box the current user is working on.
@@ -281,8 +273,8 @@ public class SuggestionBoxWebServiceProvider {
       if (newStatus.isRefused() && StringUtil.isNotDefined(validationComment)) {
         throw new WebApplicationException(Response.Status.PRECONDITION_FAILED);
       }
-      ContributionValidation validation
-          = new ContributionValidation(newStatus, fromUser, new Date(), validationComment);
+      ContributionValidation validation =
+          new ContributionValidation(newStatus, fromUser, new Date(), validationComment);
       suggestion.setLastUpdater(fromUser);
       Suggestion actual = suggestionBox.getSuggestions().validate(suggestion, validation);
       switch (actual.getValidation().getStatus()) {
@@ -336,8 +328,8 @@ public class SuggestionBoxWebServiceProvider {
       SuggestionBox suggestionBox) {
     Set<String> moderatorIds = CollectionUtil.asSet(
         OrganisationControllerFactory.getOrganisationController()
-        .getUsersIdsByRoleNames(suggestionBox.getComponentInstanceId(),
-            CollectionUtil.asList(SilverpeasRole.admin.name(), SilverpeasRole.publisher.name()))
+            .getUsersIdsByRoleNames(suggestionBox.getComponentInstanceId(),
+                CollectionUtil.asList(SilverpeasRole.admin.name(), SilverpeasRole.publisher.name()))
     );
     if (!user.isAccessAdmin() && !moderatorIds.contains(user.getId())) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
@@ -382,22 +374,6 @@ public class SuggestionBoxWebServiceProvider {
    */
   public SuggestionEntity asWebEntity(Suggestion suggestion) {
     assertSuggestionIsDefined(suggestion);
-    return SuggestionEntity.fromSuggestion(suggestion).withURI(buildSuggestionURI(suggestion));
-  }
-
-  /**
-   * Centralized the build of a suggestion URI.
-   * @param suggestion the aimed suggestion.
-   * @return the URI of specified suggestion.
-   */
-  protected URI buildSuggestionURI(Suggestion suggestion) {
-    if (suggestion == null || suggestion.getSuggestionBox() == null) {
-      return null;
-    }
-    return UriBuilder.fromUri(URLManager.getApplicationURL())
-        .path(RESTWebService.REST_WEB_SERVICES_URI_BASE).path(BOX_BASE_URI)
-        .path(suggestion.getSuggestionBox().getComponentInstanceId())
-        .path(suggestion.getSuggestionBox().getId()).path(BOX_SUGGESTION_URI_PART)
-        .path(suggestion.getId()).build();
+    return SuggestionEntity.fromSuggestion(suggestion);
   }
 }

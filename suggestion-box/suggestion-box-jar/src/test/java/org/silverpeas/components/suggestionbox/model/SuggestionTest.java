@@ -23,12 +23,16 @@
  */
 package org.silverpeas.components.suggestionbox.model;
 
+import com.silverpeas.notation.ejb.RatingBm;
+import com.silverpeas.notation.ejb.RatingServiceFactory;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.internal.stubbing.answers.Returns;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -45,6 +49,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.powermock.api.mockito.PowerMockito.when;
 import static org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_ORDER_BY.*;
@@ -57,7 +62,7 @@ import static org.silverpeas.contribution.ContributionStatus.*;
  * @author mmoquillon
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(WysiwygController.class)
+@PrepareForTest({WysiwygController.class, RatingServiceFactory.class})
 public class SuggestionTest extends RepositoryBasedTest {
 
   private final static String SUGGESTION_ID = "suggestion_1";
@@ -77,6 +82,13 @@ public class SuggestionTest extends RepositoryBasedTest {
 
   @Test
   public void updateAnExistingSuggestion() throws Exception {
+    final RatingBm ratingBm = mock(RatingBm.class);
+    PowerMockito.mockStatic(RatingServiceFactory.class, new Answer() {
+      @Override
+      public Object answer(final InvocationOnMock invocation) throws Throwable {
+        return ratingBm;
+      }
+    });
     PowerMockito.mockStatic(WysiwygController.class);
     UserDetail author = aUser();
     SuggestionBox box = SuggestionBox.getByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID);
@@ -104,6 +116,13 @@ public class SuggestionTest extends RepositoryBasedTest {
 
   @Test
   public void updateAnExistingSuggestionWithAnInvalidTitle() throws Exception {
+    final RatingBm ratingBm = mock(RatingBm.class);
+    PowerMockito.mockStatic(RatingServiceFactory.class, new Answer() {
+      @Override
+      public Object answer(final InvocationOnMock invocation) throws Throwable {
+        return ratingBm;
+      }
+    });
     PowerMockito.mockStatic(WysiwygController.class);
     UserDetail author = aUser();
     SuggestionBox box = SuggestionBox.getByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID);
@@ -133,6 +152,13 @@ public class SuggestionTest extends RepositoryBasedTest {
 
   @Test
   public void getAnUnExistingSuggestion() throws Exception {
+    final RatingBm ratingBm = mock(RatingBm.class);
+    PowerMockito.mockStatic(RatingServiceFactory.class, new Answer() {
+      @Override
+      public Object answer(final InvocationOnMock invocation) throws Throwable {
+        return ratingBm;
+      }
+    });
     SuggestionBox box = SuggestionBox.getByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID);
     Suggestion suggestion = box.getSuggestions().get("toto");
     assertThat(suggestion, is(Suggestion.NONE));
@@ -140,6 +166,13 @@ public class SuggestionTest extends RepositoryBasedTest {
 
   @Test
   public void findBySuggestionCriteria() {
+    final RatingBm ratingBm = mock(RatingBm.class);
+    PowerMockito.mockStatic(RatingServiceFactory.class, new Answer() {
+      @Override
+      public Object answer(final InvocationOnMock invocation) throws Throwable {
+        return ratingBm;
+      }
+    });
 
     // Only the mandatory filter of the suggestion box itself
     SuggestionBox box = SuggestionBox.getByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID);
@@ -277,6 +310,13 @@ public class SuggestionTest extends RepositoryBasedTest {
 
   @Test
   public void findInDraftForAUser() {
+    final RatingBm ratingBm = mock(RatingBm.class);
+    PowerMockito.mockStatic(RatingServiceFactory.class, new Answer() {
+      @Override
+      public Object answer(final InvocationOnMock invocation) throws Throwable {
+        return ratingBm;
+      }
+    });
     PowerMockito.mockStatic(WysiwygController.class);
     final String content = "This is a content";
     when(WysiwygController.load(eq(SUGGESTION_BOX_INSTANCE_ID), anyString(), anyString())).
@@ -296,6 +336,13 @@ public class SuggestionTest extends RepositoryBasedTest {
 
   @Test
   public void findOutOfDraftForAUser() {
+    final RatingBm ratingBm = mock(RatingBm.class);
+    PowerMockito.mockStatic(RatingServiceFactory.class, new Answer() {
+      @Override
+      public Object answer(final InvocationOnMock invocation) throws Throwable {
+        return ratingBm;
+      }
+    });
     PowerMockito.mockStatic(WysiwygController.class);
     final String content = "This is a content";
     when(WysiwygController.load(eq(SUGGESTION_BOX_INSTANCE_ID), anyString(), anyString())).
@@ -321,6 +368,13 @@ public class SuggestionTest extends RepositoryBasedTest {
 
   @Test
   public void findPendingValidation() {
+    final RatingBm ratingBm = mock(RatingBm.class);
+    PowerMockito.mockStatic(RatingServiceFactory.class, new Answer() {
+      @Override
+      public Object answer(final InvocationOnMock invocation) throws Throwable {
+        return ratingBm;
+      }
+    });
     PowerMockito.mockStatic(WysiwygController.class);
     final String content = "This is a content";
     when(WysiwygController.load(eq(SUGGESTION_BOX_INSTANCE_ID), anyString(), anyString())).
@@ -341,6 +395,13 @@ public class SuggestionTest extends RepositoryBasedTest {
 
   @Test
   public void findPublished() {
+    final RatingBm ratingBm = mock(RatingBm.class);
+    PowerMockito.mockStatic(RatingServiceFactory.class, new Answer() {
+      @Override
+      public Object answer(final InvocationOnMock invocation) throws Throwable {
+        return ratingBm;
+      }
+    });
     PowerMockito.mockStatic(WysiwygController.class);
     final String content = "This is a content";
     when(WysiwygController.load(eq(SUGGESTION_BOX_INSTANCE_ID), anyString(), anyString())).
@@ -370,6 +431,13 @@ public class SuggestionTest extends RepositoryBasedTest {
 
   @Test
   public void getAnExistingSuggestion() throws Exception {
+    final RatingBm ratingBm = mock(RatingBm.class);
+    PowerMockito.mockStatic(RatingServiceFactory.class, new Answer() {
+      @Override
+      public Object answer(final InvocationOnMock invocation) throws Throwable {
+        return ratingBm;
+      }
+    });
     PowerMockito.mockStatic(WysiwygController.class);
     final String title = "suggestion 1";
     final String content = "This is a content";

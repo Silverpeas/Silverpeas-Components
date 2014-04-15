@@ -24,12 +24,16 @@
 package org.silverpeas.components.suggestionbox.web;
 
 import com.silverpeas.web.Exposable;
+import com.silverpeas.web.RESTWebService;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
+import org.silverpeas.rating.web.RaterRatingEntity;
 import org.silverpeas.validation.web.ContributionValidationEntity;
 import org.springframework.util.ReflectionUtils;
 
+import javax.ws.rs.core.UriBuilder;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -38,6 +42,10 @@ import javax.xml.bind.annotation.XmlTransient;
 import java.lang.reflect.Field;
 import java.net.URI;
 import java.util.Date;
+
+import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs.BOX_BASE_URI;
+import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs
+    .BOX_SUGGESTION_URI_PART;
 
 /**
  * It represents the state of a suggestion in a suggestion box as transmitted within the body of
@@ -51,19 +59,20 @@ public class SuggestionEntity implements Exposable {
   private static final long serialVersionUID = 4234619816264612213L;
 
   public static SuggestionEntity fromSuggestion(final Suggestion suggestion) {
-    return new SuggestionEntity().decorate(suggestion);
+    return new SuggestionEntity().decorate(suggestion).withURI(buildSuggestionURI(suggestion));
   }
 
   private URI uri;
   private Suggestion suggestion;
   private ContributionValidationEntity validationEntity;
+  private RaterRatingEntity raterRatingEntity;
 
   /**
    * Sets a URI to this entity. With this URI, it can then be accessed through the Web.
    * @param uri the web entity URI.
    * @return itself.
    */
-  public SuggestionEntity withURI(final URI uri) {
+  private SuggestionEntity withURI(final URI uri) {
     this.uri = uri;
     return this;
   }
@@ -122,10 +131,17 @@ public class SuggestionEntity implements Exposable {
   @XmlElement
   public ContributionValidationEntity getValidation() {
     if (validationEntity == null) {
-      validationEntity = ContributionValidationEntity.fromContributionValidation(suggestion.
-          getValidation());
+      validationEntity = ContributionValidationEntity.fromValidableContribution(suggestion);
     }
     return validationEntity;
+  }
+
+  @XmlElement
+  public RaterRatingEntity getRaterRating() {
+    if (raterRatingEntity == null) {
+      raterRatingEntity = RaterRatingEntity.fromRateable(suggestion);
+    }
+    return raterRatingEntity;
   }
 
   @XmlTransient
@@ -168,6 +184,10 @@ public class SuggestionEntity implements Exposable {
 
   }
 
+  protected void setRaterRating(final RaterRatingEntity raterRatingEntity) {
+
+  }
+
   protected void setId(String id) {
     try {
       Field idField = ReflectionUtils.findField(Suggestion.class, "id");
@@ -183,13 +203,29 @@ public class SuggestionEntity implements Exposable {
     return this;
   }
 
+  /**
+   * Centralized the build of a suggestion URI.
+   * @param suggestion the aimed suggestion.
+   * @return the URI of specified suggestion.
+   */
+  private static URI buildSuggestionURI(Suggestion suggestion) {
+    if (suggestion == null || suggestion.getSuggestionBox() == null) {
+      return null;
+    }
+    return UriBuilder.fromUri(URLManager.getApplicationURL())
+        .path(RESTWebService.REST_WEB_SERVICES_URI_BASE).path(BOX_BASE_URI)
+        .path(suggestion.getSuggestionBox().getComponentInstanceId())
+        .path(suggestion.getSuggestionBox().getId()).path(BOX_SUGGESTION_URI_PART)
+        .path(suggestion.getId()).build();
+  }
+
   protected SuggestionEntity() {
     this.suggestion = new Suggestion("");
   }
 
   @Override
   public String toString() {
-    return "SuggestionEntity{" + "uri=" + uri + ", id=" + getId() + ", title=" + getTitle()
-        + ", content=" + getContent() + ", validation=" + getValidation() + '}';
+    return "SuggestionEntity{" + "uri=" + uri + ", id=" + getId() + ", title=" + getTitle() +
+        ", content=" + getContent() + ", validation=" + getValidation() + '}';
   }
 }

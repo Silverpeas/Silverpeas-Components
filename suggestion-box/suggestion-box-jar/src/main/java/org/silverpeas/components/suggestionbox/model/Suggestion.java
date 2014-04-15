@@ -31,6 +31,8 @@ import org.silverpeas.contribution.ValidableContribution;
 import org.silverpeas.contribution.model.ContributionValidation;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.persistence.model.jpa.AbstractJpaEntity;
+import org.silverpeas.rating.Rateable;
+import org.silverpeas.rating.ContributionRating;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -55,7 +57,7 @@ import java.util.Date;
 @Entity
 @Table(name = "sc_suggestion")
 public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
-    implements ValidableContribution {
+    implements ValidableContribution, Rateable {
 
   private static final long serialVersionUID = -8559980140411995766L;
 
@@ -86,6 +88,8 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
   private boolean contentModified = false;
   @Transient
   private int commentCount;
+  @Transient
+  private ContributionRating contributionRating;
 
   protected Suggestion() {
   }
@@ -150,6 +154,8 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
   public void setCommentCount(int count) {
     if (count >= 0) {
       this.commentCount = count;
+    } else {
+      this.commentCount = 0;
     }
   }
 
@@ -159,6 +165,19 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
    */
   public int getCommentCount() {
     return this.commentCount;
+  }
+
+  @Override
+  public ContributionRating getRating() {
+    return contributionRating;
+  }
+
+  /**
+   * Sets the rating on the suggestion.
+   * @param contributionRating the rating of the suggestion.
+   */
+  public void setRating(final ContributionRating contributionRating) {
+    this.contributionRating = contributionRating;
   }
 
   @Override

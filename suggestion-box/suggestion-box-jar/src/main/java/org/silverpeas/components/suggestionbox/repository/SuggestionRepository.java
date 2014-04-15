@@ -23,25 +23,28 @@
  */
 package org.silverpeas.components.suggestionbox.repository;
 
+import com.silverpeas.SilverpeasContent;
 import com.silverpeas.comment.service.CommentService;
+import com.silverpeas.notation.ejb.RatingServiceFactory;
 import com.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import edu.emory.mathcs.backport.java.util.Arrays;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
-import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.persistence.repository.EntityRepository;
 import org.silverpeas.persistence.repository.OperationContext;
 import org.silverpeas.persistence.repository.jpa.NamedParameters;
+import org.silverpeas.rating.ContributionRating;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This entity repository provides all necessary methods in order to handle the persistence of
@@ -69,30 +72,30 @@ public class SuggestionRepository implements EntityRepository<Suggestion, UuidId
 
     // Playing the query and returning the requested result
     List<Suggestion> suggestions = suggestionManager.findByCriteria(queryBuilder.result());
-    if (criteria.mustLoadWysiwygContent()) {
-      suggestions = withContent(suggestions);
-    }
-    return withCommentCount(suggestions);
+    return decorate(suggestions, criteria);
   }
 
   @Override
   public List<Suggestion> getAll() {
-    return withContent(withCommentCount(suggestionManager.getAll()));
+    return decorate(suggestionManager.getAll(), SuggestionCriteria.from(null).withWysiwygContent());
   }
 
   @Override
   public Suggestion getById(final String id) {
-    return withContent(withCommentCount(suggestionManager.getById(id)));
+    return decorate(suggestionManager.getById(id),
+        SuggestionCriteria.from(null).withWysiwygContent());
   }
 
   @Override
   public List<Suggestion> getById(final String... ids) {
-    return withContent(withCommentCount(suggestionManager.getById(ids)));
+    return decorate(suggestionManager.getById(ids),
+        SuggestionCriteria.from(null).withWysiwygContent());
   }
 
   @Override
   public List<Suggestion> getById(final Collection<String> ids) {
-    return withContent(withCommentCount(suggestionManager.getById(ids)));
+    return decorate(suggestionManager.getById(ids),
+        SuggestionCriteria.from(null).withWysiwygContent());
   }
 
   @Override
@@ -151,36 +154,43 @@ public class SuggestionRepository implements EntityRepository<Suggestion, UuidId
     return suggestions.size();
   }
 
-  private Suggestion withContent(final Suggestion suggestion) {
+  private Suggestion decorate(final Suggestion suggestion, final SuggestionCriteria criteria) {
+    if (criteria.mustLoadWysiwygContent()) {
+      withContent(suggestion);
+    }
+    withCommentCount(suggestion);
+    suggestion.setRating(RatingServiceFactory.getRatingService().getRating(suggestion));
+    return suggestion;
+  }
+
+  private List<Suggestion> decorate(final List<Suggestion> suggestions,
+      final SuggestionCriteria criteria) {
+    Map<String, ContributionRating> suggestionRatings = RatingServiceFactory.getRatingService().getRatings(
+        suggestions.toArray(new SilverpeasContent[suggestions.size()]));
+    for (Suggestion suggestion : suggestions) {
+      if (criteria.mustLoadWysiwygContent()) {
+        withContent(suggestion);
+      }
+      withCommentCount(suggestion);
+      suggestion.setRating(suggestionRatings.get(suggestion.getId()));
+    }
+    return suggestions;
+  }
+
+  private void withContent(final Suggestion suggestion) {
     if (suggestion != null) {
       String content = WysiwygController
           .load(suggestion.getSuggestionBox().getComponentInstanceId(), suggestion.getId(), null);
       suggestion.setContent(content);
     }
-    return suggestion;
   }
 
-  private List<Suggestion> withContent(final List<Suggestion> suggestions) {
-    for (Suggestion suggestion : suggestions) {
-      withContent(suggestion);
-    }
-    return suggestions;
-  }
-
-  private Suggestion withCommentCount(final Suggestion suggestion) {
+  private void withCommentCount(final Suggestion suggestion) {
     if (suggestion != null) {
       int count = commentService.getCommentsCountOnPublication(suggestion.getContributionType(),
           new ForeignPK(suggestion.getId(), suggestion.getComponentInstanceId()));
       suggestion.setCommentCount(count);
     }
-    return suggestion;
-  }
-
-  private List<Suggestion> withCommentCount(final List<Suggestion> suggestions) {
-    for (Suggestion suggestion : suggestions) {
-      withCommentCount(suggestion);
-    }
-    return suggestions;
   }
 
   /**

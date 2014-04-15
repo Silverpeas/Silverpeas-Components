@@ -23,14 +23,23 @@
  */
 package org.silverpeas.components.suggestionbox.web;
 
+import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.web.ResourceGettingTest;
 import com.silverpeas.web.mock.UserDetailWithProfiles;
 import com.stratelia.webactiv.SilverpeasRole;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.internal.stubbing.answers.Returns;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBoxService;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
@@ -52,6 +61,8 @@ import static org.silverpeas.components.suggestionbox.web.SuggestionMatcher.matc
  * Unit tests on the getting of suggestions from the REST-based web service SuggestionBoxResource.
  * @author mmoquillon
  */
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({UserDetail.class})
 public class SuggestionResourceGettingTest extends ResourceGettingTest<SuggestionBoxTestResources> {
 
   private String sessionKey;
@@ -65,6 +76,15 @@ public class SuggestionResourceGettingTest extends ResourceGettingTest<Suggestio
   public void prepareTest() {
     authenticatedUser = aUser();
     sessionKey = authenticate(authenticatedUser);
+    PowerMockito.mockStatic(UserDetail.class, new Answer() {
+      @Override
+      public Object answer(final InvocationOnMock invocation) throws Throwable {
+        if (invocation.getMethod().getName().endsWith("getCurrentRequester")) {
+          return authenticatedUser;
+        }
+        return invocation.callRealMethod();
+      }
+    });
   }
 
   @Test
