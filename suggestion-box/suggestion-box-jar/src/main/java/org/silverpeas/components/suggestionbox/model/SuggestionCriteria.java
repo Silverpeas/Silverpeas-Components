@@ -39,8 +39,12 @@ public class SuggestionCriteria {
 
   public enum QUERY_ORDER_BY {
 
-    TITLE_ASC("title", true), LAST_UPDATE_DATE_ASC("lastUpdateDate", true),
-    TITLE_DESC("title", false), LAST_UPDATE_DATE_DESC("lastUpdateDate", false),
+    TITLE_ASC("title", true),
+    LAST_UPDATE_DATE_ASC("lastUpdateDate", true),
+    STATUS_ASC("status", true),
+    TITLE_DESC("title", false),
+    LAST_UPDATE_DATE_DESC("lastUpdateDate", false),
+    STATUS_DESC("status", false),
     VALIDATION_DATE_DESC("validation.validationDate", false),
     COMMENT_COUNT_DESC("commentCount", false);
 

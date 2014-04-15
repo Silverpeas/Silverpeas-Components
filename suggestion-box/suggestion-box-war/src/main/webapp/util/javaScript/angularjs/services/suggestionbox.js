@@ -40,7 +40,7 @@ services.factory('Suggestion', ['RESTAdapter', function(RESTAdapter) {
           }
         }
       } else {
-        objects = (typeof 'data.suggestionTitle' === undefined ? new Suggestion(data):new Comment(data));
+        objects = (typeof data.suggestionTitle === 'undefined' ? new Suggestion(data):new Comment(data));
       }
       return objects;
     };

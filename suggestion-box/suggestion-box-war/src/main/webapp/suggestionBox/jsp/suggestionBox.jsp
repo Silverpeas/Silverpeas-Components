@@ -34,41 +34,46 @@
 <fmt:setLocale value="${currentUserLanguage}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
-<c:set var="currentUser" value="${requestScope.currentUser}"/>
-<c:set var="currentUserId" value="${currentUser.id}"/>
+
+<c:set var="currentUser"      value="${requestScope.currentUser}"/>
+<c:set var="currentUserId"    value="${currentUser.id}"/>
 <c:set var="isUserSubscribed" value="${requestScope.isUserSubscribed}"/>
-<c:set var="componentId" value="${requestScope.browseContext[3]}"/>
-<c:set var="greaterUserRole" value="${requestScope.greaterUserRole}"/>
-<c:set var="suggestionBox" value="${requestScope.currentSuggestionBox}"/>
-<c:set var="suggestionBoxId" value="${suggestionBox.id}"/>
-<c:set var="isEdito" value="${requestScope.isEdito}"/>
+<c:set var="componentId"      value="${requestScope.browseContext[3]}"/>
+<c:set var="greaterUserRole"  value="${requestScope.greaterUserRole}"/>
+<c:set var="suggestionBox"    value="${requestScope.currentSuggestionBox}"/>
+<c:set var="suggestionBoxId"  value="${suggestionBox.id}"/>
+<c:set var="isEdito"          value="${requestScope.isEdito}"/>
 
-<c:url var="componentUriBase" value="${requestScope.componentUriBase}"/>
-
-<view:setConstant var="adminRole" constant="com.stratelia.webactiv.SilverpeasRole.admin"/>
-<view:setConstant var="writerRole" constant="com.stratelia.webactiv.SilverpeasRole.writer"/>
-<view:setConstant var="publisherRole" constant="com.stratelia.webactiv.SilverpeasRole.publisher"/>
-
-<view:setConstant var="STATUS_REFUSED" constant="org.silverpeas.contribution.ContributionStatus.REFUSED"/>
+<view:setConstant var="adminRole"                 constant="com.stratelia.webactiv.SilverpeasRole.admin"/>
+<view:setConstant var="writerRole"                constant="com.stratelia.webactiv.SilverpeasRole.writer"/>
+<view:setConstant var="publisherRole"             constant="com.stratelia.webactiv.SilverpeasRole.publisher"/>
+<view:setConstant var="STATUS_REFUSED"            constant="org.silverpeas.contribution.ContributionStatus.REFUSED"/>
 <view:setConstant var="STATUS_PENDING_VALIDATION" constant="org.silverpeas.contribution.ContributionStatus.PENDING_VALIDATION"/>
-<view:setConstant var="STATUS_VALIDATED" constant="org.silverpeas.contribution.ContributionStatus.VALIDATED"/>
+<view:setConstant var="STATUS_VALIDATED"          constant="org.silverpeas.contribution.ContributionStatus.VALIDATED"/>
 
-<fmt:message var="modifyEditoLabel" key="suggestionBox.menu.item.edito.modify"/>
-<fmt:message var="publishSuggestionLabel" key="GML.publish"/>
-<fmt:message var="approveSuggestionLabel" key="GML.validate"/>
-<fmt:message var="refuseSuggestionLabel" key="GML.refuse"/>
-<fmt:message var="browseBarPathSuggestionLabel" key="suggestionBox.menu.item.suggestion.add"/>
+<fmt:message var="publishSuggestionLabel"         key="GML.publish"/>
+<fmt:message var="approveSuggestionLabel"         key="GML.validate"/>
+<fmt:message var="refuseSuggestionLabel"          key="GML.refuse"/>
 <fmt:message var="deleteSuggestionConfirmMessage" key="suggestionBox.message.suggestion.remove.confirm">
   <fmt:param value="<b>@name@</b>"/>
 </fmt:message>
-<fmt:message key="suggestionBox.menu.item.subscribe" var="subscribeToSuggestionBoxLabel"/>
-<fmt:message key="suggestionBox.menu.item.unsubscribe" var="unsubscribeFromSuggestionBoxLabel"/>
 
-<c:url var="suggestionBoxJS" value="/util/javaScript/angularjs/suggestionbox.js"/>
-<c:url var="suggestionBoxServicesJS" value="/util/javaScript/angularjs/services/suggestionbox.js"/>
+<fmt:message key="suggestionBox.menu.item.edito.modify"           var="modifyEditoLabel"/>
+<fmt:message key="suggestionBox.menu.item.suggestion.add"         var="browseBarPathSuggestionLabel"/>
+<fmt:message key="suggestionBox.menu.item.subscribe"              var="subscribeToSuggestionBoxLabel"/>
+<fmt:message key="suggestionBox.menu.item.unsubscribe"            var="unsubscribeFromSuggestionBoxLabel"/>
+<fmt:message key="suggestionBox.menu.item.suggestion.viewPending" var="suggestionsInPending"/>
+
+<c:url var="componentUriBase"                   value="${requestScope.componentUriBase}"/>
+<c:url var="suggestionBoxJS"                    value="/util/javaScript/angularjs/suggestionbox.js"/>
+<c:url var="suggestionBoxServicesJS"            value="/util/javaScript/angularjs/services/suggestionbox.js"/>
 <c:url var="suggestionBoxValidationDirectiveJS" value="/util/javaScript/angularjs/directives/suggestionbox-validation.js"/>
-<c:url var="suggestionBoxDeletionDirectiveJS" value="/util/javaScript/angularjs/directives/suggestionbox-deletion.js"/>
-<c:url var="deleteIcon" value="/util/icons/delete.gif"/>
+<c:url var="suggestionBoxDeletionDirectiveJS"   value="/util/javaScript/angularjs/directives/suggestionbox-deletion.js"/>
+
+<fmt:message key="suggestionBox.deleteSuggestion"  var="deleteIconPath"   bundle="${icons}"/>
+<fmt:message key="suggestionBox.proposeSuggestion" var="creationIconPath" bundle="${icons}"/>
+<c:url var="deleteIcon"   value="${deleteIconPath}"/>
+<c:url var="creationIcon" value="${creationIconPath}"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.suggestionBox">
@@ -109,6 +114,10 @@
     <view:operation action="${componentUriBase}edito/modify" altText="${modifyEditoLabel}"/>
     <view:operationSeparator/>
   </c:if>
+  <c:if test="${greaterUserRole.isGreaterThanOrEquals(publisherRole)}">
+    <view:operation action="${componentUriBase}suggestions/pending" altText="${suggestionsInPending}"/>
+    <view:operationSeparator/>
+  </c:if>
   <c:if test="${isUserSubscribed != null}">
     <c:choose>
       <c:when test="${isUserSubscribed}">
@@ -120,9 +129,7 @@
     </c:choose>
   </c:if>
   <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
-    <fmt:message key="suggestionBox.proposeSuggestion" var="tmpIcon" bundle="${icons}"/>
-    <c:url var="tmpIcon" value="${tmpIcon}"/>
-    <view:operationOfCreation action="${componentUriBase}suggestions/new" altText="${browseBarPathSuggestionLabel}" icon="${tmpIcon}"/>
+    <view:operationOfCreation action="${componentUriBase}suggestions/new" altText="${browseBarPathSuggestionLabel}" icon="${creationIcon}"/>
   </c:if>
 </view:operationPane>
 <view:window>
