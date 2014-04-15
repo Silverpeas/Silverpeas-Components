@@ -192,8 +192,10 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
   }
 
   /**
-   * Gets the JSON representation of a list of suggestions that are published, sorted by date of
-   * validation (from the newer to the older).
+   * Gets the JSON representation of a list of suggestions that are published, bu default sorted by
+   * date of validation (from the newer to the older).
+   * @param authorId if this parameter is set, then the suggestions to get will be those proposed by
+   * the author with the specified user unique identifier.
    * @param page if this parameter is set, then the pagination is activated and only the published
    * suggestions matching the specified pagination criterion are sent back. The parameter is
    * semicolon-separated criterion: the first part is the page number and the second part is the
@@ -208,17 +210,21 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
   @GET
   @Path(BOX_SUGGESTION_URI_PART + "/published")
   @Produces(MediaType.APPLICATION_JSON)
-  public Collection<SuggestionEntity> getPublishedSuggestions(@QueryParam("page") final String page,
+  public Collection<SuggestionEntity> getPublishedSuggestions(
+      @QueryParam("author") final String authorId,
+      @QueryParam("page") final String page,
       @QueryParam("sortby") final String property) {
     return process(new WebTreatment<Collection<SuggestionEntity>>() {
       @Override
       public List<SuggestionEntity> execute() {
         PaginationPage pagination = fromPage(page);
+        UserDetail author = (StringUtil.isDefined(authorId) ? UserDetail.getById(authorId):null);
         if (pagination != null || StringUtil.isDefined(property)) {
           List<SuggestionEntity> suggestions = getWebServiceProvider().
               getSuggestionsByCriteria(getSuggestionBox(),
                   SuggestionCriteria.from(getSuggestionBox())
                   .forUser(getUserDetail())
+                  .createdBy(author)
                   .statusIsOneOf(ContributionStatus.VALIDATED)
                   .paginatedBy(pagination)
                   .orderedBy(QUERY_ORDER_BY.fromPropertyName(property)));
@@ -227,6 +233,8 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
             getHttpServletResponse().setHeader(RESPONSE_HEADER_ARRAYSIZE, maxlength);
           }
           return suggestions;
+        } else if (author != null) {
+          return getWebServiceProvider().getPublishedSuggestionsFor(getSuggestionBox(), author);
         }
         return getWebServiceProvider().getPublishedSuggestions(getSuggestionBox());
       }

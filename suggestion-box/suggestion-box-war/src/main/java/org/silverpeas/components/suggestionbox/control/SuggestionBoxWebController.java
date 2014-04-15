@@ -44,6 +44,7 @@ import com.stratelia.webactiv.SilverpeasRole;
 import org.silverpeas.components.suggestionbox.SuggestionBoxComponentSettings;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
+import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
 import org.silverpeas.components.suggestionbox.notification
     .SuggestionNotifyManuallyUserNotification;
 import org.silverpeas.components.suggestionbox.web.SuggestionEntity;
@@ -57,11 +58,32 @@ import javax.ws.rs.core.Response.Status;
 import java.util.List;
 
 import static org.silverpeas.components.suggestionbox.common.SuggestionBoxWebServiceProvider.*;
+import static org.silverpeas.components.suggestionbox.model.SuggestionCriteria.*;
 
 @WebComponentController(SuggestionBoxComponentSettings.COMPONENT_NAME)
 public class SuggestionBoxWebController extends
     com.stratelia.silverpeas.peasCore.servlets
         .WebComponentController<SuggestionBoxWebRequestContext> {
+
+  /**
+   * A context on the viewing of suggestions. It is used to parametrize the rendering of the
+   * suggestions in a JSP.
+   */
+  public static enum ViewContext {
+    /**
+     * The suggestions to render are the suggestions published in a suggestion box.
+     */
+    PublishedSuggestions,
+    /**
+     * The suggestions to render are the suggestion awaiting a validation. It can comprise also
+     * the suggestions that were refused by a moderator (a publisher).
+     */
+    SuggestionsInValidation,
+    /**
+     * The suggestions to render are the suggestions of the current user.
+     */
+    MySuggestions
+  }
 
   /**
    * Standard Session Controller Constructor
@@ -107,7 +129,7 @@ public class SuggestionBoxWebController extends
     List<SuggestionEntity> suggestions = getWebServiceProvider().getPublishedSuggestions(context.
         getSuggestionBox());
     context.getRequest().setAttribute("suggestions", suggestions);
-    context.getRequest().setAttribute("arePublishedSuggestions", true);
+    context.getRequest().setAttribute("viewContext", ViewContext.PublishedSuggestions);
   }
 
   /**
@@ -124,7 +146,24 @@ public class SuggestionBoxWebController extends
     List<SuggestionEntity> suggestions =
         getWebServiceProvider().getSuggestionsForValidation(context.getSuggestionBox());
     context.getRequest().setAttribute("suggestions", suggestions);
-    context.getRequest().setAttribute("arePublishedSuggestions", false);
+    context.getRequest().setAttribute("viewContext", ViewContext.SuggestionsInValidation);
+  }
+
+  /**
+   * Asks for viewing the suggestions proposed by the current user. It renders an HTML page with all
+   * the suggestions of the current user.
+   * @param context the context of the incoming request.
+   */
+  @GET
+  @Path("suggestions/mine")
+  @RedirectToInternalJsp("suggestionList.jsp")
+  @InvokeAfter("isEdito")
+  @LowestRoleAccess(SilverpeasRole.writer)
+  public void listCurrentUserSuggestions(SuggestionBoxWebRequestContext context) {
+    List<SuggestionEntity> suggestions =
+        getWebServiceProvider().getAllSuggestionsFor(context.getSuggestionBox(), context.getUser());
+    context.getRequest().setAttribute("suggestions", suggestions);
+    context.getRequest().setAttribute("viewContext", ViewContext.MySuggestions);
   }
 
   /**
@@ -379,12 +418,14 @@ public class SuggestionBoxWebController extends
   protected String backUrlFromCallerKey(final SuggestionBoxWebRequestContext context,
       final String componentURL) {
     String componentUriBase = context.getComponentUriBase();
-    if (componentURL.equals("publist")) {
+    if (componentURL.equals(ViewContext.PublishedSuggestions.name())) {
       return componentUriBase + "suggestions/published";
-    } else if (componentURL.equals("pendlist")) {
+    } else if (componentURL.equals(ViewContext.SuggestionsInValidation.name())) {
       return componentUriBase + "suggestions/pending";
+    } else if (componentURL.equals(ViewContext.MySuggestions.name())) {
+      return componentUriBase + "suggestions/mine";
     } else {
-      return componentURL + "Main";
+      return componentUriBase + "Main";
     }
   }
 }

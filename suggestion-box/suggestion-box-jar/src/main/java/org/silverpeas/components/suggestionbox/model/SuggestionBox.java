@@ -226,11 +226,23 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
     }
 
     /**
+     * Finds the list of suggestions that are published and which the creator is those specified.
+     * @param @param user the creator of the returned suggestions.
+     * @return the list of suggestions as described above and ordered by ascending last update date.
+     */
+    public List<Suggestion> findPublishedFor(final UserDetail user) {
+      SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
+      SuggestionCriteria criteria = SuggestionCriteria.from(SuggestionBox.this).createdBy(user).
+          statusIsOneOf(VALIDATED).orderedBy(LAST_UPDATE_DATE_DESC);
+      return suggestionBoxService.findSuggestionsByCriteria(criteria);
+    }
+
+    /**
      * Finds the list of suggestions that are pending validation.
      * @return the list of suggestions as described above and ordered by ascending last update date.
      */
     public List<Suggestion> findPendingValidation() {
-      return findSuggestionsInStatus(PENDING_VALIDATION);
+      return findInStatus(PENDING_VALIDATION);
     }
 
     /**
@@ -285,10 +297,24 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
      * This method is a convenient one to get suggestions of different statuses.
      * @return a list of suggestions ordered by their status and by their modification date.
      */
-    public List<Suggestion> findSuggestionsInStatus(ContributionStatus ... statuses) {
+    public List<Suggestion> findInStatus(ContributionStatus... statuses) {
       SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
       SuggestionCriteria criteria = SuggestionCriteria.from(SuggestionBox.this).
           statusIsOneOf(statuses).orderedBy(STATUS_ASC, LAST_UPDATE_DATE_ASC);
+      return suggestionBoxService.findSuggestionsByCriteria(criteria);
+    }
+
+    /**
+     * Finds the list of all the suggestions that are proposed by the specified user. The
+     * suggestions are ordered by status and for each status by modification date.
+     * @param author the author of the asked suggestions.
+     * @return a list of suggestions ordered by status and by modification date. The list is empty
+     * if the user has not proposed any suggestions.
+     */
+    public List<Suggestion> findAllFor(final UserDetail author) {
+      SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
+      SuggestionCriteria criteria = SuggestionCriteria.from(SuggestionBox.this).
+          createdBy(author).orderedBy(STATUS_ASC, LAST_UPDATE_DATE_ASC);
       return suggestionBoxService.findSuggestionsByCriteria(criteria);
     }
   }

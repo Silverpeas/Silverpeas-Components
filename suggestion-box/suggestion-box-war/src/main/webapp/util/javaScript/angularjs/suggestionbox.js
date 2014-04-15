@@ -44,8 +44,8 @@ suggestionBox.controller('mainController',
       };
     }]);
 
-/* the in draft controller of the application */
-suggestionBox.controller('inDraftController',
+/* the controller in charge of the user's suggestions in draft */
+suggestionBox.controller('suggestionsInDraftController',
     ['context', '$scope', '$rootScope', function(context, $scope, $rootScope) {
       var suggestionBox = $scope.suggestionBox;
 
@@ -68,50 +68,26 @@ suggestionBox.controller('inDraftController',
       });
     }]);
 
-/* the out of draft controller of the application */
-suggestionBox.controller('outOfDraftController',
+/* the controller in charge of the user's published suggestions */
+suggestionBox.controller('myPublishedSuggestionsController',
     ['context', '$scope', '$rootScope', function(context, $scope, $rootScope) {
       var suggestionBox = $scope.suggestionBox;
 
-      $scope.publish = function(suggestion) {
-        suggestionBox.suggestions.publish(suggestion).then(function(suggestionUpdated) {
-          $rootScope.$broadcast('suggestionModified', suggestionUpdated);
+      $scope.loadMyPublished = function() {
+        suggestionBox.suggestions.get('published', {author: context.currentUserId}).then(function(theSuggestions) {
+          $scope.myPublishedSuggestions = theSuggestions;
         });
       };
 
-      $scope.loadOutOfDraft = function() {
-        suggestionBox.suggestions.get('outOfDraft').then(function(theSuggestions) {
-          $scope.outOfDraftSuggestions = theSuggestions;
-        });
-      };
-
-      $scope.loadOutOfDraft();
+      $scope.loadMyPublished();
 
       $scope.$on("suggestionModified", function(theSuggestionId) {
-        $scope.loadOutOfDraft();
+        $scope.loadMyPublished();
       });
     }]);
 
-/* the pending validation controller of the application */
-suggestionBox.controller('pendingValidationController',
-    ['context', '$scope', '$rootScope', function(context, $scope, $rootScope) {
-      var suggestionBox = $scope.suggestionBox;
-
-      $scope.loadPendingValidation = function() {
-        suggestionBox.suggestions.get('pendingValidation').then(function(theSuggestions) {
-          $scope.pendingValidationSuggestions = theSuggestions;
-        });
-      };
-
-      $scope.loadPendingValidation();
-
-      $scope.$on("suggestionModified", function(theSuggestionId) {
-        $scope.loadPendingValidation();
-      });
-    }]);
-
-/* the published controller of the application */
-suggestionBox.controller('publishedController',
+/* the controller in charge of the published suggestions of all users */
+suggestionBox.controller('publishedSuggestionsController',
     ['context', '$scope', '$rootScope', function(context, $scope, $rootScope) {
       var suggestionBox = $scope.suggestionBox;
 
@@ -128,14 +104,13 @@ suggestionBox.controller('publishedController',
       });
     }]);
 
-  /* the buzz controller of the application */
-  suggestionBox.controller('buzzPublishedController',
+  /* the controller in charge of all the published suggestions making the buzz */
+  suggestionBox.controller('buzzPublishedSuggestionsController',
     ['context', '$scope', function(context, $scope) {
       var suggestionBox = $scope.suggestionBox;
 
       $scope.loadBuzzPublished = function() {
-        // TOTO Delete this call after the buzz web service works
-        suggestionBox.suggestions.get('published', {page: {number: 0, count: 3}, sortby: 'commentCount'}).then(function(theSuggestions) {
+        suggestionBox.suggestions.get('published', {page: {number: 1, size: 3}, sortby: 'commentCount'}).then(function(theSuggestions) {
           $scope.buzzPublishedSuggestions = theSuggestions;
         });
       };
@@ -147,6 +122,7 @@ suggestionBox.controller('publishedController',
       });
     }]);
 
+  /* the controller in charge of the last comments on the suggestions */
   suggestionBox.controller('lastCommentsController',
     ['context', '$scope', function(context, $scope) {
       var suggestionBox = $scope.suggestionBox;
@@ -155,20 +131,3 @@ suggestionBox.controller('publishedController',
       });
     }]);
 
-  suggestionBox.controller('suggestionListController', ['$scope', function($scope) {
-      var suggestionBox = $scope.suggestionBox;
-
-      var fetchSuggestionsAtPage = function(page) {
-          suggestionBox.suggestions.get('published', {page: {number: page, size: $scope.suggestionsPerPage}})
-                  .then(function(theSuggestions) {
-          $scope.suggestions = theSuggestions;
-        });
-      };
-
-      $scope.suggestionsPerPage = 5;
-
-      fetchSuggestionsAtPage(1);
-
-      $scope.changePage = fetchSuggestionsAtPage;
-
-  }]);

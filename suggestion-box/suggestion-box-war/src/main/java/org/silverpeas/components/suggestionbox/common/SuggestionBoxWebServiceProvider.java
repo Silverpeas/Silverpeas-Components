@@ -104,6 +104,30 @@ public class SuggestionBoxWebServiceProvider {
   }
 
   /**
+   * Gets the list of suggestions that are in draft and which the creator is those specified.
+   * @param suggestionBox the suggestion box the current user is working on.
+   * @param creator the user that must be the creator of the returned suggestions.
+   * @return the aimed suggestion entities.
+   * @see SuggestionBox.Suggestions#findInDraftFor(UserDetail)
+   */
+  public List<SuggestionEntity> getPublishedSuggestionsFor(SuggestionBox suggestionBox,
+      UserDetail creator) {
+    return asWebEntities(suggestionBox.getSuggestions().findPublishedFor(creator));
+  }
+
+  /**
+   * Gets the list of all the suggestions in the specified suggestion box proposed by the specified
+   * creator.
+   * @param suggestionBox the suggestion box the current user is working on.
+   * @param creator the user that must be the creator of the returned suggestions.
+   * @return the asked suggestion entities.
+   * @see SuggestionBox.Suggestions#findAllFor(com.stratelia.webactiv.beans.admin.UserDetail)
+   */
+  public List<SuggestionEntity> getAllSuggestionsFor(SuggestionBox suggestionBox, UserDetail creator) {
+    return asWebEntities(suggestionBox.getSuggestions().findAllFor(creator));
+  }
+
+  /**
    * Gets the list of suggestions that are in pending validation and which.
    * @param suggestionBox the suggestion box the current user is working on.
    * @return the aimed suggestion entities.
@@ -122,7 +146,7 @@ public class SuggestionBoxWebServiceProvider {
    */
   public List<SuggestionEntity> getSuggestionsForValidation(SuggestionBox suggestionBox) {
     return asWebEntities(
-        suggestionBox.getSuggestions().findSuggestionsInStatus(PENDING_VALIDATION, REFUSED));
+        suggestionBox.getSuggestions().findInStatus(PENDING_VALIDATION, REFUSED));
   }
 
   /**

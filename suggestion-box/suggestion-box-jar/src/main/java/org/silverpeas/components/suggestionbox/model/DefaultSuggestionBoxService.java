@@ -105,7 +105,7 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService,
   }
 
   /**
-   * Releases the uses of the transversal core services that were used by the instances of the
+   * Releases the uses of the transverse core services that were used by the instances of the
    * Suggestion Box component.
    */
   @PreDestroy

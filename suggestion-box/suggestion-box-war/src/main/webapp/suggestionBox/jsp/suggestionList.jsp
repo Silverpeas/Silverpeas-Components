@@ -46,6 +46,7 @@
 <fmt:message var="refusedIconPath"           key="suggestionBox.refusedSuggestion" bundle="${icons}"/>
 <fmt:message var="validatedIconPath"         key="suggestionBox.validatedSuggestion" bundle="${icons}"/>
 <fmt:message var="pendingValidationIconPath" key="suggestionBox.SuggestionInPendingValidation" bundle="${icons}"/>
+<fmt:message var="inDraftIconPath"           key="suggestionBox.SuggestionInDraft" bundle="${icons}"/>
 
 <c:set var="currentUser"             value="${requestScope.currentUser}"/>
 <c:set var="componentId"             value="${requestScope.browseContext[3]}"/>
@@ -53,15 +54,11 @@
 <c:set var="suggestionBoxId"         value="${suggestionBox.id}"/>
 <c:set var="isEdito"                 value="${requestScope.isEdito}"/>
 <c:set var="suggestions"             value="${requestScope.suggestions}"/>
-<c:set var="arePublishedSuggestions" value="${requestScope.arePublishedSuggestions}"/>
+<c:set var="viewContext"             value="${requestScope.viewContext}"/>
+<c:set var="page"                    value="${viewContext}"/>
 
 <c:url var="componentUriBase" value="${requestScope.componentUriBase}"/>
 <c:url var="backUri"          value="${requestScope.backUrl}"/>
-
-<c:set var="page" value="publist"/>
-<c:if test="${not arePublishedSuggestions}">
-  <c:set var="page" value="pendlist"/>
-</c:if>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -88,7 +85,7 @@
       <view:arrayColumn title="${date}" sortable="true"/>
       <view:arrayColumn title="${title}" sortable="true"/>
       <view:arrayColumn title="${author}" sortable="true"/>
-      <c:if test="${arePublishedSuggestions}">
+      <c:if test="${viewContext != SuggestionBoxWebController.ViewContext.SuggestionsInValidation}">
         <view:arrayColumn title="${rating}" sortable="true"/>
         <view:arrayColumn title="${ratingCount}" sortable="true"/>
         <view:arrayColumn title="${commentCount}" sortable="true"/>
@@ -108,16 +105,29 @@
               <c:url var="statusIcon" value="${pendingValidationIconPath}"/>
               <fmt:message key="suggestionBox.label.suggestion.status.PendingValidation" var="suggestionStatus"/>
             </c:when>
+            <c:otherwise>
+              <c:url var="statusIcon" value="${inDraftIconPath}"/>
+              <fmt:message key="suggestionBox.label.suggestion.status.InDraft" var="suggestionStatus"/>
+            </c:otherwise>
           </c:choose>
           <view:arrayCellText text="<img src='${statusIcon}' alt='${statusLabel}' title='${suggestionStatus}'/>"/>
           <!-- the last update date is the validation date for refused and accepted suggestions -->
           <view:arrayCellText text="${suggestion.lastUpdateDate}"/>
           <view:arrayCellText text="<a href=\"${componentUriBase}suggestions/${suggestion.id}?from=${page}\">${suggestion.title}</a>"/>
           <view:arrayCellText text="${suggestion.authorName}"/>
-          <c:if test="${arePublishedSuggestions}">
-            <view:arrayCellText text="0"/>
-            <view:arrayCellText text="0"/>
-            <view:arrayCellText text="${suggestion.commentCount}"/>
+          <c:if test="${viewContext != SuggestionBoxWebController.ViewContext.SuggestionsInValidation}">
+            <c:choose>
+              <c:when test="${suggestion.validation.validated}">
+                <view:arrayCellText text="0"/>
+                <view:arrayCellText text="0"/>
+                <view:arrayCellText text="${suggestion.commentCount}"/>
+              </c:when>
+              <c:otherwise>
+                <view:arrayCellText text="-"/>
+                <view:arrayCellText text="-"/>
+                <view:arrayCellText text="-"/>
+              </c:otherwise>
+            </c:choose>
           </c:if>
         </view:arrayLine>
       </c:forEach>

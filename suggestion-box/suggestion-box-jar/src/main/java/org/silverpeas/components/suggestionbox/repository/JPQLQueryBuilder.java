@@ -47,6 +47,7 @@ public class JPQLQueryBuilder implements SuggestionCriteriaProcessor {
   private StringBuilder orderBy = null;
   private boolean done = false;
   private final SimpleQueryCriteria jpqlCriteria;
+  private String conjonction;
 
   public JPQLQueryBuilder(final NamedParameters parameters) {
     this.jpqlCriteria = new SimpleQueryCriteria(parameters);
@@ -59,7 +60,7 @@ public class JPQLQueryBuilder implements SuggestionCriteriaProcessor {
   @Override
   public void endProcessing() {
     if (orderBy != null && orderBy.length() > 0) {
-      jpqlCriteria.clause().replaceLast(orderBy.toString());
+      jpqlCriteria.clause().add(orderBy.toString());
     }
     done = true;
   }
@@ -72,7 +73,7 @@ public class JPQLQueryBuilder implements SuggestionCriteriaProcessor {
   @Override
   public SuggestionCriteriaProcessor then() {
     if (!done) {
-      jpqlCriteria.clause().add("and");
+      conjonction = "and";
     }
     return this;
   }
@@ -80,8 +81,9 @@ public class JPQLQueryBuilder implements SuggestionCriteriaProcessor {
   @Override
   public SuggestionCriteriaProcessor processSuggestionBox(SuggestionBox box) {
     if (!done) {
-      jpqlCriteria.clause().add("suggestionBox = :suggestionBox").parameters().add("suggestionBox",
-          box);
+      jpqlCriteria.clause().add(conjonction).add("suggestionBox = :suggestionBox").parameters()
+          .add("suggestionBox", box);
+      conjonction = null;
     }
     return this;
   }
@@ -89,8 +91,10 @@ public class JPQLQueryBuilder implements SuggestionCriteriaProcessor {
   @Override
   public SuggestionCriteriaProcessor processCreator(UserDetail creator) {
     if (!done) {
-      jpqlCriteria.clause().add("createdBy = :createdBy").parameters().add("createdBy", creator.
-          getId());
+      jpqlCriteria.clause().add(conjonction).add("createdBy = :createdBy").parameters()
+          .add("createdBy", creator.
+              getId());
+      conjonction = null;
     }
     return this;
   }
@@ -98,8 +102,9 @@ public class JPQLQueryBuilder implements SuggestionCriteriaProcessor {
   @Override
   public SuggestionCriteriaProcessor processStatus(List<ContributionStatus> status) {
     if (!done) {
-      jpqlCriteria.clause().add("validation.status in :statuses").parameters().add("statuses",
-          status);
+      jpqlCriteria.clause().add(conjonction).add("validation.status in :statuses").parameters()
+          .add("statuses", status);
+      conjonction = null;
     }
     return this;
   }
@@ -118,6 +123,7 @@ public class JPQLQueryBuilder implements SuggestionCriteriaProcessor {
         orderBy.append(anOrdering.isAsc() ? "asc" : "desc");
         i++;
       }
+      conjonction = null;
     }
     return this;
   }
@@ -129,7 +135,8 @@ public class JPQLQueryBuilder implements SuggestionCriteriaProcessor {
       for (String id : identifiers) {
         uuids.add(new UuidIdentifier().fromString(id));
       }
-      jpqlCriteria.clause().add("id in :ids").parameters().add("ids", uuids);
+      jpqlCriteria.clause().add(conjonction).add("id in :ids").parameters().add("ids", uuids);
+      conjonction = null;
     }
     return this;
   }
@@ -138,6 +145,7 @@ public class JPQLQueryBuilder implements SuggestionCriteriaProcessor {
   public SuggestionCriteriaProcessor processPagination(PaginationPage pagination) {
     jpqlCriteria.withPagination(new PaginationCriterion(pagination.getPageNumber(), pagination.
         getPageSize()));
+    conjonction = null;
     return this;
   }
 
