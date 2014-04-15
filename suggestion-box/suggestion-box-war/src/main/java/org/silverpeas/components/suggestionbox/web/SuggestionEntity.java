@@ -35,7 +35,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-
 import java.lang.reflect.Field;
 import java.net.URI;
 import java.util.Date;
@@ -103,6 +102,11 @@ public class SuggestionEntity implements Exposable {
   @XmlElement
   public Date getCreateDate() {
     return suggestion.getCreateDate();
+  }
+
+  @XmlElement
+  public Date getLastUpdateDate() {
+    return suggestion.getLastUpdateDate();
   }
 
   @XmlElement(nillable = true)

@@ -27,10 +27,10 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
-<c:set var="greaterUserRole" value="${requestScope.greaterUserRole}"/>
-
+<c:set var="greaterUserRole"     value="${requestScope.greaterUserRole}"/>
 <c:set var="currentUserLanguage" value="${requestScope.resources.language}"/>
-<fmt:setLocale value="${currentUserLanguage}"/>
+
+<fmt:setLocale  value="${currentUserLanguage}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
@@ -41,16 +41,27 @@
 <fmt:message var="rating"       key="GML.rating"/>
 <fmt:message var="ratingCount"  key="GML.rating.participation.number"/>
 <fmt:message var="commentCount" key="GML.comment.number"/>
+<fmt:message var="status"       key="GML.status"/>
 
-<c:set var="currentUser" value="${requestScope.currentUser}"/>
-<c:set var="componentId" value="${requestScope.browseContext[3]}"/>
-<c:set var="suggestionBox" value="${requestScope.currentSuggestionBox}"/>
-<c:set var="suggestionBoxId" value="${suggestionBox.id}"/>
-<c:set var="isEdito" value="${requestScope.isEdito}"/>
-<c:set var="suggestions" value="${requestScope.suggestions}"/>
+<fmt:message var="refusedIconPath"           key="suggestionBox.refusedSuggestion" bundle="${icons}"/>
+<fmt:message var="validatedIconPath"         key="suggestionBox.validatedSuggestion" bundle="${icons}"/>
+<fmt:message var="pendingValidationIconPath" key="suggestionBox.SuggestionInPendingValidation" bundle="${icons}"/>
+
+<c:set var="currentUser"             value="${requestScope.currentUser}"/>
+<c:set var="componentId"             value="${requestScope.browseContext[3]}"/>
+<c:set var="suggestionBox"           value="${requestScope.currentSuggestionBox}"/>
+<c:set var="suggestionBoxId"         value="${suggestionBox.id}"/>
+<c:set var="isEdito"                 value="${requestScope.isEdito}"/>
+<c:set var="suggestions"             value="${requestScope.suggestions}"/>
+<c:set var="arePublishedSuggestions" value="${requestScope.arePublishedSuggestions}"/>
 
 <c:url var="componentUriBase" value="${requestScope.componentUriBase}"/>
-<c:url var="backUri" value="${requestScope.backUrl}"/>
+<c:url var="backUri"          value="${requestScope.backUrl}"/>
+
+<c:set var="page" value="publist"/>
+<c:if test="${not arePublishedSuggestions}">
+  <c:set var="page" value="pendlist"/>
+</c:if>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -73,20 +84,41 @@
       </div>
     </c:if>
     <view:arrayPane var="" routingAddress="${componentUriBase}suggestions/published">
+      <view:arrayColumn title="${status}" sortable="false"/>
       <view:arrayColumn title="${date}" sortable="true"/>
       <view:arrayColumn title="${title}" sortable="true"/>
       <view:arrayColumn title="${author}" sortable="true"/>
-      <view:arrayColumn title="${rating}" sortable="true"/>
-      <view:arrayColumn title="${ratingCount}" sortable="true"/>
-      <view:arrayColumn title="${commentCount}" sortable="true"/>
+      <c:if test="${arePublishedSuggestions}">
+        <view:arrayColumn title="${rating}" sortable="true"/>
+        <view:arrayColumn title="${ratingCount}" sortable="true"/>
+        <view:arrayColumn title="${commentCount}" sortable="true"/>
+      </c:if>
       <c:forEach var="suggestion" items="${suggestions}">
         <view:arrayLine>
-          <view:arrayCellText text="${suggestion.validation.date}"/>
-          <view:arrayCellText text="<a href=\"${componentUriBase}suggestions/${suggestion.id}?from=list\">${suggestion.title}</a>"/>
+          <c:choose>
+            <c:when test="${suggestion.validation.refused}">
+              <c:url var="statusIcon" value="${refusedIconPath}"/>
+              <fmt:message key="suggestionBox.label.suggestion.status.Refused" var="suggestionStatus"/>
+            </c:when>
+            <c:when test="${suggestion.validation.validated}">
+              <c:url var="statusIcon" value="${validatedIconPath}"/>
+              <fmt:message key="suggestionBox.label.suggestion.status.Validated" var="suggestionStatus"/>
+            </c:when>
+            <c:when test="${suggestion.validation.pendingValidation}">
+              <c:url var="statusIcon" value="${pendingValidationIconPath}"/>
+              <fmt:message key="suggestionBox.label.suggestion.status.PendingValidation" var="suggestionStatus"/>
+            </c:when>
+          </c:choose>
+          <view:arrayCellText text="<img src='${statusIcon}' alt='${statusLabel}' title='${suggestionStatus}'/>"/>
+          <!-- the last update date is the validation date for refused and accepted suggestions -->
+          <view:arrayCellText text="${suggestion.lastUpdateDate}"/>
+          <view:arrayCellText text="<a href=\"${componentUriBase}suggestions/${suggestion.id}?from=${page}\">${suggestion.title}</a>"/>
           <view:arrayCellText text="${suggestion.authorName}"/>
-          <view:arrayCellText text="0"/>
-          <view:arrayCellText text="0"/>
-          <view:arrayCellText text="${suggestion.commentCount}"/>
+          <c:if test="${arePublishedSuggestions}">
+            <view:arrayCellText text="0"/>
+            <view:arrayCellText text="0"/>
+            <view:arrayCellText text="${suggestion.commentCount}"/>
+          </c:if>
         </view:arrayLine>
       </c:forEach>
     </view:arrayPane>

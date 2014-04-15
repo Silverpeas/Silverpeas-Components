@@ -54,7 +54,10 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs.BOX_BASE_URI;
-import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs.BOX_SUGGESTION_URI_PART;
+import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs
+    .BOX_SUGGESTION_URI_PART;
+import static org.silverpeas.contribution.ContributionStatus.PENDING_VALIDATION;
+import static org.silverpeas.contribution.ContributionStatus.REFUSED;
 
 
 /**
@@ -101,13 +104,25 @@ public class SuggestionBoxWebServiceProvider {
   }
 
   /**
-   * Gets the list of suggestions that are pending validation and which.
+   * Gets the list of suggestions that are in pending validation and which.
    * @param suggestionBox the suggestion box the current user is working on.
    * @return the aimed suggestion entities.
    * @see SuggestionBox.Suggestions#findPendingValidation()
    */
   public List<SuggestionEntity> getSuggestionsInPendingValidation(SuggestionBox suggestionBox) {
     return asWebEntities(suggestionBox.getSuggestions().findPendingValidation());
+  }
+
+  /**
+   * Gets the list of suggestions that are out of draft, awaiting their validation by a publisher.
+   * These suggestions are made up of those in pending validation and those refused by a
+   * publisher.
+   * @param suggestionBox the suggestion box the current user is working on.
+   * @return the aimed suggestion entities.
+   */
+  public List<SuggestionEntity> getSuggestionsForValidation(SuggestionBox suggestionBox) {
+    return asWebEntities(
+        suggestionBox.getSuggestions().findSuggestionsInStatus(PENDING_VALIDATION, REFUSED));
   }
 
   /**

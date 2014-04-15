@@ -26,6 +26,7 @@ package org.silverpeas.components.suggestionbox.model;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.contribution.ContributionStatus;
 import org.silverpeas.contribution.model.ContributionValidation;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
@@ -229,10 +230,7 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
      * @return the list of suggestions as described above and ordered by ascending last update date.
      */
     public List<Suggestion> findPendingValidation() {
-      SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
-      SuggestionCriteria criteria = SuggestionCriteria.from(SuggestionBox.this).
-          statusIsOneOf(PENDING_VALIDATION).orderedBy(LAST_UPDATE_DATE_ASC);
-      return suggestionBoxService.findSuggestionsByCriteria(criteria);
+      return findSuggestionsInStatus(PENDING_VALIDATION);
     }
 
     /**
@@ -279,6 +277,19 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
     public Suggestion validate(final Suggestion suggestion, final ContributionValidation validation) {
       SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
       return suggestionBoxService.validateSuggestion(SuggestionBox.this, suggestion, validation);
+    }
+
+    /**
+     * Finds the list of suggestions that are in the specified statuses. The suggestions are ordered
+     * by their status and for each status by their modification date.
+     * This method is a convenient one to get suggestions of different statuses.
+     * @return a list of suggestions ordered by their status and by their modification date.
+     */
+    public List<Suggestion> findSuggestionsInStatus(ContributionStatus ... statuses) {
+      SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
+      SuggestionCriteria criteria = SuggestionCriteria.from(SuggestionBox.this).
+          statusIsOneOf(statuses).orderedBy(STATUS_ASC, LAST_UPDATE_DATE_ASC);
+      return suggestionBoxService.findSuggestionsByCriteria(criteria);
     }
   }
 

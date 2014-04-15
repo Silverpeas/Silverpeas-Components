@@ -33,7 +33,7 @@ suggestionBox.controller('mainController',
         id : context.suggestionBoxId,
         componentInstanceId : context.component});
       $scope.suggestionBox = suggestionBox;
-      if (context.suggestionId) {
+      if (typeof context.suggestionId !== 'undefined') {
         suggestionBox.suggestions.get(context.suggestionId).then(function(suggestion){
           $scope.suggestion = suggestion;
         });

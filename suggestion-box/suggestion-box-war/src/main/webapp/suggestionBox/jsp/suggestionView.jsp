@@ -141,7 +141,7 @@
             ${suggestion.content}
         </div>
       </c:if>
-      <c:if test="${not empty suggestion.validation.comment && (suggestion.validation.validated || suggestion.validation.refused)}">
+      <c:if test="${not empty suggestion.validation.comment and (suggestion.validation.validated or suggestion.validation.refused)}">
         <div id="suggestionApprobationDetail">
           <p id="suggestionApprobationDetail-info"><span class="libelle"><fmt:message key="suggestionBox.label.suggestion.approbator.comment">
             <fmt:param><strong class="author"><c:out value="${suggestion.validation.validatorName}"/></strong></fmt:param>
@@ -162,12 +162,12 @@
     </view:buttonPane>
 
     <c:choose>
-      <c:when test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
+      <c:when test="${greaterUserRole.isGreaterThanOrEquals(writerRole) and suggestion.validation.validated}">
         <view:comments componentId="${componentId}" resourceId="${suggestion.id}" userId="${currentUser.id}" resourceType="${suggestion.contributionType}"/>
       </c:when>
-      <c:otherwise>
+      <c:when test="${suggestion.validation.validated}">
         <view:commentListing componentId="${componentId}" resourceId="${suggestion.id}" userId="${currentUser.id}"/>
-      </c:otherwise>
+      </c:when>
     </c:choose>
   </view:frame>
 </view:window>

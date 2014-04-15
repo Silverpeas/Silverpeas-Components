@@ -107,6 +107,24 @@ public class SuggestionBoxWebController extends
     List<SuggestionEntity> suggestions = getWebServiceProvider().getPublishedSuggestions(context.
         getSuggestionBox());
     context.getRequest().setAttribute("suggestions", suggestions);
+    context.getRequest().setAttribute("arePublishedSuggestions", true);
+  }
+
+  /**
+   * Asks for viewing the suggestions in pending validation. It renders an HTML page with all the
+   * suggestions waiting for the validation from a publisher.
+   * @param context the context of the incoming request.
+   */
+  @GET
+  @Path("suggestions/pending")
+  @RedirectToInternalJsp("suggestionList.jsp")
+  @InvokeAfter("isEdito")
+  @LowestRoleAccess(SilverpeasRole.publisher)
+  public void listSuggestionsInPendingValidation(SuggestionBoxWebRequestContext context) {
+    List<SuggestionEntity> suggestions =
+        getWebServiceProvider().getSuggestionsForValidation(context.getSuggestionBox());
+    context.getRequest().setAttribute("suggestions", suggestions);
+    context.getRequest().setAttribute("arePublishedSuggestions", false);
   }
 
   /**
@@ -197,8 +215,9 @@ public class SuggestionBoxWebController extends
   }
 
   /**
-   * Asks for editing an existing suggestion. It renders an HTML page to modify the content of the
-   * suggestion.
+   * Asks for viewing the suggestion identified by the identifier specified in the URL. It
+   * renders an HTML page with all the information about
+   * a given suggestion. If the suggestion isn't published, it can be then modified.
    * @param context the context of the incoming request.
    */
   @GET
@@ -360,8 +379,10 @@ public class SuggestionBoxWebController extends
   protected String backUrlFromCallerKey(final SuggestionBoxWebRequestContext context,
       final String componentURL) {
     String componentUriBase = context.getComponentUriBase();
-    if (componentURL.equals("list")) {
+    if (componentURL.equals("publist")) {
       return componentUriBase + "suggestions/published";
+    } else if (componentURL.equals("pendlist")) {
+      return componentUriBase + "suggestions/pending";
     } else {
       return componentURL + "Main";
     }
