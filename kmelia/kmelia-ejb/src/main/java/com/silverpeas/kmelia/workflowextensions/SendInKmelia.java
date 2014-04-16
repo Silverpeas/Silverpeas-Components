@@ -20,7 +20,23 @@
  */
 package com.silverpeas.kmelia.workflowextensions;
 
+import java.awt.Color;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.silverpeas.attachment.AttachmentException;
+import org.silverpeas.attachment.AttachmentService;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+
 import au.id.jericho.lib.html.Source;
+
 import com.lowagie.text.Element;
 import com.lowagie.text.Font;
 import com.lowagie.text.Phrase;
@@ -60,22 +76,11 @@ import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import com.stratelia.webactiv.util.node.control.NodeBm;
+import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import org.silverpeas.attachment.AttachmentException;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-
-import java.awt.*;
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class SendInKmelia extends ExternalActionImpl {
 
@@ -116,7 +121,20 @@ public class SendInKmelia extends ExternalActionImpl {
       topicId = pk.getId();
     } else {
       targetId = getTriggerParameter("targetComponentId").getValue();
-      topicId = getTriggerParameter("targetTopicId").getValue();
+      Parameter paramTopicPath = getTriggerParameter("targetFolderPath");
+      if (paramTopicPath != null && StringUtil.isDefined(paramTopicPath.getValue())) {
+        try {
+          String path =
+              DataRecordUtil.applySubstitution(paramTopicPath.getValue(), getProcessInstance()
+                  .getAllDataRecord(role, "fr"), "fr");
+          topicId = getNodeId(path);
+        } catch (WorkflowException e) {
+          SilverTrace.error("workflowEngine", "SendInKmelia.execute()", "root.MSG_GEN_ERROR", e);
+          topicId = "0";
+        }
+      } else {
+        topicId = getTriggerParameter("targetTopicId").getValue();
+      }
     }
     pubTitle = getTriggerParameter("pubTitle").getValue();
     Parameter paramDescription = getTriggerParameter("pubDescription");
@@ -129,6 +147,7 @@ public class SendInKmelia extends ExternalActionImpl {
         xmlFormName = xmlFormName.substring(0, xmlFormName.lastIndexOf(".xml"));
       }
     }
+    boolean formIsUsed = StringUtil.isDefined(xmlFormName);
     if (getTriggerParameter("addPDFHistory") != null) {
       addPDFHistory = StringUtil.getBooleanValue(getTriggerParameter("addPDFHistory").getValue());
       if (getTriggerParameter("addPDFHistoryFirst") != null) {
@@ -168,7 +187,7 @@ public class SendInKmelia extends ExternalActionImpl {
     PublicationDetail pubDetail =
         new PublicationDetail(pubPK, pubName, desc, now, now, null, userId, 1, null, null, null);
 
-    if (StringUtil.isDefined(xmlFormName)) {
+    if (formIsUsed) {
       pubDetail.setInfoId(xmlFormName);
     }
 
@@ -182,11 +201,11 @@ public class SendInKmelia extends ExternalActionImpl {
       addPdfHistory(pubPK, userId);
     }
 
-    // 3 - Copy all instance attached files to publication
+    // 3 - Copy all instance regular files to publication
     ForeignPK fromPK =
         new ForeignPK(getProcessInstance().getInstanceId(), getProcessInstance().getModelId());
     ForeignPK toPK = new ForeignPK(pubPK);
-    pasteFiles(fromPK, toPK);
+    copyFiles(fromPK, toPK, DocumentType.attachment, DocumentType.attachment);
 
     if (addPDFHistory && !addPDFHistoryFirst) {
       addPdfHistory(pubPK, userId);
@@ -197,25 +216,49 @@ public class SendInKmelia extends ExternalActionImpl {
     newPubli.setStatusMustBeChecked(false);
     getKmeliaBm().updatePublication(newPubli);
 
-    // Populate the fields
-    if (StringUtil.isDefined(xmlFormName)) {
-      populateFields(pubId);
+    // process form content
+    if (formIsUsed) {
+      // target app use form : populate form fields
+      populateFields(pubId, fromPK, toPK);
+    } else {
+      // target app do not use form : copy files of worflow folder
+      copyFiles(fromPK, toPK, DocumentType.form, DocumentType.attachment);
     }
     orga = null;
   }
 
-  public void populateFields(String pubId) {
+  public void populateFields(String pubId, ForeignPK fromPK, ForeignPK toPK) {    
     // Get the current instance
     UpdatableProcessInstance currentProcessInstance =
         (UpdatableProcessInstance) getProcessInstance();
     try {
+      // register xmlForm of publication
+      PublicationTemplateManager.getInstance().addDynamicPublicationTemplate(
+          targetId + ":" + xmlFormName, xmlFormName + ".xml");
+      
       PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) PublicationTemplateManager
           .getInstance().getPublicationTemplate(targetId + ":" + xmlFormName);
       DataRecord record = pubTemplate.getRecordSet().getEmptyRecord();
       record.setId(pubId);
       for (String fieldName : record.getFieldNames()) {
-        record.getField(fieldName).setObjectValue(
-            currentProcessInstance.getField(fieldName).getObjectValue());
+        SilverTrace.debug("workflowEngine", "SendInKmelia.populateFields", "Process fieldName =" +
+            fieldName);
+        Object fieldValue = null;
+        try {
+          Field fieldOfFolder = currentProcessInstance.getField(fieldName);
+          fieldValue = fieldOfFolder.getObjectValue();
+          // Check file attachment in order to put them inside form
+          if (fieldOfFolder instanceof FileField) {
+            SilverTrace.info("workflowEngine", "SendInKmelia.populateFields", "Process file copy");
+            fieldValue = copyFormFile(fromPK, toPK, ((FileField) fieldOfFolder).getAttachmentId());
+          }
+        } catch (WorkflowException e) {
+          SilverTrace.debug("workflowEngine", "SendInKmelia.populateFields", "fill fieldname=" +
+              fieldName + " with value " + fieldValue, e);
+        }
+        SilverTrace.debug("workflowEngine", "SendInKmelia.populateFields", "fill fieldname=" +
+            fieldName + " with value " + fieldValue);
+        record.getField(fieldName).setObjectValue(fieldValue);
       }
       // Update
       pubTemplate.getRecordSet().save(record);
@@ -228,32 +271,52 @@ public class SendInKmelia extends ExternalActionImpl {
       SilverTrace.error("workflowEngine",
           "SendInKmelia.populateFields()",
           "workflowEngine.CANNOT_UPDATE_PUBLICATION", e);
-    } catch (WorkflowException e) {
-      SilverTrace.error("workflowEngine",
-          "SendInKmelia.populateFields()",
-          "workflowEngine.CANNOT_UPDATE_PUBLICATION", e);
     }
-
   }
-
-  public Map<String, String> pasteFiles(ForeignPK fromPK, ForeignPK toPK) {
+  
+  private String copyFormFile(ForeignPK fromPK, ForeignPK toPK, String attachmentId) {
+    SimpleDocument attachment = null;
+    if (StringUtil.isDefined(attachmentId)) {
+      AttachmentService service = AttachmentServiceFactory.getAttachmentService();
+      // Retrieve attachment detail to copy
+      attachment =
+          service.searchDocumentById(new SimpleDocumentPK(attachmentId, fromPK.getInstanceId()), null);
+      if (attachment != null) {
+        SimpleDocumentPK copyPK = copyFile(attachment, toPK);
+        return copyPK.getId();
+      }
+    }
+    return null;
+  }
+  
+  private Map<String, String> copyFiles(ForeignPK fromPK, ForeignPK toPK, DocumentType fromType,
+      DocumentType toType) {
     Map<String, String> fileIds = new HashMap<String, String>();
     try {
-        List<SimpleDocument> origins = AttachmentServiceFactory.getAttachmentService().
-            listDocumentsByForeignKeyAndType(fromPK, DocumentType.attachment, getLanguage());
-        for (SimpleDocument origin : origins) {
-          SimpleDocumentPK copyPk = AttachmentServiceFactory.getAttachmentService().copyDocument(
-              origin, toPK);
-          fileIds.put(origin.getId(), copyPk.getId());
-        }
+      List<SimpleDocument> origins = AttachmentServiceFactory.getAttachmentService().
+            listDocumentsByForeignKeyAndType(fromPK, fromType, getLanguage());
+      for (SimpleDocument origin : origins) {
+        SimpleDocumentPK copyPk = copyFile(origin, toPK, toType);
+        fileIds.put(origin.getId(), copyPk.getId());
+      }
 
     } catch (AttachmentException e) {
-      SilverTrace.error("workflowEngine", "SendInKmelia.pasteFiles", "CANNOT_PASTE_FILES", e);
+      SilverTrace.error("workflowEngine", "SendInKmelia.copyFiles", "CANNOT_PASTE_FILES", e);
     }
-
     return fileIds;
   }
-
+  
+  private SimpleDocumentPK copyFile(SimpleDocument file, ForeignPK toPK) {
+    return copyFile(file, toPK); 
+  }
+  
+  private SimpleDocumentPK copyFile(SimpleDocument file, ForeignPK toPK, DocumentType type) {
+    if (type != null) {
+      file.setDocumentType(type);
+    }
+    return AttachmentServiceFactory.getAttachmentService().copyDocument(file, toPK);
+  }
+  
   private byte[] generatePDF(ProcessInstance instance) {
     com.lowagie.text.Document document = new com.lowagie.text.Document();
 
@@ -480,5 +543,48 @@ public class SendInKmelia extends ExternalActionImpl {
     }
     byte[] pdf = generatePDF(getProcessInstance());
     getKmeliaBm().addAttachmentToPublication(pubPK, userId, fileName, "", pdf);
+  }
+
+  private String getNodeId(String explicitPath) {
+    String[] path = explicitPath.substring(1).split("/");
+    NodePK nodePK = new NodePK("unknown", targetId);
+    String parentId = NodePK.ROOT_NODE_ID;
+    for (String name : path) {
+      NodeDetail existingNode = null;
+      try {
+        existingNode =
+            getNodeBm().getDetailByNameAndFatherId(nodePK, name, Integer.parseInt(parentId));
+      } catch (Exception e) {
+        SilverTrace.info("workflowEngine", "SendInKmelia.getNodeId()",
+            "root.MSG_GEN_PARAM_VALUE", "node named '" + name + "' in path '" +
+                explicitPath + "' does not exist");
+      }
+      if (existingNode != null) {
+        // topic exists
+        parentId = existingNode.getNodePK().getId();
+      } else {
+        // topic does not exists, creating it
+        NodeDetail newNode = new NodeDetail();
+        newNode.setName(name);
+        newNode.setNodePK(new NodePK("unknown", targetId));
+        newNode.setFatherPK(new NodePK(parentId, targetId));
+        newNode.setCreatorId(userId);
+        NodePK newNodePK = null;
+        try {
+          newNodePK = getNodeBm().createNode(newNode);
+        } catch (Exception e) {
+          SilverTrace.error("workflowEngine", "SendInKmelia.getNodeId()",
+              "root.MSG_GEN_PARAM_VALUE", "Can't create node named '" + name + "' in path '" +
+                  explicitPath + "'", e);
+          return "-1";
+        }
+        parentId = newNodePK.getId();
+      }
+    }
+    return parentId;
+  }
+
+  protected NodeBm getNodeBm() {
+    return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
   }
 }
