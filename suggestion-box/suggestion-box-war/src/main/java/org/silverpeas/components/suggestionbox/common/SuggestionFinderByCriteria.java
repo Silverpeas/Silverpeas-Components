@@ -26,9 +26,12 @@ package org.silverpeas.components.suggestionbox.common;
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.comment.model.CommentedPublicationInfo;
 import com.silverpeas.comment.service.CommentService;
+import com.silverpeas.util.CollectionUtil;
 import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.comparator.AbstractComplexComparator;
 import com.stratelia.webactiv.beans.admin.PaginationPage;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.apache.commons.lang.NotImplementedException;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.model.SuggestionBoxService;
@@ -39,7 +42,10 @@ import org.silverpeas.components.suggestionbox.model.SuggestionCriteriaProcessor
 import org.silverpeas.contribution.ContributionStatus;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+
+import static org.silverpeas.components.suggestionbox.model.SuggestionCriteria.JOIN_DATA_APPLY;
 
 /**
  * A finder of suggestions in the given suggestion box by applying a criteria on the suggestion
@@ -54,6 +60,7 @@ public class SuggestionFinderByCriteria implements SuggestionCriteriaProcessor {
 
   private List<Suggestion> suggestions;
   private SuggestionCriteria criteria;
+  private List<QUERY_ORDER_BY> logicalOrderBy;
 
   public SuggestionFinderByCriteria() {
   }
@@ -93,20 +100,45 @@ public class SuggestionFinderByCriteria implements SuggestionCriteriaProcessor {
   }
 
   @Override
-  public SuggestionCriteriaProcessor processOrdering(List<QUERY_ORDER_BY> orderings) {
-    if (orderings != null && !orderings.isEmpty()) {
-      if (orderings.contains(QUERY_ORDER_BY.COMMENT_COUNT_DESC)) {
-        orderings.remove(QUERY_ORDER_BY.COMMENT_COUNT_DESC);
+  public SuggestionCriteriaProcessor processJoinDataApply(
+      final List<JOIN_DATA_APPLY> joinDataApplies) {
+    if (CollectionUtil.isNotEmpty(joinDataApplies)) {
+      if (joinDataApplies.contains(JOIN_DATA_APPLY.COMMENT)) {
         CommentService commentService = SilverpeasServiceProvider.getCommentService();
         List<CommentedPublicationInfo> suggestionInfos = commentService.
             getMostCommentedPublicationsInfo(Suggestion.TYPE, Arrays.asList(new ForeignPK(null,
-                        criteria.getSuggestionBox().getComponentInstanceId())));
+                criteria.getSuggestionBox().getComponentInstanceId())));
 
         for (CommentedPublicationInfo info : suggestionInfos) {
           criteria.identifierIsOneOf(info.getPublicationId());
         }
       }
-      criteria.orderedBy(orderings.toArray(new QUERY_ORDER_BY[orderings.size()]));
+    }
+    return this;
+  }
+
+  @Override
+  public SuggestionCriteriaProcessor processOrdering(List<QUERY_ORDER_BY> orderings) {
+    if (CollectionUtil.isNotEmpty(orderings)) {
+      logicalOrderBy = orderings;
+      QUERY_ORDER_BY[] queryOrderBies = new QUERY_ORDER_BY[orderings.size()];
+      int i = 0;
+      for (QUERY_ORDER_BY queryOrderBy : orderings) {
+        if (queryOrderBy.isApplicableOnJpaQuery()) {
+          queryOrderBies[i++] = queryOrderBy;
+        } else {
+          // ordering is requested on a data that is not directly retrieved from jpqlQuery.
+          // JPA order by container is unset and logicalOrderBy will be used.
+          queryOrderBies = null;
+          break;
+        }
+      }
+      if (queryOrderBies != null) {
+        // ordering is requested on data that are directly retrieved from jpqlQuery.
+        // Logical order by container is unset.
+        criteria.orderedBy(queryOrderBies);
+        logicalOrderBy = null;
+      }
     }
     return this;
   }
@@ -119,13 +151,56 @@ public class SuggestionFinderByCriteria implements SuggestionCriteriaProcessor {
 
   @Override
   public SuggestionCriteriaProcessor processPagination(PaginationPage pagination) {
-    criteria.paginatedBy(pagination);
+    if (logicalOrderBy == null) {
+      // pagination can only be done when full JPA ordering is requested or if no ordering is
+      // expected. But, for example, if an ordering with logical data is requested,
+      // then the pagination is not possible.
+      criteria.paginatedBy(pagination);
+    }
     return this;
   }
 
   @Override
   public List<Suggestion> result() {
+    if (CollectionUtil.isNotEmpty(logicalOrderBy)) {
+      Collections.sort(suggestions, new SuggestionLogicalComparator());
+    }
     return suggestions;
   }
 
+  /**
+   * This private class handles the logical comparison of suggestion data.
+   */
+  private class SuggestionLogicalComparator extends AbstractComplexComparator<Suggestion> {
+
+    @Override
+    protected ValueBuffer getValuesToCompare(final Suggestion suggestion) {
+      ValueBuffer valueBuffer = new ValueBuffer();
+      for (QUERY_ORDER_BY queryOrderBy : logicalOrderBy) {
+        switch (queryOrderBy) {
+          case TITLE_DESC:
+          case TITLE_ASC:
+            valueBuffer.append(suggestion.getTitle(), queryOrderBy.isAsc());
+            break;
+          case LAST_UPDATE_DATE_DESC:
+          case LAST_UPDATE_DATE_ASC:
+            valueBuffer.append(suggestion.getLastUpdateDate(), queryOrderBy.isAsc());
+            break;
+          case STATUS_ASC:
+            valueBuffer.append(suggestion.getValidation().getStatus(), queryOrderBy.isAsc());
+            break;
+          case VALIDATION_DATE_DESC:
+            valueBuffer.append(suggestion.getValidation().getDate(), queryOrderBy.isAsc());
+            break;
+          case COMMENT_COUNT_DESC:
+            valueBuffer.append(suggestion.getCommentCount(), queryOrderBy.isAsc());
+            break;
+          default:
+            throw new NotImplementedException(
+                "You must add a new logical data order by management...");
+        }
+      }
+      return valueBuffer;
+    }
+  }
 }

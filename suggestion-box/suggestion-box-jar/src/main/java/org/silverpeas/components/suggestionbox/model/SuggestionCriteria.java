@@ -23,12 +23,12 @@
  */
 package org.silverpeas.components.suggestionbox.model;
 
+import com.silverpeas.util.CollectionUtil;
 import com.stratelia.webactiv.beans.admin.PaginationPage;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.contribution.ContributionStatus;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -37,17 +37,21 @@ import java.util.List;
  */
 public class SuggestionCriteria {
 
+  public enum JOIN_DATA_APPLY {
+    COMMENT
+  }
+
   public enum QUERY_ORDER_BY {
 
-    TITLE_ASC("title", true),
-    LAST_UPDATE_DATE_ASC("lastUpdateDate", true),
-    STATUS_ASC("status", true),
-    TITLE_DESC("title", false),
-    LAST_UPDATE_DATE_DESC("lastUpdateDate", false),
-    STATUS_DESC("status", false),
-    VALIDATION_DATE_DESC("validation.validationDate", false),
-    COMMENT_COUNT_DESC("commentCount", false);
+    TITLE_ASC(true, "title", true),
+    LAST_UPDATE_DATE_ASC(true, "lastUpdateDate", true),
+    STATUS_ASC(true, "status", true),
+    TITLE_DESC(true, "title", false),
+    LAST_UPDATE_DATE_DESC(true, "lastUpdateDate", false),
+    VALIDATION_DATE_DESC(true, "validation.validationDate", false),
+    COMMENT_COUNT_DESC(false, "commentCount", false);
 
+    private final boolean applicableOnJpaQuery;
     private final String propertyName;
     private final boolean asc;
 
@@ -65,9 +69,15 @@ public class SuggestionCriteria {
       return type;
     }
 
-    private QUERY_ORDER_BY(final String propertyName, final boolean asc) {
+    private QUERY_ORDER_BY(final boolean applicableOnJpaQuery, final String propertyName,
+        final boolean asc) {
+      this.applicableOnJpaQuery = applicableOnJpaQuery;
       this.propertyName = propertyName;
       this.asc = asc;
+    }
+
+    public boolean isApplicableOnJpaQuery() {
+      return applicableOnJpaQuery;
     }
 
     public String getPropertyName() {
@@ -82,6 +92,7 @@ public class SuggestionCriteria {
   private SuggestionBox suggestionBox;
   private UserDetail creator;
   private final List<ContributionStatus> statuses = new ArrayList<ContributionStatus>();
+  private final List<JOIN_DATA_APPLY> joinDataApplyList = new ArrayList<JOIN_DATA_APPLY>();
   private final List<QUERY_ORDER_BY> orderByList = new ArrayList<QUERY_ORDER_BY>();
   private final List<String> identifiers = new ArrayList<String>();
   private boolean loadWysiwygContent = false;
@@ -130,7 +141,17 @@ public class SuggestionCriteria {
    * @return the suggestion criteria itself with the new criterion on the suggestion statuses.
    */
   public SuggestionCriteria statusIsOneOf(ContributionStatus... statuses) {
-    Collections.addAll(this.statuses, statuses);
+    CollectionUtil.addAllIgnoreNull(this.statuses, statuses);
+    return this;
+  }
+
+  /**
+   * Configures the data join to apply on the suggestion list.
+   * @param joinDataApplies the list of join by directives.
+   * @return the suggestion criteria itself with the join data list criterion.
+   */
+  public SuggestionCriteria applyJoinOnData(JOIN_DATA_APPLY... joinDataApplies) {
+    CollectionUtil.addAllIgnoreNull(this.joinDataApplyList, joinDataApplies);
     return this;
   }
 
@@ -140,7 +161,7 @@ public class SuggestionCriteria {
    * @return the suggestion criteria itself with the list ordering criterion.
    */
   public SuggestionCriteria orderedBy(QUERY_ORDER_BY... orderBies) {
-    Collections.addAll(this.orderByList, orderBies);
+    CollectionUtil.addAllIgnoreNull(this.orderByList, orderBies);
     return this;
   }
 
@@ -151,7 +172,7 @@ public class SuggestionCriteria {
    * @return the suggestion criteria itself with the new criterion on the suggestion identifiers.
    */
   public SuggestionCriteria identifierIsOneOf(String... identifiers) {
-    Collections.addAll(this.identifiers, identifiers);
+    CollectionUtil.addAllIgnoreNull(this.identifiers, identifiers);
     return this;
   }
 
@@ -201,6 +222,14 @@ public class SuggestionCriteria {
   }
 
   /**
+   * Gets the data join by directive list.
+   * @return the data join by directives.
+   */
+  private List<JOIN_DATA_APPLY> getJoinDataApplyList() {
+    return joinDataApplyList;
+  }
+
+  /**
    * Gets the order by directive list.
    * @return the order by directives.
    */
@@ -228,6 +257,9 @@ public class SuggestionCriteria {
   public void processWith(final SuggestionCriteriaProcessor processor) {
     processor.startProcessing();
     processor.processSuggestionBox(getSuggestionBox());
+    if (!getJoinDataApplyList().isEmpty()) {
+      processor.processJoinDataApply(getJoinDataApplyList());
+    }
     if (!getIdentifiers().isEmpty()) {
       processor.then().processIdentifiers(getIdentifiers());
     }

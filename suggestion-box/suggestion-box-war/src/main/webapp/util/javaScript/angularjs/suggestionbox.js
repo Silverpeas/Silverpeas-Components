@@ -92,7 +92,7 @@ suggestionBox.controller('publishedSuggestionsController',
       var suggestionBox = $scope.suggestionBox;
 
       $scope.loadPublished = function() {
-        suggestionBox.suggestions.get('published').then(function(theSuggestions) {
+        suggestionBox.suggestions.get('published', {page: {number: 1, size: 5}, sortby: 'validation.validationDate'}).then(function(theSuggestions) {
           $scope.publishedSuggestions = theSuggestions;
         });
       };
