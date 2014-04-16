@@ -85,6 +85,14 @@ public interface SuggestionCriteriaProcessor {
   SuggestionCriteriaProcessor processStatus(final List<ContributionStatus> status);
 
   /**
+   * Processes the criterion on data joins of the suggestions matching the criteria.
+   * @param joinDataApplies the result data joins concerned by the criterion.
+   * @return the processor itself.
+   */
+  SuggestionCriteriaProcessor processJoinDataApply(
+      final List<SuggestionCriteria.JOIN_DATA_APPLY> joinDataApplies);
+
+  /**
    * Processes the criterion on orderings of the suggestions matching the criteria.
    * @param orderings the result orderings concerned by the criterion.
    * @return the processor itself.

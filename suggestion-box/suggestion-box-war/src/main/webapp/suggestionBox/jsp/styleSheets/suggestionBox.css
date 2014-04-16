@@ -225,7 +225,7 @@ h3.lastSuggestion-title{
   text-align:center;
 }
 .my-suggestionBox-inProgress .counter-comments  span {
-  background:transparent url(../../../util/icons/comments.gif) top left no-repeat;
+  background:transparent url(../../../util/icons/talk2user.gif) top left no-repeat;
   padding-left:20px;
 }
 

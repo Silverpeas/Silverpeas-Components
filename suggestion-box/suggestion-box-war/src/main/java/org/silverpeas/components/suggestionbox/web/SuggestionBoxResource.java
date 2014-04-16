@@ -53,6 +53,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static org.silverpeas.components.suggestionbox.model.SuggestionCriteria.JOIN_DATA_APPLY;
 import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs.BOX_BASE_URI;
 import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs
     .BOX_SUGGESTION_URI_PART;
@@ -220,12 +221,18 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
         PaginationPage pagination = fromPage(page);
         UserDetail author = (StringUtil.isDefined(authorId) ? UserDetail.getById(authorId):null);
         if (pagination != null || StringUtil.isDefined(property)) {
+          JOIN_DATA_APPLY commentJoinData = null;
+          QUERY_ORDER_BY orderBy = QUERY_ORDER_BY.fromPropertyName(property);
+          if (QUERY_ORDER_BY.COMMENT_COUNT_DESC.equals(orderBy)) {
+            commentJoinData = JOIN_DATA_APPLY.COMMENT;
+          }
           List<SuggestionEntity> suggestions = getWebServiceProvider().
               getSuggestionsByCriteria(getSuggestionBox(),
                   SuggestionCriteria.from(getSuggestionBox())
                   .createdBy(author)
                   .statusIsOneOf(ContributionStatus.VALIDATED)
                   .paginatedBy(pagination)
+                  .applyJoinOnData(commentJoinData)
                   .orderedBy(QUERY_ORDER_BY.fromPropertyName(property)));
           if (suggestions instanceof PaginatedList) {
             String maxlength = String.valueOf(((PaginatedList) suggestions).maxSize());

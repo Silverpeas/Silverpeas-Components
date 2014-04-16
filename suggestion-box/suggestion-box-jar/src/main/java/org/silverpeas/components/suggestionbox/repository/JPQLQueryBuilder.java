@@ -26,6 +26,7 @@ package org.silverpeas.components.suggestionbox.repository;
 import com.stratelia.webactiv.beans.admin.PaginationPage;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
+import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_ORDER_BY;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteriaProcessor;
 import org.silverpeas.contribution.ContributionStatus;
@@ -110,18 +111,26 @@ public class JPQLQueryBuilder implements SuggestionCriteriaProcessor {
   }
 
   @Override
+  public SuggestionCriteriaProcessor processJoinDataApply(
+      final List<SuggestionCriteria.JOIN_DATA_APPLY> joinDataApplies) {
+    return this;
+  }
+
+  @Override
   public SuggestionCriteriaProcessor processOrdering(List<QUERY_ORDER_BY> orderings) {
     if (!done) {
-      orderBy = new StringBuilder("order by ");
-      int i = 0;
       for (QUERY_ORDER_BY anOrdering : orderings) {
-        if (i > 0) {
+        if (!anOrdering.isApplicableOnJpaQuery()) {
+          continue;
+        }
+        if (orderBy == null) {
+          orderBy = new StringBuilder("order by ");
+        } else {
           orderBy.append(", ");
         }
         orderBy.append(anOrdering.getPropertyName());
         orderBy.append(" ");
         orderBy.append(anOrdering.isAsc() ? "asc" : "desc");
-        i++;
       }
       conjonction = null;
     }

@@ -203,14 +203,15 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
     }
 
     /**
-     * Finds the list of suggestions that are in draft and which the creator is those specified.
+     * Finds the list of suggestions that are in draft or refused and which the creator is those
+     * specified.
      * @param user the creator of the returned suggestions.
      * @return the list of suggestions as described above and ordered by ascending last update date.
      */
     public List<Suggestion> findInDraftFor(final UserDetail user) {
       SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
       SuggestionCriteria criteria = SuggestionCriteria.from(SuggestionBox.this).createdBy(user).
-          statusIsOneOf(DRAFT).orderedBy(LAST_UPDATE_DATE_ASC);
+          statusIsOneOf(DRAFT, REFUSED).orderedBy(LAST_UPDATE_DATE_ASC);
       return suggestionBoxService.findSuggestionsByCriteria(criteria);
     }
 
@@ -222,7 +223,7 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
     public List<Suggestion> findOutOfDraftFor(final UserDetail user) {
       SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
       SuggestionCriteria criteria = SuggestionCriteria.from(SuggestionBox.this).createdBy(user).
-          statusIsOneOf(REFUSED, PENDING_VALIDATION, VALIDATED).orderedBy(LAST_UPDATE_DATE_DESC);
+          statusIsOneOf(PENDING_VALIDATION, VALIDATED).orderedBy(LAST_UPDATE_DATE_DESC);
       return suggestionBoxService.findSuggestionsByCriteria(criteria);
     }
 

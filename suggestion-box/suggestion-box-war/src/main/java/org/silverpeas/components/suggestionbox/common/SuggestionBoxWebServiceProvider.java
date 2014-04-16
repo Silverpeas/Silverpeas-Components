@@ -72,7 +72,8 @@ public class SuggestionBoxWebServiceProvider {
   }
 
   /**
-   * Gets the list of suggestions that are in draft and which the creator is those specified.
+   * Gets the list of suggestions that are in draft or refused and which the creator is those
+   * specified.
    * @param suggestionBox the suggestion box the current user is working on.
    * @param creator the user that must be the creator of the returned suggestions.
    * @return the aimed suggestion entities.
@@ -138,7 +139,7 @@ public class SuggestionBoxWebServiceProvider {
    */
   public List<SuggestionEntity> getSuggestionsForValidation(SuggestionBox suggestionBox) {
     return asWebEntities(
-        suggestionBox.getSuggestions().findInStatus(PENDING_VALIDATION, REFUSED));
+        suggestionBox.getSuggestions().findInStatus(PENDING_VALIDATION));
   }
 
   /**

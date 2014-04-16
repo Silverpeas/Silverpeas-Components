@@ -48,32 +48,22 @@
 <view:setConstant var="writerRole"                constant="com.stratelia.webactiv.SilverpeasRole.writer"/>
 <view:setConstant var="publisherRole"             constant="com.stratelia.webactiv.SilverpeasRole.publisher"/>
 <view:setConstant var="STATUS_REFUSED"            constant="org.silverpeas.contribution.ContributionStatus.REFUSED"/>
-<view:setConstant var="STATUS_PENDING_VALIDATION" constant="org.silverpeas.contribution.ContributionStatus.PENDING_VALIDATION"/>
-<view:setConstant var="STATUS_VALIDATED"          constant="org.silverpeas.contribution.ContributionStatus.VALIDATED"/>
-
-<fmt:message var="publishSuggestionLabel"         key="GML.publish"/>
-<fmt:message var="approveSuggestionLabel"         key="GML.validate"/>
-<fmt:message var="refuseSuggestionLabel"          key="GML.refuse"/>
-<fmt:message var="deleteSuggestionConfirmMessage" key="suggestionBox.message.suggestion.remove.confirm">
-  <fmt:param value="<b>@name@</b>"/>
-</fmt:message>
 
 <fmt:message key="suggestionBox.menu.item.edito.modify"           var="modifyEditoLabel"/>
 <fmt:message key="suggestionBox.menu.item.suggestion.add"         var="browseBarPathSuggestionLabel"/>
 <fmt:message key="suggestionBox.menu.item.subscribe"              var="subscribeToSuggestionBoxLabel"/>
 <fmt:message key="suggestionBox.menu.item.unsubscribe"            var="unsubscribeFromSuggestionBoxLabel"/>
-<fmt:message key="suggestionBox.menu.item.suggestion.viewPending" var="suggestionsInPending"/>
-<fmt:message key="suggestionBox.menu.item.suggestion.mine"       var="mySuggestions"/>
+<fmt:message key="suggestionBox.menu.item.suggestion.viewPending" var="suggestionsInPendingLabel"/>
+<fmt:message key="suggestionBox.menu.item.suggestion.mine"        var="mySuggestionsLabel"/>
+<fmt:message key="suggestionBox.label.suggestion.status.Refused"  var="refusedValidationStatusLabel"/>
 
 <c:url var="componentUriBase"                   value="${requestScope.componentUriBase}"/>
 <c:url var="suggestionBoxJS"                    value="/util/javaScript/angularjs/suggestionbox.js"/>
 <c:url var="suggestionBoxServicesJS"            value="/util/javaScript/angularjs/services/suggestionbox.js"/>
-<c:url var="suggestionBoxValidationDirectiveJS" value="/util/javaScript/angularjs/directives/suggestionbox-validation.js"/>
-<c:url var="suggestionBoxDeletionDirectiveJS"   value="/util/javaScript/angularjs/directives/suggestionbox-deletion.js"/>
 
-<fmt:message key="suggestionBox.deleteSuggestion"  var="deleteIconPath"   bundle="${icons}"/>
+<fmt:message key="suggestionBox.refusedSuggestion" var="refusedIconPath"  bundle="${icons}"/>
 <fmt:message key="suggestionBox.proposeSuggestion" var="creationIconPath" bundle="${icons}"/>
-<c:url var="deleteIcon"   value="${deleteIconPath}"/>
+<c:url var="refusedIcon"   value="${refusedIconPath}"/>
 <c:url var="creationIcon" value="${creationIconPath}"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -83,9 +73,8 @@
   <view:looknfeel/>
   <view:includePlugin name="wysiwyg"/>
   <view:includePlugin name="popup"/>
+  <view:includePlugin name="rating"/>
   <script type="text/javascript" src="${suggestionBoxServicesJS}"></script>
-  <script type="text/javascript" src="${suggestionBoxValidationDirectiveJS}"></script>
-  <script type="text/javascript" src="${suggestionBoxDeletionDirectiveJS}"></script>
   <script type="application/javascript">
     function successUnsubscribe() {
       $("#yui-gen1").empty().append($('<a>').addClass('yuimenuitemlabel').attr('href',
@@ -116,7 +105,7 @@
     <view:operationSeparator/>
   </c:if>
   <c:if test="${greaterUserRole.isGreaterThanOrEquals(publisherRole)}">
-    <view:operation action="${componentUriBase}suggestions/pending" altText="${suggestionsInPending}"/>
+    <view:operation action="${componentUriBase}suggestions/pending" altText="${suggestionsInPendingLabel}"/>
     <view:operationSeparator/>
   </c:if>
   <c:if test="${isUserSubscribed != null}">
@@ -131,7 +120,7 @@
   </c:if>
   <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
     <view:operationOfCreation action="${componentUriBase}suggestions/new" altText="${browseBarPathSuggestionLabel}" icon="${creationIcon}"/>
-    <view:operation action="${componentUriBase}suggestions/mine" altText="${mySuggestions}"/>
+    <view:operation action="${componentUriBase}suggestions/mine" altText="${mySuggestionsLabel}"/>
   </c:if>
 </view:operationPane>
 <view:window>
@@ -152,9 +141,9 @@
               <c:out value="${labelMySuggestions} "/>
               <strong><fmt:message key="suggestionBox.label.suggestions.inDraft"/></strong></h3>
           </div>
-          <div suggestionbox-deletion></div>
           <ul ng-controller="suggestionsInDraftController">
             <li ng-repeat="suggestion in inDraftSuggestions">
+              <img ng-if="suggestion.validation.status === '${STATUS_REFUSED}'" src='${refusedIcon}' alt='${refusedValidationStatusLabel}' title='${refusedValidationStatusLabel}'/>
               <a ng-href="${componentUriBase}suggestions/{{ suggestion.id }}">{{suggestion.title}}</a>
             </li>
           </ul>
@@ -166,11 +155,10 @@
               <c:out value="${fn:toLowerCase(labelMySuggestions)}"/></h3>
           </div>
           <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
-            <div suggestionbox-deletion></div>
             <ul ng-controller="myPublishedSuggestionsController">
               <li ng-repeat="suggestion in myPublishedSuggestions">
                 <a ng-href="${componentUriBase}suggestions/{{suggestion.id}}">{{suggestion.title}}</a>
-                <span class="vote">  </span>
+                <span class="vote"><silverpeas-rating readonly="true" raterrating="suggestion.raterRating"></silverpeas-rating></span>
                 <span class="counter-comments"><span>{{suggestion.commentCount}} <fmt:message key="GML.comments"/></span></span>
               </li>
             </ul>
@@ -184,7 +172,7 @@
           <h3 class="lastSuggestion-title"><fmt:message key="suggestionBox.label.suggestions.last"/></h3>
         </div>
         <ul ng-controller="publishedSuggestionsController">
-          <li ng-repeat="suggestion in publishedSuggestions" ng-if="$index < 5">
+          <li ng-repeat="suggestion in publishedSuggestions">
             <a ng-href="${componentUriBase}suggestions/{{ suggestion.id }}"><span class="date">{{suggestion.validation.date | date: 'shortDate'}}</span>{{suggestion.title}}</a>
           </li>
         </ul>
@@ -197,7 +185,7 @@
         </div>
         <ul ng-controller="buzzPublishedSuggestionsController">
           <li ng-repeat="suggestion in buzzPublishedSuggestions">
-            <a ng-href="${componentUriBase}suggestions/{{ suggestion.id }}">{{suggestion.title}}</a>
+            <a ng-href="${componentUriBase}suggestions/{{ suggestion.id }}">{{suggestion.title}}<span class="vote"><silverpeas-rating readonly="true" raterrating="suggestion.raterRating"></silverpeas-rating></span></a>
           </li>
         </ul>
       </div>
