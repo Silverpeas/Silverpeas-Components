@@ -44,8 +44,8 @@
 <c:url var="mandatoryIcons" value="/util/icons/mandatoryField.gif"/>
 <c:url var="formValidator" value="/util/javaScript/checkForm.js"/>
 <c:url var="componentUriBase" value="${requestScope.componentUriBase}"/>
-<c:url var="backUri" value="${requestScope.backUrl}"/>
 <c:set var="suggestion" value="${requestScope.suggestion}"/>
+<c:url var="backUri" value="${requestScope.navigationContext.previousViewPoint.uri}"/>
 <c:set var="target" value="add"/>
 <c:if test="${suggestion != null}">
   <c:set var="target" value="${suggestion.id}"/>
@@ -122,7 +122,9 @@
   </script>
 </head>
 <body>
-<view:browseBar componentId="${componentId}" path="${browseBarPathSuggestionLabel}"/>
+<view:browseBar componentId="${componentId}" path="${requestScope.navigationContext}">
+  <view:browseBarElt link="" label="${browseBarPathSuggestionLabel}"/>
+</view:browseBar>
 <view:window>
   <view:frame>
     <div id="error" style="display: none;"></div>

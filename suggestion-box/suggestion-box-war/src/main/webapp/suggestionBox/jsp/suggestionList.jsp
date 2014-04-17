@@ -41,42 +41,44 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
-<fmt:message var="back"         key="GML.back"/>
-<fmt:message var="date"         key="GML.contribution.validation.date"/>
-<fmt:message var="title"        key="GML.title"/>
-<fmt:message var="author"       key="suggestionBox.label.suggestion.author"/>
-<fmt:message var="rating"       key="GML.rating"/>
-<fmt:message var="ratingCount"  key="GML.rating.participation.number"/>
-<fmt:message var="commentCount" key="GML.comment.number"/>
-<fmt:message var="status"       key="GML.status"/>
+<fmt:message var="back"                   key="GML.back"/>
+<fmt:message var="date"                   key="GML.contribution.validation.date"/>
+<fmt:message var="title"                  key="GML.title"/>
+<fmt:message var="author"                 key="suggestionBox.label.suggestion.author"/>
+<fmt:message var="rating"                 key="GML.rating"/>
+<fmt:message var="ratingCount"            key="GML.rating.participation.number"/>
+<fmt:message var="commentCount"           key="GML.comment.number"/>
+<fmt:message var="status"                 key="GML.status"/>
+<fmt:message var="proposeSuggestionLabel" key="suggestionBox.menu.item.suggestion.add"/>
 
-<fmt:message var="refusedIconPath"           key="suggestionBox.refusedSuggestion" bundle="${icons}"/>
-<fmt:message var="validatedIconPath"         key="suggestionBox.validatedSuggestion" bundle="${icons}"/>
+<fmt:message var="refusedIconPath"           key="suggestionBox.refusedSuggestion"             bundle="${icons}"/>
+<fmt:message var="validatedIconPath"         key="suggestionBox.validatedSuggestion"           bundle="${icons}"/>
 <fmt:message var="pendingValidationIconPath" key="suggestionBox.SuggestionInPendingValidation" bundle="${icons}"/>
-<fmt:message var="inDraftIconPath"           key="suggestionBox.SuggestionInDraft" bundle="${icons}"/>
+<fmt:message var="inDraftIconPath"           key="suggestionBox.SuggestionInDraft"             bundle="${icons}"/>
+<fmt:message var="creationIconPath"          key="suggestionBox.proposeSuggestion"             bundle="${icons}"/>
 
 <fmt:message key="suggestionBox.menu.item.suggestion.viewPending" var="suggestionsInPendingLabel"/>
 <fmt:message key="suggestionBox.menu.item.suggestion.mine"        var="mySuggestionsLabel"/>
 <fmt:message key="suggestionBox.label.suggestions.more"           var="allSuggestionsLabel"/>
 
-<c:set var="currentUser"             value="${requestScope.currentUser}"/>
-<c:set var="componentId"             value="${requestScope.browseContext[3]}"/>
-<c:set var="suggestionBox"           value="${requestScope.currentSuggestionBox}"/>
-<c:set var="suggestionBoxId"         value="${suggestionBox.id}"/>
-<c:set var="isEdito"                 value="${requestScope.isEdito}"/>
-<c:set var="suggestions"             value="${requestScope.suggestions}"/>
-<c:set var="viewContext"             value="${requestScope.viewContext}"/>
-<c:set var="page"                    value="${viewContext}"/>
+<c:set var="currentUser"     value="${requestScope.currentUser}"/>
+<c:set var="componentId"     value="${requestScope.browseContext[3]}"/>
+<c:set var="suggestionBox"   value="${requestScope.currentSuggestionBox}"/>
+<c:set var="suggestionBoxId" value="${suggestionBox.id}"/>
+<c:set var="isEdito"         value="${requestScope.isEdito}"/>
+<c:set var="suggestions"     value="${requestScope.suggestions}"/>
 
-<c:url var="componentUriBase" value="${requestScope.componentUriBase}"/>
+<c:url var="viewContext"             value="${requestScope.navigationContext.currentViewPoint.viewContextIdentifier}"/>
+<c:url var="componentUriBase"        value="${requestScope.componentUriBase}"/>
 <c:set var="publishedSuggestionsUri" value="${componentUriBase}suggestions/published"/>
-<c:set var="mineSuggestionsUri" value="${componentUriBase}suggestions/mine"/>
-<c:set var="pendingSuggestionsUri" value="${componentUriBase}suggestions/pending"/>
+<c:set var="mineSuggestionsUri"      value="${componentUriBase}suggestions/mine"/>
+<c:set var="pendingSuggestionsUri"   value="${componentUriBase}suggestions/pending"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.suggestionBox">
 <head>
   <view:looknfeel/>
+  <view:includePlugin name="toggle"/>
   <view:includePlugin name="rating"/>
   <script type="text/javascript">
     function goBack() {
@@ -85,11 +87,12 @@
   </script>
 </head>
 <body id="${componentId}">
+<view:browseBar componentId="${componentId}" path="${requestScope.navigationContext}"/>
 <view:operationPane>
+  <c:url var="creationIcon" value="${creationIconPath}"/>
   <c:choose>
     <%-- ViewContext : suggestions in pending validation status --%>
     <c:when test="${viewContext == SuggestionsInValidationViewContext}">
-      <c:set var="browseBarPathSuggestionListLabel" value="${suggestionsInPendingLabel}"/>
       <c:set var="routingAddress" value="${pendingSuggestionsUri}"/>
       <view:operation action="${publishedSuggestionsUri}" altText="${allSuggestionsLabel}"/>
       <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
@@ -98,36 +101,42 @@
     </c:when>
     <%-- ViewContext : my suggestions --%>
     <c:when test="${viewContext == MySuggestionsViewContext}">
-      <c:set var="browseBarPathSuggestionListLabel" value="${mySuggestionsLabel}"/>
       <c:set var="routingAddress" value="${mineSuggestionsUri}"/>
       <c:if test="${greaterUserRole.isGreaterThanOrEquals(publisherRole)}">
         <view:operation action="${pendingSuggestionsUri}" altText="${suggestionsInPendingLabel}"/>
+        <view:operationSeparator/>
+      </c:if>
+      <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
+        <view:operationOfCreation action="${componentUriBase}suggestions/new" altText="${proposeSuggestionLabel}" icon="${creationIcon}"/>
         <view:operationSeparator/>
       </c:if>
       <view:operation action="${publishedSuggestionsUri}" altText="${allSuggestionsLabel}"/>
     </c:when>
     <%-- ViewContext : all published suggestions --%>
     <c:otherwise>
-      <c:set var="browseBarPathSuggestionListLabel" value="${allSuggestionsLabel}"/>
       <c:set var="routingAddress" value="${publishedSuggestionsUri}"/>
       <c:if test="${greaterUserRole.isGreaterThanOrEquals(publisherRole)}">
         <view:operation action="${pendingSuggestionsUri}" altText="${suggestionsInPendingLabel}"/>
         <view:operationSeparator/>
       </c:if>
       <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
+        <view:operationOfCreation action="${componentUriBase}suggestions/new" altText="${proposeSuggestionLabel}" icon="${creationIcon}"/>
+        <view:operationSeparator/>
         <view:operation action="${mineSuggestionsUri}" altText="${mySuggestionsLabel}"/>
       </c:if>
     </c:otherwise>
   </c:choose>
 </view:operationPane>
-<view:browseBar componentId="${componentId}" path="${browseBarPathSuggestionListLabel}"/>
 <view:window>
   <view:frame>
     <h2 class="suggestionBox-title">${suggestionBox.getTitle(currentUserLanguage)}</h2>
     <c:if test="${isEdito}">
-      <div class="suggestionBox-description">
+      <silverpeas-toggle originalClass="suggestionBox-description">
         <view:displayWysiwyg objectId="${suggestionBoxId}" componentId="${componentId}" language="${null}"/>
-      </div>
+      </silverpeas-toggle>
+    </c:if>
+    <c:if test="${viewContext != SuggestionsInValidationViewContext and greaterUserRole.isGreaterThanOrEquals(writerRole)}">
+      <view:areaOfOperationOfCreation/>
     </c:if>
     <view:arrayPane var="" routingAddress="${routingAddress}" sortableLines="true">
       <view:arrayColumn title="${status}" sortable="false"/>
@@ -160,9 +169,9 @@
             </c:otherwise>
           </c:choose>
           <view:arrayCellText text="<img src='${statusIcon}' alt='${suggestionStatus}' title='${suggestionStatus}'/>"/>
-          <!-- the last update date is the validation date for refused and accepted suggestions -->
+          <%-- the last update date is the validation date for refused and accepted suggestions --%>
           <view:arrayCellText text="<!-- ${suggestion.lastUpdateDate} -->${silfn:formatDate(suggestion.lastUpdateDate, currentUserLanguage)}"/>
-          <view:arrayCellText text="<!-- ${suggestion.title} --><a href=\"${componentUriBase}suggestions/${suggestion.id}?from=${page}\">${suggestion.title}</a>"/>
+          <view:arrayCellText text="<!-- ${suggestion.title} --><a href=\"${componentUriBase}suggestions/${suggestion.id}\">${suggestion.title}</a>"/>
           <view:arrayCellText text="${suggestion.authorName}"/>
           <c:if test="${viewContext != SuggestionsInValidationViewContext}">
             <c:choose>

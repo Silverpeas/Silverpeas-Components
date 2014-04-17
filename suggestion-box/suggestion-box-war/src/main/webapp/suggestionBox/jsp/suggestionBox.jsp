@@ -71,8 +71,8 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <view:looknfeel/>
-  <view:includePlugin name="wysiwyg"/>
   <view:includePlugin name="popup"/>
+  <view:includePlugin name="toggle"/>
   <view:includePlugin name="rating"/>
   <script type="text/javascript" src="${suggestionBoxServicesJS}"></script>
   <script type="application/javascript">
@@ -127,9 +127,9 @@
   <view:frame>
     <h2 class="suggestionBox-title">${suggestionBox.getTitle(currentUserLanguage)}</h2>
     <c:if test="${isEdito}">
-      <div class="suggestionBox-description">
+      <silverpeas-toggle originalClass="suggestionBox-description">
         <view:displayWysiwyg objectId="${suggestionBoxId}" componentId="${componentId}" language="${null}"/>
-      </div>
+      </silverpeas-toggle>
     </c:if>
     <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
       <div id="my-suggestionBox">
