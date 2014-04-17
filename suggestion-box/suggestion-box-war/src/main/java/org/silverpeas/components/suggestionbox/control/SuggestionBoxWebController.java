@@ -27,24 +27,28 @@ import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.service.ComponentSubscription;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.Navigation;
+import com.stratelia.silverpeas.peasCore.servlets.NavigationContext;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.Homepage;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.Invokable;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.InvokeAfter;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.LowestRoleAccess;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternal;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternalJsp;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToViewPoint;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.ViewPoint;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.WebComponentController;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.webactiv.SilverpeasRole;
+import com.stratelia.webactiv.util.ResourceLocator;
 import org.silverpeas.components.suggestionbox.SuggestionBoxComponentSettings;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
-import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
 import org.silverpeas.components.suggestionbox.notification
     .SuggestionNotifyManuallyUserNotification;
 import org.silverpeas.components.suggestionbox.web.SuggestionEntity;
@@ -58,7 +62,6 @@ import javax.ws.rs.core.Response.Status;
 import java.util.List;
 
 import static org.silverpeas.components.suggestionbox.common.SuggestionBoxWebServiceProvider.*;
-import static org.silverpeas.components.suggestionbox.model.SuggestionCriteria.*;
 
 @WebComponentController(SuggestionBoxComponentSettings.COMPONENT_NAME)
 public class SuggestionBoxWebController extends
@@ -82,8 +85,22 @@ public class SuggestionBoxWebController extends
     /**
      * The suggestions to render are the suggestions of the current user.
      */
-    MySuggestions
+    MySuggestions;
+
+
+    public static ViewContext fromIdentifier(String identifier) {
+      try {
+        return valueOf(identifier);
+      } catch (Exception e) {
+        return null;
+      }
+    }
   }
+
+  // Some suffix path URI definitions
+  private static final String PATH_SUGGESTIONS_PUBLISHED = "suggestions/published";
+  private static final String PATH_SUGGESTIONS_PENDING = "suggestions/pending";
+  private static final String PATH_SUGGESTIONS_MINE = "suggestions/mine";
 
   /**
    * Standard Session Controller Constructor
@@ -122,14 +139,14 @@ public class SuggestionBoxWebController extends
    * @param context the context of the incoming request.
    */
   @GET
-  @Path("suggestions/published")
+  @Path(PATH_SUGGESTIONS_PUBLISHED)
+  @ViewPoint(identifier = "suggestionList", contextIdentifier = "PublishedSuggestions")
   @RedirectToInternalJsp("suggestionList.jsp")
   @InvokeAfter("isEdito")
   public void listPublishedSuggestions(SuggestionBoxWebRequestContext context) {
     List<SuggestionEntity> suggestions = getWebServiceProvider().getPublishedSuggestions(context.
         getSuggestionBox());
     context.getRequest().setAttribute("suggestions", suggestions);
-    context.getRequest().setAttribute("viewContext", ViewContext.PublishedSuggestions);
   }
 
   /**
@@ -138,7 +155,8 @@ public class SuggestionBoxWebController extends
    * @param context the context of the incoming request.
    */
   @GET
-  @Path("suggestions/pending")
+  @Path(PATH_SUGGESTIONS_PENDING)
+  @ViewPoint(identifier = "suggestionList", contextIdentifier = "SuggestionsInValidation")
   @RedirectToInternalJsp("suggestionList.jsp")
   @InvokeAfter("isEdito")
   @LowestRoleAccess(SilverpeasRole.publisher)
@@ -146,16 +164,17 @@ public class SuggestionBoxWebController extends
     List<SuggestionEntity> suggestions =
         getWebServiceProvider().getSuggestionsForValidation(context.getSuggestionBox());
     context.getRequest().setAttribute("suggestions", suggestions);
-    context.getRequest().setAttribute("viewContext", ViewContext.SuggestionsInValidation);
   }
 
   /**
-   * Asks for viewing the suggestions proposed by the current user. It renders an HTML page with all
+   * Asks for viewing the suggestions proposed by the current user. It renders an HTML page with
+   * all
    * the suggestions of the current user.
    * @param context the context of the incoming request.
    */
   @GET
-  @Path("suggestions/mine")
+  @Path(PATH_SUGGESTIONS_MINE)
+  @ViewPoint(identifier = "suggestionList", contextIdentifier = "MySuggestions")
   @RedirectToInternalJsp("suggestionList.jsp")
   @InvokeAfter("isEdito")
   @LowestRoleAccess(SilverpeasRole.writer)
@@ -163,7 +182,6 @@ public class SuggestionBoxWebController extends
     List<SuggestionEntity> suggestions =
         getWebServiceProvider().getAllSuggestionsFor(context.getSuggestionBox(), context.getUser());
     context.getRequest().setAttribute("suggestions", suggestions);
-    context.getRequest().setAttribute("viewContext", ViewContext.MySuggestions);
   }
 
   /**
@@ -174,6 +192,7 @@ public class SuggestionBoxWebController extends
   @Path("searchResult")
   @RedirectToInternal("suggestions/{id}")
   public void searchResult(SuggestionBoxWebRequestContext context) {
+    context.getNavigationContext().clear();
     context.addRedirectVariable("id", context.getRequest().getParameter("Id"));
   }
 
@@ -261,6 +280,7 @@ public class SuggestionBoxWebController extends
    */
   @GET
   @Path("suggestions/{id}")
+  @ViewPoint(identifier = "suggestionView")
   @RedirectToInternalJsp("suggestionView.jsp")
   public void viewSuggestion(SuggestionBoxWebRequestContext context) {
     String suggestionId = context.getPathVariables().get("id");
@@ -278,6 +298,9 @@ public class SuggestionBoxWebController extends
     } else {
       throw new WebApplicationException(Status.NOT_FOUND);
     }
+
+    context.getNavigationContext().viewPointFrom("suggestionView")
+        .withLabel(StringUtil.truncate(suggestion.getTitle(), 25));
   }
 
   /**
@@ -353,7 +376,7 @@ public class SuggestionBoxWebController extends
 
   @POST
   @Path("suggestions/{id}/publish")
-  @RedirectToInternal("Main")
+  @RedirectToViewPoint(identifier = "previous")
   @LowestRoleAccess(SilverpeasRole.writer)
   public void publishSuggestion(SuggestionBoxWebRequestContext context) {
     String id = context.getPathVariables().get("id");
@@ -364,7 +387,7 @@ public class SuggestionBoxWebController extends
 
   @POST
   @Path("suggestions/{id}/approve")
-  @RedirectToInternal("Main")
+  @RedirectToViewPoint(identifier = "previous")
   @LowestRoleAccess(SilverpeasRole.publisher)
   public void approveSuggestion(SuggestionBoxWebRequestContext context) {
     String id = context.getPathVariables().get("id");
@@ -377,7 +400,7 @@ public class SuggestionBoxWebController extends
 
   @POST
   @Path("suggestions/{id}/refuse")
-  @RedirectToInternal("Main")
+  @RedirectToViewPoint(identifier = "previous")
   @LowestRoleAccess(SilverpeasRole.publisher)
   public void refuseSuggestion(SuggestionBoxWebRequestContext context) {
     String id = context.getPathVariables().get("id");
@@ -415,17 +438,23 @@ public class SuggestionBoxWebController extends
   }
 
   @Override
-  protected String backUrlFromCallerKey(final SuggestionBoxWebRequestContext context,
-      final String componentURL) {
-    String componentUriBase = context.getComponentUriBase();
-    if (componentURL.equals(ViewContext.PublishedSuggestions.name())) {
-      return componentUriBase + "suggestions/published";
-    } else if (componentURL.equals(ViewContext.SuggestionsInValidation.name())) {
-      return componentUriBase + "suggestions/pending";
-    } else if (componentURL.equals(ViewContext.MySuggestions.name())) {
-      return componentUriBase + "suggestions/mine";
-    } else {
-      return componentUriBase + "Main";
+  protected void specifyViewPoint(final SuggestionBoxWebRequestContext context,
+      final NavigationContext.ViewPoint viewPoint, final String viewContextIdentifier) {
+    ViewContext viewContext = ViewContext.fromIdentifier(viewContextIdentifier);
+    if (viewContext != null) {
+      ResourceLocator multilang = context.getMultilang();
+      switch (viewContext) {
+        case PublishedSuggestions:
+          viewPoint.withLabel(multilang.getString("suggestionBox.label.suggestions.more"));
+          break;
+        case SuggestionsInValidation:
+          viewPoint
+              .withLabel(multilang.getString("suggestionBox.menu.item.suggestion.viewPending"));
+          break;
+        case MySuggestions:
+          viewPoint.withLabel(multilang.getString("suggestionBox.menu.item.suggestion.mine"));
+          break;
+      }
     }
   }
 }

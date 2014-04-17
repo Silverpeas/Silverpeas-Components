@@ -55,17 +55,8 @@
 <c:set var="isPublishable" value="${requestScope.isPublishable}"/>
 <c:set var="isModeratorView" value="${requestScope.isModeratorView}"/>
 
-<c:choose>
-  <c:when test="${isModeratorView}">
-    <c:set var="browseBarPathSuggestionLabel">${validateSuggestionMenuLabel}</c:set>
-  </c:when>
-  <c:otherwise>
-    <c:set var="browseBarPathSuggestionLabel" value=""/>
-  </c:otherwise>
-</c:choose>
-
+<c:url var="backUri" value="${requestScope.navigationContext.previousViewPoint.uri}"/>
 <c:url var="componentUriBase" value="${requestScope.componentUriBase}"/>
-<c:url var="backUri" value="${requestScope.backUrl}"/>
 <c:url var="suggestionBoxJS" value="/util/javaScript/angularjs/suggestionbox.js"/>
 <c:url var="suggestionBoxServicesJS" value="/util/javaScript/angularjs/services/suggestionbox.js"/>
 <c:url var="suggestionBoxValidationDirectiveJS" value="/util/javaScript/angularjs/directives/suggestionbox-validation.js"/>
@@ -107,7 +98,11 @@
   </script>
 </head>
 <body ng-controller="mainController" id="${componentId}">
-<view:browseBar componentId="${componentId}" path="${browseBarPathSuggestionLabel}"/>
+<view:browseBar componentId="${componentId}" path="${requestScope.navigationContext}">
+  <c:if test="${isModeratorView}">
+    <view:browseBarElt link="" label="${validateSuggestionMenuLabel}"/>
+  </c:if>
+</view:browseBar>
 <view:operationPane>
   <c:if test="${isEditable}">
     <view:operation action="javascript:modify();" altText="${modifySuggestionMenuLabel}"/>
