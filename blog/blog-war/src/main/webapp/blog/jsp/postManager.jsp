@@ -147,20 +147,22 @@
 			<view:wysiwyg replace="Content" language="${language}" width="90%" height="300" toolbar="blog" 
 				spaceId="<%=spaceId%>" spaceName="<%=spaceLabel%>" componentId="<%=instanceId%>" componentName="<%=componentLabel%>" 
 				browseInfo="<%=title%>" objectId="<%=post.getId()%>" />
-		});
 		
-		<% if ("CreatePost".equals(action)) {
-		%>     
-		$(document).ready(function() {
+			<% if ("CreatePost".equals(action)) {
+			%>     
 			$("#Title").click(function() {
 				if ($('#Title').attr('value') === "${blog_postUntitled}") {
 					$("#Title").attr('value','');
 				}
 			});
+			<%
+			}
+			%>
+			
+			if ($.trim($(".wysiwyg-fileStorage").text()).length==0) {
+				$(".wysiwyg-fileStorage").css("display", "none") ;
+			}
 		});
-		<%
-		}
-		%>
 	</script>
 </head>
 <body id="blog">
