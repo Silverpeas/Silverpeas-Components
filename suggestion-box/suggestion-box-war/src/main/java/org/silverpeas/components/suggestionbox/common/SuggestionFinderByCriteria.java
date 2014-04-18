@@ -39,6 +39,8 @@ import org.silverpeas.components.suggestionbox.model.SuggestionBoxServiceFactory
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_ORDER_BY;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteriaProcessor;
+import org.silverpeas.components.suggestionbox.repository.SuggestionRepository;
+import org.silverpeas.components.suggestionbox.repository.SuggestionRepositoryProvider;
 import org.silverpeas.contribution.ContributionStatus;
 
 import java.util.Arrays;
@@ -71,9 +73,8 @@ public class SuggestionFinderByCriteria implements SuggestionCriteriaProcessor {
 
   @Override
   public void endProcessing() {
-    SuggestionBoxService suggestionBoxService = SuggestionBoxServiceFactory.getFactory().
-        getSuggestionBoxService();
-    suggestions = suggestionBoxService.findSuggestionsByCriteria(criteria);
+    SuggestionRepository repository = SuggestionRepositoryProvider.getSuggestionRepository();
+    suggestions = repository.findByCriteria(criteria);
   }
 
   @Override

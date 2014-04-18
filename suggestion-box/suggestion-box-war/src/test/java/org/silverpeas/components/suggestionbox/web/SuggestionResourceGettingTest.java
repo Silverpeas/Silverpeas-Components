@@ -113,17 +113,14 @@ public class SuggestionResourceGettingTest extends ResourceGettingTest<Suggestio
     SuggestionEntity[] entities = gettingInDraftSuggestions();
     assertThat(entities, notNullValue());
     assertThat(entities.length, is(3));
-    verify(getTestResources().getSuggestionBoxService(), times(1)).
-        findSuggestionsByCriteria(any(SuggestionCriteria.class));
   }
 
   private SuggestionEntity[] gettingInDraftSuggestions() {
-    SuggestionBoxService service = getTestResources().getSuggestionBoxService();
     List<Suggestion> inDraft = new ArrayList<Suggestion>();
     inDraft.add(getTestResources().aRandomSuggestion());
     inDraft.add(getTestResources().aRandomSuggestion());
     inDraft.add(getTestResources().aRandomSuggestion());
-    when(service.findSuggestionsByCriteria(any(SuggestionCriteria.class)))
+    when(getTestResources().aSuggestionBox().getSuggestions().findInDraftFor(authenticatedUser))
         .thenAnswer(new Returns(inDraft));
     return getAt(SUGGESTIONS_URI_BASE + "inDraft", SuggestionEntity[].class);
   }
@@ -147,17 +144,16 @@ public class SuggestionResourceGettingTest extends ResourceGettingTest<Suggestio
     SuggestionEntity[] entities = gettingOutOfDraftSuggestions();
     assertThat(entities, notNullValue());
     assertThat(entities.length, is(3));
-    verify(getTestResources().getSuggestionBoxService(), times(1)).
-        findSuggestionsByCriteria(any(SuggestionCriteria.class));
+    verify(getTestResources().aSuggestionBox().getSuggestions(), times(1)).
+        findOutOfDraftFor(authenticatedUser);
   }
 
   private SuggestionEntity[] gettingOutOfDraftSuggestions() {
-    SuggestionBoxService service = getTestResources().getSuggestionBoxService();
     List<Suggestion> outOfDraft = new ArrayList<Suggestion>();
     outOfDraft.add(getTestResources().aRandomSuggestion());
     outOfDraft.add(getTestResources().aRandomSuggestion());
     outOfDraft.add(getTestResources().aRandomSuggestion());
-    when(service.findSuggestionsByCriteria(any(SuggestionCriteria.class)))
+    when(getTestResources().aSuggestionBox().getSuggestions().findOutOfDraftFor(authenticatedUser))
         .thenAnswer(new Returns(outOfDraft));
     return getAt(SUGGESTIONS_URI_BASE + "outOfDraft", SuggestionEntity[].class);
   }
@@ -194,16 +190,15 @@ public class SuggestionResourceGettingTest extends ResourceGettingTest<Suggestio
     SuggestionEntity[] entities = gettingPendingValidationSuggestions();
     assertThat(entities, notNullValue());
     assertThat(entities.length, is(2));
-    verify(getTestResources().getSuggestionBoxService(), times(1)).
-        findSuggestionsByCriteria(any(SuggestionCriteria.class));
+    verify(getTestResources().aSuggestionBox().getSuggestions(), times(1)).
+        findPendingValidation();
   }
 
   private SuggestionEntity[] gettingPendingValidationSuggestions() {
-    SuggestionBoxService service = getTestResources().getSuggestionBoxService();
     List<Suggestion> pendingValidation = new ArrayList<Suggestion>();
     pendingValidation.add(getTestResources().aRandomSuggestion());
     pendingValidation.add(getTestResources().aRandomSuggestion());
-    when(service.findSuggestionsByCriteria(any(SuggestionCriteria.class)))
+    when(getTestResources().aSuggestionBox().getSuggestions().findPendingValidation())
         .thenAnswer(new Returns(pendingValidation));
     return getAt(SUGGESTIONS_URI_BASE + "pendingValidation", SuggestionEntity[].class);
   }
@@ -214,15 +209,15 @@ public class SuggestionResourceGettingTest extends ResourceGettingTest<Suggestio
     SuggestionEntity[] entities = gettingPublishedSuggestions();
     assertThat(entities, notNullValue());
     assertThat(entities.length, is(1));
-    verify(getTestResources().getSuggestionBoxService(), times(1)).
-        findSuggestionsByCriteria(any(SuggestionCriteria.class));
+    verify(getTestResources().aSuggestionBox().getSuggestions(), times(1)).
+        findPublished();
   }
 
   private SuggestionEntity[] gettingPublishedSuggestions() {
     SuggestionBoxService service = getTestResources().getSuggestionBoxService();
     List<Suggestion> pendingValidation = new ArrayList<Suggestion>();
     pendingValidation.add(getTestResources().aRandomSuggestion());
-    when(service.findSuggestionsByCriteria(any(SuggestionCriteria.class)))
+    when(getTestResources().aSuggestionBox().getSuggestions().findPublished())
         .thenAnswer(new Returns(pendingValidation));
     return getAt(SUGGESTIONS_URI_BASE + "published", SuggestionEntity[].class);
   }

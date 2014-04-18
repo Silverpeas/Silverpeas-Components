@@ -77,7 +77,7 @@ public class SuggestionBoxWebServiceProvider {
    * @param suggestionBox the suggestion box the current user is working on.
    * @param creator the user that must be the creator of the returned suggestions.
    * @return the aimed suggestion entities.
-   * @see SuggestionBox.Suggestions#findInDraftFor(UserDetail)
+   * @see org.silverpeas.components.suggestionbox.model.SuggestionCollection#findInDraftFor(UserDetail)
    */
   public List<SuggestionEntity> getSuggestionsInDraftFor(SuggestionBox suggestionBox,
       UserDetail creator) {
@@ -89,7 +89,7 @@ public class SuggestionBoxWebServiceProvider {
    * @param suggestionBox the suggestion box the current user is working on.
    * @param creator the user that must be the creator of the returned suggestions.
    * @return the aimed suggestion entities.
-   * @see SuggestionBox.Suggestions#findInDraftFor(UserDetail)
+   * @see org.silverpeas.components.suggestionbox.model.SuggestionCollection#findInDraftFor(UserDetail)
    */
   public List<SuggestionEntity> getSuggestionsOutOfDraftFor(SuggestionBox suggestionBox,
       UserDetail creator) {
@@ -101,7 +101,7 @@ public class SuggestionBoxWebServiceProvider {
    * @param suggestionBox the suggestion box the current user is working on.
    * @param creator the user that must be the creator of the returned suggestions.
    * @return the aimed suggestion entities.
-   * @see SuggestionBox.Suggestions#findInDraftFor(UserDetail)
+   * @see org.silverpeas.components.suggestionbox.model.SuggestionCollection#findInDraftFor(UserDetail)
    */
   public List<SuggestionEntity> getPublishedSuggestionsFor(SuggestionBox suggestionBox,
       UserDetail creator) {
@@ -114,7 +114,7 @@ public class SuggestionBoxWebServiceProvider {
    * @param suggestionBox the suggestion box the current user is working on.
    * @param creator the user that must be the creator of the returned suggestions.
    * @return the asked suggestion entities.
-   * @see SuggestionBox.Suggestions#findAllFor(com.stratelia.webactiv.beans.admin.UserDetail)
+   * @see org.silverpeas.components.suggestionbox.model.SuggestionCollection#findAllFor(com.stratelia.webactiv.beans.admin.UserDetail)
    */
   public List<SuggestionEntity> getAllSuggestionsFor(SuggestionBox suggestionBox, UserDetail creator) {
     return asWebEntities(suggestionBox.getSuggestions().findAllFor(creator));
@@ -124,7 +124,7 @@ public class SuggestionBoxWebServiceProvider {
    * Gets the list of suggestions that are in pending validation and which.
    * @param suggestionBox the suggestion box the current user is working on.
    * @return the aimed suggestion entities.
-   * @see SuggestionBox.Suggestions#findPendingValidation()
+   * @see org.silverpeas.components.suggestionbox.model.SuggestionCollection#findPendingValidation()
    */
   public List<SuggestionEntity> getSuggestionsInPendingValidation(SuggestionBox suggestionBox) {
     return asWebEntities(suggestionBox.getSuggestions().findPendingValidation());
@@ -152,7 +152,7 @@ public class SuggestionBoxWebServiceProvider {
    * @param suggestionBox the suggestion box the current user is working on.
    * @param criteria the criteria the suggestions to return must match.
    * @return the published suggestion entities matching the specified criteria.
-   * @see SuggestionBox.Suggestions#findPublished()
+   * @see org.silverpeas.components.suggestionbox.model.SuggestionCollection#findPublished()
    */
   public List<SuggestionEntity> getSuggestionsByCriteria(SuggestionBox suggestionBox,
       final SuggestionCriteria criteria) {
@@ -165,7 +165,7 @@ public class SuggestionBoxWebServiceProvider {
    * Gets the list of suggestions that are published.
    * @param suggestionBox the suggestion box the current user is working on.
    * @return the published suggestion entities.
-   * @see SuggestionBox.Suggestions#findPublished()
+   * @see org.silverpeas.components.suggestionbox.model.SuggestionCollection#findPublished()
    */
   public List<SuggestionEntity> getPublishedSuggestions(SuggestionBox suggestionBox) {
     return asWebEntities(suggestionBox.getSuggestions().findPublished());
@@ -176,7 +176,7 @@ public class SuggestionBoxWebServiceProvider {
    * @param suggestionBox the suggestion box the current user is working on.
    * @param suggestion the suggestion to delete.
    * @param fromUser the current user.
-   * @see SuggestionBox.Suggestions#remove(Suggestion)
+   * @see org.silverpeas.components.suggestionbox.model.SuggestionCollection#remove(Object)
    */
   public void deleteSuggestion(SuggestionBox suggestionBox, Suggestion suggestion,
       UserDetail fromUser) {
@@ -198,7 +198,7 @@ public class SuggestionBoxWebServiceProvider {
    * @param suggestion the suggestion to publish.
    * @param fromUser the current user.
    * @return the suggestion entity.
-   * @see SuggestionBox.Suggestions#publish(Suggestion)
+   * @see org.silverpeas.components.suggestionbox.model.SuggestionCollection#publish(Suggestion)
    */
   public SuggestionEntity publishSuggestion(SuggestionBox suggestionBox, Suggestion suggestion,
       UserDetail fromUser) {
@@ -264,7 +264,7 @@ public class SuggestionBoxWebServiceProvider {
    * @param validationComment the optional comment related to the approval or refusal.
    * @param fromUser the current user.
    * @return the suggestion entity.
-   * @see SuggestionBox.Suggestions#validate(Suggestion, ContributionValidation)
+   * @see org.silverpeas.components.suggestionbox.model.SuggestionCollection#validate(Suggestion, ContributionValidation)
    */
   private SuggestionEntity validateSuggestion(SuggestionBox suggestionBox, Suggestion suggestion,
       ContributionStatus newStatus, String validationComment, UserDetail fromUser) {

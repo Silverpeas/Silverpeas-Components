@@ -27,12 +27,15 @@ import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.components.suggestionbox.repository.SuggestionRepositoryProvider;
 import org.silverpeas.contribution.ValidableContribution;
 import org.silverpeas.contribution.model.ContributionValidation;
+import org.silverpeas.persistence.Transaction;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.persistence.model.jpa.AbstractJpaEntity;
 import org.silverpeas.rating.Rateable;
 import org.silverpeas.rating.ContributionRating;
+import org.silverpeas.persistence.repository.OperationContext;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -44,7 +47,6 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-
 import java.util.Date;
 
 /**
@@ -62,6 +64,18 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
   private static final long serialVersionUID = -8559980140411995766L;
 
   public static final String TYPE = "Suggestion";
+
+  /**
+   * Gets the suggestion with the specified unique identifier.
+   * @param identifier the unique identifier of a suggestion.
+   * @return either NONE suggestion if it exists no suggestions with the specified identifier or
+   * the asked suggestion.
+   */
+  public static final Suggestion getById(String identifier) {
+    Suggestion suggestion =
+        SuggestionRepositoryProvider.getSuggestionRepository().getById(identifier);
+    return (suggestion == null ? Suggestion.NONE:suggestion);
+  }
 
   /**
    * The NONE suggestion. It represents no suggestions and it is dedicated to be used in place of
@@ -205,8 +219,15 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
    * Saves the state of this suggestion so that is will persist over the current context of use.
    */
   public void save() {
-    SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
-    suggestionBoxService.updateSuggestion(this);
+    final Suggestion suggestion = this;
+    Transaction.performInOne(new Transaction.Process<Void>() {
+      @Override
+      public Void execute() {
+        SuggestionRepositoryProvider.getSuggestionRepository().
+            save(OperationContext.fromUser(getLastUpdater()), suggestion);
+        return null;
+      }
+    });
   }
 
   /**

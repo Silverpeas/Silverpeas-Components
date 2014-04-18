@@ -64,10 +64,9 @@ public class SuggestionResourceDeletionTest
 
     deleteAt(aResourceURI());
 
-    SuggestionBoxService service = getTestResources().getSuggestionBoxService();
     SuggestionBox box = getTestResources().aSuggestionBox();
     Suggestion suggestion = getTestResources().aSuggestion();
-    verify(service, times(1)).removeSuggestion(eq(box), eq(suggestion));
+    verify(box.getSuggestions(), times(1)).remove(eq(suggestion));
   }
 
   @Override

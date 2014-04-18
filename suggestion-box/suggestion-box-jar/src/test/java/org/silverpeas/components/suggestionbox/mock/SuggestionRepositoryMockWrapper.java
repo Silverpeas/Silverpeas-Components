@@ -103,4 +103,9 @@ public class SuggestionRepositoryMockWrapper extends SuggestionRepository {
   public List<Suggestion> findByCriteria(final SuggestionCriteria criteria) {
     return mock.findByCriteria(criteria);
   }
+
+  @Override
+  public void index(final Suggestion suggestion) {
+    mock.index(suggestion);
+  }
 }

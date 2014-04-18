@@ -61,7 +61,7 @@ public class SuggestionResourceUpdateTest extends ResourceUpdateTest<SuggestionB
     authenticatedUser.addProfile(COMPONENT_INSTANCE_ID, SilverpeasRole.writer);
     SuggestionBox box = getTestResources().aSuggestionBox();
     Suggestion suggestion = getTestResources().aSuggestion();
-    when(getTestResources().getSuggestionBoxService().publishSuggestion(eq(box), eq(suggestion)))
+    when(box.getSuggestions().publish(eq(suggestion)))
         .thenReturn(getTestResources().aSuggestion());
     suggestionEntity =
         SuggestionEntity.fromSuggestion(getTestResources().aSuggestion());
@@ -76,10 +76,9 @@ public class SuggestionResourceUpdateTest extends ResourceUpdateTest<SuggestionB
     SuggestionEntity actual = putAt(aResourceURI("/publish"), suggestionEntity);
 
     assertThat(actual, SuggestionMatcher.matches(getTestResources().aSuggestion()));
-    SuggestionBoxService service = getTestResources().getSuggestionBoxService();
     SuggestionBox box = getTestResources().aSuggestionBox();
     Suggestion suggestion = getTestResources().aSuggestion();
-    verify(service, times(1)).publishSuggestion(eq(box), eq(suggestion));
+    verify(box.getSuggestions(), times(1)).publish(eq(suggestion));
   }
 
   @Override

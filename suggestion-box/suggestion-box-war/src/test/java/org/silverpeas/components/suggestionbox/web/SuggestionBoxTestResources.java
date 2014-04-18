@@ -29,6 +29,8 @@ import com.silverpeas.personalization.service.PersonalizationService;
 import com.silverpeas.web.TestResources;
 import com.silverpeas.web.mock.OrganizationControllerMockWrapper;
 import com.silverpeas.web.mock.UserDetailWithProfiles;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.components.suggestionbox.model.SuggestionCollection;
 import org.silverpeas.core.admin.OrganisationController;
 
 import static org.mockito.Matchers.*;
@@ -42,6 +44,7 @@ import org.silverpeas.rating.ContributionRating;
 import org.silverpeas.rating.ContributionRatingPK;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs.BOX_BASE_URI;
 
@@ -75,14 +78,15 @@ public class SuggestionBoxTestResources extends TestResources {
   private OrganizationControllerMockWrapper organizationControllerMockWrapper;
 
   private UserDetailWithProfiles creator;
+  private SuggestionBox suggestionBox;
 
   @PostConstruct
   public void prepareMocks() {
     SuggestionBoxService service = getSuggestionBoxService();
     SuggestionBox box = aSuggestionBox();
     when(service.getByComponentInstanceId(COMPONENT_INSTANCE_ID)).thenReturn(box);
-    when(service.findSuggestionById(eq(box), anyString())).thenReturn(Suggestion.NONE);
-    when(service.findSuggestionById(box, SUGGESTION_ID)).thenReturn(aSuggestion());
+    when(box.getSuggestions().get(anyString())).thenReturn(Suggestion.NONE);
+    when(box.getSuggestions().get(SUGGESTION_ID)).thenReturn(aSuggestion());
     PersonalizationService mock = getPersonalizationServiceMock();
     UserPreferences preferences = new UserPreferences(TestResources.DEFAULT_LANGUAGE, "", "", false,
         true, true,
@@ -106,10 +110,18 @@ public class SuggestionBoxTestResources extends TestResources {
   }
 
   public SuggestionBox aSuggestionBox() {
-    SuggestionBox box = new SuggestionBox(COMPONENT_INSTANCE_ID);
-    ReflectionTestUtils.setField(box, "id", new UuidIdentifier().fromString(SUGGESTION_BOX_ID));
-    box.setCreator(aUserCreator());
-    return box;
+    if (suggestionBox == null) {
+      UserDetail author = aUserCreator();
+      suggestionBox = mock(SuggestionBox.class);
+      when(suggestionBox.getComponentInstanceId()).thenReturn(COMPONENT_INSTANCE_ID);
+      when(suggestionBox.getId()).thenReturn(SUGGESTION_BOX_ID);
+      when(suggestionBox.getCreator()).thenReturn(author);
+      when(suggestionBox.getLastUpdater()).thenReturn(author);
+
+      SuggestionCollection suggestions = mock(SuggestionCollection.class);
+      when(suggestionBox.getSuggestions()).thenReturn(suggestions);
+    }
+    return suggestionBox;
   }
 
   public Suggestion aSuggestion() {
