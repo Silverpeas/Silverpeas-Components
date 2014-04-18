@@ -68,7 +68,7 @@
 <c:set var="isEdito"         value="${requestScope.isEdito}"/>
 <c:set var="suggestions"     value="${requestScope.suggestions}"/>
 
-<c:url var="viewContext"             value="${requestScope.navigationContext.currentViewPoint.viewContextIdentifier}"/>
+<c:url var="viewContext"             value="${requestScope.navigationContext.currentNavigationStep.contextIdentifier}"/>
 <c:url var="componentUriBase"        value="${requestScope.componentUriBase}"/>
 <c:set var="publishedSuggestionsUri" value="${componentUriBase}suggestions/published"/>
 <c:set var="mineSuggestionsUri"      value="${componentUriBase}suggestions/mine"/>
