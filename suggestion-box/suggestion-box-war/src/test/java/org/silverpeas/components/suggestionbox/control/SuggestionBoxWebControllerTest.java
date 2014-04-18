@@ -34,6 +34,7 @@ import com.silverpeas.web.mock.OrganizationControllerMockWrapper;
 import com.silverpeas.web.mock.PersonalizationServiceMockWrapper;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.servlets.NavigationContext;
 import com.stratelia.silverpeas.peasCore.servlets.WebMessager;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -46,6 +47,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.silverpeas.cache.service.CacheServiceFactory;
+import org.silverpeas.cache.service.InMemoryCacheService;
 import org.silverpeas.components.suggestionbox.mock.SuggestionBoxServiceMockWrapper;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
@@ -96,8 +98,9 @@ public class SuggestionBoxWebControllerTest {
         true, true,
         UserMenuDisplay.DISABLE);
     when(mock.getUserSettings(anyString())).thenReturn(preferences);
-    CacheServiceFactory.getRequestCacheService()
-        .put(UserDetail.CURRENT_REQUESTER_KEY, new UserDetail());
+    InMemoryCacheService sessionCache = new InMemoryCacheService();
+    sessionCache.put(UserDetail.CURRENT_REQUESTER_KEY, new UserDetail());
+    CacheServiceFactory.getRequestCacheService().put("@SessionCache@", sessionCache);
   }
 
   @After
@@ -745,8 +748,11 @@ public class SuggestionBoxWebControllerTest {
     when(context.getPathVariables()).thenReturn(pathVariables);
     when(context.getUser()).thenReturn(aUser());
     when(context.getComponentInstanceId()).thenReturn(COMPONENT_INSTANCE_ID);
+    when(context.getComponentUriBase()).thenReturn("/" + COMPONENT_INSTANCE_ID);
     when(context.getMessager()).thenReturn(WebMessager.getInstance());
     when(context.getSuggestionBox()).thenReturn(aSuggestionBox());
+    NavigationContext navigationContext = NavigationContext.get(context);
+    when(context.getNavigationContext()).thenReturn(navigationContext);
     return context;
   }
 
