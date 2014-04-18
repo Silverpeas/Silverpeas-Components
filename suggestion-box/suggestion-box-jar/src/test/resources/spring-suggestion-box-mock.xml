@@ -57,6 +57,10 @@
   <bean id="commentUserNotificationService"
         class="org.silverpeas.components.suggestionbox.mock.CommentUserNotificationServiceMockWrapper"/>
 
+  <bean id="suggestionBoxRepositoryProvider"
+        class="org.silverpeas.components.suggestionbox.repository.SuggestionRepositoryProvider"
+        factory-method="getInstance"/>
+
   <bean id="suggestionJPAManager"
         class="org.silverpeas.components.suggestionbox.repository.SuggestionJPAManager"/>
 

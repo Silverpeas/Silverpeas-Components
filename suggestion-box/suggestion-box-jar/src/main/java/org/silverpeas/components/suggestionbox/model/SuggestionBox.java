@@ -26,12 +26,9 @@ package org.silverpeas.components.suggestionbox.model;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.contribution.ContributionStatus;
-import org.silverpeas.contribution.model.ContributionValidation;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.persistence.model.jpa.AbstractJpaEntity;
-import org.silverpeas.upload.UploadedFile;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -42,12 +39,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-
-import static org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_ORDER_BY.*;
-import static org.silverpeas.contribution.ContributionStatus.*;
 
 /**
  * This entity represents a suggestion box.
@@ -123,8 +116,8 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
     return getComponentInst().getDescription(language);
   }
 
-  public Suggestions getSuggestions() {
-    return new Suggestions();
+  public SuggestionCollection getSuggestions() {
+    return new SuggestionCollection(this);
   }
 
   protected SuggestionBox() {
@@ -144,12 +137,12 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
   }
 
   /**
-   * Adds the specified suggestions into this suggestion box.
-   * @param newSuggestion the suggestion to add.
+   * Gets the actual persisted suggestions in this suggestion box. This operation is a side effect
+   * one as it performs some accesses to the underlying data source.
+   * @return the list of actual suggestions in this suggestion box.
    */
-  protected void addSuggestion(final Suggestion newSuggestion) {
-    newSuggestion.setSuggestionBox(this);
-    this.suggestions.add(newSuggestion);
+  protected List<Suggestion> persistedSuggestions() {
+    return this.suggestions;
   }
 
   /**
@@ -163,162 +156,6 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
     Set<SilverpeasRole> userRoles = SilverpeasRole.from(profiles);
     SilverpeasRole role = SilverpeasRole.getGreaterFrom(userRoles);
     return role != null ? role : SilverpeasRole.reader;
-  }
-
-  public class Suggestions {
-
-    /**
-     * Adds the specified suggestion among the other suggestions of the suggestion box.
-     * <p/>
-     * The suggestion will be persisted automatically once added.
-     * @param suggestion the suggestion to add.
-     * @param uploadedFiles a collection of file to attach to the suggestion.
-     */
-    public void add(final Suggestion suggestion, final Collection<UploadedFile> uploadedFiles) {
-      SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
-      suggestionBoxService.addSuggestion(SuggestionBox.this, suggestion, uploadedFiles);
-    }
-
-    /**
-     * Removes the specified suggestion from the suggestion box.
-     * <p/>
-     * If the suggestion doesn't exist in the suggestion box, then nothing is done.
-     * @param suggestion the suggestion to remove.
-     */
-    public void remove(final Suggestion suggestion) {
-      SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
-      suggestionBoxService.removeSuggestion(SuggestionBox.this, suggestion);
-    }
-
-    /**
-     * Gets the suggestion with the specified identifier from the suggestions of the suggestion
-     * box.
-     * @param suggestionId the unique identifier of the suggestion to get.
-     * @return the suggestion matching the specified identifier or NONE if no such suggestion exists
-     * in the suggestions of the suggestion box.
-     */
-    public Suggestion get(String suggestionId) {
-      SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
-      return suggestionBoxService.findSuggestionById(SuggestionBox.this, suggestionId);
-    }
-
-    /**
-     * Finds the list of suggestions that are in draft or refused and which the creator is those
-     * specified.
-     * @param user the creator of the returned suggestions.
-     * @return the list of suggestions as described above and ordered by ascending last update date.
-     */
-    public List<Suggestion> findInDraftFor(final UserDetail user) {
-      SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
-      SuggestionCriteria criteria = SuggestionCriteria.from(SuggestionBox.this).createdBy(user).
-          statusIsOneOf(DRAFT, REFUSED).orderedBy(LAST_UPDATE_DATE_ASC);
-      return suggestionBoxService.findSuggestionsByCriteria(criteria);
-    }
-
-    /**
-     * Finds the list of suggestions that are out of draft and which the creator is those specified.
-     * @param user the creator of the returned suggestions.
-     * @return the list of suggestions as described above and ordered by ascending last update date.
-     */
-    public List<Suggestion> findOutOfDraftFor(final UserDetail user) {
-      SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
-      SuggestionCriteria criteria = SuggestionCriteria.from(SuggestionBox.this).createdBy(user).
-          statusIsOneOf(PENDING_VALIDATION, VALIDATED).orderedBy(LAST_UPDATE_DATE_DESC);
-      return suggestionBoxService.findSuggestionsByCriteria(criteria);
-    }
-
-    /**
-     * Finds the list of suggestions that are published and which the creator is those specified.
-     * @param @param user the creator of the returned suggestions.
-     * @return the list of suggestions as described above and ordered by ascending last update date.
-     */
-    public List<Suggestion> findPublishedFor(final UserDetail user) {
-      SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
-      SuggestionCriteria criteria = SuggestionCriteria.from(SuggestionBox.this).createdBy(user).
-          statusIsOneOf(VALIDATED).orderedBy(LAST_UPDATE_DATE_DESC);
-      return suggestionBoxService.findSuggestionsByCriteria(criteria);
-    }
-
-    /**
-     * Finds the list of suggestions that are pending validation.
-     * @return the list of suggestions as described above and ordered by ascending last update date.
-     */
-    public List<Suggestion> findPendingValidation() {
-      return findInStatus(PENDING_VALIDATION);
-    }
-
-    /**
-     * Finds the list of suggestions that are published (validated status).
-     * @return the list of suggestions as described above and ordered by descending validation
-     * date.
-     */
-    public List<Suggestion> findPublished() {
-      SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
-      SuggestionCriteria criteria = SuggestionCriteria.from(SuggestionBox.this).
-          statusIsOneOf(VALIDATED).orderedBy(VALIDATION_DATE_DESC);
-      return suggestionBoxService.findSuggestionsByCriteria(criteria);
-    }
-
-    /**
-     * Publishes from the specified suggestion box the specified suggestion.
-     * <p/>
-     * The publication of a suggestion consists in changing its status from DRAFT to
-     * PENDING_VALIDATION and sending a notification to the moderator if the updater is at most a
-     * writer on the suggestion box.
-     * <p/>
-     * If the suggestion doesn't exist in the suggestion box, then nothing is done.
-     * @param suggestion the suggestion to publish.
-     * @return the suggestion updated.
-     */
-    public Suggestion publish(final Suggestion suggestion) {
-      SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
-      return suggestionBoxService.publishSuggestion(SuggestionBox.this, suggestion);
-    }
-
-    /**
-     * Validates the specified suggestion in the current suggestion box with the specified
-     * validation information.
-     * <p/>
-     * The publication of a suggestion consists in changing its status to VALIDATED or REFUSED
-     * and sending a notification to the creator in order to inform him about the validation
-     * result.
-     * <p/>
-     * If the suggestion doesn't exist in the suggestion box, then nothing is done.
-     * @param suggestion the suggestion to validate.
-     * @param validation the validation information.
-     * @return the updated suggestion.
-     */
-    public Suggestion validate(final Suggestion suggestion, final ContributionValidation validation) {
-      SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
-      return suggestionBoxService.validateSuggestion(SuggestionBox.this, suggestion, validation);
-    }
-
-    /**
-     * Finds the list of suggestions that are in the specified statuses. The suggestions are ordered
-     * by their status and for each status by their modification date.
-     * This method is a convenient one to get suggestions of different statuses.
-     * @return a list of suggestions ordered by their status and by their modification date.
-     */
-    public List<Suggestion> findInStatus(ContributionStatus... statuses) {
-      SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
-      SuggestionCriteria criteria = SuggestionCriteria.from(SuggestionBox.this).
-          statusIsOneOf(statuses).orderedBy(STATUS_ASC, LAST_UPDATE_DATE_ASC);
-      return suggestionBoxService.findSuggestionsByCriteria(criteria);
-    }
-
-    /**
-     * Finds the list of all the suggestions that are proposed by the specified user. The
-     * suggestions are ordered by status and for each status by modification date.
-     * @param author the author of the asked suggestions.
-     * @return a list of suggestions ordered by status and by modification date. The list is empty
-     * if the user has not proposed any suggestions.
-     */
-    public List<Suggestion> findAllFor(final UserDetail author) {
-      SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
-      SuggestionCriteria criteria = SuggestionCriteria.from(SuggestionBox.this).
-          createdBy(author).orderedBy(STATUS_ASC, LAST_UPDATE_DATE_ASC);
-      return suggestionBoxService.findSuggestionsByCriteria(criteria);
-    }
   }
 
   private static SuggestionBoxService getSuggestionBoxService() {

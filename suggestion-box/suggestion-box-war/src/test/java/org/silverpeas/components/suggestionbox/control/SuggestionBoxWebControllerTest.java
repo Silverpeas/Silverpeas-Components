@@ -48,10 +48,10 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.cache.service.InMemoryCacheService;
-import org.silverpeas.components.suggestionbox.mock.SuggestionBoxServiceMockWrapper;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
-import org.silverpeas.components.suggestionbox.model.SuggestionBoxService;
+import org.silverpeas.components.suggestionbox.model.SuggestionCollection;
+import org.silverpeas.components.suggestionbox.web.SuggestionEntity;
 import org.silverpeas.contribution.ContributionStatus;
 import org.silverpeas.contribution.model.ContributionValidation;
 import org.silverpeas.core.admin.OrganisationController;
@@ -101,6 +101,7 @@ public class SuggestionBoxWebControllerTest {
     InMemoryCacheService sessionCache = new InMemoryCacheService();
     sessionCache.put(UserDetail.CURRENT_REQUESTER_KEY, new UserDetail());
     CacheServiceFactory.getRequestCacheService().put("@SessionCache@", sessionCache);
+
   }
 
   @After
@@ -108,7 +109,6 @@ public class SuggestionBoxWebControllerTest {
     appContext.close();
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   public void addANewSuggestionToAGivenSuggestionBox() {
     final String title = "A suggestion title";
@@ -116,14 +116,13 @@ public class SuggestionBoxWebControllerTest {
     SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
     when(context.getRequest().getParameter("title")).thenReturn(title);
     when(context.getRequest().getParameter("content")).thenReturn(content);
-    SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
     SuggestionBox box = context.getSuggestionBox();
 
     controller.addSuggestion(context);
 
     ArgumentCaptor<Suggestion> suggestionArgument = ArgumentCaptor.forClass(Suggestion.class);
-    verify(suggestionBoxService, times(1)).
-        addSuggestion(eq(box), suggestionArgument.capture(), anyCollection());
+    verify(box.getSuggestions(), times(1)).
+        add(suggestionArgument.capture(), anyCollection());
     Suggestion suggestion = suggestionArgument.getValue();
     assertThat(suggestion.getTitle(), is(title));
     assertThat(suggestion.getContent(), is(content));
@@ -134,33 +133,9 @@ public class SuggestionBoxWebControllerTest {
     SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
     when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
     SuggestionBox box = context.getSuggestionBox();
-    SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
-    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(Suggestion.NONE);
+    when(box.getSuggestions().get(SUGGESTION_ID)).thenReturn(Suggestion.NONE);
 
     controller.viewSuggestion(context);
-  }
-
-  private SuggestionBoxWebRequestContext prepareViewSuggestionTest(SilverpeasRole greaterUserRole,
-      ContributionStatus suggestionStatus) {
-    SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
-    when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
-    when(context.getGreaterUserRole())
-        .thenReturn(greaterUserRole != null ? greaterUserRole : SilverpeasRole.reader);
-    SuggestionBox box = context.getSuggestionBox();
-    SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
-    Suggestion theSuggestion = aSuggestionWithStatus(suggestionStatus);
-    ReflectionTestUtils.setField(theSuggestion, "suggestionBox", box);
-    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(theSuggestion);
-    final String[] roles;
-    if (greaterUserRole != null) {
-      roles = new String[]{greaterUserRole.getName()};
-    } else {
-      roles = new String[0];
-    }
-    when(getOrganisationController()
-        .getUserProfiles(context.getUser().getId(), box.getComponentInstanceId()))
-        .thenReturn(roles);
-    return context;
   }
 
   @Test
@@ -170,8 +145,8 @@ public class SuggestionBoxWebControllerTest {
 
     controller.viewSuggestion(context);
 
-    verify(getSuggestionBoxService(), times(1))
-        .findSuggestionById(context.getSuggestionBox(), SUGGESTION_ID);
+    SuggestionBox box = context.getSuggestionBox();
+    verify(box.getSuggestions(), times(1)).get(SUGGESTION_ID);
     verify(context.getRequest(), times(1)).setAttribute("isModeratorView", false);
     verify(context.getRequest(), times(1)).setAttribute("isPublishable", false);
     verify(context.getRequest(), times(1)).setAttribute("isEditable", false);
@@ -184,8 +159,10 @@ public class SuggestionBoxWebControllerTest {
 
     controller.viewSuggestion(context);
 
-    verify(getSuggestionBoxService(), times(1))
-        .findSuggestionById(context.getSuggestionBox(), SUGGESTION_ID);
+    SuggestionBox box = context.getSuggestionBox();
+    verify(box.getSuggestions(), times(1)).get(SUGGESTION_ID);
+    verify(context.getRequest(), times(1))
+        .setAttribute(eq("suggestion"), any(SuggestionEntity.class));
     verify(context.getRequest(), times(1)).setAttribute("isModeratorView", false);
     verify(context.getRequest(), times(1)).setAttribute("isPublishable", false);
     verify(context.getRequest(), times(1)).setAttribute("isEditable", false);
@@ -198,8 +175,10 @@ public class SuggestionBoxWebControllerTest {
 
     controller.viewSuggestion(context);
 
-    verify(getSuggestionBoxService(), times(1))
-        .findSuggestionById(context.getSuggestionBox(), SUGGESTION_ID);
+    SuggestionBox box = context.getSuggestionBox();
+    verify(box.getSuggestions(), times(1)).get(SUGGESTION_ID);
+    verify(context.getRequest(), times(1))
+        .setAttribute(eq("suggestion"), any(SuggestionEntity.class));
     verify(context.getRequest(), times(1)).setAttribute("isModeratorView", false);
     verify(context.getRequest(), times(1)).setAttribute("isPublishable", true);
     verify(context.getRequest(), times(1)).setAttribute("isEditable", true);
@@ -212,8 +191,10 @@ public class SuggestionBoxWebControllerTest {
 
     controller.viewSuggestion(context);
 
-    verify(getSuggestionBoxService(), times(1))
-        .findSuggestionById(context.getSuggestionBox(), SUGGESTION_ID);
+    SuggestionBox box = context.getSuggestionBox();
+    verify(box.getSuggestions(), times(1)).get(SUGGESTION_ID);
+    verify(context.getRequest(), times(1))
+        .setAttribute(eq("suggestion"), any(SuggestionEntity.class));
     verify(context.getRequest(), times(1)).setAttribute("isModeratorView", false);
     verify(context.getRequest(), times(1)).setAttribute("isPublishable", true);
     verify(context.getRequest(), times(1)).setAttribute("isEditable", true);
@@ -226,8 +207,8 @@ public class SuggestionBoxWebControllerTest {
 
     controller.viewSuggestion(context);
 
-    verify(getSuggestionBoxService(), times(1))
-        .findSuggestionById(context.getSuggestionBox(), SUGGESTION_ID);
+    SuggestionBox box = context.getSuggestionBox();
+    verify(box.getSuggestions(), times(1)).get(SUGGESTION_ID);
     verify(context.getRequest(), times(1)).setAttribute("isModeratorView", false);
     verify(context.getRequest(), times(1)).setAttribute("isPublishable", false);
     verify(context.getRequest(), times(1)).setAttribute("isEditable", false);
@@ -240,8 +221,8 @@ public class SuggestionBoxWebControllerTest {
 
     controller.viewSuggestion(context);
 
-    verify(getSuggestionBoxService(), times(1))
-        .findSuggestionById(context.getSuggestionBox(), SUGGESTION_ID);
+    SuggestionBox box = context.getSuggestionBox();
+    verify(box.getSuggestions(), times(1)).get(SUGGESTION_ID);
     verify(context.getRequest(), times(1)).setAttribute("isModeratorView", false);
     verify(context.getRequest(), times(1)).setAttribute("isPublishable", false);
     verify(context.getRequest(), times(1)).setAttribute("isEditable", false);
@@ -254,8 +235,10 @@ public class SuggestionBoxWebControllerTest {
 
     controller.viewSuggestion(context);
 
-    verify(getSuggestionBoxService(), times(1))
-        .findSuggestionById(context.getSuggestionBox(), SUGGESTION_ID);
+    SuggestionBox box = context.getSuggestionBox();
+    verify(box.getSuggestions(), times(1)).get(SUGGESTION_ID);
+    verify(context.getRequest(), times(1))
+        .setAttribute(eq("suggestion"), any(SuggestionEntity.class));
     verify(context.getRequest(), times(1)).setAttribute("isModeratorView", false);
     verify(context.getRequest(), times(1)).setAttribute("isPublishable", true);
     verify(context.getRequest(), times(1)).setAttribute("isEditable", true);
@@ -268,8 +251,10 @@ public class SuggestionBoxWebControllerTest {
 
     controller.viewSuggestion(context);
 
-    verify(getSuggestionBoxService(), times(1))
-        .findSuggestionById(context.getSuggestionBox(), SUGGESTION_ID);
+    SuggestionBox box = context.getSuggestionBox();
+    verify(box.getSuggestions(), times(1)).get(SUGGESTION_ID);
+    verify(context.getRequest(), times(1))
+        .setAttribute(eq("suggestion"), any(SuggestionEntity.class));
     verify(context.getRequest(), times(1)).setAttribute("isModeratorView", false);
     verify(context.getRequest(), times(1)).setAttribute("isPublishable", true);
     verify(context.getRequest(), times(1)).setAttribute("isEditable", true);
@@ -282,8 +267,8 @@ public class SuggestionBoxWebControllerTest {
 
     controller.viewSuggestion(context);
 
-    verify(getSuggestionBoxService(), times(1))
-        .findSuggestionById(context.getSuggestionBox(), SUGGESTION_ID);
+    SuggestionBox box = context.getSuggestionBox();
+    verify(box.getSuggestions(), times(1)).get(SUGGESTION_ID);
     verify(context.getRequest(), times(1)).setAttribute("isModeratorView", false);
     verify(context.getRequest(), times(1)).setAttribute("isPublishable", false);
     verify(context.getRequest(), times(1)).setAttribute("isEditable", false);
@@ -296,8 +281,8 @@ public class SuggestionBoxWebControllerTest {
 
     controller.viewSuggestion(context);
 
-    verify(getSuggestionBoxService(), times(1))
-        .findSuggestionById(context.getSuggestionBox(), SUGGESTION_ID);
+    SuggestionBox box = context.getSuggestionBox();
+    verify(box.getSuggestions(), times(1)).get(SUGGESTION_ID);
     verify(context.getRequest(), times(1)).setAttribute("isModeratorView", false);
     verify(context.getRequest(), times(1)).setAttribute("isPublishable", false);
     verify(context.getRequest(), times(1)).setAttribute("isEditable", false);
@@ -310,8 +295,8 @@ public class SuggestionBoxWebControllerTest {
 
     controller.viewSuggestion(context);
 
-    verify(getSuggestionBoxService(), times(1))
-        .findSuggestionById(context.getSuggestionBox(), SUGGESTION_ID);
+    SuggestionBox box = context.getSuggestionBox();
+    verify(box.getSuggestions(), times(1)).get(SUGGESTION_ID);
     verify(context.getRequest(), times(1)).setAttribute("isModeratorView", false);
     verify(context.getRequest(), times(1)).setAttribute("isPublishable", false);
     verify(context.getRequest(), times(1)).setAttribute("isEditable", false);
@@ -324,8 +309,8 @@ public class SuggestionBoxWebControllerTest {
 
     controller.viewSuggestion(context);
 
-    verify(getSuggestionBoxService(), times(1))
-        .findSuggestionById(context.getSuggestionBox(), SUGGESTION_ID);
+    SuggestionBox box = context.getSuggestionBox();
+    verify(box.getSuggestions(), times(1)).get(SUGGESTION_ID);
     verify(context.getRequest(), times(1)).setAttribute("isModeratorView", true);
     verify(context.getRequest(), times(1)).setAttribute("isPublishable", false);
     verify(context.getRequest(), times(1)).setAttribute("isEditable", true);
@@ -338,8 +323,8 @@ public class SuggestionBoxWebControllerTest {
 
     controller.viewSuggestion(context);
 
-    verify(getSuggestionBoxService(), times(1))
-        .findSuggestionById(context.getSuggestionBox(), SUGGESTION_ID);
+    SuggestionBox box = context.getSuggestionBox();
+    verify(box.getSuggestions(), times(1)).get(SUGGESTION_ID);
     verify(context.getRequest(), times(1)).setAttribute("isModeratorView", false);
     verify(context.getRequest(), times(1)).setAttribute("isPublishable", false);
     verify(context.getRequest(), times(1)).setAttribute("isEditable", false);
@@ -352,8 +337,8 @@ public class SuggestionBoxWebControllerTest {
 
     controller.viewSuggestion(context);
 
-    verify(getSuggestionBoxService(), times(1))
-        .findSuggestionById(context.getSuggestionBox(), SUGGESTION_ID);
+    SuggestionBox box = context.getSuggestionBox();
+    verify(box.getSuggestions(), times(1)).get(SUGGESTION_ID);
     verify(context.getRequest(), times(1)).setAttribute("isModeratorView", false);
     verify(context.getRequest(), times(1)).setAttribute("isPublishable", false);
     verify(context.getRequest(), times(1)).setAttribute("isEditable", false);
@@ -366,8 +351,8 @@ public class SuggestionBoxWebControllerTest {
 
     controller.viewSuggestion(context);
 
-    verify(getSuggestionBoxService(), times(1))
-        .findSuggestionById(context.getSuggestionBox(), SUGGESTION_ID);
+    SuggestionBox box = context.getSuggestionBox();
+    verify(box.getSuggestions(), times(1)).get(SUGGESTION_ID);
     verify(context.getRequest(), times(1)).setAttribute("isModeratorView", false);
     verify(context.getRequest(), times(1)).setAttribute("isPublishable", false);
     verify(context.getRequest(), times(1)).setAttribute("isEditable", false);
@@ -380,8 +365,8 @@ public class SuggestionBoxWebControllerTest {
 
     controller.viewSuggestion(context);
 
-    verify(getSuggestionBoxService(), times(1))
-        .findSuggestionById(context.getSuggestionBox(), SUGGESTION_ID);
+    SuggestionBox box = context.getSuggestionBox();
+    verify(box.getSuggestions(), times(1)).get(SUGGESTION_ID);
     verify(context.getRequest(), times(1)).setAttribute("isModeratorView", false);
     verify(context.getRequest(), times(1)).setAttribute("isPublishable", false);
     verify(context.getRequest(), times(1)).setAttribute("isEditable", false);
@@ -392,14 +377,13 @@ public class SuggestionBoxWebControllerTest {
     SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
     when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
     SuggestionBox box = context.getSuggestionBox();
-    SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
     Suggestion theSuggestion = aSuggestion();
     ReflectionTestUtils.setField(theSuggestion, "suggestionBox", box);
-    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(theSuggestion);
+    when(box.getSuggestions().get(SUGGESTION_ID)).thenReturn(theSuggestion);
 
     controller.editSuggestion(context);
 
-    verify(suggestionBoxService, times(1)).findSuggestionById(box, SUGGESTION_ID);
+    verify(box.getSuggestions(), times(1)).get(SUGGESTION_ID);
   }
 
   @Test(expected = WebApplicationException.class)
@@ -407,8 +391,7 @@ public class SuggestionBoxWebControllerTest {
     SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
     when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
     SuggestionBox box = context.getSuggestionBox();
-    SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
-    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(Suggestion.NONE);
+    when(box.getSuggestions().get(SUGGESTION_ID)).thenReturn(Suggestion.NONE);
 
     controller.editSuggestion(context);
   }
@@ -418,9 +401,8 @@ public class SuggestionBoxWebControllerTest {
     SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
     when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
     SuggestionBox box = context.getSuggestionBox();
-    SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
-    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID))
-        .thenReturn(aSuggestionWithStatus(ContributionStatus.PENDING_VALIDATION));
+    Suggestion suggestion = aSuggestionWithStatus(ContributionStatus.PENDING_VALIDATION);
+    when(box.getSuggestions().get(SUGGESTION_ID)).thenReturn(suggestion);
     when(getOrganisationController().getUsersIdsByRoleNames(box.getComponentInstanceId(),
         CollectionUtil.asList(SilverpeasRole.admin.name(), SilverpeasRole.publisher.name())))
         .thenReturn(new String[]{"otherId"});
@@ -433,10 +415,8 @@ public class SuggestionBoxWebControllerTest {
     SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
     when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
     SuggestionBox box = context.getSuggestionBox();
-    SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
     Suggestion theSuggestion = aSuggestionWithStatus(ContributionStatus.PENDING_VALIDATION);
-    ReflectionTestUtils.setField(theSuggestion, "suggestionBox", box);
-    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(theSuggestion);
+    when(box.getSuggestions().get(SUGGESTION_ID)).thenReturn(theSuggestion);
     String userId = context.getUser().getId();
     when(getOrganisationController().getUsersIdsByRoleNames(box.getComponentInstanceId(),
         CollectionUtil.asList(SilverpeasRole.admin.name(), SilverpeasRole.publisher.name())))
@@ -444,7 +424,7 @@ public class SuggestionBoxWebControllerTest {
 
     controller.editSuggestion(context);
 
-    verify(suggestionBoxService, times(1)).findSuggestionById(box, SUGGESTION_ID);
+    verify(box.getSuggestions(), times(1)).get(SUGGESTION_ID);
   }
 
   @Test(expected = WebApplicationException.class)
@@ -452,9 +432,8 @@ public class SuggestionBoxWebControllerTest {
     SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
     when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
     SuggestionBox box = context.getSuggestionBox();
-    SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
-    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID))
-        .thenReturn(aSuggestionWithStatus(ContributionStatus.VALIDATED));
+    Suggestion suggestion = aSuggestionWithStatus(ContributionStatus.VALIDATED);
+    when(box.getSuggestions().get(SUGGESTION_ID)).thenReturn(suggestion);
     String userId = context.getUser().getId();
     when(getOrganisationController().getUsersIdsByRoleNames(box.getComponentInstanceId(),
         CollectionUtil.asList(SilverpeasRole.admin.name(), SilverpeasRole.publisher.name())))
@@ -486,17 +465,14 @@ public class SuggestionBoxWebControllerTest {
     when(context.getRequest().getParameter("title")).thenReturn(modifiedTitle);
     when(context.getRequest().getParameter("content")).thenReturn(modifiedContent);
     SuggestionBox box = context.getSuggestionBox();
-    SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
-    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID))
-        .thenReturn(aSuggestionWithStatus(withStatus));
+    Suggestion suggestion = aSuggestionWithStatus(withStatus);
+    UserDetail user = context.getUser();
+    when(suggestion.getCreator()).thenReturn(user);
+    when(box.getSuggestions().get(SUGGESTION_ID)).thenReturn(suggestion);
 
     controller.updateSuggestion(context);
 
-    ArgumentCaptor<Suggestion> suggestionArgument = ArgumentCaptor.forClass(Suggestion.class);
-    verify(suggestionBoxService, times(1)).updateSuggestion(suggestionArgument.capture());
-    Suggestion suggestion = suggestionArgument.getValue();
-    assertThat(suggestion.getTitle(), is(modifiedTitle));
-    assertThat(suggestion.getContent(), is(modifiedContent));
+    verify(suggestion, times(1)).save();
   }
 
   @Test(expected = WebApplicationException.class)
@@ -508,8 +484,7 @@ public class SuggestionBoxWebControllerTest {
     when(context.getRequest().getParameter("title")).thenReturn(modifiedTitle);
     when(context.getRequest().getParameter("content")).thenReturn(modifiedContent);
     SuggestionBox box = context.getSuggestionBox();
-    SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
-    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(Suggestion.NONE);
+    when(box.getSuggestions().get(SUGGESTION_ID)).thenReturn(Suggestion.NONE);
 
     controller.updateSuggestion(context);
   }
@@ -520,12 +495,11 @@ public class SuggestionBoxWebControllerTest {
     when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
     SuggestionBox box = context.getSuggestionBox();
     Suggestion suggestion = aSuggestion();
-    SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
-    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(suggestion);
+    when(box.getSuggestions().get(SUGGESTION_ID)).thenReturn(suggestion);
 
     controller.deleteSuggestion(context);
 
-    verify(suggestionBoxService, times(1)).removeSuggestion(box, suggestion);
+    verify(box.getSuggestions(), times(1)).remove(suggestion);
   }
 
   @Test(expected = WebApplicationException.class)
@@ -533,8 +507,7 @@ public class SuggestionBoxWebControllerTest {
     SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
     when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
     SuggestionBox box = context.getSuggestionBox();
-    SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
-    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(Suggestion.NONE);
+    when(box.getSuggestions().get(SUGGESTION_ID)).thenReturn(Suggestion.NONE);
 
     controller.deleteSuggestion(context);
   }
@@ -544,9 +517,8 @@ public class SuggestionBoxWebControllerTest {
     SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
     when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
     SuggestionBox box = context.getSuggestionBox();
-    SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
-    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID))
-        .thenReturn(aSuggestionWithStatus(ContributionStatus.VALIDATED));
+    Suggestion suggestion = aSuggestionWithStatus(ContributionStatus.VALIDATED);
+    when(box.getSuggestions().get(SUGGESTION_ID)).thenReturn(suggestion);
 
     controller.deleteSuggestion(context);
   }
@@ -570,15 +542,16 @@ public class SuggestionBoxWebControllerTest {
     SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
     when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
     SuggestionBox box = context.getSuggestionBox();
-    SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
     Suggestion suggestion = aSuggestionWithStatus(withStatus);
-    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(suggestion);
-    when(suggestionBoxService.publishSuggestion(eq(box), eq(suggestion))).thenReturn(suggestion);
+    when(box.getSuggestions().get(SUGGESTION_ID)).thenReturn(suggestion);
+    when(box.getSuggestions().publish(eq(suggestion))).thenReturn(suggestion);
+    UserDetail user = context.getUser();
+    when(suggestion.getCreator()).thenReturn(user);
 
     PowerMockito.mockStatic(UserNotificationHelper.class);
     controller.publishSuggestion(context);
 
-    verify(suggestionBoxService, times(1)).publishSuggestion(eq(box), eq(suggestion));
+    verify(box.getSuggestions(), times(1)).publish(eq(suggestion));
   }
 
   @Test(expected = WebApplicationException.class)
@@ -586,8 +559,7 @@ public class SuggestionBoxWebControllerTest {
     SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
     when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
     SuggestionBox box = context.getSuggestionBox();
-    SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
-    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(Suggestion.NONE);
+    when(box.getSuggestions().get(SUGGESTION_ID)).thenReturn(Suggestion.NONE);
 
     controller.publishSuggestion(context);
   }
@@ -632,11 +604,9 @@ public class SuggestionBoxWebControllerTest {
     SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
     when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
     SuggestionBox box = context.getSuggestionBox();
-    SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
     Suggestion suggestion = aSuggestionWithStatus(withStatus);
-    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(suggestion);
-    when(suggestionBoxService.validateSuggestion(eq(box), eq(suggestion), any(
-        ContributionValidation.class))).thenReturn(suggestion);
+    when(box.getSuggestions().get(SUGGESTION_ID)).thenReturn(suggestion);
+    when(box.getSuggestions().validate(eq(suggestion), any(ContributionValidation.class))).thenReturn(suggestion);
     String userId = context.getUser().getId();
     when(getOrganisationController().getUsersIdsByRoleNames(box.getComponentInstanceId(),
         CollectionUtil.asList(SilverpeasRole.admin.name(), SilverpeasRole.publisher.name())))
@@ -646,8 +616,8 @@ public class SuggestionBoxWebControllerTest {
     PowerMockito.mockStatic(UserNotificationHelper.class);
     controller.approveSuggestion(context);
 
-    verify(suggestionBoxService, times(1)).validateSuggestion(eq(box), eq(suggestion), any(
-        ContributionValidation.class));
+    verify(box.getSuggestions(), times(1))
+        .validate(eq(suggestion), any(ContributionValidation.class));
   }
 
   @Test(expected = WebApplicationException.class)
@@ -655,8 +625,7 @@ public class SuggestionBoxWebControllerTest {
     SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
     when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
     SuggestionBox box = context.getSuggestionBox();
-    SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
-    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(Suggestion.NONE);
+    when(box.getSuggestions().get(SUGGESTION_ID)).thenReturn(Suggestion.NONE);
 
     controller.approveSuggestion(context);
   }
@@ -707,14 +676,12 @@ public class SuggestionBoxWebControllerTest {
     SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
     when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
     SuggestionBox box = context.getSuggestionBox();
-    SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
     Suggestion suggestion = aSuggestionWithStatus(withStatus);
     if (StringUtil.isDefined(withComment)) {
       when(context.getRequest().getParameter("comment")).thenReturn(withComment);
     }
-    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(suggestion);
-    when(suggestionBoxService.validateSuggestion(eq(box), eq(suggestion), any(
-        ContributionValidation.class))).thenReturn(suggestion);
+    when(box.getSuggestions().get(SUGGESTION_ID)).thenReturn(suggestion);
+    when(box.getSuggestions().validate(eq(suggestion), any(ContributionValidation.class))).thenReturn(suggestion);
     String userId = context.getUser().getId();
     when(getOrganisationController().getUsersIdsByRoleNames(box.getComponentInstanceId(),
         CollectionUtil.asList(SilverpeasRole.admin.name(), SilverpeasRole.publisher.name())))
@@ -724,8 +691,8 @@ public class SuggestionBoxWebControllerTest {
     PowerMockito.mockStatic(UserNotificationHelper.class);
     controller.refuseSuggestion(context);
 
-    verify(suggestionBoxService, times(1)).validateSuggestion(eq(box), eq(suggestion), any(
-        ContributionValidation.class));
+    verify(box.getSuggestions(), times(1))
+        .validate(eq(suggestion), any(ContributionValidation.class));
   }
 
   @Test(expected = WebApplicationException.class)
@@ -733,10 +700,35 @@ public class SuggestionBoxWebControllerTest {
     SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
     when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
     SuggestionBox box = context.getSuggestionBox();
-    SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
-    when(suggestionBoxService.findSuggestionById(box, SUGGESTION_ID)).thenReturn(Suggestion.NONE);
+    when(box.getSuggestions().get(SUGGESTION_ID)).thenReturn(Suggestion.NONE);
 
     controller.refuseSuggestion(context);
+  }
+
+  private SuggestionBoxWebRequestContext prepareViewSuggestionTest(SilverpeasRole greaterUserRole,
+      ContributionStatus suggestionStatus) {
+    SuggestionBoxWebRequestContext context = aSuggestionBoxWebRequestContext();
+    when(context.getPathVariables().get("id")).thenReturn(SUGGESTION_ID);
+    when(context.getGreaterUserRole())
+        .thenReturn(greaterUserRole != null ? greaterUserRole : SilverpeasRole.reader);
+    SuggestionBox box = context.getSuggestionBox();
+    Suggestion theSuggestion = aSuggestionWithStatus(suggestionStatus);
+    when(box.getSuggestions().get(SUGGESTION_ID)).thenReturn(theSuggestion);
+    boolean isPublishable = greaterUserRole != null &&
+        (theSuggestion.getValidation().isInDraft() || theSuggestion.getValidation().isRefused()) &&
+            greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.writer);
+    when(theSuggestion.isPublishableBy(any(UserDetail.class))).thenReturn(isPublishable);
+
+    final String[] roles;
+    if (greaterUserRole != null) {
+      roles = new String[]{greaterUserRole.getName()};
+    } else {
+      roles = new String[0];
+    }
+    when(getOrganisationController()
+        .getUserProfiles(context.getUser().getId(), box.getComponentInstanceId()))
+        .thenReturn(roles);
+    return context;
   }
 
   @SuppressWarnings("unchecked")
@@ -750,7 +742,8 @@ public class SuggestionBoxWebControllerTest {
     when(context.getComponentInstanceId()).thenReturn(COMPONENT_INSTANCE_ID);
     when(context.getComponentUriBase()).thenReturn("/" + COMPONENT_INSTANCE_ID);
     when(context.getMessager()).thenReturn(WebMessager.getInstance());
-    when(context.getSuggestionBox()).thenReturn(aSuggestionBox());
+    SuggestionBox box = aSuggestionBox();
+    when(context.getSuggestionBox()).thenReturn(box);
     NavigationContext navigationContext = NavigationContext.get(context);
     when(context.getNavigationContext()).thenReturn(navigationContext);
     return context;
@@ -762,12 +755,6 @@ public class SuggestionBoxWebControllerTest {
     return mockWrapper.getOrganizationControllerMock();
   }
 
-  private SuggestionBoxService getSuggestionBoxService() {
-    SuggestionBoxServiceMockWrapper mockWrapper = appContext.getBean(
-        SuggestionBoxServiceMockWrapper.class);
-    return mockWrapper.getMock();
-  }
-
   private PersonalizationService getPersonalizationService() {
     PersonalizationServiceMockWrapper mockWrapper = appContext.
         getBean(PersonalizationServiceMockWrapper.class);
@@ -775,15 +762,39 @@ public class SuggestionBoxWebControllerTest {
   }
 
   private SuggestionBox aSuggestionBox() {
-    SuggestionBox box = new SuggestionBox(COMPONENT_INSTANCE_ID);
-    ReflectionTestUtils.setField(box, "id", new UuidIdentifier().fromString(SUGGESTIONBOX_ID));
-    box.setCreator(aUser());
+    UserDetail author = aUser();
+    SuggestionBox box = mock(SuggestionBox.class);
+    when(box.getComponentInstanceId()).thenReturn(COMPONENT_INSTANCE_ID);
+    when(box.getId()).thenReturn(SUGGESTIONBOX_ID);
+    when(box.getCreator()).thenReturn(author);
+    when(box.getLastUpdater()).thenReturn(author);
+
+    SuggestionCollection suggestions = mock(SuggestionCollection.class);
+    when(box.getSuggestions()).thenReturn(suggestions);
     return box;
   }
 
   private Suggestion aSuggestionWithStatus(ContributionStatus status) {
-    Suggestion suggestion = aSuggestion();
-    suggestion.getValidation().setStatus(status);
+    Suggestion suggestion = mock(Suggestion.class);
+    ContributionValidation validation = mock(ContributionValidation.class);
+    when(suggestion.isDefined()).thenReturn(true);
+    when(suggestion.getValidation()).thenReturn(validation);
+    when(validation.getStatus()).thenReturn(status);
+    switch (status) {
+      case DRAFT:
+        when(validation.isInDraft()).thenReturn(true);
+        break;
+      case PENDING_VALIDATION:
+        when(validation.isPendingValidation()).thenReturn(true);
+        break;
+      case REFUSED:
+        when(validation.isRefused()).thenReturn(true);
+        break;
+      case VALIDATED:
+        when(validation.isValidated()).thenReturn(true);
+        break;
+    }
+
     return suggestion;
   }
 

@@ -38,4 +38,7 @@
         class="org.silverpeas.components.suggestionbox.model.SuggestionBoxServiceFactory"
         factory-method="getFactory"/>
 
+  <bean id="suggestionRepositoryProvider" class="org.silverpeas.components.suggestionbox.repository.SuggestionRepositoryProvider"
+        factory-method="getInstance"/>
+
 </beans>

@@ -54,11 +54,6 @@ public class SuggestionBoxServiceMockWrapper implements SuggestionBoxService {
   }
 
   @Override
-  public List<Suggestion> findSuggestionsByCriteria(final SuggestionCriteria criteria) {
-    return mock.findSuggestionsByCriteria(criteria);
-  }
-
-  @Override
   public void saveSuggestionBox(SuggestionBox box) {
     mock.saveSuggestionBox(box);
   }
@@ -71,37 +66,5 @@ public class SuggestionBoxServiceMockWrapper implements SuggestionBoxService {
   @Override
   public SuggestionBox getByComponentInstanceId(String componentInstanceId) {
     return mock.getByComponentInstanceId(componentInstanceId);
-  }
-
-  @Override
-  public void addSuggestion(SuggestionBox box, Suggestion suggestion,
-      final Collection<UploadedFile> uploadedFiles) {
-    mock.addSuggestion(box, suggestion, uploadedFiles);
-  }
-
-  @Override
-  public void updateSuggestion(Suggestion suggestion) {
-    mock.updateSuggestion(suggestion);
-  }
-
-  @Override
-  public Suggestion findSuggestionById(SuggestionBox box, String suggestionId) {
-    return mock.findSuggestionById(box, suggestionId);
-  }
-
-  @Override
-  public void removeSuggestion(SuggestionBox box, Suggestion suggestion) {
-    mock.removeSuggestion(box, suggestion);
-  }
-
-  @Override
-  public Suggestion publishSuggestion(final SuggestionBox box, final Suggestion suggestion) {
-    return mock.publishSuggestion(box, suggestion);
-  }
-
-  @Override
-  public Suggestion validateSuggestion(final SuggestionBox box, final Suggestion suggestion,
-      final ContributionValidation validation) {
-    return mock.validateSuggestion(box, suggestion, validation);
   }
 }

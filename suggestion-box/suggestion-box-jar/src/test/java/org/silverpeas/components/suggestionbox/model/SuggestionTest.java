@@ -323,9 +323,8 @@ public class SuggestionTest extends RepositoryBasedTest {
         then(new Returns(content));
     SuggestionBox box = SuggestionBox.getByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID);
     List<Suggestion> suggestions = box.getSuggestions().findInDraftFor(UserDetail.getById("1"));
-    assertThat(suggestions, hasSize(3));
-    assertThat(suggestions, contains(matches("suggestion_1_a", "suggestion 1 IDEM", REFUSED,
-                timestamp("2014-03-15 17:34:00.0")),
+    assertThat(suggestions, hasSize(2));
+    assertThat(suggestions, contains(
             matches("suggestion_1", "suggestion 1", DRAFT, timestamp("2014-03-16 17:34:00.0")),
             matches("suggestion_1_b", "suggestion 1 / B", DRAFT, timestamp("2014-03-20 17:34:00.0"))
         )
@@ -350,11 +349,14 @@ public class SuggestionTest extends RepositoryBasedTest {
         then(new Returns(content));
     SuggestionBox box = SuggestionBox.getByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID);
     List<Suggestion> suggestions = box.getSuggestions().findOutOfDraftFor(UserDetail.getById("1"));
-    assertThat(suggestions, hasSize(4));
-    assertThat(suggestions, contains(matches("suggestion_1_v_1", "suggestion 1 V1", VALIDATED,
+    assertThat(suggestions, hasSize(5));
+    assertThat(suggestions, contains(
+        matches("suggestion_1_v_1", "suggestion 1 V1", VALIDATED,
             timestamp("2014-03-26 17:34:00.0")),
         matches("suggestion_1_v_2", "suggestion 1 V2", VALIDATED,
             timestamp("2014-03-25 17:34:00.0")),
+        matches("suggestion_1_a", "suggestion 1 IDEM", REFUSED,
+            timestamp("2014-03-15 17:34:00.0")),
         matches("suggestion_1_c", "suggestion 1 IDEM", PENDING_VALIDATION,
             timestamp("2014-03-13 17:34:00.0")),
         matches("suggestion_1_c_2", "suggestion 1 IDEM", PENDING_VALIDATION,

@@ -53,7 +53,7 @@ public class PersistenceService {
   public void saveSuggestion(final OperationContext ctx, final SuggestionBox box,
       final Suggestion suggestion) {
     SuggestionBox actualBox = suggestionBoxRepository.getById(box.getId());
-    actualBox.addSuggestion(suggestion);
+    actualBox.persistedSuggestions().add(suggestion);
     suggestionRepository.save(ctx, suggestion);
   }
 

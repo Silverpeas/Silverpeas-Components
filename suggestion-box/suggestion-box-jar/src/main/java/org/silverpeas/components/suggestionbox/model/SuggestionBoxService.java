@@ -57,80 +57,14 @@ public interface SuggestionBoxService {
   public void indexSuggestionBox(SuggestionBox suggestionBox);
 
   /**
-   * Finds suggestions according to the given suggestion criteria.
-   * @param criteria the suggestion criteria.
-   * @return the suggestion list corresponding to the given suggestion criteria.
-   */
-  public List<Suggestion> findSuggestionsByCriteria(SuggestionCriteria criteria);
-
-  /**
    * Saves the specified suggestion box.
    * @param box the box to save in Silverpeas.
    */
   public void saveSuggestionBox(final SuggestionBox box);
 
   /**
-   * Adds into the specified suggestion box the new specified suggestion.
-   * @param box a suggestion box
-   * @param suggestion a new suggestions to add into the suggestion box.
-   * @param uploadedFiles a collection of file to attach to the suggestion.
-   */
-  public void addSuggestion(final SuggestionBox box, final Suggestion suggestion,
-      final Collection<UploadedFile> uploadedFiles);
-
-  /**
    * Deletes the specified suggestion box.
    * @param box the box to delete from Silverpeas.
    */
   public void deleteSuggestionBox(final SuggestionBox box);
-
-  /**
-   * Updates the state of the specified suggestion.
-   * @param suggestion to update.
-   */
-  public void updateSuggestion(final Suggestion suggestion);
-
-  /**
-   * Gets the suggestion uniquely identified by the specified identifier from the specified
-   * suggestion box.
-   * @param box the suggestion box the suggestion should belong to.
-   * @param suggestionId the unique identifier of the suggestion to get.
-   * @return the suggestion having the specified suggestion identifier of NONE if no such suggestion
-   * exists in the specified suggestion box.
-   */
-  public Suggestion findSuggestionById(final SuggestionBox box, final String suggestionId);
-
-  /**
-   * Removes from the specified suggestion box the specified suggestion.
-   * @param box the suggestion box to which the suggestion belongs.
-   * @param suggestion the suggestion to remove.
-   */
-  public void removeSuggestion(final SuggestionBox box, final Suggestion suggestion);
-
-  /**
-   * Publishes from the specified suggestion box the specified suggestion.
-   * <p/>
-   * The publication of a suggestion consists in changing its status from DRAFT to
-   * PENDING_VALIDATION.
-   * The service sets automatically the date and the validator of the validation.
-   * <p/>
-   * @param box the suggestion box to which the suggestion belongs.
-   * @param suggestion the suggestion to publish.
-   * @return the suggestion updated.
-   */
-  public Suggestion publishSuggestion(final SuggestionBox box, final Suggestion suggestion);
-
-  /**
-   * Validates from the specified suggestion box the specified suggestion.
-   * <p/>
-   * The service sets automatically the date and the validator of the validation. It takes from the
-   * specified suggestion the information about the validation.
-   * <p/>
-   * @param box the suggestion box to which the suggestion belongs.
-   * @param suggestion the suggestion to validate.
-   * @param validation the validation information.
-   * @return the suggestion updated.
-   */
-  public Suggestion validateSuggestion(final SuggestionBox box, final Suggestion suggestion,
-      final ContributionValidation validation);
 }
