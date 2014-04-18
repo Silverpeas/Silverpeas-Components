@@ -4957,15 +4957,11 @@ public class KmeliaBmEJB implements KmeliaBm {
     
     // paste topic
     NodePK nodePK = new NodePK("unknown", targetPK);
-    NodeDetail node = new NodeDetail();
+    NodeDetail node = nodeToCopy.clone();
     node.setNodePK(nodePK);
     node.setCreatorId(userId);
-    node.setName(nodeToCopy.getName());
-    node.setDescription(nodeToCopy.getDescription());
-    node.setTranslations(nodeToCopy.getTranslations());
     node.setRightsDependsOn(father.getRightsDependsOn());
     node.setCreationDate(DateUtil.today2SQLDate());
-    node.setStatus(nodeToCopy.getStatus());
     nodePK = nodeBm.createNode(node, father);
     
     // duplicate rights
