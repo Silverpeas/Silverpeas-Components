@@ -31,9 +31,18 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.servlets.AbstractNavigationContextListener;
 import com.stratelia.silverpeas.peasCore.servlets.Navigation;
 import com.stratelia.silverpeas.peasCore.servlets.NavigationContext;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.*;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.Homepage;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.Invokable;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.InvokeAfter;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.LowestRoleAccess;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.NavigationStep;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternal;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternalJsp;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToPreviousNavigationStep;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.WebComponentController;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.webactiv.SilverpeasRole;
@@ -79,7 +88,6 @@ public class SuggestionBoxWebController extends
      */
     MySuggestions;
 
-
     public static ViewContext fromIdentifier(String identifier) {
       try {
         return valueOf(identifier);
@@ -89,10 +97,17 @@ public class SuggestionBoxWebController extends
     }
   }
 
+  // Some navigation step identifier definitions
+  private static final String SUGGESTION_LIST_NS_ID = "suggestionListNavStepIdentifier";
+  private static final String SUGGESTION_VIEW_NS_ID = "suggestionViewNavStepIdentifier";
+
   // Some suffix path URI definitions
   private static final String PATH_SUGGESTIONS_PUBLISHED = "suggestions/published";
   private static final String PATH_SUGGESTIONS_PENDING = "suggestions/pending";
   private static final String PATH_SUGGESTIONS_MINE = "suggestions/mine";
+
+  // Some identifier definitions
+  public static final String SUGGESTION_LIST_ARRAYPANE_IDENTIFIER = "suggestionListIdentifier";
 
   /**
    * Standard Session Controller Constructor
@@ -104,6 +119,71 @@ public class SuggestionBoxWebController extends
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext, SuggestionBoxComponentSettings.MESSAGES_PATH,
         SuggestionBoxComponentSettings.ICONS_PATH, SuggestionBoxComponentSettings.SETTINGS_PATH);
+  }
+
+  @Override
+  protected void onInstantiation(final SuggestionBoxWebRequestContext context) {
+    context.getNavigationContext()
+        .addListener(new AbstractNavigationContextListener<SuggestionBoxWebRequestContext>() {
+
+          @Override
+          public void navigationStepTrashed(
+              final NavigationContext<SuggestionBoxWebRequestContext>.NavigationStep
+                  trashedNavigationStep) {
+            super.navigationStepTrashed(trashedNavigationStep);
+            if (SUGGESTION_LIST_NS_ID.equals(trashedNavigationStep.getIdentifier())) {
+              // If the context change, the state of the displayed list is trashed
+              clearSuggestionListState(
+                  trashedNavigationStep.getNavigationContext().getWebComponentRequestContext());
+            }
+          }
+
+          @Override
+          public void navigationStepContextIdentifierSet(
+              final NavigationContext<SuggestionBoxWebRequestContext>.NavigationStep navigationStep,
+              final String oldContextIdentifier) {
+            super.navigationStepContextIdentifierSet(navigationStep, oldContextIdentifier);
+            // Getting the new context identifier
+            String newContextIdentifier = navigationStep.getContextIdentifier();
+            // Performing a treatment if it is defined and if it is different as the old one
+            if (StringUtil.isDefined(newContextIdentifier) &&
+                !newContextIdentifier.equals(oldContextIdentifier)) {
+              // Verifying given context identifier that is corresponding to one of those of
+              // ViewContext
+              ViewContext viewContext = ViewContext.fromIdentifier(newContextIdentifier);
+              if (viewContext != null) {
+                ResourceLocator multilang = context.getMultilang();
+                switch (viewContext) {
+                  case PublishedSuggestions:
+                    clearSuggestionListState(
+                        navigationStep.getNavigationContext().getWebComponentRequestContext());
+                    navigationStep
+                        .withLabel(multilang.getString("suggestionBox.label.suggestions.more"));
+                    break;
+                  case SuggestionsInValidation:
+                    clearSuggestionListState(
+                        navigationStep.getNavigationContext().getWebComponentRequestContext());
+                    navigationStep.withLabel(
+                        multilang.getString("suggestionBox.menu.item.suggestion.viewPending"));
+                    break;
+                  case MySuggestions:
+                    clearSuggestionListState(
+                        navigationStep.getNavigationContext().getWebComponentRequestContext());
+                    navigationStep
+                        .withLabel(multilang.getString("suggestionBox.menu.item.suggestion.mine"));
+                    break;
+                }
+              }
+            }
+          }
+
+          /**
+           * Clears the state of the suggestion list.
+           */
+          private void clearSuggestionListState(SuggestionBoxWebRequestContext context) {
+            setSessionAttribute(context, SUGGESTION_LIST_ARRAYPANE_IDENTIFIER, null);
+          }
+        });
   }
 
   @Override
@@ -132,7 +212,8 @@ public class SuggestionBoxWebController extends
    */
   @GET
   @Path(PATH_SUGGESTIONS_PUBLISHED)
-  @NavigationStep(identifier = "suggestionList", contextIdentifier = "PublishedSuggestions")
+  @NavigationStep(identifier = SUGGESTION_LIST_NS_ID,
+      contextIdentifier = "PublishedSuggestions")
   @RedirectToInternalJsp("suggestionList.jsp")
   @InvokeAfter("isEdito")
   public void listPublishedSuggestions(SuggestionBoxWebRequestContext context) {
@@ -148,7 +229,7 @@ public class SuggestionBoxWebController extends
    */
   @GET
   @Path(PATH_SUGGESTIONS_PENDING)
-  @NavigationStep(identifier = "suggestionList", contextIdentifier = "SuggestionsInValidation")
+  @NavigationStep(identifier = SUGGESTION_LIST_NS_ID, contextIdentifier = "SuggestionsInValidation")
   @RedirectToInternalJsp("suggestionList.jsp")
   @InvokeAfter("isEdito")
   @LowestRoleAccess(SilverpeasRole.publisher)
@@ -166,7 +247,7 @@ public class SuggestionBoxWebController extends
    */
   @GET
   @Path(PATH_SUGGESTIONS_MINE)
-  @NavigationStep(identifier = "suggestionList", contextIdentifier = "MySuggestions")
+  @NavigationStep(identifier = SUGGESTION_LIST_NS_ID, contextIdentifier = "MySuggestions")
   @RedirectToInternalJsp("suggestionList.jsp")
   @InvokeAfter("isEdito")
   @LowestRoleAccess(SilverpeasRole.writer)
@@ -272,7 +353,7 @@ public class SuggestionBoxWebController extends
    */
   @GET
   @Path("suggestions/{id}")
-  @NavigationStep(identifier = "suggestionView")
+  @NavigationStep(identifier = SUGGESTION_VIEW_NS_ID)
   @RedirectToInternalJsp("suggestionView.jsp")
   public void viewSuggestion(SuggestionBoxWebRequestContext context) {
     String suggestionId = context.getPathVariables().get("id");
@@ -291,7 +372,7 @@ public class SuggestionBoxWebController extends
       throw new WebApplicationException(Status.NOT_FOUND);
     }
 
-    context.getNavigationContext().navigationStepFrom("suggestionView")
+    context.getNavigationContext().navigationStepFrom(SUGGESTION_VIEW_NS_ID)
         .withLabel(StringUtil.truncate(suggestion.getTitle(), 25));
   }
 
@@ -427,26 +508,5 @@ public class SuggestionBoxWebController extends
     sug.setComponentId(context.getComponentInstanceId());
     sel.setSelectionUsersGroups(sug);
     return context.redirectToNotifyManuallyUsers();
-  }
-
-  @Override
-  protected void specifyNavigationStep(final SuggestionBoxWebRequestContext context,
-      final NavigationContext.NavigationStep navigationStep, final String contextIdentifier) {
-    ViewContext viewContext = ViewContext.fromIdentifier(contextIdentifier);
-    if (viewContext != null) {
-      ResourceLocator multilang = context.getMultilang();
-      switch (viewContext) {
-        case PublishedSuggestions:
-          navigationStep.withLabel(multilang.getString("suggestionBox.label.suggestions.more"));
-          break;
-        case SuggestionsInValidation:
-          navigationStep
-              .withLabel(multilang.getString("suggestionBox.menu.item.suggestion.viewPending"));
-          break;
-        case MySuggestions:
-          navigationStep.withLabel(multilang.getString("suggestionBox.menu.item.suggestion.mine"));
-          break;
-      }
-    }
   }
 }

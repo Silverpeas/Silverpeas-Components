@@ -33,6 +33,7 @@
 <view:setConstant var="publisherRole"                       constant="com.stratelia.webactiv.SilverpeasRole.publisher"/>
 <view:setConstant var="SuggestionsInValidationViewContext"  constant="org.silverpeas.components.suggestionbox.control.SuggestionBoxWebController.ViewContext.SuggestionsInValidation"/>
 <view:setConstant var="MySuggestionsViewContext"            constant="org.silverpeas.components.suggestionbox.control.SuggestionBoxWebController.ViewContext.MySuggestions"/>
+<view:setConstant var="SUGGESTION_LIST_IDENTIFIER"          constant="org.silverpeas.components.suggestionbox.control.SuggestionBoxWebController.SUGGESTION_LIST_ARRAYPANE_IDENTIFIER"/>
 
 <c:set var="greaterUserRole"     value="${requestScope.greaterUserRole}"/>
 <c:set var="currentUserLanguage" value="${requestScope.resources.language}"/>
@@ -138,7 +139,7 @@
     <c:if test="${viewContext != SuggestionsInValidationViewContext and greaterUserRole.isGreaterThanOrEquals(writerRole)}">
       <view:areaOfOperationOfCreation/>
     </c:if>
-    <view:arrayPane var="" routingAddress="${routingAddress}" sortableLines="true">
+    <view:arrayPane var="${SUGGESTION_LIST_IDENTIFIER}" routingAddress="${routingAddress}" sortableLines="true">
       <view:arrayColumn title="${status}" sortable="false"/>
       <view:arrayColumn title="${date}" sortable="true"/>
       <view:arrayColumn title="${title}" sortable="true"/>
