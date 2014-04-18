@@ -33,15 +33,7 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.Navigation;
 import com.stratelia.silverpeas.peasCore.servlets.NavigationContext;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.Homepage;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.Invokable;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.InvokeAfter;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.LowestRoleAccess;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternal;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternalJsp;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToViewPoint;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.ViewPoint;
-import com.stratelia.silverpeas.peasCore.servlets.annotation.WebComponentController;
+import com.stratelia.silverpeas.peasCore.servlets.annotation.*;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.webactiv.SilverpeasRole;
@@ -140,7 +132,7 @@ public class SuggestionBoxWebController extends
    */
   @GET
   @Path(PATH_SUGGESTIONS_PUBLISHED)
-  @ViewPoint(identifier = "suggestionList", contextIdentifier = "PublishedSuggestions")
+  @NavigationStep(identifier = "suggestionList", contextIdentifier = "PublishedSuggestions")
   @RedirectToInternalJsp("suggestionList.jsp")
   @InvokeAfter("isEdito")
   public void listPublishedSuggestions(SuggestionBoxWebRequestContext context) {
@@ -156,7 +148,7 @@ public class SuggestionBoxWebController extends
    */
   @GET
   @Path(PATH_SUGGESTIONS_PENDING)
-  @ViewPoint(identifier = "suggestionList", contextIdentifier = "SuggestionsInValidation")
+  @NavigationStep(identifier = "suggestionList", contextIdentifier = "SuggestionsInValidation")
   @RedirectToInternalJsp("suggestionList.jsp")
   @InvokeAfter("isEdito")
   @LowestRoleAccess(SilverpeasRole.publisher)
@@ -174,7 +166,7 @@ public class SuggestionBoxWebController extends
    */
   @GET
   @Path(PATH_SUGGESTIONS_MINE)
-  @ViewPoint(identifier = "suggestionList", contextIdentifier = "MySuggestions")
+  @NavigationStep(identifier = "suggestionList", contextIdentifier = "MySuggestions")
   @RedirectToInternalJsp("suggestionList.jsp")
   @InvokeAfter("isEdito")
   @LowestRoleAccess(SilverpeasRole.writer)
@@ -280,7 +272,7 @@ public class SuggestionBoxWebController extends
    */
   @GET
   @Path("suggestions/{id}")
-  @ViewPoint(identifier = "suggestionView")
+  @NavigationStep(identifier = "suggestionView")
   @RedirectToInternalJsp("suggestionView.jsp")
   public void viewSuggestion(SuggestionBoxWebRequestContext context) {
     String suggestionId = context.getPathVariables().get("id");
@@ -299,7 +291,7 @@ public class SuggestionBoxWebController extends
       throw new WebApplicationException(Status.NOT_FOUND);
     }
 
-    context.getNavigationContext().viewPointFrom("suggestionView")
+    context.getNavigationContext().navigationStepFrom("suggestionView")
         .withLabel(StringUtil.truncate(suggestion.getTitle(), 25));
   }
 
@@ -376,7 +368,7 @@ public class SuggestionBoxWebController extends
 
   @POST
   @Path("suggestions/{id}/publish")
-  @RedirectToViewPoint(identifier = "previous")
+  @RedirectToPreviousNavigationStep
   @LowestRoleAccess(SilverpeasRole.writer)
   public void publishSuggestion(SuggestionBoxWebRequestContext context) {
     String id = context.getPathVariables().get("id");
@@ -387,7 +379,7 @@ public class SuggestionBoxWebController extends
 
   @POST
   @Path("suggestions/{id}/approve")
-  @RedirectToViewPoint(identifier = "previous")
+  @RedirectToPreviousNavigationStep
   @LowestRoleAccess(SilverpeasRole.publisher)
   public void approveSuggestion(SuggestionBoxWebRequestContext context) {
     String id = context.getPathVariables().get("id");
@@ -400,7 +392,7 @@ public class SuggestionBoxWebController extends
 
   @POST
   @Path("suggestions/{id}/refuse")
-  @RedirectToViewPoint(identifier = "previous")
+  @RedirectToPreviousNavigationStep
   @LowestRoleAccess(SilverpeasRole.publisher)
   public void refuseSuggestion(SuggestionBoxWebRequestContext context) {
     String id = context.getPathVariables().get("id");
@@ -438,21 +430,21 @@ public class SuggestionBoxWebController extends
   }
 
   @Override
-  protected void specifyViewPoint(final SuggestionBoxWebRequestContext context,
-      final NavigationContext.ViewPoint viewPoint, final String viewContextIdentifier) {
-    ViewContext viewContext = ViewContext.fromIdentifier(viewContextIdentifier);
+  protected void specifyNavigationStep(final SuggestionBoxWebRequestContext context,
+      final NavigationContext.NavigationStep navigationStep, final String contextIdentifier) {
+    ViewContext viewContext = ViewContext.fromIdentifier(contextIdentifier);
     if (viewContext != null) {
       ResourceLocator multilang = context.getMultilang();
       switch (viewContext) {
         case PublishedSuggestions:
-          viewPoint.withLabel(multilang.getString("suggestionBox.label.suggestions.more"));
+          navigationStep.withLabel(multilang.getString("suggestionBox.label.suggestions.more"));
           break;
         case SuggestionsInValidation:
-          viewPoint
+          navigationStep
               .withLabel(multilang.getString("suggestionBox.menu.item.suggestion.viewPending"));
           break;
         case MySuggestions:
-          viewPoint.withLabel(multilang.getString("suggestionBox.menu.item.suggestion.mine"));
+          navigationStep.withLabel(multilang.getString("suggestionBox.menu.item.suggestion.mine"));
           break;
       }
     }

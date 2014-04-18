@@ -55,7 +55,7 @@
 <c:set var="isPublishable" value="${requestScope.isPublishable}"/>
 <c:set var="isModeratorView" value="${requestScope.isModeratorView}"/>
 
-<c:url var="backUri" value="${requestScope.navigationContext.previousViewPoint.uri}"/>
+<c:url var="backUri" value="${requestScope.navigationContext.previousNavigationStep.uri}"/>
 <c:url var="componentUriBase" value="${requestScope.componentUriBase}"/>
 <c:url var="suggestionBoxJS" value="/util/javaScript/angularjs/suggestionbox.js"/>
 <c:url var="suggestionBoxServicesJS" value="/util/javaScript/angularjs/services/suggestionbox.js"/>

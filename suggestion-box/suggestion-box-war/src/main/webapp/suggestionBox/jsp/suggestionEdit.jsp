@@ -45,7 +45,7 @@
 <c:url var="formValidator" value="/util/javaScript/checkForm.js"/>
 <c:url var="componentUriBase" value="${requestScope.componentUriBase}"/>
 <c:set var="suggestion" value="${requestScope.suggestion}"/>
-<c:url var="backUri" value="${requestScope.navigationContext.previousViewPoint.uri}"/>
+<c:url var="backUri" value="${requestScope.navigationContext.previousNavigationStep.uri}"/>
 <c:set var="target" value="add"/>
 <c:if test="${suggestion != null}">
   <c:set var="target" value="${suggestion.id}"/>
