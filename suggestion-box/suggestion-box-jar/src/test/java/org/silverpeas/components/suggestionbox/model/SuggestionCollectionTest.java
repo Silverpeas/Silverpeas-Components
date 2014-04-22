@@ -24,16 +24,18 @@
 package org.silverpeas.components.suggestionbox.model;
 
 import com.silverpeas.notification.builder.UserNotificationBuider;
-import com.silverpeas.notification.builder.helper.UserNotificationHelper;
+import com.silverpeas.notification.builder.helper.UserNotificationManager;
 import com.silverpeas.util.CollectionUtil;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.hamcrest.MatcherAssert;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.internal.stubbing.answers.Returns;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -41,6 +43,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.silverpeas.components.suggestionbox.mock.OrganisationControllerMockWrapper;
 import org.silverpeas.components.suggestionbox.mock.SuggestionBoxRepositoryMockWrapper;
 import org.silverpeas.components.suggestionbox.mock.SuggestionRepositoryMockWrapper;
+import org.silverpeas.components.suggestionbox.mock.UserNotificationManagerMockWrapper;
 import org.silverpeas.components.suggestionbox.notification
     .SuggestionBoxSubscriptionUserNotification;
 import org.silverpeas.components.suggestionbox.notification
@@ -59,10 +62,12 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Date;
+import java.util.List;
 
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
 
 
@@ -72,7 +77,7 @@ import static org.mockito.Mockito.*;
  * @author mmoquillon
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({WysiwygController.class, UserNotificationHelper.class})
+@PrepareForTest({WysiwygController.class})
 public class SuggestionCollectionTest {
 
   private static AbstractApplicationContext context;
@@ -84,29 +89,20 @@ public class SuggestionCollectionTest {
   public SuggestionCollectionTest() {
   }
 
-  @BeforeClass
-  public static void bootstrapSpringContext() {
-    context = new ClassPathXmlApplicationContext("/spring-suggestion-box-mock.xml",
-        "/spring-suggestion-box-embedded-datasource.xml");
-  }
-
-  @AfterClass
-  public static void shutdownSpringContext() {
-    context.close();
-  }
-
   @Before
   public void setUp() {
+    context = new ClassPathXmlApplicationContext("/spring-suggestion-box-mock.xml",
+        "/spring-suggestion-box-embedded-datasource.xml");
     suggestionBox = prepareASuggestionBox();
     SuggestionBoxRepository boxRepository = getSuggestionBoxRepository();
     when(boxRepository.getByComponentInstanceId(suggestionBox.getComponentInstanceId()))
         .thenReturn(suggestionBox);
     PowerMockito.mockStatic(WysiwygController.class);
-    PowerMockito.mockStatic(UserNotificationHelper.class);
   }
 
   @After
   public void tearDown() {
+    context.close();
   }
 
   @Test
@@ -143,8 +139,7 @@ public class SuggestionCollectionTest {
     verify(suggestionRepository, times(0)).save(any(OperationContext.class), eq(actual));
     assertThat(actual.getValidation().getStatus(), is(ContributionStatus.DRAFT));
 
-    PowerMockito.verifyStatic(times(0));
-    UserNotificationHelper.buildAndSend(any(UserNotificationBuider.class));
+    verify(getUserNotificationManager(), times(0)).buildAndSend(any(UserNotificationBuider.class));
 
     verify(suggestionRepository, times(0)).index(actual);
   }
@@ -170,8 +165,8 @@ public class SuggestionCollectionTest {
     verify(suggestionRepository, times(1)).save(any(OperationContext.class), eq(actual));
     assertThat(actual.getValidation().getStatus(), is(ContributionStatus.PENDING_VALIDATION));
 
-    PowerMockito.verifyStatic(times(1));
-    UserNotificationHelper.buildAndSend(any(SuggestionPendingValidationUserNotification.class));
+    verify(getUserNotificationManager(), times(1))
+        .buildAndSend(any(SuggestionPendingValidationUserNotification.class));
 
     verify(suggestionRepository, times(0)).index(actual);
   }
@@ -197,8 +192,8 @@ public class SuggestionCollectionTest {
     verify(suggestionRepository, times(1)).save(any(OperationContext.class), eq(actual));
     assertThat(actual.getValidation().getStatus(), is(ContributionStatus.VALIDATED));
 
-    PowerMockito.verifyStatic(times(1));
-    UserNotificationHelper.buildAndSend(any(SuggestionBoxSubscriptionUserNotification.class));
+    verify(getUserNotificationManager(), times(1))
+        .buildAndSend(any(SuggestionBoxSubscriptionUserNotification.class));
 
     verify(suggestionRepository, times(1)).index(actual);
   }
@@ -228,8 +223,7 @@ public class SuggestionCollectionTest {
     verify(suggestionRepository, times(0)).save(any(OperationContext.class), eq(actual));
     assertThat(actual.getValidation().getStatus(), is(ContributionStatus.DRAFT));
 
-    PowerMockito.verifyStatic(times(0));
-    UserNotificationHelper.buildAndSend(any(UserNotificationBuider.class));
+    verify(getUserNotificationManager(), times(0)).buildAndSend(any(UserNotificationBuider.class));
 
     verify(suggestionRepository, times(0)).index(actual);
   }
@@ -259,8 +253,7 @@ public class SuggestionCollectionTest {
     verify(suggestionRepository, times(0)).save(any(OperationContext.class), eq(actual));
     assertThat(actual.getValidation().getStatus(), is(ContributionStatus.REFUSED));
 
-    PowerMockito.verifyStatic(times(0));
-    UserNotificationHelper.buildAndSend(any(UserNotificationBuider.class));
+    verify(getUserNotificationManager(), times(0)).buildAndSend(any(UserNotificationBuider.class));
 
     verify(suggestionRepository, times(0)).index(actual);
   }
@@ -290,9 +283,15 @@ public class SuggestionCollectionTest {
     verify(suggestionRepository, times(1)).save(any(OperationContext.class), eq(actual));
     assertThat(actual.getValidation().getStatus(), is(ContributionStatus.VALIDATED));
 
-    PowerMockito.verifyStatic(times(2));
-    UserNotificationHelper.buildAndSend(any(SuggestionBoxSubscriptionUserNotification.class));
-    UserNotificationHelper.buildAndSend(any(SuggestionValidationUserNotification.class));
+    ArgumentCaptor<UserNotificationBuider> argCaptor =
+        ArgumentCaptor.forClass(UserNotificationBuider.class);
+    verify(getUserNotificationManager(), times(2)).buildAndSend(argCaptor.capture());
+    List<UserNotificationBuider> valueCaptured = argCaptor.getAllValues();
+    MatcherAssert.assertThat(valueCaptured, hasSize(2));
+    MatcherAssert.assertThat(valueCaptured.get(0),
+        instanceOf(SuggestionBoxSubscriptionUserNotification.class));
+    MatcherAssert
+        .assertThat(valueCaptured.get(1), instanceOf(SuggestionValidationUserNotification.class));
 
     verify(suggestionRepository, times(1)).index(actual);
   }
@@ -322,8 +321,8 @@ public class SuggestionCollectionTest {
     verify(suggestionRepository, times(1)).save(any(OperationContext.class), eq(actual));
     assertThat(actual.getValidation().getStatus(), is(ContributionStatus.REFUSED));
 
-    PowerMockito.verifyStatic(times(1));
-    UserNotificationHelper.buildAndSend(any(SuggestionValidationUserNotification.class));
+    verify(getUserNotificationManager(), times(1))
+        .buildAndSend(any(SuggestionValidationUserNotification.class));
 
     verify(suggestionRepository, times(0)).index(actual);
   }
@@ -360,5 +359,11 @@ public class SuggestionCollectionTest {
     SuggestionBoxRepositoryMockWrapper mockWrapper =
         context.getBean(SuggestionBoxRepositoryMockWrapper.class);
     return mockWrapper.getMock();
+  }
+
+  private UserNotificationManager getUserNotificationManager() {
+    UserNotificationManagerMockWrapper wrapper =
+        context.getBean(UserNotificationManagerMockWrapper.class);
+    return wrapper.getMock();
   }
 }

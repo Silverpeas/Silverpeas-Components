@@ -23,7 +23,6 @@
  */
 package org.silverpeas.components.suggestionbox.control;
 
-import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.personalization.service.PersonalizationService;
@@ -41,11 +40,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.cache.service.InMemoryCacheService;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
@@ -76,8 +71,6 @@ import static org.mockito.Mockito.*;
  * Unit test on some operations of the SuggestionBoxWebController instance.
  * @author mmoquillon
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({UserNotificationHelper.class})
 public class SuggestionBoxWebControllerTest {
 
   private AbstractApplicationContext appContext;
@@ -94,9 +87,9 @@ public class SuggestionBoxWebControllerTest {
     ComponentContext componentContext = mock(ComponentContext.class);
     controller = new SuggestionBoxWebController(sessionController, componentContext);
     PersonalizationService mock = getPersonalizationService();
-    UserPreferences preferences = new UserPreferences(TestResources.DEFAULT_LANGUAGE, "", "", false,
-        true, true,
-        UserMenuDisplay.DISABLE);
+    UserPreferences preferences =
+        new UserPreferences(TestResources.DEFAULT_LANGUAGE, "", "", false, true, true,
+            UserMenuDisplay.DISABLE);
     when(mock.getUserSettings(anyString())).thenReturn(preferences);
     InMemoryCacheService sessionCache = new InMemoryCacheService();
     sessionCache.put(UserDetail.CURRENT_REQUESTER_KEY, new UserDetail());
@@ -548,7 +541,6 @@ public class SuggestionBoxWebControllerTest {
     UserDetail user = context.getUser();
     when(suggestion.getCreator()).thenReturn(user);
 
-    PowerMockito.mockStatic(UserNotificationHelper.class);
     controller.publishSuggestion(context);
 
     verify(box.getSuggestions(), times(1)).publish(eq(suggestion));
@@ -606,14 +598,14 @@ public class SuggestionBoxWebControllerTest {
     SuggestionBox box = context.getSuggestionBox();
     Suggestion suggestion = aSuggestionWithStatus(withStatus);
     when(box.getSuggestions().get(SUGGESTION_ID)).thenReturn(suggestion);
-    when(box.getSuggestions().validate(eq(suggestion), any(ContributionValidation.class))).thenReturn(suggestion);
+    when(box.getSuggestions().validate(eq(suggestion), any(ContributionValidation.class)))
+        .thenReturn(suggestion);
     String userId = context.getUser().getId();
     when(getOrganisationController().getUsersIdsByRoleNames(box.getComponentInstanceId(),
         CollectionUtil.asList(SilverpeasRole.admin.name(), SilverpeasRole.publisher.name())))
         .thenReturn(new String[]{
-          (userRoleAccess.isGreaterThanOrEquals(SilverpeasRole.publisher) ? userId : "otherId")});
+            (userRoleAccess.isGreaterThanOrEquals(SilverpeasRole.publisher) ? userId : "otherId")});
 
-    PowerMockito.mockStatic(UserNotificationHelper.class);
     controller.approveSuggestion(context);
 
     verify(box.getSuggestions(), times(1))
@@ -681,14 +673,14 @@ public class SuggestionBoxWebControllerTest {
       when(context.getRequest().getParameter("comment")).thenReturn(withComment);
     }
     when(box.getSuggestions().get(SUGGESTION_ID)).thenReturn(suggestion);
-    when(box.getSuggestions().validate(eq(suggestion), any(ContributionValidation.class))).thenReturn(suggestion);
+    when(box.getSuggestions().validate(eq(suggestion), any(ContributionValidation.class)))
+        .thenReturn(suggestion);
     String userId = context.getUser().getId();
     when(getOrganisationController().getUsersIdsByRoleNames(box.getComponentInstanceId(),
         CollectionUtil.asList(SilverpeasRole.admin.name(), SilverpeasRole.publisher.name())))
         .thenReturn(new String[]{
-          (userRoleAccess.isGreaterThanOrEquals(SilverpeasRole.publisher) ? userId : "otherId")});
+            (userRoleAccess.isGreaterThanOrEquals(SilverpeasRole.publisher) ? userId : "otherId")});
 
-    PowerMockito.mockStatic(UserNotificationHelper.class);
     controller.refuseSuggestion(context);
 
     verify(box.getSuggestions(), times(1))
@@ -716,7 +708,7 @@ public class SuggestionBoxWebControllerTest {
     when(box.getSuggestions().get(SUGGESTION_ID)).thenReturn(theSuggestion);
     boolean isPublishable = greaterUserRole != null &&
         (theSuggestion.getValidation().isInDraft() || theSuggestion.getValidation().isRefused()) &&
-            greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.writer);
+        greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.writer);
     when(theSuggestion.isPublishableBy(any(UserDetail.class))).thenReturn(isPublishable);
 
     final String[] roles;
@@ -750,8 +742,8 @@ public class SuggestionBoxWebControllerTest {
   }
 
   private OrganisationController getOrganisationController() {
-    OrganizationControllerMockWrapper mockWrapper = appContext.getBean(
-        OrganizationControllerMockWrapper.class);
+    OrganizationControllerMockWrapper mockWrapper =
+        appContext.getBean(OrganizationControllerMockWrapper.class);
     return mockWrapper.getOrganizationControllerMock();
   }
 

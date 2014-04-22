@@ -37,15 +37,21 @@
 
   <bean id="attachmentService"
         class="org.silverpeas.components.suggestionbox.mock.AttachmentServiceMockWrapper"/>
+  <bean id="ratingService"
+        class="org.silverpeas.components.suggestionbox.mock.RatingServiceMockWrapper"/>
+  <bean id="userNotificationManager"
+        class="org.silverpeas.components.suggestionbox.mock.UserNotificationManagerMockWrapper"/>
 
   <bean id="suggestionBoxServiceFactory"
         class="org.silverpeas.components.suggestionbox.model.SuggestionBoxServiceFactory"
         factory-method="getFactory"/>
-
   <bean id="attachmentServiceFactory" class="org.silverpeas.attachment.AttachmentServiceFactory"
         factory-method="getInstance"/>
-
   <bean id="suggestionRepositoryProvider" class="org.silverpeas.components.suggestionbox.repository.SuggestionRepositoryProvider"
+        factory-method="getInstance"/>
+  <bean id="ratingServiceFactory" class="com.silverpeas.notation.ejb.RatingServiceFactory"
+        factory-method="getInstance"/>
+  <bean id="userNotificationHelper" class="com.silverpeas.notification.builder.helper.UserNotificationHelper"
         factory-method="getInstance"/>
 
 </beans>

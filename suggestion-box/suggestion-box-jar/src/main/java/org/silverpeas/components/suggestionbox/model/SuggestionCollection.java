@@ -162,9 +162,10 @@ public class SuggestionCollection implements Collection<Suggestion> {
       @Override
       public Void execute() {
         final SuggestionRepository suggestionRepository = getSuggestionRepository();
-        for (Suggestion suggestion: suggestions) {
+        for (Suggestion suggestion : suggestions) {
           final UserDetail author = suggestion.getLastUpdater();
-          SuggestionBox actual = SuggestionBox.getByComponentInstanceId(suggestionBox.getComponentInstanceId());
+          SuggestionBox actual =
+              SuggestionBox.getByComponentInstanceId(suggestionBox.getComponentInstanceId());
           suggestion.setSuggestionBox(actual);
           actual.persistedSuggestions().add(suggestion);
           suggestionRepository.save(OperationContext.fromUser(author), suggestion);
@@ -183,7 +184,7 @@ public class SuggestionCollection implements Collection<Suggestion> {
         final Collection<Suggestion> suggestions = (Collection<Suggestion>) theSuggestions;
         final SuggestionRepository suggestionRepository = getSuggestionRepository();
         Boolean changed = false;
-        for (Suggestion suggestion: suggestions) {
+        for (Suggestion suggestion : suggestions) {
           Suggestion actual = suggestionRepository.getById(suggestion.getId());
           if (suggestion.getSuggestionBox().equals(suggestionBox) &&
               (actual.getValidation().isInDraft() || actual.
@@ -430,7 +431,7 @@ public class SuggestionCollection implements Collection<Suggestion> {
     SuggestionRepository suggestionRepository = getSuggestionRepository();
     List<Suggestion> suggestions = suggestionRepository
         .findByCriteria(SuggestionCriteria.from(suggestionBox).statusIsOneOf(VALIDATED));
-    for (Suggestion suggestion: suggestions) {
+    for (Suggestion suggestion : suggestions) {
       suggestionRepository.index(suggestion);
     }
   }
