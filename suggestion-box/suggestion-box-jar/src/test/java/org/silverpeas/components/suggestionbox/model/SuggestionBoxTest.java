@@ -38,6 +38,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.silverpeas.components.suggestionbox.mock.UserNotificationManagerMockWrapper;
+import org.silverpeas.components.suggestionbox.mock.WysiwygManagerMockWrapper;
 import org.silverpeas.components.suggestionbox.notification
     .SuggestionBoxSubscriptionUserNotification;
 import org.silverpeas.components.suggestionbox.notification
@@ -48,7 +49,7 @@ import org.silverpeas.contribution.ContributionStatus;
 import org.silverpeas.contribution.model.ContributionValidation;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
-import org.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.wysiwyg.control.WysiwygManager;
 
 import java.util.Date;
 import java.util.List;
@@ -64,7 +65,7 @@ import static org.mockito.Mockito.*;
  * @author mmoquillon
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({WysiwygController.class, IndexEngineProxy.class})
+@PrepareForTest({IndexEngineProxy.class})
 public class SuggestionBoxTest extends RepositoryBasedTest {
 
   private final static String SUGGESTION_BOX_INSTANCE_ID = "suggestionBox1";
@@ -84,7 +85,6 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
 
   @Test
   public void addASuggestionIntoASuggestionBox() throws Exception {
-    PowerMockito.mockStatic(WysiwygController.class);
     PowerMockito.mockStatic(IndexEngineProxy.class);
     UserDetail author = aUser();
     SuggestionBox box = SuggestionBox.getByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID);
@@ -99,19 +99,17 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     String actualTitle = (String) table.getValue(0, "title");
     assertThat(actualTitle, is(newSuggestion.getTitle()));
 
-    PowerMockito.verifyStatic(times(1));
-    WysiwygController.
+    verify(getWysiwygManager(), times(1)).
         save(newSuggestion.getContent(), box.getComponentInstanceId(), newSuggestion.getId(),
             author.getId(), null, false);
-    PowerMockito.verifyStatic(times(0));
-    WysiwygController.addToIndex(any(FullIndexEntry.class), any(ForeignPK.class), anyString());
+    verify(getWysiwygManager(), times(0))
+        .addToIndex(any(FullIndexEntry.class), any(ForeignPK.class), anyString());
     PowerMockito.verifyStatic(times(0));
     IndexEngineProxy.addIndexEntry(any(FullIndexEntry.class));
   }
 
   @Test
   public void removeASuggestionFromASuggestionBox() throws Exception {
-    PowerMockito.mockStatic(WysiwygController.class);
     SuggestionBox box = SuggestionBox.getByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID);
     Suggestion suggestion = box.getSuggestions().get(SUGGESTION_ID);
     box.getSuggestions().remove(suggestion);
@@ -120,8 +118,8 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     ITable table = actualDataSet.getTable("sc_suggestion");
     assertThat(table.getRowCount(), is(SUGGESTIONS_COUNT - 1));
 
-    PowerMockito.verifyStatic(times(1));
-    WysiwygController.deleteWysiwygAttachments(SUGGESTION_BOX_INSTANCE_ID, SUGGESTION_ID);
+    verify(getWysiwygManager(), times(1))
+        .deleteWysiwygAttachments(SUGGESTION_BOX_INSTANCE_ID, SUGGESTION_ID);
   }
 
   @Test
@@ -136,7 +134,6 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     assertThat(table.getValue(0, "validationComment"), is(nullValue()));
     assertThat(table.getValue(0, "validationBy"), is(nullValue()));
 
-    PowerMockito.mockStatic(WysiwygController.class);
     PowerMockito.mockStatic(IndexEngineProxy.class);
     SuggestionBox box = SuggestionBox.getByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID);
     Suggestion suggestion = box.getSuggestions().get(SUGGESTION_ID);
@@ -159,8 +156,8 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     assertThat(table.getValue(0, "validationBy"), is(nullValue()));
 
     verify(getUserNotificationManager(), times(0)).buildAndSend(any(UserNotificationBuider.class));
-    PowerMockito.verifyStatic(times(0));
-    WysiwygController.addToIndex(any(FullIndexEntry.class), any(ForeignPK.class), anyString());
+    verify(getWysiwygManager(), times(0))
+        .addToIndex(any(FullIndexEntry.class), any(ForeignPK.class), anyString());
     PowerMockito.verifyStatic(times(0));
     IndexEngineProxy.addIndexEntry(any(FullIndexEntry.class));
   }
@@ -178,7 +175,6 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     assertThat(table.getValue(0, "validationComment"), is(nullValue()));
     assertThat(table.getValue(0, "validationBy"), is(nullValue()));
 
-    PowerMockito.mockStatic(WysiwygController.class);
     PowerMockito.mockStatic(IndexEngineProxy.class);
     SuggestionBox box = SuggestionBox.getByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID);
     Suggestion suggestion = box.getSuggestions().get(SUGGESTION_ID);
@@ -203,8 +199,8 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
 
     verify(getUserNotificationManager(), times(1))
         .buildAndSend(any(SuggestionPendingValidationUserNotification.class));
-    PowerMockito.verifyStatic(times(0));
-    WysiwygController.addToIndex(any(FullIndexEntry.class), any(ForeignPK.class), anyString());
+    verify(getWysiwygManager(), times(0))
+        .addToIndex(any(FullIndexEntry.class), any(ForeignPK.class), anyString());
     PowerMockito.verifyStatic(times(0));
     IndexEngineProxy.addIndexEntry(any(FullIndexEntry.class));
   }
@@ -222,7 +218,6 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     assertThat(table.getValue(0, "validationComment"), is(nullValue()));
     assertThat(table.getValue(0, "validationBy"), is(nullValue()));
 
-    PowerMockito.mockStatic(WysiwygController.class);
     PowerMockito.mockStatic(IndexEngineProxy.class);
     SuggestionBox box = SuggestionBox.getByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID);
     Suggestion suggestion = box.getSuggestions().get(SUGGESTION_ID);
@@ -247,8 +242,8 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
 
     verify(getUserNotificationManager(), times(1))
         .buildAndSend(any(SuggestionBoxSubscriptionUserNotification.class));
-    PowerMockito.verifyStatic(times(1));
-    WysiwygController.addToIndex(any(FullIndexEntry.class), any(ForeignPK.class), anyString());
+    verify(getWysiwygManager(), times(1))
+        .addToIndex(any(FullIndexEntry.class), any(ForeignPK.class), anyString());
     PowerMockito.verifyStatic(times(1));
     IndexEngineProxy.addIndexEntry(any(FullIndexEntry.class));
   }
@@ -266,7 +261,6 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     assertThat(table.getValue(0, "validationComment"), is(nullValue()));
     assertThat(table.getValue(0, "validationBy"), is(nullValue()));
 
-    PowerMockito.mockStatic(WysiwygController.class);
     PowerMockito.mockStatic(IndexEngineProxy.class);
     SuggestionBox box = SuggestionBox.getByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID);
     Suggestion suggestion = box.getSuggestions().get(SUGGESTION_ID);
@@ -290,8 +284,8 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     assertThat(table.getValue(0, "validationBy"), is(nullValue()));
 
     verify(getUserNotificationManager(), times(0)).buildAndSend(any(UserNotificationBuider.class));
-    PowerMockito.verifyStatic(times(0));
-    WysiwygController.addToIndex(any(FullIndexEntry.class), any(ForeignPK.class), anyString());
+    verify(getWysiwygManager(), times(0))
+        .addToIndex(any(FullIndexEntry.class), any(ForeignPK.class), anyString());
     PowerMockito.verifyStatic(times(0));
     IndexEngineProxy.addIndexEntry(any(FullIndexEntry.class));
   }
@@ -309,7 +303,6 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     assertThat(table.getValue(0, "validationComment"), is(nullValue()));
     assertThat(table.getValue(0, "validationBy"), is(nullValue()));
 
-    PowerMockito.mockStatic(WysiwygController.class);
     PowerMockito.mockStatic(IndexEngineProxy.class);
     SuggestionBox box = SuggestionBox.getByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID);
     Suggestion suggestion = box.getSuggestions().get(SUGGESTION_ID);
@@ -333,8 +326,8 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     assertThat(table.getValue(0, "validationBy"), is(nullValue()));
 
     verify(getUserNotificationManager(), times(0)).buildAndSend(any(UserNotificationBuider.class));
-    PowerMockito.verifyStatic(times(0));
-    WysiwygController.addToIndex(any(FullIndexEntry.class), any(ForeignPK.class), anyString());
+    verify(getWysiwygManager(), times(0))
+        .addToIndex(any(FullIndexEntry.class), any(ForeignPK.class), anyString());
     PowerMockito.verifyStatic(times(0));
     IndexEngineProxy.addIndexEntry(any(FullIndexEntry.class));
   }
@@ -355,7 +348,6 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     assertThat(table.getValue(index, "validationComment"), is(nullValue()));
     assertThat(table.getValue(index, "validationBy"), is(nullValue()));
 
-    PowerMockito.mockStatic(WysiwygController.class);
     PowerMockito.mockStatic(IndexEngineProxy.class);
     SuggestionBox box = SuggestionBox.getByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID);
     Suggestion suggestion = box.getSuggestions().get(SUGGESTION_ID_PENDING_VALIDATION);
@@ -387,8 +379,8 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     assertThat(valueCaptured, hasSize(2));
     assertThat(valueCaptured.get(0), instanceOf(SuggestionBoxSubscriptionUserNotification.class));
     assertThat(valueCaptured.get(1), instanceOf(SuggestionValidationUserNotification.class));
-    PowerMockito.verifyStatic(times(1));
-    WysiwygController.addToIndex(any(FullIndexEntry.class), any(ForeignPK.class), anyString());
+    verify(getWysiwygManager(), times(1))
+        .addToIndex(any(FullIndexEntry.class), any(ForeignPK.class), anyString());
     PowerMockito.verifyStatic(times(1));
     IndexEngineProxy.addIndexEntry(any(FullIndexEntry.class));
   }
@@ -410,7 +402,6 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
     assertThat(table.getValue(index, "validationComment"), is(nullValue()));
     assertThat(table.getValue(index, "validationBy"), is(nullValue()));
 
-    PowerMockito.mockStatic(WysiwygController.class);
     PowerMockito.mockStatic(IndexEngineProxy.class);
     SuggestionBox box = SuggestionBox.getByComponentInstanceId(SUGGESTION_BOX_INSTANCE_ID);
     Suggestion suggestion = box.getSuggestions().get(SUGGESTION_ID_PENDING_VALIDATION);
@@ -439,8 +430,8 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
 
     verify(getUserNotificationManager(), times(1))
         .buildAndSend(any(SuggestionValidationUserNotification.class));
-    PowerMockito.verifyStatic(times(0));
-    WysiwygController.addToIndex(any(FullIndexEntry.class), any(ForeignPK.class), anyString());
+    verify(getWysiwygManager(), times(0))
+        .addToIndex(any(FullIndexEntry.class), any(ForeignPK.class), anyString());
     PowerMockito.verifyStatic(times(0));
     IndexEngineProxy.addIndexEntry(any(FullIndexEntry.class));
   }
@@ -448,6 +439,12 @@ public class SuggestionBoxTest extends RepositoryBasedTest {
   private UserNotificationManager getUserNotificationManager() {
     UserNotificationManagerMockWrapper wrapper =
         getApplicationContext().getBean(UserNotificationManagerMockWrapper.class);
+    return wrapper.getMock();
+  }
+
+  private WysiwygManager getWysiwygManager() {
+    WysiwygManagerMockWrapper wrapper =
+        getApplicationContext().getBean(WysiwygManagerMockWrapper.class);
     return wrapper.getMock();
   }
 }

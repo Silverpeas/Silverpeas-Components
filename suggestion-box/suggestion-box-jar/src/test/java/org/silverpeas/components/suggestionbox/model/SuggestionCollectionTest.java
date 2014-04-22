@@ -30,16 +30,10 @@ import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.hamcrest.MatcherAssert;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.internal.stubbing.answers.Returns;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 import org.silverpeas.components.suggestionbox.mock.OrganisationControllerMockWrapper;
 import org.silverpeas.components.suggestionbox.mock.SuggestionBoxRepositoryMockWrapper;
 import org.silverpeas.components.suggestionbox.mock.SuggestionRepositoryMockWrapper;
@@ -56,7 +50,6 @@ import org.silverpeas.contribution.model.ContributionValidation;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.persistence.repository.OperationContext;
-import org.silverpeas.wysiwyg.control.WysiwygController;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -76,8 +69,6 @@ import static org.mockito.Mockito.*;
  * service dependencies.
  * @author mmoquillon
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({WysiwygController.class})
 public class SuggestionCollectionTest {
 
   private static AbstractApplicationContext context;
@@ -97,7 +88,6 @@ public class SuggestionCollectionTest {
     SuggestionBoxRepository boxRepository = getSuggestionBoxRepository();
     when(boxRepository.getByComponentInstanceId(suggestionBox.getComponentInstanceId()))
         .thenReturn(suggestionBox);
-    PowerMockito.mockStatic(WysiwygController.class);
   }
 
   @After
