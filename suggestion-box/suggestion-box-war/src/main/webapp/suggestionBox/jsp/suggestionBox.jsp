@@ -167,16 +167,16 @@
       </div>
     </c:if>
     <div id="all-suggestionBox">
-      <div class="secteur-container lastSuggestion">
+      <div class="secteur-container lastSuggestion" ng-controller="publishedSuggestionsController">
         <div class="header">
           <h3 class="lastSuggestion-title"><fmt:message key="suggestionBox.label.suggestions.last"/></h3>
         </div>
-        <ul ng-controller="publishedSuggestionsController">
+        <ul>
           <li ng-repeat="suggestion in publishedSuggestions">
             <a ng-href="${componentUriBase}suggestions/{{ suggestion.id }}"><span class="date">{{suggestion.validation.date | date: 'shortDate'}}</span>{{suggestion.title}}</a>
           </li>
         </ul>
-        <a href="${componentUriBase}suggestions/published" class="more"><fmt:message key="suggestionBox.label.suggestions.more"/></a>
+        <a href="${componentUriBase}suggestions/published" class="more" ng-if="publishedSuggestions.maxlength > maxItemsToRender"><fmt:message key="suggestionBox.label.suggestions.more"/></a>
       </div>
       <div class="secteur-container buzzSuggestion">
         <div class="header">
@@ -184,7 +184,7 @@
             <fmt:message key="suggestionBox.label.suggestions.buzz"/></h3>
         </div>
         <ul ng-controller="buzzPublishedSuggestionsController">
-          <li ng-repeat="suggestion in buzzPublishedSuggestions">
+          <li ng-repeat="suggestion in buzzPublishedSuggestions | filter:hasComment">
             <a ng-href="${componentUriBase}suggestions/{{ suggestion.id }}">{{suggestion.title}}<span class="vote"><silverpeas-rating readonly="true" raterrating="suggestion.raterRating"></silverpeas-rating></span></a>
           </li>
         </ul>

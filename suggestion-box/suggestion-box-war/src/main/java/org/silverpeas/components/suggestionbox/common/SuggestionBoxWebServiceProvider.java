@@ -37,6 +37,7 @@ import org.silverpeas.contribution.ContributionStatus;
 import org.silverpeas.contribution.model.ContributionValidation;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.util.NotifierUtil;
+import org.silverpeas.util.PaginationList;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
@@ -50,7 +51,6 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.silverpeas.contribution.ContributionStatus.PENDING_VALIDATION;
-import static org.silverpeas.contribution.ContributionStatus.REFUSED;
 
 /**
  * @author: Yohann Chastagnier
@@ -363,7 +363,9 @@ public class SuggestionBoxWebServiceProvider {
     for (Suggestion suggestion : suggestions) {
       entities.add(asWebEntity(suggestion));
     }
-    return entities;
+    return (suggestions instanceof PaginationList ?
+        PaginationList.from(entities, ((PaginationList) suggestions).maxSize()) :
+        entities);
   }
 
   /**

@@ -42,6 +42,8 @@ suggestionBox.controller('mainController',
       $scope.goAt = function(url) {
         window.location = url;
       };
+
+      $scope.maxItemsToRender = 3;
     }]);
 
 /* the controller in charge of the user's suggestions in draft */
@@ -92,7 +94,7 @@ suggestionBox.controller('publishedSuggestionsController',
       var suggestionBox = $scope.suggestionBox;
 
       $scope.loadPublished = function() {
-        suggestionBox.suggestions.get('published', {page: {number: 1, size: 5}, sortby: 'validation.validationDate'}).then(function(theSuggestions) {
+        suggestionBox.suggestions.get('published', {page: {number: 1, size: $scope.maxItemsToRender}, sortby: 'validation.validationDate'}).then(function(theSuggestions) {
           $scope.publishedSuggestions = theSuggestions;
         });
       };
@@ -110,7 +112,7 @@ suggestionBox.controller('publishedSuggestionsController',
       var suggestionBox = $scope.suggestionBox;
 
       $scope.loadBuzzPublished = function() {
-        suggestionBox.suggestions.get('published', {page: {number: 1, size: 3}, sortby: 'commentCount'}).then(function(theSuggestions) {
+        suggestionBox.suggestions.get('published', {page: {number: 1, size: $scope.maxItemsToRender}, sortby: 'commentCount'}).then(function(theSuggestions) {
           $scope.buzzPublishedSuggestions = theSuggestions;
         });
       };
@@ -120,13 +122,17 @@ suggestionBox.controller('publishedSuggestionsController',
       $scope.$on("suggestionModified", function(theSuggestionId) {
         $scope.loadBuzzPublished();
       });
+
+      $scope.hasComment = function(suggestion) {
+        return (suggestion.commentCount > 0) ? suggestion:null;
+      }
     }]);
 
   /* the controller in charge of the last comments on the suggestions */
   suggestionBox.controller('lastCommentsController',
     ['context', '$scope', function(context, $scope) {
       var suggestionBox = $scope.suggestionBox;
-      suggestionBox.suggestions.lastComments(3).then(function(theComments) {
+      suggestionBox.suggestions.lastComments($scope.maxItemsToRender).then(function(theComments) {
         $scope.lastComments = theComments;
       });
     }]);
