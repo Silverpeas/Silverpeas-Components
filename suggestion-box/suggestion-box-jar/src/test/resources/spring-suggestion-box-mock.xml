@@ -56,6 +56,10 @@
         class="org.silverpeas.components.suggestionbox.mock.SubscriptionServiceMockWrapper"/>
   <bean id="commentUserNotificationService"
         class="org.silverpeas.components.suggestionbox.mock.CommentUserNotificationServiceMockWrapper"/>
+  <bean id="ratingService"
+        class="org.silverpeas.components.suggestionbox.mock.RatingServiceMockWrapper"/>
+  <bean id="userNotificationManager"
+        class="org.silverpeas.components.suggestionbox.mock.UserNotificationManagerMockWrapper"/>
 
   <bean id="suggestionBoxRepositoryProvider"
         class="org.silverpeas.components.suggestionbox.repository.SuggestionRepositoryProvider"
@@ -80,6 +84,12 @@
 
   <bean id="subscriptionServiceFactory" class="com.silverpeas.subscribe.SubscriptionServiceFactory"
         factory-method="getFactory"/>
+
+  <bean id="ratingServiceFactory" class="com.silverpeas.notation.ejb.RatingServiceFactory"
+        factory-method="getInstance"/>
+
+  <bean id="userNotificationHelper" class="com.silverpeas.notification.builder.helper.UserNotificationHelper"
+        factory-method="getInstance"/>
 
   <util:list id="entities">
     <value>org.silverpeas.components.suggestionbox.model.SuggestionBox</value>

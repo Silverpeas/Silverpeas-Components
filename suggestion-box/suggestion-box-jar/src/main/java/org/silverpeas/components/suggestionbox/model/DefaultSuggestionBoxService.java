@@ -28,36 +28,20 @@ import com.silverpeas.annotation.Service;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentUserNotificationService;
 import com.silverpeas.notation.ejb.RatingServiceFactory;
-import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
-import com.silverpeas.util.CollectionUtil;
-import com.silverpeas.util.ForeignPK;
-import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
-import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.components.suggestionbox.SuggestionBoxComponentSettings;
-import org.silverpeas.components.suggestionbox.notification.SuggestionBoxSubscriptionUserNotification;
-import org.silverpeas.components.suggestionbox.notification.SuggestionPendingValidationUserNotification;
-import org.silverpeas.components.suggestionbox.notification.SuggestionValidationUserNotification;
 import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepository;
-import org.silverpeas.components.suggestionbox.repository.SuggestionRepository;
-import org.silverpeas.contribution.ContributionStatus;
-import org.silverpeas.contribution.model.ContributionValidation;
-import org.silverpeas.persistence.Transaction;
 import org.silverpeas.persistence.repository.OperationContext;
-import org.silverpeas.upload.UploadedFile;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
 
 /**
  * The default implementation of the {@link SuggestionBoxService} interface and of the
@@ -65,8 +49,8 @@ import java.util.List;
  * @author mmoquillon
  */
 @Service
-public class DefaultSuggestionBoxService implements SuggestionBoxService,
-    SilverpeasComponentService<Suggestion> {
+public class DefaultSuggestionBoxService
+    implements SuggestionBoxService, SilverpeasComponentService<Suggestion> {
 
   @Inject
   private SuggestionBoxRepository suggestionBoxRepository;
