@@ -32,13 +32,13 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.PaginationPage;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.components.suggestionbox.common.PaginatedList;
 import org.silverpeas.components.suggestionbox.common.SuggestionBoxWebServiceProvider;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_ORDER_BY;
 import org.silverpeas.contribution.ContributionStatus;
+import org.silverpeas.util.PaginationList;
 
 import javax.inject.Inject;
 import javax.ws.rs.DELETE;
@@ -234,8 +234,8 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
                   .paginatedBy(pagination)
                   .applyJoinOnData(commentJoinData)
                   .orderedBy(QUERY_ORDER_BY.fromPropertyName(property)));
-          if (suggestions instanceof PaginatedList) {
-            String maxlength = String.valueOf(((PaginatedList) suggestions).maxSize());
+          if (suggestions instanceof PaginationList) {
+            String maxlength = String.valueOf(((PaginationList) suggestions).maxSize());
             getHttpServletResponse().setHeader(RESPONSE_HEADER_ARRAYSIZE, maxlength);
           }
           return suggestions;
