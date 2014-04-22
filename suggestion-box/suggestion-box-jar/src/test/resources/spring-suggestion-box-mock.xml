@@ -60,6 +60,8 @@
         class="org.silverpeas.components.suggestionbox.mock.RatingServiceMockWrapper"/>
   <bean id="userNotificationManager"
         class="org.silverpeas.components.suggestionbox.mock.UserNotificationManagerMockWrapper"/>
+  <bean id="wysiwygManager"
+        class="org.silverpeas.components.suggestionbox.mock.WysiwygManagerMockWrapper"/>
 
   <bean id="suggestionBoxRepositoryProvider"
         class="org.silverpeas.components.suggestionbox.repository.SuggestionRepositoryProvider"
@@ -89,6 +91,9 @@
         factory-method="getInstance"/>
 
   <bean id="userNotificationHelper" class="com.silverpeas.notification.builder.helper.UserNotificationHelper"
+        factory-method="getInstance"/>
+
+  <bean id="wywiwygController" class="org.silverpeas.wysiwyg.control.WysiwygController"
         factory-method="getInstance"/>
 
   <util:list id="entities">

@@ -29,12 +29,9 @@ import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.silverpeas.attachment.AttachmentService;
@@ -50,7 +47,6 @@ import org.silverpeas.contribution.ContributionStatus;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.persistence.repository.OperationContext;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
-import org.silverpeas.wysiwyg.control.WysiwygController;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -70,7 +66,7 @@ import static org.mockito.Mockito.*;
  * @author mmoquillon
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({WysiwygController.class, IndexEngineProxy.class})
+@PrepareForTest({IndexEngineProxy.class})
 public class SuggestionBoxServiceTest {
 
   private static AbstractApplicationContext context;
@@ -82,27 +78,18 @@ public class SuggestionBoxServiceTest {
   public SuggestionBoxServiceTest() {
   }
 
-  @BeforeClass
-  public static void bootstrapSpringContext() {
-    context = new ClassPathXmlApplicationContext("/spring-suggestion-box-mock.xml",
-        "/spring-suggestion-box-embedded-datasource.xml");
-  }
-
-  @AfterClass
-  public static void shutdownSpringContext() {
-    context.close();
-  }
-
   @Before
   public void setUp() {
+    context = new ClassPathXmlApplicationContext("/spring-suggestion-box-mock.xml",
+        "/spring-suggestion-box-embedded-datasource.xml");
     SuggestionBoxServiceFactory serviceFactory = SuggestionBoxServiceFactory.getFactory();
     service = serviceFactory.getSuggestionBoxService();
     assertThat(service, notNullValue());
-    PowerMockito.mockStatic(WysiwygController.class);
   }
 
   @After
   public void tearDown() {
+    context.close();
   }
 
   /**
@@ -127,8 +114,7 @@ public class SuggestionBoxServiceTest {
     SuggestionBox box = prepareASuggestionBox();
     service.deleteSuggestionBox(box);
 
-    SuggestionBoxRepository suggestionBoxRepository = getSuggestionBoxRepository();
-    verify(suggestionBoxRepository, times(1)).delete(box);
+    verify(getSuggestionBoxRepository(), times(1)).delete(box);
     verify(getAttachmentService(), times(1)).deleteAllAttachments(eq(box.getComponentInstanceId()));
     verify(getSubscriptionService(), times(1)).unsubscribeByResource(
         eq(ComponentSubscriptionResource.from(box.getComponentInstanceId())));
