@@ -239,10 +239,12 @@ public class GalleryBmEJB implements GalleryBm {
       final GalleryProcessManagement processManagement = new GalleryProcessManagement(user,
           componentInstanceId);
       // Photos
-      for (final Map.Entry<PhotoDetail, Boolean> photoToPaste : delegate.getPhotosToPaste()
-          .entrySet()) {
-        processManagement.addPastePhotoProcesses(getPhoto(photoToPaste.getKey().getPhotoPK()),
-            delegate.getAlbum().getNodePK(), photoToPaste.getValue());
+      if (delegate.getAlbum().hasFather()) {
+        for (final Map.Entry<PhotoDetail, Boolean> photoToPaste : delegate.getPhotosToPaste()
+            .entrySet()) {
+          processManagement.addPastePhotoProcesses(getPhoto(photoToPaste.getKey().getPhotoPK()),
+              delegate.getAlbum().getNodePK(), photoToPaste.getValue());
+        }
       }
       // Albums
       for (final Map.Entry<AlbumDetail, Boolean> albumToPaste : delegate.getAlbumsToPaste()
