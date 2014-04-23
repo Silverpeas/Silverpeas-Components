@@ -1428,7 +1428,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       throws RemoteException {
     Collection<PublicationDetail> result = getPublicationBm().
         getDetailsByFatherIdsAndStatus((ArrayList<String>) fatherIds, pubPK,
-        "P.pubUpdateDate desc, P.pubId desc", PublicationDetail.VALID);
+            "P.pubUpdateDate desc, P.pubId desc", PublicationDetail.VALID);
     SilverTrace.info("kmelia", "KmeliaSessionController.getAllPublicationsByTopic()",
         "root.MSG_PARAM_VALUE", "publis=" + result.toString());
     return result;
@@ -2061,9 +2061,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public boolean isCurrentPublicationHaveContent() throws WysiwygException {
     return (getSessionPublication().getCompleteDetail().getModelDetail() != null
         || StringUtil.isDefined(WysiwygController.load(getComponentId(), getSessionPublication().
-        getId(), getCurrentLanguage())) || !isInteger(getSessionPublication()
-        .getCompleteDetail().
-        getPublicationDetail().getInfoId()));
+                getId(), getCurrentLanguage())) || !isInteger(getSessionPublication()
+            .getCompleteDetail().
+            getPublicationDetail().getInfoId()));
   }
 
   public boolean isPDCClassifyingMandatory() {
@@ -2344,7 +2344,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       throws RemoteException {
     this.sessionPublicationsList = new ArrayList<KmeliaPublication>(getKmeliaBm()
         .search(combination, nbDays,
-        getComponentId()));
+            getComponentId()));
     applyVisibilityFilter();
     return getSessionPublicationsList();
   }
@@ -2829,19 +2829,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
             NodeDetail node = (NodeDetail) clipObject.getTransferData(
                 NodeSelection.NodeDetailFlavor);
             // check if current topic is a subTopic of node
-            boolean pasteAllowed = true;
-            if (getComponentId().equals(node.getNodePK().getInstanceId())) {
-              if (node.getNodePK().getId().equals(folder.getNodePK().getId())) {
-                pasteAllowed = false;
-              }
-              String nodePath = node.getPath() + node.getId() + "/";
-              String currentPath = folder.getPath() + folder.getNodePK().getId() + "/";
-              SilverTrace.info("kmelia", "KmeliaRequestRooter.paste()", "root.MSG_GEN_PARAM_VALUE",
-                  "nodePath = " + nodePath + ", currentPath = " + currentPath);
-              if (pasteAllowed && currentPath.startsWith(nodePath)) {
-                pasteAllowed = false;
-              }
-            }
+            boolean pasteAllowed = !node.equals(folder) && !node.isFatherOf(folder);
+
             if (pasteAllowed) {
               if (clipObject.isCutted()) {
                 // move node
@@ -3374,7 +3363,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
           }
           linkedPathString.append("<a href=\"javascript:onClick=topicGoTo('").append(
               nodeInPath.getNodePK().getId()).append("')\">").append(
-              EncodeHelper.javaStringToHtmlString(nodeName)).append("</a>");
+                  EncodeHelper.javaStringToHtmlString(nodeName)).append("</a>");
           pathString.append(EncodeHelper.javaStringToHtmlString(nodeName));
           if (iterator.hasNext()) {
             linkedPathString.append(" > ");
