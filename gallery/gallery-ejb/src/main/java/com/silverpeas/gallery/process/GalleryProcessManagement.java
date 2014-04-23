@@ -202,8 +202,8 @@ public class GalleryProcessManagement {
    * @throws Exception
    */
   private AlbumDetail createAlbum(final String name, final String albumId) throws Exception {
-    final AlbumDetail newAlbum =
-        new AlbumDetail(new NodeDetail("unknown", name, null, null, null, null, "0", "unknown"));
+    final AlbumDetail newAlbum = new AlbumDetail(new NodeDetail("unknown", name, null, null, null,
+        null, "0", "unknown"));
     newAlbum.setCreationDate(DateUtil.date2SQLDate(new Date()));
     newAlbum.setCreatorId(user.getId());
     newAlbum.getNodePK().setComponentName(componentInstanceId);
@@ -221,6 +221,12 @@ public class GalleryProcessManagement {
    */
   public void addPasteAlbumProcesses(final AlbumDetail fromAlbum, final AlbumDetail toAlbum,
       final boolean isCutted) throws Exception {
+
+    // Check if node can be copied or not (parent or same object)
+    boolean pasteAllowed = !fromAlbum.equals(toAlbum) && !fromAlbum.isFatherOf(toAlbum);
+    if (!pasteAllowed) {
+      return;
+    }
 
     if (isCutted) {
 
@@ -299,8 +305,7 @@ public class GalleryProcessManagement {
    */
   private void addDeletePhotoAlbumProcesses(final NodePK albumPk) throws Exception {
     for (final PhotoDetail photo : getGalleryBm().getAllPhoto(albumPk, true)) {
-      Collection<String> albumIds =
-          getGalleryBm().getPathList(photo.getInstanceId(), photo.getId());
+      Collection<String> albumIds = getGalleryBm().getPathList(photo.getInstanceId(), photo.getId());
       if (albumIds.size() >= 2) {
         // the image is in several albums
         // delete only the link between it and album to delete
