@@ -2828,19 +2828,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
             NodeDetail node = (NodeDetail) clipObject.getTransferData(
                 NodeSelection.NodeDetailFlavor);
             // check if current topic is a subTopic of node
-            boolean pasteAllowed = true;
-            if (getComponentId().equals(node.getNodePK().getInstanceId())) {
-              if (node.getNodePK().getId().equals(folder.getNodePK().getId())) {
-                pasteAllowed = false;
-              }
-              String nodePath = node.getPath() + node.getId() + "/";
-              String currentPath = folder.getPath() + folder.getNodePK().getId() + "/";
-              SilverTrace.info("kmelia", "KmeliaRequestRooter.paste()", "root.MSG_GEN_PARAM_VALUE",
-                  "nodePath = " + nodePath + ", currentPath = " + currentPath);
-              if (pasteAllowed && currentPath.startsWith(nodePath)) {
-                pasteAllowed = false;
-              }
-            }
+            boolean pasteAllowed = !node.equals(folder) && !node.isFatherOf(folder);
+
             if (pasteAllowed) {
               if (clipObject.isCutted()) {
                 // move node
