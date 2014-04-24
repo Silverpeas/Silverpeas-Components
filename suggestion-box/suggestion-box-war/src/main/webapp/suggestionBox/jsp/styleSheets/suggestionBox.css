@@ -247,6 +247,26 @@ h3.lastSuggestion-title{
 .my-suggestionBox-inProgress .header h3 strong{
   font-size:111%;
 }
+.my-suggestionBox-inProgress a.VALIDATED {
+  background:transparent url(../icons/suggestion-validated.png) top left no-repeat;
+  padding-left:20px;
+  line-height: 16px;
+  display:block;
+}
+
+.my-suggestionBox-inProgress a.REFUSED {
+  background:transparent url(../icons/suggestion-refused.png) top left no-repeat;
+  padding-left:20px;
+  line-height: 16px;
+  display:block;
+}
+
+.my-suggestionBox-inProgress a.PENDING_VALIDATION {
+  background:transparent url(../icons/suggestion-pending-validation.png) top left no-repeat;
+  padding-left:20px;
+  line-height: 16px;
+  display:block;
+}
 
 .my-suggestionBox-inProgress .counter-comments {
   width:169px;
