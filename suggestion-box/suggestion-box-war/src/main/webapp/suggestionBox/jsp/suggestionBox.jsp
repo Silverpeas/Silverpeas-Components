@@ -114,6 +114,10 @@
     <view:operation action="${componentUriBase}suggestions/pending" altText="${suggestionsInPendingLabel}"/>
     <view:operationSeparator/>
   </c:if>
+  <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
+    <view:operationOfCreation action="${componentUriBase}suggestions/new" altText="${browseBarPathSuggestionLabel}" icon="${creationIcon}"/>
+    <view:operation action="${componentUriBase}suggestions/mine" altText="${mySuggestionsLabel}"/>
+  </c:if>
   <c:if test="${isUserSubscribed != null}">
     <c:choose>
       <c:when test="${isUserSubscribed}">
@@ -123,10 +127,6 @@
         <view:operation altText="${subscribeToSuggestionBoxLabel}" icon="" action="javascript:subscribe();"/>
       </c:otherwise>
     </c:choose>
-  </c:if>
-  <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
-    <view:operationOfCreation action="${componentUriBase}suggestions/new" altText="${browseBarPathSuggestionLabel}" icon="${creationIcon}"/>
-    <view:operation action="${componentUriBase}suggestions/mine" altText="${mySuggestionsLabel}"/>
   </c:if>
 </view:operationPane>
 <view:window>
@@ -148,12 +148,10 @@
         <fmt:message key="suggestionBox.label.suggestions.mine" var="labelMySuggestions"/>
         <div class="secteur-container my-suggestionBox-draft">
           <div class="header">
-            <h3 class="my-suggestionBox-inProgress-title">
-              <c:out value="${labelMySuggestions} "/>
-              <strong><fmt:message key="suggestionBox.label.suggestions.inDraft"/></strong></h3>
+            <h3 class="my-suggestionBox-inProgress-title"><fmt:message key="suggestionBox.label.suggestions.inDraft"/></h3>
           </div>
           <ul ng-controller="suggestionsInDraftController">
-            <li ng-if="inDraftSuggestions.length === 0"><span>${noSuggestions}</span></li>
+            <li ng-if="inDraftSuggestions.length === 0"><span class="txt-no-content">${noSuggestions}</span></li>
             <li ng-repeat="suggestion in inDraftSuggestions">
               <img ng-if="suggestion.validation.status === '${STATUS_REFUSED}'" src='${refusedIcon}' alt='${refusedValidationStatusLabel}' title='${refusedValidationStatusLabel}'/>
               <a ng-href="${componentUriBase}suggestions/{{ suggestion.id }}">{{suggestion.title}}</a>
@@ -162,13 +160,11 @@
         </div>
         <div class="secteur-container my-suggestionBox-inProgress">
           <div class="header">
-            <h3 class="my-suggestionBox-inProgress-title">
-              <strong><fmt:message key="suggestionBox.label.suggestions.progress"/></strong>
-              <c:out value="${fn:toLowerCase(labelMySuggestions)}"/></h3>
+            <h3 class="my-suggestionBox-inProgress-title"><fmt:message key="suggestionBox.label.suggestions.progress"/></h3>
           </div>
           <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
             <ul ng-controller="myOutOfDraftSuggestionsController">
-              <li ng-if="myOutOfDraftSuggestions.length === 0"><span>${noSuggestions}</span></li>
+              <li ng-if="myOutOfDraftSuggestions.length === 0"><span class="txt-no-content">${noSuggestions}</span></li>
               <li ng-repeat="suggestion in myOutOfDraftSuggestions">
                 <a ng-href="${componentUriBase}suggestions/{{suggestion.id}}">{{suggestion.title}}</a>
                 <span ng-if="suggestion.validation.status === '${STATUS_VALIDATED}'" class="vote"><silverpeas-rating readonly="true" raterrating="suggestion.raterRating"></silverpeas-rating></span>
@@ -179,13 +175,13 @@
         </div>
       </div>
     </c:if>
-    <div id="all-suggestionBox">
+    <div id="all-suggestionBox" class="" ng-class="readerView">
       <div class="secteur-container lastSuggestion" ng-controller="publishedSuggestionsController">
         <div class="header">
           <h3 class="lastSuggestion-title"><fmt:message key="suggestionBox.label.suggestions.last"/></h3>
         </div>
         <ul>
-          <li ng-if="publishedSuggestions.length === 0"><span>${noSuggestions}</span></li>
+          <li ng-if="publishedSuggestions.length === 0"><span class="txt-no-content">${noSuggestions}</span></li>
           <li ng-repeat="suggestion in publishedSuggestions">
             <a ng-href="${componentUriBase}suggestions/{{ suggestion.id }}"><span class="date">{{suggestion.validation.date | date: 'shortDate'}}</span>{{suggestion.title}}</a>
           </li>
@@ -198,7 +194,7 @@
             <fmt:message key="suggestionBox.label.suggestions.buzz"/></h3>
         </div>
         <ul ng-controller="buzzPublishedSuggestionsController">
-          <li ng-if="buzzPublishedSuggestions.length === 0"><span>${noSuggestions}</span></li>
+          <li ng-if="buzzPublishedSuggestions.length === 0"><span class="txt-no-content">${noSuggestions}</span></li>
           <li ng-repeat="suggestion in buzzPublishedSuggestions">
             <a ng-href="${componentUriBase}suggestions/{{ suggestion.id }}">{{suggestion.title}}<span class="counter-comments"><span>{{ suggestion.commentCount }}</span></span></a>
           </li>
@@ -210,7 +206,7 @@
             <fmt:message key="suggestionBox.label.suggestions.comments.last"/></h3>
         </div>
         <ul ng-controller="lastCommentsController">
-          <li ng-if="lastComments.length === 0"><span>${noComments}</span></li>
+          <li ng-if="lastComments.length === 0"><span class="txt-no-content">${noComments}</span></li>
           <li ng-repeat="comment in lastComments">
             <a class="a-suggestion" ng-href="${componentUriBase}suggestions/{{ comment.resourceId }}">{{comment.suggestionTitle}}</a>
             <div class="commentaires">
@@ -231,7 +227,8 @@
     currentUserId : '${currentUserId}',
     suggestionBoxId : '${suggestionBoxId}',
     component : '${componentId}',
-    componentUriBase : '${componentUriBase}'
+    componentUriBase : '${componentUriBase}',
+    userRole: '${greaterUserRole}'
   });
 </script>
 <script type="text/javascript" src="${suggestionBoxJS}"></script>
