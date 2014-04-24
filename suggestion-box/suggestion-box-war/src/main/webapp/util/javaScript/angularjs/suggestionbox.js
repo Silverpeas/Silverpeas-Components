@@ -39,6 +39,9 @@ suggestionBox.controller('mainController',
         });
       }
 
+      if (context.userRole === 'user')
+        $scope.readerView = 'lecteur-view';
+
       $scope.goAt = function(url) {
         window.location = url;
       };

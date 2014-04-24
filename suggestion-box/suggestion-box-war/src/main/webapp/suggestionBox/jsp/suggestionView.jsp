@@ -126,7 +126,9 @@
   <view:frame>
     <div id="error" style="display: none;"></div>
     <div class="rightContent">
-      <viewTags:displayContributionRating readOnly="${false}" showNbRaterRatings="${true}" raterRating="${suggestion.raterRating}"/>
+      <c:if test="${suggestion.validation.validated}">
+        <viewTags:displayContributionRating readOnly="${false}" showNbRaterRatings="${true}" raterRating="${suggestion.raterRating}"/>
+      </c:if>
       <viewTags:displayLastUserCRUD createDate="${suggestion.createDate}" createdBy="${suggestion.author}"/>
       <view:attachmentPane componentId="${componentId}" resourceId="${suggestion.id}" readOnly="${suggestion.validation.validated}"/>
     </div>

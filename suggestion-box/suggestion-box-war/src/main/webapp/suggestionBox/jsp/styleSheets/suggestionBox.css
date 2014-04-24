@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -56,6 +56,12 @@ silverpeas-toggle a.toggle{
   clear:left;
 }
 
+.txt-no-content {
+	color: #575757;
+	font-style:italic;
+	font-size:90%;
+}
+
 .suggestionBox-description > ul:first-child, .suggestionBox-description > p:first-child {
   margin-top:0;
   padding-top:0;
@@ -63,6 +69,7 @@ silverpeas-toggle a.toggle{
 
 .lastSuggestion  {
 	background:transparent url(../icons/suggestion-pellet.png) top right no-repeat;
+	padding-top:8px;
 }
 
 h3.lastSuggestion-title{
@@ -99,7 +106,7 @@ h3.lastSuggestion-title{
 
 .my-suggestionBox-inProgress ul,
 .my-suggestionBox-draft ul{
-    list-style-image: url("../../../util/icons/puce.png");
+    list-style-image: url("../../../util/icons/bullet.png");
 }
 
 .my-suggestionBox-inProgress ul li,
@@ -157,15 +164,17 @@ h3.lastSuggestion-title{
   color:#ec9c01
 }
 
-.buzzSuggestion li {
-  min-height:30px;
-}
-
 .buzzSuggestion li > a{
   padding-right:190px;
 }
 
-.buzzSuggestion .vote,
+.buzzSuggestion .counter-comments {
+    position: absolute;
+    right: 13px;
+    top: 13px;
+    width: 45px;
+}
+
 .lastSuggestion .date {
   position:absolute;
   top:13px;
@@ -177,6 +186,7 @@ h3.lastSuggestion-title{
   width:190px;
   height:50px;
 }
+
 
 .lastCommentSuggestion .commentaires div.avatar  {
   background-color: #FFFFFF;
@@ -246,9 +256,13 @@ h3.lastSuggestion-title{
   text-align:center;
 }
 
-.my-suggestionBox-inProgress .counter-comments  span {
+.my-suggestionBox-inProgress .counter-comments  span,
+.buzzSuggestion .counter-comments span {
   background:transparent url(../../../util/icons/talk2user.gif) top left no-repeat;
   padding-left:20px;
+}
+.buzzSuggestion a:hover .counter-comments span {
+	color:#000;
 }
 
 #suggestionApprobationDetail-info  {
@@ -339,7 +353,7 @@ h3.lastSuggestion-title{
     margin:1em 0;
   }
   
-  .lecteur-view   #all-suggestionBox {
+  #all-suggestionBox.lecteur-view {
     width:100%;
     float:none;
     padding-right:0%;
@@ -347,19 +361,26 @@ h3.lastSuggestion-title{
 	position:relative;
   }
   
-  .lecteur-view   .lastSuggestion,
-  .lecteur-view   .buzzSuggestion  { 
+  .lecteur-view .lastSuggestion,
+  .lecteur-view .buzzSuggestion  { 
 	width:46%;
     float:left;
 	clear:left;
     padding-right:3%;
     border-right:1px solid #ccc;
   }
+  
+	.lecteur-view .lastSuggestion  {
+		background:transparent url() top right no-repeat;
+	}
   .lecteur-view   .lastCommentSuggestion { 
 	width:45%;
     position:absolute;
 	top:0;
     right:2%;
+  }
+  .lecteur-view  .lastCommentSuggestion .header h3 {
+		margin-top:0.5em;
   }
 }
 

@@ -44,7 +44,7 @@
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
 <fmt:message var="back"                   key="GML.back"/>
-<fmt:message var="date"                   key="GML.contribution.validation.date"/>
+<fmt:message var="date"                   key="GML.date"/>
 <fmt:message var="title"                  key="GML.title"/>
 <fmt:message var="author"                 key="suggestionBox.label.suggestion.author"/>
 <fmt:message var="rating"                 key="GML.rating"/>
