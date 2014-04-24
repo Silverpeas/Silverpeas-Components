@@ -183,7 +183,7 @@ h3.lastSuggestion-title{
 
 .vote {
   display:block;
-  width:190px;
+  width:130px;
   height:50px;
 }
 
@@ -249,10 +249,10 @@ h3.lastSuggestion-title{
 }
 
 .my-suggestionBox-inProgress .counter-comments {
-  width:190px;
+  width:169px;
   line-height:33px;
   height:50px;
-  background:transparent url(../icons/sep.png) top left no-repeat;
+  background:transparent url(../icons/sep.png)  left -3px no-repeat;
   text-align:center;
 }
 
@@ -303,7 +303,11 @@ h3.lastSuggestion-title{
   margin:1em 0
 }
 
-
+/********* suggestion-view ***************/
+.suggestion-view .rightContent .spOverRating {
+    display: block;
+    padding-bottom: 0.3em;
+}
 /********* FORMULAIRE DE CREATION/MODIFICATION ***************/
 
 #suggestionInformation .fields {

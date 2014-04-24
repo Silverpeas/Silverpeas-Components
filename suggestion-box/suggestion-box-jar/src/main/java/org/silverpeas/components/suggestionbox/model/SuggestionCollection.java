@@ -137,13 +137,8 @@ public class SuggestionCollection implements Collection<Suggestion> {
       public Boolean execute() {
         final SuggestionRepository suggestionRepository = getSuggestionRepository();
         Suggestion actual = suggestionRepository.getById(suggestion.getId());
-        if (suggestion.getSuggestionBox().equals(suggestionBox) &&
-            (actual.getValidation().isInDraft() || actual.
-                getValidation().isRefused())) {
-          suggestionRepository.delete(actual);
-          return true;
-        }
-        return false;
+        suggestionRepository.delete(actual);
+        return true;
       }
     });
     return r;
