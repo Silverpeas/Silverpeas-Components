@@ -20,7 +20,8 @@
   <fmt:param value="${fn:toLowerCase(theSuggestionLabel)}"/>
   <fmt:param value="@name@"/>
 </fmt:message>
-<fmt:message var="commentLabel" key="GML.contribution.validation.comment"/>
+<fmt:message var="approveCommentLabel" key="GML.contribution.validation.approve.note"/>
+<fmt:message var="refuseCommentLabel" key="GML.contribution.validation.refuse.note"/>
 
 <script type="text/javascript" src="${formValidator}"></script>
 
@@ -33,8 +34,9 @@
 
   <form id="suggestionValidationForm" action="#" method="POST">
     <div>
-      <span class="txtlibform">${commentLabel}</span>
-      <textarea id="suggestionValidationComment" name="comment" rows="5" cols="60"></textarea>&nbsp;<img border="0" src="${mandatoryIcons}" width="5" height="5"/>
+      <span class="txtlibform validationApproveItem" style="display: none">${approveCommentLabel}</span>
+      <span class="txtlibform validationRefuseItem" style="display: none">${refuseCommentLabel}</span>
+      <textarea id="suggestionValidationComment" name="comment" rows="15" cols="86"></textarea>&nbsp;<img class="validationRefuseItem" border="0" src="${mandatoryIcons}" width="5" height="5"/>
     </div>
   </form>
 </div>
