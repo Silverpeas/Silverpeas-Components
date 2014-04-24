@@ -26,6 +26,7 @@ package org.silverpeas.components.suggestionbox.common;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.util.CollectionUtil;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.comparator.AbstractComplexComparator;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -45,8 +46,10 @@ import javax.ws.rs.core.Response;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -102,11 +105,11 @@ public class SuggestionBoxWebServiceProvider {
   }
 
   /**
-   * Gets the list of suggestions that are in draft and which the creator is those specified.
+   * Gets the list of suggestions that are published and which the creator is those specified.
    * @param suggestionBox the suggestion box the current user is working on.
    * @param creator the user that must be the creator of the returned suggestions.
    * @return the aimed suggestion entities.
-   * @see SuggestionCollection#findInDraftFor
+   * @see SuggestionCollection#findPublishedFor
    * (UserDetail)
    */
   public List<SuggestionEntity> getPublishedSuggestionsFor(SuggestionBox suggestionBox,
@@ -120,11 +123,11 @@ public class SuggestionBoxWebServiceProvider {
    * @param suggestionBox the suggestion box the current user is working on.
    * @param creator the user that must be the creator of the returned suggestions.
    * @return the asked suggestion entities.
-   * @see SuggestionCollection#findAllFor(UserDetail)
+   * @see SuggestionCollection#findAllProposedBy(UserDetail)
    */
-  public List<SuggestionEntity> getAllSuggestionsFor(SuggestionBox suggestionBox,
+  public List<SuggestionEntity> getAllSuggestionsProposedBy(SuggestionBox suggestionBox,
       UserDetail creator) {
-    return asWebEntities(suggestionBox.getSuggestions().findAllFor(creator));
+    return asWebEntities(suggestionBox.getSuggestions().findAllProposedBy(creator));
   }
 
   /**
@@ -175,6 +178,41 @@ public class SuggestionBoxWebServiceProvider {
    */
   public List<SuggestionEntity> getPublishedSuggestions(SuggestionBox suggestionBox) {
     return asWebEntities(suggestionBox.getSuggestions().findPublished());
+  }
+
+  /**
+   * Gets the list of all the suggestions in the specified suggestion box that a user can see.
+   * @param suggestionBox the suggestion box the current user is working on.
+   * @param user the user that requests for all suggestions.
+   * @return the asked suggestion entities.
+   * @see SuggestionCollection#findAllProposedBy(UserDetail)
+   */
+  public List<SuggestionEntity> getAllSuggestionsFor(SuggestionBox suggestionBox, UserDetail user) {
+    Set<SuggestionEntity> uniqueSuggestionResult = new HashSet<SuggestionEntity>();
+    // Suggestions proposed by the user
+    uniqueSuggestionResult.addAll(getAllSuggestionsProposedBy(suggestionBox, user));
+    // Published suggestions
+    uniqueSuggestionResult.addAll(getPublishedSuggestions(suggestionBox));
+    // The suggestions that are pending validation
+    try {
+      checkAdminAccessOrUserIsModerator(user, suggestionBox);
+      uniqueSuggestionResult.addAll(getSuggestionsInPendingValidation(suggestionBox));
+    } catch (Exception ignore) {
+      // If the user has no admin or publisher rights, no suggestion in pending validation are
+      // retrieved
+    }
+    // The final result
+    List<SuggestionEntity> finalSuggestionResult =
+        new ArrayList<SuggestionEntity>(uniqueSuggestionResult);
+    // Sorting the result by descending last update date
+    Collections.sort(finalSuggestionResult, new AbstractComplexComparator<SuggestionEntity>() {
+      @Override
+      protected ValueBuffer getValuesToCompare(final SuggestionEntity object) {
+        return new ValueBuffer().append(object.getLastUpdateDate(), false);
+      }
+    });
+    // Returning the result
+    return finalSuggestionResult;
   }
 
   /**

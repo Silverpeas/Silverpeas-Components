@@ -31,6 +31,7 @@
 
 <view:setConstant var="writerRole"                          constant="com.stratelia.webactiv.SilverpeasRole.writer"/>
 <view:setConstant var="publisherRole"                       constant="com.stratelia.webactiv.SilverpeasRole.publisher"/>
+<view:setConstant var="AllSuggestionsViewContext"           constant="org.silverpeas.components.suggestionbox.control.SuggestionBoxWebController.ViewContext.AllSuggestions"/>
 <view:setConstant var="SuggestionsInValidationViewContext"  constant="org.silverpeas.components.suggestionbox.control.SuggestionBoxWebController.ViewContext.SuggestionsInValidation"/>
 <view:setConstant var="MySuggestionsViewContext"            constant="org.silverpeas.components.suggestionbox.control.SuggestionBoxWebController.ViewContext.MySuggestions"/>
 <view:setConstant var="SUGGESTION_LIST_IDENTIFIER"          constant="org.silverpeas.components.suggestionbox.control.SuggestionBoxWebController.SUGGESTION_LIST_ARRAYPANE_IDENTIFIER"/>
@@ -58,9 +59,10 @@
 <fmt:message var="inDraftIconPath"           key="suggestionBox.SuggestionInDraft"             bundle="${icons}"/>
 <fmt:message var="creationIconPath"          key="suggestionBox.proposeSuggestion"             bundle="${icons}"/>
 
+<fmt:message key="suggestionBox.menu.item.suggestions.all"        var="allSuggestionsLabel"/>
 <fmt:message key="suggestionBox.menu.item.suggestion.viewPending" var="suggestionsInPendingLabel"/>
 <fmt:message key="suggestionBox.menu.item.suggestion.mine"        var="mySuggestionsLabel"/>
-<fmt:message key="suggestionBox.label.suggestions.more"           var="allSuggestionsLabel"/>
+<fmt:message key="suggestionBox.menu.item.suggestions.published"  var="allPublishedSuggestionsLabel"/>
 
 <c:set var="currentUser"     value="${requestScope.currentUser}"/>
 <c:set var="componentId"     value="${requestScope.browseContext[3]}"/>
@@ -71,6 +73,7 @@
 
 <c:url var="viewContext"             value="${requestScope.navigationContext.currentNavigationStep.contextIdentifier}"/>
 <c:url var="componentUriBase"        value="${requestScope.componentUriBase}"/>
+<c:set var="allSuggestionsUri"       value="${componentUriBase}suggestions/all"/>
 <c:set var="publishedSuggestionsUri" value="${componentUriBase}suggestions/published"/>
 <c:set var="mineSuggestionsUri"      value="${componentUriBase}suggestions/mine"/>
 <c:set var="pendingSuggestionsUri"   value="${componentUriBase}suggestions/pending"/>
@@ -92,10 +95,27 @@
 <view:operationPane>
   <c:url var="creationIcon" value="${creationIconPath}"/>
   <c:choose>
+    <%-- ViewContext : all suggestions the user can see --%>
+    <c:when test="${viewContext == AllSuggestionsViewContext}">
+      <c:set var="routingAddress" value="${allSuggestionsUri}"/>
+      <c:if test="${greaterUserRole.isGreaterThanOrEquals(publisherRole)}">
+        <view:operation action="${pendingSuggestionsUri}" altText="${suggestionsInPendingLabel}"/>
+        <view:operationSeparator/>
+      </c:if>
+      <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
+        <view:operationOfCreation action="${componentUriBase}suggestions/new" altText="${proposeSuggestionLabel}" icon="${creationIcon}"/>
+        <view:operationSeparator/>
+      </c:if>
+      <view:operation action="${publishedSuggestionsUri}" altText="${allPublishedSuggestionsLabel}"/>
+      <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
+        <view:operation action="${mineSuggestionsUri}" altText="${mySuggestionsLabel}"/>
+      </c:if>
+    </c:when>
     <%-- ViewContext : suggestions in pending validation status --%>
     <c:when test="${viewContext == SuggestionsInValidationViewContext}">
       <c:set var="routingAddress" value="${pendingSuggestionsUri}"/>
-      <view:operation action="${publishedSuggestionsUri}" altText="${allSuggestionsLabel}"/>
+      <view:operation action="${publishedSuggestionsUri}" altText="${allPublishedSuggestionsLabel}"/>
+      <view:operation action="${allSuggestionsUri}" altText="${allSuggestionsLabel}"/>
       <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
         <view:operation action="${mineSuggestionsUri}" altText="${mySuggestionsLabel}"/>
       </c:if>
@@ -111,7 +131,8 @@
         <view:operationOfCreation action="${componentUriBase}suggestions/new" altText="${proposeSuggestionLabel}" icon="${creationIcon}"/>
         <view:operationSeparator/>
       </c:if>
-      <view:operation action="${publishedSuggestionsUri}" altText="${allSuggestionsLabel}"/>
+      <view:operation action="${publishedSuggestionsUri}" altText="${allPublishedSuggestionsLabel}"/>
+      <view:operation action="${allSuggestionsUri}" altText="${allSuggestionsLabel}"/>
     </c:when>
     <%-- ViewContext : all published suggestions --%>
     <c:otherwise>
@@ -123,6 +144,9 @@
       <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
         <view:operationOfCreation action="${componentUriBase}suggestions/new" altText="${proposeSuggestionLabel}" icon="${creationIcon}"/>
         <view:operationSeparator/>
+      </c:if>
+      <view:operation action="${allSuggestionsUri}" altText="${allSuggestionsLabel}"/>
+      <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
         <view:operation action="${mineSuggestionsUri}" altText="${mySuggestionsLabel}"/>
       </c:if>
     </c:otherwise>

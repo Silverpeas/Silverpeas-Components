@@ -190,7 +190,7 @@
             <a ng-href="${componentUriBase}suggestions/{{ suggestion.id }}"><span class="date">{{suggestion.validation.date | date: 'shortDate'}}</span>{{suggestion.title}}</a>
           </li>
         </ul>
-        <a href="${componentUriBase}suggestions/published" class="more" ng-if="publishedSuggestions.maxlength > maxItemsToRender"><fmt:message key="suggestionBox.label.suggestions.more"/></a>
+        <a href="${componentUriBase}suggestions/published" class="more" ng-if="publishedSuggestions.maxlength > maxItemsToRender"><fmt:message key="suggestionBox.menu.item.suggestions.published"/></a>
       </div>
       <div class="secteur-container buzzSuggestion">
         <div class="header">
