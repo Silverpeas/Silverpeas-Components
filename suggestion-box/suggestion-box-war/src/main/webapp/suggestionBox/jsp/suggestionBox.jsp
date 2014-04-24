@@ -49,28 +49,39 @@
 <view:setConstant var="publisherRole"             constant="com.stratelia.webactiv.SilverpeasRole.publisher"/>
 <view:setConstant var="STATUS_REFUSED"            constant="org.silverpeas.contribution.ContributionStatus.REFUSED"/>
 <view:setConstant var="STATUS_VALIDATED"          constant="org.silverpeas.contribution.ContributionStatus.VALIDATED"/>
+<view:setConstant var="STATUS_PENDING_VALIDATION" constant="org.silverpeas.contribution.ContributionStatus.PENDING_VALIDATION"/>
 
-<fmt:message key="suggestionBox.menu.item.edito.modify"           var="modifyEditoLabel"/>
-<fmt:message key="suggestionBox.menu.item.suggestion.add"         var="browseBarPathSuggestionLabel"/>
-<fmt:message key="suggestionBox.menu.item.subscribe"              var="subscribeToSuggestionBoxLabel"/>
-<fmt:message key="suggestionBox.menu.item.unsubscribe"            var="unsubscribeFromSuggestionBoxLabel"/>
-<fmt:message key="suggestionBox.menu.item.suggestion.viewPending" var="suggestionsInPendingLabel"/>
-<fmt:message key="suggestionBox.menu.item.suggestion.mine"        var="mySuggestionsLabel"/>
-<fmt:message key="suggestionBox.label.suggestion.status.Refused"  var="refusedValidationStatusLabel"/>
-<fmt:message key="suggestionBox.label.noSuggestions"              var="noSuggestions"/>
-<fmt:message key="suggestionBox.label.noComments"                 var="noComments"/>
-<fmt:message key="suggestionBox.message.edito.empty"              var="editoEmptyMessage">
+<fmt:message key="suggestionBox.menu.item.edito.modify"                    var="modifyEditoLabel"/>
+<fmt:message key="suggestionBox.menu.item.suggestion.add"                  var="browseBarPathSuggestionLabel"/>
+<fmt:message key="suggestionBox.menu.item.subscribe"                       var="subscribeToSuggestionBoxLabel"/>
+<fmt:message key="suggestionBox.menu.item.unsubscribe"                     var="unsubscribeFromSuggestionBoxLabel"/>
+<fmt:message key="suggestionBox.menu.item.suggestion.viewPending"          var="suggestionsInPendingLabel"/>
+<fmt:message key="suggestionBox.menu.item.suggestion.mine"                 var="mySuggestionsLabel"/>
+<fmt:message key="suggestionBox.label.suggestion.status.Refused"           var="refusedValidationStatusLabel"/>
+<fmt:message key="suggestionBox.label.noSuggestions"                       var="noSuggestions"/>
+<fmt:message key="suggestionBox.label.noComments"                          var="noComments"/>
+<fmt:message key="suggestionBox.message.edito.empty"                       var="editoEmptyMessage">
   <fmt:param><c:url value="${componentUriBase}edito/modify"/></fmt:param>
 </fmt:message>
+<fmt:message key="suggestionBox.label.suggestion.status.Refused"           var="refused"/>
+<fmt:message key="suggestionBox.label.suggestion.status.Validated"         var="validated"/>
+<fmt:message key="suggestionBox.label.suggestion.status.PendingValidation" var="pending"/>
+<fmt:message key="suggestionBox.menu.item.suggestions.all"                 var="allSuggestionsLabel"/>
 
 <c:url var="componentUriBase"                   value="${requestScope.componentUriBase}"/>
 <c:url var="suggestionBoxJS"                    value="/util/javaScript/angularjs/suggestionbox.js"/>
 <c:url var="suggestionBoxServicesJS"            value="/util/javaScript/angularjs/services/suggestionbox.js"/>
+<c:url var="statusIcon" value="${refusedIconPath}"/>
 
-<fmt:message key="suggestionBox.refusedSuggestion" var="refusedIconPath"  bundle="${icons}"/>
-<fmt:message key="suggestionBox.proposeSuggestion" var="creationIconPath" bundle="${icons}"/>
-<c:url var="refusedIcon"   value="${refusedIconPath}"/>
-<c:url var="creationIcon" value="${creationIconPath}"/>
+<fmt:message key="suggestionBox.refusedSuggestion"             var="refusedIconPath"           bundle="${icons}"/>
+<fmt:message key="suggestionBox.proposeSuggestion"             var="creationIconPath"          bundle="${icons}"/>
+<fmt:message key="suggestionBox.validatedSuggestion"           var="validatedIconPath"         bundle="${icons}"/>
+<fmt:message key="suggestionBox.SuggestionInPendingValidation" var="pendingValidationIconPath" bundle="${icons}"/>
+
+<c:url var="refusedIconURL"           value="${refusedIconPath}"/>
+<c:url var="creationIconURL"          value="${creationIconPath}"/>
+<c:url var="validatedIconURL"         value="${validatedIconPath}"/>
+<c:url var="pendingValidationIconURL" value="${pendingValidationIconPath}"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.suggestionBox">
@@ -118,6 +129,7 @@
     <view:operationOfCreation action="${componentUriBase}suggestions/new" altText="${browseBarPathSuggestionLabel}" icon="${creationIcon}"/>
     <view:operation action="${componentUriBase}suggestions/mine" altText="${mySuggestionsLabel}"/>
   </c:if>
+  <view:operation action="${componentUriBase}suggestions/all" altText="${allSuggestionsLabel}"/>
   <c:if test="${isUserSubscribed != null}">
     <c:choose>
       <c:when test="${isUserSubscribed}">
@@ -166,7 +178,7 @@
             <ul ng-controller="myOutOfDraftSuggestionsController">
               <li ng-if="myOutOfDraftSuggestions.length === 0"><span class="txt-no-content">${noSuggestions}</span></li>
               <li ng-repeat="suggestion in myOutOfDraftSuggestions">
-                <a ng-href="${componentUriBase}suggestions/{{suggestion.id}}">{{suggestion.title}}</a>
+                <a ng-class="suggestion.validation.status" ng-href="${componentUriBase}suggestions/{{suggestion.id}}">{{suggestion.title}}</a>
                 <span ng-if="suggestion.validation.status === '${STATUS_VALIDATED}'" class="vote"><silverpeas-rating readonly="true" forcedisplaywhennorating="true" raterrating="suggestion.raterRating"></silverpeas-rating></span>
                 <span ng-if="suggestion.validation.status === '${STATUS_VALIDATED}'" class="counter-comments"><span>{{suggestion.commentCount}} <fmt:message key="GML.comments"/></span></span>
               </li>

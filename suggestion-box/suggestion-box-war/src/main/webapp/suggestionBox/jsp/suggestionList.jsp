@@ -164,7 +164,7 @@
       <view:areaOfOperationOfCreation/>
     </c:if>
     <view:arrayPane var="${SUGGESTION_LIST_IDENTIFIER}" routingAddress="${routingAddress}" sortableLines="true">
-      <view:arrayColumn title="${status}" sortable="false"/>
+      <view:arrayColumn title="${status}" sortable="true"/>
       <view:arrayColumn title="${date}" sortable="true"/>
       <view:arrayColumn title="${title}" sortable="true"/>
       <view:arrayColumn title="${author}" sortable="true"/>
