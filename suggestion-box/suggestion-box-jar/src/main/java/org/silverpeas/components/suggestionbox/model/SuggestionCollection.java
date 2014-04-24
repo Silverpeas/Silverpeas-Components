@@ -418,7 +418,7 @@ public class SuggestionCollection implements Collection<Suggestion> {
    * @return a list of suggestions ordered by status and by modification date. The list is empty
    * if the user has not proposed any suggestions.
    */
-  public List<Suggestion> findAllFor(final UserDetail author) {
+  public List<Suggestion> findAllProposedBy(final UserDetail author) {
     SuggestionCriteria criteria = SuggestionCriteria.from(suggestionBox).
         createdBy(author).orderedBy(STATUS_ASC, LAST_UPDATE_DATE_ASC);
     return getSuggestionRepository().findByCriteria(criteria);

@@ -77,6 +77,10 @@ public class SuggestionBoxWebController extends
    */
   public static enum ViewContext {
     /**
+     * The suggestions to render are all the suggestions in a suggestion box the user can see.
+     */
+    AllSuggestions,
+    /**
      * The suggestions to render are the suggestions published in a suggestion box.
      */
     PublishedSuggestions,
@@ -104,6 +108,7 @@ public class SuggestionBoxWebController extends
   private static final String SUGGESTION_VIEW_NS_ID = "suggestionViewNavStepIdentifier";
 
   // Some suffix path URI definitions
+  private static final String PATH_SUGGESTIONS_ALL = "suggestions/all";
   private static final String PATH_SUGGESTIONS_PUBLISHED = "suggestions/published";
   private static final String PATH_SUGGESTIONS_PENDING = "suggestions/pending";
   private static final String PATH_SUGGESTIONS_MINE = "suggestions/mine";
@@ -156,23 +161,29 @@ public class SuggestionBoxWebController extends
               if (viewContext != null) {
                 ResourceLocator multilang = context.getMultilang();
                 switch (viewContext) {
+                  case AllSuggestions:
+                    clearSuggestionListState(
+                        navigationStep.getNavigationContext().getWebComponentRequestContext());
+                    navigationStep.withLabel(
+                        multilang.getString("suggestionBox.browsebar.item.suggestions.all"));
+                    break;
                   case PublishedSuggestions:
                     clearSuggestionListState(
                         navigationStep.getNavigationContext().getWebComponentRequestContext());
-                    navigationStep
-                        .withLabel(multilang.getString("suggestionBox.label.suggestions.more"));
+                    navigationStep.withLabel(
+                        multilang.getString("suggestionBox.browsebar.item.suggestions.published"));
                     break;
                   case SuggestionsInValidation:
                     clearSuggestionListState(
                         navigationStep.getNavigationContext().getWebComponentRequestContext());
                     navigationStep.withLabel(
-                        multilang.getString("suggestionBox.menu.item.suggestion.viewPending"));
+                        multilang.getString("suggestionBox.browsebar.item.suggestion.viewPending"));
                     break;
                   case MySuggestions:
                     clearSuggestionListState(
                         navigationStep.getNavigationContext().getWebComponentRequestContext());
-                    navigationStep
-                        .withLabel(multilang.getString("suggestionBox.menu.item.suggestion.mine"));
+                    navigationStep.withLabel(
+                        multilang.getString("suggestionBox.browsebar.item.suggestion.mine"));
                     break;
                 }
               }
@@ -206,6 +217,22 @@ public class SuggestionBoxWebController extends
   @InvokeAfter({"isEdito", "isUserSubscribed"})
   public void home(SuggestionBoxWebRequestContext context) {
     // Nothing to do for now...
+  }
+
+  /**
+   * Prepares the rendering of the all suggestions screen.
+   * @param context the context of the incoming request.
+   */
+  @GET
+  @Path(PATH_SUGGESTIONS_ALL)
+  @NavigationStep(identifier = SUGGESTION_LIST_NS_ID,
+      contextIdentifier = "AllSuggestions")
+  @RedirectToInternalJsp("suggestionList.jsp")
+  @InvokeAfter("isEdito")
+  public void listAllSuggestions(SuggestionBoxWebRequestContext context) {
+    List<SuggestionEntity> suggestions = getWebServiceProvider().getAllSuggestionsFor(context.
+        getSuggestionBox(), context.getUser());
+    context.getRequest().setAttribute("suggestions", suggestions);
   }
 
   /**
@@ -254,8 +281,8 @@ public class SuggestionBoxWebController extends
   @InvokeAfter("isEdito")
   @LowestRoleAccess(SilverpeasRole.writer)
   public void listCurrentUserSuggestions(SuggestionBoxWebRequestContext context) {
-    List<SuggestionEntity> suggestions =
-        getWebServiceProvider().getAllSuggestionsFor(context.getSuggestionBox(), context.getUser());
+    List<SuggestionEntity> suggestions = getWebServiceProvider()
+        .getAllSuggestionsProposedBy(context.getSuggestionBox(), context.getUser());
     context.getRequest().setAttribute("suggestions", suggestions);
   }
 
@@ -377,7 +404,7 @@ public class SuggestionBoxWebController extends
     }
 
     context.getNavigationContext().navigationStepFrom(SUGGESTION_VIEW_NS_ID)
-        .withLabel(StringUtil.truncate(suggestion.getTitle(), 25));
+        .withLabel(StringUtil.truncate(suggestion.getTitle(), 50));
   }
 
   /**
