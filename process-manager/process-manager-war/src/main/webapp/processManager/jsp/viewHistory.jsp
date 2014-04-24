@@ -70,19 +70,20 @@
 %>
 
 <%@page import="com.silverpeas.util.StringUtil"%>
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
 <view:includePlugin name="wysiwyg"/>
-</HEAD>
-<BODY class="yui-skin-sam">
+</head>
+<body class="yui-skin-sam">
 <%
 	out.println(window.printBefore());
 	out.println(tabbedPane.print());
-	out.println(frame.printBefore());
 %>
-<table CELLPADDING="0" CELLSPACING="2" BORDER="0" WIDTH="98%">
+<view:frame>
+<table cellpadding="0" cellspacing="2" border="0" width="98%">
 <tr><td align="right">
 	<% if ("all".equalsIgnoreCase(enlightedStep)) { %>
 		<a href="viewHistory"><%=resource.getString("processManager.collapseAll") %></a>
@@ -91,21 +92,20 @@
 	<% } %>
 </td></tr>
 </table>
-<CENTER>
 <% 
 	for (int i=0; i<steps.size(); i++) // boucle sur tous les process
 	{
 	  StepVO step = (StepVO) steps.get(i);
 %>
-<table CELLPADDING="0" CELLSPACING="2" BORDER="0" WIDTH="98%" CLASS="intfdcolor">
+<table cellpadding="0" cellspacing="2" border="0" width="98%" class="intfdcolor">
 <form name="formCollapse" action="viewHistory">
-<input type="Hidden" name="enlightedStep" value="<%=enlightedStep %>">
+<input type="hidden" name="enlightedStep" value="<%=enlightedStep %>"/>
 	<tr>
-		<td CLASS=intfdcolor4 NOWRAP>
-			<table CELLPADDING=0 CELLSPACING=0 BORDER=0 WIDTH="100%">
+		<td class="intfdcolor4" nowrap="nowrap">
+			<table cellpadding="0" cellspacing="0" border="0" width="100%">
 				<tr>
 					<td class="intfdcolor" rowspan="2" nowrap width="100%">
-						<img border="0" src="<%=resource.getIcon("processManager.px") %>" width="5">
+						<img border="0" src="<%=resource.getIcon("processManager.px") %>" width="5"/>
 						<span class="txtNav">
 						<% 
 						if ( StringUtil.isDefined( step.getActivity() ) )
@@ -114,46 +114,44 @@
 						<%= step.getActionName()%> (<%=step.getActorFullName()%> - <%=step.getStepDate()%>)
 						</span>
 					</td>
-					<td class="intfdcolor"><img border="0" height="10" src="<%=resource.getIcon("processManager.px") %>"></td>
-					<td class="intfdcolor"><img border="0" height="10" src="<%=resource.getIcon("processManager.px") %>"></td>
+					<td class="intfdcolor"><img border="0" height="10" src="<%=resource.getIcon("processManager.px") %>"/></td>
+					<td class="intfdcolor"><img border="0" height="10" src="<%=resource.getIcon("processManager.px") %>"/></td>
 				</tr>
 				<tr>
-					<td height="0" class="intfdcolor" align="right" valign="bottom"><img border="0" src="<%=resource.getIcon("processManager.boxAngleLeft") %>"></td>
-					<td align="center" valign="bottom" nowrap>
+					<td height="0" class="intfdcolor" align="right" valign="bottom"><img border="0" src="<%=resource.getIcon("processManager.boxAngleLeft") %>"/></td>
+					<td align="center" valign="bottom" nowrap="nowrap">
 						<%
 						if ( (step.isVisible()) || ("supervisor".equalsIgnoreCase(currentRole)) )
 						{
 							if (step.getContent() == null) {
-								out.println("<A href=\"viewHistory?enlightedStep="+step.getStepId()+"\"><img border=\"0\" src=\""+resource.getIcon("processManager.boxDown")+"\"></a>");
+								out.println("<a href=\"viewHistory?enlightedStep="+step.getStepId()+"\"><img border=\"0\" src=\""+resource.getIcon("processManager.boxDown")+"\"></a>");
 							}
 							else{
-								out.println("<A href=\"viewHistory\"><img border=\"0\" src=\""+resource.getIcon("processManager.boxUp")+"\"></a>");
+								out.println("<a href=\"viewHistory\"><img border=\"0\" src=\""+resource.getIcon("processManager.boxUp")+"\"></a>");
 							}
 						}
 						%>
-					<img border="0" height="1" width="3" src="<%=resource.getIcon("processManager.px") %>">
+					<img border="0" height="1" width="3" src="<%=resource.getIcon("processManager.px") %>"/>
 					</td>
 				</tr>
 			</table>
 			<%
-			if (step.getContent() != null) 
-			{
+			if (step.getContent() != null) 	{
 				form = step.getContent().getForm();
 				context = step.getContent().getPageContext();
 				data = step.getContent().getRecord();
 				
-				if (form == null || data == null || ( !step.isVisible() && !("supervisor".equalsIgnoreCase(currentRole))) )
-				{
+				if (form == null || data == null || ( !step.isVisible() && !("supervisor".equalsIgnoreCase(currentRole))) ) {
 				%>
-					<table border="0" cellpadding="0" cellspacing="0"><tr><td class="intfdcolor4"></td><img border="0" src="<%=resource.getIcon("processManager.px") %>"></tr></table>
+					<table border="0" cellpadding="0" cellspacing="0"><tr><td class="intfdcolor4"><img border="0" src="<%=resource.getIcon("processManager.px") %>"/></td></tr></table>
 				<%	
 				}
 				else
 				{
 				%>
-					<table CELLPADDING="5" CELLSPACING="0" BORDER="0" WIDTH="100%">
+					<table cellpadding="5" cellspacing="0" border="0" width="100%">
 						<tr>
-							<td align="center">
+							<td>
 							<%
 								context.setBorderPrinted(true);
 								form.display(out, context, data); 
@@ -161,7 +159,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td colspan="2" align="right"><a href="viewHistory"><img border="0" src="<%=resource.getIcon("processManager.boxUp") %>"></a><img border="0" width="3" src="<%=resource.getIcon("processManager.px") %>"></td>
+							<td colspan="2" align="right"><a href="viewHistory"><img border="0" src="<%=resource.getIcon("processManager.boxUp") %>"/></a><img border="0" width="3" src="<%=resource.getIcon("processManager.px") %>"/></td>
 						</tr>
 					</table>
 				<%
@@ -170,7 +168,7 @@
 			else
 			{
 			%>
-				<table border="0" cellpadding="0" cellspacing="0"><tr><td class="intfdcolor4"></td><img border="0" src="<%=resource.getIcon("processManager.px") %>"></tr></table>
+				<table border="0" cellpadding="0" cellspacing="0"><tr><td class="intfdcolor4"><img border="0" src="<%=resource.getIcon("processManager.px") %>"/></td></tr></table>
 			<%
 			}
 			%>
@@ -181,9 +179,9 @@
 <%
    }
 %>
-</CENTER>
+</view:frame>
 <%
-   out.println(frame.printAfter());
    out.println(window.printAfter());
 %>
-</BODY>
+</body>
+</html>

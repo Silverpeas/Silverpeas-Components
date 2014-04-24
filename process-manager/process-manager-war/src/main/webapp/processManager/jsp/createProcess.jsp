@@ -31,8 +31,7 @@
 <%
 	boolean isSaveButtonEnabled = ((Boolean) request.getAttribute("isSaveButtonEnabled")).booleanValue();
 
-   com.silverpeas.form.Form form
-	   = (com.silverpeas.form.Form) request.getAttribute("form");
+   com.silverpeas.form.Form form = (com.silverpeas.form.Form) request.getAttribute("form");
    PagesContext context = (PagesContext) request.getAttribute("context");
    DataRecord data = (DataRecord) request.getAttribute("data");
 
@@ -41,42 +40,31 @@
 	  browseBar.setPath(resource.getString("processManager.createProcessBB"));
 
 	ButtonPane buttonPane = gef.getButtonPane();
-	buttonPane.addButton((Button) gef.getFormButton(
-	   generalMessage.getString("GML.validate"),
-		"javascript:onClick=B_VALIDER_ONCLICK();",
-		false));
+	buttonPane.addButton(gef.getFormButton(generalMessage.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK();", false));
 	if (isSaveButtonEnabled) {
-		buttonPane.addButton((Button) gef.getFormButton(
-			   generalMessage.getString("GML.saveDraft"),
-				"javascript:onClick=B_SAUVEGARDER_ONCLICK();",
-				false));
+		buttonPane.addButton(gef.getFormButton(generalMessage.getString("GML.saveDraft"), "javascript:onClick=B_SAUVEGARDER_ONCLICK();", false));
 	}
-	buttonPane.addButton((Button) gef.getFormButton(
-	   generalMessage.getString("GML.cancel"),
-		"javascript:onClick=B_ANNULER_ONCLICK();",
-		false));
+	buttonPane.addButton(gef.getFormButton(generalMessage.getString("GML.cancel"), "javascript:onClick=B_ANNULER_ONCLICK();", false));
 %>
 
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
+<view:looknfeel/>
 <%
-   out.println(gef.getLookStyleSheet());
 	form.displayScripts(out, context);
 %>
-<SCRIPT language="JavaScript">
+<script type="text/javascript">
 <!--
-	function B_VALIDER_ONCLICK()
-	{
-		if (isCorrectForm())
-		{
+	function B_VALIDER_ONCLICK() {
+		if (isCorrectForm()) {
 			$.progressMessage();
 	    	setTimeout("document.<%=context.getFormName()%>.submit();", 500);
 		}
 	}
 
-	function B_SAUVEGARDER_ONCLICK()
-	{
+	function B_SAUVEGARDER_ONCLICK() {
 		$.progressMessage();
 		var field = document.getElementById("isDraft");
 		field.value = "yes";
@@ -88,32 +76,29 @@
 		location.href = "listProcess?cancel=true";
 	}
 //-->
-</SCRIPT>
-</HEAD>
-<BODY class="yui-skin-sam">
+</script>
+</head>
+<body class="yui-skin-sam">
 <%
-   out.println(window.printBefore());
-	out.println(tabbedPane.print());
-   out.println(frame.printBefore());
+   	out.println(window.printBefore());
 %>
-<FORM NAME="<%=context.getFormName()%>" METHOD="POST" ACTION="saveCreation" ENCTYPE="multipart/form-data">
+<view:frame>
+<form name="<%=context.getFormName()%>" method="post" action="saveCreation" enctype="multipart/form-data">
 <input type="hidden" name="processManagertokenId" value="${currentTokenId}"/>
 <input type="hidden" id="isDraft" name="isDraft" value="No"/>
 <input type="hidden" id="isFirstTimeSaved" name="isFirstTimeSaved" value="yes"/>
-<CENTER>
 <%
    form.display(out, context, data);
 %>
-   <BR>
+   <br/>
 <%
 	out.println(buttonPane.print());
 %>
-</CENTER>
-</FORM>
+</form>
+</view:frame>
 <%
-   out.println(frame.printAfter());
    out.println(window.printAfter());
 %>
 <view:progressMessage/>
-</BODY>
-</HTML>
+</body>
+</html>
