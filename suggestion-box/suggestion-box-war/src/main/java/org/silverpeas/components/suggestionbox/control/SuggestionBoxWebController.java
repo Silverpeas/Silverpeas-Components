@@ -62,6 +62,8 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 import java.util.List;
 
+import static org.silverpeas.components.suggestionbox.SuggestionBoxComponentSettings
+    .getUserNotificationDisplayLiveTimeForLongMessage;
 import static org.silverpeas.components.suggestionbox.common.SuggestionBoxWebServiceProvider.*;
 
 @WebComponentController(SuggestionBoxComponentSettings.COMPONENT_NAME)
@@ -341,7 +343,9 @@ public class SuggestionBoxWebController extends
     suggestion.setCreator(context.getUser());
     suggestionBox.getSuggestions().add(suggestion, context.getRequest().getUploadedFiles());
     context.getMessager()
-        .addSuccess(getMultilang().getString("suggestionBox.message.suggestion.created"));
+        .addSuccess(getMultilang()
+            .getString("suggestionBox.message.suggestion.created")).setDisplayLiveTime(
+        getUserNotificationDisplayLiveTimeForLongMessage());
     context.addRedirectVariable("id", suggestion.getId());
   }
 
