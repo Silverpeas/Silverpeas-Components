@@ -113,7 +113,12 @@ suggestionBox.controller('publishedSuggestionsController',
 
       $scope.loadBuzzPublished = function() {
         suggestionBox.suggestions.get('published', {page: {number: 1, size: $scope.maxItemsToRender}, sortby: 'commentCount'}).then(function(theSuggestions) {
-          $scope.buzzPublishedSuggestions = theSuggestions;
+          $scope.buzzPublishedSuggestions = [];
+          $scope.buzzPublishedSuggestions.maxlength = theSuggestions.maxlength;
+          for (var i = 0; i < theSuggestions.length; i++) {
+            if (theSuggestions[i].commentCount > 0)
+              $scope.buzzPublishedSuggestions.push(theSuggestions[i]);
+          }
         });
       };
 
@@ -123,9 +128,6 @@ suggestionBox.controller('publishedSuggestionsController',
         $scope.loadBuzzPublished();
       });
 
-      $scope.hasComment = function(suggestion) {
-        return (suggestion.commentCount > 0) ? suggestion:null;
-      }
     }]);
 
   /* the controller in charge of the last comments on the suggestions */

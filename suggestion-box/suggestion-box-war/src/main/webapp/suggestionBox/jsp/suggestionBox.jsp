@@ -56,6 +56,11 @@
 <fmt:message key="suggestionBox.menu.item.suggestion.viewPending" var="suggestionsInPendingLabel"/>
 <fmt:message key="suggestionBox.menu.item.suggestion.mine"        var="mySuggestionsLabel"/>
 <fmt:message key="suggestionBox.label.suggestion.status.Refused"  var="refusedValidationStatusLabel"/>
+<fmt:message key="suggestionBox.label.noSuggestions"              var="noSuggestions"/>
+<fmt:message key="suggestionBox.label.noComments"                 var="noComments"/>
+<fmt:message key="suggestionBox.message.edito.empty"              var="editoEmptyMessage">
+  <fmt:param><c:url value="${componentUriBase}edito/modify"/></fmt:param>
+</fmt:message>
 
 <c:url var="componentUriBase"                   value="${requestScope.componentUriBase}"/>
 <c:url var="suggestionBoxJS"                    value="/util/javaScript/angularjs/suggestionbox.js"/>
@@ -126,11 +131,16 @@
 <view:window>
   <view:frame>
     <h2 class="suggestionBox-title">${suggestionBox.getTitle(currentUserLanguage)}</h2>
-    <c:if test="${isEdito}">
-      <silverpeas-toggle originalClass="suggestionBox-description">
-        <view:displayWysiwyg objectId="${suggestionBoxId}" componentId="${componentId}" language="${null}"/>
-      </silverpeas-toggle>
-    </c:if>
+    <c:choose>
+      <c:when test="${isEdito}">
+        <silverpeas-toggle originalClass="suggestionBox-description">
+          <view:displayWysiwyg objectId="${suggestionBoxId}" componentId="${componentId}" language="${null}"/>
+        </silverpeas-toggle>
+      </c:when>
+      <c:when test="${greaterUserRole.isGreaterThanOrEquals(adminRole)}">
+        <div class="inlineMessage">${silfn:escapeHtmlWhitespaces(editoEmptyMessage)}</div>
+      </c:when>
+    </c:choose>
     <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
       <div id="my-suggestionBox">
         <view:areaOfOperationOfCreation/>
@@ -142,6 +152,7 @@
               <strong><fmt:message key="suggestionBox.label.suggestions.inDraft"/></strong></h3>
           </div>
           <ul ng-controller="suggestionsInDraftController">
+            <li ng-if="inDraftSuggestions.length === 0"><span>${noSuggestions}</span></li>
             <li ng-repeat="suggestion in inDraftSuggestions">
               <img ng-if="suggestion.validation.status === '${STATUS_REFUSED}'" src='${refusedIcon}' alt='${refusedValidationStatusLabel}' title='${refusedValidationStatusLabel}'/>
               <a ng-href="${componentUriBase}suggestions/{{ suggestion.id }}">{{suggestion.title}}</a>
@@ -156,6 +167,7 @@
           </div>
           <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
             <ul ng-controller="myPublishedSuggestionsController">
+              <li ng-if="myPublishedSuggestions.length === 0"><span>${noSuggestions}</span></li>
               <li ng-repeat="suggestion in myPublishedSuggestions">
                 <a ng-href="${componentUriBase}suggestions/{{suggestion.id}}">{{suggestion.title}}</a>
                 <span class="vote"><silverpeas-rating readonly="true" raterrating="suggestion.raterRating"></silverpeas-rating></span>
@@ -172,6 +184,7 @@
           <h3 class="lastSuggestion-title"><fmt:message key="suggestionBox.label.suggestions.last"/></h3>
         </div>
         <ul>
+          <li ng-if="publishedSuggestions.length === 0"><span>${noSuggestions}</span></li>
           <li ng-repeat="suggestion in publishedSuggestions">
             <a ng-href="${componentUriBase}suggestions/{{ suggestion.id }}"><span class="date">{{suggestion.validation.date | date: 'shortDate'}}</span>{{suggestion.title}}</a>
           </li>
@@ -184,8 +197,9 @@
             <fmt:message key="suggestionBox.label.suggestions.buzz"/></h3>
         </div>
         <ul ng-controller="buzzPublishedSuggestionsController">
-          <li ng-repeat="suggestion in buzzPublishedSuggestions | filter:hasComment">
-            <a ng-href="${componentUriBase}suggestions/{{ suggestion.id }}">{{suggestion.title}}<span class="vote"><silverpeas-rating readonly="true" raterrating="suggestion.raterRating"></silverpeas-rating></span></a>
+          <li ng-if="buzzPublishedSuggestions.length === 0"><span>${noSuggestions}</span></li>
+          <li ng-repeat="suggestion in buzzPublishedSuggestions">
+            <a ng-href="${componentUriBase}suggestions/{{ suggestion.id }}">{{suggestion.title}}<span class="counter-comments"><span>{{ suggestion.commentCount }}</span></span></a>
           </li>
         </ul>
       </div>
@@ -195,6 +209,7 @@
             <fmt:message key="suggestionBox.label.suggestions.comments.last"/></h3>
         </div>
         <ul ng-controller="lastCommentsController">
+          <li ng-if="lastComments.length === 0"><span>${noComments}</span></li>
           <li ng-repeat="comment in lastComments">
             <a class="a-suggestion" ng-href="${componentUriBase}suggestions/{{ comment.resourceId }}">{{comment.suggestionTitle}}</a>
             <div class="commentaires">
