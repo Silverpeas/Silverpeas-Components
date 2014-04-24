@@ -123,7 +123,7 @@
 </head>
 <body>
 <view:browseBar componentId="${componentId}" path="${requestScope.navigationContext}">
-  <view:browseBarElt link="" label="${browseBarPathSuggestionLabel}"/>
+  <view:browseBarElt link="#" label="${browseBarPathSuggestionLabel}"/>
 </view:browseBar>
 <view:window>
   <view:frame>

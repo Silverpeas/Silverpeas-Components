@@ -49,7 +49,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -188,22 +187,28 @@ public class SuggestionBoxWebServiceProvider {
    * @see SuggestionCollection#findAllProposedBy(UserDetail)
    */
   public List<SuggestionEntity> getAllSuggestionsFor(SuggestionBox suggestionBox, UserDetail user) {
-    Set<SuggestionEntity> uniqueSuggestionResult = new HashSet<SuggestionEntity>();
+    Map<String, SuggestionEntity> uniqueSuggestionResult = new HashMap<String, SuggestionEntity>();
     // Suggestions proposed by the user
-    uniqueSuggestionResult.addAll(getAllSuggestionsProposedBy(suggestionBox, user));
+    for (SuggestionEntity entity : getAllSuggestionsProposedBy(suggestionBox, user)) {
+      uniqueSuggestionResult.put(entity.getId(), entity);
+    }
     // Published suggestions
-    uniqueSuggestionResult.addAll(getPublishedSuggestions(suggestionBox));
+    for (SuggestionEntity entity : getPublishedSuggestions(suggestionBox)) {
+      uniqueSuggestionResult.put(entity.getId(), entity);
+    }
     // The suggestions that are pending validation
     try {
       checkAdminAccessOrUserIsModerator(user, suggestionBox);
-      uniqueSuggestionResult.addAll(getSuggestionsInPendingValidation(suggestionBox));
+      for (SuggestionEntity entity : getSuggestionsInPendingValidation(suggestionBox)) {
+        uniqueSuggestionResult.put(entity.getId(), entity);
+      }
     } catch (Exception ignore) {
       // If the user has no admin or publisher rights, no suggestion in pending validation are
       // retrieved
     }
     // The final result
     List<SuggestionEntity> finalSuggestionResult =
-        new ArrayList<SuggestionEntity>(uniqueSuggestionResult);
+        new ArrayList<SuggestionEntity>(uniqueSuggestionResult.values());
     // Sorting the result by descending last update date
     Collections.sort(finalSuggestionResult, new AbstractComplexComparator<SuggestionEntity>() {
       @Override
