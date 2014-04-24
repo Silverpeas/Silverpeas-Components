@@ -100,7 +100,7 @@
 <body ng-controller="mainController" id="${componentId}">
 <view:browseBar componentId="${componentId}" path="${requestScope.navigationContext}">
   <c:if test="${isModeratorView}">
-    <view:browseBarElt link="" label="${validateSuggestionMenuLabel}"/>
+    <view:browseBarElt link="#" label="${validateSuggestionMenuLabel}"/>
   </c:if>
 </view:browseBar>
 <view:operationPane>

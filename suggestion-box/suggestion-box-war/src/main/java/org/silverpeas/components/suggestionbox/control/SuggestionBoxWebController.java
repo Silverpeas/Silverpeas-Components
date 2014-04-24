@@ -404,7 +404,8 @@ public class SuggestionBoxWebController extends
     }
 
     context.getNavigationContext().navigationStepFrom(SUGGESTION_VIEW_NS_ID)
-        .withLabel(StringUtil.truncate(suggestion.getTitle(), 50));
+        .withLabel(StringUtil.truncate(suggestion.getTitle(), 50))
+        .setUriMustBeUsedByBrowseBar(false);
   }
 
   /**
