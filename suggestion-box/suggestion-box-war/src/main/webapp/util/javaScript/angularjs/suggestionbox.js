@@ -70,21 +70,21 @@ suggestionBox.controller('suggestionsInDraftController',
       });
     }]);
 
-/* the controller in charge of the user's published suggestions */
-suggestionBox.controller('myPublishedSuggestionsController',
+/* the controller in charge of the user's out of draft suggestions */
+suggestionBox.controller('myOutOfDraftSuggestionsController',
     ['context', '$scope', '$rootScope', function(context, $scope, $rootScope) {
       var suggestionBox = $scope.suggestionBox;
 
-      $scope.loadMyPublished = function() {
-        suggestionBox.suggestions.get('published', {author: context.currentUserId}).then(function(theSuggestions) {
-          $scope.myPublishedSuggestions = theSuggestions;
+      $scope.loadMyOutOfDraft = function() {
+        suggestionBox.suggestions.get('outOfDraft').then(function(theSuggestions) {
+          $scope.myOutOfDraftSuggestions = theSuggestions;
         });
       };
 
-      $scope.loadMyPublished();
+      $scope.loadMyOutOfDraft();
 
       $scope.$on("suggestionModified", function(theSuggestionId) {
-        $scope.loadMyPublished();
+        $scope.loadMyOutOfDraft();
       });
     }]);
 

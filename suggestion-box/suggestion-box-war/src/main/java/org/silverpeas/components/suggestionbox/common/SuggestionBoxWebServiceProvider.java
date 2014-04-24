@@ -31,6 +31,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
+import org.silverpeas.components.suggestionbox.model.SuggestionCollection;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
 import org.silverpeas.components.suggestionbox.web.SuggestionEntity;
 import org.silverpeas.contribution.ContributionStatus;
@@ -50,6 +51,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.silverpeas.components.suggestionbox.SuggestionBoxComponentSettings
+    .getUserNotificationDisplayLiveTimeForLongMessage;
 import static org.silverpeas.contribution.ContributionStatus.PENDING_VALIDATION;
 
 /**
@@ -77,7 +80,8 @@ public class SuggestionBoxWebServiceProvider {
    * @param suggestionBox the suggestion box the current user is working on.
    * @param creator the user that must be the creator of the returned suggestions.
    * @return the aimed suggestion entities.
-   * @see org.silverpeas.components.suggestionbox.model.SuggestionCollection#findInDraftFor(UserDetail)
+   * @see SuggestionCollection#findInDraftFor
+   * (UserDetail)
    */
   public List<SuggestionEntity> getSuggestionsInDraftFor(SuggestionBox suggestionBox,
       UserDetail creator) {
@@ -89,7 +93,8 @@ public class SuggestionBoxWebServiceProvider {
    * @param suggestionBox the suggestion box the current user is working on.
    * @param creator the user that must be the creator of the returned suggestions.
    * @return the aimed suggestion entities.
-   * @see org.silverpeas.components.suggestionbox.model.SuggestionCollection#findInDraftFor(UserDetail)
+   * @see SuggestionCollection#findOutOfDraftFor
+   * (UserDetail)
    */
   public List<SuggestionEntity> getSuggestionsOutOfDraftFor(SuggestionBox suggestionBox,
       UserDetail creator) {
@@ -101,7 +106,8 @@ public class SuggestionBoxWebServiceProvider {
    * @param suggestionBox the suggestion box the current user is working on.
    * @param creator the user that must be the creator of the returned suggestions.
    * @return the aimed suggestion entities.
-   * @see org.silverpeas.components.suggestionbox.model.SuggestionCollection#findInDraftFor(UserDetail)
+   * @see SuggestionCollection#findInDraftFor
+   * (UserDetail)
    */
   public List<SuggestionEntity> getPublishedSuggestionsFor(SuggestionBox suggestionBox,
       UserDetail creator) {
@@ -114,9 +120,10 @@ public class SuggestionBoxWebServiceProvider {
    * @param suggestionBox the suggestion box the current user is working on.
    * @param creator the user that must be the creator of the returned suggestions.
    * @return the asked suggestion entities.
-   * @see org.silverpeas.components.suggestionbox.model.SuggestionCollection#findAllFor(com.stratelia.webactiv.beans.admin.UserDetail)
+   * @see SuggestionCollection#findAllFor(UserDetail)
    */
-  public List<SuggestionEntity> getAllSuggestionsFor(SuggestionBox suggestionBox, UserDetail creator) {
+  public List<SuggestionEntity> getAllSuggestionsFor(SuggestionBox suggestionBox,
+      UserDetail creator) {
     return asWebEntities(suggestionBox.getSuggestions().findAllFor(creator));
   }
 
@@ -124,7 +131,7 @@ public class SuggestionBoxWebServiceProvider {
    * Gets the list of suggestions that are in pending validation and which.
    * @param suggestionBox the suggestion box the current user is working on.
    * @return the aimed suggestion entities.
-   * @see org.silverpeas.components.suggestionbox.model.SuggestionCollection#findPendingValidation()
+   * @see SuggestionCollection#findPendingValidation()
    */
   public List<SuggestionEntity> getSuggestionsInPendingValidation(SuggestionBox suggestionBox) {
     return asWebEntities(suggestionBox.getSuggestions().findPendingValidation());
@@ -138,8 +145,7 @@ public class SuggestionBoxWebServiceProvider {
    * @return the aimed suggestion entities.
    */
   public List<SuggestionEntity> getSuggestionsForValidation(SuggestionBox suggestionBox) {
-    return asWebEntities(
-        suggestionBox.getSuggestions().findInStatus(PENDING_VALIDATION));
+    return asWebEntities(suggestionBox.getSuggestions().findInStatus(PENDING_VALIDATION));
   }
 
   /**
@@ -152,7 +158,7 @@ public class SuggestionBoxWebServiceProvider {
    * @param suggestionBox the suggestion box the current user is working on.
    * @param criteria the criteria the suggestions to return must match.
    * @return the published suggestion entities matching the specified criteria.
-   * @see org.silverpeas.components.suggestionbox.model.SuggestionCollection#findPublished()
+   * @see SuggestionCollection#findPublished()
    */
   public List<SuggestionEntity> getSuggestionsByCriteria(SuggestionBox suggestionBox,
       final SuggestionCriteria criteria) {
@@ -165,7 +171,7 @@ public class SuggestionBoxWebServiceProvider {
    * Gets the list of suggestions that are published.
    * @param suggestionBox the suggestion box the current user is working on.
    * @return the published suggestion entities.
-   * @see org.silverpeas.components.suggestionbox.model.SuggestionCollection#findPublished()
+   * @see SuggestionCollection#findPublished()
    */
   public List<SuggestionEntity> getPublishedSuggestions(SuggestionBox suggestionBox) {
     return asWebEntities(suggestionBox.getSuggestions().findPublished());
@@ -176,7 +182,7 @@ public class SuggestionBoxWebServiceProvider {
    * @param suggestionBox the suggestion box the current user is working on.
    * @param suggestion the suggestion to delete.
    * @param fromUser the current user.
-   * @see org.silverpeas.components.suggestionbox.model.SuggestionCollection#remove(Object)
+   * @see SuggestionCollection#remove(Object)
    */
   public void deleteSuggestion(SuggestionBox suggestionBox, Suggestion suggestion,
       UserDetail fromUser) {
@@ -198,7 +204,7 @@ public class SuggestionBoxWebServiceProvider {
    * @param suggestion the suggestion to publish.
    * @param fromUser the current user.
    * @return the suggestion entity.
-   * @see org.silverpeas.components.suggestionbox.model.SuggestionCollection#publish(Suggestion)
+   * @see SuggestionCollection#publish(Suggestion)
    */
   public SuggestionEntity publishSuggestion(SuggestionBox suggestionBox, Suggestion suggestion,
       UserDetail fromUser) {
@@ -217,7 +223,8 @@ public class SuggestionBoxWebServiceProvider {
           break;
         case VALIDATED:
           NotifierUtil.addSuccess(getStringTranslation("suggestionBox.message.suggestion.published",
-              userPreferences.getLanguage()));
+              userPreferences.getLanguage()))
+              .setDisplayLiveTime(getUserNotificationDisplayLiveTimeForLongMessage());
           break;
       }
       return asWebEntity(actual);
@@ -264,7 +271,8 @@ public class SuggestionBoxWebServiceProvider {
    * @param validationComment the optional comment related to the approval or refusal.
    * @param fromUser the current user.
    * @return the suggestion entity.
-   * @see org.silverpeas.components.suggestionbox.model.SuggestionCollection#validate(Suggestion, ContributionValidation)
+   * @see SuggestionCollection#validate(Suggestion,
+   * ContributionValidation)
    */
   private SuggestionEntity validateSuggestion(SuggestionBox suggestionBox, Suggestion suggestion,
       ContributionStatus newStatus, String validationComment, UserDetail fromUser) {
@@ -283,13 +291,13 @@ public class SuggestionBoxWebServiceProvider {
           NotifierUtil.addInfo(MessageFormat.format(
               getStringTranslation("suggestionBox.message.suggestion.refused",
                   userPreferences.getLanguage()), suggestion.getTitle()
-          ));
+          )).setDisplayLiveTime(getUserNotificationDisplayLiveTimeForLongMessage());
           break;
         case VALIDATED:
           NotifierUtil.addSuccess(MessageFormat.format(
               getStringTranslation("suggestionBox.message.suggestion.validated",
                   userPreferences.getLanguage()), suggestion.getTitle()
-          ));
+          )).setDisplayLiveTime(getUserNotificationDisplayLiveTimeForLongMessage());
           break;
       }
       return asWebEntity(actual);
@@ -364,8 +372,7 @@ public class SuggestionBoxWebServiceProvider {
       entities.add(asWebEntity(suggestion));
     }
     return (suggestions instanceof PaginationList ?
-        PaginationList.from(entities, ((PaginationList) suggestions).maxSize()) :
-        entities);
+        PaginationList.from(entities, ((PaginationList) suggestions).maxSize()) : entities);
   }
 
   /**

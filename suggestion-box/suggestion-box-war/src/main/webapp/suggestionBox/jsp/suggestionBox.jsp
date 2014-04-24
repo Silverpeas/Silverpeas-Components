@@ -48,6 +48,7 @@
 <view:setConstant var="writerRole"                constant="com.stratelia.webactiv.SilverpeasRole.writer"/>
 <view:setConstant var="publisherRole"             constant="com.stratelia.webactiv.SilverpeasRole.publisher"/>
 <view:setConstant var="STATUS_REFUSED"            constant="org.silverpeas.contribution.ContributionStatus.REFUSED"/>
+<view:setConstant var="STATUS_VALIDATED"          constant="org.silverpeas.contribution.ContributionStatus.VALIDATED"/>
 
 <fmt:message key="suggestionBox.menu.item.edito.modify"           var="modifyEditoLabel"/>
 <fmt:message key="suggestionBox.menu.item.suggestion.add"         var="browseBarPathSuggestionLabel"/>
@@ -166,12 +167,12 @@
               <c:out value="${fn:toLowerCase(labelMySuggestions)}"/></h3>
           </div>
           <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
-            <ul ng-controller="myPublishedSuggestionsController">
-              <li ng-if="myPublishedSuggestions.length === 0"><span>${noSuggestions}</span></li>
-              <li ng-repeat="suggestion in myPublishedSuggestions">
+            <ul ng-controller="myOutOfDraftSuggestionsController">
+              <li ng-if="myOutOfDraftSuggestions.length === 0"><span>${noSuggestions}</span></li>
+              <li ng-repeat="suggestion in myOutOfDraftSuggestions">
                 <a ng-href="${componentUriBase}suggestions/{{suggestion.id}}">{{suggestion.title}}</a>
-                <span class="vote"><silverpeas-rating readonly="true" raterrating="suggestion.raterRating"></silverpeas-rating></span>
-                <span class="counter-comments"><span>{{suggestion.commentCount}} <fmt:message key="GML.comments"/></span></span>
+                <span ng-if="suggestion.validation.status === '${STATUS_VALIDATED}'" class="vote"><silverpeas-rating readonly="true" raterrating="suggestion.raterRating"></silverpeas-rating></span>
+                <span ng-if="suggestion.validation.status === '${STATUS_VALIDATED}'" class="counter-comments"><span>{{suggestion.commentCount}} <fmt:message key="GML.comments"/></span></span>
               </li>
             </ul>
           </c:if>

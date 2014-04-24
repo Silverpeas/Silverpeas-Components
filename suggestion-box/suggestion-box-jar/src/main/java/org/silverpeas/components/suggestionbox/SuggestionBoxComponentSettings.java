@@ -83,4 +83,13 @@ public final class SuggestionBoxComponentSettings {
   public static ResourceLocator getIcons() {
     return new ResourceLocator(ICONS_PATH, "");
   }
+
+  /**
+   * Gets the live time of a user notification displayed to users for a long message.
+   * @return a live time in milliseconds.
+   */
+  public static int getUserNotificationDisplayLiveTimeForLongMessage() {
+    return getSettings()
+        .getInteger("suggestionBox.ui.userNotification.displayLiveTime.longMessage", 5000);
+  }
 }
