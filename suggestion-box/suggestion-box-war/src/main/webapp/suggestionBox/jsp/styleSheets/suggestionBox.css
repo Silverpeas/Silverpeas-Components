@@ -38,11 +38,22 @@
   padding: 8px;
   max-height:90px;
   overflow:hidden;
+  margin-bottom:1em;
+}
+
+.suggestionBox-description {
+  margin-bottom:1em;
+}
+silverpeas-toggle .suggestionBox-description {
+  margin-bottom:0em;
+}
+
+silverpeas-toggle a.toggle{
+  margin-bottom:1em;
 }
 
 #all-suggestionBox {
   clear:left;
-  margin-top:1em;
 }
 
 .suggestionBox-description > ul:first-child, .suggestionBox-description > p:first-child {
@@ -50,18 +61,12 @@
   padding-top:0;
 }
 
-.lastSuggestion .header {
-  position:relative;
-  height:67px;
+.lastSuggestion  {
+	background:transparent url(../icons/suggestion-pellet.png) top right no-repeat;
 }
+
 h3.lastSuggestion-title{
-  background:transparent url(../../../util/icons/pastille-new.png) top right no-repeat;
-  z-index:100;
-  position:absolute;
-  width:100%;
-  height:51px;
-  top:0;
-  left:0;
+
 }
 
 .lastSuggestion .more:before{
@@ -91,6 +96,17 @@ h3.lastSuggestion-title{
   list-style-type:none;
 }
 
+
+.my-suggestionBox-inProgress ul,
+.my-suggestionBox-draft ul{
+    list-style-image: url("../../../util/icons/puce.png");
+}
+
+.my-suggestionBox-inProgress ul li,
+.my-suggestionBox-draft ul li{
+	margin-left:1em;
+}
+
 .buzzSuggestion .header h3,
 .lastSuggestion .header h3,
 .lastCommentSuggestion .header h3,
@@ -101,6 +117,9 @@ h3.lastSuggestion-title{
   font-size:130%;
   font-weight:100;
   line-height:90%;
+}
+.lastSuggestion .header h3{
+  margin:0em 0 1em;
 }
 
 .my-suggestionBox-inProgress .header h3 strong,
@@ -206,15 +225,17 @@ h3.lastSuggestion-title{
   float:left;
 }
 .my-suggestionBox-inProgress .vote {
-  margin-right:1em
+  margin-right:1em;
+  line-height:33px;
+  height:50px;
 }
 
 .my-suggestionBox-inProgress .header h3 {
-  font-size:110%;
-  line-height:110%;
+  font-size:117%;
+  line-height:100%;
 }
 .my-suggestionBox-inProgress .header h3 strong{
-  font-size:130%;
+  font-size:111%;
 }
 
 .my-suggestionBox-inProgress .counter-comments {
@@ -224,6 +245,7 @@ h3.lastSuggestion-title{
   background:transparent url(../icons/sep.png) top left no-repeat;
   text-align:center;
 }
+
 .my-suggestionBox-inProgress .counter-comments  span {
   background:transparent url(../../../util/icons/talk2user.gif) top left no-repeat;
   padding-left:20px;
@@ -315,6 +337,29 @@ h3.lastSuggestion-title{
 
   #my-suggestionBox #menubar-creation-actions {
     margin:1em 0;
+  }
+  
+  .lecteur-view   #all-suggestionBox {
+    width:100%;
+    float:none;
+    padding-right:0%;
+    border:0;
+	position:relative;
+  }
+  
+  .lecteur-view   .lastSuggestion,
+  .lecteur-view   .buzzSuggestion  { 
+	width:46%;
+    float:left;
+	clear:left;
+    padding-right:3%;
+    border-right:1px solid #ccc;
+  }
+  .lecteur-view   .lastCommentSuggestion { 
+	width:45%;
+    position:absolute;
+	top:0;
+    right:2%;
   }
 }
 
