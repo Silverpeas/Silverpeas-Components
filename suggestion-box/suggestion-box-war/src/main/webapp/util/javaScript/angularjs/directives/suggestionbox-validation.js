@@ -42,6 +42,8 @@
             function getClearedDialog(message) {
               jQuery('#suggestionValidationMessage').html(message);
               jQuery('#suggestionValidationComment').val("");
+              jQuery('.validationApproveItem').hide();
+              jQuery('.validationRefuseItem').hide();
               return jQuery('#suggestionValidation');
             }
 
@@ -57,6 +59,7 @@
               var message = jQuery('#suggestionValidationApproveMsg').html().replace('@name@',
                   suggestion.title);
               var $confirm = getClearedDialog(message);
+              jQuery('.validationApproveItem').show();
               $confirm.popup('confirmation', {
                 callback : function() {
                   if (validate(true)) {
@@ -74,6 +77,7 @@
               var message = jQuery('#suggestionValidationRefuseMsg').html().replace('@name@',
                   suggestion.title);
               var $confirm = getClearedDialog(message);
+              jQuery('.validationRefuseItem').show();
               $confirm.popup('confirmation', {
                 callback : function() {
                   if (validate(false)) {
