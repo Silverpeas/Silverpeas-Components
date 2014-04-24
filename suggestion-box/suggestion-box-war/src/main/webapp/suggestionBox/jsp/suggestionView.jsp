@@ -30,6 +30,7 @@
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
 <view:setConstant var="writerRole" constant="com.stratelia.webactiv.SilverpeasRole.writer"/>
+<view:setConstant var="adminRole"  constant="com.stratelia.webactiv.SilverpeasRole.admin"/>
 <c:set var="greaterUserRole" value="${requestScope.greaterUserRole}"/>
 
 <c:set var="currentUserLanguage" value="${requestScope.resources.language}"/>
@@ -97,7 +98,7 @@
     }
   </script>
 </head>
-<body ng-controller="mainController" id="${componentId}">
+<body ng-controller="mainController" id="${componentId}" class="suggestion-view">
 <view:browseBar componentId="${componentId}" path="${requestScope.navigationContext}">
   <c:if test="${isModeratorView}">
     <view:browseBarElt link="#" label="${validateSuggestionMenuLabel}"/>
@@ -110,6 +111,8 @@
   </c:if>
   <c:if test="${isPublishable}">
     <view:operation action="javascript:publish();" altText="${publishSuggestionMenuLabel}"/>
+  </c:if>
+  <c:if test="${isPublishable or greaterUserRole.isGreaterThanOrEquals(adminRole)}">
     <view:operation action="angularjs:delete(suggestion, true)" altText="${deleteSuggestionMenuLabel}"/>
     <div suggestionbox-deletion style="display: none"></div>
   </c:if>

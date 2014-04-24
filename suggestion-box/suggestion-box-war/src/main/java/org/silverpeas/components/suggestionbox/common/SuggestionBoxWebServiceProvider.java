@@ -230,12 +230,18 @@ public class SuggestionBoxWebServiceProvider {
   public void deleteSuggestion(SuggestionBox suggestionBox, Suggestion suggestion,
       UserDetail fromUser) {
     if (suggestion.isDefined() && (suggestion.getValidation().isInDraft() || suggestion.
-        getValidation().isRefused())) {
+        getValidation().isRefused() ||
+        (suggestion.getValidation().isValidated() && fromUser.isAccessAdmin()))) {
       checkAdminAccessOrUserIsCreator(fromUser, suggestion);
-      suggestionBox.getSuggestions().remove(suggestion);
+      boolean removed = suggestionBox.getSuggestions().remove(suggestion);
       UserPreferences userPreferences = fromUser.getUserPreferences();
-      NotifierUtil.addSuccess(getStringTranslation("suggestionBox.message.suggestion.removed",
-          userPreferences.getLanguage()));
+      if (removed) {
+        NotifierUtil.addSuccess(getStringTranslation("suggestionBox.message.suggestion.removed",
+            userPreferences.getLanguage()));
+      } else {
+        NotifierUtil.addWarning(getStringTranslation("suggestionBox.message.suggestion.notRemoved",
+            userPreferences.getLanguage()));
+      }
     } else {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
     }
