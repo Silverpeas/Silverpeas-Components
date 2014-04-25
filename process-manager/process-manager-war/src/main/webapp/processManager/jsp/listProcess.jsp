@@ -171,7 +171,6 @@ Item getItem(Item[] items, String itemName)
 
 <% if (StringUtil.isDefined(welcomeMessage)) { %>
 	<span class="inlineMessage"><%=welcomeMessage %></span>
-	<br clear="all"/>
 <% } %>
 <view:areaOfOperationOfCreation/>
 <form name="<%=context.getFormName()%>" method="post" action="filterProcess" enctype="multipart/form-data">
@@ -205,8 +204,8 @@ Item getItem(Item[] items, String itemName)
 					<table cellpadding="5" cellspacing="0" border="0" width="100%">
 						<tr>
 							<td>
-						      <br/><center><% form.display(out, context, data); %></center>
-							  <br/><center><% out.println(buttonPane.print()); %></center>
+						      <br/><% form.display(out, context, data); %>
+							  <br/><% out.println(buttonPane.print()); %>
 							</td>
 						</tr>
 					</table>
