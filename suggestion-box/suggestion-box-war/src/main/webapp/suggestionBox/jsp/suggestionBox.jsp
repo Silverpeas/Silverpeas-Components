@@ -62,7 +62,7 @@
 <fmt:message key="suggestionBox.label.noSuggestions"                       var="noSuggestions"/>
 <fmt:message key="suggestionBox.label.noComments"                          var="noComments"/>
 <fmt:message key="suggestionBox.message.edito.empty"                       var="editoEmptyMessage">
-  <fmt:param><c:url value="${componentUriBase}edito/modify"/></fmt:param>
+  <fmt:param>${componentUriBase}edito/modify</fmt:param>
 </fmt:message>
 <fmt:message key="suggestionBox.label.suggestion.status.Refused"           var="refused"/>
 <fmt:message key="suggestionBox.label.suggestion.status.Validated"         var="validated"/>
