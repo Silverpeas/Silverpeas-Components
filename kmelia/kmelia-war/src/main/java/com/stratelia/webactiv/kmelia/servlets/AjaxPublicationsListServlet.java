@@ -61,8 +61,8 @@ import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
 import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.rating.Rating;
-import org.silverpeas.rating.web.RatingEntity;
+import org.silverpeas.rating.RaterRating;
+import org.silverpeas.rating.web.RaterRatingEntity;
 import org.silverpeas.viewer.ViewerFactory;
 
 import javax.servlet.ServletException;
@@ -261,7 +261,6 @@ public class AjaxPublicationsListServlet extends HttpServlet {
    * @param allPubs
    * @param sortAllowed
    * @param linksAllowed
-   * @param checkboxAllowed
    * @param kmeliaScc
    * @param profile
    * @param gef
@@ -647,14 +646,17 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       out.write(fragmentSettings.pubState);
       out.write(")</span>");
     }
-    
+
     if (fragmentSettings.rateable) {
-      Rating rating = pub.getRating(userId);
-      RatingEntity ratingEntity = RatingEntity.fromRating(rating);
-      out.write(ratingEntity.toJSonScript("ratingEntity_" + ratingEntity.getResourceId()));
-      out.write("<silverpeas-rating readonly=\"true\" shownbratings=\"false\" starsize=\"small\" rating=\"ratingEntity_"+ratingEntity.getResourceId()+"\"></silverpeas-rating>");
+      RaterRatingEntity raterRatingEntity = RaterRatingEntity.fromRateable(pub);
+      out.write(raterRatingEntity
+          .toJSonScript("raterRatingEntity_" + raterRatingEntity.getContributionId()));
+      out.write("<silverpeas-rating readonly=\"true\" shownbraterratings=\"false\" starsize=\"small\" " +
+              "raterrating=\"raterRatingEntity_" + raterRatingEntity.getContributionId() +
+              "\"></silverpeas-rating>"
+      );
     }
-     
+
     //Gestion actualités décentralisées
     if (fragmentSettings.showDelegatedNewsInfo) {
       DelegatedNews delegatedNews = kmeliaScc.getDelegatedNews(pub.getPK().getId());

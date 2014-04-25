@@ -170,7 +170,7 @@ function ClipboardCopyOne() {
 }
 
 $(document).ready(function() {
-	<view:wysiwyg replace="Description" language="<%=language%>" width="600" height="300" toolbar="quickinfo"/>
+	<view:wysiwyg replace="Description" language="<%=language%>" width="600" height="300" toolbar="quickInfo"/>
 });
 </script>
 </head>

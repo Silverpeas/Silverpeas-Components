@@ -23,16 +23,17 @@ package com.stratelia.webactiv.forums.control.helpers;
 import com.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.forums.control.ForumsSessionController;
 import com.stratelia.webactiv.forums.models.Forum;
 import com.stratelia.webactiv.forums.url.ActionUrl;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.rating.RaterRating;
+import org.silverpeas.rating.web.RaterRatingEntity;
+
+import javax.servlet.jsp.JspWriter;
 import java.io.IOException;
 import java.util.Date;
-import javax.servlet.jsp.JspWriter;
-
-import org.silverpeas.rating.Rating;
-import org.silverpeas.rating.web.RatingEntity;
 
 /**
  *
@@ -148,12 +149,18 @@ public class ForumListHelper {
       out.println("</span></td>");
 
       // 6ème colonne : notation
-      Rating rating = forum.getRating(fsc.getUserId());
-      RatingEntity ratingEntity = RatingEntity.fromRating(rating);
+      SilverpeasRole greaterUserRole =
+          SilverpeasRole.getGreaterFrom(SilverpeasRole.from(fsc.getUserRoles()));
+      boolean canUserRating =
+          greaterUserRole != null && greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.user);
+      RaterRatingEntity raterRatingEntity = RaterRatingEntity.fromRateable(forum);
       out.print("<td class=\"ArrayCell\">");
-      out.write(ratingEntity.toJSonScript("ratingEntity_" + ratingEntity.getResourceId()));
-      out.write("<silverpeas-rating readonly=\"true\" rating=\"ratingEntity_"+ratingEntity.getResourceId()+"\" shownbratings=\"false\"></silverpeas-rating>");
-      out.println("</td>");
+      out.write(raterRatingEntity
+          .toJSonScript("raterRatingEntity_" + raterRatingEntity.getContributionId()));
+      out.write("<silverpeas-rating readonly=\"true\" raterRating=\"raterRatingEntity_" +
+          raterRatingEntity.getContributionId() +
+          "\" shownbraterratings=\"false\" canuserrating=\"" + canUserRating +
+          "\"></silverpeas-rating>");
       
       // 7ème colonne : abonnement
       boolean isSubscriber = fsc.isForumSubscriber(forumId);

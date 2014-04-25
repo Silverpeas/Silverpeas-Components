@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2011 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have recieved a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.com/legal/licensing"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
+  <name>suggestionBox</name>
+  <label>
+    <message lang="fr">Boite à Idées</message>
+    <message lang="en">Suggestion Box</message>
+    <message lang="de">Kummerkasten</message>
+  </label>
+  <description>
+    <message lang="fr">La collaboration commence par l'obtention des avis des parties
+      prenantes d'un projet. L'application Boite à Idées permet justement à chacun de participer en
+      y proposant ses idées, de commenter et de noter les idées.
+    </message>
+    <message lang="en">Collaboration begins by obtaining the opinions of the stakeholders of a project.
+      The Suggestion Box allows for everyone to participate by offering their suggestions, by commenting and by
+      rating them.</message>
+    <message lang="de">Die Zusammenarbeit beginnt mit Erhalt der Stellungnahmen der Beteiligten eines
+      Projekts. Der Kummerkasten ermöglicht für jedermann zu, indem sie ihre Ideen zu beteiligen,
+      durch Kommentare zu anderen Bewertungen und ihnen durch Abstimmung</message>
+  </description>
+  <suite>
+    <message lang="fr">02 Gestion Collaborative</message>
+    <message lang="en">02 Collaborative Management</message>
+    <message lang="de">02 kollaborative Verwaltung</message>
+  </suite>
+  <visible>true</visible>
+  <portlet>false</portlet>
+  <instanceClassName>org.silverpeas.components.suggestionbox.SuggestionBoxInstanciator</instanceClassName>
+  <profiles>
+    <profile name="admin">
+      <label>
+        <message lang="fr">Gestionnaires</message>
+        <message lang="en">Administrators</message>
+        <message lang="de">Administrator</message>
+      </label>
+      <help>
+        <message lang="fr">Les gestionnaires paramètrent la boite à idées. Ils y précisent, via
+          l'édito, l'objectif de la boite à idées et quelles sont les règles en vigueur dans la
+          participation.</message>
+        <message lang="en">The application managers parameterize the suggestion box. They specify, via
+          the edito, the purpose of the suggestion box and what are the rules of the participation.</message>
+        <message lang="de">Die Administratoren Parametrieren Sie den Kummerkasten. Geben Sie über
+          die Redak, der Zweck der Kummerkasten und was sind die Regeln für die Beteiligung.</message>
+      </help>
+    </profile>
+    <profile name="publisher">
+      <label>
+        <message lang="fr">Publieurs</message>
+        <message lang="en">Publishers</message>
+        <message lang="de">Herausgeber</message>
+      </label>
+      <help>
+        <message lang="fr">Les publieurs ont pour rôle de valider les idées des participants.
+          Lorsqu'une idée est validée, celle-ci est alors publiée dans la boite à idées. Toute idée,
+          qu'elle soit validée ou refusée, est commentée par le publieur. Le commentaire d'une idée validée donne
+          des informations supplémentaires tandis que celui d'une idée refusée informe au participant
+          les raisons du refus. Le publieur peut modérer l'idée avant sa publication.</message>
+        <message lang="en">The role of the publishers is to validate the suggestions of the participants.
+          When an idea is validated, it is then published in the suggestion box. Any suggestion,
+          validated or rejected, is endorsed by the publisher. The comment on a validated suggestion
+          provides additional information whereas the one on a rejected suggestion informs
+          the participant the reasons of the refusal. The publisher can moderate the suggestion
+          before its publication.</message>
+        <message lang="de">Die Rolle der publieurs ist es, die Anregungen der Teilnehmer zu überprüfen.
+          Wenn eine Idee bestätigt ist, wird es dann in der Kummerkasten veröffentlicht. Alle Anregungen
+          werden von einem Verlag mit einem Hinweis bestätigt oder abgelehnt werden. Der Anmerkung
+          auf eine validierte Vorschlag enthält zusätzliche Informationen, während die Notiz auf
+          Vorschlag einem abgelehnt informierte die Teilnehmer Gründe für die Ablehnung. Der Verlag
+          kann die Idee, vor der Veröffentlichung moderieren.</message>
+      </help>
+    </profile>
+    <profile name="writer">
+      <label>
+        <message lang="fr">Rédacteurs</message>
+        <message lang="en">Writers</message>
+        <message lang="de">Redaktor</message>
+      </label>
+      <help>
+        <message lang="fr">Les rédacteurs sont les participants d'une boite à idées.</message>
+        <message lang="en">The writers are the participants in a suggestion box.</message>
+        <message lang="de">Die Redaktor sind die Teilnehmer in einem Kummerkasten.</message>
+      </help>
+    </profile>
+    <profile name="user">
+      <label>
+        <message lang="fr">Lecteurs</message>
+        <message lang="en">Readers</message>
+        <message lang="de">Leser</message>
+      </label>
+      <help>
+        <message lang="fr">Les lecteurs ne peuvent pas proposer leurs idées. Cependant, ils peuvent
+          consulter, commenter et noter celles publiées.</message>
+        <message lang="en">The readers can not propose their ideas. However, they can view, comment
+          and rate those published.</message>
+        <message lang="de">Die Leser können ihre Ideen vorschlagen. Allerdings können sie ansehen,
+          kommentieren und bewerten Diejenigen veröffentlicht..</message>
+      </help>
+    </profile>
+  </profiles>
+</WAComponent>

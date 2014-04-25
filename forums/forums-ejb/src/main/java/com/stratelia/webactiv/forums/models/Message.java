@@ -23,16 +23,13 @@
  */
 package com.stratelia.webactiv.forums.models;
 
+import com.silverpeas.notation.ejb.RatingServiceFactory;
+import org.silverpeas.rating.Rateable;
+import org.silverpeas.rating.ContributionRating;
+import org.silverpeas.rating.ContributionRatingPK;
+
 import java.io.Serializable;
 import java.util.Date;
-
-import org.silverpeas.rating.Rateable;
-import org.silverpeas.rating.Rating;
-import org.silverpeas.rating.RatingPK;
-
-import com.silverpeas.notation.ejb.NotationBm;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
 
 public class Message implements Rateable, Serializable {
   private static final String TYPE = "forum_message";
@@ -54,6 +51,7 @@ public class Message implements Rateable, Serializable {
   private String instanceId;
   private MessagePK pk;
   private String status;
+  private ContributionRating contributionRating;
 
   public Message(int id, String title, String author, Date date, int forumId,
       int parentId) {
@@ -265,9 +263,11 @@ public class Message implements Rateable, Serializable {
   }
 
   @Override
-  public Rating getRating(String userId) {
-    NotationBm notationBm = EJBUtilitaire.getEJBObjectRef(JNDINames.NOTATIONBM_EJBHOME, NotationBm.class);
-    RatingPK pk = new RatingPK(String.valueOf(id), getInstanceId(), RESOURCE_TYPE, userId);
-    return notationBm.getRating(pk);
+  public ContributionRating getRating() {
+    if (contributionRating == null) {
+      contributionRating = RatingServiceFactory.getRatingService()
+          .getRating(new ContributionRatingPK(String.valueOf(getId()), getInstanceId(), RESOURCE_TYPE));
+    }
+    return contributionRating;
   }
 }

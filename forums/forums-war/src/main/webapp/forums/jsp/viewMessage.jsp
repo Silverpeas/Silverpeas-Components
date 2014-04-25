@@ -34,6 +34,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <c:set var="sessionController" value="${requestScope.forumsSessionClientController}" />
 <c:set var="componentId" value="${sessionController.componentId}" />
 <c:set var="isReader" value="${sessionController.reader}" />
@@ -47,6 +48,7 @@
 <%@ page import="org.silverpeas.util.NotifierUtil"%>
 <%@ page import="java.util.HashMap"%>
 <%@ page import="java.util.Map" %>
+<%@ page import="org.silverpeas.rating.web.RaterRatingEntity" %>
 <%@ include file="checkForums.jsp"%>
 <%
     int messageId = 0;
@@ -174,10 +176,6 @@
 
         String folderName = EncodeHelper.javaStringToHtmlString(fsc.getForumName(folderId > 0 ? folderId : params));
 
-        ResourceLocator settings = fsc.getSettings();
-        String configFile = settings.getString("configFile",
-            URLManager.getApplicationURL() + "/wysiwyg/jsp/javaScript/myconfig.js");
-
         // Messages
         currentMessageId = messageId;
         int parent = fsc.getMessageParentId(currentMessageId);
@@ -192,6 +190,8 @@
           fsc.isMessageSubscriberByInheritance(currentMessageId);
         boolean isAllMessageSubscriberByInheritance = isMessageSubscriberByInheritance;
 %>
+<c:set var="message" value="<%=message%>"/>
+<c:set var="messageRaterRatingEntity" value="<%=RaterRatingEntity.fromRateable(message)%>"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.forums">
@@ -236,7 +236,7 @@
 
         function initCKeditor() {
           if (wysiwygEditorInstance == null) {
-            wysiwygEditorInstance = <view:wysiwyg replace="messageText" language="<%=fsc.getLanguage()%>" width="600" height="300" toolbar="forums"/>;
+            wysiwygEditorInstance = <view:wysiwyg replace="messageText" language="<%=fsc.getLanguage()%>" width="600" height="300" toolbar="forum"/>;
           }
         }
 
@@ -305,7 +305,7 @@
             ? ActionUrl.getUrl("viewMessage", 8, forumId) : ActionUrl.getUrl("main", 8, -1));
 %>
             <div class="notationLine">
-            	<silverpeas-rating componentid="${componentId}" resourcetype="<%=Message.RESOURCE_TYPE %>" resourceid="<%=messageId%>" readonly="${isReader}"></silverpeas-rating>
+              <viewTags:displayContributionRating readOnly="${not(isAdmin or isUser)}" canUserRating="${isAdmin or isUser}" raterRating="${messageRaterRatingEntity}"/>
             </div>
             <%
               ForumHelper

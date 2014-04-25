@@ -1,0 +1,1 @@
+DROP TABLE IF EXISTS sc_suggestion, sc_suggestion_box CASCADE;
