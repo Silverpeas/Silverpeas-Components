@@ -162,14 +162,16 @@
       <view:button label="${back}" action="javascript:cancel();"/>
     </view:buttonPane>
 
-    <c:choose>
-      <c:when test="${greaterUserRole.isGreaterThanOrEquals(writerRole) and suggestion.validation.validated}">
-        <view:comments componentId="${componentId}" resourceId="${suggestion.id}" userId="${currentUser.id}" resourceType="${suggestion.contributionType}"/>
-      </c:when>
-      <c:when test="${suggestion.validation.validated}">
-        <view:commentListing componentId="${componentId}" resourceId="${suggestion.id}" userId="${currentUser.id}"/>
-      </c:when>
-    </c:choose>
+    <c:if test="${suggestion.validation.validated}">
+      <c:choose>
+        <c:when test="${not currentUser.anonymous}">
+          <view:comments componentId="${componentId}" resourceId="${suggestion.id}" userId="${currentUser.id}" resourceType="${suggestion.contributionType}"/>
+        </c:when>
+        <c:otherwise>
+          <view:commentListing componentId="${componentId}" resourceId="${suggestion.id}" userId="${currentUser.id}"/>
+        </c:otherwise>
+      </c:choose>
+    </c:if>
   </view:frame>
 </view:window>
 <form id="actions" name="actions" action="#" method="POST" style="display: none"></form>

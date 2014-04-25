@@ -35,7 +35,7 @@
   <description>
     <message lang="fr">La collaboration commence par l'obtention des avis des parties
       prenantes d'un projet. L'application Boite à Idées permet justement à chacun de participer en
-      y proposant ses idées, de commenter et de voter les idées.
+      y proposant ses idées, de commenter et de noter les idées.
     </message>
     <message lang="en">Collaboration begins by obtaining the opinions of the stakeholders of a project.
       The Suggestion Box allows for everyone to participate by offering their suggestions, by commenting and by
@@ -102,12 +102,9 @@
         <message lang="de">Redaktor</message>
       </label>
       <help>
-        <message lang="fr">Les rédacteurs sont les participants d'une boite à idées. Ils proposent des
-          idées, commentent et votent celles des autres.</message>
-        <message lang="en">The writers are the participants in a suggestion box. They propose suggestions,
-          they vote and comment on those of others.</message>
-        <message lang="de">Die Redaktor sind die Teilnehmer in einem Kummerkasten. Sie schlagen vor
-          Anregungen, sie bewerten und kommentieren die der anderen.</message>
+        <message lang="fr">Les rédacteurs sont les participants d'une boite à idées.</message>
+        <message lang="en">The writers are the participants in a suggestion box.</message>
+        <message lang="de">Die Redaktor sind die Teilnehmer in einem Kummerkasten.</message>
       </help>
     </profile>
     <profile name="user">
@@ -117,12 +114,12 @@
         <message lang="de">Leser</message>
       </label>
       <help>
-        <message lang="fr">Les lecteurs ne participent pas à une boite à idées. Ils ne peuvent que
-          consulter les idées proposées et les échanges.</message>
-        <message lang="en">Readers don't participate in a suggestion box. They can only view the
-          proposed suggestions and exchanges.</message>
-        <message lang="de">Leser nicht in einem Kummerkasten beteiligen. Sie können nur die
-          vorgeschlagenen Anregungen und Austausch zu sehen.</message>
+        <message lang="fr">Les lecteurs ne peuvent pas proposer leurs idées. Cependant, ils peuvent
+          consulter, commenter et noter celles publiées.</message>
+        <message lang="en">The readers can not propose their ideas. However, they can view, comment
+          and rate those published.</message>
+        <message lang="de">Die Leser können ihre Ideen vorschlagen. Allerdings können sie ansehen,
+          kommentieren und bewerten Diejenigen veröffentlicht..</message>
       </help>
     </profile>
   </profiles>
