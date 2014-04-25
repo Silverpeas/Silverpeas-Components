@@ -34,6 +34,7 @@
 <fmt:setLocale value="${currentUserLanguage}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
+<c:url var="componentUriBase" value="${requestScope.componentUriBase}"/>
 
 <c:set var="currentUser"      value="${requestScope.currentUser}"/>
 <c:set var="currentUserId"    value="${currentUser.id}"/>
@@ -68,15 +69,13 @@
 <fmt:message key="suggestionBox.label.suggestion.status.PendingValidation" var="pending"/>
 <fmt:message key="suggestionBox.menu.item.suggestions.all"                 var="allSuggestionsLabel"/>
 
-<c:url var="componentUriBase"                   value="${requestScope.componentUriBase}"/>
-<c:url var="suggestionBoxJS"                    value="/util/javaScript/angularjs/suggestionbox.js"/>
-<c:url var="suggestionBoxServicesJS"            value="/util/javaScript/angularjs/services/suggestionbox.js"/>
-<c:url var="statusIcon" value="${refusedIconPath}"/>
-
 <fmt:message key="suggestionBox.refusedSuggestion"             var="refusedIconPath"           bundle="${icons}"/>
 <fmt:message key="suggestionBox.proposeSuggestion"             var="creationIconPath"          bundle="${icons}"/>
 <fmt:message key="suggestionBox.validatedSuggestion"           var="validatedIconPath"         bundle="${icons}"/>
 <fmt:message key="suggestionBox.SuggestionInPendingValidation" var="pendingValidationIconPath" bundle="${icons}"/>
+<c:url var="suggestionBoxJS"                    value="/util/javaScript/angularjs/suggestionbox.js"/>
+<c:url var="suggestionBoxServicesJS"            value="/util/javaScript/angularjs/services/suggestionbox.js"/>
+<c:url var="statusIcon" value="${refusedIconPath}"/>
 
 <c:url var="refusedIconURL"           value="${refusedIconPath}"/>
 <c:url var="creationIconURL"          value="${creationIconPath}"/>
@@ -126,7 +125,7 @@
     <view:operationSeparator/>
   </c:if>
   <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
-    <view:operationOfCreation action="${componentUriBase}suggestions/new" altText="${browseBarPathSuggestionLabel}" icon="${creationIcon}"/>
+    <view:operationOfCreation action="${componentUriBase}suggestions/new" altText="${browseBarPathSuggestionLabel}" icon="${creationIconURL}"/>
     <view:operation action="${componentUriBase}suggestions/mine" altText="${mySuggestionsLabel}"/>
   </c:if>
   <view:operation action="${componentUriBase}suggestions/all" altText="${allSuggestionsLabel}"/>
@@ -165,7 +164,7 @@
           <ul ng-controller="suggestionsInDraftController">
             <li ng-if="inDraftSuggestions.length === 0"><span class="txt-no-content">${noSuggestions}</span></li>
             <li ng-repeat="suggestion in inDraftSuggestions">
-              <img ng-if="suggestion.validation.status === '${STATUS_REFUSED}'" src='${refusedIcon}' alt='${refusedValidationStatusLabel}' title='${refusedValidationStatusLabel}'/>
+              <img ng-if="suggestion.validation.status === '${STATUS_REFUSED}'" src='${refusedIconURL}' alt='${refusedValidationStatusLabel}' title='${refusedValidationStatusLabel}'/>
               <a ng-href="${componentUriBase}suggestions/{{ suggestion.id }}">{{suggestion.title}}</a>
             </li>
           </ul>

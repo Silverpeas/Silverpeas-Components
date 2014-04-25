@@ -48,11 +48,22 @@
             }
 
             function validate(isApproving) {
+              var label = isApproving ? jQuery('#validationApproveLabel').html() :
+                  jQuery('#validationRefuseLabel').html();
+              var result = true;
               if (!isApproving && isWhitespace(jQuery('#suggestionValidationComment').val())) {
-                notyError(jQuery('#commentMandatoryErrorMessageMsg').html());
-                return false;
+                notyError(jQuery('#commentMandatoryErrorMessageMsg').html().replace('@name@',
+                    label));
+                result = false;
               }
-              return true;
+              var comment = jQuery('#suggestionValidationComment').val();
+              var commentNbChar = (comment ? (comment.split(/\n/).length + comment.length) : 0);
+              if (commentNbChar > 2000) {
+                notyError(jQuery('#commentNbMaxCharErrorMessageMsg').html().replace('@name@',
+                    label));
+                result = false;
+              }
+              return result;
             }
 
             scope.approve = function(suggestion) {
