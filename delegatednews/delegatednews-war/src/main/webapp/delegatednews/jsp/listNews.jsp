@@ -197,7 +197,7 @@
               for (var j=0; j<listDelegatedNewsJSON.length; j++)
               {
                 var delegatedNewsJSON = listDelegatedNewsJSON[j];
-                if(pubId === delegatedNewsJSON.pubId) {
+                if(pubId == delegatedNewsJSON.pubId) {
                   updatedDelegatedNews[i] = delegatedNewsJSON;
                 }
               }
