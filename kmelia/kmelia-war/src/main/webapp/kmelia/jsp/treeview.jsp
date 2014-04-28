@@ -94,6 +94,7 @@ boolean userCanManageTopics = rightsOnTopics.booleanValue() || "admin".equalsIgn
 <view:includePlugin name="popup"/>
 <view:includePlugin name="preview"/>
 <view:includePlugin name="rating" />
+<view:includePlugin name="mylinks" />
 
 <script type="text/javascript" src="javaScript/navigation.js"></script>
 <script type="text/javascript" src="javaScript/searchInTopic.js"></script>
@@ -262,7 +263,7 @@ var searchFolderId = "<%=id%>";
 </form>
 <script type="text/javascript">
 function getComponentPermalink() {
-	return "<%=URLManager.getSimpleURL(URLManager.URL_COMPONENT, componentId)%>";
+	return "<%=URLManager.getSimpleURL(URLManager.URL_COMPONENT, componentId, false)%>";
 }
 
 function deleteNode(nodeId, nodeLabel) {

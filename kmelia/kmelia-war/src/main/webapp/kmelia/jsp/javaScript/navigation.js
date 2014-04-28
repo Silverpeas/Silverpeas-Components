@@ -6,14 +6,7 @@ var exportComponentWindow = window;
 
 function addFavorite(name, description, url)
 {
-  urlWindow = getWebContext() + "/RmyLinksPeas/jsp/AddLinkFromComponent?Name=" + name + "&Description=" + description + "&Url=" + url + "&Visible=true";
-  windowName = "favoriteWindow";
-  larg = "550";
-  haut = "250";
-  windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
-  if (!favoriteWindow.closed && favoriteWindow.name === "favoriteWindow")
-    favoriteWindow.close();
-  favoriteWindow = SP_openWindow(urlWindow, windowName, larg, haut, windowParams);
+  postNewLink(name, url, description);
 }
 
 function addSubscription() {
@@ -797,7 +790,7 @@ function addCurrentNodeAsFavorite() {
     url = $("#topicPermalink").attr("href");
     description = currentTopicDescription;
   }
-  addFavorite(encodeURIComponent(path), encodeURIComponent(description), url);
+  addFavorite(path, description, url);
 }
 
 function updateCurrentTopicWysiwyg() {
