@@ -119,243 +119,235 @@
     <script type="text/javascript" src="<%=m_context%>/gallery/jsp/javaScript/dragAndDrop.js"></script>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/upload_applet.js"></script>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+    <view:includePlugin name="mylinks" />
     <script type="text/javascript">
 
-      var currentGallery = {
-        id: "<%= albumId%>",
-        name: "<%= EncodeHelper.javaStringToJsString(albumName)%>",
-        description: "<%= EncodeHelper.javaStringToJsString(albumDescription)%>"
-      };
+var currentGallery = {
+  id: "<%= albumId%>",
+  name: "<%= EncodeHelper.javaStringToJsString(albumName)%>",
+  description: "<%= EncodeHelper.javaStringToJsString(albumDescription)%>"
+};
 
-      $(document).ready(function(){
-      <%if ("admin".equals(profile)) {%>
-          $("#albumList").sortable({opacity: 0.4, cursor: 'move'});
+$(document).ready(function(){
+<%if ("admin".equals(profile)) {%>
+  $("#albumList").sortable({opacity: 0.4, cursor: 'move'});
 
-          $('#albumList').bind('sortupdate', function(event, ui) {
-            var reg=new RegExp("album", "g");
-            var data = $('#albumList').sortable('serialize');
-            data += "&";  // pour que le dernier élément soit de la même longueur que les autres
-            var tableau=data.split(reg);
-            var param = "";
-            for (var i=0; i<tableau.length; i++) {
-              if (i > 0) {
-                param += ",";
-              }
-              param += tableau[i].substring(3, tableau[i].length-1);
-            }
-            sortAlbums(param);
-          });
-      <%}%>
-        });
+  $('#albumList').bind('sortupdate', function(event, ui) {
+    var reg=new RegExp("album", "g");
+    var data = $('#albumList').sortable('serialize');
+    data += "&";  // pour que le dernier élément soit de la même longueur que les autres
+    var tableau=data.split(reg);
+    var param = "";
+    for (var i=0; i<tableau.length; i++) {
+      if (i > 0) {
+        param += ",";
+      }
+      param += tableau[i].substring(3, tableau[i].length-1);
+    }
+    sortAlbums(param);
+  });
+<%}%>
+});
 
 
-        function sortAlbums(orderedList)
-        {
-          $.get('<%=m_context%>/Album', { orderedList:orderedList,Action:'Sort'},
-          function(data){
-            data = data.replace(/^\s+/g,'').replace(/\s+$/g,'');
-            if (data == "error")
-            {
-              alert("Une erreur s'est produite !");
-            }
-          }, 'text');
-          if (pageMustBeReloadingAfterSorting) {
-            //force page reloading to reinit menus
-            reloadIncludingPage();
+function sortAlbums(orderedList)
+{
+  $.get('<%=m_context%>/Album', { orderedList:orderedList,Action:'Sort'},
+  function(data){
+    data = data.replace(/^\s+/g,'').replace(/\s+$/g,'');
+    if (data == "error")
+    {
+      alert("Une erreur s'est produite !");
+    }
+  }, 'text');
+  if (pageMustBeReloadingAfterSorting) {
+    //force page reloading to reinit menus
+    reloadIncludingPage();
+  }
+}
+
+var albumWindow = window;
+
+function addFavorite(name, description, url) {
+  postNewLink(name, url, description);
+}
+
+function deleteConfirm(id,nom)  {
+  // confirmation de suppression de l'album
+  if(window.confirm("<%=resource.getString("gallery.confirmDeleteAlbum")%> '" + nom + "' ?")) {
+    document.albumForm.action = "DeleteAlbum";
+    document.albumForm.Id.value = id;
+    document.albumForm.submit();
+  }
+}
+
+function choiceGoTo(selectedIndex) {
+  // envoi du choix de la taille des vignettes
+  if (selectedIndex != 0 && selectedIndex != 1) {
+    document.ChoiceSelectForm.Choice.value = document.photoForm.ChoiceSize[selectedIndex].value;
+    document.ChoiceSelectForm.submit();
+  }
+}
+
+function sendData() {
+  // envoi des photos selectionnees pour la modif par lot
+  var selectedPhotos = getObjects(true);
+  if (selectedPhotos && selectedPhotos.length > 0)
+  {
+    document.photoForm.SelectedIds.value 	= selectedPhotos;
+    document.photoForm.NotSelectedIds.value = getObjects(false);
+    document.photoForm.submit();
+  }
+}
+
+function sendToBasket() {
+  // envoi des photos selectionnees dans le panier
+  var selectedPhotos = getObjects(true);
+  if (selectedPhotos && selectedPhotos.length > 0)
+  {
+    document.photoForm.SelectedIds.value 	= selectedPhotos;
+    document.photoForm.NotSelectedIds.value = getObjects(false);
+    document.photoForm.action	= "BasketAddPhotos";
+    document.photoForm.submit();
+  }
+}
+
+function sendDataDelete() {
+  //confirmation de suppression de l'album
+  var selectedPhotos = getObjects(true);
+  if (selectedPhotos && selectedPhotos.length > 0)
+  {
+    if(window.confirm("<%=resource.getString("gallery.confirmDeletePhotos")%> ")) {
+      // envoi des photos selectionnees pour la modif par lot
+      document.photoForm.SelectedIds.value 	= selectedPhotos;
+      document.photoForm.NotSelectedIds.value = getObjects(false);
+      document.photoForm.action				= "DeleteSelectedPhoto";
+      document.photoForm.submit();
+    }
+  }
+}
+
+function sendDataCategorize() {
+  var selectedPhotos = getObjects(true);
+  if (selectedPhotos && selectedPhotos.length > 0)
+  {
+    var selectedIds = selectedPhotos;
+    var notSelectedIds = getObjects(false);
+
+    urlWindow = "CategorizeSelectedPhoto?SelectedIds="+selectedIds+"&NotSelectedIds="+notSelectedIds;
+    windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
+    if (!albumWindow.closed && albumWindow.name== "albumWindow") {
+      albumWindow.close();
+    }
+    albumWindow = SP_openWindow(urlWindow, "albumWindow", "550", "250", windowParams);
+  }
+}
+
+function sendDataForAddPath()
+{
+  // envoi des photos selectionnees pour le placement par lot
+  var selectedPhotos = getObjects(true);
+  if (selectedPhotos && selectedPhotos.length > 0)
+  {
+    document.photoForm.SelectedIds.value  = selectedPhotos;
+    document.photoForm.NotSelectedIds.value = getObjects(false);
+    document.photoForm.action       = "AddPathForSelectedPhoto";
+    document.photoForm.submit();
+  }
+}
+
+function getObjects(selected)	{
+  var  items = "";
+  try {
+    var boxItems = document.photoForm.SelectPhoto;
+    if (boxItems != null) {
+      // au moins une checkbox exist
+      var nbBox = boxItems.length;
+      if ( (nbBox == null) && (boxItems.checked == selected) ) {
+        // il n'y a qu'une checkbox non selectionnee
+        items += boxItems.value+",";
+      } else {
+        // search not checked boxes
+        for (i=0;i<boxItems.length ;i++ ) {
+          if (boxItems[i].checked == selected) {
+            items += boxItems[i].value+",";
           }
         }
+      }
+    }
+  }
+  catch (e)  {
+    //Checkboxes are not displayed
+  }
+  return items;
+}
 
-        var albumWindow = window;
+function doPagination(index) {
+  document.photoForm.SelectedIds.value 	= getObjects(true);
+  document.photoForm.NotSelectedIds.value = getObjects(false);
+  document.photoForm.Index.value 			= index;
+  document.photoForm.action				= "Pagination";
+  document.photoForm.submit();
+}
 
-        function addFavorite(m_sAbsolute,m_context,name,description,url)
-        {
-          urlWindow = m_sAbsolute + m_context + "/RmyLinksPeas/jsp/AddLinkFromComponent?Name="+name+"&Description="+description+"&Url="+url+"&Visible=true";
-          windowName = "albumWindow";
-          larg = "550";
-          haut = "250";
-          windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
-          if (!albumWindow.closed && albumWindow.name== "albumWindow") {
-            albumWindow.close();
-          }
-          albumWindow = SP_openWindow(urlWindow, windowName, larg, haut, windowParams);
-        }
+function sortGoTo(selectedIndex) {
+  // envoi du choix du tri
+  if (selectedIndex != 0 && selectedIndex != 1)  {
+    document.OrderBySelectForm.Tri.value = document.photoForm.SortBy[selectedIndex].value;
+    document.OrderBySelectForm.submit();
+  }
+}
 
-        function deleteConfirm(id,nom)  {
-          // confirmation de suppression de l'album
-          if(window.confirm("<%=resource.getString("gallery.confirmDeleteAlbum")%> '" + nom + "' ?")) {
-            document.albumForm.action = "DeleteAlbum";
-            document.albumForm.Id.value = id;
-            document.albumForm.submit();
-          }
-        }
+function uploadCompleted(s)  {
+  //window.alert("In uploadCompleted !"+s);
+  location.href="<%=m_context + URLManager.getURL(null, componentId)%>ViewAlbum?Id=<%=currentAlbum.getNodePK().getId()%>";
+  //return true;
+}
 
-        function choiceGoTo(selectedIndex) {
-          // envoi du choix de la taille des vignettes
-          if (selectedIndex != 0 && selectedIndex != 1) {
-            document.ChoiceSelectForm.Choice.value = document.photoForm.ChoiceSize[selectedIndex].value;
-            document.ChoiceSelectForm.submit();
-          }
-        }
+function showDnD() {
+  var url = "<%=URLManager.getFullApplicationURL(request)%>/RgalleryDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&AlbumId=<%=currentAlbum.getNodePK().getId()%>";
+  var message = "<%=URLManager.getFullApplicationURL(request)%>/upload/Gallery_<%=resource.getLanguage()%>.html";
 
-        function sendData() {
-          // envoi des photos selectionnees pour la modif par lot
-          var selectedPhotos = getObjects(true);
-          if (selectedPhotos && selectedPhotos.length > 0)
-          {
-            document.photoForm.SelectedIds.value 	= selectedPhotos;
-            document.photoForm.NotSelectedIds.value = getObjects(false);
-            document.photoForm.submit();
-          }
-        }
+<%
+long maximumFileSize = FileRepositoryManager.getUploadMaximumFileSize();%>
+    showHideDragDrop(url, message,'<%=resource.getString("GML.applet.dnd.alt")%>','<%=maximumFileSize%>','<%=m_context%>','<%=resource.getString("GML.DragNDropExpand")%>','<%=resource.getString("GML.DragNDropCollapse")%>');
+  }
 
-        function sendToBasket() {
-          // envoi des photos selectionnees dans le panier
-          var selectedPhotos = getObjects(true);
-          if (selectedPhotos && selectedPhotos.length > 0)
-          {
-            document.photoForm.SelectedIds.value 	= selectedPhotos;
-            document.photoForm.NotSelectedIds.value = getObjects(false);
-            document.photoForm.action	= "BasketAddPhotos";
-            document.photoForm.submit();
-          }
-        }
+function clipboardPaste() {
+  $.progressMessage();
+  document.albumForm.action = "paste";
+  document.albumForm.submit();
+}
 
-        function sendDataDelete() {
-          //confirmation de suppression de l'album
-          var selectedPhotos = getObjects(true);
-          if (selectedPhotos && selectedPhotos.length > 0)
-          {
-            if(window.confirm("<%=resource.getString("gallery.confirmDeletePhotos")%> ")) {
-              // envoi des photos selectionnees pour la modif par lot
-              document.photoForm.SelectedIds.value 	= selectedPhotos;
-              document.photoForm.NotSelectedIds.value = getObjects(false);
-              document.photoForm.action				= "DeleteSelectedPhoto";
-              document.photoForm.submit();
-            }
-          }
-        }
+function clipboardCopy() {
+  top.IdleFrame.location.href = '../..<%=gallerySC.getComponentUrl()%>copy?Object=Node&Id=<%=currentAlbum.getNodePK().getId()%>';
+}
 
-        function sendDataCategorize() {
-          var selectedPhotos = getObjects(true);
-          if (selectedPhotos && selectedPhotos.length > 0)
-          {
-            var selectedIds = selectedPhotos;
-            var notSelectedIds = getObjects(false);
+function clipboardCut() {
+  top.IdleFrame.location.href = '../..<%=gallerySC.getComponentUrl()%>cut?Object=Node&Id=<%=currentAlbum.getNodePK().getId()%>';
+}
 
-            urlWindow = "CategorizeSelectedPhoto?SelectedIds="+selectedIds+"&NotSelectedIds="+notSelectedIds;
-            windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
-            if (!albumWindow.closed && albumWindow.name== "albumWindow") {
-              albumWindow.close();
-            }
-            albumWindow = SP_openWindow(urlWindow, "albumWindow", "550", "250", windowParams);
-          }
-        }
+function CopySelectedPhoto()  {
+  var selectedPhotos = getObjects(true);
+  if (selectedPhotos && selectedPhotos.length > 0)
+  {
+    document.photoForm.SelectedIds.value 	= selectedPhotos;
+    document.photoForm.NotSelectedIds.value = getObjects(false);
+    document.photoForm.action				= "CopySelectedPhoto";
+    document.photoForm.submit();
+  }
+}
 
-        function sendDataForAddPath()
-        {
-          // envoi des photos selectionnees pour le placement par lot
-          var selectedPhotos = getObjects(true);
-          if (selectedPhotos && selectedPhotos.length > 0)
-          {
-            document.photoForm.SelectedIds.value  = selectedPhotos;
-            document.photoForm.NotSelectedIds.value = getObjects(false);
-            document.photoForm.action       = "AddPathForSelectedPhoto";
-            document.photoForm.submit();
-          }
-        }
-
-        function getObjects(selected)	{
-          var  items = "";
-          try {
-            var boxItems = document.photoForm.SelectPhoto;
-            if (boxItems != null) {
-              // au moins une checkbox exist
-              var nbBox = boxItems.length;
-              if ( (nbBox == null) && (boxItems.checked == selected) ) {
-                // il n'y a qu'une checkbox non selectionnee
-                items += boxItems.value+",";
-              } else {
-                // search not checked boxes
-                for (i=0;i<boxItems.length ;i++ ) {
-                  if (boxItems[i].checked == selected) {
-                    items += boxItems[i].value+",";
-                  }
-                }
-              }
-            }
-          }
-          catch (e)  {
-            //Checkboxes are not displayed
-          }
-          return items;
-        }
-
-        function doPagination(index) {
-          document.photoForm.SelectedIds.value 	= getObjects(true);
-          document.photoForm.NotSelectedIds.value = getObjects(false);
-          document.photoForm.Index.value 			= index;
-          document.photoForm.action				= "Pagination";
-          document.photoForm.submit();
-        }
-
-        function sortGoTo(selectedIndex) {
-          // envoi du choix du tri
-          if (selectedIndex != 0 && selectedIndex != 1)  {
-            document.OrderBySelectForm.Tri.value = document.photoForm.SortBy[selectedIndex].value;
-            document.OrderBySelectForm.submit();
-          }
-        }
-
-        function uploadCompleted(s)  {
-          //window.alert("In uploadCompleted !"+s);
-          location.href="<%=m_context + URLManager.getURL(null, componentId)%>ViewAlbum?Id=<%=currentAlbum.getNodePK().getId()%>";
-          //return true;
-        }
-
-        function showDnD() {
-          var url = "<%=URLManager.getFullApplicationURL(request)%>/RgalleryDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&AlbumId=<%=currentAlbum.getNodePK().getId()%>";
-          var message = "<%=URLManager.getFullApplicationURL(request)%>/upload/Gallery_<%=resource.getLanguage()%>.html";
-
-      <%
-        long maximumFileSize = FileRepositoryManager.getUploadMaximumFileSize();%>
-            showHideDragDrop(url, message,'<%=resource.getString("GML.applet.dnd.alt")%>','<%=maximumFileSize%>','<%=m_context%>','<%=resource.getString("GML.DragNDropExpand")%>','<%=resource.getString("GML.DragNDropCollapse")%>');
-          }
-
-        function clipboardPaste() {
-          $.progressMessage();
-          document.albumForm.action = "paste";
-          document.albumForm.submit();
-        }
-
-                      function clipboardCopy() {
-                        top.IdleFrame.location.href = '../..<%=gallerySC.getComponentUrl()%>copy?Object=Node&Id=<%=currentAlbum.getNodePK().getId()%>';
-                      }
-
-                      function clipboardCut() {
-                        top.IdleFrame.location.href = '../..<%=gallerySC.getComponentUrl()%>cut?Object=Node&Id=<%=currentAlbum.getNodePK().getId()%>';
-                      }
-
-                      function CopySelectedPhoto()  {
-                        var selectedPhotos = getObjects(true);
-                        if (selectedPhotos && selectedPhotos.length > 0)
-                        {
-                          document.photoForm.SelectedIds.value 	= selectedPhotos;
-                          document.photoForm.NotSelectedIds.value = getObjects(false);
-                          document.photoForm.action				= "CopySelectedPhoto";
-                          document.photoForm.submit();
-                        }
-                      }
-
-                      function CutSelectedPhoto()  {
-                        var selectedPhotos = getObjects(true);
-                        if (selectedPhotos && selectedPhotos.length > 0)
-                        {
-                          document.photoForm.SelectedIds.value  = selectedPhotos;
-                          document.photoForm.NotSelectedIds.value = getObjects(false);
-                          document.photoForm.action       = "CutSelectedPhoto";
-                          document.photoForm.submit();
-                        }
-                      }
+function CutSelectedPhoto()  {
+  var selectedPhotos = getObjects(true);
+  if (selectedPhotos && selectedPhotos.length > 0)
+  {
+    document.photoForm.SelectedIds.value  = selectedPhotos;
+    document.photoForm.NotSelectedIds.value = getObjects(false);
+    document.photoForm.action       = "CutSelectedPhoto";
+    document.photoForm.submit();
+  }
+}
 
     </script>
     <%@include file="diaporama.jsp" %>
@@ -428,11 +420,8 @@
       // favoris
       if (!isGuest) {
         operationPane.addOperation(resource.getIcon("gallery.addFavorite"), resource.getString(
-                "gallery.addFavorite"), "javaScript:addFavorite('"
-                + URLManager.getServerURL(request) + "','" + m_context + "','" + EncodeHelper.
-                javaStringToHtmlString(EncodeHelper.javaStringToJsString(galleryName)) + "','"
-                + EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(
-                albumDescription)) + "','" + albumUrl + "')");
+                "gallery.addFavorite"), "javaScript:addFavorite('" + EncodeHelper.javaStringToJsString(galleryName) + "','"
+                + EncodeHelper.javaStringToJsString(albumDescription) + "','" + albumUrl + "')");
       }
 
       if (isPrivateSearch) {
