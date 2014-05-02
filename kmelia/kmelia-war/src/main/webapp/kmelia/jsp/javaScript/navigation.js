@@ -193,6 +193,10 @@ function displayResponsibles() {
   displayComponentResponsibles(getCurrentUserId(), getComponentId());
 }
 
+function addAppAsFavorite() {
+  addFavoriteApp(getComponentId());
+}
+
 function initOperations(id, op) {
   $("#menutoggle").css({'display': 'block'});
 
@@ -436,6 +440,15 @@ function initOperations(id, op) {
     groupIndex++;
     groupEmpty = true;
     menuEmpty = false;
+  }
+
+  if (op.mylinks) {
+    menuItem = new YAHOO.widget.MenuItem(getString('GML.favorite.application.add'), {
+      classname: 'space-or-application-favorites-operation',
+      url: "javascript:onclick=addAppAsFavorite()"
+    });
+    oMenu.addItem(menuItem, groupIndex);
+    groupEmpty = false;
   }
 
   if (op.responsibles) {
