@@ -28,11 +28,8 @@
 <%@page import="java.io.File"%>
 <%@page import="com.silverpeas.blog.control.WallPaper"%>
 <%@page import="com.silverpeas.blog.control.StyleSheet"%>
-
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-
 <%@ include file="check.jsp" %>
-
 <%
 // recuperation des parametres
 Collection<PostDetail>  posts   = (Collection<PostDetail>) request.getAttribute("Posts");
@@ -78,18 +75,18 @@ if (!m_MainSessionCtrl.getCurrentUserDetail().isAccessGuest() && isUserSubscribe
   }
 }
 %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=componentLabel%></title>
 <view:looknfeel/>
 <% if (StringUtil.isDefined(rssURL)) { %>
-  <link rel="alternate" type="application/rss+xml" title="<%=componentLabel%> : <%=resource.getString("blog.rssLast")%>" href="<%=m_context+rssURL%>"/>
+<link rel="alternate" type="application/rss+xml" title="<%=componentLabel%> : <%=resource.getString("blog.rssLast")%>" href="<%=m_context+rssURL%>"/>
 <% } %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
+<!--
 function openSPWindow(fonction, windowName) {
   pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600', '400','scrollbars=yes, resizable, alwaysRaised');
 }
@@ -207,34 +204,35 @@ function hideStyleSheetFile() {
   $("#customizationDialog #StyleSheetFile").hide();
   document.customizationFiles.removeStyleSheetFile.value = "yes";
 }
+-->
 </script>
-
 <% if(wallPaper != null) { %>
 <style type="text/css">
-  #blog #blogContainer #bandeau  {
-  background:url("<%=wallPaper.getUrl()%>")  center no-repeat;
-  }
+#blog #blogContainer #bandeau {
+	background:url("<%=wallPaper.getUrl()%>") center no-repeat;
+}
 </style>
 <% } %>
-
 <% if(styleSheet != null) { %>
 <style type="text/css">
-  <%=styleSheet.getContent()%>
+<%=styleSheet.getContent()%>
 </style>
 <% } %>
 </head>
 <body id="blog">
-  <div id="<%=instanceId %>">
+<div id="<%=instanceId %>">
   <%
   out.println(window.printBefore());
   %>
-    <div id="blogContainer">
-      <div id="bandeau"><h2><a href="<%="Main"%>"><%=componentLabel%></a></h2></div>
-      <div id="navBlog">
-        <%@ include file="colonneDroite.jsp.inc" %>
-      </div>
-      <div id="postsList">
-        <%
+  <div id="blogContainer">
+    <div id="bandeau">
+      <h2><a href="<%="Main"%>"><%=componentLabel%></a></h2>
+    </div>
+    <div id="navBlog">
+      <%@ include file="colonneDroite.jsp.inc" %>
+    </div>
+    <div id="postsList">
+      <%
           Iterator it = (Iterator) posts.iterator();
 
           java.util.Calendar cal = GregorianCalendar.getInstance();
@@ -267,112 +265,104 @@ function hideStyleSheetFile() {
 
           if (visible) {
           %>
-
-          <div id="post<%=postId%>" class="<%=blocClass%>">
-          <div class="titreTicket">
-            <a href="<%="ViewPost?PostId=" + postId%>"><%=EncodeHelper.javaStringToHtmlString(post.getPublication().getName())%></a> <span class="status">(<%=status%>)</span>
-                <%  if ( link != null && !link.equals("")) {  %>
-                  <span class="permalink"><a href="<%=link%>"><img src="<%=resource.getIcon("blog.link")%>" border="0" alt='<%=resource.getString("blog.CopyPostLink")%>' title='<%=resource.getString("blog.CopyPostLink")%>'/></a></span>
-                <%  } %>
-          </div>
-          <%
+      <div id="post<%=postId%>" class="post <%=blocClass%>">
+        <div class="titreTicket"> <a href="<%="ViewPost?PostId=" + postId%>"><%=EncodeHelper.javaStringToHtmlString(post.getPublication().getName())%></a> <span class="status">(<%=status%>)</span>
+          <%  if ( link != null && !link.equals("")) {  %>
+          <span class="permalink"><a href="<%=link%>"><img src="<%=resource.getIcon("blog.link")%>" alt='<%=resource.getString("blog.CopyPostLink")%>' title='<%=resource.getString("blog.CopyPostLink")%>'/></a></span>
+          <%  } %>
+        </div>
+		
+        <%
             cal.setTime(post.getDateEvent());
             String day = resource.getString("GML.jour"+cal.get(java.util.Calendar.DAY_OF_WEEK));
            %>
-           <div class="infoTicket"><%=day%> <%=resource.getOutputDate(post.getDateEvent())%></div>
-           <div class="contentTicket">
-           <view:displayWysiwyg objectId="<%=postId%>" componentId="<%=instanceId %>" language="<%=resource.getLanguage() %>" />
-           </div>
-
-           <div class="footerTicket">
-           <span class="versCommentaires">
-            <a href="<%="ViewPost?PostId=" + postId%>#commentaires" class="versCommentaires">&gt;&gt; <%=resource.getString("blog.comments")%> (<%=post.getNbComments()%>) </a>
-           </span>
-
-            <% if (!categoryId.equals("")) {  %>
-            <span class="categoryTicket">
-              <span class="sep">&nbsp;|&nbsp;</span>
-            <a href="<%="PostByCategory?CategoryId="+categoryId%>" class="versTopic">&gt;&gt; <%=post.getCategory().getName()%> </a>
-            </span>
-            <% } %>
-
-            <span class="creatorTicket">
-            <span class="sep">&nbsp;|&nbsp;</span>
-            <% // date de cr�ation et de modification %>
-            <%=resource.getString("GML.creationDate")%> <%=resource.getOutputDate(post.getPublication().getCreationDate())%> <%=resource.getString("GML.by")%> <%=post.getCreatorName() %>
-            <% if (!resource.getOutputDate(post.getPublication().getCreationDate()).equals(resource.getOutputDate(post.getPublication().getUpdateDate())) || !post.getPublication().getCreatorId().equals(post.getPublication().getUpdaterId()))
-               {
-              UserDetail updater = m_MainSessionCtrl.getOrganisationController().getUserDetail(post.getPublication().getUpdaterId());
-              String updaterName = "Unknown";
-              if (updater != null)
-              updaterName = updater.getDisplayedName();
-            %>
-               - <%=resource.getString("GML.updateDate")%> <%=resource.getOutputDate(post.getPublication().getUpdateDate())%> <%=resource.getString("GML.by")%> <%=updaterName %>
-            <% } %>
-            </span>
-           </div>
-          <div class="separateur"><hr /></div>
+		 
+		  <div class="infoTicket"><%=day%> <%=resource.getOutputDate(post.getDateEvent())%></div>
+		 
+		   <% if (!categoryId.equals("")) {  %>
+		     <div id="list-categoryTicket">
+			  <span class="categoryTicket">  <a href="<%="PostByCategory?CategoryId="+categoryId%>" class="versTopic"><%=post.getCategory().getName()%> </a> </span>
+			 </div>
+			  <% } %>
+       
+        <div class="contentTicket">
+          <view:displayWysiwyg objectId="<%=postId%>" componentId="<%=instanceId %>" language="<%=resource.getLanguage() %>" />
         </div>
-         <%
+        <div class="footerTicket"> 
+			<span class="versCommentaires"> <a href="<%="ViewPost?PostId=" + postId%>#commentaires" class="versCommentaires"><img alt="commentaires" src="<%=resource.getIcon("blog.commentaires")%>" /> <%=post.getNbComments()%> </a> </span>
+			  <span class="creatorTicket"> <span class="sep">&nbsp;|&nbsp;</span>
+			  <% // date de cr�ation et de modification %>
+			  <%=resource.getString("GML.creationDate")%> <%=resource.getOutputDate(post.getPublication().getCreationDate())%> <%=resource.getString("GML.by")%> <%=post.getCreatorName() %>
+			  <% if (!resource.getOutputDate(post.getPublication().getCreationDate()).equals(resource.getOutputDate(post.getPublication().getUpdateDate())) || !post.getPublication().getCreatorId().equals(post.getPublication().getUpdaterId()))
+				   {
+				  UserDetail updater = m_MainSessionCtrl.getOrganisationController().getUserDetail(post.getPublication().getUpdaterId());
+				  String updaterName = "Unknown";
+				  if (updater != null)
+				  updaterName = updater.getDisplayedName();
+				%>
+			  - <%=resource.getString("GML.updateDate")%> <%=resource.getOutputDate(post.getPublication().getUpdateDate())%> <%=resource.getString("GML.by")%> <%=updaterName %>
+			  <% } %>
+			  </span> 
+		  </div>
+        <div class="separateur"><hr /></div>
+      </div>
+      <%
           // Fin du ticket
           nbPostDisplayed --;
           }
          }
         %>
-      </div>
-
-      <div id="footer">
-        <%
+    </div>
+    <div id="footer">
+      <%
         out.flush();
         getServletConfig().getServletContext().getRequestDispatcher("/wysiwyg/jsp/htmlDisplayer.jsp?ObjectId="+instanceId+"&ComponentId="+instanceId).include(request, response);
         %>
-      </div>
-
-      <!-- Dialog to edit files to customize -->
-      <div id="customizationDialog" title="<%=resource.getString("blog.customize")%>">
-        <form name="customizationFiles" action="Customize" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
-          <table>
-            <tr id="WallPaper">
-              <td class="txtlibform"><%=resource.getString("blog.wallPaper")%></td>
-              <td>
-              <% if(wallPaper != null) { %>
-               <div id="WallPaperFile">
-                 <a href="<%=wallPaper.getUrl()%>" target="_blank"><%=wallPaper.getName()%></a>
-                 <%=wallPaper.getSize()%>
-                 <a href="javascript:onclick=hideWallPaperFile();"><img src="<%=resource.getIcon("blog.smallDelete")%>" border="0"/></a>
-                 <br/>
-               </div>
-              <% } %>
-               <input type="file" name="wallPaper" id="WallPaperNewFile" size="40"/> <i>(.gif/.jpg/.png)</i>
-               <input type="hidden" name="removeWallPaperFile" value="no"/>
-              </td>
-            </tr>
-            <tr id="StyleSheet">
-              <td class="txtlibform"><%=resource.getString("blog.styleSheet")%></td>
-              <td>
-              <% if (styleSheet != null) { %>
-               <div id="StyleSheetFile">
-                 <a href="<%=styleSheet.getUrl()%>" target="_blank"><%=styleSheet.getName()%></a>
-                 <%=styleSheet.getSize()%>
-                 <a href="javascript:onclick=hideStyleSheetFile();"><img src="<%=resource.getIcon("blog.smallDelete")%>" border="0"/></a>
-                 <br/>
-               </div>
-              <% } %>
-               <input type="file" name="styleSheet" id="StyleSheetNewFile" size="40"/> <i>(.css)</i>
-               <input type="hidden" name="removeStyleSheetFile" value="no"/>
-              </td>
-            </tr>
-          </table>
-        </form>
-      </div>
     </div>
-  </div>
-
+    <!-- Dialog to edit files to customize -->
+    <div id="customizationDialog" title="<%=resource.getString("blog.customize")%>">
+      <form name="customizationFiles" action="Customize" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
+	   
+	   <div id="WallPaper">
+	   <label id="WallPaperFile_label" for="WallPaperNewFile" class="label-ui-dialog"><%=resource.getString("blog.wallPaper")%></label>
+		<% if(wallPaper != null) { %>
+			<span id="WallPaperFile" class="champ-ui-dialog">
+				<a href="<%=wallPaper.getUrl()%>" target="_blank"><%=wallPaper.getName()%></a> 
+				<%=wallPaper.getSize()%> 
+				<a href="javascript:onclick=hideWallPaperFile();"><img src="<%=resource.getIcon("blog.smallDelete")%>"/></a> <br/>
+			</span>			
+              <% } %>			  
+			  <span class="champ-ui-dialog">
+					<input type="file" name="wallPaper" id="WallPaperNewFile" size="40"/>
+					<i>(.gif/.jpg/.png)</i>
+					<input type="hidden" name="removeWallPaperFile" value="no"/>
+			  </span>
+	  </div>
+	  <div id="StyleSheet">
+	   <label id="fileName_label" for="StyleSheetNewFile" class="label-ui-dialog"><%=resource.getString("blog.styleSheet")%></label>
+        <span 	class="champ-ui-dialog">
+		<% if (styleSheet != null) { %>
+              <span id="StyleSheetFile"> 
+				<a href="<%=styleSheet.getUrl()%>" target="_blank"><%=styleSheet.getName()%></a> 
+				<%=styleSheet.getSize()%> 
+				<a href="javascript:onclick=hideStyleSheetFile();"><img src="<%=resource.getIcon("blog.smallDelete")%>" alt=""/></a> 
+				<br/>
+              </span>
+              <% } %>
+				<input type="file" name="styleSheet" id="StyleSheetNewFile" size="40"/>
+				<i>(.css)</i>
+				<input type="hidden" name="removeStyleSheetFile" value="no"/>
+		</span>
+	  </div>
+      </form>
+    </div>
+</div>
 <form name="subscriptionForm" action="AddSubscription" method="post">
 </form>
-
 <%
 out.println(window.printAfter());
 %>
+
+  </div>
 </body>
 </html>
