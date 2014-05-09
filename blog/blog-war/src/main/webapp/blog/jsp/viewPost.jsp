@@ -75,8 +75,7 @@ StyleSheet styleSheet = (StyleSheet) request.getAttribute("StyleSheet");
   }
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
@@ -150,19 +149,21 @@ out.println(window.printBefore());
 				  <%}	%> 
 				</div>
 				<div class="infoTicket"><%=day%> <%=resource.getOutputDate(post.getDateEvent())%></div>
+				<% if (!categoryId.equals("")) { %>
+				  <div id="list-categoryTicket">
+		         	<span class="categoryTicket">
+		            <a href="<%="PostByCategory?CategoryId="+categoryId%>" class="versTopic"><%=post.getCategory().getName()%> </a>
+		            </span>
+					</div>
+		         <% } %>		       
 				<div class="contentTicket">
 				<view:displayWysiwyg objectId="<%=postId%>" componentId="<%=instanceId %>" language="<%=resource.getLanguage() %>" />
 				</div>   
 				<div class="footerTicket">    	
 				   <span class="versCommentaires">
-						&gt;&gt; <%=resource.getString("blog.comments")%> (<%=post.getNbComments()%>) 
+						<img alt="commentaires" src="<%=resource.getIcon("blog.commentaires")%>" /> <%=post.getNbComments()%>
 				   </span>
-		        <% if (!categoryId.equals("")) { %>
-		         	<span class="categoryTicket">
-		            &nbsp;|&nbsp;
-		            <a href="<%="PostByCategory?CategoryId="+categoryId%>" class="versTopic">&gt;&gt; <%=post.getCategory().getName()%> </a>
-		            </span>
-		         <% } %>		       
+		        
 		       <span class="creatorTicket"> 
 	  	       &nbsp;|&nbsp;
 		         <% // date de cr�ation et de modification %>
@@ -183,7 +184,6 @@ out.println(window.printBefore());
       %>      
     </div>	 
 	</div>
-</div>
 
 <form name="postForm" action="DeletePost" method="post">
 	<input type="hidden" name="PostId"/>
@@ -191,5 +191,7 @@ out.println(window.printBefore());
 <%
 out.println(window.printAfter());
 %> 
+
+</div>
 </body>
 </html>
