@@ -78,7 +78,6 @@ boolean userCanSeeStats =
 <view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/upload_applet.js"></script>
-<view:includePlugin name="userZoom"/>
 <view:includePlugin name="popup"/>
 <view:includePlugin name="preview"/>
 <view:includePlugin name="rating" />

@@ -91,7 +91,6 @@ boolean userCanManageTopics = rightsOnTopics.booleanValue() || "admin".equalsIgn
 <script type="text/javascript" src="<%=m_context%>/kmelia/jsp/javaScript/dragAndDrop.js"></script>
 <script type="text/javascript" src="<c:url value="/util/javaScript/checkForm.js" />"></script>
 
-<view:includePlugin name="userZoom"/>
 <view:includePlugin name="popup"/>
 <view:includePlugin name="preview"/>
 <view:includePlugin name="rating" />

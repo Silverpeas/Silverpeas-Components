@@ -46,7 +46,6 @@
   <head>
     <view:looknfeel />
     <view:includePlugin name="datepicker"/>
-    <view:includePlugin name="userZoom"/>
     <script type="text/javascript" src="<c:url value='/util/javaScript/animation.js'/>"></script>
     <script type="text/javascript" src="<c:url value='/util/javaScript/checkForm.js'/>"></script>
     <script type="text/javascript">
