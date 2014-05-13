@@ -20,27 +20,37 @@
  */
 package com.silverpeas.questionReply.control;
 
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 import com.silverpeas.components.model.AbstractTestDao;
 import com.silverpeas.questionReply.model.Question;
 import com.silverpeas.questionReply.model.QuestionMatcher;
 import com.silverpeas.questionReply.model.Reply;
 import com.silverpeas.questionReply.model.ReplyMatcher;
 import com.silverpeas.util.CollectionUtil;
-
+import com.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.webactiv.persistence.IdPK;
-
+import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.junit.Before;
+import org.mockito.Matchers;
 import org.mockito.Mockito;
+import org.silverpeas.attachment.AttachmentService;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.util.SimpleDocumentList;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.when;
 
 /**
  *
@@ -50,6 +60,23 @@ public class QuestionManagerTest extends AbstractTestDao {
 
   public QuestionManagerTest() {
     new ClassPathXmlApplicationContext("spring-questionreply.xml");
+  }
+
+  @Before
+  public void prepareMocks() {
+    AttachmentService attachmentServiceMock = AttachmentServiceFactory.getAttachmentService();
+    when(attachmentServiceMock.listDocumentsByForeignKeyAndType(Matchers.any(WAPrimaryKey.class),
+        eq(DocumentType.wysiwyg), anyString()))
+        .thenReturn(new SimpleDocumentList<SimpleDocument>());
+    when(attachmentServiceMock
+        .listDocumentsByForeignKey(Matchers.any(ForeignPK.class), eq((String) null)))
+        .thenReturn(new SimpleDocumentList<SimpleDocument>());
+  }
+
+  @Override
+  public void setUp() throws Exception {
+    super.setUp();
+    prepareMocks();
   }
 
   /**
@@ -91,7 +118,7 @@ public class QuestionManagerTest extends AbstractTestDao {
     question = manager.getQuestion(100L);
     assertThat(question, is(nullValue()));
     Mockito.verify(mockContentManager, Mockito.times(1)).removeSilverContent(Mockito.any(
-        Connection.class), Mockito.anyInt(), Mockito.anyString());
+        Connection.class), Mockito.anyInt(), anyString());
   }
 
   /**
@@ -157,7 +184,7 @@ public class QuestionManagerTest extends AbstractTestDao {
     question2.setReplyNumber(1);
     assertThat(question, QuestionMatcher.matches(question2));
     Mockito.verify(mockContentManager, Mockito.times(0)).removeSilverContent(Mockito.any(
-        Connection.class), Mockito.anyInt(), Mockito.anyString());
+        Connection.class), Mockito.anyInt(), anyString());
     List<Reply> replies = question.readReplies();
     Reply reply = new Reply();
     reply.setContent("Et quand ils meurent ou s'endorment C'est la chaleur de ta voix Qui les "

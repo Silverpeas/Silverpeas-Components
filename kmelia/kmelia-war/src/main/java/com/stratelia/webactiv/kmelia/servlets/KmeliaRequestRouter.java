@@ -1272,7 +1272,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         }
         request.setAttribute("ObjectId", publication.getId());
         request.setAttribute("Language", kmelia.getLanguage());
-        request.setAttribute("ContentLanguage", kmelia.getCurrentLanguage());
+        request.setAttribute("ContentLanguage", checkLanguage(kmelia, publication));
         request.setAttribute("ReturnUrl", URLManager.getApplicationURL() + kmelia.getComponentUrl()
             + "FromWysiwyg?PubId=" + publication.getId());
         request.setAttribute("UserId", kmelia.getUserId());

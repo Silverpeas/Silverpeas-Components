@@ -27,8 +27,6 @@ import com.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import org.mockito.Mockito;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.wysiwyg.WysiwygException;
 import org.silverpeas.wysiwyg.control.WysiwygManager;
@@ -145,17 +143,6 @@ public class WysiwygManagerMockWrapper extends WysiwygManager {
   public void deleteWysiwygAttachmentsOnly(final String spaceId, final String componentId,
       final String objectId) throws WysiwygException {
     mock.deleteWysiwygAttachmentsOnly(spaceId, componentId, objectId);
-  }
-
-  @Override
-  public String loadFileAndAttachment(final ForeignPK foreignPk, final DocumentType context,
-      final String lang) {
-    return mock.loadFileAndAttachment(foreignPk, context, lang);
-  }
-
-  @Override
-  public String loadContent(final SimpleDocument doc, final String lang) {
-    return mock.loadContent(doc, lang);
   }
 
   @Override
