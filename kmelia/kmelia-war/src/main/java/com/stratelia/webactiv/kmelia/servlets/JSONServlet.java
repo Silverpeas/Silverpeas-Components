@@ -131,7 +131,7 @@ public class JSONServlet extends HttpServlet {
       boolean publicationsInTopic = !isRoot || (isRoot && (kmeliaSC.getNbPublicationsOnRoot() == 0
               || !kmeliaSC.isTreeStructure()));
       boolean addPublicationAllowed = !SilverpeasRole.user.isInRole(profile) && publicationsInTopic;
-      boolean operationsOnSelectionAllowed = (isAdmin || isPublisher) && publicationsInTopic; 
+      boolean operationsOnSelectionAllowed = (isAdmin || isPublisher) && publicationsInTopic;
 
       operations.put("addPubli", addPublicationAllowed);
       operations.put("wizard", addPublicationAllowed && kmeliaSC.isWizardEnabled());
@@ -144,7 +144,7 @@ public class JSONServlet extends HttpServlet {
       operations.put("sortPublications", isAdmin && publicationsInTopic);
       operations.put("updateChain", isAdmin && publicationsInTopic && kmeliaSC.
               isTopicHaveUpdateChainDescriptor(id));
-      
+
       operations.put("deletePublications", operationsOnSelectionAllowed);
 
       operations.put("exportSelection", !kmeliaSC.getUserDetail().isAnonymous());
@@ -154,6 +154,7 @@ public class JSONServlet extends HttpServlet {
       if (statisticEnable && isRoot && canShowStats) {
         operations.put("statistics", true);
       }
+      operations.put("mylinks", !kmeliaSC.getUserDetail().isAnonymous());
       operations.put("responsibles", !kmeliaSC.getUserDetail().isAnonymous());
     }
 

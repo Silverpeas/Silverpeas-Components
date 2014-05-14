@@ -24,6 +24,8 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
 <%@ include file="imports.jsp" %>
 <%@ include file="declarations.jsp.inc" %>
 
@@ -56,12 +58,14 @@
 	String url = "";
 %>
 
-<HTML>
-<HEAD>
-<% out.println(gef.getLookStyleSheet());%>
-<TITLE><%=generalMessage.getString("GML.popupTitle")%></TITLE>
+<html>
+<head>
+<view:looknfeel />
+<title><%=generalMessage.getString("GML.popupTitle")%></title>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<Script language="JavaScript">
+<view:includePlugin name="mylinks" />
+
+<script type="text/javascript">
 
 var favoritWindow = window;
 
@@ -157,23 +161,15 @@ function viewFavorits()
     document.titleForm.submit();
 }  */
 
-function addFavorite(m_sAbsolute,m_context,name,description,url)
-	{
-		urlWindow = m_sAbsolute + m_context + "/RmyLinksPeas/jsp/AddLinkFromComponent?Name="+name+"&Description="+description+"&Url="+url+"&Visible=true";
-	    windowName = "favoritWindow";
-		larg = "550";
-		haut = "250";
-	    windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
-	    if (!favoritWindow.closed && favoritWindow.name== "favoritWindow")
-	        favoritWindow.close();
-	    favoritWindow = SP_openWindow(urlWindow, windowName, larg, haut, windowParams);
-	}
-</Script>
+function addFavorite(name, description, url) {
+  postNewLink(name, url, description);
+}
+</script>
 
 
-</HEAD>
+</head>
 
-<BODY onUnload="reallyClose()">
+<body onUnload="reallyClose()">
 
 
 <%
@@ -246,7 +242,7 @@ function addFavorite(m_sAbsolute,m_context,name,description,url)
        	description = node.getDescription();
        	url = node.getLink();
 
-		operationPane.addOperation(settings.getString("addFavoriteIcon"),news.getString("ajouterFavori"),"javaScript:addFavorite('"+m_sAbsolute+"','"+m_context+"','"+nameTitle+"','"+Encode.javaStringToHtmlString(Encode.javaStringToJsString(description))+"','"+url+"')");
+		operationPane.addOperation(settings.getString("addFavoriteIcon"),news.getString("ajouterFavori"),"javaScript:addFavorite('"+Encode.javaStringToJsString(nameTitle)+"','"+Encode.javaStringToJsString(description)+"','"+url+"')");
 	}
 
 	//if (detailLevel > 0)
@@ -274,7 +270,7 @@ function addFavorite(m_sAbsolute,m_context,name,description,url)
 	out.println(tabbedPane.print());
 	out.println(frame.printBefore());
 %>
-<FORM NAME="newsForm" ACTION="newsEdito.jsp" METHOD=POST >
+<form name="newsForm" action="newsEdito.jsp" method="post" >
 
 <table width="100%" border="0" cellspacing="1" cellpadding="3">
   <% if (toPrint != null) {%>
@@ -351,8 +347,8 @@ function addFavorite(m_sAbsolute,m_context,name,description,url)
 
 <%
 	// fin du HTML
-	out.println(frame.printAfter());
-  	out.println(window.printAfter());
+  out.println(frame.printAfter());
+  out.println(window.printAfter());
 %>
 
 
@@ -361,32 +357,32 @@ function addFavorite(m_sAbsolute,m_context,name,description,url)
   <input type="hidden" name="FavoritId">
   <input type="hidden" name="ArchiveId">
   <input type="hidden" name="Language">
-</FORM>
+</form>
 
-<FORM NAME="titleForm" ACTION="newsEdito.jsp" METHOD=POST >
+<form name="titleForm" action="newsEdito.jsp" method="post" >
   <input type="hidden" name="TitleId">
   <input type="hidden" name="Action">
-</FORM>
+</form>
 
-<FORM NAME="publicationForm" ACTION="newsEdito.jsp" METHOD=POST >
+<form name="publicationForm" action="newsEdito.jsp" method="post" >
   <input type="hidden" name="PublicationId">
   <input type="hidden" name="Action">
-</FORM>
+</form>
 
-<FORM NAME="statisticForm" ACTION="statistic.jsp" METHOD=POST >
+<form name="statisticForm" action="statistic.jsp" method="post" >
   <input type="hidden" name="FatherId">
-</FORM>
+</form>
 
-<FORM NAME="gotoPdfForm" ACTION="pdfCompile.jsp" METHOD=POST >
+<form name="gotoPdfForm" action="pdfCompile.jsp" method="post" >
   <input type="hidden" name="Action">
-</FORM>
+</form>
 
-<FORM NAME="manageForm" ACTION="<%if (flag.equals("publisher")) out.print("manageArticles.jsp"); else out.print("manageNews.jsp");%>" METHOD=POST >
+<form name="manageForm" action="<%if (flag.equals("publisher")) out.print("manageArticles.jsp"); else out.print("manageNews.jsp");%>" METHOD="POST" >
   <input type="hidden" name="Action">
-</FORM>
- <FORM NAME="publishForm" ACTION="publishNews.jsp" METHOD=POST >
+</form>
+ <form name="publishForm" action="publishNews.jsp" method="post">
   <input type="hidden" name="Action">
-</FORM>
+</form>
 
-</BODY>
-</HTML>
+</body>
+</html>

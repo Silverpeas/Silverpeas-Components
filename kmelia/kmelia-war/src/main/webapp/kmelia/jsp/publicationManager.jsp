@@ -590,14 +590,7 @@
 
         function addFavorite(name,description,url)
         {
-		urlWindow = "<%=m_context%>/RmyLinksPeas/jsp/AddLinkFromComponent?Name="+name+"&Description="+description+"&Url="+url+"&Visible=true";
-            windowName = "favoriteWindow";
-        	larg = "550";
-        	haut = "250";
-            windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
-            if (!favoriteWindow.closed && favoriteWindow.name== "favoriteWindow")
-                favoriteWindow.close();
-            favoriteWindow = SP_openWindow(urlWindow, windowName, larg, haut, windowParams);
+          postNewLink(name, url, description);
         }
 
         $(document).ready(function(){
@@ -672,7 +665,7 @@
 	      if (!pathString.equals("")) {
 	      	namePath = namePath + " > " + pathString;
 	      }
-		  operationPane.addOperation(favoriteAddSrc, resources.getString("FavoritesAddPublication")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(namePath))+"','"+EncodeHelper.javaStringToHtmlString(pubDetail.getDescription(language))+"','"+urlPublication+"')");
+		  operationPane.addOperation(favoriteAddSrc, resources.getString("FavoritesAddPublication")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+EncodeHelper.javaStringToJsString(namePath)+"','"+pubDetail.getDescription(language)+"','"+urlPublication+"')");
           operationPane.addLine();
 
           if (!"supervisor".equals(profile)) {

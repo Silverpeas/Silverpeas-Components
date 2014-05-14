@@ -222,6 +222,7 @@
     <view:includePlugin name="wysiwyg"/>
     <view:includePlugin name="popup"/>
     <view:includePlugin name="rating" />
+    <view:includePlugin name="mylinks" />
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
     <script type="text/javascript" src="<%=m_context%>/kmelia/jsp/javaScript/glossaryHighlight.js"></script>
     <script type="text/javascript">
@@ -418,16 +419,10 @@
         }
 
         function addFavorite() {
-          var name = encodeURIComponent($("#breadCrumb").text() + " > " + $(".publiName").text());
-          var description = encodeURIComponent("<%=EncodeHelper.javaStringToJsString(pubDetail.getDescription(language))%>");
+          var name = $("#breadCrumb").text() + " > " + $(".publiName").text();
+          var description = "<%=EncodeHelper.javaStringToJsString(pubDetail.getDescription(language))%>";
           var url = "<%=URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId())%>";
-          urlWindow = "<%=m_context%>/RmyLinksPeas/jsp/AddLinkFromComponent?Name="+name+"&Description="+description+"&Url="+url+"&Visible=true";
-
-		  if (!favoriteWindow.closed && favoriteWindow.name== "favoriteWindow") {
-            favoriteWindow.close();
-          }
-
-          favoriteWindow = SP_openWindow(urlWindow, "favoriteWindow", "550", "250", "directories=0,menubar=0,toolbar=0,alwaysRaised");
+          postNewLink(name, url, description);
         }
 
         function suggestDelegatedNews() {
