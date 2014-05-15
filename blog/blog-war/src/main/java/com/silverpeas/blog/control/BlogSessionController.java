@@ -221,7 +221,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     pub.setName(title);
     pub.setUpdaterId(getUserId());
 
-    if (PublicationDetail.DRAFT.equals(pub.getStatus())) {
+    if (pub.isDraft()) {
       pub.setIndexOperation(IndexManager.NONE);
     }
 

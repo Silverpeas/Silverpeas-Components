@@ -240,21 +240,21 @@ function hideStyleSheetFile() {
           {
           PostDetail post = (PostDetail) it.next();
           String categoryId = "";
-          if (post.getCategory() != null)
+          if (post.getCategory() != null) {
             categoryId = post.getCategory().getNodePK().getId();
+          }
           String postId = post.getPublication().getPK().getId();
           String link = post.getPermalink();
 
           //Debut d'un ticket
           String blocClass = "post";
           String status = "";
-          if (post.getPublication().getStatus().equals(PublicationDetail.DRAFT)) {
-          blocClass = "postDraft";
-          status = resource.getString("GML.saveDraft");
+          if (post.getPublication().isDraft()) {
+          	blocClass = "postDraft";
+          	status = resource.getString("GML.saveDraft");
           }
           boolean visible = true;
-          if (post.getPublication().getStatus().equals(PublicationDetail.DRAFT)
-            && !post.getPublication().getCreatorId().equals(userId)) {
+          if (post.getPublication().isDraft() && !post.getPublication().getCreatorId().equals(userId)) {
            // le billet en mode brouillon n'est pas visible si ce n'est pas le createur
            visible = false;
            // sauf si le mode "brouillon visible" est actif et que le user est bloggeur
