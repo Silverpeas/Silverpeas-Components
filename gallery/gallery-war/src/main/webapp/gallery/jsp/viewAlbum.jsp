@@ -119,7 +119,6 @@
     <script type="text/javascript" src="<%=m_context%>/gallery/jsp/javaScript/dragAndDrop.js"></script>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/upload_applet.js"></script>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-    <view:includePlugin name="mylinks" />
     <script type="text/javascript">
 
 var currentGallery = {

@@ -222,7 +222,6 @@
     <view:includePlugin name="wysiwyg"/>
     <view:includePlugin name="popup"/>
     <view:includePlugin name="rating" />
-    <view:includePlugin name="mylinks" />
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
     <script type="text/javascript" src="<%=m_context%>/kmelia/jsp/javaScript/glossaryHighlight.js"></script>
     <script type="text/javascript">

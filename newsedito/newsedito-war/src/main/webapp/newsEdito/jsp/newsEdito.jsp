@@ -63,7 +63,6 @@
 <view:looknfeel />
 <title><%=generalMessage.getString("GML.popupTitle")%></title>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<view:includePlugin name="mylinks" />
 
 <script type="text/javascript">
 
