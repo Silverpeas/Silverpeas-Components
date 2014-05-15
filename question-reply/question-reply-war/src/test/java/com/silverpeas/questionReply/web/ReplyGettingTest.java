@@ -42,6 +42,7 @@ import com.silverpeas.web.mock.UserDetailWithProfiles;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.attachment.util.SimpleDocumentList;
 
 import static com.silverpeas.questionReply.web.QuestionReplyTestResources.COMPONENT_INSTANCE_ID;
 import static com.silverpeas.questionReply.web.QuestionReplyTestResources.REPLY_RESOURCE_PATH;
@@ -82,7 +83,7 @@ public class ReplyGettingTest extends RESTWebServiceTest<QuestionReplyTestResour
   public void getAllRepliesByAnAuthenticatedUser() throws Exception {
     SimpleDocumentService mockDocumentService = mock(SimpleDocumentService.class);
     when(mockDocumentService.listDocumentsByForeignKey(Mockito.any(WAPrimaryKey.class),
-        Mockito.any(String.class))).thenReturn(new ArrayList<SimpleDocument>());
+        Mockito.any(String.class))).thenReturn(new SimpleDocumentList<SimpleDocument>());
     ((SimpleDocumentServiceWrapper) AttachmentServiceFactory.getAttachmentService()).setRealService(
         mockDocumentService);
     WebResource resource = resource();
