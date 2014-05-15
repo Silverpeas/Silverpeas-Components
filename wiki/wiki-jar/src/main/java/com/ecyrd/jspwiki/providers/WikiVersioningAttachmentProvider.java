@@ -46,6 +46,7 @@ import java.util.*;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocumentVersion;
 import org.silverpeas.attachment.model.UnlockContext;
 
 import com.silverpeas.util.i18n.I18NHelper;
@@ -131,13 +132,12 @@ public class WikiVersioningAttachmentProvider implements WikiAttachmentProvider 
     att.setAttribute(WikiPage.CHANGENOTE, currentVersion.getDescription());
   }
 
-  @SuppressWarnings("unchecked")
   protected SimpleDocument getDocumentVersion(SimpleDocumentPK docPk, int versionNumber) throws
       ProviderException {
     try {
       if (versionNumber != WikiProvider.LATEST_VERSION) {
-        List<SimpleDocument> versions = ((HistorisedDocument) AttachmentServiceFactory.
-            getAttachmentService().searchDocumentById(docPk, null)).getHistory();
+        List<SimpleDocumentVersion> versions = ((HistorisedDocument) AttachmentServiceFactory.
+            getAttachmentService().searchDocumentById(docPk, null)).getFunctionalHistory();
         for (SimpleDocument version : versions) {
           if (versionNumber == version.getMajorVersion()) {
             return version;
@@ -152,12 +152,11 @@ public class WikiVersioningAttachmentProvider implements WikiAttachmentProvider 
     }
   }
 
-  @SuppressWarnings("unchecked")
   protected List<SimpleDocument> getAllDocumentVersions(SimpleDocumentPK docPk) throws
       ProviderException {
     try {
-      return ((HistorisedDocument) AttachmentServiceFactory.getAttachmentService().
-          searchDocumentById(docPk, null)).getHistory();
+      return (List)((HistorisedDocument) AttachmentServiceFactory.getAttachmentService().
+          searchDocumentById(docPk, null)).getFunctionalHistory();
     } catch (AttachmentException e) {
       ProviderException ex = new ProviderException(e.getMessage());
       ex.initCause(e);
