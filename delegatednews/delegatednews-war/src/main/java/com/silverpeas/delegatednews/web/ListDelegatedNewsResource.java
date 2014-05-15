@@ -35,10 +35,9 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
-
 import com.silverpeas.annotation.Authorized;
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
 import com.silverpeas.delegatednews.DelegatedNewsRuntimeException;
 import com.silverpeas.delegatednews.model.DelegatedNews;
 import com.silverpeas.delegatednews.service.DelegatedNewsService;
@@ -49,7 +48,7 @@ import com.silverpeas.web.RESTWebService;
  * access to a delegated news referenced by its URL.
  */
 @Service
-@Scope("request")
+@RequestScoped
 @Path("delegatednews/{instanceId}")
 @Authorized
 public class ListDelegatedNewsResource extends RESTWebService {
@@ -77,7 +76,7 @@ public class ListDelegatedNewsResource extends RESTWebService {
    * authentified, a 401 HTTP code is returned. If the user isn't authorized to save the delegated
    * news, a 403 is returned. If a problem occurs when processing the request, a 503 HTTP code is
    * returned.
-   * @param tab of delegated news to update order or to delete
+   * @param newDelegatedNews an array of delegated news to update order or to delete
    * @return the new list of delegated news after update or delete
    */
   @PUT
