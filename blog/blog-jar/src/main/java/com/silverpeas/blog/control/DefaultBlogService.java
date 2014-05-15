@@ -81,7 +81,6 @@ import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.node.control.NodeBm;
@@ -165,13 +164,22 @@ public class DefaultBlogService implements BlogService {
   public String createPost(final PostDetail post, PdcClassification classification) {
     Connection con = openConnection();
     try {
+      // Create publication
       PublicationDetail pub = post.getPublication();
       pub.setStatus(PublicationDetail.DRAFT);
       PublicationPK pk = getPublicationBm().createPublication(pub);
+      
+      // Create post
       PostDAO.createDateEvent(con, pk.getId(), post.getDateEvent(), pk.getInstanceId());
       if (StringUtil.isDefined(post.getCategoryId())) {
         setCategory(pk, post.getCategoryId());
       }
+      
+      // Create empty wysiwyg content
+      WysiwygController.createUnindexedFileAndAttachment("",
+          pk, pub.getCreatorId(), pub.getLanguage());
+      
+      // Create silver content
       createSilverContent(con, pub, pub.getCreatorId());
 
       // classify the publication on the PdC if its classification is defined
@@ -223,22 +231,33 @@ public class DefaultBlogService implements BlogService {
   public void updatePost(PostDetail post) {
     Connection con = openConnection();
     try {
-      // Suppression de l'ancienne category
-      getPublicationBm().removeAllFather(post.getPublication().getPK());
+      PublicationPK pubPk = post.getPublication().getPK();
+      PublicationDetail pub = post.getPublication();
+      
+      // Remove last category
+      getPublicationBm().removeAllFather(pubPk);
 
-      // Modification de la publi
-      getPublicationBm().setDetail(post.getPublication());
+      // Save the publication
+      getPublicationBm().setDetail(pub);
 
-      // Ajout de la nouvelle category
+      // Add the new category
       if (StringUtil.isDefined(post.getCategoryId())) {
-        setCategory(post.getPublication().getPK(), post.getCategoryId());
+        setCategory(pubPk, post.getCategoryId());
       }
 
-      // modification de la date d'évènement
-      PostDAO.updateDateEvent(con, post.getPublication().getPK().getId(), post.getDateEvent());
+      // Update event date
+      PostDAO.updateDateEvent(con, pubPk.getId(), post.getDateEvent());
+      
+      // Save wysiwyg content
+      if (pub.getStatus().equals(PublicationDetail.VALID)) {
+        WysiwygController.updateFileAndAttachment(post.getContent(),
+            pub.getInstanceId(), pubPk.getId(), pub.getUpdaterId(), pub.getLanguage());
+      } else if (pub.getStatus().equals(PublicationDetail.DRAFT)) {//DRAFT mode -> do not index
+        WysiwygController.updateFileAndAttachment(post.getContent(),
+            pub.getInstanceId(), pubPk.getId(), pub.getUpdaterId(), pub.getLanguage(), false);
+      }
 
-      // envoie notification si abonnement
-      PublicationDetail pub = post.getPublication();
+      // Send notification if subscription
       if (pub.getStatus().equals(PublicationDetail.VALID)) {
         sendSubscriptionsNotification(new NodePK("0", pub.getPK().getSpaceId(), pub.getPK().
             getInstanceId()), post, null, "update", pub.getUpdaterId());
@@ -745,10 +764,16 @@ public class DefaultBlogService implements BlogService {
 
     PublicationDetail pub = post.getPublication();
     pub.setStatus(PublicationDetail.VALID);
+    
     // update the publication
     getPublicationBm().setDetail(pub);
 
     if (pub.getStatus().equals(PublicationDetail.VALID)) {
+       
+      // index wysiwyg content
+      WysiwygController.updateFileAndAttachment(WysiwygController.load(pub.getInstanceId(), pub.getPK().getId(), pub.getLanguage()),
+          pub.getInstanceId(), pub.getPK().getId(), pub.getUpdaterId(), pub.getLanguage());
+      
       // update visibility attribute on PDC
       updateSilverContentVisibility(pub);
       

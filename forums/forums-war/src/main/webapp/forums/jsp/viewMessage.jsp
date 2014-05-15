@@ -236,7 +236,7 @@
 
         function initCKeditor() {
           if (wysiwygEditorInstance == null) {
-            wysiwygEditorInstance = <view:wysiwyg replace="messageText" language="<%=fsc.getLanguage()%>" width="600" height="300" toolbar="forum"/>;
+            wysiwygEditorInstance = <view:wysiwyg replace="messageText" language="<%=fsc.getLanguage()%>" width="600" height="300" toolbar="forum" displayFileBrowser="${false}"/>;
           }
         }
 
