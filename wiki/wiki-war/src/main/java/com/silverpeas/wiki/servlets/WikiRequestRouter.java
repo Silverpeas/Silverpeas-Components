@@ -36,10 +36,10 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.servlet.HttpRequest;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
 
 public class WikiRequestRouter extends ComponentRequestRouter<WikiSessionController> {
   private WikiEngine m_engine;
@@ -90,13 +90,15 @@ public class WikiRequestRouter extends ComponentRequestRouter<WikiSessionControl
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    *
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param wikiSC   The component Session Control, build and initialised.
+   * @param request
    * @return The complete destination URL for a forward (ex : "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
   public String getDestination(String function, WikiSessionController wikiSC,
-      HttpServletRequest request) {
+      HttpRequest request) {
     SilverTrace.info("wiki", "WikiRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "User=" + wikiSC.getUserId()
         + " Function=" + function);

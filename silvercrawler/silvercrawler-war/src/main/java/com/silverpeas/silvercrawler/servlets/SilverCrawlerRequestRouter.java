@@ -31,8 +31,7 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
-import javax.servlet.http.HttpServletRequest;
+import org.silverpeas.servlet.HttpRequest;
 
 public class SilverCrawlerRequestRouter extends ComponentRequestRouter<SilverCrawlerSessionController> {
   
@@ -71,15 +70,17 @@ public class SilverCrawlerRequestRouter extends ComponentRequestRouter<SilverCra
    * This method has to be implemented by the component request rooter it has to
    * compute a destination page
    *
+   *
    * @param function
    *          The entering request function (ex : "Main.jsp")
    * @param silverCrawlerSC
    *          The component Session Control, build and initialised.
+   * @param request
    * @return The complete destination URL for a forward (ex :
    *         "/almanach/jsp/almanach.jsp?flag=user")
    */
   public String getDestination(String function,
-      SilverCrawlerSessionController silverCrawlerSC, HttpServletRequest request) {
+      SilverCrawlerSessionController silverCrawlerSC, HttpRequest request) {
     String destination = "";
     SilverTrace.info("silverCrawler", "SilverCrawlerRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "User=" + silverCrawlerSC.getUserId()

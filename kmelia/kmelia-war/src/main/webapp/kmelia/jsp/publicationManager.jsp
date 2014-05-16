@@ -194,8 +194,8 @@
         }
       }
 
-      name = pubDetail.getName(language);
-      description = StringUtil.defaultIfBlank(pubDetail.getDescription(language), "");
+      name = EncodeHelper.javaStringToHtmlString(pubDetail.getName(language));
+      description = EncodeHelper.javaStringToHtmlString(StringUtil.defaultIfBlank(pubDetail.getDescription(language), ""));
       creationDate = resources.getOutputDate(pubDetail.getCreationDate());
       if (pubDetail.getBeginDate() != null) {
         beginDate = resources.getInputDate(pubDetail.getBeginDate());
@@ -590,14 +590,7 @@
 
         function addFavorite(name,description,url)
         {
-        	urlWindow = "<%=m_context%>/RmyLinksPeas/jsp/CreateLinkFromComponent?Name="+name+"&Description="+description+"&Url="+url+"&Visible=true";
-            windowName = "favoriteWindow";
-        	larg = "550";
-        	haut = "250";
-            windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
-            if (!favoriteWindow.closed && favoriteWindow.name== "favoriteWindow")
-                favoriteWindow.close();
-            favoriteWindow = SP_openWindow(urlWindow, windowName, larg, haut, windowParams);
+          postNewLink(name, url, description);
         }
 
         $(document).ready(function(){
@@ -636,7 +629,7 @@
         }
 
         function deleteThumbnail() {
-        	location.href="<%=httpServerBase + m_context%>/Thumbnail/jsp/thumbnailManager.jsp?Action=Delete<%=standardParamaters%>";
+          jQuery('#genericForm').attr('action', "<%=httpServerBase + m_context%>/Thumbnail/jsp/thumbnailManager.jsp?Action=Delete<%=standardParamaters%>").submit();
         }
 
         function closeThumbnailDialog() {
@@ -667,12 +660,12 @@
             operationPane.addOperation(alertSrc, resources.getString("GML.notify"), "javaScript:alertUsers();");
           }
           String urlPublication = URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId());
-	      pathString = pubDetail.getName(language);
+	      pathString = EncodeHelper.javaStringToHtmlString(pubDetail.getName(language));
 	      String namePath = spaceLabel + " > " + componentLabel;
 	      if (!pathString.equals("")) {
 	      	namePath = namePath + " > " + pathString;
 	      }
-		  operationPane.addOperation(favoriteAddSrc, resources.getString("FavoritesAddPublication")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(namePath))+"','"+pubDetail.getDescription(language)+"','"+urlPublication+"')");
+		  operationPane.addOperation(favoriteAddSrc, resources.getString("FavoritesAddPublication")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+EncodeHelper.javaStringToJsString(namePath)+"','"+pubDetail.getDescription(language)+"','"+urlPublication+"')");
           operationPane.addLine();
 
           if (!"supervisor".equals(profile)) {
@@ -1015,5 +1008,6 @@
       document.pubForm.Name.focus();
      });
   </script>
+<form id="genericForm" action="" method="POST"></form>
 </body>
 </html>

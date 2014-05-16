@@ -29,6 +29,8 @@ import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.util.Date;
 
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
@@ -43,7 +45,7 @@ public final class PostDetail implements SilverpeasContent {
   private String creatorName;
   private Date dateEvent;
   
-  private static final String TYPE = "Publication";
+  private static final String TYPE = PublicationDetail.TYPE;
 
   public PostDetail(PublicationDetail publication, String categoryId) {
     setPublication(publication);
@@ -73,7 +75,10 @@ public final class PostDetail implements SilverpeasContent {
   }
 
   public String getContent() {
-    return content;
+    if (this.content == null) {
+      this.content = WysiwygController.load(getPublication().getPK().getComponentName(), getPublication().getPK().getId(), getPublication().getLanguage());
+    }
+    return this.content;
   }
 
   public void setContent(String content) {

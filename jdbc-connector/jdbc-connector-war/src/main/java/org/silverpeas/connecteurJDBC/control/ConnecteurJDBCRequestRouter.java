@@ -32,8 +32,7 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
-import javax.servlet.http.HttpServletRequest;
+import org.silverpeas.servlet.HttpRequest;
 
 /**
  * Title: Connecteur JDBC Description: Ce composant a pour objet de permettre de recuperer
@@ -77,6 +76,7 @@ public class ConnecteurJDBCRequestRouter extends ComponentRequestRouter<Connecte
    * The rooter compute a destination page given : the function called by the client, the current
    * state of the component (embbeded in the session controleur) and parameters from the request
    * object.
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param connecteurJDBC The component Session Control, build and initialised.
    * @param request current http request
@@ -84,7 +84,7 @@ public class ConnecteurJDBCRequestRouter extends ComponentRequestRouter<Connecte
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   public String getDestination(String function,
-      ConnecteurJDBCSessionController connecteurJDBC, HttpServletRequest request) {
+      ConnecteurJDBCSessionController connecteurJDBC, HttpRequest request) {
     String destination = null;
     String rootDest = "/connecteurJDBC/jsp/";
 

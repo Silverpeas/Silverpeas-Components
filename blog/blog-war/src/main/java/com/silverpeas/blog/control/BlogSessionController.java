@@ -78,6 +78,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.xc.JaxbAnnotationIntrospector;
 import org.silverpeas.node.web.NodeEntity;
 import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.util.NotifierUtil;
 
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
@@ -212,11 +213,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     }
   }
 
-  public synchronized void updatePost(String postId, String title, String categoryId) {
-    updatePost(postId, title, categoryId, new Date());
-  }
-
-  public synchronized void updatePost(String postId, String title, String categoryId, Date dateEvent) {
+  public synchronized void updatePost(String postId, String title, String content, String categoryId, Date dateEvent) {
     checkWriteAccessOnBlogPost();
     PostDetail post = getPost(postId);
 
@@ -224,14 +221,15 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     pub.setName(title);
     pub.setUpdaterId(getUserId());
 
-    if (PublicationDetail.DRAFT.equals(pub.getStatus())) {
+    if (pub.isDraft()) {
       pub.setIndexOperation(IndexManager.NONE);
     }
 
     post.setCategoryId(categoryId);
     post.setDateEvent(dateEvent);
+    post.setContent(content);
 
-    // modification du billet
+    // save the post
     getBlogService().updatePost(post);
   }
 
@@ -240,6 +238,14 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     PostDetail post = getPost(postId);
     getBlogService().draftOutPost(post);
 
+  }
+  
+  public synchronized void updatePostAndDraftOut(String postId, String title, String content, String categoryId, Date dateEvent) {
+    //update post
+    updatePost(postId, title, content, categoryId, dateEvent);
+    
+    //draft out poste
+    draftOutPost(postId);
   }
 
   public String initAlertUser(String postId) throws RemoteException {
@@ -344,10 +350,12 @@ public final class BlogSessionController extends AbstractComponentSessionControl
 
   public synchronized void addUserSubscription() throws RemoteException {
     getBlogService().addSubscription(getUserId(), getComponentId());
+    NotifierUtil.addSuccess(getString("blog.addSubscriptionOk"));
   }
 
   public synchronized void removeUserSubscription() throws RemoteException {
     getBlogService().removeSubscription(getUserId(), getComponentId());
+    NotifierUtil.addSuccess(getString("blog.removeSubscriptionOk"));
   }
 
   public synchronized boolean isUserSubscribed() throws RemoteException {

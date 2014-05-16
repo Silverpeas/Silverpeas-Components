@@ -8,7 +8,8 @@ import org.apache.commons.fileupload.FileItem;
 
 import com.silverpeas.silvercrawler.control.SilverCrawlerSessionController;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
+import org.silverpeas.servlet.FileUploadUtil;
+import org.silverpeas.servlet.HttpRequest;
 
 /**
  * Handler for use case : upload file form has been submitted.
@@ -18,7 +19,7 @@ public class UploadFileHandler extends FunctionHandler {
 
   @Override
   public String getDestination(SilverCrawlerSessionController sessionController,
-      HttpServletRequest request)
+      HttpServletRequest req)
       throws Exception {
 
     // Is User has admin or publisher profile
@@ -27,12 +28,13 @@ public class UploadFileHandler extends FunctionHandler {
         (userHisghestRole.equals("admin") || userHisghestRole.equals("publisher"));
 
     if (!isAdminOrPublisher) {
-      request.setAttribute("errorMessage", "User has not admin/publisher rights");
+      req.setAttribute("errorMessage", "User has not admin/publisher rights");
       return "operationFailed.jsp";
     }
 
     // Retrieve File and policy for existing files
-    List<FileItem> parameters = FileUploadUtil.parseRequest(request);
+    HttpRequest request = HttpRequest.decorate(req);
+    List<FileItem> parameters = request.getFileItems();
     FileItem file = FileUploadUtil.getFile(parameters, "newFile");
     boolean replaceFile = StringUtil.getBooleanValue( FileUploadUtil.getParameter(parameters, "replaceExistingFile") );
 

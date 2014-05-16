@@ -41,8 +41,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
  //Icons
 String folderSrc;
 String publicationSrc;
-String fullStarSrc;
-String emptyStarSrc;
 String seeAlsoSrc;
 String seeAlsoDeleteSrc;
 String hLineSrc;
@@ -95,8 +93,6 @@ String	currentLang = (String) request.getAttribute("Language");
 
 //Icons
 publicationSrc		= m_context + "/util/icons/publication.gif";
-fullStarSrc			= m_context + "/util/icons/starFilled.gif";
-emptyStarSrc		= m_context + "/util/icons/starEmpty.gif";
 seeAlsoSrc			= "icons/linkedAdd.gif";
 seeAlsoDeleteSrc	= "icons/linkedDel.gif";
 

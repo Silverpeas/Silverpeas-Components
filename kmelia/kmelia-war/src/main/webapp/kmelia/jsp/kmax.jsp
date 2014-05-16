@@ -58,8 +58,6 @@ String 	translation = (String) request.getAttribute("Language");
 //Icons
 String publicationAddSrc 	= m_context + "/util/icons/create-action/add-publication.png";
 String publicationSrc 		= m_context + "/util/icons/publication.gif";
-String fullStarSrc 			= m_context + "/util/icons/starFilled.gif";
-String emptyStarSrc 		= m_context + "/util/icons/starEmpty.gif";
 String unbalancedSrc 		= m_context + "/util/icons/kmelia_declassified.gif";
 String topicBasketSrc		= m_context + "/util/icons/pubTrash.gif";
 String pubToValidateSrc		= m_context + "/util/icons/publicationstoValidate.gif";
@@ -91,8 +89,12 @@ function search() {
     timeCriteria = "X";
     timeCriteriaUsed = 0;
 	<% if (kmeliaScc.isTimeAxisUsed()) { %>
-	    timeCriteria = document.axisForm.elements[document.axisForm.length - 1].value;
-	    timeCriteriaUsed = 1;
+      // -2 instead of -1 because of security tokens
+      // before, it was :
+      //  - document.axisForm.elements[document.axisForm.length - 1].value
+      //  - timeCriteriaUsed = 1;
+	    timeCriteria = document.axisForm.elements[document.axisForm.length - 2].value;
+	    timeCriteriaUsed = 2;
 	<% } %>
 	for (var i=0; i<document.axisForm.length - timeCriteriaUsed; i++) {
     	if (document.axisForm.elements[i].value.length != 0) {

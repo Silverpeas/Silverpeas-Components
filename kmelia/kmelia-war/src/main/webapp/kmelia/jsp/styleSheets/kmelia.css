@@ -88,6 +88,16 @@
 	padding-bottom:11px;
 }
 
+#statPublication silverpeas-rating {
+ float:right; 
+}
+
+#statPublication .rating-contribution {
+ display:block;
+ text-align:right;
+ color: #999;
+}
+
 #permalinkInfo input {
 	width:90%;
 	border:1px solid #cacaca;
@@ -241,14 +251,6 @@
 	display: inline;
 }
 
-#pubList .publication .bullet {
-	margin-right: 10px;
-}
-
-#pubList .publication .importance {
-	font-size: 10px;
-}
-
 #pubList .publication .actualite {
 	font-size: 11px;
 }
@@ -280,6 +282,19 @@
 
 #pubList .publication .line3 .description {
 	white-space: normal;
+}
+
+#pubList .important3 .line1 > font > a,
+#pubList .important4 .line1 > font > a,
+#pubList .important5 .line1 > font > a {
+  background: url(/silverpeas/util/icons/flag-important.png) 0 0 no-repeat;
+  padding-left: 18px;
+}
+
+#pubList .important1 .line1 > font > a:before,
+#pubList .important2 .line1 > font > a:before {
+ content: '•';
+ padding-right: 10px;
 }
 
 #pubList #pagination {

@@ -28,7 +28,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
+import org.silverpeas.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
@@ -50,6 +50,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.servlet.HttpRequest;
 
 public class YellowpagesRequestRouter extends ComponentRequestRouter<YellowpagesSessionController> {
 
@@ -77,14 +78,16 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    *
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param scc The component Session Control, build and initialised.
+   * @param request
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
   public String getDestination(String function, YellowpagesSessionController scc,
-      HttpServletRequest request) {
+      HttpRequest request) {
     SilverTrace.info("yellowpages", "YellowpagesRequestRooter.getDestination()",
         "root.MSG_GEN_ENTER_METHOD");
     SilverTrace.info("yellowpages", "YellowpagesRequestRooter.getDestination()",
@@ -350,7 +353,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
       } else if ("ToImportCSV".equals(function)) {
         destination = rootDestination + "importCSV.jsp";
       } else if ("ImportCSV".equals(function)) {
-        List<FileItem> parameters = FileUploadUtil.parseRequest(request);
+        List<FileItem> parameters = request.getFileItems();
         FileItem fileItem = FileUploadUtil.getFile(parameters);
         String modelId = scc.getCurrentTopic().getNodeDetail().getModelId();
         request.setAttribute("Result", scc.importCSV(fileItem, modelId));
@@ -390,7 +393,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
     request.setAttribute("XMLForms", listTemplates);
   }
 
-  private String manageContact(String function, HttpServletRequest request,
+  private String manageContact(String function, HttpRequest request,
       YellowpagesSessionController ysc) {
     if ("ContactView".equals(function)) {
       String contactId = request.getParameter("ContactId");
@@ -446,7 +449,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
 
       return "/yellowpages/jsp/contactManager.jsp";
     } else if ("ContactSave".equals(function)) {
-      List<FileItem> items = FileUploadUtil.parseRequest(request);
+      List<FileItem> items = request.getFileItems();
       String modelId = ysc.getCurrentTopic().getNodeDetail().getModelId();
       String contactId = FileUploadUtil.getParameter(items, "ContactId");
       if (StringUtil.isInteger(contactId)) {

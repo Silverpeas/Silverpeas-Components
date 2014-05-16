@@ -38,6 +38,8 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 
 public class BlogRssServlet extends RssServlet<PostDetail> {
   
+  private static final long serialVersionUID = -7858489574699990145L;
+
   /*
    * (non-Javadoc)
    * @see com.silverpeas.peasUtil.RssServlet#getListElements(java.lang.String, int)

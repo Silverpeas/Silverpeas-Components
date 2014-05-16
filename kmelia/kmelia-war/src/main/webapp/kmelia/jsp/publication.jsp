@@ -28,6 +28,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <%
   response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
   response.setHeader("Pragma", "no-cache"); //HTTP 1.0
@@ -46,6 +47,7 @@
 <%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@page import="com.silverpeas.delegatednews.model.DelegatedNews"%>
 <%@page import="org.silverpeas.component.kmelia.KmeliaPublicationHelper"%>
+<%@ page import="org.silverpeas.rating.web.RaterRatingEntity" %>
 
 <%
   ResourceLocator publicationSettings = new ResourceLocator("org.silverpeas.util.publication.publicationSettings", resources.getLanguage());
@@ -64,9 +66,10 @@
   String singleFileURL = (String) request.getAttribute("SingleAttachmentURL");
   boolean userCanValidate = (Boolean) request.getAttribute("UserCanValidate");
   ValidationStep validation = (ValidationStep) request.getAttribute("ValidationStep");
-  int validationType = ((Integer) request.getAttribute("ValidationType")).intValue();
+  int validationType = (Integer) request.getAttribute("ValidationType");
   boolean isWriterApproval = (Boolean) request.getAttribute("WriterApproval");
   boolean notificationAllowed = (Boolean) request.getAttribute("NotificationAllowed");
+  boolean ratingsAllowed = (Boolean) request.getAttribute("PublicationRatingsAllowed");
   boolean attachmentsEnabled = (Boolean) request.getAttribute("AttachmentsEnabled");
   boolean draftOutTaxonomyOK = (Boolean) request.getAttribute("TaxonomyOK");
   boolean draftOutValidatorsOK = (Boolean) request.getAttribute("ValidatorsOK");
@@ -76,7 +79,7 @@
   boolean isBasket = false;
   if (isNewsManage) {
     delegatedNews = (DelegatedNews) request.getAttribute("DelegatedNews");
-    isBasket = ((Boolean) request.getAttribute("IsBasket")).booleanValue();
+    isBasket = (Boolean) request.getAttribute("IsBasket");
   }
   String indexIt = "0";
   if (kmeliaScc.isIndexable(kmeliaPublication.getDetail())) {
@@ -206,8 +209,11 @@
   boolean attachmentsUpdatable = attachmentsEnabled && isOwner && !pubDetail.haveGotClone();
 %>
 
+<c:set var="publication" value="<%=pubDetail%>"/>
+<c:set var="publicationRaterRatingEntity" value="<%=RaterRatingEntity.fromRateable(pubDetail)%>"/>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.kmelia">
   <head>
     <view:looknfeel/>
     <title></title>
@@ -215,6 +221,7 @@
     <link type="text/css" rel="stylesheet" href='<c:url value="/kmelia/jsp/styleSheets/kmelia-print.css" />' media="print"/>
     <view:includePlugin name="wysiwyg"/>
     <view:includePlugin name="popup"/>
+    <view:includePlugin name="rating" />
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
     <script type="text/javascript" src="<%=m_context%>/kmelia/jsp/javaScript/glossaryHighlight.js"></script>
     <script type="text/javascript">
@@ -411,16 +418,10 @@
         }
 
         function addFavorite() {
-          var name = encodeURIComponent($("#breadCrumb").text() + " > " + $(".publiName").text());
-          var description = encodeURIComponent("<%=EncodeHelper.javaStringToJsString(pubDetail.getDescription(language))%>");
+          var name = $("#breadCrumb").text() + " > " + $(".publiName").text();
+          var description = "<%=EncodeHelper.javaStringToJsString(pubDetail.getDescription(language))%>";
           var url = "<%=URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId())%>";
-          urlWindow = "<%=m_context%>/RmyLinksPeas/jsp/CreateLinkFromComponent?Name="+name+"&Description="+description+"&Url="+url+"&Visible=true";
-
-		  if (!favoriteWindow.closed && favoriteWindow.name== "favoriteWindow") {
-            favoriteWindow.close();
-          }
-
-          favoriteWindow = SP_openWindow(urlWindow, "favoriteWindow", "550", "250", "directories=0,menubar=0,toolbar=0,alwaysRaised");
+          postNewLink(name, url, description);
         }
 
         function suggestDelegatedNews() {
@@ -570,6 +571,28 @@
 	  	</div>
 
       <div class="rightContent">
+      	<div id="statPublication" class="bgDegradeGris">
+      		<p id="statInfo">
+      			<b><%= kmeliaPublication.getNbAccess()%> vues</b>
+      			<% if (ratingsAllowed) { %>
+            <viewTags:displayContributionRating raterRating="${publicationRaterRatingEntity}"/>
+				<% } %>
+			</p>
+
+		    <% if (URLManager.displayUniversalLinks()) {
+		            String link = null;
+		            if (!pubDetail.getPK().getInstanceId().equals(contextComponentId)) {
+		              link = URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId(),
+		                  contextComponentId);
+		            } else {
+		              link = URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId());
+		            }%>
+		        <p id="permalinkInfo">
+		        	<a href="<%=link%>" title="<%=Encode.convertHTMLEntities(resources.getString("kmelia.CopyPublicationLink"))%>"><img src="<%=resources.getIcon("kmelia.link")%>" alt="<%=Encode.convertHTMLEntities(resources.getString("kmelia.CopyPublicationLink"))%>" /></a> <%=resources.getString("GML.permalink")%> <br />
+		            <input type="text" onfocus="select();" onmouseup="return false" value="<%=URLManager.getServerURL(request)+link%>" />
+		        </p>
+	            <% }%>
+      	</div>
       <%
 
         /*********************************************************************************************************************/
@@ -670,25 +693,6 @@
 							    <%
 							      }
 							    %>
-        					<p id="statInfo">
-        						<%=resources.getString("kmelia.consulted")%><br/>
-        						<b><%= kmeliaPublication.getNbAccess()%> <%=resources.getString("kmelia.time")%></b></p>
-
-					        <% if (URLManager.displayUniversalLinks()) {
-					            String link = null;
-					            if (!pubDetail.getPK().getInstanceId().equals(contextComponentId)) {
-					              link = URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId(),
-					                  contextComponentId);
-					            } else {
-					              link = URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId());
-					            }%>
-					        <p id="permalinkInfo">
-					        	<a href="<%=link%>" title="<%=Encode.convertHTMLEntities(resources.getString(
-					                                                                     "kmelia.CopyPublicationLink"))%>"><img src="<%=resources.getIcon("kmelia.link")%>" alt="<%=Encode.convertHTMLEntities(resources.getString(
-					                                                                 "kmelia.CopyPublicationLink"))%>" /></a> <%=resources.getString("GML.permalink")%> <br />
-					            <input type="text" onfocus="select();" onmouseup="return false" value="<%=URLManager.getServerURL(request)+link%>" />
-					        </p>
-				            <% }%>
 					</div>
 					<!-- consultation -->
                     <div id="lastReader" class="bgDegradeGris">
@@ -750,7 +754,7 @@
 				        /*********************************************************************************************************************/
 				        out.print("<h2 class=\"publiName\">");
 
-						   out.print(pubDetail.getName(language));
+						   out.print(EncodeHelper.javaStringToHtmlString(pubDetail.getName(language)));
 
 				     		   if (!"user".equals(profile)) {
 						          if (pubDetail.isValidationRequired()) {
@@ -767,7 +771,7 @@
 
 				        out.println("</h2>");
 
-				        String description = EncodeHelper.convertWhiteSpacesForHTMLDisplay(pubDetail.getDescription(language));
+				        String description = EncodeHelper.convertWhiteSpacesForHTMLDisplay(EncodeHelper.javaStringToHtmlString(pubDetail.getDescription(language)));
 				        if (StringUtil.isDefined(description)) {
 				        	out.println("<p class=\"publiDesc text2\">" + description + "</p>");
 				        }
@@ -878,5 +882,9 @@
         <input type="hidden" name="ComponentId" value="<%=componentId%>"/>
       </form>
     </div>
+ <script type="text/javascript">
+ /* declare the module myapp and its dependencies (here in the silverpeas module) */
+ var myapp = angular.module('silverpeas.kmelia', ['silverpeas.services', 'silverpeas.directives']);
+ </script>
   </body>
 </html>

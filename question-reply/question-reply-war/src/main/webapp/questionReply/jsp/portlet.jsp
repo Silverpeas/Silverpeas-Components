@@ -231,6 +231,7 @@ $(document).ready(function() {
       <li class="category">
         <div class="categoryTitle" id="c<c:out value='${category.id}'/>">
           <h3><a class="categoryTitle"  id="lc<c:out value='${category.id}'/>" title="<fmt:message key="questionReply.openCategory"/>" href="#"><c:out value='${category.name}'/></a></h3>
+          <p>: <c:out value='${category.description}'/></p>
           <div class="action">
           </div>
         </div>

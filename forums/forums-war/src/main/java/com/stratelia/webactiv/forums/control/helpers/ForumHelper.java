@@ -23,15 +23,17 @@
  */
 package com.stratelia.webactiv.forums.control.helpers;
 
-import com.silverpeas.notation.model.NotationDetail;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.web.RequestHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.forums.control.ForumsSessionController;
 import com.stratelia.webactiv.forums.models.Message;
 import com.stratelia.webactiv.forums.url.ActionUrl;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.rating.RaterRating;
+import org.silverpeas.rating.web.RaterRatingEntity;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspWriter;
@@ -230,19 +232,19 @@ public class ForumHelper {
           out.println("</span></td>");
 
           // Notation
-          NotationDetail notation = fsc.getMessageNotation(messageId);
-          int globalNote = notation.getRoundGlobalNote();
-          int userNote = notation.getUserNote();
-          String cellLabel = notation.getNotesCount() + " " + resources.getString("forums.note");
-          if (userNote > 0) {
-            cellLabel += " - " + resources.getString("forums.yourNote") + " : " + userNote;
-          }
-          out.print("<td align=\"center\"  title=\"" + cellLabel + "\"><span class=\"txtnote\">");
-          for (int i = 1; i <= 5; i++) {
-            out.print("<img class=\"notation_" + (i <= globalNote ? "on" : "off")
-                + "\" src=\"" + IMAGE_NOTATION_EMPTY + "\"/>");
-          }
-          out.println("</span></td>");
+          SilverpeasRole greaterUserRole =
+              SilverpeasRole.getGreaterFrom(SilverpeasRole.from(fsc.getUserRoles()));
+          boolean canUserRating =
+              greaterUserRole != null && greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.user);
+          RaterRatingEntity raterRatingEntity = RaterRatingEntity.fromRateable(message);
+          out.print("<td  align=\"center\">");
+          out.write(raterRatingEntity
+              .toJSonScript("raterRatingEntity_" + raterRatingEntity.getContributionId()));
+          out.write("<silverpeas-rating readonly=\"true\" raterRating=\"raterRatingEntity_" +
+              raterRatingEntity.getContributionId() +
+              "\" shownbraterratings=\"false\" canuserrating=\"" + canUserRating +
+              "\"></silverpeas-rating>");
+          out.println("</td>");
         }
       }
       // Opérations
@@ -426,36 +428,5 @@ public class ForumHelper {
       }
     }
     return false;
-  }
-
-  public static int[] displayMessageNotation(JspWriter out, ResourcesWrapper resources,
-      int messageId,
-      ForumsSessionController fsc, boolean reader) {
-    try {
-      NotationDetail notation = fsc.getMessageNotation(messageId);
-      int globalNote = notation.getRoundGlobalNote();
-      int userNote = notation.getUserNote();
-      out.print("<span class=\"txtnote\">" + resources.getString("forums.messageNote") + " : ");
-      for (int i = 1; i <= 5; i++) {
-        out.print("<img");
-        if (!reader) {
-          out.print(" id=\"notationImg" + i + "\"");
-        }
-        out.print(" style=\"margin-bottom: 0px\" class=\"notation_" +
-            (i <= globalNote ? "on" : "off")
-            + "\" src=\"" + IMAGE_NOTATION_EMPTY + "\"/>");
-      }
-      out.print(" (" + notation.getNotesCount() + " " + resources.getString("forums.note"));
-      if (userNote > 0) {
-        out.print(" - " + resources.getString("forums.yourNote") + " : " + userNote);
-      }
-      out.println(")</span>");
-      return new int[] { globalNote, userNote };
-    } catch (IOException ioe) {
-      SilverTrace
-          .info("forums", "JSPforumsListManager.displayMessageNotation()", "root.EX_NO_MESSAGE",
-              null, ioe);
-      return new int[0];
-    }
   }
 }

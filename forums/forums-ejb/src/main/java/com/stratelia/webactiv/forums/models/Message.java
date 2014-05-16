@@ -23,16 +23,22 @@
  */
 package com.stratelia.webactiv.forums.models;
 
+import com.silverpeas.notation.ejb.RatingServiceFactory;
+import org.silverpeas.rating.Rateable;
+import org.silverpeas.rating.ContributionRating;
+import org.silverpeas.rating.ContributionRatingPK;
+
 import java.io.Serializable;
 import java.util.Date;
 
-public class Message implements Serializable {
+public class Message implements Rateable, Serializable {
   private static final String TYPE = "forum_message";
-
+  
   public static final String STATUS_VALIDATE = "V";
   public static final String STATUS_FOR_VALIDATION = "A";
   public static final String STATUS_REFUSED = "R";
   
+  public static final String RESOURCE_TYPE = "ForumMessage";
   
   private static final long serialVersionUID = 705520417746270396L;
   private int id;
@@ -45,6 +51,7 @@ public class Message implements Serializable {
   private String instanceId;
   private MessagePK pk;
   private String status;
+  private ContributionRating contributionRating;
 
   public Message(int id, String title, String author, Date date, int forumId,
       int parentId) {
@@ -250,6 +257,17 @@ public class Message implements Serializable {
 
   @Override
   public String toString() {
-    return "Message{" + "id=" + id + ", title=" + title + ", author=" + author + ", date=" + date + ", forumId=" + forumId + ", parentId=" + parentId + ", text=" + text + ", instanceId=" + instanceId + ", pk=" + pk + ", status=" + status + '}';
+    return "Message{" + "id=" + id + ", title=" + title + ", author=" + author + ", date=" + date +
+        ", forumId=" + forumId + ", parentId=" + parentId + ", text=" + text + ", instanceId=" +
+        instanceId + ", pk=" + pk + ", status=" + status + '}';
+  }
+
+  @Override
+  public ContributionRating getRating() {
+    if (contributionRating == null) {
+      contributionRating = RatingServiceFactory.getRatingService()
+          .getRating(new ContributionRatingPK(String.valueOf(getId()), getInstanceId(), RESOURCE_TYPE));
+    }
+    return contributionRating;
   }
 }

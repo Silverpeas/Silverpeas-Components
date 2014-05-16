@@ -73,7 +73,7 @@ String httpServerBase = GeneralPropertiesManager.getString("httpServerBase", m_s
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.kmelia">
 <head>
 <view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/browseBarComplete.js"></script>
@@ -81,10 +81,10 @@ String httpServerBase = GeneralPropertiesManager.getString("httpServerBase", m_s
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/upload_applet.js"></script>
 <script type="text/javascript" src="<%=m_context%>/kmelia/jsp/javaScript/dragAndDrop.js"></script>
 <script type="text/javascript" src="<c:url value="/util/javaScript/checkForm.js" />"></script>
-<view:includePlugin name="userZoom"/>
 <view:includePlugin name="datepicker" />
 <view:includePlugin name="popup"/>
 <view:includePlugin name="preview"/>
+<view:includePlugin name="rating" />
 <script type="text/javascript" src="javaScript/navigation.js"></script>
 <script type="text/javascript" src="javaScript/searchInTopic.js"></script>
 <script type="text/javascript" src="javaScript/publications.js"></script>
@@ -169,6 +169,7 @@ function getToValidateFolderId() {
 </script>
 </head>
 <body id="kmelia" onunload="closeWindows();">
+<div compile-directive style="display: none"></div>
 <div id="<%=componentId %>" class="<%=profile%>">
 <%
 	Window window = gef.getWindow();
@@ -456,5 +457,9 @@ function getString(key) {
      </form>
 </div>
 <view:progressMessage/>
+<script type="text/javascript">
+/* declare the module myapp and its dependencies (here in the silverpeas module) */
+var myapp = angular.module('silverpeas.kmelia', ['silverpeas.services', 'silverpeas.directives']);
+</script>
 </body>
 </html>

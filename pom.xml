@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>parent</artifactId>
-    <version>27-SNAPSHOT</version>
+    <version>28-SNAPSHOT</version>
   </parent>
 
   <scm>
@@ -31,7 +31,7 @@
 
   <groupId>com.silverpeas</groupId>
   <artifactId>components</artifactId>
-  <version>5.14-SNAPSHOT</version>
+  <version>5.15-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Silverpeas Components</name>
 
@@ -42,7 +42,7 @@
     <test.jdbc.user>postgres</test.jdbc.user>
     <test.jdbc.password>postgres</test.jdbc.password>
     <!-- Version of Silverpeas-Core on which it depends -->
-    <core.version>5.14-SNAPSHOT</core.version>
+    <core.version>5.15-SNAPSHOT</core.version>
   </properties>
 
   <dependencies>
@@ -170,6 +170,7 @@
     <module>formsonline</module>
     <module>scheduleevent</module>
     <module>crm</module>
+    <module>suggestion-box</module>
   </modules>
 
 </project>

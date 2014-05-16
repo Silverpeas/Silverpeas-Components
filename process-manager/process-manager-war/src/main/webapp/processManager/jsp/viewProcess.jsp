@@ -105,13 +105,14 @@
 
 <%@page import="java.util.Iterator"%>
 
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
 <view:includePlugin name="wysiwyg"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<SCRIPT type="text/javascript">
+<script type="text/javascript">
 function printProcess() {
     url = "printProcessFrameset";
     windowName = "printProcess";
@@ -120,29 +121,26 @@ function printProcess() {
     windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars=1";
     SP_openWindow(url, windowName, larg , haut, windowParams);
 }
-</SCRIPT>
-
-</HEAD>
-<BODY class="yui-skin-sam">
+</script>
+</head>
+<body class="yui-skin-sam">
 <div id="<%=componentId%>">
 <%
 	out.println(window.printBefore());
 	out.println(tabbedPane.print());
-	out.println(frame.printBefore());
 %>
-<CENTER>
-
+<view:frame>
 			<% if (hasLockingUsers) {%>
-			<% out.println(board.printBefore()); %>
-			<table CELLPADDING="0" CELLSPACING="0" BORDER="0" WIDTH="100%">
+			<view:board>
+			<table cellpadding="0" cellspacing="0" border="0" width="100%">
 				<tr>
 					<td class="intfdcolor" nowrap width="100%">
-						<img border="0" src="<%=resource.getIcon("processManager.px") %>" width="5"><span class="txtNav"><%=resource.getString("processManager.actionInProgress") %> </span>
+						<img border="0" src="<%=resource.getIcon("processManager.px") %>" width="5"/><span class="txtNav"><%=resource.getString("processManager.actionInProgress") %> </span>
 					</td>
 				</tr>
 			</table>
-			<table CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%">
-				<tr><td><img src="<%=resource.getIcon("processManager.px") %>"></td></tr>
+			<table cellpadding="5" cellspacing="0" border="0" width="100%">
+				<tr><td><img src="<%=resource.getIcon("processManager.px") %>"/></td></tr>
 
 				<c:choose>
 					<c:when test="${isCurrentUserIsLockingUser}">
@@ -173,21 +171,21 @@ function printProcess() {
 					</c:otherwise>
 				</c:choose>
 			</table>
-			<% out.println(board.printAfter()); %>
-			<br>
+			</view:board>
+			<br/>
 			<%
 			}
 			%>
-
-			<% out.println(board.printBefore()); %>
-			<table CELLPADDING="0" CELLSPACING="0" BORDER="0" WIDTH="100%">
+			
+			<view:board>
+			<table cellpadding="0" cellspacing="0" border="0" width="100%">
 				<tr>
 					<td class="intfdcolor" nowrap width="100%">
-						<img border="0" src="<%=resource.getIcon("processManager.px") %>" width="5"><span class="txtNav"><%=resource.getString("processManager.activeStates") %> </span>
+						<img border="0" src="<%=resource.getIcon("processManager.px") %>" width="5"/><span class="txtNav"><%=resource.getString("processManager.activeStates") %> </span>
 					</td>
 				</tr>
 			</table>
-			<table CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%">
+			<table cellpadding="5" cellpadding="0" border="0" width="100%">
 					<%
 						if (activeStates==null || activeStates.length==0)
 						{
@@ -217,13 +215,13 @@ function printProcess() {
 							}
 						}
 					%>
-				<tr><td colspan=3><img src="<%=resource.getIcon("processManager.px") %>"></td></tr>
+				<tr><td colspan="3"><img src="<%=resource.getIcon("processManager.px") %>"/></td></tr>
 			</table>
-<% out.println(board.printAfter()); %>
-<br>
-<% out.println(board.printBefore()); %>
-<table>
-<tr><td width="100%">
+</view:board>
+<br/>
+<view:board>
+<table width="100%">
+<tr><td>
 <%
 	context.setBorderPrinted(false);
    	form.display(out, context, data);
@@ -238,11 +236,11 @@ function printProcess() {
 	}
 %>
 </td></tr></table>
-<% out.println(board.printAfter()); %>
-</CENTER>
+</view:board>
+</view:frame>
 <%
-   out.println(frame.printAfter());
    out.println(window.printAfter());
 %>
 </div>
-</BODY>
+</body>
+</html>

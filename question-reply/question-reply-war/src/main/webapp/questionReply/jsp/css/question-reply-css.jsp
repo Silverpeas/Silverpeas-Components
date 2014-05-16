@@ -27,6 +27,7 @@ li.category {
   background:#EAEAEA url("<c:url value="/util/icons/arrow/open.gif" />") 5px center no-repeat;
   border:1px solid #EAEAEA;
   border-radius:10px;
+  padding-right:60px;
 }
 
 .select .categoryTitle {
@@ -52,6 +53,12 @@ li.category {
 .categoryTitle h3 {
   font-size: 11px;
   font-weight: bold;
+  display: inline;
+}
+
+.categoryTitle p {
+  display: inline;
+  color:#333;
 }
 
 .action {
@@ -154,7 +161,7 @@ h5.answerTitle {
   overflow:auto;
 }
 
-/* pour que les listes de l'éditeur est le bon comportement */
+/* pour que les listes de l'Ã©diteur ait le bon comportement */
 
 .answerContent  ul 			{ list-style-type:disc;}
 .answerContent  ul ul		{ list-style-type:circle;}

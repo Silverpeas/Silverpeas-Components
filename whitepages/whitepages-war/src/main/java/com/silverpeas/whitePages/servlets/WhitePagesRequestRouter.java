@@ -43,6 +43,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.exception.UtilException;
 import org.silverpeas.search.indexEngine.model.FieldDescription;
+import org.silverpeas.servlet.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -89,7 +90,7 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
    * javax.servlet.http.HttpServletRequest)
    */
   public String getDestination(String function, WhitePagesSessionController scc,
-      HttpServletRequest request) {
+      HttpRequest request) {
     SilverTrace.info("whitePages", "WhitePagesRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", function);
     String destination = "";

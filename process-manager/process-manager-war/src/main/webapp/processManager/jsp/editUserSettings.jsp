@@ -25,6 +25,8 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
 <%@ include file="checkProcessManager.jsp" %>
 
 <%
@@ -37,29 +39,22 @@
   browseBar.setPath(resource.getString("processManager.userSettingsBB"));
   
 	ButtonPane buttonPane = gef.getButtonPane();
-	buttonPane.addButton((Button) gef.getFormButton(
-	   generalMessage.getString("GML.validate"),
-		"javascript:onClick=B_VALIDER_ONCLICK();",
-		false));
-	buttonPane.addButton((Button) gef.getFormButton(
-	   generalMessage.getString("GML.cancel"),
-		"javascript:onClick=B_ANNULER_ONCLICK();",
-		false));
+	buttonPane.addButton(gef.getFormButton(generalMessage.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK();", false));
+	buttonPane.addButton(gef.getFormButton(generalMessage.getString("GML.cancel"), "javascript:onClick=B_ANNULER_ONCLICK();", false));
 %>
 
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
+<view:looknfeel/>
 <%
-   out.println(gef.getLookStyleSheet());
 	form.displayScripts(out, context);
 %>
-<SCRIPT language="JavaScript">
+<script type="text/javascript">
 <!--
-	function B_VALIDER_ONCLICK()
-	{
-		if (isCorrectForm())
-		{
+	function B_VALIDER_ONCLICK() {
+		if (isCorrectForm()) {
 			document.<%=context.getFormName()%>.submit();
 		}
 	}
@@ -67,39 +62,34 @@
 	function B_ANNULER_ONCLICK() {
 		location.href = "listProcess";
 	}
-	
 //-->
-</SCRIPT>
-
-</HEAD>
-<BODY class="yui-skin-sam" marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
+</script>
+</head>
+<body class="yui-skin-sam">
 <%
    out.println(window.printBefore());
-   out.println(frame.printBefore());
 %>
-<FORM NAME="<%=context.getFormName()%>" METHOD="POST" ACTION="saveUserSettings" ENCTYPE="multipart/form-data">
-<CENTER>
-	<table CELLPADDING=0 CELLSPACING=0 BORDER=0 WIDTH="98%">
+<view:frame>
+<form name="<%=context.getFormName()%>" method="post" action="saveUserSettings" enctype="multipart/form-data">
+	<table cellpadding="0" cellspacing="0" border="0" width="98%">
 	<tr>
-		<td class="intfdcolor" nowrap width="100%">
-			<img border="0" src="<%=resource.getIcon("processManager.px") %>" width="5">
-			<span class="txtNav">
-           <%=resource.getString("processManager.userSettingsHeader")%>
-			</span>
+		<td class="intfdcolor" nowrap="nowrap" width="100%">
+			<img border="0" src="<%=resource.getIcon("processManager.px") %>" width="5"/>
+			<span class="txtNav"><%=resource.getString("processManager.userSettingsHeader")%></span>
 		</td>
 	</tr>
 	</table>
 <%
    form.display(out, context, data);
 %>
-   <BR>
+</form>
+<br/>
 <%
 	out.println(buttonPane.print());
 %>
-</CENTER>
-</FORM>
+</view:frame>
 <%
-   out.println(frame.printAfter());
-   out.println(window.printAfter());
+    out.println(window.printAfter());
 %>
-</BODY>
+</body>
+</html>

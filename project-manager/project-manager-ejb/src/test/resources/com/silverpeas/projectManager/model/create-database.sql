@@ -20,14 +20,14 @@ CREATE TABLE SC_ProjectManager_Tasks
 	instanceId		varchar (50)	NOT NULL,
 	path			varchar (50)	NOT NULL,
 	previousId		int		NULL
-) 
+)
 ;
-CREATE TABLE SC_ProjectManager_Calendar 
+CREATE TABLE SC_ProjectManager_Calendar
 (
 	holidayDate		varchar (10)	NOT NULL,
 	fatherId		int		NOT NULL,
 	instanceId		varchar (50)	NOT NULL
-) 
+)
 ;
 CREATE TABLE SC_ProjectManager_Resources
 (
@@ -38,3 +38,8 @@ CREATE TABLE SC_ProjectManager_Resources
 	instanceId		varchar(50)	NOT NULL
 )
 ;
+
+CREATE TABLE UniqueId (
+	maxId BIGINT NOT NULL,
+	tableName varchar(100) NOT NULL
+);

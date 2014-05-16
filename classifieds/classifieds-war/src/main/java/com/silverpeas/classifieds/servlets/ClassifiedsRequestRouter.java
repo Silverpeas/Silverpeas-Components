@@ -31,6 +31,8 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.servlet.HttpRequest;
+
 import javax.servlet.http.HttpServletRequest;
 
 public class ClassifiedsRequestRouter extends ComponentRequestRouter<ClassifiedsSessionController> {
@@ -64,13 +66,15 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter<Classifieds
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    *
+   *
    * @param function      The entering request function (ex : "Main.jsp")
    * @param classifiedsSC The component Session Control, build and initialised.
+   * @param request
    * @return The complete destination URL for a forward (ex : "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
   public String getDestination(String function, ClassifiedsSessionController classifiedsSC,
-      HttpServletRequest request) {
+      HttpRequest request) {
     String destination = "";
     String rootDest = "/classifieds/jsp/";
     SilverTrace.info("classifieds", "classifiedsRequestRouter.getDestination()",

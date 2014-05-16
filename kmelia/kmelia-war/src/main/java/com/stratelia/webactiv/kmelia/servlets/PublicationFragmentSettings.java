@@ -37,6 +37,7 @@ public class PublicationFragmentSettings {
   boolean displayLinks;
   boolean showDelegatedNewsInfo;
   boolean draggable;
+  boolean rateable;
   
   public PublicationFragmentSettings() {
    

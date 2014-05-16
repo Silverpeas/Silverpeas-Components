@@ -25,11 +25,14 @@ package com.stratelia.webactiv.forums.models;
 
 import java.io.Serializable;
 
-public class Forum implements Serializable {
+import com.silverpeas.notation.ejb.RatingServiceFactory;
+import org.silverpeas.rating.Rateable;
+import org.silverpeas.rating.ContributionRating;
+import org.silverpeas.rating.ContributionRatingPK;
 
-  /**
-   * Generated serial version identifier
-   */
+public class Forum implements Rateable, Serializable {
+
+  public static final String RESOURCE_TYPE = "Forum";
   private static final long serialVersionUID = -2933341803291325081L;
   private int id;
   private String name;
@@ -40,6 +43,7 @@ public class Forum implements Serializable {
   private String creationDate;
   private String instanceId;
   private ForumPK pk;
+  private ContributionRating contributionRating;
 
   public Forum(int id, String name, String description, boolean active, int parentId, String category) {
     this.id = id;
@@ -202,5 +206,14 @@ public class Forum implements Serializable {
   @Override
   public String toString() {
     return "Forum{" + "id=" + id + ", name=" + name + ", description=" + description + ", active=" + active + ", parentId=" + parentId + ", category=" + category + ", creationDate=" + creationDate + ", instanceId=" + instanceId + ", pk=" + pk + '}';
+  }
+
+  @Override
+  public ContributionRating getRating() {
+    if (contributionRating == null) {
+      contributionRating = RatingServiceFactory.getRatingService()
+          .getRating(new ContributionRatingPK(String.valueOf(id), getInstanceId(), RESOURCE_TYPE));
+    }
+    return contributionRating;
   }
 }

@@ -1,37 +1,35 @@
 /**
  * Copyright (C) 2000 - 2013 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.forums.control.helpers;
 
-import com.silverpeas.notation.model.NotationDetail;
 import com.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.forums.control.ForumsSessionController;
 import com.stratelia.webactiv.forums.models.Forum;
 import com.stratelia.webactiv.forums.url.ActionUrl;
 import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane;
+import org.silverpeas.rating.RaterRating;
+import org.silverpeas.rating.web.RaterRatingEntity;
 
 import javax.servlet.jsp.JspWriter;
 import java.io.IOException;
@@ -43,7 +41,8 @@ import java.util.Date;
  */
 public class ForumListHelper {
 
-  public static String navigationBar(int forumId, ResourceLocator resource, ForumsSessionController fsc) {
+  public static String navigationBar(int forumId, ResourceLocator resource,
+      ForumsSessionController fsc) {
     boolean loop = false;
     String result = "";
     int currentId = forumId;
@@ -102,8 +101,7 @@ public class ForumListHelper {
       if (!fsc.isExternal() || !reader) {
         // rechercher si l'utilisateur a des messages non lus sur ce forum
         boolean isNewMessage = fsc.isNewMessageByForum(fsc.getUserId(), forumId);
-        out.print("<img src=\"icons/" +
-            (isNewMessage ? "newMessage" : "noNewMessage") + ".gif\"/>");
+        out.print("<img src=\"icons/" + (isNewMessage ? "newMessage" : "noNewMessage") + ".gif\"/>");
       }
 
       // Icone de deploiement
@@ -151,37 +149,34 @@ public class ForumListHelper {
       out.println("</span></td>");
 
       // 6ème colonne : notation
-      NotationDetail notation = fsc.getForumNotation(forumId);
-      int globalNote = notation.getRoundGlobalNote();
-      int userNote = notation.getUserNote();
-      String cellLabel = notation.getNotesCount() + " " + resources.getString("forums.note");
-      if (userNote > 0) {
-        cellLabel += " - " + resources.getString("forums.yourNote") + " : " + userNote;
-      }
-      out.print("<td class=\"ArrayCell\" title=\"" + cellLabel + "\"><span class=\"txtnote\">");
-      for (int i = 1; i <= 5; i++) {
-        out.print("<img class=\"notation_" + (i <= globalNote ? "on" : "off")
-            + "\" src=\"" + ForumHelper.IMAGE_NOTATION_EMPTY + "\"/>");
-      }
-      out.println("</span></td>");
-
+      SilverpeasRole greaterUserRole =
+          SilverpeasRole.getGreaterFrom(SilverpeasRole.from(fsc.getUserRoles()));
+      boolean canUserRating =
+          greaterUserRole != null && greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.user);
+      RaterRatingEntity raterRatingEntity = RaterRatingEntity.fromRateable(forum);
+      out.print("<td class=\"ArrayCell\">");
+      out.write(raterRatingEntity
+          .toJSonScript("raterRatingEntity_" + raterRatingEntity.getContributionId()));
+      out.write("<silverpeas-rating readonly=\"true\" raterRating=\"raterRatingEntity_" +
+          raterRatingEntity.getContributionId() +
+          "\" shownbraterratings=\"false\" canuserrating=\"" + canUserRating +
+          "\"></silverpeas-rating>");
+      
       // 7ème colonne : abonnement
       boolean isSubscriber = fsc.isForumSubscriber(forumId);
-      out.print("<td class=\"ArrayCell\" style=\"text-align: center\" title=\"" +
-          resources.getString("subscribeMessage") + "\"><span class=\"txtnote\">");
+      out.print("<td class=\"ArrayCell\" style=\"text-align: center\" title=\"" + resources.
+          getString("subscribeMessage") + "\"><span class=\"txtnote\">");
       out.print("<div class=\"messageFooter\">");
       out.print("<input name=\"checkbox\" type=\"checkbox\" ");
       if (isSubscriber || isSubscriberByInheritance) {
         out.print("checked ");
-        if(!isSubscriber) {
+        if (!isSubscriber) {
           out.print("disabled ");
         }
       }
-      out.print("onclick=\"javascript:window.location.href='");
-      out.print(ActionUrl
-          .getUrl((forum.isRoot() ? "main" : "viewForum"), (isSubscriber ? 17 : 18), forum.getId(),
-              forum.getParentId()));
-      out.print("'\"/></div></span></td>");
+      out.print("onclick=\"javascript:" + (isSubscriber ? "unsubscribeOneForum"
+          : "subscribeOneForum") + "(" + forum.getId() + "," + forum.getParentId()
+          + ");\"/></div></span></td>");
 
       // 8ème colonne : boutons d'admin
       if (admin || moderator) {
@@ -190,13 +185,15 @@ public class ForumListHelper {
         // icone de modification
         out.print("<a href=\"");
         out.print(ActionUrl.getUrl("editForumInfo", call, 2, forumId, currentPage));
-        out.println("\"><img src=\"" + ForumHelper.IMAGE_UPDATE + "\" border=\"0\" align=\"middle\" alt=\""
+        out.println("\"><img src=\"" + ForumHelper.IMAGE_UPDATE
+            + "\" border=\"0\" align=\"middle\" alt=\""
             + resources.getString("editForum") + "\" title=\""
             + resources.getString("editForum") + "\"/></a>");
         out.print("&nbsp;");
         // icone de suppression
         out.print("<a href=\"javascript:confirmDeleteForum('" + forumId + "');\">");
-        out.print("<img src=\"" + ForumHelper.IMAGE_DELETE + "\" border=\"0\" align=\"middle\" alt=\""
+        out.print("<img src=\"" + ForumHelper.IMAGE_DELETE
+            + "\" border=\"0\" align=\"middle\" alt=\""
             + resources.getString("deleteForum") + "\" title=\""
             + resources.getString("deleteForum") + "\"/></a>");
         out.print("&nbsp;");
@@ -206,11 +203,13 @@ public class ForumListHelper {
             (forumActive ? 5 : 6), forumId, currentPage));
         out.print("\">");
         if (forumActive) {
-          out.print("<img src=\"" + ForumHelper.IMAGE_UNLOCK + "\" border=\"0\" align=\"middle\" alt=\"");
+          out.print("<img src=\"" + ForumHelper.IMAGE_UNLOCK
+              + "\" border=\"0\" align=\"middle\" alt=\"");
           out.print(resources.getString("lockForum"));
           out.print("\" title=\"" + resources.getString("lockForum") + "\"/>");
         } else {
-          out.print("<img src=\"" + ForumHelper.IMAGE_LOCK + "\" border=\"0\" align=\"middle\" alt=\"");
+          out.print("<img src=\"" + ForumHelper.IMAGE_LOCK
+              + "\" border=\"0\" align=\"middle\" alt=\"");
           out.print(resources.getString("unlockForum"));
           out.print("\" title=\"" + resources.getString("unlockForum") + "\"/>");
         }
@@ -245,13 +244,15 @@ public class ForumListHelper {
           out.print("<td class=\"titreCateg\" align=\"center\" nowrap>");
           if (categoryId != null) {
             out.print("<a href=\"EditCategory?CategoryId=" + categoryId + "\">");
-            out.print("<img src=\"" + ForumHelper.IMAGE_UPDATE + "\" border=\"0\" align=\"middle\" alt=\""
+            out.print("<img src=\"" + ForumHelper.IMAGE_UPDATE
+                + "\" border=\"0\" align=\"middle\" alt=\""
                 + resources.getString("forums.editCategory") + "\" title=\""
                 + resources.getString("forums.editCategory") + "\"/></a>");
             out.print("&nbsp;&nbsp;");
             out.print("<a href=\"javascript:confirmDeleteCategory('"
                 + String.valueOf(categoryId) + "');\">");
-            out.print("<img src=\"" + ForumHelper.IMAGE_DELETE + "\" border=\"0\" align=\"middle\" alt=\""
+            out.print("<img src=\"" + ForumHelper.IMAGE_DELETE
+                + "\" border=\"0\" align=\"middle\" alt=\""
                 + resources.getString("forums.deleteCategory") + "\" title=\""
                 + resources.getString("forums.deleteCategory") + "\"/></a>");
             out.print("&nbsp;");
@@ -275,7 +276,7 @@ public class ForumListHelper {
       boolean moderator, boolean reader, int currentForumId, String call,
       ForumsSessionController fsc, boolean isSubscriberByInheritance) {
     int[] forumIds = fsc.getForumSonsIds(currentForumId);
-    for(int forumId : forumIds) {
+    for (int forumId : forumIds) {
 
       // Verifying subscription by inheritance
       boolean isForumSubscriberByInheritance = isSubscriberByInheritance;

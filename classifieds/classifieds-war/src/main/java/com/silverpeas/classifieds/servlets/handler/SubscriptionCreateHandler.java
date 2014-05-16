@@ -1,16 +1,10 @@
 package com.silverpeas.classifieds.servlets.handler;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.fileupload.FileItem;
-
 import com.silverpeas.classifieds.control.ClassifiedsSessionController;
 import com.silverpeas.classifieds.model.Subscribe;
 import com.silverpeas.classifieds.servlets.FunctionHandler;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
+import org.silverpeas.servlet.HttpRequest;
 
 /**
  * Use Case : for all users, show all adds of given category
@@ -20,13 +14,12 @@ public class SubscriptionCreateHandler extends FunctionHandler {
 
   @Override
   public String getDestination(ClassifiedsSessionController classifiedsSC,
-      HttpServletRequest request) throws Exception {
+      HttpRequest request) throws Exception {
 
-    if (FileUploadUtil.isRequestMultipart(request)) {
-      // retrieves parameters
-      List<FileItem> items = FileUploadUtil.parseRequest(request);
-      String field1 = FileUploadUtil.getParameter(items, classifiedsSC.getSearchFields1());
-      String field2 = FileUploadUtil.getParameter(items, classifiedsSC.getSearchFields2());
+    if (request.isContentInMultipart()) {
+      // retrieves parameters from the multipart stream
+      String field1 = request.getParameter(classifiedsSC.getSearchFields1());
+      String field2 = request.getParameter(classifiedsSC.getSearchFields2());
 
       // subscribes user
       if (StringUtil.isDefined(field1) && StringUtil.isDefined(field2)) {

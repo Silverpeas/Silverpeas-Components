@@ -99,7 +99,7 @@ public class CommentServiceStub implements CommentService {
 
   @Override
   public List<CommentedPublicationInfo> getMostCommentedPublicationsInfo(String resourceType,
-      List<WAPrimaryKey> pks) {
+      List<? extends WAPrimaryKey> pks) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
@@ -136,5 +136,15 @@ public class CommentServiceStub implements CommentService {
   @Override
   public ResourceLocator getComponentMessages(String language) {
     throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public List<CommentedPublicationInfo> getMostCommentedPublicationsInfo(String resourceType) {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
+
+  @Override
+  public List<Comment> getLastComments(String resourceType, int count) {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
 }

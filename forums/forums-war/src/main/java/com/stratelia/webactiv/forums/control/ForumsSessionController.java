@@ -20,11 +20,6 @@
  */
 package com.stratelia.webactiv.forums.control;
 
-import com.silverpeas.notation.ejb.NotationBm;
-import com.silverpeas.notation.ejb.NotationRuntimeException;
-import com.silverpeas.notation.model.Notation;
-import com.silverpeas.notation.model.NotationDetail;
-import com.silverpeas.notation.model.NotationPK;
 import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
@@ -72,7 +67,6 @@ import org.silverpeas.upload.UploadedFile;
 import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
 
 import javax.ejb.EJBException;
-import javax.servlet.ServletRequest;
 import javax.xml.bind.JAXBException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -115,7 +109,6 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   private ResourceLocator settings = null;
   private PublicationBm publicationBm = null;
   private StatisticBm statisticBm = null;
-  private NotationBm notationBm = null;
   private boolean displayAllMessages = true;
   private boolean external = false;
   private boolean resizeFrame = false;
@@ -124,7 +117,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   // Constructeur
   public ForumsSessionController(MainSessionController mainSessionCtrl, ComponentContext context) {
-    super(mainSessionCtrl, context, "com.stratelia.webactiv.forums.multilang.forumsBundle",
+    super(mainSessionCtrl, context, "org.silverpeas.forums.multilang.forumsBundle",
         "org.silverpeas.forums.settings.forumsIcons");
     deployedMessages = new ArrayList<Integer>();
     deployedForums = new ArrayList<Integer>();
@@ -868,22 +861,6 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     return getForumsBM().getMessageTags(getMessagePK(messageId));
   }
 
-  public NotationDetail getForumNotation(int forumId) {
-    return getNotationBm().getNotation(getForumNotationPk(forumId));
-  }
-
-  public NotationDetail getMessageNotation(int messageId) {
-    return getNotationBm().getNotation(getMessageNotationPk(messageId));
-  }
-
-  public void updateForumNotation(int forumId, int note) {
-    getNotationBm().updateNotation(getForumNotationPk(forumId), note);
-  }
-
-  public void updateMessageNotation(int messageId, int note) {
-    getNotationBm().updateNotation(getMessageNotationPk(messageId), note);
-  }
-
   public void validateMessage(int messageId) {
     Message message = getMessage(messageId);
     String statusBeforeUpdate = message.getStatus();
@@ -935,18 +912,6 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     return statisticBm;
   }
 
-  protected NotationBm getNotationBm() {
-    if (notationBm == null) {
-      try {
-        notationBm = EJBUtilitaire.getEJBObjectRef(JNDINames.NOTATIONBM_EJBHOME, NotationBm.class);
-      } catch (Exception e) {
-        throw new NotationRuntimeException("ForumsSessionController.getNotationBm()",
-            SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-      }
-    }
-    return notationBm;
-  }
-
   protected ForumsBM getForumsBM() {
     if (forumsBM == null) {
       try {
@@ -968,16 +933,6 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   private MessagePK getMessagePK(int messageId) {
     return new MessagePK(getComponentId(), String.valueOf(messageId));
-  }
-
-  private NotationPK getForumNotationPk(int forumId) {
-    return new NotationPK(String.valueOf(forumId), getComponentId(), Notation.TYPE_FORUM,
-        getUserId());
-  }
-
-  private NotationPK getMessageNotationPk(int messageId) {
-    return new NotationPK(String.valueOf(messageId), getComponentId(), Notation.TYPE_MESSAGE,
-        getUserId());
   }
 
   public List<Forum> getForumAncestors(int forumId) {

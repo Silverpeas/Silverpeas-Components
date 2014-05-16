@@ -2,8 +2,6 @@ package com.silverpeas.classifieds.servlets.handler;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.fileupload.FileItem;
 
 import com.silverpeas.classifieds.control.ClassifiedsRole;
@@ -16,8 +14,8 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.webactiv.SilverpeasRole;
+import org.silverpeas.servlet.HttpRequest;
 
 /**
  * Use Case : for all users, show all adds of given category
@@ -27,29 +25,29 @@ public class ClassifiedUpdateHandler extends FunctionHandler {
 
   @Override
   public String getDestination(ClassifiedsSessionController classifiedsSC,
-      HttpServletRequest request) throws Exception {
+      HttpRequest request) throws Exception {
 
     ClassifiedsRole highestRole = (isAnonymousAccess(request)) ? ClassifiedsRole.ANONYMOUS : ClassifiedsRole.getRole(classifiedsSC.getUserRoles());
 
-    if (FileUploadUtil.isRequestMultipart(request)) {
+    if (request.isContentInMultipart()) {
       // Retrieves parameters
-      List<FileItem> items = FileUploadUtil.parseRequest(request);
-      String title = FileUploadUtil.getParameter(items, "Title");
-      String classifiedId = FileUploadUtil.getParameter(items, "ClassifiedId");
-      String description = FileUploadUtil.getParameter(items, "Description");
-      String price = FileUploadUtil.getParameter(items, "Price");
-      String idImage1 = FileUploadUtil.getParameter(items, "IdImage1");
-      String idImage2 = FileUploadUtil.getParameter(items, "IdImage2");
-      String idImage3 = FileUploadUtil.getParameter(items, "IdImage3");
-      String idImage4 = FileUploadUtil.getParameter(items, "IdImage4");
-      String removeImageFile1 = FileUploadUtil.getParameter(items, "RemoveImageFile1"); //yes | no
-      String removeImageFile2 = FileUploadUtil.getParameter(items, "RemoveImageFile2"); //yes | no
-      String removeImageFile3 = FileUploadUtil.getParameter(items, "RemoveImageFile3"); //yes | no
-      String removeImageFile4 = FileUploadUtil.getParameter(items, "RemoveImageFile4"); //yes | no
-      FileItem fileImage1 = FileUploadUtil.getFile(items, "Image1");
-      FileItem fileImage2 = FileUploadUtil.getFile(items, "Image2");
-      FileItem fileImage3 = FileUploadUtil.getFile(items, "Image3");
-      FileItem fileImage4 = FileUploadUtil.getFile(items, "Image4");
+      List<FileItem> items = request.getFileItems();
+      String title = request.getParameter("Title");
+      String classifiedId = request.getParameter("ClassifiedId");
+      String description = request.getParameter("Description");
+      String price = request.getParameter("Price");
+      String idImage1 = request.getParameter("IdImage1");
+      String idImage2 = request.getParameter("IdImage2");
+      String idImage3 = request.getParameter("IdImage3");
+      String idImage4 = request.getParameter("IdImage4");
+      String removeImageFile1 = request.getParameter("RemoveImageFile1"); //yes | no
+      String removeImageFile2 = request.getParameter("RemoveImageFile2"); //yes | no
+      String removeImageFile3 = request.getParameter("RemoveImageFile3"); //yes | no
+      String removeImageFile4 = request.getParameter("RemoveImageFile4"); //yes | no
+      FileItem fileImage1 = request.getFile("Image1");
+      FileItem fileImage2 = request.getFile("Image2");
+      FileItem fileImage3 = request.getFile("Image3");
+      FileItem fileImage4 = request.getFile("Image4");
 
       ClassifiedDetail classified = classifiedsSC.getClassified(classifiedId);
       classified.setTitle(title);

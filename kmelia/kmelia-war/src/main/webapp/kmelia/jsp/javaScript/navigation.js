@@ -6,14 +6,7 @@ var exportComponentWindow = window;
 
 function addFavorite(name, description, url)
 {
-  urlWindow = getWebContext() + "/RmyLinksPeas/jsp/CreateLinkFromComponent?Name=" + name + "&Description=" + description + "&Url=" + url + "&Visible=true";
-  windowName = "favoriteWindow";
-  larg = "550";
-  haut = "250";
-  windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
-  if (!favoriteWindow.closed && favoriteWindow.name === "favoriteWindow")
-    favoriteWindow.close();
-  favoriteWindow = SP_openWindow(urlWindow, windowName, larg, haut, windowParams);
+  postNewLink(name, url, description);
 }
 
 function addSubscription() {
@@ -95,7 +88,8 @@ function refreshPublications()
   var componentId = getComponentId();
   $.get(getWebContext() + '/RAjaxPublicationsListServlet', {Id: nodeId, ComponentId: componentId, IEFix: ieFix},
   function(data) {
-    $('#pubList').html(data);
+    //$('#pubList').html(data);
+	updateHtmlContainingAngularDirectives($('#pubList'), data);
     activateUserZoom();
   }, "html");
 }
@@ -131,7 +125,8 @@ function sortGoTo(selectedIndex) {
     var componentId = getComponentId();
     $.get(getWebContext() + '/RAjaxPublicationsListServlet', {Index: 0, Sort: sort, ComponentId: componentId, Query: topicQuery, IEFix: ieFix},
     function(data) {
-      $('#pubList').html(data);
+      //$('#pubList').html(data);
+      updateHtmlContainingAngularDirectives($('#pubList'), data);
       activateUserZoom();
     }, "html");
     return;
@@ -159,7 +154,8 @@ function displayPublications(id) {
   var url = getWebContext() + "/RAjaxPublicationsListServlet";
   $.get(url, {Id: id, ComponentId: componentId, PubIdToHighlight: pubIdToHighlight, IEFix: ieFix},
   function(data) {
-    $('#pubList').html(data);
+    //$('#pubList').html(data);
+	updateHtmlContainingAngularDirectives($('#pubList'), data);
     activateUserZoom();
   }, "html");
 }
@@ -195,6 +191,10 @@ function displayOperations(id) {
 
 function displayResponsibles() {
   displayComponentResponsibles(getCurrentUserId(), getComponentId());
+}
+
+function addAppAsFavorite() {
+  addFavoriteApp(getComponentId());
 }
 
 function initOperations(id, op) {
@@ -442,6 +442,15 @@ function initOperations(id, op) {
     menuEmpty = false;
   }
 
+  if (op.mylinks) {
+    menuItem = new YAHOO.widget.MenuItem(getString('GML.favorite.application.add'), {
+      classname: 'space-or-application-favorites-operation',
+      url: "javascript:onclick=addAppAsFavorite()"
+    });
+    oMenu.addItem(menuItem, groupIndex);
+    groupEmpty = false;
+  }
+
   if (op.responsibles) {
     menuItem = new YAHOO.widget.MenuItem(getString('GML.component.responsibles'), {
       classname: 'space-or-component-responsibles-operation',
@@ -596,7 +605,7 @@ function deleteFolder(nodeId, nodeLabel) {
   if (window.confirm(getString('ConfirmDeleteTopic') + " '" + nodeLabel + "' ?")) {
     var componentId = getComponentId();
     var url = getWebContext() + '/KmeliaAJAXServlet';
-    $.get(url, {Id: nodeId, ComponentId: componentId, Action: 'Delete'},
+    $.post(url, {Id: nodeId, ComponentId: componentId, Action: 'Delete'},
     function(data) {
       if ((data - 0) == data && data.length > 0) {
         // fires event
@@ -765,7 +774,7 @@ function emptyTrash() {
     $.progressMessage();
     var componentId = getComponentId();
     var url = getWebContext() + '/KmeliaAJAXServlet';
-    $.get(url, {ComponentId: componentId, Action: 'EmptyTrash'},
+    $.post(url, {ComponentId: componentId, Action: 'EmptyTrash'},
     function(data) {
       $.closeProgressMessage();
       if (data === "ok") {
@@ -794,7 +803,7 @@ function addCurrentNodeAsFavorite() {
     url = $("#topicPermalink").attr("href");
     description = currentTopicDescription;
   }
-  addFavorite(encodeURIComponent(path), encodeURIComponent(description), url);
+  addFavorite(path, description, url);
 }
 
 function updateCurrentTopicWysiwyg() {
@@ -821,7 +830,7 @@ function pasteNode(id) {
   $.progressMessage();
 
   var url = getWebContext() + '/KmeliaAJAXServlet';
-  $.get(url, {ComponentId: getComponentId(), Action: 'Paste', Id: id, IEFix: new Date().getTime()},
+  $.post(url, {ComponentId: getComponentId(), Action: 'Paste', Id: id, IEFix: new Date().getTime()},
   function(data) {
     $.closeProgressMessage();
     if (data === "ok") {
@@ -870,7 +879,8 @@ function doPagination(index) {
   var url = getWebContext() + '/RAjaxPublicationsListServlet';
   $.get(url, {Index: index, ComponentId: componentId, Query: topicQuery, SelectedPubIds: selectedPublicationIds, NotSelectedPubIds: notSelectedPublicationIds, IEFix: ieFix},
   function(data) {
-    $('#pubList').html(data);
+    //$('#pubList').html(data);
+	updateHtmlContainingAngularDirectives($('#pubList'), data);
     activateUserZoom();
     showPublicationCheckedBoxes();
     location.href = "#pubList";
@@ -928,7 +938,7 @@ function changeStatus(nodeId, currentStatus) {
 }
 
 function _updateTopicStatus(nodeId, status, recursive) {
-  $.get(getWebContext() + '/KmeliaAJAXServlet', {ComponentId: getComponentId(), Action: 'UpdateTopicStatus', Id: nodeId, Status: status, Recursive: recursive},
+  $.post(getWebContext() + '/KmeliaAJAXServlet', {ComponentId: getComponentId(), Action: 'UpdateTopicStatus', Id: nodeId, Status: status, Recursive: recursive},
   function(data) {
     if (data === "ok") {
       updateUIStatus(nodeId, status, recursive);
@@ -941,7 +951,7 @@ function _updateTopicStatus(nodeId, status, recursive) {
 function movePublication(id, sourceId, targetId) {
   var componentId = getComponentId();
   var url = getWebContext() + '/KmeliaAJAXServlet';
-  $.get(url, {Id: id, SourceNodeId: sourceId, TargetNodeId: targetId, ComponentId: componentId, Action: 'MovePublication'},
+  $.post(url, {Id: id, SourceNodeId: sourceId, TargetNodeId: targetId, ComponentId: componentId, Action: 'MovePublication'},
   function(data) {
     //data = "erreur en votre faveur zlekfj kjf kjh kjsdh fkjshdjfkhsdjkhf fjkshd kjfhsd kjfhsdkjhf"
     if (data === "ok") {

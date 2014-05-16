@@ -26,6 +26,7 @@ import com.silverpeas.form.importExport.XMLField;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
 import com.stratelia.webactiv.kmelia.model.TopicDetail;
 import com.stratelia.webactiv.util.coordinates.model.Coordinate;
@@ -773,5 +774,11 @@ public interface KmeliaBm extends SilverpeasComponentService<KmeliaPublication> 
   public PublicationPK copyPublication(PublicationDetail publi, NodePK nodePK, String userId);
   
   public NodeDetail moveNode(NodePK nodePK, NodePK to, String userId);
+  
+  public List<KmeliaPublication> filterPublications(List<KmeliaPublication> publications,
+      String instanceId, SilverpeasRole profile, String userId);
+  
+  public boolean isPublicationVisible(PublicationDetail detail, SilverpeasRole profile,
+      String userId);
 
 }

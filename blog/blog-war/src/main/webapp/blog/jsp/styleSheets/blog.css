@@ -21,6 +21,7 @@
 	font-weight:100;
 	color:#333;
 	padding-left:7px;
+	line-height: 50px;
 }
 
 #blog #blogContainer #postsList,
@@ -68,11 +69,12 @@
 
 #blog .versCommentaires,
 #blog .categoryTicket,
-#blog .creatorTicket,
-#blog .versTopic  {
+#blog .creatorTicket  {
 	color:#999;
 }
-
+#blog .versCommentaires img {
+	vertical-align:text-bottom
+}
 #blog .comment {
 	color:#000;
 }
@@ -84,10 +86,9 @@
 }
 
 #blog .separateur {
-	background-image: url(/silverpeas/blog/jsp/icons/separateur.gif);
-	background-repeat: repeat-x;
-	height: 20px;
+	height: 10px;
 	color:#FFF;
+	border-bottom:1px solid #ccc; 
 }
 #blog .separateur hr {
 	display:none;
@@ -160,29 +161,19 @@
 	overflow-x:hidden;
 }
 
-.titreTicket a {
-	font-size:140%;
-	font-weight: bold;
-	color: #666666;
+.titreTicket > a {
+	font-size:180%;
+	font-weight: 100;
+	color:#4d4d4d;
 }
 
 .infoTicket {
-	font-size: 110%;
-	font-weight: bold;
+	font-size: 100%;
+	font-weight: 100;
 	color: #999999;
 }
 
-.postDraft .titreTicket a {
-	color: #FF6F6F;
-}
-
-.postDraft .infoTicket {
-	color: #FF6F6F;
-}
-
-.postDraft .titreTicket .status {
-	font-size: 140%;
-	font-weight: bold;
+.postDraft .titreTicket > a {
 	color: #FF6F6F;
 }
 
@@ -190,23 +181,50 @@
 	display: none;
 }
 
+.post.postDraft .status {
+	display:inline;
+}
+
+#viewPostDraft .status {
+	font-size:9pt;
+	color:#082E4A;
+}
+#list-categoryTicket {
+	padding-top:0.5em
+}
+
+.versTopic {
+    background-color: #ACACAC;
+    border: 1px solid #ACACAC;
+    border-radius: 3px;
+    color: #FFFFFF;
+    display: inline-block;
+    font-size: 0.9em;
+    line-height: 1em;
+    margin: 0 0.25em 0.15em 0;
+    padding: 0.35em 0.5em;
+    position: relative;
+    z-index: 10;
+}
+.versTopic:hover {
+    background-color: #5c5c5c;
+    border: 1px solid #5c5c5c;
+    color: #FFFFFF;   
+}
+
 #viewPost .status {
 	display: none;
 }
 
 #viewPost .titreTicket {
-	font-size: 140%;
-	font-weight: bold;
-	color: #666666;
+	font-size:180%;
+	font-weight: 100;
+	color:#4d4d4d;
 }
 
 #viewPostDraft .titreTicket {
-	font-size: 140%;
-	font-weight: bold;
-	color: #FF6F6F;
-}
-
-#viewPostDraft .infoTicket {
+	font-size:180%;
+	font-weight: 100;
 	color: #FF6F6F;
 }
 

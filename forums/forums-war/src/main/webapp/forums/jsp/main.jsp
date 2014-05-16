@@ -84,27 +84,46 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
 <fmt:message key="confirmDeleteForum" var="removeForum" />
 <fmt:message key="confirmDeleteCategory" var="removeCategory" />
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.forums">
   <head>
   	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <view:looknfeel />
+    <view:includePlugin name="rating" />
     <script type="text/javascript" src="<c:url value='/forums/jsp/javaScript/forums.js' />"></script>
     <script type="text/javascript" src="<c:url value='/util/javaScript/animation.js' />"></script>
     <script type="text/javascript">
 
       function subscribe() {
-        window.location.href = "main.jsp?action=20";
+        $('#action').val('20');
+        $('#forumForm').attr('action', 'main.jsp').submit();
       }
 
       function unsubscribe() {
-        window.location.href = "main.jsp?action=19";
+        $('#action').val('19');
+        $('#forumForm').attr('action', 'main.jsp').submit();
+      }
+
+      function subscribeOneForum(forumId, parentForumId) {
+        $('#action').val('18');
+        $('#params').val(forumId);
+        $('#forumId').val(parentForumId);
+        $('#forumForm').attr('action', 'main.jsp').submit();
+      }
+
+      function unsubscribeOneForum(forumId, parentForumId) {
+        $('#action').val('17');
+        $('#params').val(forumId);
+        $('#forumId').val(parentForumId);
+        $('#forumForm').attr('action', 'main.jsp').submit();
       }
 
       function confirmDeleteForum(forumId)
       {
         if (confirm("<view:encodeJs string="${removeForum}"/>"))
         {
-          window.location.href = "main.jsp?action=4&params=" + forumId;
+          $('#action').val('4');
+          $('#params').val(forumId);
+          $('#forumForm').attr('action', 'main.jsp').submit();
         }
       }
 
@@ -112,7 +131,8 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
       {
         if (confirm("<view:encodeJs string="${removeCategory}"/>"))
         {
-          window.location.href = "DeleteCategory?CategoryId=" + categoryId;
+          $('#CategoryId').val(categoryId);
+          $('#forumForm').attr('action', 'DeleteCategory').submit();
         }
       }
 
@@ -212,5 +232,15 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
           </c:if>
       </view:frame>
     </view:window>
+    <form id="forumForm" name="forumForm" action="" method="post">
+      <input id="action" name="action" type="hidden"/>
+      <input id="params" name="params" type="hidden"/>
+      <input id="forumId" name="forumId" type="hidden"/>
+      <input id="CategoryId" name="CategoryId" type="hidden"/>
+    </form>
+    <script type="text/javascript">
+ 	  /* declare the module myapp and its dependencies (here in the silverpeas module) */
+ 	  var myapp = angular.module('silverpeas.forums', ['silverpeas.services', 'silverpeas.directives']);
+ 	</script>
   </body>
 </html>

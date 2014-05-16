@@ -145,7 +145,7 @@ function validateMessage() {
 }
 <% } else { %>
 function init() {
-	<view:wysiwyg replace="messageText" language="<%=fsc.getLanguage()%>" width="600" height="300" toolbar="forums"/>
+	<view:wysiwyg replace="messageText" language="<%=fsc.getLanguage()%>" width="600" height="300" toolbar="forum" displayFileBrowser="${false}"/>
     document.forms["forumsForm"].elements["messageTitle"].focus();
 }
 

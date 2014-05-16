@@ -46,8 +46,10 @@ String routerUrl = URLManager.getApplicationURL() + URLManager.getURL("quickinfo
 
 boolean isNewSubscription = true;
 String codeHtml = "";
+String title = "";
 if (pubId != null && pubId != "-1") {
  	isNewSubscription = false;
+ 	title = quickInfoDetail.getTitle();
 	if (quickInfoDetail.getWysiwyg() != null && !"".equals(quickInfoDetail.getWysiwyg())) {
     codeHtml = quickInfoDetail.getWysiwyg();
 	} else if (quickInfoDetail.getDescription() != null) {
@@ -170,7 +172,7 @@ function ClipboardCopyOne() {
 }
 
 $(document).ready(function() {
-	<view:wysiwyg replace="Description" language="<%=language%>" width="600" height="300" toolbar="quickinfo"/>
+	<view:wysiwyg replace="Description" language="<%=language%>" width="600" height="300" toolbar="quickInfo" displayFileBrowser="${false}"/>
 });
 </script>
 </head>

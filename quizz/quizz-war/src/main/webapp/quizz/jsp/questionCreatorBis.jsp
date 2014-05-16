@@ -1,3 +1,4 @@
+<%@ page import="org.silverpeas.servlet.HttpRequest" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -55,7 +56,7 @@ Button cancelButton = null;
 Button finishButton = null;
 ButtonPane buttonPane = null;
 
-List<FileItem> items = FileUploadUtil.parseRequest(request);
+List<FileItem> items = HttpRequest.decorate(request).getFileItems();
 String action = FileUploadUtil.getOldParameter(items, "Action", "");
 String question = FileUploadUtil.getOldParameter(items, "question", "");
 String clue =  FileUploadUtil.getOldParameter(items, "clue", "");

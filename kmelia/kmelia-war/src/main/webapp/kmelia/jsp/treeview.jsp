@@ -78,7 +78,7 @@ boolean userCanManageTopics = rightsOnTopics.booleanValue() || "admin".equalsIgn
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.kmelia">
 <head>
 <view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/browseBarComplete.js"></script>
@@ -91,9 +91,9 @@ boolean userCanManageTopics = rightsOnTopics.booleanValue() || "admin".equalsIgn
 <script type="text/javascript" src="<%=m_context%>/kmelia/jsp/javaScript/dragAndDrop.js"></script>
 <script type="text/javascript" src="<c:url value="/util/javaScript/checkForm.js" />"></script>
 
-<view:includePlugin name="userZoom"/>
 <view:includePlugin name="popup"/>
 <view:includePlugin name="preview"/>
+<view:includePlugin name="rating" />
 
 <script type="text/javascript" src="javaScript/navigation.js"></script>
 <script type="text/javascript" src="javaScript/searchInTopic.js"></script>
@@ -169,6 +169,7 @@ var searchFolderId = "<%=id%>";
 </script>
 </head>
 <body id="kmelia" onunload="closeWindows()" class="yui-skin-sam">
+<div compile-directive style="display: none"></div>
 <div id="<%=componentId %>" class="<%=profile%>">
 <%
     Window window = gef.getWindow();
@@ -261,7 +262,7 @@ var searchFolderId = "<%=id%>";
 </form>
 <script type="text/javascript">
 function getComponentPermalink() {
-	return "<%=URLManager.getSimpleURL(URLManager.URL_COMPONENT, componentId)%>";
+	return "<%=URLManager.getSimpleURL(URLManager.URL_COMPONENT, componentId, false)%>";
 }
 
 function deleteNode(nodeId, nodeLabel) {
@@ -323,7 +324,7 @@ function resetNbPublis(nodeId) {
 function emptyTrash() {
 	if(window.confirm("<%=kmeliaScc.getString("ConfirmFlushTrashBean")%>")) {
 		$.progressMessage();
-		$.get('<%=m_context%>/KmeliaAJAXServlet', {ComponentId:'<%=componentId%>',Action:'EmptyTrash'},
+		$.post('<%=m_context%>/KmeliaAJAXServlet', {ComponentId:'<%=componentId%>',Action:'EmptyTrash'},
 				function(data){
 					$.closeProgressMessage();
 					if (data == "ok") {
@@ -779,7 +780,14 @@ $(document).ready(
 			//alert("TREE IS LOADED");
 		}).bind("select_node.jstree", function (e, data) {
     		// data.inst is the instance which triggered this event
-    		displayTopicContent(data.rslt.obj.attr("id"));
+    		var nodeId = $(data.rslt.obj).attr('id');
+    		
+    		// open topic in treeview
+    		var idSelector = "#"+nodeId;
+    		$.jstree._reference(idSelector).open_node(idSelector);
+    		
+    		// display topic content in right panel 
+    		displayTopicContent(nodeId);
     	})
     	.jstree({
     	"core" : {
@@ -970,7 +978,6 @@ $(document).ready(
 	<% } %>
 	}
 );
-
 </script>
 </div>
 <div id="visibleInvisible-message" style="display: none;">
@@ -1021,5 +1028,9 @@ $(document).ready(
           </form>
 </div>
 <view:progressMessage/>
+<script type="text/javascript">
+/* declare the module myapp and its dependencies (here in the silverpeas module) */
+var myapp = angular.module('silverpeas.kmelia', ['silverpeas.services', 'silverpeas.directives']);
+</script>
 </body>
 </html>

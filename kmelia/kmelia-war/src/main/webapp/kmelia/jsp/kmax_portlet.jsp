@@ -53,13 +53,6 @@
 <%@ include file="publicationsList.jsp.inc" %>
 <%@ include file="kmax_axisReport.jsp" %>
 
-<%!
-  //Icons
-  String publicationSrc;
-  String fullStarSrc;
-  String emptyStarSrc;
-%>
-
 <% 
 String rootId = "0";
 
@@ -69,9 +62,7 @@ if (translation == null)
 	translation = kmeliaScc.getLanguage();
 
 //Icons
-publicationSrc = m_context + "/util/icons/publication.gif";
-fullStarSrc = m_context + "/util/icons/starFilled.gif";
-emptyStarSrc = m_context + "/util/icons/starEmpty.gif";
+String publicationSrc = m_context + "/util/icons/publication.gif";
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -87,8 +78,12 @@ function search() {
     timeCriteria = "X";
     timeCriteriaUsed = 0;
 	<% if (kmeliaScc.isTimeAxisUsed()) { %>
-	    timeCriteria = document.axisForm.elements[document.axisForm.length - 1].value;
-	    timeCriteriaUsed = 1;
+      // -2 instead of -1 because of security tokens
+      // before, it was :
+      //  - document.axisForm.elements[document.axisForm.length - 1].value
+      //  - timeCriteriaUsed = 1;
+      timeCriteria = document.axisForm.elements[document.axisForm.length - 2].value;
+	    timeCriteriaUsed = 2;
 	<% } %>
 	for (var i=0; i<document.axisForm.length - timeCriteriaUsed; i++) {
     	if (document.axisForm.elements[i].value.length != 0) {

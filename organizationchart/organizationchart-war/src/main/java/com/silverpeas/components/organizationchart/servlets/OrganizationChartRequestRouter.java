@@ -24,14 +24,13 @@
 
 package com.silverpeas.components.organizationchart.servlets;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.silverpeas.components.organizationchart.control.OrganizationChartSessionController;
 
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.servlet.HttpRequest;
 
 public class OrganizationChartRequestRouter extends ComponentRequestRouter<OrganizationChartSessionController> {
 
@@ -62,14 +61,16 @@ public class OrganizationChartRequestRouter extends ComponentRequestRouter<Organ
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param orgaSC The component Session Control, build and initialised.
+   * @param request
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
   public String getDestination(String function, OrganizationChartSessionController orgaSC,
-      HttpServletRequest request) {
+      HttpRequest request) {
 
     SilverTrace.info("organizationchart", "OrganizationChartRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "User=" + orgaSC.getUserId() + " Function=" + function);

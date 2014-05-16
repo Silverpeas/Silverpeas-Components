@@ -80,6 +80,7 @@ function bindQuestionsEvent() {
 						$.each(data, function(key, answer) {
 						  $('#a'+ id + ' > ul').append(displayAnswer(answer));
 						});
+						$('html, body').animate({scrollTop:$("#q" + id).parent().offset().top}, 500);
 					}
 				});
 
@@ -454,13 +455,13 @@ function confirmDeleteCategory(categoryId) {
 <fmt:message key="GML.subscribe" var="labelSubscribe"/>
 <fmt:message key="GML.unsubscribe" var="labelUnsubscribe"/>
 function successUnsubscribe() {
-   $("#yui-gen1").empty().append($('<a>').addClass('yuimenuitemlabel').attr('href',
+   $("#yui-gen2").empty().append($('<a>').addClass('yuimenuitemlabel').attr('href',
    "javascript:subscribe();").attr('title',
-   '<view:encodeJs string="${labelUnsubscribe}" />').append('<view:encodeJs string="${labelSubscribe}" />') );
+   '<view:encodeJs string="${labelSubscribe}" />').append('<view:encodeJs string="${labelSubscribe}" />') );
 }
 
 function successSubscribe() {
-   $("#yui-gen1").empty().append($('<a>').addClass('yuimenuitemlabel').attr(
+   $("#yui-gen2").empty().append($('<a>').addClass('yuimenuitemlabel').attr(
    'href', "javascript:unsubscribe();").attr('title',
    '<view:encodeJs string="${labelUnsubscribe}" />').append('<view:encodeJs string="${labelUnsubscribe}" />') );
 }
@@ -528,7 +529,8 @@ function subscribe() {
     <c:forEach items="${requestScope.Categories}" var="category">
       <li class="category">
         <div class="categoryTitle" id="c<c:out value='${category.id}'/>">
-          <h3><a class="categoryTitle"  id="lc<c:out value='${category.id}'/>" title="<fmt:message key="questionReply.openCategory"/>" href="#"><c:out value='${category.name}'/></a></h3>
+          <h3><a class="categoryTitle" id="lc<c:out value='${category.id}'/>" title="<fmt:message key="questionReply.openCategory"/>" href="#"><c:out value='${category.name}'/></a></h3>
+          <p>: <c:out value='${category.description}'/></p>
           <div class="action">
             <c:if test="${'admin' eq requestScope.Flag}">
             <a title="<fmt:message key="questionReply.updateCategory"/>" href="EditCategory?CategoryId=<c:out value='${category.id}'/>">

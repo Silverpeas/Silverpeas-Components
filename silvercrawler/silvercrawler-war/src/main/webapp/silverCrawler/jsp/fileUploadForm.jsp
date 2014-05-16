@@ -34,6 +34,7 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
+<view:includePlugin name="tkn"/>
 <form id="fileUploadForm" name="fileUploadForm" method="POST" action="UploadFile" enctype="multipart/form-data">
   <table width="100%" cellspacing="2" cellpadding="2" border="0">
 

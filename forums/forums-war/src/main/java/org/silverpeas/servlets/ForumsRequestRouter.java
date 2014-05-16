@@ -35,6 +35,8 @@ import com.stratelia.webactiv.forums.models.Forum;
 import com.stratelia.webactiv.forums.models.Message;
 import com.stratelia.webactiv.forums.url.ActionUrl;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
+import org.silverpeas.rating.web.RaterRatingEntity;
+import org.silverpeas.servlet.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -60,12 +62,12 @@ public class ForumsRequestRouter extends ComponentRequestRouter<ForumsSessionCon
 
   @Override
   public String getDestination(String function, ForumsSessionController forumsSC,
-      HttpServletRequest request) {
+      HttpRequest request) {
     String destination;
     try {
       if ((function.startsWith("Main")) || (function.startsWith("main"))) {
         String forumId = request.getParameter("forumId");
-        if (forumId != null && Integer.parseInt(forumId) > 0) {
+        if (StringUtil.isInteger(forumId) && Integer.parseInt(forumId) > 0) {
           return ROOT_DEST + ActionUrl.getUrl("viewForum", "main", Integer.parseInt(forumId));
         }
         destination = ROOT_DEST + "main.jsp";
@@ -210,8 +212,9 @@ public class ForumsRequestRouter extends ComponentRequestRouter<ForumsSessionCon
         return ROOT_DEST + "forumNotFound";
       }
     }
-    request.setAttribute("currentForum", forumsSC.getForum(currentForumId));
-    request.setAttribute("notation", forumsSC.getForumNotation(currentForumId));
+    Forum forum = forumsSC.getForum(currentForumId);
+    request.setAttribute("currentForum", forum);
+    request.setAttribute("currentForumRaterRatingEntity", RaterRatingEntity.fromRateable(forum));
     request.setAttribute("parents", forumsSC.getForumAncestors(currentForumId));
     request.setAttribute("nbChildrens", forumsSC.getForumSonsNb(currentForumId));
     return ROOT_DEST +

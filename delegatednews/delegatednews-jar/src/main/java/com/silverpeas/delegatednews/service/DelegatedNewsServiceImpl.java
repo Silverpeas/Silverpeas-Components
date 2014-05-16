@@ -78,8 +78,7 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
    */
   @Override
   public DelegatedNews getDelegatedNews(int pubId) {
-    DelegatedNews delegatedNews = dao.findOne(Integer.valueOf(pubId));
-    return delegatedNews;
+    return dao.findOne(Integer.valueOf(pubId));
   }
 
   /**
@@ -91,8 +90,7 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
     Sort sort =
         new Sort(new Order(Direction.ASC, "newsOrder"), new Order(Direction.ASC, "beginDate"),
             new Order(Direction.ASC, "pubId"));
-    List<DelegatedNews> list = dao.findAll(sort);
-    return list;
+    return dao.findAll(sort);
   }
 
   /**
@@ -101,8 +99,7 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
    */
   @Override
   public List<DelegatedNews> getAllValidDelegatedNews() {
-    List<DelegatedNews> list = dao.findByStatus(DelegatedNews.NEWS_VALID);
-    return list;
+    return dao.findByStatus(DelegatedNews.NEWS_VALID);
   }
 
   /**
@@ -111,10 +108,12 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
   @Override
   public void validateDelegatedNews(int pubId, String validatorId) {
     DelegatedNews delegatedNews = dao.findOne(Integer.valueOf(pubId));
-    delegatedNews.setStatus(DelegatedNews.NEWS_VALID);
-    delegatedNews.setValidatorId(validatorId);
-    delegatedNews.setValidationDate(new Date());
-    dao.saveAndFlush(delegatedNews);
+    if (delegatedNews != null) {
+      delegatedNews.setStatus(DelegatedNews.NEWS_VALID);
+      delegatedNews.setValidatorId(validatorId);
+      delegatedNews.setValidationDate(new Date());
+      dao.saveAndFlush(delegatedNews);
+    }
   }
 
   /**
@@ -123,10 +122,12 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
   @Override
   public void refuseDelegatedNews(int pubId, String validatorId) {
     DelegatedNews delegatedNews = dao.findOne(Integer.valueOf(pubId));
-    delegatedNews.setStatus(DelegatedNews.NEWS_REFUSED);
-    delegatedNews.setValidatorId(validatorId);
-    delegatedNews.setValidationDate(new Date());
-    dao.saveAndFlush(delegatedNews);
+    if (delegatedNews != null) {
+      delegatedNews.setStatus(DelegatedNews.NEWS_REFUSED);
+      delegatedNews.setValidatorId(validatorId);
+      delegatedNews.setValidationDate(new Date());
+      dao.saveAndFlush(delegatedNews);
+    }
   }
 
   /**
@@ -135,9 +136,11 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
   @Override
   public void updateDateDelegatedNews(int pubId, Date dateHourBegin, Date dateHourEnd) {
     DelegatedNews delegatedNews = dao.findOne(Integer.valueOf(pubId));
-    delegatedNews.setBeginDate(dateHourBegin);
-    delegatedNews.setEndDate(dateHourEnd);
-    dao.saveAndFlush(delegatedNews);
+    if (delegatedNews != null) {
+      delegatedNews.setBeginDate(dateHourBegin);
+      delegatedNews.setEndDate(dateHourEnd);
+      dao.saveAndFlush(delegatedNews);
+    }
   }
 
   /**
@@ -250,14 +253,16 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
   public void updateDelegatedNews(int pubId, String instanceId, String status, String updaterId,
       String validatorId, Date validationDate, Date dateHourBegin, Date dateHourEnd) {
     DelegatedNews delegatedNews = dao.findOne(Integer.valueOf(pubId));
-    delegatedNews.setInstanceId(instanceId);
-    delegatedNews.setStatus(status);
-    delegatedNews.setContributorId(updaterId);
-    delegatedNews.setValidatorId(validatorId);
-    delegatedNews.setValidationDate(validationDate);
-    delegatedNews.setBeginDate(dateHourBegin);
-    delegatedNews.setEndDate(dateHourEnd);
-    dao.saveAndFlush(delegatedNews);
+    if (delegatedNews != null) {
+      delegatedNews.setInstanceId(instanceId);
+      delegatedNews.setStatus(status);
+      delegatedNews.setContributorId(updaterId);
+      delegatedNews.setValidatorId(validatorId);
+      delegatedNews.setValidationDate(validationDate);
+      delegatedNews.setBeginDate(dateHourBegin);
+      delegatedNews.setEndDate(dateHourEnd);
+      dao.saveAndFlush(delegatedNews);
+    }
   }
 
   /**

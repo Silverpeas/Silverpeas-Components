@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+~ Copyright (C) 2000 - 2014 Silverpeas
+~
+~ This program is free software: you can redistribute it and/or modify
+~ it under the terms of the GNU Affero General Public License as
+~ published by the Free Software Foundation, either version 3 of the
+~ License, or (at your option) any later version.
+~
+~ As a special exception to the terms and conditions of version 3.0 of
+~ the GPL, you may redistribute this Program in connection with Free/Libre
+~ Open Source Software ("FLOSS") applications as described in Silverpeas's
+~ FLOSS exception. You should have recieved a copy of the text describing
+~ the FLOSS exception, and it is also available here:
+~ "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+~
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+~ GNU Affero General Public License for more details.
+~
+~ You should have received a copy of the GNU Affero General Public License
+~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<dataset>
+
+  <!-- Suggestion Boxes -->
+  <sc_suggestion_box id="suggestion-box_1" instanceId="suggestionBox1"
+                     createDate="2014-03-11 17:34:00.0" createdBy="1"
+                     lastUpdateDate="2014-03-11 17:34:00.0" lastUpdatedBy="1" version="0"/>
+
+  <sc_suggestion_box id="suggestion-box_2" instanceId="suggestionBox2"
+                     createDate="2014-03-11 17:34:00.0" createdBy="1"
+                     lastUpdateDate="2014-03-11 17:34:00.0" lastUpdatedBy="1" version="0"/>
+
+
+  <!-- Suggestions -->
+  <sc_suggestion id="suggestion_1" suggestionBoxId="suggestion-box_1" title="suggestion 1"
+                 status="DRAFT" validationDate="[NULL]"
+                 validationComment="[NULL]" validationBy="[NULL]"
+                 createDate="2014-03-11 17:34:00.0" createdBy="1"
+                 lastUpdateDate="2014-03-16 17:34:00.0" lastUpdatedBy="1" version="2"/>
+
+  <sc_suggestion id="suggestion_1_a" suggestionBoxId="suggestion-box_1" title="suggestion 1 IDEM"
+                 status="REFUSED" validationDate="2014-03-15 17:33:25.0"
+                 validationComment="Bof" validationBy="26"
+                 createDate="2014-03-11 17:34:00.0" createdBy="1"
+                 lastUpdateDate="2014-03-15 17:34:00.0" lastUpdatedBy="26" version="1"/>
+
+  <sc_suggestion id="suggestion_1_v_1" suggestionBoxId="suggestion-box_1" title="suggestion 1 V1"
+                 status="VALIDATED" validationDate="2014-03-20 12:30:00.0"
+                 validationComment="Whaouuu" validationBy="26"
+                 createDate="2014-03-11 17:34:00.0" createdBy="1"
+                 lastUpdateDate="2014-03-26 17:34:00.0" lastUpdatedBy="26" version="1"/>
+
+  <sc_suggestion id="suggestion_2" suggestionBoxId="suggestion-box_2" title="suggestion 2"
+                 status="DRAFT"
+                 createDate="2014-03-11 17:34:00.0" createdBy="1"
+                 lastUpdateDate="2014-03-11 17:34:00.0" lastUpdatedBy="1" version="0"/>
+
+  <sc_suggestion id="suggestion_1_b" suggestionBoxId="suggestion-box_1" title="suggestion 1 / B"
+                 status="DRAFT"
+                 createDate="2014-03-11 17:34:00.0" createdBy="1"
+                 lastUpdateDate="2014-03-20 17:34:00.0" lastUpdatedBy="1" version="50"/>
+
+  <sc_suggestion id="suggestion_1_c" suggestionBoxId="suggestion-box_1" title="suggestion 1 IDEM"
+                 status="PENDING_VALIDATION"
+                 createDate="2014-03-11 17:34:00.0" createdBy="1"
+                 lastUpdateDate="2014-03-13 17:34:00.0" lastUpdatedBy="1" version="2"/>
+
+  <sc_suggestion id="suggestion_1_d" suggestionBoxId="suggestion-box_1" title="suggestion 1 / D"
+                 status="DRAFT"
+                 createDate="2014-03-11 17:34:00.0" createdBy="2"
+                 lastUpdateDate="2014-03-11 17:34:00.0" lastUpdatedBy="2" version="0"/>
+
+  <sc_suggestion id="suggestion_1_v_2" suggestionBoxId="suggestion-box_1" title="suggestion 1 V2"
+                 status="VALIDATED" validationDate="2014-03-30 12:30:00.0"
+                 createDate="2014-03-11 17:34:00.0" createdBy="1"
+                 validationComment="" validationBy="26"
+                 lastUpdateDate="2014-03-25 17:34:00.0" lastUpdatedBy="26" version="1"/>
+
+  <sc_suggestion id="suggestion_1_c_2" suggestionBoxId="suggestion-box_1" title="suggestion 1 IDEM"
+                 status="PENDING_VALIDATION"
+                 createDate="2014-03-11 17:34:00.0" createdBy="1"
+                 lastUpdateDate="2014-03-12 17:34:00.0" lastUpdatedBy="1" version="2"/>
+
+</dataset>

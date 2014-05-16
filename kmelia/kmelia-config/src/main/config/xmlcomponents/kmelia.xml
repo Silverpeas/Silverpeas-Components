@@ -1257,5 +1257,23 @@
         </message>
       </help>
     </parameter>
+    <parameter>
+      <name>publicationRating</name>
+      <label>
+        <message lang="fr">Notes</message>
+        <message lang="en">Ratings</message>
+        <message lang="de">Bewertungen</message>
+      </label>
+      <order>51</order>
+      <mandatory>false</mandatory>
+      <value/>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Permet aux lecteurs de donner une note à chaque publication</message>
+        <message lang="en">Allows readers to give a rating to each publication</message>
+        <message lang="de">Ermöglicht den Leser auf eine Note auf jede Veröffentlichung geben</message>
+      </help>
+    </parameter>
   </parameters>
 </WAComponent>

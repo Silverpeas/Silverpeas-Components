@@ -32,6 +32,7 @@
 <%@ page import="java.io.ObjectInputStream"%>
 <%@ page import="java.beans.*"%>
 <%@ page import="com.stratelia.webactiv.survey.control.FileHelper" %>
+<%@ page import="org.silverpeas.servlet.HttpRequest" %>
 <%@ include file="checkSurvey.jsp" %>
 
 <%!
@@ -88,7 +89,7 @@ ButtonPane buttonPane = null;
 
 QuestionContainerDetail survey = null;
 
-List<FileItem> items = FileUploadUtil.parseRequest(request);
+List<FileItem> items = HttpRequest.decorate(request).getFileItems();
 String action = FileUploadUtil.getOldParameter(items, "Action");
 String question = FileUploadUtil.getOldParameter(items, "question");
 String nbAnswers = FileUploadUtil.getOldParameter(items, "nbAnswers");

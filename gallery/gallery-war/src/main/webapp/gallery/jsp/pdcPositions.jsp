@@ -28,7 +28,6 @@
 <%@ include file="check.jsp" %>
 
 <% 
-	// récupération des paramètres :
 	PhotoDetail photo			= (PhotoDetail) request.getAttribute("Photo");
 	String 		profile			= (String) request.getAttribute("Profile");
 	String		userId 			= (String) request.getAttribute("UserId");
@@ -38,8 +37,6 @@
 	String 		xmlFormName		= (String) request.getAttribute("XMLFormName");
 	boolean		showComments	= ((Boolean) request.getAttribute("ShowCommentsTab")).booleanValue();
 		
-	// déclaration des variables :
-	
 	String 		photoId			= photo.getPhotoPK().getId();
 	String 		nbComments 		= nbCom.toString();
 %>
@@ -67,7 +64,7 @@
 	if (showComments)
 		tabbedPane.addTab(resource.getString("gallery.comments")+" ("+nbComments+")", "Comments?PhotoId="+photoId, false);
 	tabbedPane.addTab(resource.getString("gallery.accessPath"), "AccessPath?PhotoId="+photoId, false);
-	tabbedPane.addTab(resource.getString("GML.PDC"), "#", true, false);
+	tabbedPane.addTab(resource.getString("GML.PDC"), "#", true);
 	
 	out.println(window.printBefore());
 	out.println(tabbedPane.print());

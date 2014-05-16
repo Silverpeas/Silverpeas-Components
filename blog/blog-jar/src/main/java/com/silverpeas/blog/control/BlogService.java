@@ -32,7 +32,6 @@ import com.silverpeas.blog.model.Category;
 import com.silverpeas.blog.model.PostDetail;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.pdc.model.PdcClassification;
-import com.silverpeas.subscribe.Subscription;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;

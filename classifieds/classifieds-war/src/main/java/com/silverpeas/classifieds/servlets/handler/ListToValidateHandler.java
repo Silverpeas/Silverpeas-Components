@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.silverpeas.classifieds.control.ClassifiedsSessionController;
 import com.silverpeas.classifieds.model.ClassifiedDetail;
 import com.silverpeas.classifieds.servlets.FunctionHandler;
+import org.silverpeas.servlet.HttpRequest;
 
 /**
  * Use Case : for moderator, show all classifieds waiting for validation
@@ -18,7 +19,7 @@ public class ListToValidateHandler extends FunctionHandler {
 
   @Override
   public String getDestination(ClassifiedsSessionController classifiedsSC,
-      HttpServletRequest request) throws Exception{
+      HttpRequest request) throws Exception{
 
     // Retrieve classifieds waiting for validation
     Collection<ClassifiedDetail> classifieds = classifiedsSC.getClassifiedsToValidate();

@@ -20,9 +20,7 @@
  */
 package com.stratelia.webactiv.forums.forumsManager.ejb;
 
-import com.silverpeas.notation.ejb.NotationBm;
-import com.silverpeas.notation.model.Notation;
-import com.silverpeas.notation.model.NotationPK;
+import com.silverpeas.notation.ejb.RatingBm;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.constant.SubscriberType;
@@ -57,6 +55,7 @@ import org.silverpeas.components.forum.subscription.ForumMessageSubscription;
 import org.silverpeas.components.forum.subscription.ForumMessageSubscriptionResource;
 import org.silverpeas.components.forum.subscription.ForumSubscription;
 import org.silverpeas.components.forum.subscription.ForumSubscriptionResource;
+import org.silverpeas.rating.ContributionRatingPK;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
@@ -88,7 +87,7 @@ public class ForumsBMEJB implements ForumsBM {
   @EJB
   private TagCloudBm tagcloud;
   @EJB
-  private NotationBm notation;
+  private RatingBm notation;
   @EJB
   private NodeBm node;
   private static final long serialVersionUID = -6809840977338911593L;
@@ -1531,13 +1530,12 @@ public class ForumsBMEJB implements ForumsBM {
   }
 
   private void deleteNotation(ForumPK forumPK) {
-    notation.deleteNotation(new NotationPK(forumPK.getId(), forumPK.getComponentName(),
-        Notation.TYPE_FORUM));
+    notation.deleteRating(new ContributionRatingPK(forumPK.getId(), forumPK.getComponentName(), "Forum"));
   }
 
   private void deleteNotation(MessagePK messagePK) {
-    notation.deleteNotation(new NotationPK(messagePK.getId(), messagePK.getComponentName(),
-        Notation.TYPE_MESSAGE));
+    notation.deleteRating(new ContributionRatingPK(messagePK.getId(), messagePK.getComponentName(),
+        "ForumMessage"));
   }
 
   protected String getWysiwygContent(String componentId, String messageId) {

@@ -24,6 +24,7 @@
 package com.silverpeas.questionReply.control;
 
 import com.silverpeas.questionReply.model.Question;
+import com.silverpeas.util.i18n.AbstractBean;
 import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.webactiv.persistence.IdPK;
@@ -33,23 +34,21 @@ import java.util.Iterator;
 /**
  * The questionReply implementation of SilverContentInterface
  */
-public final class QuestionHeader extends AbstractI18NBean implements SilverContentInterface {
+public final class QuestionHeader extends AbstractBean implements SilverContentInterface {
 
   private static final long serialVersionUID = 311303663095375317L;
   private long id;
-  private String label;
   private String instanceId;
   private String title;
   private String date;
   private String creatorId;
-  private String description;
 
   public void init(Question question) {
     this.id = ((IdPK) question.getPK()).getIdAsLong();
-    this.label = question.getTitle();
+    setName(question.getTitle());
+    setDescription(question.getContent());
     this.title = question.getTitle();
     this.date = question.getCreationDate();
-    this.description = question.getContent();
   }
 
   public QuestionHeader(Question question) {
@@ -61,26 +60,6 @@ public final class QuestionHeader extends AbstractI18NBean implements SilverCont
     this.instanceId = instanceId;
     this.date = date;
     this.creatorId = creatorId;
-  }
-
-  @Override
-  public String getName() {
-    return label;
-  }
-
-  @Override
-  public String getDescription() {
-    return description;
-  }
-
-  @Override
-  public String getDescription(String language) {
-    return getDescription();
-  }
-
-  @Override
-  public String getName(String language) {
-    return getName();
   }
 
   @Override
@@ -120,10 +99,5 @@ public final class QuestionHeader extends AbstractI18NBean implements SilverCont
   @Override
   public String getSilverCreationDate() {
     return this.date;
-  }
-
-  @Override
-  public Iterator<String> getLanguages() {
-    return null;
   }
 }

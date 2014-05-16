@@ -51,12 +51,12 @@
 	browseBar.setPath(processId+process.getTitle(currentRole, language));
 
 	ButtonPane buttonPane = gef.getButtonPane();
-	buttonPane.addButton((Button) gef.getFormButton(
+	buttonPane.addButton(gef.getFormButton(
 	   generalMessage.getString("GML.validate"),
 		"javascript:onClick=B_VALIDER_ONCLICK();",
 		false));
 	if (isSaveButtonEnabled) {
-		buttonPane.addButton((Button) gef.getFormButton(
+		buttonPane.addButton(gef.getFormButton(
 			   generalMessage.getString("GML.saveDraft"),
 				"javascript:onClick=B_SAUVEGARDER_ONCLICK();",
 				false));
@@ -67,17 +67,15 @@
 		false));
 %>
 
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-<%
-   out.println(gef.getLookStyleSheet());
-%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
+<view:looknfeel/>
 <%
 	if (form != null) form.displayScripts(out, context);
 %>
-
-<SCRIPT language="JavaScript">
+<script type="text/javascript">
 	function B_VALIDER_ONCLICK()
 	{
 	<% if (form != null) { %>
@@ -104,29 +102,28 @@
 
     	setTimeout("document.<%=context.getFormName()%>.submit();", 500);
 	}
-</SCRIPT>
-</HEAD>
-<BODY class="yui-skin-sam">
+</script>
+</head>
+<body class="yui-skin-sam">
 <%
    out.println(window.printBefore());
-	out.println(tabbedPane.print());
-   out.println(frame.printBefore());
+   out.println(tabbedPane.print());
 %>
-<FORM NAME="<%=context.getFormName()%>" METHOD="POST" ACTION="saveAction" ENCTYPE="multipart/form-data">
+<view:frame>
+<form name="<%=context.getFormName()%>" method="post" action="saveAction" enctype="multipart/form-data">
 <input type="hidden" name="processManagertokenId" value="${currentTokenId}"/>
 <input type="hidden" id="isDraft" name="isDraft" value="No"/>
 <input type="hidden" id="isFirstTimeSaved" name="isFirstTimeSaved" value="<%=isFirstTimeSaved%>"/>
-<CENTER>
 <%
    if (form != null) form.display(out, context, data);
 	else
 	{ %>
-<table CELLPADDING=0 CELLSPACING=2 BORDER=0 WIDTH="98%" CLASS=intfdcolor>
+<table cellpadding="0" cellspacing="2" border="0" width="98%" class="intfdcolor">
 	<tr>
-		<td CLASS=intfdcolor4 NOWRAP>
-         <table CELLPADDING=0 CELLSPACING=2 BORDER=0 WIDTH="100%" CLASS=intfdcolor4><tr><td>&nbsp;</td></tr><tr>
+		<td class="intfdcolor4" nowrap="nowrap">
+         <table cellpadding="0" cellspacing="2" border="0" width="100%" class="intfdcolor4"><tr><td>&nbsp;</td></tr><tr>
 			   <td width="80%">
-			      <img border="0" src="<%=resource.getIcon("processManager.px") %>" width="5">
+			      <img border="0" src="<%=resource.getIcon("processManager.px") %>" width="5"/>
 					<span class="textePetitBold">
 	               <%=action.getLabel(currentRole, language)%>
 			      </span>
@@ -136,18 +133,17 @@
 	</tr>
 </table>
 <% } %>
-   <INPUT type="hidden" name="state" value="<%=state.getName()%>">
-   <INPUT type="hidden" name="action" value="<%=action.getName()%>">
-   <BR>
+   <input type="hidden" name="state" value="<%=state.getName()%>"/>
+   <input type="hidden" name="action" value="<%=action.getName()%>"/>
+   <br/>
 <%
 	out.println(buttonPane.print());
 %>
-</CENTER>
-</FORM>
+</form>
+</view:frame>
 <%
-   out.println(frame.printAfter());
    out.println(window.printAfter());
 %>
 <view:progressMessage/>
-</BODY>
-</HTML>
+</body>
+</html>

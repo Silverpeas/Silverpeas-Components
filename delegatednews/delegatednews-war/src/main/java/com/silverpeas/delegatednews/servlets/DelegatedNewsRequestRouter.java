@@ -32,8 +32,8 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.servlet.HttpRequest;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
 
@@ -66,13 +66,15 @@ public class DelegatedNewsRequestRouter extends ComponentRequestRouter<Delegated
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param newsSC The component Session Control, build and initialised.
+   * @param request
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   public String getDestination(String function, DelegatedNewsSessionController newsSC,
-      HttpServletRequest request) {
+      HttpRequest request) {
 
     SilverTrace.info("delegatednews", "DelegatedNewsRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "User=" + newsSC.getUserId() + " Function=" + function);
