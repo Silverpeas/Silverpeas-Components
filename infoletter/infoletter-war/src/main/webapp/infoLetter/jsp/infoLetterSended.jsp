@@ -58,7 +58,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     <view:frame>
 <div class="inlineMessage">
   <fmt:message var="messageSent" key="infoLetter.sended"/>
-  <view:encodeJs string="${messageSent}"/>
+  <c:out value="${messageSent}"/>
 </div>
 <br clear="all"/>
 <% if (emailErrors.length > 0) { %>
