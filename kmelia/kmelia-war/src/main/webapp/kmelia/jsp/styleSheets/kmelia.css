@@ -84,6 +84,10 @@
 	vertical-align:bottom;
 }
 
+#preview .inlineMessage {
+	margin-top: 0px;
+}
+
 #infoPublication{
 	padding-bottom:11px;
 }

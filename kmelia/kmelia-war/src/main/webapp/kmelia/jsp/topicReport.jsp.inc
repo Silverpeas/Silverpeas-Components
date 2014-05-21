@@ -183,7 +183,6 @@ void displayTopicsToUsersAsArray(KmeliaSessionController kmeliaScc, NodeDetail n
 							String universalLink = "";
 							if (displayLinks)
 							{
-								//String link = kmeliaScc.getAutoRedirectURL()+URLEncoder.encode(node.getDefaultUrl("kmelia"));
 								String link = URLManager.getSimpleURL(URLManager.URL_TOPIC, childId, node.getNodePK().getInstanceId());
 								universalLink = "&nbsp;<a href=\""+link+"\"><img src=\""+linkIcon+"\" border=\"0\" align=\"bottom\" alt=\""+resources.getString("kmelia.CopyTopicLink")+"\" title=\""+resources.getString("kmelia.CopyTopicLink")+"\"></a>";
 							}

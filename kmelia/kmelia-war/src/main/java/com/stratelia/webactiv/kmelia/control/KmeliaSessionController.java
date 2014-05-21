@@ -194,7 +194,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   private static final String[] AVAILABLE_EXPORT_FORMATS = {"zip", "pdf", "odt", "doc"};
 
   /* EJBs used by sessionController */
-  private ThumbnailService thumbnailService = null;
   private CommentService commentService = null;
   private PdcBm pdcBm = null;
   private StatisticBm statisticBm = null;
@@ -2120,16 +2119,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   /**
-   * @return
-   */
-  public String getAutoRedirectURL() {
-    if (autoRedirectURL == null) {
-      autoRedirectURL = getNotificationManager().getUserAutoRedirectURL(getUserId());
-    }
-    return autoRedirectURL;
-  }
-
-  /**
    * @param fileUploaded : File uploaded in temp directory
    * @param fileType
    * @param topicId
@@ -3864,8 +3853,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   private String getMaxSizeErrorMessage(ResourceLocator messages) {
-    ResourceLocator uploadSettings = new ResourceLocator(
-        "org.silverpeas.util.uploads.uploadSettings", "");
     long maximumFileSize = FileRepositoryManager.getUploadMaximumFileSize();
     String maximumFileSizeMo = UnitUtil.formatMemSize(maximumFileSize);
     return messages.getString("attachment.dialog.errorAtLeastOneFileSize") + " " + messages.
@@ -3874,5 +3861,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   public List<HistoryObjectDetail> getLastAccess(PublicationPK pk) {
     return getKmeliaBm().getLastAccess(pk, getCurrentFolderPK(), getUserId());
+  }
+  
+  public void setPublicationValidator(String userIds) {
+    PublicationDetail publication = getSessionPubliOrClone().getDetail();
+    publication.setTargetValidatorId(userIds);
+    publication.setStatusMustBeChecked(false);
+    publication.setIndexOperation(IndexManager.NONE);
+    getPublicationBm().setDetail(publication);
   }
 }
