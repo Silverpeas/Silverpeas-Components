@@ -1766,6 +1766,10 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
             kmelia);
       } else if ("statSelectionGroup".equals(function)) {
         destination = statisticRequestHandler.handleRequest(request, function, kmelia);
+      } else if ("SetPublicationValidator".equals(function)) {
+        String userIds = request.getParameter("ValideurId");
+        kmelia.setPublicationValidator(userIds);
+        destination = getDestination("ViewPublication", kmelia, request);
       } else {
         destination = rootDestination + function;
       }
