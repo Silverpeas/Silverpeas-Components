@@ -23,6 +23,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.util.StringUtil"%>
+<%@page import="org.silverpeas.components.quickinfo.model.News"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
@@ -30,16 +32,9 @@
 
 <%
   //Collection infos = Tous les quickInfos
-  Collection infos = (Collection) request.getAttribute("infos");
-  String strAdmin = (String)  request.getAttribute("isAdmin");
+  List<News> infos = (List<News>) request.getAttribute("infos");
+boolean isAdmin = (Boolean) request.getAttribute("isAdmin");
   String pdcUtilizationSrc  = m_context + "/pdcPeas/jsp/icons/pdcPeas_paramPdc.gif";
-
-  boolean isAdmin = false;
-
-  if (strAdmin != null && strAdmin.equals("true") ) {
-      isAdmin = true;
-  }
-
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -51,16 +46,6 @@
 <script type="text/javascript">
 function openSPWindow(fonction, windowName){
 	pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600', '400','scrollbars=yes, resizable, alwaysRaised');
-}
-
-function ClipboardCopyAll() {
-	document.quickInfoForm.action = "<%=m_context%><%=quickinfo.getComponentUrl()%>multicopy.jsp";
-	document.quickInfoForm.target = "IdleFrame";
-	document.quickInfoForm.submit();
-}
-
-function ClipboardPaste() {
-	top.IdleFrame.document.location.replace ('<%=m_context%><%=URLManager.getURL(URLManager.CMP_CLIPBOARD)%>paste.jsp?compR=Rquickinfo&amp;SpaceFrom=<%=quickinfo.getSpaceId()%>&amp;ComponentFrom=<%=quickinfo.getComponentId()%>&amp;JSPPage=quickInfoPublisher.jsp&amp;TargetFrame=MyMain&amp;message=REFRESH');
 }
 
 function editQuickInfo(id) {
@@ -91,10 +76,6 @@ function addQuickInfo() {
         }
         operationPane.addOperationOfCreation(m_context+"/util/icons/create-action/add-news.png", resources.getString("creation"), "javascript:onClick=addQuickInfo()");
 
-        // Clipboard
-        operationPane.addOperation(m_context+"/util/icons/copy.gif", resources.getString("GML.copy"), "javascript:onClick=ClipboardCopyAll()");
-        operationPane.addOperation(m_context+"/util/icons/paste.gif", resources.getString("GML.paste"), "javascript:onClick=ClipboardPaste()");
-
         out.println(window.printBefore());
 %>
 <view:frame>
@@ -105,15 +86,11 @@ function addQuickInfo() {
           arrayPane.addArrayColumn(null);
           arrayPane.addArrayColumn(resources.getString("GML.title"));
           arrayPane.addArrayColumn(resources.getString("GML.publisher"));
-          arrayPane.addArrayColumn(resources.getString("dateDebut"));
-          arrayPane.addArrayColumn(resources.getString("dateFin"));
-          ArrayColumn arrayColumnOp = arrayPane.addArrayColumn("<a href=\"javascript:void(0)\" onmousedown=\"return SwitchSelection(quickInfoForm, 'selectItem', event)\" onclick=\"return false\">"+resources.getString("GML.selection")+"</a>");
-                    arrayColumnOp.setSortable(false);
+          arrayPane.addArrayColumn(resources.getString("GML.dateBegin"));
+          arrayPane.addArrayColumn(resources.getString("GML.dateEnd"));
 
-          Iterator infosI = infos.iterator();
-          int index = 0;									
-          while (infosI.hasNext()) {
-            PublicationDetail pub = (PublicationDetail) infosI.next();
+          for (News news : infos) {
+            PublicationDetail pub = news.getPublication();
 
 			ArrayLine line = arrayPane.addArrayLine();
 		IconPane iconPane1 = gef.getIconPane();
@@ -141,8 +118,6 @@ function addQuickInfo() {
               ArrayCellText text = line.addArrayCellText(resources.getOutputDate(pub.getEndDate()));
               text.setCompareOn(pub.getEndDate());
             }
-                                line.addArrayCellText("<input type=\"checkbox\" name=\"selectItem"+index+"\" value=\""+pub.getPK().getId()+"\"/>");
-                                index++;
           }
           out.println(arrayPane.print());
 %>

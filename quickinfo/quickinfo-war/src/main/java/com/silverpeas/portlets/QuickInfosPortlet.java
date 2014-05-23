@@ -20,20 +20,20 @@
  */
 package com.silverpeas.portlets;
 
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.quickinfo.control.QuickInfoTransversalSC;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+
 import javax.portlet.GenericPortlet;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequestDispatcher;
 import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+
+import org.silverpeas.components.quickinfo.model.QuickInfoService;
+import org.silverpeas.components.quickinfo.model.QuickInfoServiceFactory;
+
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
 
 public class QuickInfosPortlet extends GenericPortlet implements FormNames {
 
@@ -44,16 +44,11 @@ public class QuickInfosPortlet extends GenericPortlet implements FormNames {
     MainSessionController m_MainSessionCtrl =
         (MainSessionController) session.getAttribute(
         MainSessionController.MAIN_SESSION_CONTROLLER_ATT, PortletSession.APPLICATION_SCOPE);
+    
+    QuickInfoService service = QuickInfoServiceFactory.getQuickInfoService();
+    
+    request.setAttribute("QuickInfos", service.getPlatformNews(m_MainSessionCtrl.getUserId()));
 
-    QuickInfoTransversalSC quickinfoTransversal = new QuickInfoTransversalSC();
-    quickinfoTransversal.init(m_MainSessionCtrl);
-    List<PublicationDetail> quickinfos = new ArrayList<PublicationDetail>();
-    try {
-      quickinfos = new ArrayList<PublicationDetail>(quickinfoTransversal.getAllQuickInfos());
-    } catch (Exception e) {
-      SilverTrace.error("portlet", "QuickInfosPortlet", "portlet.ERROR", e);
-    }
-    request.setAttribute("QuickInfos", quickinfos.iterator());
     include(request, response, "portlet.jsp");
   }
 

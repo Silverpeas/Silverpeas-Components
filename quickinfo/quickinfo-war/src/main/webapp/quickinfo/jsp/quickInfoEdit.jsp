@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="org.silverpeas.components.quickinfo.model.News"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
@@ -39,21 +40,23 @@
 <%@ page import="com.silverpeas.util.EncodeHelper" %>
 
 <%
-PublicationDetail quickInfoDetail = (PublicationDetail) request.getAttribute("info");
+News news = (News) request.getAttribute("info");
+PublicationDetail quickInfoDetail = null;
+if (news != null) {
+  quickInfoDetail = news.getPublication();
+}
 String pubId   = (String) request.getAttribute("Id");
 
 String routerUrl = URLManager.getApplicationURL() + URLManager.getURL("quickinfo", quickinfo.getSpaceId(), quickinfo.getComponentId());
 
-boolean isNewSubscription = true;
 String codeHtml = "";
 String title = "";
-if (pubId != null && pubId != "-1") {
- 	isNewSubscription = false;
+if (quickInfoDetail != null) {
  	title = quickInfoDetail.getTitle();
 	if (quickInfoDetail.getWysiwyg() != null && !"".equals(quickInfoDetail.getWysiwyg())) {
-    codeHtml = quickInfoDetail.getWysiwyg();
+    	codeHtml = quickInfoDetail.getWysiwyg();
 	} else if (quickInfoDetail.getDescription() != null) {
-    codeHtml = EncodeHelper.javaStringToHtmlParagraphe(quickInfoDetail.getDescription());
+    	codeHtml = EncodeHelper.javaStringToHtmlParagraphe(quickInfoDetail.getDescription());
 	}
 }
 String beginDate = "";
@@ -66,8 +69,6 @@ if (quickInfoDetail != null) {
     endDate = resources.getInputDate(quickInfoDetail.getEndDate());
   }
 }
-
-
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -83,44 +84,19 @@ if (quickInfoDetail != null) {
 function isCorrectForm() {
  	var errorMsg = "";
  	var errorNb = 0;
- 	var beginDate = $("#BeginDate").val();
-  var endDate = $("#EndDate").val();
-  var yearBegin = extractYear(beginDate, '<%=quickinfo.getLanguage()%>');
-  var monthBegin = extractMonth(beginDate, '<%=quickinfo.getLanguage()%>');
-	var dayBegin = extractDay(beginDate, '<%=quickinfo.getLanguage()%>');
-	var yearEnd = extractYear(endDate, '<%=quickinfo.getLanguage()%>'); 
-	var monthEnd = extractMonth(endDate, '<%=quickinfo.getLanguage()%>');
-	var dayEnd = extractDay(endDate, '<%=quickinfo.getLanguage()%>'); 
-	var beginDateOK = false;
-	var endDateOK = false;
-
+ 	
 	if (isWhitespace($("#Name").val())) {
-       errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.title")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
+       errorMsg+=" - '<%=resources.getString("GML.title")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
        errorNb++; 
     }
        
-    if (! isWhitespace(beginDate)) {
-    	if (isCorrectDate(yearBegin, monthBegin, dayBegin)==false) {
-            	errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("dateDebut")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
-             	errorNb++;
-    	}
-    	else beginDateOK = true;
-    }	
-  
-    if (! isWhitespace(endDate)) {
-    	if (isCorrectDate(yearEnd, monthEnd, dayEnd)==false) {
-            	errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("dateFin")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
-             	errorNb++;
-    	}
-    	else endDateOK = true;
-    }
-    
-    if (beginDateOK && endDateOK) {
-    		if (isD1AfterD2(yearEnd, monthEnd, dayEnd, yearBegin, monthBegin, dayBegin)==false) {
-    			errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("dateFin")%>' <%=resources.getString("MustContainsPostDateToBeginDate")%>\n";
-                            errorNb++;	
-    		}
-  }      	       
+	var beginDate = {dateId : 'BeginDate'};
+	var endDate = {dateId : 'EndDate'};
+	var dateErrors = isPeriodEndingInFuture(beginDate, endDate);
+	$(dateErrors).each(function(index, error) {
+	  errorMsg += " - " + error.message + "\n";
+	  errorNb++;
+	});
 
   <view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>
     
@@ -165,12 +141,6 @@ function quickInfoDeleteConfirm() {
 	}
 }
 
-function ClipboardCopyOne() {
-	document.quickInfoForm.action = "<%=m_context%><%=quickinfo.getComponentUrl()%>copy.jsp";
-	document.quickInfoForm.target = "IdleFrame";
-	document.quickInfoForm.submit();
-}
-
 $(document).ready(function() {
 	<view:wysiwyg replace="Description" language="<%=language%>" width="600" height="300" toolbar="quickInfo" displayFileBrowser="${false}"/>
 });
@@ -184,9 +154,6 @@ $(document).ready(function() {
   <c:url var="deleteIconUrl" value="/util/icons/quickInfo_to_del.gif"/>
   <fmt:message var="deleteMsg" key="suppression"/>
   <view:operation altText="${deleteMsg}" icon="${deleteIconUrl}" action="javascript:onClick=quickInfoDeleteConfirm()"/>
-  <c:url var="copyIconUrl" value="/util/icons/quickInfo_to_del.gif"/>
-  <fmt:message var="copyMsg" key="GML.copy"/>
-  <view:operation altText="${copyMsg}" icon="${copyIconUrl}" action="javascript:onClick=ClipboardCopyOne()"/>
 </view:operationPane>
 
 <view:window>
@@ -203,7 +170,7 @@ $(document).ready(function() {
     <div class="field" id="nameArea">
       <label class="txtlibform" for="name"><fmt:message key="GML.title" /> </label>
       <div class="champs">
-        <c:if test="${not empty curQuickInfo}"><c:set var="curName" value="${curQuickInfo.name}"/></c:if>
+        <c:if test="${not empty curQuickInfo}"><c:set var="curName" value="${curQuickInfo.title}"/></c:if>
         <input type="text" name="Name" size="50" id="Name" maxlength="<%=DBUtil.getTextFieldLength()%>" value="<view:encodeHtmlParagraph string="${curName}"/>" />
         &nbsp;<img border="0" src="<%=m_context%>/util/icons/mandatoryField.gif" width="5" height="5"/>
       </div>
@@ -223,14 +190,14 @@ $(document).ready(function() {
   <legend><fmt:message key="quickinfo.header.fieldset.period" /></legend>
   <div class="fields">
     <div class="field" id="BeginDateArea">
-      <label for="BeginDate" class="txtlibform"><fmt:message key="dateDebut" /></label>
+      <label for="BeginDate" class="txtlibform"><fmt:message key="GML.dateBegin" /></label>
       <div class="champs">
         <input type="text" class="dateToPick" id="BeginDate" name="BeginDate" size="12" value="<%=beginDate%>" maxlength="<%=DBUtil.getDateFieldLength()%>"/>
         <span class="txtnote">(<fmt:message key="GML.dateFormatExemple"/>)</span>
       </div>
     </div>
     <div class="field" id="EndDateArea">
-      <label for="EndDate" class="txtlibform"><fmt:message key="dateFin" /></label>
+      <label for="EndDate" class="txtlibform"><fmt:message key="GML.dateEnd" /></label>
       <div class="champs">
         <input type="text" class="dateToPick" id="EndDate" name="EndDate" size="12" value="<%=endDate%>" maxlength="<%=DBUtil.getDateFieldLength()%>"/>
         <span class="txtnote">(<fmt:message key="GML.dateFormatExemple"/>)</span>

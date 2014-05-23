@@ -25,16 +25,17 @@
 package com.stratelia.webactiv.quickinfo.control;
 
 import java.util.Comparator;
-import com.stratelia.webactiv.util.publication.model.*;
 
-public class QuickInfoDateComparatorDesc implements Comparator<PublicationDetail> {
+import org.silverpeas.components.quickinfo.model.News;
+
+public class QuickInfoDateComparatorDesc implements Comparator<News> {
   static public QuickInfoDateComparatorDesc comparator = new QuickInfoDateComparatorDesc();
 
   /**
    * This result is reversed as we want a descending sort.
    */
-  public int compare(PublicationDetail pd1, PublicationDetail pd2) {
-    int compareResult = pd1.getUpdateDate().compareTo(pd2.getUpdateDate());
+  public int compare(News pd1, News pd2) {
+    int compareResult = pd1.getPublication().getUpdateDate().compareTo(pd2.getPublication().getUpdateDate());
     return 0 - compareResult;
   }
 

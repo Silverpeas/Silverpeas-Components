@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="org.silverpeas.components.quickinfo.model.News"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="checkQuickInfo.jsp" %>
@@ -33,46 +34,34 @@
 <%@ page import="com.silverpeas.util.*" %>
 <%@ page import="com.silverpeas.util.i18n.I18NHelper" %>
 
+<%
+List<News> infosI = (List<News>) request.getAttribute("infos");
+%>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>QuickInfo - User</title>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/formUtil.js"></script>
 <view:looknfeel/>
-<script type="text/javascript">
-function clipboardCopy() {
-	parent.IdleFrame.location.href = '../..<%=quickinfo.getComponentUrl()%>copy.jsp?Id=<%=request.getParameter("Id")%>';
-}
-
-</script>
 </head>
 <body class="txtlist" id="quickinfo">
 <div id="<%=componentId %>">
-<form name="quickInfoForm" method="post" action="">
   <%
 	Window mainWin = gef.getWindow();
 	Frame maFrame = gef.getFrame();
 	OperationPane operationPane = mainWin.getOperationPane();
 
-	// Clipboard
-	operationPane.addOperation(m_context+"/util/icons/copy.gif", resources.getString("GML.copy"), "javascript:onClick=ClipboardCopy()");
-
 	out.println(mainWin.printBefore());
 	out.println(maFrame.printBefore());
-
-	//Collection infos = Les quickInfos visibles
-	Iterator infosI = (Iterator) request.getAttribute("infos");
 
 	ArrayPane arrayPane = gef.getArrayPane("quickinfoList", pageContext);
 	arrayPane.setXHTML(true);
 	arrayPane.addArrayColumn(null);
-	ArrayColumn arrayColumnOp = arrayPane.addArrayColumn("<a href=\"javascript:void(0)\" onmousedown=\"return SwitchSelection(quickInfoForm, 'selectItem', event)\" onclick=\"return false\">"+resources.getString("GML.selection")+"</a>");
-	arrayColumnOp.setSortable(false);
 
-	int index = 0;
 	ArrayCellText cellText = null;
-	while (infosI.hasNext()) {
-		PublicationDetail pub = (PublicationDetail) infosI.next();
+	for (News news : infosI) {
+		PublicationDetail pub = news.getPublication();
 		ArrayLine line = arrayPane.addArrayLine();
 		String st = "<b>" + pub.getName() + "</b>";
 		UserDetail user = quickinfo.getUserDetail(pub.getUpdaterId());
@@ -87,16 +76,12 @@ function clipboardCopy() {
 		   st = st + "<br/>" + description;
 		}
 		line.addArrayCellText(st);
-		cellText = line.addArrayCellText("<input type=\"checkbox\" name=\"selectItem"+index+"\" value=\""+pub.getPK().getId()+"\"/>");
-		cellText.setValignement("top");
-		index++;
 	}
 	out.println(arrayPane.print());
 
 	out.println(maFrame.printAfter());
 	out.println(mainWin.printAfter());
   %>
-</form>
 </div>
 </body>
 </html>

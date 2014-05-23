@@ -22,33 +22,25 @@ package com.stratelia.webactiv.quickinfo.servlets;
 
 import java.rmi.RemoteException;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Enumeration;
-import java.util.Iterator;
+import java.util.List;
 
 import javax.ejb.CreateException;
 import javax.servlet.http.HttpServletRequest;
 
+import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.wysiwyg.WysiwygException;
-import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.clipboard.ClipboardSelection;
-import com.silverpeas.util.i18n.I18NHelper;
-
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.quickinfo.control.QuickInfoSessionController;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import com.stratelia.webactiv.util.publication.model.PublicationSelection;
 
 public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSessionController> {
 
@@ -88,33 +80,20 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
     try {
       if (function.startsWith("Main") || function.startsWith("quickInfoUser")
           || function.startsWith("quickInfoPublisher")) {
-        Collection<PublicationDetail> infos;
-        if ("publisher".equals(flag)) {
+        Collection<News> infos;
+        if ("publisher".equals(flag) || "admin".equals(flag)) {
           infos = quickInfo.getQuickInfos();
           request.setAttribute("infos", infos);
-          destination = "/quickinfo/jsp/quickInfoPublisher.jsp";
-        } else if ("admin".equals(flag)) {
-          infos = quickInfo.getQuickInfos();
-          request.setAttribute("infos", infos);
-          request.setAttribute("isAdmin", "true");
+          request.setAttribute("isAdmin", "admin".equals(flag));
           destination = "/quickinfo/jsp/quickInfoPublisher.jsp";
         } else {
           infos = quickInfo.getVisibleQuickInfos();
-          if (infos == null) {
-            infos = new ArrayList<PublicationDetail>(0);
-          }
-          Iterator<PublicationDetail> iterator = infos.iterator();
-          request.setAttribute("infos", iterator);
+          request.setAttribute("infos", infos);
           destination = "/quickinfo/jsp/quickInfoUser.jsp";
         }
       } else if (function.startsWith("portlet")) {
-        Collection<PublicationDetail> infos = null;
-        infos = quickInfo.getVisibleQuickInfos();
-        if (infos == null) {
-          infos = new ArrayList<PublicationDetail>(0);
-        }
-        Iterator<PublicationDetail> iterator = infos.iterator();
-        request.setAttribute("infos", iterator);
+        List<News> infos = quickInfo.getVisibleQuickInfos();
+        request.setAttribute("infos", infos);
         destination = "/quickinfo/jsp/portlet.jsp";
       } else if (function.startsWith("quickInfoEdit") || function.startsWith("searchResult")) {
         if ("publisher".equals(flag) || "admin".equals(flag)) {
@@ -129,8 +108,7 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
           if ("Edit".equals(action)) {
             String id = request.getParameter("Id");
             request.setAttribute("Id", id);
-            quickInfo.setPageId(QuickInfoSessionController.PAGE_HEADER);
-            PublicationDetail quickInfoDetail = quickInfo.getDetail(id);
+            News quickInfoDetail = quickInfo.getDetail(id);
             request.setAttribute("info", quickInfoDetail);
             destination = "/quickinfo/jsp/quickInfoEdit.jsp";
           } else if ("Add".equals(action)) {
@@ -150,78 +128,6 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
           destination =
               GeneralPropertiesManager.getString("sessionTimeout");
         }
-      } else if (function.startsWith("multicopy")) {
-        try {
-          PublicationDetail pubDetail;
-          PublicationSelection pubSelect;
-          @SuppressWarnings("unchecked")
-          Enumeration<String> parameters = request.getParameterNames();
-          while (parameters.hasMoreElements()) {
-            String paramName = parameters.nextElement();
-            if (paramName.startsWith("selectItem")) {
-              String id = request.getParameter(paramName);
-              if (id != null) {
-                pubDetail = quickInfo.getDetail(id);
-                pubSelect = new PublicationSelection(pubDetail);
-                quickInfo.addClipboardSelection((ClipboardSelection) pubSelect);
-              }
-            }
-          }
-        } catch (Exception e) {
-          try {
-            quickInfo.setClipboardError("copyError", e);
-            // SilverTrace : mettre un warning
-          } catch (Exception ee) {
-            SilverTrace.error("quickinfo", "QuickInfoRequestRouter.getDestination()",
-                "quickinfo.NO_DATATOCOPY", ee);
-          }
-        }
-        destination = URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null)
-            + "Idle.jsp?message=REFRESHCLIPBOARD";
-      } else if (function.startsWith("copy")) {
-        try {
-          PublicationDetail pubDetail = quickInfo.getDetail(request.getParameter("Id"));
-          PublicationSelection pubSelect = new PublicationSelection(pubDetail);
-          quickInfo.addClipboardSelection((ClipboardSelection) pubSelect);
-        } catch (Exception e) {
-          try {
-            quickInfo.setClipboardError("copyError", e);
-            // SilverTrace : mettre un warning
-          } catch (Exception ee) {
-            SilverTrace.error("quickinfo", "QuickInfoRequestRouter.getDestination()",
-                "quickinfo.NO_DATATOCOPY", ee);
-          }
-        }
-        destination = URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null)
-            + "Idle.jsp?message=REFRESHCLIPBOARD";
-      } else if (function.startsWith("paste")) {
-        try {
-          SilverTrace.debug("quickinfo", "QuickInfoRequestRouter.getDestination()", "clipboard '"
-              + quickInfo.getClipboardName() + "' count=" + quickInfo.getClipboardCount());
-          Collection<ClipboardSelection> clipObjects = quickInfo.getClipboardSelectedObjects();
-          Iterator<ClipboardSelection> clipObjectIterator = clipObjects.iterator();
-          while (clipObjectIterator.hasNext()) {
-            ClipboardSelection clipObject = clipObjectIterator.next();
-            if ((clipObject != null)
-                && (clipObject
-                .isDataFlavorSupported(PublicationSelection.PublicationDetailFlavor))) {
-              PublicationDetail pubDetail;
-              pubDetail = (PublicationDetail) clipObject
-                  .getTransferData(PublicationSelection.PublicationDetailFlavor);
-
-              String description = WysiwygController.load(pubDetail.getPK().getInstanceId(),
-                  pubDetail.getPK().getId(), I18NHelper.defaultLanguage);
-              quickInfo.add(pubDetail.getName(), description, pubDetail.getBeginDate(),
-                  pubDetail.getEndDate(), null);
-            }
-          }
-          quickInfo.clipboardPasteDone();
-        } catch (Exception e) {
-          quickInfo.setClipboardError("pasteError", e);
-          SilverTrace.error("quickinfo", "QuickInfoRequestRouter.getDestination()",
-              "quickinfo.PASTE_ERROR", e);
-        }
-        destination = URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null) + "Idle.jsp";
       } else {
         destination = "/quickinfo/jsp/" + function;
       }
@@ -256,13 +162,13 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
     Date beginDate = null;
     String beginString = request.getParameter("BeginDate");
 
-    if (StringUtil.isDefined(beginString) && beginString.trim().length() > 0) {
+    if (StringUtil.isDefined(beginString)) {
       beginDate = DateUtil.stringToDate(beginString, quickInfo.getLanguage());
     }
 
     Date endDate = null;
     String endString = request.getParameter("EndDate");
-    if (StringUtil.isDefined(endString) && endString.trim().length() > 0) {
+    if (StringUtil.isDefined(endString)) {
       endDate = DateUtil.stringToDate(endString, quickInfo.getLanguage());
     }
 

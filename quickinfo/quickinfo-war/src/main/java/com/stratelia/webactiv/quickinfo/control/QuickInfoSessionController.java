@@ -20,46 +20,35 @@
  */
 package com.stratelia.webactiv.quickinfo.control;
 
-import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
-
 import java.rmi.RemoteException;
-import java.sql.Connection;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
-import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.xml.bind.JAXBException;
 
+import org.silverpeas.components.quickinfo.QuickInfoComponentSettings;
+import org.silverpeas.components.quickinfo.model.News;
+import org.silverpeas.components.quickinfo.model.QuickInfoService;
+import org.silverpeas.components.quickinfo.model.QuickInfoServiceFactory;
+import org.silverpeas.date.Period;
 import org.silverpeas.wysiwyg.WysiwygException;
-import org.silverpeas.wysiwyg.control.WysiwygController;
 
-import com.silverpeas.pdc.PdcServiceFactory;
-import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
-import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.quickinfo.QuickInfoContentManager;
-import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
 /**
@@ -68,15 +57,8 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
  */
 public class QuickInfoSessionController extends AbstractComponentSessionController {
 
-  private ResourceLocator message = null;
-  private ResourceLocator settings = new ResourceLocator(
-      "org.silverpeas.quickinfo.settings.quickInfoSettings", "");
   private PublicationBm publicationBm = null;
-  private QuickInfoContentManager pdcManager = null;
-  private int pageId = PAGE_HEADER;
-  public static final int PAGE_HEADER = 1;
-  public static final int PAGE_CLASSIFY = 2;
-
+  
   /**
    * Creates new QuickInfoSessionController
    *
@@ -86,8 +68,8 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
   public QuickInfoSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-        "org.silverpeas.quickinfo.multilang.quickinfo", null,
-        "org.silverpeas.quickinfo.settings.quickInfoSettings");
+        QuickInfoComponentSettings.MESSAGES_PATH, QuickInfoComponentSettings.ICONS_PATH,
+        QuickInfoComponentSettings.SETTINGS_PATH);
   }
 
   private PublicationBm getPublicationBm() {
@@ -105,55 +87,25 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
   }
 
   // Metier
-  public Collection<PublicationDetail> getQuickInfos() throws RemoteException {
-    List<PublicationDetail> result =
-        new ArrayList<PublicationDetail>(getPublicationBm().getOrphanPublications(
-        new PublicationPK("", this.getSpaceId(), this.getComponentId())));
-    return sortByDateDesc(result);
+  public List<News> getQuickInfos() throws RemoteException {
+    List<News> allNews = getService().getAllNews(getComponentId());
+    return sortByDateDesc(allNews);
   }
 
-  public Collection<PublicationDetail> getVisibleQuickInfos() throws RemoteException {
-    // return m_quickInfoSilverObject.getVisibleQuickInfos();
-    Collection<PublicationDetail> quickinfos = getQuickInfos();
-    List<PublicationDetail> result = new ArrayList<PublicationDetail>();
-    Iterator<PublicationDetail> qi = quickinfos.iterator();
-
-    Date now = new Date();
-
-    try {
-      SimpleDateFormat format = new SimpleDateFormat("ddMMyyyy");
-      now = format.parse(format.format(now));
-    } catch (Exception e) {
-      SilverTrace.error("quickinfo", "QuickInfoSessionController.getVisibleQuickInfos()",
-          "quickinfo.PARSE_ERROR", e);
-    }
-
-    while (qi.hasNext()) {
-      PublicationDetail detail = qi.next();
-      if (detail.getEndDate() == null) {
-        if (detail.getBeginDate() == null) {
-          result.add(detail);
-        } else if (detail.getBeginDate().compareTo(now) <= 0) {
-          result.add(detail);
-        }
-      } else {
-        if (detail.getBeginDate() == null) {
-          if (detail.getEndDate().compareTo(now) >= 0) {
-            result.add(detail);
-          }
-        } else if ((detail.getEndDate().compareTo(now) >= 0)
-            && (detail.getBeginDate().compareTo(now) <= 0)) {
-          result.add(detail);
-        }
+  public List<News> getVisibleQuickInfos() throws RemoteException {
+    List<News> quickinfos = getQuickInfos();
+    List<News> result = new ArrayList<News>();
+    
+    for (News news : quickinfos) {
+      if (news.isVisible()) {
+        result.add(news);
       }
     }
-    return sortByDateDesc(result);
+    return result;
   }
 
-  public PublicationDetail getDetail(String id) throws RemoteException {
-    PublicationDetail result = getPublicationBm().getDetail(
-        new PublicationPK(id, this.getSpaceId(), this.getComponentId()));
-    return result;
+  public News getDetail(String id) {
+    return getService().getANews(new PublicationPK(id, getComponentId()));
   }
 
   /**
@@ -164,108 +116,34 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
    * @param begin the start visibility date time
    * @param end the end visibility date time
    * @param positions the JSON positions
-   * @throws RemoteException
-   * @throws CreateException
-   * @throws WysiwygException
    */
-  public void add(String name, String description, Date begin, Date end, String positions)
-      throws RemoteException, CreateException, WysiwygException {
-    validateInformations(name, begin, end);
-
-    PublicationDetail detail = new PublicationDetail(new PublicationPK("unknown", getSpaceId(),
-        getComponentId()), name, null, new Date(), begin, end, getUserId(), 1, "",
-        "", "");
-    // Create the Publication
-    PublicationPK pubPK = getPublicationBm().createPublication(detail);
-    try {
-      getQuickInfoContentManager().createSilverContent(null, detail, getUserId(), true);
-    } catch (ContentManagerException e) {
-      SilverTrace.error("quickinfo", "QuickInfoSessionController.add()",
-          "root.ContentManagerException", e);
-    }
-    // Add the wysiwyg content
-    WysiwygController.createUnindexedFileAndAttachment(description, pubPK, getUserId(),
-        I18NHelper.defaultLanguage);
-    classifyQuickInfo(detail, positions);
+  public void add(String name, String description, Date begin, Date end, String positions) {
+    List<PdcPosition> pdcPositions = getPositionsFromJSON(positions);
+    
+    // TODO: managing description and content 
+    News news = new News(name, null, getPeriod(begin, end), positions, getUserId(), getComponentId());
+    news.setContent(description);
+    
+    getService().addNews(news, pdcPositions);    
+  }
+  
+  private QuickInfoService getService() {
+    return QuickInfoServiceFactory.getQuickInfoService();
   }
 
-  public void update(String id, String name, String description, Date begin, Date end)
-      throws RemoteException, javax.ejb.CreateException, WysiwygException {
-    validateInformations(name, begin, end);
-
-    PublicationDetail detail = new PublicationDetail(new PublicationPK(id, getSpaceId(),
-        getComponentId()), name, null, new java.util.Date(), begin, end, getUserId(),
-        1, "", "", "");
-    // Update the Publication
-    getPublicationBm().setDetail(detail);
-    try {
-      getQuickInfoContentManager().updateSilverContentVisibility(detail, true);
-    } catch (ContentManagerException e) {
-      SilverTrace.error("quickinfo", "QuickInfoSessionController.update()",
-          "root.ContentManagerException", e);
-    }
-
-    // Update the Wysiwyg if exists, create one otherwise
-    if (detail.getWysiwyg() != null && !"".equals(detail.getWysiwyg())) {
-      WysiwygController.updateFileAndAttachment(description, getComponentId(), id, getUserId(),
-          I18NHelper.defaultLanguage);
-    } else {
-      WysiwygController.createFileAndAttachment(description, detail.getPK(), getUserId(),
-          I18NHelper.defaultLanguage);
-    }
-  }
-
-  private void validateInformations(String name, Date begin, Date end)
-      throws CreateException {
-    if (!StringUtil.isDefined(name)) {
-      throw new CreateException("titreObligatoire");
-    }
-
-    if ((begin != null) && (end != null)) {
-      if (begin.after(end)) {
-        throw new CreateException("dateDebutAvantDateFin");
-      }
-    }
+  public void update(String id, String name, String description, Date begin, Date end) {    
+    News news = getDetail(id);
+    news.setTitle(name);
+    news.setContent(description);
+    news.setVisibilityPeriod(getPeriod(begin, end));
+    
+    getService().updateNews(news);      
   }
 
   public void remove(String id) throws RemoteException, WysiwygException, UtilException {
     PublicationPK pubPK = new PublicationPK(id, getComponentId());
 
-    // Delete Publication
-    getPublicationBm().removePublication(pubPK);
-    Connection connection = DBUtil.makeConnection(JNDINames.SILVERPEAS_DATASOURCE);
-    try {
-      getQuickInfoContentManager().deleteSilverContent(connection, pubPK);
-    } catch (ContentManagerException e) {
-      SilverTrace.error("quickinfo", "QuickInfoSessionController.remove('" + id + "')",
-          "ContentManagerExceptino", e);
-    } finally {
-      DBUtil.close(connection);
-    }
-
-    // Delete the Wysiwyg if exists
-    if (WysiwygController.haveGotWysiwyg(getComponentId(), id, I18NHelper.defaultLanguage)) {
-      WysiwygController.deleteFileAndAttachment(getComponentId(), id);
-    }
-  }
-
-  public ResourceLocator getMessage() {
-    try {
-      message = new ResourceLocator("org.silverpeas.quickinfo.multilang.quickinfo", getLanguage());
-    } catch (Exception e) {
-      SilverTrace.error("quickinfo", "NewsSessionControl.getMessage()",
-          "quickinfo.CANT_GET_LANGUAGE", e);
-      if (message == null) {
-        message = new ResourceLocator("org.silverpeas.quickinfo.multilang.quickinfo",
-            I18NHelper.defaultLanguage);
-      }
-    }
-    return message;
-  }
-
-  @Override
-  public ResourceLocator getSettings() {
-    return settings;
+    getService().removeNews(pubPK);
   }
 
   public boolean isPdcUsed() {
@@ -276,18 +154,6 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     return false;
   }
 
-  public int getPageId() {
-    return pageId;
-  }
-
-  public void setPageId(int pageId) {
-    this.pageId = pageId;
-  }
-
-  public int getSilverObjectId(String objectId) {
-    return getQuickInfoContentManager().getSilverObjectId(objectId, getComponentId());
-  }
-
   @Override
   public void close() {
     if (publicationBm != null) {
@@ -296,32 +162,25 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
   }
 
   public void index() throws RemoteException {
-    Collection<PublicationDetail> infos = getQuickInfos();
-    for (PublicationDetail publicationDetail : infos) {
-      getPublicationBm().createIndex(publicationDetail.getPK());
+    List<News> infos = getQuickInfos();
+    for (News news : infos) {
+      getPublicationBm().createIndex(news.getPublication().getPK());
     }
   }
 
-  public Collection<PublicationDetail> sortByDateDesc(List<PublicationDetail> alPubDetails) {
-    Comparator<PublicationDetail> comparator = QuickInfoDateComparatorDesc.comparator;
-    Collections.sort(alPubDetails, comparator);
-    return alPubDetails;
-  }
-
-  private QuickInfoContentManager getQuickInfoContentManager() {
-    if (pdcManager == null) {
-      pdcManager = new QuickInfoContentManager();
-    }
-    return pdcManager;
+  private List<News> sortByDateDesc(List<News> listOfNews) {
+    Comparator<News> comparator = QuickInfoDateComparatorDesc.comparator;
+    Collections.sort(listOfNews, comparator);
+    return listOfNews;
   }
 
   /**
    * Classify the info letter publication on the PdC only if the positions parameter is filled
    *
-   * @param publi the quickInfo PublicationDetail to classify
    * @param positions the string json positions
    */
-  private void classifyQuickInfo(PublicationDetail publi, String positions) {
+  private List<PdcPosition> getPositionsFromJSON(String positions) {
+    List<PdcPosition> pdcPositions = null;
     if (StringUtil.isDefined(positions)) {
       PdcClassificationEntity qiClassification = null;
       try {
@@ -331,17 +190,20 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
             "PdcClassificationEntity error", "Problem to read JSON", e);
       }
       if (qiClassification != null && !qiClassification.isUndefined()) {
-        List<PdcPosition> pdcPositions = qiClassification.getPdcPositions();
-        String qiId = publi.getPK().getId();
-        PdcClassification classification = aPdcClassificationOfContent(qiId,
-            publi.getInstanceId()).withPositions(pdcPositions);
-        if (!classification.isEmpty()) {
-          PdcClassificationService service =
-              PdcServiceFactory.getFactory().getPdcClassificationService();
-          classification.ofContent(qiId);
-          service.classifyContent(publi, classification);
-        }
+        pdcPositions = qiClassification.getPdcPositions();
       }
     }
+    return pdcPositions;
   }
+  
+  private Period getPeriod(Date begin, Date end) {
+    if (begin == null) {
+      begin = DateUtil.MINIMUM_DATE;
+    }
+    if (end == null) {
+      end = DateUtil.MAXIMUM_DATE;
+    }
+    return Period.from(begin, end);
+  }
+  
 }
