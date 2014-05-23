@@ -214,6 +214,11 @@ public class WysiwygManagerMockWrapper extends WysiwygManager {
   }
 
   @Override
+  public List<ComponentInstLight> getStorageFile() {
+    return mock.getStorageFile();
+  }
+
+  @Override
   public void indexEmbeddedLinkedFiles(final FullIndexEntry indexEntry,
       final List<String> embeddedAttachmentIds) {
     mock.indexEmbeddedLinkedFiles(indexEntry, embeddedAttachmentIds);
