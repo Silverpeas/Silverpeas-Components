@@ -259,7 +259,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
    * @param allPubs
    * @param sortAllowed
    * @param linksAllowed
-   * @param checkboxAllowed
+   * @param seeAlso
+   * @param toSearch
    * @param kmeliaScc
    * @param profile
    * @param gef
@@ -457,8 +458,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         out.write(pagination.printIndex("doPagination"));
         out.write("</div>");
       }
-      displayFilePreviewJavascript(kmeliaScc.getComponentId(), out);
-      displayFileViewJavascript(kmeliaScc.getComponentId(), out);
+      displayFilePreviewJavascript(kmeliaScc.getComponentId(), language, out);
+      displayFileViewJavascript(kmeliaScc.getComponentId(), language, out);
       out.write(board.printAfter());
     } else if (showNoPublisMessage
         && (toSearch || kmeliaScc.getNbPublicationsOnRoot() != 0 || !currentTopicId.equals("0"))) {
@@ -485,14 +486,15 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     out.write("</form>");
   }
 
-  void displayFilePreviewJavascript(String componentId, Writer out)
-      throws IOException {
+  void displayFilePreviewJavascript(String componentId, final String contentLanguage, Writer out)
+  throws IOException {
     StringBuilder sb = new StringBuilder(50);
     sb.append("<script type=\"text/javascript\">");
     sb.append("function previewFile(target, attachmentId) {");
     sb.append("$(target).preview(\"previewAttachment\", {");
     sb.append("componentInstanceId: \"").append(componentId).append("\",");
-    sb.append("attachmentId: attachmentId");
+    sb.append("attachmentId: attachmentId,");
+    sb.append("lang: '" + contentLanguage + "'");
     sb.append("});");
     sb.append("return false;");
     sb.append("}");
@@ -500,14 +502,15 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     out.write(sb.toString());
   }
 
-  void displayFileViewJavascript(String componentId, Writer out)
-      throws IOException {
+  void displayFileViewJavascript(String componentId, final String contentLanguage, Writer out)
+  throws IOException {
     StringBuilder sb = new StringBuilder(50);
     sb.append("<script type=\"text/javascript\">");
     sb.append("function viewFile(target, attachmentId) {");
     sb.append("$(target).view(\"viewAttachment\", {");
     sb.append("componentInstanceId: \"").append(componentId).append("\",");
-    sb.append("attachmentId: attachmentId");
+    sb.append("attachmentId: attachmentId,");
+    sb.append("lang: '" + contentLanguage + "'");
     sb.append("});");
     sb.append("return false;");
     sb.append("}");
@@ -997,6 +1000,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
    * @param viewable
    * @param isDownloadAllowedForReaders
    * @param isUserAllowedToDownloadFile
+   * @param id
    * @return
    * @throws IOException
    */
