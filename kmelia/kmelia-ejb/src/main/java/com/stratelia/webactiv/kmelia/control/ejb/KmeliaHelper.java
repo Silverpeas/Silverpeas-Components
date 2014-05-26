@@ -25,10 +25,9 @@ package com.stratelia.webactiv.kmelia.control.ejb;
 import java.io.Serializable;
 
 import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.importExport.attachment.AttachmentDetail;
-import org.silverpeas.importExport.versioning.Document;
 import org.silverpeas.search.indexEngine.model.IndexManager;
 
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
@@ -100,25 +99,17 @@ public class KmeliaHelper implements Serializable {
   }
 
   public static String getPublicationUrl(PublicationDetail pubDetail) {
-    return "/Rkmelia/" + pubDetail.getPK().getInstanceId()
-        + "/searchResult?Type=Publication&Id=" + pubDetail.getPK().getId();
+    if (pubDetail.isAlias()) {
+      // app of the alias have to be defined
+      return URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId(),
+          pubDetail.getInstanceId(), false);
+    }
+    return URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId(), false);
   }
 
   public static String getNodeUrl(NodeDetail nodeDetail) {
-    return "/Rkmelia/" + nodeDetail.getNodePK().getInstanceId()
-        + "/searchResult?Type=Node&Id=" + nodeDetail.getNodePK().getId();
-  }
-
-  public static String getAttachmentUrl(PublicationDetail pubDetail, AttachmentDetail attDetail) {
-    return "/Rkmelia/" + attDetail.getPK().getInstanceId()
-        + "/searchResult?Type=Attachment&Id=" + pubDetail.getPK().getId() + "&AttachmentId="
-        + attDetail.getPK().getId() + "&FileOpened=0";
-  }
-
-  public static String getDocumentUrl(PublicationDetail pubDetail, Document document) {
-    return "/Rkmelia/" + document.getPk().getInstanceId()
-        + "/searchResult?Type=Document&Id=" + pubDetail.getPK().getId() + "&DocumentId=" + document.
-        getPk().getId() + "&FileOpened=0";
+    return URLManager.getSimpleURL(URLManager.URL_TOPIC, nodeDetail.getNodePK().getId(), nodeDetail
+        .getNodePK().getInstanceId(), false);
   }
 
   public static String getDocumentUrl(PublicationDetail pubDetail, SimpleDocument document) {
