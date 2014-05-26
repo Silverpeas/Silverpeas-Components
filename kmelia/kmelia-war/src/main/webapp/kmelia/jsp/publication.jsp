@@ -133,7 +133,7 @@
   List<String> availableFormats = kmeliaScc.getAvailableFormats();
 
   //Vrai si le user connecte est le createur de cette publication ou si il est admin
-  boolean isOwner = false;
+  boolean isUpdatable = false;
 
   // display message according to previous action
   if (action.equals("ValidationComplete") || action.equals("ValidationInProgress") || action.equals("Unvalidate") || action.equals("Suspend")) {
@@ -167,16 +167,16 @@
   if (action.equals("ValidateView")) {
     kmeliaScc.setSessionOwner(true);
     action = "UpdateView";
-    isOwner = true;
+    isUpdatable = true;
   } else {
-    isOwner = KmeliaPublicationHelper.isUserConsideredAsOwner(contextComponentId, currentUser.getId(), profile, ownerDetail);
+    isUpdatable = KmeliaPublicationHelper.isUserConsideredAsOwner(contextComponentId, currentUser.getId(), profile, ownerDetail);
     suppressionAllowed = KmeliaPublicationHelper.isRemovable(contextComponentId, currentUser.getId(), profile, ownerDetail);
 
     //modification pour acceder e l'onglet voir aussi
-    kmeliaScc.setSessionOwner(isOwner && validatorsOK);
+    kmeliaScc.setSessionOwner(isUpdatable && validatorsOK);
   }
 
-  if (isNewsManage && !kmaxMode && !toolboxMode && isOwner && delegatedNews != null) {
+  if (isNewsManage && !kmaxMode && !toolboxMode && isUpdatable && delegatedNews != null) {
     if (DelegatedNews.NEWS_TO_VALIDATE.equals(delegatedNews.getStatus())) {
       screenMessage = "<div class=\"inlineMessage\">" + resources.getString(
           "kmelia.DelegatedNewsToValidate") + "</div>";
@@ -189,7 +189,7 @@
     }
   }
   
-  if (SilverpeasRole.writer.isInRole(profile) && !validatorsOK) {
+  if (isUpdatable && SilverpeasRole.writer.isInRole(profile) && !validatorsOK) {
     String selectUserLab = resources.getString("kmelia.SelectValidator");
     String link = "&nbsp;<a href=\"#\" onclick=\"javascript:SP_openWindow('SelectValidator','selectUser',800,600,'');\">";
     link += "<img src=\""
@@ -217,7 +217,7 @@
   //Attachments can be updated in both cases only :
   //  - on clone (if "publication always visible" is used)
   //  - if current user can modified publication
-  boolean attachmentsUpdatable = attachmentsEnabled && isOwner && !pubDetail.haveGotClone();
+  boolean attachmentsUpdatable = attachmentsEnabled && isUpdatable && !pubDetail.haveGotClone();
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -481,7 +481,7 @@
         }
         operationPane.addLine();
 
-        if (isOwner && validatorsOK) {
+        if (isUpdatable && validatorsOK) {
           if (!"supervisor".equals(profile)) {
             if (attachmentsUpdatable) {
             	operationPane.addOperation("#", resources.getString("kmelia.AddFile"), "javascript:addAttachment('" +pubDetail.getId() + "')");
@@ -505,11 +505,11 @@
           if (!currentUser.isAnonymous()) {
             operationPane.addOperation(resources.getIcon("kmelia.copy"), resources.getString("GML.copy"), "javascript:clipboardCopy()");
           }
-          if (isOwner) {
+          if (isUpdatable) {
             operationPane.addOperation(resources.getIcon("kmelia.cut"), resources.getString("GML.cut"), "javascript:clipboardCut()");
           }
         }
-        if (!toolboxMode && isOwner) {
+        if (!toolboxMode && isUpdatable) {
           if (userCanValidate) {
             // if clone exists, only the clone can be validated or refused
             operationPane.addLine();
@@ -522,14 +522,14 @@
           }
         }
 
-        if (isNewsManage && isOwner && pubDetail.isValid() && delegatedNews == null && !isBasket) {
+        if (isNewsManage && isUpdatable && pubDetail.isValid() && delegatedNews == null && !isBasket) {
           operationPane.addLine();
           operationPane.addOperation("#", resources.getString("kmelia.DelegatedNewsSuggest"), "javaScript:suggestDelegatedNews()");
         }
 
         out.println(window.printBefore());
         action = "View";
-        if (isOwner && validatorsOK) {
+        if (isUpdatable && validatorsOK) {
           KmeliaDisplayHelper.displayAllOperations(id, kmeliaScc, gef, action, resources, out, kmaxMode);
         } else {
           KmeliaDisplayHelper.displayUserOperations(id, kmeliaScc, gef, action, resources, out, kmaxMode);
@@ -610,7 +610,7 @@
 			            out.flush();
 			            String attProfile = kmeliaScc.getProfile();
 			            if (kmeliaScc.isVersionControlled(componentId)) {
-			              if (!isOwner) {
+			              if (!isUpdatable) {
 			                attProfile = "user";
 			              }
 			            } else {
@@ -722,7 +722,7 @@
 							<% } %>
                       		</ul>
                       	<% } %>
-                      	<% if (isOwner && kmeliaScc.getInvisibleTabs().indexOf(KmeliaSessionController.TAB_READER_LIST) == -1) { %>
+                      	<% if (isUpdatable && kmeliaScc.getInvisibleTabs().indexOf(KmeliaSessionController.TAB_READER_LIST) == -1) { %>
                       		<a id="readingControlLink" href="ReadingControl">&gt;&gt; <%=resources.getString("PubGererControlesLecture") %></a>
                       	<% } else { %>
                       		<br clear="all" />
