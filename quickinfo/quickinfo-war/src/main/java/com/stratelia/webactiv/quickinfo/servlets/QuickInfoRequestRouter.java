@@ -79,21 +79,19 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
     if (flag == null) {
       return null;
     }
-
+    request.setAttribute("Role", flag);
+    
     try {
-      if (function.startsWith("Main") || function.startsWith("quickInfoUser")
-          || function.startsWith("quickInfoPublisher")) {
+      if ("Main".equals(function)) {
         Collection<News> infos;
         if ("publisher".equals(flag) || "admin".equals(flag)) {
           infos = quickInfo.getQuickInfos();
-          request.setAttribute("infos", infos);
-          request.setAttribute("isAdmin", "admin".equals(flag));
-          destination = "/quickinfo/jsp/quickInfoPublisher.jsp";
         } else {
           infos = quickInfo.getVisibleQuickInfos();
-          request.setAttribute("infos", infos);
-          destination = "/quickinfo/jsp/quickInfoUser.jsp";
         }
+        request.setAttribute("ListOfNews", infos);
+        request.setAttribute("AppSettings", quickInfo.getInstanceSettings());
+        destination = "/quickinfo/jsp/home.jsp";
       } else if (function.startsWith("portlet")) {
         List<News> infos = quickInfo.getVisibleQuickInfos();
         request.setAttribute("infos", infos);

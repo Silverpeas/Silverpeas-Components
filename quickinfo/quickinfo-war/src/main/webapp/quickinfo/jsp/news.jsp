@@ -35,6 +35,7 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
 <c:set var="news" value="${requestScope['News']}"/>
+<c:set var="role" value="${requestScope['Role']}"/>
 
 <%@ include file="checkQuickInfo.jsp" %>
 
@@ -52,12 +53,14 @@
 <fmt:message var="browseBarMsg" key="edition"/>
 <view:browseBar extraInformations="${browseBarMsg}" />
 <view:operationPane>
-  <c:url var="deleteIconUrl" value="/util/icons/quickInfo_to_del.gif"/>
-  <fmt:message var="updateMsg" key="GML.modify"/>
-  <view:operation altText="${updateMsg}" action="Edit?Id=${news.id}"></view:operation>
-  <fmt:message var="deleteMsg" key="GML.delete"/>
-  <fmt:message var="deleteConfirmMsg" key="supprimerQIConfirmation"/>
-  <view:operation altText="${deleteMsg}" icon="${deleteIconUrl}" action="javascript:onclick=confirmDelete(${news.id}, '${deleteConfirmMsg}')"/>
+	<c:if test="${role == 'admin' || role == 'publisher'}">
+	  <c:url var="deleteIconUrl" value="/util/icons/quickInfo_to_del.gif"/>
+	  <fmt:message var="updateMsg" key="GML.modify"/>
+	  <view:operation altText="${updateMsg}" action="Edit?Id=${news.id}"></view:operation>
+	  <fmt:message var="deleteMsg" key="GML.delete"/>
+	  <fmt:message var="deleteConfirmMsg" key="supprimerQIConfirmation"/>
+	  <view:operation altText="${deleteMsg}" icon="${deleteIconUrl}" action="javascript:onclick=confirmDelete(${news.id}, '${deleteConfirmMsg}')"/>
+	</c:if>
 </view:operationPane>
 <view:window>
 

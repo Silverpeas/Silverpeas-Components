@@ -4,6 +4,13 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 public class QuickInfoComponentSettings {
   
+  private String description;
+  private boolean commentsEnabled = false;
+  private boolean taxonomyEnabled = false;
+  
+  public static final String PARAM_COMMENTS = "comments";
+  public static final String PARAM_TAXONOMY = "usePdc";
+  
   /**
    * The name of the Quickinfo component in Silverpeas.
    */
@@ -27,6 +34,22 @@ public class QuickInfoComponentSettings {
    */
   public static final String ICONS_PATH
       = "org.silverpeas.quickinfo.settings.quickinfoIcons";
+  
+  public QuickInfoComponentSettings(String desc) {
+    this.description = desc;
+  }
+  
+  public boolean isCommentsEnabled() {
+    return commentsEnabled;
+  }
+
+  public void setCommentsEnabled(boolean commentsEnabled) {
+    this.commentsEnabled = commentsEnabled;
+  }
+
+  public String getDescription() {
+    return description;
+  }
 
   /**
    * Gets all the messages for the Suggestion Box component and translated in the specified
@@ -52,6 +75,14 @@ public class QuickInfoComponentSettings {
    */
   public static ResourceLocator getIcons() {
     return new ResourceLocator(ICONS_PATH, "");
+  }
+
+  public void setTaxonomyEnabled(boolean taxonomyEnabled) {
+    this.taxonomyEnabled = taxonomyEnabled;
+  }
+
+  public boolean isTaxonomyEnabled() {
+    return taxonomyEnabled;
   }
 
 }

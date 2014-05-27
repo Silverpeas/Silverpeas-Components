@@ -43,6 +43,7 @@ import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.UtilException;
@@ -56,6 +57,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 public class QuickInfoSessionController extends AbstractComponentSessionController {
 
   private PublicationBm publicationBm = null;
+  private QuickInfoComponentSettings instanceSettings = null;
   
   /**
    * Creates new QuickInfoSessionController
@@ -82,6 +84,18 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
       }
     }
     return publicationBm;
+  }
+  
+  public QuickInfoComponentSettings getInstanceSettings() {
+    if (instanceSettings == null) {
+      ComponentInstLight app = getOrganisationController().getComponentInstLight(getComponentId()); 
+      instanceSettings = new QuickInfoComponentSettings(app.getDescription(getLanguage()));
+    }
+    instanceSettings.setCommentsEnabled(StringUtil
+        .getBooleanValue(getComponentParameterValue(QuickInfoComponentSettings.PARAM_COMMENTS)));
+    instanceSettings.setTaxonomyEnabled(StringUtil
+        .getBooleanValue(getComponentParameterValue(QuickInfoComponentSettings.PARAM_TAXONOMY)));
+    return instanceSettings;
   }
 
   // Metier

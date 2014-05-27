@@ -21,6 +21,96 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+ 
+ /*** home***/
+.quickInfo-description {
+    border-left: 6px solid #E4E4E4;
+    color: #666666;
+    padding: 8px;
+	max-height:90px;
+	overflow:hidden;
+}
+
+#list-news {
+	list-style-type:none;
+	padding:0;
+	margin:1em 0 0;
+}
+#list-news li{
+	padding:0;
+	margin:0 0 2em 0;
+}
+
+#list-news .news-illustration {
+	width:100px;
+	float:left;
+	margin:0 1em 0.5em 0;
+}
+#list-news .news-title {	
+	font-size:125%;
+	line-height:110%;
+	margin:0 0 0.25em 0;
+	padding:0;
+}
+#list-news .news-title a{	
+	font-size:100%;
+	color:#2d2d2d;
+}
+
+#list-news .news-title a:hover{	
+	color:#1c94d4;
+}
+#list-news .news-teasing {	
+	line-height:100%;
+	color:#8f8f8f;
+	margin:0 0 0.5em 0;
+	padding:0;
+}
+
+#list-news .news-info-fonctionality {
+	background-color:#f3f3f3;
+	border-top:1px solid #e8e8e8;
+	border-bottom:1px solid #e8e8e8;
+	clear:left;
+	padding:0.3em 0.5em 0.10em;
+	color:#8f8f8f;
+    font-size: 0.9em;
+	position:relative;
+}
+
+#list-news .news-nb-comments img{
+	border:0;
+	vertical-align:text-top;
+}
+
+#list-news .news-broadcast {
+	margin-left:0.5em;
+}
+
+#list-news .news-broadcast span{
+	background-color: #ec9c01;
+    border: 1px solid #ec9c01;
+    border-radius: 3px;
+    color: #FFFFFF;
+    display: inline-block;
+    line-height: 1em;
+    margin: 0 0.25em 0.15em 0;
+    padding: 0.20em 0.5em;
+    position: relative;
+    z-index: 10;
+}
+
+#list-news .news-broadcast span.actuality-diffusion-important{
+	text-indent:-3000px;
+	background:#EC9C01 url("icons/important.png")  0.5em  0.20em no-repeat;
+	width:10px;
+}
+
+#list-news .news-info-fonctionality .operation {
+	position:absolute;
+	top:0.3em;
+	right:0.5em;
+}
 
 .actuality-title {
     color: #333333;

@@ -73,6 +73,10 @@ public class News implements SilverpeasContent {
     return getPublication().getUpdaterId();
   }
   
+  public Date getLastUpdateDate() {
+    return getPublication().getUpdateDate();
+  }
+  
   public boolean isVisible() {
     return getVisibilityPeriod().contains(new Date());
   }
