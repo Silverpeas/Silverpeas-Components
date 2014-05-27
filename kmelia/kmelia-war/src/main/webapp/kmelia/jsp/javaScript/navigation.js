@@ -811,8 +811,13 @@ function updateCurrentTopicWysiwyg() {
 }
 
 function shareCurrentTopic() {
-  var url = getWebContext() + "/RfileSharing/jsp/NewTicket?objectId=" + getCurrentNodeId() + "&componentId=" + getComponentId() + "&type=Node";
-  SP_openWindow(url, "Share", '650', '400', 'scrollbars=yes, resizable, alwaysRaised');
+  var sharingObject = {
+      componentId: getComponentId(),
+      type       : "Node",
+      id         : getCurrentNodeId(),
+      name   : $("#" + getCurrentNodeId()).find('a:first').text()
+  };
+  createSharingTicketPopup(sharingObject);
 }
 
 function updateTopicWysiwyg(id) {

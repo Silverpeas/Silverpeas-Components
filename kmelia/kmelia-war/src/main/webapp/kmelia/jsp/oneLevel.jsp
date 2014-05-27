@@ -152,7 +152,7 @@ function getComponentLabel() {
 }
 
 function getLanguage() {
-	return "<%=language%>"; 
+	return "<%=language%>";
 }
 
 function getPubIdToHighlight() {
@@ -175,7 +175,7 @@ function getToValidateFolderId() {
 	Window window = gef.getWindow();
 	BrowseBar browseBar = window.getBrowseBar();
 	browseBar.setI18N("GoToCurrentTopic", translation);
-	
+
 	//Display operations - following lines are mandatory to init menu correctly
 	OperationPane operationPane = window.getOperationPane();
 	operationPane.addOperation("", resources.getString("FavoritesAdd1")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addCurrentNodeAsFavorite()");
@@ -184,7 +184,7 @@ function getToValidateFolderId() {
 %>
 <view:frame>
 					<div id="subTopics"></div>
-					
+
 					<% if (displaySearch.booleanValue()) {
 						Button searchButton = gef.getFormButton(resources.getString("GML.search"), "javascript:onClick=searchInTopic();", false); %>
 						<div id="searchZone">
@@ -195,10 +195,10 @@ function getToValidateFolderId() {
 						</view:board>
 						</div>
 					<% } %>
-					
+
 					<div id="topicDescription"></div>
 					<view:areaOfOperationOfCreation/>
-					
+
 				<% if (dragAndDropEnable) { %>
 						<div id="DnD">
 						<table width="98%" cellpadding="0" cellspacing="0"><tr><td align="right">
@@ -307,11 +307,11 @@ function displayTopicContent(id) {
 		// search session is over
 		searchInProgress = false;
 	}
-	
+
 	if (!searchInProgress) {
 		clearSearchQuery();
 	}
-	
+
 	setCurrentNodeId(id);
 
 	if (id === getToValidateFolderId() || id === "1") {
@@ -350,11 +350,11 @@ function displayTopicContent(id) {
 	//display topic rich description
 	displayTopicDescription(id);
 }
-	
+
 function displaySubTopics(id) {
 	var sUrl = "<%=m_context%>/services/folders/<%=componentId%>/"+id+"/children?lang="+getTranslation();
 	$.ajax(sUrl, {
-		 type: 'GET', 
+		 type: 'GET',
 		 dataType : 'json',
 		 async : false,
 		 cache : false,
@@ -432,12 +432,12 @@ function getString(key) {
            <input type="hidden" name="ParentId" id="parentId"/>
            <input type="hidden" name="ChildId" id="topicId"/>&nbsp;<img border="0" src="<c:out value="${mandatoryFieldUrl}" />" width="5" height="5"/></td>
          </tr>
-           
+
          <tr>
            <td class="txtlibform"><fmt:message key="TopicDescription" /> :</td>
            <td><input type="text" name="Description" id="folderDescription" size="60" maxlength="200"/></td>
          </tr>
-           
+
          <% if (kmeliaScc.isNotificationAllowed()) { %>
            <tr>
              <td class="txtlibform" valign="top"><fmt:message key="TopicAlert" /> :</td>
@@ -456,6 +456,8 @@ function getString(key) {
        </table>
      </form>
 </div>
+
+<%@ include file="../../sharing/jsp/createTicketPopin.jsp" %>
 <view:progressMessage/>
 <script type="text/javascript">
 /* declare the module myapp and its dependencies (here in the silverpeas module) */
