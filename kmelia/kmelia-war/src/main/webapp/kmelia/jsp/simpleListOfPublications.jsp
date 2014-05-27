@@ -91,14 +91,14 @@ function updateChain() {
     document.updateChain.submit();
 }
 <% } %>
-  
+
 $.i18n.properties({
   name: 'kmeliaBundle',
   path: webContext + '/services/bundles/com/silverpeas/kmelia/multilang/',
   language: '<%=language%>',
   mode: 'map'
 });
-    
+
 function getString(key) {
 	return $.i18n.prop(key);
 }
@@ -221,13 +221,13 @@ $(document).ready(function() {
 	        operationPane.addOperation("useless", resources.getString("kmelia.operation.deletePublications"), "javascript:onclick=deletePublications()");
 	        operationPane.addLine();
         }
-                    	
+
     	if (!isGuest) {
     	  	operationPane.addOperation("useless", resources.getString("kmelia.operation.exportSelection"), "javascript:onclick=exportPublications()");
     		operationPane.addOperation("useless", resources.getString("SubscriptionsAdd"), "javascript:onClick=addSubscription()");
       		operationPane.addOperation("useless", resources.getString("FavoritesAdd1")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(namePath))+"','','"+urlTopic+"')");
     	}
-    	
+
     	if (userCanCreatePublications) {
       		operationPane.addLine();
           	operationPane.addOperation("useless", resources.getString("PubBasket"), "GoToBasket");
@@ -239,7 +239,7 @@ $(document).ready(function() {
         operationPane.addLine();
         operationPane.addOperation("useless", resources.getString("kmelia.operation.statistics"), "javascript:showStats();");
       }
-      
+
     out.println(window.printBefore());
 %>
 <view:frame>
@@ -252,7 +252,7 @@ $(document).ready(function() {
 						</table>
 						</view:board>
 						</div>
-					<% } %>					
+					<% } %>
 					<div id="topicDescription"></div>
 					<view:areaOfOperationOfCreation/>
 				<%
@@ -317,6 +317,8 @@ $(document).ready(function() {
 <form name="updateChain" action="UpdateChainInit">
 </form>
 </div>
+
+<%@ include file="../../sharing/jsp/createTicketPopin.jsp" %>
 <view:progressMessage/>
 <script type="text/javascript">
 /* declare the module myapp and its dependencies (here in the silverpeas module) */
