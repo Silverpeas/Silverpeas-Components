@@ -34,6 +34,7 @@ public class News implements SilverpeasContent {
   
   public News(PublicationDetail publication) {
     this.publication = publication;
+    this.content = getPublication().getWysiwyg();
   }
   
   public PublicationDetail getPublication() {

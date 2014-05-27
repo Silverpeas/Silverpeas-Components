@@ -96,38 +96,45 @@ pageContext.setAttribute("thumbnailBackURL", URLManager.getFullApplicationURL(re
 <view:includePlugin name="datepicker"/>
 <view:includePlugin name="wysiwyg"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<script type="text/javascript" src="js/quickinfo.js"></script>
 <script type="text/javascript">
 function isCorrectForm() {
  	var errorMsg = "";
  	var errorNb = 0;
  	
 	if (isWhitespace($("#Name").val())) {
-       errorMsg+=" - '<%=resources.getString("GML.title")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
-       errorNb++; 
+  	  errorMsg +=" - '<%=resources.getString("GML.title")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
+  	  errorNb++; 
     }
        
 	var beginDate = {dateId : 'BeginDate'};
 	var endDate = {dateId : 'EndDate'};
 	var dateErrors = isPeriodEndingInFuture(beginDate, endDate);
 	$(dateErrors).each(function(index, error) {
-	  errorMsg += " - " + error.message + "\n";
-	  errorNb++;
+  	  errorMsg += " - " + error.message + "\n";
+  	  errorNb++;
 	});
 
-  <view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>
+    <view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>
+  
+  	var error = {
+      msg: errorMsg, 
+      nb: errorNb
+    };
+  	checkThumbnail(error);
     
- 	switch(errorNb) {
+ 	switch(error.nb) {
     	case 0 :
         	result = true;
         	break;
     	case 1 :
-        	errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
-        	window.alert(errorMsg);
+      		error.msg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + error.msg;
+        	window.alert(error.msg);
         	result = false;
         	break;
     	default :
-    	    errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
-    	    window.alert(errorMsg);
+      		error.msg = "<%=resources.getString("GML.ThisFormContains")%> " + error.nb + " <%=resources.getString("GML.errors")%> :\n" + error.msg;
+    	    window.alert(error.msg);
     	    result = false;
     	    break;
  	}
@@ -137,21 +144,14 @@ function isCorrectForm() {
 function saveNews() {
 	if (isCorrectForm()) {
   		<c:if test="${empty curQuickInfo}">
-    		<view:pdcPositions setIn="document.quickInfoEditForm.Positions.value"/>;
+    		<view:pdcPositions setIn="document.newsForm.Positions.value"/>;
    		</c:if>
-		document.quickInfoEditForm.submit();
-	}
-}
-
-function quickInfoDeleteConfirm() {
-	if (window.confirm("<%=resources.getString("supprimerQIConfirmation")%>")) {
-      document.quickInfoEditForm.Action.value = "ReallyRemove";
-      document.quickInfoEditForm.submit();
+		document.newsForm.submit();
 	}
 }
 
 $(document).ready(function() {
-	<view:wysiwyg replace="Content" language="<%=language%>" width="600" height="300" toolbar="quickInfo" displayFileBrowser="${false}"/>
+	<view:wysiwyg replace="Content" language="<%=language%>" width="98%" height="300" toolbar="quickInfo" displayFileBrowser="${false}"/>
 });
 </script>
 </head>
@@ -159,14 +159,16 @@ $(document).ready(function() {
 <div id="<%=componentId %>">
 <fmt:message var="broweBarMsg" key="edition"/>
 <view:browseBar extraInformations="${broweBarMsg}" />
-<view:operationPane>
-  <c:url var="deleteIconUrl" value="/util/icons/quickInfo_to_del.gif"/>
-  <fmt:message var="deleteMsg" key="suppression"/>
-  <view:operation altText="${deleteMsg}" icon="${deleteIconUrl}" action="javascript:onClick=quickInfoDeleteConfirm()"/>
-</view:operationPane>
+<c:if test="${not empty curQuickInfo}">
+	<view:operationPane>
+	  <fmt:message var="deleteMsg" key="GML.delete"/>
+	  <fmt:message var="deleteConfirmMsg" key="supprimerQIConfirmation"/>
+	  <view:operation altText="${deleteMsg}" icon="${deleteIconUrl}" action="javascript:onclick=confirmDelete(${news.id}, '${deleteConfirmMsg}')"/>
+	</view:operationPane>
+</c:if>
 
 <view:window>
-<form name="quickInfoEditForm" action="Save" method="post" enctype="multipart/form-data">
+<form name="newsForm" action="Save" method="post" enctype="multipart/form-data">
   <input type="hidden" name="Positions" />
   <c:if test="${not empty curQuickInfo}">
     <input type="hidden" name="Id" value="${curQuickInfo.id}"/>

@@ -50,12 +50,12 @@ function openSPWindow(fonction, windowName){
 
 function editQuickInfo(id) {
 	document.quickInfoEditForm.Id.value = id;
-	document.quickInfoEditForm.Action.value = "Edit";
+	document.quickInfoEditForm.action = "Edit";
 	document.quickInfoEditForm.submit();
 }
 
 function addQuickInfo() {
-	document.quickInfoEditForm.Action.value = "Add";
+	document.quickInfoEditForm.action = "Add";
 	document.quickInfoEditForm.submit();
 }
 </script>
@@ -97,7 +97,7 @@ function addQuickInfo() {
 		Icon debIcon = iconPane1.addIcon();
 		debIcon.setProperties(m_context+"/util/icons/Actualite.gif", "", "");
 		line.addArrayCellIconPane(iconPane1);	
-            line.addArrayCellLink(EncodeHelper.javaStringToHtmlString(pub.getName()), "javascript:onClick=editQuickInfo('"+pub.getPK().getId()+"')");
+            line.addArrayCellLink(EncodeHelper.javaStringToHtmlString(pub.getName()), "View?Id="+pub.getPK().getId());
                                                 try {
                                                         UserDetail detail = quickinfo.getUserDetail(pub.getCreatorId());
                                                         line.addArrayCellText(detail.getLastName() + " " + detail.getFirstName());
@@ -126,9 +126,8 @@ function addQuickInfo() {
         out.println(window.printAfter());
 %>
 </form>
-<form name="quickInfoEditForm" action="quickInfoEdit.jsp" method="post">
+<form name="quickInfoEditForm" action="" method="post">
   <input type="hidden" name="Id"/>
-  <input type="hidden" name="Action"/>
 </form>
 </div>
 </body>

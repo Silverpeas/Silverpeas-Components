@@ -44,7 +44,6 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.quickinfo.control.QuickInfoSessionController;
 import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSessionController> {
 
@@ -106,33 +105,21 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
         String id = request.getParameter("Id");
         request.setAttribute("News", quickInfo.getDetail(id));
         destination = "/quickinfo/jsp/news.jsp";
-      } else if (function.startsWith("quickInfoEdit") || function.startsWith("searchResult")) {
-        if ("publisher".equals(flag) || "admin".equals(flag)) {
-          String action = request.getParameter("Action");
-          if (action == null) {
-            if (!function.startsWith("searchResult")) {
-              action = "Add";
-            } else {
-              action = "Edit";
-            }
-          }
-          if ("Edit".equals(action)) {
-            setCommonAttributesToAddOrUpdate(quickInfo, request);
-            destination = "/quickinfo/jsp/quickInfoEdit.jsp";
-          } else if ("Add".equals(action)) {
-            setCommonAttributesToAddOrUpdate(quickInfo, request);
-            destination = "/quickinfo/jsp/quickInfoEdit.jsp";
-          } else if ("ReallyRemove".equals(action)) {
-            String id = request.getParameter("Id");
-            quickInfo.remove(id);
-            destination = getDestination("Main", quickInfo, request);
-          }
-        } else if ("user".equals(flag)) {
-          destination = getDestination("quickInfoUser", quickInfo, request);
-        } else {
-          destination =
-              GeneralPropertiesManager.getString("sessionTimeout");
+      } else if ("Add".equals(function) || "Edit".equals(function)) {
+        if (!"publisher".equals(flag) && !"admin".equals(flag)) {
+          throwHttpForbiddenError();
         }
+        setCommonAttributesToAddOrUpdate(quickInfo, request);
+        destination = "/quickinfo/jsp/quickInfoEdit.jsp";
+      } else if ("Remove".equals(function)) {
+        if (!"publisher".equals(flag) && !"admin".equals(flag)) {
+          throwHttpForbiddenError();
+        }
+        String id = request.getParameter("Id");
+        quickInfo.remove(id);
+        destination = getDestination("Main", quickInfo, request);
+      } else if (function.startsWith("searchResult")) {
+        destination = getDestination("View", quickInfo, request);
       } else {
         destination = "/quickinfo/jsp/" + function;
       }

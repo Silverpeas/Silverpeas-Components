@@ -22,6 +22,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+.actuality-title {
+    color: #333333;
+    font-size: 130%;
+    font-weight: 100;
+    margin: 0 0 1em;
+    padding: 0;
+}
+
+#illustration img {
+	width:310px;
+	margin-bottom:1em;
+	border-radius:12px;
+}
+
+#commentInfo a {
+	background:transparent url(/silverpeas/util/icons/talk2user.gif) 0 0 no-repeat;
+	padding-left:20px;
+}
+
+#permalinkInfo input {
+	width:100%;
+}
+#permalinkInfo img {
+	border:0;
+}
+
  
 fieldset#infoFieldset legend {
   background:transparent url(../../../util/icons/component/quickinfoSmall.gif) 11px 0px no-repeat;
