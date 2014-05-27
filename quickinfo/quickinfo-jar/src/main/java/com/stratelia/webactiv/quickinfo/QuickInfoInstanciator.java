@@ -23,10 +23,11 @@
  */
 package com.stratelia.webactiv.quickinfo;
 
-import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
-import com.silverpeas.admin.components.InstanciationException;
 import java.sql.Connection;
 
+import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
+import com.silverpeas.admin.components.InstanciationException;
+import com.silverpeas.thumbnail.ThumbnailInstanciator;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.publication.PublicationInstanciator;
 
@@ -54,6 +55,11 @@ public class QuickInfoInstanciator extends Object implements ComponentsInstancia
         "delete called with: space=" + spaceId);
     PublicationInstanciator pub = new PublicationInstanciator("com.stratelia.webactiv.quickinfo");
     pub.delete(con, spaceId, componentId, userId);
+    
+    // deleting thumbnails
+    ThumbnailInstanciator thumbnails = new ThumbnailInstanciator();
+    thumbnails.delete(con, spaceId, componentId, userId);
+    
     SilverTrace.debug("quickinfo", "QuickInfoInstanciator.delete()",
         "QuickInfoInstanciator.delete finished");
   }

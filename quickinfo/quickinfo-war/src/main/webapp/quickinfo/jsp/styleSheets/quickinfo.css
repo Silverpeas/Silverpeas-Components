@@ -23,7 +23,7 @@
  */
 
  
- fieldset#infoFieldset legend {
+fieldset#infoFieldset legend {
   background:transparent url(../../../util/icons/component/quickinfoSmall.gif) 11px 0px no-repeat;
 }
 
@@ -31,14 +31,23 @@ fieldset#datesFieldset legend {
   background:transparent url(../../../util/icons/calendar_1.png) 11px 0px no-repeat;
 }
 
-#infoFieldset .field, 
-#datesFieldset .field {
-  clear: both;
-  display: block;
-  float: none;
-  width: 98%;
+fieldset#news-thumbnail legend {
+    background: url("../../../util/icons/images.png") no-repeat scroll 11px 0 rgba(0, 0, 0, 0);
 }
 
-#infoFieldset #nameArea input {
-  width: 46%;
+#nameArea,
+#descriptionArea,
+#contentArea,
+#broadcastArea,
+#BeginDateArea,
+#EndDateArea,
+#thumb  {
+    clear: both;
+    width: 98%;
+    display:block;
+	float:none;
+}
+
+#descriptionArea textarea {
+	width:90%;
 }

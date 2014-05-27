@@ -27,12 +27,16 @@ import java.util.Date;
 import java.util.List;
 
 import javax.ejb.CreateException;
-import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.quickinfo.model.News;
+import org.silverpeas.date.Period;
+import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.wysiwyg.WysiwygException;
 
+import com.silverpeas.thumbnail.control.ThumbnailController;
+import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -95,6 +99,13 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
         List<News> infos = quickInfo.getVisibleQuickInfos();
         request.setAttribute("infos", infos);
         destination = "/quickinfo/jsp/portlet.jsp";
+      } else if ("Save".equals(function)) {
+        createOrUpdateQuickInfo(quickInfo, request);
+        destination = getDestination("quickInfoPublisher", quickInfo, request);
+      } else if ("View".equals(function)) {
+        String id = request.getParameter("Id");
+        request.setAttribute("News", quickInfo.getDetail(id));
+        destination = "/quickinfo/jsp/news.jsp";
       } else if (function.startsWith("quickInfoEdit") || function.startsWith("searchResult")) {
         if ("publisher".equals(flag) || "admin".equals(flag)) {
           String action = request.getParameter("Action");
@@ -106,21 +117,15 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
             }
           }
           if ("Edit".equals(action)) {
-            String id = request.getParameter("Id");
-            request.setAttribute("Id", id);
-            News quickInfoDetail = quickInfo.getDetail(id);
-            request.setAttribute("info", quickInfoDetail);
+            setCommonAttributesToAddOrUpdate(quickInfo, request);
             destination = "/quickinfo/jsp/quickInfoEdit.jsp";
           } else if ("Add".equals(action)) {
-            request.setAttribute("info", null);
+            setCommonAttributesToAddOrUpdate(quickInfo, request);
             destination = "/quickinfo/jsp/quickInfoEdit.jsp";
           } else if ("ReallyRemove".equals(action)) {
             String id = request.getParameter("Id");
             quickInfo.remove(id);
             destination = getDestination("Main", quickInfo, request);
-          } else if ("ReallyAdd".equals(action) || "ReallyUpdate".equals(action)) {
-            createOrUpdateQuickInfo(quickInfo, request, action);
-            destination = getDestination("quickInfoPublisher", quickInfo, request);
           }
         } else if ("user".equals(flag)) {
           destination = getDestination("quickInfoUser", quickInfo, request);
@@ -139,6 +144,16 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
         "root.MSG_GEN_PARAM_VALUE", "destination" + destination);
     return destination;
   }
+  
+  private void setCommonAttributesToAddOrUpdate(QuickInfoSessionController quickInfo, HttpRequest request) {
+    String id = request.getParameter("Id");
+    News quickInfoDetail = null;
+    if (StringUtil.isDefined(id)) {
+      quickInfoDetail = quickInfo.getDetail(id);
+    }
+    request.setAttribute("info", quickInfoDetail);
+    request.setAttribute("ThumbnailSettings", quickInfo.getThumbnailSettings());
+  }
 
   /**
    * This method retrieve all the request parameters before creating or updating a quick info
@@ -146,42 +161,71 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
    * @param quickInfo the QuickInfoSessionController
    * @param request the HttpServletRequest
    * @param action a string representation of an action
-   * @throws ParseException
+   * @throws Exception 
    * @throws RemoteException
    * @throws CreateException
    * @throws WysiwygException
    */
   private void createOrUpdateQuickInfo(QuickInfoSessionController quickInfo,
-      HttpServletRequest request, String action) throws ParseException, RemoteException,
-      CreateException, WysiwygException {
-    String name = request.getParameter("Name");
-    String description = request.getParameter("Description");
-    if (description == null) {
-      description = "";
-    }
-    Date beginDate = null;
-    String beginString = request.getParameter("BeginDate");
+      HttpRequest request) throws Exception {
 
+    List<FileItem> items = request.getFileItems();
+    News news = requestToNews(items, quickInfo.getLanguage());
+
+    String id = request.getParameter("Id");
+    if (StringUtil.isDefined(id)) {
+      quickInfo.update(id, news);
+    } else {
+      String positions = request.getParameter("Positions");
+      id = quickInfo.add(news, positions);
+    }
+
+    ThumbnailController.processThumbnail(new ForeignPK(id, quickInfo.getComponentId()), "News",
+        items);
+  }
+  
+  private News requestToNews(List<FileItem> items, String language) throws ParseException {
+    
+    String name = FileUploadUtil.getParameter(items, "Name");
+    String description = FileUploadUtil.getParameter(items, "Description");
+    String content = FileUploadUtil.getParameter(items, "Content");
+    
+    Date beginDate = null;
+    String beginString = FileUploadUtil.getParameter(items, "BeginDate");
     if (StringUtil.isDefined(beginString)) {
-      beginDate = DateUtil.stringToDate(beginString, quickInfo.getLanguage());
+      beginDate = DateUtil.stringToDate(beginString, language);
     }
 
     Date endDate = null;
-    String endString = request.getParameter("EndDate");
+    String endString = FileUploadUtil.getParameter(items, "EndDate");
     if (StringUtil.isDefined(endString)) {
-      endDate = DateUtil.stringToDate(endString, quickInfo.getLanguage());
+      endDate = DateUtil.stringToDate(endString, language);
     }
-
-    if ("ReallyAdd".equals(action)) {
-      String positions = request.getParameter("Positions");
-      quickInfo.add(name, description, beginDate, endDate, positions);
-    } else {
-      String id = request.getParameter("Id");
-      quickInfo.update(id, name, description, beginDate, endDate);
+    
+    List<String> broadcastModes = FileUploadUtil.getParameterValues(items, "BroadcastMode", "UTF-8");
+    int[] modes = new int[broadcastModes.size()];
+    for (int i=0; i<broadcastModes.size(); i++) {
+      modes[i] = Integer.parseInt(broadcastModes.get(i));
     }
+    
+    News news =
+      new News(name, description, getPeriod(beginDate, endDate), modes);
+    news.setContent(content);
+    
+    return news;
+  }
+  
+  private Period getPeriod(Date begin, Date end) {
+    if (begin == null) {
+      begin = DateUtil.MINIMUM_DATE;
+    }
+    if (end == null) {
+      end = DateUtil.MAXIMUM_DATE;
+    }
+    return Period.from(begin, end);
   }
 
-  public String getFlag(String[] profiles) {
+  private String getFlag(String[] profiles) {
     String flag = "user";
     for (int i = 0; i < profiles.length; i++) {
       // if admin, return it, we won't find a better profile

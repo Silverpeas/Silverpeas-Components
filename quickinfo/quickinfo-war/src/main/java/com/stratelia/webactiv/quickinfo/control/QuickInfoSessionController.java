@@ -24,7 +24,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJBException;
@@ -34,17 +33,16 @@ import org.silverpeas.components.quickinfo.QuickInfoComponentSettings;
 import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.components.quickinfo.model.QuickInfoService;
 import org.silverpeas.components.quickinfo.model.QuickInfoServiceFactory;
-import org.silverpeas.date.Period;
 import org.silverpeas.wysiwyg.WysiwygException;
 
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
+import com.silverpeas.thumbnail.ThumbnailSettings;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.UtilException;
@@ -117,25 +115,27 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
    * @param end the end visibility date time
    * @param positions the JSON positions
    */
-  public void add(String name, String description, Date begin, Date end, String positions) {
+  public String add(News news, String positions) {
     List<PdcPosition> pdcPositions = getPositionsFromJSON(positions);
     
-    // TODO: managing description and content 
-    News news = new News(name, null, getPeriod(begin, end), positions, getUserId(), getComponentId());
-    news.setContent(description);
+    news.setCreatorId(getUserId());
+    news.setComponentInstanceId(getComponentId());
     
-    getService().addNews(news, pdcPositions);    
+    return getService().addNews(news, pdcPositions);    
   }
   
   private QuickInfoService getService() {
     return QuickInfoServiceFactory.getQuickInfoService();
   }
 
-  public void update(String id, String name, String description, Date begin, Date end) {    
+  public void update(String id, News updatedNews) {    
     News news = getDetail(id);
-    news.setTitle(name);
-    news.setContent(description);
-    news.setVisibilityPeriod(getPeriod(begin, end));
+    news.setTitle(updatedNews.getTitle());
+    news.setDescription(updatedNews.getDescription());
+    news.setContent(updatedNews.getContent());
+    news.setVisibilityPeriod(updatedNews.getVisibilityPeriod());
+    news.setUpdaterId(getUserId());
+    news.setBroadcastModes(updatedNews.getBroadcastModes());
     
     getService().updateNews(news);      
   }
@@ -167,6 +167,33 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
       getPublicationBm().createIndex(news.getPublication().getPK());
     }
   }
+  
+  public ThumbnailSettings getThumbnailSettings() {
+    ThumbnailSettings settings = new ThumbnailSettings();
+    settings.setMandatory(StringUtil.getBooleanValue(getComponentParameterValue("thumbnailMandatory")));
+    setThumbnailDimensions(settings);
+    return settings;
+  }
+  
+  public void setThumbnailDimensions(ThumbnailSettings settings) {
+    int width = getInt(getComponentParameterValue("thumbnailWidthSize"));
+    int height = getInt(getComponentParameterValue("thumbnailHeightSize"));
+
+    if (width == -1 && height == -1) {
+      // get global settings if undefined on instance level
+      width = getSettings().getInteger("thumbnail.width", 200);
+      height = getSettings().getInteger("thumbnail.height", -1);
+    }
+    settings.setWidth(width);
+    settings.setHeight(height);
+  }
+  
+  private int getInt(String str) {
+    if (StringUtil.isInteger(str)) {
+      return Integer.parseInt(str);
+    }
+    return -1;
+  }
 
   private List<News> sortByDateDesc(List<News> listOfNews) {
     Comparator<News> comparator = QuickInfoDateComparatorDesc.comparator;
@@ -194,16 +221,6 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
       }
     }
     return pdcPositions;
-  }
-  
-  private Period getPeriod(Date begin, Date end) {
-    if (begin == null) {
-      begin = DateUtil.MINIMUM_DATE;
-    }
-    if (end == null) {
-      end = DateUtil.MAXIMUM_DATE;
-    }
-    return Period.from(begin, end);
   }
   
 }

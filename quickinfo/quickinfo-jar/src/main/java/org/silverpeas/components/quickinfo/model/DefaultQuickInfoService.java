@@ -23,6 +23,9 @@ import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.service.PdcClassificationService;
+import com.silverpeas.thumbnail.control.ThumbnailController;
+import com.silverpeas.thumbnail.model.ThumbnailDetail;
+import com.silverpeas.thumbnail.service.ThumbnailServiceFactory;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -156,6 +159,12 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
     for (SimpleDocument document : docs) {
       attachmentService.deleteAttachment(document);
     }
+    
+    // Deleting thumbnail
+    ThumbnailDetail thumbnail =
+        new ThumbnailDetail(pk.getInstanceId(), Integer.parseInt(pk.getId()),
+            ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
+    ThumbnailController.deleteThumbnail(thumbnail);
   }
   
   @Override

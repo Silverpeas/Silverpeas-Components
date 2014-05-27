@@ -23,17 +23,20 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.thumbnail.model.ThumbnailDetail"%>
 <%@page import="org.silverpeas.components.quickinfo.model.News"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
+
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
 <c:set var="curQuickInfo" value="${requestScope['info']}"/>
-<c:set var="curPubId" value="${requestScope['Id']}"/>
+<c:set var="thumbnailSettings" value="${requestScope['ThumbnailSettings']}"/>
 
 <%@ include file="checkQuickInfo.jsp" %>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager" %>
@@ -42,34 +45,48 @@
 <%
 News news = (News) request.getAttribute("info");
 PublicationDetail quickInfoDetail = null;
+ThumbnailDetail thumbnail = null;
 if (news != null) {
   quickInfoDetail = news.getPublication();
+  thumbnail = news.getThumbnail();
 }
-String pubId   = (String) request.getAttribute("Id");
-
-String routerUrl = URLManager.getApplicationURL() + URLManager.getURL("quickinfo", quickinfo.getSpaceId(), quickinfo.getComponentId());
 
 String codeHtml = "";
 String title = "";
-if (quickInfoDetail != null) {
- 	title = quickInfoDetail.getTitle();
-	if (quickInfoDetail.getWysiwyg() != null && !"".equals(quickInfoDetail.getWysiwyg())) {
-    	codeHtml = quickInfoDetail.getWysiwyg();
-	} else if (quickInfoDetail.getDescription() != null) {
-    	codeHtml = EncodeHelper.javaStringToHtmlParagraphe(quickInfoDetail.getDescription());
-	}
-}
 String beginDate = "";
 String endDate = "";
+String broadcastMajorChecked = "";
+String broadcastTickerChecked = "";
+String broadcastBlockingChecked = "";
 if (quickInfoDetail != null) {
-  if (quickInfoDetail.getBeginDate() != null) {
-    beginDate = resources.getInputDate(quickInfoDetail.getBeginDate());
-  }
-  if (quickInfoDetail.getEndDate() != null) {
-    endDate = resources.getInputDate(quickInfoDetail.getEndDate());
-  }
+ 	title = quickInfoDetail.getTitle();
+	codeHtml = quickInfoDetail.getWysiwyg();
+	if (quickInfoDetail.getBeginDate() != null) {
+    	beginDate = resources.getInputDate(quickInfoDetail.getBeginDate());
+  	}
+  	if (quickInfoDetail.getEndDate() != null) {
+    	endDate = resources.getInputDate(quickInfoDetail.getEndDate());
+  	}
+  	if (news.getBroadcastModes().contains(News.BROADCAST_MAJOR)) {
+  	  broadcastMajorChecked = "checked=\"checked\"";
+  	}
+  	if (news.getBroadcastModes().contains(News.BROADCAST_TICKER)) {
+  	  broadcastTickerChecked = "checked=\"checked\"";
+  	}
+  	if (news.getBroadcastModes().contains(News.BROADCAST_BLOCKING)) {
+  	  broadcastBlockingChecked = "checked=\"checked\"";
+  	}
 }
+
+ButtonPane buttonPane = gef.getButtonPane();
+buttonPane.addButton(gef.getFormButton(resources.getString("GML.validate"), "javascript:onclick=saveNews()", false));
+buttonPane.addButton(gef.getFormButton(resources.getString("GML.cancel"), "Main", false));
+
+pageContext.setAttribute("thumbnailBackURL", URLManager.getFullApplicationURL(request)+URLManager.getURL("useless", componentId), PageContext.PAGE_SCOPE);
 %>
+
+<c:set var="thumbnailBackURL" value="${pageScope.thumbnailBackURL}"/>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -78,7 +95,6 @@ if (quickInfoDetail != null) {
 <view:looknfeel/>
 <view:includePlugin name="datepicker"/>
 <view:includePlugin name="wysiwyg"/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
 function isCorrectForm() {
@@ -100,8 +116,7 @@ function isCorrectForm() {
 
   <view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>
     
- 	switch(errorNb)
- 	{
+ 	switch(errorNb) {
     	case 0 :
         	result = true;
         	break;
@@ -119,17 +134,11 @@ function isCorrectForm() {
  	return result;
 }
 
-function reallyAddQuickInfo() {
+function saveNews() {
 	if (isCorrectForm()) {
-    <view:pdcPositions setIn="document.quickInfoEditForm.Positions.value"/>;    
-		document.quickInfoEditForm.Action.value = "ReallyAdd";
-		document.quickInfoEditForm.submit();
-	}
-}
-
-function updateQuickInfo() {
-	if (isCorrectForm()) {
-		document.quickInfoEditForm.Action.value = "ReallyUpdate";
+  		<c:if test="${empty curQuickInfo}">
+    		<view:pdcPositions setIn="document.quickInfoEditForm.Positions.value"/>;
+   		</c:if>
 		document.quickInfoEditForm.submit();
 	}
 }
@@ -142,7 +151,7 @@ function quickInfoDeleteConfirm() {
 }
 
 $(document).ready(function() {
-	<view:wysiwyg replace="Description" language="<%=language%>" width="600" height="300" toolbar="quickInfo" displayFileBrowser="${false}"/>
+	<view:wysiwyg replace="Content" language="<%=language%>" width="600" height="300" toolbar="quickInfo" displayFileBrowser="${false}"/>
 });
 </script>
 </head>
@@ -157,9 +166,11 @@ $(document).ready(function() {
 </view:operationPane>
 
 <view:window>
-<form name="quickInfoEditForm" action="quickInfoEdit" method="post">
+<form name="quickInfoEditForm" action="Save" method="post" enctype="multipart/form-data">
   <input type="hidden" name="Positions" />
-
+  <c:if test="${not empty curQuickInfo}">
+    <input type="hidden" name="Id" value="${curQuickInfo.id}"/>
+  </c:if>
 <view:frame>
 
 <fieldset id="infoFieldset" class="skinFieldset">
@@ -175,88 +186,86 @@ $(document).ready(function() {
         &nbsp;<img border="0" src="<%=m_context%>/util/icons/mandatoryField.gif" width="5" height="5"/>
       </div>
     </div>
-
+    
     <div class="field" id="descriptionArea">
       <label class="txtlibform" for="description"><fmt:message key="GML.description" /> </label>
       <div class="champs">
-        <textarea name="Description" id="Description" rows="50" cols="10"><%=codeHtml%></textarea>
+        <c:if test="${not empty curQuickInfo}"><c:set var="curDesc" value="${curQuickInfo.description}"/></c:if>
+        <textarea name="Description" cols="50" rows="3" id="Description"><c:out value="${curDesc}"/></textarea>
+      </div>
+    </div>
+    
+    <div class="field" id="broadcastArea">
+      <label class="txtlibform"><fmt:message key="quickinfo.news.broadcast.mode" /> </label>
+      <div class="champs">
+      	<input type="checkbox" name="BroadcastMode" value="<%=News.BROADCAST_MAJOR%>" <%=broadcastMajorChecked %>/> <fmt:message key="quickinfo.news.broadcast.mode.major" />
+      	<input type="checkbox" name="BroadcastMode" value="<%=News.BROADCAST_TICKER%>" <%=broadcastTickerChecked %>/> <fmt:message key="quickinfo.news.broadcast.mode.ticker" />
+      	<input type="checkbox" name="BroadcastMode" value="<%=News.BROADCAST_BLOCKING%>" <%=broadcastBlockingChecked %>/> <fmt:message key="quickinfo.news.broadcast.mode.blocking" />
+      </div>
+    </div>
+
+    <div class="field" id="contentArea">
+      <label class="txtlibform" for="content"><fmt:message key="quickinfo.news.content" /> </label>
+      <div class="champs">
+        <textarea name="Content" id="Content" rows="50" cols="10"><%=codeHtml%></textarea>
       </div>
     </div>
     
   </div>
 </fieldset>
 
-<fieldset id="datesFieldset" class="skinFieldset">
-  <legend><fmt:message key="quickinfo.header.fieldset.period" /></legend>
-  <div class="fields">
-    <div class="field" id="BeginDateArea">
-      <label for="BeginDate" class="txtlibform"><fmt:message key="GML.dateBegin" /></label>
-      <div class="champs">
-        <input type="text" class="dateToPick" id="BeginDate" name="BeginDate" size="12" value="<%=beginDate%>" maxlength="<%=DBUtil.getDateFieldLength()%>"/>
-        <span class="txtnote">(<fmt:message key="GML.dateFormatExemple"/>)</span>
-      </div>
-    </div>
-    <div class="field" id="EndDateArea">
-      <label for="EndDate" class="txtlibform"><fmt:message key="GML.dateEnd" /></label>
-      <div class="champs">
-        <input type="text" class="dateToPick" id="EndDate" name="EndDate" size="12" value="<%=endDate%>" maxlength="<%=DBUtil.getDateFieldLength()%>"/>
-        <span class="txtnote">(<fmt:message key="GML.dateFormatExemple"/>)</span>
-      </div>
-    </div>
-  </div>
-</fieldset>
+<div class="table">
+	<div class="cell">
+		<fieldset id="datesFieldset" class="skinFieldset">
+	  		<legend><fmt:message key="quickinfo.header.fieldset.period" /></legend>
+	  		<div class="fields">
+	    		<div class="field" id="BeginDateArea">
+		      		<label for="BeginDate" class="txtlibform"><fmt:message key="GML.dateBegin" /></label>
+		      		<div class="champs">
+		        		<input type="text" class="dateToPick" id="BeginDate" name="BeginDate" size="12" value="<%=beginDate%>" maxlength="<%=DBUtil.getDateFieldLength()%>"/>
+		        		<span class="txtnote">(<fmt:message key="GML.dateFormatExemple"/>)</span>
+		      		</div>
+	    		</div>
+	    		<div class="field" id="EndDateArea">
+	      			<label for="EndDate" class="txtlibform"><fmt:message key="GML.dateEnd" /></label>
+	      			<div class="champs">
+	        			<input type="text" class="dateToPick" id="EndDate" name="EndDate" size="12" value="<%=endDate%>" maxlength="<%=DBUtil.getDateFieldLength()%>"/>
+	        			<span class="txtnote">(<fmt:message key="GML.dateFormatExemple"/>)</span>
+	      			</div>
+	    		</div>
+	  		</div>
+		</fieldset>
+	</div>
 
-<c:if test="${empty curPubId}">
+	<div class="cell">
+		<fieldset id="news-thumbnail" class="skinFieldset">
+			<legend><fmt:message key="GML.thumbnail" /></legend>
+			<c:url var="backURL" value="${thumbnailBackURL}/quickInfoEdit">
+				<c:param name="Action" value="Edit"/>
+				<c:param name="Id" value="${curQuickInfo.id}"/>
+			</c:url>
+			<viewTags:displayThumbnail thumbnail="<%=thumbnail %>" mandatory="${thumbnailSettings.mandatory}" componentId="${curQuickInfo.componentInstanceId}" objectId="${curQuickInfo.id}" backURL="${backURL}" objectType="<%=ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE %>" width="${thumbnailSettings.width}" height="${thumbnailSettings.height}"/>
+		</fieldset>
+	</div>
+</div>
+
+<c:if test="${empty curQuickInfo}">
   <view:pdcNewContentClassification componentId="<%=quickinfo.getComponentId()%>" />
 </c:if>
-<c:if test="${not empty curPubId}">
-  <view:pdcClassification componentId="<%=quickinfo.getComponentId()%>" contentId="${curPubId}" editable="true" />
+<c:if test="${not empty curQuickInfo}">
+  <view:pdcClassification componentId="<%=quickinfo.getComponentId()%>" contentId="${curQuickInfo.id}" editable="true" />
 </c:if>
 
 <div class="legend">
   <fmt:message key="GML.requiredField" /> : <img src="<%=m_context%>/util/icons/mandatoryField.gif" width="5" height="5" />
 </div>
 
-
-<%
-	
-	ButtonPane	buttonPane		= gef.getButtonPane();
-
-%>
-  
-  <table width="100%" border="0" cellspacing="0" cellpadding="5">
-    <tr>
-      <td align="right">
-        <%
-          String link = "javascript:onClick=updateQuickInfo()";
-          if (quickInfoDetail == null) {
-            link = "javascript:onClick=reallyAddQuickInfo()";
-          }
-          Button button = gef.getFormButton(resources.getString("GML.validate"), link, false);
-					buttonPane.addButton(button);
-          button = gef.getFormButton(resources.getString("GML.cancel"), "Main", false);
-					buttonPane.addButton(button);
-        %>
-      <br/><%=buttonPane.print()%><br/>
-      </td>
-    </tr>
-  </table>
+<%=buttonPane.print()%>
     
-	<input type="hidden" name="Action"/>
-    <% if (quickInfoDetail != null) { %>
-    	<input type="hidden" name="Id" value="<%=quickInfoDetail.getPK().getId()%>"/>
-  	<% } %>
 </view:frame>
 </form>
 
 </view:window>
-
-<form name="quickInfoForm" action="quickInfoEdit.jsp" method="post">
-  <input type="hidden" name="Action"/>
-  <% if (quickInfoDetail != null) { %>
-      <input type="hidden" name="Id" value="<%=quickInfoDetail.getPK().getId()%>"/>
-  <% } %>
-</form>
 </div>
 </body>
 </html>

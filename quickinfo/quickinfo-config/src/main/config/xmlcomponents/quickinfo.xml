@@ -104,5 +104,61 @@
         <message lang="de">Nachrichten können auf dem KP klassifiziert werden</message>
       </help>
     </parameter>
+    <parameter>
+      <name>thumbnailMandatory</name>
+      <label>
+        <message lang="fr">Vignette obligatoire</message>
+        <message lang="en">Mandatory thumbnail</message>
+        <message lang="de">Obligatorisches Vorschaubild</message>
+      </label>
+      <order>2</order>
+      <mandatory>true</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Permet de rendre obligatoire l'ajout d'une vignette à chaque actualité.</message>
+        <message lang="en">Lets make it mandatory to add a thumbnail to each news.</message>
+        <message lang="de">macht es zwingend erforderlich,eine Miniaturansicht für jede News hinzu zu fügen.</message>
+      </help>
+    </parameter>
+    <parameter>
+      <name>thumbnailWidthSize</name>
+      <label>
+        <message lang="fr">Largeur de la vignette</message>
+        <message lang="en">Thumbnail width</message>
+        <message lang="de">Breite des Vorschaubilds</message>
+      </label>
+      <order>3</order>
+      <mandatory>false</mandatory>
+      <value></value>
+      <type>text</type>
+      <size>5</size>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Ce paramètre permet de définir la largeur de la vignette à afficher.</message>
+        <message lang="en">This feature allows to define width of the displayed thumbnail.</message>
+        <message lang="de">Diese Funktion erlaubt es, die Breite der angezeigten Miniaturansicht zu definieren</message>
+      </help>
+    </parameter>
+    <parameter>
+      <name>thumbnailHeightSize</name>
+      <label>
+        <message lang="fr">Hauteur de la vignette</message>
+        <message lang="en">Thumbnail height</message>
+        <message lang="de">Höhe des Vorschaubilds</message>
+      </label>
+      <order>4</order>
+      <mandatory>false</mandatory>
+      <value></value>
+      <type>text</type>
+      <size>5</size>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Ce paramètre permet de définir la hauteur de la vignette à afficher.</message>
+        <message lang="en">This feature allows to define height of the displayed thumbnail.</message>
+        <message lang="de">Diese Funktion erlaubt es, die Höhe der angezeigten Miniaturansicht zu definieren</message>
+      </help>
+    </parameter>
   </parameters>
 </WAComponent>
