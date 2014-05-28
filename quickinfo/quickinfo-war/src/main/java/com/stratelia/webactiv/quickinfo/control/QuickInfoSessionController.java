@@ -37,6 +37,9 @@ import org.silverpeas.wysiwyg.WysiwygException;
 
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
+import com.silverpeas.subscribe.SubscriptionService;
+import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.thumbnail.ThumbnailSettings;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
@@ -200,6 +203,18 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     }
     settings.setWidth(width);
     settings.setHeight(height);
+  }
+  
+  public Boolean isSubscriberUser() {
+    Boolean subscriber = null;
+    if (!getUserDetail().isAccessGuest()) {
+      SubscriptionService subscriptionService = SubscriptionServiceFactory.getFactory().
+          getSubscribeService();
+      boolean isUserSubscribed = subscriptionService.existsSubscription(
+          new ComponentSubscription(getUserId(), getComponentId()));
+      subscriber = new Boolean(isUserSubscribed);
+    }
+    return subscriber;
   }
   
   private int getInt(String str) {

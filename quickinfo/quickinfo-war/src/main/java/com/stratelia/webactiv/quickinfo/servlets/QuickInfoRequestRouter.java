@@ -92,6 +92,7 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
         }
         request.setAttribute("ListOfNews", infos);
         request.setAttribute("AppSettings", quickInfo.getInstanceSettings());
+        request.setAttribute("IsSubscriberUser", quickInfo.isSubscriberUser());
         destination = "/quickinfo/jsp/home.jsp";
       } else if (function.startsWith("portlet")) {
         List<News> infos = quickInfo.getVisibleQuickInfos();
@@ -99,10 +100,14 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
         request.setAttribute("AppSettings", quickInfo.getInstanceSettings());
         destination = "/quickinfo/jsp/portlet.jsp";
       } else if ("Save".equals(function)) {
-        createOrUpdateQuickInfo(quickInfo, request);
-        destination = getDestination("quickInfoPublisher", quickInfo, request);
+        String id = createOrUpdateQuickInfo(quickInfo, request);
+        request.setAttribute("Id", id);
+        destination = getDestination("View", quickInfo, request);
       } else if ("View".equals(function)) {
         String id = request.getParameter("Id");
+        if (StringUtil.isDefined(id)) {
+          id = (String) request.getAttribute("Id");
+        }
         String anchor = request.getParameter("Anchor");
         request.setAttribute("News", quickInfo.getDetail(id));
         request.setAttribute("AppSettings", quickInfo.getInstanceSettings());
@@ -155,7 +160,7 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
    * @throws CreateException
    * @throws WysiwygException
    */
-  private void createOrUpdateQuickInfo(QuickInfoSessionController quickInfo,
+  private String createOrUpdateQuickInfo(QuickInfoSessionController quickInfo,
       HttpRequest request) throws Exception {
 
     List<FileItem> items = request.getFileItems();
@@ -171,6 +176,8 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
 
     ThumbnailController.processThumbnail(new ForeignPK(id, quickInfo.getComponentId()), "News",
         items);
+    
+    return id;
   }
   
   private News requestToNews(List<FileItem> items, String language) throws ParseException {

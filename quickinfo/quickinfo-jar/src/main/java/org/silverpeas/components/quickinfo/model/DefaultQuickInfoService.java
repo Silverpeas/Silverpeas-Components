@@ -18,6 +18,7 @@ import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.util.SimpleDocumentList;
 import org.silverpeas.components.quickinfo.QuickInfoComponentSettings;
+import org.silverpeas.components.quickinfo.notification.QuickInfoSubscriptionUserNotification;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
@@ -25,6 +26,7 @@ import com.silverpeas.SilverpeasComponentService;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentUserNotificationService;
+import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
@@ -33,6 +35,7 @@ import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
+import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.CompoSpace;
 import com.stratelia.webactiv.quickinfo.QuickInfoContentManager;
@@ -119,6 +122,10 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
     
     // Classifying new content onto taxonomy
     classifyQuickInfo(publication, positions);
+    
+    // Sending notifications to subscribers
+    UserNotificationHelper.buildAndSend(new QuickInfoSubscriptionUserNotification(news, NotifAction.CREATE));
+    
     return pubPK.getId();
   }
   
@@ -144,6 +151,9 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
       WysiwygController.createFileAndAttachment(news.getContent(), publication.getPK(),
           news.getUpdaterId(), I18NHelper.defaultLanguage);
     }
+    
+    // Sending notifications to subscribers
+    UserNotificationHelper.buildAndSend(new QuickInfoSubscriptionUserNotification(news, NotifAction.UPDATE));
   }
   
   @Override

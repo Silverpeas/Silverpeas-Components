@@ -34,10 +34,15 @@
 
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<c:set var="componentId" value="${requestScope.browseContext[3]}"/>
+
+<fmt:message key="GML.subscribe" var="actionLabelSubscribe"/>
+<fmt:message key="GML.unsubscribe" var="actionLabelUnsubscribe"/>
 
 <c:set var="listOfNews" value="${requestScope['ListOfNews']}"/>
 <c:set var="appSettings" value="${requestScope['AppSettings']}"/>
 <c:set var="role" value="${requestScope['Role']}"/>
+<c:set var="isSubscriberUser" value="${requestScope.IsSubscriberUser}"/>
 <fmt:message var="deleteConfirmMsg" key="supprimerQIConfirmation"/>
 
 <%@ include file="checkQuickInfo.jsp" %>
@@ -51,12 +56,30 @@
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 function openPDCSetup() {
-  var url = webContext+'/RpdcUtilization/jsp/Main?ComponentId=<%=componentId%>';
+  var url = webContext+'/RpdcUtilization/jsp/Main?ComponentId=${componentId}';
   SP_openWindow(url, 'utilizationPdc1', '600', '400','scrollbars=yes, resizable, alwaysRaised');
+}
+
+function successSubscribe() {
+  // changing label and href of operation on-the-fly
+  $("a[href='javascript:subscribe();']").first().attr('href', "javascript:unsubscribe();").text("${actionLabelUnsubscribe}");
+}
+
+function subscribe() {
+  $.post('<c:url value="/services/subscribe/${componentId}" />', successSubscribe(), 'json');
+}
+
+function successUnsubscribe() {
+  //changing label and href of operation on-the-fly
+  $("a[href='javascript:unsubscribe();']").first().attr('href', "javascript:subscribe();").text("${actionLabelSubscribe}");
+}
+
+function unsubscribe() {
+  $.post('<c:url value="/services/unsubscribe/${componentId}" />', successUnsubscribe(), 'json');
 }
 </script>
 </head>
-<body class="quickInfo" id="<%=componentId%>">
+<body class="quickInfo" id="${componentId}">
 <view:browseBar />
 <view:operationPane>
   <c:if test="${role == 'admin' && appSettings.taxonomyEnabled}">
@@ -67,6 +90,16 @@ function openPDCSetup() {
 	  <fmt:message var="addMsg" key="creation"/>
 	  <c:url var="addIcon" value="/util/icons/create-action/add-news.png"/>
 	  <view:operationOfCreation altText="${addMsg}" icon="${addIcon}" action="Add"></view:operationOfCreation>
+  </c:if>
+  <c:if test="${isSubscriberUser != null}">
+    <c:choose>
+      <c:when test="${isSubscriberUser}">
+        <view:operation altText="${actionLabelUnsubscribe}" action="javascript:unsubscribe();"/>
+      </c:when>
+      <c:otherwise>
+        <view:operation altText="${actionLabelSubscribe}" action="javascript:subscribe();"/>
+      </c:otherwise>
+    </c:choose>
   </c:if>
 </view:operationPane>
 <view:window>
@@ -104,5 +137,8 @@ function openPDCSetup() {
 	</ul>
     <!-- /INTEGRATION HOME quickInfo -->
 </view:window>
+<form name="newsForm" action="" method="post">
+  <input type="hidden" name="Id"/>
+</form>
 </body>
 </html>

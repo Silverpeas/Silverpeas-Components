@@ -84,7 +84,7 @@
 									
 		<p id="permalinkInfo">
 			<a title="Pour copier le lien vers cette publication : Clique droit puis 'Copier le raccourci'" href="/silverpeas/Publication/18040"><img alt="Pour copier le lien vers cette publication : Clique droit puis 'Copier le raccourci'" src="/silverpeas/util/icons/link.gif" /></a> Permalien <br />
-			<input type="text" value="http://intranoo.silverpeas.com/silverpeas/Publication/18040" onmouseup="return false" onfocus="select();" />
+			<input type="text" value="${pageContext.request.scheme}://${header['host']}<c:url value="/Publication/${news.id}"/>" onmouseup="return false" onfocus="select();" />
 		</p>
 	</div>
                           
