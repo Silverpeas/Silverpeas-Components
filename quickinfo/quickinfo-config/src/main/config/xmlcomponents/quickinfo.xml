@@ -160,5 +160,23 @@
         <message lang="de">Diese Funktion erlaubt es, die Höhe der angezeigten Miniaturansicht zu definieren</message>
       </help>
     </parameter>
+    <parameter>
+      <name>comments</name>
+      <label>
+        <message lang="fr">Commentaires</message>
+        <message lang="en">Comments</message>
+        <message lang="de">Kommentare</message>
+      </label>
+      <order>5</order>
+      <mandatory>true</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Pour commenter les actualités</message>
+        <message lang="en">To comment news</message>
+        <message lang="de">To comment news</message>
+      </help>
+    </parameter>
   </parameters>
 </WAComponent>

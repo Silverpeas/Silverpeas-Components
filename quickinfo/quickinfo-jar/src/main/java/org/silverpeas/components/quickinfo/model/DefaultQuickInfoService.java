@@ -9,6 +9,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+
 import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -19,13 +23,14 @@ import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import com.silverpeas.SilverpeasComponentService;
 import com.silverpeas.annotation.Service;
+import com.silverpeas.comment.service.CommentService;
+import com.silverpeas.comment.service.CommentUserNotificationService;
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
-import com.silverpeas.thumbnail.service.ThumbnailServiceFactory;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -43,10 +48,15 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 @Service
 public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComponentService<News> {
   
+  @Inject
+  private CommentUserNotificationService commentUserNotificationService;
+  
+  @Inject
+  private CommentService commentService;
+  
   @Override
   public News getContentById(String contentId) {
-    // TODO Auto-generated method stub
-    return null;
+    return getANews(new PublicationPK(contentId));
   }
   
   @Override
@@ -165,6 +175,9 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
         new ThumbnailDetail(pk.getInstanceId(), Integer.parseInt(pk.getId()),
             ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
     ThumbnailController.deleteThumbnail(thumbnail);
+
+    // Deleting comments
+    commentService.deleteAllCommentsOnPublication(News.CONTRIBUTION_TYPE, pk);
   }
   
   @Override
@@ -214,6 +227,24 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
         service.classifyContent(publi, classification);
       }
     }
+  }
+  
+  /**
+   * Initializes the component by setting some transversal core services for their
+   * use by the component instances. One of these services is the user comment notification.
+   */
+  @PostConstruct
+  public void initialize() {
+    commentUserNotificationService.register(QuickInfoComponentSettings.COMPONENT_NAME, this);
+  }
+  
+  /**
+   * Releases the uses of the transverse core services that were used by the instances of the
+   * component.
+   */
+  @PreDestroy
+  public void release() {
+    commentUserNotificationService.unregister(QuickInfoComponentSettings.COMPONENT_NAME);
   }
 
 }

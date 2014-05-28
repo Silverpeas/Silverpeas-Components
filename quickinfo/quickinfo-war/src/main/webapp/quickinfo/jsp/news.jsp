@@ -36,6 +36,8 @@
 
 <c:set var="news" value="${requestScope['News']}"/>
 <c:set var="role" value="${requestScope['Role']}"/>
+<c:set var="userId" value="${sessionScope['SilverSessionController'].userId}"/>
+<c:set var="appSettings" value="${requestScope['AppSettings']}"/>
 
 <%@ include file="checkQuickInfo.jsp" %>
 
@@ -49,7 +51,7 @@
 
 </script>
 </head>
-<body class="quickInfo actuality" id="<%=componentId%>">
+<body class="quickInfo actuality" id="${news.componentInstanceId}">
 <fmt:message var="browseBarMsg" key="edition"/>
 <view:browseBar extraInformations="${browseBarMsg}" />
 <view:operationPane>
@@ -73,10 +75,12 @@
 			<b>6 fois</b>
 		</p>
 		
+		<c:if test="${appSettings.commentsEnabled}">
 		<p id="commentInfo">
-			Commentaires<br />
-			<a href="#commentaires">3</a>
+			<fmt:message key="GML.comment.number"/><br />
+			<a href="#commentaires">${news.numberOfComments}</a>
 		</p>
+		</c:if>
 									
 		<p id="permalinkInfo">
 			<a title="Pour copier le lien vers cette publication : Clique droit puis 'Copier le raccourci'" href="/silverpeas/Publication/18040"><img alt="Pour copier le lien vers cette publication : Clique droit puis 'Copier le raccourci'" src="/silverpeas/util/icons/link.gif" /></a> Permalien <br />
@@ -95,8 +99,10 @@
     <div id="richContent">
 		${news.content}
 	</div>
-     
-	<div class="commentaires" id="commentaires"> et les commentaires ici</div>
+    
+    <c:if test="${appSettings.commentsEnabled}">
+		<view:comments userId="${userId}" componentId="${news.componentInstanceId}" resourceType="<%=News.CONTRIBUTION_TYPE %>" resourceId="${news.id}" indexed="true"/>
+	</c:if>
 </div>
 <!-- /INTEGRATION UNE ACTU -->
 

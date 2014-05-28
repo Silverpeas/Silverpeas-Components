@@ -87,7 +87,9 @@ function openPDCSetup() {
 			<h3 class="news-title"><a href="View?Id=${news.id}">${news.title}</a></h3>
 			<p class="news-teasing"><view:encodeHtmlParagraph string="${news.description}"/></p>
 			<div class="news-info-fonctionality">
-				<a href="consultation.html#commentaires" class="news-nb-comments"><img src="/silverpeas/util/icons/talk2user.gif" alt="commentaire" /> 3</a> 
+				<c:if test="${appSettings.commentsEnabled}">
+					<a href="View?Id=${news.id}&Anchor=comments" class="news-nb-comments"><img src="/silverpeas/util/icons/talk2user.gif" alt="commentaire" /> ${news.numberOfComments}</a>
+				</c:if> 
 				<span class="sep"> | </span> <span class="creationInfo" ><fmt:message key="GML.createdAt"/> ${silfn:formatDate(news.creationDate, _language)} </span><span class="lastModificationInfo" >- <fmt:message key="GML.updatedAt"/> ${silfn:formatDate(news.lastUpdateDate, _language)} </span>
 				<span class="news-broadcast"><span class="news-broadcast-important">Importante</span> <span class="news-broadcast-blocking">Alerte</span> <span class="news-broadcast-ticker">Ticker</span></span>
 				<c:if test="${role == 'admin' || role == 'publisher'}">

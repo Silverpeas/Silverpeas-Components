@@ -80,6 +80,7 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
       return null;
     }
     request.setAttribute("Role", flag);
+    request.setAttribute("AppSettings", quickInfo.getInstanceSettings());
     
     try {
       if ("Main".equals(function)) {
@@ -95,13 +96,16 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
       } else if (function.startsWith("portlet")) {
         List<News> infos = quickInfo.getVisibleQuickInfos();
         request.setAttribute("infos", infos);
+        request.setAttribute("AppSettings", quickInfo.getInstanceSettings());
         destination = "/quickinfo/jsp/portlet.jsp";
       } else if ("Save".equals(function)) {
         createOrUpdateQuickInfo(quickInfo, request);
         destination = getDestination("quickInfoPublisher", quickInfo, request);
       } else if ("View".equals(function)) {
         String id = request.getParameter("Id");
+        String anchor = request.getParameter("Anchor");
         request.setAttribute("News", quickInfo.getDetail(id));
+        request.setAttribute("AppSettings", quickInfo.getInstanceSettings());
         destination = "/quickinfo/jsp/news.jsp";
       } else if ("Add".equals(function) || "Edit".equals(function)) {
         if (!"publisher".equals(flag) && !"admin".equals(flag)) {

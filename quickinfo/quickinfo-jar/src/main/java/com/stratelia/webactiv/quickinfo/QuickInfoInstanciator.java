@@ -27,6 +27,7 @@ import java.sql.Connection;
 
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.InstanciationException;
+import com.silverpeas.comment.service.CommentServiceFactory;
 import com.silverpeas.thumbnail.ThumbnailInstanciator;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.publication.PublicationInstanciator;
@@ -59,6 +60,10 @@ public class QuickInfoInstanciator extends Object implements ComponentsInstancia
     // deleting thumbnails
     ThumbnailInstanciator thumbnails = new ThumbnailInstanciator();
     thumbnails.delete(con, spaceId, componentId, userId);
+    
+    // deleting comments
+    CommentServiceFactory.getFactory().getCommentService()
+        .deleteAllCommentsByComponentInstanceId(componentId);
     
     SilverTrace.debug("quickinfo", "QuickInfoInstanciator.delete()",
         "QuickInfoInstanciator.delete finished");

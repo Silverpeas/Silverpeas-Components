@@ -2,10 +2,11 @@ package org.silverpeas.components.quickinfo.model;
 
 import java.util.List;
 
+import com.silverpeas.SilverpeasComponentService;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
-public interface QuickInfoService {
+public interface QuickInfoService extends SilverpeasComponentService<News> {
   
   public String addNews(News news, List<PdcPosition> positions);
   

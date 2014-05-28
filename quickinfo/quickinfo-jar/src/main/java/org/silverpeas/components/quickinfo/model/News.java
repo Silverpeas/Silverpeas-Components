@@ -8,12 +8,16 @@ import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.date.Period;
 
 import com.silverpeas.SilverpeasContent;
+import com.silverpeas.comment.service.CommentService;
+import com.silverpeas.comment.service.CommentServiceFactory;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
 public class News implements SilverpeasContent {
+  
+  public static final String CONTRIBUTION_TYPE = "News";
   
   private static final long serialVersionUID = 1L;
   private PublicationDetail publication;
@@ -124,6 +128,11 @@ public class News implements SilverpeasContent {
         new ThumbnailDetail(getComponentInstanceId(), Integer.parseInt(getId()),
             ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
     return ThumbnailController.getCompleteThumbnail(thumbnail);
+  }
+  
+  public int getNumberOfComments() {
+    CommentService commentService = CommentServiceFactory.getFactory().getCommentService();
+    return commentService.getCommentsCountOnPublication(CONTRIBUTION_TYPE, getPublication().getPK());
   }
 
   @Override
