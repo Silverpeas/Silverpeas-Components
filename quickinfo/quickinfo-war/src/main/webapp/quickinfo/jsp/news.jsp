@@ -39,16 +39,28 @@
 <c:set var="userId" value="${sessionScope['SilverSessionController'].userId}"/>
 <c:set var="appSettings" value="${requestScope['AppSettings']}"/>
 
+<c:url var="SilverpeasAnimationJS" value="/util/javaScript/animation.js"/>
+
 <%@ include file="checkQuickInfo.jsp" %>
+<%
+pageContext.setAttribute("componentURL", URLManager.getFullApplicationURL(request)+URLManager.getURL("useless", componentId), PageContext.PAGE_SCOPE);
+%>
+<c:set var="componentURL" value="${pageScope.componentURL}"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>QuickInfo - View</title>
 <view:looknfeel/>
+<script type="text/javascript" src="${SilverpeasAnimationJS}"></script>
 <script type="text/javascript" src="js/quickinfo.js"></script>
 <script type="text/javascript">
-
+function notify() {
+  var url = "${componentURL}/Notify?Id=${news.id}";
+  var windowName = "userPanelWindow";
+  var windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars,resizable";
+  SP_openWindow(url, windowName, "740", "600", windowParams, false);
+}
 </script>
 </head>
 <body class="quickInfo actuality" id="${news.componentInstanceId}">
@@ -62,6 +74,10 @@
 	  <fmt:message var="deleteMsg" key="GML.delete"/>
 	  <fmt:message var="deleteConfirmMsg" key="supprimerQIConfirmation"/>
 	  <view:operation altText="${deleteMsg}" icon="${deleteIconUrl}" action="javascript:onclick=confirmDelete(${news.id}, '${deleteConfirmMsg}')"/>
+	</c:if>
+	<c:if test="${appSettings.notificationAllowed}">
+		<fmt:message var="notifyMsg" key="GML.notify"/>
+		<view:operation altText="${notifyMsg}" action="javascript:notify()"/>
 	</c:if>
 </view:operationPane>
 <view:window>

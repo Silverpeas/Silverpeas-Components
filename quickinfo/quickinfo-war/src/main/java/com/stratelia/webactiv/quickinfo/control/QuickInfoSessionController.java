@@ -33,8 +33,10 @@ import org.silverpeas.components.quickinfo.QuickInfoComponentSettings;
 import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.components.quickinfo.model.QuickInfoService;
 import org.silverpeas.components.quickinfo.model.QuickInfoServiceFactory;
+import org.silverpeas.components.quickinfo.notification.NewsManualUserNotification;
 import org.silverpeas.wysiwyg.WysiwygException;
 
+import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.subscribe.SubscriptionService;
@@ -42,10 +44,13 @@ import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.thumbnail.ThumbnailSettings;
 import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
@@ -98,6 +103,7 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
         .getBooleanValue(getComponentParameterValue(QuickInfoComponentSettings.PARAM_COMMENTS)));
     instanceSettings.setTaxonomyEnabled(StringUtil
         .getBooleanValue(getComponentParameterValue(QuickInfoComponentSettings.PARAM_TAXONOMY)));
+    instanceSettings.setNotificationAllowed(!getUserDetail().isAnonymous());
     return instanceSettings;
   }
 
@@ -215,6 +221,25 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
       subscriber = new Boolean(isUserSubscribed);
     }
     return subscriber;
+  }
+  
+  public String notify(String newsId) {
+    AlertUser sel = getAlertUser();
+    sel.resetAll();
+
+    // setting up browsebar
+    sel.setHostSpaceName(getSpaceLabel());
+    sel.setHostComponentId(getComponentId());
+    PairObject hostComponentName = new PairObject(getComponentLabel(), null);
+    sel.setHostComponentName(hostComponentName);
+    sel.setNotificationMetaData(UserNotificationHelper.build(new NewsManualUserNotification(
+        getDetail(newsId), getUserDetail())));
+
+    SelectionUsersGroups sug = new SelectionUsersGroups();
+    sug.setComponentId(getComponentId());
+    sel.setSelectionUsersGroups(sug);
+
+    return AlertUser.getAlertUserURL();
   }
   
   private int getInt(String str) {

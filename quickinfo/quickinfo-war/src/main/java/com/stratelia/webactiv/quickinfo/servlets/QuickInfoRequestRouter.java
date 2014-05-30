@@ -105,7 +105,7 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
         destination = getDestination("View", quickInfo, request);
       } else if ("View".equals(function)) {
         String id = request.getParameter("Id");
-        if (StringUtil.isDefined(id)) {
+        if (!StringUtil.isDefined(id)) {
           id = (String) request.getAttribute("Id");
         }
         String anchor = request.getParameter("Anchor");
@@ -127,6 +127,9 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
         destination = getDestination("Main", quickInfo, request);
       } else if (function.startsWith("searchResult")) {
         destination = getDestination("View", quickInfo, request);
+      } else if ("Notify".equals(function)) {
+        String id = request.getParameter("Id");
+        destination = quickInfo.notify(id);
       } else {
         destination = "/quickinfo/jsp/" + function;
       }

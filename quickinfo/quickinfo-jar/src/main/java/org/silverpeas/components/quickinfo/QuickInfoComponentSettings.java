@@ -7,6 +7,7 @@ public class QuickInfoComponentSettings {
   private String description;
   private boolean commentsEnabled = false;
   private boolean taxonomyEnabled = false;
+  private boolean notificationAllowed = false;
   
   public static final String PARAM_COMMENTS = "comments";
   public static final String PARAM_TAXONOMY = "usePdc";
@@ -83,6 +84,14 @@ public class QuickInfoComponentSettings {
 
   public boolean isTaxonomyEnabled() {
     return taxonomyEnabled;
+  }
+
+  public void setNotificationAllowed(boolean notificationAllowed) {
+    this.notificationAllowed = notificationAllowed;
+  }
+
+  public boolean isNotificationAllowed() {
+    return notificationAllowed;
   }
 
 }
