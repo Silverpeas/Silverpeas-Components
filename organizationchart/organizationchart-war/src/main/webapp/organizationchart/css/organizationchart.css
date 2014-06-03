@@ -154,7 +154,7 @@
 		color: #f9e98e ; position: absolute; z-index: 1}
 
 .gotoParent {
-	background:transparent  url(http://localhost:8000/silverpeas/util/icons/arrow/arrowUpModal.png) center center no-repeat;
+	background:transparent  url(/silverpeas/util/icons/arrow/arrowUpModal.png) center center no-repeat;
 	display: block;
 	width: 13px;
 	height: 13px;
