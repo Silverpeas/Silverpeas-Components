@@ -101,6 +101,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -987,6 +988,14 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           for (String pubId : pubIds) {
             StringTokenizer tokens = new StringTokenizer(pubId, "-");
             infoLinks.add(new ForeignPK(tokens.nextToken(), tokens.nextToken()));
+            
+            // removing deleted pks from session
+            Set<String> list =
+                (Set<String>) request.getSession().getAttribute(
+                    KmeliaConstants.PUB_TO_LINK_SESSION_KEY);
+            if (list != null) {
+              list.remove(pubId);
+            }
           }
 
           if (!infoLinks.isEmpty()) {
