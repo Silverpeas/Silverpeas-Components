@@ -4,7 +4,6 @@ import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfCon
 
 import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -19,7 +18,10 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.util.SimpleDocumentList;
 import org.silverpeas.components.quickinfo.QuickInfoComponentSettings;
 import org.silverpeas.components.quickinfo.notification.QuickInfoSubscriptionUserNotification;
+import org.silverpeas.components.quickinfo.repository.NewsRepository;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.persistence.Transaction;
+import org.silverpeas.persistence.repository.OperationContext;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import com.silverpeas.SilverpeasComponentService;
@@ -52,6 +54,9 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComponentService<News> {
   
   @Inject
+  private NewsRepository newsRepository;
+  
+  @Inject
   private CommentUserNotificationService commentUserNotificationService;
   
   @Inject
@@ -59,7 +64,7 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
   
   @Override
   public News getContentById(String contentId) {
-    return getANews(new PublicationPK(contentId));
+    return getNews(contentId);
   }
   
   @Override
@@ -68,7 +73,6 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
         "root.MSG_GEN_ENTER_METHOD", "componentId = " + componentId);
     List<News> quickinfos = getAllNews(componentId);
     List<News> result = new ArrayList<News>();
-    
     for (News news : quickinfos) {
       if (news.isVisible()) {
         result.add(news);
@@ -78,19 +82,30 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
   }
   
   public List<News> getAllNews(String componentId) {
-    List<News> allNews = new ArrayList<News>();
-    Collection<PublicationDetail> publications =
-        getPublicationBm().getOrphanPublications(new PublicationPK("", componentId));
-    for (PublicationDetail publication : publications) {
-      allNews.add(new News(publication));
+    List<News> allNews = newsRepository.getByComponentId(componentId);
+    for (News aNews : allNews) {
+      PublicationDetail publication = getPublication(aNews);
+      aNews.setPublication(publication);
     }
     return allNews;
   }
   
-  public News getANews(PublicationPK pk) {
-    PublicationDetail publication = getPublicationBm().getDetail(pk);
-    News news = new News(publication);
+  public News getNews(String id) {
+    News news = newsRepository.getById(id);
+    PublicationDetail publication = getPublication(news);
+    news.setPublication(publication);
     return news;
+  }
+  
+  public News getNewsByForeignId(String foreignId) {
+    News news = newsRepository.getByForeignId(foreignId);
+    PublicationDetail publication = getPublication(news);
+    news.setPublication(publication);
+    return news;
+  }
+  
+  private PublicationDetail getPublication(News news) {
+    return getPublicationBm().getDetail(news.getForeignPK());
   }
 
   @Override
@@ -104,11 +119,19 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
   }
 
   @Override
-  public String addNews(News news, List<PdcPosition> positions) {
+  public News addNews(final News news, List<PdcPosition> positions) {
     // Creating publication
-    PublicationDetail publication = news.getPublication();
-    PublicationPK pubPK = getPublicationBm().createPublication(publication);
+    final PublicationDetail publication = news.getPublication();
+    final PublicationPK pubPK = getPublicationBm().createPublication(publication);
     publication.setPk(pubPK);
+    
+    News savedNews = Transaction.performInOne(new Transaction.Process<News>() {
+      @Override
+      public News execute() {
+        news.setPublicationId(pubPK.getId());
+        return newsRepository.save(OperationContext.fromUser(publication.getCreatorId()), news);
+      }
+    });
     
     // Referring new content into taxonomy
     try {
@@ -124,16 +147,24 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
     classifyQuickInfo(publication, positions);
     
     // Sending notifications to subscribers
-    UserNotificationHelper.buildAndSend(new QuickInfoSubscriptionUserNotification(news, NotifAction.CREATE));
+    UserNotificationHelper.buildAndSend(new QuickInfoSubscriptionUserNotification(savedNews, NotifAction.CREATE));
     
-    return pubPK.getId();
+    return savedNews;
   }
   
   @Override
-  public void updateNews(News news) {
+  public void updateNews(final News news) {
     // Updating the publication
-    PublicationDetail publication = news.getPublication();
+    final PublicationDetail publication = news.getPublication();
     getPublicationBm().setDetail(publication);
+    
+    Transaction.performInOne(new Transaction.Process<News>() {
+      @Override
+      public News execute() {
+        news.setPublicationId(publication.getId());
+        return newsRepository.save(OperationContext.fromUser(news.getLastUpdatedBy()), news);
+      }
+    });
     
     // Updating visibility onto taxonomy
     try {
@@ -145,11 +176,11 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
 
     // Update WYSIWYG content if exists, create one otherwise
     if (publication.getWysiwyg() != null && !"".equals(publication.getWysiwyg())) {
-      WysiwygController.updateFileAndAttachment(news.getContent(), news.getComponentInstanceId(), news.getId(), news.getUpdaterId(),
-          I18NHelper.defaultLanguage);
+      WysiwygController.updateFileAndAttachment(news.getContent(), news.getComponentInstanceId(),
+          news.getPublicationId(), publication.getUpdaterId(), I18NHelper.defaultLanguage);
     } else {
       WysiwygController.createFileAndAttachment(news.getContent(), publication.getPK(),
-          news.getUpdaterId(), I18NHelper.defaultLanguage);
+          publication.getUpdaterId(), I18NHelper.defaultLanguage);
     }
     
     // Sending notifications to subscribers
@@ -157,14 +188,18 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
   }
   
   @Override
-  public void removeNews(PublicationPK pk) {
+  public void removeNews(String id) {
+    News news = getNews(id);
+    
+    PublicationPK foreignPK = news.getForeignPK();
+    
     // Deleting publication
-    getPublicationBm().removePublication(pk);
+    getPublicationBm().removePublication(foreignPK);
     
     // De-reffering contribution in taxonomy
     Connection connection = DBUtil.makeConnection(JNDINames.SILVERPEAS_DATASOURCE);
     try {
-      new QuickInfoContentManager().deleteSilverContent(connection, pk);
+      new QuickInfoContentManager().deleteSilverContent(connection, foreignPK);
     } catch (ContentManagerException e) {
       SilverTrace.error("quickinfo", "DefaultQuickInfoService.removeNews",
           "ContentManagerExceptino", e);
@@ -175,19 +210,22 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
     // Deleting all attached files (WYSIWYG, WYSIWYG images...)
     AttachmentService attachmentService = AttachmentServiceFactory.getAttachmentService();
     SimpleDocumentList<SimpleDocument> docs =
-        attachmentService.listAllDocumentsByForeignKey(pk, null);
+        attachmentService.listAllDocumentsByForeignKey(foreignPK, null);
     for (SimpleDocument document : docs) {
       attachmentService.deleteAttachment(document);
     }
     
     // Deleting thumbnail
     ThumbnailDetail thumbnail =
-        new ThumbnailDetail(pk.getInstanceId(), Integer.parseInt(pk.getId()),
+        new ThumbnailDetail(foreignPK.getInstanceId(), Integer.parseInt(foreignPK.getId()),
             ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
     ThumbnailController.deleteThumbnail(thumbnail);
 
     // Deleting comments
-    commentService.deleteAllCommentsOnPublication(News.CONTRIBUTION_TYPE, pk);
+    commentService.deleteAllCommentsOnPublication(News.CONTRIBUTION_TYPE, foreignPK);
+    
+    // deleting news itself
+    newsRepository.deleteById(id);
   }
   
   @Override

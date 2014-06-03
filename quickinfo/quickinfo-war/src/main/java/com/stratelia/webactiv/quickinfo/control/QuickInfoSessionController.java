@@ -56,7 +56,6 @@ import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
 /**
  * @author squere
@@ -125,8 +124,12 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     return result;
   }
 
-  public News getDetail(String id) {
-    return getService().getANews(new PublicationPK(id, getComponentId()));
+  public News getNews(String id) {
+    return getService().getNews(id);
+  }
+  
+  public News getNewsByForeignId(String foreignId) {
+    return getService().getNewsByForeignId(foreignId);
   }
 
   /**
@@ -138,7 +141,7 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
    * @param end the end visibility date time
    * @param positions the JSON positions
    */
-  public String add(News news, String positions) {
+  public News add(News news, String positions) {
     List<PdcPosition> pdcPositions = getPositionsFromJSON(positions);
     
     news.setCreatorId(getUserId());
@@ -152,21 +155,21 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
   }
 
   public void update(String id, News updatedNews) {    
-    News news = getDetail(id);
+    News news = getNews(id);
     news.setTitle(updatedNews.getTitle());
     news.setDescription(updatedNews.getDescription());
     news.setContent(updatedNews.getContent());
     news.setVisibilityPeriod(updatedNews.getVisibilityPeriod());
     news.setUpdaterId(getUserId());
-    news.setBroadcastModes(updatedNews.getBroadcastModes());
+    news.setImportant(updatedNews.isImportant());
+    news.setTicker(updatedNews.isTicker());
+    news.setMandatory(updatedNews.isMandatory());
     
     getService().updateNews(news);      
   }
 
   public void remove(String id) throws RemoteException, WysiwygException, UtilException {
-    PublicationPK pubPK = new PublicationPK(id, getComponentId());
-
-    getService().removeNews(pubPK);
+    getService().removeNews(id);
   }
 
   public boolean isPdcUsed() {
@@ -233,7 +236,7 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     PairObject hostComponentName = new PairObject(getComponentLabel(), null);
     sel.setHostComponentName(hostComponentName);
     sel.setNotificationMetaData(UserNotificationHelper.build(new NewsManualUserNotification(
-        getDetail(newsId), getUserDetail())));
+        getNews(newsId), getUserDetail())));
 
     SelectionUsersGroups sug = new SelectionUsersGroups();
     sug.setComponentId(getComponentId());

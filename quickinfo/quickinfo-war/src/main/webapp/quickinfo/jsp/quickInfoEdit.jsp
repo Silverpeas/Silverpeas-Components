@@ -67,23 +67,21 @@ if (quickInfoDetail != null) {
   	if (quickInfoDetail.getEndDate() != null) {
     	endDate = resources.getInputDate(quickInfoDetail.getEndDate());
   	}
-  	if (news.getBroadcastModes().contains(News.BROADCAST_MAJOR)) {
+  	if (news.isImportant()) {
   	  broadcastMajorChecked = "checked=\"checked\"";
   	}
-  	if (news.getBroadcastModes().contains(News.BROADCAST_TICKER)) {
+  	if (news.isTicker()) {
   	  broadcastTickerChecked = "checked=\"checked\"";
   	}
-  	if (news.getBroadcastModes().contains(News.BROADCAST_BLOCKING)) {
+  	if (news.isMandatory()) {
   	  broadcastBlockingChecked = "checked=\"checked\"";
   	}
+  	pageContext.setAttribute("thumbnailBackURL", URLManager.getFullApplicationURL(request)+URLManager.getURL("useless", componentId)+"View?Id="+news.getId(), PageContext.PAGE_SCOPE);
 }
-
-ButtonPane buttonPane = gef.getButtonPane();
-buttonPane.addButton(gef.getFormButton(resources.getString("GML.validate"), "javascript:onclick=saveNews()", false));
-buttonPane.addButton(gef.getFormButton(resources.getString("GML.cancel"), "Main", false));
-
-pageContext.setAttribute("thumbnailBackURL", URLManager.getFullApplicationURL(request)+URLManager.getURL("useless", componentId), PageContext.PAGE_SCOPE);
 %>
+
+<fmt:message var="buttonOK" key="GML.validate"/>
+<fmt:message var="buttonCancel" key="GML.cancel"/>
 
 <c:set var="thumbnailBackURL" value="${pageScope.thumbnailBackURL}"/>
 
@@ -172,6 +170,7 @@ $(document).ready(function() {
   <input type="hidden" name="Positions" />
   <c:if test="${not empty curQuickInfo}">
     <input type="hidden" name="Id" value="${curQuickInfo.id}"/>
+    <input type="hidden" name="PubId" value="${curQuickInfo.publicationId}"/>
   </c:if>
 <view:frame>
 
@@ -200,9 +199,9 @@ $(document).ready(function() {
     <div class="field" id="broadcastArea">
       <label class="txtlibform"><fmt:message key="quickinfo.news.broadcast.mode" /> </label>
       <div class="champs">
-      	<input type="checkbox" name="BroadcastMode" value="<%=News.BROADCAST_MAJOR%>" <%=broadcastMajorChecked %>/> <fmt:message key="quickinfo.news.broadcast.mode.major" />
-      	<input type="checkbox" name="BroadcastMode" value="<%=News.BROADCAST_TICKER%>" <%=broadcastTickerChecked %>/> <fmt:message key="quickinfo.news.broadcast.mode.ticker" />
-      	<input type="checkbox" name="BroadcastMode" value="<%=News.BROADCAST_BLOCKING%>" <%=broadcastBlockingChecked %>/> <fmt:message key="quickinfo.news.broadcast.mode.blocking" />
+      	<input type="checkbox" name="BroadcastImportant" value="true" <%=broadcastMajorChecked %>/> <fmt:message key="quickinfo.news.broadcast.mode.major" />
+      	<input type="checkbox" name="BroadcastTicker" value="true" <%=broadcastTickerChecked %>/> <fmt:message key="quickinfo.news.broadcast.mode.ticker" />
+      	<input type="checkbox" name="BroadcastMandatory" value="true" <%=broadcastBlockingChecked %>/> <fmt:message key="quickinfo.news.broadcast.mode.blocking" />
       </div>
     </div>
 
@@ -246,7 +245,7 @@ $(document).ready(function() {
 				<c:param name="Action" value="Edit"/>
 				<c:param name="Id" value="${curQuickInfo.id}"/>
 			</c:url>
-			<viewTags:displayThumbnail thumbnail="<%=thumbnail %>" mandatory="${thumbnailSettings.mandatory}" componentId="${curQuickInfo.componentInstanceId}" objectId="${curQuickInfo.id}" backURL="${backURL}" objectType="<%=ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE %>" width="${thumbnailSettings.width}" height="${thumbnailSettings.height}"/>
+			<viewTags:displayThumbnail thumbnail="<%=thumbnail %>" mandatory="${thumbnailSettings.mandatory}" componentId="${curQuickInfo.componentInstanceId}" objectId="${curQuickInfo.publicationId}" backURL="${thumbnailBackURL}" objectType="<%=ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE %>" width="${thumbnailSettings.width}" height="${thumbnailSettings.height}"/>
 		</fieldset>
 	</div>
 </div>
@@ -262,7 +261,10 @@ $(document).ready(function() {
   <fmt:message key="GML.requiredField" /> : <img src="<%=m_context%>/util/icons/mandatoryField.gif" width="5" height="5" />
 </div>
 
-<%=buttonPane.print()%>
+<view:buttonPane>
+<view:button label="${buttonOK}" action="javascript:onclick=saveNews()"/>
+<view:button label="${buttonCancel}" action="Main"/>
+</view:buttonPane>
     
 </view:frame>
 </form>

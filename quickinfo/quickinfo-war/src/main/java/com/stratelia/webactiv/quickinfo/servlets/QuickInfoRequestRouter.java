@@ -104,12 +104,15 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
         request.setAttribute("Id", id);
         destination = getDestination("View", quickInfo, request);
       } else if ("View".equals(function)) {
-        String id = request.getParameter("Id");
-        if (!StringUtil.isDefined(id)) {
-          id = (String) request.getAttribute("Id");
+        News news = (News) request.getAttribute("News");
+        if (news == null) {
+          String id = request.getParameter("Id");
+          if (!StringUtil.isDefined(id)) {
+            id = (String) request.getAttribute("Id");
+          }
+          request.setAttribute("News", quickInfo.getNews(id));
         }
         String anchor = request.getParameter("Anchor");
-        request.setAttribute("News", quickInfo.getDetail(id));
         request.setAttribute("AppSettings", quickInfo.getInstanceSettings());
         destination = "/quickinfo/jsp/news.jsp";
       } else if ("Add".equals(function) || "Edit".equals(function)) {
@@ -126,6 +129,8 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
         quickInfo.remove(id);
         destination = getDestination("Main", quickInfo, request);
       } else if (function.startsWith("searchResult")) {
+        String id = request.getParameter("Id");
+        request.setAttribute("News", quickInfo.getNewsByForeignId(id));
         destination = getDestination("View", quickInfo, request);
       } else if ("Notify".equals(function)) {
         String id = request.getParameter("Id");
@@ -146,7 +151,7 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
     String id = request.getParameter("Id");
     News quickInfoDetail = null;
     if (StringUtil.isDefined(id)) {
-      quickInfoDetail = quickInfo.getDetail(id);
+      quickInfoDetail = quickInfo.getNews(id);
     }
     request.setAttribute("info", quickInfoDetail);
     request.setAttribute("ThumbnailSettings", quickInfo.getThumbnailSettings());
@@ -169,15 +174,18 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
     List<FileItem> items = request.getFileItems();
     News news = requestToNews(items, quickInfo.getLanguage());
 
-    String id = request.getParameter("Id");
+    String id = news.getId();
+    String pubId = news.getPublicationId();
     if (StringUtil.isDefined(id)) {
       quickInfo.update(id, news);
     } else {
       String positions = request.getParameter("Positions");
-      id = quickInfo.add(news, positions);
+      News savedNews = quickInfo.add(news, positions);
+      id = savedNews.getId();
+      pubId = savedNews.getPublicationId();
     }
 
-    ThumbnailController.processThumbnail(new ForeignPK(id, quickInfo.getComponentId()), "News",
+    ThumbnailController.processThumbnail(new ForeignPK(pubId, quickInfo.getComponentId()), News.CONTRIBUTION_TYPE,
         items);
     
     return id;
@@ -185,9 +193,17 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
   
   private News requestToNews(List<FileItem> items, String language) throws ParseException {
     
+    String id = FileUploadUtil.getParameter(items, "Id");
     String name = FileUploadUtil.getParameter(items, "Name");
     String description = FileUploadUtil.getParameter(items, "Description");
     String content = FileUploadUtil.getParameter(items, "Content");
+    String pubId = FileUploadUtil.getParameter(items, "PubId");
+    boolean important =
+        StringUtil.getBooleanValue(FileUploadUtil.getParameter(items, "BroadcastImportant"));
+    boolean ticker =
+        StringUtil.getBooleanValue(FileUploadUtil.getParameter(items, "BroadcastTicker"));
+    boolean mandatory =
+        StringUtil.getBooleanValue(FileUploadUtil.getParameter(items, "BroadcastMandatory"));
     
     Date beginDate = null;
     String beginString = FileUploadUtil.getParameter(items, "BeginDate");
@@ -199,17 +215,15 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
     String endString = FileUploadUtil.getParameter(items, "EndDate");
     if (StringUtil.isDefined(endString)) {
       endDate = DateUtil.stringToDate(endString, language);
-    }
-    
-    List<String> broadcastModes = FileUploadUtil.getParameterValues(items, "BroadcastMode", "UTF-8");
-    int[] modes = new int[broadcastModes.size()];
-    for (int i=0; i<broadcastModes.size(); i++) {
-      modes[i] = Integer.parseInt(broadcastModes.get(i));
-    }
+    }    
     
     News news =
-      new News(name, description, getPeriod(beginDate, endDate), modes);
+        new News(name, description, getPeriod(beginDate, endDate), important, ticker, mandatory);
+    news.setId(id);
     news.setContent(content);
+    if (StringUtil.isDefined(pubId)) {
+      news.setPublicationId(pubId);
+    }
     
     return news;
   }

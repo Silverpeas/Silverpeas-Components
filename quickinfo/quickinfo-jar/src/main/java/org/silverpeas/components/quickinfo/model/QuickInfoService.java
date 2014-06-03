@@ -4,15 +4,14 @@ import java.util.List;
 
 import com.silverpeas.SilverpeasComponentService;
 import com.silverpeas.pdc.model.PdcPosition;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
 public interface QuickInfoService extends SilverpeasComponentService<News> {
   
-  public String addNews(News news, List<PdcPosition> positions);
+  public News addNews(News news, List<PdcPosition> positions);
   
   public void updateNews(News news);
   
-  public void removeNews(PublicationPK pk);
+  public void removeNews(String id);
   
   public List<News> getAllNews(String componentId);
   
@@ -20,6 +19,8 @@ public interface QuickInfoService extends SilverpeasComponentService<News> {
   
   public List<News> getPlatformNews(String userId);
   
-  public News getANews(PublicationPK pk);
+  public News getNews(String id);
+  
+  public News getNewsByForeignId(String id);
 
 }

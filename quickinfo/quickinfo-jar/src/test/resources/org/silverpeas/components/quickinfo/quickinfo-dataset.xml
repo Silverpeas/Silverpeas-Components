@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2000 - 2014 Silverpeas
+    Copyright (C) 2000 - 2013 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -24,21 +24,22 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:ctx="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="
-        http://www.springframework.org/schema/beans  http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-  <ctx:annotation-config/>
-  <ctx:component-scan base-package="org.silverpeas.components.quickinfo"/>
+<dataset>
 
-  <bean id="quickinfoServiceFactory"
-        class="org.silverpeas.components.quickinfo.model.QuickInfoServiceFactory"
-        factory-method="getFactory"/>
-        
-  <bean id="newsRepositoryProvider" class="org.silverpeas.components.quickinfo.repository.NewsRepositoryProvider"
-        factory-method="getInstance"/>
+  <sc_quickinfo_news id="news_1" instanceId="quickinfo1" foreignId="123"
+  				important="true" broadcastTicker="false" broadcastMandatory="false"
+                createDate="2013-11-21 09:57:30.3" createdBy="1"
+                lastUpdateDate="2013-11-21 09:57:30.3" lastUpdatedBy="1" version="0"/>
+                
+  <sc_quickinfo_news id="news_2" instanceId="quickinfo1" foreignId="128"
+  				important="true" broadcastTicker="true" broadcastMandatory="true"
+                createDate="2013-11-21 09:57:30.3" createdBy="1"
+                lastUpdateDate="2013-11-21 09:57:30.3" lastUpdatedBy="1" version="0"/>
+                
+  <sc_quickinfo_news id="news_3" instanceId="quickinfo2" foreignId="256"
+  				important="true" broadcastTicker="true" broadcastMandatory="true"
+                createDate="2014-03-21 09:57:30.3" createdBy="1"
+                lastUpdateDate="2014-11-22 09:57:30.3" lastUpdatedBy="1" version="0"/>                
 
-</beans>
+</dataset>

@@ -100,11 +100,11 @@ function notify() {
 									
 		<p id="permalinkInfo">
 			<a title="Pour copier le lien vers cette publication : Clique droit puis 'Copier le raccourci'" href="/silverpeas/Publication/18040"><img alt="Pour copier le lien vers cette publication : Clique droit puis 'Copier le raccourci'" src="/silverpeas/util/icons/link.gif" /></a> Permalien <br />
-			<input type="text" value="${pageContext.request.scheme}://${header['host']}<c:url value="/Publication/${news.id}"/>" onmouseup="return false" onfocus="select();" />
+			<input type="text" value="${pageContext.request.scheme}://${header['host']}<c:url value="/Publication/${news.publicationId}"/>" onmouseup="return false" onfocus="select();" />
 		</p>
 	</div>
                           
-    <viewTags:displayLastUserCRUD createDate="${news.publication.creationDate}" createdById="${news.publication.creatorId}" updateDate="${news.publication.updateDate}" updatedById="${news.publication.updaterId}"/>
+    <viewTags:displayLastUserCRUD createDate="${news.createDate}" createdById="${news.createdBy}" updateDate="${news.updateDate}" updatedById="${news.updaterId}"/>
 </div>
 
 <div class="principalContent" >
@@ -117,7 +117,7 @@ function notify() {
 	</div>
     
     <c:if test="${appSettings.commentsEnabled}">
-		<view:comments userId="${userId}" componentId="${news.componentInstanceId}" resourceType="<%=News.CONTRIBUTION_TYPE %>" resourceId="${news.id}" indexed="true"/>
+		<view:comments userId="${userId}" componentId="${news.componentInstanceId}" resourceType="<%=News.CONTRIBUTION_TYPE %>" resourceId="${news.publicationId}" indexed="true"/>
 	</c:if>
 </div>
 <!-- /INTEGRATION UNE ACTU -->

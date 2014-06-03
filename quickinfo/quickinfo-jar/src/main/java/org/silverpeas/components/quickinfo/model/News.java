@@ -4,8 +4,19 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.date.Period;
+import org.silverpeas.persistence.model.identifier.UuidIdentifier;
+import org.silverpeas.persistence.model.jpa.AbstractJpaEntity;
 
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.comment.service.CommentService;
@@ -14,35 +25,66 @@ import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
-public class News implements SilverpeasContent {
+@Entity
+@Table(name = "sc_quickinfo_news")
+/*@NamedQuery(name = "newsFromComponentInstance", query = "from News n where n.componentInstanceId = :componentInstanceId")*/
+@NamedQueries({@NamedQuery(name = "newsFromComponentInstance", query = "from News n where n.componentInstanceId = :componentInstanceId"),
+  @NamedQuery(name = "newsByForeignId", query = "from News n where n.publicationId = :foreignId")})
+public class News extends AbstractJpaEntity<News, UuidIdentifier> implements SilverpeasContent {
   
   public static final String CONTRIBUTION_TYPE = "News";
   
   private static final long serialVersionUID = 1L;
+  
+  @Transient
   private PublicationDetail publication;
+  @Transient
   private String content;
-  private int[] broadcastModes;
   
-  public static final int BROADCAST_CLASSIC = 1;
-  public static final int BROADCAST_MAJOR = 2;
-  public static final int BROADCAST_TICKER = 3;
-  public static final int BROADCAST_BLOCKING = 4;
+  @Column(name = "instanceId", nullable = false)
+  private String componentInstanceId;
   
-  public News(String name, String description, Period visibilityPeriod, int[] broadcastModes) {
+  @Column(name = "important", nullable = false)
+  @NotNull
+  private boolean important = false;
+  
+  @Column(name = "broadcastTicker", nullable = false)
+  @NotNull
+  private boolean ticker = false;
+  
+  @Column(name = "broadcastMandatory", nullable = false)
+  @NotNull
+  private boolean mandatory = false;
+  
+  @Column(name = "foreignId", nullable = false)
+  @Size(min = 1)
+  @NotNull
+  private String publicationId;
+  
+  protected News() {
+    
+  }
+  
+  public News(String name, String description, Period visibilityPeriod, boolean important, boolean ticker, boolean mandatory) {
     PublicationDetail publi = new PublicationDetail(name, description, visibilityPeriod, null, null);
     this.publication = publi;
-    setBroadcastModes(broadcastModes);
-    this.broadcastModes = broadcastModes;
+    setImportant(important);
+    setTicker(ticker);
+    setMandatory(mandatory);
   }
   
   public News(PublicationDetail publication) {
-    this.publication = publication;
-    this.content = getPublication().getWysiwyg();
+    setPublication(publication);
   }
   
   public PublicationDetail getPublication() {
     return publication;
+  }
+  
+  public News setId(String id) {
+    return super.setId(id);
   }
   
   public String getTitle() {
@@ -62,14 +104,16 @@ public class News implements SilverpeasContent {
   }
   
   public void setCreatorId(String userId) {
+    super.setCreatedBy(userId);
     getPublication().setCreatorId(userId);
   }
   
   public String getCreatorId() {
-    return getPublication().getCreatorId();
+    return getCreatedBy();
   }
   
   public void setUpdaterId(String userId) {
+    super.setLastUpdatedBy(userId);
     getPublication().setUpdaterId(userId);
   }
   
@@ -77,7 +121,7 @@ public class News implements SilverpeasContent {
     return getPublication().getUpdaterId();
   }
   
-  public Date getLastUpdateDate() {
+  public Date getUpdateDate() {
     return getPublication().getUpdateDate();
   }
   
@@ -107,25 +151,9 @@ public class News implements SilverpeasContent {
     return modes;
   }
   
-  public void setBroadcastModes(int[] modes) {
-    if (modes != null && modes.length > 0) {
-      getPublication().setImportance(modes[0]);
-    } else {
-      getPublication().setImportance(BROADCAST_CLASSIC);
-    }
-  }
-  
-  public void setBroadcastModes(List<Integer> modes) {
-    if (modes != null && !modes.isEmpty()) {
-      getPublication().setImportance(modes.get(0));
-    } else {
-      getPublication().setImportance(BROADCAST_CLASSIC);
-    }
-  }
-  
   public ThumbnailDetail getThumbnail() {
     ThumbnailDetail thumbnail =
-        new ThumbnailDetail(getComponentInstanceId(), Integer.parseInt(getId()),
+        new ThumbnailDetail(getComponentInstanceId(), Integer.parseInt(getPublicationId()),
             ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
     return ThumbnailController.getCompleteThumbnail(thumbnail);
   }
@@ -136,17 +164,13 @@ public class News implements SilverpeasContent {
   }
 
   @Override
-  public String getId() {
-    return getPublication().getId();
-  }
-
-  @Override
   public String getComponentInstanceId() {
-    return getPublication().getInstanceId();
+    return componentInstanceId;
   }
   
   public void setComponentInstanceId(String componentId) {
     getPublication().getPK().setComponentName(componentId);
+    this.componentInstanceId = componentId;
   }
 
   @Override
@@ -156,13 +180,8 @@ public class News implements SilverpeasContent {
   }
 
   @Override
-  public UserDetail getCreator() {
-    return UserDetail.getById(getPublication().getCreatorId());
-  }
-
-  @Override
   public Date getCreationDate() {
-    return getPublication().getCreationDate();
+    return getCreateDate();
   }
 
   @Override
@@ -174,6 +193,47 @@ public class News implements SilverpeasContent {
   public boolean canBeAccessedBy(UserDetail user) {
     return OrganisationControllerFactory.getOrganisationController().isComponentAvailable(
         getComponentInstanceId(), user.getId());
+  }
+
+  public void setImportant(boolean important) {
+    this.important = important;
+  }
+
+  public boolean isImportant() {
+    return important;
+  }
+
+  public void setTicker(boolean ticker) {
+    this.ticker = ticker;
+  }
+
+  public boolean isTicker() {
+    return ticker;
+  }
+
+  public void setMandatory(boolean mandatory) {
+    this.mandatory = mandatory;
+  }
+
+  public boolean isMandatory() {
+    return mandatory;
+  }
+
+  public void setPublicationId(String publicationId) {
+    this.publicationId = publicationId;
+  }
+
+  public String getPublicationId() {
+    return publicationId;
+  }
+  
+  protected void setPublication(PublicationDetail publication) {
+    this.publication = publication;
+    this.content = getPublication().getWysiwyg();
+  }
+  
+  protected PublicationPK getForeignPK() {
+    return new PublicationPK(getPublicationId(), getComponentInstanceId());
   }
   
 }
