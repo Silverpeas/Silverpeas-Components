@@ -93,15 +93,16 @@
   <script type="text/javascript" src="${suggestionBoxServicesJS}"></script>
   <script type="application/javascript">
     function successUnsubscribe() {
-      $("#yui-gen1").empty().append($('<a>').addClass('yuimenuitemlabel').attr('href',
-          "javascript:subscribe();").attr('title',
-          '<view:encodeJs string="${subscribeToSuggestionBoxLabel}" />').append('<view:encodeJs string="${subscribeToSuggestionBoxLabel}" />'));
+      setSubscriptionMenu('<view:encodeJs string="${subscribeToSuggestionBoxLabel}" />', 'subscribe');
     }
 
     function successSubscribe() {
-      $("#yui-gen1").empty().append($('<a>').addClass('yuimenuitemlabel').attr('href',
-          "javascript:unsubscribe();").attr('title',
-          '<view:encodeJs string="${unsubscribeFromSuggestionBoxLabel}" />').append('<view:encodeJs string="${unsubscribeFromSuggestionBoxLabel}" />'));
+      setSubscriptionMenu('<view:encodeJs string="${unsubscribeFromSuggestionBoxLabel}" />', 'unsubscribe');
+    }
+    function setSubscriptionMenu(label, actionMethodName) {
+      var $menuLabel = $("#subscriptionMenuLabel");
+      $menuLabel.html(label);
+      $menuLabel.parents('a').attr('href', "javascript:" + actionMethodName + "();");
     }
 
     function unsubscribe() {
@@ -132,10 +133,10 @@
   <c:if test="${isUserSubscribed != null}">
     <c:choose>
       <c:when test="${isUserSubscribed}">
-        <view:operation altText="${unsubscribeFromSuggestionBoxLabel}" icon="" action="javascript:unsubscribe();"/>
+        <view:operation altText="<span id='subscriptionMenuLabel'>${unsubscribeFromSuggestionBoxLabel}</span>" icon="" action="javascript:unsubscribe();"/>
       </c:when>
       <c:otherwise>
-        <view:operation altText="${subscribeToSuggestionBoxLabel}" icon="" action="javascript:subscribe();"/>
+        <view:operation altText="<span id='subscriptionMenuLabel'>${subscribeToSuggestionBoxLabel}</span>" icon="" action="javascript:subscribe();"/>
       </c:otherwise>
     </c:choose>
   </c:if>
