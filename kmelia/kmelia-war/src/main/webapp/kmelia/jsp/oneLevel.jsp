@@ -100,7 +100,7 @@ String httpServerBase = GeneralPropertiesManager.getString("httpServerBase", m_s
   <%--The below triggered function has to be defined as soon as possible in HTML code in order to
   increase chances to perform the treatment when "menuRender" event is fired --%>
   $(document).ready(function() {
-    $(document).bind('menuRendered', function(){
+    menuRenderedPromise.then(function(){
 
       $.i18n.properties({
         name: 'kmeliaBundle',

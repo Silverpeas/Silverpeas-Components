@@ -190,6 +190,7 @@ function displayOperations(id) {
     } catch (e) {
       // right click could not be supported by calling page
     }
+    applyTokenSecurity();
   }, 'json');
 }
 
