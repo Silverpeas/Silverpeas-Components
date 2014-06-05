@@ -58,10 +58,10 @@
 
 <c:url var="backUri" value="${requestScope.navigationContext.previousNavigationStep.uri}"/>
 <c:url var="componentUriBase" value="${requestScope.componentUriBase}"/>
-<c:url var="suggestionBoxJS" value="/util/javaScript/angularjs/suggestionbox.js"/>
-<c:url var="suggestionBoxServicesJS" value="/util/javaScript/angularjs/services/suggestionbox.js"/>
-<c:url var="suggestionBoxValidationDirectiveJS" value="/util/javaScript/angularjs/directives/suggestionbox-validation.js"/>
-<c:url var="suggestionBoxDeletionDirectiveJS" value="/util/javaScript/angularjs/directives/suggestionbox-deletion.js"/>
+<c:url var="suggestionBoxJS" value="/suggestionBox/jsp/javaScript/angularjs/suggestionbox.js"/>
+<c:url var="suggestionBoxServicesJS" value="/suggestionBox/jsp/javaScript/angularjs/services/suggestionbox.js"/>
+<c:url var="suggestionBoxValidationDirectiveJS" value="/suggestionBox/jsp/javaScript/angularjs/directives/suggestionbox-validation.js"/>
+<c:url var="suggestionBoxDeletionDirectiveJS" value="/suggestionBox/jsp/javaScript/angularjs/directives/suggestionbox-deletion.js"/>
 <c:url var="SilverpeasAnimationJS" value="/util/javaScript/animation.js"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

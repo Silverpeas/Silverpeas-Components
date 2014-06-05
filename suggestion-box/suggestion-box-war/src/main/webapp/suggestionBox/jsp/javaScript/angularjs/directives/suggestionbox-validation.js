@@ -36,7 +36,7 @@
       ['context', function(context) {
         return {
           templateUrl : webContext +
-              '/util/javaScript/angularjs/directives/suggestionbox-validation.jsp',
+              '/suggestionBox/jsp/javaScript/angularjs/directives/suggestionbox-validation.jsp',
           link : function postLink(scope, element, attrs) {
 
             function getClearedDialog(message) {

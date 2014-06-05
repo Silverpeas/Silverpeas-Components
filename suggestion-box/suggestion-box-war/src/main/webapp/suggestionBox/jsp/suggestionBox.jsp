@@ -73,8 +73,8 @@
 <fmt:message key="suggestionBox.proposeSuggestion"             var="creationIconPath"          bundle="${icons}"/>
 <fmt:message key="suggestionBox.validatedSuggestion"           var="validatedIconPath"         bundle="${icons}"/>
 <fmt:message key="suggestionBox.SuggestionInPendingValidation" var="pendingValidationIconPath" bundle="${icons}"/>
-<c:url var="suggestionBoxJS"                    value="/util/javaScript/angularjs/suggestionbox.js"/>
-<c:url var="suggestionBoxServicesJS"            value="/util/javaScript/angularjs/services/suggestionbox.js"/>
+<c:url var="suggestionBoxJS"                    value="/suggestionBox/jsp/javaScript/angularjs/suggestionbox.js"/>
+<c:url var="suggestionBoxServicesJS"            value="/suggestionBox/jsp/javaScript/angularjs/services/suggestionbox.js"/>
 <c:url var="statusIcon" value="${refusedIconPath}"/>
 
 <c:url var="refusedIconURL"           value="${refusedIconPath}"/>
