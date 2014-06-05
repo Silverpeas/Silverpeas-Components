@@ -113,7 +113,7 @@ services.factory('Suggestion', ['RESTAdapter', function(RESTAdapter) {
          * @returns {string} the id of the deleted suggestion.
          */
         this.remove = function(id) {
-          return adapter.delete(id);
+          return adapter.remove(id);
         };
         /**
          * Publishes the suggestion identified by the specified identifier from the suggestions
