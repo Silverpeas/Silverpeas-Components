@@ -36,7 +36,7 @@
       ['context', '$rootScope', function(context, $rootScope) {
         return {
           templateUrl : webContext +
-              '/util/javaScript/angularjs/directives/suggestionbox-deletion.jsp',
+              '/suggestionBox/jsp/javaScript/angularjs/directives/suggestionbox-deletion.jsp',
           link : function postLink(scope, element, attrs) {
 
             function getClearedDialog(message) {
