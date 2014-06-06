@@ -145,7 +145,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
-  @SuppressWarnings("StatementWithEmptyBody")
   @Override
   public String getDestination(String function, KmeliaSessionController kmelia,
       HttpRequest request) {
@@ -919,10 +918,15 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         request.setAttribute("ComponentName", URLEncoder.encode(kmelia.getComponentLabel(),
             CharEncoding.UTF_8));
         String browseInfo = kmelia.getSessionPathString();
-        if (!browseInfo.contains(topic.getName())) {
+        if (browseInfo != null && !browseInfo.contains(topic.getName())) {
           browseInfo += topic.getName();
         }
-        request.setAttribute("BrowseInfo", browseInfo + " > " + kmelia.getString("TopicWysiwyg"));
+        if (!StringUtil.isDefined(browseInfo)) {
+          browseInfo = kmelia.getString("TopicWysiwyg");
+        } else {
+          browseInfo += " > " + kmelia.getString("TopicWysiwyg");
+        }
+        request.setAttribute("BrowseInfo", browseInfo);
         request.setAttribute("ObjectId", "Node_" + subTopicId);
         request.setAttribute("Language", kmelia.getLanguage());
         request.setAttribute("ContentLanguage", kmelia.getCurrentLanguage());
