@@ -655,9 +655,9 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       RaterRatingEntity raterRatingEntity = RaterRatingEntity.fromRateable(pub);
       out.write(raterRatingEntity
           .toJSonScript("raterRatingEntity_" + raterRatingEntity.getContributionId()));
-      out.write("<silverpeas-rating readonly=\"true\" shownbraterratings=\"false\" starsize=\"small\" " +
+      out.write("<div silverpeas-rating readonly=\"true\" shownbraterratings=\"false\" starsize=\"small\" " +
               "raterrating=\"raterRatingEntity_" + raterRatingEntity.getContributionId() +
-              "\"></silverpeas-rating>"
+              "\"></div>"
       );
     }
 

@@ -113,13 +113,13 @@
     <view:operation action="javascript:publish();" altText="${publishSuggestionMenuLabel}"/>
   </c:if>
   <c:if test="${isPublishable or greaterUserRole.isGreaterThanOrEquals(adminRole)}">
-    <view:operation action="angularjs:delete(suggestion, true)" altText="${deleteSuggestionMenuLabel}"/>
-    <div suggestionbox-deletion style="display: none"></div>
+    <view:operation action="angularjs:remove(suggestion, true)" altText="${deleteSuggestionMenuLabel}"/>
+    <div suggestionbox-deletion></div>
   </c:if>
   <c:if test="${isModeratorView}">
     <view:operation action="angularjs:refuse(suggestion)" altText="${refuseSuggestionMenuLabel}"/>
     <view:operation action="angularjs:approve(suggestion)" altText="${validateSuggestionMenuLabel}"/>
-    <div suggestionbox-validation style="display: none"></div>
+    <div suggestionbox-validation></div>
   </c:if>
   <c:if test="${suggestion.validation.validated}">
     <view:operation action="javascript:notify()" altText="${notifyLabel}"/>

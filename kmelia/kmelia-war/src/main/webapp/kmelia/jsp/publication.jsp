@@ -831,6 +831,8 @@
 
       <div id="publication-export" style="display: none;">
         <form id="exportForm" action="<c:url value='/exportPublication'/>" target="_blank">
+          <input type="hidden" name="PubId" value="<%=id%>"/>
+          <input type="hidden" name="ComponentId" value="<%=componentId%>"/>
           <fieldset>
             <legend><%=resources.getString("kmelia.format")%></legend>
             <%
@@ -848,8 +850,6 @@
             %>
             <input type="radio" name="Format" value="<%=format %>" <%=checked %> <%=disabled %>/><%=resources.getString("kmelia.export.format." + format)%>
             <% } %>
-            <input type="hidden" name="PubId" value="<%=id%>"/>
-            <input type="hidden" name="ComponentId" value="<%=componentId%>"/>
           </fieldset>
         </form>
       </div>
@@ -886,7 +886,7 @@
         <input type="hidden" name="PubId" value="<%=id%>"/>
         <input type="hidden" name="Motive" value=""/>
       </form>
-      <form name="toRouterForm">
+      <form name="toRouterForm" action="#">
         <input type="hidden" name="PubId" value="<%=id%>"/>
         <input type="hidden" name="ComponentId" value="<%=componentId%>"/>
       </form>

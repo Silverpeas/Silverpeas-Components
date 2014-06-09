@@ -81,6 +81,7 @@ boolean userCanManageTopics = rightsOnTopics.booleanValue() || "admin".equalsIgn
 <html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.kmelia">
 <head>
 <view:looknfeel/>
+<title></title>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/browseBarComplete.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery-migrate-1.2.1.min.js"></script>
@@ -991,17 +992,17 @@ $(document).ready(
 </div>
 <div id="addOrUpdateNode" style="display: none;">
 	<form name="topicForm" action="AddTopic" method="post">
+    <input type="hidden" id="<%=I18NHelper.HTMLHiddenRemovedTranslationMode %>" name="<%=I18NHelper.HTMLHiddenRemovedTranslationMode %>" value="false"/>
             <table cellpadding="5" width="100%">
               <tr><td class="txtlibform"><fmt:message key="TopicPath"/> :</td>
                 <td valign="top" id="path"></td>
               </tr>
               <%=I18NHelper.getFormLine(resources, null, kmeliaScc.getLanguage())%>
-              <input type="hidden" id="<%=I18NHelper.HTMLHiddenRemovedTranslationMode %>" name="<%=I18NHelper.HTMLHiddenRemovedTranslationMode %>" value="false"/>
               <tr>
                 <td class="txtlibform"><fmt:message key="TopicTitle"/> :</td>
                 <td><input type="text" name="Name" id="folderName" size="60" maxlength="60"/>
                 <input type="hidden" name="ParentId" id="parentId"/>
-                <input type="hidden" name="ChildId" id="topicId"/>&nbsp;<img border="0" src="<c:out value="${mandatoryFieldUrl}" />" width="5" height="5"/></td>
+                <input type="hidden" name="ChildId" id="topicId"/>&nbsp;<img border="0" src="<c:out value="${mandatoryFieldUrl}" />" width="5" height="5" alt=""/></td>
               </tr>
 
               <tr>
