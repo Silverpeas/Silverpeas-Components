@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<dataset>
+
+  <!-- Photo -->
+  <sc_gallery_media mediaId="1" mediaType="Photo" instanceId="instanceId_A" title="title 1"
+                    description="[NULL]" author="[NULL]" keyWord="[NULL]"
+                    beginVisibiliyDate="2014-01-01 00:00:00.0"
+                    endVisibiliyDate="2014-12-31 12:59:59.999" createDate="2014-06-01 16:38:52.253"
+                    createdBy="0" lastUpdateDate="2014-06-01 16:38:52.253" lastUpdatedBy="0"/>
+  <sc_gallery_media mediaId="2" mediaType="Photo" instanceId="instanceId_A" title="title 2"
+                    description="[NULL]" author="[NULL]" keyWord="[NULL]"
+                    beginVisibiliyDate="1900-01-01 00:00:00.0"
+                    endVisibiliyDate="2999-12-31 23:59:59.999" createDate="2014-06-01 16:38:52.253"
+                    createdBy="0" lastUpdateDate="2014-06-01 16:38:52.253" lastUpdatedBy="0"/>
+  <sc_gallery_media mediaId="9" mediaType="Photo" instanceId="instanceId_Z" title="title 9"
+                    description="[NULL]" author="[NULL]" keyWord="[NULL]"
+                    beginVisibiliyDate="1900-01-01 00:00:00.0"
+                    endVisibiliyDate="2999-12-31 23:59:59.999" createDate="2014-06-01 16:38:52.253"
+                    createdBy="0" lastUpdateDate="2014-06-01 16:38:52.253" lastUpdatedBy="0"/>
+
+  <SC_Gallery_Internal mediaId="1" fileName="fileName_1" fileSize="101" fileMimeType="image/jpeg"
+                       download="0" beginDownloadDate="[NULL]" endDownloadDate="[NULL]"/>
+  <SC_Gallery_Internal mediaId="2" fileName="fileName_2" fileSize="102" fileMimeType="image/png"
+                       download="0" beginDownloadDate="[NULL]" endDownloadDate="[NULL]"/>
+  <SC_Gallery_Internal mediaId="9" fileName="fileName_9" fileSize="109" fileMimeType="image/tiff"
+                       download="0" beginDownloadDate="[NULL]" endDownloadDate="[NULL]"/>
+
+  <SC_Gallery_Photo mediaId="1" resolutionL="800" resolutionH="600"/>
+  <SC_Gallery_Photo mediaId="2" resolutionL="1280" resolutionH="720"/>
+  <SC_Gallery_Photo mediaId="9" resolutionL="1600" resolutionH="1200"/>
+
+  <!-- Video -->
+  <sc_gallery_media mediaId="v_1" mediaType="Video" instanceId="instanceId_A" title="title v_1"
+                    description="[NULL]" author="[NULL]" keyWord="[NULL]"
+                    beginVisibiliyDate="2014-01-01 00:00:00.0"
+                    endVisibiliyDate="2014-06-31 12:59:59.999" createDate="2014-06-01 16:38:52.253"
+                    createdBy="0" lastUpdateDate="2014-06-01 16:38:52.253" lastUpdatedBy="0"/>
+  <sc_gallery_media mediaId="v_2" mediaType="Video" instanceId="instanceId_A" title="title v_2"
+                    description="[NULL]" author="[NULL]" keyWord="[NULL]"
+                    beginVisibiliyDate="1900-01-01 00:00:00.0"
+                    endVisibiliyDate="2999-12-31 23:59:59.999" createDate="2014-06-01 16:38:52.253"
+                    createdBy="0" lastUpdateDate="2014-06-01 16:38:52.253" lastUpdatedBy="0"/>
+  <sc_gallery_media mediaId="v_9" mediaType="Video" instanceId="instanceId_Z" title="title v_9"
+                    description="[NULL]" author="[NULL]" keyWord="[NULL]"
+                    beginVisibiliyDate="1900-01-01 00:00:00.0"
+                    endVisibiliyDate="2999-12-31 23:59:59.999" createDate="2014-06-01 16:38:52.253"
+                    createdBy="0" lastUpdateDate="2014-06-01 16:38:52.253" lastUpdatedBy="0"/>
+
+  <SC_Gallery_Internal mediaId="v_1" fileName="fileName_v_1" fileSize="201" fileMimeType="video/mp4"
+                       download="0" beginDownloadDate="[NULL]" endDownloadDate="[NULL]"/>
+  <SC_Gallery_Internal mediaId="v_2" fileName="fileName_v_2" fileSize="202"
+                       fileMimeType="video/x-flv" download="0" beginDownloadDate="[NULL]"
+                       endDownloadDate="[NULL]"/>
+  <SC_Gallery_Internal mediaId="v_9" fileName="fileName_v_9" fileSize="209" fileMimeType="video/mp4"
+                       download="0" beginDownloadDate="[NULL]" endDownloadDate="[NULL]"/>
+
+  <SC_Gallery_Video mediaId="v_1" resolutionL="1280" resolutionH="720" bitrate="5000"
+                    duration="36000000"/>
+  <SC_Gallery_Video mediaId="v_2" resolutionL="1920" resolutionH="1080" bitrate="5000"
+                    duration="36000000"/>
+  <SC_Gallery_Video mediaId="v_9" resolutionL="1280" resolutionH="720" bitrate="5000"
+                    duration="36000000"/>
+
+  <!-- Sound -->
+  <sc_gallery_media mediaId="s_1" mediaType="Sound" instanceId="instanceId_A" title="title s_1"
+                    description="[NULL]" author="[NULL]" keyWord="[NULL]"
+                    beginVisibiliyDate="2014-01-01 00:00:00.0"
+                    endVisibiliyDate="2014-12-31 12:59:59.999" createDate="2014-06-01 16:38:52.253"
+                    createdBy="0" lastUpdateDate="2014-06-01 16:38:52.253" lastUpdatedBy="0"/>
+  <sc_gallery_media mediaId="s_2" mediaType="Sound" instanceId="instanceId_A" title="title s_2"
+                    description="[NULL]" author="[NULL]" keyWord="[NULL]"
+                    beginVisibiliyDate="1900-01-01 00:00:00.0"
+                    endVisibiliyDate="2999-12-31 23:59:59.999" createDate="2014-06-01 16:38:52.253"
+                    createdBy="0" lastUpdateDate="2014-06-01 16:38:52.253" lastUpdatedBy="0"/>
+  <sc_gallery_media mediaId="s_9" mediaType="Sound" instanceId="instanceId_Z" title="title s_9"
+                    description="[NULL]" author="[NULL]" keyWord="[NULL]"
+                    beginVisibiliyDate="1900-01-01 00:00:00.0"
+                    endVisibiliyDate="2999-12-31 23:59:59.999" createDate="2014-06-01 16:38:52.253"
+                    createdBy="0" lastUpdateDate="2014-06-01 16:38:52.253" lastUpdatedBy="0"/>
+
+  <SC_Gallery_Internal mediaId="s_1" fileName="fileName_s_1" fileSize="301"
+                       fileMimeType="audio/x-mpeg" download="0" beginDownloadDate="[NULL]"
+                       endDownloadDate="[NULL]"/>
+  <SC_Gallery_Internal mediaId="s_2" fileName="fileName_s_2" fileSize="302"
+                       fileMimeType="video/x-flv" download="0" beginDownloadDate="[NULL]"
+                       endDownloadDate="[NULL]"/>
+  <SC_Gallery_Internal mediaId="s_9" fileName="fileName_s_9" fileSize="309"
+                       fileMimeType="audio/x-mpeg" download="0" beginDownloadDate="[NULL]"
+                       endDownloadDate="[NULL]"/>
+
+  <SC_Gallery_Sound mediaId="v_1" bitrate="5000" duration="36000000"/>
+  <SC_Gallery_Sound mediaId="v_2" bitrate="5000" duration="36000000"/>
+  <SC_Gallery_Sound mediaId="v_9" bitrate="5000" duration="36000000"/>
+
+  <!-- Streaming -->
+  <sc_gallery_media mediaId="stream_1" mediaType="Streaming" instanceId="instanceId_A"
+                    title="title stream_1" description="[NULL]" author="[NULL]" keyWord="[NULL]"
+                    beginVisibiliyDate="2014-01-01 00:00:00.0"
+                    endVisibiliyDate="2014-03-31 12:59:59.999" createDate="2014-06-01 16:38:52.253"
+                    createdBy="0" lastUpdateDate="2014-06-01 16:38:52.253" lastUpdatedBy="0"/>
+  <sc_gallery_media mediaId="stream_2" mediaType="Streaming" instanceId="instanceId_A"
+                    title="title stream_2" description="[NULL]" author="[NULL]" keyWord="[NULL]"
+                    beginVisibiliyDate="1900-01-01 00:00:00.0"
+                    endVisibiliyDate="2999-12-31 23:59:59.999" createDate="2014-06-01 16:38:52.253"
+                    createdBy="0" lastUpdateDate="2014-06-01 16:38:52.253" lastUpdatedBy="0"/>
+  <sc_gallery_media mediaId="stream_9" mediaType="Streaming" instanceId="instanceId_Z"
+                    title="title stream_9" description="[NULL]" author="[NULL]" keyWord="[NULL]"
+                    beginVisibiliyDate="1900-01-01 00:00:00.0"
+                    endVisibiliyDate="2999-12-31 23:59:59.999" createDate="2014-06-01 16:38:52.253"
+                    createdBy="0" lastUpdateDate="2014-06-01 16:38:52.253" lastUpdatedBy="0"/>
+
+  <SC_Gallery_Streaming mediaId="stream_1" url="url_1" provider="PROVIDER_A"/>
+  <SC_Gallery_Streaming mediaId="stream_2" url="url_2" provider="PROVIDER_B"/>
+  <SC_Gallery_Streaming mediaId="stream_9" url="url_9" provider="PROVIDER_A"/>
+</dataset>
