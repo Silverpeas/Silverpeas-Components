@@ -24,7 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="imports.jsp" %>
 <%@ include file="init.jsp.inc" %>
 
@@ -35,29 +35,19 @@ String[] allColumns = null;
 String[] tables = null;
 String[] columns = null;
 String column = null;
-String action = null;
+String action = request.getParameter("Action");
 
 String value = "";
 String label = "";
 String selected = "";
 
-
-
-action = (String) request.getParameter("Action");
-
-String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-
-
+String m_context = GeneralPropertiesManager..getString("ApplicationURL");
 %>
-
-
 
 <HTML>
 <Head>
 <TITLE><%=connecteurJDBC.getString("windowTitleParametrageRequete")%></TITLE>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 </head>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>

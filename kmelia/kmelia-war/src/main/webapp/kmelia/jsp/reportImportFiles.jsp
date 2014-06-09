@@ -24,7 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
@@ -45,7 +45,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	String message = (String) request.getAttribute("Message") ;
 	
 //Icons
-	Button closeButton = (Button) gef.getFormButton(resources.getString("GML.close"), "javascript:onClick=refreshWindow();", false);
+	Button closeButton = gef.getFormButton(resources.getString("GML.close"), "javascript:onClick=refreshWindow();", false);
 %>
 <html>
 <head><title><%=resources.getString("GML.popupTitle")%></title>
@@ -56,11 +56,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 		window.close();
 	}
 </script>
-<%
-	out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 </head>
-
 <body>
 <%
   Window window = gef.getWindow();

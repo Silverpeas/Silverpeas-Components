@@ -24,7 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
@@ -60,10 +60,8 @@ String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getStrin
 
 <html>
 <head>
-	<title>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</title>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<title></title>
+<view:looknfeel/>
 </head>
 <body bgcolor=#FFFFFF leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
   <%

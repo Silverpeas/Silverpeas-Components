@@ -24,7 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkKmelia.jsp" %>
 <%@ include file="topicReport.jsp.inc" %>
 
@@ -52,7 +52,7 @@ kmeliaScc.setSessionPath(linkedPathString);
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title></title>
-<% out.println(gef.getLookStyleSheet()); %>
+<view:looknfeel/>
 <Script language="JavaScript1.2">
 function topicGoTo(id) {
     document.topicDetailForm.Action.value = "Search";

@@ -24,7 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
@@ -65,15 +65,12 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <!-- dictionnaireIcones -->
 
- <html>
+<html>
 <title><%=resources.getString("GML.popupTitle")%></title>
 <head>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 </head>
-
- <body bgcolor="FFFFFF" topmargin="5" leftmargin="5">
+<body bgcolor="FFFFFF" topmargin="5" leftmargin="5">
 
 <%
     Window window = gef.getWindow();

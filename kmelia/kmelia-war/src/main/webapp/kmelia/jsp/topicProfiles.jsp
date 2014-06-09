@@ -24,7 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkKmelia.jsp" %>
 <%@ page import="com.stratelia.webactiv.beans.admin.ProfileInst"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.Group"%>
@@ -46,7 +46,7 @@ String nodeId = node.getNodePK().getId();
 %>
 <html>
 <head>
-<% out.println(gef.getLookStyleSheet()); %>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 function topicGoTo(id) {

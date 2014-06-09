@@ -24,9 +24,11 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 <html>
 <head>
+<view:looknfeel/>
 <%
 	String zipUrl = (String) request.getAttribute("ZipURL");
 	String name = (String) request.getAttribute("Name");
@@ -36,8 +38,6 @@
 	
 	long sizeZip = sizeZipP.longValue();
 	long sizeMax = sizeMaxP.longValue();
-
-	out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script language="JavaScript">

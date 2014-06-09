@@ -45,15 +45,14 @@
 <%@page import="com.silverpeas.treeMenu.model.MenuConstants"%>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/menuTree" prefix="menuTree"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%
 GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 String language = (String) session.getAttribute("WYSIWYG_Language");
 String userId = (String) session.getAttribute("WYSIWYG_UserId");
-ResourceLocator message = new ResourceLocator(
-					"org.silverpeas.wysiwyg.multilang.wysiwygBundle",
-					language);
-String contextName = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+ResourceLocator message = new ResourceLocator("org.silverpeas.wysiwyg.multilang.wysiwygBundle", language);
+String contextName = GeneralPropertiesManager.getString("ApplicationURL");
 %>
 
 <%@page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%><html>
@@ -61,9 +60,7 @@ String contextName = GeneralPropertiesManager.getGeneralResourceLocator().getStr
 <title></title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" type="text/css" href="<%=contextName %>/kmelia/jsp/styleSheets/kmelia.css">
-<%
-  out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <%-- load the css and js file used by tree menu --%>
 <menuTree:head displayCssFile="true" displayJavascriptFile="true" displayIconsStyles="false" contextName="<%=contextName%>"></menuTree:head>
 

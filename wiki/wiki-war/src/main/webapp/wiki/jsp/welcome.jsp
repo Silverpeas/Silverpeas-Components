@@ -24,17 +24,16 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page isELIgnored ="false" %> 
 <%@ include file="check.jsp" %>
 <html>
 <head>
-<%
-	out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 </head>
 <body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
 Bienvenue sur le composant wiki.<br><br>
-Cette instance est nommée <b><%=componentLabel%></b>.<br>
-Elle est située dans l\'espace <b><%=spaceLabel%></b>.
+Cette instance est nommï¿½e <b><%=componentLabel%></b>.<br>
+Elle est situï¿½e dans l\'espace <b><%=spaceLabel%></b>.
 </body>
 </html>

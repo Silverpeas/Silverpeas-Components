@@ -49,7 +49,6 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <view:looknfeel />
 <%
-    out.println(graphicFactory.getLookStyleSheet());
     if (!graphicFactory.hasExternalStylesheet()) {
 %>
     <link rel="stylesheet" type="text/css" href="styleSheets/forums.css" />

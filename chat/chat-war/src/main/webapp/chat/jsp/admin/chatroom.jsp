@@ -24,8 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
-<html>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page import="jChatBox.Util.*,jChatBox.Chat.*,jChatBox.Chat.Filter.*,java.util.*" %>
 <jsp:useBean id="SystemProcessor" class="jChatBox.Service.SystemProcessor" scope="session" />
 <%@ include file="../checkChat.jsp" %>
@@ -179,7 +178,10 @@ if (isPdcUsed)
 }
 Board board = gef.getBoard();
 %>
+<html>
 <head>
+<title>Chatroom Manager</title>
+<view:looknfeel/>
 <LINK REL=STYLESHEET TYPE="text/css" HREF="styles/admin.css">
 <script language="JavaScript">
 <!--
@@ -267,10 +269,6 @@ function clearblacklist()
 }
 //-->
 </script>
-<title>Chatroom Manager</title>
-<%
-out.println(gef.getLookStyleSheet());
-%>
 </head>
 <body bgcolor="#FFFFFF" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
 <form method="post" action="chatroom.jsp" name="chatroom">

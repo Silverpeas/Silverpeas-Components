@@ -24,7 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkDataWarning.jsp" %>
 <%
 	String requete = (String)request.getAttribute("requete");
@@ -33,9 +33,7 @@
 <HTML>
 <HEAD>
 <TITLE><%=resource.getString("operationPaneReqExpert")%></TITLE>
-<%
-	out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 </HEAD>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <BODY marginwidth=5 marginheight=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF" onload=document.form.SQLReq.focus()>

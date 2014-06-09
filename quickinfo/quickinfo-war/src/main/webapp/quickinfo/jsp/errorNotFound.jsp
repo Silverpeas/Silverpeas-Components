@@ -24,7 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
   Exception exception = (Exception) request.getAttribute("error");
 %>
@@ -33,7 +33,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-<% out.println(gef.getLookStyleSheet()); %>
+<view:looknfeel/>
   </head>
   <body>
 <%

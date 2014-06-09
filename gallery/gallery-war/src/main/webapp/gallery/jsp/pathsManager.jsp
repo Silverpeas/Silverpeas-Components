@@ -24,6 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 
 <% 
@@ -33,16 +34,13 @@
 	Collection  albums     = (Collection) request.getAttribute("Albums");
 		
 	// déclaration des boutons
-	Button validateButton = (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
-	Button cancelButton   = (Button) gef.getFormButton(resource.getString("GML.cancel"), "GoToCurrentAlbum?AlbumId="+albumId, false);
+	Button validateButton = gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
+	Button cancelButton   = gef.getFormButton(resource.getString("GML.cancel"), "GoToCurrentAlbum?AlbumId="+albumId, false);
 %>
 
 <html>
 <head>
-	<%
-		out.println(gef.getLookStyleSheet());
-	%>
-
+<view:looknfeel/>
 	<script type="text/javascript">
 	function sendData() 
 	{

@@ -24,6 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page import="org.silverpeas.resourcemanager.model.Reservation"%>
 <%@ page import="java.util.List" %>
 <%@ include file="check.jsp" %>
@@ -35,10 +36,8 @@ List listOfReservation = (List)request.getAttribute("listOfReservation");
 ArrayLine arrayLine;
 %>
 <html>
-	<head>
-	<%
-		out.println(gef.getLookStyleSheet());
-	%>
+<head>
+<view:looknfeel/>
 	<script language=JavaScript>
 	function seeReservation(reservationId) {
 		location.href="ViewReservation?reservationId="+reservationId;	

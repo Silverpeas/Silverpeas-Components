@@ -24,7 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp"%>
 
 <%
@@ -34,9 +34,7 @@ Collection resources = (Collection) request.getAttribute("Resources");
 <html>
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
-<%
-   out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <script language="JavaScript">
 
 function refresh() 

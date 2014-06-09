@@ -24,8 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
-<html>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page import="jChatBox.Util.*,jChatBox.Chat.*,jChatBox.Chat.Filter.*,java.util.*,java.text.SimpleDateFormat" %>
 <jsp:useBean id="UserProcessor" class="jChatBox.Service.UserProcessor" scope="application" />
 <%@ include file="../checkChat.jsp" %>
@@ -82,9 +81,10 @@ browseBar.setPath(path);
 
 Board board = gef.getBoard();
 %>
-
+<html>
 <head>
 <title>Private Message</title>
+<view:looknfeel/>
 <script language="JavaScript"><!--
 function ready()
 {
@@ -103,9 +103,6 @@ function chat()
 	SendMessage();
 }
 //--></script>
-<%
-	out.println(gef.getLookStyleSheet());
-%>
 </head>
 <body leftmargin="5" topmargin="5" marginwidth="5" marginheight="5" onLoad="ready()">
 <form method="get" action="<%= response.encodeURL("content.jsp") %>" name="chat" target="content" OnSubmit='SendMessage();return false;'>

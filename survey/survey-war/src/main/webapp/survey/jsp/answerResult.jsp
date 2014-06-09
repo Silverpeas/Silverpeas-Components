@@ -25,7 +25,7 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkSurvey.jsp" %>
 
 <%
@@ -40,7 +40,7 @@ String iconsPath = GeneralPropertiesManager.getString("ApplicationURL");
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
-<% out.println(gef.getLookStyleSheet()); %>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=iconsPath%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 function viewResultByUser(userId, userName) {

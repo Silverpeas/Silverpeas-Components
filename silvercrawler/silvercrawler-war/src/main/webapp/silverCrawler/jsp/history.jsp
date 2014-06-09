@@ -24,14 +24,14 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 <html>
 <head>
+<view:looknfeel/>
 <%
 	Collection downloads = (Collection) request.getAttribute("Downloads");
 	String name = (String) request.getAttribute("Name");
- 
-	out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script language="JavaScript">
@@ -105,7 +105,7 @@ out.println(board.printBefore());
 	        int nbDownload = historyByUser.getNbDownload();
 	        ligne.addArrayCellText(nbDownload);
 	        
-	        // colonne des icones pour le détail
+	        // colonne des icones pour le dï¿½tail
 	        String historyUserId = historyByUser.getUser().getId();
 	        IconPane iconPane = gef.getIconPane();
 			Icon detailIcon = iconPane.addIcon();

@@ -24,6 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%@ include file="imports.jsp" %>
 <%@ include file="init.jsp.inc" %>
@@ -44,16 +45,14 @@
 %>
 
 <%
-String graphicPath                            = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+String graphicPath                            = GeneralPropertiesManager.getString("ApplicationURL");
 String m_context                              = graphicPath;
 
 %>
 <HTML>
 <Head>
   <TITLE><%=connecteurJDBC.getString("windowTitleParametrageConnection")%> </TITLE>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 </head>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <Script language="JavaScript">

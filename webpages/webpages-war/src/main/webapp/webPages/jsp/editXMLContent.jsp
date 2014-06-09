@@ -41,9 +41,7 @@
 
 <html>
 <head>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <% formUpdate.displayScripts(out, context);%>
 <script type="text/javascript">
