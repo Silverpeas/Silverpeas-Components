@@ -25,6 +25,7 @@
 --%>
 <%@page import="com.silverpeas.util.StringUtil"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page import="java.util.Iterator"%>
 <%@ page import="java.util.List"%>
 <%@ page import="com.silverpeas.gallery.model.PhotoDetail"%>
@@ -33,7 +34,7 @@
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@ page import="com.silverpeas.util.EncodeHelper"%>
 <%
-String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+String m_context = GeneralPropertiesManager.getString("ApplicationURL");
 GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
 List photos = (List) request.getAttribute("Photos");
@@ -48,9 +49,7 @@ ResourceLocator multilang = new ResourceLocator("com.silverpeas.gallery.multilan
 
 <html>
 <head>
-<%
-	out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/treeview.css">
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script language="javascript">

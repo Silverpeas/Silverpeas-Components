@@ -24,7 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkDataWarning.jsp" %>
 <%
 	DataWarningQuery dataQuery = (DataWarningQuery)request.getAttribute("dataQuery");
@@ -32,9 +32,7 @@
 <HTML>
 <HEAD>
 <TITLE><%=resource.getString("operationPaneParamGen")%></TITLE>
-<%
-	out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 </HEAD>
 <BODY marginwidth=5 marginheight=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF" onload=document.form.SQLReqDescription.focus()>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js">

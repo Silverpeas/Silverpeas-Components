@@ -24,7 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkWhitePages.jsp" %>
 
 <%
@@ -43,10 +43,7 @@
 <HTML>
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-<%
-   out.println(gef.getLookStyleSheet());
-%>
-
+<view:looknfeel/>
 <script language="JavaScript">
 <!--	
 	function B_SEND_ONCLICK() {
@@ -55,7 +52,6 @@
 //-->
 </script>	
 </HEAD>
-
 <BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
 <FORM NAME="myForm" METHOD="POST" ACTION="sendExpertNotification">
 <%

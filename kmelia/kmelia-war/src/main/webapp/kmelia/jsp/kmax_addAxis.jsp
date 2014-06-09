@@ -46,20 +46,20 @@
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPane"%>
 <%@ include file="checkKmelia.jsp" %>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
 <%
 String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
 
 ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(kmeliaScc.getLanguage());
 
-Button cancelButton = (Button) gef.getFormButton(generalMessage.getString("GML.cancel"), "javascript:onClick=window.close();", false);
-Button validateButton = (Button) gef.getFormButton(generalMessage.getString("GML.validate"), "javascript:onClick=sendData()", false);
+Button cancelButton = gef.getFormButton(generalMessage.getString("GML.cancel"), "javascript:onClick=window.close();", false);
+Button validateButton = gef.getFormButton(generalMessage.getString("GML.validate"), "javascript:onClick=sendData()", false);
 %>
 <HTML>
 <HEAD>
 <TITLE><%=generalMessage.getString("GML.popupTitle")%></TITLE>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script LANGUAGE="JavaScript" TYPE="text/javascript">
 function sendData() {

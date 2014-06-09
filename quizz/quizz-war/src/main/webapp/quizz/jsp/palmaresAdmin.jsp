@@ -24,7 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
@@ -33,7 +33,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ include file="checkQuizz.jsp" %>
 <%
-String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+String m_context = GeneralPropertiesManager.getString("ApplicationURL");
 String iconsPath = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 
 //Icons
@@ -42,12 +42,13 @@ String folderSrc = iconsPath + "/util/icons/delete.gif";
 
 <html>
 <head>
-	<title>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</title>
+	<title></title>
+	<view:looknfeel/>
   <%
   ResourceLocator settings = quizzScc.getSettings();
   String space = quizzScc.getSpaceLabel();
   String component = quizzScc.getComponentLabel();
-  String m_Context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+  String m_Context = GeneralPropertiesManager.getString("ApplicationURL");
 
   String currentQuizzTitle="";
   int currentQuizzPoints=0;
@@ -64,9 +65,6 @@ function notifyPopup(context,compoId,users,groups)
     SP_openWindow(context+'/RnotificationUser/jsp/Main.jsp?popupMode=Yes&editTargets=No&compoId=' + compoId + '&theTargetsUsers='+users+'&theTargetsGroups='+groups, 'notifyUserPopup', '700', '400', 'menubar=no,scrollbars=no,statusbar=no');
 }
 </script>
-<%
-out.println(gef.getLookStyleSheet());
-%>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 </head>
 <body bgcolor="#FFFFFF" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">

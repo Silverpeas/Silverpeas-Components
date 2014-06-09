@@ -24,19 +24,17 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 
 <% 
-	Button validateButton 	= (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
-    Button cancelButton 	= (Button) gef.getFormButton(resource.getString("GML.cancel"), "javaScript:window.close()", false);
+	Button validateButton 	= gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
+    Button cancelButton 	= gef.getFormButton(resource.getString("GML.cancel"), "javaScript:window.close()", false);
 %>
 
 <html>
 		<head>
-		<%
-			out.println(gef.getLookStyleSheet());
-		%>
-
+		<view:looknfeel/>
 		<TITLE>Titre de la fenetre</TITLE>
 		<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 		<script language="javascript">

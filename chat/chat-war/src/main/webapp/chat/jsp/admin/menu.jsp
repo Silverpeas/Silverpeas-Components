@@ -24,8 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
-<html>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page import="jChatBox.Util.*,jChatBox.Chat.*,java.util.*,java.text.SimpleDateFormat" %>
 <jsp:useBean id="SystemProcessor" class="jChatBox.Service.ModeratorProcessor" scope="application" />
 <%@ include file="../checkChat.jsp" %>
@@ -60,8 +59,10 @@ TabbedPane tabbedPane = gef.getTabbedPane();
 tabbedPane.addTab(resource.getString("chat.chatRoomList"),"Main",false);
 tabbedPane.addTab(resource.getString("chat.administration"),"#",true);
 %>
-
+<html>
 <head>
+<title>jChatBox Manager</title>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script language="JavaScript">
 
@@ -83,10 +84,6 @@ function openSPWindow(fonction, windowName){
 }
 
 </script>
-<title>jChatBox Manager</title>
-<%
-out.println(gef.getLookStyleSheet());
-%>
 </head>
 <body bgcolor="#FFFFFF" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
 <form method="post" action="menu.jsp" name="chat">

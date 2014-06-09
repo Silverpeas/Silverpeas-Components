@@ -49,9 +49,7 @@ Button validateButton = gef.getFormButton(resources.getString("GML.validate"), "
 <html>
 <head>
 <title><%=resources.getString("GML.popupTitle")%></title>
-<%
-	out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <script type="text/javascript">
 function validateForm() {
 	formValid = false;

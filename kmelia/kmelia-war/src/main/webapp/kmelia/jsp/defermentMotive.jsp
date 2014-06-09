@@ -24,7 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkKmelia.jsp" %>
 
 <%
@@ -35,16 +35,14 @@ String			  currentLang 	= (String) request.getAttribute("Language");
 //Icons
 String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
 
-Button cancelButton 	= (Button) gef.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=window.close();", false);
-Button validateButton 	= (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData()", false);
+Button cancelButton 	= gef.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=window.close();", false);
+Button validateButton 	= gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData()", false);
 %>
 <HTML>
 <HEAD>
 <TITLE><%=resources.getString("GML.popupTitle")%></TITLE>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script LANGUAGE="JavaScript" TYPE="text/javascript">
 function sendData() {

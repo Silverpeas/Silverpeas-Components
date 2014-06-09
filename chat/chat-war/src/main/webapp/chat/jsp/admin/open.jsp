@@ -24,8 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
-<html>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page import="jChatBox.Util.*,jChatBox.Chat.*,jChatBox.Chat.Filter.*,java.util.*" %>
 <%@ include file="../checkChat.jsp" %>
 <jsp:useBean id="SystemProcessor" class="jChatBox.Service.SystemProcessor" scope="session" />
@@ -56,10 +55,9 @@ if (isPdcUsed)
 
 Board board = gef.getBoard();
 %>
+<html>
 <head>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <script language="JavaScript"><!--
 function validate()
 {

@@ -24,7 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page import="jChatBox.Util.*,jChatBox.Chat.*,jChatBox.*,java.util.*,java.text.SimpleDateFormat,com.stratelia.silverpeas.silvertrace.*,com.stratelia.silverpeas.chat.control.*" %>
 <%@ include file="../configureme.jsp" %>
 <%@ include file="../checkChat.jsp" %>
@@ -127,8 +127,9 @@ TabbedPane tabbedPane = gef.getTabbedPane();
 tabbedPane.addTab(resource.getString("chat.chatRoomList"),"#",true);
 tabbedPane.addTab(resource.getString("chat.administration"),"javascript:manageWindow('goAdmin','GoAdmin','popupChat','1', '1', 'menubar=no,scrollbars=no,statusbar=no')",false);
 %>
-
 <head>
+<title>Chat Login</title>
+<view:looknfeel/>
 <script language="Javascript">
 
 function auto_open_chatroom()
@@ -211,10 +212,6 @@ function enterPopup(identifiant)
 	manageWindow('open','redirect.jsp?chatrooms='+identifiant+'&name=<%= request.getAttribute("chat_fullName") %>','popupChat','650', '400', 'menubar=no,scrollbars=no,statusbar=no');
 }
 </script>
-<title>Chat Login</title>
-<%
-out.println(gef.getLookStyleSheet());
-%>
 </head>
 <body bgcolor="#FFFFFF" onLoad="auto_open_chatroom()">
 <%

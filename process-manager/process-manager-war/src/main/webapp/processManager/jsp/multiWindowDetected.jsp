@@ -36,9 +36,7 @@
 <HTML>
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-<%
-   out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 </HEAD>
 <BODY class="yui-skin-sam">
 <%

@@ -44,14 +44,8 @@ boolean openUrl = false;
 <html>
 <head>
 <title></title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script language="javascript">
-
-</script>
 </head>
 <body>
 <%

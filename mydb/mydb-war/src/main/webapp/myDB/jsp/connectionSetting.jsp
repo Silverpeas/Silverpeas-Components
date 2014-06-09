@@ -24,11 +24,12 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="init.jsp" %>
 
 <html>
 <head>
+<view:looknfeel/>
 <%
 	String login = myDBSC.getLogin();
 	if (login == null)
@@ -40,8 +41,6 @@
 	{
 		password = "";
 	}
-
-	out.println(gef.getLookStyleSheet());
 %>
 	<script type="text/javascript" src="<%=applicationURL%>/util/javaScript/checkForm.js"></script>
 	<script type="text/javascript">

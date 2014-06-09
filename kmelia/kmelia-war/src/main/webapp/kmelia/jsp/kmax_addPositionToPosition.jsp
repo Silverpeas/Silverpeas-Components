@@ -24,7 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page import="javax.servlet.*"%>
 <%@ page import="javax.servlet.http.*"%>
 <%@ page import="javax.servlet.jsp.*"%>
@@ -46,22 +46,22 @@
 <%@ include file="checkKmelia.jsp" %>
 
 <%
-String action = (String) request.getParameter("Action");
-String axisId = (String) request.getParameter("AxisId");
-String translation = (String) request.getParameter("Translation");
+String action = request.getParameter("Action");
+String axisId = request.getParameter("AxisId");
+String translation = request.getParameter("Translation");
 
 //Icons
 String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
 ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(kmeliaScc.getLanguage());
 
-Button cancelButton = (Button) gef.getFormButton(generalMessage.getString("GML.cancel"), "javascript:onClick=window.close();", false);
-Button validateButton = (Button) gef.getFormButton(generalMessage.getString("GML.validate"), "javascript:onClick=sendData()", false);
+Button cancelButton = gef.getFormButton(generalMessage.getString("GML.cancel"), "javascript:onClick=window.close();", false);
+Button validateButton = gef.getFormButton(generalMessage.getString("GML.validate"), "javascript:onClick=sendData()", false);
 
 %>
 <HTML>
 <HEAD>
 <TITLE><%=kmeliaScc.getString("ComponentCreationTitle")%></TITLE>
-<% out.println(gef.getLookStyleSheet()); %>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 
 <script LANGUAGE="JavaScript" TYPE="text/javascript">

@@ -43,10 +43,11 @@ public class GoToPost extends GoTo {
       HttpServletResponse res) throws Exception {
     BlogService service = BlogServiceFactory.getFactory().getBlogService();
     PostDetail post = service.getContentById(objectId);
-
-    String gotoURL = URLManager.getURL(null, post.getPublication()
-        .getInstanceId())
-        + post.getPublication().getURL();
+    String componentId = post.getPublication().getInstanceId();
+    String gotoURL = URLManager.getURL(null, componentId) + post.getPublication().getURL();
+    
+    // force context of GraphicElementFactory
+    setGefSpaceId(req, componentId);
 
     return "goto=" + URLEncoder.encode(gotoURL, "UTF-8");
   }

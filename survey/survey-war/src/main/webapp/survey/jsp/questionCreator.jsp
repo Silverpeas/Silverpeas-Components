@@ -25,6 +25,7 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page import="java.io.PrintWriter"%>
 <%@ page import="java.io.IOException"%>
 <%@ page import="java.io.File"%>
@@ -72,7 +73,7 @@
 
 <%
 String nextAction = "";
-String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+String m_context = GeneralPropertiesManager.getString("ApplicationURL");
 
 //Icons
 String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
@@ -164,7 +165,7 @@ while (itemIter.hasNext()) {
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
-<%out.println(gef.getLookStyleSheet()); %>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
