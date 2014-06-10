@@ -49,6 +49,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import com.stratelia.webactiv.util.statistic.control.StatisticBm;
 
 @Service
 public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComponentService<News> {
@@ -224,6 +225,9 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
     // Deleting comments
     commentService.deleteAllCommentsOnPublication(News.CONTRIBUTION_TYPE, foreignPK);
     
+    // deleting statistics
+    getStatisticService().deleteStats(news);
+    
     // deleting news itself
     newsRepository.deleteById(id);
   }
@@ -293,6 +297,10 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
   @PreDestroy
   public void release() {
     commentUserNotificationService.unregister(QuickInfoComponentSettings.COMPONENT_NAME);
+  }
+  
+  private StatisticBm getStatisticService() {
+    return EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticBm.class);
   }
 
 }

@@ -56,6 +56,7 @@ import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
+import com.stratelia.webactiv.util.statistic.control.StatisticBm;
 
 /**
  * @author squere
@@ -125,11 +126,19 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
   }
 
   public News getNews(String id) {
-    return getService().getNews(id);
+    News news = getService().getNews(id);
+    addVisit(news);
+    return news;
   }
   
   public News getNewsByForeignId(String foreignId) {
-    return getService().getNewsByForeignId(foreignId);
+    News news = getService().getNewsByForeignId(foreignId);
+    addVisit(news);
+    return news;
+  }
+  
+  private void addVisit(News news) {
+    getStatisticService().addStat(getUserId(), news);
   }
 
   /**
@@ -278,6 +287,10 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
       }
     }
     return pdcPositions;
+  }
+  
+  private StatisticBm getStatisticService() {
+    return EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticBm.class);
   }
   
 }

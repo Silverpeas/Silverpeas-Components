@@ -3141,8 +3141,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     SilverTrace.info("kmelia", "KmeliaBmEJB.deleteAllReadingControlsByPublication()",
         "root.MSG_GEN_ENTER_METHOD");
     try {
-      statisticBm.deleteHistoryByAction(new ForeignPK(pubPK.getId(), pubPK.getInstanceId()),
-          1, "Publication");
+      statisticBm.deleteStats(new ForeignPK(pubPK.getId(), pubPK.getInstanceId()), "Publication");
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.deleteAllReadingControlsByPublication()",
           ERROR, "kmelia.EX_IMPOSSIBLE_DE_SUPPRIMER_LES_CONTROLES_DE_LECTURE", e);

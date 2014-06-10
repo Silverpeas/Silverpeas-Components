@@ -64,8 +64,6 @@ function notify() {
 </script>
 </head>
 <body class="quickInfo actuality" id="${news.componentInstanceId}">
-<fmt:message var="browseBarMsg" key="edition"/>
-<view:browseBar extraInformations="${browseBarMsg}" />
 <view:operationPane>
 	<c:if test="${role == 'admin' || role == 'publisher'}">
 	  <c:url var="deleteIconUrl" value="/util/icons/quickInfo_to_del.gif"/>
@@ -88,7 +86,7 @@ function notify() {
 	<div class="bgDegradeGris" id="actualityInfoPublication">
 		<p id="statInfo">
 			Consultée<br />
-			<b>6 fois</b>
+			<b>${news.nbAccess} fois</b>
 		</p>
 		
 		<c:if test="${appSettings.commentsEnabled}">

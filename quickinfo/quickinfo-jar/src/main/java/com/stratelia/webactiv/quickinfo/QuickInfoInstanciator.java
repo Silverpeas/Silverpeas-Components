@@ -31,6 +31,9 @@ import com.silverpeas.comment.service.CommentServiceFactory;
 import com.silverpeas.thumbnail.ThumbnailInstanciator;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.publication.PublicationInstanciator;
+import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.statistic.control.StatisticBm;
 
 public class QuickInfoInstanciator extends Object implements ComponentsInstanciatorIntf {
 
@@ -65,7 +68,14 @@ public class QuickInfoInstanciator extends Object implements ComponentsInstancia
     CommentServiceFactory.getFactory().getCommentService()
         .deleteAllCommentsByComponentInstanceId(componentId);
     
+    // deleting stats
+    getStatisticService().deleteStatsOfComponent(componentId);
+    
     SilverTrace.debug("quickinfo", "QuickInfoInstanciator.delete()",
         "QuickInfoInstanciator.delete finished");
+  }
+  
+  private StatisticBm getStatisticService() {
+    return EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticBm.class);
   }
 }

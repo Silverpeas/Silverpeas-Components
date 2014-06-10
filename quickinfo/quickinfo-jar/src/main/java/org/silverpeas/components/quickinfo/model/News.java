@@ -24,8 +24,11 @@ import com.silverpeas.comment.service.CommentServiceFactory;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import com.stratelia.webactiv.util.statistic.control.StatisticBm;
 
 @Entity
 @Table(name = "sc_quickinfo_news")
@@ -186,7 +189,7 @@ public class News extends AbstractJpaEntity<News, UuidIdentifier> implements Sil
 
   @Override
   public String getContributionType() {
-    return "QuickInfo";
+    return CONTRIBUTION_TYPE;
   }
 
   @Override
@@ -234,6 +237,14 @@ public class News extends AbstractJpaEntity<News, UuidIdentifier> implements Sil
   
   protected PublicationPK getForeignPK() {
     return new PublicationPK(getPublicationId(), getComponentInstanceId());
+  }
+  
+  public int getNbAccess() {
+    return getStatisticService().getCount(this);
+  }
+  
+  private StatisticBm getStatisticService() {
+    return EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticBm.class);
   }
   
 }
