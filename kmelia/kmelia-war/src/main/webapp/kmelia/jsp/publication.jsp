@@ -585,9 +585,9 @@
       <div class="rightContent">
       	<div id="statPublication" class="bgDegradeGris">
       		<p id="statInfo">
-      			<b><%= kmeliaPublication.getNbAccess()%> vues</b>
+      			<b><%= kmeliaPublication.getNbAccess()%> <%=resources.getString("GML.stats.views") %></b>
       			<% if (ratingsAllowed) { %>
-            <viewTags:displayContributionRating raterRating="${publicationRaterRatingEntity}"/>
+            		<viewTags:displayContributionRating raterRating="${publicationRaterRatingEntity}"/>
 				<% } %>
 			</p>
 
