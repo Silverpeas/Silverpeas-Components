@@ -126,19 +126,19 @@ function unsubscribe() {
 				<span class="sep"> | </span> <span class="creationInfo" ><fmt:message key="GML.createdAt"/> ${silfn:formatDateAndHour(news.creationDate, _language)} </span><span class="lastModificationInfo" >- <fmt:message key="GML.updatedAt"/> ${silfn:formatDate(news.updateDate, _language)} </span>
 				<span class="news-broadcast">
 					<c:if test="${news.important}">
-						<span class="news-broadcast-important">Importante</span> 
+						<span class="news-broadcast-important"><fmt:message key="quickinfo.news.broadcast.mode.major"/></span> 
 					</c:if>
 					<c:if test="${news.mandatory}">
-						<span class="news-broadcast-blocking">Alerte</span>
+						<span class="news-broadcast-blocking"><fmt:message key="quickinfo.news.broadcast.mode.blocking"/></span>
 					</c:if>
 					<c:if test="${news.ticker}">
-						<span class="news-broadcast-ticker">Ticker</span>
+						<span class="news-broadcast-ticker"><fmt:message key="quickinfo.news.broadcast.mode.ticker"/></span>
 					</c:if>
 				</span>
 				<c:if test="${role == 'admin' || role == 'publisher'}">
 					<div class="operation">
 						<a title="<fmt:message key="GML.modify"/>" href="Edit?Id=${news.id}"><img border="0" title="<fmt:message key="GML.modify"/>" alt="<fmt:message key="GML.modify"/>" src="/silverpeas/util/icons/update.gif" /></a>
-						<a title="<fmt:message key="GML.delete"/>" href="javascript:onclick=confirmDelete(${news.id}, '${deleteConfirmMsg}')"><img border="0" title="<fmt:message key="GML.delete"/>" alt="<fmt:message key="GML.delete"/>" src="/silverpeas/util/icons/delete.gif" /></a>
+						<a title="<fmt:message key="GML.delete"/>" href="javascript:onclick=confirmDelete('${news.id}', '${deleteConfirmMsg}')"><img border="0" title="<fmt:message key="GML.delete"/>" alt="<fmt:message key="GML.delete"/>" src="/silverpeas/util/icons/delete.gif" /></a>
 					</div>
 				</c:if>
 			</div>

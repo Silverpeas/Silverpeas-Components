@@ -7,9 +7,13 @@ import com.silverpeas.pdc.model.PdcPosition;
 
 public interface QuickInfoService extends SilverpeasComponentService<News> {
   
-  public News addNews(News news, List<PdcPosition> positions);
+  public News create(News news);
   
-  public void updateNews(News news);
+  public void publish(String id);
+  
+  public void updateAndPublish(News news, List<PdcPosition> positions);
+  
+  public void update(final News news, List<PdcPosition> positions);
   
   public void removeNews(String id);
   

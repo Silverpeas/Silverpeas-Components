@@ -23,6 +23,10 @@ import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
+import com.stratelia.silverpeas.pdc.control.PdcBm;
+import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
+import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
+import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
@@ -178,8 +182,7 @@ public class News extends AbstractJpaEntity<News, UuidIdentifier> implements Sil
 
   @Override
   public String getSilverpeasContentId() {
-    // TODO Auto-generated method stub
-    return null;
+    return getPublication().getSilverObjectId();
   }
 
   @Override
@@ -243,8 +246,29 @@ public class News extends AbstractJpaEntity<News, UuidIdentifier> implements Sil
     return getStatisticService().getCount(this);
   }
   
+  public boolean isDraft() {
+    return getPublication().isDraft();
+  }
+  
+  public void setDraft() {
+    getPublication().setStatus(PublicationDetail.DRAFT);
+  }
+  
+  public void setPublished() {
+    getPublication().setStatus(PublicationDetail.VALID);
+  }
+  
   private StatisticBm getStatisticService() {
     return EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticBm.class);
+  }
+  
+  public List<ClassifyPosition> getTaxonomyPositions() throws PdcException {
+    String silverObjectId = getPublication().getSilverObjectId();
+    return getTaxonomyService().getPositions(Integer.parseInt(silverObjectId), getComponentInstanceId());
+  }
+  
+  private PdcBm getTaxonomyService() {
+    return new PdcBmImpl();
   }
   
 }

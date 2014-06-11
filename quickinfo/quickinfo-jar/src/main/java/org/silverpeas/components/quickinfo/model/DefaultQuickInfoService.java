@@ -22,6 +22,7 @@ import org.silverpeas.components.quickinfo.repository.NewsRepository;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.persistence.Transaction;
 import org.silverpeas.persistence.repository.OperationContext;
+import org.silverpeas.search.indexEngine.model.IndexManager;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import com.silverpeas.SilverpeasComponentService;
@@ -120,9 +121,10 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
   }
 
   @Override
-  public News addNews(final News news, List<PdcPosition> positions) {
+  public News create(final News news) {
     // Creating publication
     final PublicationDetail publication = news.getPublication();
+    publication.setIndexOperation(IndexManager.NONE);
     final PublicationPK pubPK = getPublicationBm().createPublication(publication);
     publication.setPk(pubPK);
     
@@ -136,27 +138,54 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
     
     // Referring new content into taxonomy
     try {
-      new QuickInfoContentManager().createSilverContent(null, publication, publication.getCreatorId(), true);
+      new QuickInfoContentManager().createSilverContent(null, publication, publication.getCreatorId(), false);
     } catch (ContentManagerException e) {
       SilverTrace.error("quickinfo", "DefaultQuickInfoService.addNews()", "root.ContentManagerException", e);
     }
     
-    // Adding WYSIWYG content
-    WysiwygController.createUnindexedFileAndAttachment(news.getContent(), pubPK, publication.getCreatorId(), I18NHelper.defaultLanguage);
-    
-    // Classifying new content onto taxonomy
-    classifyQuickInfo(publication, positions);
-    
-    // Sending notifications to subscribers
-    UserNotificationHelper.buildAndSend(new QuickInfoSubscriptionUserNotification(savedNews, NotifAction.CREATE));
-    
     return savedNews;
   }
   
+  private void publish(final News news) {
+    news.setPublished();
+    
+    PublicationDetail publication = news.getPublication();
+    
+    getPublicationBm().setDetail(publication, false);
+    
+    try {
+      new QuickInfoContentManager().updateSilverContentVisibility(publication, true);
+    } catch (ContentManagerException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    
+    // Sending notifications to subscribers
+    UserNotificationHelper.buildAndSend(new QuickInfoSubscriptionUserNotification(news, NotifAction.CREATE));
+  }
+  
   @Override
-  public void updateNews(final News news) {
+  public void publish(String id) {
+    News news = getNews(id);
+    publish(news);
+  }
+  
+  @Override
+  public void updateAndPublish(final News news, List<PdcPosition> positions) {
+    update(news, positions, true);
+  }
+  
+  @Override
+  public void update(final News news, List<PdcPosition> positions) {
+    update(news, positions, false);
+  }
+  
+  private void update(final News news, List<PdcPosition> positions, boolean publish) {
     // Updating the publication
     final PublicationDetail publication = news.getPublication();
+    if (news.isDraft()) {
+      publication.setIndexOperation(IndexManager.NONE);
+    }
     getPublicationBm().setDetail(publication);
     
     Transaction.performInOne(new Transaction.Process<News>() {
@@ -169,27 +198,31 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
     
     // Updating visibility onto taxonomy
     try {
-      new QuickInfoContentManager().updateSilverContentVisibility(publication, true);
+      new QuickInfoContentManager().updateSilverContentVisibility(publication, !news.isDraft());
     } catch (ContentManagerException e) {
       SilverTrace.error("quickinfo", "DefaultQuickInfoService.update()",
           "root.ContentManagerException", e);
     }
-
-    // Update WYSIWYG content if exists, create one otherwise
-    if (publication.getWysiwyg() != null && !"".equals(publication.getWysiwyg())) {
-      WysiwygController.updateFileAndAttachment(news.getContent(), news.getComponentInstanceId(),
-          news.getPublicationId(), publication.getUpdaterId(), I18NHelper.defaultLanguage);
-    } else {
-      WysiwygController.createFileAndAttachment(news.getContent(), publication.getPK(),
-          publication.getUpdaterId(), I18NHelper.defaultLanguage);
-    }
     
-    // Sending notifications to subscribers
-    UserNotificationHelper.buildAndSend(new QuickInfoSubscriptionUserNotification(news, NotifAction.UPDATE));
+    // Classifying new content onto taxonomy
+    classifyQuickInfo(publication, positions);
+    
+    // saving WYSIWYG content
+    WysiwygController.save(news.getContent(), news.getComponentInstanceId(),
+        news.getPublicationId(), publication.getUpdaterId(), I18NHelper.defaultLanguage, false);
+    
+    if (!news.isDraft() && news.isVisible()) {
+      // Sending notifications to subscribers
+      NotifAction action = NotifAction.UPDATE;
+      if (publish) {
+        action = NotifAction.CREATE;
+      }
+      UserNotificationHelper.buildAndSend(new QuickInfoSubscriptionUserNotification(news, action));
+    }
   }
   
   @Override
-  public void removeNews(String id) {
+  public void removeNews(final String id) {
     News news = getNews(id);
     
     PublicationPK foreignPK = news.getForeignPK();
@@ -229,7 +262,12 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
     getStatisticService().deleteStats(news);
     
     // deleting news itself
-    newsRepository.deleteById(id);
+    Transaction.performInOne(new Transaction.Process<Long>() {
+      @Override
+      public Long execute() {
+        return Long.valueOf(newsRepository.deleteById(id));
+      }
+    });
   }
   
   @Override

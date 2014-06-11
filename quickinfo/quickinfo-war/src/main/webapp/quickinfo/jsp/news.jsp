@@ -47,7 +47,7 @@ pageContext.setAttribute("componentURL", URLManager.getFullApplicationURL(reques
 %>
 <c:set var="componentURL" value="${pageScope.componentURL}"/>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>QuickInfo - View</title>
@@ -61,17 +61,30 @@ function notify() {
   var windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars,resizable";
   SP_openWindow(url, windowName, "740", "600", windowParams, false);
 }
+
+function publish() {
+  $("#newsForm").attr("action", "Publish");
+  $("#newsForm").submit();
+}
+
+function update() {
+  $("#newsForm").attr("action", "Edit");
+  $("#newsForm").submit();
+}
 </script>
 </head>
 <body class="quickInfo actuality" id="${news.componentInstanceId}">
 <view:operationPane>
 	<c:if test="${role == 'admin' || role == 'publisher'}">
-	  <c:url var="deleteIconUrl" value="/util/icons/quickInfo_to_del.gif"/>
-	  <fmt:message var="updateMsg" key="GML.modify"/>
-	  <view:operation altText="${updateMsg}" action="Edit?Id=${news.id}"></view:operation>
-	  <fmt:message var="deleteMsg" key="GML.delete"/>
-	  <fmt:message var="deleteConfirmMsg" key="supprimerQIConfirmation"/>
-	  <view:operation altText="${deleteMsg}" icon="${deleteIconUrl}" action="javascript:onclick=confirmDelete(${news.id}, '${deleteConfirmMsg}')"/>
+	  	<c:if test="${news.draft}">
+			<fmt:message var="publishMsg" key="GML.publish"/>
+		  	<view:operation altText="${publishMsg}" action="javascript:onclick=publish()"></view:operation>
+		</c:if>
+		<fmt:message var="updateMsg" key="GML.modify"/>
+		<view:operation altText="${updateMsg}" action="javascript:onclick=update()"></view:operation>
+		<fmt:message var="deleteMsg" key="GML.delete"/>
+		<fmt:message var="deleteConfirmMsg" key="supprimerQIConfirmation"/>
+		<view:operation altText="${deleteMsg}" action="javascript:onclick=confirmDelete(${news.id}, '${deleteConfirmMsg}')"/>
 	</c:if>
 	<c:if test="${appSettings.notificationAllowed}">
 		<fmt:message var="notifyMsg" key="GML.notify"/>
@@ -84,11 +97,12 @@ function notify() {
 <div class="rightContent">
 	<div id="illustration"><img alt="" src="${news.thumbnail.URL}" /></div>
 	<div class="bgDegradeGris" id="actualityInfoPublication">
-		<p id="statInfo">
-			Consultée<br />
-			<b>${news.nbAccess} fois</b>
-		</p>
-		
+		<c:if test="${not news.draft}">
+			<p id="statInfo">
+				Consultée<br />
+				<b>${news.nbAccess} fois</b>
+			</p>
+		</c:if>
 		<c:if test="${appSettings.commentsEnabled}">
 		<p id="commentInfo">
 			<fmt:message key="GML.comment.number"/><br />
@@ -103,9 +117,14 @@ function notify() {
 	</div>
                           
     <viewTags:displayLastUserCRUD createDate="${news.createDate}" createdById="${news.createdBy}" updateDate="${news.updateDate}" updatedById="${news.updaterId}"/>
+    
+    <view:pdcClassificationPreview componentId="${news.componentInstanceId}" contentId="${news.publicationId}" />
 </div>
 
 <div class="principalContent" >
+	<c:if test="${news.draft}">
+		<div class="inlineMessage">Cette actualité est actuellement un brouillon... <a href="#" onclick="javascript:publish()">Publiez-la maintenant</a></div>
+	</c:if>
 	<h2 class="actuality-title">${news.title}</h2>
 	<c:if test="${not empty news.description}">
 		<p class="publiDesc text2"><view:encodeHtmlParagraph string="${news.description}"/></p>
@@ -120,8 +139,8 @@ function notify() {
 </div>
 <!-- /INTEGRATION UNE ACTU -->
 
-<form name="newsForm" action="" method="post">
-<input type="hidden" name="Id"/>
+<form name="newsForm" id="newsForm" action="" method="post">
+<input type="hidden" name="Id" value="${news.id}"/>
 </form>
 </view:window>
 </body>

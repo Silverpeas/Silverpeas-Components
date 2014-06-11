@@ -37,6 +37,7 @@
 
 <c:set var="curQuickInfo" value="${requestScope['info']}"/>
 <c:set var="thumbnailSettings" value="${requestScope['ThumbnailSettings']}"/>
+<c:set var="newOneInProgress" value="${requestScope['NewOneInProgress']}"/>
 
 <%@ include file="checkQuickInfo.jsp" %>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager" %>
@@ -82,6 +83,8 @@ if (quickInfoDetail != null) {
 
 <fmt:message var="buttonOK" key="GML.validate"/>
 <fmt:message var="buttonCancel" key="GML.cancel"/>
+<fmt:message var="buttonPublish" key="GML.publish"/>
+<fmt:message var="buttonSaveDraft" key="GML.saveDraft"/>
 
 <c:set var="thumbnailBackURL" value="${pageScope.thumbnailBackURL}"/>
 
@@ -141,11 +144,26 @@ function isCorrectForm() {
 
 function saveNews() {
 	if (isCorrectForm()) {
-  		<c:if test="${empty curQuickInfo}">
+  		<c:if test="${empty curQuickInfo.taxonomyPositions}">
     		<view:pdcPositions setIn="document.newsForm.Positions.value"/>;
    		</c:if>
-		document.newsForm.submit();
+   		$("#newsForm").submit();
 	}
+}
+
+function publish() {
+  if (isCorrectForm()) {
+	  <c:if test="${empty curQuickInfo.taxonomyPositions}">
+	  	<view:pdcPositions setIn="document.newsForm.Positions.value"/>;
+	  </c:if>
+	  $("#newsForm").attr("action", "SaveAndPublish");
+	  $("#newsForm").submit();
+  }
+}
+
+function abortNews() {
+  $("#newsForm").attr("action", "Remove");
+  $("#newsForm").submit();
 }
 
 $(document).ready(function() {
@@ -155,8 +173,11 @@ $(document).ready(function() {
 </head>
 <body id="quickinfo">
 <div id="<%=componentId %>">
-<fmt:message var="broweBarMsg" key="edition"/>
-<view:browseBar extraInformations="${broweBarMsg}" />
+<fmt:message var="browseBarMsg" key="edition"/>
+<c:if test="${newOneInProgress}">
+<fmt:message var="browseBarMsg" key="creation.inProgress"/>
+</c:if>
+<view:browseBar extraInformations="${browseBarMsg}" />
 <c:if test="${not empty curQuickInfo}">
 	<view:operationPane>
 	  <fmt:message var="deleteMsg" key="GML.delete"/>
@@ -166,7 +187,7 @@ $(document).ready(function() {
 </c:if>
 
 <view:window>
-<form name="newsForm" action="Save" method="post" enctype="multipart/form-data">
+<form name="newsForm" id="newsForm" action="Save" method="post" enctype="multipart/form-data">
   <input type="hidden" name="Positions" />
   <c:if test="${not empty curQuickInfo}">
     <input type="hidden" name="Id" value="${curQuickInfo.id}"/>
@@ -250,20 +271,37 @@ $(document).ready(function() {
 	</div>
 </div>
 
-<c:if test="${empty curQuickInfo}">
-  <view:pdcNewContentClassification componentId="<%=quickinfo.getComponentId()%>" />
-</c:if>
-<c:if test="${not empty curQuickInfo}">
-  <view:pdcClassification componentId="<%=quickinfo.getComponentId()%>" contentId="${curQuickInfo.id}" editable="true" />
-</c:if>
+<c:choose>
+<c:when test="${empty curQuickInfo.taxonomyPositions}">
+	<view:pdcNewContentClassification componentId="<%=quickinfo.getComponentId()%>" />
+</c:when>
+<c:otherwise>
+	<view:pdcClassification componentId="<%=quickinfo.getComponentId()%>" contentId="${curQuickInfo.publicationId}" editable="true" />
+</c:otherwise>
+</c:choose>
 
 <div class="legend">
   <fmt:message key="GML.requiredField" /> : <img src="<%=m_context%>/util/icons/mandatoryField.gif" width="5" height="5" />
 </div>
 
 <view:buttonPane>
-<view:button label="${buttonOK}" action="javascript:onclick=saveNews()"/>
+<c:choose>
+<c:when test="${curQuickInfo.draft}">
+	<view:button label="${buttonPublish}" action="javascript:onclick=publish()"/>
+	<view:button label="${buttonSaveDraft}" action="javascript:onclick=saveNews()"/>
+</c:when>
+<c:otherwise>
+	<view:button label="${buttonOK}" action="javascript:onclick=saveNews()"/>
+</c:otherwise>
+</c:choose>
+<c:choose>
+<c:when test="${newOneInProgress}">
+<view:button label="${buttonCancel}" action="javascript:onclick=abortNews()"/>
+</c:when>
+<c:otherwise>
 <view:button label="${buttonCancel}" action="Main"/>
+</c:otherwise>
+</c:choose>
 </view:buttonPane>
     
 </view:frame>

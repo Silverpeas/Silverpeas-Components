@@ -85,7 +85,7 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
     try {
       if ("Main".equals(function)) {
         Collection<News> infos;
-        if ("publisher".equals(flag) || "admin".equals(flag)) {
+        if (isContributor(flag)) {
           infos = quickInfo.getQuickInfos();
         } else {
           infos = quickInfo.getVisibleQuickInfos();
@@ -100,7 +100,16 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
         request.setAttribute("AppSettings", quickInfo.getInstanceSettings());
         destination = "/quickinfo/jsp/portlet.jsp";
       } else if ("Save".equals(function)) {
-        String id = createOrUpdateQuickInfo(quickInfo, request);
+        String id = saveQuickInfo(quickInfo, request, false);
+        request.setAttribute("Id", id);
+        destination = getDestination("View", quickInfo, request);
+      } else if ("Publish".equals(function)) {
+        String id = request.getParameter("Id");
+        quickInfo.publish(id);
+        request.setAttribute("Id", id);
+        destination = getDestination("View", quickInfo, request);
+      } else if ("SaveAndPublish".equals(function)) {
+        String id = saveQuickInfo(quickInfo, request, true);
         request.setAttribute("Id", id);
         destination = getDestination("View", quickInfo, request);
       } else if ("View".equals(function)) {
@@ -110,19 +119,29 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
           if (!StringUtil.isDefined(id)) {
             id = (String) request.getAttribute("Id");
           }
-          request.setAttribute("News", quickInfo.getNews(id));
+          request.setAttribute("News", quickInfo.getNews(id, true));
         }
         String anchor = request.getParameter("Anchor");
         request.setAttribute("AppSettings", quickInfo.getInstanceSettings());
         destination = "/quickinfo/jsp/news.jsp";
-      } else if ("Add".equals(function) || "Edit".equals(function)) {
-        if (!"publisher".equals(flag) && !"admin".equals(flag)) {
+      } else if ("Add".equals(function)) {
+        if (!isContributor(flag)) {
           throwHttpForbiddenError();
         }
-        setCommonAttributesToAddOrUpdate(quickInfo, request);
+        News news = quickInfo.createEmptyNews();
+        request.setAttribute("NewOneInProgress", true);
+        setCommonAttributesToAddOrUpdate(quickInfo, news, request);
+        destination = "/quickinfo/jsp/quickInfoEdit.jsp";
+      } else if ("Edit".equals(function)) {
+        if (!isContributor(flag)) {
+          throwHttpForbiddenError();
+        }
+        String id = request.getParameter("Id");
+        News news = quickInfo.getNews(id, false);
+        setCommonAttributesToAddOrUpdate(quickInfo, news, request);
         destination = "/quickinfo/jsp/quickInfoEdit.jsp";
       } else if ("Remove".equals(function)) {
-        if (!"publisher".equals(flag) && !"admin".equals(flag)) {
+        if (!isContributor(flag)) {
           throwHttpForbiddenError();
         }
         String id = request.getParameter("Id");
@@ -130,7 +149,11 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
         destination = getDestination("Main", quickInfo, request);
       } else if (function.startsWith("searchResult")) {
         String id = request.getParameter("Id");
-        request.setAttribute("News", quickInfo.getNewsByForeignId(id));
+        News news = quickInfo.getNewsByForeignId(id);
+        if (news.isDraft() && !isContributor(flag)) {
+          throwHttpForbiddenError();
+        }
+        request.setAttribute("News", news);
         destination = getDestination("View", quickInfo, request);
       } else if ("Notify".equals(function)) {
         String id = request.getParameter("Id");
@@ -147,13 +170,12 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
     return destination;
   }
   
-  private void setCommonAttributesToAddOrUpdate(QuickInfoSessionController quickInfo, HttpRequest request) {
-    String id = request.getParameter("Id");
-    News quickInfoDetail = null;
-    if (StringUtil.isDefined(id)) {
-      quickInfoDetail = quickInfo.getNews(id);
-    }
-    request.setAttribute("info", quickInfoDetail);
+  private boolean isContributor(String role) {
+    return "publisher".equals(role) || "admin".equals(role);
+  }
+  
+  private void setCommonAttributesToAddOrUpdate(QuickInfoSessionController quickInfo, News news, HttpRequest request) {
+    request.setAttribute("info", news);
     request.setAttribute("ThumbnailSettings", quickInfo.getThumbnailSettings());
   }
 
@@ -168,23 +190,22 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
    * @throws CreateException
    * @throws WysiwygException
    */
-  private String createOrUpdateQuickInfo(QuickInfoSessionController quickInfo,
-      HttpRequest request) throws Exception {
+  private String saveQuickInfo(QuickInfoSessionController quickInfo,
+      HttpRequest request, boolean publish) throws Exception {
 
     List<FileItem> items = request.getFileItems();
     News news = requestToNews(items, quickInfo.getLanguage());
+    
+    String positions = request.getParameter("Positions");
 
     String id = news.getId();
     String pubId = news.getPublicationId();
-    if (StringUtil.isDefined(id)) {
-      quickInfo.update(id, news);
+    if (publish) {
+      quickInfo.updateAndPublish(id, news, positions);
     } else {
-      String positions = request.getParameter("Positions");
-      News savedNews = quickInfo.add(news, positions);
-      id = savedNews.getId();
-      pubId = savedNews.getPublicationId();
+      quickInfo.update(id, news, positions);
     }
-
+    
     ThumbnailController.processThumbnail(new ForeignPK(pubId, quickInfo.getComponentId()), News.CONTRIBUTION_TYPE,
         items);
     

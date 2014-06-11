@@ -34,7 +34,7 @@ import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.components.quickinfo.model.QuickInfoService;
 import org.silverpeas.components.quickinfo.model.QuickInfoServiceFactory;
 import org.silverpeas.components.quickinfo.notification.NewsManualUserNotification;
-import org.silverpeas.wysiwyg.WysiwygException;
+import org.silverpeas.date.Period;
 
 import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.pdc.model.PdcPosition;
@@ -52,9 +52,9 @@ import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
 
@@ -107,27 +107,28 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     return instanceSettings;
   }
 
-  // Metier
-  public List<News> getQuickInfos() throws RemoteException {
+  public List<News> getQuickInfos() {
     List<News> allNews = getService().getAllNews(getComponentId());
     return sortByDateDesc(allNews);
   }
 
-  public List<News> getVisibleQuickInfos() throws RemoteException {
+  public List<News> getVisibleQuickInfos() {
     List<News> quickinfos = getQuickInfos();
     List<News> result = new ArrayList<News>();
     
     for (News news : quickinfos) {
-      if (news.isVisible()) {
+      if (news.isVisible() && !news.isDraft()) {
         result.add(news);
       }
     }
     return result;
   }
 
-  public News getNews(String id) {
+  public News getNews(String id, boolean statVisit) {
     News news = getService().getNews(id);
-    addVisit(news);
+    if (statVisit) {
+      addVisit(news);
+    }
     return news;
   }
   
@@ -138,7 +139,9 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
   }
   
   private void addVisit(News news) {
-    getStatisticService().addStat(getUserId(), news);
+    if (!news.isDraft()) {
+      getStatisticService().addStat(getUserId(), news);
+    }
   }
 
   /**
@@ -150,21 +153,33 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
    * @param end the end visibility date time
    * @param positions the JSON positions
    */
-  public News add(News news, String positions) {
-    List<PdcPosition> pdcPositions = getPositionsFromJSON(positions);
-    
+  public void publish(String id) {
+    getService().publish(id);    
+  }
+  
+  public News createEmptyNews() {
+    Period period = Period.from(DateUtil.MINIMUM_DATE, DateUtil.MAXIMUM_DATE);
+    News news = new News(getString("quickinfo.news.untitled"), null, period, false, false, false);
+    news.setDraft();
     news.setCreatorId(getUserId());
     news.setComponentInstanceId(getComponentId());
-    
-    return getService().addNews(news, pdcPositions);    
+    return getService().create(news);
   }
   
   private QuickInfoService getService() {
     return QuickInfoServiceFactory.getQuickInfoService();
   }
+    
+  public void updateAndPublish(String id, News updatedNews, String pdcPositions) {
+    update(id, updatedNews, getPositionsFromJSON(pdcPositions), true);
+  }
 
-  public void update(String id, News updatedNews) {    
-    News news = getNews(id);
+  public void update(String id, News updatedNews, String pdcPositions) {
+    update(id, updatedNews, getPositionsFromJSON(pdcPositions), false);
+  }
+  
+  private void update(String id, News updatedNews, List<PdcPosition> pdcPositions, boolean forcePublish) {
+    News news = getNews(id, false);
     news.setTitle(updatedNews.getTitle());
     news.setDescription(updatedNews.getDescription());
     news.setContent(updatedNews.getContent());
@@ -173,11 +188,14 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     news.setImportant(updatedNews.isImportant());
     news.setTicker(updatedNews.isTicker());
     news.setMandatory(updatedNews.isMandatory());
+    if (forcePublish) {
+      news.setPublished();
+    }
     
-    getService().updateNews(news);      
+    getService().update(news, pdcPositions);      
   }
 
-  public void remove(String id) throws RemoteException, WysiwygException, UtilException {
+  public void remove(String id) {
     getService().removeNews(id);
   }
 
@@ -245,7 +263,7 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     PairObject hostComponentName = new PairObject(getComponentLabel(), null);
     sel.setHostComponentName(hostComponentName);
     sel.setNotificationMetaData(UserNotificationHelper.build(new NewsManualUserNotification(
-        getNews(newsId), getUserDetail())));
+        getNews(newsId, false), getUserDetail())));
 
     SelectionUsersGroups sug = new SelectionUsersGroups();
     sug.setComponentId(getComponentId());
