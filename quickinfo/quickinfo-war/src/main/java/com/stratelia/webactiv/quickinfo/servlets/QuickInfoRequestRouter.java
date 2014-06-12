@@ -44,6 +44,7 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.quickinfo.control.QuickInfoSessionController;
 import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
 public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSessionController> {
 
@@ -199,15 +200,17 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
     String positions = request.getParameter("Positions");
 
     String id = news.getId();
-    String pubId = news.getPublicationId();
+    
+    // process thumbnail first to be stored in index when publication is updated
+    ThumbnailController.processThumbnail(
+        new ForeignPK(news.getPublicationId(), quickInfo.getComponentId()),
+        PublicationDetail.getResourceType(), items);
+    
     if (publish) {
       quickInfo.updateAndPublish(id, news, positions);
     } else {
       quickInfo.update(id, news, positions);
     }
-    
-    ThumbnailController.processThumbnail(new ForeignPK(pubId, quickInfo.getComponentId()), News.CONTRIBUTION_TYPE,
-        items);
     
     return id;
   }

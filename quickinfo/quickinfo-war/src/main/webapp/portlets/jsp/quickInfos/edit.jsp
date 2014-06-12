@@ -24,6 +24,7 @@
 
 --%>
 
+<%@page import="com.silverpeas.portlets.QuickInfosPortlet"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="javax.portlet.RenderRequest" %>
@@ -31,7 +32,6 @@
 <%@ page import="javax.portlet.PortletPreferences" %>
 <%@ page import="javax.portlet.PortletURL" %>
 <%@ page import="com.silverpeas.portlets.FormNames" %>
-<%@ page session="false" %>
 
 <%@ taglib uri="http://java.sun.com/portlet" prefix="portlet" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
@@ -40,42 +40,43 @@
 
 <portlet:defineObjects/>
 <portlet:actionURL var="actionURL"/>
-<view:setBundle basename="com.silverpeas.portlets.multilang.portletsBundle"/>
+<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
+<view:setBundle basename="org.silverpeas.quickinfo.multilang.quickinfo"/>
+
+<style>
+.txtlibform {
+  padding-right: 10px;
+  width: 150px;
+}
+</style>
 
 <%
-    RenderRequest pReq = (RenderRequest)request.getAttribute("javax.portlet.request");
-    RenderResponse rRes = (RenderResponse)request.getAttribute("javax.portlet.response");
-    PortletPreferences pref = pReq.getPreferences();
-    String error = pReq.getParameter(FormNames.ERROR_BAD_VALUE);
-%>
-    <!-- START error -->
-<%
-    if (error != null) {
-%>
-      <div class="portlet-msg-error" style="color: red">
-          <fmt:message key="portlets.portlet.nextEvents.error"/>
-      </div>
-      <br>
-<%
-        }
+RenderRequest pReq = (RenderRequest)request.getAttribute("javax.portlet.request");
+RenderResponse rRes = (RenderResponse)request.getAttribute("javax.portlet.response");
+PortletPreferences pref = pReq.getPreferences();
+    
+String slideshowSelected="";
+String listSelected = "selected=\"selected\"";;
+if (pref.getValue(QuickInfosPortlet.PARAM_DISPLAY, "list").equals("slideshow")) {
+  slideshowSelected = "selected=\"selected\"";
+  listSelected = "";
+}
 %>
 
     <form name="inputForm" target="_self" method="POST" action="<c:out value="${actionURL}" />">
-        <table border="0" width="100%" style="align: center">
-
-            <!-- START "url" text box -->
+        <table border="0" width="100%">
             <tr>
-                <td><fmt:message key="portlets.portlet.nextEvents.pref.nbEvents" /> :</td>
-                <td><input class="portlet-form-input-field" name="<%=FormNames.TEXTBOX_NB_ITEMS%>" value="<%=pref.getValue("nbEvents","")%>" type="text" size="10"/></td>
+                <td class="txtlibform"><fmt:message key="quickinfo.portlet.pref.display.mode" /> :</td>
+                <td><select name="<%=QuickInfosPortlet.PARAM_DISPLAY%>">
+                	<option value="slideshow" <%=slideshowSelected %>><fmt:message key="quickinfo.portlet.pref.display.mode.slideshow" /></option>
+                	<option value="list" <%=listSelected %>><fmt:message key="quickinfo.portlet.pref.display.mode.list" /></option>
+                </select></td>
             </tr>
-
-            <!-- START "finished" and "cancel" buttons -->
             <tr>
-                <td colspan="2" style="text-align: center; vertical-align: top">
-                    <input class="portlet-form-button" name="<%=FormNames.SUBMIT_FINISHED%>" type="submit" value="<fmt:message key="portlets.validate"/>"/>
-                    <input class="portlet-form-button" name="<%=FormNames.SUBMIT_CANCEL%>" type="submit" value="<fmt:message key="portlets.cancel"/>"/>
+                <td colspan="2">
+                    <input class="portlet-form-button" name="<%=FormNames.SUBMIT_FINISHED%>" type="submit" value="<fmt:message key="GML.validate"/>"/>
+                    <input class="portlet-form-button" name="<%=FormNames.SUBMIT_CANCEL%>" type="submit" value="<fmt:message key="GML.cancel"/>"/>
                 </td>
             </tr>
         </table>
-        <!-- END "finished" and "cancel" buttons -->
     </form>

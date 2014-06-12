@@ -37,6 +37,7 @@
 
 <portlet:defineObjects/>
 
-<view:setBundle basename="com.silverpeas.portlets.multilang.portletsBundle"/>
+<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
+<view:setBundle basename="org.silverpeas.quickinfo.multilang.quickinfo"/>
 
-<fmt:message key="portlets.portlet.quickInfos.help"/>
+<fmt:message key="quickinfo.portlet.help"/>

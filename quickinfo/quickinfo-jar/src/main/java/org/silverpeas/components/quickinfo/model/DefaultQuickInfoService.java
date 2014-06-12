@@ -181,8 +181,13 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
   }
   
   private void update(final News news, List<PdcPosition> positions, boolean publish) {
-    // Updating the publication
     final PublicationDetail publication = news.getPublication();
+    
+    // saving WYSIWYG content
+    WysiwygController.save(news.getContent(), news.getComponentInstanceId(),
+        news.getPublicationId(), publication.getUpdaterId(), I18NHelper.defaultLanguage, false);
+    
+    // Updating the publication
     if (news.isDraft()) {
       publication.setIndexOperation(IndexManager.NONE);
     }
@@ -206,10 +211,6 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
     
     // Classifying new content onto taxonomy
     classifyQuickInfo(publication, positions);
-    
-    // saving WYSIWYG content
-    WysiwygController.save(news.getContent(), news.getComponentInstanceId(),
-        news.getPublicationId(), publication.getUpdaterId(), I18NHelper.defaultLanguage, false);
     
     if (!news.isDraft() && news.isVisible()) {
       // Sending notifications to subscribers

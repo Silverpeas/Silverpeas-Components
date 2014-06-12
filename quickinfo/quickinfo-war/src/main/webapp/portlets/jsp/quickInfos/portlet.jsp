@@ -41,35 +41,60 @@
 
 <%@ taglib uri="http://java.sun.com/portlet" prefix="portlet" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 
 <portlet:defineObjects/>
 
-<%
-RenderRequest 	pReq 	= (RenderRequest) request.getAttribute("javax.portlet.request");
-List<News> 		infos 	= (List<News>) pReq.getAttribute("QuickInfos");
+<c:set var="pRequest" value="${requestScope['javax.portlet.request']}"/>
+<c:set var="allNews" value="${pRequest.getAttribute('QuickInfos')}"/>
 
-String description = "";
-for (News news : infos) {
-    PublicationDetail pub = news.getPublication();
-	UserDetail pubCreator = UserDetail.getById(pub.getCreatorId());
+<c:set var="displayMode" value="${pRequest.preferences.map['displayMode']}"/>
+<c:set var="slideshow" value="${displayMode[0] == 'slideshow'}"/>
 
-    description = pub.getWysiwyg();
-    if (!StringUtil.isDefined(description)) {
-    	description = EncodeHelper.javaStringToHtmlParagraphe(pub.getDescription());
-    }
-    
-    %>
+<c:if test="${slideshow}">
+<script src="<%=m_sContext %>/portlets/jsp/quickInfos/js/responsiveslides.min.js" type="text/javascript"></script>
+<link rel="stylesheet" href="<%=m_sContext %>/portlets/jsp/quickInfos/css/responsiveslides.css" />
+<link rel="stylesheet" href="<%=m_sContext %>/portlets/jsp/quickInfos/css/themes.css" />
+<script type="text/javascript" >
+$(document).ready(function() {
+	$(".slider-actuality-portlet").responsiveSlides({
+			auto: true,
+			pager: false,
+			nav: true,
+			speed: 500,
+			pause: true,
+			timeout: 6000,
+			namespace: "centered-btns"
+		});
+});
+</script>
+	<div class="rslides">	
+	<ul class="slider-actuality-portlet">
+</c:if>
+<c:if test="${not slideshow}">
+	<ul class="listing-actuality-portlet">
+</c:if>
 
-	<table cellpadding="3" cellspacing="0" border="0" width="98%"><tr><td><span class="textePetitBold"><%=EncodeHelper.convertHTMLEntities(pub.getName()) %></span><br/><view:username userId="<%=pubCreator.getId()%>"/> - <%=DateUtil.getOutputDate(pub.getCreationDate(), language)%></td></tr></table>
-	<table cellpadding="1" cellspacing="0" border="0" class="intfdcolor" width="98%"><tr><td>
-	<table cellpadding="3" cellspacing="0" border="0" class="intfdcolor4" width="100%"><tr><td>
+	<c:forEach items="${allNews}" var="news">
+		<li>
+			<c:if test="${not empty news.thumbnail}">
+				<img class="actuality-illustration" alt="" src="${news.thumbnail.URL}" />
+			</c:if>
+			<h3 class="actuality-title"><a href="${news.permalink}">${news.title}</a></h3>
+			<div class="actuality-info-fonctionality">
+				<span class="actuality-date">${silfn:formatDate(news.updateDate, _language)}</span>
+				<a href="consultation.html#commentaires" class="actuality-nb-commentaires"><img src="/silverpeas/util/icons/talk2user.gif" alt="commentaire" /> ${news.numberOfComments}</a> 
+			</div>
+			<p class="actuality-teasing">${news.description}</p>
+		</li>
+	</c:forEach>
 
-		<span class="txtnote"><%=description%></span>
-
-	</td></tr></table>
-	</td></tr></table>
-
-	<%
-}
-out.flush();
-%>
+<c:if test="${slideshow}">
+	</ul>
+	</div>
+</c:if>
+<c:if test="${not slideshow}">
+	</ul>
+	<br clear="both" />
+</c:if>

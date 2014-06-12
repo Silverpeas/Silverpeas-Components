@@ -27,6 +27,7 @@ import com.stratelia.silverpeas.pdc.control.PdcBm;
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
@@ -269,6 +270,10 @@ public class News extends AbstractJpaEntity<News, UuidIdentifier> implements Sil
   
   private PdcBm getTaxonomyService() {
     return new PdcBmImpl();
+  }
+  
+  public String getPermalink() {
+    return URLManager.getSimpleURL(URLManager.URL_PUBLI, getPublicationId());
   }
   
 }
