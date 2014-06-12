@@ -159,7 +159,7 @@
   border-radius: 8px;
   -webkit-border-radius: 8px;
   -moz-border-radius: 8px;
-  padding: 13px;
+  padding: 13px 82px 13px 13px;
   margin: 0 0 1em 0;
   position: relative;
 }
