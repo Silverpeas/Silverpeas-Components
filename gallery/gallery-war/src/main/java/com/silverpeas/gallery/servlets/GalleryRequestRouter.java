@@ -367,7 +367,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         putPhotoCommonParameters(request, gallerySC, photo, flag);
 
         String repertoire =
-            gallerySC.getSettings().getString("imagesSubDirectory") + photo.getPhotoPK().getId();
+            gallerySC.getSettings().getString("imagesSubDirectory") + photo.getMediaPK().getId();
         request.setAttribute("Repertoire", repertoire);
 
         // appel jsp
@@ -446,12 +446,12 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
       } else if (function.equals("PreviousPhoto")) {
         // récupération de la photo précédente
         PhotoDetail photo = gallerySC.getPrevious();
-        request.setAttribute("PhotoId", photo.getPhotoPK().getId());
+        request.setAttribute("PhotoId", photo.getMediaPK().getId());
         destination = getDestination("PreviewPhoto", gallerySC, request);
       } else if (function.equals("NextPhoto")) {
         // récupération de la photo suivante
         PhotoDetail photo = gallerySC.getNext();
-        request.setAttribute("PhotoId", photo.getPhotoPK().getId());
+        request.setAttribute("PhotoId", photo.getMediaPK().getId());
         destination = getDestination("PreviewPhoto", gallerySC, request);
       } else if (function.startsWith("searchResult")) {
         // traitement des recherches
@@ -782,7 +782,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         request.setAttribute("IsViewMetadata", gallerySC.isViewMetadata());
 
         String repertoire =
-            gallerySC.getSettings().getString("imagesSubDirectory") + photo.getPhotoPK().getId();
+            gallerySC.getSettings().getString("imagesSubDirectory") + photo.getMediaPK().getId();
         request.setAttribute("Repertoire", repertoire);
 
         // récupération du formulaire et affichage
@@ -1650,7 +1650,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
     Form formView;
     DataRecord data;
 
-    String photoId = photo.getPhotoPK().getId();
+    String photoId = photo.getMediaPK().getId();
     String xmlFormName = gallerySC.getXMLFormName();
     if (isDefined(xmlFormName)) {
       String xmlFormShortName =

@@ -62,8 +62,8 @@ public class GalleryIndexPhotoDataProcess extends AbstractGalleryDataProcess {
     if (getPhoto() != null) {
       // Index the Photo
       indexEntry =
-          new FullIndexEntry(getPhoto().getPhotoPK().getComponentName(), "Photo", getPhoto()
-              .getPhotoPK().getId());
+          new FullIndexEntry(getPhoto().getMediaPK().getComponentName(), "Photo", getPhoto()
+              .getMediaPK().getId());
       indexEntry.setTitle(getPhoto().getTitle());
       indexEntry.setPreView(getPhoto().getDescription());
       indexEntry.setCreationDate(getPhoto().getCreationDate());
@@ -82,7 +82,7 @@ public class GalleryIndexPhotoDataProcess extends AbstractGalleryDataProcess {
         indexEntry.setThumbnail(getPhoto().getImageName());
         indexEntry.setThumbnailMimeType(getPhoto().getImageMimeType());
         indexEntry.setThumbnailDirectory(gallerySettings.getString("imagesSubDirectory") +
-            getPhoto().getPhotoPK().getId());
+            getPhoto().getMediaPK().getId());
       }
 
       // récupération des méta données pour les indéxer
@@ -126,7 +126,7 @@ public class GalleryIndexPhotoDataProcess extends AbstractGalleryDataProcess {
               PublicationTemplateManager.getInstance().getPublicationTemplate(
                   getPhoto().getInstanceId() + ":" + xmlFormShortName);
           final RecordSet set = pubTemplate.getRecordSet();
-          set.indexRecord(getPhoto().getPhotoPK().getId(), xmlFormShortName, indexEntry);
+          set.indexRecord(getPhoto().getMediaPK().getId(), xmlFormShortName, indexEntry);
           SilverTrace.info("gallery", "GalleryIndexPhotoDataProcess.onSuccessful()",
               "root.MSG_GEN_ENTER_METHOD", "indexEntry = " + indexEntry.toString());
         } catch (final Exception e) {

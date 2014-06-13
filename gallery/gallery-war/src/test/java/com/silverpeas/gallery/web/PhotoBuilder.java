@@ -25,8 +25,8 @@ package com.silverpeas.gallery.web;
 
 import java.sql.Date;
 
+import com.silverpeas.gallery.model.MediaPK;
 import com.silverpeas.gallery.model.PhotoDetail;
-import com.silverpeas.gallery.model.PhotoPK;
 
 /**
  * @author Yohann Chastagnier
@@ -51,7 +51,7 @@ public class PhotoBuilder {
     public PhotoMock(final String photoId, final String componentId) {
       super("title" + photoId, "description" + photoId, Date.valueOf("2012-01-01"), null,
           "2012/01/01", "author", true, true);
-      setPhotoPK(new PhotoPK(photoId, componentId));
+      setMediaPK(new MediaPK(photoId, componentId));
       setImageName("imageName" + photoId);
     }
   }

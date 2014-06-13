@@ -29,11 +29,11 @@ import com.silverpeas.gallery.delegate.PhotoDataCreateDelegate;
 import com.silverpeas.gallery.delegate.PhotoDataUpdateDelegate;
 import com.silverpeas.gallery.model.AlbumDetail;
 import com.silverpeas.gallery.model.GalleryRuntimeException;
+import com.silverpeas.gallery.model.MediaPK;
 import com.silverpeas.gallery.model.MetaData;
 import com.silverpeas.gallery.model.Order;
 import com.silverpeas.gallery.model.OrderRow;
 import com.silverpeas.gallery.model.PhotoDetail;
-import com.silverpeas.gallery.model.PhotoPK;
 import com.silverpeas.gallery.process.GalleryProcessExecutionContext;
 import com.silverpeas.gallery.process.GalleryProcessManagement;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
@@ -163,10 +163,10 @@ public class GalleryBmEJB implements GalleryBm {
   }
 
   @Override
-  public PhotoDetail getPhoto(final PhotoPK photoPK) {
+  public PhotoDetail getPhoto(final MediaPK mediaPK) {
     final Connection con = initCon();
     try {
-      return getPhoto(con, photoPK);
+      return getPhoto(con, mediaPK);
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getPhoto()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
@@ -175,8 +175,8 @@ public class GalleryBmEJB implements GalleryBm {
     }
   }
 
-  private PhotoDetail getPhoto(final Connection con, final PhotoPK photoPK) throws Exception {
-    final int photoId = Integer.parseInt(photoPK.getId());
+  private PhotoDetail getPhoto(final Connection con, final MediaPK mediaPK) throws Exception {
+    final int photoId = Integer.parseInt(mediaPK.getId());
     return PhotoDAO.getPhoto(con, photoId);
   }
 
@@ -248,7 +248,7 @@ public class GalleryBmEJB implements GalleryBm {
       if (delegate.getAlbum().hasFather()) {
         for (final Map.Entry<PhotoDetail, Boolean> photoToPaste : delegate.getPhotosToPaste()
             .entrySet()) {
-          processManagement.addPastePhotoProcesses(getPhoto(photoToPaste.getKey().getPhotoPK()),
+          processManagement.addPastePhotoProcesses(getPhoto(photoToPaste.getKey().getMediaPK()),
               delegate.getAlbum().getNodePK(), photoToPaste.getValue());
         }
       }
@@ -309,7 +309,7 @@ public class GalleryBmEJB implements GalleryBm {
           componentInstanceId);
       for (final String photoId : photoIds) {
         processManagement.addUpdatePhotoProcesses(
-            getPhoto(new PhotoPK(photoId, componentInstanceId)), false, null, null, delegate);
+            getPhoto(new MediaPK(photoId, componentInstanceId)), false, null, null, delegate);
       }
       processManagement.execute();
     } catch (final Exception e) {
@@ -345,7 +345,7 @@ public class GalleryBmEJB implements GalleryBm {
       PhotoDetail photo;
       for (final String photoId : photoIds) {
         photo = new PhotoDetail();
-        photo.setPhotoPK(new PhotoPK(photoId, componentInstanceId));
+        photo.setMediaPK(new MediaPK(photoId, componentInstanceId));
         processManagement.addDeletePhotoProcesses(photo);
       }
       processManagement.execute();
@@ -575,8 +575,8 @@ public class GalleryBmEJB implements GalleryBm {
 
     if (photo != null) {
       // Index the Photo
-      indexEntry = new FullIndexEntry(photo.getPhotoPK().getComponentName(), "Photo",
-          photo.getPhotoPK().getId());
+      indexEntry = new FullIndexEntry(photo.getMediaPK().getComponentName(), "Photo",
+          photo.getMediaPK().getId());
       indexEntry.setTitle(photo.getTitle());
       indexEntry.setPreView(photo.getDescription());
       indexEntry.setCreationDate(photo.getCreationDate());
@@ -595,7 +595,7 @@ public class GalleryBmEJB implements GalleryBm {
         indexEntry.setThumbnail(photo.getImageName());
         indexEntry.setThumbnailMimeType(photo.getImageMimeType());
         indexEntry.setThumbnailDirectory(gallerySettings.getString("imagesSubDirectory") + photo.
-            getPhotoPK().getId());
+            getMediaPK().getId());
       }
 
       // récupération des méta données pour les indéxer
@@ -637,7 +637,7 @@ public class GalleryBmEJB implements GalleryBm {
           pubTemplate = PublicationTemplateManager.getInstance().getPublicationTemplate(
               photo.getInstanceId() + ":" + xmlFormShortName);
           final RecordSet set = pubTemplate.getRecordSet();
-          set.indexRecord(photo.getPhotoPK().getId(), xmlFormShortName, indexEntry);
+          set.indexRecord(photo.getMediaPK().getId(), xmlFormShortName, indexEntry);
           SilverTrace.info("gallery", "GalleryBmEJB.createIndex()", "root.MSG_GEN_ENTER_METHOD",
               "indexEntry = " + indexEntry.toString());
         } catch (final Exception e) {
@@ -651,17 +651,17 @@ public class GalleryBmEJB implements GalleryBm {
   }
 
   @Override
-  public int getSilverObjectId(final PhotoPK photoPK) {
+  public int getSilverObjectId(final MediaPK mediaPK) {
     SilverTrace.info("gallery", "GalleryBmEJB.getSilverObjectId()", "root.MSG_GEN_ENTER_METHOD",
-        "photoId = " + photoPK.getId());
+        "photoId = " + mediaPK.getId());
     int silverObjectId = -1;
     PhotoDetail photoDetail;
     try {
-      silverObjectId = getGalleryContentManager().getSilverObjectId(photoPK.getId(), photoPK
+      silverObjectId = getGalleryContentManager().getSilverObjectId(mediaPK.getId(), mediaPK
           .getInstanceId());
 
       if (silverObjectId == -1) {
-        photoDetail = getPhoto(photoPK);
+        photoDetail = getPhoto(mediaPK);
         silverObjectId = createSilverContent(null, photoDetail, photoDetail.getCreatorId());
       }
     } catch (final Exception e) {
@@ -674,7 +674,7 @@ public class GalleryBmEJB implements GalleryBm {
   private int createSilverContent(final Connection con, final PhotoDetail photoDetail,
       final String creatorId) {
     SilverTrace.info("gallery", "GalleryBmEJB.createSilverContent()", "root.MSG_GEN_ENTER_METHOD",
-        "photoId = " + photoDetail.getPhotoPK().getId());
+        "photoId = " + photoDetail.getMediaPK().getId());
     try {
       return getGalleryContentManager().createSilverContent(con, photoDetail, creatorId);
     } catch (final Exception e) {
@@ -693,12 +693,12 @@ public class GalleryBmEJB implements GalleryBm {
       for (final MatchingIndexEntry matchIndex : result) {
         // Ne retourne que les photos
         if (matchIndex.getObjectType().equals("Photo")) {
-          final PhotoPK photoPK = new PhotoPK(matchIndex.getObjectId());
-          final PhotoDetail photo = getPhoto(photoPK);
+          final MediaPK mediaPK = new MediaPK(matchIndex.getObjectId());
+          final PhotoDetail photo = getPhoto(mediaPK);
 
           if (photo != null) {
             SilverTrace.info("gallery", "GalleryBmEJB.getResultSearch()",
-                "root.MSG_GEN_ENTER_METHOD", "photo = " + photo.getPhotoPK().getId());
+                "root.MSG_GEN_ENTER_METHOD", "photo = " + photo.getMediaPK().getId());
             photos.add(photo);
           }
         }

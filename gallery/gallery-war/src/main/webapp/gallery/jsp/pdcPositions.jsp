@@ -37,7 +37,7 @@
 	String 		xmlFormName		= (String) request.getAttribute("XMLFormName");
 	boolean		showComments	= ((Boolean) request.getAttribute("ShowCommentsTab")).booleanValue();
 		
-	String 		photoId			= photo.getPhotoPK().getId();
+	String 		photoId			= photo.getMediaPK().getId();
 	String 		nbComments 		= nbCom.toString();
 %>
 

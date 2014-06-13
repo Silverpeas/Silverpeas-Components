@@ -35,8 +35,8 @@ public class GSCCreationDateComparatorAsc implements Comparator<PhotoDetail> {
         photo2.getCreationDate());
     if (compareResult == 0) {
       // les 2 photos on été créée à la même date, comparer les Id
-      compareResult = photo1.getPhotoPK().getId().compareTo(
-          photo2.getPhotoPK().getId());
+      compareResult = photo1.getMediaPK().getId().compareTo(
+          photo2.getMediaPK().getId());
     }
     return compareResult;
   }

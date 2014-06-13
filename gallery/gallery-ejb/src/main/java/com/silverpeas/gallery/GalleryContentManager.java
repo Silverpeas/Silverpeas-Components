@@ -26,8 +26,8 @@ import java.util.List;
 
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.model.GalleryRuntimeException;
+import com.silverpeas.gallery.model.MediaPK;
 import com.silverpeas.gallery.model.PhotoDetail;
-import com.silverpeas.gallery.model.PhotoPK;
 
 import com.stratelia.silverpeas.contentManager.ContentInterface;
 import com.stratelia.silverpeas.contentManager.ContentManager;
@@ -86,44 +86,44 @@ public class GalleryContentManager implements ContentInterface, java.io.Serializ
   public int createSilverContent(Connection con, PhotoDetail photoDetail, String userId)
       throws ContentManagerException {
     return getContentManager().addSilverContent(con,
-        photoDetail.getPhotoPK().getId(),
-        photoDetail.getPhotoPK().getComponentName(), userId);
+        photoDetail.getMediaPK().getId(),
+        photoDetail.getMediaPK().getComponentName(), userId);
   }
 
   /**
    * delete a content. It is registered to contentManager service
    *
    * @param con a Connection
-   * @param photoPK the identifiant of the content to unregister
+   * @param mediaPK the identifiant of the content to unregister
    * @throws ContentManagerException
    */
-  public void deleteSilverContent(Connection con, PhotoPK photoPK) throws ContentManagerException {
-    int contentId = getContentManager().getSilverContentId(photoPK.getId(),
-        photoPK.getComponentName());
+  public void deleteSilverContent(Connection con, MediaPK mediaPK) throws ContentManagerException {
+    int contentId = getContentManager().getSilverContentId(mediaPK.getId(),
+        mediaPK.getComponentName());
     if (contentId != -1) {
       SilverTrace.info("gallery", "GalleryContentManager.deleteSilverContent()",
-          "root.MSG_GEN_ENTER_METHOD", "photoId = " + photoPK.getId()
+          "root.MSG_GEN_ENTER_METHOD", "photoId = " + mediaPK.getId()
           + ", contentId = " + contentId);
       getContentManager().removeSilverContent(con, contentId,
-          photoPK.getComponentName());
+          mediaPK.getComponentName());
     }
   }
 
   /**
-   * return a list of photoPK according to a list of silverContentId
+   * return a list of mediaPK according to a list of silverContentId
    *
    * @param idList a list of silverContentId
    * @param peasId the id of the instance
-   * @return a list of PhotoPK
+   * @return a list of MediaPK
    */
-  private ArrayList<PhotoPK> makePKArray(List<Integer> idList, String peasId) {
-    ArrayList<PhotoPK> pks = new ArrayList<PhotoPK>();
+  private ArrayList<MediaPK> makePKArray(List<Integer> idList, String peasId) {
+    ArrayList<MediaPK> pks = new ArrayList<MediaPK>();
     // for each silverContentId, we get the corresponding photoId
     for(int contentId : idList)  {
       try {
         String id = getContentManager().getInternalContentId(contentId);
-        PhotoPK photoPK = new PhotoPK(id, peasId);
-        pks.add(photoPK);
+        MediaPK mediaPK = new MediaPK(id, peasId);
+        pks.add(mediaPK);
       } catch (ClassCastException ignored) {
         // ignore unknown item
       } catch (ContentManagerException ignored) {
@@ -134,18 +134,18 @@ public class GalleryContentManager implements ContentInterface, java.io.Serializ
   }
 
   /**
-   * return a list of silverContent according to a list of photoPK
+   * return a list of silverContent according to a list of mediaPK
    *
-   * @param ids a list of photoPK
+   * @param ids a list of mediaPK
    * @return a list of photoDetail
    */
-  private List<PhotoDetail> getHeaders(List<PhotoPK> ids) {
+  private List<PhotoDetail> getHeaders(List<MediaPK> ids) {
     ArrayList<PhotoDetail> headers = new ArrayList<PhotoDetail>();
     // création de la liste "headers" avec toutes les photos (format PhotoDetail)
-    // en fonction de la liste "ids" des photos (format PhotoPK)
+    // en fonction de la liste "ids" des photos (format MediaPK)
     if (ids != null) {
-      for (PhotoPK photoPK : ids) {
-        PhotoDetail photo = getGalleryBm().getPhoto(photoPK);
+      for (MediaPK mediaPK : ids) {
+        PhotoDetail photo = getGalleryBm().getPhoto(mediaPK);
         photo.setIconUrl("gallerySmall.gif");
         headers.add(photo);
       }

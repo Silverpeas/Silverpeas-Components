@@ -26,13 +26,13 @@ package com.silverpeas.kmelia.export;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.silverpeas.gallery.model.MediaPK;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.model.PhotoDetail;
-import com.silverpeas.gallery.model.PhotoPK;
 
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileRepositoryManager;
@@ -144,8 +144,8 @@ public class SilverpeasImageFinder {
     String imageId = parameters.get("ImageId");
     String componentId = parameters.get("ComponentId");
     PhotoDetail image = getGalleryBm().getPhoto(
-        new PhotoPK(imageId, componentId));
-    return FileRepositoryManager.getAbsolutePath(image.getPhotoPK().getInstanceId()) + "image"
+        new MediaPK(imageId, componentId));
+    return FileRepositoryManager.getAbsolutePath(image.getMediaPK().getInstanceId()) + "image"
         + image.getId() + "/" + image.getImageName();
   }
 

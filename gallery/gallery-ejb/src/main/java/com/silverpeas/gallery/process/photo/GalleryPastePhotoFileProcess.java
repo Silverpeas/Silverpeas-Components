@@ -23,12 +23,12 @@
  */
 package com.silverpeas.gallery.process.photo;
 
+import com.silverpeas.gallery.model.MediaPK;
 import org.silverpeas.process.io.file.FileHandler;
 import org.silverpeas.process.session.ProcessSession;
 
 import com.silverpeas.gallery.ImageHelper;
 import com.silverpeas.gallery.model.PhotoDetail;
-import com.silverpeas.gallery.model.PhotoPK;
 import com.silverpeas.gallery.process.AbstractGalleryFileProcess;
 import com.silverpeas.gallery.process.GalleryProcessExecutionContext;
 
@@ -38,31 +38,31 @@ import com.silverpeas.gallery.process.GalleryProcessExecutionContext;
  */
 public class GalleryPastePhotoFileProcess extends AbstractGalleryFileProcess {
 
-  private final PhotoPK fromPhotoPk;
+  private final MediaPK fromMediaPk;
   private final boolean isCutted;
 
   /**
    * Gets an instance
    * @param photo
-   * @param fromPhotoPk
+   * @param fromMediaPk
    * @param isCutted
    * @return
    */
   public static GalleryPastePhotoFileProcess getInstance(final PhotoDetail photo,
-      final PhotoPK fromPhotoPk, final boolean isCutted) {
-    return new GalleryPastePhotoFileProcess(photo, fromPhotoPk, isCutted);
+      final MediaPK fromMediaPk, final boolean isCutted) {
+    return new GalleryPastePhotoFileProcess(photo, fromMediaPk, isCutted);
   }
 
   /**
    * Default hidden constructor
    * @param photo
-   * @param fromPhotoPk
+   * @param fromMediaPk
    * @param isCutted
    */
-  protected GalleryPastePhotoFileProcess(final PhotoDetail photo, final PhotoPK fromPhotoPk,
+  protected GalleryPastePhotoFileProcess(final PhotoDetail photo, final MediaPK fromMediaPk,
       final boolean isCutted) {
     super(photo);
-    this.fromPhotoPk = fromPhotoPk;
+    this.fromMediaPk = fromMediaPk;
     this.isCutted = isCutted;
   }
 
@@ -75,8 +75,8 @@ public class GalleryPastePhotoFileProcess extends AbstractGalleryFileProcess {
   @Override
   public void processFiles(final GalleryProcessExecutionContext context,
       final ProcessSession session, final FileHandler fileHandler) throws Exception {
-    if (!isCutted || !fromPhotoPk.getInstanceId().equals(context.getComponentInstanceId())) {
-      ImageHelper.pasteImage(fileHandler, fromPhotoPk, getPhoto(), isCutted);
+    if (!isCutted || !fromMediaPk.getInstanceId().equals(context.getComponentInstanceId())) {
+      ImageHelper.pasteImage(fileHandler, fromMediaPk, getPhoto(), isCutted);
     }
   }
 }

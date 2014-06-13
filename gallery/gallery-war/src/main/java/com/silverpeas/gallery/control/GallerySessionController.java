@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import com.silverpeas.gallery.model.MediaPK;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.search.indexEngine.model.FieldDescription;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
@@ -56,7 +57,6 @@ import com.silverpeas.gallery.model.MetaData;
 import com.silverpeas.gallery.model.Order;
 import com.silverpeas.gallery.model.OrderRow;
 import com.silverpeas.gallery.model.PhotoDetail;
-import com.silverpeas.gallery.model.PhotoPK;
 import com.silverpeas.gallery.model.PhotoSelection;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
@@ -205,14 +205,14 @@ public final class GallerySessionController extends AbstractComponentSessionCont
 
   public List<Comment> getAllComments(String id) {
     return getCommentService().getAllCommentsOnPublication(PhotoDetail.getResourceType(),
-        new PhotoPK(id, getSpaceId(), getComponentId()));
+        new MediaPK(id, getSpaceId(), getComponentId()));
   }
 
   public int getSilverObjectId(String objectId) {
     int silverObjectId = -1;
     try {
       silverObjectId = getGalleryBm().getSilverObjectId(
-          new PhotoPK(objectId, getSpaceId(), getComponentId()));
+          new MediaPK(objectId, getSpaceId(), getComponentId()));
     } catch (Exception e) {
       SilverTrace.error("gallery", "GallerySessionController.getSilverObjectId()",
           "root.EX_CANT_GET_LANGUAGE_RESOURCE", "objectId=" + objectId, e);
@@ -330,15 +330,15 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   }
 
   public PhotoDetail getPhoto(String photoId) {
-    PhotoPK photoPK = new PhotoPK(photoId, getComponentId());
-    PhotoDetail photo = getGalleryBm().getPhoto(photoPK);
+    MediaPK mediaPK = new MediaPK(photoId, getComponentId());
+    PhotoDetail photo = getGalleryBm().getPhoto(mediaPK);
     photo.setCreatorName(getUserDetail(photo.getCreatorId()).getDisplayedName());
     if (photo.getUpdateId() != null) {
       photo.setUpdateName(getUserDetail(photo.getUpdateId()).getDisplayedName());
     }
 
     // Mise à jour de l'album courant
-    Collection<String> albumIds = getGalleryBm().getPathList(photo.getPhotoPK().getInstanceId(),
+    Collection<String> albumIds = getGalleryBm().getPathList(photo.getMediaPK().getInstanceId(),
         photo.getId());
     SilverTrace.info("gallery", "GallerySessionController.getPhoto", "root.MSG_GEN_PARAM_VALUE",
         "albumIds = " + albumIds + ", currentAlbumId =  " + getCurrentAlbumId());
@@ -748,10 +748,10 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   }
 
   private synchronized NotificationMetaData getAlertNotificationMetaData(String photoId) {
-    PhotoPK photoPK = new PhotoPK(photoId, getSpaceId(), getComponentId());
+    MediaPK mediaPK = new MediaPK(photoId, getSpaceId(), getComponentId());
     NodePK nodePK = currentAlbum.getNodePK();
     String senderName = getUserDetail().getDisplayedName();
-    PhotoDetail photoDetail = getPhoto(photoPK.getId());
+    PhotoDetail photoDetail = getPhoto(mediaPK.getId());
     String htmlPath = getGalleryBm().getHTMLNodePath(nodePK);
 
     ResourceLocator message = new ResourceLocator("org.silverpeas.gallery.multilang.galleryBundle",
@@ -771,7 +771,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     notifMetaData.addLanguage("en", subject_en, body_en);
 
     notifMetaData.setLink(getPhotoUrl(photoDetail));
-    notifMetaData.setComponentId(photoPK.getInstanceId());
+    notifMetaData.setComponentId(mediaPK.getInstanceId());
     notifMetaData.setSender(getUserId());
 
     return notifMetaData;
@@ -935,7 +935,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
                 PhotoSelection.PhotoDetailFlavor);
 
             delegate.addPhoto(photo, clipObject.isCutted());
-            clipObjectPerformed.put(photo.getPhotoPK(), clipObject);
+            clipObjectPerformed.put(photo.getMediaPK(), clipObject);
           }
           if (clipObject.isDataFlavorSupported(NodeSelection.NodeDetailFlavor)) {
             AlbumDetail album = (AlbumDetail) clipObject.getTransferData(

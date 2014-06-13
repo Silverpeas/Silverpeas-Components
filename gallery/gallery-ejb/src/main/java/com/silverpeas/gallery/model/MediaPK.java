@@ -24,52 +24,49 @@
 package com.silverpeas.gallery.model;
 
 import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
  * It's the Node PrimaryKey object It identify a Node
- * 
  * @author Nicolas Eysseric
  * @version 1.0
  */
-public class PhotoPK extends WAPrimaryKey {
+public class MediaPK extends WAPrimaryKey {
 
   private static final long serialVersionUID = -7700365133735243226L;
 
   /**
    * Constructor which set only the id
-   * 
    * @since 1.0
    */
-  public PhotoPK(String id) {
+  public MediaPK(String id) {
     super(id);
   }
 
   /**
    * Constructor which set id, space and component name
-   * 
    * @since 1.0
    */
-  public PhotoPK(String id, String space, String componentName) {
+  public MediaPK(String id, String space, String componentName) {
     super(id, space, componentName);
   }
 
-  public PhotoPK(String id, String componentId) {
+  public MediaPK(String id, String componentId) {
     super(id, componentId);
   }
 
   /**
    * Constructor which set the id The WAPrimaryKey provides space and component
    * name
-   * 
    * @since 1.0
    */
-  public PhotoPK(String id, WAPrimaryKey pk) {
+  public MediaPK(String id, WAPrimaryKey pk) {
     super(id, pk);
   }
 
   /**
    * Return the object root table name
-   * 
    * @return the root table name of the object
    * @since 1.0
    */
@@ -80,37 +77,46 @@ public class PhotoPK extends WAPrimaryKey {
 
   /**
    * Return the object table name
-   * 
    * @return the table name of the object
    * @since 1.0
    */
   @Override
   public String getTableName() {
-    return "SC_Gallery_Photo";
+    return "SC_Gallery_Media";
   }
 
   /**
    * Check if an another object is equal to this object
-   * 
+   * @param other the object to compare to this NodePK
    * @return true if other is equals to this object
-   * @param other
-   *          the object to compare to this NodePK
    * @since 1.0
    */
   public boolean equals(Object other) {
-    if (!(other instanceof PhotoPK))
+    if (other == null) {
       return false;
-    return (id.equals(((PhotoPK) other).getId()))
-        && (componentName.equals(((PhotoPK) other).getComponentName()));
+    }
+    if (super.equals(other)) {
+      return true;
+    }
+    if (getClass() != other.getClass()) {
+      return false;
+    }
+    final MediaPK otherMediaPK = (MediaPK) other;
+    EqualsBuilder matcher = new EqualsBuilder();
+    matcher.append(getId(), otherMediaPK.getId());
+    matcher.append(getInstanceId(), otherMediaPK.getInstanceId());
+    return matcher.isEquals();
   }
 
   /**
    * Returns a hash code for the key
-   * 
    * @return A hash code for this object
    */
-    @Override
+  @Override
   public int hashCode() {
-    return this.id.hashCode() ^ this.componentName.hashCode();
+    HashCodeBuilder hash = new HashCodeBuilder();
+    hash.append(getId());
+    hash.append(getInstanceId());
+    return hash.build();
   }
 }

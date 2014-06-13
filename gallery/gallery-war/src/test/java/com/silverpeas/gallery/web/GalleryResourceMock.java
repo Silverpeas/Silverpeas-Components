@@ -28,8 +28,8 @@ import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.model.AlbumDetail;
+import com.silverpeas.gallery.model.MediaPK;
 import com.silverpeas.gallery.model.PhotoDetail;
-import com.silverpeas.gallery.model.PhotoPK;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -82,16 +82,16 @@ public class GalleryResourceMock extends GalleryResource {
             });
 
         // getPhoto
-        when(galleryBmMock.getPhoto(any(PhotoPK.class))).thenAnswer(new Answer<PhotoDetail>() {
+        when(galleryBmMock.getPhoto(any(MediaPK.class))).thenAnswer(new Answer<PhotoDetail>() {
 
           @Override
           public PhotoDetail answer(final InvocationOnMock invocation) throws Throwable {
-            final PhotoPK photoPk = (PhotoPK) invocation.getArguments()[0];
-            if (photoPk == null || !"7".equals(photoPk.getId())) {
+            final MediaPK mediaPk = (MediaPK) invocation.getArguments()[0];
+            if (mediaPk == null || !"7".equals(mediaPk.getId())) {
               return null;
             }
-            return PhotoBuilder.getPhotoBuilder().buildPhoto(photoPk.getId(),
-                photoPk.getComponentName());
+            return PhotoBuilder.getPhotoBuilder().buildPhoto(mediaPk.getId(),
+                mediaPk.getComponentName());
           }
         });
       }

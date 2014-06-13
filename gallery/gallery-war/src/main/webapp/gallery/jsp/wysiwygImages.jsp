@@ -78,15 +78,15 @@ if (photos != null) {
         out.println("<tr>");
         while (itP.hasNext() && nbAffiche < nbParLigne) {
           photo = (PhotoDetail) itP.next();
-          idP = photo.getPhotoPK().getId();
+          idP = photo.getMediaPK().getId();
           String name = "";
           String url = "";
           if (photo.getImageName() != null && !photo.getImageName().equals("")) {
             url = m_context + "/GalleryInWysiwyg/dummy?ImageId=" + idP + "&ComponentId=" + photo.
-                getPhotoPK().getInstanceId();
+                getMediaPK().getInstanceId();
             name = photo.getId() + "_133x100.jpg";
             vignette_url = m_context + "/GalleryInWysiwyg/dummy?ImageId=" + idP + "&ComponentId=" + photo.
-                getPhotoPK().getInstanceId() + "&Size=133x100";
+                getMediaPK().getInstanceId() + "&Size=133x100";
             if (!photo.isPreviewable()) {
               vignette_url = m_context + "/gallery/jsp/icons/notAvailable_" + "fr" + "_133x100.jpg";
             }

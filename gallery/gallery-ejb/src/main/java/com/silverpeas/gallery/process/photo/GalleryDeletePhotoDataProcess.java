@@ -81,11 +81,11 @@ public class GalleryDeletePhotoDataProcess extends AbstractGalleryDataProcess {
 
     // Supprimer les commentaires
     CommentServiceFactory.getFactory().getCommentService()
-        .deleteAllCommentsOnPublication(PhotoDetail.getResourceType(), getPhoto().getPhotoPK());
+        .deleteAllCommentsOnPublication(PhotoDetail.getResourceType(), getPhoto().getMediaPK());
 
     // Supprime le silverObject correspond
     getGalleryContentManager()
-        .deleteSilverContent(context.getConnection(), getPhoto().getPhotoPK());
+        .deleteSilverContent(context.getConnection(), getPhoto().getMediaPK());
   }
 
   /**

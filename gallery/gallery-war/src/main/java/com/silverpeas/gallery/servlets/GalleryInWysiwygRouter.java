@@ -38,13 +38,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.silverpeas.gallery.model.MediaPK;
 import org.silverpeas.core.admin.OrganisationController;
 
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.model.AlbumDetail;
 import com.silverpeas.gallery.model.GalleryRuntimeException;
 import com.silverpeas.gallery.model.PhotoDetail;
-import com.silverpeas.gallery.model.PhotoPK;
 import com.silverpeas.util.StringUtil;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -107,7 +107,7 @@ public class GalleryInWysiwygRouter extends HttpServlet {
       if (StringUtil.isDefined(imageId)) {
         // affichage de l'image
         PhotoDetail image = getGalleryBm().getPhoto(
-            new PhotoPK(imageId, componentId));
+            new MediaPK(imageId, componentId));
         displayImage(response, image, size, useOriginal);
       } else if (!StringUtil.isDefined(albumId)) {
         // affichage de l'arborescence des albums
@@ -168,7 +168,7 @@ public class GalleryInWysiwygRouter extends HttpServlet {
     if (StringUtil.isDefined(size)) {
       fileName = image.getId() + "_" + size + ".jpg";
     }
-    String filePath = FileRepositoryManager.getAbsolutePath(image.getPhotoPK()
+    String filePath = FileRepositoryManager.getAbsolutePath(image.getMediaPK()
         .getInstanceId())
         + "image" + image.getId() + File.separator + fileName;
     SilverTrace.info("gallery", "GalleryInWysiwygRouter.displayImage()",

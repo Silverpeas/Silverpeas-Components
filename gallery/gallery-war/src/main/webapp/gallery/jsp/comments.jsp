@@ -49,7 +49,7 @@
 <c:set var="instanceId" value="${browseContext[3]}"/>
 <c:set var="photo" value="${requestScope.Photo}"/>
 <c:set var="photoResourceType" value="${photo.contributionType}"/>
-<c:set var="photoId" value="${photo.photoPK.id}"/>
+<c:set var="photoId" value="${photo.mediaPK.id}"/>
 <c:set var="userId" value="${requestScope.UserId}"/>
 <c:set var="nodePath"  value="${requestScope.Path}"/>
 <c:set var="commentCount" value="${requestScope.NbComments}"/>

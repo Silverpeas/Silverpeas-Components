@@ -273,7 +273,7 @@ function sendData()
     int id = unAlbum.getId();
     String nom = unAlbum.getName();
     String link = "";
-    if (unAlbum.getPermalink() != null) {
+    if (StringUtil.isDefined(unAlbum.getPermalink())) {
       link = "&nbsp;<a href=\"" + unAlbum.getPermalink() + "\"><img src=\"" + resource.
           getIcon("gallery.link") + "\" border=\"0\" align=\"bottom\" alt=\"" + resource.
           getString("gallery.CopyAlbumLink") + "\" title=\"" + resource.getString(
@@ -331,7 +331,7 @@ function sendData()
 				{
 					photo 		= (PhotoDetail) itP.next();
 					if (photo != null) {
-						idP = photo.getPhotoPK().getId();
+						idP = photo.getMediaPK().getId();
 						String nomRep = resource.getSetting("imagesSubDirectory") + idP;
 						String name = photo.getImageName();
 						String altTitle = EncodeHelper.javaStringToHtmlString(photo.getTitle());

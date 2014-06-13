@@ -29,6 +29,7 @@ import java.util.List;
 
 import javax.ejb.Local;
 
+import com.silverpeas.gallery.model.MediaPK;
 import org.silverpeas.process.util.ProcessList;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
 
@@ -39,7 +40,6 @@ import com.silverpeas.gallery.model.AlbumDetail;
 import com.silverpeas.gallery.model.Order;
 import com.silverpeas.gallery.model.OrderRow;
 import com.silverpeas.gallery.model.PhotoDetail;
-import com.silverpeas.gallery.model.PhotoPK;
 import com.silverpeas.gallery.process.GalleryProcessExecutionContext;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 
@@ -68,7 +68,7 @@ public interface GalleryBm {
       String instanceIdTo, String... albums);
 
   // les photos ...
-  public PhotoDetail getPhoto(PhotoPK photoPK);
+  public PhotoDetail getPhoto(MediaPK mediaPK);
 
   public Collection<PhotoDetail> getAllPhoto(NodePK nodePK, boolean viewAllPhoto);
 
@@ -110,7 +110,7 @@ public interface GalleryBm {
 
   public void indexGallery(String instanceId);
 
-  public int getSilverObjectId(PhotoPK photoPK);
+  public int getSilverObjectId(MediaPK mediaPK);
 
   public Collection<PhotoDetail> search(QueryDescription query);
 

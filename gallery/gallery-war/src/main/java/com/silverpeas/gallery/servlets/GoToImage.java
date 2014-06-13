@@ -26,8 +26,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.silverpeas.gallery.control.ejb.GalleryBm;
+import com.silverpeas.gallery.model.MediaPK;
 import com.silverpeas.gallery.model.PhotoDetail;
-import com.silverpeas.gallery.model.PhotoPK;
 import com.silverpeas.peasUtil.GoTo;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -44,9 +44,9 @@ public class GoToImage extends GoTo {
   @Override
   public String getDestination(String objectId, HttpServletRequest req,
       HttpServletResponse res) throws Exception {
-    PhotoPK photoPK = new PhotoPK(objectId);
-    PhotoDetail photo = getGalleryBm().getPhoto(photoPK);
-    String componentId = photo.getPhotoPK().getInstanceId();
+    MediaPK mediaPK = new MediaPK(objectId);
+    PhotoDetail photo = getGalleryBm().getPhoto(mediaPK);
+    String componentId = photo.getMediaPK().getInstanceId();
     SilverTrace.info("gallery", "GoToImage.doPost", "root.MSG_GEN_PARAM_VALUE",
         "componentId = " + componentId);
     String gotoURL = URLManager.getURL(null, componentId) + photo.getURL();

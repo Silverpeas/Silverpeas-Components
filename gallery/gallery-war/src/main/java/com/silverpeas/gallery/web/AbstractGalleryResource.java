@@ -37,8 +37,8 @@ import com.silverpeas.gallery.ImageHelper;
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.model.AlbumDetail;
 import com.silverpeas.gallery.model.GalleryRuntimeException;
+import com.silverpeas.gallery.model.MediaPK;
 import com.silverpeas.gallery.model.PhotoDetail;
-import com.silverpeas.gallery.model.PhotoPK;
 import com.silverpeas.web.RESTWebService;
 
 import com.stratelia.webactiv.SilverpeasRole;
@@ -98,7 +98,7 @@ public abstract class AbstractGalleryResource extends RESTWebService {
     checkNotFoundStatus(album);
     verifyPhotoInAlbum(photo, album);
     return PhotoEntity.createFrom(photo, getUserPreferences().getLanguage())
-        .withURI(buildPhotoURI(photo.getPhotoPK(), album.getNodePK()))
+        .withURI(buildPhotoURI(photo.getMediaPK(), album.getNodePK()))
         .withParentURI(buildAlbumURI(album.getNodePK()));
   }
 
@@ -150,7 +150,7 @@ public abstract class AbstractGalleryResource extends RESTWebService {
    * @param album
    * @return album URI
    */
-  protected URI buildPhotoURI(PhotoPK photo, NodePK album) {
+  protected URI buildPhotoURI(MediaPK photo, NodePK album) {
     if (photo == null || album == null) {
       return null;
     }

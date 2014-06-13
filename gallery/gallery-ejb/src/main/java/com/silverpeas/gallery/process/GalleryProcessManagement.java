@@ -27,6 +27,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Date;
 
+import com.silverpeas.gallery.model.MediaPK;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.process.util.ProcessList;
 
@@ -37,7 +38,6 @@ import com.silverpeas.gallery.delegate.PhotoDataUpdateDelegate;
 import com.silverpeas.gallery.model.AlbumDetail;
 import com.silverpeas.gallery.model.GalleryRuntimeException;
 import com.silverpeas.gallery.model.PhotoDetail;
-import com.silverpeas.gallery.model.PhotoPK;
 import com.silverpeas.gallery.process.photo.GalleryCreatePhotoDataProcess;
 import com.silverpeas.gallery.process.photo.GalleryCreatePhotoFileProcess;
 import com.silverpeas.gallery.process.photo.GalleryDeindexPhotoDataProcess;
@@ -149,10 +149,10 @@ public class GalleryProcessManagement {
    */
   public void addPastePhotoProcesses(final PhotoDetail photoToPaste, final NodePK toAlbum,
       final boolean isCutted) {
-    final PhotoPK fromPhotoPk = new PhotoPK(photoToPaste.getId(), photoToPaste.getInstanceId());
+    final MediaPK fromMediaPk = new MediaPK(photoToPaste.getId(), photoToPaste.getInstanceId());
     processList.add(GalleryPastePhotoDataProcess.getInstance(photoToPaste, toAlbum.getId(),
-        fromPhotoPk, isCutted));
-    processList.add(GalleryPastePhotoFileProcess.getInstance(photoToPaste, fromPhotoPk, isCutted));
+        fromMediaPk, isCutted));
+    processList.add(GalleryPastePhotoFileProcess.getInstance(photoToPaste, fromMediaPk, isCutted));
     if (isCutted) {
       processList.add(GalleryDeindexPhotoDataProcess.getInstance(photoToPaste));
       processList.add(GalleryIndexPhotoDataProcess.getInstance(photoToPaste));

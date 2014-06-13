@@ -36,8 +36,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import com.silverpeas.gallery.model.MediaPK;
 import com.silverpeas.gallery.model.PhotoDetail;
-import com.silverpeas.gallery.model.PhotoPK;
 import com.silverpeas.gallery.model.PhotoWithStatus;
 import com.silverpeas.gallery.socialNetwork.SocialInformationGallery;
 import com.silverpeas.socialnetwork.model.SocialInformation;
@@ -288,7 +288,7 @@ public class PhotoDAO {
               + " where photoId = ? ";
       // initialisation des paramètres
       prepStmt = con.prepareStatement(query);
-      int photoId = Integer.parseInt(updatedPhoto.getPhotoPK().getId());
+      int photoId = Integer.parseInt(updatedPhoto.getMediaPK().getId());
       initParam(prepStmt, photoId, updatedPhoto);
       // initialisation du dernier paramètre
       prepStmt.setInt(25, photoId);
@@ -478,8 +478,8 @@ public class PhotoDAO {
     String beginDownloadDate = rs.getString(23);
     String endDownloadDate = rs.getString(24);
 
-    PhotoPK photoPK = new PhotoPK(photoId, instanceId);
-    photo.setPhotoPK(photoPK);
+    MediaPK mediaPK = new MediaPK(photoId, instanceId);
+    photo.setMediaPK(mediaPK);
     photo.setTitle(title);
     photo.setDescription(description);
     photo.setSizeH(sizeH);

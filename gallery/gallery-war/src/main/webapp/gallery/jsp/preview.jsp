@@ -52,7 +52,7 @@
   DataRecord xmlData = (DataRecord) request.getAttribute("XMLData");
 
   // déclaration des variables :
-  String nomRep = resource.getSetting("imagesSubDirectory") + photo.getPhotoPK().getId();
+  String nomRep = resource.getSetting("imagesSubDirectory") + photo.getMediaPK().getId();
   String name = "";
   if (photo.getImageName() != null && !photo.getImageName().equals("")) {
     name = photo.getImageName();
@@ -71,7 +71,7 @@
   long size = photo.getImageSize();
   int height = photo.getSizeH();
   int width = photo.getSizeL();
-  String photoId = new Integer(photo.getPhotoPK().getId()).toString();
+  String photoId = new Integer(photo.getMediaPK().getId()).toString();
   String lien = FileServerUtils.getUrl(componentId, URLEncoder.encode(name, "UTF-8"), photo.
       getImageMimeType(), nomRep);
   String lienWatermark = "";
@@ -276,7 +276,7 @@ function goToNotify(url)
 					<table border="0" width="10" align="center" cellspacing="1" cellpadding="0" class="fondPhoto"><tr><td align="center">
 						<table cellspacing="1" cellpadding="5" border="0" class="cadrePhoto"><tr><td bgcolor="#FFFFFF">
               <center>
-                <img src="<%=preview_url%>" onclick="javascript:startSlideshow('<%=photo.getPhotoPK().getId()%>')" style="cursor: pointer"/>
+                <img src="<%=preview_url%>" onclick="javascript:startSlideshow('<%=photo.getMediaPK().getId()%>')" style="cursor: pointer"/>
               </center>
 						</td></tr></table>
 					</td></tr></table>
@@ -292,7 +292,7 @@ function goToNotify(url)
 			<%=board.printBefore()%>
 			<table align="left" border="0" cellpadding="5">
 				<!-- AFFICHAGE des données de la photo -->
-				<%	if ( link != null && !link.equals("")) {	%>
+				<%	if (StringUtil.isDefined(link)) {	%>
 					<tr align="left">
 						<td class="txtlibform" nowrap="nowrap"><%=resource.getString("gallery.permalink")%> :</td>
 						<td><a href="<%=link%>" ><img src=<%=resource.getIcon("gallery.link")%> border="0" alt='<%=resource.getString("gallery.CopyPhotoLink")%>' title='<%=resource.getString("gallery.CopyPhotoLink")%>'/></a></td>

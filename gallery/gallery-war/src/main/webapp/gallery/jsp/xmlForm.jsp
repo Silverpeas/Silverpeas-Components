@@ -40,7 +40,7 @@ PagesContext 		context 	= new PagesContext("myForm", "0", resource.getLanguage()
 context.setObjectId(photo.getId());
 context.setBorderPrinted(false);
 
-String photoId 	= photo.getPhotoPK().getId();
+String photoId 	= photo.getMediaPK().getId();
 String nbComments = nbCom.toString();
 %>
 <HTML>

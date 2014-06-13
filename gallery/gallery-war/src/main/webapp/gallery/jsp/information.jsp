@@ -77,7 +77,7 @@
       context.setIgnoreDefaultValues(true);
 
       if (photo != null) {
-        photoId = String.valueOf(photo.getPhotoPK().getId());
+        photoId = String.valueOf(photo.getMediaPK().getId());
         title = photo.getTitle();
         description = photo.getDescription();
         if (description == null) {

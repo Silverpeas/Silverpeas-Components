@@ -90,7 +90,7 @@ public class GalleryUpdatePhotoDataProcess extends AbstractGalleryDataProcess {
     if (delegate != null) {
 
       SilverTrace.info("gallery", "GalleryUpdatePhotoDataProcess.process()",
-          "root.MSG_GEN_ENTER_METHOD", "PhotoPK = " + getPhoto().toString());
+          "root.MSG_GEN_ENTER_METHOD", "MediaPK = " + getPhoto().toString());
 
       if (delegate.isHeaderData()) {
         delegate.updateHeader(getPhoto());

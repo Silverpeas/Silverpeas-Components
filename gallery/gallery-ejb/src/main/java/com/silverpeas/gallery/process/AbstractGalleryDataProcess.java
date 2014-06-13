@@ -25,6 +25,7 @@ package com.silverpeas.gallery.process;
 
 import java.util.Date;
 
+import com.silverpeas.gallery.model.MediaPK;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.process.management.AbstractDataProcess;
@@ -36,7 +37,6 @@ import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.dao.PhotoDAO;
 import com.silverpeas.gallery.model.GalleryRuntimeException;
 import com.silverpeas.gallery.model.PhotoDetail;
-import com.silverpeas.gallery.model.PhotoPK;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
@@ -175,14 +175,14 @@ public abstract class AbstractGalleryDataProcess extends
       throws Exception {
 
     // Sets technical data
-    getPhoto().setPhotoPK(new PhotoPK("unknown", context.getComponentInstanceId()));
+    getPhoto().setMediaPK(new MediaPK("unknown", context.getComponentInstanceId()));
     getPhoto().setCreatorId(context.getUser().getId());
     getPhoto().setUpdateId(null);
     getPhoto().setCreationDate(new Date());
     getPhoto().setUpdateDate(null);
 
     // Insert photo in database
-    getPhoto().getPhotoPK().setId(PhotoDAO.createPhoto(context.getConnection(), getPhoto()));
+    getPhoto().getMediaPK().setId(PhotoDAO.createPhoto(context.getConnection(), getPhoto()));
 
     // Insert path of the photo
     PhotoDAO.createPath(context.getConnection(), getPhoto(), albumId);

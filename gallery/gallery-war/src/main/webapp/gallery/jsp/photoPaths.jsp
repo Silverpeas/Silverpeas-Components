@@ -37,7 +37,7 @@
 	Boolean		isUsePdc		= (Boolean) request.getAttribute("IsUsePdc");
 	boolean		showComments	= ((Boolean) request.getAttribute("ShowCommentsTab")).booleanValue();
 	
-	String 		photoId			= new Integer(photo.getPhotoPK().getId()).toString();
+	String 		photoId			= new Integer(photo.getMediaPK().getId()).toString();
 	String 		nbComments 		= nbCom.toString();
 
 	Button validateButton = gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);

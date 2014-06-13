@@ -300,7 +300,7 @@
           while (it.hasNext() && nbAffiche < nbParLigne) {
             photo = (PhotoDetail) it.next();
             if (photo != null) {
-              idP = photo.getPhotoPK().getId();
+              idP = photo.getMediaPK().getId();
               String nomRep = resource.getSetting("imagesSubDirectory") + idP;
               String name = photo.getId() + extension;
               vignette_url = FileServerUtils.getUrl(componentId, name, photo.getImageMimeType(), nomRep);

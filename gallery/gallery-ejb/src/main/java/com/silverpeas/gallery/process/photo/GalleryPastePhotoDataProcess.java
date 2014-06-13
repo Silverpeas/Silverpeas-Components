@@ -25,12 +25,12 @@ package com.silverpeas.gallery.process.photo;
 
 import static com.silverpeas.util.StringUtil.isDefined;
 
+import com.silverpeas.gallery.model.MediaPK;
 import org.silverpeas.process.session.ProcessSession;
 
 import com.silverpeas.comment.service.CommentServiceFactory;
 import com.silverpeas.form.record.IdentifiedRecordTemplate;
 import com.silverpeas.gallery.model.PhotoDetail;
-import com.silverpeas.gallery.model.PhotoPK;
 import com.silverpeas.gallery.process.AbstractGalleryDataProcess;
 import com.silverpeas.gallery.process.GalleryProcessExecutionContext;
 import com.silverpeas.pdc.PdcServiceFactory;
@@ -48,39 +48,39 @@ public class GalleryPastePhotoDataProcess extends AbstractGalleryDataProcess {
   /** Id of the album (Node) */
   private final String albumId;
 
-  private final PhotoPK fromPhotoPk;
+  private final MediaPK fromMediaPk;
   private final boolean isCutted;
 
   private boolean isSameComponentInstanceDestination = true;
   private ForeignPK fromForeignPK = null;
   private ForeignPK toForeignPK = null;
-  private PhotoPK toPhotoPK = null;
+  private MediaPK toMediaPK = null;
 
   /**
    * Default hidden constructor
    * @param photo
    * @param albumId
-   * @param fromPhotoPk
+   * @param fromMediaPk
    * @param isCutted
    * @return
    */
   public static GalleryPastePhotoDataProcess getInstance(final PhotoDetail photo,
-      final String albumId, final PhotoPK fromPhotoPk, final boolean isCutted) {
-    return new GalleryPastePhotoDataProcess(photo, albumId, fromPhotoPk, isCutted);
+      final String albumId, final MediaPK fromMediaPk, final boolean isCutted) {
+    return new GalleryPastePhotoDataProcess(photo, albumId, fromMediaPk, isCutted);
   }
 
   /**
    * Default hidden constructor
    * @param photo
    * @param albumId
-   * @param fromPhotoPk
+   * @param fromMediaPk
    * @param isCutted
    */
   protected GalleryPastePhotoDataProcess(final PhotoDetail photo, final String albumId,
-      final PhotoPK fromPhotoPk, final boolean isCutted) {
+      final MediaPK fromMediaPk, final boolean isCutted) {
     super(photo);
     this.albumId = albumId;
-    this.fromPhotoPk = fromPhotoPk;
+    this.fromMediaPk = fromMediaPk;
     this.isCutted = isCutted;
   }
 
@@ -96,13 +96,13 @@ public class GalleryPastePhotoDataProcess extends AbstractGalleryDataProcess {
 
     // Initializing variables
     isSameComponentInstanceDestination =
-        fromPhotoPk.getInstanceId().equals(context.getComponentInstanceId());
-    fromForeignPK = new ForeignPK(getPhoto().getId(), fromPhotoPk.getInstanceId());
+        fromMediaPk.getInstanceId().equals(context.getComponentInstanceId());
+    fromForeignPK = new ForeignPK(getPhoto().getId(), fromMediaPk.getInstanceId());
 
     // If the destination application is different from the original, then update destination
     // information and user data
     if (!isSameComponentInstanceDestination) {
-      getPhoto().getPhotoPK().setComponentName(context.getComponentInstanceId());
+      getPhoto().getMediaPK().setComponentName(context.getComponentInstanceId());
       getPhoto().setAlbumId(albumId);
     }
 
@@ -119,20 +119,20 @@ public class GalleryPastePhotoDataProcess extends AbstractGalleryDataProcess {
       } else {
 
         // Updating repository data
-        updatePhotoPath(fromPhotoPk.getInstanceId(), albumId, context);
+        updatePhotoPath(fromMediaPk.getInstanceId(), albumId, context);
       }
     }
 
     // Initializing variables after photo creation
     toForeignPK = new ForeignPK(getPhoto().getId(), context.getComponentInstanceId());
-    toPhotoPK = new PhotoPK(getPhoto().getId(), context.getComponentInstanceId());
+    toMediaPK = new MediaPK(getPhoto().getId(), context.getComponentInstanceId());
 
     // Commons
     processPasteCommons(context);
 
     SilverTrace.info("gallery", "GalleryPastePhotoDataProcess.onSuccessful()",
         "root.MSG_GEN_PARAM_VALUE", "photo = " + getPhoto().toString() + " toPK = " +
-            getPhoto().getPhotoPK().toString());
+            getPhoto().getMediaPK().toString());
   }
 
   /**
@@ -142,13 +142,13 @@ public class GalleryPastePhotoDataProcess extends AbstractGalleryDataProcess {
   private void processPasteCommons(final GalleryProcessExecutionContext context) throws Exception {
     if (!isCutted || !isSameComponentInstanceDestination) {
       // Paste positions on Pdc
-      final int fromSilverObjectId = getGalleryBm().getSilverObjectId(fromPhotoPk);
-      final int toSilverObjectId = getGalleryBm().getSilverObjectId(toPhotoPK);
+      final int fromSilverObjectId = getGalleryBm().getSilverObjectId(fromMediaPk);
+      final int toSilverObjectId = getGalleryBm().getSilverObjectId(toMediaPK);
 
       PdcServiceFactory
           .getFactory()
           .getPdcManager()
-          .copyPositions(fromSilverObjectId, fromPhotoPk.getInstanceId(), toSilverObjectId,
+          .copyPositions(fromSilverObjectId, fromMediaPk.getInstanceId(), toSilverObjectId,
               context.getComponentInstanceId());
 
       // move comments
@@ -180,7 +180,7 @@ public class GalleryPastePhotoDataProcess extends AbstractGalleryDataProcess {
           // get xmlContent to paste
           final PublicationTemplate pubTemplateFrom =
               getPublicationTemplateManager().getPublicationTemplate(
-                  fromPhotoPk.getInstanceId() + ":" + xmlFormShortName);
+                  fromMediaPk.getInstanceId() + ":" + xmlFormShortName);
           final IdentifiedRecordTemplate recordTemplateFrom =
               (IdentifiedRecordTemplate) pubTemplateFrom.getRecordSet().getRecordTemplate();
 
@@ -191,7 +191,7 @@ public class GalleryPastePhotoDataProcess extends AbstractGalleryDataProcess {
               (IdentifiedRecordTemplate) pubTemplate.getRecordSet().getRecordTemplate();
 
           // paste xml content
-          getGenericRecordSetManager().cloneRecord(recordTemplateFrom, fromPhotoPk.getId(),
+          getGenericRecordSetManager().cloneRecord(recordTemplateFrom, fromMediaPk.getId(),
               recordTemplate, getPhoto().getId(), null);
         }
       } catch (final PublicationTemplateException e) {

@@ -23,9 +23,9 @@ package com.silverpeas.gallery;
 import com.silverpeas.gallery.image.DrewImageMetadataExtractor;
 import com.silverpeas.gallery.image.ImageMetadataException;
 import com.silverpeas.gallery.image.ImageMetadataExtractor;
+import com.silverpeas.gallery.model.MediaPK;
 import com.silverpeas.gallery.model.MetaData;
 import com.silverpeas.gallery.model.PhotoDetail;
-import com.silverpeas.gallery.model.PhotoPK;
 import com.silverpeas.gallery.processing.ImageResizer;
 import com.silverpeas.gallery.processing.ImageUtility;
 import com.silverpeas.gallery.processing.Size;
@@ -77,8 +77,8 @@ public class ImageHelper {
    */
   public static InputStream openInputStream(final PhotoDetail photo,
       final boolean isOriginalRequired) {
-    final String photoId = photo.getPhotoPK().getId();
-    final String instanceId = photo.getPhotoPK().getInstanceId();
+    final String photoId = photo.getMediaPK().getId();
+    final String instanceId = photo.getMediaPK().getInstanceId();
     if (StringUtil.isDefined(photoId) && StringUtil.isDefined(instanceId)) {
       final String subDirectory = gallerySettings.getString("imagesSubDirectory");
       String fileName = photoId + previewSuffix;
@@ -109,8 +109,8 @@ public class ImageHelper {
   public static void processImage(final FileHandler fileHandler, final PhotoDetail photo,
       final FileItem image, final boolean watermark, final String watermarkHD,
       final String watermarkOther) throws Exception {
-    final String photoId = photo.getPhotoPK().getId();
-    final String instanceId = photo.getPhotoPK().getInstanceId();
+    final String photoId = photo.getMediaPK().getId();
+    final String instanceId = photo.getMediaPK().getInstanceId();
 
     if (image != null) {
       String name = image.getName();
@@ -144,8 +144,8 @@ public class ImageHelper {
   public static void processImage(final FileHandler fileHandler, final PhotoDetail photo,
       final File image, final boolean watermark, final String watermarkHD,
       final String watermarkOther) throws Exception {
-    final String photoId = photo.getPhotoPK().getId();
-    final String instanceId = photo.getPhotoPK().getInstanceId();
+    final String photoId = photo.getMediaPK().getId();
+    final String instanceId = photo.getMediaPK().getInstanceId();
 
     if (image != null) {
       String name = image.getName();
@@ -206,7 +206,7 @@ public class ImageHelper {
 
   public static void setMetaData(final FileHandler fileHandler, final PhotoDetail photo,
       final String lang) throws ImageMetadataException, IOException {
-    final String photoId = photo.getPhotoPK().getId();
+    final String photoId = photo.getMediaPK().getId();
     final String name = photo.getImageName();
     final String mimeType = photo.getImageMimeType();
 
@@ -382,9 +382,9 @@ public class ImageHelper {
     ImageIO.write(outputBuf, "JPEG", watermarkedTargetStream);
   }
 
-  public static void pasteImage(final FileHandler fileHandler, final PhotoPK fromPK,
+  public static void pasteImage(final FileHandler fileHandler, final MediaPK fromPK,
       final PhotoDetail image, final boolean cut) {
-    final PhotoPK toPK = image.getPhotoPK();
+    final MediaPK toPK = image.getMediaPK();
     final String subDirectory = gallerySettings.getString("imagesSubDirectory");
     final HandledFile fromDir = fileHandler.getHandledFile(BASE_PATH, fromPK.getInstanceId(),
         subDirectory + fromPK.getId());

@@ -46,7 +46,7 @@ public class PhotoDetail implements SilverContentInterface, Serializable {
    */
   private static final long serialVersionUID = 1L;
   private static final String TYPE = "Photo";
-  PhotoPK photoPK;
+  MediaPK mediaPK;
   String title;
   String description;
   int sizeH;
@@ -213,7 +213,7 @@ public class PhotoDetail implements SilverContentInterface, Serializable {
   }
 
   public String getInstanceId() {
-    return getPhotoPK().getInstanceId();
+    return getMediaPK().getInstanceId();
   }
 
   public String getStatus() {
@@ -305,22 +305,22 @@ public class PhotoDetail implements SilverContentInterface, Serializable {
     this.imageSize = imageSize;
   }
 
-  public PhotoPK getPhotoPK() {
-    return photoPK;
+  public MediaPK getMediaPK() {
+    return mediaPK;
   }
 
-  public void setPhotoPK(PhotoPK photoPK) {
-    this.photoPK = photoPK;
+  public void setMediaPK(MediaPK mediaPK) {
+    this.mediaPK = mediaPK;
   }
 
   public String toString() {
-    return "(pk = " + getPhotoPK().toString() + ", name = " + getTitle() + ")";
+    return "(pk = " + getMediaPK().toString() + ", name = " + getTitle() + ")";
   }
 
   public boolean equals(Object o) {
     if (o instanceof PhotoDetail) {
       PhotoDetail anotherPhoto = (PhotoDetail) o;
-      return this.photoPK.equals(anotherPhoto.getPhotoPK());
+      return this.mediaPK.equals(anotherPhoto.getMediaPK());
     }
     return false;
   }
@@ -358,7 +358,7 @@ public class PhotoDetail implements SilverContentInterface, Serializable {
   }
 
   public String getId() {
-    return getPhotoPK().getId();
+    return getMediaPK().getId();
   }
 
   public String getDate() {
@@ -377,10 +377,6 @@ public class PhotoDetail implements SilverContentInterface, Serializable {
       return URLManager.getApplicationURL() + "/Image/" + getId();
 
     return null;
-  }
-
-  public void setPermalink(String permalink) {
-    this.permalink = permalink;
   }
 
   private Map<String, MetaData> getAllMetaData() {
@@ -487,13 +483,13 @@ public class PhotoDetail implements SilverContentInterface, Serializable {
    * @return the url
    */
   public String getWebURL(PhotoSize size) {
-    String idPhoto = photoPK.getId();
+    String idPhoto = mediaPK.getId();
     String path = "image" + idPhoto;
     String name = getImageName();
     if (name != null)
     {
       name = (size.getPrefix().equals(".jpg")) ? name : (getId() + size.getPrefix());
-      return FileServerUtils.getWebUrl(photoPK.getInstanceId(), name, name, getImageMimeType(), path);
+      return FileServerUtils.getWebUrl(mediaPK.getInstanceId(), name, name, getImageMimeType(), path);
     }
 
     return null;

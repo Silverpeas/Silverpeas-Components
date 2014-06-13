@@ -27,8 +27,8 @@ import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.gallery.model.AlbumDetail;
+import com.silverpeas.gallery.model.MediaPK;
 import com.silverpeas.gallery.model.PhotoDetail;
-import com.silverpeas.gallery.model.PhotoPK;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import org.apache.commons.io.IOUtils;
 
@@ -98,7 +98,7 @@ public class GalleryResource extends AbstractGalleryResource {
     try {
       final AlbumDetail album =
           getGalleryBm().getAlbum(new NodePK(albumId, getComponentId()), true);
-      final PhotoDetail photo = getGalleryBm().getPhoto(new PhotoPK(photoId, getComponentId()));
+      final PhotoDetail photo = getGalleryBm().getPhoto(new MediaPK(photoId, getComponentId()));
       verifyUserPhotoAccess(photo);
       return asWebEntity(photo, album);
     } catch (final WebApplicationException ex) {
@@ -154,7 +154,7 @@ public class GalleryResource extends AbstractGalleryResource {
     try {
       final AlbumDetail album =
           getGalleryBm().getAlbum(new NodePK(albumId, getComponentId()), true);
-      final PhotoDetail photo = getGalleryBm().getPhoto(new PhotoPK(photoId, getComponentId()));
+      final PhotoDetail photo = getGalleryBm().getPhoto(new MediaPK(photoId, getComponentId()));
       verifyUserPhotoAccess(photo);
       return Response.ok(new StreamingOutput() {
         @Override

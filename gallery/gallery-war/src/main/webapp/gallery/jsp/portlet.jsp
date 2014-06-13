@@ -127,7 +127,7 @@ div {
                   photo = (PhotoDetail) itP.next();
                   altTitle = "";
                   if (photo != null) {
-                    idP = photo.getPhotoPK().getId();
+                    idP = photo.getMediaPK().getId();
                     String nomRep = resource.getSetting("imagesSubDirectory") + idP;
                     String name = photo.getImageName();
                     if (name != null) {

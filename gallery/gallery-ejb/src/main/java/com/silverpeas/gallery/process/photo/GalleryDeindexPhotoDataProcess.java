@@ -49,11 +49,11 @@ public class GalleryDeindexPhotoDataProcess extends AbstractGalleryDataProcess {
     super.onSuccessful();
 
     SilverTrace.info("gallery", "GalleryBmEJB.deleteIndex()", "root.MSG_GEN_ENTER_METHOD",
-        "PhotoPK = " + getPhoto().getPhotoPK().toString());
+        "MediaPK = " + getPhoto().getMediaPK().toString());
 
     final IndexEntryPK indexEntry =
-        new IndexEntryPK(getPhoto().getPhotoPK().getComponentName(), "Photo", getPhoto()
-            .getPhotoPK().getId());
+        new IndexEntryPK(getPhoto().getMediaPK().getComponentName(), "Photo", getPhoto()
+            .getMediaPK().getId());
 
     IndexEngineProxy.removeIndexEntry(indexEntry);
   }

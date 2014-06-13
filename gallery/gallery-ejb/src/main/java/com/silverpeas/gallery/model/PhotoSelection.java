@@ -62,9 +62,9 @@ public class PhotoSelection extends ClipboardSelection {
   }
 
   public IndexEntry getIndexEntry() {
-    PhotoPK photoPK = currentPhoto.getPhotoPK();
+    MediaPK mediaPK = currentPhoto.getMediaPK();
     IndexEntry indexEntry =
-        new IndexEntry(photoPK.getComponentName(), "Photo", currentPhoto.getPhotoPK().getId());
+        new IndexEntry(mediaPK.getComponentName(), "Photo", currentPhoto.getMediaPK().getId());
     indexEntry.setTitle(currentPhoto.getName());
     return indexEntry;
   }

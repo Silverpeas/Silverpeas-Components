@@ -65,7 +65,7 @@
 
   // dans le cas d'une mise à jour, récupération des données :
   if (photo != null) {
-    photoId = new Integer(photo.getPhotoPK().getId()).toString();
+    photoId = new Integer(photo.getMediaPK().getId()).toString();
     title = photo.getTitle();
     description = photo.getDescription();
     if (description == null) {
