@@ -23,110 +23,36 @@
  */
 package com.silverpeas.gallery.model;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import com.silverpeas.gallery.ImageType;
-import com.silverpeas.gallery.process.photo.GalleryLoadMetaDataProcess;
+import com.silverpeas.gallery.GalleryComponentSettings;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileServerUtils;
+import org.silverpeas.date.Period;
+import org.silverpeas.notification.message.MessageManager;
 
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+
+/**
+ * This class is an old one. {@link Photo} must be used instead.
+ * It became a wrapper of Photo class.
+ */
 public class PhotoDetail implements SilverContentInterface, Serializable {
-  /**
-   *
-   */
-  private static final long serialVersionUID = 1L;
-  private static final String TYPE = "Photo";
-  MediaPK mediaPK;
-  String title;
-  String description;
-  int sizeH;
-  int sizeL;
-  Date creationDate;
-  Date updateDate;
-  String vueDate;
-  String author;
-  boolean download = false;
-  boolean albumLabel = false;
-  String status;
-  String albumId;
-  String creatorId;
-  String creatorName;
-  String updateId;
-  String updateName;
-  String imageName;
-  long imageSize;
-  String imageMimeType;
-  Date beginDate;
-  Date endDate;
-  String permalink;
-  LinkedHashMap<String, MetaData> metaData = null;
-  String keyWord;
-  Date beginDownloadDate;
-  Date endDownloadDate;
+  private static final long serialVersionUID = -1907932374204169173L;
 
-  private String silverObjectId; // added for the components - PDC integration
-  private String iconUrl;
-
-  public String getKeyWord() {
-    return keyWord;
-  }
-
-  public void setKeyWord(String keyWord) {
-    this.keyWord = keyWord;
-  }
-
-  public void setSilverObjectId(String silverObjectId) {
-    this.silverObjectId = silverObjectId;
-  }
-
-  public void setSilverObjectId(int silverObjectId) {
-    this.silverObjectId = Integer.toString(silverObjectId);
-  }
-
-  public String getSilverObjectId() {
-    return this.silverObjectId;
-  }
-
-  public void setIconUrl(String iconUrl) {
-    this.iconUrl = iconUrl;
-  }
-
-  public String getIconUrl() {
-    return this.iconUrl;
-  }
-
-  public Date getBeginDate() {
-    return beginDate;
-  }
-
-  public void setBeginDate(Date beginDate) {
-    this.beginDate = beginDate;
-  }
-
-  public Date getEndDate() {
-    return endDate;
-  }
-
-  public void setEndDate(Date endDate) {
-    this.endDate = endDate;
-  }
+  private final Photo photo;
 
   public PhotoDetail() {
+    photo = new Photo();
   }
 
   public PhotoDetail(String title, String description, Date creationDate,
       Date updateDate, String vueDate, String author, boolean download,
       boolean albumLabel) {
+    this();
     setTitle(title);
     setDescription(description);
     setCreationDate(creationDate);
@@ -141,6 +67,7 @@ public class PhotoDetail implements SilverContentInterface, Serializable {
       Date updateDate, String vueDate, String author, boolean download,
       boolean albumLabel, Date beginDate, Date endDate, String keyWord,
       Date beginDownloadDate, Date endDownloadDate) {
+    this();
     setTitle(title);
     setDescription(description);
     setCreationDate(creationDate);
@@ -156,347 +83,306 @@ public class PhotoDetail implements SilverContentInterface, Serializable {
     setEndDownloadDate(endDownloadDate);
   }
 
+  /**
+   * Gets the wrapped photo object.
+   * @return the wrapped photo object.
+   */
+  public Photo getPhoto() {
+    return photo;
+  }
+
+  public String getKeyWord() {
+    return photo.getKeyWord();
+  }
+
+  public void setKeyWord(String keyWord) {
+    photo.setKeyWord(keyWord);
+  }
+
+  public void setSilverObjectId(String silverObjectId) {
+    photo.setSilverpeasContentId(silverObjectId);
+  }
+
+  public void setSilverObjectId(int silverObjectId) {
+    photo.setSilverpeasContentId(Integer.toString(silverObjectId));
+  }
+
+  public String getSilverObjectId() {
+    return photo.getSilverpeasContentId();
+  }
+
+  public void setIconUrl(String iconUrl) {
+    photo.setIconUrl(iconUrl);
+  }
+
+  @Override
+  public String getIconUrl() {
+    return photo.getIconUrl();
+  }
+
+  public Date getBeginDate() {
+    return photo.getVisibilityPeriod().getBeginDate();
+  }
+
+  public void setBeginDate(Date beginDate) {
+    photo.setVisibilityPeriod(Period.from(beginDate, getEndDate()));
+  }
+
+  public Date getEndDate() {
+    return photo.getVisibilityPeriod().getEndDate();
+  }
+
+  public void setEndDate(Date endDate) {
+    photo.setVisibilityPeriod(Period.from(getBeginDate(), endDate));
+  }
+
   public String getAuthor() {
-    return author;
+    return photo.getAuthor();
   }
 
   public void setAuthor(String author) {
-    this.author = author;
+    photo.setAuthor(author);
   }
 
-  /*
-   * public String getAlbumId() { return albumId; }
-   */
-
-  public void setAlbumId(String albumId) {
-    this.albumId = albumId;
-  }
-
+  @Override
   public String getCreatorId() {
-    return creatorId;
+    return photo.getCreatorId();
   }
 
   public void setCreatorId(String creatorId) {
-    this.creatorId = creatorId;
+    photo.setCreatorId(creatorId);
   }
 
   public Date getCreationDate() {
-    return creationDate;
+    return photo.getCreationDate();
   }
 
   public void setCreationDate(Date creationDate) {
-    this.creationDate = creationDate;
+    photo.setCreationDate(creationDate);
   }
 
   public Date getUpdateDate() {
-    return updateDate;
+    return photo.getLastUpdateDate();
   }
 
   public void setUpdateDate(Date updateDate) {
-    this.updateDate = updateDate;
+    photo.setLastUpdateDate(updateDate);
   }
 
   public String getVueDate() {
-    return vueDate;
+    // TODO : at the end og media migration, this method must be removed
+    return null;
   }
 
   public void setVueDate(String vueDate) {
-    this.vueDate = vueDate;
+    // TODO : at the end og media migration, this method must be removed
   }
 
+  @Override
   public String getDescription() {
-    return description;
+    return photo.getDescription();
   }
 
   public void setDescription(String description) {
-    this.description = description;
+    photo.setDescription(description);
   }
 
+  @Override
   public String getInstanceId() {
     return getMediaPK().getInstanceId();
   }
 
   public String getStatus() {
-    return status;
+    // TODO : at the end og media migration, this method must be removed
+    return null;
   }
 
   public void setStatus(String status) {
-    this.status = status;
+    // TODO : at the end og media migration, this method must be removed
   }
 
   public int getSizeH() {
-    return sizeH;
+    return photo.getResolutionH();
   }
 
   public void setSizeH(int sizeH) {
-    this.sizeH = sizeH;
+    photo.setResolutionH(sizeH);
   }
 
   public int getSizeL() {
-    return sizeL;
+    return photo.getResolutionW();
   }
 
   public void setSizeL(int sizeL) {
-    this.sizeL = sizeL;
+    photo.setResolutionW(sizeL);
   }
 
   public boolean isDownload() {
-    return download;
+    return photo.isDownloadAuthorized();
   }
 
   public boolean isDownloadable() {
-    // contrôle si la photo est téléchargeable et si la date du jour est
-    // comprise dans la période de visibilité
-    boolean ok;
-    Date date = new Date();
-    if (beginDownloadDate == null)
-      ok = download;
-    else {
-      if (endDownloadDate == null)
-        ok = download && date.after(beginDownloadDate);
-      else
-        ok = download && date.after(beginDownloadDate)
-            && date.before(endDownloadDate);
-    }
-    return ok;
+    return photo.isDownloadable();
   }
 
   public void setDownload(boolean download) {
-    this.download = download;
+    photo.setDownloadAuthorized(download);
   }
 
   public String getTitle() {
-    return title;
+    return photo.getTitle();
   }
 
   public void setTitle(String title) {
-    this.title = title;
+    photo.setTitle(title);
   }
 
   public boolean isAlbumLabel() {
-    return albumLabel;
-  }
-
-  public void setAlbumLabel(boolean albumLabel) {
-    this.albumLabel = albumLabel;
-  }
-
-  public String getImageMimeType() {
-    return imageMimeType;
-  }
-
-  public void setImageMimeType(String imageMimeType) {
-    this.imageMimeType = imageMimeType;
-  }
-
-  public String getImageName() {
-    return imageName;
-  }
-
-  public void setImageName(String imageName) {
-    this.imageName = imageName;
-  }
-
-  public long getImageSize() {
-    return imageSize;
-  }
-
-  public void setImageSize(long imageSize) {
-    this.imageSize = imageSize;
-  }
-
-  public MediaPK getMediaPK() {
-    return mediaPK;
-  }
-
-  public void setMediaPK(MediaPK mediaPK) {
-    this.mediaPK = mediaPK;
-  }
-
-  public String toString() {
-    return "(pk = " + getMediaPK().toString() + ", name = " + getTitle() + ")";
-  }
-
-  public boolean equals(Object o) {
-    if (o instanceof PhotoDetail) {
-      PhotoDetail anotherPhoto = (PhotoDetail) o;
-      return this.mediaPK.equals(anotherPhoto.getMediaPK());
-    }
+    // TODO : at the end og media migration, this method must be removed
     return false;
   }
 
-  public String getCreatorName() {
-    return creatorName;
+  public void setAlbumLabel(boolean albumLabel) {
+    // TODO : at the end og media migration, this method must be removed
   }
 
-  public void setCreatorName(String creatorName) {
-    this.creatorName = creatorName;
+  public String getImageMimeType() {
+    return photo.getFileMimeType();
+  }
+
+  public void setImageMimeType(String imageMimeType) {
+    photo.setFileMimeType(imageMimeType);
+  }
+
+  public String getImageName() {
+    return photo.getFileName();
+  }
+
+  public void setImageName(String imageName) {
+    photo.setFileName(imageName);
+  }
+
+  public long getImageSize() {
+    return photo.getFileSize();
+  }
+
+  public void setImageSize(long imageSize) {
+    photo.setFileSize(imageSize);
+  }
+
+  public MediaPK getMediaPK() {
+    return photo.getMediaPK();
+  }
+
+  public void setMediaPK(MediaPK mediaPK) {
+    photo.setMediaPK(mediaPK);
+  }
+
+  public String toString() {
+    return photo.toString();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    return photo.equals(o);
+  }
+
+  public String getCreatorName() {
+    return photo.getCreatorName();
   }
 
   public String getUpdateId() {
-    return updateId;
+    return photo.getLastUpdatedBy();
   }
 
   public void setUpdateId(String updateId) {
-    this.updateId = updateId;
+    photo.setLastUpdatedBy(updateId);
   }
 
   public String getUpdateName() {
-    return updateName;
+    return photo.getLastUpdaterName();
   }
 
-  public void setUpdateName(String updateName) {
-    this.updateName = updateName;
-  }
-
+  @Override
   public String getName() {
-    return getTitle();
+    return photo.getName();
   }
 
+  @Override
   public String getURL() {
-    return "searchResult?Type=Photo&Id=" + getId();
+    return photo.getURL();
   }
 
+  @Override
   public String getId() {
     return getMediaPK().getId();
   }
 
+  @Override
   public String getDate() {
-    if (getUpdateDate() != null)
-      return DateUtil.date2SQLDate(getUpdateDate());
-
-    return getSilverCreationDate();
+    return photo.getDate();
   }
 
+  @Override
   public String getSilverCreationDate() {
-    return DateUtil.date2SQLDate(getCreationDate());
+    return photo.getSilverCreationDate();
   }
 
   public String getPermalink() {
-    if (URLManager.displayUniversalLinks())
-      return URLManager.getApplicationURL() + "/Image/" + getId();
-
-    return null;
-  }
-
-  private Map<String, MetaData> getAllMetaData() {
-    if (metaData == null) {
-      metaData = new LinkedHashMap<String, MetaData>();
-      try {
-        GalleryLoadMetaDataProcess.load(this);
-      } catch (Exception e) {
-        SilverTrace.error("gallery", "PhotoDetail.getAllMetaData",
-            "gallery.MSG_NOT_ADD_METADATA", "photoId =  " + getId());
-      }
-    }
-    return metaData;
+    return photo.getPermalink();
   }
 
   public void addMetaData(MetaData data) {
-    getAllMetaData().put(data.getProperty(), data);
+    photo.addMetaData(data);
   }
 
   public MetaData getMetaData(String property) {
-    return getAllMetaData().get(property);
+    return photo.getMetaData(property);
   }
 
   public Collection<String> getMetaDataProperties() {
-    Collection<MetaData> values = getAllMetaData().values();
-    Collection<String> properties = new ArrayList<String>();
-    for (MetaData meta : values) {
-      if (meta != null) {
-        properties.add(meta.getProperty());
-      }
-    }
-    return properties;
+    return photo.getMetaDataProperties();
   }
 
   public Date getBeginDownloadDate() {
-    return beginDownloadDate;
+    return photo.getDownloadPeriod().getBeginDatable().isDefined() ?
+        photo.getDownloadPeriod().getBeginDate() : null;
   }
 
   public void setBeginDownloadDate(Date beginDownloadDate) {
-    this.beginDownloadDate = beginDownloadDate;
+    photo.setDownloadPeriod(Period.from(beginDownloadDate, photo.getDownloadPeriod().getEndDate()));
   }
 
   public Date getEndDownloadDate() {
-    return endDownloadDate;
+    return photo.getDownloadPeriod().getEndDatable().isDefined() ?
+        photo.getDownloadPeriod().getEndDate() : null;
   }
 
   public void setEndDownloadDate(Date endDownloadDate) {
-    this.endDownloadDate = endDownloadDate;
+    photo.setDownloadPeriod(Period.from(photo.getDownloadPeriod().getBeginDate(), endDownloadDate));
   }
 
+  @Override
   public String getDescription(String language) {
     return getDescription();
   }
 
+  @Override
   public String getName(String language) {
     return getName();
   }
 
+  @Override
   public Iterator<String> getLanguages() {
-    return null;
+    return photo.getLanguages();
   }
 
   public boolean isVisible(Date today) {
-    boolean result = false;
-    if (!StringUtil.isDefined(String.valueOf(beginDate))
-        && !StringUtil.isDefined(String.valueOf(endDate))) {
-      result = true;
-    } else {
-      if (StringUtil.isDefined(String.valueOf(beginDate))
-          && !StringUtil.isDefined(String.valueOf(endDate))) {
-        result = beginDate.compareTo(today) <= 0;
-      }
-      if (!StringUtil.isDefined(String.valueOf(beginDate))
-          && StringUtil.isDefined(String.valueOf(endDate))) {
-        result = endDate.compareTo(today) >= 0;
-      }
-      if (StringUtil.isDefined(String.valueOf(beginDate))
-          && StringUtil.isDefined(String.valueOf(endDate))) {
-        result = beginDate.compareTo(today) <= 0
-            && endDate.compareTo(today) >= 0;
-      }
-    }
-    return result;
-  }
-
-  /**
-   * Get url to access photo from a web site.
-   *
-   * @param size  the expecting size of photo (tiny, small, normal, preview, original)
-   *
-   * @return the url
-   */
-  public String getWebURL(String size) {
-    PhotoSize photoSize = PhotoSize.get(size);
-
-    return getWebURL(photoSize);
-  }
-
-  /**
-   * Get url to access photo from a web site.
-   *
-   * @param size  the expecting size of photo
-   *
-   * @return the url
-   */
-  public String getWebURL(PhotoSize size) {
-    String idPhoto = mediaPK.getId();
-    String path = "image" + idPhoto;
-    String name = getImageName();
-    if (name != null)
-    {
-      name = (size.getPrefix().equals(".jpg")) ? name : (getId() + size.getPrefix());
-      return FileServerUtils.getWebUrl(mediaPK.getInstanceId(), name, name, getImageMimeType(), path);
-    }
-
-    return null;
+    return photo.isVisible(today);
   }
 
   public String getContributionType() {
-    return TYPE;
+    return photo.getContributionType();
   }
 
   /**
@@ -504,10 +390,14 @@ public class PhotoDetail implements SilverContentInterface, Serializable {
    * @return the same value returned by getContributionType()
    */
   public static String getResourceType() {
-    return TYPE;
+    return Photo.getResourceType();
   }
   
   public boolean isPreviewable() {
-    return ImageType.isPreviewable(getImageName());
+    return photo.isPreviewable();
+  }
+
+  public String getThumbnailUrl(final String formatPrefix) {
+    return photo.getThumbnailUrl(formatPrefix);
   }
 }

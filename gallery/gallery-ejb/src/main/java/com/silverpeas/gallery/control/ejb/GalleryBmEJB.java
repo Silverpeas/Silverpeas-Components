@@ -21,6 +21,7 @@
 package com.silverpeas.gallery.control.ejb;
 
 import com.silverpeas.form.RecordSet;
+import com.silverpeas.gallery.GalleryComponentSettings;
 import com.silverpeas.gallery.GalleryContentManager;
 import com.silverpeas.gallery.dao.OrderDAO;
 import com.silverpeas.gallery.dao.PhotoDAO;
@@ -590,11 +591,11 @@ public class GalleryBmEJB implements GalleryBm {
       }
 
       if (photo.getImageName() != null) {
-        final ResourceLocator gallerySettings = new ResourceLocator(
-            "org.silverpeas.gallery.settings.gallerySettings", "");
+        final ResourceLocator gallerySettings =
+            new ResourceLocator("org.silverpeas.gallery.settings.gallerySettings", "");
         indexEntry.setThumbnail(photo.getImageName());
         indexEntry.setThumbnailMimeType(photo.getImageMimeType());
-        indexEntry.setThumbnailDirectory(gallerySettings.getString("imagesSubDirectory") + photo.
+        indexEntry.setThumbnailDirectory(GalleryComponentSettings.getMediaFolderNamePrefix() + photo.
             getMediaPK().getId());
       }
 

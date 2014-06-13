@@ -498,7 +498,6 @@ public class PhotoDAO {
     photo.setDownload(download);
     photo.setAlbumLabel(albumLabel);
     photo.setStatus(status);
-    photo.setAlbumId(albumId);
     photo.setCreatorId(creatorId);
     photo.setUpdateId(updateId);
     photo.setImageName(imageName);

@@ -2,6 +2,7 @@ package com.silverpeas.gallery.process.photo;
 
 import java.util.Collection;
 
+import com.silverpeas.gallery.GalleryComponentSettings;
 import org.silverpeas.process.session.ProcessSession;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
@@ -81,8 +82,8 @@ public class GalleryIndexPhotoDataProcess extends AbstractGalleryDataProcess {
             new ResourceLocator("com.silverpeas.gallery.settings.gallerySettings", "");
         indexEntry.setThumbnail(getPhoto().getImageName());
         indexEntry.setThumbnailMimeType(getPhoto().getImageMimeType());
-        indexEntry.setThumbnailDirectory(gallerySettings.getString("imagesSubDirectory") +
-            getPhoto().getMediaPK().getId());
+        indexEntry.setThumbnailDirectory(
+            GalleryComponentSettings.getMediaFolderNamePrefix() + getPhoto().getMediaPK().getId());
       }
 
       // récupération des méta données pour les indéxer

@@ -103,7 +103,6 @@ public class GalleryPastePhotoDataProcess extends AbstractGalleryDataProcess {
     // information and user data
     if (!isSameComponentInstanceDestination) {
       getPhoto().getMediaPK().setComponentName(context.getComponentInstanceId());
-      getPhoto().setAlbumId(albumId);
     }
 
     // If the paste action is copy and paste (not cut and paste), then create the new photo

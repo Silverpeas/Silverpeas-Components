@@ -1,3 +1,4 @@
+<%@ page import="com.silverpeas.gallery.GalleryComponentSettings" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -332,7 +333,7 @@ function sendData()
 					photo 		= (PhotoDetail) itP.next();
 					if (photo != null) {
 						idP = photo.getMediaPK().getId();
-						String nomRep = resource.getSetting("imagesSubDirectory") + idP;
+						String nomRep = GalleryComponentSettings.getMediaFolderNamePrefix() + idP;
 						String name = photo.getImageName();
 						String altTitle = EncodeHelper.javaStringToHtmlString(photo.getTitle());
 						if (StringUtil.isDefined(photo.getDescription())) {

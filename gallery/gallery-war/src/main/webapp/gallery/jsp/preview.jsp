@@ -1,3 +1,4 @@
+<%@ page import="com.silverpeas.gallery.GalleryComponentSettings" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -52,7 +53,7 @@
   DataRecord xmlData = (DataRecord) request.getAttribute("XMLData");
 
   // déclaration des variables :
-  String nomRep = resource.getSetting("imagesSubDirectory") + photo.getMediaPK().getId();
+  String nomRep = GalleryComponentSettings.getMediaFolderNamePrefix() + photo.getMediaPK().getId();
   String name = "";
   if (photo.getImageName() != null && !photo.getImageName().equals("")) {
     name = photo.getImageName();

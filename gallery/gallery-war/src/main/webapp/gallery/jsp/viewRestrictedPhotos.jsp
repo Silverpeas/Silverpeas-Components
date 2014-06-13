@@ -1,3 +1,4 @@
+<%@ page import="com.silverpeas.gallery.GalleryComponentSettings" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -301,7 +302,7 @@
             photo = (PhotoDetail) it.next();
             if (photo != null) {
               idP = photo.getMediaPK().getId();
-              String nomRep = resource.getSetting("imagesSubDirectory") + idP;
+              String nomRep = GalleryComponentSettings.getMediaFolderNamePrefix() + idP;
               String name = photo.getId() + extension;
               vignette_url = FileServerUtils.getUrl(componentId, name, photo.getImageMimeType(), nomRep);
               if (!photo.isPreviewable()) {

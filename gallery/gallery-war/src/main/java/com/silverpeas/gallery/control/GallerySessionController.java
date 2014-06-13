@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import com.silverpeas.gallery.GalleryComponentSettings;
 import com.silverpeas.gallery.model.MediaPK;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.search.indexEngine.model.FieldDescription;
@@ -332,10 +333,6 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   public PhotoDetail getPhoto(String photoId) {
     MediaPK mediaPK = new MediaPK(photoId, getComponentId());
     PhotoDetail photo = getGalleryBm().getPhoto(mediaPK);
-    photo.setCreatorName(getUserDetail(photo.getCreatorId()).getDisplayedName());
-    if (photo.getUpdateId() != null) {
-      photo.setUpdateName(getUserDetail(photo.getUpdateId()).getDisplayedName());
-    }
 
     // Mise à jour de l'album courant
     Collection<String> albumIds = getGalleryBm().getPathList(photo.getMediaPK().getInstanceId(),
@@ -1146,7 +1143,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
       if (row.getPhotoId() == Integer.parseInt(photoId)) {
         // on est sur la bonne ligne
         PhotoDetail photo = getPhoto(Integer.toString(row.getPhotoId()));
-        String nomRep = getSettings().getString("imagesSubDirectory") + photoId;
+        String nomRep = GalleryComponentSettings.getMediaFolderNamePrefix() + photoId;
         String download = row.getDownloadDecision();
 
         if (!download.equals("T")) {

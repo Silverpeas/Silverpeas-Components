@@ -23,6 +23,7 @@
  */
 package com.silverpeas.gallery.process.photo;
 
+import com.silverpeas.gallery.GalleryComponentSettings;
 import org.silverpeas.process.io.file.FileHandler;
 import org.silverpeas.process.session.ProcessSession;
 
@@ -65,6 +66,6 @@ public class GalleryDeletePhotoFileProcess extends AbstractGalleryFileProcess {
 
     // Deleting repository with old photos
     fileHandler.getHandledFile(BASE_PATH, context.getComponentInstanceId(),
-        gallerySettings.getString("imagesSubDirectory") + getPhoto().getId()).delete();
+        GalleryComponentSettings.getMediaFolderNamePrefix() + getPhoto().getId()).delete();
   }
 }

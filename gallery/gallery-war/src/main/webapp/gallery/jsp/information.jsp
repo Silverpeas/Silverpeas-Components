@@ -1,3 +1,4 @@
+<%@ page import="com.silverpeas.gallery.GalleryComponentSettings" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -335,7 +336,7 @@ var messages = new Array();
 // optional: bgColor and color to be sent to tooltip
 <%
 if (photo != null) {
-    String nameRep = resource.getSetting("imagesSubDirectory") + photo.getId();
+    String nameRep = GalleryComponentSettings.getMediaFolderNamePrefix() + photo.getId();
 %>
 messages[0] = new Array('<%=FileServerUtils.getUrl( componentId,
     photo.getId() + extensionAlt, photo.getImageMimeType(), nameRep)%>','<%=EncodeHelper.javaStringToJsString(photo.

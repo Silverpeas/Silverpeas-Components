@@ -39,29 +39,31 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 
 public class GalleryInstanciator implements ComponentsInstanciatorIntf {
 
+  private static final String COMPONENT_NAME = GalleryComponentSettings.COMPONENT_NAME;
+
   public GalleryInstanciator() {
   }
 
   @Override
   public void create(Connection con, String spaceId, String componentId,
       String userId) throws InstanciationException {
-    SilverTrace.info("gallery", "GalleryInstanciator.create()", "root.MSG_GEN_ENTER_METHOD",
+    SilverTrace.info(COMPONENT_NAME, "GalleryInstanciator.create()", "root.MSG_GEN_ENTER_METHOD",
         "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
     NodeInstanciator node = new NodeInstanciator("com.silverpeas.gallery");
     node.create(con, spaceId, componentId, userId);
     insertRootNode(con, componentId, userId);
     insertAlbumNode(con, componentId, userId);
-    SilverTrace.info("gallery", "GalleryInstanciator.create()", "root.MSG_GEN_EXIT_METHOD");
+    SilverTrace.info(COMPONENT_NAME, "GalleryInstanciator.create()", "root.MSG_GEN_EXIT_METHOD");
   }
 
   @Override
   public void delete(Connection con, String spaceId, String componentId, String userId) throws
       InstanciationException {
-    SilverTrace.info("gallery", "GalleryInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD",
+    SilverTrace.info(COMPONENT_NAME, "GalleryInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD",
         "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
     getGalleryBm().deleteAlbum(UserDetail.getById(userId), componentId, new NodePK(
         NodePK.ROOT_NODE_ID, componentId));
-    SilverTrace.info("gallery", "GalleryInstanciator.delete()", "root.MSG_GEN_EXIT_METHOD");
+    SilverTrace.info(COMPONENT_NAME, "GalleryInstanciator.delete()", "root.MSG_GEN_EXIT_METHOD");
   }
 
   private void insertRootNode(Connection con, String componentId, String userId) throws

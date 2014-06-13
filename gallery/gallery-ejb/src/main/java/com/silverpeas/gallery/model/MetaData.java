@@ -25,7 +25,6 @@ import java.util.Date;
 
 public class MetaData {
 
- 
   private String property;
   private String label;
   private boolean date = false;
@@ -48,44 +47,50 @@ public class MetaData {
     return label;
   }
 
-  public void setLabel(String label) {
+  public MetaData setLabel(String label) {
     this.label = label;
+    return this;
   }
 
   public boolean isDate() {
     return date;
   }
 
-  public void setDate(boolean date) {
+  public MetaData setDate(boolean date) {
     this.date = date;
+    return this;
   }
 
   public String getValue() {
     return value;
   }
 
-  public void setValue(String value) {
+  public MetaData setValue(String value) {
     this.value = value;
+    return this;
   }
 
   public String getProperty() {
     return property;
   }
 
-  public void setProperty(String property) {
+  public MetaData setProperty(String property) {
     this.property = property;
+    return this;
   }
 
   public Date getDateValue() {
     return dateValue;
   }
 
-  public void setDateValue(Date dateValue) {
+  public MetaData setDateValue(Date dateValue) {
     this.dateValue = dateValue;
+    return this;
   }
 
-  public void setData(byte[] data) {
+  public MetaData setData(byte[] data) {
     this.data = data;
+    return this;
   }
 
   public void convert(String encoding) throws UnsupportedEncodingException {

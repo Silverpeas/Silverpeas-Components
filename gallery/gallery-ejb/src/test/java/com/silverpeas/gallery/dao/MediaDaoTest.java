@@ -23,6 +23,7 @@
  */
 package com.silverpeas.gallery.dao;
 
+import com.silverpeas.gallery.BaseGalleryTest;
 import com.stratelia.webactiv.util.DBUtil;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
@@ -35,7 +36,7 @@ import static org.hamcrest.Matchers.is;
 /**
  * This class of unit tests has been written during Entity and SGBD model migration.
  */
-public class MediaDaoTest extends DAOBasedTest {
+public class MediaDaoTest extends BaseGalleryTest {
 
   private final static int MEDIA_ROW_COUNT = 12;
   private final static int MEDIA_INTERNAL_ROW_COUNT = 9;
@@ -57,17 +58,7 @@ public class MediaDaoTest extends DAOBasedTest {
   @Override
   public void setUp() throws Exception {
     super.setUp();
-    DBUtil.getInstanceForTest(getDataSource().getConnection());
     verifyDataBeforeTest();
-  }
-
-  @Override
-  public void tearDown() throws Exception {
-    try {
-      super.tearDown();
-    } finally {
-      DBUtil.clearTestInstance();
-    }
   }
 
   @Test

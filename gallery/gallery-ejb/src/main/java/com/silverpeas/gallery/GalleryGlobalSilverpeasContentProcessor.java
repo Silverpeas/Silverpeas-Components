@@ -23,8 +23,6 @@
  */
 package com.silverpeas.gallery;
 
-import java.io.IOException;
-
 import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.gallery.processing.Size;
 import com.stratelia.silverpeas.contentManager.DefaultGlobalSilverContentProcessor;
@@ -34,27 +32,21 @@ import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.FileServerUtils;
-import com.stratelia.webactiv.util.ResourceLocator;
+
+import java.io.IOException;
 
 public class GalleryGlobalSilverpeasContentProcessor extends DefaultGlobalSilverContentProcessor
     implements IGlobalSilverContentProcessor {
-
-  private static String galleryDirectory = null;
-  static {
-    ResourceLocator gallerySettings =
-        new ResourceLocator("com.silverpeas.gallery.settings.gallerySettings", "");
-    galleryDirectory = gallerySettings.getString("imagesSubDirectory");
-  }
 
   @Override
   public GlobalSilverContent getGlobalSilverContent(SilverContentInterface sci,
       UserDetail creatorDetail, String location) {
     GlobalSilverContent gsc = super.getGlobalSilverContent(sci, creatorDetail, location);
     String instanceId = sci.getInstanceId();
-    String directory = galleryDirectory + sci.getId();
+    String directory = GalleryComponentSettings.getMediaFolderNamePrefix() + sci.getId();
     PhotoDetail photo = (PhotoDetail) sci;
-    gsc.setThumbnailURL(FileServerUtils.getUrl(instanceId, photo.getImageName(), photo
-        .getImageMimeType(), directory));
+    gsc.setThumbnailURL(FileServerUtils
+        .getUrl(instanceId, photo.getImageName(), photo.getImageMimeType(), directory));
     Size size = new Size(60, 45);
     try {
       size = ImageHelper.getWidthAndHeight(instanceId, directory, photo.getImageName(), 60);

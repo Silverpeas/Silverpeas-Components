@@ -1,3 +1,4 @@
+<%@ page import="com.silverpeas.gallery.GalleryComponentSettings" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -572,24 +573,11 @@ function CutSelectedPhoto()  {
             photo = (PhotoDetail) it.next();
             if (photo != null) {
               idP = photo.getMediaPK().getId();
-              String nomRep = resource.getSetting("imagesSubDirectory") + idP;
-              String name = photo.getImageName();
               String altTitle = EncodeHelper.javaStringToHtmlString(photo.getTitle());
               if (StringUtil.isDefined(photo.getDescription())) {
                 altTitle += " : " + EncodeHelper.javaStringToHtmlString(photo.getDescription());
               }
-              if (name != null) {
-                name = photo.getId() + extension;
-                vignette_url = FileServerUtils.getUrl(componentId, name, photo.
-                        getImageMimeType(), nomRep);
-                if (!photo.isPreviewable()) {
-                  vignette_url = m_context + "/gallery/jsp/icons/notAvailable_" + resource.
-                          getLanguage() + extension;
-                }
-              } else {
-                vignette_url = m_context + "/gallery/jsp/icons/notAvailable_"
-                        + resource.getLanguage() + extension;
-              }
+              vignette_url = photo.getThumbnailUrl(extension);
               photoColor = "fondPhoto";
               if (!photo.isVisible(today)) {
                 photoColor = "fondPhotoNotVisible";

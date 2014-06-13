@@ -21,34 +21,19 @@
  */
 package com.silverpeas.gallery.dao;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.sql.DataSource;
-
-import org.silverpeas.core.admin.OrganisationController;
-
+import com.silverpeas.gallery.BaseGalleryTest;
 import com.silverpeas.gallery.model.Order;
 import com.silverpeas.gallery.model.OrderRow;
 import com.silverpeas.util.CollectionUtil;
-
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
-
-import org.dbunit.database.DatabaseConnection;
-import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
-import org.dbunit.operation.DatabaseOperation;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.silverpeas.core.admin.OrganisationController;
+
+import java.sql.Connection;
+import java.util.Collection;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -60,28 +45,11 @@ import static org.mockito.Mockito.when;
  *
  * @author ehugonnet
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/spring-gallery-embbed-datasource.xml"})
-public class OrderDAOTest {
+public class OrderDAOTest extends BaseGalleryTest {
 
-  public OrderDAOTest() {
-  }
-  @Inject
-  private DataSource dataSource;
-
-  public Connection getConnection() throws SQLException {
-    return this.dataSource.getConnection();
-  }
-
-  @Before
-  public void generalSetUp() throws Exception {
-    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(
-        PhotoDaoTest.class.getClassLoader().getResourceAsStream(
-        "com/silverpeas/gallery/dao/order_dataset.xml")));
-    dataSet.addReplacementObject("[NULL]", null);
-    IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
-    DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);
-    DBUtil.getInstanceForTest(dataSource.getConnection());
+  @Override
+  public String getDataSetPath() {
+    return "com/silverpeas/gallery/dao/order_dataset.xml";
   }
 
   /**

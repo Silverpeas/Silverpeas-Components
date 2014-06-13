@@ -28,6 +28,7 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.form.XmlSearchForm;
+import com.silverpeas.gallery.GalleryComponentSettings;
 import com.silverpeas.gallery.ParameterNames;
 import com.silverpeas.gallery.control.GallerySessionController;
 import com.silverpeas.gallery.delegate.PhotoDataCreateDelegate;
@@ -367,7 +368,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         putPhotoCommonParameters(request, gallerySC, photo, flag);
 
         String repertoire =
-            gallerySC.getSettings().getString("imagesSubDirectory") + photo.getMediaPK().getId();
+            GalleryComponentSettings.getMediaFolderNamePrefix() + photo.getMediaPK().getId();
         request.setAttribute("Repertoire", repertoire);
 
         // appel jsp
@@ -782,7 +783,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         request.setAttribute("IsViewMetadata", gallerySC.isViewMetadata());
 
         String repertoire =
-            gallerySC.getSettings().getString("imagesSubDirectory") + photo.getMediaPK().getId();
+            GalleryComponentSettings.getMediaFolderNamePrefix() + photo.getMediaPK().getId();
         request.setAttribute("Repertoire", repertoire);
 
         // récupération du formulaire et affichage

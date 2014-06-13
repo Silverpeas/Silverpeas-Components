@@ -1,3 +1,4 @@
+<%@ page import="com.silverpeas.gallery.GalleryComponentSettings" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -128,7 +129,7 @@ div {
                   altTitle = "";
                   if (photo != null) {
                     idP = photo.getMediaPK().getId();
-                    String nomRep = resource.getSetting("imagesSubDirectory") + idP;
+                    String nomRep = GalleryComponentSettings.getMediaFolderNamePrefix() + idP;
                     String name = photo.getImageName();
                     if (name != null) {
                       name = photo.getId() + "_66x50.jpg";

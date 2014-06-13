@@ -27,13 +27,13 @@ CREATE TABLE SC_Gallery_Internal (
 CREATE TABLE SC_Gallery_Photo (
   mediaId     VARCHAR(40) NOT NULL,
   resolutionH INT         NULL,
-  resolutionL INT         NULL
+  resolutionW INT         NULL
 );
 
 CREATE TABLE SC_Gallery_Video (
   mediaId     VARCHAR(40) NOT NULL,
   resolutionH INT         NULL,
-  resolutionL INT         NULL,
+  resolutionW INT         NULL,
   bitrate     INT8        NULL,
   duration    INT8        NULL
 );
@@ -45,9 +45,9 @@ CREATE TABLE SC_Gallery_Sound (
 );
 
 CREATE TABLE SC_Gallery_Streaming (
-  mediaId  VARCHAR(40)   NOT NULL,
-  url      VARCHAR(1000) NOT NULL,
-  provider VARCHAR(50)   NOT NULL
+  mediaId     VARCHAR(40)   NOT NULL,
+  homepageUrl VARCHAR(1000) NOT NULL,
+  provider    VARCHAR(50)   NOT NULL
 );
 
 CREATE TABLE SC_Gallery_Path (

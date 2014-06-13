@@ -95,9 +95,6 @@ public class MediaPK extends WAPrimaryKey {
     if (other == null) {
       return false;
     }
-    if (super.equals(other)) {
-      return true;
-    }
     if (getClass() != other.getClass()) {
       return false;
     }

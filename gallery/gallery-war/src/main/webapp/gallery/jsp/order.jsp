@@ -1,3 +1,4 @@
+<%@ page import="com.silverpeas.gallery.GalleryComponentSettings" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -107,7 +108,7 @@ var messages = new Array();
 	{
 		OrderRow row = (OrderRow) itP.next();
 		PhotoDetail photo = row.getPhoto();
-		String nomRep = resource.getSetting("imagesSubDirectory") + photo.getId();
+		String nomRep = GalleryComponentSettings.getMediaFolderNamePrefix() + photo.getId();
 %>
 		messages[<%=messagesId%>] = new Array('<%=FileServerUtils.getUrl( componentId, photo.getId()
 		    + extensionAlt, photo.getImageMimeType(), nomRep)%>',
@@ -464,7 +465,7 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
 
       String download = row.getDownloadDecision();
 
-      String nomRep = resource.getSetting("imagesSubDirectory") + photoId;
+      String nomRep = GalleryComponentSettings.getMediaFolderNamePrefix() + photoId;
       String name = photoId + extension;
       PhotoDetail photo = row.getPhoto();
       String altTitle = EncodeHelper.javaStringToHtmlString(photo.getTitle());
@@ -550,7 +551,7 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
 
       OrderRow row = (OrderRow) itP.next();
       photoId = row.getPhotoId();
-      String nomRep = resource.getSetting("imagesSubDirectory") + photoId;
+      String nomRep = GalleryComponentSettings.getMediaFolderNamePrefix() + photoId;
       String name = photoId + extension;
       PhotoDetail photo = row.getPhoto();
       String altTitle = EncodeHelper.javaStringToHtmlString(photo.getTitle());

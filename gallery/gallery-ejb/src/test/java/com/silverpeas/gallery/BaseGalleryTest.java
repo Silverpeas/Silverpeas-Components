@@ -29,6 +29,7 @@ import java.sql.SQLException;
 import javax.inject.Inject;
 import javax.sql.DataSource;
 
+import com.stratelia.webactiv.util.DBUtil;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.ReplacementDataSet;
@@ -36,6 +37,7 @@ import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.Before;
 import org.junit.runner.RunWith;
+import org.silverpeas.persistence.dao.DAOBasedTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -45,29 +47,25 @@ import com.silverpeas.gallery.dao.PhotoDaoTest;
  * Base class for tests in the gallery component.
  * It prepares the database to use in tests.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/spring-gallery-embbed-datasource.xml"})
-public abstract class BaseGalleryTest {
+public abstract class BaseGalleryTest extends DAOBasedTest {
 
-  @Inject
-  private DataSource dataSource;
-
-  @Before
-  public void generalSetUp() throws Exception {
-    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(
-            PhotoDaoTest.class.getClassLoader().getResourceAsStream(getResource())));
-    dataSet.addReplacementObject("[NULL]", null);
-    IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
-    DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);
+  @Override
+  public String[] getApplicationContextPath() {
+    return new String[]{"/spring-gallery-embbed-datasource.xml"};
   }
 
-  public Connection getConnection() throws SQLException {
-    return this.dataSource.getConnection();
+  @Override
+  public void setUp() throws Exception {
+    super.setUp();
+    DBUtil.getInstanceForTest(getDataSource().getConnection());
   }
 
-  public DataSource getDataSource() {
-    return dataSource;
+  @Override
+  public void tearDown() throws Exception {
+    try {
+      super.tearDown();
+    } finally {
+      DBUtil.clearTestInstance();
+    }
   }
-
-  abstract public String getResource();
 }

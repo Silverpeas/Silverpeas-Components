@@ -25,6 +25,7 @@ import com.silverpeas.gallery.image.ImageMetadataException;
 import com.silverpeas.gallery.image.ImageMetadataExtractor;
 import com.silverpeas.gallery.model.MediaPK;
 import com.silverpeas.gallery.model.MetaData;
+import com.silverpeas.gallery.model.Photo;
 import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.gallery.processing.ImageResizer;
 import com.silverpeas.gallery.processing.ImageUtility;
@@ -80,14 +81,14 @@ public class ImageHelper {
     final String photoId = photo.getMediaPK().getId();
     final String instanceId = photo.getMediaPK().getInstanceId();
     if (StringUtil.isDefined(photoId) && StringUtil.isDefined(instanceId)) {
-      final String subDirectory = gallerySettings.getString("imagesSubDirectory");
       String fileName = photoId + previewSuffix;
       if (isOriginalRequired) {
         fileName = photo.getImageName();
       }
       try {
-        return FileUtils.openInputStream(FileUtils.getFile(new File(BASE_PATH.getPath()),
-            instanceId, subDirectory + photoId, fileName));
+        return FileUtils.openInputStream(FileUtils
+            .getFile(new File(BASE_PATH.getPath()), instanceId,
+                GalleryComponentSettings.getMediaFolderNamePrefix() + photoId, fileName));
       } catch (IOException e) {
         SilverTrace.error("gallery", "ImageHelper.getBytes", "gallery.ERR_CANT_GET_IMAGE_BYTES",
             "image = " + photo.getTitle() + " (#" + photo.getId() + ")");
@@ -117,9 +118,9 @@ public class ImageHelper {
       if (name != null) {
         name = FileUtil.getFilename(name);
         if (ImageType.isImage(name)) {
-          final String subDirectory = gallerySettings.getString("imagesSubDirectory");
-          final HandledFile handledImageFile = fileHandler.getHandledFile(BASE_PATH, instanceId,
-              subDirectory + photoId, name);
+          final String subDirectory = GalleryComponentSettings.getMediaFolderNamePrefix();
+          final HandledFile handledImageFile =
+              fileHandler.getHandledFile(BASE_PATH, instanceId, subDirectory + photoId, name);
           handledImageFile.writeByteArrayToFile(image.get());
           photo.setImageName(name);
           photo.setImageMimeType(image.getContentType());
@@ -152,9 +153,9 @@ public class ImageHelper {
       if (name != null) {
         name = name.substring(name.lastIndexOf(File.separator) + 1, name.length());
         if (ImageType.isImage(name)) {
-          String subDirectory = gallerySettings.getString("imagesSubDirectory");
-          final HandledFile handledImageFile = fileHandler.getHandledFile(BASE_PATH, instanceId,
-              subDirectory + photoId, name);
+          String subDirectory = GalleryComponentSettings.getMediaFolderNamePrefix();
+          final HandledFile handledImageFile =
+              fileHandler.getHandledFile(BASE_PATH, instanceId, subDirectory + photoId, name);
           fileHandler.copyFile(image, handledImageFile);
           photo.setImageName(name);
           photo.setImageMimeType(FileUtil.getMimeType(name));
@@ -199,28 +200,30 @@ public class ImageHelper {
     }
   }
 
-  public static void setMetaData(final FileHandler fileHandler, final PhotoDetail photo)
+  public static void setMetaData(final FileHandler fileHandler, final Photo photo)
       throws IOException, ImageMetadataException {
     setMetaData(fileHandler, photo, I18NHelper.defaultLanguage);
   }
 
-  public static void setMetaData(final FileHandler fileHandler, final PhotoDetail photo,
+  public static void setMetaData(final FileHandler fileHandler, final Photo photo,
       final String lang) throws ImageMetadataException, IOException {
     final String photoId = photo.getMediaPK().getId();
-    final String name = photo.getImageName();
-    final String mimeType = photo.getImageMimeType();
+    final String name = photo.getFileName();
+    final String mimeType = photo.getFileMimeType();
 
     if ("image/jpeg".equals(mimeType) || "image/pjpeg".equals(mimeType)) {
       final HandledFile handledFile = fileHandler.getHandledFile(BASE_PATH, photo.getInstanceId(),
-          settings.getString("imagesSubDirectory") + photoId, name);
+          GalleryComponentSettings.getMediaFolderNamePrefix() + photoId, name);
       if (handledFile.exists()) {
         try {
           final ImageMetadataExtractor extractor = new DrewImageMetadataExtractor(photo.
               getInstanceId());
-          for (final MetaData meta : extractor.extractImageExifMetaData(handledFile.getFile(), lang)) {
+          for (final MetaData meta : extractor
+              .extractImageExifMetaData(handledFile.getFile(), lang)) {
             photo.addMetaData(meta);
           }
-          for (final MetaData meta : extractor.extractImageIptcMetaData(handledFile.getFile(), lang)) {
+          for (final MetaData meta : extractor
+              .extractImageIptcMetaData(handledFile.getFile(), lang)) {
             photo.addMetaData(meta);
           }
         } catch (UnsupportedEncodingException e) {
@@ -385,9 +388,9 @@ public class ImageHelper {
   public static void pasteImage(final FileHandler fileHandler, final MediaPK fromPK,
       final PhotoDetail image, final boolean cut) {
     final MediaPK toPK = image.getMediaPK();
-    final String subDirectory = gallerySettings.getString("imagesSubDirectory");
-    final HandledFile fromDir = fileHandler.getHandledFile(BASE_PATH, fromPK.getInstanceId(),
-        subDirectory + fromPK.getId());
+    final String subDirectory = GalleryComponentSettings.getMediaFolderNamePrefix();
+    final HandledFile fromDir = fileHandler
+        .getHandledFile(BASE_PATH, fromPK.getInstanceId(), subDirectory + fromPK.getId());
     final HandledFile toDir =
         fileHandler.getHandledFile(BASE_PATH, toPK.getInstanceId(), subDirectory + toPK.getId());
 
@@ -396,8 +399,8 @@ public class ImageHelper {
 
       // copy thumbnails & watermark (only if it does exist)
       for (final String thumbnailSuffix : new String[]{thumbnailSuffix_large,
-        thumbnailSuffix_medium, thumbnailSuffix_small, previewSuffix, thumbnailSuffix_Xlarge,
-        watermarkSuffix}) {
+          thumbnailSuffix_medium, thumbnailSuffix_small, previewSuffix, thumbnailSuffix_Xlarge,
+          watermarkSuffix}) {
         pasteFile(fromDir.getHandledFile(fromPK.getId() + thumbnailSuffix),
             toDir.getHandledFile(toPK.getId() + thumbnailSuffix), cut);
       }

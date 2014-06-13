@@ -51,7 +51,7 @@ public class GalleryBmEJBTest extends BaseGalleryTest {
   private static final String ALBUM_NAME = "Nature";
 
   @Override
-  public String getResource() {
+  public String getDataSetPath() {
     return "com/silverpeas/gallery/dao/photo_dataset.xml";
   }
 

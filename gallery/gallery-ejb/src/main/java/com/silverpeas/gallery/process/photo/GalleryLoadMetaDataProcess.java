@@ -23,6 +23,7 @@
  */
 package com.silverpeas.gallery.process.photo;
 
+import com.silverpeas.gallery.model.Photo;
 import org.silverpeas.process.ProcessFactory;
 import org.silverpeas.process.io.file.FileHandler;
 import org.silverpeas.process.management.AbstractFileProcess;
@@ -38,14 +39,14 @@ import com.silverpeas.gallery.model.PhotoDetail;
  */
 public class GalleryLoadMetaDataProcess extends AbstractFileProcess<ProcessExecutionContext> {
 
-  private final PhotoDetail photo;
+  private final Photo photo;
 
   /**
    * Method to call to load MetaData
    * @param photo
    * @throws Exception
    */
-  public static void load(final PhotoDetail photo) throws Exception {
+  public static void load(final Photo photo) throws Exception {
     ProcessFactory.getProcessManagement().execute(new GalleryLoadMetaDataProcess(photo),
         new ProcessExecutionContext(null, null));
   }
@@ -54,7 +55,7 @@ public class GalleryLoadMetaDataProcess extends AbstractFileProcess<ProcessExecu
    * Default hidden constructor
    * @param photo
    */
-  private GalleryLoadMetaDataProcess(final PhotoDetail photo) {
+  private GalleryLoadMetaDataProcess(final Photo photo) {
     this.photo = photo;
   }
 
