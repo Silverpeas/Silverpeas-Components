@@ -86,6 +86,13 @@ public class GalleryBmEJB implements GalleryBm {
   private NodeBm nodeBm;
   private final OrderDAO orderDao = new OrderDAO();
 
+  public GalleryBmEJB() {
+  }
+
+  protected GalleryBmEJB(NodeBm nodeBm) {
+    this.nodeBm = nodeBm;
+  }
+
   @Override
   public AlbumDetail getAlbum(final NodePK nodePK, final boolean viewAllPhoto) {
     try {
@@ -361,7 +368,7 @@ public class GalleryBmEJB implements GalleryBm {
     }
   }
 
-  private Connection initCon() {
+  protected Connection initCon() {
     Connection con;
     // initialisation de la connexion
     try {

@@ -255,27 +255,23 @@ public class PhotoDAO {
     return id;
   }
 
-  public static String createPath(Connection con, PhotoDetail photo,
+  public static void createPath(Connection con, PhotoDetail photo,
       String albumId) throws SQLException, UtilException {
-    // Création d'un emplacement
-    String id = "";
+    // Create new path
     PreparedStatement prepStmt = null;
     try {
-      int newId = DBUtil.getNextId("SC_Gallery_Path", "photoId");
-      id = Integer.toString(newId);
-      // création de la requete
+      // Build SQL query
       String query = "insert into SC_Gallery_Path (photoId, nodeId, instanceId) values (?,?,?)";
-      // initialisation des paramètres
+      // initialize prepare statement
       prepStmt = con.prepareStatement(query);
       prepStmt.setInt(1, Integer.parseInt(photo.getId()));
       prepStmt.setInt(2, Integer.parseInt(albumId));
       prepStmt.setString(3, photo.getInstanceId());
       prepStmt.executeUpdate();
     } finally {
-      // fermeture
+      // close prepare statement
       DBUtil.close(prepStmt);
     }
-    return id;
   }
 
   public static void updatePhoto(Connection con, PhotoDetail photo)
@@ -317,6 +313,14 @@ public class PhotoDAO {
     }
   }
 
+  /**
+   * get last uploaded pictures
+   * @param con a database connection
+   * @param instanceId the gallery application instance identifier
+   * @param viewAllPhoto boolean to include/exclude photo which are not visible
+   * @return a collection of last uploaded photos
+   * @throws SQLException
+   */
   public static Collection<PhotoDetail> getDernieres(Connection con, String instanceId,
       boolean viewAllPhoto) throws SQLException {
     // récupérer toutes les photos d'un album
@@ -623,7 +627,7 @@ public class PhotoDAO {
   }
 
   /**
-   * get my SocialInformationGallery accordint to the type of data base used(PostgreSQL,Oracle,MMS)
+   * get my SocialInformationGallery according to the type of data base used(PostgreSQL,Oracle,MMS)
    * .
    * @param con
    * @param userId

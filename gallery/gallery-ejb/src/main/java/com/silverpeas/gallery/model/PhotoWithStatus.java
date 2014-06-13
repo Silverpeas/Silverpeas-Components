@@ -1,4 +1,3 @@
-
 /**
  * Copyright (C) 2000 - 2013 Silverpeas
  *
@@ -24,13 +23,11 @@
  */
 package com.silverpeas.gallery.model;
 
-
-
 public class PhotoWithStatus {
-  
+
   private PhotoDetail photo;
   private boolean update;
-  
+
   public PhotoWithStatus(PhotoDetail photo, boolean update) {
     this.photo = photo;
     this.update = update;
@@ -44,7 +41,6 @@ public class PhotoWithStatus {
     return update;
   }
 
-  
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -54,7 +50,6 @@ public class PhotoWithStatus {
     return result;
   }
 
-  
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {
@@ -76,9 +71,5 @@ public class PhotoWithStatus {
     }
     return update == other.update;
   }
-
-  
-    
-  
 
 }

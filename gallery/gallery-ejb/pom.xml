@@ -64,6 +64,12 @@
       <groupId>org.apache.sanselan</groupId>
       <artifactId>sanselan</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.silverpeas.core</groupId>
+      <artifactId>test-core</artifactId>
+      <version>${core.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
