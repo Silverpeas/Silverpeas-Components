@@ -35,16 +35,20 @@
   angular.module('silverpeas.directives').directive('suggestionboxDeletion',
       ['context', '$rootScope', function(context, $rootScope) {
         return {
+          restrict: 'AE',
           templateUrl : webContext +
-              '/util/javaScript/angularjs/directives/suggestionbox-deletion.jsp',
+              '/suggestionBox/jsp/javaScript/angularjs/directives/suggestionbox-deletion.jsp',
+          replace: true,
           link : function postLink(scope, element, attrs) {
+            applyTokenSecurity('#suggestionDeletion');
 
             function getClearedDialog(message) {
               jQuery('#suggestionDeletionMessage').html(message);
               return jQuery('#suggestionDeletion');
             }
 
-            scope.delete = function(suggestion, navigationCall) {
+            // As delete word is a forbidden one, remove has been used (IE8 - IE9 restriction).
+            scope.remove = function(suggestion, navigationCall) {
               var message = jQuery('#deleteSuggestionConfirmMessage').html().replace('@name@',
                   suggestion.title);
               var $confirm = getClearedDialog(message);

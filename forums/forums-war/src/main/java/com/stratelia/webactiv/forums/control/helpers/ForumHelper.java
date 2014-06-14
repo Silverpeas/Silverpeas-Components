@@ -240,10 +240,10 @@ public class ForumHelper {
           out.print("<td  align=\"center\">");
           out.write(raterRatingEntity
               .toJSonScript("raterRatingEntity_" + raterRatingEntity.getContributionId()));
-          out.write("<silverpeas-rating readonly=\"true\" raterRating=\"raterRatingEntity_" +
+          out.write("<div silverpeas-rating readonly=\"true\" raterRating=\"raterRatingEntity_" +
               raterRatingEntity.getContributionId() +
               "\" shownbraterratings=\"false\" canuserrating=\"" + canUserRating +
-              "\"></silverpeas-rating>");
+              "\"></div>");
           out.println("</td>");
         }
       }

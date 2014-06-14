@@ -24,14 +24,13 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="init.jsp" %>
 
 <html>
 <head>
+<view:looknfeel/>
 <%
-	out.println(gef.getLookStyleSheet());
-
 	TableManager tableManager = myDBSC.getTableManager();
 	DataTypeList dataTypeList = tableManager.getDataTypeList();
 	ForeignKeys foreignKeys = tableManager.getForeignKeys();

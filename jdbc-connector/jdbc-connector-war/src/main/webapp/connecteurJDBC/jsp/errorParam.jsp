@@ -24,7 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="imports.jsp" %>
 <%!
 	GraphicElementFactory gef;
@@ -74,9 +74,7 @@ String m_context                              = graphicPath;
 <HTML>
 <Head>
   <TITLE><%=connecteurJDBC.getString("windowTitleParametrageConnection")%> </TITLE>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 </head>
 <BODY marginwidth=5 marginheight=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
 

@@ -25,7 +25,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="imports.jsp" %>
 <%!
 	GraphicElementFactory gef;
@@ -122,7 +122,7 @@ addCriter = request.getParameter("addCriter");
 count = request.getParameter("count");
 addConst = request.getParameter("addConst");
 
-String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+String m_context = GeneralPropertiesManager.getString("ApplicationURL");
 
 String arrowRight = m_context + "/util/icons/formButtons/arrowRight.gif";
 String arrowLeft = m_context + "/util/icons/formButtons/arrowLeft.gif";
@@ -253,9 +253,7 @@ String separator = "<TABLE CELLPADDING=0 CELLSPACING=0 BORDER=0><TR><TD><img src
 <HTML>
 <Head>
 <TITLE>___/ Silverpeas - Corporate Portal Organizer \________________________________________________________________________</TITLE>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 </head>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>

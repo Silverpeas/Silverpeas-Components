@@ -25,6 +25,7 @@
 --%>
 <%@page import="com.stratelia.webactiv.yellowpages.ImportReport"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkYellowpages.jsp" %>
 
 <html>
@@ -50,7 +51,7 @@
 		}
 	}
 %>
-<% out.println(gef.getLookStyleSheet()); %>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/infoHighlight.js"></script>
 <script type="text/javascript">

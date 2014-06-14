@@ -79,7 +79,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
   	<title></title>
-    <% out.println(gef.getLookStyleSheet());%>
+    <view:looknfeel/>
     <% formUpdate.displayScripts(out, context);%>
     <script type="text/javascript">
       function topicGoTo(id) {

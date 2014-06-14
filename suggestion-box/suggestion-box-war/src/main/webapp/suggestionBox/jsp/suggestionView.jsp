@@ -58,10 +58,10 @@
 
 <c:url var="backUri" value="${requestScope.navigationContext.previousNavigationStep.uri}"/>
 <c:url var="componentUriBase" value="${requestScope.componentUriBase}"/>
-<c:url var="suggestionBoxJS" value="/util/javaScript/angularjs/suggestionbox.js"/>
-<c:url var="suggestionBoxServicesJS" value="/util/javaScript/angularjs/services/suggestionbox.js"/>
-<c:url var="suggestionBoxValidationDirectiveJS" value="/util/javaScript/angularjs/directives/suggestionbox-validation.js"/>
-<c:url var="suggestionBoxDeletionDirectiveJS" value="/util/javaScript/angularjs/directives/suggestionbox-deletion.js"/>
+<c:url var="suggestionBoxJS" value="/suggestionBox/jsp/javaScript/angularjs/suggestionbox.js"/>
+<c:url var="suggestionBoxServicesJS" value="/suggestionBox/jsp/javaScript/angularjs/services/suggestionbox.js"/>
+<c:url var="suggestionBoxValidationDirectiveJS" value="/suggestionBox/jsp/javaScript/angularjs/directives/suggestionbox-validation.js"/>
+<c:url var="suggestionBoxDeletionDirectiveJS" value="/suggestionBox/jsp/javaScript/angularjs/directives/suggestionbox-deletion.js"/>
 <c:url var="SilverpeasAnimationJS" value="/util/javaScript/animation.js"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -113,13 +113,13 @@
     <view:operation action="javascript:publish();" altText="${publishSuggestionMenuLabel}"/>
   </c:if>
   <c:if test="${isPublishable or greaterUserRole.isGreaterThanOrEquals(adminRole)}">
-    <view:operation action="angularjs:delete(suggestion, true)" altText="${deleteSuggestionMenuLabel}"/>
-    <div suggestionbox-deletion style="display: none"></div>
+    <view:operation action="angularjs:remove(suggestion, true)" altText="${deleteSuggestionMenuLabel}"/>
+    <div suggestionbox-deletion></div>
   </c:if>
   <c:if test="${isModeratorView}">
     <view:operation action="angularjs:refuse(suggestion)" altText="${refuseSuggestionMenuLabel}"/>
     <view:operation action="angularjs:approve(suggestion)" altText="${validateSuggestionMenuLabel}"/>
-    <div suggestionbox-validation style="display: none"></div>
+    <div suggestionbox-validation></div>
   </c:if>
   <c:if test="${suggestion.validation.validated}">
     <view:operation action="javascript:notify()" altText="${notifyLabel}"/>

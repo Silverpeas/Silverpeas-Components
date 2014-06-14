@@ -1914,6 +1914,7 @@ public class KmeliaBmEJB implements KmeliaBm {
         if (!fathers.contains(new NodePK(alias.getId(), alias.getInstanceId()))) {
           // Perform subscription notification sendings when the alias is not the one of the
           // original publication
+          pubDetail.setAlias(true);
           sendSubscriptionsNotification(alias, pubDetail, update);
         }
       }
@@ -3082,6 +3083,7 @@ public class KmeliaBmEJB implements KmeliaBm {
         "root.MSG_GEN_ENTER_METHOD");
 
     final PublicationDetail pubDetail = getPublicationDetail(pubPK);
+    pubDetail.setAlias(isAlias(pubDetail, topicPK));
 
     final NotificationMetaData notifMetaData = UserNotificationHelper
         .build(new KmeliaNotifyPublicationUserNotification(topicPK, pubDetail, senderName));
@@ -3090,6 +3092,18 @@ public class KmeliaBmEJB implements KmeliaBm {
         "root.MSG_GEN_EXIT_METHOD");
 
     return notifMetaData;
+  }
+  
+  public boolean isAlias(PublicationDetail pubDetail, NodePK nodePK) {
+    boolean result = false;
+    Collection<Alias> aliases = getAlias(pubDetail.getPK());
+    for (Alias alias : aliases) {
+      if (!alias.getInstanceId().equals(pubDetail.getInstanceId()) && nodePK.equals(alias)) {
+        result = true;
+        break;
+      }
+    }
+    return result;
   }
 
   /**

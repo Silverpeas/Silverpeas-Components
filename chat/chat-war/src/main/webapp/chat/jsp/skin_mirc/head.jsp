@@ -24,7 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="../checkChat.jsp" %>
 <%@ page import="jChatBox.Util.*,jChatBox.Chat.*,jChatBox.Chat.Filter.*,java.util.*,java.net.*" %>
 <jsp:useBean id="UserProcessor" class="jChatBox.Service.UserProcessor" scope="application" />
@@ -65,17 +65,13 @@ browseBar.setPath(chatroomName);
 %>
 <html>
 <head>
-	<title></title>
-	<%
-	out.println(gef.getLookStyleSheet());
-	%>
-
+<title></title>
+<view:looknfeel/>
 <script>
 function refreshList(){
 	top.window.opener.location="login.jsp";
 }
 </script>
-
 </head>
 <body leftmargin="5" topmargin="5" marginwidth="5" marginheight="5" onLoad="javascript:refreshList()">
 <table cellpadding=0 cellspacing=0 border=0 width="98%"><tr><td>

@@ -23,22 +23,23 @@
 <fmt:message var="approveCommentLabel" key="GML.contribution.validation.approve.note"/>
 <fmt:message var="refuseCommentLabel" key="GML.contribution.validation.refuse.note"/>
 
-<script type="text/javascript" src="${formValidator}"></script>
+<div style="display: none">
+  <script type="text/javascript" src="${formValidator}"></script>
 
-<span id="suggestionValidationApproveMsg" style="display: none">${approveSuggestionConfirmMessage}</span>
-<span id="suggestionValidationRefuseMsg" style="display: none">${refuseSuggestionConfirmMessage}</span>
-<span id="commentMandatoryErrorMessageMsg" style="display: none"><b>@name@</b> <fmt:message key='GML.MustBeFilled'/></span>
-<span id="commentNbMaxCharErrorMessageMsg" style="display: none"><b>@name@</b> <fmt:message key='GML.data.error.message.string.limit'><fmt:param value="2000"/></fmt:message></span>
+  <span id="suggestionValidationApproveMsg" style="display: none">${approveSuggestionConfirmMessage}</span>
+  <span id="suggestionValidationRefuseMsg" style="display: none">${refuseSuggestionConfirmMessage}</span>
+  <span id="commentMandatoryErrorMessageMsg" style="display: none"><b>@name@</b> <fmt:message key='GML.MustBeFilled'/></span>
+  <span id="commentNbMaxCharErrorMessageMsg" style="display: none"><b>@name@</b> <fmt:message key='GML.data.error.message.string.limit'><fmt:param value="2000"/></fmt:message></span>
 
-<div id="suggestionValidation" style="display: none">
-  <span id="suggestionValidationMessage"></span><br/><br/>
+  <div id="suggestionValidation">
+    <span id="suggestionValidationMessage"></span><br/><br/>
 
-  <form id="suggestionValidationForm" action="#" method="POST">
-    <div>
-      <span id="validationApproveLabel" class="txtlibform validationApproveItem" style="display: none">${approveCommentLabel}</span>
-      <span id="validationRefuseLabel" class="txtlibform validationRefuseItem" style="display: none">${refuseCommentLabel}</span>
-      <textarea id="suggestionValidationComment" name="comment" rows="15" cols="86"></textarea>&nbsp;<img class="validationRefuseItem" border="0" src="${mandatoryIcons}" width="5" height="5"/>
-    </div>
-  </form>
+    <form id="suggestionValidationForm" action="#" method="POST">
+      <div>
+        <span id="validationApproveLabel" class="txtlibform validationApproveItem" style="display: none">${approveCommentLabel}</span>
+        <span id="validationRefuseLabel" class="txtlibform validationRefuseItem" style="display: none">${refuseCommentLabel}</span>
+        <textarea id="suggestionValidationComment" name="comment" rows="15" cols="86"></textarea>&nbsp;<img class="validationRefuseItem" border="0" src="${mandatoryIcons}" width="5" height="5"/>
+      </div>
+    </form>
+  </div>
 </div>
-<view:includePlugin name="tkn"/>

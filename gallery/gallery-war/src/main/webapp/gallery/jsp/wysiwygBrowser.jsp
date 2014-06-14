@@ -38,7 +38,7 @@ String componentId 	= request.getParameter("ComponentId");
 String language 	= request.getParameter("Language");
 String fieldName    = request.getParameter("FieldName");
 
-String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+String m_context = GeneralPropertiesManager.getString("ApplicationURL");
 %>
 
 <html>

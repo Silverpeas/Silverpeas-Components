@@ -73,8 +73,8 @@
 <fmt:message key="suggestionBox.proposeSuggestion"             var="creationIconPath"          bundle="${icons}"/>
 <fmt:message key="suggestionBox.validatedSuggestion"           var="validatedIconPath"         bundle="${icons}"/>
 <fmt:message key="suggestionBox.SuggestionInPendingValidation" var="pendingValidationIconPath" bundle="${icons}"/>
-<c:url var="suggestionBoxJS"                    value="/util/javaScript/angularjs/suggestionbox.js"/>
-<c:url var="suggestionBoxServicesJS"            value="/util/javaScript/angularjs/services/suggestionbox.js"/>
+<c:url var="suggestionBoxJS"                    value="/suggestionBox/jsp/javaScript/angularjs/suggestionbox.js"/>
+<c:url var="suggestionBoxServicesJS"            value="/suggestionBox/jsp/javaScript/angularjs/services/suggestionbox.js"/>
 <c:url var="statusIcon" value="${refusedIconPath}"/>
 
 <c:url var="refusedIconURL"           value="${refusedIconPath}"/>
@@ -93,15 +93,16 @@
   <script type="text/javascript" src="${suggestionBoxServicesJS}"></script>
   <script type="application/javascript">
     function successUnsubscribe() {
-      $("#yui-gen1").empty().append($('<a>').addClass('yuimenuitemlabel').attr('href',
-          "javascript:subscribe();").attr('title',
-          '<view:encodeJs string="${subscribeToSuggestionBoxLabel}" />').append('<view:encodeJs string="${subscribeToSuggestionBoxLabel}" />'));
+      setSubscriptionMenu('<view:encodeJs string="${subscribeToSuggestionBoxLabel}" />', 'subscribe');
     }
 
     function successSubscribe() {
-      $("#yui-gen1").empty().append($('<a>').addClass('yuimenuitemlabel').attr('href',
-          "javascript:unsubscribe();").attr('title',
-          '<view:encodeJs string="${unsubscribeFromSuggestionBoxLabel}" />').append('<view:encodeJs string="${unsubscribeFromSuggestionBoxLabel}" />'));
+      setSubscriptionMenu('<view:encodeJs string="${unsubscribeFromSuggestionBoxLabel}" />', 'unsubscribe');
+    }
+    function setSubscriptionMenu(label, actionMethodName) {
+      var $menuLabel = $("#subscriptionMenuLabel");
+      $menuLabel.html(label);
+      $menuLabel.parents('a').attr('href', "javascript:" + actionMethodName + "();");
     }
 
     function unsubscribe() {
@@ -132,10 +133,10 @@
   <c:if test="${isUserSubscribed != null}">
     <c:choose>
       <c:when test="${isUserSubscribed}">
-        <view:operation altText="${unsubscribeFromSuggestionBoxLabel}" icon="" action="javascript:unsubscribe();"/>
+        <view:operation altText="<span id='subscriptionMenuLabel'>${unsubscribeFromSuggestionBoxLabel}</span>" icon="" action="javascript:unsubscribe();"/>
       </c:when>
       <c:otherwise>
-        <view:operation altText="${subscribeToSuggestionBoxLabel}" icon="" action="javascript:subscribe();"/>
+        <view:operation altText="<span id='subscriptionMenuLabel'>${subscribeToSuggestionBoxLabel}</span>" icon="" action="javascript:subscribe();"/>
       </c:otherwise>
     </c:choose>
   </c:if>
@@ -145,9 +146,9 @@
     <h2 class="suggestionBox-title">${suggestionBox.getTitle(currentUserLanguage)}</h2>
     <c:choose>
       <c:when test="${isEdito}">
-        <silverpeas-toggle originalClass="suggestionBox-description">
+        <div silverpeas-toggle originalClass="suggestionBox-description">
           <view:displayWysiwyg objectId="${suggestionBoxId}" componentId="${componentId}" language="${null}"/>
-        </silverpeas-toggle>
+        </div>
       </c:when>
       <c:when test="${greaterUserRole.isGreaterThanOrEquals(adminRole)}">
         <div class="inlineMessage">${silfn:escapeHtmlWhitespaces(editoEmptyMessage)}</div>
@@ -178,7 +179,7 @@
               <li ng-if="myOutOfDraftSuggestions.length === 0"><span class="txt-no-content">${noSuggestions}</span></li>
               <li ng-repeat="suggestion in myOutOfDraftSuggestions">
                 <a ng-class="suggestion.validation.status" ng-href="${componentUriBase}suggestions/{{suggestion.id}}">{{suggestion.title}}</a>
-                <span ng-if="suggestion.validation.status === '${STATUS_VALIDATED}'" class="vote"><silverpeas-rating readonly="true" forcedisplaywhennorating="true" raterrating="suggestion.raterRating"></silverpeas-rating></span>
+                <span ng-if="suggestion.validation.status === '${STATUS_VALIDATED}'" class="vote"><div silverpeas-rating readonly="true" forcedisplaywhennorating="true" raterrating="suggestion.raterRating"></div></span>
                 <span ng-if="suggestion.validation.status === '${STATUS_VALIDATED}'" class="counter-comments"><span>{{suggestion.commentCount}} <fmt:message key="GML.comments"/></span></span>
               </li>
             </ul>

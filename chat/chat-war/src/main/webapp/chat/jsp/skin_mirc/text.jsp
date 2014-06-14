@@ -24,8 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
-<html>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page import="jChatBox.Util.*,jChatBox.Chat.*,java.util.*,java.text.SimpleDateFormat" %>
 <%@ include file="../checkChat.jsp" %>
 <jsp:useBean id="UserProcessor" class="jChatBox.Service.UserProcessor" scope="application" />
@@ -59,11 +58,10 @@
 		}
 	}
 %>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<html>
 <head>
 <title><%= chatroomName %></title>
+<view:looknfeel/>
 <script language="JavaScript"><!--
 function ready()
 {

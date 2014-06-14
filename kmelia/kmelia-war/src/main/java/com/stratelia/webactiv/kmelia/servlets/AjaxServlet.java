@@ -37,6 +37,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.io.Writer;
 
@@ -53,6 +54,7 @@ public class AjaxServlet extends HttpServlet {
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
+    resp.setContentType(MediaType.TEXT_HTML);
     HttpSession session = req.getSession(true);
     String componentId = req.getParameter("ComponentId");
     KmeliaSessionController kmeliaSC =

@@ -24,6 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkYellowpages.jsp" %>
 
 <%
@@ -39,9 +40,10 @@ Button cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "Main
 
 %>
 
-<%@page import="com.silverpeas.publicationTemplate.PublicationTemplate"%><HTML>
+<%@page import="com.silverpeas.publicationTemplate.PublicationTemplate"%>
+<HTML>
 <HEAD>
-<% out.println(gef.getLookStyleSheet()); %>
+<view:looknfeel/>
 <script language="javaScript">
 
 function sendData() {

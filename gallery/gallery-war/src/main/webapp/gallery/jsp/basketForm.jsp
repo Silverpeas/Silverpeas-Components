@@ -24,6 +24,7 @@
 
 --%>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp"%>
 
 <%
@@ -39,7 +40,7 @@ context.setBorderPrinted(false);
 %>
 <HTML>
 <HEAD>
-<% out.println(gef.getLookStyleSheet()); %>
+<view:looknfeel/>
 <% 
 if (formUpdate != null) {
 	formUpdate.displayScripts(out, context);

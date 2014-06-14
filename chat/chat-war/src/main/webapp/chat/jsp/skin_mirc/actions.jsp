@@ -24,7 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page import="jChatBox.Util.*,jChatBox.Chat.*,jChatBox.Chat.Filter.*,java.util.*,java.net.*" %>
 <%@ include file="../checkChat.jsp" %>
 <jsp:useBean id="UserProcessor" class="jChatBox.Service.UserProcessor" scope="application" />
@@ -38,10 +38,9 @@
 %>
 <html>
 <head>
-	<title></title>
-
+<title></title>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-
 <script language='javascript1.2'>
 function fct_redirect()
 {
@@ -60,11 +59,7 @@ function notify()
 	SP_openWindow(chemin,"Notification",largeur,hauteur,"resizable=1,scrollbars=1");
 
 }
-
 </script>
-<%
-out.println(gef.getLookStyleSheet());
-%>
 </head>
 <body  bgcolor="#ffffff" leftmargin="7" topmargin="0" marginwidth="7" marginheight="0">
 <form name="formRefresh" id="formRefresh">

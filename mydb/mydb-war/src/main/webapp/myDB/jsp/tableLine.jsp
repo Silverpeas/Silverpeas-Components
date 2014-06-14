@@ -24,13 +24,12 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="init.jsp" %>
 <html>
 <head>
+<view:looknfeel/>
 <%
-	out.println(gef.getLookStyleSheet());
-
 	Form form = (Form)request.getAttribute("form");
 	PagesContext context = (PagesContext)request.getAttribute("context");
 	DataRecord data = (DataRecord)request.getAttribute("data");

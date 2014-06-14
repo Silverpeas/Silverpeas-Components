@@ -157,10 +157,10 @@ public class ForumListHelper {
       out.print("<td class=\"ArrayCell\">");
       out.write(raterRatingEntity
           .toJSonScript("raterRatingEntity_" + raterRatingEntity.getContributionId()));
-      out.write("<silverpeas-rating readonly=\"true\" raterRating=\"raterRatingEntity_" +
+      out.write("<div silverpeas-rating readonly=\"true\" raterRating=\"raterRatingEntity_" +
           raterRatingEntity.getContributionId() +
           "\" shownbraterratings=\"false\" canuserrating=\"" + canUserRating +
-          "\"></silverpeas-rating>");
+          "\"></div>");
       
       // 7ème colonne : abonnement
       boolean isSubscriber = fsc.isForumSubscriber(forumId);

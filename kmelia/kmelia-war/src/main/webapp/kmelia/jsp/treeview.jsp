@@ -81,6 +81,7 @@ boolean userCanManageTopics = rightsOnTopics.booleanValue() || "admin".equalsIgn
 <html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.kmelia">
 <head>
 <view:looknfeel/>
+<title></title>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/browseBarComplete.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery-migrate-1.2.1.min.js"></script>
@@ -134,7 +135,7 @@ function getComponentLabel() {
 }
 
 function getLanguage() {
-	return "<%=language%>"; 
+	return "<%=language%>";
 }
 
 function getPubIdToHighlight() {
@@ -372,8 +373,8 @@ function updateUIStatus(nodeId, newStatus, recursive) {
 	//changing label style according to topic's new status
 	node.removeClass("Visible Invisible");
 	node.addClass(newStatus);
-	
-	// 
+
+	//
 	if (recursive == "1") {
 		var children = getTreeview()._get_children("#"+nodeId);
 		for (var i=0; i<children.length; i++) {
@@ -383,7 +384,7 @@ function updateUIStatus(nodeId, newStatus, recursive) {
 			}
 		}
 	}
-	
+
 	if (nodeId == getCurrentNodeId()) {
 		// refreshing operations of current folder
 		displayOperations(nodeId);
@@ -391,14 +392,14 @@ function updateUIStatus(nodeId, newStatus, recursive) {
 }
 
 function displayTopicContent(id) {
-	
+
 	if (id != searchFolderId) {
 		// search session is over
 		searchInProgress = false;
 	}
-	
+
 	setCurrentNodeId(id);
-	
+
 	if (!searchInProgress) {
 		clearSearchQuery();
 	}
@@ -471,7 +472,7 @@ function customMenu(node) {
 		//user can not manage folders
 		return false;
 	<% } %>
-	
+
 	var nodeType = node.attr("rel");
 	var nodeId = node.attr("id");
 	var userRole = '<%=profile%>';
@@ -487,11 +488,11 @@ function customMenu(node) {
        	            action: function () {
        	            	emptyTrash();
        	            }
-       	        }	
+	        }
         	};
         return binItems;
     }
-	
+
     // The default set of all items
     var items = {
     	addItem: {
@@ -578,7 +579,7 @@ function customMenu(node) {
         }
     	<% } %>
     };
-    
+
     if (nodeType == "root") {
     	<% if(!userCanManageRoot) { %>
     		// user can not manage root folder
@@ -589,14 +590,14 @@ function customMenu(node) {
         delete items.copyItem;
         delete items.cutItem;
         delete items.statusItem;
-    } 
-    
+    }
+
     if (items.statusItem) {
     	if (node.attr("status") == "Invisible") {
     		items.statusItem.label = "<%=resources.getString("TopicInvisible2Visible")%>";
     	}
     }
-    
+
     if (userRole == "admin") {
     	// all actions are allowed
     } else if (userRole == "user") {
@@ -714,7 +715,7 @@ function publicationMovedSuccessfully(id, targetId) {
 				addNbPublis(elementId, 1);
 			}
 		}
-		
+
 		// remove one publi to current node and its parents
 		var path = getTreeview().get_path("#"+getCurrentNodeId(), true);
 		for (i=0; i<path.length; i++) {
@@ -724,7 +725,7 @@ function publicationMovedSuccessfully(id, targetId) {
 			}
 		}
 	}
-	
+
 	try {
 		// remove one publi to publications header
 		var previousNb = $("#pubsHeader #pubsCounter span").html();
@@ -736,9 +737,9 @@ function publicationMovedSuccessfully(id, targetId) {
 			$("#pubsHeader #pubsCounter span").html(eval(previousNb-1));
 		}
 	} catch (e) {
-		
+
 	}
-	
+
 	// remove publication from publications list
 	$("#pubList #pub-"+id).closest("li").fadeOut('500', function() {
 		$(this).remove();
@@ -762,7 +763,7 @@ function publicationsRemovedSuccessfully(nb) {
 					addNbPublis(elementId, 0-eval(nb));
 				}
 			}
-			
+
 			// add nb publi to trash
 			addNbPublis("1", eval(nb));
 		}
@@ -781,12 +782,12 @@ $(document).ready(
 		}).bind("select_node.jstree", function (e, data) {
     		// data.inst is the instance which triggered this event
     		var nodeId = $(data.rslt.obj).attr('id');
-    		
+
     		// open topic in treeview
     		var idSelector = "#"+nodeId;
     		$.jstree._reference(idSelector).open_node(idSelector);
-    		
-    		// display topic content in right panel 
+
+		// display topic content in right panel
     		displayTopicContent(nodeId);
     	})
     	.jstree({
@@ -799,7 +800,7 @@ $(document).ready(
           	"initially_select" : "#<%=id%>",
           	"select_prev_on_delete" : false
         },
-    	"json_data" : { 
+	"json_data" : {
 			"ajax" : {
 				"url": function (node) {
 					var nodeId = "";
@@ -828,7 +829,7 @@ $(document).ready(
 							}
 						}
 					}
-				    return n;         
+				    return n;
 				}
 			}
 		},
@@ -839,11 +840,11 @@ $(document).ready(
 			// Those two checks may slow jstree a lot, so use only when needed
 			"max_depth" : -2,
 			"max_children" : -2,
-			// I want only `drive` nodes to be root nodes 
+			// I want only `drive` nodes to be root nodes
 			// This will prevent moving or creating any other type as a root node
 			"valid_children" : [ "root" ],
 			"types" : {
-				// The `root` node 
+				// The `root` node
 				"root" : {
 					"valid_children" : [ "bin", getToValidateFolderId() ],
 					// those prevent the functions with the same name to be used on `root` nodes
@@ -917,10 +918,10 @@ $(document).ready(
 						var profile = getUserProfile(targetId);
 						//writeInConsole("drag_check : current user is "+profile+" in root");
 						if (profile != "<%=SilverpeasRole.user.toString()%>") {
-							return { 
-								after : false, 
-								before : false, 
-								inside : true 
+							return {
+								after : false,
+								before : false,
+								inside : true
 							};
 						}
 					}
@@ -928,10 +929,10 @@ $(document).ready(
 					var profile = getUserProfile(targetId);
 					//writeInConsole("drag_check : current user is "+profile+" in folder #"+targetId);
 					if (profile != "<%=SilverpeasRole.user.toString()%>") {
-						return { 
-							after : false, 
-							before : false, 
-							inside : true 
+						return {
+							after : false,
+							before : false,
+							inside : true
 						};
 					}
 				}
@@ -940,39 +941,39 @@ $(document).ready(
 			"drag_finish" : function (data) {
 				var pubId = extractPublicationId(data.o.id);
 				var targetId = data.r.attr("id");
-				
+
 				// store new parent of publication
 				movePublication(pubId, getCurrentNodeId(), targetId);
 			}
 		},
 		// the `plugins` array allows you to configure the active plugins on this instance
 		"plugins" : ["themes","json_data","ui","types","crrm","contextmenu","dnd"]
-    });	
-		
+    });
+
 	$("#splitter").splitter({
 		splitVertical: true,
-		minLeft: 50, sizeLeft: 300, minRight: 250, 
+		minLeft: 50, sizeLeft: 300, minRight: 250,
 		anchorToWindow: true,
 		resizeToWidth: false,
 		accessKey: 'I'
 	});
-	
+
 	$.i18n.properties({
         name: 'kmeliaBundle',
         path: webContext + '/services/bundles/com/silverpeas/kmelia/multilang/',
         language: '<%=language%>',
         mode: 'map'
     });
-	
+
 	<% if (displaySearch.booleanValue()) { %>
 		document.getElementById("topicQuery").focus();
 	<% } %>
-	
+
 	<% if (KmeliaHelper.ROLE_ADMIN.equals(profile)) { %>
 		//Right-click concerns only admins
 		showRightClickHelp();
 	<% } %>
-	
+
 	<% if (settings.getBoolean("DisplayDnDOnLoad", false)) { %>
 		showDnD();
 	<% } %>
@@ -991,24 +992,24 @@ $(document).ready(
 </div>
 <div id="addOrUpdateNode" style="display: none;">
 	<form name="topicForm" action="AddTopic" method="post">
+    <input type="hidden" id="<%=I18NHelper.HTMLHiddenRemovedTranslationMode %>" name="<%=I18NHelper.HTMLHiddenRemovedTranslationMode %>" value="false"/>
             <table cellpadding="5" width="100%">
               <tr><td class="txtlibform"><fmt:message key="TopicPath"/> :</td>
                 <td valign="top" id="path"></td>
               </tr>
               <%=I18NHelper.getFormLine(resources, null, kmeliaScc.getLanguage())%>
-              <input type="hidden" id="<%=I18NHelper.HTMLHiddenRemovedTranslationMode %>" name="<%=I18NHelper.HTMLHiddenRemovedTranslationMode %>" value="false"/>
               <tr>
                 <td class="txtlibform"><fmt:message key="TopicTitle"/> :</td>
                 <td><input type="text" name="Name" id="folderName" size="60" maxlength="60"/>
                 <input type="hidden" name="ParentId" id="parentId"/>
-                <input type="hidden" name="ChildId" id="topicId"/>&nbsp;<img border="0" src="<c:out value="${mandatoryFieldUrl}" />" width="5" height="5"/></td>
+                <input type="hidden" name="ChildId" id="topicId"/>&nbsp;<img border="0" src="<c:out value="${mandatoryFieldUrl}" />" width="5" height="5" alt=""/></td>
               </tr>
-                
+
               <tr>
                 <td class="txtlibform"><fmt:message key="TopicDescription" /> :</td>
                 <td><input type="text" name="Description" id="folderDescription" size="60" maxlength="200"/></td>
               </tr>
-                
+
               <% if (kmeliaScc.isNotificationAllowed()) { %>
                 <tr>
                   <td class="txtlibform" valign="top"><fmt:message key="TopicAlert" /> :</td>
@@ -1027,6 +1028,8 @@ $(document).ready(
             </table>
           </form>
 </div>
+
+<%@ include file="../../sharing/jsp/createTicketPopin.jsp" %>
 <view:progressMessage/>
 <script type="text/javascript">
 /* declare the module myapp and its dependencies (here in the silverpeas module) */

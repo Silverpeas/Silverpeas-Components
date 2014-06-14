@@ -24,7 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkKmelia.jsp" %>
 
 <%
@@ -36,12 +36,12 @@ String linkedPathString = kmeliaScc.getSessionPath();
 
 // declaration des boutons
 Button validateButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData();", false);
-Button cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "Main", false);
+Button cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "Main", false);
 
 %>
 <html>
 <head>
-<% out.println(gef.getLookStyleSheet()); %>
+<view:looknfeel/>
 <script language="javaScript">
 
 function sendData() {

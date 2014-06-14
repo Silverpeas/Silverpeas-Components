@@ -156,9 +156,9 @@
   <view:frame>
     <h2 class="suggestionBox-title">${suggestionBox.getTitle(currentUserLanguage)}</h2>
     <c:if test="${isEdito}">
-      <silverpeas-toggle originalClass="suggestionBox-description">
+      <div silverpeas-toggle originalClass="suggestionBox-description">
         <view:displayWysiwyg objectId="${suggestionBoxId}" componentId="${componentId}" language="${null}"/>
-      </silverpeas-toggle>
+      </div>
     </c:if>
     <c:if test="${viewContext != SuggestionsInValidationViewContext and greaterUserRole.isGreaterThanOrEquals(writerRole)}">
       <view:areaOfOperationOfCreation/>
@@ -203,8 +203,10 @@
               <c:when test="${suggestion.validation.validated}">
                 <c:set var="_currentRaterRating"><viewTags:displayContributionRating readOnly="${true}" showNbRaterRatings="${false}" raterRating="${suggestion.raterRating}"/></c:set>
                 <view:arrayCellText text="${_currentRaterRating}"/>
-                <view:arrayCellText text="${suggestion.raterRating.numberOfRaterRatings}"/>
-                <view:arrayCellText text="${suggestion.commentCount}"/>
+                <fmt:formatNumber pattern='#0000000000.##' value='${suggestion.raterRating.numberOfRaterRatings}' var="tmpValue"/>
+                <view:arrayCellText text="<!-- ${tmpValue} -->${suggestion.raterRating.numberOfRaterRatings}"/>
+                <fmt:formatNumber pattern='#0000000000.##' value='${suggestion.commentCount}' var="tmpValue"/>
+                <view:arrayCellText text="<!-- ${tmpValue} -->${suggestion.commentCount}"/>
               </c:when>
               <c:otherwise>
                 <view:arrayCellText text="-"/>

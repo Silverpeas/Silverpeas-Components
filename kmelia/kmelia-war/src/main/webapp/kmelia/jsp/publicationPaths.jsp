@@ -24,7 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page import="com.stratelia.webactiv.util.publication.model.Alias" %>
 <%@ page import="com.stratelia.webactiv.kmelia.model.Treeview" %>
 <%@page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
@@ -57,9 +57,7 @@ Button cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "View
 <html>
 <head>
 <title></title>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <style>
 .content {
 	padding-left: 0px;

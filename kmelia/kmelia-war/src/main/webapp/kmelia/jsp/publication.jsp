@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.stratelia.webactiv.SilverpeasRole"%>
 <%@page import="com.stratelia.webactiv.util.statistic.model.HistoryObjectDetail"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -72,7 +73,7 @@
   boolean ratingsAllowed = (Boolean) request.getAttribute("PublicationRatingsAllowed");
   boolean attachmentsEnabled = (Boolean) request.getAttribute("AttachmentsEnabled");
   boolean draftOutTaxonomyOK = (Boolean) request.getAttribute("TaxonomyOK");
-  boolean draftOutValidatorsOK = (Boolean) request.getAttribute("ValidatorsOK");
+  boolean validatorsOK = (Boolean) request.getAttribute("ValidatorsOK");
   int searchScope = (Integer) request.getAttribute("SearchScope");
   boolean isNewsManage = (Boolean) request.getAttribute("NewsManage");
   DelegatedNews delegatedNews = null;
@@ -112,8 +113,6 @@
   boolean fin = rang.intValue() == nbPublis.intValue() - 1;
 
   boolean suppressionAllowed = false;
-
-  Board boardHelp = gef.getBoard();
 
   //Icons
   String pubValidateSrc = m_context + "/util/icons/publicationValidate.gif";
@@ -176,12 +175,8 @@
     isOwner = KmeliaPublicationHelper.isUserConsideredAsOwner(contextComponentId, currentUser.getId(), profile, ownerDetail);
     suppressionAllowed = KmeliaPublicationHelper.isRemovable(contextComponentId, currentUser.getId(), profile, ownerDetail);
 
-    if (isOwner) {
-      kmeliaScc.setSessionOwner(true);
-    } else {
-      //modification pour acceder e l'onglet voir aussi
-      kmeliaScc.setSessionOwner(false);
-    }
+    //modification pour acceder e l'onglet voir aussi
+    kmeliaScc.setSessionOwner(isOwner && validatorsOK);
   }
 
   if (isNewsManage && !kmaxMode && !toolboxMode && isOwner && delegatedNews != null) {
@@ -195,6 +190,25 @@
       screenMessage = "<div class=\"inlineMessage-nok\">" + resources.getString(
           "kmelia.DelegatedNewsRefused") + "</div>";
     }
+  }
+  
+  if (SilverpeasRole.writer.isInRole(profile) && !validatorsOK) {
+    String selectUserLab = resources.getString("kmelia.SelectValidator");
+    String link = "&nbsp;<a href=\"#\" onclick=\"javascript:SP_openWindow('SelectValidator','selectUser',800,600,'');\">";
+    link += "<img src=\""
+        + resources.getIcon("kmelia.user")
+        + "\" width=\"15\" height=\"15\" border=\"0\" alt=\""
+        + selectUserLab + "\" align=\"absmiddle\" title=\""
+        + selectUserLab + "\"></a>";
+        
+    screenMessage += "<div class=\"inlineMessage\" id=\"validationArea\">" + resources.getString("kmelia.publication.validators.select");
+    screenMessage += "<div id=\"\"><form id=\"form-pub-validator\" action=\"SetPublicationValidator\" method=\"post\"><input type=\"text\" name=\"Valideur\" id=\"Valideur\" value=\"\" size=\"60\" readonly=\"readonly\"/><input type=\"hidden\" name=\"ValideurId\" id=\"ValideurId\" value=\"\"/>";
+    screenMessage += link;
+    screenMessage += "</form></div>";
+    screenMessage += "<a href=\"#\" onclick=\"javascript:$('#form-pub-validator').submit();\" class=\"button\"><span>"+resources.getString("GML.validate")+"</span></a>";
+    screenMessage += "<a href=\"#\" onclick=\"javascript:$('#validationArea').hide('slow');\" class=\"button\"><span>"+resources.getString("GML.close")+"</span></a>";
+    screenMessage += "</div>";
+    attachmentsEnabled = false;
   }
 
   String author = pubDetail.getAuthor();
@@ -336,7 +350,7 @@
 	      }
 
 	      function pubDraftOut() {
-	        if (<%= draftOutTaxonomyOK && draftOutValidatorsOK %>) {
+	        if (<%= draftOutTaxonomyOK %>) {
 	          location.href = "<%=routerUrl%>DraftOut?From=ViewPublication";
 	        } else {
 	        	$("#publication-draftout").dialog('open');
@@ -468,7 +482,7 @@
         }
         operationPane.addLine();
 
-        if (isOwner) {
+        if (isOwner && validatorsOK) {
           if (!"supervisor".equals(profile)) {
             if (attachmentsUpdatable) {
             	operationPane.addOperation("#", resources.getString("kmelia.AddFile"), "javascript:addAttachment('" +pubDetail.getId() + "')");
@@ -516,13 +530,11 @@
 
         out.println(window.printBefore());
         action = "View";
-        if (isOwner) {
-          KmeliaDisplayHelper.displayAllOperations(id, kmeliaScc, gef, action, resources, out,
-                  kmaxMode);
-            } else {
-              KmeliaDisplayHelper.displayUserOperations(id, kmeliaScc, gef, action, resources, out,
-                  kmaxMode);
-            }
+        if (isOwner && validatorsOK) {
+          KmeliaDisplayHelper.displayAllOperations(id, kmeliaScc, gef, action, resources, out, kmaxMode);
+        } else {
+          KmeliaDisplayHelper.displayUserOperations(id, kmeliaScc, gef, action, resources, out, kmaxMode);
+        }
         out.println(frame.printBefore());
 
         InfoDetail infos = pubComplete.getInfoDetail();
@@ -573,9 +585,9 @@
       <div class="rightContent">
       	<div id="statPublication" class="bgDegradeGris">
       		<p id="statInfo">
-      			<b><%= kmeliaPublication.getNbAccess()%> vues</b>
+      			<b><%= kmeliaPublication.getNbAccess()%> <%=resources.getString("GML.stats.views") %></b>
       			<% if (ratingsAllowed) { %>
-            <viewTags:displayContributionRating raterRating="${publicationRaterRatingEntity}"/>
+            		<viewTags:displayContributionRating raterRating="${publicationRaterRatingEntity}"/>
 				<% } %>
 			</p>
 
@@ -819,6 +831,8 @@
 
       <div id="publication-export" style="display: none;">
         <form id="exportForm" action="<c:url value='/exportPublication'/>" target="_blank">
+          <input type="hidden" name="PubId" value="<%=id%>"/>
+          <input type="hidden" name="ComponentId" value="<%=componentId%>"/>
           <fieldset>
             <legend><%=resources.getString("kmelia.format")%></legend>
             <%
@@ -836,8 +850,6 @@
             %>
             <input type="radio" name="Format" value="<%=format %>" <%=checked %> <%=disabled %>/><%=resources.getString("kmelia.export.format." + format)%>
             <% } %>
-            <input type="hidden" name="PubId" value="<%=id%>"/>
-            <input type="hidden" name="ComponentId" value="<%=componentId%>"/>
           </fieldset>
         </form>
       </div>
@@ -847,9 +859,6 @@
       	<ul>
       	<% if(!draftOutTaxonomyOK) { %>
       		<li><%=resources.getString("kmelia.PdcClassificationMandatory")%></li>
-      	<% } %>
-      	<% if(!draftOutValidatorsOK) { %>
-      		<li><%=resources.getString("kmelia.publication.validators.mandatory")%></li>
       	<% } %>
       	</ul>
       </div>
@@ -877,7 +886,7 @@
         <input type="hidden" name="PubId" value="<%=id%>"/>
         <input type="hidden" name="Motive" value=""/>
       </form>
-      <form name="toRouterForm">
+      <form name="toRouterForm" action="#">
         <input type="hidden" name="PubId" value="<%=id%>"/>
         <input type="hidden" name="ComponentId" value="<%=componentId%>"/>
       </form>

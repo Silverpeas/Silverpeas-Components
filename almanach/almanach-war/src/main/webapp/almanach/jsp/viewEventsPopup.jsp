@@ -55,6 +55,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.*"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane"%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
 <%@ include file="checkAlmanach.jsp" %>
 <%
   AlmanachCalendarView calendarView = (AlmanachCalendarView) request.getAttribute("calendarView");
@@ -65,9 +67,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=resources.getString("GML.popupTitle")%></title>
-<%
-out.println(graphicFactory.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <script type="text/javascript">
 function viewEvent(componentId, id) {
 	window.opener.location.href="<%=m_context%>/Ralmanach/"+componentId+"/viewEventContent.jsp?Id="+id;

@@ -10,11 +10,12 @@
   <fmt:param value="@name@"/>
 </fmt:message>
 
-<span id="deleteSuggestionConfirmMessage" style="display: none">${deleteSuggestionConfirmMessage}</span>
+<div style="display: none">
+  <span id="deleteSuggestionConfirmMessage" style="display: none">${deleteSuggestionConfirmMessage}</span>
 
-<div id="suggestionDeletion" style="display: none">
-  <span id="suggestionDeletionMessage"></span>
+  <div id="suggestionDeletion">
+    <span id="suggestionDeletionMessage"></span>
 
-  <form id="suggestionDeletionForm" action="#" method="POST"></form>
+    <form id="suggestionDeletionForm" action="#" method="POST"></form>
+  </div>
 </div>
-<view:includePlugin name="tkn"/>

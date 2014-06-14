@@ -24,11 +24,11 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 
 <% 
-	// récupération des paramètres :
+	// rï¿½cupï¿½ration des paramï¿½tres :
 	String 		albumId			= (String) request.getAttribute("AlbumId");
 
 	String 		profile			= (String) request.getAttribute("Profile");
@@ -40,9 +40,7 @@
 
 <html>
 <head>
-<%
-	out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script language="javascript">
 

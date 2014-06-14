@@ -27,6 +27,7 @@ import com.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import org.mockito.Mockito;
+import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.wysiwyg.WysiwygException;
 import org.silverpeas.wysiwyg.control.WysiwygManager;
@@ -46,7 +47,7 @@ public class WysiwygManagerMockWrapper extends WysiwygManager {
   }
 
   @Override
-  public String[][] getImages(final String id, final String componentId) {
+  public List<SimpleDocument> getImages(final String id, final String componentId) {
     return mock.getImages(id, componentId);
   }
 
@@ -213,8 +214,8 @@ public class WysiwygManagerMockWrapper extends WysiwygManager {
   }
 
   @Override
-  public List<ComponentInstLight> getStorageFile(final String userId) {
-    return mock.getStorageFile(userId);
+  public List<ComponentInstLight> getStorageFile() {
+    return mock.getStorageFile();
   }
 
   @Override

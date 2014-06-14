@@ -2123,16 +2123,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   /**
-   * @return
-   */
-  public String getAutoRedirectURL() {
-    if (autoRedirectURL == null) {
-      autoRedirectURL = getNotificationManager().getUserAutoRedirectURL(getUserId());
-    }
-    return autoRedirectURL;
-  }
-
-  /**
    * @param fileUploaded : File uploaded in temp directory
    * @param fileType
    * @param topicId
@@ -3875,5 +3865,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   public List<HistoryObjectDetail> getLastAccess(PublicationPK pk) {
     return getKmeliaBm().getLastAccess(pk, getCurrentFolderPK(), getUserId());
+  }
+  
+  public void setPublicationValidator(String userIds) {
+    PublicationDetail publication = getSessionPubliOrClone().getDetail();
+    publication.setTargetValidatorId(userIds);
+    publication.setStatusMustBeChecked(false);
+    publication.setIndexOperation(IndexManager.NONE);
+    getPublicationBm().setDetail(publication);
   }
 }

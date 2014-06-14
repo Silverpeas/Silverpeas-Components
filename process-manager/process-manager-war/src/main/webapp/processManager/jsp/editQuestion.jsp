@@ -24,7 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkProcessManager.jsp" %>
 
 <%
@@ -56,8 +56,8 @@
 <HTML>
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<view:looknfeel/>
 <%
-   out.println(gef.getLookStyleSheet());
 	form.displayScripts(out, context);
 %>
 <SCRIPT language="JavaScript">

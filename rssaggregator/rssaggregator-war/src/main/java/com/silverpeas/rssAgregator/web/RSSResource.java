@@ -23,8 +23,14 @@
  */
 package com.silverpeas.rssAgregator.web;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.silverpeas.annotation.Authorized;
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
+import com.silverpeas.rssAgregator.control.RSSServiceFactory;
+import com.silverpeas.rssAgregator.model.RSSItem;
+import com.silverpeas.rssAgregator.model.RssAgregatorException;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.web.RESTWebService;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -34,15 +40,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
-
-import com.silverpeas.annotation.Authorized;
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
-import com.silverpeas.rssAgregator.control.RSSServiceFactory;
-import com.silverpeas.rssAgregator.model.RSSItem;
-import com.silverpeas.rssAgregator.model.RssAgregatorException;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.web.RESTWebService;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequestScoped

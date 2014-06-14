@@ -25,6 +25,7 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page isErrorPage="true" %>
 
 <%@ page import="javax.servlet.*"%>
@@ -64,7 +65,7 @@ private String displayUnexpectedError(SurveySessionController surveyScc) {
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head> 
 <title><%=surveyScc.getString("GML.error")%></title>
-<%=gef.getLookStyleSheet() %>
+<view:looknfeel/>
 </head> 
 <body>
 <table>

@@ -24,6 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page import="com.silverpeas.util.EncodeHelper" %>
 <%
     response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
@@ -38,9 +39,7 @@
 %>
 <html>
 <head>
-  <%
-    out.println(gef.getLookStyleSheet());
-  %>
+<view:looknfeel/>
   <script type='text/javascript'>
     function validateResource() {
       if (!$('textarea').val()) {

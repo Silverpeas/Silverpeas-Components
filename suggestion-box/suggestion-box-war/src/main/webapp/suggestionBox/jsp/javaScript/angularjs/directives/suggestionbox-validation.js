@@ -35,9 +35,12 @@
   angular.module('silverpeas.directives').directive('suggestionboxValidation',
       ['context', function(context) {
         return {
+          restrict: 'AE',
           templateUrl : webContext +
-              '/util/javaScript/angularjs/directives/suggestionbox-validation.jsp',
+              '/suggestionBox/jsp/javaScript/angularjs/directives/suggestionbox-validation.jsp',
+          replace: true,
           link : function postLink(scope, element, attrs) {
+            applyTokenSecurity('#suggestionValidation');
 
             function getClearedDialog(message) {
               jQuery('#suggestionValidationMessage').html(message);

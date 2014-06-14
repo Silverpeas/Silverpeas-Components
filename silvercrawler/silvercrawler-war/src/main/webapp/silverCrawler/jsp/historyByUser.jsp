@@ -24,16 +24,16 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 <html>
 <head>
+<view:looknfeel/>
 <%
 	Collection downloads = (Collection) request.getAttribute("DownloadsByUser");
 	String userName = (String) request.getAttribute("UserName");
 	String userId = (String) request.getAttribute("UserId");
 	String folderName = (String) request.getAttribute("FolderName");
-	
-	out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script language="JavaScript">

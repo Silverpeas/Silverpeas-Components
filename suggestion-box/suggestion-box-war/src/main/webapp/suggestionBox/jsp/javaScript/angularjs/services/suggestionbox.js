@@ -113,7 +113,7 @@ services.factory('Suggestion', ['RESTAdapter', function(RESTAdapter) {
          * @returns {string} the id of the deleted suggestion.
          */
         this.remove = function(id) {
-          return adapter.delete(id);
+          return adapter.remove(id);
         };
         /**
          * Publishes the suggestion identified by the specified identifier from the suggestions
@@ -122,7 +122,7 @@ services.factory('Suggestion', ['RESTAdapter', function(RESTAdapter) {
          * @returns {Suggestion} the updated suggestion.
          */
         this.publish = function(suggestion) {
-          return adapter.update(suggestion.id, 'publish', suggestion);
+          return adapter.update(suggestion.id + '/publish', suggestion);
         };
         /**
          * Gets the last comments that were posted on some of the suggestions in the suggestion

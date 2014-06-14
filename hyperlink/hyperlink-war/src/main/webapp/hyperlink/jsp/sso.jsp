@@ -25,7 +25,7 @@
 --%>
 <%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 <%
 String login 	= (String) request.getAttribute("Login");
@@ -76,9 +76,7 @@ window.onload = function()
 	}
 }
 </script>
-<%
-	out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 </head>
 <body>
 <H1>Connexion en cours, merci de patienter...</H1>

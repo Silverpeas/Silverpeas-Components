@@ -25,6 +25,7 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page import="javax.servlet.*"%>
 <%@ page import="javax.servlet.http.*"%>
 <%@ page import="javax.servlet.jsp.*"%>
@@ -59,7 +60,7 @@ if (action != null) {
     action_prev = action;
 }
 
-String iconsPath = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+String iconsPath = GeneralPropertiesManager.getString("ApplicationURL");
 
 //Icons
 lockSrc = iconsPath + "/util/icons/lock.gif";
@@ -107,7 +108,7 @@ ResourceLocator message = new ResourceLocator("org.silverpeas.survey.multilang.s
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
-<% out.println(gef.getLookStyleSheet()); %>
+<view:looknfeel/>
 <script language="JavaScript1.2">
 function viewOpenedSurveys() {
   document.surveysForm.Action.value = "ViewOpenedSurveys";

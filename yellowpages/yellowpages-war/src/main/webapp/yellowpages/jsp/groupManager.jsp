@@ -24,6 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
@@ -93,9 +94,7 @@ if (currentTopic != null) {
 
 <HTML>
 <HEAD>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <SCRIPT LANGUAGE="JAVASCRIPT" SRC="<%=m_context%>/util/javaScript/animation.js"></SCRIPT>
 <script type="text/javascript" src="javaScript/spacesInURL.js"></script>
 <script language="JavaScript1.2">

@@ -24,7 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
@@ -56,7 +56,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
 <%
-String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+String m_context = GeneralPropertiesManager.getString("ApplicationURL");
 
 String spaceId = quizzScc.getSpaceId();
 String componentId = quizzScc.getComponentId();
@@ -65,17 +65,12 @@ String componentId = quizzScc.getComponentId();
 <html>
 <head>
 <title>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</title>
-<%
-out.println(gef.getLookStyleSheet());
-%>
-
+<view:looknfeel/>
 <script language="JavaScript1.2">
-function goto_jsp(jsp)
-{
+function goto_jsp(jsp) {
 	  window.open(jsp,"MyMain");
 }
 </script>
-
 </head>
 <body bgcolor="#FFFFFF" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
   <%

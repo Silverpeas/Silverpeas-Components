@@ -23,8 +23,7 @@
  */
 
 .suggestionBox-title,
-.suggestion-title
-{
+.suggestion-title {
   color: #333333;
   font-size: 130%;
   font-weight: 100;
@@ -36,263 +35,273 @@
   border-left: 6px solid #E4E4E4;
   color: #666666;
   padding: 8px;
-  max-height:90px;
-  overflow:hidden;
-  margin-bottom:1em;
+  max-height: 90px;
+  overflow: hidden;
+  margin-bottom: 1em;
 }
 
 .suggestionBox-description {
-  margin-bottom:1em;
-}
-silverpeas-toggle .suggestionBox-description {
-  margin-bottom:0em;
+  margin-bottom: 1em;
 }
 
-silverpeas-toggle a.toggle{
-  margin-bottom:1em;
+.silverpeas-toggle .suggestionBox-description {
+  margin-bottom: 0em;
+}
+
+.silverpeas-toggle a.toggle {
+  margin-bottom: 1em;
 }
 
 #all-suggestionBox {
-  clear:left;
+  clear: left;
 }
 
 .txt-no-content {
-	color: #575757;
-	font-style:italic;
-	font-size:90%;
+  color: #575757;
+  font-style: italic;
+  font-size: 90%;
 }
 
 .suggestionBox-description > ul:first-child, .suggestionBox-description > p:first-child {
-  margin-top:0;
-  padding-top:0;
+  margin-top: 0;
+  padding-top: 0;
 }
 
-.lastSuggestion  {
-	background:transparent url(../icons/suggestion-pellet.png) top right no-repeat;
-	padding-top:8px;
+.lastSuggestion h3 {
+  background: transparent url(../icons/suggestion-pellet.png) top right no-repeat;
+  height: 28px;
+  padding-top: 8px !important;
+  position: absolute;
+  top: 0;
+  width: 100%;
 }
 
-h3.lastSuggestion-title{
-
+.lastSuggestion .header {
+  height: 30px;
+  padding-top: 8px;
+  position: relative;
 }
 
-.lastSuggestion .more:before{
-  content:'>> ';
+.lastSuggestion .more:before {
+  content: '>> ';
 }
-
 
 .lastSuggestion .more {
-  float:right;
+  float: right;
 }
 
 .lastSuggestion .date {
-  font-size:100%;
+  font-size: 100%;
 }
 
-.lastSuggestion li > a{
-  padding-right:80px;
+.lastSuggestion li > a {
+  padding-right: 80px;
 }
 
 .buzzSuggestion ul,
 .lastSuggestion ul,
 .lastCommentSuggestion ul,
 .my-suggestionBox-inProgress ul,
-.my-suggestionBox-draft ul{
-  padding:0;
-  margin:0;
-  list-style-type:none;
+.my-suggestionBox-draft ul {
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
 }
 
-
 .my-suggestionBox-inProgress ul,
-.my-suggestionBox-draft ul{
-    list-style-image: url("../../../util/icons/bullet.png");
+.my-suggestionBox-draft ul {
+  list-style-image: url("../../../util/icons/bullet.png");
 }
 
 .my-suggestionBox-inProgress ul li,
-.my-suggestionBox-draft ul li{
-	margin-left:1em;
+.my-suggestionBox-draft ul li {
+  margin-left: 1em;
 }
 
 .buzzSuggestion .header h3,
 .lastSuggestion .header h3,
 .lastCommentSuggestion .header h3,
 .my-suggestionBox-inProgress .header h3,
-.my-suggestionBox-draft .header h3{
-  padding:0;
-  margin:2em 0 1em;
-  font-size:130%;
-  font-weight:100;
-  line-height:90%;
+.my-suggestionBox-draft .header h3 {
+  padding: 0;
+  margin: 2em 0 1em;
+  font-size: 130%;
+  font-weight: 100;
+  line-height: 90%;
 }
-.lastSuggestion .header h3{
-  margin:0em 0 1em;
+
+.lastSuggestion .header h3 {
+  margin: 0em 0 1em;
 }
 
 .my-suggestionBox-inProgress .header h3 strong,
-.my-suggestionBox-draft .header h3 strong{
-  display:block;
-  font-size:90%;
-  font-weight:100;
-  color:#1c94d4;
+.my-suggestionBox-draft .header h3 strong {
+  display: block;
+  font-size: 90%;
+  font-weight: 100;
+  color: #1c94d4;
 }
-
 
 .buzzSuggestion a:hover,
 .lastSuggestion a:hover,
-.lastCommentSuggestion  a:hover,
+.lastCommentSuggestion a:hover,
 .my-suggestionBox-draft li a:hover,
 .my-suggestionBox-inProgress li a:hover,
-.my-suggestionBox-inProgress li a:hover{
-  color:#1c94d4;
+.my-suggestionBox-inProgress li a:hover {
+  color: #1c94d4;
 }
+
 .buzzSuggestion li,
 .lastSuggestion li,
-.lastCommentSuggestion li{
+.lastCommentSuggestion li {
   background-color: #f0f0f0;
   border: 1px solid #cccccc;
   border-radius: 8px;
   -webkit-border-radius: 8px;
   -moz-border-radius: 8px;
-  padding: 13px;
-  margin:0 0 1em 0;
-  position:relative;
+  padding: 13px 82px 13px 13px;
+  margin: 0 0 1em 0;
+  position: relative;
 }
-
 
 .buzzSuggestion .header h3 {
-  color:#ec9c01
+  color: #ec9c01
 }
 
-.buzzSuggestion li > a{
-  padding-right:190px;
+.buzzSuggestion li > a {
+  padding-right: 190px;
 }
 
 .buzzSuggestion .counter-comments {
-    position: absolute;
-    right: 13px;
-    top: 13px;
-    width: 45px;
+  position: absolute;
+  right: 13px;
+  top: 13px;
+  width: 45px;
 }
 
 .lastSuggestion .date {
-  position:absolute;
-  top:13px;
-  right:13px;
+  position: absolute;
+  top: 13px;
+  right: 13px;
 }
 
 .vote {
-  display:block;
-  width:130px;
-  height:50px;
+  display: block;
+  width: 130px;
+  height: 50px;
 }
 
-
-.lastCommentSuggestion .commentaires div.avatar  {
+.lastCommentSuggestion .commentaires div.avatar {
   background-color: #FFFFFF;
   border: 1px solid #CECECE;
-  left:auto;
+  left: auto;
   padding: 0;
   position: relative;
-  top:auto;
-  float:left;
-  margin-right:1em;
+  top: auto;
+  float: left;
+  margin-right: 1em;
 }
 
-
-.lastCommentSuggestion .commentaires pre.text  {
+.lastCommentSuggestion .commentaires pre.text {
   color: #575757;
-  font-style:italic;
-  font-family:inherit;
+  font-style: italic;
+  font-family: inherit;
   white-space: pre-wrap;
 }
 
 .lastCommentSuggestion .author {
   color: #333333;
 }
-.lastCommentSuggestion .author .date{
-  font-size:100%;
+
+.lastCommentSuggestion .author .date {
+  font-size: 100%;
 }
 
-.lastCommentSuggestion a.a-suggestion{
-  background:transparent url(../icons/suggestion.png) top left no-repeat;
-  padding-left:20px;
+.lastCommentSuggestion a.a-suggestion {
+  background: transparent url(../icons/suggestion.png) top left no-repeat;
+  padding-left: 20px;
   line-height: 16px;
-  display:block;
+  display: block;
 }
-
 
 .my-suggestionBox-draft li {
-  margin-bottom:1em;
+  margin-bottom: 1em;
 }
 
 .my-suggestionBox-inProgress li a {
-  display:block;
-  clear:left;
-  margin-bottom:0.5em;
+  display: block;
+  clear: left;
+  margin-bottom: 0.5em;
 }
-.my-suggestionBox-inProgress .vote, .my-suggestionBox-inProgress .counter-comments{
-  float:left;
+
+.my-suggestionBox-inProgress .vote, .my-suggestionBox-inProgress .counter-comments {
+  float: left;
 }
+
 .my-suggestionBox-inProgress .vote {
-  margin-right:1em;
-  line-height:33px;
-  height:50px;
+  margin-right: 1em;
+  line-height: 33px;
+  height: 50px;
 }
 
 .my-suggestionBox-inProgress .header h3 {
-  font-size:117%;
-  line-height:100%;
+  font-size: 117%;
+  line-height: 100%;
 }
-.my-suggestionBox-inProgress .header h3 strong{
-  font-size:111%;
+
+.my-suggestionBox-inProgress .header h3 strong {
+  font-size: 111%;
 }
+
 .my-suggestionBox-inProgress a.VALIDATED {
-  background:transparent url(../icons/suggestion-validated.png) top left no-repeat;
-  padding-left:20px;
+  background: transparent url(../icons/suggestion-validated.png) top left no-repeat;
+  padding-left: 20px;
   line-height: 16px;
-  display:block;
+  display: block;
 }
 
 .my-suggestionBox-inProgress a.REFUSED {
-  background:transparent url(../icons/suggestion-refused.png) top left no-repeat;
-  padding-left:20px;
+  background: transparent url(../icons/suggestion-refused.png) top left no-repeat;
+  padding-left: 20px;
   line-height: 16px;
-  display:block;
+  display: block;
 }
 
 .my-suggestionBox-inProgress a.PENDING_VALIDATION {
-  background:transparent url(../icons/suggestion-pending-validation.png) top left no-repeat;
-  padding-left:20px;
+  background: transparent url(../icons/suggestion-pending-validation.png) top left no-repeat;
+  padding-left: 20px;
   line-height: 16px;
-  display:block;
+  display: block;
 }
 
 .my-suggestionBox-inProgress .counter-comments {
-  width:169px;
-  line-height:33px;
-  height:50px;
-  background:transparent url(../icons/sep.png)  left -3px no-repeat;
-  text-align:center;
+  width: 169px;
+  line-height: 33px;
+  height: 50px;
+  background: transparent url(../icons/sep.png) left -3px no-repeat;
+  text-align: center;
 }
 
-.my-suggestionBox-inProgress .counter-comments  span,
+.my-suggestionBox-inProgress .counter-comments span,
 .buzzSuggestion .counter-comments span {
-  background:transparent url(../../../util/icons/talk2user.gif) top left no-repeat;
-  padding-left:20px;
-}
-.buzzSuggestion a:hover .counter-comments span {
-	color:#000;
+  background: transparent url(../../../util/icons/talk2user.gif) top left no-repeat;
+  padding-left: 20px;
 }
 
-#suggestionApprobationDetail-info  {
-  font-style:italic;
+.buzzSuggestion a:hover .counter-comments span {
+  color: #000;
 }
+
+#suggestionApprobationDetail-info {
+  font-style: italic;
+}
+
 #suggestionApprobationDetail-info span {
-  opacity:0.6;
+  opacity: 0.6;
 }
+
 #suggestionApprobationDetail-info span.date {
-  font-size:100%;
+  font-size: 100%;
 }
 
 #suggestion .fields {
@@ -314,112 +323,228 @@ h3.lastSuggestion-title{
 }
 
 .suggestion .principalContent .inlineMessage {
-  margin:0;
+  margin: 0;
 }
-
 
 /********* LISTING COMPLET ***************/
 #suggestionBoxList {
-  margin:1em 0
+  margin: 1em 0
 }
 
 /********* suggestion-view ***************/
 .suggestion-view .rightContent .spOverRating {
-    display: block;
-    padding-bottom: 0.3em;
+  display: block;
+  padding-bottom: 0.3em;
 }
+
 /********* FORMULAIRE DE CREATION/MODIFICATION ***************/
 
 #suggestionInformation .fields {
-  height:auto;
+  height: auto;
 }
 
 #suggestionInformation legend {
   background: url("../../../util/icons/mini_publi.gif") no-repeat scroll 11px 0 rgba(0, 0, 0, 0);
 }
 
-#suggestionDescriptionArea  {
+#suggestionDescriptionArea {
   clear: both;
   padding: 5px 1% 5px 0;
   width: 99%;
 }
 
-
-#suggestionDescriptionArea label{
-  width:100%;
+#suggestionDescriptionArea label {
+  width: 100%;
 }
 
 #suggestionDescriptionArea .champs {
   clear: both;
   padding: 1em 0;
-  margin:0;
+  margin: 0;
 }
 
+.lastSuggestion .date {
+  position: absolute;
+  top: 13px;
+  right: 13px;
+}
 
+#all-suggestionBox {
+  width: 46%;
+  float: right;
+  padding-right: 3%;
+  border-right: 1px solid #ccc;
+}
 
-@media screen and (min-width: 800px) {
+#my-suggestionBox {
+  width: 45%;
+  float: right;
+  margin-left: 3%;
+  margin-right: 2%;
+  padding-top: 1em;
+}
+
+#my-suggestionBox #menubar-creation-actions {
+  margin: 1em 0;
+}
+
+/*** lecteur view *****/
+#all-suggestionBox.lecteur-view {
+  width: 100%;
+  float: none;
+  padding-right: 0;
+  border: 0;
+  position: relative;
+}
+
+.lecteur-view .lastSuggestion,
+.lecteur-view .buzzSuggestion {
+  width: 46%;
+  float: left;
+  clear: left;
+  padding-right: 3%;
+  border-right: 1px solid #ccc;
+}
+
+.lecteur-view .lastCommentSuggestion {
+  width: 45%;
+  position: absolute;
+  top: 0;
+  right: 2%;
+}
+
+.lecteur-view .lastCommentSuggestion .header h3 {
+  margin-top: 0.5em;
+}
+
+/*** END lecteur view *****/
+
+@media screen and (min-width: 10px) {
+
+  .lastSuggestion .date {
+    position: relative;
+    right: auto;
+    top: auto;
+  }
 
   #all-suggestionBox {
-    width:46%;
-    float:right;
-    padding-right:3%;
-    border-right:1px solid #ccc;
+    width: 100%;
+    float: none;
+    padding-right: 0;
+    border-right: 0;
   }
+
   #my-suggestionBox {
-    width:45%;
-    float:right;
-    margin-left:3%;
-    margin-right:2%;
-    padding-top:1em;
+    width: 100%;
+    float: none;
+    margin-left: 0%;
+    margin-right: 0%;
+    padding-top: 0;
   }
 
   #my-suggestionBox #menubar-creation-actions {
-    margin:1em 0;
+    margin: 0;
   }
-  
-  #all-suggestionBox.lecteur-view {
-    width:100%;
-    float:none;
-    padding-right:0%;
-    border:0;
-	position:relative;
-  }
-  
-  .lecteur-view .lastSuggestion,
-  .lecteur-view .buzzSuggestion  { 
-	width:46%;
-    float:left;
-	clear:left;
-    padding-right:3%;
-    border-right:1px solid #ccc;
-  }
-  
-	.lecteur-view .lastSuggestion  {
-		background:transparent url() top right no-repeat;
-	}
-  .lecteur-view   .lastCommentSuggestion { 
-	width:45%;
-    position:absolute;
-	top:0;
-    right:2%;
-  }
-  .lecteur-view  .lastCommentSuggestion .header h3 {
-		margin-top:0.5em;
-  }
-}
 
-@media screen and (max-width: 400px) {
-
-  .buzzSuggestion li > a ,
-  .lastSuggestion li > a{
+  .buzzSuggestion li > a,
+  .lastSuggestion li > a {
     padding-right: 0;
   }
+
   .buzzSuggestion .vote, .lastSuggestion .date {
     position: relative;
     right: auto;
     top: auto;
   }
+
   .buzzSuggestion .vote {
     margin: 0 auto;
   }
+
+  /*** lecteur view *****/
+  #all-suggestionBox.lecteur-view {
+    width: 100%;
+    float: none;
+    padding-right: 0;
+    border: 0;
+    position: relative;
+  }
+
+  .lecteur-view .lastSuggestion,
+  .lecteur-view .buzzSuggestion {
+    width: 100%;
+    float: none;
+    clear: left;
+    padding-right: 0%;
+    border-right: 0;
+  }
+
+  .lecteur-view .lastCommentSuggestion {
+    width: 100%;
+    position: relatvie;
+    top: auto;
+    right: auto;
+  }
+
+  /*** END lecteur view *****/
+
+}
+
+@media screen and (min-width: 800px) {
+  .lastSuggestion .date {
+    position: absolute;
+    top: 13px;
+    right: 13px;
+  }
+
+  #all-suggestionBox {
+    width: 46%;
+    float: right;
+    padding-right: 3%;
+    border-right: 1px solid #ccc;
+  }
+
+  #my-suggestionBox {
+    width: 45%;
+    float: right;
+    margin-left: 3%;
+    margin-right: 2%;
+    padding-top: 1em;
+  }
+
+  #my-suggestionBox #menubar-creation-actions {
+    margin: 1em 0;
+  }
+
+  /*** lecteur view *****/
+  #all-suggestionBox.lecteur-view {
+    width: 100%;
+    float: none;
+    padding-right: 0;
+    border: 0;
+    position: relative;
+  }
+
+  .lecteur-view .lastSuggestion,
+  .lecteur-view .buzzSuggestion {
+    width: 46%;
+    float: left;
+    clear: left;
+    padding-right: 4%;
+    border-right: 1px solid #ccc;
+  }
+
+  .lecteur-view .lastCommentSuggestion {
+    width: 44%;
+    position: absolute;
+    top: 0;
+    right: 2%;
+  }
+
+  .lecteur-view .lastCommentSuggestion .header h3 {
+    margin-top: 0.5em;
+  }
+
+  /*** END lecteur view *****/
+
 }
