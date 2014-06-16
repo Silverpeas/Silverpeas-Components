@@ -24,11 +24,11 @@
 package com.silverpeas.gallery.dao;
 
 import com.silverpeas.gallery.BaseGalleryTest;
-import com.stratelia.webactiv.util.DBUtil;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
 import org.junit.Test;
-import org.silverpeas.persistence.dao.DAOBasedTest;
+
+import java.sql.Connection;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -62,8 +62,13 @@ public class MediaDaoTest extends BaseGalleryTest {
   }
 
   @Test
-  public void dummyTest() {
+  public void getAllMedia() throws Exception {
+    performDAOTest(new DAOTest() {
+      @Override
+      public void test(final Connection connection) {
 
+      }
+    });
   }
 
   /**

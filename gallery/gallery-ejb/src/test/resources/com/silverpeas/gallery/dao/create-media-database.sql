@@ -1,17 +1,17 @@
 CREATE TABLE SC_Gallery_Media (
-  mediaId            VARCHAR(40)                                        NOT NULL,
-  mediaType          VARCHAR(30)                                        NOT NULL,
-  instanceId         VARCHAR(50)                                        NOT NULL,
-  title              VARCHAR(255)                                       NOT NULL,
-  description        VARCHAR(255)                                       NULL,
-  author             VARCHAR(50)                                        NULL,
-  keyWord            VARCHAR(1000)                                      NULL,
-  beginVisibiliyDate TIMESTAMP DEFAULT '1900-01-01 00:00:00.0'          NOT NULL,
-  endVisibiliyDate   TIMESTAMP DEFAULT '2999-12-31 23:59:59.999'        NOT NULL,
-  createDate         TIMESTAMP                                          NOT NULL,
-  createdBy          VARCHAR(50)                                        NOT NULL,
-  lastUpdateDate     TIMESTAMP                                          NOT NULL,
-  lastUpdatedBy      VARCHAR(50)                                        NULL
+  mediaId            VARCHAR(40)                          NOT NULL,
+  mediaType          VARCHAR(30)                          NOT NULL,
+  instanceId         VARCHAR(50)                          NOT NULL,
+  title              VARCHAR(255)                         NOT NULL,
+  description        VARCHAR(255)                         NULL,
+  author             VARCHAR(50)                          NULL,
+  keyWord            VARCHAR(1000)                        NULL,
+  beginVisibiliyDate INT8 DEFAULT -2208992400000          NOT NULL,
+  endVisibiliyDate   INT8 DEFAULT 32503676399999          NOT NULL,
+  createDate         TIMESTAMP                            NOT NULL,
+  createdBy          VARCHAR(50)                          NOT NULL,
+  lastUpdateDate     TIMESTAMP                            NOT NULL,
+  lastUpdatedBy      VARCHAR(50)                          NULL
 );
 
 CREATE TABLE SC_Gallery_Internal (
@@ -20,8 +20,8 @@ CREATE TABLE SC_Gallery_Internal (
   fileSize          INT8         NULL,
   fileMimeType      VARCHAR(100) NULL,
   download          INT          NULL,
-  beginDownloadDate TIMESTAMP    NULL,
-  endDownloadDate   TIMESTAMP    NULL
+  beginDownloadDate INT8         NULL,
+  endDownloadDate   INT8         NULL
 );
 
 CREATE TABLE SC_Gallery_Photo (
