@@ -29,11 +29,11 @@ import com.silverpeas.gallery.constant.StreamingProvider;
 /**
  * This class represents a Streaming.
  */
-public class Streaming extends InternalMedia {
+public class Streaming extends Media {
   private static final long serialVersionUID = 5772513957256327862L;
 
   private String homepageUrl = "";
-  private StreamingProvider provider = StreamingProvider.Unknown;
+  private StreamingProvider provider = StreamingProvider.unknown;
 
   @Override
   public MediaType getType() {
@@ -78,5 +78,10 @@ public class Streaming extends InternalMedia {
    */
   public static String getResourceType() {
     return MediaType.Streaming.name();
+  }
+
+  @Override
+  public String getThumbnailUrl(final String formatPrefix) {
+    return null;
   }
 }

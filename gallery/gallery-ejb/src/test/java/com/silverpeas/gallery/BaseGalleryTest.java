@@ -23,31 +23,23 @@
  */
 package com.silverpeas.gallery;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
-import javax.inject.Inject;
-import javax.sql.DataSource;
-
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
-import org.dbunit.database.DatabaseConnection;
-import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
-import org.dbunit.operation.DatabaseOperation;
-import org.junit.Before;
-import org.junit.runner.RunWith;
+import org.silverpeas.cache.service.CacheServiceFactory;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.persistence.dao.DAOBasedTest;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
-import com.silverpeas.gallery.dao.PhotoDaoTest;
+import static org.mockito.Mockito.mock;
 
 /**
  * Base class for tests in the gallery component.
  * It prepares the database to use in tests.
  */
 public abstract class BaseGalleryTest extends DAOBasedTest {
+
+  private OrganisationController organisationControllerMock;
 
   @Override
   public String[] getApplicationContextPath() {
@@ -57,6 +49,10 @@ public abstract class BaseGalleryTest extends DAOBasedTest {
   @Override
   public void setUp() throws Exception {
     super.setUp();
+    organisationControllerMock = mock(OrganisationController.class);
+    ReflectionTestUtils
+        .setField(OrganisationControllerFactory.getFactory(), "organisationController",
+            organisationControllerMock);
     DBUtil.getInstanceForTest(getDataSource().getConnection());
   }
 
@@ -64,8 +60,14 @@ public abstract class BaseGalleryTest extends DAOBasedTest {
   public void tearDown() throws Exception {
     try {
       super.tearDown();
+      OrganisationControllerFactory.getFactory().clearFactory();
+      CacheServiceFactory.getSessionCacheService().put(UserDetail.CURRENT_REQUESTER_KEY, null);
     } finally {
       DBUtil.clearTestInstance();
     }
+  }
+
+  protected OrganisationController getOrganisationControllerMock() {
+    return organisationControllerMock;
   }
 }

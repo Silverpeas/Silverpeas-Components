@@ -59,6 +59,10 @@ public abstract class Media implements SilverpeasContent, SilverContentInterface
   private String silverpeasContentId;
   private String iconUrl;
 
+  public Media() {
+    mediaPK = new MediaPK(null);
+  }
+
   public MediaPK getMediaPK() {
     return mediaPK;
   }
@@ -67,9 +71,17 @@ public abstract class Media implements SilverpeasContent, SilverContentInterface
     this.mediaPK = mediaPK;
   }
 
+  public void setId(String mediaId) {
+    getMediaPK().setId(mediaId);
+  }
+
   @Override
   public String getId() {
     return getMediaPK() != null ? getMediaPK().getId() : null;
+  }
+
+  public void setComponentInstanceId(String instanceId) {
+    getMediaPK().setComponentName(instanceId);
   }
 
   @Override
@@ -129,6 +141,11 @@ public abstract class Media implements SilverpeasContent, SilverContentInterface
 
   public void setVisibilityPeriod(final Period visibilityPeriod) {
     this.visibilityPeriod = Period.check(visibilityPeriod);
+  }
+
+  public boolean isVisible() {
+    Date today = DateUtil.getDate();
+    return isVisible(today);
   }
 
   public boolean isVisible(Date today) {
@@ -317,5 +334,49 @@ public abstract class Media implements SilverpeasContent, SilverContentInterface
       return getMediaPK().equals(anotherPhoto.getMediaPK());
     }
     return false;
+  }
+
+  /**
+   * Gets the photo instance if type of the current media is {@link MediaType#Photo}.
+   * @return photo instance, null if media type is not {@link MediaType#Photo}.
+   */
+  public Photo getPhoto() {
+    if (MediaType.Photo == getType()) {
+      return (Photo) this;
+    }
+    return null;
+  }
+
+  /**
+   * Gets the video instance if type of the current media is {@link MediaType#Video}.
+   * @return video instance, null if media type is not {@link MediaType#Video}.
+   */
+  public Video getVideo() {
+    if (MediaType.Video == getType()) {
+      return (Video) this;
+    }
+    return null;
+  }
+
+  /**
+   * Gets the sound instance if type of the current media is {@link MediaType#Sound}.
+   * @return sound instance, null if media type is not {@link MediaType#Sound}.
+   */
+  public Sound getSound() {
+    if (MediaType.Sound == getType()) {
+      return (Sound) this;
+    }
+    return null;
+  }
+
+  /**
+   * Gets the streaming instance if type of the current media is {@link MediaType#Streaming}.
+   * @return streaming instance, null if media type is not {@link MediaType#Streaming}.
+   */
+  public Streaming getStreaming() {
+    if (MediaType.Streaming == getType()) {
+      return (Streaming) this;
+    }
+    return null;
   }
 }

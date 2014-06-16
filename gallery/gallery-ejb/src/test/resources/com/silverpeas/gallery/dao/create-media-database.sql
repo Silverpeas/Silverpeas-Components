@@ -1,17 +1,17 @@
 CREATE TABLE SC_Gallery_Media (
-  mediaId            VARCHAR(40)                          NOT NULL,
-  mediaType          VARCHAR(30)                          NOT NULL,
-  instanceId         VARCHAR(50)                          NOT NULL,
-  title              VARCHAR(255)                         NOT NULL,
-  description        VARCHAR(255)                         NULL,
-  author             VARCHAR(50)                          NULL,
-  keyWord            VARCHAR(1000)                        NULL,
-  beginVisibiliyDate INT8 DEFAULT -2208992400000          NOT NULL,
-  endVisibiliyDate   INT8 DEFAULT 32503676399999          NOT NULL,
-  createDate         TIMESTAMP                            NOT NULL,
-  createdBy          VARCHAR(50)                          NOT NULL,
-  lastUpdateDate     TIMESTAMP                            NOT NULL,
-  lastUpdatedBy      VARCHAR(50)                          NULL
+  mediaId             VARCHAR(40)                          NOT NULL,
+  mediaType           VARCHAR(30)                          NOT NULL,
+  instanceId          VARCHAR(50)                          NOT NULL,
+  title               VARCHAR(255)                         NOT NULL,
+  description         VARCHAR(255)                         NULL,
+  author              VARCHAR(50)                          NULL,
+  keyWord             VARCHAR(1000)                        NULL,
+  beginVisibilityDate INT8 DEFAULT -2208992400000          NOT NULL,
+  endVisibilityDate   INT8 DEFAULT 32503676399999          NOT NULL,
+  createDate          TIMESTAMP                            NOT NULL,
+  createdBy           VARCHAR(50)                          NOT NULL,
+  lastUpdateDate      TIMESTAMP                            NOT NULL,
+  lastUpdatedBy       VARCHAR(50)                          NULL
 );
 
 CREATE TABLE SC_Gallery_Internal (
@@ -52,13 +52,13 @@ CREATE TABLE SC_Gallery_Streaming (
 
 CREATE TABLE SC_Gallery_Path (
   mediaId    VARCHAR(40) NOT NULL,
-  nodeId     INT         NOT NULL,
-  instanceId VARCHAR(50) NOT NULL
+  instanceId VARCHAR(50) NOT NULL,
+  nodeId     VARCHAR(40) NOT NULL
 );
 
 CREATE TABLE SC_Gallery_Order (
   orderId     INT         NOT NULL,
-  userId      INT         NOT NULL,
+  userId      VARCHAR(40) NOT NULL,
   instanceId  VARCHAR(50) NOT NULL,
   createDate  TIMESTAMP   NOT NULL,
   processDate TIMESTAMP   NULL,

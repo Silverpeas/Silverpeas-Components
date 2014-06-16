@@ -27,5 +27,13 @@ package com.silverpeas.gallery.constant;
  * @author: Yohann Chastagnier
  */
 public enum StreamingProvider {
-  Unknown, YouTube, Vimeo
+  unknown, youtube, vimeo;
+
+  public static StreamingProvider from(String provider) {
+    try {
+      return valueOf(provider.toLowerCase());
+    } catch (Exception e) {
+      return unknown;
+    }
+  }
 }

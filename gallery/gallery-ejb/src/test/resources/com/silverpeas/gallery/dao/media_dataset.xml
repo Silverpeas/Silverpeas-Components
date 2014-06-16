@@ -3,26 +3,26 @@
 
 <dataset>
   <!-- 1900-01-01 00:00:00.0 = -2208992400000 -->
-  <!-- 2999-12-31 23:59:59.999 = 32503676399999 -->
+  <!-- 2999-12-31 00:00:00.0 = 32503590000000 -->
   <!-- 2014-01-01 00:00:00.0 = 1388530800000 -->
   <!-- 2014-12-31 12:59:59.999 = 1420027199999 -->
-  <!-- 2014-06-31 12:59:59.999 = 1404212399999 -->
+  <!-- 2014-06-30 12:59:59.999 = 1404125999999 -->
   <!-- 2014-03-31 12:59:59.999 = 1396263599999 -->
 
   <!-- Photo -->
   <sc_gallery_media mediaId="1" mediaType="Photo" instanceId="instanceId_A" title="title 1"
-                    description="[NULL]" author="[NULL]" keyWord="[NULL]"
-                    beginVisibiliyDate="1388530800000" endVisibiliyDate="1420027199999"
-                    createDate="2014-06-01 16:38:52.253" createdBy="0"
-                    lastUpdateDate="2014-06-01 16:38:52.253" lastUpdatedBy="0"/>
+                    description="a description 1" author="an author 1" keyWord="keywords 1"
+                    beginVisibilityDate="1388530800000" endVisibilityDate="1420027199999"
+                    createDate="2014-06-01 16:38:52.253" createdBy="adminUserId"
+                    lastUpdateDate="2014-06-01 16:38:52.253" lastUpdatedBy="adminUserId"/>
   <sc_gallery_media mediaId="2" mediaType="Photo" instanceId="instanceId_A" title="title 2"
                     description="[NULL]" author="[NULL]" keyWord="[NULL]"
-                    beginVisibiliyDate="-2208992400000" endVisibiliyDate="32503676399999"
+                    beginVisibilityDate="-2208992400000" endVisibilityDate="32503590000000"
                     createDate="2014-06-01 16:38:52.253" createdBy="0"
                     lastUpdateDate="2014-06-01 16:38:52.253" lastUpdatedBy="0"/>
   <sc_gallery_media mediaId="9" mediaType="Photo" instanceId="instanceId_Z" title="title 9"
                     description="[NULL]" author="[NULL]" keyWord="[NULL]"
-                    beginVisibiliyDate="-2208992400000" endVisibiliyDate="32503676399999"
+                    beginVisibilityDate="-2208992400000" endVisibilityDate="32503590000000"
                     createDate="2014-06-01 16:38:52.253" createdBy="0"
                     lastUpdateDate="2014-06-01 16:38:52.253" lastUpdatedBy="0"/>
 
@@ -33,62 +33,62 @@
   <SC_Gallery_Internal mediaId="9" fileName="fileName_9" fileSize="109" fileMimeType="image/tiff"
                        download="0" beginDownloadDate="[NULL]" endDownloadDate="[NULL]"/>
 
-  <SC_Gallery_Photo mediaId="1" resolutionW="800" resolutionH="600"/>
-  <SC_Gallery_Photo mediaId="2" resolutionW="1280" resolutionH="720"/>
+  <SC_Gallery_Photo mediaId="1" resolutionW="1000" resolutionH="750"/>
+  <SC_Gallery_Photo mediaId="2" resolutionW="800" resolutionH="600"/>
   <SC_Gallery_Photo mediaId="9" resolutionW="1600" resolutionH="1200"/>
 
   <!-- Video -->
   <sc_gallery_media mediaId="v_1" mediaType="Video" instanceId="instanceId_A" title="title v_1"
                     description="[NULL]" author="[NULL]" keyWord="[NULL]"
-                    beginVisibiliyDate="1388530800000" endVisibiliyDate="1404212399999"
-                    createDate="2014-06-01 16:38:52.253" createdBy="0"
-                    lastUpdateDate="2014-06-01 16:38:52.253" lastUpdatedBy="0"/>
+                    beginVisibilityDate="1388530800000" endVisibilityDate="1404125999999"
+                    createDate="2014-06-01 16:38:52.253" createdBy="adminUserId"
+                    lastUpdateDate="2014-06-03 11:20:42.637" lastUpdatedBy="publisherUserId"/>
   <sc_gallery_media mediaId="v_2" mediaType="Video" instanceId="instanceId_A" title="title v_2"
-                    description="[NULL]" author="[NULL]" keyWord="[NULL]"
-                    beginVisibiliyDate="-2208992400000" endVisibiliyDate="32503676399999"
+                    description="[NULL]" author="an author v_2" keyWord="[NULL]"
+                    beginVisibilityDate="-2208992400000" endVisibilityDate="32503590000000"
                     createDate="2014-06-01 16:38:52.253" createdBy="0"
                     lastUpdateDate="2014-06-01 16:38:52.253" lastUpdatedBy="0"/>
   <sc_gallery_media mediaId="v_9" mediaType="Video" instanceId="instanceId_Z" title="title v_9"
                     description="[NULL]" author="[NULL]" keyWord="[NULL]"
-                    beginVisibiliyDate="-2208992400000" endVisibiliyDate="32503676399999"
+                    beginVisibilityDate="-2208992400000" endVisibilityDate="32503590000000"
                     createDate="2014-06-01 16:38:52.253" createdBy="0"
                     lastUpdateDate="2014-06-01 16:38:52.253" lastUpdatedBy="0"/>
 
   <SC_Gallery_Internal mediaId="v_1" fileName="fileName_v_1" fileSize="201" fileMimeType="video/mp4"
-                       download="0" beginDownloadDate="[NULL]" endDownloadDate="[NULL]"/>
+                       download="1" beginDownloadDate="1388530800000" endDownloadDate="[NULL]"/>
   <SC_Gallery_Internal mediaId="v_2" fileName="fileName_v_2" fileSize="202"
                        fileMimeType="video/x-flv" download="0" beginDownloadDate="[NULL]"
                        endDownloadDate="[NULL]"/>
   <SC_Gallery_Internal mediaId="v_9" fileName="fileName_v_9" fileSize="209" fileMimeType="video/mp4"
                        download="0" beginDownloadDate="[NULL]" endDownloadDate="[NULL]"/>
 
-  <SC_Gallery_Video mediaId="v_1" resolutionW="1280" resolutionH="720" bitrate="5000"
+  <SC_Gallery_Video mediaId="v_1" resolutionW="1920" resolutionH="1080" bitrate="5000"
                     duration="36000000"/>
-  <SC_Gallery_Video mediaId="v_2" resolutionW="1920" resolutionH="1080" bitrate="5000"
-                    duration="36000000"/>
-  <SC_Gallery_Video mediaId="v_9" resolutionW="1280" resolutionH="720" bitrate="5000"
+  <SC_Gallery_Video mediaId="v_2" resolutionW="1280" resolutionH="720" bitrate="5000"
+                    duration="[NULL]"/>
+  <SC_Gallery_Video mediaId="v_9" resolutionW="1800" resolutionH="1113" bitrate="5000"
                     duration="36000000"/>
 
   <!-- Sound -->
   <sc_gallery_media mediaId="s_1" mediaType="Sound" instanceId="instanceId_A" title="title s_1"
                     description="[NULL]" author="[NULL]" keyWord="[NULL]"
-                    beginVisibiliyDate="1388530800000" endVisibiliyDate="1420027199999"
-                    createDate="2014-06-01 16:38:52.253" createdBy="0"
-                    lastUpdateDate="2014-06-01 16:38:52.253" lastUpdatedBy="0"/>
+                    beginVisibilityDate="1388530800000" endVisibilityDate="1420027199999"
+                    createDate="2014-06-01 16:38:52.253" createdBy="writerUserId"
+                    lastUpdateDate="2014-06-03 11:20:42.637" lastUpdatedBy="publisherUserId"/>
   <sc_gallery_media mediaId="s_2" mediaType="Sound" instanceId="instanceId_A" title="title s_2"
-                    description="[NULL]" author="[NULL]" keyWord="[NULL]"
-                    beginVisibiliyDate="-2208992400000" endVisibiliyDate="32503676399999"
+                    description="[NULL]" author="an author s_2" keyWord="[NULL]"
+                    beginVisibilityDate="-2208992400000" endVisibilityDate="32503590000000"
                     createDate="2014-06-01 16:38:52.253" createdBy="0"
                     lastUpdateDate="2014-06-01 16:38:52.253" lastUpdatedBy="0"/>
   <sc_gallery_media mediaId="s_9" mediaType="Sound" instanceId="instanceId_Z" title="title s_9"
-                    description="[NULL]" author="[NULL]" keyWord="[NULL]"
-                    beginVisibiliyDate="-2208992400000" endVisibiliyDate="32503676399999"
+                    description="[NULL]" author="an author s_9" keyWord="[NULL]"
+                    beginVisibilityDate="-2208992400000" endVisibilityDate="32503590000000"
                     createDate="2014-06-01 16:38:52.253" createdBy="0"
                     lastUpdateDate="2014-06-01 16:38:52.253" lastUpdatedBy="0"/>
 
   <SC_Gallery_Internal mediaId="s_1" fileName="fileName_s_1" fileSize="301"
                        fileMimeType="audio/x-mpeg" download="0" beginDownloadDate="[NULL]"
-                       endDownloadDate="[NULL]"/>
+                       endDownloadDate="1420027199999"/>
   <SC_Gallery_Internal mediaId="s_2" fileName="fileName_s_2" fileSize="302"
                        fileMimeType="video/x-flv" download="0" beginDownloadDate="[NULL]"
                        endDownloadDate="[NULL]"/>
@@ -96,28 +96,44 @@
                        fileMimeType="audio/x-mpeg" download="0" beginDownloadDate="[NULL]"
                        endDownloadDate="[NULL]"/>
 
-  <SC_Gallery_Sound mediaId="v_1" bitrate="5000" duration="36000000"/>
-  <SC_Gallery_Sound mediaId="v_2" bitrate="5000" duration="36000000"/>
-  <SC_Gallery_Sound mediaId="v_9" bitrate="5000" duration="36000000"/>
+  <SC_Gallery_Sound mediaId="s_1" bitrate="500" duration="3600000"/>
+  <SC_Gallery_Sound mediaId="s_2" bitrate="[NULL]" duration="3600000"/>
+  <SC_Gallery_Sound mediaId="s_9" bitrate="500" duration="3600000"/>
 
   <!-- Streaming -->
   <sc_gallery_media mediaId="stream_1" mediaType="Streaming" instanceId="instanceId_A"
-                    title="title stream_1" description="[NULL]" author="[NULL]" keyWord="[NULL]"
-                    beginVisibiliyDate="1388530800000" endVisibiliyDate="1396263599999"
-                    createDate="2014-06-01 16:38:52.253" createdBy="0"
-                    lastUpdateDate="2014-06-01 16:38:52.253" lastUpdatedBy="0"/>
+                    title="title stream_1" description="[NULL]" author="an author stream_1"
+                    keyWord="[NULL]"
+                    beginVisibilityDate="1388530800000" endVisibilityDate="1396263599999"
+                    createDate="2014-06-01 16:38:52.253" createdBy="publisherUserId"
+                    lastUpdateDate="2014-06-03 11:20:42.637" lastUpdatedBy="adminUserId"/>
   <sc_gallery_media mediaId="stream_2" mediaType="Streaming" instanceId="instanceId_A"
                     title="title stream_2" description="[NULL]" author="[NULL]" keyWord="[NULL]"
-                    beginVisibiliyDate="-2208992400000" endVisibiliyDate="32503676399999"
+                    beginVisibilityDate="-2208992400000" endVisibilityDate="32503590000000"
                     createDate="2014-06-01 16:38:52.253" createdBy="0"
                     lastUpdateDate="2014-06-01 16:38:52.253" lastUpdatedBy="0"/>
   <sc_gallery_media mediaId="stream_9" mediaType="Streaming" instanceId="instanceId_Z"
                     title="title stream_9" description="[NULL]" author="[NULL]" keyWord="[NULL]"
-                    beginVisibiliyDate="-2208992400000" endVisibiliyDate="32503676399999"
+                    beginVisibilityDate="-2208992400000" endVisibilityDate="32503590000000"
                     createDate="2014-06-01 16:38:52.253" createdBy="0"
                     lastUpdateDate="2014-06-01 16:38:52.253" lastUpdatedBy="0"/>
 
-  <SC_Gallery_Streaming mediaId="stream_1" homepageUrl="url_1" provider="PROVIDER_A"/>
+  <SC_Gallery_Streaming mediaId="stream_1" homepageUrl="url_1" provider="yOuTuBE"/>
   <SC_Gallery_Streaming mediaId="stream_2" homepageUrl="url_2" provider="PROVIDER_B"/>
   <SC_Gallery_Streaming mediaId="stream_9" homepageUrl="url_9" provider="PROVIDER_A"/>
+
+  <!-- Albums -->
+  <SC_Gallery_Path mediaId="1" instanceId="instanceId_A" nodeId="1"/>
+  <SC_Gallery_Path mediaId="2" instanceId="instanceId_A" nodeId="2"/>
+  <SC_Gallery_Path mediaId="9" instanceId="instanceId_Z" nodeId="1"/>
+  <SC_Gallery_Path mediaId="v_1" instanceId="instanceId_A" nodeId="1"/>
+  <SC_Gallery_Path mediaId="v_1" instanceId="instanceId_A" nodeId="2"/>
+  <SC_Gallery_Path mediaId="v_2" instanceId="instanceId_A" nodeId="1"/>
+  <SC_Gallery_Path mediaId="v_9" instanceId="instanceId_Z" nodeId="2"/>
+  <SC_Gallery_Path mediaId="s_1" instanceId="instanceId_A" nodeId="1"/>
+  <SC_Gallery_Path mediaId="s_2" instanceId="instanceId_A" nodeId="1"/>
+  <SC_Gallery_Path mediaId="s_9" instanceId="instanceId_Z" nodeId="2"/>
+  <SC_Gallery_Path mediaId="stream_1" instanceId="instanceId_A" nodeId="2"/>
+  <SC_Gallery_Path mediaId="stream_2" instanceId="instanceId_A" nodeId="1"/>
+  <SC_Gallery_Path mediaId="stream_9" instanceId="instanceId_Z" nodeId="2"/>
 </dataset>

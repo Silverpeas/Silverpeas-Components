@@ -23,9 +23,19 @@
  */
 package com.silverpeas.gallery.constant;
 
+import com.silverpeas.util.StringUtil;
+
 /**
  * @author: Yohann Chastagnier
  */
 public enum MediaType {
-  Unknown, Photo, Video, Sound, Streaming
+  Unknown, Photo, Video, Sound, Streaming;
+
+  public static MediaType from(String type) {
+    try {
+      return valueOf(StringUtil.capitalize(type));
+    } catch (Exception e) {
+      return Unknown;
+    }
+  }
 }

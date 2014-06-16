@@ -49,6 +49,10 @@ public class PhotoDetail implements SilverContentInterface, Serializable {
     photo = new Photo();
   }
 
+  public PhotoDetail(Photo photo) {
+    this.photo = photo;
+  }
+
   public PhotoDetail(String title, String description, Date creationDate,
       Date updateDate, String vueDate, String author, boolean download,
       boolean albumLabel) {

@@ -37,7 +37,7 @@ public class StreamingTest {
     Streaming streaming = new Streaming();
     assertThat(streaming.getType(), is(MediaType.Streaming));
     assertThat(streaming.getHomepageUrl(), is(""));
-    assertThat(streaming.getProvider(), is(StreamingProvider.Unknown));
+    assertThat(streaming.getProvider(), is(StreamingProvider.unknown));
   }
 
   @Test
@@ -49,7 +49,7 @@ public class StreamingTest {
   private Streaming defaultStreaming() {
     Streaming streaming = new Streaming();
     streaming.setHomepageUrl("anUrl");
-    streaming.setProvider(StreamingProvider.YouTube);
+    streaming.setProvider(StreamingProvider.youtube);
     assertDefaultStreaming(streaming);
     return streaming;
   }
@@ -57,6 +57,6 @@ public class StreamingTest {
   private void assertDefaultStreaming(Streaming streaming) {
     assertThat(streaming.getType(), is(MediaType.Streaming));
     assertThat(streaming.getHomepageUrl(), is("anUrl"));
-    assertThat(streaming.getProvider(), is(StreamingProvider.YouTube));
+    assertThat(streaming.getProvider(), is(StreamingProvider.youtube));
   }
 }
