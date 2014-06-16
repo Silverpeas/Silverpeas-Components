@@ -206,11 +206,7 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
         new ForeignPK(news.getPublicationId(), quickInfo.getComponentId()),
         PublicationDetail.getResourceType(), items);
     
-    if (publish) {
-      quickInfo.updateAndPublish(id, news, positions);
-    } else {
-      quickInfo.update(id, news, positions);
-    }
+    quickInfo.update(id, news, positions, publish);
     
     return id;
   }

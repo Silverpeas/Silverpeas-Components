@@ -5,9 +5,11 @@ CREATE TABLE sc_quickinfo_news (
   important      		BOOLEAN	 	NOT NULL,
   broadcastTicker		BOOLEAN 	NOT NULL,
   broadcastMandatory	BOOLEAN		NOT NULL,
-  createDate     		DATETIME   NOT NULL,
+  createDate     		DATETIME   	NOT NULL,
   createdBy      		VARCHAR(40) NOT NULL,
-  lastUpdateDate 		DATETIME   NOT NULL,
+  lastUpdateDate 		DATETIME   	NOT NULL,
   lastUpdatedBy  		VARCHAR(40) NOT NULL,
-  version        		BIGINT        NOT NULL
+  publishDate 			DATETIME	NULL,
+  publishedBy  			VARCHAR(40) NULL,
+  version        		BIGINT      NOT NULL
 );

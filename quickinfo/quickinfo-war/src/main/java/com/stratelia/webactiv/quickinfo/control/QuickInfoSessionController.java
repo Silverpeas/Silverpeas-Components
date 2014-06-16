@@ -154,7 +154,7 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
    * @param positions the JSON positions
    */
   public void publish(String id) {
-    getService().publish(id);    
+    getService().publish(id, getUserId());    
   }
   
   public News createEmptyNews() {
@@ -169,16 +169,8 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
   private QuickInfoService getService() {
     return QuickInfoServiceFactory.getQuickInfoService();
   }
-    
-  public void updateAndPublish(String id, News updatedNews, String pdcPositions) {
-    update(id, updatedNews, getPositionsFromJSON(pdcPositions), true);
-  }
-
-  public void update(String id, News updatedNews, String pdcPositions) {
-    update(id, updatedNews, getPositionsFromJSON(pdcPositions), false);
-  }
   
-  private void update(String id, News updatedNews, List<PdcPosition> pdcPositions, boolean forcePublish) {
+  public void update(String id, News updatedNews, String pdcPositions, boolean forcePublish) {
     News news = getNews(id, false);
     news.setTitle(updatedNews.getTitle());
     news.setDescription(updatedNews.getDescription());
@@ -192,7 +184,7 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
       news.setPublished();
     }
     
-    getService().update(news, pdcPositions);      
+    getService().update(news, getPositionsFromJSON(pdcPositions), forcePublish);
   }
 
   public void remove(String id) {

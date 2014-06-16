@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -148,9 +149,16 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
   
   private void publish(final News news) {
     news.setPublished();
+    news.setPublishDate(new Date());
+    
+    Transaction.performInOne(new Transaction.Process<News>() {
+      @Override
+      public News execute() {
+        return newsRepository.save(OperationContext.fromUser(news.getPublishedBy()), news);
+      }
+    });
     
     PublicationDetail publication = news.getPublication();
-    
     getPublicationBm().setDetail(publication, false);
     
     try {
@@ -165,22 +173,14 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
   }
   
   @Override
-  public void publish(String id) {
+  public void publish(String id, String userId) {
     News news = getNews(id);
+    news.setPublishedBy(userId);
     publish(news);
   }
   
   @Override
-  public void updateAndPublish(final News news, List<PdcPosition> positions) {
-    update(news, positions, true);
-  }
-  
-  @Override
-  public void update(final News news, List<PdcPosition> positions) {
-    update(news, positions, false);
-  }
-  
-  private void update(final News news, List<PdcPosition> positions, boolean publish) {
+  public void update(final News news, List<PdcPosition> positions, final boolean forcePublishing) {
     final PublicationDetail publication = news.getPublication();
     
     // saving WYSIWYG content
@@ -197,6 +197,10 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
       @Override
       public News execute() {
         news.setPublicationId(publication.getId());
+        if (forcePublishing) {
+          news.setPublishDate(new Date());
+          news.setPublishedBy(news.getLastUpdatedBy());
+        }
         return newsRepository.save(OperationContext.fromUser(news.getLastUpdatedBy()), news);
       }
     });
@@ -215,7 +219,7 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
     if (!news.isDraft() && news.isVisible()) {
       // Sending notifications to subscribers
       NotifAction action = NotifAction.UPDATE;
-      if (publish) {
+      if (forcePublishing) {
         action = NotifAction.CREATE;
       }
       UserNotificationHelper.buildAndSend(new QuickInfoSubscriptionUserNotification(news, action));

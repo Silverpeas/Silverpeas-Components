@@ -73,6 +73,7 @@ public class NewsRepositoryTest extends RepositoryBasedTest {
   public void testLoadingFromComponentId() {
     List<News> allNews = newsRepository.getByComponentId("quickinfo1");
     assertThat(allNews, hasSize(2));
+    assertThat(allNews.get(0).getPublicationId(), Matchers.is("128"));
   }
   
   @Test

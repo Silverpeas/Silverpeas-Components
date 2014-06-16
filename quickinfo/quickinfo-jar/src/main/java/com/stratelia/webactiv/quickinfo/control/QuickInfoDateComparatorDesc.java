@@ -35,10 +35,23 @@ public class QuickInfoDateComparatorDesc implements Comparator<News> {
    * This result is reversed as we want a descending sort.
    */
   public int compare(News pd1, News pd2) {
-    int compareResult = pd1.getPublication().getUpdateDate().compareTo(pd2.getPublication().getUpdateDate());
+    
+    int compareResult = 0;
+    if (pd1.getPublishDate() == null || pd2.getPublishDate() == null) {
+      if (pd1.getPublishDate() != null) {
+        compareResult = 1;
+      } else {
+        compareResult = -1;
+      }
+    } else {
+      compareResult = pd1.getPublishDate().compareTo(pd2.getPublishDate());
+    }
+    if (compareResult == 0) {
+      compareResult = pd1.getUpdateDate().compareTo(pd2.getUpdateDate());
+    }
     return 0 - compareResult;
   }
-
+  
   /**
    * This comparator equals self only. Use the shared comparator
    * QuickInfoDateComparatorDesc.comparator if multiples comparators are used.

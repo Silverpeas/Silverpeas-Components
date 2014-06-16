@@ -9,5 +9,7 @@ CREATE TABLE sc_quickinfo_news (
   createdBy      		VARCHAR(40) NOT NULL,
   lastUpdateDate 		TIMESTAMP   NOT NULL,
   lastUpdatedBy  		VARCHAR(40) NOT NULL,
+  publishDate 			TIMESTAMP   NULL,
+  publishedBy  			VARCHAR(40) NULL,
   version        		NUMBER(19, 0) NOT NULL
 );

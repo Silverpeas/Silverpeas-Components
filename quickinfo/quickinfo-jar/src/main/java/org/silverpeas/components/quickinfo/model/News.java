@@ -29,6 +29,7 @@ import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
@@ -38,7 +39,7 @@ import com.stratelia.webactiv.util.statistic.control.StatisticBm;
 @Entity
 @Table(name = "sc_quickinfo_news")
 /*@NamedQuery(name = "newsFromComponentInstance", query = "from News n where n.componentInstanceId = :componentInstanceId")*/
-@NamedQueries({@NamedQuery(name = "newsFromComponentInstance", query = "from News n where n.componentInstanceId = :componentInstanceId"),
+@NamedQueries({@NamedQuery(name = "newsFromComponentInstance", query = "from News n where n.componentInstanceId = :componentInstanceId order by n.publishDate DESC"),
   @NamedQuery(name = "newsByForeignId", query = "from News n where n.publicationId = :foreignId")})
 public class News extends AbstractJpaEntity<News, UuidIdentifier> implements SilverpeasContent {
   
@@ -70,6 +71,12 @@ public class News extends AbstractJpaEntity<News, UuidIdentifier> implements Sil
   @Size(min = 1)
   @NotNull
   private String publicationId;
+  
+  @Column
+  private Date publishDate;
+  
+  @Column
+  private String publishedBy;
   
   protected News() {
     
@@ -274,6 +281,29 @@ public class News extends AbstractJpaEntity<News, UuidIdentifier> implements Sil
   
   public String getPermalink() {
     return URLManager.getSimpleURL(URLManager.URL_PUBLI, getPublicationId());
+  }
+
+  public void setPublishDate(Date publishDate) {
+    this.publishDate = publishDate;
+  }
+
+  public Date getPublishDate() {
+    return publishDate;
+  }
+
+  public void setPublishedBy(String publishedBy) {
+    this.publishedBy = publishedBy;
+  }
+
+  public String getPublishedBy() {
+    return publishedBy;
+  }
+  
+  public boolean isUpdatedAfterBePublished() {
+    if (getPublishDate() == null) {
+      return false;
+    }
+    return DateUtil.compareTo(getUpdateDate(), getPublishDate(), false) > 0;
   }
   
 }

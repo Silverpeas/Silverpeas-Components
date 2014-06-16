@@ -84,7 +84,7 @@ function update() {
 		<view:operation altText="${updateMsg}" action="javascript:onclick=update()"></view:operation>
 		<fmt:message var="deleteMsg" key="GML.delete"/>
 		<fmt:message var="deleteConfirmMsg" key="supprimerQIConfirmation"/>
-		<view:operation altText="${deleteMsg}" action="javascript:onclick=confirmDelete(${news.id}, '${deleteConfirmMsg}')"/>
+		<view:operation altText="${deleteMsg}" action="javascript:onclick=confirmDelete('${news.id}', '${deleteConfirmMsg}')"/>
 	</c:if>
 	<c:if test="${appSettings.notificationAllowed}">
 		<fmt:message var="notifyMsg" key="GML.notify"/>
@@ -116,7 +116,7 @@ function update() {
 		</p>
 	</div>
                           
-    <viewTags:displayLastUserCRUD createDate="${news.createDate}" createdById="${news.createdBy}" updateDate="${news.updateDate}" updatedById="${news.updaterId}"/>
+    <viewTags:displayLastUserCRUD createDate="${news.createDate}" createdById="${news.createdBy}" updateDate="${news.updateDate}" updatedById="${news.updaterId}" publishDate="${news.publishDate}" publishedById="${news.publishedBy}"/>
     
     <view:pdcClassificationPreview componentId="${news.componentInstanceId}" contentId="${news.publicationId}" />
 </div>

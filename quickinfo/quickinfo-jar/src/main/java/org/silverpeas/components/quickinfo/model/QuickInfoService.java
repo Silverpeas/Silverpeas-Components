@@ -9,11 +9,9 @@ public interface QuickInfoService extends SilverpeasComponentService<News> {
   
   public News create(News news);
   
-  public void publish(String id);
+  public void publish(String id, String userId);
   
-  public void updateAndPublish(News news, List<PdcPosition> positions);
-  
-  public void update(final News news, List<PdcPosition> positions);
+  public void update(final News news, List<PdcPosition> positions, final boolean forcePublishing);
   
   public void removeNews(String id);
   
