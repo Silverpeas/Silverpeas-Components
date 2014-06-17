@@ -53,8 +53,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.subscribe.service.NodeSubscriptionResource;
-import com.silverpeas.thumbnail.service.ThumbnailService;
-import com.silverpeas.thumbnail.service.ThumbnailServiceFactory;
+import com.silverpeas.thumbnail.ThumbnailSettings;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
@@ -83,7 +82,6 @@ import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.beans.admin.ProfileInst;
@@ -154,8 +152,6 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.component.kmelia.InstanceParameters;
 import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.importExport.attachment.AttachmentImportExport;
 import org.silverpeas.search.SearchEngineFactory;
 import org.silverpeas.search.indexEngine.model.IndexManager;
@@ -212,7 +208,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   private String sessionTimeCriteria = null; // Specific Kmax
   private String sortValue = null;
   private String defaultSortValue = "2";
-  private String autoRedirectURL = null;
   private int rang = 0;
   private ResourceLocator publicationSettings = null;
   public final static String TAB_PREVIEW = "tabpreview";
@@ -513,10 +508,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   public boolean isSuppressionOnlyForAdmin() {
     return StringUtil.getBooleanValue(getComponentParameterValue("suppressionOnlyForAdmin"));
-  }
-
-  public boolean isThumbnailMandatory() {
-    return StringUtil.getBooleanValue(getComponentParameterValue("thumbnailMandatory"));
   }
 
   public boolean isFolderSharingEnabled() {
@@ -2108,10 +2099,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     }
   }
 
-  public ThumbnailService getThumbnailService() {
-    return ThumbnailServiceFactory.getThumbnailService();
-  }
-
   /**
    * @return
    */
@@ -3254,46 +3241,12 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
           SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DAVOIR_LE_CHEMIN_COURANT", e);
     }
   }
-
-  public int[] getThumbnailWidthAndHeight() {
-    int widthInt = getLengthFromXMLDescriptor("thumbnailWidthSize");
-    int heightInt = getLengthFromXMLDescriptor("thumbnailHeightSize");
-
-    if (widthInt == -1 && heightInt == -1) {
-      // 2ième chance si nécessaire
-      widthInt = getLengthFromProperties("vignetteWidth");
-      heightInt = getLengthFromProperties("vignetteHeight");
-    }
-
-    return new int[]{widthInt, heightInt};
-  }
-
-  private int getLengthFromProperties(String name) {
-    int length = -1;
-    String lengthFromProperties = getSettings().getString(name);
-    try {
-      length = Integer.parseInt(lengthFromProperties);
-    } catch (NumberFormatException e) {
-      SilverTrace.info("kmelia", "KmeliaSessionController.getLengthFromProperties()",
-          "root.MSG_GEN_PARAM_VALUE", "properties wrong parameter " + name + " = "
-          + lengthFromProperties);
-    }
-    return length;
-  }
-
-  private int getLengthFromXMLDescriptor(String name) {
-    int length = -1;
-    String lengthFromXml = getComponentParameterValue(name);
-    if (StringUtil.isDefined(lengthFromXml)) {
-      try {
-        length = Integer.parseInt(lengthFromXml);
-      } catch (NumberFormatException e) {
-        SilverTrace.info("kmelia", "KmeliaSessionController.getLengthFromXMLDescriptor()",
-            "root.MSG_GEN_PARAM_VALUE", "xml wrong parameter " + name + " = "
-            + lengthFromXml);
-      }
-    }
-    return length;
+  
+  public ThumbnailSettings getThumbnailSettings() {
+    int width = getSettings().getInteger("vignetteWidth", -1);
+    int height = getSettings().getInteger("vignetteHeight", -1);
+    ThumbnailSettings settings = ThumbnailSettings.getInstance(getComponentId(), width, height);
+    return settings;
   }
 
   /**
@@ -3304,24 +3257,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    */
   public String getAxisIdGlossary() {
     return getComponentParameterValue("axisIdGlossary");
-  }
-
-  public List<ComponentInstLight> getGalleries() {
-    List<ComponentInstLight> galleries = null;
-    OrganisationController orgaController = OrganisationControllerFactory.
-        getOrganisationController();
-    String[] compoIds = orgaController.getCompoId("gallery");
-    for (String compoId : compoIds) {
-      if (StringUtil.getBooleanValue(orgaController.getComponentParameterValue("gallery" + compoId,
-          "viewInWysiwyg"))) {
-        if (galleries == null) {
-          galleries = new ArrayList<ComponentInstLight>();
-        }
-        ComponentInstLight gallery = orgaController.getComponentInstLight("gallery" + compoId);
-        galleries.add(gallery);
-      }
-    }
-    return galleries;
   }
 
   public String getRole() {

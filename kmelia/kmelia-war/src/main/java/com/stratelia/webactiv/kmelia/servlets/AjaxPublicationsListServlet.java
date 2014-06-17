@@ -25,6 +25,7 @@ import com.silverpeas.kmelia.KmeliaConstants;
 import com.silverpeas.kmelia.domain.TopicSearch;
 import com.silverpeas.kmelia.search.KmeliaSearchServiceFactory;
 import com.silverpeas.thumbnail.ThumbnailException;
+import com.silverpeas.thumbnail.ThumbnailSettings;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.ForeignPK;
@@ -62,7 +63,6 @@ import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
 import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.rating.RaterRating;
 import org.silverpeas.rating.web.RaterRatingEntity;
 import org.silverpeas.viewer.ViewerFactory;
 
@@ -779,7 +779,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
   void displayThumbnail(PublicationDetail pub, KmeliaSessionController ksc,
       ResourceLocator publicationSettings, Writer out) throws IOException, NumberFormatException,
       ThumbnailException {
-    int[] defaultSizes = ksc.getThumbnailWidthAndHeight();
+    ThumbnailSettings thumbnailSettings = ksc.getThumbnailSettings();
     String vignette_url;
     String size = null;
     if (pub.getImage().startsWith("/")) {
@@ -790,16 +790,14 @@ public class AjaxPublicationsListServlet extends HttpServlet {
           getComponentName(),
           "vignette", pub.getImage(), pub.getImageMimeType(),
           publicationSettings.getString("imagesSubDirectory"));
-      String height = "";
-      String width = "";
       if (!StringUtil.isDefined(pub.getThumbnail().getCropFileName())) {
-        // thumbnail is not cropable, process sizes
+        // thumbnail is not cropped, process sizes
         String[] computedSize = new String[2];
         File image = getThumbnail(pub, publicationSettings);
-        if (defaultSizes[0] != -1) {
-          computedSize = ImageUtil.getWidthAndHeightByWidth(image, defaultSizes[0]);
-        } else if (defaultSizes[1] != -1) {
-          computedSize = ImageUtil.getWidthAndHeightByHeight(image, defaultSizes[1]);
+        if (thumbnailSettings.getWidth() != -1) {
+          computedSize = ImageUtil.getWidthAndHeightByWidth(image, thumbnailSettings.getWidth());
+        } else if (thumbnailSettings.getHeight() != -1) {
+          computedSize = ImageUtil.getWidthAndHeightByHeight(image, thumbnailSettings.getHeight());
         }
         if (StringUtil.isDefined(computedSize[0]) && StringUtil.isDefined(computedSize[1])) {
           size = computedSize[0] + "x" + computedSize[1];
