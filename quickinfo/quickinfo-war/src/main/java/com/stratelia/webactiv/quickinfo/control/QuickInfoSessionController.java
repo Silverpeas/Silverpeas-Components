@@ -214,25 +214,12 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
   }
   
   public ThumbnailSettings getThumbnailSettings() {
-    ThumbnailSettings settings = new ThumbnailSettings();
-    settings.setMandatory(StringUtil.getBooleanValue(getComponentParameterValue("thumbnailMandatory")));
-    setThumbnailDimensions(settings);
+    int width = getSettings().getInteger("thumbnail.width", 200);
+    int height = getSettings().getInteger("thumbnail.height", 200);
+    ThumbnailSettings settings = ThumbnailSettings.getInstance(getComponentId(), width, height);
     return settings;
   }
-  
-  public void setThumbnailDimensions(ThumbnailSettings settings) {
-    int width = getInt(getComponentParameterValue("thumbnailWidthSize"));
-    int height = getInt(getComponentParameterValue("thumbnailHeightSize"));
-
-    if (width == -1 && height == -1) {
-      // get global settings if undefined on instance level
-      width = getSettings().getInteger("thumbnail.width", 200);
-      height = getSettings().getInteger("thumbnail.height", -1);
-    }
-    settings.setWidth(width);
-    settings.setHeight(height);
-  }
-  
+    
   public Boolean isSubscriberUser() {
     Boolean subscriber = null;
     if (!getUserDetail().isAccessGuest()) {
@@ -262,13 +249,6 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     sel.setSelectionUsersGroups(sug);
 
     return AlertUser.getAlertUserURL();
-  }
-  
-  private int getInt(String str) {
-    if (StringUtil.isInteger(str)) {
-      return Integer.parseInt(str);
-    }
-    return -1;
   }
 
   private List<News> sortByDateDesc(List<News> listOfNews) {
