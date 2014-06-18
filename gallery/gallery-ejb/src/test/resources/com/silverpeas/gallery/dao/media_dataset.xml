@@ -136,4 +136,30 @@
   <SC_Gallery_Path mediaId="stream_1" instanceId="instanceId_A" nodeId="2"/>
   <SC_Gallery_Path mediaId="stream_2" instanceId="instanceId_A" nodeId="1"/>
   <SC_Gallery_Path mediaId="stream_9" instanceId="instanceId_Z" nodeId="2"/>
+
+  <!-- ORDERS -->
+  <SC_Gallery_Order orderId="200" userId="writerUserId" instanceId="instanceId_A"
+                    createDate="2014-06-01 16:38:52.253" processDate="[NULL]"
+                    processUser="[NULL]"/>
+  <SC_Gallery_Order orderId="201" userId="writerUserId" instanceId="instanceId_A"
+                    createDate="2014-06-01 16:38:52.253" processDate="2014-06-30 12:59:59.999"
+                    processUser="adminUserId"/>
+  <SC_Gallery_Order orderId="202" userId="writerUserId" instanceId="instanceId_Z"
+                    createDate="2014-06-01 16:38:52.253" processDate="2014-06-30 12:59:59.999"
+                    processUser="adminUserId"/>
+
+  <SC_Gallery_OrderDetail orderId="200" mediaId="1" instanceId="instanceId_A"
+                          downloadDate="[NULL]" downloadDecision="[NULL]"/>
+  <SC_Gallery_OrderDetail orderId="200" mediaId="2" instanceId="instanceId_A"
+                          downloadDate="[NULL]" downloadDecision="[NULL]"/>
+
+  <SC_Gallery_OrderDetail orderId="201" mediaId="1" instanceId="instanceId_A"
+                          downloadDate="[NULL]" downloadDecision="[NULL]"/>
+  <SC_Gallery_OrderDetail orderId="201" mediaId="v_2" instanceId="instanceId_A"
+                          downloadDate="2014-12-31 12:59:59.999" downloadDecision="T"/>
+
+  <SC_Gallery_OrderDetail orderId="202" mediaId="3" instanceId="instanceId_Z"
+                          downloadDate="[NULL]" downloadDecision="[NULL]"/>
+  <SC_Gallery_OrderDetail orderId="202" mediaId="4" instanceId="instanceId_Z"
+                          downloadDate="[NULL]" downloadDecision="[NULL]"/>
 </dataset>

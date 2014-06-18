@@ -32,20 +32,17 @@ import com.silverpeas.gallery.model.Photo;
 import com.silverpeas.gallery.model.Sound;
 import com.silverpeas.gallery.model.Streaming;
 import com.silverpeas.gallery.model.Video;
-import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import org.apache.commons.lang3.time.DateUtils;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
 import org.junit.Test;
-import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.date.Period;
 import org.silverpeas.persistence.repository.OperationContext;
 
 import java.sql.Connection;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -54,64 +51,11 @@ import static com.silverpeas.gallery.model.MediaCriteria.QUERY_ORDER_BY.*;
 import static com.silverpeas.gallery.model.MediaCriteria.VISIBILITY.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.when;
 
 /**
  * This class of unit tests has been written during Entity and SGBD model migration.
  */
 public class MediaDaoTest extends BaseGalleryTest {
-
-  private final static String INSTANCE_A = "instanceId_A";
-  private final static Date TODAY = java.sql.Date.valueOf("2014-03-01");
-  private final static Date CREATE_DATE = Timestamp.valueOf("2014-06-01 16:38:52.253");
-  private final static Date LAST_UPDATE_DATE = Timestamp.valueOf("2014-06-03 11:20:42.637");
-
-  private final static int MEDIA_ROW_COUNT = 12;
-  private final static int MEDIA_INTERNAL_ROW_COUNT = 9;
-  private final static int MEDIA_PHOTO_ROW_COUNT = 3;
-  private final static int MEDIA_VIDEO_ROW_COUNT = 3;
-  private final static int MEDIA_SOUND_ROW_COUNT = 3;
-  private final static int MEDIA_STREAMING_ROW_COUNT = 3;
-  private final static int MEDIA_PATH_ROW_COUNT = 13;
-
-  private UserDetail adminAccessUser;
-  private UserDetail publisherUser;
-  private UserDetail writerUser;
-
-  @Override
-  public String[] getApplicationContextPath() {
-    return new String[]{"/spring-media-embbed-datasource.xml"};
-  }
-
-  @Override
-  public String getDataSetPath() {
-    return "com/silverpeas/gallery/dao/media_dataset.xml";
-  }
-
-  @Override
-  public void setUp() throws Exception {
-    super.setUp();
-    verifyDataBeforeTest();
-
-    adminAccessUser = new UserDetail();
-    adminAccessUser.setId("adminUserId");
-    adminAccessUser.setAccessLevel(UserAccessLevel.ADMINISTRATOR);
-    publisherUser = new UserDetail();
-    publisherUser.setId("publisherUserId");
-    writerUser = new UserDetail();
-    writerUser.setId("writerUserId");
-
-    when(getOrganisationControllerMock().getUserDetail(adminAccessUser.getId()))
-        .thenReturn(adminAccessUser);
-    when(getOrganisationControllerMock().getUserDetail(publisherUser.getId()))
-        .thenReturn(publisherUser);
-    when(getOrganisationControllerMock().getUserDetail(writerUser.getId())).thenReturn(writerUser);
-
-    when(getOrganisationControllerMock().getUserProfiles(publisherUser.getId(), INSTANCE_A))
-        .thenReturn(new String[]{SilverpeasRole.reader.name(), SilverpeasRole.publisher.name()});
-    when(getOrganisationControllerMock().getUserProfiles(writerUser.getId(), INSTANCE_A))
-        .thenReturn(new String[]{SilverpeasRole.reader.name(), SilverpeasRole.writer.name()});
-  }
 
   @Test
   public void getAllMedia() throws Exception {
@@ -167,8 +111,8 @@ public class MediaDaoTest extends BaseGalleryTest {
     performDAOTest(new DAOTest() {
       @Override
       public void test(final Connection connection) throws Exception {
-        List<Media> media = MediaDAO.findByCriteria(connection,
-            defaultMediaCriteria().mediaTypeIsOneOf(MediaType.Photo));
+        List<Media> media = MediaDAO
+            .findByCriteria(connection, defaultMediaCriteria().mediaTypeIsOneOf(MediaType.Photo));
         assertThat(media, hasSize(2));
         assertMediaType(media, MediaType.Photo, Photo.class);
       }
@@ -180,8 +124,8 @@ public class MediaDaoTest extends BaseGalleryTest {
     performDAOTest(new DAOTest() {
       @Override
       public void test(final Connection connection) throws Exception {
-        List<Media> media = MediaDAO.findByCriteria(connection,
-            defaultMediaCriteria().mediaTypeIsOneOf(MediaType.Video));
+        List<Media> media = MediaDAO
+            .findByCriteria(connection, defaultMediaCriteria().mediaTypeIsOneOf(MediaType.Video));
         assertThat(media, hasSize(2));
         assertMediaType(media, MediaType.Video, Video.class);
       }
@@ -205,8 +149,8 @@ public class MediaDaoTest extends BaseGalleryTest {
     performDAOTest(new DAOTest() {
       @Override
       public void test(final Connection connection) throws Exception {
-        List<Media> media = MediaDAO.findByCriteria(connection,
-            defaultMediaCriteria().mediaTypeIsOneOf(MediaType.Sound));
+        List<Media> media = MediaDAO
+            .findByCriteria(connection, defaultMediaCriteria().mediaTypeIsOneOf(MediaType.Sound));
         assertThat(media, hasSize(2));
         assertMediaType(media, MediaType.Sound, Sound.class);
       }
@@ -653,7 +597,8 @@ public class MediaDaoTest extends BaseGalleryTest {
         assertMediaIdentifiers(media, false, "1", "2", "v_1", "v_2", "s_1", "s_2", "stream_1",
             "stream_2");
 
-        media = MediaDAO.findByCriteria(connection, defaultMediaCriteria().orderedBy(DIMENSION_ASC));
+        media =
+            MediaDAO.findByCriteria(connection, defaultMediaCriteria().orderedBy(DIMENSION_ASC));
         assertThat(media, hasSize(8));
         int index = 0;
         assertThat(media.get(index++).getId(), is("2"));
@@ -662,8 +607,8 @@ public class MediaDaoTest extends BaseGalleryTest {
         assertThat(media.get(index++).getId(), is("v_1"));
         assertThat(index, is(4));
 
-        media = MediaDAO
-            .findByCriteria(connection, defaultMediaCriteria().orderedBy(DIMENSION_DESC));
+        media =
+            MediaDAO.findByCriteria(connection, defaultMediaCriteria().orderedBy(DIMENSION_DESC));
         assertThat(media, hasSize(8));
         index = 0;
         assertThat(media.get(index++).getId(), is("v_1"));
@@ -1781,26 +1726,5 @@ public class MediaDaoTest extends BaseGalleryTest {
     } else {
       assertThat(identifiers, containsInAnyOrder(ids));
     }
-  }
-
-  /**
-   * Verifying the data before a test.
-   */
-  private void verifyDataBeforeTest() throws Exception {
-    IDataSet actualDataSet = getActualDataSet();
-    ITable mediaTable = actualDataSet.getTable("SC_Gallery_Media");
-    assertThat(mediaTable.getRowCount(), is(MEDIA_ROW_COUNT));
-    ITable internalTable = actualDataSet.getTable("SC_Gallery_Internal");
-    assertThat(internalTable.getRowCount(), is(MEDIA_INTERNAL_ROW_COUNT));
-    ITable photoTable = actualDataSet.getTable("SC_Gallery_Photo");
-    assertThat(photoTable.getRowCount(), is(MEDIA_PHOTO_ROW_COUNT));
-    ITable videoTable = actualDataSet.getTable("SC_Gallery_Video");
-    assertThat(videoTable.getRowCount(), is(MEDIA_VIDEO_ROW_COUNT));
-    ITable soundTable = actualDataSet.getTable("SC_Gallery_Sound");
-    assertThat(soundTable.getRowCount(), is(MEDIA_SOUND_ROW_COUNT));
-    ITable streamingTable = actualDataSet.getTable("SC_Gallery_Streaming");
-    assertThat(streamingTable.getRowCount(), is(MEDIA_STREAMING_ROW_COUNT));
-    ITable pathTable = actualDataSet.getTable("SC_Gallery_Path");
-    assertThat(pathTable.getRowCount(), is(MEDIA_PATH_ROW_COUNT));
   }
 }

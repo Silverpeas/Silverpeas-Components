@@ -56,14 +56,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import static com.stratelia.webactiv.util.DBUtil.*;
 
 public class MediaDAO {
-
-  private static String nullBeginDate = "0000/00/00";
-  private static String nullEndDate = "9999/99/99";
 
   private final static String SELECT_INTERNAL_MEDIA_PREFIX =
       "select I.mediaId, I.fileName, I.fileSize, I.fileMimeType, I.download, I.beginDownloadDate," +
@@ -96,66 +92,60 @@ public class MediaDAO {
 
     Pair<String, List<Object>> queryBuild = queryBuilder.result();
 
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    List<Media> media = new ArrayList<Media>();
-    Map<String, Photo> photos = new HashMap<String, Photo>();
-    Map<String, Video> videos = new HashMap<String, Video>();
-    Map<String, Sound> sounds = new HashMap<String, Sound>();
-    Map<String, Streaming> streamings = new HashMap<String, Streaming>();
-    try {
+    final Map<String, Photo> photos = new HashMap<String, Photo>();
+    final Map<String, Video> videos = new HashMap<String, Video>();
+    final Map<String, Sound> sounds = new HashMap<String, Sound>();
+    final Map<String, Streaming> streamings = new HashMap<String, Streaming>();
 
-      prepStmt = con.prepareStatement(queryBuild.getLeft());
-      DBUtil.setParameters(prepStmt, queryBuild.getRight());
-      rs = prepStmt.executeQuery();
-      while (rs.next()) {
-        String mediaId = rs.getString(1);
-        MediaType mediaType = MediaType.from(rs.getString(2));
-        String instanceId = rs.getString(3);
-        final Media currentMedia;
-        switch (mediaType) {
-          case Photo:
-            currentMedia = new Photo();
-            photos.put(mediaId, (Photo) currentMedia);
-            break;
-          case Video:
-            currentMedia = new Video();
-            videos.put(mediaId, (Video) currentMedia);
-            break;
-          case Sound:
-            currentMedia = new Sound();
-            sounds.put(mediaId, (Sound) currentMedia);
-            break;
-          case Streaming:
-            currentMedia = new Streaming();
-            streamings.put(mediaId, (Streaming) currentMedia);
-            break;
-          default:
-            currentMedia = null;
-        }
-        if (currentMedia == null) {
-          // Unknown media ...
-          SilverTrace.warn(GalleryComponentSettings.COMPONENT_NAME, "MediaDAO.findByCriteria()",
-              "root.MSG_GEN_PARAM_VALUE", "unknown media type: " + mediaType);
-          continue;
-        }
-        media.add(currentMedia);
+    List<Media> media = select(con, queryBuild.getLeft(), queryBuild.getRight(),
+        new SelectResultRowProcessor<Media>() {
+          @Override
+          protected Media read(final ResultSet rs) throws SQLException {
+            String mediaId = rs.getString(1);
+            MediaType mediaType = MediaType.from(rs.getString(2));
+            String instanceId = rs.getString(3);
+            final Media currentMedia;
+            switch (mediaType) {
+              case Photo:
+                currentMedia = new Photo();
+                photos.put(mediaId, (Photo) currentMedia);
+                break;
+              case Video:
+                currentMedia = new Video();
+                videos.put(mediaId, (Video) currentMedia);
+                break;
+              case Sound:
+                currentMedia = new Sound();
+                sounds.put(mediaId, (Sound) currentMedia);
+                break;
+              case Streaming:
+                currentMedia = new Streaming();
+                streamings.put(mediaId, (Streaming) currentMedia);
+                break;
+              default:
+                currentMedia = null;
+            }
+            if (currentMedia == null) {
+              // Unknown media ...
+              SilverTrace.warn(GalleryComponentSettings.COMPONENT_NAME, "MediaDAO.findByCriteria()",
+                  "root.MSG_GEN_PARAM_VALUE", "unknown media type: " + mediaType);
+              return null;
+            }
 
-        currentMedia.setMediaPK(new MediaPK(mediaId, instanceId));
-        currentMedia.setTitle(rs.getString(4));
-        currentMedia.setDescription(rs.getString(5));
-        currentMedia.setAuthor(rs.getString(6));
-        currentMedia.setKeyWord(rs.getString(7));
-        currentMedia.setVisibilityPeriod(
-            Period.check(Period.from(new Date(rs.getLong(8)), new Date(rs.getLong(9)))));
-        currentMedia.setCreationDate(rs.getTimestamp(10));
-        currentMedia.setCreatorId(rs.getString(11));
-        currentMedia.setLastUpdateDate(rs.getTimestamp(12));
-        currentMedia.setLastUpdatedBy(rs.getString(13));
-      }
-    } finally {
-      DBUtil.close(rs, prepStmt);
-    }
+            currentMedia.setMediaPK(new MediaPK(mediaId, instanceId));
+            currentMedia.setTitle(rs.getString(4));
+            currentMedia.setDescription(rs.getString(5));
+            currentMedia.setAuthor(rs.getString(6));
+            currentMedia.setKeyWord(rs.getString(7));
+            currentMedia.setVisibilityPeriod(
+                Period.check(Period.from(new Date(rs.getLong(8)), new Date(rs.getLong(9)))));
+            currentMedia.setCreationDate(rs.getTimestamp(10));
+            currentMedia.setCreatorId(rs.getString(11));
+            currentMedia.setLastUpdateDate(rs.getTimestamp(12));
+            currentMedia.setLastUpdatedBy(rs.getString(13));
+            return currentMedia;
+          }
+        });
 
     decoratePhotos(con, media, photos);
     decorateVideos(con, media, videos);
@@ -385,24 +375,6 @@ public class MediaDAO {
   }
 
   /**
-   * Gets from an media list result the unique media expected.
-   * @param media media list result from a query.
-   * @return the unique media result.
-   * @throws IllegalArgumentException if it exists more than one media in the specified
-   * result list.
-   */
-  private static Media unique(List<Media> media) {
-    if (media.isEmpty()) {
-      return null;
-    }
-    if (media.size() == 1) {
-      return media.get(0);
-    }
-    throw new IllegalArgumentException(
-        "wanted to get a unique media from a list that contains more than one...");
-  }
-
-  /**
    * Saves (insert or update) a media.
    * @param con
    * @param context
@@ -423,7 +395,7 @@ public class MediaDAO {
 
     // A new ID
     if (isInsert) {
-      uuid = UUID.randomUUID().toString();
+      uuid = getUniqueId();
       media.getMediaPK().setId(uuid);
     }
 

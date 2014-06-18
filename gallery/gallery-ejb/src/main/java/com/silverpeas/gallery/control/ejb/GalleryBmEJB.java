@@ -30,6 +30,7 @@ import com.silverpeas.gallery.delegate.PhotoDataCreateDelegate;
 import com.silverpeas.gallery.delegate.PhotoDataUpdateDelegate;
 import com.silverpeas.gallery.model.AlbumDetail;
 import com.silverpeas.gallery.model.GalleryRuntimeException;
+import com.silverpeas.gallery.model.MediaOrderCriteria;
 import com.silverpeas.gallery.model.MediaPK;
 import com.silverpeas.gallery.model.MetaData;
 import com.silverpeas.gallery.model.Order;
@@ -57,6 +58,18 @@ import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.dao.NodeDAO;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import org.silverpeas.process.ProcessFactory;
+import org.silverpeas.process.util.ProcessList;
+import org.silverpeas.search.SearchEngineFactory;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -67,17 +80,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import org.silverpeas.process.ProcessFactory;
-import org.silverpeas.process.util.ProcessList;
-import org.silverpeas.search.SearchEngineFactory;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
-import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
-import org.silverpeas.search.searchEngine.model.QueryDescription;
 
 @Stateless(name = "Gallery", description = "Stateless session bean to manage an image gallery")
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
@@ -85,7 +87,6 @@ public class GalleryBmEJB implements GalleryBm {
 
   @EJB
   private NodeBm nodeBm;
-  private final OrderDAO orderDao = new OrderDAO();
 
   public GalleryBmEJB() {
   }
@@ -729,7 +730,7 @@ public class GalleryBmEJB implements GalleryBm {
       final String componentId) {
     final Connection con = initCon();
     try {
-      return orderDao.createOrder(con, basket, userId, componentId);
+      return OrderDAO.createOrder(con, basket, userId, componentId);
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.createOrder()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_REQUEST_NOT_CREATE", e);
@@ -742,7 +743,8 @@ public class GalleryBmEJB implements GalleryBm {
   public List<Order> getAllOrders(final String userId, final String instanceId) {
     final Connection con = initCon();
     try {
-      return orderDao.getAllOrders(con, userId, instanceId);
+      return OrderDAO.findByCriteria(con,
+          MediaOrderCriteria.fromComponentInstanceId(instanceId).withOrdererId(userId));
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getAllOrders()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_REQUEST_LIST_NOT_EXIST", e);
@@ -781,7 +783,8 @@ public class GalleryBmEJB implements GalleryBm {
   public Order getOrder(final String orderId, final String instanceId) {
     final Connection con = initCon();
     try {
-      return orderDao.getOrder(con, orderId, instanceId);
+      return OrderDAO.getByCriteria(con,
+          MediaOrderCriteria.fromComponentInstanceId(instanceId).identifierIsOneOf(orderId));
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getOrder()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_ORDER_NOT_EXIST", e);
@@ -791,10 +794,11 @@ public class GalleryBmEJB implements GalleryBm {
   }
 
   @Override
-  public Collection<Order> getAllOrderToDelete(final int nbDays) {
+  public List<Order> getAllOrderToDelete(final int nbDays) {
     final Connection con = initCon();
     try {
-      return orderDao.getAllOrdersToDelete(con, nbDays);
+      return OrderDAO
+          .findByCriteria(con, MediaOrderCriteria.fromNbDaysAfterThatDeleteAnOrder(nbDays));
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getOrder()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_ORDER_NOT_EXIST", e);
@@ -804,26 +808,15 @@ public class GalleryBmEJB implements GalleryBm {
   }
 
   @Override
-  public void deleteOrder(final String orderId) {
+  public void deleteOrders(final List<Order> orders) {
     final Connection con = initCon();
     try {
-      orderDao.deleteOrder(con, orderId);
+      for (Order order : orders) {
+        OrderDAO.deleteOrder(con, order);
+      }
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.deleteOrder()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_ORDER_NOT_EXIST", e);
-    } finally {
-      DBUtil.close(con);
-    }
-  }
-
-  @Override
-  public Date getDownloadDate(final String orderId, final String photoId) {
-    final Connection con = initCon();
-    try {
-      return OrderDAO.getDownloadDate(con, orderId, photoId);
-    } catch (final Exception e) {
-      throw new GalleryRuntimeException("GalleryBmEJB.photoDateDownload()",
-          SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
     } finally {
       DBUtil.close(con);
     }
@@ -834,30 +827,6 @@ public class GalleryBmEJB implements GalleryBm {
   }
 
   /**
-   * @param userId ID of user
-   * @see PhotoDetail
-   * @return the list of photos that the user has created or updated
-   * @throws SQLException, ParseException
-   */
-  public List<PhotoDetail> getAllPhotosbyUserid(final String userId) {
-    final Connection con = initCon();
-    try {
-      final List<String> photoIds = PhotoDAO.getAllPhotosIDbyUserid(con, userId);
-      final List<PhotoDetail> photos = new ArrayList<PhotoDetail>(photoIds.size());
-      for (final String id : photoIds) {
-        photos.add(PhotoDAO.getPhoto(con, Integer.parseInt(id)));
-      }
-      return photos;
-    } catch (final SQLException e) {
-      throw new GalleryRuntimeException("GalleryBmEJB.getAllPhotobyUserid()",
-          SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
-    } finally {
-      DBUtil.close(con);
-    }
-
-  }
-
-  /**
    * get my list of SocialInformationGallery according to options and number of Item and the first
    * Index
    *
@@ -865,10 +834,9 @@ public class GalleryBmEJB implements GalleryBm {
    * @param : String myId
    * @param :List<String> myContactsIds
    * @param :List<String> options list of Available Components name
-   * @param int numberOfElement, int firstIndex
    */
   @Override
-  public List<SocialInformation> getAllPhotosByUserid(final String userId, final Date begin,
+  public List<SocialInformation> getAllPhotosByUserId(final String userId, final Date begin,
       final Date end) {
     final Connection con = initCon();
     try {
@@ -889,7 +857,6 @@ public class GalleryBmEJB implements GalleryBm {
    * @param : String myId
    * @param :List<String> myContactsIds
    * @param :List<String> options list of Available Components name
-   * @param int numberOfElement, int firstIndex
    */
   @Override
   public List<SocialInformation> getSocialInformationsListOfMyContacts(

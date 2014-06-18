@@ -594,38 +594,6 @@ public class PhotoDAO {
   }
 
   /**
-   * @param userId ID of user
-   * @return
-   * @throws SQLException
-   * @throws ParseException
-   **/
-  public static List<String> getAllPhotosIDbyUserid(Connection con, String userId) throws
-      SQLException {
-    List<String> listPhoto = new ArrayList<String>();
-    String query =
-        "(SELECT creationdate AS dateinformation, photoId,'new'as type FROM SC_Gallery_Photo  WHERE creatorid = ?) "
-            + "UNION (SELECT updatedate AS dateinformation, photoId ,'update'as type FROM sc_gallery_photo  WHERE  updateid = ? ) "
-            + "ORDER BY dateinformation DESC, photoId DESC ";
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    try {
-      prepStmt = con.prepareStatement(query);
-      prepStmt.setString(1, userId);
-      prepStmt.setString(2, userId);
-      rs = prepStmt.executeQuery();
-      while (rs.next()) {
-        listPhoto.add(rs.getString("photoId"));
-      }
-    } finally {
-      // fermeture
-      DBUtil.close(rs, prepStmt);
-    }
-
-    return listPhoto;
-
-  }
-
-  /**
    * get my SocialInformationGallery according to the type of data base used(PostgreSQL,Oracle,MMS)
    * .
    * @param con

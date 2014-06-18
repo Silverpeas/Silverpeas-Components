@@ -1018,9 +1018,8 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     // demande
     // 1. création du message
     Order order = getOrder(orderId);
-    String user = getOrganisationController().getUserDetail(Integer.toString(order.
-        getProcessUserId()))
-        .getDisplayedName();
+    String user = getOrganisationController().getUserDetail(order.
+        getProcessUserId()).getDisplayedName();
 
     ResourceLocator message = new ResourceLocator("org.silverpeas.gallery.multilang.galleryBundle",
         "fr");
@@ -1097,7 +1096,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     List<OrderRow> rows = order.getRows();
     List<OrderRow> newRows = new ArrayList<OrderRow>();
     for (OrderRow row : rows) {
-      String photoId = Integer.toString(row.getPhotoId());
+      String photoId = row.getMediaId();
       PhotoDetail photo = getPhoto(photoId);
       row.setPhoto(photo);
       newRows.add(row);
@@ -1126,7 +1125,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     Order order = getOrder(orderId);
     List<OrderRow> rows = order.getRows();
     for (OrderRow row : rows) {
-      if (row.getPhotoId() == Integer.parseInt(photoId)) {
+      if (row.getMediaId().equals(photoId)) {
         // on est sur la bonne ligne, mettre à jour
         row.setDownloadDecision("T");
         getGalleryBm().updateOrderRow(row);
@@ -1139,9 +1138,9 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     Order order = getOrder(orderId);
     List<OrderRow> rows = order.getRows();
     for (OrderRow row : rows) {
-      if (row.getPhotoId() == Integer.parseInt(photoId)) {
+      if (row.getMediaId().equals(photoId)) {
         // on est sur la bonne ligne
-        PhotoDetail photo = getPhoto(Integer.toString(row.getPhotoId()));
+        PhotoDetail photo = getPhoto(row.getMediaId());
         String nomRep = GalleryComponentSettings.getMediaFolderNamePrefix() + photoId;
         String download = row.getDownloadDecision();
 
@@ -1170,7 +1169,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   }
 
   public boolean isAccessAuthorized(String orderId) {
-    return Integer.toString(getOrder(orderId).getUserId()).equals(getUserId());
+    return getOrder(orderId).getUserId().equals(getUserId());
   }
 
   public List<MetaData> getMetaDataKeys() {

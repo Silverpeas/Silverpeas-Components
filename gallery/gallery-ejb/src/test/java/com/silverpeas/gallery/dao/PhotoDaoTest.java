@@ -46,8 +46,18 @@ public class PhotoDaoTest extends BaseGalleryTest {
   private static final String GALLERY2 = "gallery27";
 
   @Override
+  public String[] getApplicationContextPath() {
+    return new String[]{"/spring-gallery-embbed-datasource.xml"};
+  }
+
+  @Override
   public String getDataSetPath() {
     return "com/silverpeas/gallery/dao/photo_dataset.xml";
+  }
+
+  @Override
+  protected void verifyDataBeforeTest() throws Exception {
+    // Skip
   }
 
   @Test
@@ -77,21 +87,6 @@ public class PhotoDaoTest extends BaseGalleryTest {
       assertThat(photos.get(3), equalTo(socialCiel));
     } finally {
       connexion.close();
-    }
-  }
-
-  @Test
-  public void testGetAllPhotosIDbyUserid() throws Exception {
-    Connection con = getConnection();
-    final String creatorId = "0";
-    List<String> expectedItems = Arrays.asList("0", "2", "3");
-    try {
-      List<String> photos = PhotoDAO.getAllPhotosIDbyUserid(con, creatorId);
-      for (String expectedItem : expectedItems) {
-        assertThat(photos, hasItem(expectedItem));
-      }
-    } finally {
-      con.close();
     }
   }
 

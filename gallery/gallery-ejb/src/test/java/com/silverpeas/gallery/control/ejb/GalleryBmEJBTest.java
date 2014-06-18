@@ -21,39 +21,30 @@
  */
 package com.silverpeas.gallery.control.ejb;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import com.silverpeas.gallery.BaseGalleryTest;
+import com.silverpeas.gallery.model.AlbumDetail;
+import com.silverpeas.gallery.model.Order;
+import com.stratelia.webactiv.util.node.control.NodeBm;
+import com.stratelia.webactiv.util.node.model.NodeDetail;
+import com.stratelia.webactiv.util.node.model.NodePK;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import com.silverpeas.gallery.BaseGalleryTest;
-import com.silverpeas.gallery.model.AlbumDetail;
-import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
-import com.stratelia.webactiv.util.node.model.NodePK;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.when;
 
 public class GalleryBmEJBTest extends BaseGalleryTest {
 
   private GalleryBmEJBMock galleryBmEJB;
   private NodeBm nodeBm;
-  private static final String GALLERY_ID = "gallery26";
   private static final String ALBUM_NAME = "Nature";
-
-  @Override
-  public String getDataSetPath() {
-    return "com/silverpeas/gallery/dao/photo_dataset.xml";
-  }
 
   @Before
   public void prepareGalleryBmEJB() throws Exception {
@@ -76,7 +67,6 @@ public class GalleryBmEJBTest extends BaseGalleryTest {
     nodeDetail.setChildrenDetails(nodes);
 
     nodeBm = Mockito.mock(NodeBm.class);
-    //when(nodeBm.getDetail(Mockito.any(NodePK.class))).thenReturn(nodeDetail);
 
     when(nodeBm.getDetail(Mockito.any(NodePK.class))).thenAnswer( new Answer<NodeDetail>() {
       @Override
@@ -101,7 +91,7 @@ public class GalleryBmEJBTest extends BaseGalleryTest {
 
   @Test
   public void testGetRootAlbum() {
-    NodePK nodePK = new NodePK("0", GALLERY_ID);
+    NodePK nodePK = new NodePK("0", INSTANCE_A);
     AlbumDetail album = galleryBmEJB.getAlbum(nodePK, false);
     assertThat(album, notNullValue());
     assertThat(album.getChildrenDetails(), hasSize(2));
@@ -111,10 +101,50 @@ public class GalleryBmEJBTest extends BaseGalleryTest {
 
   @Test
   public void testGetAlbumWithPhotos() {
-    NodePK nodePK = new NodePK("1", GALLERY_ID);
+    NodePK nodePK = new NodePK("1", INSTANCE_A);
     AlbumDetail album = galleryBmEJB.getAlbum(nodePK, false);
     assertThat(album.getName(), equalTo(ALBUM_NAME));
     assertThat(album.getPhotos(), hasSize(3));
   }
 
+  @Test
+  public void testGetAllOrders() {
+    List<Order> orders = galleryBmEJB.getAllOrders(writerUser.getId(), INSTANCE_A);
+    assertThat(orders, hasSize(2));
+
+    orders = galleryBmEJB.getAllOrders(adminAccessUser.getId(), INSTANCE_A);
+    assertThat(orders, hasSize(0));
+
+    orders = galleryBmEJB.getAllOrders(writerUser.getId(), "otherInstanceId");
+    assertThat(orders, hasSize(0));
+  }
+
+  @Test
+  public void testGetOrder() {
+    Order order = galleryBmEJB.getOrder("201", INSTANCE_A);
+    assertThat(order, notNullValue());
+
+    order = galleryBmEJB.getOrder("201", "otherInstanceId");
+    assertThat(order, nullValue());
+  }
+
+  @Test
+  public void testDeleteOrders() {
+    List<Order> orders = galleryBmEJB.getAllOrders(writerUser.getId(), INSTANCE_A);
+    assertThat(orders, hasSize(2));
+
+    galleryBmEJB.deleteOrders(orders);
+
+    orders = galleryBmEJB.getAllOrders(writerUser.getId(), INSTANCE_A);
+    assertThat(orders, hasSize(0));
+  }
+
+  @Test
+  public void testGetAllOrderToDelete() {
+    List<Order> orders = galleryBmEJB.getAllOrderToDelete(0);
+    assertThat(orders, hasSize(3));
+
+    orders = galleryBmEJB.getAllOrderToDelete(365000);
+    assertThat(orders, hasSize(0));
+  }
 }

@@ -57,7 +57,7 @@ CREATE TABLE SC_Gallery_Path (
 );
 
 CREATE TABLE SC_Gallery_Order (
-  orderId     INT         NOT NULL,
+  orderId     VARCHAR(40) NOT NULL,
   userId      VARCHAR(40) NOT NULL,
   instanceId  VARCHAR(50) NOT NULL,
   createDate  TIMESTAMP   NOT NULL,
@@ -66,7 +66,7 @@ CREATE TABLE SC_Gallery_Order (
 );
 
 CREATE TABLE SC_Gallery_OrderDetail (
-  orderId          INT         NOT NULL,
+  orderId          VARCHAR(40) NOT NULL,
   mediaId          VARCHAR(40) NOT NULL,
   instanceId       VARCHAR(50) NOT NULL,
   downloadDate     TIMESTAMP   NULL,

@@ -40,7 +40,7 @@ import static com.silverpeas.gallery.model.MediaCriteria.VISIBILITY.BY_DEFAULT;
 import static com.silverpeas.gallery.model.MediaCriteria.VISIBILITY.FORCE_GET_ALL;
 
 /**
- * Class that permits to set media search criteria for media box application.
+ * Class that permits to set media search criteria for media application.
  * @author: Yohann Chastagnier
  */
 public class MediaCriteria {

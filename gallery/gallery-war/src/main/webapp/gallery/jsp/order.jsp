@@ -318,7 +318,7 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
 			{
 				OrderRow row = (OrderRow) itP.next();
 
-				elementIds += "\"DownloadType"+row.getPhotoId()+"\"";
+				elementIds += "\"DownloadType"+row.getMediaId()+"\"";
 				if (itP.hasNext())
 					elementIds += ", ";
 			}
@@ -461,7 +461,7 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
       ArrayLine ligne = arrayPane.addArrayLine();
 
       OrderRow row = (OrderRow) itP.next();
-      photoId = row.getPhotoId();
+      photoId = row.getMediaId();
 
       String download = row.getDownloadDecision();
 
@@ -550,7 +550,7 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
       ArrayLine ligne = arrayPane.addArrayLine();
 
       OrderRow row = (OrderRow) itP.next();
-      photoId = row.getPhotoId();
+      photoId = row.getMediaId();
       String nomRep = GalleryComponentSettings.getMediaFolderNamePrefix() + photoId;
       String name = photoId + extension;
       PhotoDetail photo = row.getPhoto();

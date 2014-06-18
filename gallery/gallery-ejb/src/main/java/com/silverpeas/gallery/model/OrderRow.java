@@ -26,24 +26,24 @@ package com.silverpeas.gallery.model;
 import java.util.Date;
 
 public class OrderRow {
-  private int orderId;
-  private int photoId;
+  private String orderId;
+  private String mediaId;
   private PhotoDetail photo;
   private String instanceId;
   private Date downloadDate;
   private String downloadDecision;
 
-  public OrderRow(int orderId, int photoId, String instanceId) {
+  public OrderRow(String orderId, String mediaId, String instanceId) {
     setOrderId(orderId);
-    setPhotoId(photoId);
+    setMediaId(mediaId);
     setInstanceId(instanceId);
   }
 
-  public int getOrderId() {
+  public String getOrderId() {
     return orderId;
   }
 
-  public void setOrderId(int orderId) {
+  public void setOrderId(String orderId) {
     this.orderId = orderId;
   }
 
@@ -55,12 +55,12 @@ public class OrderRow {
     this.instanceId = instanceId;
   }
 
-  public int getPhotoId() {
-    return photoId;
+  public String getMediaId() {
+    return mediaId;
   }
 
-  public void setPhotoId(int photoId) {
-    this.photoId = photoId;
+  public void setMediaId(String photoId) {
+    this.mediaId = photoId;
   }
 
   public Date getDownloadDate() {

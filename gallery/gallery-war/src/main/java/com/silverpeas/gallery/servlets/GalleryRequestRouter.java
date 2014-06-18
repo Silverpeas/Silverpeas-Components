@@ -73,6 +73,8 @@ import java.util.SortedSet;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 
+import static com.stratelia.webactiv.util.DBUtil.isSqlDefined;
+
 public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionController> {
 
   /**
@@ -1454,8 +1456,8 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
   private Integer getNbOrdersProcess(Collection<Order> orders) {
     int nb = 0;
     for (final Order order : orders) {
-      if (order.getProcessUserId() >= 0) {
-        nb = nb + 1;
+      if (isSqlDefined(order.getProcessUserId())) {
+        nb++;
       }
     }
     return nb;
@@ -1508,12 +1510,12 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
     Order order = gallerySC.getOrder(orderId);
 
     // mettre à jour la date et le user
-    order.setProcessUserId(Integer.parseInt(userId));
+    order.setProcessUserId(userId);
 
     // mettre à jour les lignes
     List<OrderRow> rows = order.getRows();
     for (final OrderRow orderRow : rows) {
-      int photoId = orderRow.getPhotoId();
+      String photoId = orderRow.getMediaId();
       String download = request.getParameter("DownloadType" + photoId);
       orderRow.setDownloadDecision(download);
     }

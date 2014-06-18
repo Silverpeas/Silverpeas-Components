@@ -120,15 +120,13 @@ public interface GalleryBm {
 
   public List<Order> getAllOrders(String userId, String instanceId);
 
-  public Date getDownloadDate(String orderId, String photoId);
-
   public void updateOrderRow(OrderRow row);
 
   public void updateOrder(Order order);
 
-  public Collection<Order> getAllOrderToDelete(int nbDays);
+  public List<Order> getAllOrderToDelete(int nbDays);
 
-  public void deleteOrder(String orderId);
+  public void deleteOrders(List<Order> orders);
 
   /**
    * get my list of SocialInformationGallery according to options and number of Item and the first
@@ -141,7 +139,7 @@ public interface GalleryBm {
    * @return
    * @
    */
-  public List<SocialInformation> getAllPhotosByUserid(String userId, Date begin, Date end);
+  public List<SocialInformation> getAllPhotosByUserId(String userId, Date begin, Date end);
 
   /**
    * get list of SocialInformationGallery of my contacts according to options and number of Item and
