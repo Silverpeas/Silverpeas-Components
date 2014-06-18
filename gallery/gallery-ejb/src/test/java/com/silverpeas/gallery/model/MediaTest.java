@@ -93,7 +93,9 @@ public class MediaTest {
   @Test
   public void justInstancedTest() {
     Media media = new MediaForTest();
-    assertThat(media.getMediaPK(), nullValue());
+    assertThat(media.getMediaPK(), notNullValue());
+    assertThat(media.getMediaPK().getId(), nullValue());
+    assertThat(media.getMediaPK().getInstanceId(), nullValue());
     assertThat(media.getId(), nullValue());
     assertThat(media.getInstanceId(), nullValue());
     assertThat(media.getType(), is(MediaType.Unknown));
@@ -124,7 +126,7 @@ public class MediaTest {
     assertThat(media.isDownloadable(), is(true));
     assertThat(media.getURL(), is("searchResult?Type=Media&Id=null"));
     assertThat(media.getLanguages(), nullValue());
-    assertThat(media.toString(), is("(pk = , name = )"));
+    assertThat(media.toString(), is("(pk = (id = null, instanceId = null), name = )"));
   }
 
   @Test

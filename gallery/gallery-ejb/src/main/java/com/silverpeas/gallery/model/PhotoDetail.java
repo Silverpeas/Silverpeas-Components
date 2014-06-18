@@ -47,6 +47,7 @@ public class PhotoDetail implements SilverContentInterface, Serializable {
 
   public PhotoDetail() {
     photo = new Photo();
+    photo.setMediaPK(null);
   }
 
   public PhotoDetail(Photo photo) {
