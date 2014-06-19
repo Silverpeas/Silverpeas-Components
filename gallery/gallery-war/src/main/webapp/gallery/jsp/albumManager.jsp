@@ -33,7 +33,7 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
-<fmt:message var="mandatoryIconPath" key="gallery.obligatoire" bundle="${icons}"/>
+<fmt:message var="mandatoryIconPath" key="gallery.mandatory" bundle="${icons}"/>
 <c:url var="mandatoryIcon"      value="${mandatoryIconPath}" />
 <c:url var="formCheckingScript" value="/util/javaScript/checkForm.js"/>
 
@@ -41,7 +41,7 @@
 <script type="text/javascript">
   function openGalleryEditor(gallery)
   {
-    var title = "<fmt:message key='gallery.ajoutAlbum'/>";
+    var title = "<fmt:message key='gallery.addAlbum'/>";
     if (gallery) {
       title = "<fmt:message key='gallery.updateAlbum'/> " + gallery.name;
       document.galleryForm.action = "UpdateAlbum";
@@ -58,27 +58,27 @@
       title: title,
       callback: function() {
         var isCorrect = validateGalleryForm();
-        if (isCorrect) 
+        if (isCorrect)
         {
           document.galleryForm.submit();
-          
+
         }
         return isCorrect;
       }
     });
   }
-		
-  function validateGalleryForm() 
+
+  function validateGalleryForm()
   {
     var errorMsg = "";
     var errorNb = 0;
     var name = stripInitialWhitespace(document.galleryForm.Name.value);
-    if (name == "") 
+    if (name == "")
     {
       errorMsg+="  - '<fmt:message key="GML.name"/>' <fmt:message key="GML.MustBeFilled"/>\n";
       errorNb++;
-    } 
-    switch(errorNb) 
+    }
+    switch(errorNb)
     {
       case 0 :
         result = true;
@@ -93,9 +93,9 @@
         window.alert(errorMsg);
         result = false;
         break;
-      } 
+      }
       return result;
-    }	
+    }
 </script>
 
 <div id="galleryEditor" style="display: none">

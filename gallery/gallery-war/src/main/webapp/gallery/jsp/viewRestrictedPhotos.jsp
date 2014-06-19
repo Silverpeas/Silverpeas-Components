@@ -25,7 +25,15 @@
 
 --%>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
+<%-- Set resource bundle --%>
+<fmt:setLocale value="${requestScope.resources.language}"/>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+
 <%@ include file="check.jsp"%>
 
 <%
@@ -242,7 +250,7 @@
 				</td>
 				<td align="right" nowrap><select name="ChoiceSize"
 					onChange="javascript:choiceGoTo(this.selectedIndex);">
-					<option selected><%=resource.getString("gallery.choixTaille")%></option>
+					<option selected><%=resource.getString("gallery.selectSize")%></option>
 					<option>-------------------------------</option>
 					<%
 						String selected = "";
@@ -269,7 +277,7 @@
 					<option value="CreationDateAsc"><%=resource.getString("gallery.dateCreatAsc")%></option>
 					<option value="CreationDateDesc"><%=resource.getString("gallery.dateCreatDesc")%></option>
 					<option value="Title"><%=resource.getString("GML.title")%></option>
-					<option value="Size"><%=resource.getString("gallery.taille")%></option>
+					<option value="Size"><fmt:message key="gallery.dimension"/></option>
 					<option value="Author"><%=resource.getString("GML.author")%></option>
 				</select></td>
 			</tr>
@@ -472,7 +480,7 @@
 			%>
 			<tr>
 				<td class="txtlibform" nowrap><%=resource
-																.getString("gallery.keyWord")%>
+																.getString("gallery.keyword")%>
 				:</td>
 				<td>
 				<%
@@ -533,7 +541,7 @@
 			// pas de photos
 			out.println(board.printBefore());
 			if (isViewNotVisible)
-				out.println("<center>"+ resource.getString("gallery.pasPhoto")+ "</center>");
+				out.println("<center>"+ resource.getString("gallery.empty.data")+ "</center>");
 			else
 				out.println("<center>"+ resource.getString("gallery.noPhotoSearchBegin") + searchKeyWord + " " + resource.getString("gallery.noPhotoSearchEnd")+ "</center>");
 			out.println("<BR/><center>" + returnButton.print()

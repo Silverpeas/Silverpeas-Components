@@ -62,7 +62,7 @@ function sendData()
 	
 	Board board = gef.getBoard();
 	Button validateButton 	= (Button) gef.getFormButton(resource.getString("GML.search"), "javascript:onClick=sendData();", false);
-	Button razButton		= (Button) gef.getFormButton(resource.getString("gallery.raz"), "ClearSearch", false);
+	Button razButton		= (Button) gef.getFormButton(resource.getString("gallery.search.reset"), "ClearSearch", false);
 	
 	out.println(window.printBefore());
     out.println(frame.printBefore());

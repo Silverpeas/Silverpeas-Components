@@ -26,8 +26,15 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
+<%-- Set resource bundle --%>
+<fmt:setLocale value="${requestScope.resources.language}"/>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+
 <%@ include file="check.jsp"%>
 <%
   // recuperation des parametres :
@@ -360,7 +367,7 @@ function CutSelectedPhoto()  {
       displayPath(path, browseBar);
 
       if ("admin".equals(profile) || "publisher".equals(profile)) {
-        operationPane.addOperationOfCreation(resource.getIcon("gallery.addAlbum"), resource.getString("gallery.ajoutSousAlbum"), "javaScript:openGalleryEditor()");
+        operationPane.addOperationOfCreation(resource.getIcon("gallery.addAlbum"), resource.getString("gallery.addSubAlbum"), "javaScript:openGalleryEditor()");
         // modification et suppression de l'album courant
         if ("admin".equals(profile) || ("publisher".equals(profile) && currentAlbum.getCreatorId().equals(userId))) {
           // avec gestion des droits pour les publieurs
@@ -400,7 +407,7 @@ function CutSelectedPhoto()  {
       }
       if ("admin".equals(profile) || "publisher".equals(profile) || "writer".equals(profile)) {
         // possibilite d'ajouter des photos pour les "admin", "publisher" et "writer"
-        operationPane.addOperationOfCreation(resource.getIcon("gallery.addPhoto"), resource.getString("gallery.ajoutPhoto"), "AddPhoto");
+        operationPane.addOperationOfCreation(resource.getIcon("gallery.addPhoto"), resource.getString("gallery.addPhoto"), "AddPhoto");
         operationPane.addLine();
       }
 
@@ -518,9 +525,8 @@ function CutSelectedPhoto()  {
                       out.println(resource.getString("gallery.photos"));
                     }%>
                 </td>
-                <td align="right" nowrap><select name="ChoiceSize"
-                                                 onchange="javascript:choiceGoTo(this.selectedIndex);">
-                    <option selected="selected"><%=resource.getString("gallery.choixTaille")%></option>
+                <td align="right" nowrap><select name="ChoiceSize" onchange="javascript:choiceGoTo(this.selectedIndex);">
+                    <option selected="selected"><fmt:message key="gallery.selectSize"/></option>
                     <option>-------------------------------</option>
                     <%String selected = "";
                       if ("66x50".equals(taille)) {
@@ -537,15 +543,15 @@ function CutSelectedPhoto()  {
                         selected = "selected";
                       }%>
                     <option value="266x150" <%=selected%>><%="266x150"%></option>
-                  </select> <select name="SortBy"
-                                    onchange="javascript:sortGoTo(this.selectedIndex);">
-                    <option selected><%=resource.getString("gallery.orderBy")%></option>
+                  </select>
+                  <select name="SortBy" onchange="javascript:sortGoTo(this.selectedIndex);">
+                    <option selected><fmt:message key="gallery.orderBy"/></option>
                     <option>-------------------------------</option>
-                    <option value="CreationDateAsc"><%=resource.getString("gallery.dateCreatAsc")%></option>
-                    <option value="CreationDateDesc"><%=resource.getString("gallery.dateCreatDesc")%></option>
-                    <option value="Title"><%=resource.getString("GML.title")%></option>
-                    <option value="Size"><%=resource.getString("gallery.taille")%></option>
-                    <option value="Author"><%=resource.getString("GML.author")%></option>
+                    <option value="CreationDateAsc"><fmt:message key="gallery.dateCreatAsc"/></option>
+                    <option value="CreationDateDesc"><fmt:message key="gallery.dateCreatDesc"/></option>
+                    <option value="Title"><fmt:message key="GML.title"/></option>
+                    <option value="Size"><fmt:message key="gallery.dimension"/></option>
+                    <option value="Author"><fmt:message key="GML.author"/></option>
                   </select></td>
               </tr>
             </table></td>
@@ -702,7 +708,7 @@ function CutSelectedPhoto()  {
               }
               if (photo.getKeyWord() != null) {%>
             <tr>
-              <td class="txtlibform" nowrap><%=resource.getString("gallery.keyWord")%>
+              <td class="txtlibform" nowrap><%=resource.getString("gallery.keyword")%>
                 :</td>
               <td>
                 <%String keyWord = photo.getKeyWord();
@@ -753,22 +759,22 @@ function CutSelectedPhoto()  {
               inlineMessage = resource.getString("gallery.album.emptyForUser");
             } else if (!somePhotos && "writer".equals(profile)) {
               String[] params = new String[2];
-              params[0] = resource.getString("gallery.ajoutPhoto");
+              params[0] = resource.getString("gallery.addPhoto");
               params[1] = fctAddPhoto;
               inlineMessage = resource.getStringWithParams("gallery.album.emptyForWriter", params);
             } else if (!somePhotos && !someAlbums && ("publisher".equals(profile) || "admin".equals(
                     profile))) {
               // profile publisher et admin
               String[] params = new String[4];
-              params[0] = resource.getString("gallery.ajoutAlbum");
+              params[0] = resource.getString("gallery.addAlbum");
               params[1] = "javaScript:addAlbum()";
-              params[2] = resource.getString("gallery.ajoutPhoto");
+              params[2] = resource.getString("gallery.addPhoto");
               params[3] = fctAddPhoto;
               inlineMessage = resource.getStringWithParams("gallery.album.emptyForAdmin", params);
             }
           %>
           <% if (StringUtil.isDefined(inlineMessage)) {%>
-          <div class="inlineMessage"><%=inlineMessage%></div>
+          <div id="folder-empty" class="inlineMessage"><%=inlineMessage%></div>
           <% }%>
           <%
             }

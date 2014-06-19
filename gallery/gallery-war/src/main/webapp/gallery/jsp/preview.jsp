@@ -26,8 +26,41 @@
 --%>
 
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
+
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
+
+<%-- Set resource bundle --%>
+<c:set var="language" value="${requestScope.resources.language}"/>
+
+<fmt:setLocale value="${language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
+<fmt:message var="commentTab" key="gallery.comments"/>
+
+<c:set var="curPhoto" value="${requestScope.Photo}"/>
+<c:set var="userId" value="${requestScope.UserId}"/>
+<c:set var="photoResourceType" value="${curPhoto.photo.contributionType}"/>
+<c:set var="photoId" value="${curPhoto.photo.mediaPK.id}"/>
+<c:set var="callback">function( event ) { if (event.type === 'listing') { commentCount = event.comments.length; $('#comment-tab').html('<c:out value="${commentTab}"/> ( ' + event.comments.length + ')'); } else if (event.type === 'deletion') { commentCount--; $('#comment-tab').html('<c:out value="${commentTab}"/> ( ' + commentCount + ')'); } else if (event.type === 'addition') { commentCount++; $('#comment-tab').html('<c:out value="${commentTab}"/> ( ' + commentCount + ')'); } }</c:set>
+
+
+<fmt:message var="permalinkIcon" key='gallery.link' bundle='${icons}'/>
+<c:url var="permalinkIconUrl" value="${permalinkIcon}"/>
+<fmt:message var="previousIcon" key='gallery.previous' bundle='${icons}'/>
+<c:url var="previousIconUrl" value="${previousIcon}"/>
+<fmt:message var="nextIcon" key='gallery.next' bundle='${icons}'/>
+<c:url var="nextIconUrl" value="${nextIcon}"/>
+<fmt:message var="downloadIcon" key='gallery.image.download' bundle='${icons}'/>
+<c:url var="downloadIconUrl" value="${downloadIcon}"/>
+<fmt:message var="downloadWatermarkIcon" key='gallery.image.dowloadWatermark' bundle='${icons}'/>
+<c:url var="downloadWatermarkIconUrl" value="${downloadWatermarkIcon}"/>
+<fmt:message var="downloadForbiddenIcon" key='gallery.image.download.forbidden' bundle='${icons}'/>
+<c:url var="downloadForbiddenIconUrl" value="${downloadForbiddenIcon}"/>
 
 <%
   // récupération des paramètres :
@@ -42,7 +75,6 @@
   boolean watermark = ((Boolean) request.getAttribute("IsWatermark")).booleanValue();
   String XMLFormName = (String) request.getAttribute("XMLFormName");
   boolean updateAllowed = ((Boolean) request.getAttribute("UpdateImageAllowed")).booleanValue();
-  boolean showComments = ((Boolean) request.getAttribute("ShowCommentsTab")).booleanValue();
   String sizeParam = (String) request.getAttribute("PreviewSize");
   boolean linkDownload = ((Boolean) request.getAttribute("ViewLinkDownload")).booleanValue();
   boolean isBasket = ((Boolean) request.getAttribute("IsBasket")).booleanValue();
@@ -60,8 +92,7 @@
   }
   String namePreview = photo.getId() + "_" + sizeParam + ".jpg";
   String nameVignette = photo.getId() + "_266x150.jpg";
-  String preview_url = FileServerUtils.getUrl(componentId, namePreview,
-      photo.getImageMimeType(), nomRep);
+  String preview_url = FileServerUtils.getUrl(componentId, namePreview, photo.getImageMimeType(), nomRep);
   String title = photo.getTitle();
   String description = photo.getDescription();
   String author = photo.getAuthor();
@@ -116,6 +147,10 @@
 <view:includePlugin name="popup"/>
 <view:includePlugin name="preview"/>
 <view:includePlugin name="wysiwyg"/>
+<view:includePlugin name="messageme"/>
+<view:includePlugin name="invitme"/>
+<view:includePlugin name="userZoom"/>
+
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script language="javascript">
 
@@ -171,7 +206,7 @@ function goToNotify(url)
 </script>
 <%@include file="diaporama.jsp" %>
 </head>
-<body class="yui-skin-sam">
+<body class="gallery gallery-fiche-image yui-skin-sam" id="<%=componentId%>">
   <%
     browseBar.setDomainName(spaceLabel);
     browseBar.setComponentName(componentLabel, "Main");
@@ -220,10 +255,6 @@ function goToNotify(url)
       tabbedPane.addTab(resource.getString("gallery.info"), "EditInformation?PhotoId=" + photoId,
           false);
     }
-    if (showComments) {
-      tabbedPane.addTab(resource.getString("gallery.comments") + " (" + nbComments + ")",
-          "Comments?PhotoId=" + photoId, false);
-    }
     if (updateAllowed) {
       tabbedPane.addTab(resource.getString("gallery.accessPath"), "AccessPath?PhotoId=" + photoId,
           false);
@@ -234,229 +265,206 @@ function goToNotify(url)
 
     out.println(window.printBefore());
     out.println(tabbedPane.print());
-    out.println(frame.printBefore());
   %>
+<view:frame>
 <form name="photoForm" method="post" accept-charset="UTF-8">
-<table cellpadding="5" width="100%">
-	<tr>
-	<!-- AFFICHAGE des boutons de navigation -->
-		<td align="center">
-			<table border="0">
-				<tr>
-					<td align="center" width="25">
-						<%	if ( !debut ) { %>
-							<a id="previousButton" href="PreviousPhoto"><img src="/silverpeas/util/viewGenerator/icons/arrows/arrowLeft.gif" align="middle" border="0" alt="<%=resource.getString("gallery.previous")%>" title="<%=resource.getString("gallery.previous")%>"/></a>
-						<% } else { %>
-							&nbsp;
-						<% } %>
-					</td>
-					<td align="center" nowrap="nowrap">
-						<span class="txtnav"><span class="currentPage"><%=rang.intValue()+1%></span> / <%=albumSize.intValue()%></span>
-					</td>
-					<td align="center" width="25">
-						<% if ( !fin ) { %>
-							<a id="nextButton" href="NextPhoto"><img src="/silverpeas/util/viewGenerator/icons/arrows/arrowRight.gif" align="middle" border="0" alt="<%=resource.getString("gallery.next")%>" title="<%=resource.getString("gallery.next")%>"/></a>
-						<% } else { %>
-							&nbsp;
-						<% } %>
-					</td>
-				</tr>
-			</table>
-		</td>
-	</tr>
-	<tr>
-		<!-- AFFICHAGE de la preview de la photo -->
-      	<td>
-			<%
-				if (!photo.isPreviewable()) {
-					preview_url = m_context+"/gallery/jsp/icons/notAvailable_"+resource.getLanguage()+"_" + sizeParam + ".jpg";
-				}
-				if ( preview_url != null )
-				{
-					%>
-					<table border="0" width="10" align="center" cellspacing="1" cellpadding="0" class="fondPhoto"><tr><td align="center">
-						<table cellspacing="1" cellpadding="5" border="0" class="cadrePhoto"><tr><td bgcolor="#FFFFFF">
-              <center>
-                <img src="<%=preview_url%>" onclick="javascript:startSlideshow('<%=photo.getMediaPK().getId()%>')" style="cursor: pointer"/>
-              </center>
-						</td></tr></table>
-					</td></tr></table>
-					<%
-				}
-			%>
-		</td>
-	</tr>
-	</table>
-	<table width="600" align="center">
-	<tr>
-		<td align="center">
-			<%=board.printBefore()%>
-			<table align="left" border="0" cellpadding="5">
-				<!-- AFFICHAGE des données de la photo -->
-				<%	if (StringUtil.isDefined(link)) {	%>
-					<tr align="left">
-						<td class="txtlibform" nowrap="nowrap"><%=resource.getString("gallery.permalink")%> :</td>
-						<td><a href="<%=link%>" ><img src=<%=resource.getIcon("gallery.link")%> border="0" alt='<%=resource.getString("gallery.CopyPhotoLink")%>' title='<%=resource.getString("gallery.CopyPhotoLink")%>'/></a></td>
-					</tr>
-				<%	}
-				if ( title != null && !title.equals(name)) {	%>
-					<tr align="left">
-						<td class="txtlibform" nowrap="nowrap"><%=resource.getString("GML.title")%> :</td>
-						<td><%=title%></td>
-					</tr>
-				<%	}
-				if ( description != null && !description.equals("") ) {	%>
-					<tr align="left">
-						<td class="txtlibform" nowrap="nowrap"><%=resource.getString("GML.description")%> :</td>
-						<td><%=description%></td>
-					</tr>
-				<%	}
-						if (linkDownload || photo.isDownloadable())
-						{ %>
-						<tr align="left">
-							<td class="txtlibform" nowrap="nowrap"><%=resource.getString("gallery.originale")%> :</td>
-							<td><a href="<%=lien%>" target=_blank><%=EncodeHelper.javaStringToHtmlString(resource.getString("gallery.telecharger"))%></a></td>
-						</tr>
 
-						<% if (!lienWatermark.equals(""))
-							{%>
-						<tr align="left">
-							<td class="txtlibform" nowrap="nowrap"><%=resource.getString("gallery.originaleWatermark")%> :</td>
-							<td><a href="<%=lienWatermark%>" target=_blank><%=EncodeHelper.javaStringToHtmlString(resource.getString("gallery.telecharger"))%></a></td>
-						</tr>
-						<% }
-						} %>
+<div class="rightContent">
+  <!-- nom du fichier -->
+  <div class="fileName">
+    <c:choose>
+      <c:when test="${requestScope.ViewLinkDownload or curPhoto.photo.downloadable}">
+        <a href="<%=lien%>" target="_blank">${curPhoto.photo.fileName} <img src="${downloadIconUrl}" alt="<%=EncodeHelper.javaStringToHtmlString(resource.getString("gallery.download.photo"))%>" title="<fmt:message key='gallery.originale'/>"/></a>
+        <% if (!lienWatermark.equals("")) { %>
+          <a href="<%=lienWatermark%>" target="_blank"><img src="${downloadWatermarkIconUrl}" alt="<%=EncodeHelper.javaStringToHtmlString(resource.getString("gallery.download.photo"))%>" title="<fmt:message key='gallery.originaleWatermark'/>"/></a>
+        <% } %>
+      </c:when>
+      <c:otherwise>
+        ${curPhoto.photo.fileName} <img src="${downloadForbiddenIconUrl}" alt="<fmt:message key='gallery.download.forbidden'/>" title="<fmt:message key='gallery.download.forbidden'/>" class="forbidden-download-file"/>
+      </c:otherwise>
+    </c:choose>
+  </div>
+  <div class="fileCharacteristic  bgDegradeGris">
+    <p>
+      <span class="fileCharacteristicWeight"><fmt:message key="gallery.weight" /> <b><%=FileRepositoryManager.formatFileSize(size)%></b></span>
+      <span class="fileCharacteristicSize"><fmt:message key="gallery.dimension" /> <b><%=width%> x <%=height%> <fmt:message key="gallery.pixels" /></b></span> <br class="clear" />
+    </p>
+  </div>
 
-						<% if (photo.isDownload() && (photo.getBeginDownloadDate() != null || photo.getEndDownloadDate() != null)) { %>
-						<tr align="left">
-							<td class="txtlibform" nowrap="nowrap"><%=resource.getString("gallery.beginDownloadDate")%> :</td>
-							<td><%=beginDownloadDate%>
-							<% if (photo.getEndDownloadDate() != null) { %>
-								&nbsp;<span class="txtlibform"><%=resource.getString("gallery.endDownloadDate")%></span>&nbsp;<%=endDownloadDate%>
-							<% } %>
-							</td>
-						</tr>
-						<% } %>
-				<% if (photo.getBeginDate() != null || photo.getEndDate() != null) { %>
-					<tr align="left">
-						<td class="txtlibform" nowrap="nowrap"><%=resource.getString("gallery.beginDate")%> :</td>
-						<td><%=beginDate%>
-						<% if (photo.getEndDate() != null) { %>
-							&nbsp;<span class="txtlibform"><%=resource.getString("gallery.endDate")%></span>&nbsp;<%=endDate%>
-						<% } %>
-						</td>
-					</tr>
-				<% 	}  %>
-				<%
-				if ( name != null ) {	%>
-					<tr align="left">
-						<td class="txtlibform" nowrap="nowrap"><%=resource.getString("gallery.nomFic")%> :</td>
-						<td><%=name%></td>
-					</tr>
-				<%	}
-				if ( size != 0 ) {	%>
-					<tr align="left">
-						<td class="txtlibform" nowrap="nowrap"><%=resource.getString("gallery.poids")%> :</td>
-						<td><%=FileRepositoryManager.formatFileSize(size)%></td>
-					</tr>
-				<%	}
-				if ( height != 0 ) {	%>
-					<tr align="left">
-						<td class="txtlibform" nowrap="nowrap"><%=resource.getString("gallery.taille")%> :</td>
-						<td><%=width%> x <%=height%> <%=resource.getString("gallery.pixels")%> </td>
-					</tr>
-				<%	}
-				if ( author != null && !author.equals("") ) {	%>
-					<tr align="left">
-						<td class="txtlibform" nowrap="nowrap"><%=resource.getString("GML.author")%> :</td>
-						<td><%=author%></td>
-					</tr>
-				<%	}	%>
-				<tr align="left">
-					<td class="txtlibform" nowrap="nowrap"><%=resource.getString("gallery.creationDate")%> :</td>
-					<td><%=creationDate%>&nbsp;<span class="txtlibform"><%=resource.getString("gallery.par")%></span>&nbsp;<%=creatorName%></td>
-				</tr>
-				<% if (updateDate != null && updateName != null) { %>
-					<tr align="left">
-						<td class="txtlibform" nowrap="nowrap"><%=resource.getString("gallery.updateDate")%> :</td>
-						<td><%=updateDate%>&nbsp;<span class="txtlibform"><%=resource.getString("gallery.par")%></span>&nbsp;<%=updateName%></td>
-					</tr>
-				<%	}
-				if ( keyWord != null && !keyWord.equals("") )
-				{ %>
-					<tr align="left">
-					<td class="txtlibform" nowrap="nowrap"><%=resource.getString("gallery.keyWord")%> :</td>
-					<td>
-					<%
-					StringTokenizer st = new StringTokenizer(keyWord);
-					while (st.hasMoreTokens())
-					{
-						String searchKeyWord = st.nextToken();
-						%>
-						<a href="<%="SearchKeyWord?SearchKeyWord=" + searchKeyWord%>"> <%=searchKeyWord%> </a>
-					 <% } %>
-					</td></tr>
-				<% } %>
-				</table>
-				<%=board.printAfter()%>
+  <c:set var="updateDate" value="${curPhoto.updateDate}"/>
+  <c:set var="createDate" value="${curPhoto.creationDate}"/>
 
-				<%
-				// AFFICHAGE des métadonnées
-				if (metaDataKeys != null && !metaDataKeys.isEmpty()) {
-					out.println("<br/>");
-					out.println(board.printBefore());
-					out.println("<table align=\"left\" border=\"0\" CELLPADDING=\"5\">");
-					MetaData metaData;
-					for (final String propertyLong : metaDataKeys) {
-						// extraire le nom de la propertie
-						metaData = photo.getMetaData(propertyLong);
-						String mdLabel = metaData.getLabel();
-						String mdValue = metaData.getValue();
-						if (metaData.isDate()) {
-							mdValue = resource.getOutputDateAndHour(metaData.getDateValue());
-						}
-						// affichage
-						%>
-							<tr align="left">
-								<td class="txtlibform" nowrap="nowrap" valign="top"><%=mdLabel%> :</td>
-								<td><%=mdValue%></td>
-							</tr>
-						<%
-					}
-					out.println(board.printAfter());
-					out.println("</table>");
-				}
+  <div class="bgDegradeGris" id="suggestionInfoPublication">
+  <c:if test="${not empty curPhoto.photo.author}">
+    <p id="authorInfo"><b><fmt:message key="GML.author"/></b> ${curPhoto.photo.author}
+    </p>
+  </c:if>
+  <c:if test="${not empty curPhoto.photo.lastUpdater}">
+    <div class="paragraphe" id="infoModification"> <b><fmt:message key="GML.updatedAt"/></b>${silfn:formatDate(updateDate, _language)} <fmt:message key="GML.by"/>
+      <view:username userId="${curPhoto.photo.lastUpdater.id}"/>
+      <div class="profilPhoto"><img src='<c:url value="${curPhoto.photo.lastUpdater.avatar}" />' alt="" class="defaultAvatar"/></div>
+    </div>
+  </c:if>
 
-				if (xmlForm != null) {
-				%>
-					<br/>
+  <c:if test="${not empty curPhoto.photo.creator}">
+    <div class="paragraphe" id="infoCreation">
+      <b><fmt:message key="GML.createdAt"/></b>${silfn:formatDate(createDate, _language)} <fmt:message key="GML.by"/>
+      <view:username userId="${curPhoto.photo.creator.id}"/>
+      <div class="profilPhoto"><img src='<c:url value="${curPhoto.photo.creator.avatar}" />' alt="" class="defaultAvatar"/></div>
+    </div>
+  </c:if>
+    <p id="permalinkInfo">
+      <fmt:message key="gallery.CopyPhotoLink" var="cpPhotoLinkAlt"/>
+      <a title="${cpPhotoLinkAlt}" href="${curPhoto.photo.permalink}">
+        <img border="0" alt="${cpPhotoLinkAlt}" title="${cpPhotoLinkAlt}" src="${permalinkIconUrl}" />
+      </a> <fmt:message key="GML.permalink"/> <br />
+      <input type="text" value="${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${curPhoto.photo.permalink}" onfocus="select();" class="inputPermalink" />
+    </p>
+  </div>
+  <c:if test="${curPhoto.photo.downloadable and (curPhoto.photo.visibilityPeriod.defined or curPhoto.photo.downloadPeriod.defined)}">
+    <div class="periode bgDegradeGris" id="periode">
+      <div class="header bgDegradeGris">
+        <h4 class="clean"><fmt:message key="GML.period"/></h4>
+      </div>
+      <c:if test="${curPhoto.photo.visibilityPeriod.defined}">
+        <div class="periode_visibility paragraphe">
+          <fmt:message key="gallery.beginDate"/>
+          <b>
+            <c:if test="${curPhoto.photo.visibilityPeriod.beginDatable.defined}">
+              <view:formatDate value="${curPhoto.photo.visibilityPeriod.beginDate}" language="${language}" />
+            </c:if>
+          </b>
+          <b><fmt:message key="GML.toDate"/>
+            <c:if test="${curPhoto.photo.visibilityPeriod.endDatable.defined}">
+              <view:formatDate value="${curPhoto.photo.visibilityPeriod.endDate}" language="${language}" />
+            </c:if>
+          </b>
+        </div>
+      </c:if>
+      <c:if test="${curPhoto.photo.downloadPeriod.defined}">
+        <div class="periode_download paragraphe">
+          <fmt:message key="gallery.beginDownloadDate"/>
+          <b>
+            <c:if test="${curPhoto.photo.downloadPeriod.beginDatable.defined}">
+              <view:formatDate value="${curPhoto.photo.downloadPeriod.beginDate}" language="${language}" />
+            </c:if>
+          </b>
+          <b><fmt:message key="GML.toDate"/>
+            <c:if test="${curPhoto.photo.downloadPeriod.endDatable.defined}">
+              <view:formatDate value="${curPhoto.photo.downloadPeriod.endDate}" language="${language}" />
+            </c:if>
+          </b>
+        </div>
+      </c:if>
+      <br class="clear"/>
+    </div>
+  </c:if>
 
-					<%=board.printBefore()%>
-					<table align="left" border="0" width="50%">
-					<!-- AFFICHAGE du formulaire -->
-						<tr align="left">
-							<td colspan="2">
-                              <%
-                                PagesContext xmlContext = new PagesContext("myForm", "0", resource.
-                                    getLanguage(), false, componentId, gallerySC.getUserId(), gallerySC.
-                                    getAlbum(gallerySC.getCurrentAlbumId()).getNodePK().getId());
-                                xmlContext.setObjectId(photoId);
-                                xmlContext.setBorderPrinted(false);
-                                xmlContext.setIgnoreDefaultValues(true);
+  <c:if test="${requestScope.IsUsePdc}">
+    <view:pdcClassificationPreview componentId="<%=componentId%>" contentId="${photoId}" />
+  </c:if>
 
-                                xmlForm.display(out, xmlContext, xmlData);
-                              %>
-							</td>
-						</tr>
-					</table>
-					<%=board.printAfter()%>
-				<% } %>
-		</td>
-	</tr>
-</table>
+  <%
+  // AFFICHAGE des métadonnées
+  if (metaDataKeys != null && !metaDataKeys.isEmpty()) {
+%>
+  <div class="metadata bgDegradeGris" id="metadata">
+    <div class="header bgDegradeGris">
+      <h4 class="clean"><fmt:message key="GML.metadata"/></h4>
+    </div>
+    <div id="metadata_list">
+    <%
+          MetaData metaData;
+          for (final String propertyLong : metaDataKeys) {
+            metaData = photo.getMetaData(propertyLong);
+            String mdLabel = metaData.getLabel();
+            String mdValue = metaData.getValue();
+            if (metaData.isDate()) {
+              mdValue = resource.getOutputDateAndHour(metaData.getDateValue());
+            }
+            %>
+        <p id="metadata_<%=mdLabel%>"><%=mdLabel%> <b><%=mdValue%></b></p>
+            <%
+          }
+        %>
+    </div>
+  </div>
+  <%
+    }
+    %>
+</div>
+<div class="principalContent">
+  <div id="pagination">
+    <c:if test="${requestScope.Rang ne 0}">
+      <fmt:message var="previousPicture" key="gallery.previous"/>
+      <a id="previousButton" href="PreviousPhoto">
+        <img alt="${previousPicture}" title="${previousPicture}" src="${previousIconUrl}" />
+      </a>
+    </c:if>
+    <span class="txtnav"><span class="currentPage"><%=rang.intValue()+1%></span> / <%=albumSize.intValue()%></span>
+    <c:if test="${requestScope.Rang ne (requestScope.NbPhotos - 1)}">
+      <fmt:message var="nextPicture" key="gallery.next"/>
+      <a id="nextButton" href="NextPhoto"><img alt="${nextPicture}" title="${nextPicture}" src="${nextIconUrl}"/></a>
+    </c:if>
+  </div>
+  <div class="contentMedia">
+    <div class="fondPhoto">
+      <div class="cadrePhoto">
+        <a href="#" onclick="javascript:startSlideshow('${curPhoto.photo.id}')">
+        <%
+          if (!photo.isPreviewable()) {
+            preview_url = m_context+"/gallery/jsp/icons/notAvailable_"+resource.getLanguage()+"_" + sizeParam + ".jpg";
+          }
+          if ( preview_url != null )
+          {
+            %>
+          <img alt="${curPhoto.name}" src="<%=preview_url%>"/>
+       <% } %>
+        </a>
+      </div>
+      <c:if test="${curPhoto.photo.title != curPhoto.photo.fileName}">
+        <h2 class="mediaTitle">${curPhoto.photo.title}</h2>
+      </c:if>
+      <c:if test="${not empty curPhoto.photo.keyWord}">
+        <div class="motsClefs">
+        <c:set var="listKeys" value="${fn:split(curPhoto.photo.keyWord,' ')}"/>
+        <c:forEach items="${listKeys}" var="keyword">
+          <span><a href="SearchKeyWord?SearchKeyWord=${keyword}">${keyword}</a></span>
+        </c:forEach>
+        </div>
+      </c:if>
+      <c:if test="${not empty curPhoto.photo.description}">
+        <p class="description">${curPhoto.photo.description}</p>
+      </c:if>
+    </div>
+  </div>
+
+  <%
+  if (xmlForm != null) {
+  %>
+  <br/>
+    <%
+      PagesContext xmlContext = new PagesContext("myForm", "0", resource.
+          getLanguage(), false, componentId, gallerySC.getUserId(), gallerySC.
+          getAlbum(gallerySC.getCurrentAlbumId()).getNodePK().getId());
+      xmlContext.setObjectId(photoId);
+      xmlContext.setBorderPrinted(false);
+      xmlContext.setIgnoreDefaultValues(true);
+
+      xmlForm.display(out, xmlContext, xmlData);
+    %>
+<% } %>
+
+
+  <c:if test="${requestScope.ShowCommentsTab}">
+    <view:comments  userId="${userId}" componentId="<%= componentId %>"
+              resourceType="${photoResourceType}" resourceId="${photoId}" indexed="${callback}"/>
+  </c:if>
+</div>
+
 </form>
+</view:frame>
 <%
-  	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
 </body>

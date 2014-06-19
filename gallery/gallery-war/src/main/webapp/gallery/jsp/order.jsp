@@ -578,11 +578,11 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
       } else if (("D").equals(downloadDecision)) {
         // la photo est autorisée en téléchargement
         download = "<a href=\"OrderDownloadImage?PhotoId=" + photoId + "&OrderId=" + orderId + "\" target=_blank>" + EncodeHelper.
-            javaStringToHtmlString(resource.getString("gallery.telecharger")) + "</a>";
+            javaStringToHtmlString(resource.getString("gallery.download.photo")) + "</a>";
       } else if (("DW").equals(downloadDecision)) {
         // la photo est autorisée en téléchargement avec le watermark
         download = "<a href=\"OrderDownloadImage?PhotoId=" + photoId + "&OrderId=" + orderId + "\" target=_blank>" + EncodeHelper.
-            javaStringToHtmlString(resource.getString("gallery.telecharger")) + "</a>";
+            javaStringToHtmlString(resource.getString("gallery.download.photo")) + "</a>";
       } else if (("T").equals(downloadDecision)) {
         // la photo est déjà téléchargée
         Date dateDownload = row.getDownloadDate();

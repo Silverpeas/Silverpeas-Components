@@ -105,7 +105,7 @@ div {
 		<tr>
 			<td align="center" class=ArrayNavigation>
 				<%
-					out.println(resource.getString("gallery.dernieres"));
+					out.println(resource.getString("gallery.last.media"));
 				%>
 			</td>
 		</tr>
@@ -168,7 +168,7 @@ div {
 					<td colspan="5" valign="middle" align="center" width="100%">
 						<br>
 						<%
-							out.println(resource.getString("gallery.pasPhoto"));
+							out.println(resource.getString("gallery.empty.data"));
 						%>
 						<br>
 					</td>

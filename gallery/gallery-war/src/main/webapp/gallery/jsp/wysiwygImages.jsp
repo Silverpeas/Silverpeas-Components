@@ -127,7 +127,7 @@ if (photos != null) {
 				<td colspan="5" valign="middle" align="center" width="100%">
 					<br>
 					<%
-						out.println(multilang.getString("gallery.pasPhoto"));
+						out.println(multilang.getString("gallery.empty.data"));
 					%>
 					<br>
 				</td>

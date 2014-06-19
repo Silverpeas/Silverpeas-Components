@@ -181,7 +181,7 @@ function sendData()
 	}
 	if ( "admin".equals(profile) || "publisher".equals(profile))
 	{
-		operationPane.addOperationOfCreation(resource.getIcon("gallery.addAlbum"),resource.getString("gallery.ajoutAlbum"), "javaScript:openGalleryEditor()");
+		operationPane.addOperationOfCreation(resource.getIcon("gallery.addAlbum"),resource.getString("gallery.addAlbum"), "javaScript:openGalleryEditor()");
 		operationPane.addLine();
 
 		//visualisation des photos non visibles par les lecteurs
@@ -307,7 +307,7 @@ function sendData()
 		<tr>
 			<td colspan="5" align="center" class=ArrayNavigation>
 				<%
-					out.println(resource.getString("gallery.dernieres"));
+					out.println(resource.getString("gallery.last.media"));
 				%>
 			</td>
 		</tr>
@@ -366,8 +366,9 @@ function sendData()
 				// on passe e la ligne suivante
 				nbAffiche = 0;
 				out.println("</tr>");
-				if (itP.hasNext())
+				if (itP.hasNext()) {
 					out.println("<tr><td colspan=\""+nbParLigne+"\">&nbsp;</td></tr>");
+				}
 			}
 		}
 		else
@@ -377,7 +378,7 @@ function sendData()
 					<td colspan="5" valign="middle" align="center" width="100%">
 						<br/>
 						<%
-							out.println(resource.getString("gallery.pasPhoto"));
+							out.println(resource.getString("gallery.empty.data"));
 						%>
 						<br/>
 					</td>
@@ -388,12 +389,11 @@ function sendData()
 	%>
 		</table>
 
-    <%@include file="albumManager.jsp" %>
-	<%
+<%@include file="albumManager.jsp" %>
 
-  	out.println(board.printAfter());
-
-  	out.println(frame.printAfter());
+<%
+	out.println(board.printAfter());
+	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
 <form name="albumForm" action="" method="post">

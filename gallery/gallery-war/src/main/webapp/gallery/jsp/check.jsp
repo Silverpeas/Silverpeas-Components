@@ -47,7 +47,6 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.*"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.iconPanes.IconPane"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.icons.Icon"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.navigationList.NavigationList"%>

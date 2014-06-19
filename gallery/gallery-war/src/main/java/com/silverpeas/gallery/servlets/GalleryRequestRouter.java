@@ -351,28 +351,6 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         // preview de la nouvelle image
         request.setAttribute("PhotoId", photoId);
         destination = getDestination("PreviewPhoto", gallerySC, request);
-      } else if (function.equals("EditPhoto")) {
-        // récupération des paramètres
-        String photoId = request.getParameter("PhotoId");
-
-        // check user rights
-        if (!gallerySC.isPhotoAdmin(flag, photoId, userId)) {
-          throw new AccessForbiddenException("GalleryRequestRouter.EditPhoto",
-              SilverpeasException.WARNING, null);
-        }
-
-        // récupération de la photo
-        PhotoDetail photo = gallerySC.getPhoto(photoId);
-
-        // passage des paramètres
-        putPhotoCommonParameters(request, gallerySC, photo, flag);
-
-        String repertoire =
-            GalleryComponentSettings.getMediaFolderNamePrefix() + photo.getMediaPK().getId();
-        request.setAttribute("Repertoire", repertoire);
-
-        // appel jsp
-        destination = rootDest + "photoManager.jsp";
       } else if (function.equals("UpdatePhoto") || function.equals("UpdateInformation")) {
         if (!StringUtil.isDefined(request.getCharacterEncoding())) {
           request.setCharacterEncoding("UTF-8");
@@ -722,38 +700,6 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         } else {
           destination = returnToAlbum(request, gallerySC);
         }
-      } else if (function.equals("GoToXMLForm")) {
-        // visualisation du formulaire associé à la photo
-        String photoId = request.getParameter("PhotoId");
-
-        // récupération du formulaire et affichage
-        String xmlFormName = gallerySC.getXMLFormName();
-        String xmlFormShortName = null;
-        if (isDefined(xmlFormName)) {
-          xmlFormShortName =
-              xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
-        }
-
-        PublicationTemplateImpl pubTemplate =
-            (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
-            gallerySC.getComponentId()
-            + ":" + xmlFormShortName, xmlFormName);
-        Form formUpdate = pubTemplate.getUpdateForm();
-        RecordSet recordSet = pubTemplate.getRecordSet();
-        DataRecord data = recordSet.getRecord(photoId);
-        if (data == null) {
-          data = recordSet.getEmptyRecord();
-          data.setId(photoId);
-        }
-
-        request.setAttribute("Form", formUpdate);
-        request.setAttribute("Data", data);
-        request.setAttribute("XMLFormName", xmlFormName);
-
-        // passage des paramètres
-        putPhotoCommonParameters(request, gallerySC, gallerySC.getPhoto(photoId), flag);
-
-        destination = rootDest + "xmlForm.jsp";
       } else if (function.equals("UpdateXMLForm")) {
         // mise à jour des données du formulaire
         if (!StringUtil.isDefined(request.getCharacterEncoding())) {
