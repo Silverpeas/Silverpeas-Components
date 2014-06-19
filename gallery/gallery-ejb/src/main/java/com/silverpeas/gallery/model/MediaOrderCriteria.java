@@ -25,8 +25,10 @@ package com.silverpeas.gallery.model;
 
 import com.silverpeas.util.CollectionUtil;
 import com.silverpeas.util.StringUtil;
+import com.stratelia.webactiv.util.DateUtil;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static com.stratelia.webactiv.util.DBUtil.isSqlDefined;
@@ -40,6 +42,7 @@ public class MediaOrderCriteria {
   private String componentInstanceId;
   private final List<String> identifiers = new ArrayList<String>();
   private String ordererId;
+  private Date referenceDate = DateUtil.getNow();
   private Integer nbDaysAfterThatDeleteAnOrder;
 
   private MediaOrderCriteria() {
@@ -89,6 +92,19 @@ public class MediaOrderCriteria {
   }
 
   /**
+   * Sets the reference date criterion (the date of the day by default).
+   * @param referenceDate the reference date specified.
+   * @return the order criteria itself with the new criterion on the reference date.
+   */
+  public MediaOrderCriteria referenceDateOf(Date referenceDate) {
+    if (referenceDate == null) {
+      throw new IllegalArgumentException("dateReference parameter must not be null");
+    }
+    this.referenceDate = referenceDate;
+    return this;
+  }
+
+  /**
    * Gets the indetifier of order instance.
    * {@link #fromComponentInstanceId(String)}
    * @return the criterion on the order instance to which the orders should belong.
@@ -116,6 +132,14 @@ public class MediaOrderCriteria {
   }
 
   /**
+   * Gets the reference date.
+   * @return the reference date.
+   */
+  private Date getReferenceDate() {
+    return referenceDate;
+  }
+
+  /**
    * Gets the number of days after that an order should be deleted.
    * @return
    */
@@ -140,7 +164,8 @@ public class MediaOrderCriteria {
       processor.then().processOrderer(getOrdererId());
     }
     if (getNbDaysAfterThatDeleteAnOrder() != null) {
-      processor.then().processNbDaysBeforeDeleteAnOrder(getNbDaysAfterThatDeleteAnOrder());
+      processor.then().processNbDaysAfterThatDeleteAnOrder(getReferenceDate(),
+          getNbDaysAfterThatDeleteAnOrder());
     }
 
     processor.endProcessing();

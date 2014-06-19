@@ -1,31 +1,82 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataset>
-  <sc_gallery_photo photoid = "0" title="ciel" description="france" sizeh= "110" sizel="110" creationdate= "2010/03/01" updatedate="2010/05/01" vuedate="[NULL]" author="[NULL]" download="0" albumlabel="0" status="[NULL]"  albumid="0" creatorid="0"
-                    updateid="1" instanceid="gallery25" imagename="ciel.jpg" imagesize="5146" imagemimetype="image/png" begindate="0000/00/00" enddate="9999/99/99" keyword="[NULL]" begindownloaddate="[NULL]" enddownloaddate="[NULL]" />
-  <sc_gallery_photo photoid = "1" title="montagne" description="alpes" sizeh= "110" sizel="110" creationdate= "2010/03/12" updatedate="[NULL]" vuedate="[NULL]" author="[NULL]" download="0" albumlabel="0" status="[NULL]"  albumid="0" creatorid="1"
-                    updateid="[NULL]" instanceid="gallery27" imagename="montagne.jpg" imagesize="5146" imagemimetype="image/png" begindate="0000/00/00" enddate="9999/99/99" keyword="[NULL]" begindownloaddate="[NULL]" enddownloaddate="[NULL]" />
-  <sc_gallery_photo photoid = "2" title="animal" description="chien" sizeh= "110" sizel="110" creationdate= "2010/04/10" updatedate="2010/04/14" vuedate="[NULL]" author="[NULL]" download="0" albumlabel="0" status="[NULL]"  albumid="0" creatorid="0"
-                    updateid="1" instanceid="gallery26" imagename="animal.jpg" imagesize="5146" imagemimetype="image/png" begindate="0000/00/00" enddate="9999/99/99" keyword="[NULL]" begindownloaddate="[NULL]" enddownloaddate="[NULL]" />
-  <sc_gallery_photo photoid = "3" title="fleur" description="tulipe" sizeh= "110" sizel="110" creationdate= "2010/06/15" updatedate="2010/06/16" vuedate="[NULL]" author="[NULL]" download="0" albumlabel="0" status="[NULL]"  albumid="0" creatorid="1"
-                    updateid="0" instanceid="gallery26" imagename="fleur.jpg" imagesize="5146" imagemimetype="image/png" begindate="0000/00/00" enddate="9999/99/99" keyword="[NULL]" begindownloaddate="[NULL]" enddownloaddate="[NULL]" />
-  <sc_gallery_photo photoid = "4" title="mer" description="mediterranée" sizeh= "110" sizel="110" creationdate= "2010/07/04" updatedate="2010/07/08" vuedate="[NULL]" author="[NULL]" download="0" albumlabel="0" status="[NULL]"  albumid="0" creatorid="1"
-                    updateid="1" instanceid="gallery26" imagename="mer.jpg" imagesize="5146" imagemimetype="image/png" begindate="0000/00/00" enddate="9999/99/99" keyword="[NULL]" begindownloaddate="[NULL]" enddownloaddate="[NULL]" />
-  <sc_gallery_photo photoid = "5" title="viper" description="voiture" sizeh= "110" sizel="110" creationdate= "2014/06/09" updatedate="2014/06/09" vuedate="[NULL]" author="[NULL]" download="0" albumlabel="0" status="[NULL]"  albumid="0" creatorid="1"
-                    updateid="1" instanceid="gallery26" imagename="viper.jpg" imagesize="5146" imagemimetype="image/png" begindate="2014/05/01" enddate="2014/05/15" keyword="[NULL]" begindownloaddate="[NULL]" enddownloaddate="[NULL]" />
+  <!-- 2014/05/01 : 1402264800000 -->
+  <!-- 2014/05/15 : 1402264800000 -->
+  <SC_Gallery_Media mediaId="0" mediaType="Photo" title="ciel" description="france"
+                    createDate="2010-03-01" lastUpdateDate="2010-05-01" author="[NULL]"
+                    createdBy="0" lastUpdatedBy="1" instanceid="gallery25"
+                    beginVisibilityDate="-2208992400000" endVisibilityDate="32503590000000"
+                    keyword="[NULL]"/>
+  <SC_Gallery_Media mediaId="1" mediaType="Photo" title="montagne" description="alpes"
+                    createDate="2010-03-12" lastUpdateDate="2010-03-12" author="[NULL]"
+                    createdBy="1" lastUpdatedBy="1" instanceid="gallery27"
+                    beginVisibilityDate="-2208992400000" endVisibilityDate="32503590000000"
+                    keyword="[NULL]"/>
+  <SC_Gallery_Media mediaId="2" mediaType="Photo" title="animal" description="chien"
+                    createDate="2010-04-10" lastUpdateDate="2010-04-14" author="[NULL]"
+                    createdBy="0" lastUpdatedBy="1" instanceid="gallery26"
+                    beginVisibilityDate="-2208992400000" endVisibilityDate="32503590000000"
+                    keyword="[NULL]"/>
+  <SC_Gallery_Media mediaId="3" mediaType="Photo" title="fleur" description="tulipe"
+                    createDate="2010-06-15" lastUpdateDate="2010-06-16" author="[NULL]"
+                    createdBy="1" lastUpdatedBy="0" instanceid="gallery26"
+                    beginVisibilityDate="-2208992400000" endVisibilityDate="32503590000000"
+                    keyword="[NULL]"/>
+  <SC_Gallery_Media mediaId="4" mediaType="Photo" title="mer" description="mediterranée"
+                    createDate="2010-07-04" lastUpdateDate="2010-07-08" author="[NULL]"
+                    createdBy="1" lastUpdatedBy="1" instanceid="gallery26"
+                    beginVisibilityDate="-2208992400000" endVisibilityDate="32503590000000"
+                    keyword="[NULL]"/>
+  <SC_Gallery_Media mediaId="5" mediaType="Photo" title="viper" description="voiture"
+                    createDate="2014-06-09" lastUpdateDate="2014-06-09" author="[NULL]"
+                    createdBy="1" lastUpdatedBy="1" instanceid="gallery26"
+                    beginVisibilityDate="1398895200000" endVisibilityDate="1400104800000"
+                    keyword="[NULL]"/>
 
-  <sb_node_node nodeid="0" nodename="Accueil" nodedescription="La Racine" nodecreationdate="2014/06/10"
-                nodecreatorid="0" nodepath="/" nodelevelnumber="1" nodefatherid="-1" modelid="" nodestatus="Visible" instanceid="gallery26"
-                ordernumber="0" rightsdependson="-1" lang="[NULL]" type="[NULL]" />
-  <sb_node_node nodeid="1" nodename="Nature" nodedescription="Noeud de test contenant des images sur le thème de la nature"
-                nodecreationdate="2014/06/10" nodecreatorid="0" nodepath="/0/" nodelevelnumber="2" nodefatherid="0" modelid="[NULL]"
-                nodestatus="[NULL]" instanceid="gallery26" ordernumber="2" rightsdependson="-1" />
-  <sb_node_node nodeid="2" nodename="Automobile" nodedescription="Noeud de test contenant des images sur le thème automobile"
-                nodecreationdate="2014/06/10" nodecreatorid="0" nodepath="/0/" nodelevelnumber="2" nodefatherid="0" modelid="[NULL]"
-                nodestatus="[NULL]" instanceid="gallery26" ordernumber="1" rightsdependson="-1" />
+  <SC_Gallery_Internal mediaId="0" download="0" fileName="ciel.jpg" fileSize="5146"
+                       fileMimeType="image/png" beginDownloaddate="[NULL]"
+                       endDownloaddate="[NULL]"/>
+  <SC_Gallery_Internal mediaId="1" download="0" fileName="montagne.jpg" fileSize="5146"
+                       fileMimeType="image/png" beginDownloaddate="[NULL]"
+                       endDownloaddate="[NULL]"/>
+  <SC_Gallery_Internal mediaId="2" download="0" fileName="animal.jpg" fileSize="5146"
+                       fileMimeType="image/png" beginDownloaddate="[NULL]"
+                       endDownloaddate="[NULL]"/>
+  <SC_Gallery_Internal mediaId="3" download="0" fileName="fleur.jpg" fileSize="5146"
+                       fileMimeType="image/png" beginDownloaddate="[NULL]"
+                       endDownloaddate="[NULL]"/>
+  <SC_Gallery_Internal mediaId="4" download="0" fileName="mer.jpg" fileSize="5146"
+                       fileMimeType="image/png" beginDownloaddate="[NULL]"
+                       endDownloaddate="[NULL]"/>
+  <SC_Gallery_Internal mediaId="5" download="0" fileName="viper.jpg" fileSize="5146"
+                       fileMimeType="image/png" beginDownloaddate="[NULL]"
+                       endDownloaddate="[NULL]"/>
 
-  <sc_gallery_path photoid="2" nodeid="1" instanceid="gallery26" />
-  <sc_gallery_path photoid="3" nodeid="1" instanceid="gallery26" />
-  <sc_gallery_path photoid="5" nodeid="2" instanceid="gallery26" />
-  <sc_gallery_path photoid="4" nodeid="1" instanceid="gallery26" />
+  <SC_Gallery_Photo mediaId="0" resolutionH="110" resolutionW="110"/>
+  <SC_Gallery_Photo mediaId="1" resolutionH="110" resolutionW="110"/>
+  <SC_Gallery_Photo mediaId="2" resolutionH="110" resolutionW="110"/>
+  <SC_Gallery_Photo mediaId="3" resolutionH="110" resolutionW="110"/>
+  <SC_Gallery_Photo mediaId="4" resolutionH="110" resolutionW="110"/>
+  <SC_Gallery_Photo mediaId="5" resolutionH="110" resolutionW="110"/>
+
+  <sb_node_node nodeid="0" nodename="Accueil" nodedescription="La Racine"
+                nodecreationdate="2014/06/10" nodecreatorid="0" nodepath="/" nodelevelnumber="1"
+                nodefatherid="-1" modelid="" nodestatus="Visible" instanceid="gallery26"
+                ordernumber="0" rightsdependson="-1" lang="[NULL]" type="[NULL]"/>
+  <sb_node_node nodeid="1" nodename="Nature"
+                nodedescription="Noeud de test contenant des images sur le thème de la nature"
+                nodecreationdate="2014/06/10" nodecreatorid="0" nodepath="/0/" nodelevelnumber="2"
+                nodefatherid="0" modelid="[NULL]" nodestatus="[NULL]" instanceid="gallery26"
+                ordernumber="2" rightsdependson="-1"/>
+  <sb_node_node nodeid="2" nodename="Automobile"
+                nodedescription="Noeud de test contenant des images sur le thème automobile"
+                nodecreationdate="2014/06/10" nodecreatorid="0" nodepath="/0/" nodelevelnumber="2"
+                nodefatherid="0" modelid="[NULL]" nodestatus="[NULL]" instanceid="gallery26"
+                ordernumber="1" rightsdependson="-1"/>
+
+  <sc_gallery_path mediaId="2" nodeid="1" instanceid="gallery26"/>
+  <sc_gallery_path mediaId="3" nodeid="1" instanceid="gallery26"/>
+  <sc_gallery_path mediaId="5" nodeid="2" instanceid="gallery26"/>
+  <sc_gallery_path mediaId="4" nodeid="1" instanceid="gallery26"/>
 
 </dataset>

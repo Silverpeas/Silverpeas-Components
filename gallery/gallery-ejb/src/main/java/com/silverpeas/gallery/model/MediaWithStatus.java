@@ -23,18 +23,18 @@
  */
 package com.silverpeas.gallery.model;
 
-public class PhotoWithStatus {
+public class MediaWithStatus {
 
-  private PhotoDetail photo;
+  private Media media;
   private boolean update;
 
-  public PhotoWithStatus(PhotoDetail photo, boolean update) {
-    this.photo = photo;
+  public MediaWithStatus(Media media, boolean update) {
+    this.media = media;
     this.update = update;
   }
 
-  public PhotoDetail getPhoto() {
-    return photo;
+  public Media getMedia() {
+    return media;
   }
 
   public boolean isUpdate() {
@@ -45,7 +45,7 @@ public class PhotoWithStatus {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((photo == null) ? 0 : photo.hashCode());
+    result = prime * result + ((media == null) ? 0 : media.hashCode());
     result = prime * result + (update ? 1231 : 1237);
     return result;
   }
@@ -58,15 +58,15 @@ public class PhotoWithStatus {
     if (obj == null) {
       return false;
     }
-    if (!(obj instanceof PhotoWithStatus)) {
+    if (!(obj instanceof MediaWithStatus)) {
       return false;
     }
-    PhotoWithStatus other = (PhotoWithStatus) obj;
-    if (photo == null) {
-      if (other.photo != null) {
+    MediaWithStatus other = (MediaWithStatus) obj;
+    if (media == null) {
+      if (other.media != null) {
         return false;
       }
-    } else if (!photo.equals(other.photo)) {
+    } else if (!media.equals(other.media)) {
       return false;
     }
     return update == other.update;

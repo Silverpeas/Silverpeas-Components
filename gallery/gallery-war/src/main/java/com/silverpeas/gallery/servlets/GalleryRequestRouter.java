@@ -145,7 +145,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         request.setAttribute("root", root);
         request.setAttribute("Albums", gallerySC.addNbPhotos(root.getChildrenAlbumsDetails()));
         // chercher les dernières photos
-        Collection<PhotoDetail> photos = gallerySC.getDernieres();
+        Collection<PhotoDetail> photos = gallerySC.getLastRegistredMedia();
         request.setAttribute("Photos", photos);
         request.setAttribute("IsUsePdc", gallerySC.isUsePdc());
         request.setAttribute("IsPrivateSearch", gallerySC.isPrivateSearch());
@@ -1094,7 +1094,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         gallerySC.setIndexOfFirstItemToDisplay("0");
         request.setAttribute("root", gallerySC.goToAlbum("0"));
         // chercher les dernières photos
-        Collection<PhotoDetail> photos = gallerySC.getDernieres();
+        Collection<PhotoDetail> photos = gallerySC.getLastRegistredMedia();
         request.setAttribute("Photos", photos);
         // appel jsp
         destination = rootDest + "portlet.jsp";

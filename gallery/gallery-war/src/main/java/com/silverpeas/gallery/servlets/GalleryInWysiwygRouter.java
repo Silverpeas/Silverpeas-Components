@@ -146,7 +146,7 @@ public class GalleryInWysiwygRouter extends HttpServlet {
     // récupération de toutes les photos d'un album
     try {
       NodePK nodePK = new NodePK(albumId, componentId);
-      return getGalleryBm().getAllPhoto(nodePK, false);
+      return getGalleryBm().getAllPhotos(nodePK);
     } catch (Exception e) {
       throw new GalleryRuntimeException(
           "GalleryInWysiwygRouter.viewPhotosOfAlbum()",

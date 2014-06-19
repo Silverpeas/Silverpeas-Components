@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import com.silverpeas.gallery.control.ejb.GalleryBm;
+import com.silverpeas.gallery.model.Media;
+import com.silverpeas.gallery.model.MediaCriteria;
 import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
@@ -36,11 +38,12 @@ public class GalleryStatistics implements ComponentStatisticsInterface {
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
       throws Exception {
-    Collection<PhotoDetail> photos = getGalleryBm().getAllPhotos(componentId);
-    ArrayList<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>(photos.size());
-    for (PhotoDetail photo : photos) {
+    Collection<Media> media = getGalleryBm().getAllMedia(componentId,
+        MediaCriteria.VISIBILITY.FORCE_GET_ALL);
+    ArrayList<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>(media.size());
+    for (Media aMedia : media) {
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
-      myCouple.setUserId(photo.getCreatorId());
+      myCouple.setUserId(aMedia.getCreatorId());
       myCouple.setCountVolume(1);
       myArrayList.add(myCouple);
     }

@@ -24,6 +24,7 @@
 package com.silverpeas.gallery.model;
 
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -83,12 +84,12 @@ public interface MediaOrderCriteriaProcessor {
   MediaOrderCriteriaProcessor processOrderer(final String ordererId);
 
   /**
-   * Processes the criterion on the nb days after that an order should be deleted.
-   * @param nbDaysAfterThatDeleteAnOrder the identifiers of albums concerned by the criterion.
+   * Processes the criterion on the nb of days after that an order should be deleted.
+   * @param referenceDate
+   * @param nbDaysAfterThatDeleteAnOrder the nb of days after that an order should be deleted.
    * @return the processor itself.
    */
-  MediaOrderCriteriaProcessor processNbDaysBeforeDeleteAnOrder(
-      final int nbDaysAfterThatDeleteAnOrder);
+  MediaOrderCriteriaProcessor processNbDaysAfterThatDeleteAnOrder(final Date referenceDate, final int nbDaysAfterThatDeleteAnOrder);
 
   /**
    * Gets the result of the processing. Warning, the result can be incomplete if called before the

@@ -191,13 +191,13 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     viewAllPhoto = SilverpeasRole.admin.isInRole(getRole());
   }
 
-  public Collection<PhotoDetail> getDernieres() {
+  public Collection<PhotoDetail> getLastRegistredMedia() {
     Collection<PhotoDetail> photos;
     // va rechercher les dernières photos du composant
     try {
-      photos = getGalleryBm().getDernieres(getComponentId(), viewAllPhoto);
-    } catch (RemoteException e) {
-      throw new GalleryRuntimeException("GallerySessionController.getDernieres()",
+      photos = getGalleryBm().getLastRegistredMedia(getComponentId());
+    } catch (Exception e) {
+      throw new GalleryRuntimeException("GallerySessionController.getLastRegistredMedia()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
     return photos;
@@ -237,7 +237,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     NodePK nodePK = new NodePK(albumId, getComponentId());
     AlbumDetail album;
     try {
-      album = getGalleryBm().getAlbum(nodePK, viewAllPhoto);
+      album = getGalleryBm().getAlbum(nodePK);
     } catch (Exception e) {
       throw new GalleryRuntimeException("GallerySessionController.getAlbum()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
@@ -249,7 +249,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     NodePK nodePK = new NodePK(albumId, getComponentId());
     AlbumDetail album;
     try {
-      album = getGalleryBm().getAlbum(nodePK, viewAllPhoto);
+      album = getGalleryBm().getAlbum(nodePK);
     } catch (Exception e) {
       throw new GalleryRuntimeException("GallerySessionController.getAlbumLight()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
@@ -290,7 +290,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     if (albums != null) {
       SilverTrace.debug("gallery", "GallerySessionController.addAlbumPath()",
           "root.MSG_GEN_PARAM_VALUE", "photoId = " + photoId);
-      getGalleryBm().addPhotoPaths(photoId, getComponentId(), albums);
+      getGalleryBm().addMediaPaths(photoId, getComponentId(), albums);
     }
   }
 
@@ -537,15 +537,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   }
 
   public int getNbPhotosPerPage() {
-    int nbPhotosPerPage = 15;
-    if ("66x50".equals(taille)) {
-      nbPhotosPerPage = 35;
-    } else if ("133x100".equals(taille)) {
-      nbPhotosPerPage = 15;
-    } else if ("266x150".equals(taille)) {
-      nbPhotosPerPage = 6;
-    }
-    return nbPhotosPerPage;
+    return GalleryComponentSettings.getNbMediaDisplayedPerPageByResolution(taille);
   }
 
   public String getTaille() {
@@ -966,7 +958,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
 
   public Collection<PhotoDetail> getAllPhotos(AlbumDetail album) {
     try {
-      return getGalleryBm().getAllPhoto(album.getNodePK(), viewAllPhoto);
+      return getGalleryBm().getAllPhotos(album.getNodePK());
     } catch (Exception e) {
       return null;
     }

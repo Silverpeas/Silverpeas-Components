@@ -30,12 +30,14 @@ import com.silverpeas.gallery.model.InternalMedia;
 import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.MediaCriteria;
 import com.silverpeas.gallery.model.MediaPK;
+import com.silverpeas.gallery.model.MediaWithStatus;
 import com.silverpeas.gallery.model.Photo;
 import com.silverpeas.gallery.model.Sound;
 import com.silverpeas.gallery.model.Streaming;
 import com.silverpeas.gallery.model.Video;
+import com.silverpeas.gallery.socialNetwork.SocialInformationGallery;
+import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.util.CollectionUtil;
-import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
@@ -98,7 +100,7 @@ public class MediaDAO {
     final Map<String, Streaming> streamings = new HashMap<String, Streaming>();
 
     List<Media> media = select(con, queryBuild.getLeft(), queryBuild.getRight(),
-        new SelectResultRowProcessor<Media>() {
+        new SelectResultRowProcessor<Media>(criteria.getResultLimit()) {
           @Override
           protected Media read(final ResultSet rs) throws SQLException {
             String mediaId = rs.getString(1);
@@ -390,7 +392,7 @@ public class MediaDAO {
     // The current Uuid
     String uuid = media.getId();
 
-    boolean isInsert = StringUtil.isNotDefined(uuid) ||
+    boolean isInsert = !isSqlDefined(uuid) ||
         selectCount(con, "select count(*) from SC_Gallery_Media where mediaId = ?", uuid) == 0;
 
     // A new ID
@@ -671,7 +673,8 @@ public class MediaDAO {
    */
   public static void saveMediaPath(Connection con, Media media, String albumId)
       throws SQLException, UtilException {
-    List<String> pathParams = Arrays.asList(media.getId(), media.getInstanceId(), albumId);
+    List<?> pathParams =
+        Arrays.asList(media.getId(), media.getInstanceId(), Integer.valueOf(albumId));
 
     boolean isInsert = selectCount(con,
         "select count(*) from SC_Gallery_Path where mediaId = ? and instanceId = ? and nodeId" +
@@ -692,5 +695,108 @@ public class MediaDAO {
   public static void deleteAllMediaPath(Connection con, Media media) throws SQLException {
     executeUpdate(con, "delete from SC_Gallery_Path where mediaId = ? and instanceId = ?",
         Arrays.asList(media.getId(), media.getInstanceId()));
+  }
+
+  /**
+   * Gets the paths of a media.
+   * @param con
+   * @param instanceId
+   * @param mediaId
+   * @return
+   * @throws SQLException
+   */
+  public static Collection<String> getPathList(Connection con, String instanceId, String mediaId)
+      throws SQLException {
+    return select(con,
+        "select N.NodeId from SC_Gallery_Path P, SB_Node_Node N where P.mediaId = ? and N.nodeId " +
+            "= P.NodeId and P.instanceId = ? and N.instanceId = P.instanceId",
+        Arrays.asList(mediaId, instanceId), new SelectResultRowProcessor<String>() {
+
+          @Override
+          protected String read(final ResultSet rs) throws SQLException {
+            return String.valueOf(rs.getInt(1));
+          }
+        });
+  }
+
+  /**
+   * get my SocialInformationGallery according to the type of data base used(PostgreSQL,Oracle,MMS)
+   * .
+   * @param con
+   * @param userId
+   * @param period
+   * @return List<SocialInformation>
+   * @throws SQLException
+   * @throws java.text.ParseException
+   */
+  public static List<SocialInformation> getAllMediaIdByUserId(final Connection con, String userId,
+      Period period) throws SQLException {
+    return select(con,
+        "(select createDate AS dateinformation, mediaId, 'new' as type from SC_Gallery_Media " +
+            "where createdBy = ? and createDate >= ? and createDate <= ? ) " +
+            "union (select lastUpdateDate AS dateinformation, mediaId , " +
+            "'update' as type from SC_Gallery_Media where lastUpdatedBy = ? and lastUpdateDate <>" +
+            " createDate and lastUpdateDate >= ? and lastUpdateDate <= ? ) order by " +
+            "dateinformation desc, mediaId desc", Arrays
+            .asList(userId, period.getBeginDate(), period.getEndDate(), userId,
+                period.getBeginDate(), period.getEndDate()),
+        new SelectResultRowProcessor<SocialInformation>() {
+
+          @Override
+          protected SocialInformation read(final ResultSet rs) throws SQLException {
+            Media media = getByCriteria(con, MediaCriteria.fromMediaId(rs.getString(2))
+                .withVisibility(MediaCriteria.VISIBILITY.FORCE_GET_ALL));
+            MediaWithStatus withStatus =
+                new MediaWithStatus(media, "update".equalsIgnoreCase(rs.getString(3)));
+            return new SocialInformationGallery(withStatus);
+          }
+        });
+  }
+
+  /**
+   * get list of socialInformationGallery of my contacts according to the type of data base
+   * used(PostgreSQL,Oracle,MMS) .
+   * @param con
+   * @param userIds
+   * @param availableComponents
+   * @param period
+   * @return
+   * @throws SQLException
+   * @throws java.text.ParseException
+   */
+  public static List<SocialInformation> getSocialInformationListOfMyContacts(final Connection con,
+      List<String> userIds, List<String> availableComponents, Period period) throws SQLException {
+    List<Object> params = new ArrayList<Object>();
+    StringBuilder query =
+        new StringBuilder("(select createDate AS dateinformation, mediaId, 'new' as type ");
+    query.append("from SC_Gallery_Media where createdBy in ");
+    appendListOfParameters(query, userIds, params);
+    query.append(" and instanceId in ");
+    appendListOfParameters(query, availableComponents, params);
+    query.append(" AND createDate >= ? AND createDate <= ?) ");
+    params.add(period.getBeginDate());
+    params.add(period.getEndDate());
+    query.append(" union (SELECT lastUpdateDate AS dateinformation, mediaId, 'update' as type ");
+    query.append("from SC_Gallery_Media where lastUpdatedBy in ");
+    appendListOfParameters(query, userIds, params);
+    query.append(" and instanceId in ");
+    appendListOfParameters(query, availableComponents, params);
+    query.append(" and lastUpdateDate <> createDate ");
+    query.append("and lastUpdateDate >= ? and lastUpdateDate <= ?) ");
+    params.add(period.getBeginDate());
+    params.add(period.getEndDate());
+    query.append("order by dateinformation desc, mediaId desc");
+
+    return select(con, query.toString(), params, new SelectResultRowProcessor<SocialInformation>() {
+
+      @Override
+      protected SocialInformation read(final ResultSet rs) throws SQLException {
+        Media media = getByCriteria(con, MediaCriteria.fromMediaId(rs.getString(2))
+            .withVisibility(MediaCriteria.VISIBILITY.FORCE_GET_ALL));
+        MediaWithStatus withStatus =
+            new MediaWithStatus(media, "update".equalsIgnoreCase(rs.getString(3)));
+        return new SocialInformationGallery(withStatus);
+      }
+    });
   }
 }

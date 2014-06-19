@@ -27,6 +27,7 @@ import com.silverpeas.gallery.model.Order;
 import com.silverpeas.gallery.model.OrderRow;
 import com.silverpeas.util.CollectionUtil;
 import com.stratelia.webactiv.util.DateUtil;
+import org.apache.commons.lang.time.DateUtils;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
 import org.junit.Test;
@@ -309,12 +310,14 @@ public class OrderDAOTest extends BaseGalleryTest {
     performDAOTest(new DAOTest() {
       @Override
       public void test(final Connection connection) throws Exception {
-        List<Order> ordersToDelete = OrderDAO
-            .findByCriteria(connection, MediaOrderCriteria.fromNbDaysAfterThatDeleteAnOrder(0));
+        List<Order> ordersToDelete = OrderDAO.findByCriteria(connection,
+            MediaOrderCriteria.fromNbDaysAfterThatDeleteAnOrder(0)
+                .referenceDateOf(DateUtils.addDays(CREATE_DATE, 1)));
         assertThat(ordersToDelete, hasSize(3));
 
         ordersToDelete = OrderDAO.findByCriteria(connection,
-            MediaOrderCriteria.fromNbDaysAfterThatDeleteAnOrder(365000));
+            MediaOrderCriteria.fromNbDaysAfterThatDeleteAnOrder(1)
+                .referenceDateOf(DateUtils.addDays(CREATE_DATE, 1)));
         assertThat(ordersToDelete, hasSize(0));
       }
     });

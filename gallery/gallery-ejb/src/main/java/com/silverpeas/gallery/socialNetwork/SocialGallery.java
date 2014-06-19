@@ -39,6 +39,7 @@ import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.date.Period;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +56,7 @@ public class SocialGallery implements SocialGalleryInterface {
    */
   @Override
   public List<SocialInformation> getSocialInformationsList(String userId, Date begin, Date end) {
-    return getGalleryBm().getAllPhotosByUserId(userId, begin, end);
+    return getGalleryBm().getAllMediaByUserId(userId, Period.from(begin, end));
   }
 
   /**
@@ -71,8 +72,8 @@ public class SocialGallery implements SocialGalleryInterface {
   @Override
   public List<SocialInformation> getSocialInformationsListOfMyContacts(String myId,
       List<String> myContactsIds, Date begin, Date end) throws SilverpeasException {
-    return getGalleryBm().getSocialInformationsListOfMyContacts(myContactsIds, this.
-        getListAvailable(myId), begin, end);
+    return getGalleryBm().getSocialInformationListOfMyContacts(myContactsIds, this.
+        getListAvailable(myId), Period.from(begin, end));
   }
 
   private GalleryBm getGalleryBm() {

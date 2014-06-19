@@ -23,15 +23,11 @@
  */
 package com.silverpeas.gallery.process.photo;
 
-import static com.silverpeas.util.StringUtil.isDefined;
-
-import org.silverpeas.process.session.ProcessSession;
-
 import com.silverpeas.comment.service.CommentServiceFactory;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
-import com.silverpeas.gallery.dao.PhotoDAO;
+import com.silverpeas.gallery.dao.MediaDAO;
 import com.silverpeas.gallery.model.GalleryRuntimeException;
 import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.gallery.process.AbstractGalleryDataProcess;
@@ -39,6 +35,9 @@ import com.silverpeas.gallery.process.GalleryProcessExecutionContext;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.process.session.ProcessSession;
+
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * Process to delete a photo from Database
@@ -72,9 +71,7 @@ public class GalleryDeletePhotoDataProcess extends AbstractGalleryDataProcess {
   @Override
   protected void processData(final GalleryProcessExecutionContext context,
       final ProcessSession session) throws Exception {
-    PhotoDAO.removePhoto(context.getConnection(), Integer.parseInt(getPhoto().getId()));
-    PhotoDAO.deletePhotoPath(context.getConnection(), getPhoto().getId(),
-        context.getComponentInstanceId());
+    MediaDAO.deleteMedia(context.getConnection(), getPhoto().getPhoto());
 
     // Delete form data
     removeXMLContentOfPhoto(getPhoto().getId(), context);

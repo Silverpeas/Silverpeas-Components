@@ -32,6 +32,7 @@ import com.silverpeas.gallery.model.Photo;
 import com.silverpeas.gallery.model.Sound;
 import com.silverpeas.gallery.model.Streaming;
 import com.silverpeas.gallery.model.Video;
+import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import org.apache.commons.lang3.time.DateUtils;
@@ -43,7 +44,10 @@ import org.silverpeas.date.Period;
 import org.silverpeas.persistence.repository.OperationContext;
 
 import java.sql.Connection;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -76,32 +80,32 @@ public class MediaDaoTest extends BaseGalleryTest {
       @Override
       public void test(final Connection connection) throws Exception {
         List<Media> media =
-            MediaDAO.findByCriteria(connection, defaultMediaCriteria().albumIdentifierIsOneOf(1));
+            MediaDAO.findByCriteria(connection, defaultMediaCriteria().albumIdentifierIsOneOf("1"));
         assertMediaIdentifiers(media, false, "1", "v_1", "v_2", "s_1", "s_2", "stream_2");
 
         media =
-            MediaDAO.findByCriteria(connection, defaultMediaCriteria().albumIdentifierIsOneOf(2));
+            MediaDAO.findByCriteria(connection, defaultMediaCriteria().albumIdentifierIsOneOf("2"));
         assertMediaIdentifiers(media, false, "2", "v_1", "stream_1");
 
         // Album that does not exist
-        media =
-            MediaDAO.findByCriteria(connection, defaultMediaCriteria().albumIdentifierIsOneOf(999));
+        media = MediaDAO
+            .findByCriteria(connection, defaultMediaCriteria().albumIdentifierIsOneOf("999"));
         assertThat(media, hasSize(0));
 
         // Several albums
         media = MediaDAO.findByCriteria(connection,
-            defaultMediaCriteria().albumIdentifierIsOneOf(1, 999, 2, 89));
+            defaultMediaCriteria().albumIdentifierIsOneOf("1", "999", "2", "89"));
         assertMediaIdentifiers(media, false, "1", "v_2", "s_1", "s_2", "stream_2", "2", "v_1",
             "stream_1");
 
         // Removing the identifier of component instance
         media = MediaDAO.findByCriteria(connection,
-            defaultMediaCriteria().albumIdentifierIsOneOf(1).onComponentInstanceId(null));
-        assertMediaIdentifiers(media, false, "1", "v_1", "v_2", "s_1", "s_2", "stream_2", "9");
+            defaultMediaCriteria().albumIdentifierIsOneOf("1").onComponentInstanceId(null));
+        assertMediaIdentifiers(media, false, "1", "v_1", "v_2", "s_1", "s_2", "stream_2");
 
         media = MediaDAO.findByCriteria(connection,
-            defaultMediaCriteria().albumIdentifierIsOneOf(2).onComponentInstanceId(null));
-        assertMediaIdentifiers(media, false, "2", "v_1", "stream_1", "v_9", "s_9", "stream_9");
+            defaultMediaCriteria().albumIdentifierIsOneOf("2").onComponentInstanceId(null));
+        assertMediaIdentifiers(media, false, "2", "v_1", "stream_1");
       }
     });
   }
@@ -140,6 +144,11 @@ public class MediaDaoTest extends BaseGalleryTest {
         List<Media> media = MediaDAO.findByCriteria(connection,
             defaultMediaCriteria().mediaTypeIsOneOf(MediaType.Photo, MediaType.Video));
         assertThat(media, hasSize(4));
+
+        media = MediaDAO.findByCriteria(connection,
+            defaultMediaCriteria().mediaTypeIsOneOf(MediaType.Photo, MediaType.Video)
+                .limitResultTo(2));
+        assertThat(media, hasSize(2));
       }
     });
   }
@@ -271,20 +280,20 @@ public class MediaDaoTest extends BaseGalleryTest {
 
         media = MediaDAO.findByCriteria(connection,
             mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming)
-                .visibility(FORCE_GET_ALL));
+                .withVisibility(FORCE_GET_ALL));
         assertThat(media, hasSize(2));
         assertMediaType(media, MediaType.Streaming, Streaming.class);
 
         media = MediaDAO.findByCriteria(connection,
             mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming)
-                .visibility(HIDDEN_ONLY));
+                .withVisibility(HIDDEN_ONLY));
         assertThat(media, hasSize(1));
         assertMediaType(media, MediaType.Streaming, Streaming.class);
         assertThat(media.get(0).getId(), is("stream_1"));
 
         media = MediaDAO.findByCriteria(connection,
             mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming)
-                .visibility(VISIBLE_ONLY));
+                .withVisibility(VISIBLE_ONLY));
         assertThat(media, hasSize(1));
         assertMediaType(media, MediaType.Streaming, Streaming.class);
         assertThat(media.get(0).getId(), is("stream_2"));
@@ -295,17 +304,108 @@ public class MediaDaoTest extends BaseGalleryTest {
 
         media = MediaDAO.findByCriteria(connection,
             mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming)
-                .visibility(HIDDEN_ONLY));
+                .withVisibility(HIDDEN_ONLY));
         assertThat(media, hasSize(1));
         assertMediaType(media, MediaType.Streaming, Streaming.class);
         assertThat(media.get(0).getId(), is("stream_1"));
 
         media = MediaDAO.findByCriteria(connection,
             mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming)
-                .visibility(VISIBLE_ONLY));
+                .withVisibility(VISIBLE_ONLY));
         assertThat(media, hasSize(1));
         assertMediaType(media, MediaType.Streaming, Streaming.class);
         assertThat(media.get(0).getId(), is("stream_2"));
+      }
+    });
+  }
+
+  @Test
+  public void getMediaThatWillBeNotVisible() throws Exception {
+    performDAOTest(new DAOTest() {
+      @Override
+      public void test(final Connection connection) throws Exception {
+        Date today = Timestamp.valueOf("2014-03-30 11:33:45.854");
+        List<Media> media = MediaDAO.findByCriteria(connection,
+            MediaCriteria.fromNbDaysBeforeThatMediaIsNotVisible(0).referenceDateOf(today));
+        assertThat(media, hasSize(0));
+
+        media = MediaDAO.findByCriteria(connection,
+            MediaCriteria.fromNbDaysBeforeThatMediaIsNotVisible(1).referenceDateOf(today));
+        assertThat(media, hasSize(1));
+
+        media = MediaDAO.findByCriteria(connection,
+            MediaCriteria.fromNbDaysBeforeThatMediaIsNotVisible(2).referenceDateOf(today));
+        assertThat(media, hasSize(0));
+      }
+    });
+  }
+
+  @Test
+  public void getPathList() throws Exception {
+    performDAOTest(new DAOTest() {
+      @Override
+      public void test(final Connection connection) throws Exception {
+        Collection<String> pathList = MediaDAO.getPathList(connection, INSTANCE_A, "v_2");
+        assertThat(pathList, contains("1"));
+
+        pathList = MediaDAO.getPathList(connection, INSTANCE_A, "v_1");
+        assertThat(pathList, containsInAnyOrder("1", "2"));
+      }
+    });
+  }
+
+  @Test
+  public void getAllMediaIdByUserId() throws Exception {
+    performDAOTest(new DAOTest() {
+      @Override
+      public void test(final Connection connection) throws Exception {
+        Date beginDate = DateUtils.addDays(CREATE_DATE, +1);
+        Date endDate = DateUtils.addDays(CREATE_DATE, +2);
+        List<SocialInformation> socialInformationList = MediaDAO
+            .getAllMediaIdByUserId(connection, writerUser.getId(), Period.from(beginDate, endDate));
+        assertThat(socialInformationList, hasSize(0));
+
+        beginDate = DateUtils.addDays(CREATE_DATE, 0);
+        endDate = DateUtils.addDays(CREATE_DATE, +2);
+        socialInformationList = MediaDAO
+            .getAllMediaIdByUserId(connection, writerUser.getId(), Period.from(beginDate, endDate));
+        assertThat(socialInformationList, hasSize(1));
+
+        beginDate = DateUtils.addDays(LAST_UPDATE_DATE, -2);
+        endDate = DateUtils.addDays(LAST_UPDATE_DATE, +2);
+        socialInformationList = MediaDAO
+            .getAllMediaIdByUserId(connection, writerUser.getId(), Period.from(beginDate, endDate));
+        assertThat(socialInformationList, hasSize(1));
+      }
+    });
+  }
+
+  @Test
+  public void getSocialInformationListOfMyContacts() throws Exception {
+    performDAOTest(new DAOTest() {
+      @Override
+      public void test(final Connection connection) throws Exception {
+        Date beginDate = DateUtils.addDays(CREATE_DATE, +1);
+        Date endDate = DateUtils.addDays(CREATE_DATE, +2);
+        List<SocialInformation> socialInformationList = MediaDAO
+            .getSocialInformationListOfMyContacts(connection,
+                Arrays.asList(writerUser.getId(), adminAccessUser.getId(), publisherUser.getId()),
+                Arrays.asList(INSTANCE_A, "otherInstanceId"), Period.from(beginDate, endDate));
+        assertThat(socialInformationList, hasSize(0));
+
+        beginDate = DateUtils.addDays(CREATE_DATE, 0);
+        endDate = DateUtils.addDays(CREATE_DATE, +2);
+        socialInformationList = MediaDAO.getSocialInformationListOfMyContacts(connection,
+            Arrays.asList(writerUser.getId(), adminAccessUser.getId(), publisherUser.getId()),
+            Arrays.asList(INSTANCE_A, "otherInstanceId"), Period.from(beginDate, endDate));
+        assertThat(socialInformationList, hasSize(4));
+
+        beginDate = DateUtils.addDays(LAST_UPDATE_DATE, -2);
+        endDate = DateUtils.addDays(LAST_UPDATE_DATE, +2);
+        socialInformationList = MediaDAO.getSocialInformationListOfMyContacts(connection,
+            Arrays.asList(writerUser.getId(), adminAccessUser.getId(), publisherUser.getId()),
+            Arrays.asList(INSTANCE_A, "otherInstanceId"), Period.from(beginDate, endDate));
+        assertThat(socialInformationList, hasSize(7));
       }
     });
   }
@@ -1556,10 +1656,10 @@ public class MediaDaoTest extends BaseGalleryTest {
             .getByCriteria(connection, defaultMediaCriteria().identifierIsOneOf(mediaIdToPerform))
             .getStreaming();
 
-        TableRow mediaPathRow = getTableRowFor(pathTable, "nodeId", "albumA");
+        TableRow mediaPathRow = getTableRowFor(pathTable, "nodeId", "26");
         assertThat(mediaPathRow, nullValue());
 
-        MediaDAO.saveMediaPath(connection, streamingToPerform, "albumA");
+        MediaDAO.saveMediaPath(connection, streamingToPerform, "26");
 
         actualDataSet = getActualDataSet();
         mediaTable = actualDataSet.getTable("SC_Gallery_Media");
@@ -1577,12 +1677,12 @@ public class MediaDaoTest extends BaseGalleryTest {
         pathTable = actualDataSet.getTable("SC_Gallery_Path");
         assertThat(pathTable.getRowCount(), is(MEDIA_PATH_ROW_COUNT + 1));
 
-        mediaPathRow = getTableRowFor(pathTable, "nodeId", "albumA");
+        mediaPathRow = getTableRowFor(pathTable, "nodeId", 26);
         assertThat(mediaPathRow.getString("mediaId"), is(mediaIdToPerform));
         assertThat(mediaPathRow.getString("instanceId"), is(INSTANCE_A));
-        assertThat(mediaPathRow.getString("nodeId"), is("albumA"));
+        assertThat(mediaPathRow.getInteger("nodeId"), is(26));
 
-        MediaDAO.saveMediaPath(connection, streamingToPerform, "albumA");
+        MediaDAO.saveMediaPath(connection, streamingToPerform, "26");
 
         actualDataSet = getActualDataSet();
         mediaTable = actualDataSet.getTable("SC_Gallery_Media");
@@ -1600,7 +1700,7 @@ public class MediaDaoTest extends BaseGalleryTest {
         pathTable = actualDataSet.getTable("SC_Gallery_Path");
         assertThat(pathTable.getRowCount(), is(MEDIA_PATH_ROW_COUNT + 1));
 
-        MediaDAO.saveMediaPath(connection, streamingToPerform, "albumB");
+        MediaDAO.saveMediaPath(connection, streamingToPerform, "38");
 
         actualDataSet = getActualDataSet();
         mediaTable = actualDataSet.getTable("SC_Gallery_Media");
@@ -1618,15 +1718,15 @@ public class MediaDaoTest extends BaseGalleryTest {
         pathTable = actualDataSet.getTable("SC_Gallery_Path");
         assertThat(pathTable.getRowCount(), is(MEDIA_PATH_ROW_COUNT + 2));
 
-        mediaPathRow = getTableRowFor(pathTable, "nodeId", "albumA");
+        mediaPathRow = getTableRowFor(pathTable, "nodeId", 26);
         assertThat(mediaPathRow.getString("mediaId"), is(mediaIdToPerform));
         assertThat(mediaPathRow.getString("instanceId"), is(INSTANCE_A));
-        assertThat(mediaPathRow.getString("nodeId"), is("albumA"));
+        assertThat(mediaPathRow.getInteger("nodeId"), is(26));
 
-        mediaPathRow = getTableRowFor(pathTable, "nodeId", "albumB");
+        mediaPathRow = getTableRowFor(pathTable, "nodeId", 38);
         assertThat(mediaPathRow.getString("mediaId"), is(mediaIdToPerform));
         assertThat(mediaPathRow.getString("instanceId"), is(INSTANCE_A));
-        assertThat(mediaPathRow.getString("nodeId"), is("albumB"));
+        assertThat(mediaPathRow.getInteger("nodeId"), is(38));
       }
     });
   }

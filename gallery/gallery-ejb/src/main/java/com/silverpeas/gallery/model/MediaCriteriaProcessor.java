@@ -93,7 +93,7 @@ public interface MediaCriteriaProcessor {
    * @param albumIds the identifiers of albums concerned by the criterion.
    * @return the processor itself.
    */
-  MediaCriteriaProcessor processAlbums(final List<Integer> albumIds);
+  MediaCriteriaProcessor processAlbums(final List<String> albumIds);
 
   /**
    * Processes the criterion on the creator of the medias.
@@ -108,6 +108,16 @@ public interface MediaCriteriaProcessor {
    * @return the processor itself.
    */
   MediaCriteriaProcessor processMediaTypes(final List<MediaType> mediaTypes);
+
+  /**
+   * Processes the criterion on the nb of days before that a media is not visible.
+   *
+   * @param referenceDate
+   * @param nbDaysBeforeThatMediaIsNotVisible the nb of days before that a media is not visible.
+   * @return the processor itself.
+   */
+  MediaCriteriaProcessor processNbDaysBeforeThatMediaIsNotVisible(final Date referenceDate,
+      final int nbDaysBeforeThatMediaIsNotVisible);
 
   /**
    * Processes the criterion on orderings of the medias matching the criteria.

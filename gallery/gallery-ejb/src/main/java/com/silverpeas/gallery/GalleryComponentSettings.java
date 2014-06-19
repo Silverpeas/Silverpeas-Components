@@ -88,4 +88,28 @@ public final class GalleryComponentSettings {
   public static String getMediaFolderNamePrefix() {
     return getSettings().getString("imagesSubDirectory", "image");
   }
+
+  /**
+   * Gets the max number of media displayed on homepage.
+   * @return
+   */
+  public static int getNbMediaDisplayedPerPage() {
+    return getNbMediaDisplayedPerPageByResolution(null);
+  }
+
+  /**
+   * Gets the max number of media displayed on homepage.
+   * @return
+   */
+  public static int getNbMediaDisplayedPerPageByResolution(String resolution) {
+    int nbPhotosPerPage = 15;
+    if ("66x50".equals(resolution)) {
+      nbPhotosPerPage = 35;
+    } else if ("133x100".equals(resolution)) {
+      nbPhotosPerPage = 15;
+    } else if ("266x150".equals(resolution)) {
+      nbPhotosPerPage = 6;
+    }
+    return nbPhotosPerPage;
+  }
 }

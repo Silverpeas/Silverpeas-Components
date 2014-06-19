@@ -53,7 +53,7 @@ CREATE TABLE SC_Gallery_Streaming (
 CREATE TABLE SC_Gallery_Path (
   mediaId    VARCHAR(40) NOT NULL,
   instanceId VARCHAR(50) NOT NULL,
-  nodeId     VARCHAR(40) NOT NULL
+  nodeId     INT         NOT NULL
 );
 
 CREATE TABLE SC_Gallery_Order (

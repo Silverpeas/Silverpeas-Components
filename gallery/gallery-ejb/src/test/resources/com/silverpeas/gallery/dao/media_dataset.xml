@@ -103,10 +103,10 @@
   <!-- Streaming -->
   <sc_gallery_media mediaId="stream_1" mediaType="Streaming" instanceId="instanceId_A"
                     title="title stream_1" description="[NULL]" author="an author stream_1"
-                    keyWord="[NULL]"
-                    beginVisibilityDate="1388530800000" endVisibilityDate="1396263599999"
-                    createDate="2014-06-01 16:38:52.253" createdBy="publisherUserId"
-                    lastUpdateDate="2014-06-03 11:20:42.637" lastUpdatedBy="adminUserId"/>
+                    keyWord="[NULL]" beginVisibilityDate="1388530800000"
+                    endVisibilityDate="1396263599999" createDate="2014-06-01 16:38:52.253"
+                    createdBy="publisherUserId" lastUpdateDate="2014-06-03 11:20:42.637"
+                    lastUpdatedBy="adminUserId"/>
   <sc_gallery_media mediaId="stream_2" mediaType="Streaming" instanceId="instanceId_A"
                     title="title stream_2" description="[NULL]" author="[NULL]" keyWord="[NULL]"
                     beginVisibilityDate="-2208992400000" endVisibilityDate="32503590000000"
@@ -125,22 +125,43 @@
   <!-- Albums -->
   <SC_Gallery_Path mediaId="1" instanceId="instanceId_A" nodeId="1"/>
   <SC_Gallery_Path mediaId="2" instanceId="instanceId_A" nodeId="2"/>
-  <SC_Gallery_Path mediaId="9" instanceId="instanceId_Z" nodeId="1"/>
+  <SC_Gallery_Path mediaId="9" instanceId="instanceId_Z" nodeId="9"/>
   <SC_Gallery_Path mediaId="v_1" instanceId="instanceId_A" nodeId="1"/>
   <SC_Gallery_Path mediaId="v_1" instanceId="instanceId_A" nodeId="2"/>
   <SC_Gallery_Path mediaId="v_2" instanceId="instanceId_A" nodeId="1"/>
-  <SC_Gallery_Path mediaId="v_9" instanceId="instanceId_Z" nodeId="2"/>
+  <SC_Gallery_Path mediaId="v_9" instanceId="instanceId_Z" nodeId="9"/>
   <SC_Gallery_Path mediaId="s_1" instanceId="instanceId_A" nodeId="1"/>
   <SC_Gallery_Path mediaId="s_2" instanceId="instanceId_A" nodeId="1"/>
-  <SC_Gallery_Path mediaId="s_9" instanceId="instanceId_Z" nodeId="2"/>
+  <SC_Gallery_Path mediaId="s_9" instanceId="instanceId_Z" nodeId="9"/>
   <SC_Gallery_Path mediaId="stream_1" instanceId="instanceId_A" nodeId="2"/>
   <SC_Gallery_Path mediaId="stream_2" instanceId="instanceId_A" nodeId="1"/>
-  <SC_Gallery_Path mediaId="stream_9" instanceId="instanceId_Z" nodeId="2"/>
+  <SC_Gallery_Path mediaId="stream_9" instanceId="instanceId_Z" nodeId="9"/>
+
+  <sb_node_node nodeid="1" nodename="Homepage" nodedescription="The homepage"
+                nodecreationdate="2014/06/10" nodecreatorid="0" nodepath="/" nodelevelnumber="1"
+                nodefatherid="-1" modelid="" nodestatus="Visible" instanceid="instanceId_A"
+                ordernumber="0" rightsdependson="-1" lang="[NULL]" type="[NULL]"/>
+  <sb_node_node nodeid="2" nodename="Nerd" nodedescription="Nerd description"
+                nodecreationdate="2014/06/10" nodecreatorid="0" nodepath="/0/" nodelevelnumber="2"
+                nodefatherid="0" modelid="[NULL]" nodestatus="[NULL]" instanceid="instanceId_A"
+                ordernumber="2" rightsdependson="-1"/>
+  <sb_node_node nodeid="9" nodename="Geek" nodedescription="Geek description"
+                nodecreationdate="2014/06/10" nodecreatorid="0" nodepath="/0/" nodelevelnumber="2"
+                nodefatherid="0" modelid="[NULL]" nodestatus="[NULL]" instanceid="instanceId_Z"
+                ordernumber="1" rightsdependson="-1"/>
+
+  <sb_node_node nodeid="26" nodename="New 26" nodedescription="26 description"
+                nodecreationdate="2014/06/10" nodecreatorid="0" nodepath="/0/1" nodelevelnumber="2"
+                nodefatherid="0" modelid="[NULL]" nodestatus="[NULL]" instanceid="instanceId_A"
+                ordernumber="1" rightsdependson="-1"/>
+  <sb_node_node nodeid="38" nodename="New 38" nodedescription="38 description"
+                nodecreationdate="2014/06/10" nodecreatorid="0" nodepath="/0/1" nodelevelnumber="2"
+                nodefatherid="0" modelid="[NULL]" nodestatus="[NULL]" instanceid="instanceId_A"
+                ordernumber="1" rightsdependson="-1"/>
 
   <!-- ORDERS -->
   <SC_Gallery_Order orderId="200" userId="writerUserId" instanceId="instanceId_A"
-                    createDate="2014-06-01 16:38:52.253" processDate="[NULL]"
-                    processUser="[NULL]"/>
+                    createDate="2014-06-01 16:38:52.253" processDate="[NULL]" processUser="[NULL]"/>
   <SC_Gallery_Order orderId="201" userId="writerUserId" instanceId="instanceId_A"
                     createDate="2014-06-01 16:38:52.253" processDate="2014-06-30 12:59:59.999"
                     processUser="adminUserId"/>
@@ -148,18 +169,18 @@
                     createDate="2014-06-01 16:38:52.253" processDate="2014-06-30 12:59:59.999"
                     processUser="adminUserId"/>
 
-  <SC_Gallery_OrderDetail orderId="200" mediaId="1" instanceId="instanceId_A"
-                          downloadDate="[NULL]" downloadDecision="[NULL]"/>
-  <SC_Gallery_OrderDetail orderId="200" mediaId="2" instanceId="instanceId_A"
-                          downloadDate="[NULL]" downloadDecision="[NULL]"/>
+  <SC_Gallery_OrderDetail orderId="200" mediaId="1" instanceId="instanceId_A" downloadDate="[NULL]"
+                          downloadDecision="[NULL]"/>
+  <SC_Gallery_OrderDetail orderId="200" mediaId="2" instanceId="instanceId_A" downloadDate="[NULL]"
+                          downloadDecision="[NULL]"/>
 
-  <SC_Gallery_OrderDetail orderId="201" mediaId="1" instanceId="instanceId_A"
-                          downloadDate="[NULL]" downloadDecision="[NULL]"/>
+  <SC_Gallery_OrderDetail orderId="201" mediaId="1" instanceId="instanceId_A" downloadDate="[NULL]"
+                          downloadDecision="[NULL]"/>
   <SC_Gallery_OrderDetail orderId="201" mediaId="v_2" instanceId="instanceId_A"
                           downloadDate="2014-12-31 12:59:59.999" downloadDecision="T"/>
 
-  <SC_Gallery_OrderDetail orderId="202" mediaId="3" instanceId="instanceId_Z"
-                          downloadDate="[NULL]" downloadDecision="[NULL]"/>
-  <SC_Gallery_OrderDetail orderId="202" mediaId="4" instanceId="instanceId_Z"
-                          downloadDate="[NULL]" downloadDecision="[NULL]"/>
+  <SC_Gallery_OrderDetail orderId="202" mediaId="3" instanceId="instanceId_Z" downloadDate="[NULL]"
+                          downloadDecision="[NULL]"/>
+  <SC_Gallery_OrderDetail orderId="202" mediaId="4" instanceId="instanceId_Z" downloadDate="[NULL]"
+                          downloadDecision="[NULL]"/>
 </dataset>

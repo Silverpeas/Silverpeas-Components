@@ -71,8 +71,7 @@ public class GalleryResource extends AbstractGalleryResource {
   @Produces(MediaType.APPLICATION_JSON)
   public AlbumEntity getAlbum(@PathParam("albumId") final String albumId) {
     try {
-      final AlbumDetail album =
-          getGalleryBm().getAlbum(new NodePK(albumId, getComponentId()), true);
+      final AlbumDetail album = getGalleryBm().getAlbum(new NodePK(albumId, getComponentId()));
       return asWebEntity(album);
     } catch (final WebApplicationException ex) {
       throw ex;
@@ -96,8 +95,7 @@ public class GalleryResource extends AbstractGalleryResource {
   public PhotoEntity getPhoto(@PathParam("albumId") final String albumId,
       @PathParam("photoId") final String photoId) {
     try {
-      final AlbumDetail album =
-          getGalleryBm().getAlbum(new NodePK(albumId, getComponentId()), true);
+      final AlbumDetail album = getGalleryBm().getAlbum(new NodePK(albumId, getComponentId()));
       final PhotoDetail photo = getGalleryBm().getPhoto(new MediaPK(photoId, getComponentId()));
       verifyUserPhotoAccess(photo);
       return asWebEntity(photo, album);
@@ -152,8 +150,7 @@ public class GalleryResource extends AbstractGalleryResource {
   private Response getPhotoContent(final String albumId, final String photoId,
       final boolean isOriginalRequired) {
     try {
-      final AlbumDetail album =
-          getGalleryBm().getAlbum(new NodePK(albumId, getComponentId()), true);
+      final AlbumDetail album = getGalleryBm().getAlbum(new NodePK(albumId, getComponentId()));
       final PhotoDetail photo = getGalleryBm().getPhoto(new MediaPK(photoId, getComponentId()));
       verifyUserPhotoAccess(photo);
       return Response.ok(new StreamingOutput() {

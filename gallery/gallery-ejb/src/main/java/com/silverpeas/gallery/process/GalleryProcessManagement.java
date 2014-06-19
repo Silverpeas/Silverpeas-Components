@@ -23,31 +23,16 @@
  */
 package com.silverpeas.gallery.process;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.Date;
-
-import com.silverpeas.gallery.model.MediaPK;
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.process.util.ProcessList;
-
 import com.silverpeas.gallery.ImageType;
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.delegate.PhotoDataCreateDelegate;
 import com.silverpeas.gallery.delegate.PhotoDataUpdateDelegate;
 import com.silverpeas.gallery.model.AlbumDetail;
 import com.silverpeas.gallery.model.GalleryRuntimeException;
+import com.silverpeas.gallery.model.MediaCriteria;
+import com.silverpeas.gallery.model.MediaPK;
 import com.silverpeas.gallery.model.PhotoDetail;
-import com.silverpeas.gallery.process.photo.GalleryCreatePhotoDataProcess;
-import com.silverpeas.gallery.process.photo.GalleryCreatePhotoFileProcess;
-import com.silverpeas.gallery.process.photo.GalleryDeindexPhotoDataProcess;
-import com.silverpeas.gallery.process.photo.GalleryDeletePhotoDataProcess;
-import com.silverpeas.gallery.process.photo.GalleryDeletePhotoFileProcess;
-import com.silverpeas.gallery.process.photo.GalleryIndexPhotoDataProcess;
-import com.silverpeas.gallery.process.photo.GalleryPastePhotoDataProcess;
-import com.silverpeas.gallery.process.photo.GalleryPastePhotoFileProcess;
-import com.silverpeas.gallery.process.photo.GalleryUpdatePhotoDataProcess;
-import com.silverpeas.gallery.process.photo.GalleryUpdatePhotoFileProcess;
+import com.silverpeas.gallery.process.photo.*;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -56,6 +41,12 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.process.util.ProcessList;
+
+import java.io.File;
+import java.util.Collection;
+import java.util.Date;
 
 /**
  * @author Yohann Chastagnier
@@ -279,7 +270,8 @@ public class GalleryProcessManagement {
    */
   private void addPastePhotoAlbumProcesses(final NodePK fromAlbumPk, final NodePK toAlbumPk,
       final boolean isCutted) throws Exception {
-    for (final PhotoDetail photo : getGalleryBm().getAllPhoto(fromAlbumPk, true)) {
+    for (final PhotoDetail photo : getGalleryBm()
+        .getAllPhotos(fromAlbumPk, MediaCriteria.VISIBILITY.FORCE_GET_ALL)) {
       addPastePhotoProcesses(photo, toAlbumPk, isCutted);
     }
   }
@@ -304,7 +296,8 @@ public class GalleryProcessManagement {
    * @throws Exception
    */
   private void addDeletePhotoAlbumProcesses(final NodePK albumPk) throws Exception {
-    for (final PhotoDetail photo : getGalleryBm().getAllPhoto(albumPk, true)) {
+    for (final PhotoDetail photo : getGalleryBm()
+        .getAllPhotos(albumPk, MediaCriteria.VISIBILITY.FORCE_GET_ALL)) {
       Collection<String> albumIds = getGalleryBm().getPathList(photo.getInstanceId(), photo.getId());
       if (albumIds.size() >= 2) {
         // the image is in several albums

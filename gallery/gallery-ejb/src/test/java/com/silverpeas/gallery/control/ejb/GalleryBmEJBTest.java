@@ -23,19 +23,30 @@ package com.silverpeas.gallery.control.ejb;
 
 import com.silverpeas.gallery.BaseGalleryTest;
 import com.silverpeas.gallery.model.AlbumDetail;
+import com.silverpeas.gallery.model.Media;
+import com.silverpeas.gallery.model.MediaCriteria;
 import com.silverpeas.gallery.model.Order;
+import com.silverpeas.socialnetwork.model.SocialInformation;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.silverpeas.cache.service.CacheServiceFactory;
+import org.silverpeas.date.Period;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
+import static com.silverpeas.gallery.model.MediaCriteria.VISIBILITY.FORCE_GET_ALL;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.when;
@@ -45,6 +56,21 @@ public class GalleryBmEJBTest extends BaseGalleryTest {
   private GalleryBmEJBMock galleryBmEJB;
   private NodeBm nodeBm;
   private static final String ALBUM_NAME = "Nature";
+
+  @Override
+  public void setUp() throws Exception {
+    super.setUp();
+    // Simulating a connected publisher user
+    CacheServiceFactory.getSessionCacheService()
+        .put(UserDetail.CURRENT_REQUESTER_KEY, publisherUser);
+  }
+
+  @Override
+  public void tearDown() throws Exception {
+    super.tearDown();
+    // Simulating a connected publisher user
+    CacheServiceFactory.getSessionCacheService().put(UserDetail.CURRENT_REQUESTER_KEY, null);
+  }
 
   @Before
   public void prepareGalleryBmEJB() throws Exception {
@@ -92,7 +118,7 @@ public class GalleryBmEJBTest extends BaseGalleryTest {
   @Test
   public void testGetRootAlbum() {
     NodePK nodePK = new NodePK("0", INSTANCE_A);
-    AlbumDetail album = galleryBmEJB.getAlbum(nodePK, false);
+    AlbumDetail album = galleryBmEJB.getAlbum(nodePK, MediaCriteria.VISIBILITY.FORCE_GET_ALL);
     assertThat(album, notNullValue());
     assertThat(album.getChildrenDetails(), hasSize(2));
     assertThat(album.getName(), equalTo("Accueil"));
@@ -100,11 +126,11 @@ public class GalleryBmEJBTest extends BaseGalleryTest {
   }
 
   @Test
-  public void testGetAlbumWithPhotos() {
+  public void testGetAlbumWithMedia() {
     NodePK nodePK = new NodePK("1", INSTANCE_A);
-    AlbumDetail album = galleryBmEJB.getAlbum(nodePK, false);
+    AlbumDetail album = galleryBmEJB.getAlbum(nodePK, MediaCriteria.VISIBILITY.FORCE_GET_ALL);
     assertThat(album.getName(), equalTo(ALBUM_NAME));
-    assertThat(album.getPhotos(), hasSize(3));
+    assertThat(album.getPhotos(), hasSize(1));
   }
 
   @Test
@@ -146,5 +172,82 @@ public class GalleryBmEJBTest extends BaseGalleryTest {
 
     orders = galleryBmEJB.getAllOrderToDelete(365000);
     assertThat(orders, hasSize(0));
+  }
+
+  @Test
+  public void getSocialInformationListOfMyContacts() {
+    Date beginDate = DateUtils.addDays(CREATE_DATE, +1);
+    Date endDate = DateUtils.addDays(CREATE_DATE, +2);
+    List<SocialInformation> socialInformationList = galleryBmEJB
+        .getSocialInformationListOfMyContacts(
+            Arrays.asList(writerUser.getId(), adminAccessUser.getId(), publisherUser.getId()),
+            Arrays.asList(INSTANCE_A, "otherInstanceId"), Period.from(beginDate, endDate));
+    assertThat(socialInformationList, hasSize(0));
+
+    beginDate = DateUtils.addDays(CREATE_DATE, 0);
+    endDate = DateUtils.addDays(CREATE_DATE, +2);
+    socialInformationList = galleryBmEJB.getSocialInformationListOfMyContacts(
+        Arrays.asList(writerUser.getId(), adminAccessUser.getId(), publisherUser.getId()),
+        Arrays.asList(INSTANCE_A, "otherInstanceId"), Period.from(beginDate, endDate));
+    assertThat(socialInformationList, hasSize(4));
+
+    beginDate = DateUtils.addDays(LAST_UPDATE_DATE, -2);
+    endDate = DateUtils.addDays(LAST_UPDATE_DATE, +2);
+    socialInformationList = galleryBmEJB.getSocialInformationListOfMyContacts(
+        Arrays.asList(writerUser.getId(), adminAccessUser.getId(), publisherUser.getId()),
+        Arrays.asList(INSTANCE_A, "otherInstanceId"), Period.from(beginDate, endDate));
+    assertThat(socialInformationList, hasSize(7));
+  }
+
+  @Test
+  public void testGetPathList() {
+    Collection<String> pathList = galleryBmEJB.getPathList(INSTANCE_A, "v_2");
+    assertThat(pathList, contains("1"));
+
+    pathList = galleryBmEJB.getPathList(INSTANCE_A, "v_1");
+    assertThat(pathList, containsInAnyOrder("1", "2"));
+  }
+
+  @Test
+  public void testAddMediaPaths() throws Exception {
+    String mediaIdToPerform = "1";
+
+    Collection<String> pathList = galleryBmEJB.getPathList(INSTANCE_A, mediaIdToPerform);
+    assertThat(pathList, containsInAnyOrder("1"));
+
+
+    galleryBmEJB.addMediaPaths(mediaIdToPerform, INSTANCE_A, "1", "26");
+
+    pathList = galleryBmEJB.getPathList(INSTANCE_A, mediaIdToPerform);
+    assertThat(pathList, containsInAnyOrder("1", "26"));
+
+    galleryBmEJB.addMediaPaths(mediaIdToPerform, INSTANCE_A, "26");
+
+    pathList = galleryBmEJB.getPathList(INSTANCE_A, mediaIdToPerform);
+    assertThat(pathList, containsInAnyOrder("1", "26"));
+
+    galleryBmEJB.addMediaPaths(mediaIdToPerform, INSTANCE_A, "38");
+
+    pathList = galleryBmEJB.getPathList(INSTANCE_A, mediaIdToPerform);
+    assertThat(pathList, containsInAnyOrder("1", "26", "38"));
+  }
+
+  @Test
+  public void testGetAllMediaOfComponent() {
+    Collection<Media> media = galleryBmEJB.getAllMedia(INSTANCE_A);
+    assertThat(media, notNullValue());
+
+    media = galleryBmEJB.getAllMedia(INSTANCE_A, FORCE_GET_ALL);
+    assertThat(media, hasSize(8));
+  }
+
+  @Test
+  public void testGetAllMediaOfAlbum() {
+    NodePK albumPK = new NodePK("1", INSTANCE_A);
+    Collection<Media> media = galleryBmEJB.getAllMedia(albumPK);
+    assertThat(media, hasSize(6));
+
+    media = galleryBmEJB.getAllMedia(albumPK, FORCE_GET_ALL);
+    assertThat(media, hasSize(6));
   }
 }

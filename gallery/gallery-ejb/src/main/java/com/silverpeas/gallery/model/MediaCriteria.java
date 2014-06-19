@@ -52,6 +52,9 @@ public class MediaCriteria {
   public enum QUERY_ORDER_BY {
 
     DIMENSION_ASC(false, "dimension", true), DIMENSION_DESC(false, "dimension", false),
+    COMPONENT_INSTANCE_ASC(true, "M.instanceId", true),
+    COMPONENT_INSTANCE_DESC(true, "M.instanceId", false),
+    IDENTIFIER_ASC(true, "M.mediaId", true), IDENTIFIER_DESC(true, "M.mediaId", false),
     CREATE_DATE_ASC(true, "M.createDate", true), CREATE_DATE_DESC(true, "M.createDate", false),
     LAST_UPDATE_DATE_ASC(true, "M.lastUpdateDate", true),
     LAST_UPDATE_DATE_DESC(true, "M.lastUpdateDate", false),
@@ -99,12 +102,14 @@ public class MediaCriteria {
   private SilverpeasRole requesterComponentLowerRole;
   private String componentInstanceId;
   private UserDetail creator;
-  private final List<Integer> albumIds = new ArrayList<Integer>();
+  private final List<String> albumIds = new ArrayList<String>();
   private final List<MediaType> mediaTypes = new ArrayList<MediaType>();
   private final List<QUERY_ORDER_BY> orderByList = new ArrayList<QUERY_ORDER_BY>();
   private final List<String> identifiers = new ArrayList<String>();
   private VISIBILITY visibility = BY_DEFAULT;
-  private Date referenceDate = DateUtil.getDate();
+  private Date referenceDate = DateUtil.getNow();
+  private Integer nbDaysBeforeThatMediaIsNotVisible;
+  private int resultLimit = 0;
 
   private MediaCriteria() {
 
@@ -133,9 +138,23 @@ public class MediaCriteria {
   }
 
   /**
+   * Initializes media search criteria axed on the given nb of days before that a media is not
+   * visible.
+   * @param nbDaysBeforeThatMediaIsNotVisible the nb of days before that a media is not visible.
+   * @return an instance of media criteria with the nb of days before that a media is not visible
+   * criterion set.
+   */
+  public static MediaCriteria fromNbDaysBeforeThatMediaIsNotVisible(
+      Integer nbDaysBeforeThatMediaIsNotVisible) {
+    MediaCriteria criteria = new MediaCriteria();
+    criteria.nbDaysBeforeThatMediaIsNotVisible = nbDaysBeforeThatMediaIsNotVisible;
+    return criteria;
+  }
+
+  /**
    * Sets the criterion of the identifier of the component instance the media must be attached.
    * @param componentInstanceId the identifier of the component instance.
-   * @return an instance of media criteria with the instance of component instance criterion setl.
+   * @return an instance of media criteria with the instance of component instance criterion set.
    */
   public MediaCriteria onComponentInstanceId(String componentInstanceId) {
     this.componentInstanceId = componentInstanceId;
@@ -170,7 +189,7 @@ public class MediaCriteria {
    * @param albumIds the media album identifier list that the media must be attached.
    * @return the media criteria itself with the new criterion on the media types.
    */
-  public MediaCriteria albumIdentifierIsOneOf(Integer... albumIds) {
+  public MediaCriteria albumIdentifierIsOneOf(String... albumIds) {
     CollectionUtil.addAllIgnoreNull(this.albumIds, albumIds);
     return this;
   }
@@ -214,7 +233,7 @@ public class MediaCriteria {
    * @param visibility the visibility requested.
    * @return the media criteria itself with the new criterion on the media visibility.
    */
-  public MediaCriteria visibility(VISIBILITY visibility) {
+  public MediaCriteria withVisibility(VISIBILITY visibility) {
     if (visibility == null) {
       throw new IllegalArgumentException("visibility parameter must not be null");
     }
@@ -223,7 +242,7 @@ public class MediaCriteria {
   }
 
   /**
-   * Sets the reference date criterion (used by visibility criterion for example).
+   * Sets the reference date criterion (the date of the day by default).
    * @param referenceDate the reference date specified.
    * @return the media criteria itself with the new criterion on the media reference date.
    */
@@ -233,6 +252,24 @@ public class MediaCriteria {
     }
     this.referenceDate = referenceDate;
     return this;
+  }
+
+  /**
+   * Limit the number of results.
+   * @param nbMedia the maximum media in a result.
+   * @return the media criteria itself with the result limit set.
+   */
+  public MediaCriteria limitResultTo(int nbMedia) {
+    resultLimit = nbMedia;
+    return this;
+  }
+
+  /**
+   * Gets the maximum number of media in a result list.
+   * @return
+   */
+  public int getResultLimit() {
+    return resultLimit;
   }
 
   /**
@@ -276,10 +313,10 @@ public class MediaCriteria {
 
   /**
    * Gets the media album identifier criteria value.
-   * {@link #albumIdentifierIsOneOf(Integer...)}
+   * {@link #albumIdentifierIsOneOf(String...)}
    * @return the criterion on the album identifiers the medias must be attached.
    */
-  private List<Integer> getAlbumIds() {
+  private List<String> getAlbumIds() {
     return albumIds;
   }
 
@@ -326,6 +363,14 @@ public class MediaCriteria {
   }
 
   /**
+   * Gets the criterion of the nb of days before that a media is not visible.
+   * @return
+   */
+  public Integer getNbDaysBeforeThatMediaIsNotVisible() {
+    return nbDaysBeforeThatMediaIsNotVisible;
+  }
+
+  /**
    * Processes this criteria with the specified processor.
    * It chains in a given order the different criterion to process.
    * @param processor the processor to use for processing each criterion in this criteria.
@@ -336,8 +381,9 @@ public class MediaCriteria {
       processor.processComponentInstance(getComponentInstanceId());
     }
     VISIBILITY theVisibility = getVisibility();
-    if (theVisibility == BY_DEFAULT && getRequester() != null && (getRequester().isAccessAdmin() ||
-        getRequesterComponentLowerRole().isGreaterThanOrEquals(SilverpeasRole.publisher))) {
+    if (theVisibility == BY_DEFAULT && getRequester() != null &&
+        (getRequester().isAccessAdmin() || getRequesterComponentLowerRole() == null ||
+            getRequesterComponentLowerRole().isGreaterThanOrEquals(SilverpeasRole.publisher))) {
       theVisibility = FORCE_GET_ALL;
     }
     processor.then().processVisibility(theVisibility, getReferenceDate());
@@ -352,6 +398,10 @@ public class MediaCriteria {
     }
     if (!getMediaTypes().isEmpty()) {
       processor.then().processMediaTypes(getMediaTypes());
+    }
+    if (getNbDaysBeforeThatMediaIsNotVisible() != null) {
+      processor.then().processNbDaysBeforeThatMediaIsNotVisible(getReferenceDate(),
+          getNbDaysBeforeThatMediaIsNotVisible());
     }
     if (!getOrderByList().isEmpty()) {
       processor.then().processOrdering(getOrderByList());

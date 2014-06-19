@@ -23,13 +23,14 @@ package com.silverpeas.gallery.control.ejb;
 import java.io.File;
 import java.rmi.RemoteException;
 import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.ejb.Local;
 
+import com.silverpeas.gallery.model.Media;
+import com.silverpeas.gallery.model.MediaCriteria;
 import com.silverpeas.gallery.model.MediaPK;
+import org.silverpeas.date.Period;
 import org.silverpeas.process.util.ProcessList;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
 
@@ -50,7 +51,9 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 @Local
 public interface GalleryBm {
 
-  public AlbumDetail getAlbum(NodePK nodePK, boolean viewAllPhoto);
+  public AlbumDetail getAlbum(NodePK nodePK);
+
+  public AlbumDetail getAlbum(NodePK nodePK, MediaCriteria.VISIBILITY visibility);
 
   public NodePK createAlbum(AlbumDetail album, NodePK nodePK);
 
@@ -62,7 +65,7 @@ public interface GalleryBm {
 
   public void setPhotoPath(String photoId, String instanceId, String... albums);
 
-  public void addPhotoPaths(String photoId, String instanceId, String... albums);
+  public void addMediaPaths(String mediaId, String instanceId, String... albums);
 
   public void updatePhotoPath(String photoId, String instanceIdFrom,
       String instanceIdTo, String... albums);
@@ -70,12 +73,17 @@ public interface GalleryBm {
   // les photos ...
   public PhotoDetail getPhoto(MediaPK mediaPK);
 
-  public Collection<PhotoDetail> getAllPhoto(NodePK nodePK, boolean viewAllPhoto);
+  public Collection<PhotoDetail> getAllPhotos(NodePK nodePK);
 
-  public Collection<PhotoDetail> getAllPhotosSorted(NodePK nodePK,
-      HashMap<String, String> parsedParameters, boolean viewAllPhoto);
+  public Collection<PhotoDetail> getAllPhotos(NodePK nodePK, MediaCriteria.VISIBILITY visibility);
 
-  public Collection<PhotoDetail> getAllPhotos(String instanceId);
+  public Collection<Media> getAllMedia(NodePK nodePK);
+
+  public Collection<Media> getAllMedia(NodePK nodePK, MediaCriteria.VISIBILITY visibility);
+
+  public Collection<Media> getAllMedia(String instanceId);
+
+  public Collection<Media> getAllMedia(String instanceId, MediaCriteria.VISIBILITY visibility);
 
   public void paste(UserDetail user, String componentInstanceId, GalleryPasteDelegate delegate);
 
@@ -93,8 +101,7 @@ public interface GalleryBm {
 
   public void deletePhoto(UserDetail user, String componentInstanceId, Collection<String> photoIds);
 
-  public Collection<PhotoDetail> getDernieres(String instanceId, boolean viewAllPhoto) throws
-      RemoteException;
+  public Collection<PhotoDetail> getLastRegistredMedia(String instanceId);
 
   public Collection<PhotoDetail> getAllPhotoEndVisible(int nbDays);
 
@@ -102,11 +109,11 @@ public interface GalleryBm {
 
   public Collection<NodeDetail> getPath(NodePK nodePK);
 
-  public Collection<String> getPathList(String instanceId, String photoId);
+  public Collection<String> getPathList(String instanceId, String mediaId);
 
   public String getHTMLNodePath(NodePK nodePK);
 
-  public void createIndex(PhotoDetail photo);
+  public void createIndex(Media media);
 
   public void indexGallery(String instanceId);
 
@@ -134,12 +141,11 @@ public interface GalleryBm {
    *
    * @return: List <SocialInformation>
    * @param userId
-   * @param begin
-   * @param end
+   * @param period
    * @return
    * @
    */
-  public List<SocialInformation> getAllPhotosByUserId(String userId, Date begin, Date end);
+  public List<SocialInformation> getAllMediaByUserId(String userId, Period period);
 
   /**
    * get list of SocialInformationGallery of my contacts according to options and number of Item and
@@ -147,13 +153,12 @@ public interface GalleryBm {
    *
    * @param listOfuserId
    * @param availableComponent
-   * @param begin
-   * @param end
+   * @param period
    * @return List<SocialInformation>
    * @
    */
-  public List<SocialInformation> getSocialInformationsListOfMyContacts(List<String> listOfuserId,
-      List<String> availableComponent, Date begin, Date end);
+  public List<SocialInformation> getSocialInformationListOfMyContacts(List<String> listOfuserId,
+      List<String> availableComponent, Period period);
 
   public void sortAlbums(List<NodePK> albumIds);
 

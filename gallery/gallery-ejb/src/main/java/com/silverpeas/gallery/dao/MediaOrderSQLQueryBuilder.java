@@ -25,11 +25,11 @@ package com.silverpeas.gallery.dao;
 
 import com.silverpeas.gallery.model.MediaOrderCriteriaProcessor;
 import com.silverpeas.gallery.model.Order;
-import com.stratelia.webactiv.util.DateUtil;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -94,11 +94,11 @@ public class MediaOrderSQLQueryBuilder implements MediaOrderCriteriaProcessor {
   }
 
   @Override
-  public MediaOrderCriteriaProcessor processNbDaysBeforeDeleteAnOrder(
+  public MediaOrderCriteriaProcessor processNbDaysAfterThatDeleteAnOrder(final Date referenceDate,
       final int nbDaysAfterThatDeleteAnOrder) {
     if (!done) {
       where(conjunction).append("O.createDate < ?");
-      parameters.add(DateUtils.addDays(DateUtil.getDate(), -nbDaysAfterThatDeleteAnOrder));
+      parameters.add(DateUtils.addDays(referenceDate, -nbDaysAfterThatDeleteAnOrder));
       conjunction = "";
     }
     return this;

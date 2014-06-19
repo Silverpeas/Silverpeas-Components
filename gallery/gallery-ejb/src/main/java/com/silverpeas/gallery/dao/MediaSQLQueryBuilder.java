@@ -23,6 +23,7 @@
  */
 package com.silverpeas.gallery.dao;
 
+import com.silverpeas.calendar.DateTime;
 import com.silverpeas.gallery.constant.MediaType;
 import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.MediaCriteriaProcessor;
@@ -31,7 +32,9 @@ import com.silverpeas.gallery.model.Video;
 import com.silverpeas.util.CollectionUtil;
 import com.silverpeas.util.comparator.AbstractComplexComparator;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.DateUtil;
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
@@ -127,10 +130,10 @@ public class MediaSQLQueryBuilder implements MediaCriteriaProcessor {
   }
 
   @Override
-  public MediaCriteriaProcessor processAlbums(final List<Integer> albumIds) {
+  public MediaCriteriaProcessor processAlbums(final List<String> albumIds) {
     if (!done) {
       StringBuilder params = new StringBuilder();
-      for (Integer albumId : albumIds) {
+      for (String albumId : albumIds) {
         if (params.length() > 0) {
           params.append(",");
         }
@@ -168,6 +171,20 @@ public class MediaSQLQueryBuilder implements MediaCriteriaProcessor {
         parameters.add(mediaType.name());
       }
       where(conjunction).append("M.mediaType in (").append(params.toString()).append(")");
+      conjunction = "";
+    }
+    return this;
+  }
+
+  @Override
+  public MediaCriteriaProcessor processNbDaysBeforeThatMediaIsNotVisible(final Date referenceDate,
+      final int nbDaysBeforeThatMediaIsNotVisible) {
+    if (!done) {
+      where(conjunction).append("M.endVisibilityDate between ? and ?");
+      DateTime date =
+          new DateTime(DateUtils.addDays(referenceDate, nbDaysBeforeThatMediaIsNotVisible));
+      parameters.add(date.getBeginOfDay().getTime());
+      parameters.add(date.getEndOfDay().getTime());
       conjunction = "";
     }
     return this;
@@ -254,6 +271,14 @@ public class MediaSQLQueryBuilder implements MediaCriteriaProcessor {
           case TITLE_DESC:
           case TITLE_ASC:
             valueBuffer.append(media.getTitle(), queryOrderBy.isAsc());
+            break;
+          case COMPONENT_INSTANCE_ASC:
+          case COMPONENT_INSTANCE_DESC:
+            valueBuffer.append(media.getComponentInstanceId(), queryOrderBy.isAsc());
+            break;
+          case IDENTIFIER_ASC:
+          case IDENTIFIER_DESC:
+            valueBuffer.append(media.getId(), queryOrderBy.isAsc());
             break;
           case CREATE_DATE_ASC:
           case CREATE_DATE_DESC:
