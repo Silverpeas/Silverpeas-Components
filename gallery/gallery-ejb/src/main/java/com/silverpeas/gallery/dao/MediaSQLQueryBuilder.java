@@ -138,7 +138,7 @@ public class MediaSQLQueryBuilder implements MediaCriteriaProcessor {
           params.append(",");
         }
         params.append("?");
-        parameters.add(albumId);
+        parameters.add(Integer.valueOf(albumId));
       }
       distinct = true;
       from.append(

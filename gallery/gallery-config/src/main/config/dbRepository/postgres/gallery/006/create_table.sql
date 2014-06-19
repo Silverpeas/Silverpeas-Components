@@ -26,14 +26,14 @@ CREATE TABLE SC_Gallery_Internal (
 
 CREATE TABLE SC_Gallery_Photo (
   mediaId     VARCHAR(40) NOT NULL,
-  resolutionH INT         NULL,
-  resolutionW INT         NULL
+  resolutionW INT         NULL,
+  resolutionH INT         NULL
 );
 
 CREATE TABLE SC_Gallery_Video (
   mediaId     VARCHAR(40) NOT NULL,
-  resolutionH INT         NULL,
   resolutionW INT         NULL,
+  resolutionH INT         NULL,
   bitrate     INT8        NULL,
   duration    INT8        NULL
 );
