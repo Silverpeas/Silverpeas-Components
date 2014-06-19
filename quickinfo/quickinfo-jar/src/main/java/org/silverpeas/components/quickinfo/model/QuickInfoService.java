@@ -21,6 +21,10 @@ public interface QuickInfoService extends SilverpeasComponentService<News> {
   
   public List<News> getPlatformNews(String userId);
   
+  public List<News> getNewsForTicker(String userId);
+  
+  public List<News> getBlockingNews(String userId);
+  
   public News getNews(String id);
   
   public News getNewsByForeignId(String id);

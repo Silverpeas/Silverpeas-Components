@@ -104,6 +104,8 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     instanceSettings.setTaxonomyEnabled(StringUtil
         .getBooleanValue(getComponentParameterValue(QuickInfoComponentSettings.PARAM_TAXONOMY)));
     instanceSettings.setNotificationAllowed(!getUserDetail().isAnonymous());
+    instanceSettings
+        .setBroadcastModes(getComponentParameterValue(QuickInfoComponentSettings.PARAM_BROADCAST));
     return instanceSettings;
   }
 

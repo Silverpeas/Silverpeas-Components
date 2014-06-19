@@ -293,6 +293,30 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
     return sortByDateDesc(result);
   }
   
+  @Override
+  public List<News> getNewsForTicker(String userId) {
+    List<News> allNews = getPlatformNews(userId);
+    List<News> forTicker = new ArrayList<News>();
+    for (News news : allNews) {
+      if (news.isTicker()) {
+        forTicker.add(news);
+      }
+    }
+    return forTicker;
+  }
+  
+  @Override
+  public List<News> getBlockingNews(String userId) {
+    List<News> allNews = getPlatformNews(userId);
+    List<News> result = new ArrayList<News>();
+    for (News news : allNews) {
+      if (news.isMandatory()) {
+        result.add(news);
+      }
+    }
+    return result;
+  }
+  
   private List<News> sortByDateDesc(List<News> listOfNews) {
     Comparator<News> comparator = QuickInfoDateComparatorDesc.comparator;
     Collections.sort(listOfNews, comparator);

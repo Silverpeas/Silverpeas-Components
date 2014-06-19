@@ -38,6 +38,7 @@
 <c:set var="curQuickInfo" value="${requestScope['info']}"/>
 <c:set var="thumbnailSettings" value="${requestScope['ThumbnailSettings']}"/>
 <c:set var="newOneInProgress" value="${requestScope['NewOneInProgress']}"/>
+<c:set var="appSettings" value="${requestScope['AppSettings']}"/>
 
 <%@ include file="checkQuickInfo.jsp" %>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager" %>
@@ -221,8 +222,12 @@ $(document).ready(function() {
       <label class="txtlibform"><fmt:message key="quickinfo.news.broadcast.mode" /> </label>
       <div class="champs">
       	<input type="checkbox" name="BroadcastImportant" value="true" <%=broadcastMajorChecked %>/> <fmt:message key="quickinfo.news.broadcast.mode.major" />
-      	<input type="checkbox" name="BroadcastTicker" value="true" <%=broadcastTickerChecked %>/> <fmt:message key="quickinfo.news.broadcast.mode.ticker" />
-      	<input type="checkbox" name="BroadcastMandatory" value="true" <%=broadcastBlockingChecked %>/> <fmt:message key="quickinfo.news.broadcast.mode.blocking" />
+      	<c:if test="${appSettings.broadcastingByTicker}">
+      		<input type="checkbox" name="BroadcastTicker" value="true" <%=broadcastTickerChecked %>/> <fmt:message key="quickinfo.news.broadcast.mode.ticker" />
+      	</c:if>
+      	<c:if test="${appSettings.broadcastingByBlockingNews}">
+      		<input type="checkbox" name="BroadcastMandatory" value="true" <%=broadcastBlockingChecked %>/> <fmt:message key="quickinfo.news.broadcast.mode.blocking" />
+      	</c:if>
       </div>
     </div>
 

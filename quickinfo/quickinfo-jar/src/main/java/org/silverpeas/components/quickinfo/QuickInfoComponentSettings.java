@@ -8,9 +8,16 @@ public class QuickInfoComponentSettings {
   private boolean commentsEnabled = false;
   private boolean taxonomyEnabled = false;
   private boolean notificationAllowed = false;
+  private boolean broadcastTicker = false;
+  private boolean broadcastBlocking = false;
   
   public static final String PARAM_COMMENTS = "comments";
   public static final String PARAM_TAXONOMY = "usePdc";
+  
+  public static final String PARAM_BROADCAST = "broadcasting";
+  public static final String VALUE_BROADCAST_TICKER = "ticker";
+  public static final String VALUE_BROADCAST_BLOCKING = "blocking";
+  public static final String VALUE_BROADCAST_BOTH = "both";
   
   /**
    * The name of the Quickinfo component in Silverpeas.
@@ -92,6 +99,21 @@ public class QuickInfoComponentSettings {
 
   public boolean isNotificationAllowed() {
     return notificationAllowed;
+  }
+  
+  public void setBroadcastModes(String paramValue) {
+    this.broadcastTicker =
+        VALUE_BROADCAST_BOTH.equals(paramValue) || VALUE_BROADCAST_TICKER.equals(paramValue);
+    this.broadcastBlocking =
+        VALUE_BROADCAST_BOTH.equals(paramValue) || VALUE_BROADCAST_BLOCKING.equals(paramValue);
+  }
+
+  public boolean isBroadcastingByTicker() {
+    return broadcastTicker;
+  }
+
+  public boolean isBroadcastingByBlockingNews() {
+    return broadcastBlocking;
   }
 
 }

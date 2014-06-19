@@ -133,10 +133,10 @@ function unsubscribe() {
 					<c:if test="${news.important}">
 						<span class="news-broadcast-important"><fmt:message key="quickinfo.news.broadcast.mode.major"/></span> 
 					</c:if>
-					<c:if test="${news.mandatory}">
+					<c:if test="${appSettings.broadcastingByBlockingNews && news.mandatory}">
 						<span class="news-broadcast-blocking"><fmt:message key="quickinfo.news.broadcast.mode.blocking"/></span>
 					</c:if>
-					<c:if test="${news.ticker}">
+					<c:if test="${appSettings.broadcastingByTicker && news.ticker}">
 						<span class="news-broadcast-ticker"><fmt:message key="quickinfo.news.broadcast.mode.ticker"/></span>
 					</c:if>
 				</span>

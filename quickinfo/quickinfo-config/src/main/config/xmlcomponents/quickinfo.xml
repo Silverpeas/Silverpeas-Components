@@ -178,5 +178,58 @@
         <message lang="de">To comment news</message>
       </help>
     </parameter>
+    <parameter>
+      <name>broadcasting</name>
+      <label>
+        <message lang="fr">Diffusion annexe</message>
+        <message lang="en">Broadcasting</message>
+        <message lang="de">Broadcasting</message>
+      </label>
+      <order>6</order>
+      <mandatory>true</mandatory>
+      <value>none</value>
+      <options>
+        <option>
+          <name>
+            <message lang="fr">Aucune</message>
+            <message lang="en">None</message>
+            <message lang="de">Nein</message>
+          </name>
+          <value>none</value>
+        </option>
+        <option>
+          <name>
+            <message lang="fr">Défilante</message>
+            <message lang="en">Scrolling</message>
+            <message lang="de">Ticker</message>
+          </name>
+          <value>ticker</value>
+        </option>
+        <option>
+          <name>
+            <message lang="fr">Bloquante</message>
+            <message lang="en">Blocking</message>
+            <message lang="de">Blocking</message>
+          </name>
+          <value>blocking</value>
+        </option>
+        <option>
+          <name>
+            <message lang="fr">Tous les modes</message>
+            <message lang="en">All</message>
+            <message lang="de">Alle</message>
+          </name>
+          <value>both</value>
+        </option>
+      </options>
+      <type>select</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Cette fonction permet d'afficher les actualités en dehors des pages d'accueil classiques. Les modes retenus ici sont disponibles sur chaque actualité mais pas obligatoires. Une actualité "défilante" est affichée dans le bandeau défilant (ticker). Une actualité "bloquante" est affichée dès la connexion des utilisateurs et nécessite une action pour poursuivre la navigation.</message>
+        <message lang="en">This function displays the news outside of traditional homepages. Methods used here are available on each news but not mandatory. A "scrolling" news is displayed in the scrolling banner (ticker). A "blocking" news is displayed when users log on and requires action to continue browsing.</message>
+        <message lang="de">Diese Funktion zeigt die Nachrichten außerhalb der traditionellen Homepages. Methoden werden dabei auf jeder Nachricht, aber nicht zwingend zur Verfügung. A "Blättern" Nachrichten in der Scroll-Banner (Ticker) angezeigt. Ein "Sperrung" Nachrichten wird angezeigt, wenn sich Benutzer anmelden und erfordert Maßnahmen der Suche fortzufahren.</message>
+      </help>
+    </parameter>
+    
   </parameters>
 </WAComponent>
