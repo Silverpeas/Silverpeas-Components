@@ -29,6 +29,7 @@ import java.util.List;
 import javax.ejb.EJBException;
 import javax.xml.bind.JAXBException;
 
+import org.silverpeas.components.quickinfo.NewsByStatus;
 import org.silverpeas.components.quickinfo.QuickInfoComponentSettings;
 import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.components.quickinfo.model.QuickInfoService;
@@ -109,21 +110,12 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     return instanceSettings;
   }
 
-  public List<News> getQuickInfos() {
-    List<News> allNews = getService().getAllNews(getComponentId());
-    return sortByDateDesc(allNews);
+  public NewsByStatus getQuickInfos() {
+    return getService().getAllNewsByStatus(getComponentId(), getUserId());
   }
 
   public List<News> getVisibleQuickInfos() {
-    List<News> quickinfos = getQuickInfos();
-    List<News> result = new ArrayList<News>();
-    
-    for (News news : quickinfos) {
-      if (news.isVisible() && !news.isDraft()) {
-        result.add(news);
-      }
-    }
-    return result;
+    return getService().getVisibleNews(getComponentId());
   }
 
   public News getNews(String id, boolean statVisit) {
@@ -209,7 +201,7 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
   }
 
   public void index() throws RemoteException {
-    List<News> infos = getQuickInfos();
+    List<News> infos = getVisibleQuickInfos();
     for (News news : infos) {
       getPublicationBm().createIndex(news.getPublication().getPK());
     }
@@ -251,12 +243,6 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     sel.setSelectionUsersGroups(sug);
 
     return AlertUser.getAlertUserURL();
-  }
-
-  private List<News> sortByDateDesc(List<News> listOfNews) {
-    Comparator<News> comparator = QuickInfoDateComparatorDesc.comparator;
-    Collections.sort(listOfNews, comparator);
-    return listOfNews;
   }
 
   /**

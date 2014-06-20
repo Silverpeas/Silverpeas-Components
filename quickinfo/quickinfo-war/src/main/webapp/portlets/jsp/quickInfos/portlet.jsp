@@ -77,10 +77,15 @@ $(document).ready(function() {
 </c:if>
 
 	<c:forEach items="${allNews}" var="news">
-		<li>
-			<c:if test="${not empty news.thumbnail}">
-				<img class="actuality-illustration" alt="" src="${news.thumbnail.URL}" />
-			</c:if>
+			<c:choose>
+				<c:when test="${not empty news.thumbnail}">
+					<li>
+					<div class="content-actuality-illustration"><img class="actuality-illustration" alt="" src="${news.thumbnail.URL}" /></div>
+				</c:when>
+				<c:otherwise>
+					<li class="actuality-without-illustration">
+				</c:otherwise>
+			</c:choose>
 			<h3 class="actuality-title"><a href="${news.permalink}">${news.title}</a></h3>
 			<div class="actuality-info-fonctionality">
 				<span class="actuality-date">${silfn:formatDate(news.updateDate, _language)}</span>

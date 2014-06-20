@@ -56,7 +56,9 @@ if (news != null) {
 String codeHtml = "";
 String title = "";
 String beginDate = "";
+String beginHour = "";
 String endDate = "";
+String endHour = "";
 String broadcastMajorChecked = "";
 String broadcastTickerChecked = "";
 String broadcastBlockingChecked = "";
@@ -65,9 +67,11 @@ if (quickInfoDetail != null) {
 	codeHtml = quickInfoDetail.getWysiwyg();
 	if (quickInfoDetail.getBeginDate() != null) {
     	beginDate = resources.getInputDate(quickInfoDetail.getBeginDate());
+    	beginHour = quickInfoDetail.getBeginHour();
   	}
   	if (quickInfoDetail.getEndDate() != null) {
     	endDate = resources.getInputDate(quickInfoDetail.getEndDate());
+    	endHour = quickInfoDetail.getEndHour();
   	}
   	if (news.isImportant()) {
   	  broadcastMajorChecked = "checked=\"checked\"";
@@ -105,12 +109,17 @@ function isCorrectForm() {
  	var errorNb = 0;
  	
 	if (isWhitespace($("#Name").val())) {
-  	  errorMsg +=" - '<%=resources.getString("GML.title")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
+  	  errorMsg +=" - '<fmt:message key="GML.title" />' <fmt:message key="GML.MustBeFilled" />\n";
   	  errorNb++; 
     }
+    
+	if ($("#Description").val().length > 300) {
+	  errorMsg +=" - '<fmt:message key="GML.description" />' <fmt:message key="GML.data.error.message.string.limit"><fmt:param value="300"/></fmt:message>\n";
+	  errorNb++; 
+  	}
        
-	var beginDate = {dateId : 'BeginDate'};
-	var endDate = {dateId : 'EndDate'};
+	var beginDate = {dateId : 'BeginDate', hourId : 'beginHour'};
+	var endDate = {dateId : 'EndDate', hourId : 'endHour', defaultDateHour : '23:59'};
 	var dateErrors = isPeriodEndingInFuture(beginDate, endDate);
 	$(dateErrors).each(function(index, error) {
   	  errorMsg += " - " + error.message + "\n";
@@ -250,14 +259,16 @@ $(document).ready(function() {
 		      		<label for="BeginDate" class="txtlibform"><fmt:message key="GML.dateBegin" /></label>
 		      		<div class="champs">
 		        		<input type="text" class="dateToPick" id="BeginDate" name="BeginDate" size="12" value="<%=beginDate%>" maxlength="<%=DBUtil.getDateFieldLength()%>"/>
-		        		<span class="txtnote">(<fmt:message key="GML.dateFormatExemple"/>)</span>
+		        		<span class="txtsublibform">&nbsp;<%=resources.getString("ToHour")%>&nbsp;</span>
+						<input id="beginHour" class="inputHour" type="text" name="BeginHour" value="<%=beginHour%>" size="5" maxlength="5" /> <i>(hh:mm)</i>
 		      		</div>
 	    		</div>
 	    		<div class="field" id="EndDateArea">
 	      			<label for="EndDate" class="txtlibform"><fmt:message key="GML.dateEnd" /></label>
 	      			<div class="champs">
 	        			<input type="text" class="dateToPick" id="EndDate" name="EndDate" size="12" value="<%=endDate%>" maxlength="<%=DBUtil.getDateFieldLength()%>"/>
-	        			<span class="txtnote">(<fmt:message key="GML.dateFormatExemple"/>)</span>
+	        			<span class="txtsublibform">&nbsp;<%=resources.getString("ToHour")%>&nbsp;</span>
+						<input id="endHour" class="inputHour" type="text" name="EndHour" value="<%=endHour %>" size="5" maxlength="5" /> <i>(hh:mm)</i>
 	      			</div>
 	    		</div>
 	  		</div>

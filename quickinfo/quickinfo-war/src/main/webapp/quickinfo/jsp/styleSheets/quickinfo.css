@@ -31,10 +31,19 @@
 	overflow:hidden;
 }
 
+
 #list-news {
 	list-style-type:none;
 	padding:0;
 	margin:1em 0 0;
+    float: right;
+    padding-right: 3%;
+    width: 59%;
+}
+#list-news.reader {
+    float: none;
+    padding-right: 0;
+    width: 100%;
 }
 #list-news li{
 	padding:0;
@@ -112,7 +121,7 @@
 	right:0.5em;
 }
 
-.actuality-title {
+.quickInfo-title {
     color: #333333;
     font-size: 130%;
     font-weight: 100;
@@ -166,4 +175,54 @@ fieldset#news-thumbnail legend {
 
 #descriptionArea textarea {
 	width:90%;
+}
+
+
+#my-quickInfo {
+    float: right;
+    margin-left: 3%;
+    margin-right: 2%;
+    padding-top: 1em;
+    width: 33%;
+}
+
+#my-quickInfo .header h3 {
+    font-size: 130%;
+    font-weight: 100;
+    line-height: 90%;
+    margin: 2em 0 1em;
+    padding: 0;
+}
+
+#my-quickInfo  .header h3 strong {
+    color: #1c94d4;
+    display: block;
+    font-size: 90%;
+    font-weight: 100;
+}
+#my-quickInfo ul {
+    list-style-image: url("/silverpeas/util/icons/bullet.png");
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+#my-quickInfo ul li {
+    margin:0 0 1em 1em;
+	padding:0;
+}
+
+#my-quickInfo ul li .date{
+    font-size:100%;
+	color:#8f8f8f;
+	display:block;
+}
+
+#my-quickInfo #menubar-creation-actions {
+	margin:0;	
+}
+
+.quickInfo  .publiDesc {
+    border-left: 6px solid #e4e4e4;
+    color: #666666;
+    padding: 8px;
 }

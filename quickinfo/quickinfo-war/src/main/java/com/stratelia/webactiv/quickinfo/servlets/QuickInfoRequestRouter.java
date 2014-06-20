@@ -29,6 +29,7 @@ import java.util.List;
 import javax.ejb.CreateException;
 
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.components.quickinfo.NewsByStatus;
 import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.date.Period;
 import org.silverpeas.servlet.FileUploadUtil;
@@ -87,7 +88,9 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
       if ("Main".equals(function)) {
         Collection<News> infos;
         if (isContributor(flag)) {
-          infos = quickInfo.getQuickInfos();
+          NewsByStatus allNews = quickInfo.getQuickInfos();
+          request.setAttribute("NotVisibleNews", allNews);
+          infos = allNews.getVisibles();
         } else {
           infos = quickInfo.getVisibleQuickInfos();
         }
@@ -228,13 +231,15 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
     Date beginDate = null;
     String beginString = FileUploadUtil.getParameter(items, "BeginDate");
     if (StringUtil.isDefined(beginString)) {
-      beginDate = DateUtil.stringToDate(beginString, language);
+      String hour = FileUploadUtil.getParameter(items, "BeginHour");
+      beginDate = DateUtil.stringToDate(beginString, hour, language);
     }
 
     Date endDate = null;
     String endString = FileUploadUtil.getParameter(items, "EndDate");
     if (StringUtil.isDefined(endString)) {
-      endDate = DateUtil.stringToDate(endString, language);
+      String hour = FileUploadUtil.getParameter(items, "EndHour");
+      endDate = DateUtil.stringToDate(endString, hour, language);
     }    
     
     News news =

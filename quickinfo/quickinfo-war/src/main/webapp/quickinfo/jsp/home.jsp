@@ -40,6 +40,7 @@
 <fmt:message key="GML.unsubscribe" var="actionLabelUnsubscribe"/>
 
 <c:set var="listOfNews" value="${requestScope['ListOfNews']}"/>
+<c:set var="allOtherNews" value="${requestScope['NotVisibleNews']}"/>
 <c:set var="appSettings" value="${requestScope['AppSettings']}"/>
 <c:set var="role" value="${requestScope['Role']}"/>
 <c:set var="isSubscriberUser" value="${requestScope.IsSubscriberUser}"/>
@@ -104,13 +105,46 @@ function unsubscribe() {
 </view:operationPane>
 <view:window>
 	<!--INTEGRATION HOME quickInfo -->
-	<h2 class="quickInfo-title"><%=componentLabel %></h2>
 	<c:if test="${not empty appSettings.description}">
-		<p class="quickInfo-description">
-		   ${appSettings.description}
-		</p>
+		<h2 class="quickInfo-title"><%=componentLabel %></h2>
+		<p class="quickInfo-description">${silfn:escapeHtmlWhitespaces(appSettings.description)}</p>
 	</c:if>
-	<div id="menubar-creation-actions"></div>
+	<c:if test="${not empty allOtherNews}">
+		<!-- Dedicated part for contributors -->
+		<div id="my-quickInfo">
+	      <div id="menubar-creation-actions"></div>
+	      <div class="secteur-container my-quickInfo-draft">
+	        <div class="header">
+	          <h3 class="my-quickInfo-draft-title"><fmt:message key="quickinfo.home.drafts"/></h3>
+	        </div>
+	        <ul>
+	          <c:forEach items="${allOtherNews.drafts}" var="news">
+				<li><a href="View?Id=${news.id}">${news.title}</a></li>
+			  </c:forEach>
+	        </ul>
+	      </div>
+	      <div class="secteur-container my-quickInfo-futur">
+	        <div class="header">
+	          <h3 class="my-quickInfo-futur-title"><fmt:message key="quickinfo.home.notYetVisibles"/></h3>
+	        </div>
+	        <ul>
+	          <c:forEach items="${allOtherNews.notYetVisibles}" var="news">
+				<li><a href="View?Id=${news.id}"><span class="date">${silfn:formatDateAndHour(news.visibilityPeriod.beginDate, _language)}</span>${news.title}</a></li>
+			  </c:forEach>
+	        </ul>
+	      </div>
+	      <div class="secteur-container my-quickInfo-outOfDate">
+	        <div class="header">
+	          <h3 class="my-quickInfo-outOfDate-title"><fmt:message key="quickinfo.home.noMoreVisibles"/></h3>
+	        </div>
+	        <ul>
+	          <c:forEach items="${allOtherNews.noMoreVisibles}" var="news">
+				<li><a href="View?Id=${news.id}"><span class="date">${silfn:formatDateAndHour(news.visibilityPeriod.endDate, _language)}</span>${news.title}</a></li>
+			  </c:forEach>
+	        </ul>
+	      </div>
+	    </div>
+	</c:if>
     <ul id="list-news">
     	<c:forEach items="${listOfNews}" var="news">
 		<li>

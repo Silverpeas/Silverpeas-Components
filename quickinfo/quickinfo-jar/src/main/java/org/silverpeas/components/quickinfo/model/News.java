@@ -144,6 +144,14 @@ public class News extends AbstractJpaEntity<News, UuidIdentifier> implements Sil
     return getVisibilityPeriod().contains(new Date());
   }
   
+  public boolean isNoMoreVisible() {
+    return new Date().after(getVisibilityPeriod().getEndDate());
+  }
+  
+  public boolean isNotYetVisible() {
+    return new Date().before(getVisibilityPeriod().getBeginDate());
+  }
+  
   public void setVisibilityPeriod(Period period) {
     getPublication().setVisibilityPeriod(period);
   }
