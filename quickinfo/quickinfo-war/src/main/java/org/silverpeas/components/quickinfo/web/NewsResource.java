@@ -1,12 +1,17 @@
 package org.silverpeas.components.quickinfo.web;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response.Status;
 
 import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.components.quickinfo.model.QuickInfoService;
@@ -14,29 +19,6 @@ import org.silverpeas.components.quickinfo.model.QuickInfoServiceFactory;
 
 import com.silverpeas.annotation.Authenticated;
 import com.silverpeas.annotation.RequestScoped;
-/*
- * Copyright (C) 2000 - 2014 Silverpeas
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 import com.silverpeas.annotation.Service;
 import com.silverpeas.web.RESTWebService;
 
@@ -64,6 +46,33 @@ public class NewsResource extends RESTWebService {
     }
     
     return entities;
+  }
+  
+  @GET
+  @Path("{newsId}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public NewsEntity getNews(@PathParam("newsId") String onNewsId) {
+    try {
+      News news = getService().getNews(onNewsId);
+      URI newsURI = getUriInfo().getRequestUri();
+      return asWebEntity(news, newsURI);
+    } catch (Exception ex) {
+      throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
+    }
+  }
+  
+  @POST
+  @Path("{newsId}/acknowledge")
+  public void acknowledge(@PathParam("newsId") String onNewsId) {
+    try {
+      getService().acknowledgeNews(onNewsId, getUserDetail().getId());
+    } catch (Exception ex) {
+      throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
+    }
+  }
+  
+  protected NewsEntity asWebEntity(final News news, URI newsURI) {
+    return NewsEntity.fromNews(news).withURI(newsURI);
   }
   
   private QuickInfoService getService() {

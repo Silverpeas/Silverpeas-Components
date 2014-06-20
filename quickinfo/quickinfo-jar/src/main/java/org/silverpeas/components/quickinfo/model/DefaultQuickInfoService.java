@@ -37,8 +37,11 @@ import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.util.SimpleDocumentList;
+import org.silverpeas.authentication.UserAuthenticationListener;
+import org.silverpeas.authentication.UserAuthenticationListenerRegistration;
 import org.silverpeas.components.quickinfo.NewsByStatus;
 import org.silverpeas.components.quickinfo.QuickInfoComponentSettings;
+import org.silverpeas.components.quickinfo.QuickInfoUserAuthenticationListener;
 import org.silverpeas.components.quickinfo.notification.QuickInfoSubscriptionUserNotification;
 import org.silverpeas.components.quickinfo.repository.NewsRepository;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
@@ -86,6 +89,8 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
   @Inject
   private CommentService commentService;
   
+  private UserAuthenticationListener userAuthenticationListener;
+  
   @Override
   public News getContentById(String contentId) {
     return getNews(contentId);
@@ -106,6 +111,7 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
     return result;
   }
   
+  @Override
   public List<News> getAllNews(String componentId) {
     List<News> allNews = newsRepository.getByComponentId(componentId);
     for (News aNews : allNews) {
@@ -115,10 +121,12 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
     return allNews;
   }
   
+  @Override
   public NewsByStatus getAllNewsByStatus(String componentId, String userId) {
     return new NewsByStatus(getAllNews(componentId), userId);
   }
   
+  @Override
   public News getNews(String id) {
     News news = newsRepository.getById(id);
     PublicationDetail publication = getPublication(news);
@@ -126,11 +134,20 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
     return news;
   }
   
+  @Override
   public News getNewsByForeignId(String foreignId) {
     News news = newsRepository.getByForeignId(foreignId);
     PublicationDetail publication = getPublication(news);
     news.setPublication(publication);
     return news;
+  }
+  
+  @Override
+  public void acknowledgeNews(String id, String userId) {
+    News news = newsRepository.getById(id);
+    if (news != null) {
+      getStatisticService().addStat(userId, news);
+    }
   }
   
   private PublicationDetail getPublication(News news) {
@@ -332,11 +349,11 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
   }
   
   @Override
-  public List<News> getBlockingNews(String userId) {
+  public List<News> getUnreadBlockingNews(String userId) {
     List<News> allNews = getPlatformNews(userId);
     List<News> result = new ArrayList<News>();
     for (News news : allNews) {
-      if (news.isMandatory()) {
+      if (news.isMandatory() && !getStatisticService().isRead(news, userId)) {
         result.add(news);
       }
     }
@@ -381,6 +398,8 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
   @PostConstruct
   public void initialize() {
     commentUserNotificationService.register(QuickInfoComponentSettings.COMPONENT_NAME, this);
+    userAuthenticationListener = new QuickInfoUserAuthenticationListener();
+    UserAuthenticationListenerRegistration.register(userAuthenticationListener);
   }
   
   /**
@@ -390,6 +409,7 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
   @PreDestroy
   public void release() {
     commentUserNotificationService.unregister(QuickInfoComponentSettings.COMPONENT_NAME);
+    UserAuthenticationListenerRegistration.unregister(userAuthenticationListener);
   }
   
   private StatisticBm getStatisticService() {

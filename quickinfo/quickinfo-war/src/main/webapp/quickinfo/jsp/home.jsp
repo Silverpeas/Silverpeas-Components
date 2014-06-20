@@ -44,6 +44,8 @@
 <c:set var="appSettings" value="${requestScope['AppSettings']}"/>
 <c:set var="role" value="${requestScope['Role']}"/>
 <c:set var="isSubscriberUser" value="${requestScope.IsSubscriberUser}"/>
+<c:set var="contributor" value="${role == 'admin' || role == 'publisher'}"/>
+
 <fmt:message var="deleteConfirmMsg" key="supprimerQIConfirmation"/>
 
 <%@ include file="checkQuickInfo.jsp" %>
@@ -87,7 +89,7 @@ function unsubscribe() {
   	<fmt:message var="pdcMsg" key="GML.PDCParam"/>
   	<view:operation altText="${pdcMsg}" action="javascript:onclick=openPDCSetup()"/>
   </c:if>
-  <c:if test="${role == 'admin' || role == 'publisher'}">
+  <c:if test="${contributor}">
 	  <fmt:message var="addMsg" key="creation"/>
 	  <c:url var="addIcon" value="/util/icons/create-action/add-news.png"/>
 	  <view:operationOfCreation altText="${addMsg}" icon="${addIcon}" action="Add"></view:operationOfCreation>
@@ -109,7 +111,7 @@ function unsubscribe() {
 		<h2 class="quickInfo-title"><%=componentLabel %></h2>
 		<p class="quickInfo-description">${silfn:escapeHtmlWhitespaces(appSettings.description)}</p>
 	</c:if>
-	<c:if test="${not empty allOtherNews}">
+	<c:if test="${contributor}">
 		<!-- Dedicated part for contributors -->
 		<div id="my-quickInfo">
 	      <div id="menubar-creation-actions"></div>
@@ -145,7 +147,12 @@ function unsubscribe() {
 	      </div>
 	    </div>
 	</c:if>
-    <ul id="list-news">
+	<c:if test="${contributor}">
+    	<ul id="list-news">
+    </c:if>
+    <c:if test="${not contributor}">
+    	<ul id="list-news" class="reader">
+    </c:if>
     	<c:forEach items="${listOfNews}" var="news">
 		<li>
 			<c:if test="${not empty news.thumbnail}">
@@ -165,16 +172,18 @@ function unsubscribe() {
 				</c:if>
 				<span class="news-broadcast">
 					<c:if test="${news.important}">
-						<span class="news-broadcast-important"><fmt:message key="quickinfo.news.broadcast.mode.major"/></span> 
+						<span class="news-broadcast-important" title="<fmt:message key="quickinfo.news.broadcast.mode.major"/>"><fmt:message key="quickinfo.news.broadcast.mode.major"/></span> 
 					</c:if>
-					<c:if test="${appSettings.broadcastingByBlockingNews && news.mandatory}">
-						<span class="news-broadcast-blocking"><fmt:message key="quickinfo.news.broadcast.mode.blocking"/></span>
-					</c:if>
-					<c:if test="${appSettings.broadcastingByTicker && news.ticker}">
-						<span class="news-broadcast-ticker"><fmt:message key="quickinfo.news.broadcast.mode.ticker"/></span>
+					<c:if test="${contributor}">
+						<c:if test="${appSettings.broadcastingByBlockingNews && news.mandatory}">
+							<span class="news-broadcast-blocking"><fmt:message key="quickinfo.news.broadcast.mode.blocking"/></span>
+						</c:if>
+						<c:if test="${appSettings.broadcastingByTicker && news.ticker}">
+							<span class="news-broadcast-ticker"><fmt:message key="quickinfo.news.broadcast.mode.ticker"/></span>
+						</c:if>
 					</c:if>
 				</span>
-				<c:if test="${role == 'admin' || role == 'publisher'}">
+				<c:if test="${contributor}">
 					<div class="operation">
 						<a title="<fmt:message key="GML.modify"/>" href="Edit?Id=${news.id}"><img border="0" title="<fmt:message key="GML.modify"/>" alt="<fmt:message key="GML.modify"/>" src="/silverpeas/util/icons/update.gif" /></a>
 						<a title="<fmt:message key="GML.delete"/>" href="javascript:onclick=confirmDelete('${news.id}', '${deleteConfirmMsg}')"><img border="0" title="<fmt:message key="GML.delete"/>" alt="<fmt:message key="GML.delete"/>" src="/silverpeas/util/icons/delete.gif" /></a>

@@ -12,6 +12,7 @@ import org.silverpeas.util.UnitUtil;
 import org.silverpeas.util.time.TimeData;
 import org.silverpeas.util.time.TimeUnit;
 
+import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.web.Exposable;
 import com.stratelia.webactiv.util.DateUtil;
 
@@ -42,6 +43,9 @@ public class NewsEntity implements Exposable {
 
   private static final long serialVersionUID = 1L;
   
+  @XmlElement(defaultValue = "")
+  private URI uri;
+  
   @XmlElement
   @NotNull
   private String id;
@@ -59,6 +63,12 @@ public class NewsEntity implements Exposable {
   
   @XmlElement
   private Date date;
+  
+  @XmlElement
+  private String content;
+  
+  @XmlElement
+  private String thumbnailURL;
 
   @XmlElement
   @NotNull
@@ -72,6 +82,11 @@ public class NewsEntity implements Exposable {
     entity.setPermalink(news.getPermalink());
     entity.setId(news.getId());
     entity.setPublicationId(news.getPublicationId());
+    entity.setContent(news.getContent());
+    ThumbnailDetail thumbnail = news.getThumbnail();
+    if (thumbnail != null) {
+      entity.setThumbnailURL(thumbnail.getURL());
+    }
     return entity;
   }
   
@@ -112,8 +127,12 @@ public class NewsEntity implements Exposable {
 
   @Override
   public URI getURI() {
-    // TODO Auto-generated method stub
-    return null;
+    return uri;
+  }
+  
+  public NewsEntity withURI(final URI uri) {
+    this.uri = uri;
+    return this;
   }
 
   public void setId(String id) {
@@ -145,5 +164,27 @@ public class NewsEntity implements Exposable {
     return UnitUtil.getTimeData(DateUtil.getNow().getTime() - getDate().getTime())
         .getTimeConverted(TimeUnit.DAY).intValue();
   }
+  
+  @XmlElement
+  public String getPublishTime() {
+    return DateUtil.formatTime(getDate());
+  }
+  
+  public String getContent() {
+    return content;
+  }
+
+  public void setContent(String content) {
+    this.content = content;
+  }
+
+  public void setThumbnailURL(String thumbnailURL) {
+    this.thumbnailURL = thumbnailURL;
+  }
+
+  public String getThumbnailURL() {
+    return thumbnailURL;
+  }
+
 
 }
