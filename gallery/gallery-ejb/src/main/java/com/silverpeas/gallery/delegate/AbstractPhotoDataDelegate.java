@@ -28,14 +28,18 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.fileupload.FileItem;
+import org.hibernate.dialect.function.PositionSubstringFunction;
 
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.gallery.model.PhotoDetail;
+import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.classifyEngine.Position;
 import com.stratelia.webactiv.util.DateUtil;
+
 import org.silverpeas.servlet.FileUploadUtil;
 
 /**
@@ -180,6 +184,7 @@ public abstract class AbstractPhotoDataDelegate {
     private Date endDownloadDate = null;
     private Date beginDate = null;
     private Date endDate = null;
+    private List<PdcPosition> pdcPositions = null;
 
     public Boolean getAlbumLabel() {
       return albumLabel;
@@ -264,6 +269,15 @@ public abstract class AbstractPhotoDataDelegate {
     public void setEndDate(final String endDate) throws ParseException {
       this.endDate = stringToDate(endDate);
     }
+
+    public List<PdcPosition> getPdcPositions() {
+      return pdcPositions;
+    }
+
+    public void setPdcPositions(List<PdcPosition> pdcPositions) {
+      this.pdcPositions = pdcPositions;
+    }
+
   }
 
   /**
@@ -308,4 +322,5 @@ public abstract class AbstractPhotoDataDelegate {
   public boolean isSkipEmptyValues() {
     return skipEmptyValues;
   }
+
 }

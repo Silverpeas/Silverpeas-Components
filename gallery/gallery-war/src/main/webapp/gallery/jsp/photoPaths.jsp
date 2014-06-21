@@ -30,15 +30,11 @@
 <%
 	PhotoDetail photo			= (PhotoDetail) request.getAttribute("Photo");
 	List 	path 			= (List) request.getAttribute("Path");
-	Integer		nbCom			= (Integer) request.getAttribute("NbComments");
 	Collection 	pathList 		= (Collection) request.getAttribute("PathList");
 	Collection 	albums			= (Collection) request.getAttribute("Albums");
 	String 		xmlFormName		= (String) request.getAttribute("XMLFormName");
-	Boolean		isUsePdc		= (Boolean) request.getAttribute("IsUsePdc");
-	boolean		showComments	= ((Boolean) request.getAttribute("ShowCommentsTab")).booleanValue();
-	
-	String 		photoId			= new Integer(photo.getMediaPK().getId()).toString();
-	String 		nbComments 		= nbCom.toString();
+
+	String 		photoId			= photo.getMediaPK().getId();
 
 	Button validateButton = gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
 	Button cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "PreviewPhoto?PhotoId="+photoId, false);
@@ -47,9 +43,9 @@
 <html>
 <head>
 <view:looknfeel/>
-<script language="javascript">
+<script type="text/javascript">
 
-function sendData() 
+function sendData()
 {
 	document.paths.submit();
 }
@@ -65,23 +61,19 @@ function sendData()
    	TabbedPane tabbedPane = gef.getTabbedPane();
 	tabbedPane.addTab(resource.getString("gallery.photo"), "PreviewPhoto?PhotoId="+photoId, false);
 	tabbedPane.addTab(resource.getString("gallery.info"), "EditInformation?PhotoId="+photoId, false);
-	if (showComments)
-		tabbedPane.addTab(resource.getString("gallery.comments")+" ("+nbComments+")", "Comments?PhotoId="+photoId, false);
 	tabbedPane.addTab(resource.getString("gallery.accessPath"), "#", true);
-	if (isUsePdc.booleanValue())
-		tabbedPane.addTab(resource.getString("GML.PDC"), "PdcPositions?PhotoId="+photoId, false);
-	
+
 	out.println(window.printBefore());
 	out.println(tabbedPane.print());
     out.println(frame.printBefore());
-    
+
     Board board	= gef.getBoard();
-    
+
     out.println(board.printBefore());
     %>
-    <form name="paths" action="SelectPath" method="POST">
-    <table>
+  <form name="paths" action="SelectPath" method="POST">
     <input type="hidden" name="PhotoId" value="<%=photoId%>">
+    <table>
     <%
 	if(albums !=null && !albums.isEmpty())
 	{
@@ -92,7 +84,7 @@ function sendData()
 			if(album.getLevel() > 1)
 			{ // on n'affiche pas le noeud racine
 				String name = album.getName();
-			
+
 				String ind = "";
 				if(album.getLevel() > 2)
 				{// calcul chemin arbre
@@ -105,11 +97,11 @@ function sendData()
 						}
 					}
 				}
-				name = ind + name;	
+				name = ind + name;
 				// recherche si cet album est dans la liste des albums de la photo
 				boolean used = false;
 				Iterator i = pathList.iterator();
-				while (i.hasNext()) 
+				while (i.hasNext())
 			    {
 					String nodeId = (String) i.next();
 					if (new Integer(album.getId()).toString().equals(nodeId))
@@ -123,20 +115,20 @@ function sendData()
 			}
 		}
 	}
-	
-	out.println("</table>");
-	out.println("</form>");
-	
+%>
+	</table>
+</form>
+<%
 	out.println(board.printAfter());
-	
+
 	ButtonPane buttonPane = gef.getButtonPane();
 	buttonPane.addButton(validateButton);
 	buttonPane.addButton(cancelButton);
 	out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
-	
+
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
-	
+
 </body>
 </html>

@@ -41,6 +41,8 @@
 
 <c:set var="mandatoryIcon"><fmt:message key='gallery.mandatory' bundle='${icons}'/></c:set>
 <c:set var="photo" value="${requestScope.Photo.photo}" />
+<c:set var="browseContext" value="${requestScope.browseContext}"/>
+<c:set var="instanceId" value="${browseContext[3]}"/>
 
 <%
 	// récupération des paramètres :
@@ -50,9 +52,6 @@
   String userName = (String) request.getAttribute("UserName");
 
   boolean viewMetadata = ((Boolean) request.getAttribute("IsViewMetadata")).booleanValue();
-
-  Integer nbCom = (Integer) request.getAttribute("NbComments");
-  Boolean isUsePdc = (Boolean) request.getAttribute("IsUsePdc");
 
   // paramètres pour le formulaire
   Form formUpdate = (Form) request.getAttribute("Form");
@@ -170,16 +169,15 @@
 // fonctions de contrôle des zones des formulaires avant validation
 function sendData() {
 	<% if (formUpdate != null) { %>
-		if (isCorrectForm() && isCorrectLocalForm())
-		{
-      		document.photoForm.submit();
-  		}
-  	<% } else { %>
-    	if (isCorrectLocalForm())
-		{
-     			document.photoForm.submit();
-  		}
-  	<% } %>
+	if (isCorrectForm() && isCorrectLocalForm()) {
+	<% } else { %>
+	if (isCorrectLocalForm()) {
+	<% } %>
+	  <c:if test="${requestScope.IsUsePdc and empty photo.id}">
+	    <view:pdcPositions setIn="document.photoForm.Positions.value"/>
+	  </c:if>
+	  document.photoForm.submit();
+  }
 }
 
 function isCorrectLocalForm()
@@ -271,15 +269,18 @@ function isCorrectLocalForm()
 	     }
 
    	// vérifier que le document est bien une image
-   	if (file != "")
-   	{
-		var verif = /[.][jpg,gif,bmp,tiff,tif,jpeg,png,JPG,GIF,BMP,TIFF,TIF,JPEG,PNG]{3,4}$/;
-		if (verif.exec(file) == null)
-		{
+   	if (file != "") {
+   	  var verif = /[.][jpg,gif,bmp,tiff,tif,jpeg,png,JPG,GIF,BMP,TIFF,TIF,JPEG,PNG]{3,4}$/;
+   	  if (verif.exec(file) == null) {
 				errorMsg+="  - '<fmt:message key="gallery.photo"/>'  <fmt:message key="gallery.format"/>\n";
-       			errorNb++;
-		}
-	}
+        errorNb++;
+      }
+	  }
+
+  <c:if test="${requestScope.IsUsePdc and empty photo.id}">
+    <view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>;
+  </c:if>
+
    	switch(errorNb)
    	{
       	case 0 :
@@ -495,9 +496,6 @@ function hideTip() {
 		tabbedPane.addTab(resource.getString("gallery.photo"), "PreviewPhoto?PhotoId="+photoId, false);
 		tabbedPane.addTab(resource.getString("gallery.info"), "#", true);
 		tabbedPane.addTab(resource.getString("gallery.accessPath"), "AccessPath?PhotoId="+photoId, false);
-		if (isUsePdc.booleanValue()) {
-			tabbedPane.addTab(resource.getString("GML.PDC"), "PdcPositions?PhotoId="+photoId, false);
-		}
 	}
 
 	out.println(window.printBefore());
@@ -506,6 +504,7 @@ function hideTip() {
 <view:frame>
 <form name="photoForm" action="<%=action%>" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
 <input type="hidden" name="PhotoId" value="<%=photoId%>"/>
+<input type="hidden" name="Positions"/>
 
 <table cellpadding="5" width="100%">
 <tr>
@@ -519,8 +518,6 @@ function hideTip() {
   		<center>
   		<a href="#" onmouseover="doTooltip(event,0)" onmouseout="hideTip()"><img src="<%=vignette_url%>" border="0"/></a>
   		</center>
-
-
   <%
   // AFFICHAGE des métadonnées
   if (metaDataKeys != null && !metaDataKeys.isEmpty()) {
@@ -646,7 +643,7 @@ function hideTip() {
     <%-- Display PDC form --%>
     <c:choose>
       <c:when test="${not empty photo.id}">
-        <view:pdcClassification componentId="<%=componentId%>" contentId="${photo.id}" editable="true" />
+        <view:pdcClassification componentId="${instanceId}" contentId="${photo.id}" editable="true" />
       </c:when>
       <c:otherwise>
         <view:pdcNewContentClassification componentId="${instanceId}"/>

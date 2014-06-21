@@ -28,9 +28,11 @@ import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.model.AlbumDetail;
+import com.silverpeas.gallery.model.MediaCriteria;
 import com.silverpeas.gallery.model.MediaPK;
 import com.silverpeas.gallery.model.PhotoDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -64,22 +66,23 @@ public class GalleryResourceMock extends GalleryResource {
         galleryBmMock = mock(GalleryBm.class);
 
         // getAlbum
-        when(galleryBmMock.getAlbum(any(NodePK.class), anyBoolean())).thenAnswer(
-            new Answer<AlbumDetail>() {
+        when(galleryBmMock.getAlbum(any(NodePK.class)))
+            .thenAnswer(
+                new Answer<AlbumDetail>() {
 
-              @Override
-              public AlbumDetail answer(final InvocationOnMock invocation) throws Throwable {
-                final NodePK nodePk = (NodePK) invocation.getArguments()[0];
-                if (nodePk == null || !"3".equals(nodePk.getId())) {
-                  return null;
-                }
-                return AlbumBuilder
-                    .getAlbumBuilder()
-                    .buildAlbum(nodePk.getId())
-                    .addPhoto(
-                        PhotoBuilder.getPhotoBuilder().buildPhoto("7", nodePk.getComponentName()));
-              }
-            });
+                  @Override
+                  public AlbumDetail answer(final InvocationOnMock invocation) throws Throwable {
+                    final NodePK nodePk = (NodePK) invocation.getArguments()[0];
+                    if (nodePk == null || !"3".equals(nodePk.getId())) {
+                      return null;
+                    }
+                    return AlbumBuilder.getAlbumBuilder()
+                        .buildAlbum(nodePk.getId())
+                        .addPhoto(
+                            PhotoBuilder.getPhotoBuilder().buildPhoto("7",
+                                nodePk.getComponentName()));
+                  }
+                });
 
         // getPhoto
         when(galleryBmMock.getPhoto(any(MediaPK.class))).thenAnswer(new Answer<PhotoDetail>() {

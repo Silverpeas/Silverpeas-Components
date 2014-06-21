@@ -70,7 +70,6 @@ public interface GalleryBm {
   public void updatePhotoPath(String photoId, String instanceIdFrom,
       String instanceIdTo, String... albums);
 
-  // les photos ...
   public PhotoDetail getPhoto(MediaPK mediaPK);
 
   public Collection<PhotoDetail> getAllPhotos(NodePK nodePK);
@@ -143,7 +142,6 @@ public interface GalleryBm {
    * @param userId
    * @param period
    * @return
-   * @
    */
   public List<SocialInformation> getAllMediaByUserId(String userId, Period period);
 
@@ -155,7 +153,6 @@ public interface GalleryBm {
    * @param availableComponent
    * @param period
    * @return List<SocialInformation>
-   * @
    */
   public List<SocialInformation> getSocialInformationListOfMyContacts(List<String> listOfuserId,
       List<String> availableComponent, Period period);

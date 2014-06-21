@@ -38,13 +38,16 @@ import com.silverpeas.gallery.model.MetaData;
 import com.silverpeas.gallery.model.Order;
 import com.silverpeas.gallery.model.OrderRow;
 import com.silverpeas.gallery.model.PhotoDetail;
+import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.peasUtil.AccessForbiddenException;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
+
 import org.silverpeas.servlet.FileUploadUtil;
+
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
@@ -58,12 +61,14 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
+
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.search.indexEngine.model.FieldDescription;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
 import org.silverpeas.servlet.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -93,7 +98,6 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
   /**
    * Method declaration
-   *
    * @param mainSessionCtrl
    * @param componentContext
    * @return
@@ -108,8 +112,6 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
-   *
-   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param gallerySC The component Session Control, build and initialised.
    * @param request
@@ -320,8 +322,8 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
               xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
           PublicationTemplateImpl pubTemplate =
               (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
-              gallerySC.getComponentId()
-              + ":" + xmlFormShortName, xmlFormName);
+                  gallerySC.getComponentId()
+                      + ":" + xmlFormShortName, xmlFormName);
           formUpdate = pubTemplate.getUpdateForm();
           RecordSet recordSet = pubTemplate.getRecordSet();
           data = recordSet.getEmptyRecord();
@@ -329,9 +331,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         request.setAttribute("Form", formUpdate);
         request.setAttribute("Data", data);
 
-        // appel jsp
-        // destination = rootDest + "photoManager.jsp";
-        destination = rootDest + "information.jsp";
+        destination = rootDest + "managePhoto.jsp";
       } else if (function.equals("CreatePhoto")) {
 
         // création de la photo dans la base de donnée
@@ -360,7 +360,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         List<FileItem> parameters = request.getFileItems();
         String photoId =
             FileUploadUtil.getParameter(parameters, "PhotoId", null,
-            request.getCharacterEncoding());
+                request.getCharacterEncoding());
         updatePhotoData(photoId, request, gallerySC);
         // retour à la preview
         request.setAttribute("PhotoId", photoId);
@@ -406,7 +406,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
           boolean linkDownload =
               "admin".equals(flag) || "publisher".equals(flag) || "privilegedUser".equals(flag)
-              || ("writer".equals(flag) && photo.getCreatorId().equals(gallerySC.getUserId()));
+                  || ("writer".equals(flag) && photo.getCreatorId().equals(gallerySC.getUserId()));
           request.setAttribute("ViewLinkDownload", linkDownload);
 
           putPhotoCommonParameters(request, gallerySC, photo, flag);
@@ -419,6 +419,9 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           // Slideshow requirements
           request.setAttribute("albumId", gallerySC.getCurrentAlbumId());
           request.setAttribute("wait", gallerySC.getSlideshowWait());
+          // Add this following line for backward compatibility TODO create migration script in
+          // order to insert each photo inside content manager
+          request.setAttribute("SilverObjetId", gallerySC.getSilverObjectId(photoId));
           // appel jsp
           destination = rootDest + "preview.jsp";
         } catch (Exception e) {
@@ -523,30 +526,6 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         // String title = request.getParameter("Title");
         String description = request.getParameter("Description");
         gallerySC.sendAskPhoto(description);
-      } else if (function.equals("PdcPositions")) {
-
-        // traitement du plan de classement
-        request.setAttribute("Path", gallerySC.getPath());
-        String photoId = request.getParameter("PhotoId");
-        if (photoId == null || photoId.equals("")) {
-          photoId = request.getParameter("PubId");
-        }
-        if (photoId == null || photoId.equals("")) {
-          photoId = (String) request.getAttribute("PhotoId");
-        }
-
-        // check user rights
-        if (!gallerySC.isPhotoAdmin(flag, photoId, userId)) {
-          throw new AccessForbiddenException("GalleryRequestRouter.PdcPositions",
-              SilverpeasException.WARNING, null);
-        }
-
-        PhotoDetail photo = gallerySC.getPhoto(photoId);
-        putPhotoCommonParameters(request, gallerySC, photo, flag);
-
-        request.setAttribute("SilverObjetId", gallerySC.getSilverObjectId(photoId));
-
-        destination = rootDest + "pdcPositions.jsp";
       } else if (function.equals("ChoiceSize")) {
         // traitement du choix des tailles
         String choix = request.getParameter("Choice");
@@ -604,8 +583,8 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
                 xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
             PublicationTemplateImpl pubTemplate =
                 (PublicationTemplateImpl) getPublicationTemplateManager()
-                .getPublicationTemplate(
-                gallerySC.getComponentId() + ":" + xmlFormShortName, xmlFormName);
+                    .getPublicationTemplate(
+                        gallerySC.getComponentId() + ":" + xmlFormShortName, xmlFormName);
             Form formUpdate = pubTemplate.getUpdateForm();
             RecordSet recordSet = pubTemplate.getRecordSet();
             DataRecord data = recordSet.getEmptyRecord();
@@ -746,8 +725,8 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
           PublicationTemplateImpl pubTemplate =
               (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
-              gallerySC.getComponentId()
-              + ":" + xmlFormShortName, xmlFormName);
+                  gallerySC.getComponentId()
+                      + ":" + xmlFormShortName, xmlFormName);
           formUpdate = pubTemplate.getUpdateForm();
           RecordSet recordSet = pubTemplate.getRecordSet();
           data = recordSet.getRecord(photoId);
@@ -761,7 +740,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         request.setAttribute("Data", data);
 
         // appel jsp
-        destination = rootDest + "information.jsp";
+        destination = rootDest + "managePhoto.jsp";
       } else if (function.equals("AllSelected")) {
         // sélectionne (ou déselectionne) toutes les photos de l'album (ou de la liste restreinte
         // dans le cas de la recherche)
@@ -831,8 +810,8 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
               xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
           PublicationTemplateImpl pubTemplate =
               (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
-              gallerySC.getComponentId()
-              + ":" + xmlFormShortName, xmlFormName);
+                  gallerySC.getComponentId()
+                      + ":" + xmlFormShortName, xmlFormName);
           Form form = pubTemplate.getSearchForm();
 
           // get previous search
@@ -925,7 +904,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         // Ajout de la requete classique
         String word =
             FileUploadUtil.getParameter(items, "SearchKeyWord", null,
-            request.getCharacterEncoding());
+                request.getCharacterEncoding());
         query.setQuery(word);
         gallerySC.setSearchKeyWord(word);
 
@@ -936,8 +915,8 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
               xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
           PublicationTemplateImpl template =
               (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
-              gallerySC.getComponentId()
-              + ":" + xmlFormShortName);
+                  gallerySC.getComponentId()
+                      + ":" + xmlFormShortName);
 
           String templateFileName = template.getFileName();
           String templateName = templateFileName.substring(0, templateFileName.lastIndexOf("."));
@@ -947,7 +926,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
           PagesContext context =
               new PagesContext("XMLSearchForm", "2", gallerySC.getLanguage(),
-              gallerySC.getUserId());
+                  gallerySC.getUserId());
           context.setEncoding("UTF-8");
           XmlSearchForm searchForm = (XmlSearchForm) template.getSearchForm();
           searchForm.update(items, data, context);
@@ -1050,8 +1029,8 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           } else {
             result =
                 getPhotosBySilverObjectIds(new TreeSet<Integer>(silverObjectIds),
-                new ContentManager(),
-                gallerySC);
+                    new ContentManager(),
+                    gallerySC);
           }
           // mise à jour de la liste des photos résultat de la recherche
           gallerySC.setSearchResultListPhotos(result);
@@ -1114,7 +1093,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
             "objectType = " + objectType + " objectId = " + objectId);
         SilverTrace.debug("gallery", "GalleryRequestRouter.copy", "root.MSG_GEN_PARAM_VALUE",
             "destination = " + URLManager.getURL(URLManager.CMP_CLIPBOARD)
-            + "Idle.jsp?message=REFRESHCLIPBOARD");
+                + "Idle.jsp?message=REFRESHCLIPBOARD");
 
         destination =
             URLManager.getURL(URLManager.CMP_CLIPBOARD) + "Idle.jsp?message=REFRESHCLIPBOARD";
@@ -1149,7 +1128,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
             "objectType = " + objectType + " objectId = " + objectId);
         SilverTrace.debug("gallery", "GalleryRequestRouter.cut", "root.MSG_GEN_PARAM_VALUE",
             "destination = " + URLManager.getURL(URLManager.CMP_CLIPBOARD)
-            + "Idle.jsp?message=REFRESHCLIPBOARD");
+                + "Idle.jsp?message=REFRESHCLIPBOARD");
 
         destination =
             URLManager.getURL(URLManager.CMP_CLIPBOARD) + "Idle.jsp?message=REFRESHCLIPBOARD";
@@ -1236,8 +1215,8 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
                 xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
             PublicationTemplateImpl pubTemplate =
                 (PublicationTemplateImpl) getPublicationTemplateManager()
-                .getPublicationTemplate(
-                gallerySC.getComponentId() + ":" + xmlFormShortName, xmlFormName);
+                    .getPublicationTemplate(
+                        gallerySC.getComponentId() + ":" + xmlFormShortName, xmlFormName);
             Form formUpdate = pubTemplate.getUpdateForm();
             RecordSet recordSet = pubTemplate.getRecordSet();
             DataRecord data = recordSet.getEmptyRecord();
@@ -1268,8 +1247,8 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
             PublicationTemplate pub =
                 getPublicationTemplateManager().getPublicationTemplate(
-                gallerySC.getComponentId() + ":"
-                + xmlFormShortName);
+                    gallerySC.getComponentId() + ":"
+                        + xmlFormShortName);
             RecordSet set = pub.getRecordSet();
             Form form = pub.getUpdateForm();
             DataRecord data = set.getRecord(orderId);
@@ -1280,7 +1259,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
             PagesContext context =
                 new PagesContext("myForm", "0", gallerySC.getLanguage(), false,
-                gallerySC.getComponentId(), gallerySC.getUserId());
+                    gallerySC.getComponentId(), gallerySC.getUserId());
             context.setEncoding("UTF-8");
             context.setObjectId(orderId);
 
@@ -1345,7 +1324,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
                 xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
             PublicationTemplateImpl pubTemplate =
                 (PublicationTemplateImpl) getPublicationTemplateManager()
-                .getPublicationTemplate(gallerySC.getComponentId() + ":" + xmlFormShortName);
+                    .getPublicationTemplate(gallerySC.getComponentId() + ":" + xmlFormShortName);
 
             if (pubTemplate != null) {
               formView = pubTemplate.getViewForm();
@@ -1487,6 +1466,12 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
     delegate.getHeaderData().setEndDate(
         request.getParameter(ParameterNames.ImageEndDate));
 
+    String positions = request.getParameter("Positions");
+    if (StringUtil.isDefined(positions)) {
+      PdcClassificationEntity withClassification = PdcClassificationEntity.fromJSON(positions);
+      delegate.getHeaderData().setPdcPositions(withClassification.getPdcPositions());
+    }
+
     // 2. Récupération des données du formulaire
     final String xmlFormName = gallerySC.getXMLFormName();
     if (isDefined(xmlFormName)) {
@@ -1494,8 +1479,8 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
       PublicationTemplate pub =
           getPublicationTemplateManager().getPublicationTemplate(
-          gallerySC.getComponentId() + ":"
-          + xmlFormShortName);
+              gallerySC.getComponentId() + ":"
+                  + xmlFormShortName);
       delegate.setForm(pub.getRecordSet(), pub.getUpdateForm());
     }
 
@@ -1526,7 +1511,6 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
   /**
    * mise à jour des photos selectionnées : traitement par lot
-   *
    * @param request
    * @param gallerySC
    * @param photoIds
@@ -1539,7 +1523,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
     // Getting all HTTP parameters
     final List<FileItem> parameters = new ArrayList<FileItem>();
     for (FileItem param : request.getFileItems()) {
-        parameters.add(param);
+      parameters.add(param);
     }
 
     final PhotoDataUpdateDelegate delegate =
@@ -1573,8 +1557,8 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
       PublicationTemplate pub =
           getPublicationTemplateManager().getPublicationTemplate(
-          gallerySC.getComponentId() + ":"
-          + xmlFormShortName);
+              gallerySC.getComponentId() + ":"
+                  + xmlFormShortName);
       delegate.setForm(pub.getRecordSet(), pub.getUpdateForm());
     }
 
@@ -1606,8 +1590,8 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
       PublicationTemplateImpl pubTemplate =
           (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
-          gallerySC.getComponentId()
-          + ":" + xmlFormShortName);
+              gallerySC.getComponentId()
+                  + ":" + xmlFormShortName);
 
       if (pubTemplate != null) {
         formView = pubTemplate.getViewForm();
@@ -1635,7 +1619,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
     PublicationTemplate pub =
         getPublicationTemplateManager().getPublicationTemplate(gallerySC.getComponentId() + ":"
-        + xmlFormShortName);
+            + xmlFormShortName);
     RecordSet set = pub.getRecordSet();
     Form form = pub.getUpdateForm();
     DataRecord data = set.getRecord(photo.getId());
@@ -1646,9 +1630,9 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
     PagesContext context =
         new PagesContext("myForm", "0", gallerySC.getLanguage(), false,
-        gallerySC.getComponentId(),
-        gallerySC.getUserId(), gallerySC.getAlbum(gallerySC.getCurrentAlbumId())
-        .getNodePK().getId());
+            gallerySC.getComponentId(),
+            gallerySC.getUserId(), gallerySC.getAlbum(gallerySC.getCurrentAlbumId())
+                .getNodePK().getId());
     context.setEncoding("UTF-8");
     context.setObjectId(photo.getId());
 
@@ -1694,8 +1678,8 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
       PublicationTemplate pub =
           getPublicationTemplateManager().getPublicationTemplate(
-          gallerySC.getComponentId() + ":"
-          + xmlFormShortName);
+              gallerySC.getComponentId() + ":"
+                  + xmlFormShortName);
       delegate.setForm(pub.getRecordSet(), pub.getUpdateForm());
     }
 
@@ -1742,7 +1726,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
     boolean allowedToUpdateImage =
         "admin".equals(profile) || "publisher".equals(profile)
-        || ("writer".equals(profile) && photo.getCreatorId().equals(gallerySC.getUserId()));
+            || ("writer".equals(profile) && photo.getCreatorId().equals(gallerySC.getUserId()));
     request.setAttribute("UpdateImageAllowed", allowedToUpdateImage);
 
     request.setAttribute("ShowCommentsTab", gallerySC.areCommentsEnabled());

@@ -192,4 +192,18 @@ public class PhotoDetailTest {
         is("/silverpeas/FileServer/mediaId_formatSuffix?ComponentId=instanceId&SourceFile" +
             "=mediaId_formatSuffix&MimeType=image/jpeg&Directory=imagemediaId"));
   }
+
+  @Test
+  public void checkPhotoPeriodInit() {
+    PhotoDetail photo = new PhotoDetail();
+    photo.setBeginDownloadDate(null);
+    assertThat(photo.getBeginDownloadDate(), nullValue());
+    photo.setEndDownloadDate(null);
+    assertThat(photo.getEndDownloadDate(), nullValue());
+    photo.setBeginDate(null);
+    assertThat(photo.getBeginDate(), nullValue());
+    photo.setEndDate(null);
+    assertThat(photo.getEndDate(), nullValue());
+  }
+
 }

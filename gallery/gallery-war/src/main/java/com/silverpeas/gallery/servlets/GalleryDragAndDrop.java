@@ -26,9 +26,11 @@ import com.silverpeas.gallery.model.GalleryRuntimeException;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.ZipManager;
+
 import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.web.util.SilverpeasTransverseWebErrorUtil;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -37,7 +39,9 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.core.admin.OrganisationController;
 
 import javax.ejb.EJBException;
@@ -46,6 +50,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -159,6 +164,7 @@ public class GalleryDragAndDrop extends HttpServlet {
     try {
 
       final UserDetail user = UserDetail.getById(userId);
+      CacheServiceFactory.getSessionCacheService().put(UserDetail.CURRENT_REQUESTER_KEY, user);
       final PhotoDataCreateDelegate delegate =
           new PhotoDataCreateDelegate(user.getUserPreferences().getLanguage(), albumId);
       delegate.getHeaderData().setDownload(download);

@@ -23,6 +23,10 @@
  */
 package com.silverpeas.gallery.process.photo;
 
+import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
+
+import java.util.List;
+
 import org.silverpeas.process.session.ProcessSession;
 
 import com.silverpeas.form.PagesContext;
@@ -30,6 +34,11 @@ import com.silverpeas.gallery.delegate.PhotoDataCreateDelegate;
 import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.gallery.process.AbstractGalleryDataProcess;
 import com.silverpeas.gallery.process.GalleryProcessExecutionContext;
+import com.silverpeas.pdc.PdcServiceFactory;
+import com.silverpeas.pdc.model.PdcClassification;
+import com.silverpeas.pdc.model.PdcPosition;
+import com.silverpeas.pdc.service.PdcClassificationService;
+import com.silverpeas.util.CollectionUtil;
 
 /**
  * Process to create a photo in Database
@@ -91,6 +100,32 @@ public class GalleryCreatePhotoDataProcess extends AbstractGalleryDataProcess {
       pageContext.setEncoding("UTF-8");
       pageContext.setObjectId(photoId);
       delegate.updateForm(photoId, pageContext);
+    }
+
+    // Insert content manager of the media
+    int silverContentId =
+        getGalleryContentManager().createSilverContent(context.getConnection(), getPhoto(), context
+            .getUser().getId());
+    getPhoto().setSilverObjectId(silverContentId);
+
+    // Persists pdc classification
+    classifyPhotoContent();
+  }
+
+  private void classifyPhotoContent() {
+    if (delegate.isHeaderData()) {
+      List<PdcPosition> pdcPositions = delegate.getHeaderData().getPdcPositions();
+      if (CollectionUtil.isNotEmpty(pdcPositions)) {
+        PdcClassification curClassification =
+            aPdcClassificationOfContent(getPhoto().getSilverObjectId(), getPhoto().getInstanceId())
+                .withPositions(pdcPositions);
+        if (!curClassification.isEmpty()) {
+          PdcClassificationService service =
+              PdcServiceFactory.getFactory().getPdcClassificationService();
+          curClassification.ofContent(getPhoto().getSilverObjectId());
+          service.classifyContent(getPhoto().getPhoto(), curClassification);
+        }
+      }
     }
   }
 }

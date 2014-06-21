@@ -43,6 +43,8 @@
 <fmt:message var="commentTab" key="gallery.comments"/>
 
 <c:set var="curPhoto" value="${requestScope.Photo}"/>
+<c:set var="browseContext" value="${requestScope.browseContext}"/>
+<c:set var="instanceId" value="${browseContext[3]}"/>
 <c:set var="userId" value="${requestScope.UserId}"/>
 <c:set var="photoResourceType" value="${curPhoto.photo.contributionType}"/>
 <c:set var="photoId" value="${curPhoto.photo.mediaPK.id}"/>
@@ -70,7 +72,6 @@
   Integer rang = (Integer) request.getAttribute("Rang");
   Integer albumSize = (Integer) request.getAttribute("NbPhotos");
   Integer nbCom = (Integer) request.getAttribute("NbComments");
-  boolean pdc = ((Boolean) request.getAttribute("IsUsePdc")).booleanValue();
   boolean viewMetadata = ((Boolean) request.getAttribute("IsViewMetadata")).booleanValue();
   boolean watermark = ((Boolean) request.getAttribute("IsWatermark")).booleanValue();
   String XMLFormName = (String) request.getAttribute("XMLFormName");
@@ -103,7 +104,7 @@
   long size = photo.getImageSize();
   int height = photo.getSizeH();
   int width = photo.getSizeL();
-  String photoId = new Integer(photo.getMediaPK().getId()).toString();
+  String photoId = photo.getMediaPK().getId();
   String lien = FileServerUtils.getUrl(componentId, URLEncoder.encode(name, "UTF-8"), photo.
       getImageMimeType(), nomRep);
   String lienWatermark = "";
@@ -206,7 +207,7 @@ function goToNotify(url)
 </script>
 <%@include file="diaporama.jsp" %>
 </head>
-<body class="gallery gallery-fiche-image yui-skin-sam" id="<%=componentId%>">
+<body class="gallery gallery-fiche-image yui-skin-sam" id="${instanceId}">
   <%
     browseBar.setDomainName(spaceLabel);
     browseBar.setComponentName(componentLabel, "Main");
@@ -258,9 +259,6 @@ function goToNotify(url)
     if (updateAllowed) {
       tabbedPane.addTab(resource.getString("gallery.accessPath"), "AccessPath?PhotoId=" + photoId,
           false);
-      if (pdc) {
-        tabbedPane.addTab(resource.getString("GML.PDC"), "PdcPositions?PhotoId=" + photoId, false);
-      }
     }
 
     out.println(window.printBefore());
@@ -361,7 +359,7 @@ function goToNotify(url)
   </c:if>
 
   <c:if test="${requestScope.IsUsePdc}">
-    <view:pdcClassificationPreview componentId="<%=componentId%>" contentId="${photoId}" />
+    <view:pdcClassificationPreview componentId="${instanceId}" contentId="${photoId}" />
   </c:if>
 
   <%

@@ -28,10 +28,10 @@ import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.model.GalleryRuntimeException;
 import com.silverpeas.gallery.model.MediaPK;
 import com.silverpeas.gallery.model.PhotoDetail;
-
 import com.stratelia.silverpeas.contentManager.ContentInterface;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
+import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
@@ -54,10 +54,10 @@ public class GalleryContentManager implements ContentInterface, java.io.Serializ
    * @return a List of SilverContent
    */
   @Override
-  public List getSilverContentById(List<Integer> ids, String peasId, String userId,
+  public List<SilverContentInterface> getSilverContentById(List<Integer> ids, String peasId, String userId,
       List<String> userRoles) {
     if (getContentManager() == null) {
-      return new ArrayList<PhotoDetail>();
+      return new ArrayList<SilverContentInterface>();
     }
 
     return getHeaders(makePKArray(ids, peasId));
@@ -139,8 +139,8 @@ public class GalleryContentManager implements ContentInterface, java.io.Serializ
    * @param ids a list of mediaPK
    * @return a list of photoDetail
    */
-  private List<PhotoDetail> getHeaders(List<MediaPK> ids) {
-    ArrayList<PhotoDetail> headers = new ArrayList<PhotoDetail>();
+  private List<SilverContentInterface> getHeaders(List<MediaPK> ids) {
+    List<SilverContentInterface> headers = new ArrayList<SilverContentInterface>();
     // création de la liste "headers" avec toutes les photos (format PhotoDetail)
     // en fonction de la liste "ids" des photos (format MediaPK)
     if (ids != null) {

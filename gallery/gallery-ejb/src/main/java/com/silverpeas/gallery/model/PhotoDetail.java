@@ -23,18 +23,15 @@
  */
 package com.silverpeas.gallery.model;
 
-import com.silverpeas.gallery.GalleryComponentSettings;
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.contentManager.SilverContentInterface;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.util.FileServerUtils;
-import org.silverpeas.date.Period;
-import org.silverpeas.notification.message.MessageManager;
-
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
+
+import org.silverpeas.date.Period;
+
+import com.stratelia.silverpeas.contentManager.SilverContentInterface;
+import com.stratelia.webactiv.util.DateUtil;
 
 /**
  * This class is an old one. {@link Photo} must be used instead.
@@ -126,19 +123,27 @@ public class PhotoDetail implements SilverContentInterface, Serializable {
   }
 
   public Date getBeginDate() {
-    return photo.getVisibilityPeriod().getBeginDate();
+    return photo.getVisibilityPeriod().getBeginDatable().isDefined() ?
+        photo.getVisibilityPeriod().getBeginDate() : null;
   }
 
   public void setBeginDate(Date beginDate) {
-    photo.setVisibilityPeriod(Period.from(beginDate, getEndDate()));
+    if (beginDate == null) {
+      beginDate = DateUtil.MINIMUM_DATE;
+    }
+    photo.setVisibilityPeriod(Period.from(beginDate, photo.getVisibilityPeriod().getEndDate()));
   }
 
   public Date getEndDate() {
-    return photo.getVisibilityPeriod().getEndDate();
+    return photo.getVisibilityPeriod().getEndDatable().isDefined() ?
+        photo.getVisibilityPeriod().getEndDate() : null;
   }
 
   public void setEndDate(Date endDate) {
-    photo.setVisibilityPeriod(Period.from(getBeginDate(), endDate));
+    if (endDate == null) {
+      endDate = DateUtil.MINIMUM_DATE;
+    }
+    photo.setVisibilityPeriod(Period.from(photo.getVisibilityPeriod().getBeginDate(), endDate));
   }
 
   public String getAuthor() {
@@ -355,6 +360,9 @@ public class PhotoDetail implements SilverContentInterface, Serializable {
   }
 
   public void setBeginDownloadDate(Date beginDownloadDate) {
+    if (beginDownloadDate == null) {
+      beginDownloadDate = DateUtil.MINIMUM_DATE;
+    }
     photo.setDownloadPeriod(Period.from(beginDownloadDate, photo.getDownloadPeriod().getEndDate()));
   }
 
@@ -364,6 +372,9 @@ public class PhotoDetail implements SilverContentInterface, Serializable {
   }
 
   public void setEndDownloadDate(Date endDownloadDate) {
+    if (endDownloadDate == null) {
+      endDownloadDate = DateUtil.MAXIMUM_DATE;
+    }
     photo.setDownloadPeriod(Period.from(photo.getDownloadPeriod().getBeginDate(), endDownloadDate));
   }
 
@@ -397,7 +408,7 @@ public class PhotoDetail implements SilverContentInterface, Serializable {
   public static String getResourceType() {
     return Photo.getResourceType();
   }
-  
+
   public boolean isPreviewable() {
     return photo.isPreviewable();
   }
