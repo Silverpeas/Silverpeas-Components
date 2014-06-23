@@ -25,44 +25,15 @@ var services = angular.module('silverpeas.services');
 
 services.factory('Suggestion', ['RESTAdapter', function(RESTAdapter) {
   return new function() {
-    // the converter of Suggestion objects from a json stream */
-    var converter = function(data) {
-      var objects;
-      if (data instanceof Array) {
-        objects = [];
-        if (data.length > 0 && typeof data[0].suggestionTitle === 'undefined') {
-          for (var i = 0; i < data.length; i++) {
-            objects.push(new Suggestion(data[i]));
-          }
-        } else {
-          for (var i = 0; i < data.length; i++) {
-            objects.push(new SuggestionComment(data[i]));
-          }
-        }
-      } else {
-        objects = (typeof data.suggestionTitle === 'undefined' ? new Suggestion(data):new Comment(data));
-      }
-      return objects;
-    };
 
     // the type Suggestion
     var Suggestion = function() {
       this.type = 'Suggestion';
-      if (arguments.length > 0) {
-        for (var prop in arguments[0]) {
-          this[prop] = arguments[0][prop];
-        }
-      }
     };
 
     // the type SuggestionComment
     var SuggestionComment = function() {
       this.type = 'SuggestionComment';
-      if (arguments.length > 0) {
-        for (var prop in arguments[0]) {
-          this[prop] = arguments[0][prop];
-        }
-      }
     };
 
     /**
@@ -72,7 +43,9 @@ services.factory('Suggestion', ['RESTAdapter', function(RESTAdapter) {
      */
     this.suggestions = function(suggestionBoxUri) {
       return new function() {
-        var adapter = RESTAdapter.get(suggestionBoxUri + '/suggestions', converter);
+        var adapter = RESTAdapter.get(suggestionBoxUri + '/suggestions', Suggestion);
+        var adapterForComments = RESTAdapter.get(suggestionBoxUri + '/suggestions/lastComments',
+            SuggestionComment);
 
         /**
          * Gets one or more suggestions according to the arguments.
@@ -85,8 +58,8 @@ services.factory('Suggestion', ['RESTAdapter', function(RESTAdapter) {
          * - inDraft for the suggestions in draft (in redaction),
          * - outOfDraft for the suggestions that were validated (published and refused)
          *
-         * If the argument is an object or it mades up of an identifier following by an object, then
-         * the object is taken as a criteria to apply to requested resource.
+         * If the argument is an object or it is made up of an identifier following by an object,
+         * hen the object is taken as a criteria to apply to requested resource.
          * @returns {Array} the asked suggestion boxes.
          */
         this.get = function() {
@@ -131,8 +104,10 @@ services.factory('Suggestion', ['RESTAdapter', function(RESTAdapter) {
          * @returns {Comment} the last comments on the suggestions.
          */
         this.lastComments = function(count) {
-          var howMany = (typeof count === 'number' ? {count: count}:{});
-          return this.get("lastComments", howMany);
+          if (typeof count === 'number')
+            return adapterForComments.find(adapterForComments.criteria({count: count}));
+          else
+            return adapterForComments.find();
         };
       };
     };
@@ -144,51 +119,36 @@ services.factory('SuggestionBox',
       return new function() {
         var baseUri = webContext + '/services/suggestionbox/' + context.component;
 
-        // the adapter over the remote REST service used to get one or more suggestions boxes
-        var adapter = RESTAdapter.get(webContext + '/services/suggestionbox/' + context.component,
-            function(data) {
-              var suggestionboxes;
-              if (data instanceof Array) {
-                suggestionboxes = [];
-                for (var i = 0; i < data.length; i++) {
-                  data[i].suggestions = Suggestion.suggestions(data[i].id);
-                  suggestionboxes.push(new SuggestionBox(data[i]));
-                }
-              } else {
-                data.suggestions = Suggestion.suggestions(data.id);
-                suggestionboxes = new SuggestionBox(data);
-              }
-              return suggestionboxes;
-            });
-
         // the type SuggestionBox
-        var SuggestionBox = function() {
-          if (arguments.length > 0) {
-            for (var prop in arguments[0]) {
-              this[prop] = arguments[0][prop];
-            }
+        var SuggestionBox = function(properties) {
+          for(var prop in properties) {
+            this[prop] = properties[prop];
           }
           this.suggestions = Suggestion.suggestions(baseUri + '/' + this.id);
         };
 
         /**
-         * Gets one or more suggestion boxes according to the argument. The argument is either a
-         * suggestion box identifier or a criteria the suggestion boxes has to match.
-         * @returns {Array|SuggestionBox} the asked suggestion boxes.
+         * Gets the suggestion box matching the specified identifiers. These should define
+         * at least the unique suggestion box identifier (property named 'id') or the identifier of
+         * the component instance (property named 'componentInstanceId') it belongs.
+         * @returns {SuggestionBox} the asked suggestion box.
          */
-        this.get = function() {
-          /* TODO uncomment the code below once the web service is available */
-          /*if (arguments.length === 1 && (typeof arguments[0] === 'number' || typeof arguments[0] === 'string')) {
-           return adapter.find(arguments[0]);
-           } else {
-           return adapter.find({
-           url: adapter.url,
-           criteria: adapter.criteria(arguments[0], defaultParameters)
-           });
-           }*/
-
-          /* TODO remove the code below once the web service is available */
-          return new SuggestionBox(arguments[0]);
+        this.get = function(identifiers) {
+          if (typeof identifiers === 'object' &&
+              (identifiers.id || identifiers.componentInstanceId)) {
+            var criteria = {};
+            if (identifiers.id) {
+              criteria.id = identifiers.id;
+              criteria.componentInstanceId = identifiers.id;
+            }
+            if (identifiers.componentInstanceId) {
+              criteria.componentInstanceId = identifiers.componentInstanceId;
+              if (identifiers.id === undefined)
+                criteria.id = identifiers.componentInstanceId;
+            }
+            return new SuggestionBox(criteria);
+          } else
+            notyError("Error: missing suggestion box id or componentInstanceId property");
         };
       };
     }]);
