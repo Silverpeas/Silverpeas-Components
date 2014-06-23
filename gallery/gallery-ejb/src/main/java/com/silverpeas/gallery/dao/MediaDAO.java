@@ -102,7 +102,7 @@ public class MediaDAO {
     List<Media> media = select(con, queryBuild.getLeft(), queryBuild.getRight(),
         new SelectResultRowProcessor<Media>(criteria.getResultLimit()) {
           @Override
-          protected Media read(final ResultSet rs) throws SQLException {
+          protected Media currentRow(final int rowIndex, final ResultSet rs) throws SQLException {
             String mediaId = rs.getString(1);
             MediaType mediaType = MediaType.from(rs.getString(2));
             String instanceId = rs.getString(3);
@@ -713,7 +713,7 @@ public class MediaDAO {
         Arrays.asList(mediaId, instanceId), new SelectResultRowProcessor<String>() {
 
           @Override
-          protected String read(final ResultSet rs) throws SQLException {
+          protected String currentRow(final int rowIndex, final ResultSet rs) throws SQLException {
             return String.valueOf(rs.getInt(1));
           }
         });
@@ -743,7 +743,7 @@ public class MediaDAO {
         new SelectResultRowProcessor<SocialInformation>() {
 
           @Override
-          protected SocialInformation read(final ResultSet rs) throws SQLException {
+          protected SocialInformation currentRow(final int rowIndex, final ResultSet rs) throws SQLException {
             Media media = getByCriteria(con, MediaCriteria.fromMediaId(rs.getString(2))
                 .withVisibility(MediaCriteria.VISIBILITY.FORCE_GET_ALL));
             MediaWithStatus withStatus =
@@ -790,7 +790,7 @@ public class MediaDAO {
     return select(con, query.toString(), params, new SelectResultRowProcessor<SocialInformation>() {
 
       @Override
-      protected SocialInformation read(final ResultSet rs) throws SQLException {
+      protected SocialInformation currentRow(final int rowIndex, final ResultSet rs) throws SQLException {
         Media media = getByCriteria(con, MediaCriteria.fromMediaId(rs.getString(2))
             .withVisibility(MediaCriteria.VISIBILITY.FORCE_GET_ALL));
         MediaWithStatus withStatus =

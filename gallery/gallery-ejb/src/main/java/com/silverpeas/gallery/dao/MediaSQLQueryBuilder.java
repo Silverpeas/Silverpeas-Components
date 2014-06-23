@@ -32,7 +32,6 @@ import com.silverpeas.gallery.model.Video;
 import com.silverpeas.util.CollectionUtil;
 import com.silverpeas.util.comparator.AbstractComplexComparator;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.DateUtil;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.lang3.tuple.Pair;

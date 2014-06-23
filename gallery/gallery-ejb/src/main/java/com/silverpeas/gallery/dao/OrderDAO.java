@@ -155,7 +155,7 @@ public class OrderDAO {
             "where orderId = ?", orderId, new SelectResultRowProcessor<OrderRow>() {
 
           @Override
-          protected OrderRow read(final ResultSet rs) throws SQLException {
+          protected OrderRow currentRow(final int rowIndex, final ResultSet rs) throws SQLException {
             String mediaId = rs.getString(1);
             String instanceId = rs.getString(2);
             OrderRow orderRow = new OrderRow(orderId, mediaId, instanceId);
@@ -209,7 +209,7 @@ public class OrderDAO {
         new SelectResultRowProcessor<Order>() {
 
           @Override
-          protected Order read(final ResultSet rs) throws SQLException {
+          protected Order currentRow(final int rowIndex, final ResultSet rs) throws SQLException {
             Order order = new Order(rs.getString(1));
             order.setUserId(rs.getString(2));
             order.setInstanceId(rs.getString(3));
