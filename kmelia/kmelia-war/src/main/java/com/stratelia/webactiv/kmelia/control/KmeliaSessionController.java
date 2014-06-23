@@ -1058,7 +1058,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     } else {
       if (getSessionTopic() == null || NodePK.BIN_NODE_ID.equals(
           getSessionTopic().getNodePK().getId())) {
-        // la publication est dans la corbeille
+        // publication is in the trash can
         pubDetail.setIndexOperation(IndexManager.NONE);
       }
 
@@ -1066,6 +1066,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         if (getSessionClone().getId().equals(pubDetail.getId())) {
           // update the clone, clone stay in same status
           pubDetail.setStatusMustBeChecked(false);
+          
+          // clone must not be indexed
+          pubDetail.setIndexOperation(IndexManager.NONE);
+          
         }
       }
       getKmeliaBm().updatePublication(pubDetail);
