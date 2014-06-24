@@ -951,7 +951,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
         destination = getDestination("GoToCurrentTopic", kmelia, request);
       } else if (function.equals("ViewOnly")) {
-        String id = request.getParameter("documentId");
+        String id = request.getParameter("Id");
         destination = rootDestination + "publicationViewOnly.jsp?Id=" + id;
       } else if (function.equals("SeeAlso")) {
         String action = request.getParameter("Action");

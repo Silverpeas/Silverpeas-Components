@@ -34,5 +34,7 @@ public interface QuickInfoService extends SilverpeasComponentService<News> {
   public News getNews(String id);
   
   public News getNewsByForeignId(String id);
+  
+  public void submitNewsOnHomepage(String id, String userId);
 
 }

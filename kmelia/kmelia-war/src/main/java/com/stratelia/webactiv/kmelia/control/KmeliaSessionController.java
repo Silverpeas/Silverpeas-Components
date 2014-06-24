@@ -105,7 +105,6 @@ import com.stratelia.webactiv.kmelia.model.updatechain.FieldParameter;
 import com.stratelia.webactiv.kmelia.model.updatechain.FieldUpdateChainDescriptor;
 import com.stratelia.webactiv.kmelia.model.updatechain.Fields;
 import com.stratelia.webactiv.kmelia.model.updatechain.UpdateChainDescriptor;
-import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
@@ -3453,23 +3452,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     KmeliaPublication kmeliaPublication = getSessionPublication();
     String pubId = kmeliaPublication.getId();
     PublicationDetail pubDetail = kmeliaPublication.getDetail();
-    String instanceId = pubDetail.getInstanceId();
     String contributorId = pubDetail.getUpdaterId();
-    Date beginDateAndHour = DateUtil.getDate(pubDetail.getBeginDate(), pubDetail.getBeginHour());
-    Date endDateAndHour = DateUtil.getDate(pubDetail.getEndDate(), pubDetail.getEndHour());
-    DelegatedNewsService delegatedNewsService = ServicesFactory.getDelegatedNewsService();
-    delegatedNewsService.addDelegatedNews(Integer.parseInt(pubId), instanceId, contributorId,
-        new Date(), beginDateAndHour, endDateAndHour);
+    DelegatedNewsService delegatedNewsService = ServicesFactory.getDelegatedNewsService();    
+    delegatedNewsService.submitNews(pubId, pubDetail, contributorId, pubDetail.getVisibilityPeriod(), getUserId());
 
-    // alerte l'équipe éditoriale du composant delegatednews
-    String[] tabInstanceId = getOrganisationController().getCompoId("delegatednews");
-    String delegatednewsInstanceId = null;
-    for (String aTabInstanceId : tabInstanceId) {
-      delegatednewsInstanceId = aTabInstanceId;
-      break;
-    }
-    delegatedNewsService.notifyDelegatedNewsToValidate(pubId, pubDetail.getName(this.getLanguage()),
-        this.getUserId(), this.getUserDetail().getDisplayedName(), delegatednewsInstanceId);
     return pubId;
   }
 

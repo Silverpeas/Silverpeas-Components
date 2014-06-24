@@ -21,9 +21,6 @@
 package com.stratelia.webactiv.quickinfo.control;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import javax.ejb.EJBException;
@@ -37,6 +34,8 @@ import org.silverpeas.components.quickinfo.model.QuickInfoServiceFactory;
 import org.silverpeas.components.quickinfo.notification.NewsManualUserNotification;
 import org.silverpeas.date.Period;
 
+import com.silverpeas.delegatednews.service.DelegatedNewsService;
+import com.silverpeas.delegatednews.service.ServicesFactory;
 import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
@@ -107,6 +106,8 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     instanceSettings.setNotificationAllowed(!getUserDetail().isAnonymous());
     instanceSettings
         .setBroadcastModes(getComponentParameterValue(QuickInfoComponentSettings.PARAM_BROADCAST));
+    instanceSettings.setDelegatedNewsEnabled(StringUtil
+        .getBooleanValue(getComponentParameterValue(QuickInfoComponentSettings.PARAM_DELEGATED)));
     return instanceSettings;
   }
 
@@ -244,6 +245,10 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
 
     return AlertUser.getAlertUserURL();
   }
+  
+  public void submitNewsOnHomepage(String id) {
+    getService().submitNewsOnHomepage(id, getUserId());
+  }
 
   /**
    * Classify the info letter publication on the PdC only if the positions parameter is filled
@@ -269,6 +274,10 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
   
   private StatisticBm getStatisticService() {
     return EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticBm.class);
+  }
+  
+  private DelegatedNewsService getDelegatedNewsService() {
+    return ServicesFactory.getDelegatedNewsService();
   }
   
 }

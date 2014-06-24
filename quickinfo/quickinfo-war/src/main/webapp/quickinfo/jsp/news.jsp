@@ -36,8 +36,10 @@
 
 <c:set var="news" value="${requestScope['News']}"/>
 <c:set var="role" value="${requestScope['Role']}"/>
+<c:set var="contributor" value="${role == 'admin' || role == 'publisher'}"/>
 <c:set var="userId" value="${sessionScope['SilverSessionController'].userId}"/>
 <c:set var="appSettings" value="${requestScope['AppSettings']}"/>
+<c:set var="viewOnly" value="${requestScope['ViewOnly']}"/>
 
 <c:url var="SilverpeasAnimationJS" value="/util/javaScript/animation.js"/>
 
@@ -71,11 +73,20 @@ function update() {
   $("#newsForm").attr("action", "Edit");
   $("#newsForm").submit();
 }
+
+function submitOnHomepage() {
+  $("#newsForm").attr("action", "SubmitOnHomepage");
+  $("#newsForm").submit();
+}
 </script>
 </head>
 <body class="quickInfo actuality" id="${news.componentInstanceId}">
+<c:if test="${viewOnly}">
+<view:browseBar clickable="false"/>
+</c:if>
+<c:if test="${not viewOnly}">
 <view:operationPane>
-	<c:if test="${role == 'admin' || role == 'publisher'}">
+	<c:if test="${contributor}">
 	  	<c:if test="${news.draft}">
 			<fmt:message var="publishMsg" key="GML.publish"/>
 		  	<view:operation altText="${publishMsg}" action="javascript:onclick=publish()"></view:operation>
@@ -85,12 +96,18 @@ function update() {
 		<fmt:message var="deleteMsg" key="GML.delete"/>
 		<fmt:message var="deleteConfirmMsg" key="supprimerQIConfirmation"/>
 		<view:operation altText="${deleteMsg}" action="javascript:onclick=confirmDelete('${news.id}', '${deleteConfirmMsg}')"/>
+		<view:operationSeparator/>
+		<c:if test="${appSettings.delegatedNewsEnabled && (empty news.delegatedNews || news.delegatedNews.denied)}">
+			<fmt:message var="submitOnHomepage" key="quickinfo.news.delegated.operation"/>
+			<view:operation altText="${submitOnHomepage}" action="javascript:onclick=submitOnHomepage()"/>
+		</c:if>
 	</c:if>
 	<c:if test="${appSettings.notificationAllowed}">
 		<fmt:message var="notifyMsg" key="GML.notify"/>
 		<view:operation altText="${notifyMsg}" action="javascript:notify()"/>
 	</c:if>
 </view:operationPane>
+</c:if>
 <view:window>
 
 <!--INTEGRATION  UNE ACTU -->
@@ -99,8 +116,7 @@ function update() {
 	<div class="bgDegradeGris" id="actualityInfoPublication">
 		<c:if test="${not news.draft}">
 			<p id="statInfo">
-				Consultée<br />
-				<b>${news.nbAccess} fois</b>
+				<b>${news.nbAccess} <fmt:message key="GML.stats.views"/></b>
 			</p>
 		</c:if>
 		<c:if test="${appSettings.commentsEnabled}">
@@ -122,8 +138,23 @@ function update() {
 </div>
 
 <div class="principalContent" >
-	<c:if test="${news.draft}">
-		<div class="inlineMessage">Cette actualité est actuellement un brouillon... <a href="#" onclick="javascript:publish()">Publiez-la maintenant</a></div>
+	<c:if test="${contributor}">
+		<c:if test="${not empty news.delegatedNews}">
+			<c:choose>
+				<c:when test="${news.delegatedNews.waitingForValidation}">
+					<div class="inlineMessage"><fmt:message key="quickinfo.news.delegated.tovalidate.help"/></div>
+				</c:when>
+				<c:when test="${news.delegatedNews.validated}">
+					<div class="inlineMessage-ok"><fmt:message key="quickinfo.news.delegated.validated.help"/></div>
+				</c:when>
+				<c:when test="${news.delegatedNews.denied}">
+					<div class="inlineMessage-nok"><fmt:message key="quickinfo.news.delegated.refused.help"/></div>
+				</c:when>
+			</c:choose>
+		</c:if>
+		<c:if test="${news.draft}">
+			<div class="inlineMessage"><fmt:message key="quickinfo.news.draft.info"/></div>
+		</c:if>
 	</c:if>
 	<h2 class="actuality-title">${news.title}</h2>
 	<c:if test="${not empty news.description}">

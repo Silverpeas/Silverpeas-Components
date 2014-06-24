@@ -10,8 +10,12 @@ import static org.hamcrest.Matchers.*;
 
 import javax.sql.DataSource;
 
+import com.silverpeas.calendar.DateTime;
 import com.silverpeas.delegatednews.dao.DelegatedNewsDaoTest;
 import com.silverpeas.delegatednews.model.DelegatedNews;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.database.DatabaseConnection;
@@ -20,13 +24,13 @@ import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.Before;
+import org.silverpeas.date.Period;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Date;
 import java.util.List;
 
 import org.junit.AfterClass;
@@ -71,10 +75,12 @@ public class DelegatedNewsServiceTest {
 
   @Test
   public void testAddDelegatedNews() throws Exception {
-    int pubId = 4;
+    String pubId = "4";
 	  String instanceId = "kmelia1";  
     String contributorId = "1";
-    service.addDelegatedNews(pubId, instanceId, contributorId, new Date(), null, null);
+    PublicationDetail publi = new PublicationDetail();
+    publi.setPk(new PublicationPK(pubId, instanceId));
+    service.submitNews(pubId, publi, contributorId, Period.from(DateUtil.MINIMUM_DATE, DateUtil.MAXIMUM_DATE), contributorId);
   }
   
   @Test

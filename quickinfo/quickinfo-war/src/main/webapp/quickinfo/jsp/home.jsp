@@ -181,6 +181,17 @@ function unsubscribe() {
 						<c:if test="${appSettings.broadcastingByTicker && news.ticker}">
 							<span class="news-broadcast-ticker"><fmt:message key="quickinfo.news.broadcast.mode.ticker"/></span>
 						</c:if>
+						<c:if test="${not empty news.delegatedNews}">
+							<c:if test="${news.delegatedNews.waitingForValidation}">
+								<span class="news-delegated" title="<fmt:message key="quickinfo.news.delegated.tovalidate.help"/>"><fmt:message key="quickinfo.news.delegated.tovalidate"/></span>
+							</c:if>
+							<c:if test="${news.delegatedNews.validated}">
+								<span class="news-delegated" title="<fmt:message key="quickinfo.news.delegated.validated.help"/>"><fmt:message key="quickinfo.news.delegated.validated"/></span>
+							</c:if>
+							<c:if test="${news.delegatedNews.denied}">
+								<span class="news-delegated" title="<fmt:message key="quickinfo.news.delegated.denied.help"/>"><fmt:message key="quickinfo.news.delegated.denied"/></span>
+							</c:if>
+						</c:if>
 					</c:if>
 				</span>
 				<c:if test="${contributor}">

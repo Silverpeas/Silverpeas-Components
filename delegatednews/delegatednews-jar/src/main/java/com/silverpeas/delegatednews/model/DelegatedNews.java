@@ -161,6 +161,18 @@ public class DelegatedNews implements java.io.Serializable {
   public void setNewsOrder(int newsOrder) {
     this.newsOrder = newsOrder;
   }
+  
+  public boolean isValidated() {
+    return DelegatedNews.NEWS_VALID.equals(getStatus());
+  }
+  
+  public boolean isDenied() {
+    return DelegatedNews.NEWS_REFUSED.equals(getStatus());
+  }
+  
+  public boolean isWaitingForValidation() {
+    return DelegatedNews.NEWS_TO_VALIDATE.equals(getStatus());
+  }
 	
 	public PublicationDetail getPublicationDetail() {
 	  try {

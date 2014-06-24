@@ -10,9 +10,11 @@ public class QuickInfoComponentSettings {
   private boolean notificationAllowed = false;
   private boolean broadcastTicker = false;
   private boolean broadcastBlocking = false;
+  private boolean delegatedNewsEnabled = false;
   
   public static final String PARAM_COMMENTS = "comments";
   public static final String PARAM_TAXONOMY = "usePdc";
+  public static final String PARAM_DELEGATED = "delegatedNews";
   
   public static final String PARAM_BROADCAST = "broadcasting";
   public static final String VALUE_BROADCAST_TICKER = "ticker";
@@ -114,6 +116,14 @@ public class QuickInfoComponentSettings {
 
   public boolean isBroadcastingByBlockingNews() {
     return broadcastBlocking;
+  }
+
+  public void setDelegatedNewsEnabled(boolean delegatedNewsEnabled) {
+    this.delegatedNewsEnabled = delegatedNewsEnabled;
+  }
+
+  public boolean isDelegatedNewsEnabled() {
+    return delegatedNewsEnabled;
   }
 
 }

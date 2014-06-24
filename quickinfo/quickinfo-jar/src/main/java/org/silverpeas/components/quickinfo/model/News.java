@@ -21,6 +21,7 @@ import org.silverpeas.persistence.model.jpa.AbstractJpaEntity;
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
+import com.silverpeas.delegatednews.model.DelegatedNews;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
@@ -51,6 +52,8 @@ public class News extends AbstractJpaEntity<News, UuidIdentifier> implements Sil
   private PublicationDetail publication;
   @Transient
   private String content;
+  @Transient
+  private DelegatedNews delegatedNews;
   
   @Column(name = "instanceId", nullable = false)
   private String componentInstanceId;
@@ -312,6 +315,18 @@ public class News extends AbstractJpaEntity<News, UuidIdentifier> implements Sil
       return false;
     }
     return DateUtil.compareTo(getUpdateDate(), getPublishDate(), false) > 0;
+  }
+  
+  public DelegatedNews getDelegatedNews() {
+    return delegatedNews;
+  }
+  
+  public void setDelegatedNews(DelegatedNews dn) {
+    this.delegatedNews = dn;
+  }
+  
+  public boolean isCanBeSubmittedOnHomepage() {
+    return delegatedNews == null || delegatedNews.isDenied();
   }
   
 }

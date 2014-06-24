@@ -52,7 +52,7 @@
     <!--
     function openPublication(pubId, instanceId) {
       url = "OpenPublication?PubId="+pubId+"&InstanceId="+instanceId;
-      SP_openWindow(url,'publication','800','600','scrollbars=yes, noresize, alwaysRaised');
+      SP_openWindow(url,'publication','850','600','scrollbars=yes, noresize, alwaysRaised');
     }
     
     function validateDelegatedNews(pubId) {
@@ -75,46 +75,17 @@
       $("#datesDialog").dialog("open");
     }
     
-    function areDatesCorrect(beginDate, beginHour, endDate, endHour, language) {
+    function areDatesCorrect() {
       var errorMsg = "";
       var errorNb = 0;
-      var beginDateOK = true;
-      if (!isWhitespace(beginDate)) {
-      	if (!isDateOK(beginDate, language)) {
-        	errorMsg+="  - '<fmt:message key="delegatednews.visibilityBeginDate"/>' <fmt:message key="GML.MustContainsCorrectDate"/>\n";
-            errorNb++;
-            beginDateOK = false;
-		} 
-      }
-      if (!checkHour(beginHour)) {
-      	errorMsg+="  - '<fmt:message key="delegatednews.hour"/>' <fmt:message key="GML.MustContainsCorrectHour"/>\n";
+      
+      var beginDate = {dateId : 'BeginDate', hourId : 'BeginHour'};
+      var endDate = {dateId : 'EndDate', hourId : 'EndHour', defaultDateHour : '23:59'};
+      var dateErrors = isPeriodEndingInFuture(beginDate, endDate);
+      $(dateErrors).each(function(index, error) {
+        errorMsg += " - " + error.message + "\n";
         errorNb++;
-	  }
-      if (!isWhitespace(endDate)) {
-      	if (!isDateOK(endDate, language)) {
-        	errorMsg+="  - '<fmt:message key="delegatednews.visibilityEndDate"/>' <fmt:message key="GML.MustContainsCorrectDate"/>\n";
-            errorNb++;
-		} else {
-        	if (!isWhitespace(beginDate) && !isWhitespace(endDate)) {
-            	if (beginDateOK && !isDate1AfterDate2(endDate, beginDate, language)) {
-            		errorMsg+="  - '<fmt:message key="delegatednews.visibilityEndDate"/>' <fmt:message key="GML.MustContainsPostOrEqualDateTo"/> "+beginDate+"\n";
-                	errorNb++;
-				}
-			} else {
-            	if (isWhitespace(beginDate) && !isWhitespace(endDate)) {
-                	if (!isFuture(endDate, language)) {
-                    	errorMsg+="  - '<fmt:message key="delegatednews.visibilityEndDate"/>' <fmt:message key="GML.MustContainsPostDate"/>\n";
-                        errorNb++;
-                    }
-				}
-			}
-		}
-	  }
-      if (!checkHour(endHour))
-      {
-      	errorMsg+="  - '<fmt:message key="delegatednews.hour"/>' <fmt:message key="GML.MustContainsCorrectHour"/>\n";
-        errorNb++;
-	  }
+      });
          
       switch(errorNb) {
       	case 0 :
@@ -126,7 +97,7 @@
             result = false;
             break;
 		default :
-        	errorMsg = '<fmt:message key="GML.ThisFormContains" /> " + errorNb + " <fmt:message key="GML.errors"/> :\n' + errorMsg;
+        	errorMsg = '<fmt:message key="GML.ThisFormContains" /> ' + errorNb + ' <fmt:message key="GML.errors"/> :\n' + errorMsg;
             window.alert(errorMsg);
             result = false;
             break;
@@ -162,16 +133,12 @@
         width: 500,
         buttons: {
           "<fmt:message key="GML.ok"/>": function() {
-            var beginDate = $("#datesDialog #BeginDate").val();
-            var beginHour = $("#datesDialog #BeginHour").val();
-            var endDate = $("#datesDialog #EndDate").val();
-            var endHour = $("#datesDialog #EndHour").val();
-            if (areDatesCorrect(beginDate, beginHour, endDate, endHour, '<%=resources.getLanguage()%>')) {
+            if (areDatesCorrect()) {
               document.listDelegatedNews.action = "UpdateDateDelegatedNews";
-              document.listDelegatedNews.BeginDate.value = beginDate;
-              document.listDelegatedNews.BeginHour.value = beginHour;
-              document.listDelegatedNews.EndDate.value = endDate;
-              document.listDelegatedNews.EndHour.value = endHour;
+              document.listDelegatedNews.BeginDate.value = $("#datesDialog #BeginDate").val();
+              document.listDelegatedNews.BeginHour.value = $("#datesDialog #BeginHour").val();
+              document.listDelegatedNews.EndDate.value = $("#datesDialog #EndDate").val();
+              document.listDelegatedNews.EndHour.value = $("#datesDialog #EndHour").val();
               document.listDelegatedNews.submit();
             }
           },
@@ -356,7 +323,8 @@
     arrayPane.setSortableLines(true);
     arrayPane.setTitle(resources.getString("delegatednews.listNews"));
     arrayPane.addArrayColumn(resources.getString("delegatednews.news.title"));
-    arrayPane.addArrayColumn(resources.getString("delegatednews.updateDate"));
+    ArrayColumn column = arrayPane.addArrayColumn(resources.getString("delegatednews.updateDate"));
+    column.setWidth("70px");
     arrayPane.addArrayColumn(resources.getString("delegatednews.contributor"));
     arrayPane.addArrayColumn(resources.getString("delegatednews.news.state"));
     arrayPane.addArrayColumn(resources.getString("delegatednews.visibilityBeginDate"));
@@ -453,12 +421,12 @@
   <form>
     <table cellspacing="0" cellpadding="5">
       <tr id="beginArea">
-        <td class="txtlibform"><fmt:message key="delegatednews.visibilityBeginDate"/></td>
+        <td class="txtlibform"><label for="BeginDate"><fmt:message key="delegatednews.visibilityBeginDate"/></label></td>
         <td><input type="text" class="dateToPick" id="BeginDate" value="" size="12" maxlength="10"/>
           <span class="txtsublibform">&nbsp;<fmt:message key="delegatednews.hour"/>&nbsp;</span><input type="text" id="BeginHour" value="" size="5" maxlength="5"/> <i>(hh:mm)</i></td>
       </tr>
       <tr id="endArea">
-        <td class="txtlibform"><fmt:message key="delegatednews.visibilityEndDate"/></td>
+        <td class="txtlibform"><label for="EndDate"><fmt:message key="delegatednews.visibilityEndDate"/></label></td>
         <td><input type="text" class="dateToPick" id="EndDate" value="" size="12" maxlength="10"/>
           <span class="txtsublibform">&nbsp;<fmt:message key="delegatednews.hour"/>&nbsp;</span><input type="text" id="EndHour" value="" size="5" maxlength="5"/> <i>(hh:mm)</i></td>
       </tr>

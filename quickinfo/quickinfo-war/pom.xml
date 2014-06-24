@@ -79,5 +79,11 @@
       <groupId>javax.validation</groupId>
       <artifactId>validation-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.silverpeas.components.delegatednews</groupId>
+      <artifactId>delegatednews-jar</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 </project>

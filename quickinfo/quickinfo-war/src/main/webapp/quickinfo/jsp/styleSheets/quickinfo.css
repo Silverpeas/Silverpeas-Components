@@ -115,6 +115,12 @@
 	width:10px;
 }
 
+#list-news .news-broadcast span.news-delegated {
+	padding-left:20px;
+    border: 1px solid #1c94d4;
+	background:#1c94d4 url("../icons/home.png")  5px 3px no-repeat;
+}
+
 #list-news .news-info-fonctionality .operation {
 	position:absolute;
 	top:0.3em;

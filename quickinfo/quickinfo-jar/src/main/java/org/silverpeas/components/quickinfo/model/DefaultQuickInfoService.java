@@ -54,6 +54,8 @@ import com.silverpeas.SilverpeasComponentService;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentUserNotificationService;
+import com.silverpeas.delegatednews.service.DelegatedNewsService;
+import com.silverpeas.delegatednews.service.ServicesFactory;
 import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
@@ -61,6 +63,7 @@ import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
@@ -88,7 +91,7 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
   
   @Inject
   private CommentService commentService;
-  
+    
   private UserAuthenticationListener userAuthenticationListener;
   
   @Override
@@ -114,9 +117,13 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
   @Override
   public List<News> getAllNews(String componentId) {
     List<News> allNews = newsRepository.getByComponentId(componentId);
+    boolean delegateNewsEnabled = isDelegatedNewsActivated(componentId);
     for (News aNews : allNews) {
       PublicationDetail publication = getPublication(aNews);
       aNews.setPublication(publication);
+      if (delegateNewsEnabled) {
+        setDelegatedNews(aNews, publication);
+      }
     }
     return allNews;
   }
@@ -131,7 +138,13 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
     News news = newsRepository.getById(id);
     PublicationDetail publication = getPublication(news);
     news.setPublication(publication);
+    setDelegatedNews(news, publication);
     return news;
+  }
+  
+  private void setDelegatedNews(News news, PublicationDetail publication) {
+    news.setDelegatedNews(getDelegatedNewsService().getDelegatedNews(
+        Integer.parseInt(publication.getId())));
   }
   
   @Override
@@ -267,6 +280,11 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
       }
       UserNotificationHelper.buildAndSend(new QuickInfoSubscriptionUserNotification(news, action));
     }
+    
+    if (isDelegatedNewsActivated(news.getComponentInstanceId())) {
+      getDelegatedNewsService().updateDelegatedNews(publication.getId(), news,
+          publication.getUpdaterId(), news.getVisibilityPeriod());
+    }
   }
   
   @Override
@@ -309,6 +327,9 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
     // deleting statistics
     getStatisticService().deleteStats(news);
     
+    // deleting delegated news
+    getDelegatedNewsService().deleteDelegatedNews(Integer.parseInt(foreignPK.getId()));
+    
     // deleting news itself
     Transaction.performInOne(new Transaction.Process<Long>() {
       @Override
@@ -323,7 +344,9 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
     SilverTrace.info("quickinfo", "DefaultQuickInfoService.getPlatformNews()",
         "root.MSG_GEN_PARAM_VALUE", "Enter Get All Quick Info : User=" + userId);
     List<News> result = new ArrayList<News>();
-    CompoSpace[] compoSpaces = OrganisationControllerFactory.getOrganisationController().getCompoForUser(userId, "quickinfo");
+    CompoSpace[] compoSpaces =
+        OrganisationControllerFactory.getOrganisationController().getCompoForUser(userId,
+            QuickInfoComponentSettings.COMPONENT_NAME);
     for (CompoSpace compoSpace : compoSpaces) {
       String componentId = compoSpace.getComponentId();
       try {
@@ -358,6 +381,12 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
       }
     }
     return result;
+  }
+  
+  public void submitNewsOnHomepage(String id, String userId) {
+    News news = getNews(id);
+    getDelegatedNewsService().submitNews(news.getPublicationId(), news, news.getUpdaterId(),
+        news.getVisibilityPeriod(), userId);
   }
   
   private List<News> sortByDateDesc(List<News> listOfNews) {
@@ -414,6 +443,17 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
   
   private StatisticBm getStatisticService() {
     return EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticBm.class);
+  }
+  
+  private DelegatedNewsService getDelegatedNewsService() {
+    return ServicesFactory.getDelegatedNewsService();
+  }
+  
+  private boolean isDelegatedNewsActivated(String componentId) {
+    String paramValue =
+        OrganisationControllerFactory.getOrganisationController().getComponentParameterValue(
+            componentId, QuickInfoComponentSettings.PARAM_DELEGATED);
+    return StringUtil.getBooleanValue(paramValue);
   }
 
 }

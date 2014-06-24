@@ -179,13 +179,31 @@
       </help>
     </parameter>
     <parameter>
+      <name>delegatedNews</name>
+      <label>
+        <message lang="fr">Actualités déléguées</message>
+        <message lang="en">Delegated news</message>
+        <message lang="de">Dezentralisierte Nachrichten</message>
+      </label>
+      <order>6</order>
+      <mandatory>true</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Permet de soumettre certaines actualités sur la page d'accueil de la plate-forme. Ces actualités sont validées ou refusées grâce à l'application "Actualités déléguées".</message>
+        <message lang="en">Allows contributors to submit some news on the homepage of the platform. These submissions are validated or denied via the "Delegated news" app.</message>
+        <message lang="de">Allows contributors to submit some news on the homepage of the platform. These submissions are validated or denied via the "Delegated news" app.</message>
+      </help>
+    </parameter>
+    <parameter>
       <name>broadcasting</name>
       <label>
         <message lang="fr">Diffusion annexe</message>
         <message lang="en">Broadcasting</message>
         <message lang="de">Broadcasting</message>
       </label>
-      <order>6</order>
+      <order>7</order>
       <mandatory>true</mandatory>
       <value>none</value>
       <options>
@@ -229,7 +247,6 @@
         <message lang="en">This function displays the news outside of traditional homepages. Methods used here are available on each news but not mandatory. A "scrolling" news is displayed in the scrolling banner (ticker). A "blocking" news is displayed when users log on and requires action to continue browsing.</message>
         <message lang="de">Diese Funktion zeigt die Nachrichten außerhalb der traditionellen Homepages. Methoden werden dabei auf jeder Nachricht, aber nicht zwingend zur Verfügung. A "Blättern" Nachrichten in der Scroll-Banner (Ticker) angezeigt. Ein "Sperrung" Nachrichten wird angezeigt, wenn sich Benutzer anmelden und erfordert Maßnahmen der Suche fortzufahren.</message>
       </help>
-    </parameter>
-    
+    </parameter>    
   </parameters>
 </WAComponent>

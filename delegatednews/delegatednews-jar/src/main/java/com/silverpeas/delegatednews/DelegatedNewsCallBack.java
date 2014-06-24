@@ -24,25 +24,17 @@
  */
 package com.silverpeas.delegatednews;
 
-import java.util.Date;
-
-import org.silverpeas.core.admin.OrganisationController;
-
 import com.silverpeas.delegatednews.model.DelegatedNews;
 import com.silverpeas.delegatednews.service.DelegatedNewsService;
 import com.silverpeas.delegatednews.service.ServicesFactory;
-import com.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBack;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
 public class DelegatedNewsCallBack implements CallBack {
 
   private DelegatedNewsService delegatedNewsService = null;
-  private OrganisationController organizationController = null;
 
   public DelegatedNewsCallBack() {
   }
@@ -79,26 +71,9 @@ public class DelegatedNewsCallBack implements CallBack {
           getDelegatedNewsService().deleteDelegatedNews(pubId);
         }
         else {
-
           // met à jour l'actualité
-          getDelegatedNewsService().updateDelegatedNews(pubId, instanceId,
-              DelegatedNews.NEWS_TO_VALIDATE, pubDetail.getUpdaterId(), null, new Date(),
-              pubDetail.getBeginDateAndHour(), pubDetail.getEndDateAndHour());
-
-          // alerte l'équipe éditoriale
-          String[] tabInstanceId = getOrganisationController().getCompoId("delegatednews");
-          String delegatednewsInstanceId = null;
-          for (String element : tabInstanceId) {
-            delegatednewsInstanceId = element;
-            break;
-          }
-
-          UserDetail updaterUserDetail = UserDetail.getById(pubDetail.getUpdaterId());
-          String updaterUserName = updaterUserDetail.getDisplayedName();
-
-          getDelegatedNewsService().notifyDelegatedNewsToValidate(Integer.toString(pubId),
-              pubDetail.getName(DisplayI18NHelper.getDefaultLanguage()), pubDetail.getUpdaterId(),
-              updaterUserName, delegatednewsInstanceId);
+          getDelegatedNewsService().updateDelegatedNews(pubDetail.getId(), pubDetail,
+              pubDetail.getUpdaterId(), pubDetail.getVisibilityPeriod());
         }
       }
     } else if (action == CallBackManager.ACTION_PUBLICATION_REMOVE) {
@@ -125,16 +100,6 @@ public class DelegatedNewsCallBack implements CallBack {
       this.delegatedNewsService = ServicesFactory.getDelegatedNewsService();
     }
     return this.delegatedNewsService;
-  }
-
-  /**
-   * @return
-   */
-  public OrganisationController getOrganisationController() {
-    if (this.organizationController == null) {
-      this.organizationController = new OrganizationController();
-    }
-    return this.organizationController;
   }
 
 }
