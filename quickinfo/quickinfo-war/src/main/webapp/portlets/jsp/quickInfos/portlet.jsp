@@ -44,13 +44,33 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 
-<portlet:defineObjects/>
+<c:set var="appSettings" value="${requestScope['AppSettings']}"/>
+<c:set var="fromApp" value="${not empty appSettings}"/>
 
-<c:set var="pRequest" value="${requestScope['javax.portlet.request']}"/>
-<c:set var="allNews" value="${pRequest.getAttribute('QuickInfos')}"/>
+<c:choose>
+<c:when test="${fromApp}">
+	<c:set var="allNews" value="${requestScope['infos']}"/>
+	<c:set var="displayMode" value="list"/>
+	<c:set var="slideshow" value="${displayMode == 'slideshow'}"/>
+	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+	<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+	<title>QuickInfo - Home</title>
+	<view:looknfeel/>
+	</head>
+	<body>
+	<div class="portlet-content">
+</c:when>
+<c:otherwise>
+	<portlet:defineObjects/>
+	<c:set var="pRequest" value="${requestScope['javax.portlet.request']}"/>
+	<c:set var="allNews" value="${pRequest.getAttribute('QuickInfos')}"/>
+	<c:set var="displayMode" value="${pRequest.preferences.map['displayMode']}"/>
+	<c:set var="slideshow" value="${displayMode[0] == 'slideshow'}"/>
+	</c:otherwise>
+</c:choose>
 
-<c:set var="displayMode" value="${pRequest.preferences.map['displayMode']}"/>
-<c:set var="slideshow" value="${displayMode[0] == 'slideshow'}"/>
+
 
 <c:if test="${slideshow}">
 <script src="<%=m_sContext %>/portlets/jsp/quickInfos/js/responsiveslides.min.js" type="text/javascript"></script>
@@ -102,4 +122,10 @@ $(document).ready(function() {
 <c:if test="${not slideshow}">
 	</ul>
 	<br clear="both" />
+</c:if>
+
+<c:if test="${fromApp}">
+</div>
+</body>
+</html>
 </c:if>

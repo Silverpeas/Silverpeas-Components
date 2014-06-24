@@ -188,7 +188,7 @@ $(document).ready(function() {
 <fmt:message var="browseBarMsg" key="creation.inProgress"/>
 </c:if>
 <view:browseBar extraInformations="${browseBarMsg}" />
-<c:if test="${not empty curQuickInfo}">
+<c:if test="${not newOneInProgress}">
 	<view:operationPane>
 	  <fmt:message var="deleteMsg" key="GML.delete"/>
 	  <fmt:message var="deleteConfirmMsg" key="supprimerQIConfirmation"/>

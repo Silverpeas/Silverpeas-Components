@@ -125,6 +125,7 @@ function unsubscribe() {
 			  </c:forEach>
 	        </ul>
 	      </div>
+	      <c:if test="${not empty allOtherNews.notYetVisibles}">
 	      <div class="secteur-container my-quickInfo-futur">
 	        <div class="header">
 	          <h3 class="my-quickInfo-futur-title"><fmt:message key="quickinfo.home.notYetVisibles"/></h3>
@@ -135,6 +136,8 @@ function unsubscribe() {
 			  </c:forEach>
 	        </ul>
 	      </div>
+	      </c:if>
+	      <c:if test="${not empty allOtherNews.noMoreVisibles}">
 	      <div class="secteur-container my-quickInfo-outOfDate">
 	        <div class="header">
 	          <h3 class="my-quickInfo-outOfDate-title"><fmt:message key="quickinfo.home.noMoreVisibles"/></h3>
@@ -145,6 +148,7 @@ function unsubscribe() {
 			  </c:forEach>
 	        </ul>
 	      </div>
+	      </c:if>
 	    </div>
 	</c:if>
 	<c:if test="${contributor}">
@@ -163,9 +167,10 @@ function unsubscribe() {
 			<div class="news-info-fonctionality">
 				<c:if test="${appSettings.commentsEnabled}">
 					<a href="View?Id=${news.id}&Anchor=comments" class="news-nb-comments"><img src="/silverpeas/util/icons/talk2user.gif" alt="commentaire" /> ${news.numberOfComments}</a>
+					<span class="sep"> | </span> 
 				</c:if>
 				<c:if test="${not news.draft}">
-					<span class="sep"> | </span> <span class="creationInfo" ><fmt:message key="GML.publishedAt"/> ${silfn:formatDateAndHour(news.publishDate, _language)} </span>
+					<span class="creationInfo" ><fmt:message key="GML.publishedAt"/> ${silfn:formatDateAndHour(news.publishDate, _language)} </span>
 					<c:if test="${news.updatedAfterBePublished}">
 						<span class="lastModificationInfo" >- <fmt:message key="GML.updatedAt"/> ${silfn:formatDate(news.updateDate, _language)} </span>
 					</c:if>

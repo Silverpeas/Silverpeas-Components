@@ -102,7 +102,7 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
         List<News> infos = quickInfo.getVisibleQuickInfos();
         request.setAttribute("infos", infos);
         request.setAttribute("AppSettings", quickInfo.getInstanceSettings());
-        destination = "/quickinfo/jsp/portlet.jsp";
+        destination = "/portlets/jsp/quickInfos/portlet.jsp";
       } else if ("Save".equals(function)) {
         String id = saveQuickInfo(quickInfo, request, false);
         request.setAttribute("Id", id);
