@@ -29,6 +29,7 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="check.jsp"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -37,8 +38,11 @@
 <%-- Set resource bundle --%>
 <fmt:setLocale value="${requestScope.resources.language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
-<%@ include file="check.jsp"%>
+<fmt:message var="addVideoIcon" key='gallery.video.add' bundle='${icons}'/>
+<c:url var="addVideoIconUrl" value="${addVideoIcon}"/>
+
 <%
   // recuperation des parametres :
   AlbumDetail currentAlbum = (AlbumDetail) request.getAttribute("CurrentAlbum");
@@ -410,7 +414,8 @@ function CutSelectedMedia()  {
       }
       if ("admin".equals(profile) || "publisher".equals(profile) || "writer".equals(profile)) {
         // possibilite d'ajouter des photos pour les "admin", "publisher" et "writer"
-        operationPane.addOperationOfCreation(resource.getIcon("gallery.addPhoto"), resource.getString("gallery.addPhoto"), "AddMedia");
+        operationPane.addOperationOfCreation(resource.getIcon("gallery.addPhoto"), resource.getString("gallery.addPhoto"), "AddMedia?type=Photo");
+        operationPane.addOperationOfCreation(resource.getIcon("gallery.video.add"), resource.getString("gallery.video.add"), "AddMedia?type=Video");
         operationPane.addLine();
       }
 

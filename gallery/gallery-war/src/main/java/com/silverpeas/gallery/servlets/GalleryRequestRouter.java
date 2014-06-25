@@ -296,6 +296,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           throw new AccessForbiddenException("GalleryRequestRouter.AddMedia",
               SilverpeasException.WARNING, null);
         }
+        String mediaType = request.getParameter("type");
 
         // passage des paramètres
         request.setAttribute("Media", null);
@@ -331,7 +332,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         request.setAttribute("Form", formUpdate);
         request.setAttribute("Data", data);
 
-        destination = rootDest + "mediaEdit.jsp";
+        destination = rootDest + "media" + mediaType + "Edit.jsp";
       } else if (function.equals("CreateMedia")) {
 
         // création de le média dans la base de donnée
