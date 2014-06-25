@@ -26,6 +26,7 @@ package com.silverpeas.gallery.model;
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.AccessControllerProvider;
+import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.MediaType;
 import com.silverpeas.gallery.control.ejb.MediaServiceFactory;
 import com.silverpeas.util.StringUtil;
@@ -33,6 +34,7 @@ import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
+import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.date.Period;
 
 import java.io.Serializable;
@@ -253,11 +255,34 @@ public abstract class Media implements SilverpeasContent, SilverContentInterface
   }
 
   /**
-   * Gets the URL prefix the media thumbnail according the specified format prefix.
-   * @param formatPrefix
+   * Gets the URL prefix the media thumbnail according the specified media resolution.
+   * @param mediaResolution
    * @return the URL of media thumbnail.
    */
-  public abstract String getThumbnailUrl(String formatPrefix);
+  public String getThumbnailUrl(MediaResolution mediaResolution) {
+    if (mediaResolution == null) {
+      mediaResolution = MediaResolution.PREVIEW;
+    }
+    String thumbnailUrl =
+        URLManager.getApplicationURL() + "/gallery/jsp/icons/" + getType().name().toLowerCase() +
+            "_";
+    switch (mediaResolution) {
+      case TINY:
+        thumbnailUrl += MediaResolution.TINY.getLabel();
+        break;
+      case SMALL:
+        thumbnailUrl += MediaResolution.SMALL.getLabel();
+        break;
+      case MEDIUM:
+      case LARGE:
+      case WATERMARK:
+      case PREVIEW:
+        thumbnailUrl += MediaResolution.MEDIUM.getLabel();
+        break;
+    }
+    thumbnailUrl += ".png";
+    return FilenameUtils.normalize(thumbnailUrl, true);
+  }
 
   @Override
   public String getSilverpeasContentId() {

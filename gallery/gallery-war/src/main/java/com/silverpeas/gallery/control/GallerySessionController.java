@@ -25,6 +25,7 @@ import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.gallery.GalleryComponentSettings;
+import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.control.ejb.MediaServiceFactory;
 import com.silverpeas.gallery.delegate.GalleryPasteDelegate;
@@ -89,7 +90,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   private String currentAlbumId = "0";
   private AlbumDetail currentAlbum = getAlbum(currentAlbumId);
   private int rang = 0;
-  private String taille = "133x100";
+  private MediaResolution displayedMediaResolution = MediaResolution.SMALL;
   private String tri = "CreationDateAsc";
   private String currentOrderId = "0";
   private List<String> listSelected = new ArrayList<String>();
@@ -517,15 +518,16 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   }
 
   public int getNbMediaPerPage() {
-    return GalleryComponentSettings.getNbMediaDisplayedPerPageByResolution(taille);
+    return GalleryComponentSettings
+        .getNbMediaDisplayedPerPageByResolution(displayedMediaResolution);
   }
 
-  public String getTaille() {
-    return taille;
+  public MediaResolution getDisplayedMediaResolution() {
+    return displayedMediaResolution;
   }
 
-  public void setTaille(String taille) {
-    this.taille = taille;
+  public void setDisplayedMediaResolution(MediaResolution displayedMediaResolution) {
+    this.displayedMediaResolution = displayedMediaResolution;
   }
 
   public String getTri() {

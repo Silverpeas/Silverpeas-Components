@@ -23,6 +23,7 @@
  */
 package com.silverpeas.gallery.model;
 
+import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.MediaType;
 import org.junit.Test;
 
@@ -39,8 +40,9 @@ public class PhotoTest {
     assertThat(photo.getResolutionW(), is(0));
     assertThat(photo.getResolutionH(), is(0));
     assertThat(photo.getMetaDataProperties(), hasSize(0));
-    assertThat(photo.getThumbnailUrl("_formatSuffix"),
-        is("/silverpeas/gallery/jsp/icons/notAvailable_fr_formatSuffix"));
+    assertThat(photo.getThumbnailUrl(MediaResolution.TINY),
+        is("/silverpeas/gallery/jsp/icons/notAvailable_fr" +
+            MediaResolution.TINY.getThumbnailSuffix()));
   }
 
   @Test
@@ -54,15 +56,18 @@ public class PhotoTest {
     Photo photo = defaultPhoto();
 
     assertThat(photo.isPreviewable(), is(false));
-    assertThat(photo.getThumbnailUrl("_formatSuffix"),
-        is("/silverpeas/gallery/jsp/icons/notAvailable_fr_formatSuffix"));
+    assertThat(photo.getThumbnailUrl(MediaResolution.MEDIUM),
+        is("/silverpeas/gallery/jsp/icons/notAvailable_fr" +
+            MediaResolution.MEDIUM.getThumbnailSuffix()));
 
     photo.setFileName("image.jpg");
 
     assertThat(photo.isPreviewable(), is(true));
-    assertThat(photo.getThumbnailUrl("_formatSuffix"),
-        is("/silverpeas/FileServer/mediaId_formatSuffix?ComponentId=instanceId&SourceFile" +
-            "=mediaId_formatSuffix&MimeType=image/jpeg&Directory=imagemediaId"));
+    assertThat(photo.getThumbnailUrl(MediaResolution.LARGE),
+        is("/silverpeas/FileServer/mediaId" + MediaResolution.LARGE.getThumbnailSuffix() +
+            "?ComponentId=instanceId&SourceFile" +
+            "=mediaId" + MediaResolution.LARGE.getThumbnailSuffix() +
+            "&MimeType=image/jpeg&Directory=imagemediaId"));
   }
 
   private Photo defaultPhoto() {
@@ -86,7 +91,8 @@ public class PhotoTest {
     assertThat(photo.getMetaDataProperties(), hasSize(1));
     assertThat(photo.getMetaData(photo.getMetaDataProperties().iterator().next()).getValue(),
         is("ok"));
-    assertThat(photo.getThumbnailUrl("_formatSuffix"),
-        is("/silverpeas/gallery/jsp/icons/notAvailable_fr_formatSuffix"));
+    assertThat(photo.getThumbnailUrl(MediaResolution.PREVIEW),
+        is("/silverpeas/gallery/jsp/icons/notAvailable_fr" +
+            MediaResolution.PREVIEW.getThumbnailSuffix()));
   }
 }

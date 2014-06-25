@@ -20,6 +20,7 @@
  */
 package com.silverpeas.gallery;
 
+import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.image.DrewImageMetadataExtractor;
 import com.silverpeas.gallery.image.ImageMetadataException;
 import com.silverpeas.gallery.image.ImageMetadataExtractor;
@@ -54,17 +55,13 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
+import static com.silverpeas.gallery.constant.MediaResolution.*;
+
 public class ImageHelper {
 
   private final static FileBasePath BASE_PATH = FileBasePath.UPLOAD_PATH;
   final static ResourceLocator gallerySettings =
       new ResourceLocator("org.silverpeas.gallery.settings.gallerySettings", "");
-  static final String thumbnailSuffix_small = "_66x50.jpg";
-  static final String thumbnailSuffix_medium = "_133x100.jpg";
-  static final String thumbnailSuffix_large = "_266x150.jpg";
-  static final String previewSuffix = "_preview.jpg";
-  static final String thumbnailSuffix_Xlarge = "_600x400.jpg";
-  static final String watermarkSuffix = "_watermark.jpg";
 
   /**
    * Open an output stream of an image according to given details of a photo.
@@ -77,7 +74,7 @@ public class ImageHelper {
     final String photoId = photo.getMediaPK().getId();
     final String instanceId = photo.getMediaPK().getInstanceId();
     if (StringUtil.isDefined(photoId) && StringUtil.isDefined(instanceId)) {
-      String fileName = photoId + previewSuffix;
+      String fileName = photoId + PREVIEW.getThumbnailSuffix();
       if (isOriginalRequired) {
         fileName = photo.getFileName();
       }
@@ -254,26 +251,19 @@ public class ImageHelper {
     // Large
     // Medium
     // Small
-    final int[] imageSize = new int[]{600, 600, 266, 133, 66};
-    final boolean[] isWatermark = new boolean[]{false, watermark, watermark, watermark, watermark};
-    final int[] imageWatermarkSize =
-        new int[]{0, Integer.parseInt(gallerySettings.getString("sizeWatermark600x400")),
-            Integer.parseInt(gallerySettings.getString("sizeWatermark266x150")),
-            Integer.parseInt(gallerySettings.getString("sizeWatermark133x100")),
-            Integer.parseInt(gallerySettings.getString("sizeWatermark66x50"))};
-    final String[] imageSuffixName =
-        new String[]{thumbnailSuffix_Xlarge, previewSuffix, thumbnailSuffix_large,
-            thumbnailSuffix_medium, thumbnailSuffix_small};
-    HandledFile currentThumblail;
+    final MediaResolution[] mediaResolutions =
+        new MediaResolution[]{LARGE, PREVIEW, MEDIUM, SMALL, TINY};
     BufferedImage previewImage = null;
-    for (int i = 0; i < imageSize.length; i++) {
+    for (MediaResolution mediaResolution : mediaResolutions) {
       // Current thumbnail
-      currentThumblail = originalHandedImageFile.getParentHandledFile()
-          .getHandledFile(photoId + imageSuffixName[i]);
+      HandledFile currentThumblail = originalHandedImageFile.getParentHandledFile()
+          .getHandledFile(photoId + mediaResolution.getThumbnailSuffix());
       // Thumbnail creation
       redimPhoto((previewImage != null ? previewImage : originalImage), currentThumblail,
-          (originalImageWidth > imageSize[i] ? imageSize[i] : originalImageWidth), isWatermark[i],
-          nameWatermark, imageWatermarkSize[i]);
+          (originalImageWidth > mediaResolution.getWidth() ? mediaResolution.getWidth() :
+              originalImageWidth), (watermark && mediaResolution.isWatermarkApplicable()),
+          nameWatermark,
+          (mediaResolution.getWatermarkSize() != null ? mediaResolution.getWatermarkSize() : 0));
       // The first thumbnail that has to be created must be the larger one and without watermark.
       // This first thumbnail is cached and reused for the following thumbnail creation.
       if (previewImage == null) {
@@ -386,11 +376,10 @@ public class ImageHelper {
     if (fromDir.exists()) {
 
       // copy thumbnails & watermark (only if it does exist)
-      for (final String thumbnailSuffix : new String[]{thumbnailSuffix_large,
-          thumbnailSuffix_medium, thumbnailSuffix_small, previewSuffix, thumbnailSuffix_Xlarge,
-          watermarkSuffix}) {
-        pasteFile(fromDir.getHandledFile(fromPK.getId() + thumbnailSuffix),
-            toDir.getHandledFile(toPK.getId() + thumbnailSuffix), cut);
+      for (final MediaResolution mediaResolution : new MediaResolution[]{MEDIUM, SMALL, TINY,
+          PREVIEW, LARGE, WATERMARK}) {
+        pasteFile(fromDir.getHandledFile(fromPK.getId() + mediaResolution.getThumbnailSuffix()),
+            toDir.getHandledFile(toPK.getId() + mediaResolution.getThumbnailSuffix()), cut);
       }
       // copy original image
       pasteFile(fromDir.getHandledFile(image.getFileName()), toDir.getHandledFile(image.

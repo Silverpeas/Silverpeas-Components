@@ -1,5 +1,6 @@
 <%@ page import="com.silverpeas.gallery.GalleryComponentSettings" %>
 <%@ page import="com.silverpeas.gallery.model.Photo" %>
+<%@ page import="com.silverpeas.gallery.constant.MediaResolution" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -76,7 +77,7 @@
 
   if (photo != null) {
     photoId = String.valueOf(photo.getMediaPK().getId());
-    vignette_url = photo.getThumbnailUrl("_266x150.jpg");
+    vignette_url = photo.getThumbnailUrl(MediaResolution.MEDIUM);
     action = "UpdateInformation";
     if (photo.getDownloadPeriod().getBeginDatable().isDefined()) {
       beginDownloadDate = resource.getInputDate(photo.getDownloadPeriod().getBeginDatable());

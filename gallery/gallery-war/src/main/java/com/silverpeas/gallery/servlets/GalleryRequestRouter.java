@@ -30,6 +30,7 @@ import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.form.XmlSearchForm;
 import com.silverpeas.gallery.GalleryComponentSettings;
 import com.silverpeas.gallery.ParameterNames;
+import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.MediaType;
 import com.silverpeas.gallery.control.GallerySessionController;
 import com.silverpeas.gallery.delegate.MediaDataCreateDelegate;
@@ -199,7 +200,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           request.setAttribute("Albums",
               gallerySC.addNbMedia(currentAlbum.getChildrenAlbumsDetails()));
           request.setAttribute("Path", gallerySC.getPath(currentAlbum.getNodePK()));
-          request.setAttribute("Taille", gallerySC.getTaille());
+          request.setAttribute("MediaResolution", gallerySC.getDisplayedMediaResolution());
           request.setAttribute("DragAndDropEnable", gallerySC.isDragAndDropEnabled());
           request.setAttribute("IsViewMetadata", gallerySC.isViewMetadata());
           request.setAttribute("IsViewList", gallerySC.isViewList());
@@ -530,7 +531,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         // traitement du choix des tailles
         String choix = request.getParameter("Choice");
         // mettre à jour la taille avec le choix
-        gallerySC.setTaille(choix);
+        gallerySC.setDisplayedMediaResolution(MediaResolution.fromNameOrLabel(choix));
         // retourner au début de la liste des médias
         gallerySC.initIndex();
         // retour ... en fonction d'ou on viens
@@ -882,7 +883,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         request.setAttribute("NbMediaPerPage", gallerySC.getNbMediaPerPage());
         request.setAttribute("FirstMediaIndex", gallerySC.getIndexOfFirstItemToDisplay());
         request.setAttribute("Tri", gallerySC.getTri());
-        request.setAttribute("Taille", gallerySC.getTaille());
+        request.setAttribute("MediaResolution", gallerySC.getDisplayedMediaResolution());
         request.setAttribute("IsViewMetadata", gallerySC.isViewMetadata());
         request.setAttribute("IsViewList", gallerySC.isViewList());
         request.setAttribute("SelectedIds", gallerySC.getListSelected());
@@ -1054,7 +1055,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         request.setAttribute("NbMediaPerPage", gallerySC.getNbMediaPerPage());
         request.setAttribute("FirstMediaIndex", gallerySC.getIndexOfFirstItemToDisplay());
         request.setAttribute("Tri", gallerySC.getTri());
-        request.setAttribute("Taille", gallerySC.getTaille());
+        request.setAttribute("MediaResolution", gallerySC.getDisplayedMediaResolution());
         request.setAttribute("IsViewMetadata", gallerySC.isViewMetadata());
         request.setAttribute("IsViewList", gallerySC.isViewList());
         request.setAttribute("SelectedIds", gallerySC.getListSelected());
@@ -1305,7 +1306,6 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           String orderId = gallerySC.getCurrentOrderId();
           request.setAttribute("Order", gallerySC.getOrder(orderId));
           request.setAttribute("NbMediaPerPage", gallerySC.getNbMediaPerPage());
-          request.setAttribute("Taille", gallerySC.getTaille());
 
           Form formView;
           DataRecord data;

@@ -79,9 +79,4 @@ public class Streaming extends Media {
   public static String getResourceType() {
     return MediaType.Streaming.name();
   }
-
-  @Override
-  public String getThumbnailUrl(final String formatPrefix) {
-    return null;
-  }
 }

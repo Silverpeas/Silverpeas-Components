@@ -1,5 +1,6 @@
 <%@ page import="com.silverpeas.gallery.GalleryComponentSettings" %>
 <%@ page import="com.silverpeas.gallery.model.Media" %>
+<%@ page import="com.silverpeas.gallery.constant.MediaResolution" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -36,8 +37,8 @@
 
     // declaration des variables :
     int id = 0;
-    String extension = "_66x50.jpg";
-    String extensionAlt = "_266x150.jpg";
+    MediaResolution extension = MediaResolution.TINY;
+    MediaResolution extensionAlt = MediaResolution.MEDIUM;
 
     Iterator itP = photos.iterator();
 %>
@@ -163,7 +164,7 @@ var messages = new Array();
             String nomRep = GalleryComponentSettings.getMediaFolderNamePrefix()
                 + media.getId();%>
             messages[<%=messagesId%>] = new Array('<%=FileServerUtils.getUrl( componentId, media.getId()
-            + extensionAlt, media.getInternalMedia().getFileMimeType(),
+            + extensionAlt.getThumbnailSuffix(), media.getInternalMedia().getFileMimeType(),
             nomRep)%>','<%=EncodeHelper.javaStringToJsString(media.getName()) %>',"#FFFFFF");
         <%messagesId++;
       }%>
@@ -345,7 +346,7 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
 
          id = Integer.parseInt((String) itP.next());
          Media media = gallerySC.getMedia(Integer.toString(id));
-         String name = id + extension;
+         String name = id + extension.getThumbnailSuffix();
          String vignette_url = media.getThumbnailUrl(extension);
 
          ArrayCellText arrayCellText0 = ligne.addArrayCellText("<a href=\"MediaView?MediaId="

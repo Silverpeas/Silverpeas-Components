@@ -414,6 +414,6 @@ public class PhotoDetail implements SilverContentInterface, Serializable {
   }
 
   public String getThumbnailUrl(final String formatPrefix) {
-    return photo.getThumbnailUrl(formatPrefix);
+    return null;
   }
 }

@@ -1,5 +1,6 @@
 <%@ page import="com.silverpeas.gallery.GalleryComponentSettings" %>
 <%@ page import="com.silverpeas.gallery.model.InternalMedia" %>
+<%@ page import="com.silverpeas.gallery.constant.MediaResolution" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -42,8 +43,8 @@
 
 	// déclaration des variables :
 	String mediaId = "";
-	String 	extension		= "_66x50.jpg";
-	String 	extensionAlt 	= "_266x150.jpg";
+	MediaResolution extension		= MediaResolution.TINY;
+  MediaResolution 	extensionAlt 	= MediaResolution.MEDIUM;
 
 	List 		rows 	= order.getRows();
 	Iterator 	itP 	= (Iterator) rows.iterator();
@@ -112,7 +113,7 @@ var messages = new Array();
 		String nomRep = GalleryComponentSettings.getMediaFolderNamePrefix() + iMedia.getId();
 %>
 		messages[<%=messagesId%>] = new Array('<%=FileServerUtils.getUrl( componentId, iMedia.getId()
-		    + extensionAlt, iMedia.getFileMimeType(), nomRep)%>',
+		    + extensionAlt.getThumbnailSuffix(), iMedia.getFileMimeType(), nomRep)%>',
 		    '<%=EncodeHelper.javaStringToJsString(iMedia.getName())%>',"#FFFFFF");
 <%
 		messagesId++;
@@ -466,7 +467,7 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
 
       String download = row.getDownloadDecision();
 
-      String name = mediaId + extension;
+      String name = mediaId + extension.getThumbnailSuffix();
       InternalMedia iMedia = row.getInternalMedia();
       String vignette_url = iMedia.getThumbnailUrl(extension);
 
@@ -546,7 +547,7 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
 
       OrderRow row = (OrderRow) itP.next();
       mediaId = row.getMediaId();
-      String name = mediaId + extension;
+      String name = mediaId + extension.getThumbnailSuffix();
       InternalMedia iMedia = row.getInternalMedia();
       String vignette_url = iMedia.getThumbnailUrl(extension);
 

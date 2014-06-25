@@ -23,10 +23,17 @@
  */
 package com.silverpeas.gallery.model;
 
+import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.MediaType;
 import com.silverpeas.gallery.constant.StreamingProvider;
 import org.junit.Test;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.silverpeas.gallery.constant.MediaResolution.*;
+import static com.silverpeas.gallery.constant.MediaResolution.PREVIEW;
+import static com.silverpeas.gallery.constant.MediaResolution.WATERMARK;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -44,6 +51,17 @@ public class StreamingTest {
   public void justCreatedTest() {
     Streaming streaming = defaultStreaming();
     assertDefaultStreaming(streaming);
+
+    Map<MediaResolution, String> expected = new HashMap<MediaResolution, String>();
+    expected.put(TINY, "/silverpeas/gallery/jsp/icons/streaming_66x50.png");
+    expected.put(SMALL, "/silverpeas/gallery/jsp/icons/streaming_133x100.png");
+    expected.put(MEDIUM, "/silverpeas/gallery/jsp/icons/streaming_266x150.png");
+    expected.put(LARGE, "/silverpeas/gallery/jsp/icons/streaming_266x150.png");
+    expected.put(PREVIEW, "/silverpeas/gallery/jsp/icons/streaming_266x150.png");
+    expected.put(WATERMARK, "/silverpeas/gallery/jsp/icons/streaming_266x150.png");
+    for (MediaResolution mediaResolution : MediaResolution.values()) {
+      assertThat(streaming.getThumbnailUrl(mediaResolution), is(expected.get(mediaResolution)));
+    }
   }
 
   private Streaming defaultStreaming() {

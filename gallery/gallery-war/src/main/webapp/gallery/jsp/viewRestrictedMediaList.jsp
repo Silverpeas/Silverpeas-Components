@@ -1,6 +1,7 @@
 <%@ page import="com.silverpeas.gallery.GalleryComponentSettings" %>
 <%@ page import="com.silverpeas.gallery.model.Media" %>
 <%@ page import="com.silverpeas.gallery.model.Photo" %>
+<%@ page import="com.silverpeas.gallery.constant.MediaResolution" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -45,7 +46,7 @@
   String profile = (String) request.getAttribute("Profile");
   int firstPhotoIndex = ((Integer) request.getAttribute("FirstMediaIndex")).intValue();
   int nbPhotosPerPage = ((Integer) request.getAttribute("NbMediaPerPage")).intValue();
-  String taille = (String) request.getAttribute("Taille");
+  MediaResolution mediaResolution = (MediaResolution) request.getAttribute("MediaResolution");
   Boolean isViewMetadata = (Boolean) request.getAttribute("IsViewMetadata");
   Boolean isViewList = (Boolean) request.getAttribute("IsViewList");
   Collection<String> selectedIds = (Collection) request.getAttribute("SelectedIds");
@@ -56,7 +57,6 @@
   int nbAffiche = 0;
   int nbParLigne = 1;
   int largeurCellule = 0;
-  String extension = "";
   boolean viewMetadata = isViewMetadata.booleanValue();
   boolean viewList = isViewList.booleanValue();
   String typeAff = "1";
@@ -80,18 +80,15 @@
   }
 
   // calcul du nombre de photo par ligne en fonction de la taille
-  if (taille.equals("66x50")) {
+  if (mediaResolution.isTiny()) {
     nbParLigne = 8;
-    extension = "_66x50.jpg";
-  } else if (taille.equals("133x100")) {
+  } else if (mediaResolution.isSmall()) {
     nbParLigne = 5;
-    extension = "_133x100.jpg";
     if (viewList) {
       typeAff = "2";
     }
-  } else if (taille.equals("266x150")) {
+  } else if (mediaResolution.isMedium()) {
     nbParLigne = 3;
-    extension = "_266x150.jpg";
     if (viewList) {
       typeAff = "3";
       nbParLigne = 1;
@@ -256,19 +253,19 @@
 					<option>-------------------------------</option>
 					<%
 						String selected = "";
-								if (taille.equals("66x50"))
+								if (mediaResolution.equals("66x50"))
 									selected = "selected";
 					%>
 					<option value="66x50" <%=selected%>><%="66x50"%></option>
 					<%
 						selected = "";
-								if (taille.equals("133x100"))
+								if (mediaResolution.equals("133x100"))
 									selected = "selected";
 					%>
 					<option value="133x100" <%=selected%>><%="133x100"%></option>
 					<%
 						selected = "";
-								if (taille.equals("266x150"))
+								if (mediaResolution.equals("266x150"))
 									selected = "selected";
 					%>
 					<option value="266x150" <%=selected%>><%="266x150"%></option>
@@ -306,7 +303,7 @@
             media = it.next();
             if (media != null) {
               idP = media.getMediaPK().getId();
-              vignette_url = media.getThumbnailUrl(extension);
+              vignette_url = media.getThumbnailUrl(mediaResolution);
               photoColor = "fondPhoto";
               if (!media.isVisible()) {
                 photoColor = "fondPhotoNotVisible";

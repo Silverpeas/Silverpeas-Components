@@ -24,6 +24,7 @@
 package com.silverpeas.gallery;
 
 
+import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
@@ -103,14 +104,16 @@ public final class GalleryComponentSettings {
    * Gets the max number of media displayed on homepage.
    * @return
    */
-  public static int getNbMediaDisplayedPerPageByResolution(String resolution) {
+  public static int getNbMediaDisplayedPerPageByResolution(MediaResolution resolution) {
     int nbPhotosPerPage = 15;
-    if ("66x50".equals(resolution)) {
-      nbPhotosPerPage = 35;
-    } else if ("133x100".equals(resolution)) {
-      nbPhotosPerPage = 15;
-    } else if ("266x150".equals(resolution)) {
-      nbPhotosPerPage = 6;
+    if (resolution != null) {
+      if (resolution.isTiny()) {
+        nbPhotosPerPage = 35;
+      } else if (resolution.isSmall()) {
+        nbPhotosPerPage = 15;
+      } else if (resolution.isMedium()) {
+        nbPhotosPerPage = 6;
+      }
     }
     return nbPhotosPerPage;
   }
@@ -133,5 +136,11 @@ public final class GalleryComponentSettings {
   public static boolean isMakeWatermarkEnabled(String componentInstanceId) {
     return StringUtil.getBooleanValue(OrganisationControllerFactory.getOrganisationController()
         .getComponentParameterValue(componentInstanceId, "watermark"));
+  }
+
+  public static Integer getWatermarkSize(String bundlePartOfWaterwarkSizeLabel) {
+    String tmpValue =
+        getSettings().getString("sizeWatermark" + bundlePartOfWaterwarkSizeLabel, null);
+    return (StringUtil.isInteger(tmpValue)) ? Integer.valueOf(tmpValue) : null;
   }
 }

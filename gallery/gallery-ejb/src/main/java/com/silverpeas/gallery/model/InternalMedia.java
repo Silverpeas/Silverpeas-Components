@@ -24,6 +24,7 @@
 package com.silverpeas.gallery.model;
 
 import com.silverpeas.gallery.GalleryComponentSettings;
+import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.util.DateUtil;
@@ -108,20 +109,27 @@ public abstract class InternalMedia extends Media {
   }
 
   @Override
-  public String getThumbnailUrl(final String formatPrefix) {
+  public String getThumbnailUrl(MediaResolution mediaResolution) {
     String thumbnailUrl;
-    if (StringUtil.isDefined(getFileName())) {
-      thumbnailUrl = FileServerUtils
-          .getUrl(getInstanceId(), getId() + formatPrefix, getFileMimeType(),
-              GalleryComponentSettings.getMediaFolderNamePrefix() + getId());
-      if (!isPreviewable()) {
-        thumbnailUrl =
-            URLManager.getApplicationURL() + "/gallery/jsp/icons/notAvailable_" + MessageManager.
-                getLanguage() + formatPrefix;
+    if (mediaResolution == null) {
+      mediaResolution = MediaResolution.PREVIEW;
+    }
+    if (getType().isPhoto()) {
+      if (StringUtil.isDefined(getFileName())) {
+        thumbnailUrl = FileServerUtils
+            .getUrl(getInstanceId(), getId() + mediaResolution.getThumbnailSuffix(),
+                getFileMimeType(), GalleryComponentSettings.getMediaFolderNamePrefix() + getId());
+        if (!isPreviewable()) {
+          thumbnailUrl =
+              URLManager.getApplicationURL() + "/gallery/jsp/icons/notAvailable_" + MessageManager.
+                  getLanguage() + mediaResolution.getThumbnailSuffix();
+        }
+      } else {
+        thumbnailUrl = URLManager.getApplicationURL() + "/gallery/jsp/icons/notAvailable_" +
+            MessageManager.getLanguage() + mediaResolution.getThumbnailSuffix();
       }
     } else {
-      thumbnailUrl = URLManager.getApplicationURL() + "/gallery/jsp/icons/notAvailable_" +
-          MessageManager.getLanguage() + formatPrefix;
+      thumbnailUrl = super.getThumbnailUrl(mediaResolution);
     }
     return FilenameUtils.normalize(thumbnailUrl, true);
   }

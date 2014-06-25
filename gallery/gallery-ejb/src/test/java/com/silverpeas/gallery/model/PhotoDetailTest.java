@@ -25,6 +25,7 @@ package com.silverpeas.gallery.model;
 
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.AccessControllerProvider;
+import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.MediaType;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
@@ -182,15 +183,18 @@ public class PhotoDetailTest {
     assertThat(
         wrappedPhoto.getMetaData(wrappedPhoto.getMetaDataProperties().iterator().next()).getValue(),
         is("ok"));
-    Assert.assertThat(wrappedPhoto.getThumbnailUrl("_formatSuffix"),
-        is("/silverpeas/gallery/jsp/icons/notAvailable_fr_formatSuffix"));
+    Assert.assertThat(wrappedPhoto.getThumbnailUrl(MediaResolution.TINY),
+        is("/silverpeas/gallery/jsp/icons/notAvailable_fr" +
+            MediaResolution.TINY.getThumbnailSuffix()));
 
     // Previewable
     photoDetail.setImageName("image.jpg");
     assertThat(wrappedPhoto.isPreviewable(), is(true));
-    assertThat(wrappedPhoto.getThumbnailUrl("_formatSuffix"),
-        is("/silverpeas/FileServer/mediaId_formatSuffix?ComponentId=instanceId&SourceFile" +
-            "=mediaId_formatSuffix&MimeType=image/jpeg&Directory=imagemediaId"));
+    assertThat(wrappedPhoto.getThumbnailUrl(MediaResolution.TINY),
+        is("/silverpeas/FileServer/mediaId" + MediaResolution.TINY.getThumbnailSuffix() +
+            "?ComponentId=instanceId&SourceFile" +
+            "=mediaId" + MediaResolution.TINY.getThumbnailSuffix() +
+            "&MimeType=image/jpeg&Directory=imagemediaId"));
   }
 
   @Test

@@ -23,9 +23,16 @@
  */
 package com.silverpeas.gallery.model;
 
+import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.MediaType;
 import org.junit.Test;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.silverpeas.gallery.constant.MediaResolution.*;
+import static com.silverpeas.gallery.constant.MediaResolution.PREVIEW;
+import static com.silverpeas.gallery.constant.MediaResolution.WATERMARK;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -43,6 +50,17 @@ public class SoundTest {
   public void justCreatedTest() {
     Sound sound = defaultSound();
     assertDefaultSound(sound);
+
+    Map<MediaResolution, String> expected = new HashMap<MediaResolution, String>();
+    expected.put(TINY, "/silverpeas/gallery/jsp/icons/sound_66x50.png");
+    expected.put(SMALL, "/silverpeas/gallery/jsp/icons/sound_133x100.png");
+    expected.put(MEDIUM, "/silverpeas/gallery/jsp/icons/sound_266x150.png");
+    expected.put(LARGE, "/silverpeas/gallery/jsp/icons/sound_266x150.png");
+    expected.put(PREVIEW, "/silverpeas/gallery/jsp/icons/sound_266x150.png");
+    expected.put(WATERMARK, "/silverpeas/gallery/jsp/icons/sound_266x150.png");
+    for (MediaResolution mediaResolution : MediaResolution.values()) {
+      assertThat(sound.getThumbnailUrl(mediaResolution), is(expected.get(mediaResolution)));
+    }
   }
 
   private Sound defaultSound() {

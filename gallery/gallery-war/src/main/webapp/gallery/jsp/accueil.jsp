@@ -38,7 +38,10 @@
 <view:setConstant var="publisherRole" constant="com.stratelia.webactiv.SilverpeasRole.publisher"/>
 <view:setConstant var="userRole" constant="com.stratelia.webactiv.SilverpeasRole.user"/>
 
+<view:setConstant var="SMALL_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.SMALL"/>
+
 <c:set var="greaterUserRole" value="${requestScope.greaterUserRole}"/>
+<jsp:useBean id="greaterUserRole" type="com.stratelia.webactiv.SilverpeasRole"/>
 <c:set var="isPdcUsed" value="${requestScope.IsUsePdc}"/>
 <c:set var="isPrivateSearch" value="${requestScope.IsPrivateSearch}"/>
 <c:set var="isBasket" value="${requestScope.IsBasket}"/>
@@ -47,7 +50,9 @@
 
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
 <c:set var="albumList" value="${requestScope.Albums}"/>
+<jsp:useBean id="albumList" type="java.util.List<com.silverpeas.gallery.model.AlbumDetail>"/>
 <c:set var="mediaList" value="${requestScope.MediaList}"/>
+<jsp:useBean id="mediaList" type="java.util.List<com.silverpeas.gallery.model.Media>"/>
 
 <c:set var="nbPerLine" value="${5}"/>
 
@@ -302,7 +307,7 @@
                           <tr>
                             <td bgcolor="#FFFFFF">
                               <a href="MediaView?MediaId=${media.id}">
-                                <img src="${media.getThumbnailUrl('_133x100.jpg')}" border="0" alt="<c:out value='${media.title}'/>" title="<c:out value='${media.title}'/>"/>
+                                <img src="${media.getThumbnailUrl(SMALL_RESOLUTION)}" border="0" alt="<c:out value='${media.title}'/>" title="<c:out value='${media.title}'/>"/>
                               </a>
                             </td>
                           </tr>

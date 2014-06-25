@@ -25,6 +25,7 @@ package com.silverpeas.gallery.model;
 
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.AccessControllerProvider;
+import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.MediaType;
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.control.ejb.MediaServiceFactory;
@@ -331,7 +332,7 @@ public class MediaTest {
     }
 
     @Override
-    public String getThumbnailUrl(final String formatPrefix) {
+    public String getThumbnailUrl(final MediaResolution mediaResolution) {
       return null;
     }
   }
