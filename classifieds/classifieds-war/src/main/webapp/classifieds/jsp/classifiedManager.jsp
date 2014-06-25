@@ -67,7 +67,7 @@
 	<c:set var="validatorName" value="${classified.validatorName}" />
 	<c:set var="creationDate" value="${classified.creationDate}" />
 	<c:set var="validateDate" value="${classified.validateDate}" />
-	<c:set var="lastUpdateDate" value="${classified.updateDate}" />
+	<c:set var="updateDate" value="${classified.updateDate}" />
 	<c:set var="images" value="${classified.images}" />
 </c:if>
 
@@ -278,11 +278,11 @@
       </div>
     </div>
   </c:if>
-  <c:if test="${not empty lastUpdateDate}">
+  <c:if test="${not empty updateDate}">
     <div class="field" id="updateDateArea">
       <label class="txtlibform"><fmt:message key="classifieds.updateDate"/> :</label>
       <div class="champs">
-        <view:formatDateTime value="${lastUpdateDate}"/>
+        <view:formatDateTime value="${updateDate}"/>
       </div>
     </div>
   </c:if>
