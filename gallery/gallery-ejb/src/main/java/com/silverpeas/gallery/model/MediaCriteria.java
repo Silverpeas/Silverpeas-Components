@@ -51,6 +51,7 @@ public class MediaCriteria {
 
   public enum QUERY_ORDER_BY {
 
+    SIZE_ASC(false, "size", true), SIZE_DESC(false, "size", false),
     DIMENSION_ASC(false, "dimension", true), DIMENSION_DESC(false, "dimension", false),
     COMPONENT_INSTANCE_ASC(true, "M.instanceId", true),
     COMPONENT_INSTANCE_DESC(true, "M.instanceId", false),

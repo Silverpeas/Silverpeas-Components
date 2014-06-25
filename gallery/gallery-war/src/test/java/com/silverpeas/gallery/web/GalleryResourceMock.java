@@ -28,11 +28,9 @@ import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.model.AlbumDetail;
-import com.silverpeas.gallery.model.MediaCriteria;
+import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.MediaPK;
-import com.silverpeas.gallery.model.PhotoDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
-
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -40,7 +38,6 @@ import javax.ws.rs.Path;
 
 import static com.silverpeas.gallery.web.GalleryResourceURIs.GALLERY_BASE_URI;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -77,18 +74,16 @@ public class GalleryResourceMock extends GalleryResource {
                       return null;
                     }
                     return AlbumBuilder.getAlbumBuilder()
-                        .buildAlbum(nodePk.getId())
-                        .addPhoto(
-                            PhotoBuilder.getPhotoBuilder().buildPhoto("7",
-                                nodePk.getComponentName()));
+                        .buildAlbum(nodePk.getId()).addMedia(PhotoBuilder.getPhotoBuilder()
+                            .buildPhoto("7", nodePk.getComponentName()));
                   }
                 });
 
         // getPhoto
-        when(galleryBmMock.getPhoto(any(MediaPK.class))).thenAnswer(new Answer<PhotoDetail>() {
+        when(galleryBmMock.getMedia(any(MediaPK.class))).thenAnswer(new Answer<Media>() {
 
           @Override
-          public PhotoDetail answer(final InvocationOnMock invocation) throws Throwable {
+          public Media answer(final InvocationOnMock invocation) throws Throwable {
             final MediaPK mediaPk = (MediaPK) invocation.getArguments()[0];
             if (mediaPk == null || !"7".equals(mediaPk.getId())) {
               return null;
@@ -111,7 +106,7 @@ public class GalleryResourceMock extends GalleryResource {
    * .gallery.model.PhotoDetail)
    */
   @Override
-  protected void verifyUserPhotoAccess(final PhotoDetail photo) {
+  protected void verifyUserMediaAccess(final Media media) {
     // Nothing to do.
   }
 }

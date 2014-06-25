@@ -43,8 +43,8 @@
 			{
 				if (isCorrectForm()) 
 				{
-					document.askPhotoForm.action = "SendAsk";
-	        		document.askPhotoForm.submit();
+					document.askMediaForm.action = "SendAsk";
+	        		document.askMediaForm.submit();
 	        		window.close();
 	    		}
 			}
@@ -53,7 +53,7 @@
 			{
 		     	var errorMsg = "";
 		     	var errorNb = 0;
-		     	var title = stripInitialWhitespace(document.askPhotoForm.Description.value);
+		     	var title = stripInitialWhitespace(document.askMediaForm.Description.value);
 		     	if (title == "") 
 		     	{
 		           	errorMsg+="  - '<%=resource.getString("gallery.request")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
@@ -80,7 +80,7 @@
 		</script>
 	
 		</head>
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5" onLoad="javascript:document.askPhotoForm.Description.focus();">
+<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5" onLoad="javascript:document.askMediaForm.Description.focus();">
 <%
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "Main");
@@ -91,7 +91,7 @@
     out.println(frame.printBefore());
     out.println(board.printBefore());
 %>
-<form name="askPhotoForm" method="post" action="SendAsk">
+<form name="askMediaForm" method="post" action="SendAsk">
 <table CELLPADDING="5" WIDTH="100%">
 	<tr>
 		<td class="txtlibform"><%=resource.getString("gallery.request")%> :<br><TEXTAREA ROWS="5" COLS="90" name="Description"></TEXTAREA></td>

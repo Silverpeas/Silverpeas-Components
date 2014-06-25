@@ -24,21 +24,21 @@
 package com.silverpeas.gallery.process.photo;
 
 import com.silverpeas.gallery.GalleryComponentSettings;
+import com.silverpeas.gallery.model.Media;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.process.io.file.FileHandler;
 import org.silverpeas.process.session.ProcessSession;
 
 import com.silverpeas.gallery.ImageHelper;
-import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.gallery.process.AbstractGalleryFileProcess;
 import com.silverpeas.gallery.process.GalleryProcessExecutionContext;
 import com.silverpeas.util.StringUtil;
 
 /**
- * Process to update a photo on file system
+ * Process to update a media on file system
  * @author Yohann Chastagnier
  */
-public class GalleryUpdatePhotoFileProcess extends AbstractGalleryFileProcess {
+public class GalleryUpdateMediaFileProcess extends AbstractGalleryFileProcess {
 
   private final FileItem fileItem;
   private final boolean watermark;
@@ -47,31 +47,31 @@ public class GalleryUpdatePhotoFileProcess extends AbstractGalleryFileProcess {
 
   /**
    * Gets an instance
-   * @param photo
+   * @param media
    * @param fileItem
    * @param watermark
    * @param watermarkHD
    * @param watermarkOther
    * @return
    */
-  public static GalleryUpdatePhotoFileProcess getInstance(final PhotoDetail photo,
+  public static GalleryUpdateMediaFileProcess getInstance(final Media media,
       final FileItem fileItem, final boolean watermark, final String watermarkHD,
       final String watermarkOther) {
-    return new GalleryUpdatePhotoFileProcess(photo, fileItem, watermark, watermarkHD,
+    return new GalleryUpdateMediaFileProcess(media, fileItem, watermark, watermarkHD,
         watermarkOther);
   }
 
   /**
    * Default hidden constructor
-   * @param photo
+   * @param media
    * @param fileItem
    * @param watermark
    * @param watermarkHD
    * @param watermarkOther
    */
-  protected GalleryUpdatePhotoFileProcess(final PhotoDetail photo, final FileItem fileItem,
+  protected GalleryUpdateMediaFileProcess(final Media media, final FileItem fileItem,
       final boolean watermark, final String watermarkHD, final String watermarkOther) {
-    super(photo);
+    super(media);
     this.fileItem = fileItem;
     this.watermark = watermark;
     this.watermarkHD = watermarkHD;
@@ -87,17 +87,18 @@ public class GalleryUpdatePhotoFileProcess extends AbstractGalleryFileProcess {
   @Override
   public void processFiles(final GalleryProcessExecutionContext context,
       final ProcessSession session, final FileHandler fileHandler) throws Exception {
-    if (fileItem != null) {
+    if (getMedia().getType().isPhoto() && fileItem != null) {
       final String name = fileItem.getName();
       if (StringUtil.isDefined(name)) {
 
-        // Deleting repository with old photos
+        // Deleting repository with old media
         fileHandler.getHandledFile(BASE_PATH, context.getComponentInstanceId(),
-            GalleryComponentSettings.getMediaFolderNamePrefix() + getPhoto().getId()).delete();
+            GalleryComponentSettings.getMediaFolderNamePrefix() + getMedia().getId()).delete();
 
         // Creating new images
-        ImageHelper.processImage(fileHandler, getPhoto(), fileItem, watermark, watermarkHD,
-            watermarkOther);
+        ImageHelper
+            .processImage(fileHandler, getMedia().getPhoto(), fileItem, watermark, watermarkHD,
+                watermarkOther);
       }
     }
   }

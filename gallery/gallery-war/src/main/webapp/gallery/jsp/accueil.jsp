@@ -1,410 +1,348 @@
-<%@ page import="com.silverpeas.gallery.GalleryComponentSettings" %>
 <%--
+  Copyright (C) 2000 - 2014 Silverpeas
 
-    Copyright (C) 2000 - 2013 Silverpeas
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as
+  published by the Free Software Foundation, either version 3 of the
+  License, or (at your option) any later version.
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation, either version 3 of the
-    License, or (at your option) any later version.
+  As a special exception to the terms and conditions of version 3.0 of
+  the GPL, you may redistribute this Program in connection with Free/Libre
+  Open Source Software ("FLOSS") applications as described in Silverpeas's
+  FLOSS exception. You should have recieved a copy of the text describing
+  the FLOSS exception, and it is also available here:
+  "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
-    As a special exception to the terms and conditions of version 3.0 of
-    the GPL, you may redistribute this Program in connection with Free/Libre
-    Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
-    the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU Affero General Public License for more details.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  --%>
 
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
---%>
-
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
-<%
-  String profile = (String) request.getAttribute("Profile");
-  List photos = (List) request.getAttribute("Photos");
-  boolean isPdcUsed = (Boolean) request.getAttribute("IsUsePdc");
-  boolean isPrivateSearch = (Boolean) request.getAttribute("IsPrivateSearch");
-  boolean isBasket = (Boolean) request.getAttribute("IsBasket");
-  boolean isOrder = (Boolean) request.getAttribute("IsOrder");
-  boolean isGuest = (Boolean) request.getAttribute("IsGuest");
-  List<AlbumDetail> albums = (List<AlbumDetail>) request.getAttribute("Albums");
 
-  // parametrage pour l'affichage des dernieres photos telechargees
-  int nbAffiche = 0;
-  int nbParLigne = 5;
-  int nbTotal = 15;
+<fmt:setLocale value="${requestScope.resources.language}"/>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
-  session.setAttribute("Silverpeas_Album_ComponentId", componentId);
-%>
+<view:setConstant var="adminRole" constant="com.stratelia.webactiv.SilverpeasRole.admin"/>
+<view:setConstant var="publisherRole" constant="com.stratelia.webactiv.SilverpeasRole.publisher"/>
+<view:setConstant var="userRole" constant="com.stratelia.webactiv.SilverpeasRole.user"/>
+
+<c:set var="greaterUserRole" value="${requestScope.greaterUserRole}"/>
+<c:set var="isPdcUsed" value="${requestScope.IsUsePdc}"/>
+<c:set var="isPrivateSearch" value="${requestScope.IsPrivateSearch}"/>
+<c:set var="isBasket" value="${requestScope.IsBasket}"/>
+<c:set var="isOrder" value="${requestScope.IsOrder}"/>
+<c:set var="isGuest" value="${requestScope.IsGuest}"/>
+
+<c:set var="componentId" value="${requestScope.browseContext[3]}"/>
+<c:set var="albumList" value="${requestScope.Albums}"/>
+<c:set var="mediaList" value="${requestScope.MediaList}"/>
+
+<c:set var="nbPerLine" value="${5}"/>
+
+<c:set var="Silverpeas_Album_ComponentId" value="${15}" scope="session"/>
+
+<fmt:message key="GML.PDCParam" var="pdcLabel"/>
+<fmt:message key="gallery.pdcUtilizationSrc" var="pdcIcon" bundle="${icons}"/>
+<c:url value="${pdcIcon}" var="pdcIcon" />
+<fmt:message key="gallery.addAlbum" var="addAlbumLabel"/>
+<fmt:message key="gallery.addAlbum" var="addAlbumIcon" bundle="${icons}"/>
+<c:url value="${addAlbumIcon}" var="addAlbumIcon" />
+<fmt:message key="gallery.viewNotVisible" var="viewNotVisibleLabel"/>
+<fmt:message key="gallery.viewNotVisible" var="viewNotVisibleIcon" bundle="${icons}"/>
+<c:url value="${viewNotVisibleIcon}" var="viewNotVisibleIcon" />
+<fmt:message key="gallery.viewBasket" var="viewBasketLabel"/>
+<fmt:message key="gallery.viewBasket" var="viewBasketIcon" bundle="${icons}"/>
+<c:url value="${viewBasketIcon}" var="viewBasketIcon" />
+<fmt:message key="gallery.viewOrderList" var="viewOrderListLabel"/>
+<fmt:message key="gallery.viewOrderList" var="viewOrderListIcon" bundle="${icons}"/>
+<c:url value="${viewOrderListIcon}" var="viewOrderListIcon" />
+<fmt:message key="gallery.askMedia" var="askMediaLabel"/>
+<fmt:message key="gallery.askMedia" var="askMediaIcon" bundle="${icons}"/>
+<c:url value="${askMediaIcon}" var="askMediaIcon" />
+<fmt:message key="GML.paste" var="pasteLabel"/>
+<fmt:message key="GML.paste" var="pasteIcon" bundle="${icons}"/>
+<c:url value="${pasteIcon}" var="pasteIcon" />
+<fmt:message key="gallery.lastResult" var="lastResultLabel"/>
+<fmt:message key="gallery.lastResult" var="lastResultIcon" bundle="${icons}"/>
+<c:url value="${lastResultIcon}" var="lastResultIcon" />
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.cookie.js"></script>
-<script type="text/javascript">
+  <view:looknfeel/>
+  <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js"/>"></script>
+  <script type="text/javascript" src="<c:url value="/util/javaScript/checkForm.js"/>"></script>
+  <script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery.cookie.js"/>"></script>
+  <script type="text/javascript">
+    <c:if test="${greaterUserRole.isGreaterThanOrEquals(adminRole)}">
+    $(document).ready(function() {
+      showAlbumsHelp();
 
-	  $(document).ready(function(){
-		  <%if ( "admin".equals(profile)) { %>
-		    showAlbumsHelp();
+      $("#albumList").sortable({opacity : 0.4, cursor : 'move'});
 
-		    $("#albumList").sortable({opacity: 0.4, cursor: 'move'});
+      $('#albumList').bind('sortupdate', function(event, ui) {
+        var reg = new RegExp("album", "g");
+        var data = $('#albumList').sortable('serialize');
+        data += "&";  // pour que le dernier élément soit de la même longueur que les autres
+        var tableau = data.split(reg);
+        var param = "";
+        for (var i = 0; i < tableau.length; i++) {
+          if (i > 0) {
+            param += ",";
+          }
+          param += tableau[i].substring(3, tableau[i].length - 1);
+        }
+        sortAlbums(param);
+      });
+    });
+    </c:if>
 
-			  $('#albumList').bind('sortupdate', function(event, ui) {
-				     var reg=new RegExp("album", "g");
-				     var data = $('#albumList').sortable('serialize');
-				     data += "&";  // pour que le dernier élément soit de la même longueur que les autres
-				     var tableau=data.split(reg);
-				     var param = "";
-				     for (var i=0; i<tableau.length; i++) {
-				        if (i > 0) {
-				          param += ",";
-				        }
-				        param += tableau[i].substring(3, tableau[i].length-1);
-				     }
-				     sortAlbums(param);
-				    });
-		  <%} %>
-	  });
+    var albumsHelpAlreadyShown = false;
 
-	  var albumsHelpAlreadyShown = false;
-
-	  function showAlbumsHelp() {
-		  var albumsCookieName = "Silverpeas_GALLERY_AlbumsHelp";
-		  var albumsCookieValue = $.cookie(albumsCookieName);
-		  if (!albumsHelpAlreadyShown && "IKnowIt" != albumsCookieValue) {
-		    albumsHelpAlreadyShown = true;
-		    $( "#albums-message" ).dialog({
-		      modal: true,
-		      resizable: false,
-		      width: 400,
-		      dialogClass: 'help-modal-message',
-		      buttons: {
-		        "<%=resource.getString("gallery.help.albums.buttons.ok") %>": function() {
-		          $.cookie(albumsCookieName, "IKnowIt", { expires: 3650, path: '/' });
-		          $( this ).dialog( "close" );
-		        },
-		        "<%=resource.getString("gallery.help.albums.buttons.remind") %>": function() {
-		          $( this ).dialog( "close" );
-		        }
-		      }
-		    });
-		  }
-		}
-
-  function sortAlbums(orderedList)
-  {
-    $.get('<%=m_context%>/Album', { orderedList:orderedList,Action:'Sort'},
-    function(data){
-      data = data.replace(/^\s+/g,'').replace(/\s+$/g,'');
-      if (data == "error")
-      {
-        alert("Une erreur s'est produite !");
+    function showAlbumsHelp() {
+      var albumsCookieName = "Silverpeas_GALLERY_AlbumsHelp";
+      var albumsCookieValue = $.cookie(albumsCookieName);
+      if (!albumsHelpAlreadyShown && "IKnowIt" != albumsCookieValue) {
+        albumsHelpAlreadyShown = true;
+        $("#albums-message").dialog({
+          modal : true,
+          resizable : false,
+          width : 400,
+          dialogClass : 'help-modal-message',
+          buttons : {
+            "<fmt:message key="gallery.help.albums.buttons.ok"/>" : function() {
+              $.cookie(albumsCookieName, "IKnowIt", { expires : 3650, path : '/' });
+              $(this).dialog("close");
+            },
+            "<fmt:message key="gallery.help.albums.buttons.remind"/>" : function() {
+              $(this).dialog("close");
+            }
+          }
+        });
       }
-    }, 'text');
-    if (pageMustBeReloadingAfterSorting) {
-      //force page reloading to reinit menus
-      reloadIncludingPage();
     }
-  }
 
-  function clipboardPaste() {
-    $.progressMessage();
-    document.albumForm.action = "paste";
-    document.albumForm.submit();
-	}
-
-var albumWindow = window;
-var askWindow = window;
-
-function openSPWindow(fonction, windowName){
-	pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600', '400','scrollbars=yes, resizable, alwaysRaised');
-}
-
-function deleteConfirm(id,nom)
-{
-	if(window.confirm("<%=resource.getString("gallery.confirmDeleteAlbum")%> '" + nom + "' ?"))
-	{
-		document.albumForm.action = "DeleteAlbum";
-		document.albumForm.Id.value = id;
-		document.albumForm.submit();
-	}
-}
-
-function askPhoto()
-{
-	windowName = "askWindow";
-	larg = "570";
-	haut = "250";
-    windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
-    if (!askWindow.closed && askWindow.name== "askWindow")
-    	askWindow.close();
-    askWindow = SP_openWindow("AskPhoto", windowName, larg, haut, windowParams);
-}
-
-function sendData()
-{
-    var query = stripInitialWhitespace(document.searchForm.SearchKeyWord.value);
-	if (!isWhitespace(query) && query != "*") {
-    	//displayStaticMessage();
-		setTimeout("document.searchForm.submit();", 500);
+    function sortAlbums(orderedList) {
+      $.get('<c:url value="/Album"/>', { orderedList : orderedList, Action : 'Sort'},
+          function(data) {
+            data = data.replace(/^\s+/g, '').replace(/\s+$/g, '');
+            if (data == "error") {
+              alert("Une erreur s'est produite !");
+            }
+          }, 'text');
+      if (pageMustBeReloadingAfterSorting) {
+        //force page reloading to reinit menus
+        reloadIncludingPage();
+      }
     }
-}
 
-</script>
+    function clipboardPaste() {
+      $.progressMessage();
+      document.albumForm.action = "paste";
+      document.albumForm.submit();
+    }
+
+    var albumWindow = window;
+    var askWindow = window;
+
+    function openSPWindow(fonction, windowName) {
+      pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600', '400',
+          'scrollbars=yes, resizable, alwaysRaised');
+    }
+
+    function deleteConfirm(id, nom) {
+      if (window.confirm("<fmt:message key="gallery.confirmDeleteAlbum"/> '" + nom + "' ?")) {
+        document.albumForm.action = "DeleteAlbum";
+        document.albumForm.Id.value = id;
+        document.albumForm.submit();
+      }
+    }
+
+    function askMedia() {
+      windowName = "askWindow";
+      larg = "570";
+      haut = "250";
+      windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
+      if (!askWindow.closed && askWindow.name == "askWindow")
+        askWindow.close();
+      askWindow = SP_openWindow("AskMedia", windowName, larg, haut, windowParams);
+    }
+
+    function sendData() {
+      var query = stripInitialWhitespace(document.searchForm.SearchKeyWord.value);
+      if (!isWhitespace(query) && query != "*") {
+        //displayStaticMessage();
+        setTimeout("document.searchForm.submit();", 500);
+      }
+    }
+
+  </script>
 </head>
 <body>
-<div id="<%=componentId %>">
-<%
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel, "Main");
+<view:operationPane>
+  <c:if test="${greaterUserRole.isGreaterThanOrEquals(adminRole) and isPdcUsed}">
+    <c:url value="/RpdcUtilization/jsp/Main?ComponentId=${componentId}" var="tmpUrl"/>
+    <view:operation action="javascript:onClick=openSPWindow('${tmpUrl}','utilizationPdc1')" altText="${pdcLabel}" icon="${pdcIcon}"/>
+    <view:operationSeparator/>
+  </c:if>
+  <c:if test="${greaterUserRole.isGreaterThanOrEquals(publisherRole)}">
+    <view:operationOfCreation action="javaScript:openGalleryEditor()" altText="${addAlbumLabel}" icon="${addAlbumIcon}"/>
+    <view:operationSeparator/>
+    <view:operation action="ViewNotVisible" altText="${viewNotVisibleLabel}" icon="${viewNotVisibleIcon}"/>
+    <view:operationSeparator/>
+  </c:if>
+  <c:if test="${greaterUserRole eq userRole and isBasket}">
+    <view:operation action="BasketView" altText="${viewBasketLabel}" icon="${viewBasketIcon}"/>
+  </c:if>
+  <c:if test="${(greaterUserRole eq adminRole or greaterUserRole eq userRole) and isOrder}">
+    <view:operation action="OrderViewList" altText="${viewOrderListLabel}" icon="${viewOrderListIcon}"/>
+  </c:if>
+  <c:if test="${greaterUserRole != adminRole and not isGuest}">
+    <view:operationOfCreation action="javaScript:askMedia()" altText="${askMediaLabel}" icon="${askMediaIcon}"/>
+    <view:operationSeparator/>
+  </c:if>
+  <c:if test="${greaterUserRole.isGreaterThanOrEquals(adminRole)}">
+    <view:operation action="javascript:onClick=clipboardPaste()" altText="${pasteLabel}" icon="${pasteIcon}"/>
+    <view:operationSeparator/>
+  </c:if>
+  <c:if test="${isPrivateSearch}">
+    <view:operation action="LastResult" altText="${lastResultLabel}" icon="${lastResultIcon}"/>
+  </c:if>
+</view:operationPane>
+<div id="${componentId}">
+  <view:window>
+    <view:frame>
+      <c:if test="${isPrivateSearch}">
+        <view:board>
+          <center>
+            <form name="searchForm" action="SearchKeyWord" method="post" onsubmit="javascript:sendData();">
+              <table border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td valign="middle" align="left" class="txtlibform" width="30%">
+                    <span style="line-height: 27px;"><fmt:message key="GML.search"/></span>
+                  </td>
+                  <td align="left" valign="middle">
+                    <table border="0" cellspacing="0" cellpadding="0">
+                      <tr valign="middle">
+                        <td valign="middle"><input type="text" name="SearchKeyWord" size="36"/></td>
+                        <td valign="middle">&nbsp;</td>
+                        <td valign="middle" align="left" width="100%">
+                          <fmt:message key="GML.ok" var="tmpLabel"/>
+                          <view:button label="${tmpLabel}" action="javascript:onClick=sendData();"/>
+                        </td>
+                        <td valign="middle">&nbsp;</td>
+                        <td valign="middle"><a href="SearchAdvanced">
+                          <fmt:message key="gallery.searchAdvanced"/>
+                        </a></td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </form>
+          </center>
+        </view:board>
+        <br/>
+      </c:if>
 
-	// affichage de la gestion du plan de classement (seulement pour les administrateurs)
-	if ( "admin".equals(profile))
-	{
-		if (isPdcUsed)
-		{
-			operationPane.addOperation(resource.getIcon("gallery.pdcUtilizationSrc"), resource.getString("GML.PDCParam"), "javascript:onClick=openSPWindow('"+m_context+"/RpdcUtilization/jsp/Main?ComponentId="+componentId+"','utilizationPdc1')");
-			operationPane.addLine();
-		}
-	}
-	if ( "admin".equals(profile) || "publisher".equals(profile))
-	{
-		operationPane.addOperationOfCreation(resource.getIcon("gallery.addAlbum"),resource.getString("gallery.addAlbum"), "javaScript:openGalleryEditor()");
-		operationPane.addLine();
+      <div id="subTopics">
+        <view:areaOfOperationOfCreation/>
+        <ul id="albumList">
+          <c:forEach var="aAlbum" items="${albumList}">
+            <li id="album_${aAlbum.id}" class="ui-state-default">
+              <a href="ViewAlbum?Id=${aAlbum.id}">
+                <strong>${aAlbum.name}
+                  <span>${aAlbum.nbMedia}</span>
+                </strong>
+                <span>${aAlbum.description}</span>
+              </a>
+            </li>
+          </c:forEach>
+        </ul>
+      </div>
+      <br/>
+      <view:board>
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" align=center>
+          <tr>
+            <td colspan="5" align="center" class=ArrayNavigation>
+              <fmt:message key="gallery.last.media"/>
+            </td>
+          </tr>
+          <c:choose>
+            <c:when test="${not empty mediaList}">
+              <c:forEach var="media" items="${mediaList}" varStatus="loop">
+                <c:set var="isNewLine" value="${loop.index % nbPerLine == 0}"/>
+                <c:set var="isEndLine" value="${loop.last or loop.index % nbPerLine == 4}"/>
+                <c:if test="${isNewLine}">
+                  <tr>
+                    <td colspan="${nbPerLine}">&#160;</td>
+                  </tr>
+                </c:if>
+                <c:if test="${isNewLine}">
+                  <tr>
+                </c:if>
 
-		//visualisation des photos non visibles par les lecteurs
-		operationPane.addOperation(resource.getIcon("gallery.viewNotVisible"),resource.getString("gallery.viewNotVisible"),"ViewNotVisible");
-		operationPane.addLine();
-	}
+                <td valign="middle" align="center">
+                  <table border="0" width="10" align="center" cellspacing="1" cellpadding="0" class="fondPhoto">
+                    <tr>
+                      <td align="center">
+                        <table cellspacing="1" cellpadding="3" border="0" class="cadrePhoto">
+                          <tr>
+                            <td bgcolor="#FFFFFF">
+                              <a href="MediaView?MediaId=${media.id}">
+                                <img src="${media.getThumbnailUrl('_133x100.jpg')}" border="0" alt="<c:out value='${media.title}'/>" title="<c:out value='${media.title}'/>"/>
+                              </a>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
 
-	if ("user".equals(profile) && isBasket)
-	{
-		// voir le panier
-		operationPane.addOperation(resource.getIcon("gallery.viewBasket"),resource.getString("gallery.viewBasket"), "BasketView");
-	}
-	if (isOrder)
-	{
-		if ("admin".equals(profile) || "user".equals(profile))
-		{
-			// voir la liste des demandes
-			operationPane.addOperation(resource.getIcon("gallery.viewOrderList"),resource.getString("gallery.viewOrderList"), "OrderViewList");
-		}
-	}
+                <c:if test="${isEndLine}">
+                  </tr>
+                </c:if>
+              </c:forEach>
+            </c:when>
+            <c:otherwise>
+              <tr>
+                <td colspan="5" valign="middle" align="center" width="100%">
+                  <br/>
+                  <fmt:message key="gallery.empty.data"/>
+                  <br/>
+                </td>
+              </tr>
+            </c:otherwise>
+          </c:choose>
+        </table>
 
-	if (!"admin".equals(profile) && !isGuest)
-	{
-		// demande de photo aupres du gestionnaire
-		operationPane.addOperationOfCreation(resource.getIcon("gallery.askPhoto"),resource.getString("gallery.askPhoto"), "javaScript:askPhoto()");
-		operationPane.addLine();
-	}
+        <%@include file="albumManager.jsp" %>
 
-
-	if ("admin".equals(profile))
-	{
-       	operationPane.addOperation(resource.getIcon("gallery.paste"), resource.getString("GML.paste"), "javascript:onClick=clipboardPaste()");
-       	operationPane.addLine();
-	}
-
-	// derniers resultat de la recherche
-	if (isPrivateSearch)
-	{
-    	operationPane.addOperation(resource.getIcon("gallery.lastResult"), resource.getString("gallery.lastResult"), "LastResult");
-	}
-
-	out.println(window.printBefore());
-    out.println(frame.printBefore());
-
-
-	if (isPrivateSearch)
-	{
-		 // affichage de la zone de recherche
-		 // ---------------------------------
-		 Board b	= gef.getBoard();
-		 out.println(b.printBefore());
-		 Button validateButton 	= gef.getFormButton("OK", "javascript:onClick=sendData();", false);
-		 %>
-		 <center>
-		 	<form name="searchForm" action="SearchKeyWord" method="post" onsubmit="javascript:sendData();">
-		 	<table border="0" cellpadding="0" cellspacing="0">
-		 			<tr>
-		 				<td valign="middle" align="left" class="txtlibform" width="30%"><%=resource.getString("GML.search")%></td>
-		 				<td align="left" valign="middle">
-		 					<table border="0" cellspacing="0" cellpadding="0">
-		 						<tr valign="middle">
-		 							<td valign="middle"><input type="text" name="SearchKeyWord" size="36"/></td>
-		 							<td valign="middle">&nbsp;</td>
-		 							<td valign="middle" align="left" width="100%"><% out.println(validateButton.print());%></td>
-		 							<td valign="middle">&nbsp;</td>
-		 							<td valign="middle"><a href="SearchAdvanced"><%=resource.getString("gallery.searchAdvanced")%></a></td>
-		 						</tr>
-		 					</table>
-		 				</td>
-		 			</tr>
-		     </table>
-		     </form>
-		 </center>
-    <%
-    out.println(b.printAfter());
-    %>
-    <br/>
-  <% } %>
-
-  <div id="subTopics">
-  <view:areaOfOperationOfCreation/>
-  <ul id="albumList">
-<%
-  for (AlbumDetail unAlbum : albums) {
-    IconPane icon = gef.getIconPane();
-    Icon albumIcon = icon.addIcon();
-    albumIcon.setProperties(resource.getIcon("gallery.gallerySmall"), "");
-    icon.setSpacing("30px");
-
-    int id = unAlbum.getId();
-    String nom = unAlbum.getName();
-    String link = "";
-    if (StringUtil.isDefined(unAlbum.getPermalink())) {
-      link = "&nbsp;<a href=\"" + unAlbum.getPermalink() + "\"><img src=\"" + resource.
-          getIcon("gallery.link") + "\" border=\"0\" align=\"bottom\" alt=\"" + resource.
-          getString("gallery.CopyAlbumLink") + "\" title=\"" + resource.getString(
-          "gallery.CopyAlbumLink") + "\"></a>";
-    }
-    %>
-    <li id="album_<%=id%>" class="ui-state-default">
-	    <a href="ViewAlbum?Id=<%=id%>">
-	 		<strong><%=unAlbum.getName()%>
-	 		<span><%=unAlbum.getNbPhotos() %></span>
-	 		</strong>
-	 		<span><%=unAlbum.getDescription()%></span>
-	 	</a>
-    </li>
-    <%
-} %>
-</ul>
+      </view:board>
+    </view:frame>
+  </view:window>
+  <form name="albumForm" action="" method="post">
+    <input type="hidden" name="Id"/>
+    <input type="hidden" name="Name"/>
+    <input type="hidden" name="Description"/>
+  </form>
 </div>
-<br/>
-<%
-           // afficher les dernieres photos telechargees
-           // ------------------------------------------
-
-           Board board = gef.getBoard();
-	out.println(board.printBefore());
-
-	// affichage de l'entete
-	%>
-		<table width="100%" border="0" cellspacing="0" cellpadding="0" align=center>
-		<tr>
-			<td colspan="5" align="center" class=ArrayNavigation>
-				<%
-					out.println(resource.getString("gallery.last.media"));
-				%>
-			</td>
-		</tr>
-	<%
-	if (photos != null)
-	{
-		String	vignette_url 	= null;
-		int		nbPhotos	 	= photos.size();
-
-		if (nbPhotos>0)
-		{
-			PhotoDetail photo;
-			String idP;
-			Iterator itP = photos.iterator();
-
-			while (itP.hasNext() && nbTotal != 0)
-			{
-				// affichage de la photo
-				out.println("<tr><td colspan=\""+nbParLigne+"\">&nbsp;</td></tr>");
-				out.println("<tr>");
-				while (itP.hasNext() && nbAffiche < nbParLigne)
-				{
-					photo 		= (PhotoDetail) itP.next();
-					if (photo != null) {
-						idP = photo.getMediaPK().getId();
-						String nomRep = GalleryComponentSettings.getMediaFolderNamePrefix() + idP;
-						String name = photo.getImageName();
-						String altTitle = EncodeHelper.javaStringToHtmlString(photo.getTitle());
-						if (StringUtil.isDefined(photo.getDescription())) {
-							altTitle += " : "+EncodeHelper.javaStringToHtmlString(photo.getDescription());
-						}
-						if (name != null) {
-							name = photo.getId() + "_133x100.jpg";
-							vignette_url = FileServerUtils.getUrl(componentId, name, photo.getImageMimeType(), nomRep);
-							if (!photo.isPreviewable()) {
-								vignette_url = m_context+"/gallery/jsp/icons/notAvailable_"+resource.getLanguage()+"_133x100.jpg";
-							}
-						} else {
-							vignette_url = m_context+"/gallery/jsp/icons/notAvailable_"+resource.getLanguage()+"_133x100.jpg";
-						}
-						nbTotal 	= nbTotal - 1 ;
-						nbAffiche 	= nbAffiche + 1;
-
-						// on affiche encore sur la meme ligne
-						%>
-							<td valign="middle" align="center">
-								<table border="0" width="10" align="center" cellspacing="1" cellpadding="0" class="fondPhoto"><tr><td align="center">
-									<table cellspacing="1" cellpadding="3" border="0" class="cadrePhoto"><tr><td bgcolor="#FFFFFF">
-										<a href="PreviewPhoto?PhotoId=<%=idP%>"><img src="<%=vignette_url%>" border="0" alt="<%=altTitle%>" title="<%=altTitle%>"/></a>
-									</td></tr></table>
-								</td></tr></table>
-							</td>
-						<%
-					}
-				}
-				// on passe e la ligne suivante
-				nbAffiche = 0;
-				out.println("</tr>");
-				if (itP.hasNext()) {
-					out.println("<tr><td colspan=\""+nbParLigne+"\">&nbsp;</td></tr>");
-				}
-			}
-		}
-		else
-		{
-			%>
-				<tr>
-					<td colspan="5" valign="middle" align="center" width="100%">
-						<br/>
-						<%
-							out.println(resource.getString("gallery.empty.data"));
-						%>
-						<br/>
-					</td>
-				</tr>
-			<%
-		}
-	}
-	%>
-		</table>
-
-<%@include file="albumManager.jsp" %>
-
-<%
-	out.println(board.printAfter());
-	out.println(frame.printAfter());
-	out.println(window.printAfter());
-%>
-<form name="albumForm" action="" method="post">
-	<input type="hidden" name="Id"/>
-	<input type="hidden" name="Name"/>
-	<input type="hidden" name="Description"/>
-</form>
-</div>
-<div id="albums-message" title="<%=resource.getString("gallery.help.albums.title") %>" style="display: none;">
+<div id="albums-message" title="<fmt:message key="gallery.help.albums.title"/>" style="display: none;">
   <p>
-    <%=resource.getStringWithParam("gallery.help.albums.content", componentLabel) %>
+    <fmt:message key="gallery.help.albums.content"/>
   </p>
 </div>
 <view:progressMessage/>

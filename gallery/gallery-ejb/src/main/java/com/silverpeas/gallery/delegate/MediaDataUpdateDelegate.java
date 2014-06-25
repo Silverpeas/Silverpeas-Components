@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
@@ -21,27 +21,40 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.gallery;
+package com.silverpeas.gallery.delegate;
 
-import java.util.Comparator;
+import com.silverpeas.gallery.constant.MediaType;
+import org.apache.commons.fileupload.FileItem;
 
-import com.silverpeas.gallery.model.PhotoDetail;
+import java.util.List;
 
-public class GSCCreationDateComparatorAsc implements Comparator<PhotoDetail> {
-  static public GSCCreationDateComparatorAsc comparator = new GSCCreationDateComparatorAsc();
+/**
+ * @author Yohann Chastagnier
+ */
+public class MediaDataUpdateDelegate extends AbstractMediaDataDelegate {
 
-  public int compare(PhotoDetail photo1, PhotoDetail photo2) {
-    int compareResult = photo1.getCreationDate().compareTo(
-        photo2.getCreationDate());
-    if (compareResult == 0) {
-      // les 2 photos on été créée à la même date, comparer les Id
-      compareResult = photo1.getMediaPK().getId().compareTo(
-          photo2.getMediaPK().getId());
-    }
-    return compareResult;
+  /**
+   * Default constructor
+   * @param mediaType
+   * @param language
+   * @param albumId
+   * @param parameters
+   */
+  public MediaDataUpdateDelegate(final MediaType mediaType, final String language,
+      final String albumId, final List<FileItem> parameters) {
+    super(mediaType, language, albumId, parameters);
   }
 
-  public boolean equals(Object o) {
-    return o == this;
+  /**
+   * Default constructor
+   * @param mediaType
+   * @param language
+   * @param albumId
+   * @param parameters
+   * @param skipEmptyValues
+   */
+  public MediaDataUpdateDelegate(final MediaType mediaType, final String language,
+      final String albumId, final List<FileItem> parameters, final boolean skipEmptyValues) {
+    super(mediaType, language, albumId, parameters, skipEmptyValues);
   }
 }

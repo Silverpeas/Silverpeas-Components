@@ -23,35 +23,60 @@
  */
 package com.silverpeas.gallery.delegate;
 
-import java.util.List;
-
+import com.silverpeas.gallery.constant.MediaType;
+import com.silverpeas.gallery.model.Media;
+import com.silverpeas.gallery.model.Photo;
+import com.silverpeas.gallery.model.Sound;
+import com.silverpeas.gallery.model.Streaming;
+import com.silverpeas.gallery.model.Video;
 import org.apache.commons.fileupload.FileItem;
+
+import java.util.List;
 
 /**
  * @author Yohann Chastagnier
  */
-public class PhotoDataUpdateDelegate extends AbstractPhotoDataDelegate {
+public class MediaDataCreateDelegate extends AbstractMediaDataDelegate {
 
   /**
    * Default constructor
+   * @param mediaType
    * @param language
    * @param albumId
    * @param parameters
    */
-  public PhotoDataUpdateDelegate(final String language, final String albumId,
-      final List<FileItem> parameters) {
-    super(language, albumId, parameters);
+  public MediaDataCreateDelegate(final MediaType mediaType, final String language,
+      final String albumId, final List<FileItem> parameters) {
+    super(mediaType, language, albumId, parameters, false);
   }
 
   /**
    * Default constructor
+   * @param mediaType
    * @param language
    * @param albumId
-   * @param parameters
-   * @param skipEmptyValues
    */
-  public PhotoDataUpdateDelegate(final String language, final String albumId,
-      final List<FileItem> parameters, final boolean skipEmptyValues) {
-    super(language, albumId, parameters, skipEmptyValues);
+  public MediaDataCreateDelegate(final MediaType mediaType, final String language,
+      final String albumId) {
+    super(mediaType, language, albumId, null, false);
+  }
+
+  /**
+   * Gets a new media instance according to known media type.
+   * @return
+   */
+  public Media newInstance() {
+    switch (getMediaType()) {
+      case Photo:
+        return new Photo();
+      case Video:
+        return new Video();
+      case Sound:
+        return new Sound();
+      case Streaming:
+        return new Streaming();
+      default:
+        return null;
+    }
   }
 }

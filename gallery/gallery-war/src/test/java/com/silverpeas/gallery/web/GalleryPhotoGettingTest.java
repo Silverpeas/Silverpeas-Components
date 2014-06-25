@@ -24,7 +24,7 @@ package com.silverpeas.gallery.web;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import com.silverpeas.gallery.model.PhotoDetail;
+import com.silverpeas.gallery.model.Media;
 import com.silverpeas.web.ResourceGettingTest;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.junit.Before;
@@ -44,11 +44,11 @@ public class GalleryPhotoGettingTest extends ResourceGettingTest<GalleryTestReso
 
   private UserDetail user;
   private String sessionKey;
-  private PhotoDetail expected;
+  private Media expected;
 
   private static String ALBUM_ID = "3";
-  private static String PHOTO_ID = "7";
-  private static String PHOTO_ID_DOESNT_EXISTS = "8";
+  private static String MEDIA_ID = "7";
+  private static String MEDIA_ID_DOESNT_EXISTS = "8";
 
   public GalleryPhotoGettingTest() {
     super(JAVA_PACKAGE, SPRING_CONTEXT);
@@ -59,7 +59,7 @@ public class GalleryPhotoGettingTest extends ResourceGettingTest<GalleryTestReso
     user = aUser();
     sessionKey = authenticate(user);
     expected =
-        PhotoBuilder.getPhotoBuilder().buildPhoto(PHOTO_ID, getExistingComponentInstances()[0]);
+        PhotoBuilder.getPhotoBuilder().buildPhoto(MEDIA_ID, getExistingComponentInstances()[0]);
   }
 
   @Test
@@ -71,7 +71,7 @@ public class GalleryPhotoGettingTest extends ResourceGettingTest<GalleryTestReso
 
   @Override
   public String aResourceURI() {
-    return aResourceURI(PHOTO_ID);
+    return aResourceURI(MEDIA_ID);
   }
 
   private String aResourceURI(final String photoId) {
@@ -81,11 +81,11 @@ public class GalleryPhotoGettingTest extends ResourceGettingTest<GalleryTestReso
 
   @Override
   public String anUnexistingResourceURI() {
-    return aResourceURI(PHOTO_ID_DOESNT_EXISTS);
+    return aResourceURI(MEDIA_ID_DOESNT_EXISTS);
   }
 
   @Override
-  public PhotoDetail aResource() {
+  public Media aResource() {
     return expected;
   }
 

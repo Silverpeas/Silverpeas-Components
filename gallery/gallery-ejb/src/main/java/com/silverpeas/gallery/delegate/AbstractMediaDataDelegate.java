@@ -23,30 +23,30 @@
  */
 package com.silverpeas.gallery.delegate;
 
-import java.text.ParseException;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.fileupload.FileItem;
-import org.hibernate.dialect.function.PositionSubstringFunction;
-
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
-import com.silverpeas.gallery.model.PhotoDetail;
+import com.silverpeas.gallery.constant.MediaType;
+import com.silverpeas.gallery.model.InternalMedia;
+import com.silverpeas.gallery.model.Media;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.classifyEngine.Position;
 import com.stratelia.webactiv.util.DateUtil;
-
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.date.Period;
 import org.silverpeas.servlet.FileUploadUtil;
+
+import java.text.ParseException;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author Yohann Chastagnier
  */
-public abstract class AbstractPhotoDataDelegate {
+public abstract class AbstractMediaDataDelegate {
 
+  private final MediaType mediaType;
   private final boolean skipEmptyValues;
   private final String language;
   private HeaderData headerData = null;
@@ -57,28 +57,35 @@ public abstract class AbstractPhotoDataDelegate {
 
   /**
    * Default constructor
+   * @param mediaType
    * @param language
    * @param albumId
    * @param parameters
    */
-  public AbstractPhotoDataDelegate(final String language, final String albumId,
-      final List<FileItem> parameters) {
-    this(language, albumId, parameters, true);
+  public AbstractMediaDataDelegate(final MediaType mediaType, final String language,
+      final String albumId, final List<FileItem> parameters) {
+    this(mediaType, language, albumId, parameters, true);
   }
 
   /**
    * Default constructor
+   * @param mediaType
    * @param language
    * @param albumId
    * @param parameters
    * @param skipEmptyValues
    */
-  public AbstractPhotoDataDelegate(final String language, final String albumId,
-      final List<FileItem> parameters, final boolean skipEmptyValues) {
+  public AbstractMediaDataDelegate(final MediaType mediaType, final String language,
+      final String albumId, final List<FileItem> parameters, final boolean skipEmptyValues) {
+    this.mediaType = mediaType;
     this.language = language;
     this.skipEmptyValues = skipEmptyValues;
     this.albumId = albumId;
     this.parameters = parameters;
+  }
+
+  protected MediaType getMediaType() {
+    return mediaType;
   }
 
   /**
@@ -118,38 +125,45 @@ public abstract class AbstractPhotoDataDelegate {
 
   /**
    * Perform a header data update
-   * @param photo
+   * @param media
    */
-  public void updateHeader(final PhotoDetail photo) {
-    if (getHeaderData().getAlbumLabel() != null) {
-      photo.setAlbumLabel(getHeaderData().getAlbumLabel());
-    }
+  public void updateHeader(final Media media) {
     if (!skipEmptyValues || StringUtil.isDefined(getHeaderData().getTitle())) {
-      photo.setTitle(getHeaderData().getTitle());
+      media.setTitle(getHeaderData().getTitle());
     }
     if (!skipEmptyValues || StringUtil.isDefined(getHeaderData().getDescription())) {
-      photo.setDescription(getHeaderData().getDescription());
+      media.setDescription(getHeaderData().getDescription());
     }
     if (!skipEmptyValues || StringUtil.isDefined(getHeaderData().getAuthor())) {
-      photo.setAuthor(getHeaderData().getAuthor());
+      media.setAuthor(getHeaderData().getAuthor());
     }
     if (!skipEmptyValues || StringUtil.isDefined(getHeaderData().getKeyWord())) {
-      photo.setKeyWord(getHeaderData().getKeyWord());
+      media.setKeyWord(getHeaderData().getKeyWord());
     }
-    if (!skipEmptyValues || getHeaderData().isDownload()) {
-      photo.setDownload(getHeaderData().isDownload());
+    if (!skipEmptyValues || getHeaderData().getBeginVisibilityDate() != null) {
+      media.setVisibilityPeriod(Period
+          .getPeriodWithUndefinedIfNull(getHeaderData().getBeginVisibilityDate(),
+              media.getVisibilityPeriod().getEndDate()));
     }
-    if (!skipEmptyValues || getHeaderData().getBeginDownloadDate() != null) {
-      photo.setBeginDownloadDate(getHeaderData().getBeginDownloadDate());
+    if (!skipEmptyValues || getHeaderData().getEndVisibilityDate() != null) {
+      media.setVisibilityPeriod(Period
+          .getPeriodWithUndefinedIfNull(media.getVisibilityPeriod().getBeginDate(),
+              getHeaderData().getEndVisibilityDate()));
     }
-    if (!skipEmptyValues || getHeaderData().getEndDownloadDate() != null) {
-      photo.setEndDownloadDate(getHeaderData().getEndDownloadDate());
-    }
-    if (!skipEmptyValues || getHeaderData().getBeginDate() != null) {
-      photo.setBeginDate(getHeaderData().getBeginDate());
-    }
-    if (!skipEmptyValues || getHeaderData().getEndDate() != null) {
-      photo.setEndDate(getHeaderData().getEndDate());
+    if (media instanceof InternalMedia) {
+      if (!skipEmptyValues || getHeaderData().getBeginDownloadDate() != null) {
+        ((InternalMedia) media).setDownloadPeriod(Period
+            .getPeriodWithUndefinedIfNull(getHeaderData().getBeginDownloadDate(),
+                ((InternalMedia) media).getDownloadPeriod().getEndDate()));
+      }
+      if (!skipEmptyValues || getHeaderData().getEndDownloadDate() != null) {
+        ((InternalMedia) media).setDownloadPeriod(Period.getPeriodWithUndefinedIfNull(
+            ((InternalMedia) media).getDownloadPeriod().getBeginDate(),
+            getHeaderData().getEndDownloadDate()));
+      }
+      if (!skipEmptyValues || getHeaderData().isDownloadAuthorized()) {
+        ((InternalMedia) media).setDownloadAuthorized(getHeaderData().isDownloadAuthorized());
+      }
     }
   }
 
@@ -157,42 +171,33 @@ public abstract class AbstractPhotoDataDelegate {
    * Perform a form update
    * @param pagesContext
    */
-  public void updateForm(final String photoId, final PagesContext pagesContext) throws Exception {
+  public void updateForm(final String mediaId, final PagesContext pagesContext) throws Exception {
     final RecordSet set = recordSet;
-    DataRecord data = set.getRecord(photoId);
+    DataRecord data = set.getRecord(mediaId);
     if (data == null) {
       data = set.getEmptyRecord();
-      data.setId(photoId);
+      data.setId(mediaId);
     }
     form.update(parameters, data, pagesContext);
     set.save(data);
   }
 
   /**
-   * Photo header data
+   * Media header data
    * @author Yohann Chastagnier
    */
   public class HeaderData {
 
-    private Boolean albumLabel = null;
     private String title = null;
     private String description = null;
     private String author = null;
     private String keyWord = null;
-    private boolean download = false;
+    private Date beginVisibilityDate = null;
+    private Date endVisibilityDate = null;
+    private boolean downloadAuthorized = false;
     private Date beginDownloadDate = null;
     private Date endDownloadDate = null;
-    private Date beginDate = null;
-    private Date endDate = null;
     private List<PdcPosition> pdcPositions = null;
-
-    public Boolean getAlbumLabel() {
-      return albumLabel;
-    }
-
-    public void setAlbumLabel(final String albumLabel) {
-      this.albumLabel = albumLabel != null && Boolean.valueOf(albumLabel);
-    }
 
     private String getTitle() {
       return (title == null) ? "" : title;
@@ -226,16 +231,32 @@ public abstract class AbstractPhotoDataDelegate {
       this.keyWord = keyWord;
     }
 
-    private boolean isDownload() {
-      return download;
+    private Date getBeginVisibilityDate() {
+      return beginVisibilityDate;
     }
 
-    public void setDownload(final String download) {
-      this.download = download != null && Boolean.valueOf(download);
+    public void setBeginVisibilityDate(final String beginVisibilityDate) throws ParseException {
+      this.beginVisibilityDate = stringToDate(beginVisibilityDate);
     }
 
-    public void setDownload(final boolean download) {
-      this.download = download;
+    private Date getEndVisibilityDate() {
+      return endVisibilityDate;
+    }
+
+    public void setEndVisibilityDate(final String endVisibilityDate) throws ParseException {
+      this.endVisibilityDate = stringToDate(endVisibilityDate);
+    }
+
+    private boolean isDownloadAuthorized() {
+      return downloadAuthorized;
+    }
+
+    public void setDownloadAuthorized(final String downloadAuthorized) {
+      setDownloadAuthorized(StringUtil.getBooleanValue(downloadAuthorized));
+    }
+
+    public void setDownloadAuthorized(final boolean download) {
+      this.downloadAuthorized = download;
     }
 
     private Date getBeginDownloadDate() {
@@ -252,22 +273,6 @@ public abstract class AbstractPhotoDataDelegate {
 
     public void setEndDownloadDate(final String endDownloadDate) throws ParseException {
       this.endDownloadDate = stringToDate(endDownloadDate);
-    }
-
-    private Date getBeginDate() {
-      return beginDate;
-    }
-
-    public void setBeginDate(final String beginDate) throws ParseException {
-      this.beginDate = stringToDate(beginDate);
-    }
-
-    private Date getEndDate() {
-      return endDate;
-    }
-
-    public void setEndDate(final String endDate) throws ParseException {
-      this.endDate = stringToDate(endDate);
     }
 
     public List<PdcPosition> getPdcPositions() {

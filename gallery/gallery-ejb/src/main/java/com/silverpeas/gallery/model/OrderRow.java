@@ -23,12 +23,15 @@
  */
 package com.silverpeas.gallery.model;
 
+import com.silverpeas.gallery.control.ejb.MediaServiceFactory;
+import com.silverpeas.util.StringUtil;
+
 import java.util.Date;
 
 public class OrderRow {
   private String orderId;
   private String mediaId;
-  private PhotoDetail photo;
+  private InternalMedia internalMedia;
   private String instanceId;
   private Date downloadDate;
   private String downloadDecision;
@@ -59,8 +62,11 @@ public class OrderRow {
     return mediaId;
   }
 
-  public void setMediaId(String photoId) {
-    this.mediaId = photoId;
+  public void setMediaId(String mediaId) {
+    if (StringUtil.isNotDefined(mediaId) || mediaId.equals(this.mediaId)) {
+      internalMedia = null;
+    }
+    this.mediaId = mediaId;
   }
 
   public Date getDownloadDate() {
@@ -79,12 +85,11 @@ public class OrderRow {
     this.downloadDecision = downloadDecision;
   }
 
-  public PhotoDetail getPhoto() {
-    return photo;
+  public InternalMedia getInternalMedia() {
+    if (internalMedia == null) {
+      internalMedia = (InternalMedia) MediaServiceFactory.getMediaService()
+          .getMedia(new MediaPK(getMediaId(), getInstanceId()));
+    }
+    return internalMedia;
   }
-
-  public void setPhoto(PhotoDetail photo) {
-    this.photo = photo;
-  }
-
 }

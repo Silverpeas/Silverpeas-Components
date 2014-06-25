@@ -23,31 +23,29 @@
  */
 package com.silverpeas.gallery.web;
 
-import java.io.InputStream;
-import java.net.URI;
-import java.util.Date;
-import java.util.EnumSet;
-
-import javax.ws.rs.PathParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
 import com.silverpeas.gallery.ImageHelper;
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.model.AlbumDetail;
 import com.silverpeas.gallery.model.GalleryRuntimeException;
+import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.MediaPK;
-import com.silverpeas.gallery.model.PhotoDetail;
+import com.silverpeas.gallery.model.Photo;
 import com.silverpeas.web.RESTWebService;
-
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.model.NodePK;
-
 import org.apache.commons.collections.CollectionUtils;
+
+import javax.ws.rs.PathParam;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.Date;
+import java.util.EnumSet;
 
 import static com.silverpeas.gallery.web.GalleryResourceURIs.*;
 
@@ -78,9 +76,9 @@ public abstract class AbstractGalleryResource extends RESTWebService {
     checkNotFoundStatus(album);
     AlbumEntity albumEntity = AlbumEntity.createFrom(album, getUserPreferences().getLanguage())
         .withURI(getUriInfo().getRequestUri()).withParentURI(buildAlbumURI(album.getFatherPK()));
-    for (PhotoDetail photo : album.getPhotos()) {
-      if (hasUserPhotoAccess(photo)) {
-        albumEntity.addPhoto(asWebEntity(photo, album));
+    for (Media media : album.getMedia()) {
+      if (media.getType().isPhoto() && hasUserMediaAccess(media.getPhoto())) {
+        albumEntity.addPhoto(asWebEntity(media.getPhoto(), album));
       }
     }
     return albumEntity;
@@ -89,32 +87,34 @@ public abstract class AbstractGalleryResource extends RESTWebService {
   /**
    * Converts the photo into its corresponding web entity.
    *
-   * @param photo the photo to convert.
+   * @param media the photo to convert.
    * @param album the album of the photo.
    * @return the corresponding photo entity.
    */
-  protected PhotoEntity asWebEntity(PhotoDetail photo, AlbumDetail album) {
-    checkNotFoundStatus(photo);
+  protected PhotoEntity asWebEntity(Media media, AlbumDetail album) {
+    checkNotFoundStatus(media);
+    checkNotFoundStatus(media.getPhoto());
     checkNotFoundStatus(album);
-    verifyPhotoInAlbum(photo, album);
-    return PhotoEntity.createFrom(photo, getUserPreferences().getLanguage())
-        .withURI(buildPhotoURI(photo.getMediaPK(), album.getNodePK()))
+    verifyPhotoIsInAlbum(media.getPhoto(), album);
+    return PhotoEntity.createFrom(media.getPhoto(), getUserPreferences().getLanguage())
+        .withURI(buildPhotoURI(media.getMediaPK(), album.getNodePK()))
         .withParentURI(buildAlbumURI(album.getNodePK()));
   }
 
   /**
    * Converts the photo into an input stream.
    *
-   * @param photo the photo to convert.
+   *
+   *
+   * @param photo
    * @param album the album of the photo.
    * @param isOriginalRequired the original or preview content
    * @return the corresponding photo entity.
    */
-  protected InputStream asInputStream(PhotoDetail photo, AlbumDetail album,
-      boolean isOriginalRequired) {
+  protected InputStream asInputStream(Photo photo, AlbumDetail album, boolean isOriginalRequired) {
     checkNotFoundStatus(photo);
     checkNotFoundStatus(album);
-    verifyPhotoInAlbum(photo, album);
+    verifyPhotoIsInAlbum(photo, album);
     return ImageHelper.openInputStream(photo, isOriginalRequired);
   }
 
@@ -164,7 +164,7 @@ public abstract class AbstractGalleryResource extends RESTWebService {
    *
    * @param object any object
    */
-  private void checkNotFoundStatus(Object object) {
+  protected void checkNotFoundStatus(Object object) {
     if (object == null) {
       throw new WebApplicationException(Status.NOT_FOUND);
     }
@@ -173,20 +173,21 @@ public abstract class AbstractGalleryResource extends RESTWebService {
   /**
    * Centralization
    *
-   * @param photo
+   * @param media
    * @return
    */
-  protected boolean hasUserPhotoAccess(PhotoDetail photo) {
-    return (isViewAllPhotoAuthorized() || photo.isVisible(new Date()));
+  protected boolean hasUserMediaAccess(Media media) {
+    return media.canBeAccessedBy(getUserDetail());
   }
 
   /**
    * Verifying that the authenticated user is authorized to view the given photo.
    *
    * @return
+   * @param media
    */
-  protected void verifyUserPhotoAccess(PhotoDetail photo) {
-    if (!hasUserPhotoAccess(photo)) {
+  protected void verifyUserMediaAccess(Media media) {
+    if (!hasUserMediaAccess(media)) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
   }
@@ -205,8 +206,8 @@ public abstract class AbstractGalleryResource extends RESTWebService {
    *
    * @return
    */
-  protected void verifyPhotoInAlbum(PhotoDetail photo, AlbumDetail album) {
-    if (!album.getPhotos().contains(photo)) {
+  protected void verifyPhotoIsInAlbum(Photo photo, AlbumDetail album) {
+    if (!album.getMedia().contains(photo)) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
   }

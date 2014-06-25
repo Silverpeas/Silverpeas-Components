@@ -1,31 +1,30 @@
 package com.silverpeas.gallery.process.photo;
 
+import com.silverpeas.gallery.model.Media;
+import com.silverpeas.gallery.process.AbstractGalleryDataProcess;
+import com.silverpeas.gallery.process.GalleryProcessExecutionContext;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.process.session.ProcessSession;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 
-import com.silverpeas.gallery.model.PhotoDetail;
-import com.silverpeas.gallery.process.AbstractGalleryDataProcess;
-import com.silverpeas.gallery.process.GalleryProcessExecutionContext;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
-public class GalleryDeindexPhotoDataProcess extends AbstractGalleryDataProcess {
+public class GalleryDeindexMediaDataProcess extends AbstractGalleryDataProcess {
 
   /**
-   * Process to deindex a photo in Database
-   * @param photo
+   * Process to deindex a media in Database
+   * @param media
    * @return
    */
-  public static GalleryDeindexPhotoDataProcess getInstance(final PhotoDetail photo) {
-    return new GalleryDeindexPhotoDataProcess(photo);
+  public static GalleryDeindexMediaDataProcess getInstance(final Media media) {
+    return new GalleryDeindexMediaDataProcess(media);
   }
 
   /**
    * Default hidden conctructor
-   * @param photo
+   * @param media
    */
-  protected GalleryDeindexPhotoDataProcess(final PhotoDetail photo) {
-    super(photo);
+  protected GalleryDeindexMediaDataProcess(final Media media) {
+    super(media);
   }
 
   /*
@@ -48,12 +47,11 @@ public class GalleryDeindexPhotoDataProcess extends AbstractGalleryDataProcess {
   public void onSuccessful() throws Exception {
     super.onSuccessful();
 
-    SilverTrace.info("gallery", "GalleryBmEJB.deleteIndex()", "root.MSG_GEN_ENTER_METHOD",
-        "MediaPK = " + getPhoto().getMediaPK().toString());
+    SilverTrace.info("gallery", "GalleryDeindexMediaDataProcess.onSuccessful()",
+        "root.MSG_GEN_ENTER_METHOD", "MediaPK = " + getMedia().getMediaPK().toString());
 
-    final IndexEntryPK indexEntry =
-        new IndexEntryPK(getPhoto().getMediaPK().getComponentName(), "Photo", getPhoto()
-            .getMediaPK().getId());
+    final IndexEntryPK indexEntry = new IndexEntryPK(getMedia().getMediaPK().getComponentName(),
+        getMedia().getContributionType(), getMedia().getMediaPK().getId());
 
     IndexEngineProxy.removeIndexEntry(indexEntry);
   }

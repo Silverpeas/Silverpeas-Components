@@ -23,7 +23,7 @@
  */
 package com.silverpeas.gallery.web;
 
-import com.silverpeas.gallery.model.PhotoDetail;
+import com.silverpeas.gallery.model.Media;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -33,9 +33,9 @@ import org.hamcrest.Description;
  */
 public class PhotoEntityMatcher extends BaseMatcher<PhotoEntity> {
 
-  private final PhotoDetail expected;
+  private final Media expected;
 
-  protected PhotoEntityMatcher(final PhotoDetail expected) {
+  protected PhotoEntityMatcher(final Media expected) {
     this.expected = expected;
   }
 
@@ -71,7 +71,7 @@ public class PhotoEntityMatcher extends BaseMatcher<PhotoEntity> {
     return match;
   }
 
-  public static PhotoEntityMatcher matches(final PhotoDetail expected) {
+  public static PhotoEntityMatcher matches(final Media expected) {
     return new PhotoEntityMatcher(expected);
   }
 }

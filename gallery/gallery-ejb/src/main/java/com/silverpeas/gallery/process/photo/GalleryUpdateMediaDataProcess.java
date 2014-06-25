@@ -23,55 +23,56 @@
  */
 package com.silverpeas.gallery.process.photo;
 
+import com.silverpeas.gallery.delegate.MediaDataUpdateDelegate;
+import com.silverpeas.gallery.model.Media;
 import org.silverpeas.process.session.ProcessSession;
 
 import com.silverpeas.form.PagesContext;
-import com.silverpeas.gallery.delegate.PhotoDataUpdateDelegate;
-import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.gallery.process.AbstractGalleryDataProcess;
 import com.silverpeas.gallery.process.GalleryProcessExecutionContext;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
- * Process to update a photo in Database
+ * Process to update a media in Database
  * @author Yohann Chastagnier
  */
-public class GalleryUpdatePhotoDataProcess extends AbstractGalleryDataProcess {
+public class GalleryUpdateMediaDataProcess extends AbstractGalleryDataProcess {
 
-  /** Delegate in charge of updating photo data */
-  private final PhotoDataUpdateDelegate delegate;
+  /**
+   * Delegate in charge of updating media data
+   */
+  private final MediaDataUpdateDelegate delegate;
   private final boolean updateTechnicalData;
 
   /**
    * Gets an instance
-   * @param photo
-   * @param delegate
+   * @param media
    * @return
    */
-  public static GalleryUpdatePhotoDataProcess getInstance(final PhotoDetail photo) {
-    return new GalleryUpdatePhotoDataProcess(photo, null, false);
+  public static GalleryUpdateMediaDataProcess getInstance(final Media media) {
+    return new GalleryUpdateMediaDataProcess(media, null, false);
   }
 
   /**
    * Gets an instance
-   * @param photo
+   * @param media
    * @param delegate
    * @return
    */
-  public static GalleryUpdatePhotoDataProcess getInstance(final PhotoDetail photo,
-      final PhotoDataUpdateDelegate delegate) {
-    return new GalleryUpdatePhotoDataProcess(photo, delegate, true);
+  public static GalleryUpdateMediaDataProcess getInstance(final Media media,
+      final MediaDataUpdateDelegate delegate) {
+    return new GalleryUpdateMediaDataProcess(media, delegate, true);
   }
 
   /**
    * Default hidden constructor
-   * @param photo
+   * @param media
    * @param delegate
-   * @param updateTechnicalData TODO
+   * @param updateTechnicalData
    */
-  protected GalleryUpdatePhotoDataProcess(final PhotoDetail photo,
-      final PhotoDataUpdateDelegate delegate, final boolean updateTechnicalData) {
-    super(photo);
+  protected GalleryUpdateMediaDataProcess(final Media media, final MediaDataUpdateDelegate delegate,
+      final boolean updateTechnicalData) {
+    super(media);
     this.delegate = delegate;
     this.updateTechnicalData = updateTechnicalData;
   }
@@ -86,32 +87,33 @@ public class GalleryUpdatePhotoDataProcess extends AbstractGalleryDataProcess {
   protected void processData(final GalleryProcessExecutionContext context,
       final ProcessSession session) throws Exception {
 
-    // Sets functional data photo
+    // Sets functional data media
     if (delegate != null) {
 
-      SilverTrace.info("gallery", "GalleryUpdatePhotoDataProcess.process()",
-          "root.MSG_GEN_ENTER_METHOD", "MediaPK = " + getPhoto().toString());
+      SilverTrace
+          .info("gallery", "GalleryUpdateMediaDataProcess.process()", "root.MSG_GEN_ENTER_METHOD",
+              "MediaPK = " + getMedia().toString());
 
       if (delegate.isHeaderData()) {
-        delegate.updateHeader(getPhoto());
+        delegate.updateHeader(getMedia());
       }
 
       // Persists form data
       if (delegate.isForm()) {
-        final String photoId = getPhoto().getId();
+        final String mediaId = getMedia().getId();
         final PagesContext pageContext =
-            new PagesContext("photoForm", "0", delegate.getLanguage(), false,
+            new PagesContext("mediaForm", "0", delegate.getLanguage(), false,
                 context.getComponentInstanceId(), context.getUser().getId(), delegate.getAlbumId());
         pageContext.setEncoding("UTF-8");
-        pageContext.setObjectId(photoId);
+        pageContext.setObjectId(mediaId);
         if (delegate.isSkipEmptyValues()) {
           pageContext.setUpdatePolicy(PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES);
         }
-        delegate.updateForm(photoId, pageContext);
+        delegate.updateForm(mediaId, pageContext);
       }
     }
 
-    // Update photo
-    updatePhoto(updateTechnicalData, context);
+    // Update media
+    updateMedia(updateTechnicalData, context);
   }
 }

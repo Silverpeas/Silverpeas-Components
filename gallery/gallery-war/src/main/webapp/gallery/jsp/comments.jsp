@@ -39,7 +39,7 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
-<fmt:message var="photoTab" key="gallery.photo"/>
+<fmt:message var="photoTab" key="gallery.media"/>
 <fmt:message var="infoTab" key="gallery.info"/>
 <fmt:message var="commentTab" key="gallery.comments"/>
 <fmt:message var="accessTab" key="gallery.accessPath"/>
@@ -47,13 +47,13 @@
 
 <c:set var="browseContext" value="${requestScope.browseContext}"/>
 <c:set var="instanceId" value="${browseContext[3]}"/>
-<c:set var="photo" value="${requestScope.Photo}"/>
+<c:set var="photo" value="${requestScope.Media}"/>
 <c:set var="photoResourceType" value="${photo.contributionType}"/>
 <c:set var="photoId" value="${photo.mediaPK.id}"/>
 <c:set var="userId" value="${requestScope.UserId}"/>
 <c:set var="nodePath"  value="${requestScope.Path}"/>
 <c:set var="commentCount" value="${requestScope.NbComments}"/>
-<c:set var="updateAllowed" value="${requestScope.UpdateImageAllowed}"/>
+<c:set var="updateAllowed" value="${requestScope.UpdateMediaAllowed}"/>
 <c:set var="pdc" value="${requestScope.IsUsePdc}"/>
 <c:set var="callback">function( event ) { if (event.type === 'listing') { commentCount = event.comments.length; $('#comment-tab').html('<c:out value="${commentTab}"/> ( ' + event.comments.length + ')'); } else if (event.type === 'deletion') { commentCount--; $('#comment-tab').html('<c:out value="${commentTab}"/> ( ' + commentCount + ')'); } else if (event.type === 'addition') { commentCount++; $('#comment-tab').html('<c:out value="${commentTab}"/> ( ' + commentCount + ')'); } }</c:set>
 
@@ -75,15 +75,15 @@
     <view:window>
 
       <view:tabs>
-        <view:tab action="PreviewPhoto?PhotoId=${photoId}" label="${photoTab}" selected="false"/>
+        <view:tab action="MediaView?MediaId=${photoId}" label="${photoTab}" selected="false"/>
         <c:if test="${updateAllowed}">
-          <view:tab action="EditInformation?PhotoId=${photoId}" label="${infoTab}" selected="false"/>
+          <view:tab action="EditInformation?MediaId=${photoId}" label="${infoTab}" selected="false"/>
         </c:if>
         <view:tab action="#" label="<span id='comment-tab'>${commentTab} (${commentCount})</span>" selected="true"/>
         <c:if test="${updateAllowed}">
-          <view:tab action="AccessPath?PhotoId=${photoId}" label="${accessTab}" selected="false"/>
+          <view:tab action="AccessPath?MediaId=${photoId}" label="${accessTab}" selected="false"/>
           <c:if test="${pdc}">
-            <view:tab action="PdcPositions?PhotoId=${photoId}" label="${pdcTab}" selected="false"/>
+            <view:tab action="PdcPositions?MediaId=${photoId}" label="${pdcTab}" selected="false"/>
           </c:if>
         </c:if>
       </view:tabs>

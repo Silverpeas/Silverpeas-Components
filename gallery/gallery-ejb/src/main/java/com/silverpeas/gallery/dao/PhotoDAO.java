@@ -97,14 +97,14 @@ public class PhotoDAO {
   }
 
   /**
-   * get last uploaded pictures
+   * Gets last uploaded media.
    * @param con a database connection
    * @param instanceId the gallery application instance identifier
    * @return a collection of last uploaded photos
    * @throws SQLException
    */
-  public static Collection<PhotoDetail> getLastRegistredMedia(Connection con, String instanceId)
-      throws SQLException {
+  public static Collection<PhotoDetail> getLastRegisteredMedia(Connection con, String instanceId)
+  throws SQLException {
     return findByCriteria(con, MediaCriteria.fromComponentInstanceId(instanceId)
         .orderedBy(CREATE_DATE_DESC, IDENTIFIER_DESC)
         .limitResultTo(GalleryComponentSettings.getNbMediaDisplayedPerPage()));

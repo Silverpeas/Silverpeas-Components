@@ -86,7 +86,7 @@ public class Photo extends InternalMedia {
       try {
         GalleryLoadMetaDataProcess.load(this);
       } catch (Exception e) {
-        SilverTrace.error("gallery", "Photo.getAllMetaData", "gallery.MSG_NOT_ADD_METADATA",
+        SilverTrace.error("gallery", "Media.getAllMetaData", "gallery.MSG_NOT_ADD_METADATA",
             "photoId =  " + getId());
       }
     }

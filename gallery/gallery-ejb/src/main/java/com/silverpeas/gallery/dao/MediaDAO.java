@@ -405,20 +405,20 @@ public class MediaDAO {
     updateQueries.add(prepareSaveMedia(context, media, isInsert));
 
     // Photo
-    if (media.getPhoto() != null) {
+    if (media.getType().isPhoto()) {
       updateQueries.addAll(prepareSavePhoto(context, media.getPhoto(), isInsert));
     }
     // Video
-    if (media.getVideo() != null) {
+    if (media.getType().isVideo()) {
       updateQueries.addAll(prepareSaveVideo(context, media.getVideo(), isInsert));
     }
     // Sound
-    if (media.getSound() != null) {
+    if (media.getType().isSound()) {
       updateQueries.addAll(prepareSaveSound(context, media.getSound(), isInsert));
     }
     // Streaming
-    if (media.getStreaming() != null) {
-      updateQueries.add(prepareSaveStreaming(context, media.getStreaming(), isInsert));
+    if (media.getType().isStreaming()) {
+      updateQueries.add(prepareSaveStreaming(media.getStreaming(), isInsert));
     }
 
     // Execution of update queries
@@ -436,7 +436,7 @@ public class MediaDAO {
   private static List<Pair<String, List<Object>>> prepareSavePhoto(OperationContext context,
       Photo photo, boolean isInsert) {
     List<Pair<String, List<Object>>> updateQueries = new ArrayList<Pair<String, List<Object>>>();
-    updateQueries.add(prepareSaveInternalMedia(context, photo, isInsert));
+    updateQueries.add(prepareSaveInternalMedia(photo, isInsert));
     StringBuilder photoSave = new StringBuilder();
     List<Object> photoParams = new ArrayList<Object>();
     if (isInsert) {
@@ -466,7 +466,7 @@ public class MediaDAO {
   private static List<Pair<String, List<Object>>> prepareSaveVideo(OperationContext context,
       Video video, boolean isInsert) {
     List<Pair<String, List<Object>>> updateQueries = new ArrayList<Pair<String, List<Object>>>();
-    updateQueries.add(prepareSaveInternalMedia(context, video, isInsert));
+    updateQueries.add(prepareSaveInternalMedia(video, isInsert));
     StringBuilder videoSave = new StringBuilder();
     List<Object> videoParams = new ArrayList<Object>();
     if (isInsert) {
@@ -498,7 +498,7 @@ public class MediaDAO {
   private static List<Pair<String, List<Object>>> prepareSaveSound(OperationContext context,
       Sound sound, boolean isInsert) {
     List<Pair<String, List<Object>>> updateQueries = new ArrayList<Pair<String, List<Object>>>();
-    updateQueries.add(prepareSaveInternalMedia(context, sound, isInsert));
+    updateQueries.add(prepareSaveInternalMedia(sound, isInsert));
     StringBuilder soundSave = new StringBuilder();
     List<Object> soundParams = new ArrayList<Object>();
     if (isInsert) {
@@ -520,13 +520,12 @@ public class MediaDAO {
 
   /**
    * Prepares query and parameters in order to save a streaming.
-   * @param context
    * @param streaming
    * @param isInsert
    * @return
    */
-  private static Pair<String, List<Object>> prepareSaveStreaming(OperationContext context,
-      Streaming streaming, boolean isInsert) {
+  private static Pair<String, List<Object>> prepareSaveStreaming(Streaming streaming,
+      boolean isInsert) {
     StringBuilder streamingSave = new StringBuilder();
     List<Object> streamingParams = new ArrayList<Object>();
     if (isInsert) {
@@ -581,7 +580,7 @@ public class MediaDAO {
       appendSaveParameter(mediaSave, "createdBy", context.getUser(), true, mediaParams);
       appendSaveParameter(mediaSave, "lastUpdateDate", saveDate, true, mediaParams);
       appendSaveParameter(mediaSave, "lastUpdatedBy", context.getUser(), true, mediaParams);
-    } else {
+    } else if (!context.isUpdatingInCaseOfCreation()) {
       appendSaveParameter(mediaSave, "lastUpdateDate", saveDate, false, mediaParams);
       appendSaveParameter(mediaSave, "lastUpdatedBy", context.getUser(), false, mediaParams);
     }
@@ -595,13 +594,12 @@ public class MediaDAO {
 
   /**
    * Prepares query and parameters in order to save a media.
-   * @param context
    * @param iMedia
    * @param isInsert
    * @return
    */
-  private static Pair<String, List<Object>> prepareSaveInternalMedia(OperationContext context,
-      InternalMedia iMedia, boolean isInsert) {
+  private static Pair<String, List<Object>> prepareSaveInternalMedia(InternalMedia iMedia,
+      boolean isInsert) {
     StringBuilder iMediaSave = new StringBuilder();
     List<Object> iMediaParams = new ArrayList<Object>();
     if (isInsert) {
@@ -700,17 +698,16 @@ public class MediaDAO {
   /**
    * Gets the paths of a media.
    * @param con
-   * @param instanceId
-   * @param mediaId
+   * @param media
    * @return
    * @throws SQLException
    */
-  public static Collection<String> getPathList(Connection con, String instanceId, String mediaId)
-      throws SQLException {
+  public static Collection<String> getAlbumIdsOf(Connection con, Media media) throws SQLException {
     return select(con,
         "select N.NodeId from SC_Gallery_Path P, SB_Node_Node N where P.mediaId = ? and N.nodeId " +
             "= P.NodeId and P.instanceId = ? and N.instanceId = P.instanceId",
-        Arrays.asList(mediaId, instanceId), new SelectResultRowProcessor<String>() {
+        Arrays.asList(media.getId(), media.getInstanceId()),
+        new SelectResultRowProcessor<String>() {
 
           @Override
           protected String currentRow(final int rowIndex, final ResultSet rs) throws SQLException {
@@ -743,7 +740,8 @@ public class MediaDAO {
         new SelectResultRowProcessor<SocialInformation>() {
 
           @Override
-          protected SocialInformation currentRow(final int rowIndex, final ResultSet rs) throws SQLException {
+          protected SocialInformation currentRow(final int rowIndex, final ResultSet rs)
+              throws SQLException {
             Media media = getByCriteria(con, MediaCriteria.fromMediaId(rs.getString(2))
                 .withVisibility(MediaCriteria.VISIBILITY.FORCE_GET_ALL));
             MediaWithStatus withStatus =
@@ -790,7 +788,8 @@ public class MediaDAO {
     return select(con, query.toString(), params, new SelectResultRowProcessor<SocialInformation>() {
 
       @Override
-      protected SocialInformation currentRow(final int rowIndex, final ResultSet rs) throws SQLException {
+      protected SocialInformation currentRow(final int rowIndex, final ResultSet rs)
+          throws SQLException {
         Media media = getByCriteria(con, MediaCriteria.fromMediaId(rs.getString(2))
             .withVisibility(MediaCriteria.VISIBILITY.FORCE_GET_ALL));
         MediaWithStatus withStatus =

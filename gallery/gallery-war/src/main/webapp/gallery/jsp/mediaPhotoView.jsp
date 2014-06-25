@@ -1,4 +1,6 @@
 <%@ page import="com.silverpeas.gallery.GalleryComponentSettings" %>
+<%@ page import="com.silverpeas.gallery.model.Media" %>
+<%@ page import="com.silverpeas.gallery.model.Photo" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -42,12 +44,12 @@
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 <fmt:message var="commentTab" key="gallery.comments"/>
 
-<c:set var="curPhoto" value="${requestScope.Photo}"/>
+<c:set var="curPhoto" value="${requestScope.Media}"/>
 <c:set var="browseContext" value="${requestScope.browseContext}"/>
 <c:set var="instanceId" value="${browseContext[3]}"/>
 <c:set var="userId" value="${requestScope.UserId}"/>
-<c:set var="photoResourceType" value="${curPhoto.photo.contributionType}"/>
-<c:set var="photoId" value="${curPhoto.photo.mediaPK.id}"/>
+<c:set var="photoResourceType" value="${curPhoto.contributionType}"/>
+<c:set var="photoId" value="${curPhoto.id}"/>
 <c:set var="callback">function( event ) { if (event.type === 'listing') { commentCount = event.comments.length; $('#comment-tab').html('<c:out value="${commentTab}"/> ( ' + event.comments.length + ')'); } else if (event.type === 'deletion') { commentCount--; $('#comment-tab').html('<c:out value="${commentTab}"/> ( ' + commentCount + ')'); } else if (event.type === 'addition') { commentCount++; $('#comment-tab').html('<c:out value="${commentTab}"/> ( ' + commentCount + ')'); } }</c:set>
 
 
@@ -66,20 +68,17 @@
 
 <%
   // récupération des paramètres :
-  PhotoDetail photo = (PhotoDetail) request.getAttribute("Photo");
+  Photo photo = (Photo) request.getAttribute("Media");
   List<NodeDetail> path = (List<NodeDetail>) request.getAttribute("Path");
   String profile = (String) request.getAttribute("Profile");
   Integer rang = (Integer) request.getAttribute("Rang");
-  Integer albumSize = (Integer) request.getAttribute("NbPhotos");
-  Integer nbCom = (Integer) request.getAttribute("NbComments");
-  boolean viewMetadata = ((Boolean) request.getAttribute("IsViewMetadata")).booleanValue();
-  boolean watermark = ((Boolean) request.getAttribute("IsWatermark")).booleanValue();
-  String XMLFormName = (String) request.getAttribute("XMLFormName");
-  boolean updateAllowed = ((Boolean) request.getAttribute("UpdateImageAllowed")).booleanValue();
+  Integer albumSize = (Integer) request.getAttribute("NbMedia");
+  boolean viewMetadata = (Boolean) request.getAttribute("IsViewMetadata");
+  boolean watermark = (Boolean) request.getAttribute("IsWatermark");
+  boolean updateAllowed = (Boolean) request.getAttribute("UpdateMediaAllowed");
   String sizeParam = (String) request.getAttribute("PreviewSize");
-  boolean linkDownload = ((Boolean) request.getAttribute("ViewLinkDownload")).booleanValue();
-  boolean isBasket = ((Boolean) request.getAttribute("IsBasket")).booleanValue();
-  boolean isPrivateSearch = ((Boolean) request.getAttribute("IsPrivateSearch")).booleanValue();
+  boolean isBasket = (Boolean) request.getAttribute("IsBasket");
+  boolean isPrivateSearch = (Boolean) request.getAttribute("IsPrivateSearch");
 
   // paramètres du formulaire
   Form xmlForm = (Form) request.getAttribute("XMLForm");
@@ -88,43 +87,24 @@
   // déclaration des variables :
   String nomRep = GalleryComponentSettings.getMediaFolderNamePrefix() + photo.getMediaPK().getId();
   String name = "";
-  if (photo.getImageName() != null && !photo.getImageName().equals("")) {
-    name = photo.getImageName();
+  if (photo.getFileName() != null && !photo.getFileName().equals("")) {
+    name = photo.getFileName();
   }
   String namePreview = photo.getId() + "_" + sizeParam + ".jpg";
-  String nameVignette = photo.getId() + "_266x150.jpg";
-  String preview_url = FileServerUtils.getUrl(componentId, namePreview, photo.getImageMimeType(), nomRep);
+  String preview_url = FileServerUtils.getUrl(componentId, namePreview, photo.getFileMimeType(),
+      nomRep);
   String title = photo.getTitle();
-  String description = photo.getDescription();
-  String author = photo.getAuthor();
-  String creationDate = resource.getOutputDate(photo.getCreationDate());
-  String creatorName = photo.getCreatorName();
-  String updateDate = resource.getOutputDate(photo.getUpdateDate());
-  String updateName = photo.getUpdateName();
-  long size = photo.getImageSize();
-  int height = photo.getSizeH();
-  int width = photo.getSizeL();
+  long size = photo.getFileSize();
+  int height = photo.getResolutionH();
+  int width = photo.getResolutionW();
   String photoId = photo.getMediaPK().getId();
   String lien = FileServerUtils.getUrl(componentId, URLEncoder.encode(name, "UTF-8"), photo.
-      getImageMimeType(), nomRep);
+      getFileMimeType(), nomRep);
   String lienWatermark = "";
-  String lienPreview = FileServerUtils.getUrl(componentId, namePreview, photo.
-      getImageMimeType(), nomRep);
-  String lienVignette = FileServerUtils.getUrl(componentId, nameVignette, photo.
-      getImageMimeType(), nomRep);
-  boolean debut = rang.intValue() == 0;
-  boolean fin = rang.intValue() == albumSize.intValue() - 1;
-  String beginDownloadDate = resource.getOutputDate(photo.getBeginDownloadDate());
-  String endDownloadDate = resource.getOutputDate(photo.getEndDownloadDate());
-  String nbComments = nbCom.toString();
-  String link = photo.getPermalink();
   Collection<String> metaDataKeys = null;
   if (viewMetadata) {
     metaDataKeys = photo.getMetaDataProperties();
   }
-  String keyWord = photo.getKeyWord();
-  String beginDate = resource.getOutputDate(photo.getBeginDate());
-  String endDate = resource.getOutputDate(photo.getEndDate());
 
   // si le paramètre watermark est actif, récupérer l'image avec le watermark
   if (watermark) {
@@ -134,11 +114,10 @@
 
     if (fileWatermark.exists()) {
       lienWatermark = FileServerUtils.getUrl(componentId, photo.getId() + "_watermark.jpg", photo.
-          getImageMimeType(), nomRep);
+          getFileMimeType(), nomRep);
     }
   }
 
-  Board board = gef.getBoard();
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -161,8 +140,8 @@ function deleteConfirm(id,nom)
 {
 	if(window.confirm("<%=resource.getString("gallery.confirmDeletePhoto")%> '"+nom+"' ?"))
 	{
-		document.photoForm.action = "DeletePhoto?PhotoId="+id;
-		document.photoForm.submit();
+		document.mediaForm.action = "DeleteMedia?MediaId="+id;
+		document.mediaForm.submit();
 	}
 }
 
@@ -213,7 +192,7 @@ function goToNotify(url)
     browseBar.setComponentName(componentLabel, "Main");
     displayPath(path, browseBar);
 
-    String url = "ToAlertUser?PhotoId=" + photoId;
+    String url = "ToAlertUser?MediaId=" + photoId;
     operationPane.addOperation(resource.getIcon("gallery.alert"), resource.getString("GML.notify"),
         "javaScript:onClick=goToNotify('" + url + "')");
     operationPane.addLine();
@@ -240,7 +219,7 @@ function goToNotify(url)
       operationPane.addLine();
       // ajouter la photo au panier
       operationPane.addOperation(resource.getIcon("gallery.addPhotoToBasket"), resource.getString(
-          "gallery.addPhotoToBasket"), "BasketAddPhoto?PhotoId=" + photoId);
+          "gallery.addPhotoToBasket"), "BasketAddMedia?MediaId=" + photoId);
     }
 
     if (isPrivateSearch) {
@@ -251,13 +230,13 @@ function goToNotify(url)
     }
 
     TabbedPane tabbedPane = gef.getTabbedPane();
-    tabbedPane.addTab(resource.getString("gallery.photo"), "#", true);
+    tabbedPane.addTab(resource.getString("gallery.media"), "#", true);
     if (updateAllowed) {
-      tabbedPane.addTab(resource.getString("gallery.info"), "EditInformation?PhotoId=" + photoId,
+      tabbedPane.addTab(resource.getString("gallery.info"), "EditInformation?MediaId=" + photoId,
           false);
     }
     if (updateAllowed) {
-      tabbedPane.addTab(resource.getString("gallery.accessPath"), "AccessPath?PhotoId=" + photoId,
+      tabbedPane.addTab(resource.getString("gallery.accessPath"), "AccessPath?MediaId=" + photoId,
           false);
     }
 
@@ -265,20 +244,20 @@ function goToNotify(url)
     out.println(tabbedPane.print());
   %>
 <view:frame>
-<form name="photoForm" method="post" accept-charset="UTF-8">
+<form name="mediaForm" method="post" accept-charset="UTF-8">
 
 <div class="rightContent">
   <!-- nom du fichier -->
   <div class="fileName">
     <c:choose>
-      <c:when test="${requestScope.ViewLinkDownload or curPhoto.photo.downloadable}">
-        <a href="<%=lien%>" target="_blank">${curPhoto.photo.fileName} <img src="${downloadIconUrl}" alt="<%=EncodeHelper.javaStringToHtmlString(resource.getString("gallery.download.photo"))%>" title="<fmt:message key='gallery.originale'/>"/></a>
+      <c:when test="${requestScope.ViewLinkDownload or curPhoto.downloadable}">
+        <a href="<%=lien%>" target="_blank">${curPhoto.fileName} <img src="${downloadIconUrl}" alt="<%=EncodeHelper.javaStringToHtmlString(resource.getString("gallery.download.photo"))%>" title="<fmt:message key='gallery.originale'/>"/></a>
         <% if (!lienWatermark.equals("")) { %>
           <a href="<%=lienWatermark%>" target="_blank"><img src="${downloadWatermarkIconUrl}" alt="<%=EncodeHelper.javaStringToHtmlString(resource.getString("gallery.download.photo"))%>" title="<fmt:message key='gallery.originaleWatermark'/>"/></a>
         <% } %>
       </c:when>
       <c:otherwise>
-        ${curPhoto.photo.fileName} <img src="${downloadForbiddenIconUrl}" alt="<fmt:message key='gallery.download.forbidden'/>" title="<fmt:message key='gallery.download.forbidden'/>" class="forbidden-download-file"/>
+        ${curPhoto.fileName} <img src="${downloadForbiddenIconUrl}" alt="<fmt:message key='gallery.download.forbidden'/>" title="<fmt:message key='gallery.download.forbidden'/>" class="forbidden-download-file"/>
       </c:otherwise>
     </c:choose>
   </div>
@@ -289,67 +268,67 @@ function goToNotify(url)
     </p>
   </div>
 
-  <c:set var="updateDate" value="${curPhoto.updateDate}"/>
   <c:set var="createDate" value="${curPhoto.creationDate}"/>
+  <c:set var="lastUpdateDate" value="${curPhoto.lastUpdateDate}"/>
 
   <div class="bgDegradeGris" id="suggestionInfoPublication">
-  <c:if test="${not empty curPhoto.photo.author}">
-    <p id="authorInfo"><b><fmt:message key="GML.author"/></b> ${curPhoto.photo.author}
+  <c:if test="${not empty curPhoto.author}">
+    <p id="authorInfo"><b><fmt:message key="GML.author"/></b> ${curPhoto.author}
     </p>
   </c:if>
-  <c:if test="${not empty curPhoto.photo.lastUpdater}">
-    <div class="paragraphe" id="infoModification"> <b><fmt:message key="GML.updatedAt"/></b>${silfn:formatDate(updateDate, _language)} <fmt:message key="GML.by"/>
-      <view:username userId="${curPhoto.photo.lastUpdater.id}"/>
-      <div class="profilPhoto"><img src='<c:url value="${curPhoto.photo.lastUpdater.avatar}" />' alt="" class="defaultAvatar"/></div>
+  <c:if test="${not empty curPhoto.lastUpdater}">
+    <div class="paragraphe" id="infoModification"> <b><fmt:message key="GML.updatedAt"/></b>${silfn:formatDate(lastUpdateDate, _language)} <fmt:message key="GML.by"/>
+      <view:username userId="${curPhoto.lastUpdater.id}"/>
+      <div class="profilPhoto"><img src='<c:url value="${curPhoto.lastUpdater.avatar}" />' alt="" class="defaultAvatar"/></div>
     </div>
   </c:if>
 
-  <c:if test="${not empty curPhoto.photo.creator}">
+  <c:if test="${not empty curPhoto.creator}">
     <div class="paragraphe" id="infoCreation">
       <b><fmt:message key="GML.createdAt"/></b>${silfn:formatDate(createDate, _language)} <fmt:message key="GML.by"/>
-      <view:username userId="${curPhoto.photo.creator.id}"/>
-      <div class="profilPhoto"><img src='<c:url value="${curPhoto.photo.creator.avatar}" />' alt="" class="defaultAvatar"/></div>
+      <view:username userId="${curPhoto.creator.id}"/>
+      <div class="profilPhoto"><img src='<c:url value="${curPhoto.creator.avatar}" />' alt="" class="defaultAvatar"/></div>
     </div>
   </c:if>
     <p id="permalinkInfo">
       <fmt:message key="gallery.CopyPhotoLink" var="cpPhotoLinkAlt"/>
-      <a title="${cpPhotoLinkAlt}" href="${curPhoto.photo.permalink}">
+      <a title="${cpPhotoLinkAlt}" href="${curPhoto.permalink}">
         <img border="0" alt="${cpPhotoLinkAlt}" title="${cpPhotoLinkAlt}" src="${permalinkIconUrl}" />
       </a> <fmt:message key="GML.permalink"/> <br />
-      <input type="text" value="${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${curPhoto.photo.permalink}" onfocus="select();" class="inputPermalink" />
+      <input type="text" value="${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${curPhoto.permalink}" onfocus="select();" class="inputPermalink" />
     </p>
   </div>
-  <c:if test="${curPhoto.photo.downloadable and (curPhoto.photo.visibilityPeriod.defined or curPhoto.photo.downloadPeriod.defined)}">
+  <c:if test="${curPhoto.downloadable and (curPhoto.visibilityPeriod.defined or curPhoto.downloadPeriod.defined)}">
     <div class="periode bgDegradeGris" id="periode">
       <div class="header bgDegradeGris">
         <h4 class="clean"><fmt:message key="GML.period"/></h4>
       </div>
-      <c:if test="${curPhoto.photo.visibilityPeriod.defined}">
+      <c:if test="${curPhoto.visibilityPeriod.defined}">
         <div class="periode_visibility paragraphe">
           <fmt:message key="gallery.beginDate"/>
           <b>
-            <c:if test="${curPhoto.photo.visibilityPeriod.beginDatable.defined}">
-              <view:formatDate value="${curPhoto.photo.visibilityPeriod.beginDate}" language="${language}" />
+            <c:if test="${curPhoto.visibilityPeriod.beginDatable.defined}">
+              <view:formatDate value="${curPhoto.visibilityPeriod.beginDate}" language="${language}" />
             </c:if>
           </b>
           <b><fmt:message key="GML.toDate"/>
-            <c:if test="${curPhoto.photo.visibilityPeriod.endDatable.defined}">
-              <view:formatDate value="${curPhoto.photo.visibilityPeriod.endDate}" language="${language}" />
+            <c:if test="${curPhoto.visibilityPeriod.endDatable.defined}">
+              <view:formatDate value="${curPhoto.visibilityPeriod.endDate}" language="${language}" />
             </c:if>
           </b>
         </div>
       </c:if>
-      <c:if test="${curPhoto.photo.downloadPeriod.defined}">
+      <c:if test="${curPhoto.downloadPeriod.defined}">
         <div class="periode_download paragraphe">
           <fmt:message key="gallery.beginDownloadDate"/>
           <b>
-            <c:if test="${curPhoto.photo.downloadPeriod.beginDatable.defined}">
-              <view:formatDate value="${curPhoto.photo.downloadPeriod.beginDate}" language="${language}" />
+            <c:if test="${curPhoto.downloadPeriod.beginDatable.defined}">
+              <view:formatDate value="${curPhoto.downloadPeriod.beginDate}" language="${language}" />
             </c:if>
           </b>
           <b><fmt:message key="GML.toDate"/>
-            <c:if test="${curPhoto.photo.downloadPeriod.endDatable.defined}">
-              <view:formatDate value="${curPhoto.photo.downloadPeriod.endDate}" language="${language}" />
+            <c:if test="${curPhoto.downloadPeriod.endDatable.defined}">
+              <view:formatDate value="${curPhoto.downloadPeriod.endDate}" language="${language}" />
             </c:if>
           </b>
         </div>
@@ -395,20 +374,20 @@ function goToNotify(url)
   <div id="pagination">
     <c:if test="${requestScope.Rang ne 0}">
       <fmt:message var="previousPicture" key="gallery.previous"/>
-      <a id="previousButton" href="PreviousPhoto">
+      <a id="previousButton" href="PreviousMedia">
         <img alt="${previousPicture}" title="${previousPicture}" src="${previousIconUrl}" />
       </a>
     </c:if>
     <span class="txtnav"><span class="currentPage"><%=rang.intValue()+1%></span> / <%=albumSize.intValue()%></span>
-    <c:if test="${requestScope.Rang ne (requestScope.NbPhotos - 1)}">
+    <c:if test="${requestScope.Rang ne (requestScope.NbMedia - 1)}">
       <fmt:message var="nextPicture" key="gallery.next"/>
-      <a id="nextButton" href="NextPhoto"><img alt="${nextPicture}" title="${nextPicture}" src="${nextIconUrl}"/></a>
+      <a id="nextButton" href="NextMedia"><img alt="${nextPicture}" title="${nextPicture}" src="${nextIconUrl}"/></a>
     </c:if>
   </div>
   <div class="contentMedia">
     <div class="fondPhoto">
       <div class="cadrePhoto">
-        <a href="#" onclick="javascript:startSlideshow('${curPhoto.photo.id}')">
+        <a href="#" onclick="javascript:startSlideshow('${curPhoto.id}')">
         <%
           if (!photo.isPreviewable()) {
             preview_url = m_context+"/gallery/jsp/icons/notAvailable_"+resource.getLanguage()+"_" + sizeParam + ".jpg";
@@ -420,19 +399,19 @@ function goToNotify(url)
        <% } %>
         </a>
       </div>
-      <c:if test="${curPhoto.photo.title != curPhoto.photo.fileName}">
-        <h2 class="mediaTitle">${curPhoto.photo.title}</h2>
+      <c:if test="${curPhoto.title != curPhoto.fileName}">
+        <h2 class="mediaTitle">${curPhoto.title}</h2>
       </c:if>
-      <c:if test="${not empty curPhoto.photo.keyWord}">
+      <c:if test="${not empty curPhoto.keyWord}">
         <div class="motsClefs">
-        <c:set var="listKeys" value="${fn:split(curPhoto.photo.keyWord,' ')}"/>
+        <c:set var="listKeys" value="${fn:split(curPhoto.keyWord,' ')}"/>
         <c:forEach items="${listKeys}" var="keyword">
           <span><a href="SearchKeyWord?SearchKeyWord=${keyword}">${keyword}</a></span>
         </c:forEach>
         </div>
       </c:if>
-      <c:if test="${not empty curPhoto.photo.description}">
-        <p class="description">${curPhoto.photo.description}</p>
+      <c:if test="${not empty curPhoto.description}">
+        <p class="description">${curPhoto.description}</p>
       </c:if>
     </div>
   </div>
@@ -455,7 +434,7 @@ function goToNotify(url)
 
 
   <c:if test="${requestScope.ShowCommentsTab}">
-    <view:comments  userId="${userId}" componentId="<%= componentId %>"
+    <view:comments  userId="${userId}" componentId="${instanceId}"
               resourceType="${photoResourceType}" resourceId="${photoId}" indexed="${callback}"/>
   </c:if>
 </div>

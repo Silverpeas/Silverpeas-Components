@@ -23,22 +23,21 @@
  */
 package com.silverpeas.gallery.process.photo;
 
-import java.io.File;
-
+import com.silverpeas.gallery.ImageHelper;
+import com.silverpeas.gallery.model.Media;
+import com.silverpeas.gallery.process.AbstractGalleryFileProcess;
+import com.silverpeas.gallery.process.GalleryProcessExecutionContext;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.process.io.file.FileHandler;
 import org.silverpeas.process.session.ProcessSession;
 
-import com.silverpeas.gallery.ImageHelper;
-import com.silverpeas.gallery.model.PhotoDetail;
-import com.silverpeas.gallery.process.AbstractGalleryFileProcess;
-import com.silverpeas.gallery.process.GalleryProcessExecutionContext;
+import java.io.File;
 
 /**
- * Process to create a photo on file system
+ * Process to create a media on file system
  * @author Yohann Chastagnier
  */
-public class GalleryCreatePhotoFileProcess extends AbstractGalleryFileProcess {
+public class GalleryCreateMediaFileProcess extends AbstractGalleryFileProcess {
 
   private final File file;
   private final FileItem fileItem;
@@ -48,30 +47,29 @@ public class GalleryCreatePhotoFileProcess extends AbstractGalleryFileProcess {
 
   /**
    * Gets an instance
-   * @param photo
+   * @param media
    * @param file
    * @param watermark
    * @param watermarkHD
    * @param watermarkOther
    * @return
    */
-  public static GalleryCreatePhotoFileProcess getInstance(final PhotoDetail photo,
-      final Object file, final boolean watermark, final String watermarkHD,
-      final String watermarkOther) {
-    return new GalleryCreatePhotoFileProcess(photo, file, watermark, watermarkHD, watermarkOther);
+  public static GalleryCreateMediaFileProcess getInstance(final Media media, final Object file,
+      final boolean watermark, final String watermarkHD, final String watermarkOther) {
+    return new GalleryCreateMediaFileProcess(media, file, watermark, watermarkHD, watermarkOther);
   }
 
   /**
    * Default hidden constructor
-   * @param photo
+   * @param media
    * @param file
    * @param watermark
    * @param watermarkHD
    * @param watermarkOther
    */
-  protected GalleryCreatePhotoFileProcess(final PhotoDetail photo, final Object file,
+  protected GalleryCreateMediaFileProcess(final Media media, final Object file,
       final boolean watermark, final String watermarkHD, final String watermarkOther) {
-    super(photo);
+    super(media);
     if (file != null) {
       if (file instanceof FileItem) {
         fileItem = (FileItem) file;
@@ -81,7 +79,8 @@ public class GalleryCreatePhotoFileProcess extends AbstractGalleryFileProcess {
         fileItem = null;
       } else {
         throw new IllegalArgumentException(
-            "GalleryPhotoIOProcess() - parameter 'file' has to be an FileItem or File instance.");
+            "GalleryCreateMediaFileProcess() - parameter 'file' has to be an FileItem or File " +
+                "instance.");
       }
     } else {
       fileItem = null;
@@ -102,13 +101,16 @@ public class GalleryCreatePhotoFileProcess extends AbstractGalleryFileProcess {
   public void processFiles(final GalleryProcessExecutionContext context,
       final ProcessSession session, final FileHandler fileHandler) throws Exception {
 
-    // Photo
-    if (fileItem != null) {
-      ImageHelper.processImage(fileHandler, getPhoto(), fileItem, watermark, watermarkHD,
-          watermarkOther);
-    } else {
-      ImageHelper.processImage(fileHandler, getPhoto(), file, watermark, watermarkHD,
-          watermarkOther);
+    // Media
+    if (getMedia().getType().isPhoto()) {
+      if (fileItem != null) {
+        ImageHelper
+            .processImage(fileHandler, getMedia().getPhoto(), fileItem, watermark, watermarkHD,
+                watermarkOther);
+      } else {
+        ImageHelper.processImage(fileHandler, getMedia().getPhoto(), file, watermark, watermarkHD,
+            watermarkOther);
+      }
     }
   }
 }

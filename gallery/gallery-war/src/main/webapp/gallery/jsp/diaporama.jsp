@@ -71,7 +71,7 @@
       },
       callbackLink : function(photo) {
         return webContext +
-            "/Rgallery/<c:out value="${componentInstanceId}" />/PreviewPhoto?PhotoId=" + photo.id;
+            "/Rgallery/<c:out value="${componentInstanceId}" />/MediaView?MediaId=" + photo.id;
       }
     });
   }

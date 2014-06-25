@@ -23,45 +23,45 @@
  */
 package com.silverpeas.gallery.process.photo;
 
+import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.MediaPK;
 import org.silverpeas.process.io.file.FileHandler;
 import org.silverpeas.process.session.ProcessSession;
 
 import com.silverpeas.gallery.ImageHelper;
-import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.gallery.process.AbstractGalleryFileProcess;
 import com.silverpeas.gallery.process.GalleryProcessExecutionContext;
 
 /**
- * Process to paste a photo on file system
+ * Process to paste a media on file system
  * @author Yohann Chastagnier
  */
-public class GalleryPastePhotoFileProcess extends AbstractGalleryFileProcess {
+public class GalleryPasteMediaFileProcess extends AbstractGalleryFileProcess {
 
   private final MediaPK fromMediaPk;
   private final boolean isCutted;
 
   /**
    * Gets an instance
-   * @param photo
+   * @param media
    * @param fromMediaPk
    * @param isCutted
    * @return
    */
-  public static GalleryPastePhotoFileProcess getInstance(final PhotoDetail photo,
+  public static GalleryPasteMediaFileProcess getInstance(final Media media,
       final MediaPK fromMediaPk, final boolean isCutted) {
-    return new GalleryPastePhotoFileProcess(photo, fromMediaPk, isCutted);
+    return new GalleryPasteMediaFileProcess(media, fromMediaPk, isCutted);
   }
 
   /**
    * Default hidden constructor
-   * @param photo
+   * @param media
    * @param fromMediaPk
    * @param isCutted
    */
-  protected GalleryPastePhotoFileProcess(final PhotoDetail photo, final MediaPK fromMediaPk,
+  protected GalleryPasteMediaFileProcess(final Media media, final MediaPK fromMediaPk,
       final boolean isCutted) {
-    super(photo);
+    super(media);
     this.fromMediaPk = fromMediaPk;
     this.isCutted = isCutted;
   }
@@ -75,8 +75,10 @@ public class GalleryPastePhotoFileProcess extends AbstractGalleryFileProcess {
   @Override
   public void processFiles(final GalleryProcessExecutionContext context,
       final ProcessSession session, final FileHandler fileHandler) throws Exception {
-    if (!isCutted || !fromMediaPk.getInstanceId().equals(context.getComponentInstanceId())) {
-      ImageHelper.pasteImage(fileHandler, fromMediaPk, getPhoto(), isCutted);
+    if (getMedia().getType().isPhoto()) {
+      if (!isCutted || !fromMediaPk.getInstanceId().equals(context.getComponentInstanceId())) {
+        ImageHelper.pasteImage(fileHandler, fromMediaPk, getMedia().getPhoto(), isCutted);
+      }
     }
   }
 }

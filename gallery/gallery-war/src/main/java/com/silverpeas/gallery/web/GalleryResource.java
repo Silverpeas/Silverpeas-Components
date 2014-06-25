@@ -27,8 +27,9 @@ import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.gallery.model.AlbumDetail;
+import com.silverpeas.gallery.model.InternalMedia;
+import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.MediaPK;
-import com.silverpeas.gallery.model.PhotoDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import org.apache.commons.io.IOUtils;
 
@@ -96,9 +97,9 @@ public class GalleryResource extends AbstractGalleryResource {
       @PathParam("photoId") final String photoId) {
     try {
       final AlbumDetail album = getGalleryBm().getAlbum(new NodePK(albumId, getComponentId()));
-      final PhotoDetail photo = getGalleryBm().getPhoto(new MediaPK(photoId, getComponentId()));
-      verifyUserPhotoAccess(photo);
-      return asWebEntity(photo, album);
+      final Media media = getGalleryBm().getMedia(new MediaPK(photoId, getComponentId()));
+      verifyUserMediaAccess(media);
+      return asWebEntity(media, album);
     } catch (final WebApplicationException ex) {
       throw ex;
     } catch (final Exception ex) {
@@ -151,20 +152,22 @@ public class GalleryResource extends AbstractGalleryResource {
       final boolean isOriginalRequired) {
     try {
       final AlbumDetail album = getGalleryBm().getAlbum(new NodePK(albumId, getComponentId()));
-      final PhotoDetail photo = getGalleryBm().getPhoto(new MediaPK(photoId, getComponentId()));
-      verifyUserPhotoAccess(photo);
+      final Media media = getGalleryBm().getMedia(new MediaPK(photoId, getComponentId()));
+      checkNotFoundStatus(media);
+      checkNotFoundStatus(media.getPhoto());
+      verifyUserMediaAccess(media);
       return Response.ok(new StreamingOutput() {
         @Override
         public void write(final OutputStream output) throws IOException, WebApplicationException {
-          final InputStream photoStream = asInputStream(photo, album,
-              (isOriginalRequired && (isUserPrivileged() || photo.isDownloadable())));
+          final InputStream photoStream = asInputStream(media.getPhoto(), album,
+              (isOriginalRequired && (isUserPrivileged() || media.isDownloadable())));
           try {
             IOUtils.copy(photoStream, output);
           } finally {
             IOUtils.closeQuietly(photoStream);
           }
         }
-      }).header("Content-Type", photo.getImageMimeType()).build();
+      }).header("Content-Type", ((InternalMedia)media).getFileMimeType()).build();
     } catch (final WebApplicationException ex) {
       throw ex;
     } catch (final Exception ex) {

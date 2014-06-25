@@ -56,7 +56,7 @@
 <c:set var="isCommentsEnabled" value="${requestScope.IsCommentsEnabled}" />
 <c:set var="profile" value="${requestScope.Profile}" />
 <c:set var="creationDate" value="${requestScope.CreationDate}" />
-<c:set var="updateDate" value="${requestScope.UpdateDate}" />
+<c:set var="lastUpdateDate" value="${requestScope.UpdateDate}" />
 <c:set var="validationDate" value="${requestScope.ValidateDate}" />
 <c:set var="userId" value="${requestScope.UserId}" />
 <c:set var="classified" value="${requestScope.Classified}" />
@@ -264,8 +264,8 @@
                    <fmt:message key="classifieds.by" />&nbsp;
                     <view:username userId="${classified.creatorId}" />
                     <div class="profilPhoto"><view:image src="${classified.creator.avatar}" type="avatar.profil" css="defaultAvatar" alt=""/></div><br/>
-									 <c:if test="${fn:length(updateDate) > 0}">
-									   <fmt:message key="classifieds.updateDate" /> : <b><c:out value="${updateDate}" /></b><br/>
+									 <c:if test="${fn:length(lastUpdateDate) > 0}">
+									   <fmt:message key="classifieds.updateDate" /> : <b><c:out value="${lastUpdateDate}" /></b><br/>
 									 </c:if>
 									</div>
 									<div id="classified_contact_link" class="bgDegradeGris">

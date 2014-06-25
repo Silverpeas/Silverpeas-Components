@@ -1,4 +1,5 @@
 <%@ page import="com.silverpeas.gallery.GalleryComponentSettings" %>
+<%@ page import="com.silverpeas.gallery.model.Photo" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -40,16 +41,14 @@
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
 <c:set var="mandatoryIcon"><fmt:message key='gallery.mandatory' bundle='${icons}'/></c:set>
-<c:set var="photo" value="${requestScope.Photo.photo}" />
+<c:set var="photo" value="${requestScope.Media}" />
 <c:set var="browseContext" value="${requestScope.browseContext}"/>
 <c:set var="instanceId" value="${browseContext[3]}"/>
 
 <%
 	// récupération des paramètres :
-  PhotoDetail photo = (PhotoDetail) request.getAttribute("Photo");
-  String repertoire = (String) request.getAttribute("Repertoire");
+  Photo photo = (Photo) request.getAttribute("Media");
   List<NodeDetail> path = (List<NodeDetail>) request.getAttribute("Path");
-  String userName = (String) request.getAttribute("UserName");
 
   boolean viewMetadata = ((Boolean) request.getAttribute("IsViewMetadata")).booleanValue();
 
@@ -59,23 +58,10 @@
 
   // déclaration des variables :
   String photoId = "";
-  String title = "";
-  String description = "";
-  String author = "";
-  boolean download = false;
-  String nomRep = "";
   String vignette_url = null;
-  String action = "CreatePhoto";
-  String chemin = "";
-  String creationDate = resource.getOutputDate(new Date());
-  String updateDate = null;
-  String nameFile = "";
-  String name = "";
-  String creatorName = userName;
-  String updateName = "";
+  String action = "CreateMedia";
   String beginDownloadDate = "";
   String endDownloadDate = "";
-  String keyWord = "";
   String beginDate = "";
   String endDate = "";
   Collection<String> metaDataKeys = null;
@@ -90,50 +76,26 @@
 
   if (photo != null) {
     photoId = String.valueOf(photo.getMediaPK().getId());
-    title = photo.getTitle();
-    description = photo.getDescription();
-    if (description == null) {
-      description = "";
-    }
-    author = photo.getAuthor();
-    if (author == null) {
-      author = "";
-    }
-    download = photo.isDownload();
-    nomRep = repertoire;
-    nameFile = photo.getImageName();
-    name = photo.getId() + "_266x150.jpg";
-    vignette_url = FileServerUtils.getUrl(componentId, name, photo.getImageMimeType(), nomRep);
+    vignette_url = photo.getThumbnailUrl("_266x150.jpg");
     action = "UpdateInformation";
-    creationDate = resource.getOutputDate(photo.getCreationDate());
-    updateDate = resource.getOutputDate(photo.getUpdateDate());
-    creatorName = photo.getCreatorName();
-    updateName = photo.getUpdateName();
-    if (photo.getBeginDownloadDate() != null) {
-      beginDownloadDate = resource.getInputDate(photo.getBeginDownloadDate());
+    if (photo.getDownloadPeriod().getBeginDatable().isDefined()) {
+      beginDownloadDate = resource.getInputDate(photo.getDownloadPeriod().getBeginDatable());
     } else {
       beginDownloadDate = "";
     }
-    if (photo.getEndDownloadDate() != null) {
-      endDownloadDate = resource.getInputDate(photo.getEndDownloadDate());
+    if (photo.getDownloadPeriod().getEndDatable().isDefined()) {
+      endDownloadDate = resource.getInputDate(photo.getDownloadPeriod().getEndDatable());
     } else {
       endDownloadDate = "";
     }
 
-    if (title.equals(nameFile)) {
-      title = "";
-    }
-    keyWord = photo.getKeyWord();
-    if (keyWord == null) {
-      keyWord = "";
-    }
-    if (photo.getBeginDate() != null) {
-      beginDate = resource.getInputDate(photo.getBeginDate());
+    if (photo.getVisibilityPeriod().getBeginDatable().isDefined()) {
+      beginDate = resource.getInputDate(photo.getVisibilityPeriod().getBeginDatable());
     } else {
       beginDate = "";
     }
-    if (photo.getEndDate() != null) {
-      endDate = resource.getInputDate(photo.getEndDate());
+    if (photo.getVisibilityPeriod().getEndDatable().isDefined()) {
+      endDate = resource.getInputDate(photo.getVisibilityPeriod().getEndDatable());
     } else {
       endDate = "";
     }
@@ -145,8 +107,8 @@
   // déclaration des boutons
   Button validateButton = gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
   Button cancelButton;
-  if (action == "UpdateInformation") {
-    cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "PreviewPhoto?PhotoId=" + photoId, false);
+  if (action.equals("UpdateInformation")) {
+    cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "MediaView?MediaId=" + photoId, false);
   } else {
     cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "GoToCurrentAlbum", false);
   }
@@ -174,9 +136,9 @@ function sendData() {
 	if (isCorrectLocalForm()) {
 	<% } %>
 	  <c:if test="${requestScope.IsUsePdc and empty photo.id}">
-	    <view:pdcPositions setIn="document.photoForm.Positions.value"/>
+	    <view:pdcPositions setIn="document.mediaForm.Positions.value"/>
 	  </c:if>
-	  document.photoForm.submit();
+	  document.mediaForm.submit();
   }
 }
 
@@ -184,13 +146,13 @@ function isCorrectLocalForm()
 {
    	var errorMsg = "";
    	var errorNb = 0;
-   	var title = stripInitialWhitespace(document.photoForm.<%=ParameterNames.ImageTitle%>.value);
-   	var descr = document.photoForm.<%=ParameterNames.ImageDescription%>.value;
-   	var file = stripInitialWhitespace(document.photoForm.WAIMGVAR0.value);
-   	var beginDownloadDate = document.photoForm.<%=ParameterNames.ImageBeginDownloadDate%>.value;
-   	var endDownloadDate = document.photoForm.<%=ParameterNames.ImageEndDownloadDate%>.value;
-   	var beginDate = document.photoForm.<%=ParameterNames.ImageBeginDate%>.value;
-   	var endDate = document.photoForm.<%=ParameterNames.ImageEndDate%>.value;
+   	var title = stripInitialWhitespace(document.mediaForm.<%=ParameterNames.MediaTitle%>.value);
+   	var descr = document.mediaForm.<%=ParameterNames.MediaDescription%>.value;
+   	var file = stripInitialWhitespace(document.mediaForm.WAIMGVAR0.value);
+   	var beginDownloadDate = document.mediaForm.<%=ParameterNames.MediaBeginDownloadDate%>.value;
+   	var endDownloadDate = document.mediaForm.<%=ParameterNames.MediaEndDownloadDate%>.value;
+   	var beginDate = document.mediaForm.<%=ParameterNames.MediaBeginVisibilityDate%>.value;
+   	var endDate = document.mediaForm.<%=ParameterNames.MediaEndVisibilityDate%>.value;
    	var langue = "<%=resource.getLanguage()%>";
 		var beginDownloadDateOK = true;
 		var beginDateOK = true;
@@ -206,7 +168,7 @@ function isCorrectLocalForm()
      	errorNb++;
    	}
    	if (<%=(vignette_url == null)%> && file == "") {
-   		errorMsg+="  - '<fmt:message key="gallery.photo"/>'  <fmt:message key="GML.MustBeFilled"/>\n";
+   		errorMsg+="  - '<fmt:message key="gallery.media"/>'  <fmt:message key="GML.MustBeFilled"/>\n";
    		errorNb++;
    	}
    	// vérifier les dates de début et de fin de période
@@ -272,7 +234,7 @@ function isCorrectLocalForm()
    	if (file != "") {
    	  var verif = /[.][jpg,gif,bmp,tiff,tif,jpeg,png,JPG,GIF,BMP,TIFF,TIF,JPEG,PNG]{3,4}$/;
    	  if (verif.exec(file) == null) {
-				errorMsg+="  - '<fmt:message key="gallery.photo"/>'  <fmt:message key="gallery.format"/>\n";
+				errorMsg+="  - '<fmt:message key="gallery.media"/>'  <fmt:message key="gallery.format"/>\n";
         errorNb++;
       }
 	  }
@@ -350,7 +312,7 @@ if (photo != null) {
     String nameRep = GalleryComponentSettings.getMediaFolderNamePrefix() + photo.getId();
 %>
 messages[0] = new Array('<%=FileServerUtils.getUrl( componentId,
-    photo.getId() + extensionAlt, photo.getImageMimeType(), nameRep)%>','<%=EncodeHelper.javaStringToJsString(photo.
+    photo.getId() + extensionAlt, photo.getFileMimeType(), nameRep)%>','<%=EncodeHelper.javaStringToJsString(photo.
     getName())%>',"#FFFFFF");
 
 <% } %>
@@ -493,17 +455,17 @@ function hideTip() {
 	TabbedPane tabbedPane = gef.getTabbedPane();
 	if (photo != null)
 	{
-		tabbedPane.addTab(resource.getString("gallery.photo"), "PreviewPhoto?PhotoId="+photoId, false);
+		tabbedPane.addTab(resource.getString("gallery.media"), "MediaView?MediaId="+photoId, false);
 		tabbedPane.addTab(resource.getString("gallery.info"), "#", true);
-		tabbedPane.addTab(resource.getString("gallery.accessPath"), "AccessPath?PhotoId="+photoId, false);
+		tabbedPane.addTab(resource.getString("gallery.accessPath"), "AccessPath?MediaId="+photoId, false);
 	}
 
 	out.println(window.printBefore());
 	out.println(tabbedPane.print());
 %>
 <view:frame>
-<form name="photoForm" action="<%=action%>" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
-<input type="hidden" name="PhotoId" value="<%=photoId%>"/>
+<form name="mediaForm" action="<%=action%>" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
+<input type="hidden" name="MediaId" value="<%=photoId%>"/>
 <input type="hidden" name="Positions"/>
 
 <table cellpadding="5" width="100%">
@@ -554,7 +516,7 @@ function hideTip() {
     <legend><fmt:message key="GML.bloc.information.principals"/></legend>
     <div class="fields">
       <div class="field" id="fileArea">
-        <label for="WAIMGVAR0" class="txtlibform"><fmt:message key="gallery.photo" /></label>
+        <label for="WAIMGVAR0" class="txtlibform"><fmt:message key="gallery.media" /></label>
         <div class="champs">
           <input id="fileId" type="file" name="WAIMGVAR0" size="60" />&nbsp;<img alt="<fmt:message key="GML.mandatory" />" src="<c:url value='${mandatoryIcon}'/>" width="5" height="5"/>
         </div>
@@ -571,25 +533,25 @@ function hideTip() {
           <c:if test="${photo.title != photo.fileName}">
             <c:set var="photoTitle" value="${photo.title}"/>
           </c:if>
-          <input id="title" type="text" name="SP$$ImageTitle" size="60" maxlength="150" value="${photoTitle}"/>&nbsp;
+          <input id="title" type="text" name="SP$$MediaTitle" size="60" maxlength="150" value="${photoTitle}"/>&nbsp;
         </div>
       </div>
       <div class="field" id="descriptionArea">
         <label for="description" class="txtlibform"><fmt:message key="GML.description"/></label>
         <div class="champs">
-          <input id="description" type="text" name="SP$$ImageDescription" size="60" maxlength="150" value="<c:out value='${photo.description}'/>"/>&nbsp;
+          <input id="description" type="text" name="SP$$MediaDescription" size="60" maxlength="150" value="<c:out value='${photo.description}'/>"/>&nbsp;
         </div>
       </div>
       <div class="field" id="authorArea">
         <label for="author" class="txtlibform"><fmt:message key="GML.author"/></label>
         <div class="champs">
-          <input id="author" type="text" name="SP$$ImageAuthor" size="60" maxlength="150" value="<c:out value='${photo.author}'/>"/>&nbsp;
+          <input id="author" type="text" name="SP$$MediaAuthor" size="60" maxlength="150" value="<c:out value='${photo.author}'/>"/>&nbsp;
         </div>
       </div>
       <div class="field" id="keywordArea">
         <label for="keyword" class="txtlibform"><fmt:message key="gallery.keyword"/></label>
         <div class="champs">
-          <input id="keyword" type="text" name="SP$$ImageKeyWord" size="60" maxlength="150" value="<c:out value='${photo.keyWord}'/>"/>&nbsp;
+          <input id="keyword" type="text" name="SP$$MediaKeyWord" size="60" maxlength="150" value="<c:out value='${photo.keyWord}'/>"/>&nbsp;
         </div>
       </div>
     </div>
@@ -605,34 +567,34 @@ function hideTip() {
           <c:if test="${photo.downloadable}">
             <c:set var="downloadChecked" value="checked=\"checked\""/>
           </c:if>
-          <input id="download" type="checkbox" name="SP$$ImageDownload" value="true" ${downloadChecked} />
+          <input id="download" type="checkbox" name="SP$$MediaDownloadAuthorized" value="true" ${downloadChecked} />
         </div>
       </div>
       <div class="field" id="beginDownloadDateArea">
         <label for="beginDownloadDate" class="txtlibform"><fmt:message key="gallery.beginDownloadDate"/></label>
         <div class="champs">
-          <input id="beginDownloadDate" type="text" class="dateToPick" name="SP$$ImageBeginDownloadDate" size="12" maxlength="10" value="<%=beginDownloadDate%>"/>
+          <input id="beginDownloadDate" type="text" class="dateToPick" name="SP$$MediaBeginDownloadDate" size="12" maxlength="10" value="<%=beginDownloadDate%>"/>
           <span class="txtnote">(<fmt:message key='GML.dateFormatExemple'/>)</span>
         </div>
       </div>
       <div class="field" id="endDownloadDateArea">
         <label for="endDownloadDate" class="txtlibform"><fmt:message key="GML.toDate"/></label>
         <div class="champs">
-          <input id="endDownloadDate" type="text" class="dateToPick" name="SP$$ImageEndDownloadDate" size="12" maxlength="10" value="<%=endDownloadDate%>"/>
+          <input id="endDownloadDate" type="text" class="dateToPick" name="SP$$MediaEndDownloadDate" size="12" maxlength="10" value="<%=endDownloadDate%>"/>
           <span class="txtnote">(<fmt:message key='GML.dateFormatExemple'/>)</span>
         </div>
       </div>
       <div class="field" id="beginDateArea">
         <label for="beginDate" class="txtlibform"><fmt:message key="gallery.beginDate"/></label>
         <div class="champs">
-          <input id="beginDate" type="text" class="dateToPick" name="SP$$ImageBeginDate" size="12" maxlength="10" value="<%=beginDate%>"/>
+          <input id="beginDate" type="text" class="dateToPick" name="SP$$MediaBeginVisibilityDate" size="12" maxlength="10" value="<%=beginDate%>"/>
           <span class="txtnote">(<fmt:message key='GML.dateFormatExemple'/>)</span>
         </div>
       </div>
       <div class="field" id="endDateArea">
         <label for="endDate" class="txtlibform"><fmt:message key="GML.toDate"/></label>
         <div class="champs">
-          <input id="endDate" type="text" class="dateToPick" name="SP$$ImageEndDate" size="12" maxlength="10" value="<%=endDate%>"/>
+          <input id="endDate" type="text" class="dateToPick" name="SP$$MediaEndVisibilityDate" size="12" maxlength="10" value="<%=endDate%>"/>
           <span class="txtnote">(<fmt:message key='GML.dateFormatExemple'/>)</span>
         </div>
       </div>

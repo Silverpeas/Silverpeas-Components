@@ -23,14 +23,11 @@
  */
 package com.silverpeas.gallery.process.photo;
 
-import static com.silverpeas.util.StringUtil.isDefined;
-
-import com.silverpeas.gallery.model.MediaPK;
-import org.silverpeas.process.session.ProcessSession;
-
 import com.silverpeas.comment.service.CommentServiceFactory;
 import com.silverpeas.form.record.IdentifiedRecordTemplate;
-import com.silverpeas.gallery.model.PhotoDetail;
+import com.silverpeas.gallery.dao.MediaDAO;
+import com.silverpeas.gallery.model.Media;
+import com.silverpeas.gallery.model.MediaPK;
 import com.silverpeas.gallery.process.AbstractGalleryDataProcess;
 import com.silverpeas.gallery.process.GalleryProcessExecutionContext;
 import com.silverpeas.pdc.PdcServiceFactory;
@@ -38,14 +35,19 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.process.session.ProcessSession;
+
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
- * Process to paste a photo in Database
+ * Process to paste a media in Database
  * @author Yohann Chastagnier
  */
-public class GalleryPastePhotoDataProcess extends AbstractGalleryDataProcess {
+public class GalleryPasteMediaDataProcess extends AbstractGalleryDataProcess {
 
-  /** Id of the album (Node) */
+  /**
+   * Id of the album (Node)
+   */
   private final String albumId;
 
   private final MediaPK fromMediaPk;
@@ -58,27 +60,27 @@ public class GalleryPastePhotoDataProcess extends AbstractGalleryDataProcess {
 
   /**
    * Default hidden constructor
-   * @param photo
+   * @param media
    * @param albumId
    * @param fromMediaPk
    * @param isCutted
    * @return
    */
-  public static GalleryPastePhotoDataProcess getInstance(final PhotoDetail photo,
-      final String albumId, final MediaPK fromMediaPk, final boolean isCutted) {
-    return new GalleryPastePhotoDataProcess(photo, albumId, fromMediaPk, isCutted);
+  public static GalleryPasteMediaDataProcess getInstance(final Media media, final String albumId,
+      final MediaPK fromMediaPk, final boolean isCutted) {
+    return new GalleryPasteMediaDataProcess(media, albumId, fromMediaPk, isCutted);
   }
 
   /**
    * Default hidden constructor
-   * @param photo
+   * @param media
    * @param albumId
    * @param fromMediaPk
    * @param isCutted
    */
-  protected GalleryPastePhotoDataProcess(final PhotoDetail photo, final String albumId,
+  protected GalleryPasteMediaDataProcess(final Media media, final String albumId,
       final MediaPK fromMediaPk, final boolean isCutted) {
-    super(photo);
+    super(media);
     this.albumId = albumId;
     this.fromMediaPk = fromMediaPk;
     this.isCutted = isCutted;
@@ -97,41 +99,57 @@ public class GalleryPastePhotoDataProcess extends AbstractGalleryDataProcess {
     // Initializing variables
     isSameComponentInstanceDestination =
         fromMediaPk.getInstanceId().equals(context.getComponentInstanceId());
-    fromForeignPK = new ForeignPK(getPhoto().getId(), fromMediaPk.getInstanceId());
+    fromForeignPK = new ForeignPK(getMedia().getId(), fromMediaPk.getInstanceId());
 
     // If the destination application is different from the original, then update destination
     // information and user data
     if (!isSameComponentInstanceDestination) {
-      getPhoto().getMediaPK().setComponentName(context.getComponentInstanceId());
+      getMedia().getMediaPK().setComponentName(context.getComponentInstanceId());
     }
 
-    // If the paste action is copy and paste (not cut and paste), then create the new photo
+    // If the paste action is copy and paste (not cut and paste), then create the new media
     if (!isCutted) {
-      createPhoto(albumId, context);
+      createMedia(albumId, context);
     } else {
-      updatePhoto(true, context);
+      updateMedia(true, context);
       if (isSameComponentInstanceDestination) {
 
         // Move into the same application
-        updatePhotoPath(context.getComponentInstanceId(), albumId, context);
+        moveMediaPath(context.getComponentInstanceId(), albumId, context);
 
       } else {
 
         // Updating repository data
-        updatePhotoPath(fromMediaPk.getInstanceId(), albumId, context);
+        moveMediaPath(fromMediaPk.getInstanceId(), albumId, context);
       }
     }
 
-    // Initializing variables after photo creation
-    toForeignPK = new ForeignPK(getPhoto().getId(), context.getComponentInstanceId());
-    toMediaPK = new MediaPK(getPhoto().getId(), context.getComponentInstanceId());
+    // Initializing variables after media creation
+    toForeignPK = new ForeignPK(getMedia().getId(), context.getComponentInstanceId());
+    toMediaPK = new MediaPK(getMedia().getId(), context.getComponentInstanceId());
 
     // Commons
     processPasteCommons(context);
 
-    SilverTrace.info("gallery", "GalleryPastePhotoDataProcess.onSuccessful()",
-        "root.MSG_GEN_PARAM_VALUE", "photo = " + getPhoto().toString() + " toPK = " +
-            getPhoto().getMediaPK().toString());
+    SilverTrace
+        .info("gallery", "GalleryPasteMediaDataProcess.onSuccessful()", "root.MSG_GEN_PARAM_VALUE",
+            "media = " + getMedia().toString() + " toPK = " +
+                getMedia().getMediaPK().toString());
+  }
+
+  /**
+   * Centralizes the media path update
+   * @param fromComponentInstanceId
+   * @param albumId
+   * @param context
+   * @throws Exception
+   */
+  private void moveMediaPath(final String fromComponentInstanceId, final String albumId,
+      final GalleryProcessExecutionContext context) throws Exception {
+    getMedia().setComponentInstanceId(fromComponentInstanceId);
+    MediaDAO.deleteAllMediaPath(context.getConnection(), getMedia());
+    getMedia().setComponentInstanceId(context.getComponentInstanceId());
+    MediaDAO.saveMediaPath(context.getConnection(), getMedia(), albumId);
   }
 
   /**
@@ -144,15 +162,13 @@ public class GalleryPastePhotoDataProcess extends AbstractGalleryDataProcess {
       final int fromSilverObjectId = getGalleryBm().getSilverObjectId(fromMediaPk);
       final int toSilverObjectId = getGalleryBm().getSilverObjectId(toMediaPK);
 
-      PdcServiceFactory
-          .getFactory()
-          .getPdcManager()
+      PdcServiceFactory.getFactory().getPdcManager()
           .copyPositions(fromSilverObjectId, fromMediaPk.getInstanceId(), toSilverObjectId,
               context.getComponentInstanceId());
 
       // move comments
       CommentServiceFactory.getFactory().getCommentService()
-          .moveAndReindexComments(PhotoDetail.getResourceType(), fromForeignPK, toForeignPK);
+          .moveAndReindexComments(getMedia().getContributionType(), fromForeignPK, toForeignPK);
 
       // XML Form
       pasteXmlForm(context);
@@ -177,24 +193,23 @@ public class GalleryPastePhotoDataProcess extends AbstractGalleryDataProcess {
               context.getComponentInstanceId() + ":" + xmlFormShortName, xmlFormShortName + ".xml");
 
           // get xmlContent to paste
-          final PublicationTemplate pubTemplateFrom =
-              getPublicationTemplateManager().getPublicationTemplate(
-                  fromMediaPk.getInstanceId() + ":" + xmlFormShortName);
+          final PublicationTemplate pubTemplateFrom = getPublicationTemplateManager()
+              .getPublicationTemplate(fromMediaPk.getInstanceId() + ":" + xmlFormShortName);
           final IdentifiedRecordTemplate recordTemplateFrom =
               (IdentifiedRecordTemplate) pubTemplateFrom.getRecordSet().getRecordTemplate();
 
-          final PublicationTemplate pubTemplate =
-              getPublicationTemplateManager().getPublicationTemplate(
-                  context.getComponentInstanceId() + ":" + xmlFormShortName);
+          final PublicationTemplate pubTemplate = getPublicationTemplateManager()
+              .getPublicationTemplate(context.getComponentInstanceId() + ":" + xmlFormShortName);
           final IdentifiedRecordTemplate recordTemplate =
               (IdentifiedRecordTemplate) pubTemplate.getRecordSet().getRecordTemplate();
 
           // paste xml content
-          getGenericRecordSetManager().cloneRecord(recordTemplateFrom, fromMediaPk.getId(),
-              recordTemplate, getPhoto().getId(), null);
+          getGenericRecordSetManager()
+              .cloneRecord(recordTemplateFrom, fromMediaPk.getId(), recordTemplate,
+                  getMedia().getId(), null);
         }
       } catch (final PublicationTemplateException e) {
-        SilverTrace.info("gallery", "GalleryPastePhotoDataProcess.processPasteCommons()",
+        SilverTrace.info("gallery", "GalleryPasteMediaDataProcess.processPasteCommons()",
             "gallery.DIFERENT_FORM_COMPONENT", e);
       }
     }

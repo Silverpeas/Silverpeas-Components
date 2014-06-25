@@ -1,4 +1,5 @@
 <%@ page import="com.silverpeas.gallery.GalleryComponentSettings" %>
+<%@ page import="com.silverpeas.gallery.model.InternalMedia" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -40,7 +41,7 @@
 
 
 	// déclaration des variables :
-	int 	photoId			= 0;
+	String mediaId = "";
 	String 	extension		= "_66x50.jpg";
 	String 	extensionAlt 	= "_266x150.jpg";
 
@@ -107,12 +108,12 @@ var messages = new Array();
 	while (itP.hasNext())
 	{
 		OrderRow row = (OrderRow) itP.next();
-		PhotoDetail photo = row.getPhoto();
-		String nomRep = GalleryComponentSettings.getMediaFolderNamePrefix() + photo.getId();
+		InternalMedia iMedia = row.getInternalMedia();
+		String nomRep = GalleryComponentSettings.getMediaFolderNamePrefix() + iMedia.getId();
 %>
-		messages[<%=messagesId%>] = new Array('<%=FileServerUtils.getUrl( componentId, photo.getId()
-		    + extensionAlt, photo.getImageMimeType(), nomRep)%>',
-		    '<%=EncodeHelper.javaStringToJsString(photo.getName())%>',"#FFFFFF");
+		messages[<%=messagesId%>] = new Array('<%=FileServerUtils.getUrl( componentId, iMedia.getId()
+		    + extensionAlt, iMedia.getFileMimeType(), nomRep)%>',
+		    '<%=EncodeHelper.javaStringToJsString(iMedia.getName())%>',"#FFFFFF");
 <%
 		messagesId++;
 	}
@@ -284,7 +285,7 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
 
 	function download(photoId)
 	{
-		var url = "OrderDownloadImage?PhotoId="+photoId;
+		var url = "OrderDownloadMedia?MediaId="+photoId;
 	    windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
 	    if (!orderWindow.closed && orderWindow.name == "orderWindow")
 	        orderWindow.close();
@@ -352,7 +353,7 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
 	String chemin = "<a href=\"OrderViewList\">" + resource.getString("gallery.viewOrderList")+"</a>" + " > " + resource.getString("gallery.order");
 	browseBar.setPath(chemin);
 
-	int orderId = order.getOrderId();
+	String orderId = order.getOrderId();
 
 	out.println(window.printBefore());
     out.println(frame.printBefore());
@@ -450,7 +451,7 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
     boolean ok = false;
     itP = rows.iterator();
     if (itP.hasNext()) {
-      ArrayColumn columnOp0 = arrayPane.addArrayColumn(resource.getString("gallery.photo"));
+      ArrayColumn columnOp0 = arrayPane.addArrayColumn(resource.getString("gallery.media"));
       columnOp0.setSortable(false);
       ArrayColumn columnOp1 = arrayPane.addArrayColumn(resource.getString("gallery.choiceDownload"));
       columnOp1.setSortable(false);
@@ -461,22 +462,16 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
       ArrayLine ligne = arrayPane.addArrayLine();
 
       OrderRow row = (OrderRow) itP.next();
-      photoId = row.getMediaId();
+      mediaId = row.getMediaId();
 
       String download = row.getDownloadDecision();
 
-      String nomRep = GalleryComponentSettings.getMediaFolderNamePrefix() + photoId;
-      String name = photoId + extension;
-      PhotoDetail photo = row.getPhoto();
-      String altTitle = EncodeHelper.javaStringToHtmlString(photo.getTitle());
-      if (StringUtil.isDefined(photo.getDescription())) {
-        altTitle += " : " + EncodeHelper.javaStringToHtmlString(photo.getDescription());
-      }
-      String vignette_url = FileServerUtils.getUrl(componentId, name, photo.
-          getImageMimeType(), nomRep);
+      String name = mediaId + extension;
+      InternalMedia iMedia = row.getInternalMedia();
+      String vignette_url = iMedia.getThumbnailUrl(extension);
 
       ArrayCellText arrayCellText0 = ligne.addArrayCellText(
-          "<a href=\"PreviewPhoto?PhotoId=" + photoId + "\" onmouseover=\"doTooltip(event," + indexPhoto + ")\" onmouseout=\"hideTip()\"><IMG SRC=\"" + vignette_url + "\" border=\"0\"></a>");
+          "<a href=\"MediaView?MediaId=" + mediaId + "\" onmouseover=\"doTooltip(event," + indexPhoto + ")\" onmouseout=\"hideTip()\"><IMG SRC=\"" + vignette_url + "\" border=\"0\"></a>");
       arrayCellText0.setCompareOn(name);
       indexPhoto++;
 
@@ -491,7 +486,7 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
             dateDownload);
         viewValid = false;
       } else {
-        if (order.getProcessUserId() != -1) {
+        if (!DBUtil.isSqlDefined(order.getProcessUserId())) {
           // la demande est déjà traitée
           if (("R").equals(download)) {
             // la photo a été refusée
@@ -505,7 +500,7 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
           }
           viewValid = false;
         } else {
-          choix = "<select name=\"DownloadType" + photoId + "\" id=\"DownloadType" + photoId + "\" onChange=\"javascript:downloadGoTo(this.selectedIndex);\">";
+          choix = "<select name=\"DownloadType" + mediaId + "\" id=\"DownloadType" + mediaId + "\" onChange=\"javascript:downloadGoTo(this.selectedIndex);\">";
           choix = choix + "<option value=\"0\" selected>" + resource.getString(
               "gallery.choiceDownload") + "</option>";
           choix = choix + "<option value=\"0\">-------------------------------</option>";
@@ -539,7 +534,7 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
     boolean ok = false;
     itP = rows.iterator();
     if (itP.hasNext()) {
-      ArrayColumn columnOp0 = arrayPane.addArrayColumn(resource.getString("gallery.photo"));
+      ArrayColumn columnOp0 = arrayPane.addArrayColumn(resource.getString("gallery.media"));
       columnOp0.setSortable(false);
       ArrayColumn columnOp1 = arrayPane.addArrayColumn(resource.getString("gallery.downloadDate"));
       columnOp1.setSortable(false);
@@ -550,19 +545,13 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
       ArrayLine ligne = arrayPane.addArrayLine();
 
       OrderRow row = (OrderRow) itP.next();
-      photoId = row.getMediaId();
-      String nomRep = GalleryComponentSettings.getMediaFolderNamePrefix() + photoId;
-      String name = photoId + extension;
-      PhotoDetail photo = row.getPhoto();
-      String altTitle = EncodeHelper.javaStringToHtmlString(photo.getTitle());
-      if (StringUtil.isDefined(photo.getDescription())) {
-        altTitle += " : " + EncodeHelper.javaStringToHtmlString(photo.getDescription());
-      }
-      String vignette_url = FileServerUtils.getUrl(componentId, name, photo.getImageMimeType(),
-          nomRep);
+      mediaId = row.getMediaId();
+      String name = mediaId + extension;
+      InternalMedia iMedia = row.getInternalMedia();
+      String vignette_url = iMedia.getThumbnailUrl(extension);
 
       ArrayCellText arrayCellText0 = ligne.addArrayCellText(
-          "<a href=\"PreviewPhoto?PhotoId=" + photoId + "\" onmouseover=\"doTooltip(event," + indexPhoto + ")\" onmouseout=\"hideTip()\"><IMG SRC=\"" + vignette_url + "\" border=\"0\"></a>");
+          "<a href=\"MediaView?MediaId=" + mediaId + "\" onmouseover=\"doTooltip(event," + indexPhoto + ")\" onmouseout=\"hideTip()\"><IMG SRC=\"" + vignette_url + "\" border=\"0\"></a>");
       arrayCellText0.setCompareOn(name);
       indexPhoto++;
 
@@ -577,11 +566,11 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
         download = resource.getString("gallery.refused");
       } else if (("D").equals(downloadDecision)) {
         // la photo est autorisée en téléchargement
-        download = "<a href=\"OrderDownloadImage?PhotoId=" + photoId + "&OrderId=" + orderId + "\" target=_blank>" + EncodeHelper.
+        download = "<a href=\"OrderDownloadMedia?MediaId=" + mediaId + "&OrderId=" + orderId + "\" target=_blank>" + EncodeHelper.
             javaStringToHtmlString(resource.getString("gallery.download.photo")) + "</a>";
       } else if (("DW").equals(downloadDecision)) {
         // la photo est autorisée en téléchargement avec le watermark
-        download = "<a href=\"OrderDownloadImage?PhotoId=" + photoId + "&OrderId=" + orderId + "\" target=_blank>" + EncodeHelper.
+        download = "<a href=\"OrderDownloadMedia?MediaId=" + mediaId + "&OrderId=" + orderId + "\" target=_blank>" + EncodeHelper.
             javaStringToHtmlString(resource.getString("gallery.download.photo")) + "</a>";
       } else if (("T").equals(downloadDecision)) {
         // la photo est déjà téléchargée

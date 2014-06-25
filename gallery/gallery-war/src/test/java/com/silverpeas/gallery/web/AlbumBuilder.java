@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import com.silverpeas.gallery.model.AlbumDetail;
+import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.PhotoDetail;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
@@ -56,12 +57,12 @@ public class AlbumBuilder {
       setName("name" + albumId);
       setDescription("description" + albumId);
       setNodePK(new NodePK(albumId));
-      final Collection<PhotoDetail> photos = new ArrayList<PhotoDetail>();
-      setPhotos(photos);
+      final Collection<Media> mediaList = new ArrayList<Media>();
+      setMedia(mediaList);
     }
 
-    public AlbumMock addPhoto(final PhotoDetail photo) {
-      getPhotos().add(photo);
+    public AlbumMock addMedia(final Media media) {
+      getMedia().add(media);
       return this;
     }
   }

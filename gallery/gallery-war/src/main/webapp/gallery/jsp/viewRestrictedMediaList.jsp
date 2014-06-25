@@ -1,4 +1,6 @@
 <%@ page import="com.silverpeas.gallery.GalleryComponentSettings" %>
+<%@ page import="com.silverpeas.gallery.model.Media" %>
+<%@ page import="com.silverpeas.gallery.model.Photo" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -39,10 +41,10 @@
 <%
   // récupération des paramètres :
   String searchKeyWord = (String) request.getAttribute("SearchKeyWord");
-  List<PhotoDetail> photos = (List) request.getAttribute("Photos");
+  List<Media> mediaList = (List) request.getAttribute("MediaList");
   String profile = (String) request.getAttribute("Profile");
-  int firstPhotoIndex = ((Integer) request.getAttribute("FirstPhotoIndex")).intValue();
-  int nbPhotosPerPage = ((Integer) request.getAttribute("NbPhotosPerPage")).intValue();
+  int firstPhotoIndex = ((Integer) request.getAttribute("FirstMediaIndex")).intValue();
+  int nbPhotosPerPage = ((Integer) request.getAttribute("NbMediaPerPage")).intValue();
   String taille = (String) request.getAttribute("Taille");
   Boolean isViewMetadata = (Boolean) request.getAttribute("IsViewMetadata");
   Boolean isViewList = (Boolean) request.getAttribute("IsViewList");
@@ -60,8 +62,8 @@
   String typeAff = "1";
 
   // initialisation de la pagination
-  Pagination pagination = gef.getPagination(photos.size(), nbPhotosPerPage, firstPhotoIndex);
-  List<PhotoDetail> affPhotos = photos.subList(pagination.getFirstItemIndex(), pagination.getLastItemIndex());
+  Pagination pagination = gef.getPagination(mediaList.size(), nbPhotosPerPage, firstPhotoIndex);
+  List<Media> subMediaList = mediaList.subList(pagination.getFirstItemIndex(), pagination.getLastItemIndex());
 
   // création du chemin :
   String chemin = " ";
@@ -110,7 +112,7 @@
 		// envoi du choix de la taille des vignettes
 		if (selectedIndex != 0 && selectedIndex != 1)
 		{
-			document.ChoiceSelectForm.Choice.value = document.photoForm.ChoiceSize[selectedIndex].value;
+			document.ChoiceSelectForm.Choice.value = document.mediaForm.ChoiceSize[selectedIndex].value;
 			document.ChoiceSelectForm.submit();
 		}
 	}
@@ -118,25 +120,25 @@
 	function sendData()
 	{
 		// envoi des photos sélectionnées pour la modif par lot
-		document.photoForm.SelectedIds.value 	= getObjects(true);
-		document.photoForm.NotSelectedIds.value = getObjects(false);
+		document.mediaForm.SelectedIds.value 	= getObjects(true);
+		document.mediaForm.NotSelectedIds.value = getObjects(false);
 
-		document.photoForm.submit();
+		document.mediaForm.submit();
 	}
 
 	function sendToBasket()
 	{
 		// envoi des photos sélectionnées dans le panier
-		document.photoForm.SelectedIds.value 	= getObjects(true);
-		document.photoForm.NotSelectedIds.value = getObjects(false);
-		document.photoForm.action				= "BasketAddPhotos";
-		document.photoForm.submit();
+		document.mediaForm.SelectedIds.value 	= getObjects(true);
+		document.mediaForm.NotSelectedIds.value = getObjects(false);
+		document.mediaForm.action				= "BasketAddMediaList";
+		document.mediaForm.submit();
 	}
 
 	function getObjects(selected)
 	{
 		var  items = "";
-		var boxItems = document.photoForm.SelectPhoto;
+		var boxItems = document.mediaForm.SelectPhoto;
 		if (boxItems != null){
 			// au moins une checkbox exist
 			var nbBox = boxItems.length;
@@ -157,11 +159,11 @@
 
 	function doPagination(index)
 	{
-		document.photoForm.SelectedIds.value 	= getObjects(true);
-		document.photoForm.NotSelectedIds.value = getObjects(false);
-		document.photoForm.Index.value 			= index;
-		document.photoForm.action				= "PaginationSearch";
-		document.photoForm.submit();
+		document.mediaForm.SelectedIds.value 	= getObjects(true);
+		document.mediaForm.NotSelectedIds.value = getObjects(false);
+		document.mediaForm.Index.value 			= index;
+		document.mediaForm.action				= "PaginationSearch";
+		document.mediaForm.submit();
 	}
 
 	function sortGoTo(selectedIndex)
@@ -169,7 +171,7 @@
 		// envoi du choix du tri
 		if (selectedIndex != 0 && selectedIndex != 1)
 		{
-			document.OrderBySelectForm.Tri.value = document.photoForm.SortBy[selectedIndex].value;
+			document.OrderBySelectForm.Tri.value = document.mediaForm.SortBy[selectedIndex].value;
 			document.OrderBySelectForm.submit();
 		}
 	}
@@ -212,19 +214,19 @@
     // afficher les photos
     // -------------------
     // affichage des photos sous forme de vignettes
-    if (photos != null) {
+    if (mediaList != null) {
 %>
 <br>
 <%
 	String vignette_url = null;
-		int nbPhotos = photos.size();
+		int nbPhotos = mediaList.size();
 		Board board = gef.getBoard();
 
-		if (photos.size() > 0) {
+		if (mediaList.size() > 0) {
 			out.println(board.printBefore());
 			// affichage de l'entête
 %>
-<form name="photoForm" action="EditSelectedPhoto" accept-charset="UTF-8">
+<form name="mediaForm" action="EditSelectedMedia" accept-charset="UTF-8">
 <table width="98%" border="0" cellspacing="0" cellpadding="0"
 	align=center>
 	<input type="hidden" name="SearchKeyWord" value="<%=searchKeyWord%>">
@@ -242,10 +244,10 @@
 			<tr>
 				<td align="center" width="100%" class=ArrayNavigation><%=pagination.printCounter()%>
 				<%
-					if (photos.size() == 1)
-								out.println(resource.getString("gallery.photo"));
+					if (mediaList.size() == 1)
+								out.println(resource.getString("gallery.media"));
 							else
-								out.println(resource.getString("gallery.photos"));
+								out.println(resource.getString("gallery.media.several"));
 				%>
 				</td>
 				<td align="right" nowrap><select name="ChoiceSize"
@@ -287,15 +289,9 @@
 </table>
 <%
 	String photoColor = "";
-	PhotoDetail photo;
+	Media media;
 	String idP;
-	Calendar calendar = Calendar.getInstance();
-	calendar.set(Calendar.HOUR_OF_DAY, 0);
-	calendar.set(Calendar.MINUTE, 0);
-	calendar.set(Calendar.SECOND, 0);
-	calendar.set(Calendar.MILLISECOND, 0);
-	Date today = calendar.getTime();
-	Iterator it = affPhotos.iterator();
+	Iterator<Media> it = subMediaList.iterator();
 	while (it.hasNext()) {
 		// affichage de la photo
 %>
@@ -307,26 +303,21 @@
 	<tr>
       <%
           while (it.hasNext() && nbAffiche < nbParLigne) {
-            photo = (PhotoDetail) it.next();
-            if (photo != null) {
-              idP = photo.getMediaPK().getId();
-              String nomRep = GalleryComponentSettings.getMediaFolderNamePrefix() + idP;
-              String name = photo.getId() + extension;
-              vignette_url = FileServerUtils.getUrl(componentId, name, photo.getImageMimeType(), nomRep);
-              if (!photo.isPreviewable()) {
-                vignette_url = m_context + "/gallery/jsp/icons/notAvailable_" + resource.getLanguage() + extension;
-              }
+            media = it.next();
+            if (media != null) {
+              idP = media.getMediaPK().getId();
+              vignette_url = media.getThumbnailUrl(extension);
               photoColor = "fondPhoto";
-              if (!photo.isVisible(today)) {
+              if (!media.isVisible()) {
                 photoColor = "fondPhotoNotVisible";
               }
 
               nbAffiche = nbAffiche + 1;
 
-              String altTitle = EncodeHelper.javaStringToHtmlString(photo.getTitle());
-              if (StringUtil.isDefined(photo.getDescription())) {
+              String altTitle = EncodeHelper.javaStringToHtmlString(media.getTitle());
+              if (StringUtil.isDefined(media.getDescription())) {
                 altTitle += " : "
-                    + EncodeHelper.javaStringToHtmlString(photo.getDescription());
+                    + EncodeHelper.javaStringToHtmlString(media.getDescription());
               }
 
               // on affiche encore sur la même ligne
@@ -342,7 +333,7 @@
 				<td align="center" colspan="2">
 				<table cellspacing="1" cellpadding="3" border="0" class="cadrePhoto">
 					<tr>
-						<td bgcolor="#FFFFFF"><a href="PreviewPhoto?PhotoId=<%=idP%>"><IMG
+						<td bgcolor="#FFFFFF"><a href="MediaView?MediaId=<%=idP%>"><IMG
 							SRC="<%=vignette_url%>" border="0" alt="<%=altTitle%>"
 							title="<%=altTitle%>"></a></td>
 					</tr>
@@ -359,14 +350,14 @@
 				%>
 				<td align="center" width="10"><input type="checkbox"
 					name="SelectPhoto" value="<%=idP%>" <%=usedCheck%>></td>
-				<td class="txtlibform"><%=photo.getName()%></td>
+				<td class="txtlibform"><%=media.getName()%></td>
 			</tr>
 			<%
-				if (photo.getDescription() != null) {
+				if (media.getDescription() != null) {
 			%>
 			<tr>
 				<td>&nbsp;</td>
-				<td><%=photo.getDescription()%></td>
+				<td><%=media.getDescription()%></td>
 			</tr>
 			<%
 				}
@@ -384,7 +375,7 @@
 				<td align="center">
 				<table cellspacing="1" cellpadding="3" border="0" class="cadrePhoto">
 					<tr>
-						<td bgcolor="#FFFFFF"><a href="PreviewPhoto?PhotoId=<%=idP%>"><IMG
+						<td bgcolor="#FFFFFF"><a href="MediaView?MediaId=<%=idP%>"><IMG
 							SRC="<%=vignette_url%>" border="0" alt="<%=altTitle%>"
 							title="<%=altTitle%>"></a></td>
 					</tr>
@@ -417,7 +408,7 @@
 				<td align="center">
 				<table cellspacing="1" cellpadding="5" border="0" class="cadrePhoto">
 					<tr>
-						<td bgcolor="#FFFFFF"><a href="PreviewPhoto?PhotoId=<%=idP%>"><IMG
+						<td bgcolor="#FFFFFF"><a href="MediaView?MediaId=<%=idP%>"><IMG
 							SRC="<%=vignette_url%>" border="0" alt="<%=altTitle%>"
 							title="<%=altTitle%>"></a></td>
 					</tr>
@@ -431,31 +422,32 @@
 			<tr>
 				<td class="txtlibform" nowrap><%=resource.getString("GML.title")%>
 				:</td>
-				<td><%=photo.getName()%></td>
+				<td><%=media.getName()%></td>
 			</tr>
 			<%
-				if (photo.getDescription() != null) {
+				if (media.getDescription() != null) {
 			%>
 			<tr>
 				<td class="txtlibform" nowrap><%=resource
 																.getString("GML.description")%>
 				:</td>
-				<td><%=photo.getDescription()%></td>
+				<td><%=media.getDescription()%></td>
 			</tr>
 			<%
 				}
-										if (photo.getAuthor() != null) {
+										if (media.getAuthor() != null) {
 			%>
 			<tr>
 				<td class="txtlibform" nowrap><%=resource
 																.getString("GML.author")%>
 				:</td>
-				<td><%=photo.getAuthor()%></td>
+				<td><%=media.getAuthor()%></td>
 			</tr>
 			<%
     }
 
-      if (viewMetadata) {
+      Photo photo = media.getPhoto();
+      if (viewMetadata && photo != null) {
         final Collection<String> metaDataKeys = photo.getMetaDataProperties();
         if (metaDataKeys != null && !metaDataKeys.isEmpty()) {
           MetaData metaData;
@@ -476,7 +468,7 @@
           }
         }
       }
-			if (photo.getKeyWord() != null) {
+			if (media.getKeyWord() != null) {
 			%>
 			<tr>
 				<td class="txtlibform" nowrap><%=resource
@@ -484,7 +476,7 @@
 				:</td>
 				<td>
 				<%
-					String keyWord = photo.getKeyWord();
+					String keyWord = media.getKeyWord();
                       // découper la zone keyWord en mots
                       StringTokenizer st = new StringTokenizer(
                           keyWord);

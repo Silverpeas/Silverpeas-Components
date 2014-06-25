@@ -23,13 +23,12 @@
  */
 package com.silverpeas.gallery.web;
 
-import com.silverpeas.gallery.model.PhotoDetail;
+import com.silverpeas.gallery.model.Photo;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 import java.net.URI;
 
 import static com.silverpeas.gallery.web.GalleryResourceURIs.GALLERY_PHOTO_CONTENT_PART;
@@ -55,9 +54,6 @@ public class PhotoEntity extends AbstractMediaEntity<PhotoEntity> {
   @XmlElement(defaultValue = "0")
   private int height;
 
-  @XmlTransient
-  private final PhotoDetail photo;
-
   @Override
   public PhotoEntity withURI(final URI uri) {
     previewUrl = uri.toString() + "/" + GALLERY_PHOTO_PREVIEW_PART;
@@ -71,23 +67,22 @@ public class PhotoEntity extends AbstractMediaEntity<PhotoEntity> {
    * @param language
    * @return the entity representing the specified photo.
    */
-  public static PhotoEntity createFrom(final PhotoDetail photo, final String language) {
+  public static PhotoEntity createFrom(final Photo photo, final String language) {
     return new PhotoEntity(photo, language);
   }
 
   /**
    * Default hidden constructor.
    */
-  private PhotoEntity(final PhotoDetail photo, final String language) {
+  private PhotoEntity(final Photo photo, final String language) {
     super("photo", photo.getId(), photo.getTitle(), photo.getDescription(language));
-    this.photo = photo;
-    width = photo.getSizeL();
-    height = photo.getSizeH();
+    width = photo.getResolutionW();
+    height = photo.getResolutionH();
   }
 
+  @SuppressWarnings("UnusedDeclaration")
   protected PhotoEntity() {
     super();
-    photo = null;
   }
 
   /**

@@ -26,6 +26,7 @@ import com.silverpeas.gallery.model.AlbumDetail;
 import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.MediaCriteria;
 import com.silverpeas.gallery.model.Order;
+import com.silverpeas.gallery.model.Photo;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.node.control.NodeBm;
@@ -54,7 +55,6 @@ import static org.mockito.Mockito.when;
 public class GalleryBmEJBTest extends BaseGalleryTest {
 
   private GalleryBmEJBMock galleryBmEJB;
-  private NodeBm nodeBm;
   private static final String ALBUM_NAME = "Nature";
 
   @Override
@@ -75,16 +75,14 @@ public class GalleryBmEJBTest extends BaseGalleryTest {
   @Before
   public void prepareGalleryBmEJB() throws Exception {
     List<NodeDetail> nodes = new ArrayList<NodeDetail>();
-    final NodeDetail nodeSon1 =
-        new NodeDetail("1", ALBUM_NAME,
-            "Noeud de test contenant des images sur le thème de la nature", "2014/06/10", "0", "/0/",
-            2, "0", null, null, null, null);
+    final NodeDetail nodeSon1 = new NodeDetail("1", ALBUM_NAME,
+        "Noeud de test contenant des images sur le thème de la nature", "2014/06/10", "0", "/0/", 2,
+        "0", null, null, null, null);
     nodeSon1.setOrder(1);
     nodes.add(nodeSon1);
-    final NodeDetail nodeSon2 =
-        new NodeDetail("2", "Automobile",
-            "Noeud de test contenant des images sur le thème automobile", "2014/06/10", "0", "/0/",
-            2, "0", null, null, null, null);
+    final NodeDetail nodeSon2 = new NodeDetail("2", "Automobile",
+        "Noeud de test contenant des images sur le thème automobile", "2014/06/10", "0", "/0/", 2,
+        "0", null, null, null, null);
     nodeSon2.setOrder(2);
     nodes.add(nodeSon2);
     final NodeDetail nodeDetail =
@@ -92,9 +90,9 @@ public class GalleryBmEJBTest extends BaseGalleryTest {
             null, null);
     nodeDetail.setChildrenDetails(nodes);
 
-    nodeBm = Mockito.mock(NodeBm.class);
+    final NodeBm nodeBm = Mockito.mock(NodeBm.class);
 
-    when(nodeBm.getDetail(Mockito.any(NodePK.class))).thenAnswer( new Answer<NodeDetail>() {
+    when(nodeBm.getDetail(Mockito.any(NodePK.class))).thenAnswer(new Answer<NodeDetail>() {
       @Override
       public NodeDetail answer(InvocationOnMock invocation) throws Throwable {
         Object[] arguments = invocation.getArguments();
@@ -122,7 +120,7 @@ public class GalleryBmEJBTest extends BaseGalleryTest {
     assertThat(album, notNullValue());
     assertThat(album.getChildrenDetails(), hasSize(2));
     assertThat(album.getName(), equalTo("Accueil"));
-    assertThat(album.getPhotos(), empty());
+    assertThat(album.getMedia(), empty());
   }
 
   @Test
@@ -130,7 +128,7 @@ public class GalleryBmEJBTest extends BaseGalleryTest {
     NodePK nodePK = new NodePK("1", INSTANCE_A);
     AlbumDetail album = galleryBmEJB.getAlbum(nodePK, MediaCriteria.VISIBILITY.FORCE_GET_ALL);
     assertThat(album.getName(), equalTo(ALBUM_NAME));
-    assertThat(album.getPhotos(), hasSize(1));
+    assertThat(album.getMedia(), hasSize(6));
   }
 
   @Test
@@ -201,34 +199,44 @@ public class GalleryBmEJBTest extends BaseGalleryTest {
 
   @Test
   public void testGetPathList() {
-    Collection<String> pathList = galleryBmEJB.getPathList(INSTANCE_A, "v_2");
+    String mediaIdToPerform = "v_2";
+    Media media = new Photo();
+    media.setId(mediaIdToPerform);
+    media.setComponentInstanceId(INSTANCE_A);
+
+    Collection<String> pathList = galleryBmEJB.getAlbumIdsOf(media);
     assertThat(pathList, contains("1"));
 
-    pathList = galleryBmEJB.getPathList(INSTANCE_A, "v_1");
+    media.setId("v_1");
+
+    pathList = galleryBmEJB.getAlbumIdsOf(media);
     assertThat(pathList, containsInAnyOrder("1", "2"));
   }
 
   @Test
   public void testAddMediaPaths() throws Exception {
     String mediaIdToPerform = "1";
+    Media media = new Photo();
+    media.setId(mediaIdToPerform);
+    media.setComponentInstanceId(INSTANCE_A);
 
-    Collection<String> pathList = galleryBmEJB.getPathList(INSTANCE_A, mediaIdToPerform);
+    Collection<String> pathList = galleryBmEJB.getAlbumIdsOf(media);
     assertThat(pathList, containsInAnyOrder("1"));
 
 
-    galleryBmEJB.addMediaPaths(mediaIdToPerform, INSTANCE_A, "1", "26");
+    galleryBmEJB.addMediaToAlbums(media, "1", "26");
 
-    pathList = galleryBmEJB.getPathList(INSTANCE_A, mediaIdToPerform);
+    pathList = galleryBmEJB.getAlbumIdsOf(media);
     assertThat(pathList, containsInAnyOrder("1", "26"));
 
-    galleryBmEJB.addMediaPaths(mediaIdToPerform, INSTANCE_A, "26");
+    galleryBmEJB.addMediaToAlbums(media, "26");
 
-    pathList = galleryBmEJB.getPathList(INSTANCE_A, mediaIdToPerform);
+    pathList = galleryBmEJB.getAlbumIdsOf(media);
     assertThat(pathList, containsInAnyOrder("1", "26"));
 
-    galleryBmEJB.addMediaPaths(mediaIdToPerform, INSTANCE_A, "38");
+    galleryBmEJB.addMediaToAlbums(media, "38");
 
-    pathList = galleryBmEJB.getPathList(INSTANCE_A, mediaIdToPerform);
+    pathList = galleryBmEJB.getAlbumIdsOf(media);
     assertThat(pathList, containsInAnyOrder("1", "26", "38"));
   }
 

@@ -32,19 +32,20 @@ import org.silverpeas.search.indexEngine.model.IndexEntry;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 
-public class PhotoSelection extends ClipboardSelection {
+public class MediaSelection extends ClipboardSelection {
 
   private static final long serialVersionUID = -4373774805830276786L;
-  static public DataFlavor PhotoDetailFlavor = new DataFlavor(PhotoDetail.class, "Photo");
-  private PhotoDetail currentPhoto;
+  static public DataFlavor MediaFlavor = new DataFlavor(Media.class, "Media");
+  private Media currentMedia;
 
 
-  public PhotoSelection(PhotoDetail photo) {
+  public MediaSelection(Media media) {
     super();
-    currentPhoto = photo;
-    super.addFlavor(PhotoDetailFlavor);
+    currentMedia = media;
+    super.addFlavor(MediaFlavor);
   }
 
+  @Override
   public synchronized Object getTransferData(DataFlavor parFlavor)
       throws UnsupportedFlavorException {
     Object transferedData;
@@ -52,8 +53,8 @@ public class PhotoSelection extends ClipboardSelection {
     try {
       transferedData = super.getTransferData(parFlavor);
     } catch (UnsupportedFlavorException e) {
-      if (PhotoDetailFlavor.equals(parFlavor)) {
-        transferedData = currentPhoto;
+      if (MediaFlavor.equals(parFlavor)) {
+        transferedData = currentMedia;
       } else {
         throw e;
       }
@@ -61,23 +62,30 @@ public class PhotoSelection extends ClipboardSelection {
     return transferedData;
   }
 
+  @Override
   public IndexEntry getIndexEntry() {
-    MediaPK mediaPK = currentPhoto.getMediaPK();
+    MediaPK mediaPK = currentMedia.getMediaPK();
     IndexEntry indexEntry =
-        new IndexEntry(mediaPK.getComponentName(), "Photo", currentPhoto.getMediaPK().getId());
-    indexEntry.setTitle(currentPhoto.getName());
+        new IndexEntry(mediaPK.getComponentName(), "Media", currentMedia.getMediaPK().getId());
+    indexEntry.setTitle(currentMedia.getName());
     return indexEntry;
   }
 
+  @Override
   public SilverpeasKeyData getKeyData() {
     SilverpeasKeyData keyData = new SilverpeasKeyData();
-    keyData.setTitle(currentPhoto.getName());
-    keyData.setAuthor(currentPhoto.getCreatorId());
-    keyData.setCreationDate(currentPhoto.getCreationDate());
-    keyData.setDesc(currentPhoto.getDescription());
+    keyData.setTitle(currentMedia.getName());
+    keyData.setAuthor(currentMedia.getCreatorId());
+    keyData.setCreationDate(currentMedia.getCreationDate());
+    keyData.setDesc(currentMedia.getDescription());
     try {
-      keyData.setProperty("BEGINDATE", currentPhoto.getBeginDate().toString());
-      keyData.setProperty("ENDDATE", currentPhoto.getEndDate().toString());
+      if (currentMedia.getVisibilityPeriod().getBeginDatable().isDefined()) {
+        keyData
+            .setProperty("BEGINDATE", currentMedia.getVisibilityPeriod().getBeginDate().toString());
+      }
+      if (currentMedia.getVisibilityPeriod().getEndDatable().isDefined()) {
+        keyData.setProperty("ENDDATE", currentMedia.getVisibilityPeriod().getEndDate().toString());
+      }
     } catch (SKDException e) {
       SilverTrace.error("gallery", "PhotoSelection.getKeyData", "gallery.ERROR_KEY_DATA", e);
     }

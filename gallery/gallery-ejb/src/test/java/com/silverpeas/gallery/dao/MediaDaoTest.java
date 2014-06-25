@@ -345,10 +345,17 @@ public class MediaDaoTest extends BaseGalleryTest {
     performDAOTest(new DAOTest() {
       @Override
       public void test(final Connection connection) throws Exception {
-        Collection<String> pathList = MediaDAO.getPathList(connection, INSTANCE_A, "v_2");
+        String mediaIdToPerform = "v_2";
+        Media media = new Photo();
+        media.setId(mediaIdToPerform);
+        media.setComponentInstanceId(INSTANCE_A);
+
+        Collection<String> pathList = MediaDAO.getAlbumIdsOf(connection, media);
         assertThat(pathList, contains("1"));
 
-        pathList = MediaDAO.getPathList(connection, INSTANCE_A, "v_1");
+        media.setId("v_1");
+
+        pathList = MediaDAO.getAlbumIdsOf(connection, media);
         assertThat(pathList, containsInAnyOrder("1", "2"));
       }
     });
@@ -930,6 +937,16 @@ public class MediaDaoTest extends BaseGalleryTest {
     });
   }
 
+  @Test(expected = NullPointerException.class)
+  public void deleteMediaThatDoesNotExist() throws Exception {
+    performDAOTest(new DAOTest() {
+      @Override
+      public void test(final Connection connection) throws Exception {
+        MediaDAO.deleteMedia(connection, null);
+      }
+    });
+  }
+
   @Test
   public void deletePhoto() throws Exception {
     performDAOTest(new DAOTest() {
@@ -1058,8 +1075,7 @@ public class MediaDaoTest extends BaseGalleryTest {
         assertThat(mediaRow.getLong("endVisibilityDate"), is(DateUtil.MAXIMUM_DATE.getTime()));
         assertThat(mediaRow.getDate("createDate"), greaterThanOrEqualTo(now));
         assertThat(mediaRow.getString("createdBy"), is(writerUser.getId()));
-        assertThat(mediaRow.getDate("lastUpdateDate"),
-            greaterThanOrEqualTo(mediaRow.getDate("createDate")));
+        assertThat(mediaRow.getDate("lastUpdateDate"), is(mediaRow.getDate("createDate")));
         assertThat(mediaRow.getString("lastUpdatedBy"), is(writerUser.getId()));
 
         TableRow iMediaRow = getTableRowFor(internalTable, "mediaId", newVideo.getId());
@@ -1276,8 +1292,7 @@ public class MediaDaoTest extends BaseGalleryTest {
         assertThat(mediaRow.getLong("endVisibilityDate"), is(DateUtil.MAXIMUM_DATE.getTime()));
         assertThat(mediaRow.getDate("createDate"), greaterThanOrEqualTo(now));
         assertThat(mediaRow.getString("createdBy"), is(adminAccessUser.getId()));
-        assertThat(mediaRow.getDate("lastUpdateDate"),
-            greaterThanOrEqualTo(mediaRow.getDate("createDate")));
+        assertThat(mediaRow.getDate("lastUpdateDate"), is(mediaRow.getDate("createDate")));
         assertThat(mediaRow.getString("lastUpdatedBy"), is(adminAccessUser.getId()));
 
         TableRow iMediaRow = getTableRowFor(internalTable, "mediaId", newSound.getId());
@@ -1481,8 +1496,7 @@ public class MediaDaoTest extends BaseGalleryTest {
         assertThat(mediaRow.getLong("endVisibilityDate"), is(DateUtil.MAXIMUM_DATE.getTime()));
         assertThat(mediaRow.getDate("createDate"), greaterThanOrEqualTo(now));
         assertThat(mediaRow.getString("createdBy"), is(writerUser.getId()));
-        assertThat(mediaRow.getDate("lastUpdateDate"),
-            greaterThanOrEqualTo(mediaRow.getDate("createDate")));
+        assertThat(mediaRow.getDate("lastUpdateDate"), is(mediaRow.getDate("createDate")));
         assertThat(mediaRow.getString("lastUpdatedBy"), is(writerUser.getId()));
 
         TableRow iMediaRow = getTableRowFor(internalTable, "mediaId", newStreaming.getId());
@@ -1492,6 +1506,37 @@ public class MediaDaoTest extends BaseGalleryTest {
         assertThat(streamingRow.getString("mediaId"), is(newId));
         assertThat(streamingRow.getString("homepageUrl"), is("streaming URL"));
         assertThat(streamingRow.getString("provider"), is(StreamingProvider.vimeo.name()));
+
+        // Updating to test (to verify update data in context of creation)
+        Thread.sleep(100);
+        MediaDAO.saveMedia(connection, OperationContext.fromUser(adminAccessUser), newStreaming);
+
+        actualDataSet = getActualDataSet();
+        mediaTable = actualDataSet.getTable("SC_Gallery_Media");
+        assertThat(mediaTable.getRowCount(), is(MEDIA_ROW_COUNT + 1));
+
+        // Update date has changed because context of creation has not been set.
+        mediaRow = getTableRowFor(mediaTable, "mediaId", newStreaming.getId());
+        Date lastUpdateDate = mediaRow.getDate("lastUpdateDate");
+        assertThat(mediaRow.getDate("createDate"), greaterThanOrEqualTo(now));
+        assertThat(mediaRow.getString("createdBy"), is(writerUser.getId()));
+        assertThat(lastUpdateDate, greaterThan(mediaRow.getDate("createDate")));
+        assertThat(mediaRow.getString("lastUpdatedBy"), is(adminAccessUser.getId()));
+
+        Thread.sleep(100);
+        MediaDAO.saveMedia(connection,
+            OperationContext.fromUser(writerUser).setUpdatingInCaseOfCreation(), newStreaming);
+
+        actualDataSet = getActualDataSet();
+        mediaTable = actualDataSet.getTable("SC_Gallery_Media");
+        assertThat(mediaTable.getRowCount(), is(MEDIA_ROW_COUNT + 1));
+
+        // Update date has not changed because context of creation has been set.
+        mediaRow = getTableRowFor(mediaTable, "mediaId", newStreaming.getId());
+        assertThat(mediaRow.getDate("createDate"), greaterThanOrEqualTo(now));
+        assertThat(mediaRow.getString("createdBy"), is(writerUser.getId()));
+        assertThat(mediaRow.getDate("lastUpdateDate"), is(lastUpdateDate));
+        assertThat(mediaRow.getString("lastUpdatedBy"), is(adminAccessUser.getId()));
       }
     });
   }

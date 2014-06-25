@@ -24,34 +24,34 @@
 package com.silverpeas.gallery.process.photo;
 
 import com.silverpeas.gallery.GalleryComponentSettings;
+import com.silverpeas.gallery.model.Media;
 import org.silverpeas.process.io.file.FileHandler;
 import org.silverpeas.process.session.ProcessSession;
 
-import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.gallery.process.AbstractGalleryFileProcess;
 import com.silverpeas.gallery.process.GalleryProcessExecutionContext;
 
 /**
- * Process to delete a photo from file system
+ * Process to delete a media from file system
  * @author Yohann Chastagnier
  */
-public class GalleryDeletePhotoFileProcess extends AbstractGalleryFileProcess {
+public class GalleryDeleteMediaFileProcess extends AbstractGalleryFileProcess {
 
   /**
    * Gets an instance
-   * @param photo
+   * @param media
    * @return
    */
-  public static GalleryDeletePhotoFileProcess getInstance(final PhotoDetail photo) {
-    return new GalleryDeletePhotoFileProcess(photo);
+  public static GalleryDeleteMediaFileProcess getInstance(final Media media) {
+    return new GalleryDeleteMediaFileProcess(media);
   }
 
   /**
    * Default hidden constructor
-   * @param photo
+   * @param media
    */
-  protected GalleryDeletePhotoFileProcess(final PhotoDetail photo) {
-    super(photo);
+  protected GalleryDeleteMediaFileProcess(final Media media) {
+    super(media);
   }
 
   /*
@@ -64,8 +64,8 @@ public class GalleryDeletePhotoFileProcess extends AbstractGalleryFileProcess {
   public void processFiles(final GalleryProcessExecutionContext context,
       final ProcessSession session, final FileHandler fileHandler) throws Exception {
 
-    // Deleting repository with old photos
+    // Deleting repository with old media
     fileHandler.getHandledFile(BASE_PATH, context.getComponentInstanceId(),
-        GalleryComponentSettings.getMediaFolderNamePrefix() + getPhoto().getId()).delete();
+        GalleryComponentSettings.getMediaFolderNamePrefix() + getMedia().getId()).delete();
   }
 }

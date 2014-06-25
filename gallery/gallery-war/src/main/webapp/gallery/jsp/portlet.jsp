@@ -1,4 +1,5 @@
 <%@ page import="com.silverpeas.gallery.GalleryComponentSettings" %>
+<%@ page import="com.silverpeas.gallery.model.Media" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -31,7 +32,7 @@
 
 <%
   AlbumDetail root = (AlbumDetail) request.getAttribute("root");
-  List photos = (List) request.getAttribute("Photos");
+  List<Media> mediaList = (List) request.getAttribute("MediaList");
 
 // parametrage pour l'affichage des dernieres photos telechargees
   int nbTotal = 10;
@@ -50,7 +51,7 @@ function goToAlbum(id) {
 }
 
 function goToImage(photoId) {
-    document.imageForm.PhotoId.value = photoId;
+    document.imageForm.MediaId.value = photoId;
     document.imageForm.submit();
 }
 
@@ -110,43 +111,26 @@ div {
 			</td>
 		</tr>
         <%
-          if (photos != null) {
-            String vignette_url = null;
-            String altTitle = "";
-            int nbPhotos = photos.size();
+          if (mediaList != null) {
+            int nbPhotos = mediaList.size();
 
             if (nbPhotos > 0) {
-              PhotoDetail photo;
+              Media media;
               String idP;
-              Iterator itP = photos.iterator();
-              while (itP.hasNext() && nbTotal != 0 && nbAffiche < nbTotal) {
+              Iterator<Media> itP = mediaList.iterator();
+              while (itP.hasNext() && nbAffiche < nbTotal) {
                 // affichage de la photo
                 out.println("<tr><td>&nbsp;</td></tr>");
                 out.println("<tr><td align=\"center\">");
 
                 while (itP.hasNext() && nbAffiche < nbTotal) {
-                  photo = (PhotoDetail) itP.next();
-                  altTitle = "";
-                  if (photo != null) {
-                    idP = photo.getMediaPK().getId();
-                    String nomRep = GalleryComponentSettings.getMediaFolderNamePrefix() + idP;
-                    String name = photo.getImageName();
-                    if (name != null) {
-                      name = photo.getId() + "_66x50.jpg";
-                      vignette_url = FileServerUtils.getUrl(componentId, name, photo.
-                          getImageMimeType(), nomRep);
-                      if (!photo.isPreviewable()) {
-                        vignette_url = m_context + "/gallery/jsp/icons/notAvailable_" + resource.
-                            getLanguage() + "_66x50.jpg";
-                      }
-
-                      altTitle = EncodeHelper.javaStringToHtmlString(photo.getTitle());
-                      if (photo.getDescription() != null && photo.getDescription().length() > 0) {
-                        altTitle += " : " + EncodeHelper.javaStringToHtmlString(photo.getDescription());
-                      }
-                    } else {
-                      vignette_url = m_context + "/gallery/jsp/icons/notAvailable_" + resource.
-                          getLanguage() + "_66x50.jpg";
+                  media = itP.next();
+                  if (media != null) {
+                    idP = media.getMediaPK().getId();
+                    String vignette_url = media.getThumbnailUrl("_66x50.jpg");
+                    String altTitle = EncodeHelper.javaStringToHtmlString(media.getTitle());
+                    if (media.getDescription() != null && media.getDescription().length() > 0) {
+                      altTitle += " : " + EncodeHelper.javaStringToHtmlString(media.getDescription());
                     }
         %>
         <div id="vignette">
@@ -188,8 +172,8 @@ div {
 <form name="albumForm" action="ViewAlbum" Method="POST" target="MyMain">
 	<input type="hidden" name="Id">
 </form>
-<form name="imageForm" action="PreviewPhoto" Method="POST" target="MyMain">
-	<input type="hidden" name="PhotoId">
+<form name="imageForm" action="MediaView" Method="POST" target="MyMain">
+	<input type="hidden" name="MediaId">
 </form>
 </body>
 </html>

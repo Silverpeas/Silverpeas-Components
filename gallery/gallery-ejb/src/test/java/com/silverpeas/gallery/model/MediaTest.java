@@ -26,6 +26,8 @@ package com.silverpeas.gallery.model;
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.silverpeas.gallery.constant.MediaType;
+import com.silverpeas.gallery.control.ejb.GalleryBm;
+import com.silverpeas.gallery.control.ejb.MediaServiceFactory;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import org.apache.commons.lang.time.DateUtils;
@@ -33,8 +35,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.date.Period;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -44,11 +44,11 @@ import java.util.Date;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class MediaTest {
 
+  private GalleryBm mediaServiceMock;
   private ApplicationContext accessControllerProviderSave;
   private UserDetail userForTest = new UserDetail();
   private UserDetail lastUpdaterForTest = new UserDetail();
@@ -60,6 +60,8 @@ public class MediaTest {
   @SuppressWarnings("unchecked")
   @Before
   public void setup() {
+    mediaServiceMock = mock(GalleryBm.class);
+    MediaServiceFactory.getInstance().setMediaService(mediaServiceMock);
     AccessController<String> componentAccessController = mock(AccessController.class);
     when(componentAccessController.isUserAuthorized("userIdAccessTest", "instanceIdForTest"))
         .thenReturn(true);
@@ -88,6 +90,7 @@ public class MediaTest {
   public void tearDown() {
     // For all other tests...
     AccessControllerProvider.getInstance().setApplicationContext(accessControllerProviderSave);
+    MediaServiceFactory.getInstance().setMediaService(null);
   }
 
   @Test
@@ -295,6 +298,28 @@ public class MediaTest {
     assertThat(media.getLanguages(), nullValue());
     assertThat(media.toString(),
         is("(pk = (id = mediaId, instanceId = instanceId), name = A title)"));
+  }
+
+  @Test
+  public void testAddToAlbums() {
+    Media media = defaultMedia();
+    media.addToAlbums("1", "2");
+    verify(mediaServiceMock, times(1)).addMediaToAlbums(media, "1", "2");
+  }
+
+  @Test
+  public void testSetToAlbums() {
+    Media media = defaultMedia();
+    media.setToAlbums("1", "2");
+    verify(mediaServiceMock, times(1)).removeMediaFromAllAlbums(media);
+    verify(mediaServiceMock, times(1)).addMediaToAlbums(media, "1", "2");
+  }
+
+  @Test
+  public void testRemoveMediaFromAllAlbums() {
+    Media media = defaultMedia();
+    media.removeFromAllAlbums();
+    verify(mediaServiceMock, times(1)).removeMediaFromAllAlbums(media);
   }
 
   private class MediaForTest extends Media {

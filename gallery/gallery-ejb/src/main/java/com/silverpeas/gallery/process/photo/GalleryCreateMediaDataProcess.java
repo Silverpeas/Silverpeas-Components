@@ -23,15 +23,10 @@
  */
 package com.silverpeas.gallery.process.photo;
 
-import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
-
-import java.util.List;
-
-import org.silverpeas.process.session.ProcessSession;
-
 import com.silverpeas.form.PagesContext;
-import com.silverpeas.gallery.delegate.PhotoDataCreateDelegate;
-import com.silverpeas.gallery.model.PhotoDetail;
+import com.silverpeas.gallery.GalleryComponentSettings;
+import com.silverpeas.gallery.delegate.MediaDataCreateDelegate;
+import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.process.AbstractGalleryDataProcess;
 import com.silverpeas.gallery.process.GalleryProcessExecutionContext;
 import com.silverpeas.pdc.PdcServiceFactory;
@@ -39,37 +34,44 @@ import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.util.CollectionUtil;
+import org.silverpeas.process.session.ProcessSession;
+
+import java.util.List;
+
+import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
 /**
- * Process to create a photo in Database
+ * Process to create a media in Database
  * @author Yohann Chastagnier
  */
-public class GalleryCreatePhotoDataProcess extends AbstractGalleryDataProcess {
+public class GalleryCreateMediaDataProcess extends AbstractGalleryDataProcess {
 
   private final String albumId;
 
-  /** Delegate in charge of creating photo data */
-  private final PhotoDataCreateDelegate delegate;
+  /**
+   * Delegate in charge of creating media data
+   */
+  private final MediaDataCreateDelegate delegate;
 
   /**
    * Gets an instance
-   * @param photo
+   * @param media
    * @param delegate
    * @return
    */
-  public static GalleryCreatePhotoDataProcess getInstance(final PhotoDetail photo,
-      final String albumId, final PhotoDataCreateDelegate delegate) {
-    return new GalleryCreatePhotoDataProcess(photo, albumId, delegate);
+  public static GalleryCreateMediaDataProcess getInstance(final Media media, final String albumId,
+      final MediaDataCreateDelegate delegate) {
+    return new GalleryCreateMediaDataProcess(media, albumId, delegate);
   }
 
   /**
    * Default hidden constructor
-   * @param photo
+   * @param media
    * @param delegate
    */
-  protected GalleryCreatePhotoDataProcess(final PhotoDetail photo, final String albumId,
-      final PhotoDataCreateDelegate delegate) {
-    super(photo);
+  protected GalleryCreateMediaDataProcess(final Media media, final String albumId,
+      final MediaDataCreateDelegate delegate) {
+    super(media);
     this.delegate = delegate;
     this.albumId = albumId;
   }
@@ -84,46 +86,47 @@ public class GalleryCreatePhotoDataProcess extends AbstractGalleryDataProcess {
   protected void processData(final GalleryProcessExecutionContext context,
       final ProcessSession session) throws Exception {
 
-    // Photo
+    // Media
     if (delegate.isHeaderData()) {
-      delegate.updateHeader(getPhoto());
+      delegate.updateHeader(getMedia());
     }
 
-    createPhoto(albumId, context);
+    createMedia(albumId, context);
 
     // Persists form data
     if (delegate.isForm()) {
-      final String photoId = getPhoto().getId();
+      final String mediaId = getMedia().getId();
       final PagesContext pageContext =
-          new PagesContext("photoForm", "0", delegate.getLanguage(), false,
+          new PagesContext("mediaForm", "0", delegate.getLanguage(), false,
               context.getComponentInstanceId(), context.getUser().getId(), albumId);
       pageContext.setEncoding("UTF-8");
-      pageContext.setObjectId(photoId);
-      delegate.updateForm(photoId, pageContext);
+      pageContext.setObjectId(mediaId);
+      delegate.updateForm(mediaId, pageContext);
     }
 
-    // Insert content manager of the media
-    int silverContentId =
-        getGalleryContentManager().createSilverContent(context.getConnection(), getPhoto(), context
-            .getUser().getId());
-    getPhoto().setSilverObjectId(silverContentId);
+    if (GalleryComponentSettings.isPdcEnabled(getMedia().getComponentInstanceId())) {
+      // Insert content manager of the media
+      int silverContentId = getGalleryContentManager()
+          .createSilverContent(context.getConnection(), getMedia(), context.getUser().getId());
+      getMedia().setSilverpeasContentId(Integer.toString(silverContentId));
 
-    // Persists pdc classification
-    classifyPhotoContent();
+      // Persists pdc classification
+      classifyMediaContent();
+    }
   }
 
-  private void classifyPhotoContent() {
+  private void classifyMediaContent() {
     if (delegate.isHeaderData()) {
       List<PdcPosition> pdcPositions = delegate.getHeaderData().getPdcPositions();
       if (CollectionUtil.isNotEmpty(pdcPositions)) {
         PdcClassification curClassification =
-            aPdcClassificationOfContent(getPhoto().getSilverObjectId(), getPhoto().getInstanceId())
-                .withPositions(pdcPositions);
+            aPdcClassificationOfContent(getMedia().getSilverpeasContentId(),
+                getMedia().getInstanceId()).withPositions(pdcPositions);
         if (!curClassification.isEmpty()) {
           PdcClassificationService service =
               PdcServiceFactory.getFactory().getPdcClassificationService();
-          curClassification.ofContent(getPhoto().getSilverObjectId());
-          service.classifyContent(getPhoto().getPhoto(), curClassification);
+          curClassification.ofContent(getMedia().getSilverpeasContentId());
+          service.classifyContent(getMedia(), curClassification);
         }
       }
     }

@@ -21,8 +21,10 @@
 package com.silverpeas.gallery.dao;
 
 import com.silverpeas.gallery.BaseGalleryTest;
+import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.MediaPK;
 import com.silverpeas.gallery.model.MediaWithStatus;
+import com.silverpeas.gallery.model.Photo;
 import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.gallery.socialNetwork.SocialInformationGallery;
 import com.silverpeas.socialnetwork.model.SocialInformation;
@@ -227,7 +229,12 @@ public class PhotoDaoTest extends BaseGalleryTest {
   public void testGetPhotoPathList() throws Exception {
     Connection con = getConnection();
     try {
-      Collection<String> pathList = MediaDAO.getPathList(con, GALLERY1, "5");
+      String mediaIdToPerform = "5";
+      Media media = new Photo();
+      media.setId(mediaIdToPerform);
+      media.setComponentInstanceId(GALLERY1);
+
+      Collection<String> pathList = MediaDAO.getAlbumIdsOf(con, media);
       assertThat(pathList, notNullValue());
       assertThat(pathList, hasSize(1));
       assertThat(pathList, contains("2"));
@@ -241,8 +248,12 @@ public class PhotoDaoTest extends BaseGalleryTest {
     String photoId = "5";
     Connection con = getConnection();
     try {
-      PhotoDAO.deletePhotoPath(con, photoId, GALLERY2);
-      Collection<String> pathList = MediaDAO.getPathList(con, GALLERY2, photoId);
+      Media media = new Photo();
+      media.setId(photoId);
+      media.setComponentInstanceId(GALLERY2);
+
+      PhotoDAO.deletePhotoPath(con, media.getId(), media.getComponentInstanceId());
+      Collection<String> pathList = MediaDAO.getAlbumIdsOf(con, media);
       assertThat(pathList, empty());
     } finally {
       con.close();
@@ -254,11 +265,15 @@ public class PhotoDaoTest extends BaseGalleryTest {
     String merPhotoId = "4";
     Connection con = getConnection();
     try {
-      Collection<String> pathList = MediaDAO.getPathList(con, GALLERY1, merPhotoId);
+      Media media = new Photo();
+      media.setId(merPhotoId);
+      media.setComponentInstanceId(GALLERY1);
+
+      Collection<String> pathList = MediaDAO.getAlbumIdsOf(con, media);
       assertThat(pathList, hasSize(1));
       PhotoDetail mer = PhotoDAO.getPhoto(con, merPhotoId);
       PhotoDAO.createPath(con, mer, "2");
-      pathList = MediaDAO.getPathList(con, GALLERY1, merPhotoId);
+      pathList = MediaDAO.getAlbumIdsOf(con, media);
       assertThat(pathList, hasSize(2));
     } finally {
       con.close();
@@ -273,13 +288,13 @@ public class PhotoDaoTest extends BaseGalleryTest {
       CacheServiceFactory.getSessionCacheService()
           .put(UserDetail.CURRENT_REQUESTER_KEY, publisherUser);
 
-      Collection<PhotoDetail> allLastUploadedPhotos = PhotoDAO.getLastRegistredMedia(con, GALLERY1);
+      Collection<PhotoDetail> allLastUploadedPhotos = PhotoDAO.getLastRegisteredMedia(con, GALLERY1);
       assertThat(allLastUploadedPhotos, notNullValue());
       assertThat(allLastUploadedPhotos, hasSize(4));
 
       CacheServiceFactory.getSessionCacheService().put(UserDetail.CURRENT_REQUESTER_KEY, null);
 
-      Collection<PhotoDetail> lastUploadedPhotos = PhotoDAO.getLastRegistredMedia(con, GALLERY1);
+      Collection<PhotoDetail> lastUploadedPhotos = PhotoDAO.getLastRegisteredMedia(con, GALLERY1);
       assertThat(lastUploadedPhotos, notNullValue());
       assertThat(lastUploadedPhotos, hasSize(3));
 

@@ -1,4 +1,7 @@
 <%@ page import="com.silverpeas.gallery.GalleryComponentSettings" %>
+<%@ page import="com.silverpeas.gallery.model.Media" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="com.silverpeas.gallery.model.Photo" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -42,8 +45,8 @@
   String userId = (String) request.getAttribute("UserId");
   String profile = (String) request.getAttribute("Profile");
   List<NodeDetail> path = (List) request.getAttribute("Path");
-  int firstPhotoIndex = ((Integer) request.getAttribute("FirstPhotoIndex")).intValue();
-  int nbPhotosPerPage = ((Integer) request.getAttribute("NbPhotosPerPage")).intValue();
+  int firstPhotoIndex = ((Integer) request.getAttribute("FirstMediaIndex")).intValue();
+  int nbPhotosPerPage = ((Integer) request.getAttribute("NbMediaPerPage")).intValue();
   String taille = (String) request.getAttribute("Taille");
   Boolean dragAndDropEnable = (Boolean) request.getAttribute("DragAndDropEnable");
   Boolean isViewMetadata = (Boolean) request.getAttribute("IsViewMetadata");
@@ -61,10 +64,10 @@
   ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
 
   // declaration des variables :
-  String fctAddPhoto = "AddPhoto";
+  String fctAddPhoto = "AddMedia";
   int nbAffiche = 0;
   String albumId = "";
-  List photos = null;
+  List<Media> mediaList = new ArrayList<Media>();
   int id = 0;
   int nbParLigne = 1;
   int largeurCellule = 0;
@@ -79,19 +82,19 @@
 
   if (currentAlbum != null) {
     albumId = String.valueOf(currentAlbum.getId());
-    photos = (List) currentAlbum.getPhotos();
+    mediaList = currentAlbum.getMedia();
     albumName = currentAlbum.getName();
     albumDescription = currentAlbum.getDescription();
     albumUrl = currentAlbum.getLink();
   }
 
-  boolean somePhotos = photos != null && !photos.isEmpty();
+  boolean somePhotos = mediaList != null && !mediaList.isEmpty();
   boolean someAlbums = currentAlbum.getChildrenDetails() != null
           && !currentAlbum.getChildrenDetails().isEmpty();
 
   // initialisation de la pagination
-  Pagination pagination = gef.getPagination(photos.size(), nbPhotosPerPage, firstPhotoIndex);
-  List affPhotos = photos.subList(pagination.getFirstItemIndex(), pagination.getLastItemIndex());
+  Pagination pagination = gef.getPagination(mediaList.size(), nbPhotosPerPage, firstPhotoIndex);
+  List<Media> subMediaList = mediaList.subList(pagination.getFirstItemIndex(), pagination.getLastItemIndex());
 
   // creation du chemin :
   String namePath = "";
@@ -191,7 +194,7 @@ function deleteConfirm(id,nom)  {
 function choiceGoTo(selectedIndex) {
   // envoi du choix de la taille des vignettes
   if (selectedIndex != 0 && selectedIndex != 1) {
-    document.ChoiceSelectForm.Choice.value = document.photoForm.ChoiceSize[selectedIndex].value;
+    document.ChoiceSelectForm.Choice.value = document.mediaForm.ChoiceSize[selectedIndex].value;
     document.ChoiceSelectForm.submit();
   }
 }
@@ -201,9 +204,9 @@ function sendData() {
   var selectedPhotos = getObjects(true);
   if (selectedPhotos && selectedPhotos.length > 0)
   {
-    document.photoForm.SelectedIds.value 	= selectedPhotos;
-    document.photoForm.NotSelectedIds.value = getObjects(false);
-    document.photoForm.submit();
+    document.mediaForm.SelectedIds.value 	= selectedPhotos;
+    document.mediaForm.NotSelectedIds.value = getObjects(false);
+    document.mediaForm.submit();
   }
 }
 
@@ -212,10 +215,10 @@ function sendToBasket() {
   var selectedPhotos = getObjects(true);
   if (selectedPhotos && selectedPhotos.length > 0)
   {
-    document.photoForm.SelectedIds.value 	= selectedPhotos;
-    document.photoForm.NotSelectedIds.value = getObjects(false);
-    document.photoForm.action	= "BasketAddPhotos";
-    document.photoForm.submit();
+    document.mediaForm.SelectedIds.value 	= selectedPhotos;
+    document.mediaForm.NotSelectedIds.value = getObjects(false);
+    document.mediaForm.action	= "BasketAddMediaList";
+    document.mediaForm.submit();
   }
 }
 
@@ -226,10 +229,10 @@ function sendDataDelete() {
   {
     if(window.confirm("<%=resource.getString("gallery.confirmDeletePhotos")%> ")) {
       // envoi des photos selectionnees pour la modif par lot
-      document.photoForm.SelectedIds.value 	= selectedPhotos;
-      document.photoForm.NotSelectedIds.value = getObjects(false);
-      document.photoForm.action				= "DeleteSelectedPhoto";
-      document.photoForm.submit();
+      document.mediaForm.SelectedIds.value 	= selectedPhotos;
+      document.mediaForm.NotSelectedIds.value = getObjects(false);
+      document.mediaForm.action				= "DeleteSelectedMedia";
+      document.mediaForm.submit();
     }
   }
 }
@@ -241,7 +244,7 @@ function sendDataCategorize() {
     var selectedIds = selectedPhotos;
     var notSelectedIds = getObjects(false);
 
-    urlWindow = "CategorizeSelectedPhoto?SelectedIds="+selectedIds+"&NotSelectedIds="+notSelectedIds;
+    urlWindow = "CategorizeSelectedMedia?SelectedIds="+selectedIds+"&NotSelectedIds="+notSelectedIds;
     windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
     if (!albumWindow.closed && albumWindow.name== "albumWindow") {
       albumWindow.close();
@@ -256,17 +259,17 @@ function sendDataForAddPath()
   var selectedPhotos = getObjects(true);
   if (selectedPhotos && selectedPhotos.length > 0)
   {
-    document.photoForm.SelectedIds.value  = selectedPhotos;
-    document.photoForm.NotSelectedIds.value = getObjects(false);
-    document.photoForm.action       = "AddPathForSelectedPhoto";
-    document.photoForm.submit();
+    document.mediaForm.SelectedIds.value  = selectedPhotos;
+    document.mediaForm.NotSelectedIds.value = getObjects(false);
+    document.mediaForm.action       = "AddAlbumForSelectedMedia";
+    document.mediaForm.submit();
   }
 }
 
 function getObjects(selected)	{
   var  items = "";
   try {
-    var boxItems = document.photoForm.SelectPhoto;
+    var boxItems = document.mediaForm.SelectPhoto;
     if (boxItems != null) {
       // au moins une checkbox exist
       var nbBox = boxItems.length;
@@ -290,17 +293,17 @@ function getObjects(selected)	{
 }
 
 function doPagination(index) {
-  document.photoForm.SelectedIds.value 	= getObjects(true);
-  document.photoForm.NotSelectedIds.value = getObjects(false);
-  document.photoForm.Index.value 			= index;
-  document.photoForm.action				= "Pagination";
-  document.photoForm.submit();
+  document.mediaForm.SelectedIds.value 	= getObjects(true);
+  document.mediaForm.NotSelectedIds.value = getObjects(false);
+  document.mediaForm.Index.value 			= index;
+  document.mediaForm.action				= "Pagination";
+  document.mediaForm.submit();
 }
 
 function sortGoTo(selectedIndex) {
   // envoi du choix du tri
   if (selectedIndex != 0 && selectedIndex != 1)  {
-    document.OrderBySelectForm.Tri.value = document.photoForm.SortBy[selectedIndex].value;
+    document.OrderBySelectForm.Tri.value = document.mediaForm.SortBy[selectedIndex].value;
     document.OrderBySelectForm.submit();
   }
 }
@@ -334,25 +337,25 @@ function clipboardCut() {
   top.IdleFrame.location.href = '../..<%=gallerySC.getComponentUrl()%>cut?Object=Node&Id=<%=currentAlbum.getNodePK().getId()%>';
 }
 
-function CopySelectedPhoto()  {
+function CopySelectedMedia()  {
   var selectedPhotos = getObjects(true);
   if (selectedPhotos && selectedPhotos.length > 0)
   {
-    document.photoForm.SelectedIds.value 	= selectedPhotos;
-    document.photoForm.NotSelectedIds.value = getObjects(false);
-    document.photoForm.action				= "CopySelectedPhoto";
-    document.photoForm.submit();
+    document.mediaForm.SelectedIds.value 	= selectedPhotos;
+    document.mediaForm.NotSelectedIds.value = getObjects(false);
+    document.mediaForm.action				= "CopySelectedMedia";
+    document.mediaForm.submit();
   }
 }
 
-function CutSelectedPhoto()  {
+function CutSelectedMedia()  {
   var selectedPhotos = getObjects(true);
   if (selectedPhotos && selectedPhotos.length > 0)
   {
-    document.photoForm.SelectedIds.value  = selectedPhotos;
-    document.photoForm.NotSelectedIds.value = getObjects(false);
-    document.photoForm.action       = "CutSelectedPhoto";
-    document.photoForm.submit();
+    document.mediaForm.SelectedIds.value  = selectedPhotos;
+    document.mediaForm.NotSelectedIds.value = getObjects(false);
+    document.mediaForm.action       = "CutSelectedMedia";
+    document.mediaForm.submit();
   }
 }
 
@@ -400,14 +403,14 @@ function CutSelectedPhoto()  {
       operationPane.addOperation(resource.getIcon("gallery.allSelect"), resource.getString("gallery.allSelect"), "AllSelected");
 
       if ("admin".equals(profile)) {
-        operationPane.addOperation(resource.getIcon("gallery.copy"), resource.getString("gallery.copySelectedPhoto"), "javascript:onClick=CopySelectedPhoto()");
-        operationPane.addOperation(resource.getIcon("gallery.cut"), resource.getString("gallery.cutSelectedPhoto"), "javascript:onClick=CutSelectedPhoto()");
+        operationPane.addOperation(resource.getIcon("gallery.copy"), resource.getString("gallery.copySelectedPhoto"), "javascript:onClick=CopySelectedMedia()");
+        operationPane.addOperation(resource.getIcon("gallery.cut"), resource.getString("gallery.cutSelectedPhoto"), "javascript:onClick=CutSelectedMedia()");
         operationPane.addOperation(resource.getIcon("gallery.paste"), resource.getString("GML.paste"), "javascript:onClick=clipboardPaste()");
         operationPane.addLine();
       }
       if ("admin".equals(profile) || "publisher".equals(profile) || "writer".equals(profile)) {
         // possibilite d'ajouter des photos pour les "admin", "publisher" et "writer"
-        operationPane.addOperationOfCreation(resource.getIcon("gallery.addPhoto"), resource.getString("gallery.addPhoto"), "AddPhoto");
+        operationPane.addOperationOfCreation(resource.getIcon("gallery.addPhoto"), resource.getString("gallery.addPhoto"), "AddMedia");
         operationPane.addLine();
       }
 
@@ -419,7 +422,7 @@ function CutSelectedPhoto()  {
         operationPane.addLine();
       }
 
-      if (photos.size() > 1) {
+      if (mediaList.size() > 1) {
         // diaporama
         operationPane.addOperation(resource.getIcon("gallery.startDiaporama"), resource.getString("gallery.diaporama"), "javascript:startSlideshow()");
       }
@@ -449,23 +452,13 @@ function CutSelectedPhoto()  {
         out.println("<tr><td>");
         out.println("<div id=\"subTopics\">");
         out.println("<ul id=\"albumList\" >");
-        Iterator it = albums.iterator();
-        while (it.hasNext()) {
-          AlbumDetail unAlbum = (AlbumDetail) it.next();
+        for (AlbumDetail unAlbum : albums) {
           id = unAlbum.getId();
-          String nom = unAlbum.getName();
-          String link = "";
-          if (StringUtil.isDefined(unAlbum.getPermalink())) {
-            link = "&nbsp;<a href=\"" + unAlbum.getPermalink() + "\"><img src=\""
-                    + resource.getIcon("gallery.link") + "\" border=\"0\" align=\"bottom\" alt=\""
-                    + resource.getString("gallery.CopyAlbumLink") + "\" title=\"" + resource.
-                    getString("gallery.CopyAlbumLink") + "\"></a>";
-          }
     %>
     <li id="album_<%=id%>" class="ui-state-default">
       <a href="ViewAlbum?Id=<%=id%>">
         <strong><%=unAlbum.getName()%>
-          <span><%=unAlbum.getNbPhotos()%></span>
+          <span><%=unAlbum.getNbMedia()%></span>
         </strong>
         <span><%=unAlbum.getDescription()%></span>
       </a>
@@ -496,16 +489,16 @@ function CutSelectedPhoto()  {
     <%// afficher les photos
       // -------------------
       // affichage des photos sous forme de vignettes
-      if (photos != null) {%>
+      if (mediaList != null) {%>
     <br/>
     <%String vignette_url = null;
-      int nbPhotos = photos.size();
+      int nbPhotos = mediaList.size();
       Board board = gef.getBoard();
 
-      if (photos.size() > 0) {
+      if (mediaList.size() > 0) {
         out.println(board.printBefore());
         // affichage de l'entete%>
-        <form name="photoForm" action="EditSelectedPhoto">
+        <form name="mediaForm" action="EditSelectedMedia">
         	<input type="hidden" name="AlbumId" value="<%=albumId%>"/>
         	<input type="hidden" name="Index"/>
         	<input type="hidden" name="SelectedIds"/> <input type="hidden" name="NotSelectedIds"/>
@@ -519,10 +512,10 @@ function CutSelectedPhoto()  {
             <table border="0" width="100%">
               <tr>
                 <td align="center" width="100%" class=ArrayNavigation><%=pagination.printCounter()%>
-                  <%if (photos.size() == 1) {
-                      out.println(resource.getString("gallery.photo"));
+                  <%if (mediaList.size() == 1) {
+                      out.println(resource.getString("gallery.media"));
                     } else {
-                      out.println(resource.getString("gallery.photos"));
+                      out.println(resource.getString("gallery.media.several"));
                     }%>
                 </td>
                 <td align="right" nowrap><select name="ChoiceSize" onchange="javascript:choiceGoTo(this.selectedIndex);">
@@ -558,15 +551,9 @@ function CutSelectedPhoto()  {
         </tr>
     </table>
     <%String photoColor = "";
-      PhotoDetail photo;
+      Media media;
       String idP;
-      Calendar calendar = Calendar.getInstance();
-      calendar.set(Calendar.HOUR_OF_DAY, 0);
-      calendar.set(Calendar.MINUTE, 0);
-      calendar.set(Calendar.SECOND, 0);
-      calendar.set(Calendar.MILLISECOND, 0);
-      Date today = calendar.getTime();
-      Iterator it = affPhotos.iterator();
+      Iterator<Media> it = subMediaList.iterator();
       while (it.hasNext()) {
         // affichage de la photo%>
     <table width="98%" border="0" cellspacing="5" cellpadding="0"
@@ -576,16 +563,16 @@ function CutSelectedPhoto()  {
       </tr>
       <tr>
         <%while (it.hasNext() && nbAffiche < nbParLigne) {
-            photo = (PhotoDetail) it.next();
-            if (photo != null) {
-              idP = photo.getMediaPK().getId();
-              String altTitle = EncodeHelper.javaStringToHtmlString(photo.getTitle());
-              if (StringUtil.isDefined(photo.getDescription())) {
-                altTitle += " : " + EncodeHelper.javaStringToHtmlString(photo.getDescription());
+            media = it.next();
+            if (media != null) {
+              idP = media.getMediaPK().getId();
+              String altTitle = EncodeHelper.javaStringToHtmlString(media.getTitle());
+              if (StringUtil.isDefined(media.getDescription())) {
+                altTitle += " : " + EncodeHelper.javaStringToHtmlString(media.getDescription());
               }
-              vignette_url = photo.getThumbnailUrl(extension);
+              vignette_url = media.getThumbnailUrl(extension);
               photoColor = "fondPhoto";
-              if (!photo.isVisible(today)) {
+              if (!media.isVisible()) {
                 photoColor = "fondPhotoNotVisible";
               }
 
@@ -600,7 +587,7 @@ function CutSelectedPhoto()  {
                        class="cadrePhoto">
                   <tr>
                     <td bgcolor="#FFFFFF"><a
-                        href="PreviewPhoto?PhotoId=<%=idP%>"><img src="<%=vignette_url%>" border="0" alt="<%=altTitle%>" title="<%=altTitle%>"/>
+                        href="MediaView?MediaId=<%=idP%>"><img src="<%=vignette_url%>" border="0" alt="<%=altTitle%>" title="<%=altTitle%>"/>
                       </a></td>
                   </tr>
                 </table></td>
@@ -614,12 +601,12 @@ function CutSelectedPhoto()  {
               <td align="center" width="10"><input type="checkbox"
                                                    name="SelectPhoto" value="<%=idP%>" <%=usedCheck%>/>
               </td>
-              <td class="txtlibform"><%=photo.getName()%></td>
+              <td class="txtlibform"><%=media.getName()%></td>
             </tr>
-            <%if (photo.getDescription() != null) {%>
+            <%if (media.getDescription() != null) {%>
             <tr>
               <td>&nbsp;</td>
-              <td><%=photo.getDescription()%></td>
+              <td><%=media.getDescription()%></td>
             </tr>
             <%}%>
           </table></td>
@@ -634,7 +621,7 @@ function CutSelectedPhoto()  {
                        class="cadrePhoto">
                   <tr>
                     <td bgcolor="#FFFFFF"><a
-                        href="PreviewPhoto?PhotoId=<%=idP%>"><img src="<%=vignette_url%>" border="0" alt="<%=altTitle%>" title="<%=altTitle%>"/>
+                        href="MediaView?MediaId=<%=idP%>"><img src="<%=vignette_url%>" border="0" alt="<%=altTitle%>" title="<%=altTitle%>"/>
                       </a></td>
                   </tr>
                 </table></td>
@@ -662,7 +649,7 @@ function CutSelectedPhoto()  {
                        class="cadrePhoto">
                   <tr>
                     <td bgcolor="#FFFFFF"><a
-                        href="PreviewPhoto?PhotoId=<%=idP%>"><img src="<%=vignette_url%>" border="0" alt="<%=altTitle%>" title="<%=altTitle%>"/>
+                        href="MediaView?MediaId=<%=idP%>"><img src="<%=vignette_url%>" border="0" alt="<%=altTitle%>" title="<%=altTitle%>"/>
                       </a></td>
                   </tr>
                 </table></td>
@@ -672,21 +659,22 @@ function CutSelectedPhoto()  {
           <table border="0" width="100%">
             <tr>
               <td class="txtlibform" nowrap><%=resource.getString("GML.title")%> :</td>
-              <td><%=photo.getName()%></td>
+              <td><%=media.getName()%></td>
             </tr>
-            <%if (photo.getDescription() != null) {%>
+            <%if (media.getDescription() != null) {%>
             <tr>
               <td class="txtlibform" nowrap><%=resource.getString("GML.description")%> :</td>
-              <td><%=photo.getDescription()%></td>
+              <td><%=media.getDescription()%></td>
             </tr>
             <%}
-              if (photo.getAuthor() != null) {%>
+              if (media.getAuthor() != null) {%>
             <tr>
               <td class="txtlibform" nowrap><%=resource.getString("GML.author")%> :</td>
-              <td><%=photo.getAuthor()%></td>
+              <td><%=media.getAuthor()%></td>
             </tr>
             <%}
-              if (viewMetadata) {
+              Photo photo = media.getPhoto();
+              if (viewMetadata && photo != null) {
                 final Collection<String> metaDataKeys = photo.getMetaDataProperties();
                 if (metaDataKeys != null && !metaDataKeys.isEmpty()) {
                   MetaData metaData;
@@ -706,12 +694,12 @@ function CutSelectedPhoto()  {
             <%}
                 }
               }
-              if (photo.getKeyWord() != null) {%>
+              if (media.getKeyWord() != null) {%>
             <tr>
               <td class="txtlibform" nowrap><%=resource.getString("gallery.keyword")%>
                 :</td>
               <td>
-                <%String keyWord = photo.getKeyWord();
+                <%String keyWord = media.getKeyWord();
                   // decouper la zone keyWord en mots
                   StringTokenizer st = new StringTokenizer(keyWord);
                   // traitement des mots cles

@@ -27,6 +27,7 @@ import com.silverpeas.SilverpeasContent;
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.silverpeas.gallery.constant.MediaType;
+import com.silverpeas.gallery.control.ejb.MediaServiceFactory;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -148,7 +149,7 @@ public abstract class Media implements SilverpeasContent, SilverContentInterface
     return isVisible(today);
   }
 
-  public boolean isVisible(Date today) {
+  protected boolean isVisible(Date today) {
     boolean result = true;
     if (today != null && getVisibilityPeriod().isDefined()) {
       result = getVisibilityPeriod().contains(today);
@@ -337,6 +338,19 @@ public abstract class Media implements SilverpeasContent, SilverContentInterface
   }
 
   /**
+   * Gets the internal media instance if type of the current media is {@link MediaType#Photo} or
+   * {@link MediaType#Video} or {@link MediaType#Sound}.
+   * @return internal media instance, null if media type is not {@link MediaType#Photo} or {@link
+   * MediaType#Video} or {@link MediaType#Sound}.
+   */
+  public InternalMedia getInternalMedia() {
+    if (this instanceof InternalMedia) {
+      return (InternalMedia) this;
+    }
+    return null;
+  }
+
+  /**
    * Gets the photo instance if type of the current media is {@link MediaType#Photo}.
    * @return photo instance, null if media type is not {@link MediaType#Photo}.
    */
@@ -378,5 +392,30 @@ public abstract class Media implements SilverpeasContent, SilverContentInterface
       return (Streaming) this;
     }
     return null;
+  }
+
+  /**
+   * Removes the current media from all albums which it is attached to.
+   */
+  public void removeFromAllAlbums() {
+    MediaServiceFactory.getMediaService().removeMediaFromAllAlbums(this);
+  }
+
+  /**
+   * Adds the current media to the album represented by specified identifiers.
+   * @param albumIds the identifier of albums.
+   */
+  public void addToAlbums(String... albumIds) {
+    MediaServiceFactory.getMediaService().addMediaToAlbums(this, albumIds);
+  }
+
+  /**
+   * Sets the current media to the album represented by specified identifiers.
+   * (all not specified album attachments will be deleted)
+   * @param albumIds the identifier of albums.
+   */
+  public void setToAlbums(String... albumIds) {
+    removeFromAllAlbums();
+    addToAlbums(albumIds);
   }
 }

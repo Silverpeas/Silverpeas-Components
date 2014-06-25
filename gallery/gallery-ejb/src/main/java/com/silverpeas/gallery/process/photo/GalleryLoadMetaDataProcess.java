@@ -23,6 +23,7 @@
  */
 package com.silverpeas.gallery.process.photo;
 
+import com.silverpeas.gallery.ImageHelper;
 import com.silverpeas.gallery.model.Photo;
 import org.silverpeas.process.ProcessFactory;
 import org.silverpeas.process.io.file.FileHandler;
@@ -30,11 +31,8 @@ import org.silverpeas.process.management.AbstractFileProcess;
 import org.silverpeas.process.management.ProcessExecutionContext;
 import org.silverpeas.process.session.ProcessSession;
 
-import com.silverpeas.gallery.ImageHelper;
-import com.silverpeas.gallery.model.PhotoDetail;
-
 /**
- * Process to load metada of a photo
+ * Process to load metadata of a photo
  * @author Yohann Chastagnier
  */
 public class GalleryLoadMetaDataProcess extends AbstractFileProcess<ProcessExecutionContext> {

@@ -1,3 +1,4 @@
+<%@ page import="com.silverpeas.gallery.model.Media" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -28,16 +29,17 @@
 <%@ include file="check.jsp" %>
 
 <%
-	PhotoDetail photo			= (PhotoDetail) request.getAttribute("Photo");
+	Media media = (Media) request.getAttribute("Media");
 	List 	path 			= (List) request.getAttribute("Path");
 	Collection 	pathList 		= (Collection) request.getAttribute("PathList");
 	Collection 	albums			= (Collection) request.getAttribute("Albums");
 	String 		xmlFormName		= (String) request.getAttribute("XMLFormName");
 
-	String 		photoId			= photo.getMediaPK().getId();
+	String mediaId = media.getMediaPK().getId();
 
 	Button validateButton = gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
-	Button cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "PreviewPhoto?PhotoId="+photoId, false);
+	Button cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "MediaView?MediaId="+
+      mediaId, false);
 %>
 
 <html>
@@ -59,8 +61,8 @@ function sendData()
 	displayPath(path, browseBar);
 
    	TabbedPane tabbedPane = gef.getTabbedPane();
-	tabbedPane.addTab(resource.getString("gallery.photo"), "PreviewPhoto?PhotoId="+photoId, false);
-	tabbedPane.addTab(resource.getString("gallery.info"), "EditInformation?PhotoId="+photoId, false);
+	tabbedPane.addTab(resource.getString("gallery.media"), "MediaView?MediaId="+ mediaId, false);
+	tabbedPane.addTab(resource.getString("gallery.info"), "EditInformation?MediaId="+ mediaId, false);
 	tabbedPane.addTab(resource.getString("gallery.accessPath"), "#", true);
 
 	out.println(window.printBefore());
@@ -72,7 +74,7 @@ function sendData()
     out.println(board.printBefore());
     %>
   <form name="paths" action="SelectPath" method="POST">
-    <input type="hidden" name="PhotoId" value="<%=photoId%>">
+    <input type="hidden" name="MediaId" value="<%=mediaId%>">
     <table>
     <%
 	if(albums !=null && !albums.isEmpty())

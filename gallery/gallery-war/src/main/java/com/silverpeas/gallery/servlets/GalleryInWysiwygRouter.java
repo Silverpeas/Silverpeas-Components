@@ -116,7 +116,7 @@ public class GalleryInWysiwygRouter extends HttpServlet {
         destination = rootDest + "wysiwygAlbums.jsp";
       } else {
         // affichage du contenu d'un album
-        request.setAttribute("Photos", viewPhotosOfAlbum(componentId, albumId));
+        request.setAttribute("MediaList", viewPhotosOfAlbum(componentId, albumId));
         // appel jsp
         destination = rootDest + "wysiwygImages.jsp";
       }

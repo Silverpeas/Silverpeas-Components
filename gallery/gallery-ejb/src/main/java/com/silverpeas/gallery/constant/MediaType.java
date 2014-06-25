@@ -38,4 +38,36 @@ public enum MediaType {
       return Unknown;
     }
   }
+
+  /**
+   * Indicates if current type is the photo one.
+   * @return
+   */
+  public boolean isPhoto() {
+    return Photo == this;
+  }
+
+  /**
+   * Indicates if current type is the video one.
+   * @return
+   */
+  public boolean isVideo() {
+    return Video == this;
+  }
+
+  /**
+   * Indicates if current type is the sound one.
+   * @return
+   */
+  public boolean isSound() {
+    return Sound == this;
+  }
+
+  /**
+   * Indicates if current type is the streaming one.
+   * @return
+   */
+  public boolean isStreaming() {
+    return Streaming == this;
+  }
 }

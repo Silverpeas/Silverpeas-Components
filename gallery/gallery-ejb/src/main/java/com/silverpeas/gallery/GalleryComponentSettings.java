@@ -24,7 +24,9 @@
 package com.silverpeas.gallery;
 
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 
 /**
@@ -111,5 +113,25 @@ public final class GalleryComponentSettings {
       nbPhotosPerPage = 6;
     }
     return nbPhotosPerPage;
+  }
+
+  public static boolean isDragAndDropEnabled(String componentInstanceId) {
+    return StringUtil.getBooleanValue(OrganisationControllerFactory.getOrganisationController()
+        .getComponentParameterValue(componentInstanceId, "dragAndDrop"));
+  }
+
+  public static boolean isPdcEnabled(String componentInstanceId) {
+    return StringUtil.getBooleanValue(OrganisationControllerFactory.getOrganisationController()
+        .getComponentParameterValue(componentInstanceId, "usePdc"));
+  }
+
+  public static boolean isViewMetadataEnabled(String componentInstanceId) {
+    return StringUtil.getBooleanValue(OrganisationControllerFactory.getOrganisationController()
+        .getComponentParameterValue(componentInstanceId, "viewMetadata"));
+  }
+
+  public static boolean isMakeWatermarkEnabled(String componentInstanceId) {
+    return StringUtil.getBooleanValue(OrganisationControllerFactory.getOrganisationController()
+        .getComponentParameterValue(componentInstanceId, "watermark"));
   }
 }

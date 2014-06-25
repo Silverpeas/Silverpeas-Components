@@ -1,4 +1,5 @@
 <%@ page import="com.silverpeas.gallery.GalleryComponentSettings" %>
+<%@ page import="com.silverpeas.gallery.model.Media" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -29,7 +30,7 @@
 <%@ include file="check.jsp"%>
 <%
   // recuperation des parametres :
-    Collection photos = (List) request.getAttribute("Photos");
+    Collection photos = (List) request.getAttribute("MediaList");
     Collection selectedIds = (Collection) request.getAttribute("SelectedIds");
     boolean isOrder = ((Boolean) request.getAttribute("IsOrder")).booleanValue();
 
@@ -54,10 +55,10 @@
 		if(window.confirm("<%=resource.getString("gallery.confirmDeletePhotos")%> "))
 		{
 			// envoi des photos selectionnees pour la suppression
-			document.photoForm.SelectedIds.value 	= getObjects(true);
-			document.photoForm.NotSelectedIds.value = getObjects(false);
-			document.photoForm.action				= "BasketDeleteSelectedPhoto";
-			document.photoForm.submit();
+			document.mediaForm.SelectedIds.value 	= getObjects(true);
+			document.mediaForm.NotSelectedIds.value = getObjects(false);
+			document.mediaForm.action				= "BasketDeleteSelectedMedia";
+			document.mediaForm.submit();
 		}
 	}
 
@@ -66,7 +67,7 @@
 		var  items = "";
 		try
 		{
-			var boxItems = document.photoForm.SelectPhoto;
+			var boxItems = document.mediaForm.SelectPhoto;
 			if (boxItems != null){
 				// au moins une checkbox exist
 				var nbBox = boxItems.length;
@@ -92,11 +93,11 @@
 
 	function doPagination(index)
 	{
-		document.photoForm.SelectedIds.value 	= getObjects(true);
-		document.photoForm.NotSelectedIds.value = getObjects(false);
-		document.photoForm.Index.value 			= index;
-		document.photoForm.action				= "BasketPagination";
-		document.photoForm.submit();
+		document.mediaForm.SelectedIds.value 	= getObjects(true);
+		document.mediaForm.NotSelectedIds.value = getObjects(false);
+		document.mediaForm.Index.value 			= index;
+		document.mediaForm.action				= "BasketPagination";
+		document.mediaForm.submit();
 	}
 
 	function deleteConfirm(id)
@@ -104,9 +105,9 @@
 		// confirmation de suppression d'une photo
 		if(window.confirm("<%=resource.getString("gallery.confirmDeletePhoto")%>  ?"))
 		{
-  			document.photoFormDelete.action = "BasketDeletePhoto";
-  			document.photoFormDelete.PhotoId.value = id;
-  			document.photoFormDelete.submit();
+  			document.mediaFormDelete.action = "BasketDeleteMedia";
+  			document.mediaFormDelete.MediaId.value = id;
+  			document.mediaFormDelete.submit();
 		}
 	}
 
@@ -158,12 +159,12 @@ var messages = new Array();
   <%int messagesId = 0;
           while (itP.hasNext()) {
             String photoId = (String) itP.next();
-            PhotoDetail photo = gallerySC.getPhoto(photoId);
+            Media media = gallerySC.getMedia(photoId);
             String nomRep = GalleryComponentSettings.getMediaFolderNamePrefix()
-                + photo.getId();%>
-            messages[<%=messagesId%>] = new Array('<%=FileServerUtils.getUrl( componentId, photo.getId()
-            + extensionAlt, photo.getImageMimeType(),
-            nomRep)%>','<%=EncodeHelper.javaStringToJsString(photo.getName()) %>',"#FFFFFF");
+                + media.getId();%>
+            messages[<%=messagesId%>] = new Array('<%=FileServerUtils.getUrl( componentId, media.getId()
+            + extensionAlt, media.getInternalMedia().getFileMimeType(),
+            nomRep)%>','<%=EncodeHelper.javaStringToJsString(media.getName()) %>',"#FFFFFF");
         <%messagesId++;
       }%>
 
@@ -320,7 +321,7 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
     // afficher les photos du panier
     // -------------------
 %>
-<FORM NAME="photoForm"><input type="hidden" name="SelectedIds">
+<FORM NAME="mediaForm"><input type="hidden" name="SelectedIds">
 <input type="hidden" name="NotSelectedIds"> <%
    if (photos.size() == 0) {
        out.println("<center>"
@@ -333,7 +334,7 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
        boolean ok = false;
        itP = photos.iterator();
        if (itP.hasNext()) {
-         arrayPane.addArrayColumn(resource.getString("gallery.photo"));
+         arrayPane.addArrayColumn(resource.getString("gallery.media"));
          ArrayColumn columnOp = arrayPane.addArrayColumn(resource.getString("gallery.operation"));
          columnOp.setSortable(false);
          ok = true;
@@ -343,22 +344,11 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
          ArrayLine ligne = arrayPane.addArrayLine();
 
          id = Integer.parseInt((String) itP.next());
-         PhotoDetail photo = gallerySC.getPhoto(Integer.toString(id));
-         String nomRep = GalleryComponentSettings.getMediaFolderNamePrefix() + id;
+         Media media = gallerySC.getMedia(Integer.toString(id));
          String name = id + extension;
-         String altTitle = EncodeHelper.javaStringToHtmlString(photo.getTitle());
-         if (photo.getDescription() != null
-             && photo.getDescription().length() > 0) {
-           altTitle += " : "
-               + EncodeHelper.javaStringToHtmlString(photo.getDescription());
-         }
-         String vignette_url = FileServerUtils.getUrl(componentId, name, photo.
-             getImageMimeType(), nomRep);
-         String vignetteAlt = FileServerUtils.getUrl(componentId, photo.getId() + extensionAlt, photo.getImageMimeType(), nomRep);
-         String alt = EncodeHelper.javaStringToHtmlString("<IMG SRC=\""
-             + vignetteAlt + "\" border=\"0\">");
+         String vignette_url = media.getThumbnailUrl(extension);
 
-         ArrayCellText arrayCellText0 = ligne.addArrayCellText("<a href=\"PreviewPhoto?PhotoId="
+         ArrayCellText arrayCellText0 = ligne.addArrayCellText("<a href=\"MediaView?MediaId="
              + id
              + "\" onmouseover=\"doTooltip(event,"
              + indexPhoto
@@ -393,8 +383,8 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
  %>
 </FORM>
 
-<form name="photoFormDelete" action="" Method="POST"><input
-	type="hidden" name="PhotoId"> <input type="hidden" name="Name">
+<form name="mediaFormDelete" action="" Method="POST"><input
+	type="hidden" name="MediaId"> <input type="hidden" name="Name">
 <input type="hidden" name="Description"></form>
 
 <form name="favorite" action="" Method="POST"><input

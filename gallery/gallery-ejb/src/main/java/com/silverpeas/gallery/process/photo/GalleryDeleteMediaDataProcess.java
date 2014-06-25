@@ -29,7 +29,7 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.gallery.dao.MediaDAO;
 import com.silverpeas.gallery.model.GalleryRuntimeException;
-import com.silverpeas.gallery.model.PhotoDetail;
+import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.process.AbstractGalleryDataProcess;
 import com.silverpeas.gallery.process.GalleryProcessExecutionContext;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
@@ -40,26 +40,26 @@ import org.silverpeas.process.session.ProcessSession;
 import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
- * Process to delete a photo from Database
+ * Process to delete a media from Database
  * @author Yohann Chastagnier
  */
-public class GalleryDeletePhotoDataProcess extends AbstractGalleryDataProcess {
+public class GalleryDeleteMediaDataProcess extends AbstractGalleryDataProcess {
 
   /**
    * Gets an instance
-   * @param photo
+   * @param media
    * @return
    */
-  public static GalleryDeletePhotoDataProcess getInstance(final PhotoDetail photo) {
-    return new GalleryDeletePhotoDataProcess(photo);
+  public static GalleryDeleteMediaDataProcess getInstance(final Media media) {
+    return new GalleryDeleteMediaDataProcess(media);
   }
 
   /**
    * Default hidden constructor
-   * @param photo
+   * @param media
    */
-  protected GalleryDeletePhotoDataProcess(final PhotoDetail photo) {
-    super(photo);
+  protected GalleryDeleteMediaDataProcess(final Media media) {
+    super(media);
   }
 
   /*
@@ -71,26 +71,26 @@ public class GalleryDeletePhotoDataProcess extends AbstractGalleryDataProcess {
   @Override
   protected void processData(final GalleryProcessExecutionContext context,
       final ProcessSession session) throws Exception {
-    MediaDAO.deleteMedia(context.getConnection(), getPhoto().getPhoto());
+    MediaDAO.deleteMedia(context.getConnection(), getMedia());
 
     // Delete form data
-    removeXMLContentOfPhoto(getPhoto().getId(), context);
+    removeXMLContentOfMedia(getMedia().getId(), context);
 
     // Supprimer les commentaires
     CommentServiceFactory.getFactory().getCommentService()
-        .deleteAllCommentsOnPublication(PhotoDetail.getResourceType(), getPhoto().getMediaPK());
+        .deleteAllCommentsOnPublication(getMedia().getContributionType(), getMedia().getMediaPK());
 
     // Supprime le silverObject correspond
     getGalleryContentManager()
-        .deleteSilverContent(context.getConnection(), getPhoto().getMediaPK());
+        .deleteSilverContent(context.getConnection(), getMedia().getMediaPK());
   }
 
   /**
    * Centralized processing
-   * @param photoId
+   * @param mediaId
    * @param context
    */
-  private void removeXMLContentOfPhoto(final String photoId,
+  private void removeXMLContentOfMedia(final String mediaId,
       final GalleryProcessExecutionContext context) {
     try {
       final String xmlFormName = getXMLFormName(context);
@@ -102,14 +102,14 @@ public class GalleryDeletePhotoDataProcess extends AbstractGalleryDataProcess {
                 context.getComponentInstanceId() + ":" + xmlFormShortName);
 
         final RecordSet set = pubTemplate.getRecordSet();
-        final DataRecord data = set.getRecord(photoId);
+        final DataRecord data = set.getRecord(mediaId);
         set.delete(data);
       }
     } catch (final PublicationTemplateException e) {
-      throw new GalleryRuntimeException("GallerySessionController.removeXMLContentOfPhoto()",
+      throw new GalleryRuntimeException("GallerySessionController.removeXMLContentOfMedia()",
           SilverpeasRuntimeException.ERROR, "gallery.EX_IMPOSSIBLE_DE_SUPPRIMER_LE_CONTENU_XML", e);
     } catch (final FormException e) {
-      throw new GalleryRuntimeException("GallerySessionController.removeXMLContentOfPhoto()",
+      throw new GalleryRuntimeException("GallerySessionController.removeXMLContentOfMedia()",
           SilverpeasRuntimeException.ERROR, "gallery.EX_IMPOSSIBLE_DE_SUPPRIMER_LE_CONTENU_XML", e);
     }
   }
@@ -126,7 +126,7 @@ public class GalleryDeletePhotoDataProcess extends AbstractGalleryDataProcess {
      * TODO - YCH - JMS ?
      * AttachmentController
      * .deleteAttachment(AttachmentController.searchAttachmentByCustomerPK(new ForeignPK(
-     * photoId, context.getComponentInstanceId())));
+     * mediaId, context.getComponentInstanceId())));
      */
   }
 }

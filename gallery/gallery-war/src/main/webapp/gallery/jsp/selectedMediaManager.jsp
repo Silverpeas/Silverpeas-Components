@@ -53,19 +53,21 @@
 	String 		beginDate			= "";
 	String 		endDate				= "";
 
-	PagesContext 		context 	= new PagesContext("photoForm", "0", resource.getLanguage(), false, componentId, gallerySC.getUserId(), gallerySC.getAlbum(gallerySC.getCurrentAlbumId()).getNodePK().getId()); //Pas de passage de l'objectId dans le contexte car on est en traitement par lot, ce passage se fera lors de la validation du formulaire
+	PagesContext 		context 	= new PagesContext("mediaForm", "0", resource.getLanguage(), false, componentId, gallerySC.getUserId(), gallerySC.getAlbum(gallerySC.getCurrentAlbumId()).getNodePK().getId()); //Pas de passage de l'objectId dans le contexte car on est en traitement par lot, ce passage se fera lors de la validation du formulaire
 	context.setBorderPrinted(false);
 	context.setCurrentFieldIndex("10");
 	context.setUseBlankFields(true);
 	context.setUseMandatory(false);
 
 	// d�claration des boutons
-	Button validateButton = (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
+	Button validateButton =
+      gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
 	Button cancelButton;
 	if (albumId != null && !albumId.equals("") &&  !albumId.equals("null"))
-		cancelButton   = (Button) gef.getFormButton(resource.getString("GML.cancel"), "GoToCurrentAlbum?AlbumId="+albumId, false);
+		cancelButton   =
+        gef.getFormButton(resource.getString("GML.cancel"), "GoToCurrentAlbum?AlbumId="+albumId, false);
 	else
-		cancelButton   = (Button) gef.getFormButton(resource.getString("GML.cancel"), "SearchKeyWord?SearchKeyWord="+searchKeyWord, false);
+		cancelButton   = gef.getFormButton(resource.getString("GML.cancel"), "SearchKeyWord?SearchKeyWord="+searchKeyWord, false);
 %>
 
 <html>
@@ -86,12 +88,12 @@ function sendData()
 	<% if (formUpdate != null) { %>
 		if (isCorrectHeaderForm() && isCorrectForm())
 		{
-       		document.photoForm.submit();
+       		document.mediaForm.submit();
 		}
 	<% } else { %>
 		if (isCorrectHeaderForm())
 		{
-       		document.photoForm.submit();
+       		document.mediaForm.submit();
 		}
 	<% } %>
 }
@@ -100,12 +102,12 @@ function isCorrectHeaderForm()
 {
    	var errorMsg = "";
    	var errorNb = 0;
-   	var title = stripInitialWhitespace(document.photoForm.Im$Title.value);
-   	var descr = document.photoForm.Im$Description.value;
-   	var beginDownloadDate = document.photoForm.Im$BeginDownloadDate.value;
-   	var endDownloadDate = document.photoForm.Im$EndDownloadDate.value;
-   	var beginDate = document.photoForm.Im$BeginDate.value;
-   	var endDate = document.photoForm.Im$EndDate.value;
+   	var title = stripInitialWhitespace(document.mediaForm.Media$Title.value);
+   	var descr = document.mediaForm.Media$Description.value;
+   	var beginDownloadDate = document.mediaForm.Media$BeginDownloadDate.value;
+   	var endDownloadDate = document.mediaForm.Media$EndDownloadDate.value;
+   	var beginDate = document.mediaForm.Media$BeginVisibilityDate.value;
+   	var endDate = document.mediaForm.Media$EndVisibilityDate.value;
    	var langue = "<%=resource.getLanguage()%>";
     var beginDownloadDateOK = true;
     var beginDateOK = true;
@@ -198,7 +200,7 @@ function isCorrectHeaderForm()
 </script>
 
 </head>
-<body class="yui-skin-sam" onLoad="javascript:document.photoForm.Im$Title.focus();">
+<body class="yui-skin-sam" onLoad="javascript:document.mediaForm.Media$Title.focus();">
 <%
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "Main");
@@ -209,25 +211,25 @@ function isCorrectHeaderForm()
 	out.println(window.printBefore());
   out.println(frame.printBefore());
 %>
-<form name="photoForm" action="UpdateSelectedPhoto" method="POST" enctype="multipart/form-data">
+<form name="mediaForm" action="UpdateSelectedMedia" method="POST" enctype="multipart/form-data">
 	<%=board.printBefore()%>
 	<table cellpadding="5">
 		<tr>
 			<td class="txtlibform"><fmt:message key="GML.title"/> :</td>
-			<td><input type="text" name="Im$Title" size="60" maxlength="150" value="<%=title%>">
+			<td><input type="text" name="Media$Title" size="60" maxlength="150" value="<%=title%>">
 				<input type="hidden" name="Im$SearchKeyWord" value="<%=searchKeyWord%>"></td>
 		</tr>
 		<tr>
 			<td class="txtlibform"><fmt:message key="GML.description"/> :</td>
-			<td><input type="text" name="Im$Description" size="60" maxlength="150" value="<%=description%>"></td>
+			<td><input type="text" name="Media$Description" size="60" maxlength="150" value="<%=description%>"></td>
 		</tr>
 		<tr>
 			<td class="txtlibform"><fmt:message key="GML.author"/> :</td>
-			<td><input type="text" name="Im$Author" size="60" maxlength="150" value="<%=author%>"></td>
+			<td><input type="text" name="Media$Author" size="60" maxlength="150" value="<%=author%>"></td>
 		</tr>
 		<tr>
 			<td class="txtlibform"><fmt:message key="gallery.keyword"/> :</td>
-			<td><input type="text" name="Im$KeyWord" size="60" maxlength="150" value="<%=keyWord%>"></td>
+			<td><input type="text" name="Media$KeyWord" size="60" maxlength="150" value="<%=keyWord%>"></td>
 		</tr>
 		<tr>
 			<td class="txtlibform"><fmt:message key="gallery.download"/> :</td>
@@ -236,23 +238,23 @@ function isCorrectHeaderForm()
 				if (download)
 					downloadCheck = "checked";
 			%>
-		    <td><input type="checkbox" name="Im$Download" value="true" <%=downloadCheck%>></td>
+		    <td><input type="checkbox" name="Media$DownloadAuthorized" value="true" <%=downloadCheck%>></td>
 		</tr>
 		<tr>
 			<td class="txtlibform"><fmt:message key="gallery.beginDownloadDate"/> :</td>
-			<td><input type="text" class="dateToPick" name="Im$BeginDownloadDate" size="12" maxlength="10" value="<%=beginDownloadDate%>"/></td>
+			<td><input type="text" class="dateToPick" name="Media$BeginDownloadDate" size="12" maxlength="10" value="<%=beginDownloadDate%>"/></td>
 		</tr>
 		<tr>
 			<td class="txtlibform"><fmt:message key="GML.toDate"/> :</td>
-			<td><input type="text" class="dateToPick" name="Im$EndDownloadDate" size="12" maxlength="10" value="<%=endDownloadDate%>"/></td>
+			<td><input type="text" class="dateToPick" name="Media$EndDownloadDate" size="12" maxlength="10" value="<%=endDownloadDate%>"/></td>
 		</tr>
 		<tr>
 			<td class="txtlibform"><fmt:message key="gallery.beginDate"/> :</td>
-			<td><input type="text" class="dateToPick" name="Im$BeginDate" size="12" maxlength="10" value="<%=beginDate%>"/></td>
+			<td><input type="text" class="dateToPick" name="Media$BeginVisibilityDate" size="12" maxlength="10" value="<%=beginDate%>"/></td>
 		</tr>
 		<tr>
 			<td class="txtlibform"><fmt:message key="GML.toDate"/> :</td>
-			<td><input type="text" class="dateToPick" name="Im$EndDate" size="12" maxlength="10" value="<%=endDate%>"/>&nbsp;</td>
+			<td><input type="text" class="dateToPick" name="Media$EndVisibilityDate" size="12" maxlength="10" value="<%=endDate%>"/>&nbsp;</td>
 		</tr>
 	</table>
 	<%=board.printAfter()%>

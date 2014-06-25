@@ -26,7 +26,9 @@ package com.silverpeas.gallery.web;
 import java.sql.Date;
 
 import com.silverpeas.gallery.model.MediaPK;
+import com.silverpeas.gallery.model.Photo;
 import com.silverpeas.gallery.model.PhotoDetail;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 
 /**
  * @author Yohann Chastagnier
@@ -37,7 +39,7 @@ public class PhotoBuilder {
     return new PhotoBuilder();
   }
 
-  public PhotoDetail buildPhoto(final String photoId, final String componentId) {
+  public Photo buildPhoto(final String photoId, final String componentId) {
     return new PhotoMock(photoId, componentId);
   }
 
@@ -45,14 +47,23 @@ public class PhotoBuilder {
     // Nothing to do
   }
 
-  protected class PhotoMock extends PhotoDetail {
+  protected class PhotoMock extends Photo {
     private static final long serialVersionUID = -1043834505447908434L;
 
     public PhotoMock(final String photoId, final String componentId) {
-      super("title" + photoId, "description" + photoId, Date.valueOf("2012-01-01"), null,
-          "2012/01/01", "author", true, true);
+      setTitle("title" + photoId);
+      setDescription("description" + photoId);
+      setCreationDate(Date.valueOf("2012-01-01"));
+      setLastUpdateDate(Date.valueOf("2012-01-01"));
+      setAuthor("author");
+      setDownloadAuthorized(true);
       setMediaPK(new MediaPK(photoId, componentId));
-      setImageName("imageName" + photoId);
+      setFileName("imageName" + photoId);
+    }
+
+    @Override
+    public boolean canBeAccessedBy(final UserDetail user) {
+      return true;
     }
   }
 }

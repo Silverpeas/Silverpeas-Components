@@ -21,7 +21,6 @@
 package com.silverpeas.gallery;
 
 import com.silverpeas.gallery.control.ejb.GalleryBm;
-
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
@@ -33,7 +32,8 @@ public class GalleryIndexer implements ComponentIndexerInterface {
   @Override
   public void index(MainSessionController mainSessionCtrl, ComponentContext context) throws
       Exception {
-    getGalleryBm().indexGallery(context.getCurrentComponentId());
+    getGalleryBm()
+        .indexGallery(mainSessionCtrl.getCurrentUserDetail(), context.getCurrentComponentId());
   }
 
   private GalleryBm getGalleryBm() {

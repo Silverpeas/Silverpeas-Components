@@ -28,19 +28,18 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page import="java.util.Iterator"%>
 <%@ page import="java.util.List"%>
-<%@ page import="com.silverpeas.gallery.model.PhotoDetail"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.*"%>
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@ page import="com.silverpeas.util.EncodeHelper"%>
+<%@ page import="com.silverpeas.gallery.model.Media" %>
+<%@ page import="com.silverpeas.gallery.model.Photo" %>
 <%
 String m_context = GeneralPropertiesManager.getString("ApplicationURL");
-GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
-List photos = (List) request.getAttribute("Photos");
+List<Media> mediaList = (List) request.getAttribute("MediaList");
 String language = (String) request.getAttribute("Language");
     
-// param�trage pour l'affichage des photos 
+// paramétrage pour l'affichage des photos
 int nbAffiche = 0;
 int nbParLigne = 4;
     
@@ -65,23 +64,26 @@ function selectImage(url, idP)
 <form name="frmVignette">
 <table width="100%">
 <%	
-if (photos != null) {
+if (mediaList != null) {
     String vignette_url = null;
       
-    if (photos.size() > 0) {
-      PhotoDetail photo;
+    if (mediaList.size() > 0) {
       String idP;
-      Iterator itP = photos.iterator();
+      Iterator<Media> itP = mediaList.iterator();
         
       while (itP.hasNext()) {
+
         // affichage de la photo
         out.println("<tr>");
         while (itP.hasNext() && nbAffiche < nbParLigne) {
-          photo = (PhotoDetail) itP.next();
+          Photo photo = itP.next().getPhoto();
+          if (photo == null) {
+            continue;
+          }
           idP = photo.getMediaPK().getId();
           String name = "";
           String url = "";
-          if (photo.getImageName() != null && !photo.getImageName().equals("")) {
+          if (photo.getFileName() != null && !photo.getFileName().equals("")) {
             url = m_context + "/GalleryInWysiwyg/dummy?ImageId=" + idP + "&ComponentId=" + photo.
                 getMediaPK().getInstanceId();
             name = photo.getId() + "_133x100.jpg";
@@ -105,9 +107,9 @@ if (photos != null) {
 						<table border="0" align="center" width="10" cellspacing="1" cellpadding="0" class="fondPhoto">
 							<tr><td align="center" colspan="2">
 								<table cellspacing="1" cellpadding="3" border="0" class="cadrePhoto"><tr><td bgcolor="#FFFFFF">
-									<div style="text-align:right" class="imagename"><%=photo.getImageName() %></div>
+									<div style="text-align:right" class="imagename"><%=photo.getFileName() %></div>
 									<a href="javaScript:selectImage('<%=url%>','<%=idP%>');"><img src="<%=vignette_url%>" border="0" alt="<%=altTitle%>" title="<%=altTitle%>"/></a>
-										<input type="checkbox" name="UseOriginal<%=idP%>" value="true"><font style="font-size: 9px"><%=photo.getSizeL()%>x<%=photo.getSizeH()%></font><br>
+										<input type="checkbox" name="UseOriginal<%=idP%>" value="true"><font style="font-size: 9px"><%=photo.getResolutionW()%>x<%=photo.getResolutionH()%></font><br>
 								</td></tr></table>
 							</td></tr>
 						</table>

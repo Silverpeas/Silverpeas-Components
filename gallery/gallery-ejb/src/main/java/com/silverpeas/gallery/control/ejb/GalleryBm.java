@@ -21,12 +21,12 @@
 package com.silverpeas.gallery.control.ejb;
 
 import java.io.File;
-import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.List;
 
 import javax.ejb.Local;
 
+import com.silverpeas.gallery.delegate.MediaDataCreateDelegate;
 import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.MediaCriteria;
 import com.silverpeas.gallery.model.MediaPK;
@@ -35,8 +35,7 @@ import org.silverpeas.process.util.ProcessList;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
 
 import com.silverpeas.gallery.delegate.GalleryPasteDelegate;
-import com.silverpeas.gallery.delegate.PhotoDataCreateDelegate;
-import com.silverpeas.gallery.delegate.PhotoDataUpdateDelegate;
+import com.silverpeas.gallery.delegate.MediaDataUpdateDelegate;
 import com.silverpeas.gallery.model.AlbumDetail;
 import com.silverpeas.gallery.model.Order;
 import com.silverpeas.gallery.model.OrderRow;
@@ -63,14 +62,19 @@ public interface GalleryBm {
 
   public Collection<AlbumDetail> getAllAlbums(String instanceId);
 
-  public void setPhotoPath(String photoId, String instanceId, String... albums);
+  public void removeMediaFromAllAlbums(Media media);
 
-  public void addMediaPaths(String mediaId, String instanceId, String... albums);
+  public void addMediaToAlbums(Media media, String... albums);
 
-  public void updatePhotoPath(String photoId, String instanceIdFrom,
-      String instanceIdTo, String... albums);
+  /*public void setMediaPath(Media media, String... albums);
+
+  public void addMediaPaths(Media media, String... albums);*/
 
   public PhotoDetail getPhoto(MediaPK mediaPK);
+
+  public Media getMedia(MediaPK mediaPK);
+
+  public Media getMedia(MediaPK mediaPK, MediaCriteria.VISIBILITY visibility);
 
   public Collection<PhotoDetail> getAllPhotos(NodePK nodePK);
 
@@ -87,38 +91,37 @@ public interface GalleryBm {
   public void paste(UserDetail user, String componentInstanceId, GalleryPasteDelegate delegate);
 
   public void importFromRepository(UserDetail user, String componentInstanceId, File repository,
-      boolean watermark, String watermarkHD, String watermarkOther, PhotoDataCreateDelegate delegate);
+      boolean watermark, String watermarkHD, String watermarkOther, MediaDataCreateDelegate delegate);
 
-  public void createPhoto(UserDetail user, String componentInstanceId, PhotoDetail photo,
-      boolean watermark, String watermarkHD, String watermarkOther, PhotoDataCreateDelegate delegate);
+  public Media createMedia(UserDetail user, String componentInstanceId, boolean watermark,
+      String watermarkHD, String watermarkOther, MediaDataCreateDelegate delegate);
 
-  public void updatePhoto(UserDetail user, String componentInstanceId, Collection<String> photoIds,
-      String albumId, PhotoDataUpdateDelegate delegate);
+  public void updateMedia(UserDetail user, String componentInstanceId, Collection<String> mediaIds,
+      String albumId, MediaDataUpdateDelegate delegate);
 
-  public void updatePhoto(UserDetail user, String componentInstanceId, PhotoDetail photo,
-      boolean watermark, String watermarkHD, String watermarkOther, PhotoDataUpdateDelegate delegate);
+  public void updateMedia(UserDetail user, String componentInstanceId, Media media,
+      boolean watermark, String watermarkHD, String watermarkOther,
+      MediaDataUpdateDelegate delegate);
 
-  public void deletePhoto(UserDetail user, String componentInstanceId, Collection<String> photoIds);
+  public void deleteMedia(UserDetail user, String componentInstanceId, Collection<String> mediaIds);
 
-  public Collection<PhotoDetail> getLastRegistredMedia(String instanceId);
+  public List<Media> getLastRegisteredMedia(String instanceId);
 
-  public Collection<PhotoDetail> getAllPhotoEndVisible(int nbDays);
+  public Collection<Media> getAllMediaThatWillBeNotVisible(int nbDays);
 
-  public Collection<PhotoDetail> getNotVisible(String instanceId);
+  public Collection<Media> getNotVisible(String instanceId);
 
   public Collection<NodeDetail> getPath(NodePK nodePK);
 
-  public Collection<String> getPathList(String instanceId, String mediaId);
+  public Collection<String> getAlbumIdsOf(Media media);
 
   public String getHTMLNodePath(NodePK nodePK);
 
-  public void createIndex(Media media);
-
-  public void indexGallery(String instanceId);
+  public void indexGallery(final UserDetail user, String instanceId);
 
   public int getSilverObjectId(MediaPK mediaPK);
 
-  public Collection<PhotoDetail> search(QueryDescription query);
+  public Collection<Media> search(QueryDescription query);
 
   public String createOrder(Collection<String> basket, String userId, String instanceId);
 
