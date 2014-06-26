@@ -78,7 +78,7 @@ public class NewsEntity implements Exposable {
     NewsEntity entity = new NewsEntity();
     entity.setTitle(news.getTitle());
     entity.setDescription(news.getDescription());
-    entity.setDate(news.getPublishDate());
+    entity.setDate(news.getOnlineDate());
     entity.setPermalink(news.getPermalink());
     entity.setId(news.getId());
     entity.setPublicationId(news.getPublicationId());

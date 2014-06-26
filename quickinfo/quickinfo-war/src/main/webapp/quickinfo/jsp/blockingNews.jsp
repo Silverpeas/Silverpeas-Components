@@ -109,18 +109,23 @@ $(function() {
 </script>
 </head>
 <body class="alert-quickInfo">
-<div class="content-alert-quickInfo">
-	<h1 class="titre"><fmt:message key="quickinfo.blocking.title"/></h1>
-    <div class="rightContent">
-      <div id="illustration"><img alt="" src="" /></div>
-    </div>
-    <div class="principalContent" >
-      <h2 class="actuality-title"></h2>
-      <div class="date"></div>
-      <p class="quickInfo-description"></p>
-      <div id="richContent"></div>
-    </div>
+<div class="page">
+  <div id="header"> <img src="/silverpeas/images/logo.jpg" class="logo" alt="logo"/> </div>
+  <div class="cadre">
+	<div class="content-alert-quickInfo">
+		<h1 class="titre"><fmt:message key="quickinfo.blocking.title"/></h1>
+	    <div class="rightContent">
+	      <div id="illustration"><img alt="" src="" /></div>
+	    </div>
+	    <div class="principalContent" >
+	      <h2 class="actuality-title"></h2>
+	      <div class="date"></div>
+	      <p class="quickInfo-description"></p>
+	      <div id="richContent"></div>
+	    </div>
+	</div>
+	</div>
+	<a class="validate-actuality" href="#" onclick="javascript:nextNews()"><span><fmt:message key="quickinfo.blocking.button"/></span></a>
 </div>
-<a class="validate-actuality" href="#" onclick="javascript:nextNews()"><span><fmt:message key="quickinfo.blocking.button"/></span></a>
 </body>
 </html>

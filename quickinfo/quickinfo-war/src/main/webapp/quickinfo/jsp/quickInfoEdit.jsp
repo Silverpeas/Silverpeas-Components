@@ -89,7 +89,7 @@ if (quickInfoDetail != null) {
 <fmt:message var="buttonOK" key="GML.validate"/>
 <fmt:message var="buttonCancel" key="GML.cancel"/>
 <fmt:message var="buttonPublish" key="GML.publish"/>
-<fmt:message var="buttonSaveDraft" key="GML.saveDraft"/>
+<fmt:message var="buttonSaveDraft" key="GML.draft.save"/>
 
 <c:set var="thumbnailBackURL" value="${pageScope.thumbnailBackURL}"/>
 

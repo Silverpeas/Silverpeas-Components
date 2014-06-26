@@ -58,7 +58,7 @@
 	<title>QuickInfo - Home</title>
 	<view:looknfeel/>
 	</head>
-	<body>
+	<body id="quickinfo-app-portlet">
 	<div class="portlet-content">
 </c:when>
 <c:otherwise>
@@ -109,7 +109,7 @@ $(document).ready(function() {
 			<h3 class="actuality-title"><a href="${news.permalink}">${news.title}</a></h3>
 			<div class="actuality-info-fonctionality">
 				<span class="actuality-date">${silfn:formatDate(news.updateDate, _language)}</span>
-				<a href="consultation.html#commentaires" class="actuality-nb-commentaires"><img src="/silverpeas/util/icons/talk2user.gif" alt="commentaire" /> ${news.numberOfComments}</a> 
+				<a href="${news.permalink}#commentaires" class="actuality-nb-commentaires"><img src="/silverpeas/util/icons/talk2user.gif" alt="commentaire" /> ${news.numberOfComments}</a> 
 			</div>
 			<p class="actuality-teasing">${news.description}</p>
 		</li>

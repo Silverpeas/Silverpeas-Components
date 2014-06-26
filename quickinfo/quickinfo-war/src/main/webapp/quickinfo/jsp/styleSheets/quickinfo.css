@@ -81,16 +81,19 @@
 	border-top:1px solid #e8e8e8;
 	border-bottom:1px solid #e8e8e8;
 	clear:left;
-	padding:0.3em 0.5em 0.10em;
+	padding:3px 5px 1px;
 	color:#8f8f8f;
     font-size: 0.9em;
 	position:relative;
+	height:19px;
 }
 
 #list-news .news-nb-comments img{
 	border:0;
 	vertical-align:text-top;
 }
+
+
 
 #list-news .news-broadcast {
 	margin-left:0.5em;
@@ -216,6 +219,9 @@ fieldset#news-thumbnail legend {
     margin:0 0 1em 1em;
 	padding:0;
 }
+#my-quickInfo ul li a{
+	display:block;
+}
 
 #my-quickInfo ul li .date{
     font-size:100%;
@@ -238,11 +244,24 @@ fieldset#news-thumbnail legend {
 	background-color:#fbf7aa;
 	position:relative;
 }
+
+.alert-quickInfo #header .logo {
+    background-color: #fff;
+    border:8px solid #f9e98e ;
+    border-radius: 0 0 16px 16px;
+	border-top:0;
+    left: 1em;
+    padding: 8px 32px 16px;
+    position: fixed;
+    right: 1em;
+    top: 0;
+}
+
 .alert-quickInfo .content-alert-quickInfo {
 	background-color:#FFF;
 	border-top:8px solid #f9e98e;
 	border-bottom:8px solid #f9e98e;
-	margin-top:100px;
+	margin-top:150px;
 	padding:1em;
 	height:300px;
 	overflow:auto;

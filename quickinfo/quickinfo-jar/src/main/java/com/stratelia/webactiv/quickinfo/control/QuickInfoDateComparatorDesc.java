@@ -37,14 +37,14 @@ public class QuickInfoDateComparatorDesc implements Comparator<News> {
   public int compare(News pd1, News pd2) {
     
     int compareResult = 0;
-    if (pd1.getPublishDate() == null || pd2.getPublishDate() == null) {
-      if (pd1.getPublishDate() != null) {
+    if (pd1.getOnlineDate() == null || pd2.getOnlineDate() == null) {
+      if (pd1.getOnlineDate() != null) {
         compareResult = 1;
       } else {
         compareResult = -1;
       }
     } else {
-      compareResult = pd1.getPublishDate().compareTo(pd2.getPublishDate());
+      compareResult = pd1.getOnlineDate().compareTo(pd2.getOnlineDate());
     }
     if (compareResult == 0) {
       compareResult = pd1.getUpdateDate().compareTo(pd2.getUpdateDate());

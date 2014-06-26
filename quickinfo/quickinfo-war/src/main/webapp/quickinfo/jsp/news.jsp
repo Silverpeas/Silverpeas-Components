@@ -112,7 +112,9 @@ function submitOnHomepage() {
 
 <!--INTEGRATION  UNE ACTU -->
 <div class="rightContent">
-	<div id="illustration"><img alt="" src="${news.thumbnail.URL}" /></div>
+	<c:if test="${not empty news.thumbnail}">
+		<div id="illustration"><img alt="" src="${news.thumbnail.URL}" /></div>
+	</c:if>
 	<div class="bgDegradeGris" id="actualityInfoPublication">
 		<c:if test="${not news.draft}">
 			<p id="statInfo">
@@ -132,7 +134,7 @@ function submitOnHomepage() {
 		</p>
 	</div>
                           
-    <viewTags:displayLastUserCRUD createDate="${news.createDate}" createdById="${news.createdBy}" updateDate="${news.updateDate}" updatedById="${news.updaterId}" publishDate="${news.publishDate}" publishedById="${news.publishedBy}"/>
+    <viewTags:displayLastUserCRUD createDate="${news.createDate}" createdById="${news.createdBy}" updateDate="${news.updateDate}" updatedById="${news.updaterId}" publishDate="${news.onlineDate}" publishedById="${news.publishedBy}"/>
     
     <view:pdcClassificationPreview componentId="${news.componentInstanceId}" contentId="${news.publicationId}" />
 </div>
@@ -148,7 +150,7 @@ function submitOnHomepage() {
 					<div class="inlineMessage-ok"><fmt:message key="quickinfo.news.delegated.validated.help"/></div>
 				</c:when>
 				<c:when test="${news.delegatedNews.denied}">
-					<div class="inlineMessage-nok"><fmt:message key="quickinfo.news.delegated.refused.help"/></div>
+					<div class="inlineMessage-nok"><fmt:message key="quickinfo.news.delegated.denied.help"/></div>
 				</c:when>
 			</c:choose>
 		</c:if>
@@ -165,7 +167,7 @@ function submitOnHomepage() {
 	</div>
     
     <c:if test="${appSettings.commentsEnabled}">
-		<view:comments userId="${userId}" componentId="${news.componentInstanceId}" resourceType="<%=News.CONTRIBUTION_TYPE %>" resourceId="${news.publicationId}" indexed="true"/>
+		<view:comments userId="${userId}" componentId="${news.componentInstanceId}" resourceType="<%=News.CONTRIBUTION_TYPE %>" resourceId="${news.id}" indexed="true"/>
 	</c:if>
 </div>
 <!-- /INTEGRATION UNE ACTU -->

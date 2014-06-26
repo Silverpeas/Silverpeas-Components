@@ -224,8 +224,10 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
       e.printStackTrace();
     }
     
-    // Sending notifications to subscribers
-    UserNotificationHelper.buildAndSend(new QuickInfoSubscriptionUserNotification(news, NotifAction.CREATE));
+    if (news.isVisible()) {
+      // Sending notifications to subscribers
+      UserNotificationHelper.buildAndSend(new QuickInfoSubscriptionUserNotification(news, NotifAction.CREATE));
+    }
   }
   
   @Override
@@ -322,7 +324,7 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
     ThumbnailController.deleteThumbnail(thumbnail);
 
     // Deleting comments
-    commentService.deleteAllCommentsOnPublication(News.CONTRIBUTION_TYPE, foreignPK);
+    commentService.deleteAllCommentsOnPublication(News.CONTRIBUTION_TYPE, news.getPK());
     
     // deleting statistics
     getStatisticService().deleteStats(news);

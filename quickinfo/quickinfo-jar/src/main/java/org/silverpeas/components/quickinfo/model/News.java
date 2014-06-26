@@ -93,6 +93,10 @@ public class News extends AbstractJpaEntity<News, UuidIdentifier> implements Sil
     setMandatory(mandatory);
   }
   
+  public NewsPK getPK() {
+    return new NewsPK(getId(), getComponentInstanceId());
+  }
+  
   public News(PublicationDetail publication) {
     setPublication(publication);
   }
@@ -186,7 +190,7 @@ public class News extends AbstractJpaEntity<News, UuidIdentifier> implements Sil
   
   public int getNumberOfComments() {
     CommentService commentService = CommentServiceFactory.getFactory().getCommentService();
-    return commentService.getCommentsCountOnPublication(CONTRIBUTION_TYPE, getPublication().getPK());
+    return commentService.getCommentsCountOnPublication(CONTRIBUTION_TYPE, getPK());
   }
 
   @Override
@@ -327,6 +331,13 @@ public class News extends AbstractJpaEntity<News, UuidIdentifier> implements Sil
   
   public boolean isCanBeSubmittedOnHomepage() {
     return delegatedNews == null || delegatedNews.isDenied();
+  }
+  
+  public Date getOnlineDate() {
+    if (getPublishDate() != null && getVisibilityPeriod().getBeginDate().after(getPublishDate())) {
+      return getVisibilityPeriod().getBeginDate();
+    }
+    return getPublishDate();
   }
   
 }
