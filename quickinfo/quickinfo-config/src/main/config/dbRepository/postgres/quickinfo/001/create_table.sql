@@ -13,3 +13,26 @@ CREATE TABLE sc_quickinfo_news (
   publishedBy  			VARCHAR(40) NULL,
   version        		INT8        NOT NULL
 );
+
+INSERT INTO sc_quickinfo_news (id, instanceId, foreignId,
+	important, broadcastTicker, broadcastMandatory,
+	createDate, createdBy, lastUpdateDate, lastUpdatedBy,
+	publishDate, publishedBy, version)
+  SELECT
+    cast(pubId AS TEXT),
+    instanceId,
+	cast(pubId AS TEXT),
+    false,
+    false,
+    false,
+    to_timestamp(pubCreationDate, 'YYYY/MM/DD'),
+	pubCreatorId,
+	to_timestamp(pubUpdateDate, 'YYYY/MM/DD'),
+    pubUpdaterId,
+	to_timestamp(pubCreationDate, 'YYYY/MM/DD'),
+	pubCreatorId,
+    0
+  FROM
+    sb_publication_publi
+  WHERE
+	instanceId like 'quickinfo%';
