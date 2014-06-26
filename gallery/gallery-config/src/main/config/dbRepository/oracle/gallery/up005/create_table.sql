@@ -202,7 +202,7 @@ SELECT
     CASE
     WHEN endDate = '9999/99/99' THEN 32503590000000
     ELSE (to_date(endDate, 'YYYY/MM/DD') - to_date('1-1-1970 00:00:00','MM-DD-YYYY HH24:Mi:SS'))*24*3600*1000 END,
-    to_timestamp(creationDate, 'YYYY/MM/DD'),
+    to_date(creationDate, 'YYYY/MM/DD'),
     creatorId,
     CASE WHEN updateDate IS NOT NULL THEN to_date(updateDate, 'YYYY/MM/DD')
     ELSE to_date(creationDate, 'YYYY/MM/DD') END,
