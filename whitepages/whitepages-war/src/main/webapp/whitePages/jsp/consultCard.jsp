@@ -214,7 +214,7 @@ String firstName = userRecord.getField("FirstName").getValue(language);
 
         <!-- profilPhoto  -->  
 		<div class="profilPhoto">
-			<img class="defaultAvatar" alt="viewUser" src="<%=m_context + userRecord.getUserDetail().getAvatar()%>"/>
+			<view:image css="defaultAvatar" alt="viewUser" src="<%=userRecord.getUserDetail().getAvatar()%>" type="avatar"/>
         </div>
              
         <p class="statut">
