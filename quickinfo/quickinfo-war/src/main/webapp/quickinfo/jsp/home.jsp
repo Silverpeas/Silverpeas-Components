@@ -120,6 +120,9 @@ function unsubscribe() {
 	          <h3 class="my-quickInfo-draft-title"><fmt:message key="quickinfo.home.drafts"/></h3>
 	        </div>
 	        <ul>
+	          <c:if test="${empty allOtherNews.drafts}">
+	          	<li><span class="txt-no-content"><fmt:message key="quickinfo.home.drafts.none"/></span></li>
+	          </c:if>
 	          <c:forEach items="${allOtherNews.drafts}" var="news">
 				<li><a href="View?Id=${news.id}">${news.title}</a></li>
 			  </c:forEach>
@@ -151,6 +154,22 @@ function unsubscribe() {
 	      </c:if>
 	    </div>
 	</c:if>
+	
+	<c:if test="${empty listOfNews}">
+		<c:if test="${contributor}">
+			<div class="inlineMessage forContributor">
+				<fmt:message key="quickinfo.news.none"/><br/>	
+				<fmt:message key="quickinfo.news.none.contributor"/>
+			</div>
+		</c:if>
+		<c:if test="${not contributor}">
+			<div class="inlineMessage">
+				<fmt:message key="quickinfo.news.none"/><br/>
+	    		<fmt:message key="quickinfo.news.none.reader"/>
+	    	</div>
+	    </c:if>
+	</c:if>
+	
 	<c:if test="${contributor}">
     	<ul id="list-news">
     </c:if>
@@ -169,11 +188,9 @@ function unsubscribe() {
 					<a href="View?Id=${news.id}#commentaires" class="news-nb-comments"><img src="/silverpeas/util/icons/talk2user.gif" alt="commentaire" /> ${news.numberOfComments}</a>
 					<span class="sep"> | </span> 
 				</c:if>
-				<c:if test="${not news.draft}">
-					<span class="creationInfo" ><fmt:message key="GML.publishedAt"/> ${silfn:formatDateAndHour(news.onlineDate, _language)} </span>
-					<c:if test="${news.updatedAfterBePublished}">
-						<span class="lastModificationInfo" >- <fmt:message key="GML.updatedAt"/> ${silfn:formatDate(news.updateDate, _language)} </span>
-					</c:if>
+				<span class="creationInfo" ><fmt:message key="GML.publishedAt"/> ${silfn:formatDateAndHour(news.onlineDate, _language)} </span>
+				<c:if test="${news.updatedAfterBePublished}">
+					<span class="lastModificationInfo" >- <fmt:message key="GML.updatedAt"/> ${silfn:formatDate(news.updateDate, _language)} </span>
 				</c:if>
 				<span class="news-broadcast">
 					<c:if test="${news.important}">
