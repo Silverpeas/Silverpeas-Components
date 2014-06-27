@@ -275,7 +275,7 @@ if(cards != null && !cards.isEmpty()){
            <% } %>
                  <div class="profilPhoto">
                    	<a href="javascript:consult(<%=card.getPK().getId()%>)">
-                   	<img class="defaultAvatar" alt="viewUser" src="<%=m_context + userRecord.getUserDetail().getAvatar()%>"/>
+                   	<view:image css="defaultAvatar" alt="viewUser" src="<%=userRecord.getUserDetail().getAvatar()%>" type="avatar"/>
                    	</a>
                  </div>
                  <div class="info">

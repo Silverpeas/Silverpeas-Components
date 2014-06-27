@@ -380,7 +380,7 @@
                     <div id="msgContent<%=currentId%>" class="contourintfdcolor">
                         <a name="msg<%=currentId%>"/>
                           <div id="author<%=i%>" class="user">
-                            <div class="profilPhoto"><img src="<%=context + avatar%>" alt="<%=authorLabel%>" /></div>
+                            <div class="profilPhoto"><view:image src="<%=avatar%>" alt="<%=authorLabel%>" type="avatar" /></div>
                             <div class="info">
                               <ul>
                                 <li class="userName"><%=authorLabel%></li>

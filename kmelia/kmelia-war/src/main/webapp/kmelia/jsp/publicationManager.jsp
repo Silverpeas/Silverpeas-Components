@@ -157,7 +157,7 @@
       pubName = pubDetail.getName(language);
       if (pubDetail.getImage() != null) {
         if (pubDetail.getImage().startsWith("/")) {
-          vignette_url = pubDetail.getImage() + "&Size=133x100";
+          vignette_url = pubDetail.getImage();
         } else {
           vignette_url = FileServerUtils
               .getUrl(pubDetail.getPK().getComponentName(), "vignette",
@@ -301,7 +301,6 @@
 	//definition size of thumbnail selector
 	String thumbnailWidth = "";
 	String thumbnailHeight = "";
-	String vignetteSizeParameters = "";
 	String vignetteSizeParametersForUpdateFile = "";
     if (vignette_url != null) {
 		if (thumbnailSize[0] != -1) {
@@ -318,15 +317,7 @@
 		  	// square id one selected
         	thumbnailHeight = String.valueOf(thumbnailSize[0]);
      	}
-		vignetteSizeParameters = "&ThumbnailWidth=" + thumbnailWidth + "&ThumbnailHeight=" + thumbnailHeight;
-	} else {
-      	if (thumbnailSize[0] != -1) {
-			vignetteSizeParameters += "&ThumbnailWidth=" + String.valueOf(thumbnailSize[0]);
-		}
-		if(thumbnailSize[1] != -1){
-			vignetteSizeParameters += "&ThumbnailHeight=" + String.valueOf(thumbnailSize[1]);
-		}
-    }
+	}
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -909,7 +900,7 @@
 					<div class="field" id="thumb">
 						<div id="thumbnailPreviewAndActions">
 							<div id="thumbnailPreview">
-								<img src="<%=vignette_url %>" id="thumbnail" alt=""/>
+								<view:image src="<%=vignette_url %>" type="vignette.thumbnail" id="thumbnail" alt=""/>
 							</div>
 							<div id="thumbnailActions">
 								<% if (pubDetail != null && pubDetail.getThumbnail() != null && pubDetail.getThumbnail().isCropable()) { %>
