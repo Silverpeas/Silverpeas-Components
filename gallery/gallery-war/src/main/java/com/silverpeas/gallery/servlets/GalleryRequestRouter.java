@@ -301,6 +301,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
         // passage des paramètres
         request.setAttribute("Media", null);
+        request.setAttribute("MediaType", mediaType);
         String repertoire = "";
         request.setAttribute("Repertoire", repertoire);
         request.setAttribute("Path", gallerySC.getPath());
@@ -424,7 +425,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           // order to insert each media inside content manager
           request.setAttribute("SilverObjetId", gallerySC.getSilverObjectId(mediaId));
           // appel jsp
-          destination = rootDest + "mediaView.jsp";
+          destination = rootDest + "media" + media.getType().toString() + "View.jsp";
         } catch (Exception e) {
           destination = getDocumentNotFoundDestination(gallerySC, request);
         }
@@ -1434,8 +1435,9 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
       throws Exception {
 
     final List<FileItem> parameters = request.getFileItems();
+    MediaType mediaType = MediaType.from(request.getParameter("type"));
     final MediaDataCreateDelegate delegate =
-        new MediaDataCreateDelegate(MediaType.Photo, gallerySC.getLanguage(),
+        new MediaDataCreateDelegate(mediaType, gallerySC.getLanguage(),
             gallerySC.getCurrentAlbumId(), parameters);
 
     // 1. Getting the header data

@@ -24,7 +24,9 @@
 package com.silverpeas.gallery.process.photo;
 
 import com.silverpeas.gallery.GalleryComponentSettings;
+import com.silverpeas.gallery.VideoHelper;
 import com.silverpeas.gallery.model.Media;
+
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.process.io.file.FileHandler;
 import org.silverpeas.process.session.ProcessSession;
@@ -33,6 +35,7 @@ import com.silverpeas.gallery.ImageHelper;
 import com.silverpeas.gallery.process.AbstractGalleryFileProcess;
 import com.silverpeas.gallery.process.GalleryProcessExecutionContext;
 import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * Process to update a media on file system
@@ -87,19 +90,39 @@ public class GalleryUpdateMediaFileProcess extends AbstractGalleryFileProcess {
   @Override
   public void processFiles(final GalleryProcessExecutionContext context,
       final ProcessSession session, final FileHandler fileHandler) throws Exception {
-    if (getMedia().getType().isPhoto() && fileItem != null) {
-      final String name = fileItem.getName();
-      if (StringUtil.isDefined(name)) {
+    // Media
+    switch (getMedia().getType()) {
+      case Photo:
+        if (fileItem != null) {
+          final String name = fileItem.getName();
+          if (StringUtil.isDefined(name)) {
 
-        // Deleting repository with old media
-        fileHandler.getHandledFile(BASE_PATH, context.getComponentInstanceId(),
-            GalleryComponentSettings.getMediaFolderNamePrefix() + getMedia().getId()).delete();
+            // Deleting repository with old media
+            fileHandler.getHandledFile(BASE_PATH, context.getComponentInstanceId(),
+                getMedia().getType().getTechnicalFolder() + getMedia().getId()).delete();
 
-        // Creating new images
-        ImageHelper
-            .processImage(fileHandler, getMedia().getPhoto(), fileItem, watermark, watermarkHD,
-                watermarkOther);
-      }
+            // Creating new images
+            ImageHelper
+                .processImage(fileHandler, getMedia().getPhoto(), fileItem, watermark, watermarkHD,
+                    watermarkOther);
+          }
+        }
+        break;
+      case Video:
+        if (fileItem != null) {
+          // Deleting repository with old media
+          fileHandler.getHandledFile(BASE_PATH, context.getComponentInstanceId(),
+              getMedia().getType().getTechnicalFolder() + getMedia().getId()).delete();
+
+          // Save new video
+          VideoHelper.processVideoFile(fileHandler, fileItem, getMedia().getVideo());
+        }
+        break;
+      default:
+        SilverTrace.warn("Gallery", GalleryUpdateMediaFileProcess.class.getName(),
+            getMedia().getType().name() + " media type is never processed");
+        break;
     }
+
   }
 }

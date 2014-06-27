@@ -70,4 +70,13 @@ public enum MediaType {
   public boolean isStreaming() {
     return Streaming == this;
   }
+
+  public String getTechnicalFolder() {
+    switch (this) {
+      case Photo:
+        return "image";
+      default:
+        return this.name().toLowerCase();
+    }
+  }
 }

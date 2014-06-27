@@ -61,9 +61,12 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 
 <%@ page import="com.silverpeas.gallery.control.GallerySessionController"%>
 <%@ page import="com.silverpeas.gallery.model.AlbumDetail"%>
+<%@ page import="com.silverpeas.gallery.model.Media"%>
+<%@ page import="com.silverpeas.gallery.model.Photo" %>
 <%@ page import="com.silverpeas.gallery.model.Order"%>
 <%@ page import="com.silverpeas.gallery.model.OrderRow"%>
 <%@ page import="com.silverpeas.gallery.ParameterNames"%>
+<%@ page import="com.silverpeas.gallery.GalleryComponentSettings" %>
 
 <%@ page import="com.silverpeas.publicationTemplate.*"%>
 <%@ page import="com.silverpeas.form.*"%>

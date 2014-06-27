@@ -49,8 +49,8 @@ public abstract class InternalMedia extends Media {
   private Period downloadPeriod = Period.UNDEFINED;
 
   /**
-   * Indicates if the media is marked as downloadable.
-   * The visibility period is not taken into account here.
+   * Indicates if the media is marked as downloadable. The visibility period is not taken into
+   * account here.
    * @return true if marked as downloadable, false otherwise.
    */
   public boolean isDownloadAuthorized() {
@@ -58,8 +58,8 @@ public abstract class InternalMedia extends Media {
   }
 
   /**
-   * Indicates if the download is possible according the visibility information.
-   * The date of day must be included into visibility period.
+   * Indicates if the download is possible according the visibility information. The date of day
+   * must be included into visibility period.
    * @return true if download is possible, false otherwise.
    */
   @Override
@@ -133,4 +133,12 @@ public abstract class InternalMedia extends Media {
     }
     return FilenameUtils.normalize(thumbnailUrl, true);
   }
+
+  public String getOriginalUrl() {
+    String originalUrl =
+        FileServerUtils.getUrl(getInstanceId(), getFileName(), getFileMimeType(), getType()
+            .getTechnicalFolder() + getId());
+    return FilenameUtils.normalize(originalUrl, true);
+  }
+
 }

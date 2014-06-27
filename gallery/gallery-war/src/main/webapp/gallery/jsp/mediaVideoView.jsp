@@ -1,6 +1,3 @@
-<%@ page import="com.silverpeas.gallery.GalleryComponentSettings" %>
-<%@ page import="com.silverpeas.gallery.model.Media" %>
-<%@ page import="com.silverpeas.gallery.model.Photo" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -45,13 +42,16 @@
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 <fmt:message var="commentTab" key="gallery.comments"/>
 
-<c:set var="curPhoto" value="${requestScope.Media}"/>
+<c:set var="video" value="${requestScope.Media}"/>
 <c:set var="browseContext" value="${requestScope.browseContext}"/>
 <c:set var="instanceId" value="${browseContext[3]}"/>
 <c:set var="userId" value="${requestScope.UserId}"/>
-<c:set var="photoResourceType" value="${curPhoto.contributionType}"/>
-<c:set var="photoId" value="${curPhoto.id}"/>
+<c:set var="photoResourceType" value="${video.contributionType}"/>
+<c:set var="photoId" value="${video.id}"/>
 <c:set var="callback">function( event ) { if (event.type === 'listing') { commentCount = event.comments.length; $('#comment-tab').html('<c:out value="${commentTab}"/> ( ' + event.comments.length + ')'); } else if (event.type === 'deletion') { commentCount--; $('#comment-tab').html('<c:out value="${commentTab}"/> ( ' + commentCount + ')'); } else if (event.type === 'addition') { commentCount++; $('#comment-tab').html('<c:out value="${commentTab}"/> ( ' + commentCount + ')'); } }</c:set>
+<c:set var="albumPath" value="${requestScope.Path}" />
+<c:set var="greaterUserRole" value="${requestScope.greaterUserRole}"/>
+
 
 
 <fmt:message var="permalinkIcon" key='gallery.link' bundle='${icons}'/>
@@ -66,18 +66,16 @@
 <c:url var="downloadWatermarkIconUrl" value="${downloadWatermarkIcon}"/>
 <fmt:message var="downloadForbiddenIcon" key='gallery.image.download.forbidden' bundle='${icons}'/>
 <c:url var="downloadForbiddenIconUrl" value="${downloadForbiddenIcon}"/>
+<jsp:useBean id="now" class="java.util.Date" />
 
 <%
   // récupération des paramètres :
-  Photo photo = (Photo) request.getAttribute("Media");
+  Media photo = (Media) request.getAttribute("Media");
   List<NodeDetail> path = (List<NodeDetail>) request.getAttribute("Path");
   String profile = (String) request.getAttribute("Profile");
   Integer rang = (Integer) request.getAttribute("Rang");
   Integer albumSize = (Integer) request.getAttribute("NbMedia");
-  boolean viewMetadata = (Boolean) request.getAttribute("IsViewMetadata");
-  boolean watermark = (Boolean) request.getAttribute("IsWatermark");
   boolean updateAllowed = (Boolean) request.getAttribute("UpdateMediaAllowed");
-  String sizeParam = (String) request.getAttribute("PreviewSize");
   boolean isBasket = (Boolean) request.getAttribute("IsBasket");
   boolean isPrivateSearch = (Boolean) request.getAttribute("IsPrivateSearch");
 
@@ -86,36 +84,8 @@
   DataRecord xmlData = (DataRecord) request.getAttribute("XMLData");
 
   // déclaration des variables :
-  String nomRep = GalleryComponentSettings.getMediaFolderNamePrefix() + photo.getMediaPK().getId();
-  String name = "";
-  if (photo.getFileName() != null && !photo.getFileName().equals("")) {
-    name = photo.getFileName();
-  }
-  String namePreview = photo.getId() + "_" + sizeParam + ".jpg";
-  String preview_url = FileServerUtils.getUrl(componentId, namePreview, photo.getFileMimeType(),
-      nomRep);
   String title = photo.getTitle();
-  long size = photo.getFileSize();
   String photoId = photo.getMediaPK().getId();
-  String lien = FileServerUtils.getUrl(componentId, URLEncoder.encode(name, "UTF-8"), photo.
-      getFileMimeType(), nomRep);
-  String lienWatermark = "";
-  Collection<String> metaDataKeys = null;
-  if (viewMetadata) {
-    metaDataKeys = photo.getMetaDataProperties();
-  }
-
-  // si le paramètre watermark est actif, récupérer l'image avec le watermark
-  if (watermark) {
-    // image avec le watermarkOther pour le téléchargement
-    File fileWatermark = new File(FileRepositoryManager.getAbsolutePath(componentId) + nomRep + File.separator + photo.
-        getId() + "_watermark.jpg");
-
-    if (fileWatermark.exists()) {
-      lienWatermark = FileServerUtils.getUrl(componentId, photo.getId() + "_watermark.jpg", photo.
-          getFileMimeType(), nomRep);
-    }
-  }
 
 %>
 
@@ -129,7 +99,6 @@
 <view:includePlugin name="messageme"/>
 <view:includePlugin name="invitme"/>
 <view:includePlugin name="userZoom"/>
-
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script language="javascript">
 
@@ -186,6 +155,10 @@ function goToNotify(url)
 <%@include file="diaporama.jsp" %>
 </head>
 <body class="gallery gallery-fiche-image yui-skin-sam" id="${instanceId}">
+
+<%-- <viewTags:browseBar albumPath="${albumPath}"/>  --%>
+
+
   <%
     browseBar.setDomainName(spaceLabel);
     browseBar.setComponentName(componentLabel, "Main");
@@ -197,8 +170,8 @@ function goToNotify(url)
     operationPane.addLine();
 
     if (updateAllowed) {
-      operationPane.addOperation(resource.getIcon("GML.delete"), resource.getString(
-          "GML.delete"), "javaScript:deleteConfirm('" + photoId + "','" + EncodeHelper.
+      operationPane.addOperation(resource.getIcon("gallery.deletePhoto"), resource.getString(
+          "gallery.deletePhoto"), "javaScript:deleteConfirm('" + photoId + "','" + EncodeHelper.
           javaStringToHtmlString(EncodeHelper.javaStringToJsString(title)) + "')");
     }
     if ("admin".equals(profile)) {
@@ -217,8 +190,8 @@ function goToNotify(url)
     if ("user".equals(profile) && isBasket) {
       operationPane.addLine();
       // ajouter la photo au panier
-      operationPane.addOperation(resource.getIcon("gallery.addMediaToBasket"), resource.getString(
-          "gallery.addMediaToBasket"), "BasketAddMedia?MediaId=" + photoId);
+      operationPane.addOperation(resource.getIcon("gallery.addPhotoToBasket"), resource.getString(
+          "gallery.addPhotoToBasket"), "BasketAddMedia?MediaId=" + photoId);
     }
 
     if (isPrivateSearch) {
@@ -250,85 +223,83 @@ function goToNotify(url)
   <!-- nom du fichier -->
   <div class="fileName">
     <c:choose>
-      <c:when test="${requestScope.ViewLinkDownload or curPhoto.downloadable}">
-        <a href="<%=lien%>" target="_blank">${curPhoto.fileName} <img src="${downloadIconUrl}" alt="<%=EncodeHelper.javaStringToHtmlString(resource.getString("gallery.download.photo"))%>" title="<fmt:message key='gallery.originale'/>"/></a>
-        <% if (!lienWatermark.equals("")) { %>
-          <a href="<%=lienWatermark%>" target="_blank"><img src="${downloadWatermarkIconUrl}" alt="<%=EncodeHelper.javaStringToHtmlString(resource.getString("gallery.download.photo"))%>" title="<fmt:message key='gallery.originaleWatermark'/>"/></a>
-        <% } %>
+      <c:when test="${requestScope.ViewLinkDownload or video.downloadable}">
+        <a href="${video.originalUrl}" target="_blank">${video.name} <img src="${downloadIconUrl}" alt="<fmt:message key='gallery.download.photo'/>" title="<fmt:message key='gallery.originale'/>"/></a>
       </c:when>
       <c:otherwise>
-        ${curPhoto.fileName} <img src="${downloadForbiddenIconUrl}" alt="<fmt:message key='gallery.download.forbidden'/>" title="<fmt:message key='gallery.download.forbidden'/>" class="forbidden-download-file"/>
+        ${video.fileName} <img src="${downloadForbiddenIconUrl}" alt="<fmt:message key='gallery.download.forbidden'/>" title="<fmt:message key='gallery.download.forbidden'/>" class="forbidden-download-file"/>
       </c:otherwise>
     </c:choose>
   </div>
+  <%-- TODO display video characteristic dimension and bitrate -->
   <div class="fileCharacteristic  bgDegradeGris">
     <p>
-      <span class="fileCharacteristicWeight"><fmt:message key="gallery.weight" /> <b><%=FileRepositoryManager.formatFileSize(size)%></b></span>
-      <span class="fileCharacteristicSize"><fmt:message key="gallery.dimension" /> <b>${curPhoto.resolutionW} x ${curPhoto.resolutionH} <fmt:message key="gallery.pixels" /></b></span> <br class="clear" />
+      <span class="fileCharacteristicWeight"><fmt:message key="gallery.weight" /> <b>TODO</b></span>
+      <span class="fileCharacteristicSize"><fmt:message key="gallery.dimension" /> <b>TODO <fmt:message key="gallery.pixels" /></b></span> <br class="clear" />
     </p>
   </div>
-
-  <c:set var="createDate" value="${curPhoto.creationDate}"/>
-  <c:set var="lastUpdateDate" value="${curPhoto.lastUpdateDate}"/>
+  --%>
+  <c:set var="createDate" value="${video.creationDate}"/>
+  <c:set var="lastUpdateDate" value="${video.lastUpdateDate}"/>
 
   <div class="bgDegradeGris" id="suggestionInfoPublication">
-  <c:if test="${not empty curPhoto.author}">
-    <p id="authorInfo"><b><fmt:message key="GML.author"/></b> ${curPhoto.author}
+  <c:if test="${not empty video.author}">
+    <p id="authorInfo"><b><fmt:message key="GML.author"/></b> ${video.author}
     </p>
   </c:if>
-  <c:if test="${not empty curPhoto.lastUpdater}">
+  <c:if test="${not empty video.lastUpdater}">
     <div class="paragraphe" id="infoModification"> <b><fmt:message key="GML.updatedAt"/></b>${silfn:formatDate(lastUpdateDate, _language)} <fmt:message key="GML.by"/>
-      <view:username userId="${curPhoto.lastUpdater.id}"/>
-      <div class="profilPhoto"><img src='<c:url value="${curPhoto.lastUpdater.avatar}" />' alt="" class="defaultAvatar"/></div>
+      <view:username userId="${video.lastUpdater.id}"/>
+      <div class="profilPhoto"><img src='<c:url value="${video.lastUpdater.avatar}" />' alt="" class="defaultAvatar"/></div>
     </div>
   </c:if>
 
-  <c:if test="${not empty curPhoto.creator}">
+  <c:if test="${not empty video.creator}">
     <div class="paragraphe" id="infoCreation">
       <b><fmt:message key="GML.createdAt"/></b>${silfn:formatDate(createDate, _language)} <fmt:message key="GML.by"/>
-      <view:username userId="${curPhoto.creator.id}"/>
-      <div class="profilPhoto"><img src='<c:url value="${curPhoto.creator.avatar}" />' alt="" class="defaultAvatar"/></div>
+      <view:username userId="${video.creator.id}"/>
+      <div class="profilPhoto"><img src='<c:url value="${video.creator.avatar}" />' alt="" class="defaultAvatar"/></div>
     </div>
   </c:if>
     <p id="permalinkInfo">
       <fmt:message key="gallery.CopyPhotoLink" var="cpPhotoLinkAlt"/>
-      <a title="${cpPhotoLinkAlt}" href="${curPhoto.permalink}">
-        <img border="0" alt="${cpPhotoLinkAlt}" title="${cpPhotoLinkAlt}" src="${permalinkIconUrl}" />
+      <a title="${cpPhotoLinkAlt}" href="${video.permalink}">
+        <img border="0" alt='${cpPhotoLinkAlt}' title='${cpPhotoLinkAlt}' src="${permalinkIconUrl}" />
       </a> <fmt:message key="GML.permalink"/> <br />
-      <input type="text" value="${silfn:fullApplicationURL(pageContext.request)}}${curPhoto.permalink}" onfocus="select();" class="inputPermalink" />
+      <input type="text" value="${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${video.permalink}" onfocus="select();" class="inputPermalink" />
     </p>
   </div>
-  <c:if test="${curPhoto.downloadable and (curPhoto.visibilityPeriod.defined or curPhoto.downloadPeriod.defined)}">
+  <c:if test="${video.downloadable and (video.visibilityPeriod.defined or video.downloadPeriod.defined)}">
     <div class="periode bgDegradeGris" id="periode">
       <div class="header bgDegradeGris">
         <h4 class="clean"><fmt:message key="GML.period"/></h4>
       </div>
-      <c:if test="${curPhoto.visibilityPeriod.defined}">
+      <c:if test="${video.visibilityPeriod.defined}">
         <div class="periode_visibility paragraphe">
           <fmt:message key="gallery.beginDate"/>
           <b>
-            <c:if test="${curPhoto.visibilityPeriod.beginDatable.defined}">
-              <view:formatDate value="${curPhoto.visibilityPeriod.beginDate}" language="${language}" />
+            <c:if test="${video.visibilityPeriod.beginDatable.defined}">
+              <view:formatDate value="${video.visibilityPeriod.beginDate}" language="${language}" />
             </c:if>
           </b>
           <b><fmt:message key="GML.toDate"/>
-            <c:if test="${curPhoto.visibilityPeriod.endDatable.defined}">
-              <view:formatDate value="${curPhoto.visibilityPeriod.endDate}" language="${language}" />
+            <c:if test="${video.visibilityPeriod.endDatable.defined}">
+              <view:formatDate value="${video.visibilityPeriod.endDate}" language="${language}" />
             </c:if>
           </b>
         </div>
       </c:if>
-      <c:if test="${curPhoto.downloadPeriod.defined}">
+      <c:if test="${video.downloadPeriod.defined}">
         <div class="periode_download paragraphe">
           <fmt:message key="gallery.beginDownloadDate"/>
           <b>
-            <c:if test="${curPhoto.downloadPeriod.beginDatable.defined}">
-              <view:formatDate value="${curPhoto.downloadPeriod.beginDate}" language="${language}" />
+            <c:if test="${video.downloadPeriod.beginDatable.defined}">
+              <view:formatDate value="${video.downloadPeriod.beginDate}" language="${language}" />
             </c:if>
           </b>
           <b><fmt:message key="GML.toDate"/>
-            <c:if test="${curPhoto.downloadPeriod.endDatable.defined}">
-              <view:formatDate value="${curPhoto.downloadPeriod.endDate}" language="${language}" />
+            <c:if test="${video.downloadPeriod.endDatable.defined}">
+              <view:formatDate value="${video.downloadPeriod.endDate}" language="${language}" />
             </c:if>
           </b>
         </div>
@@ -341,34 +312,6 @@ function goToNotify(url)
     <view:pdcClassificationPreview componentId="${instanceId}" contentId="${photoId}" />
   </c:if>
 
-  <%
-  // AFFICHAGE des métadonnées
-  if (metaDataKeys != null && !metaDataKeys.isEmpty()) {
-%>
-  <div class="metadata bgDegradeGris" id="metadata">
-    <div class="header bgDegradeGris">
-      <h4 class="clean"><fmt:message key="GML.metadata"/></h4>
-    </div>
-    <div id="metadata_list">
-    <%
-          MetaData metaData;
-          for (final String propertyLong : metaDataKeys) {
-            metaData = photo.getMetaData(propertyLong);
-            String mdLabel = metaData.getLabel();
-            String mdValue = metaData.getValue();
-            if (metaData.isDate()) {
-              mdValue = resource.getOutputDateAndHour(metaData.getDateValue());
-            }
-            %>
-        <p id="metadata_<%=mdLabel%>"><%=mdLabel%> <b><%=mdValue%></b></p>
-            <%
-          }
-        %>
-    </div>
-  </div>
-  <%
-    }
-    %>
 </div>
 <div class="principalContent">
   <div id="pagination">
@@ -387,31 +330,22 @@ function goToNotify(url)
   <div class="contentMedia">
     <div class="fondPhoto">
       <div class="cadrePhoto">
-        <a href="#" onclick="javascript:startSlideshow('${curPhoto.id}')">
-        <%
-          if (!photo.isPreviewable()) {
-            preview_url = m_context+"/gallery/jsp/icons/notAvailable_"+resource.getLanguage()+"_" + sizeParam + ".jpg";
-          }
-          if ( preview_url != null )
-          {
-            %>
-          <img alt="${curPhoto.name}" src="<%=preview_url%>"/>
-       <% } %>
-        </a>
+        <c:url value="/services/gallery/${instanceId}/albums/${albumPath[fn:length(albumPath)-1].nodePK.id}/videos/${video.id}?_t=${now.time}" var="videoUrl"/>
+        <view:video url="${videoUrl}"></view:video>
       </div>
-      <c:if test="${curPhoto.title != curPhoto.fileName}">
-        <h2 class="mediaTitle">${curPhoto.title}</h2>
+      <c:if test="${video.title != video.name}">
+        <h2 class="mediaTitle">${video.title}</h2>
       </c:if>
-      <c:if test="${not empty curPhoto.keyWord}">
+      <c:if test="${not empty video.keyWord}">
         <div class="motsClefs">
-        <c:set var="listKeys" value="${fn:split(curPhoto.keyWord,' ')}"/>
+        <c:set var="listKeys" value="${fn:split(video.keyWord,' ')}"/>
         <c:forEach items="${listKeys}" var="keyword">
           <span><a href="SearchKeyWord?SearchKeyWord=${keyword}">${keyword}</a></span>
         </c:forEach>
         </div>
       </c:if>
-      <c:if test="${not empty curPhoto.description}">
-        <p class="description">${curPhoto.description}</p>
+      <c:if test="${not empty video.description}">
+        <p class="description">${video.description}</p>
       </c:if>
     </div>
   </div>
@@ -432,14 +366,14 @@ function goToNotify(url)
     %>
 <% } %>
 
-</div>
-</form>
-<div class="principalContent">
+
   <c:if test="${requestScope.ShowCommentsTab}">
     <view:comments  userId="${userId}" componentId="${instanceId}"
-                    resourceType="${photoResourceType}" resourceId="${photoId}" indexed="${callback}"/>
+              resourceType="${photoResourceType}" resourceId="${photoId}" indexed="${callback}"/>
   </c:if>
 </div>
+
+</form>
 </view:frame>
 <%
 	out.println(window.printAfter());

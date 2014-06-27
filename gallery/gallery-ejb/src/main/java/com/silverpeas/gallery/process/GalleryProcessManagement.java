@@ -34,6 +34,7 @@ import com.silverpeas.gallery.model.MediaCriteria;
 import com.silverpeas.gallery.model.MediaPK;
 import com.silverpeas.gallery.model.Photo;
 import com.silverpeas.gallery.process.photo.*;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -42,6 +43,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.process.util.ProcessList;
 
@@ -117,9 +119,10 @@ public class GalleryProcessManagement {
       final MediaDataUpdateDelegate delegate) {
     processList.add(GalleryUpdateMediaDataProcess.getInstance(media, delegate));
     final FileItem fileItem = delegate.getFileItem();
-    if (fileItem != null) {
+    if (fileItem != null && StringUtil.isDefined(fileItem.getName())) {
       processList.add(GalleryUpdateMediaFileProcess
           .getInstance(media, fileItem, watermark, watermarkHD, watermarkOther));
+      processList.add(GalleryUpdateMediaDataProcess.getInstance(media));
     }
     processList.add(GalleryIndexMediaDataProcess.getInstance(media));
   }

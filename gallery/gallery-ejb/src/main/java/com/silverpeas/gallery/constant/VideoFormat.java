@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
@@ -21,19 +21,35 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.gallery.web;
+package com.silverpeas.gallery.constant;
 
+import java.util.Locale;
+
+import com.stratelia.webactiv.util.FileRepositoryManager;
 
 /**
- * Base URIs from which the REST-based ressources representing gallery entities are defined.
- * @author Yohann Chastagnier
+ * Enumeration for all supported video format.
  */
-public final class GalleryResourceURIs {
+public enum VideoFormat {
+  MP4, FLV, ERROR;
 
-  public static final String GALLERY_BASE_URI = "gallery";
-  public static final String GALLERY_ALBUMS_URI_PART = "albums";
-  public static final String GALLERY_PHOTOS_PART = "photos";
-  public static final String GALLERY_PHOTO_PREVIEW_PART = "previewContent";
-  public static final String GALLERY_PHOTO_CONTENT_PART = "content";
-  public static final String GALLERY_VIDEOS_PART = "videos";
+  public static VideoFormat findFormat(String format) {
+    if (format != null) {
+      try {
+        return VideoFormat.valueOf(format.toUpperCase(Locale.getDefault()));
+      } catch (IllegalArgumentException ex) {
+        return ERROR;
+      }
+    }
+    return ERROR;
+  }
+
+  public static boolean isVideo(String name) {
+    VideoFormat type = findFormat(FileRepositoryManager.getFileExtension(name));
+    return type.isValid();
+  }
+
+  protected boolean isValid() {
+    return this != ERROR;
+  }
 }

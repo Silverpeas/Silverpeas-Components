@@ -33,6 +33,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/gallery" prefix="viewTags" %>
 
 <%-- Set resource bundle --%>
 <c:set var="language" value="${requestScope.resources.language}"/>
@@ -45,6 +46,14 @@
 <c:set var="photo" value="${requestScope.Media}" />
 <c:set var="browseContext" value="${requestScope.browseContext}"/>
 <c:set var="instanceId" value="${browseContext[3]}"/>
+
+<c:set var="action" value="CreateMedia"/>
+<c:set var="bodyCss" value="createMedia"/>
+<c:if test="${not empty photo}">
+  <c:set var="mediaType" value="${fn:toLowerCase(media.type)}"/>
+  <c:set var="action" value="UpdateInformation"/>
+  <c:set var="bodyCss" value="editMedia"/>
+</c:if>
 
 <%
 	// récupération des paramètres :
@@ -61,10 +70,6 @@
   String photoId = "";
   String vignette_url = null;
   String action = "CreateMedia";
-  String beginDownloadDate = "";
-  String endDownloadDate = "";
-  String beginDate = "";
-  String endDate = "";
   Collection<String> metaDataKeys = null;
 
   String extensionAlt = "_preview.jpg";
@@ -79,27 +84,7 @@
     photoId = String.valueOf(photo.getMediaPK().getId());
     vignette_url = photo.getThumbnailUrl(MediaResolution.MEDIUM);
     action = "UpdateInformation";
-    if (photo.getDownloadPeriod().getBeginDatable().isDefined()) {
-      beginDownloadDate = resource.getInputDate(photo.getDownloadPeriod().getBeginDatable());
-    } else {
-      beginDownloadDate = "";
-    }
-    if (photo.getDownloadPeriod().getEndDatable().isDefined()) {
-      endDownloadDate = resource.getInputDate(photo.getDownloadPeriod().getEndDatable());
-    } else {
-      endDownloadDate = "";
-    }
 
-    if (photo.getVisibilityPeriod().getBeginDatable().isDefined()) {
-      beginDate = resource.getInputDate(photo.getVisibilityPeriod().getBeginDatable());
-    } else {
-      beginDate = "";
-    }
-    if (photo.getVisibilityPeriod().getEndDatable().isDefined()) {
-      endDate = resource.getInputDate(photo.getVisibilityPeriod().getEndDatable());
-    } else {
-      endDate = "";
-    }
     if (viewMetadata) {
       metaDataKeys = photo.getMetaDataProperties();
     }
@@ -444,7 +429,8 @@ function hideTip() {
 </script>
 
 </head>
-<body class="gallery createPhoto yui-skin-sam" id="<%=componentId%>">
+
+<body class="gallery ${bodyCss} yui-skin-sam" id="${instanceId}">
 <%
 
 	browseBar.setDomainName(spaceLabel);
@@ -465,9 +451,10 @@ function hideTip() {
 	out.println(tabbedPane.print());
 %>
 <view:frame>
-<form name="mediaForm" action="<%=action%>" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
+<form name="mediaForm" action="${action}" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
 <input type="hidden" name="MediaId" value="<%=photoId%>"/>
 <input type="hidden" name="Positions"/>
+<input type="hidden" name="type" value="Photo"/>
 
 <table cellpadding="5" width="100%">
 <tr>
@@ -513,94 +500,7 @@ function hideTip() {
 	</td>
 	<td>
 
-  <fieldset id="photoInfo" class="skinFieldset">
-    <legend><fmt:message key="GML.bloc.information.principals"/></legend>
-    <div class="fields">
-      <div class="field" id="fileArea">
-        <label for="WAIMGVAR0" class="txtlibform"><fmt:message key="gallery.media" /></label>
-        <div class="champs">
-          <input id="fileId" type="file" name="WAIMGVAR0" size="60" />&nbsp;<img alt="<fmt:message key="GML.mandatory" />" src="<c:url value='${mandatoryIcon}'/>" width="5" height="5"/>
-        </div>
-      </div>
-      <div class="field" id="fileNameArea">
-        <label for="fileName" class="txtlibform"><fmt:message key="gallery.fileName" /></label>
-        <div class="champs">
-          ${photo.fileName}
-        </div>
-      </div>
-      <div class="field" id="titleArea">
-        <label for="title" class="txtlibform"><fmt:message key="GML.title"/></label>
-        <div class="champs">
-          <c:if test="${photo.title != photo.fileName}">
-            <c:set var="photoTitle" value="${photo.title}"/>
-          </c:if>
-          <input id="title" type="text" name="SP$$MediaTitle" size="60" maxlength="150" value="${photoTitle}"/>&nbsp;
-        </div>
-      </div>
-      <div class="field" id="descriptionArea">
-        <label for="description" class="txtlibform"><fmt:message key="GML.description"/></label>
-        <div class="champs">
-          <input id="description" type="text" name="SP$$MediaDescription" size="60" maxlength="150" value="<c:out value='${photo.description}'/>"/>&nbsp;
-        </div>
-      </div>
-      <div class="field" id="authorArea">
-        <label for="author" class="txtlibform"><fmt:message key="GML.author"/></label>
-        <div class="champs">
-          <input id="author" type="text" name="SP$$MediaAuthor" size="60" maxlength="150" value="<c:out value='${photo.author}'/>"/>&nbsp;
-        </div>
-      </div>
-      <div class="field" id="keywordArea">
-        <label for="keyword" class="txtlibform"><fmt:message key="gallery.keyword"/></label>
-        <div class="champs">
-          <input id="keyword" type="text" name="SP$$MediaKeyWord" size="60" maxlength="150" value="<c:out value='${photo.keyWord}'/>"/>&nbsp;
-        </div>
-      </div>
-    </div>
-  </fieldset>
-
-  <fieldset class="skinFieldset" id="photoOptions">
-    <legend><fmt:message key="gallery.options" /></legend>
-    <div class="fields">
-      <div class="field" id="downloadArea">
-        <label for="download" class="txtlibform"><fmt:message key="gallery.download"/></label>
-        <div class="champs">
-          <c:set var="downloadChecked" value=""/>
-          <c:if test="${photo.downloadable}">
-            <c:set var="downloadChecked" value="checked=\"checked\""/>
-          </c:if>
-          <input id="download" type="checkbox" name="SP$$MediaDownloadAuthorized" value="true" ${downloadChecked} />
-        </div>
-      </div>
-      <div class="field" id="beginDownloadDateArea">
-        <label for="beginDownloadDate" class="txtlibform"><fmt:message key="gallery.beginDownloadDate"/></label>
-        <div class="champs">
-          <input id="beginDownloadDate" type="text" class="dateToPick" name="SP$$MediaBeginDownloadDate" size="12" maxlength="10" value="<%=beginDownloadDate%>"/>
-          <span class="txtnote">(<fmt:message key='GML.dateFormatExemple'/>)</span>
-        </div>
-      </div>
-      <div class="field" id="endDownloadDateArea">
-        <label for="endDownloadDate" class="txtlibform"><fmt:message key="GML.toDate"/></label>
-        <div class="champs">
-          <input id="endDownloadDate" type="text" class="dateToPick" name="SP$$MediaEndDownloadDate" size="12" maxlength="10" value="<%=endDownloadDate%>"/>
-          <span class="txtnote">(<fmt:message key='GML.dateFormatExemple'/>)</span>
-        </div>
-      </div>
-      <div class="field" id="beginDateArea">
-        <label for="beginDate" class="txtlibform"><fmt:message key="gallery.beginDate"/></label>
-        <div class="champs">
-          <input id="beginDate" type="text" class="dateToPick" name="SP$$MediaBeginVisibilityDate" size="12" maxlength="10" value="<%=beginDate%>"/>
-          <span class="txtnote">(<fmt:message key='GML.dateFormatExemple'/>)</span>
-        </div>
-      </div>
-      <div class="field" id="endDateArea">
-        <label for="endDate" class="txtlibform"><fmt:message key="GML.toDate"/></label>
-        <div class="champs">
-          <input id="endDate" type="text" class="dateToPick" name="SP$$MediaEndVisibilityDate" size="12" maxlength="10" value="<%=endDate%>"/>
-          <span class="txtnote">(<fmt:message key='GML.dateFormatExemple'/>)</span>
-        </div>
-      </div>
-    </div>
-  </fieldset>
+  <viewTags:editMedia mediaBean="${photo}" mediaType="Photo"/>
 
   <c:if test="${requestScope.IsUsePdc}">
     <%-- Display PDC form --%>
@@ -628,12 +528,20 @@ function hideTip() {
 </tr>
 </table>
 </form>
-<%
-	ButtonPane buttonPane = gef.getButtonPane();
-  buttonPane.addButton(validateButton);
-  buttonPane.addButton(cancelButton);
-	out.println(buttonPane.print());
-%>
+<fmt:message key="GML.validate" var="validateLabel" />
+<fmt:message key="GML.cancel" var="cancelLabel" />
+<view:buttonPane>
+  <view:button action="javascript:onClick=sendData();" label="${validateLabel}" />
+  <c:choose>
+    <c:when test="${not empty photo}">
+      <view:button action="MediaView?MediaId=${photo.id}" label="${cancelLabel}" />
+    </c:when>
+    <c:otherwise>
+      <view:button action="GoToCurrentAlbum" label="${cancelLabel}" />
+    </c:otherwise>
+  </c:choose>
+</view:buttonPane>
+
 </view:frame>
 <%
 	out.println(window.printAfter());

@@ -27,12 +27,17 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
 <view:setConstant var="MediaTypePhoto" constant="com.silverpeas.gallery.constant.MediaType.Photo"/>
+<view:setConstant var="MediaTypeVideo" constant="com.silverpeas.gallery.constant.MediaType.Video"/>
 
 <c:set var="media" value="${requestScope.Media}"/>
 
+
 <c:choose>
   <c:when test="${media.type eq MediaTypePhoto}">
-    <%@include file="mediaPhotoEdit.jsp" %>
+    <jsp:include page="mediaPhotoEdit.jsp" />
+  </c:when>
+  <c:when test="${media.type eq MediaTypeVideo}">
+    <jsp:include page="mediaVideoEdit.jsp" />
   </c:when>
   <c:otherwise>
     <%-- Nothing --%>

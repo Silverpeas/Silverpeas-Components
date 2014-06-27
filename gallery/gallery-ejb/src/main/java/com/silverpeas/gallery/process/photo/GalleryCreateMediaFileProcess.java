@@ -23,15 +23,24 @@
  */
 package com.silverpeas.gallery.process.photo;
 
-import com.silverpeas.gallery.ImageHelper;
-import com.silverpeas.gallery.model.Media;
-import com.silverpeas.gallery.process.AbstractGalleryFileProcess;
-import com.silverpeas.gallery.process.GalleryProcessExecutionContext;
+import java.io.File;
+
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.process.io.file.FileHandler;
+import org.silverpeas.process.io.file.HandledFile;
 import org.silverpeas.process.session.ProcessSession;
 
-import java.io.File;
+import com.silverpeas.gallery.GalleryComponentSettings;
+import com.silverpeas.gallery.ImageHelper;
+import com.silverpeas.gallery.ImageType;
+import com.silverpeas.gallery.VideoHelper;
+import com.silverpeas.gallery.constant.VideoFormat;
+import com.silverpeas.gallery.model.Media;
+import com.silverpeas.gallery.model.Video;
+import com.silverpeas.gallery.process.AbstractGalleryFileProcess;
+import com.silverpeas.gallery.process.GalleryProcessExecutionContext;
+import com.silverpeas.util.FileUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * Process to create a media on file system
@@ -79,7 +88,7 @@ public class GalleryCreateMediaFileProcess extends AbstractGalleryFileProcess {
         fileItem = null;
       } else {
         throw new IllegalArgumentException(
-            "GalleryCreateMediaFileProcess() - parameter 'file' has to be an FileItem or File " +
+            "GalleryCreateMediaFileProcess() - parameter 'file' has to be a FileItem or File " +
                 "instance.");
       }
     } else {
@@ -102,15 +111,30 @@ public class GalleryCreateMediaFileProcess extends AbstractGalleryFileProcess {
       final ProcessSession session, final FileHandler fileHandler) throws Exception {
 
     // Media
-    if (getMedia().getType().isPhoto()) {
-      if (fileItem != null) {
-        ImageHelper
-            .processImage(fileHandler, getMedia().getPhoto(), fileItem, watermark, watermarkHD,
-                watermarkOther);
-      } else {
-        ImageHelper.processImage(fileHandler, getMedia().getPhoto(), file, watermark, watermarkHD,
-            watermarkOther);
-      }
+    switch (getMedia().getType()) {
+      case Photo:
+        if (fileItem != null) {
+          ImageHelper
+              .processImage(fileHandler, getMedia().getPhoto(), fileItem, watermark, watermarkHD,
+                  watermarkOther);
+        } else {
+          ImageHelper.processImage(fileHandler, getMedia().getPhoto(), file, watermark,
+              watermarkHD,
+              watermarkOther);
+        }
+        break;
+      case Video:
+        Video video = getMedia().getVideo();
+        if (fileItem != null) {
+          VideoHelper.processVideoFile(fileHandler, fileItem, video);
+        }
+        break;
+
+      default:
+        SilverTrace.warn("Gallery", GalleryUpdateMediaFileProcess.class.getName(),
+            getMedia().getType().name() + " media type is never processed");
+        break;
     }
   }
+
 }

@@ -276,25 +276,70 @@ br.clear {
   height: 3em;
 }
 
-#photoInfo legend {
-  background: transparent url("/silverpeas/util/icons/component/gallerySmall.gif") 11px 0 no-repeat;
+#PhotoInfo legend {
+	background: transparent
+		url("/silverpeas/util/icons/component/gallerySmall.gif") 11px 0
+		no-repeat;
 }
 
-#photoOptions legend {
-  background: transparent url("/silverpeas/util/icons/cog.png") 11px 0 no-repeat;
+#videoInfo legend {
+	background: transparent
+		url("../icons/icon-video.png") 11px 0
+		no-repeat;
+}
+
+
+#streamingInfo legend {
+	background: transparent
+		url("../icons/icon-streaming.png") 11px 0
+		no-repeat;
+}
+
+#PhotoOptions legend,
+#videoOptions legend,
+#stremingOptions legend
+{
+	background: transparent
+		url("/silverpeas/util/icons/cog.png") 11px 0
+		no-repeat;
 }
 
 #formInfo legend {
   background: transparent url("/silverpeas/util/icons/component/formsOnlineSmall.gif") 11px 0 no-repeat;
 }
 
-.createPhoto #metadata {
-  width: 300px;
-  margin-top: 1em;
+.editMedia   #metadata {
+	width: 300px;
+	margin-top: 1em;
 }
 
-.createPhoto #metadata b {
-  display: block;
+.editMedia   #metadata b {
+	display: block;
+}
+
+.createMedia #fileNameArea {
+	display:none;
+}
+
+.createMedia #beginDownloadDateArea,
+.createMedia #endDownloadDateArea {
+	width:364px;
+}
+.createMedia #beginDateArea {
+	clear:both;
+}
+.createMedia #beginDateArea,
+.createMedia #endDateArea {
+	width:364px;
+}
+
+.createMedia #endDateArea label,
+.createMedia #endDownloadDateArea label {
+    width: 50px;
+}
+.createMedia #endDateArea .champs,
+.createMedia #endDownloadDateArea .champs {
+    margin-left: 50px;
 }
 
 /************ inline message folder empty **********/
