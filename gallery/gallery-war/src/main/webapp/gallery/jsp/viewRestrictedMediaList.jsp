@@ -28,25 +28,35 @@
 
 --%>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+<%@ include file="check.jsp"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/gallery" prefix="gallery" %>
 
 <%-- Set resource bundle --%>
-<fmt:setLocale value="${requestScope.resources.language}"/>
+<c:set var="userLanguage" value="${requestScope.resources.language}"/>
+<fmt:setLocale value="${userLanguage}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
-<%@ include file="check.jsp"%>
+<c:set var="mediaList" value="${requestScope.MediaList}"/>
+<jsp:useBean id="mediaList" type="java.util.List<com.silverpeas.gallery.model.Media>"/>
+<c:set var="mediaResolution" value="${requestScope.MediaResolution}"/>
+<jsp:useBean id="mediaResolution" type="com.silverpeas.gallery.constant.MediaResolution"/>
+<c:set var="nbMediaPerPage" value="${requestScope.NbMediaPerPage}"/>
+<c:set var="currentPageIndex" value="${requestScope.CurrentPageIndex}"/>
+<c:set var="firstMediaIndex" value="${nbMediaPerPage * currentPageIndex}"/>
+<c:set var="lastMediaIndex" value="${firstMediaIndex + nbMediaPerPage - 1}"/>
 
 <%
   // récupération des paramètres :
   String searchKeyWord = (String) request.getAttribute("SearchKeyWord");
-  List<Media> mediaList = (List) request.getAttribute("MediaList");
   String profile = (String) request.getAttribute("Profile");
-  int firstPhotoIndex = ((Integer) request.getAttribute("FirstMediaIndex")).intValue();
+  int firstPhotoIndex = ((Integer) request.getAttribute("CurrentPageIndex")).intValue();
   int nbPhotosPerPage = ((Integer) request.getAttribute("NbMediaPerPage")).intValue();
-  MediaResolution mediaResolution = (MediaResolution) request.getAttribute("MediaResolution");
   Boolean isViewMetadata = (Boolean) request.getAttribute("IsViewMetadata");
   Boolean isViewList = (Boolean) request.getAttribute("IsViewList");
   Collection<String> selectedIds = (Collection) request.getAttribute("SelectedIds");
@@ -104,16 +114,6 @@
 <script language="javascript">
 	var albumWindow = window;
 
-	function choiceGoTo(selectedIndex)
-	{
-		// envoi du choix de la taille des vignettes
-		if (selectedIndex != 0 && selectedIndex != 1)
-		{
-			document.ChoiceSelectForm.Choice.value = document.mediaForm.ChoiceSize[selectedIndex].value;
-			document.ChoiceSelectForm.submit();
-		}
-	}
-
 	function sendData()
 	{
 		// envoi des photos sélectionnées pour la modif par lot
@@ -135,7 +135,7 @@
 	function getObjects(selected)
 	{
 		var  items = "";
-		var boxItems = document.mediaForm.SelectPhoto;
+		var boxItems = document.mediaForm.SelectMedia;
 		if (boxItems != null){
 			// au moins une checkbox exist
 			var nbBox = boxItems.length;
@@ -163,16 +163,6 @@
 		document.mediaForm.submit();
 	}
 
-	function sortGoTo(selectedIndex)
-	{
-		// envoi du choix du tri
-		if (selectedIndex != 0 && selectedIndex != 1)
-		{
-			document.OrderBySelectForm.Tri.value = document.mediaForm.SortBy[selectedIndex].value;
-			document.OrderBySelectForm.submit();
-		}
-	}
-
 </script>
 </head>
 <body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5"
@@ -194,15 +184,15 @@
 
     if ("admin".equals(profile) || "publisher".equals(profile) || "writer".equals(profile)) {
       // possibilité de modifier les photos par lot
-      operationPane.addOperation(resource.getIcon("gallery.updateSelectedPhoto"), resource.getString(
-          "gallery.updateSelectedPhoto"), "javascript:onClick=sendData();");
+      operationPane.addOperation(resource.getIcon("gallery.updateSelectedMedia"), resource.getString(
+          "gallery.updateSelectedMedia"), "javascript:onClick=sendData();");
       operationPane.addOperation(resource.getIcon("gallery.allSelect"), resource.getString(
           "gallery.allSelect"), "AllSelected");
     }
     if ("user".equals(profile) && isBasket) {
       // ajouter les photos sélectionnées au panier
-      operationPane.addOperation(resource.getIcon("gallery.addToBasketSelectedPhoto"), resource.
-          getString("gallery.addToBasketSelectedPhoto"), "javascript:onClick=sendToBasket();");
+      operationPane.addOperation(resource.getIcon("gallery.addToBasketSelectedMedia"), resource.
+          getString("gallery.addToBasketSelectedMedia"), "javascript:onClick=sendToBasket();");
     }
 
     out.println(window.printBefore());
@@ -237,50 +227,10 @@
 						textColonne = 1;
 		%>
 		<td colspan="<%=nbParLigne + textColonne%>" align="center">
-		<table border="0" width="100%">
-			<tr>
-				<td align="center" width="100%" class=ArrayNavigation><%=pagination.printCounter()%>
-				<%
-					if (mediaList.size() == 1)
-								out.println(resource.getString("gallery.media"));
-							else
-								out.println(resource.getString("gallery.media.several"));
-				%>
-				</td>
-				<td align="right" nowrap><select name="ChoiceSize"
-					onChange="javascript:choiceGoTo(this.selectedIndex);">
-					<option selected><%=resource.getString("gallery.selectSize")%></option>
-					<option>-------------------------------</option>
-					<%
-						String selected = "";
-								if (mediaResolution.equals("66x50"))
-									selected = "selected";
-					%>
-					<option value="66x50" <%=selected%>><%="66x50"%></option>
-					<%
-						selected = "";
-								if (mediaResolution.equals("133x100"))
-									selected = "selected";
-					%>
-					<option value="133x100" <%=selected%>><%="133x100"%></option>
-					<%
-						selected = "";
-								if (mediaResolution.equals("266x150"))
-									selected = "selected";
-					%>
-					<option value="266x150" <%=selected%>><%="266x150"%></option>
-				</select> <select name="SortBy"
-					onChange="javascript:sortGoTo(this.selectedIndex);">
-					<option selected><%=resource.getString("gallery.orderBy")%></option>
-					<option>-------------------------------</option>
-					<option value="CreationDateAsc"><%=resource.getString("gallery.dateCreatAsc")%></option>
-					<option value="CreationDateDesc"><%=resource.getString("gallery.dateCreatDesc")%></option>
-					<option value="Title"><%=resource.getString("GML.title")%></option>
-					<option value="Size"><fmt:message key="gallery.dimension"/></option>
-					<option value="Author"><%=resource.getString("GML.author")%></option>
-				</select></td>
-			</tr>
-		</table>
+      <gallery:albumListHeader currentMediaResolution="${mediaResolution}"
+                               nbMediaPerPage="${nbMediaPerPage}"
+                               currentPageIndex="${currentPageIndex}"
+                               mediaList="${mediaList}"/>
 		</td>
 	</tr>
 </table>
@@ -346,7 +296,7 @@
 												usedCheck = "checked";
 				%>
 				<td align="center" width="10"><input type="checkbox"
-					name="SelectPhoto" value="<%=idP%>" <%=usedCheck%>></td>
+					name="SelectMedia" value="<%=idP%>" <%=usedCheck%>></td>
 				<td class="txtlibform"><%=media.getName()%></td>
 			</tr>
 			<%
@@ -387,7 +337,7 @@
 											usedCheck = "checked";
 			%>
 			<tr>
-				<td align="center"><input type="checkbox" name="SelectPhoto"
+				<td align="center"><input type="checkbox" name="SelectMedia"
 					value="<%=idP%>" <%=usedCheck%>></td>
 			</tr>
 		</table>
@@ -494,7 +444,7 @@
 
 			<tr>
 				<td align="left" valign="top" colspan="2"><input
-					type="checkbox" name="SelectPhoto" value="<%=idP%>" <%=usedCheck%>></td>
+					type="checkbox" name="SelectMedia" value="<%=idP%>" <%=usedCheck%>></td>
 			</tr>
 		</table>
 		</td>
@@ -542,11 +492,6 @@
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
-<form name="ChoiceSelectForm" action="ChoiceSize" Method="POST">
-<input type="hidden" name="Choice"> <input type="hidden" name="SearchKeyWord" value="<%=searchKeyWord%>"></form>
-<form name="OrderBySelectForm" action="SortBy" Method="POST">
-<input type="hidden" name="Tri">
-<input type="hidden" name="SearchKeyWord" value="<%=searchKeyWord%>"></form>
 
 </body>
 </html>

@@ -108,7 +108,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   private ResourceLocator metadataResources = null;
   private CommentService commentService = null;
   // pagination de la liste des résultats (PDC via DomainsBar)
-  private int indexOfFirstItemToDisplay = 0;
+  private int indexOfCurrentPage = 0;
   // panier en cours
   private List<String> basket = new ArrayList<String>(); // liste des photos mise dans le panier
   static final Properties defaultSettings = new Properties();
@@ -544,12 +544,12 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     sortMediaSearch();
   }
 
-  public void setIndexOfFirstItemToDisplay(String index) {
-    this.indexOfFirstItemToDisplay = Integer.parseInt(index);
+  public void setIndexOfCurrentPage(String index) {
+    this.indexOfCurrentPage = Integer.parseInt(index);
   }
 
-  public int getIndexOfFirstItemToDisplay() {
-    return indexOfFirstItemToDisplay;
+  public int getIndexOfCurrentPage() {
+    return indexOfCurrentPage;
   }
 
   public String getCurrentAlbumId() {
@@ -644,7 +644,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   }
 
   public void initIndex() {
-    indexOfFirstItemToDisplay = 0;
+    indexOfCurrentPage = 0;
   }
 
   public String initAlertUser(String mediaId) {

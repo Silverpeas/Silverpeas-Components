@@ -22,6 +22,7 @@ package com.silverpeas.gallery.control.ejb;
 
 import com.silverpeas.gallery.GalleryComponentSettings;
 import com.silverpeas.gallery.GalleryContentManager;
+import com.silverpeas.gallery.constant.MediaType;
 import com.silverpeas.gallery.dao.MediaDAO;
 import com.silverpeas.gallery.dao.OrderDAO;
 import com.silverpeas.gallery.dao.PhotoDAO;
@@ -628,7 +629,7 @@ public class GalleryBmEJB implements GalleryBm {
       // création des médias à partir des résultats
       for (final MatchingIndexEntry matchIndex : result) {
         // Ne retourne que les médias
-        if (matchIndex.getObjectType().equals("Media")) {
+        if (MediaType.from(matchIndex.getObjectType()) != MediaType.Unknown) {
           final MediaPK mediaPK = new MediaPK(matchIndex.getObjectId());
           final Media media = getMedia(mediaPK);
 

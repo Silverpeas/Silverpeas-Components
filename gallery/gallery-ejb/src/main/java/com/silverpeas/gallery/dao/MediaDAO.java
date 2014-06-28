@@ -576,13 +576,19 @@ public class MediaDAO {
         media.getVisibilityPeriod().getEndDate().getTime(), isInsert, mediaParams);
     Timestamp saveDate = new Timestamp(new Date().getTime());
     if (isInsert) {
-      appendSaveParameter(mediaSave, "createDate", saveDate, true, mediaParams);
-      appendSaveParameter(mediaSave, "createdBy", context.getUser(), true, mediaParams);
-      appendSaveParameter(mediaSave, "lastUpdateDate", saveDate, true, mediaParams);
-      appendSaveParameter(mediaSave, "lastUpdatedBy", context.getUser(), true, mediaParams);
+      media.setCreationDate(saveDate);
+      media.setCreator(context.getUser());
+      media.setLastUpdateDate(saveDate);
+      media.setLastUpdater(context.getUser());
+      appendSaveParameter(mediaSave, "createDate", media.getCreationDate(), true, mediaParams);
+      appendSaveParameter(mediaSave, "createdBy", media.getCreatorId(), true, mediaParams);
+      appendSaveParameter(mediaSave, "lastUpdateDate", media.getLastUpdateDate(), true, mediaParams);
+      appendSaveParameter(mediaSave, "lastUpdatedBy", media.getLastUpdatedBy(), true, mediaParams);
     } else if (!context.isUpdatingInCaseOfCreation()) {
-      appendSaveParameter(mediaSave, "lastUpdateDate", saveDate, false, mediaParams);
-      appendSaveParameter(mediaSave, "lastUpdatedBy", context.getUser(), false, mediaParams);
+      media.setLastUpdateDate(saveDate);
+      media.setLastUpdater(context.getUser());
+      appendSaveParameter(mediaSave, "lastUpdateDate", media.getLastUpdateDate(), false, mediaParams);
+      appendSaveParameter(mediaSave, "lastUpdatedBy", media.getLastUpdatedBy(), false, mediaParams);
     }
     if (isInsert) {
       appendListOfParameters(mediaSave.append(") values "), mediaParams);

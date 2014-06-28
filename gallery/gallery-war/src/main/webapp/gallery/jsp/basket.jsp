@@ -68,7 +68,7 @@
 		var  items = "";
 		try
 		{
-			var boxItems = document.mediaForm.SelectPhoto;
+			var boxItems = document.mediaForm.SelectMedia;
 			if (boxItems != null){
 				// au moins une checkbox exist
 				var nbBox = boxItems.length;
@@ -307,8 +307,8 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
       }
 
       // possibilite de modifier ou supprimer les photos par lot
-      operationPane.addOperation(resource.getIcon("gallery.deleteSelectedPhoto"), resource.getString(
-          "gallery.deleteSelectedPhoto"),
+      operationPane.addOperation(resource.getIcon("gallery.deleteSelectedMedia"), resource.getString(
+          "gallery.deleteSelectedMedia"),
           "javascript:onClick=sendDataDelete();");
 
       // vider le panier
@@ -369,8 +369,8 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
              + "')\"><img src=\""
              + resource.getIcon("gallery.deleteSrc")
              + "\" alt=\""
-             + resource.getString("gallery.deletePhoto")
-             + "\" border=\"0\" align=\"absmiddle\"></a> <input type=\"checkbox\" name=\"SelectPhoto\" value=\""
+             + resource.getString("GML.delete")
+             + "\" border=\"0\" align=\"absmiddle\"></a> <input type=\"checkbox\" name=\"SelectMedia\" value=\""
              + EncodeHelper.javaStringToHtmlString(String.valueOf(id)) + usedCheck + "\">");
 
        }

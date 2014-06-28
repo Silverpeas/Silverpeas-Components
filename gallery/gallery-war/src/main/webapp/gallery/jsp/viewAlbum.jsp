@@ -1,8 +1,3 @@
-<%@ page import="com.silverpeas.gallery.GalleryComponentSettings" %>
-<%@ page import="com.silverpeas.gallery.model.Media" %>
-<%@ page import="java.util.ArrayList" %>
-<%@ page import="com.silverpeas.gallery.model.Photo" %>
-<%@ page import="com.silverpeas.gallery.constant.MediaResolution" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -29,764 +24,394 @@
 
 --%>
 
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ include file="check.jsp"%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ include file="check.jsp" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/gallery" prefix="gallery" %>
 
 <%-- Set resource bundle --%>
-<fmt:setLocale value="${requestScope.resources.language}"/>
+<c:set var="userLanguage" value="${requestScope.resources.language}"/>
+<fmt:setLocale value="${userLanguage}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
-<fmt:message var="addVideoIcon" key='gallery.video.add' bundle='${icons}'/>
-<c:url var="addVideoIconUrl" value="${addVideoIcon}"/>
+<view:setConstant var="adminRole" constant="com.stratelia.webactiv.SilverpeasRole.admin"/>
+<view:setConstant var="publisherRole" constant="com.stratelia.webactiv.SilverpeasRole.publisher"/>
+<view:setConstant var="writerRole" constant="com.stratelia.webactiv.SilverpeasRole.writer"/>
+<view:setConstant var="userRole" constant="com.stratelia.webactiv.SilverpeasRole.user"/>
 
-<%
-  // recuperation des parametres :
-  AlbumDetail currentAlbum = (AlbumDetail) request.getAttribute("CurrentAlbum");
-  String userId = (String) request.getAttribute("UserId");
-  String profile = (String) request.getAttribute("Profile");
-  List<NodeDetail> path = (List) request.getAttribute("Path");
-  int firstPhotoIndex = ((Integer) request.getAttribute("FirstMediaIndex")).intValue();
-  int nbPhotosPerPage = ((Integer) request.getAttribute("NbMediaPerPage")).intValue();
-  MediaResolution mediaResolution = (MediaResolution) request.getAttribute("MediaResolution");
-  Boolean dragAndDropEnable = (Boolean) request.getAttribute("DragAndDropEnable");
-  Boolean isViewMetadata = (Boolean) request.getAttribute("IsViewMetadata");
-  Boolean isViewList = (Boolean) request.getAttribute("IsViewList");
-  Collection selectedIds = (Collection) request.getAttribute("SelectedIds");
-  boolean isPdcUsed = ((Boolean) request.getAttribute("IsUsePdc")).booleanValue();
-  boolean isBasket = ((Boolean) request.getAttribute("IsBasket")).booleanValue();
-  boolean isGuest = ((Boolean) request.getAttribute("IsGuest")).booleanValue();
-  boolean isPrivateSearch = ((Boolean) request.getAttribute("IsPrivateSearch")).booleanValue();
-  List<AlbumDetail> albums = (List) request.getAttribute("Albums");
+<c:set var="greaterUserRole" value="${requestScope.greaterUserRole}"/>
+<jsp:useBean id="greaterUserRole" type="com.stratelia.webactiv.SilverpeasRole"/>
 
-  session.setAttribute("Silverpeas_Album_ComponentId", componentId);
+<c:set var="componentId" value="${requestScope.browseContext[3]}"/>
 
-  //For Drag And Drop
-  ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
+<fmt:message key="gallery.addSubAlbum" var="addAlbumLabel"/>
+<fmt:message key="gallery.addAlbum" var="addAlbumIcon" bundle="${icons}"/>
+<c:url value="${addAlbumIcon}" var="addAlbumIcon"/>
+<fmt:message key="gallery.updateAlbum" var="updateAlbumLabel"/>
+<fmt:message key="gallery.updateAlbum" var="updateAlbumIcon" bundle="${icons}"/>
+<c:url value="${updateAlbumIcon}" var="updateAlbumIcon"/>
+<fmt:message key="gallery.deleteThisAlbum" var="deleteAlbumLabel"/>
+<fmt:message key="gallery.deleteAlbum" var="deleteAlbumIcon" bundle="${icons}"/>
+<c:url value="${deleteAlbumIcon}" var="deleteAlbumIcon"/>
+<fmt:message key="gallery.copyAlbum" var="copyAlbumLabel"/>
+<fmt:message key="gallery.copy" var="copyAlbumIcon" bundle="${icons}"/>
+<c:url value="${copyAlbumIcon}" var="copyAlbumIcon"/>
+<fmt:message key="gallery.cutAlbum" var="cutAlbumLabel"/>
+<fmt:message key="gallery.cut" var="cutAlbumIcon" bundle="${icons}"/>
+<c:url value="${cutAlbumIcon}" var="cutAlbumIcon"/>
+<fmt:message key="gallery.updateSelectedMedia" var="updateSelectedMediaLabel"/>
+<fmt:message key="gallery.updateSelectedMedia" var="updateSelectedMediaIcon" bundle="${icons}"/>
+<c:url value="${updateSelectedMediaIcon}" var="updateSelectedMediaIcon"/>
+<fmt:message key="gallery.deleteSelectedMedia" var="deleteSelectedMediaLabel"/>
+<fmt:message key="gallery.deleteSelectedMedia" var="deleteSelectedMediaIcon" bundle="${icons}"/>
+<c:url value="${deleteSelectedMediaIcon}" var="deleteSelectedMediaIcon"/>
+<fmt:message key="gallery.categorizeSelectedMedia" var="categorizedSelectedMediaLabel"/>
+<fmt:message key="gallery.categorizeSelectedMedia" var="categorizedSelectedMediaIcon" bundle="${icons}"/>
+<c:url value="${categorizedSelectedMediaIcon}" var="categorizedSelectedMediaIcon"/>
+<fmt:message key="gallery.addPathForSelectedMedia" var="addPathForSelectedMediaLabel"/>
+<fmt:message key="gallery.addPathForSelectedMedia" var="addPathForSelectedMediaIcon" bundle="${icons}"/>
+<c:url value="${addPathForSelectedMediaIcon}" var="addPathForSelectedMediaIcon"/>
+<fmt:message key="gallery.allSelect" var="allSelectMediaLabel"/>
+<fmt:message key="gallery.allSelect" var="allSelectMediaIcon" bundle="${icons}"/>
+<c:url value="${allSelectMediaIcon}" var="allSelectMediaIcon"/>
+<fmt:message key="gallery.copySelectedPhoto" var="copySelectedMediaLabel"/>
+<fmt:message key="gallery.copy" var="copySelectedMediaIcon" bundle="${icons}"/>
+<c:url value="${copySelectedMediaIcon}" var="copySelectedMediaIcon"/>
+<fmt:message key="gallery.cutSelectedPhoto" var="cutSelectedMediaLabel"/>
+<fmt:message key="gallery.cut" var="cutSelectedMediaIcon" bundle="${icons}"/>
+<c:url value="${cutSelectedMediaIcon}" var="cutSelectedMediaIcon"/>
+<fmt:message key="GML.paste" var="pasteSelectedMediaLabel"/>
+<fmt:message key="gallery.paste" var="pasteSelectedMediaIcon" bundle="${icons}"/>
+<c:url value="${pasteSelectedMediaIcon}" var="pasteSelectedMediaIcon"/>
+<fmt:message key="gallery.addPhoto" var="addPhotoLabel"/>
+<fmt:message key="gallery.addPhoto" var="addPhotoIcon" bundle="${icons}"/>
+<c:url value="${addPhotoIcon}" var="addPhotoIcon"/>
+<fmt:message key="gallery.video.add" var="addVideoLabel"/>
+<fmt:message key='gallery.video.add' var="addVideoIcon" bundle='${icons}'/>
+<c:url var="addVideoIcon" value="${addVideoIcon}"/>
+<fmt:message key="gallery.addToBasketSelectedMedia" var="addToBasketSelectedMediaLabel"/>
+<fmt:message key='gallery.addToBasketSelectedMedia' var="addToBasketSelectedMediaIcon" bundle='${icons}'/>
+<c:url var="addToBasketSelectedMediaIcon" value="${addToBasketSelectedMediaIcon}"/>
+<fmt:message key="gallery.viewBasket" var="viewBasketLabel"/>
+<fmt:message key='gallery.viewBasket' var="viewBasketIcon" bundle='${icons}'/>
+<c:url var="addToBasketSelectedMediaIcon" value="${addToBasketSelectedMediaIcon}"/>
+<fmt:message key="gallery.diaporama" var="diaporamaLabel"/>
+<fmt:message key='gallery.startDiaporama' var="diaporamaIcon" bundle='${icons}'/>
+<c:url var="diaporamaIcon" value="${diaporamaIcon}"/>
+<fmt:message key="gallery.addFavorite" var="addFavoriteLabel"/>
+<fmt:message key='gallery.addFavorite' var="addFavoriteIcon" bundle='${icons}'/>
+<c:url var="addFavoriteIcon" value="${addFavoriteIcon}"/>
+<fmt:message key="gallery.lastResult" var="lastResultLabel"/>
+<fmt:message key='gallery.lastResult' var="lastResultIcon" bundle='${icons}'/>
+<c:url var="lastResultIcon" value="${lastResultIcon}"/>
 
-  // declaration des variables :
-  String fctAddPhoto = "AddMedia";
-  int nbAffiche = 0;
-  String albumId = "";
-  List<Media> mediaList = new ArrayList<Media>();
-  int id = 0;
-  int nbParLigne = 1;
-  int largeurCellule = 0;
-  String albumName = "";
-  String albumDescription = "";
-  String albumUrl = "";
-  boolean viewMetadata = isViewMetadata.booleanValue();
-  boolean viewList = isViewList.booleanValue();
-  String typeAff = "1";
-  String galleryName = "";
+<c:set var="currentAlbum" value="${requestScope.CurrentAlbum}"/>
+<jsp:useBean id="currentAlbum" type="com.silverpeas.gallery.model.AlbumDetail"/>
+<c:set var="albums" value="${requestScope.Albums}"/>
+<jsp:useBean id="albums" type="java.util.List<com.silverpeas.gallery.model.AlbumDetail>"/>
 
-  if (currentAlbum != null) {
-    albumId = String.valueOf(currentAlbum.getId());
-    mediaList = currentAlbum.getMedia();
-    albumName = currentAlbum.getName();
-    albumDescription = currentAlbum.getDescription();
-    albumUrl = currentAlbum.getLink();
-  }
+<c:set var="maximumFileSize" value="<%=FileRepositoryManager.getUploadMaximumFileSize()%>"/>
 
-  boolean somePhotos = mediaList != null && !mediaList.isEmpty();
-  boolean someAlbums = currentAlbum.getChildrenDetails() != null
-          && !currentAlbum.getChildrenDetails().isEmpty();
+<c:set var="userId" value="${requestScope.UserId}"/>
+<c:set var="path" value="${requestScope.Path}"/>
+<jsp:useBean id="path" type="java.util.List<com.stratelia.webactiv.util.node.model.NodeDetail>"/>
+<c:set var="nbMediaPerPage" value="${requestScope.NbMediaPerPage}"/>
+<c:set var="currentPageIndex" value="${requestScope.CurrentPageIndex}"/>
+<c:set var="mediaResolution" value="${requestScope.MediaResolution}"/>
+<jsp:useBean id="mediaResolution" type="com.silverpeas.gallery.constant.MediaResolution"/>
+<c:set var="dragAndDropEnable" value="${requestScope.DragAndDropEnable}"/>
+<c:set var="isViewMetadata" value="${requestScope.IsViewMetadata}"/>
+<c:set var="isViewList" value="${requestScope.IsViewList}"/>
+<c:set var="selectedIds" value="${requestScope.SelectedIds}"/>
+<c:set var="isPdcUsed" value="${requestScope.IsUsePdc}"/>
+<c:set var="isPrivateSearch" value="${requestScope.IsPrivateSearch}"/>
+<c:set var="isBasket" value="${requestScope.IsBasket}"/>
+<c:set var="isGuest" value="${requestScope.IsGuest}"/>
 
-  // initialisation de la pagination
-  Pagination pagination = gef.getPagination(mediaList.size(), nbPhotosPerPage, firstPhotoIndex);
-  List<Media> subMediaList = mediaList.subList(pagination.getFirstItemIndex(), pagination.getLastItemIndex());
+<c:set var="Silverpeas_Album_ComponentId" value="${componentId}" scope="session"/>
 
-  // creation du chemin :
-  String namePath = "";
-  boolean suivant = false;
-  //Collections.reverse(path);
-  galleryName = browseBar.getBreadCrumb();
+<c:set var="fctAddMedia" value="AddMedia"/>
 
-  // calcul du nombre de photo par ligne en fonction de la taille
-  if (mediaResolution.isTiny()) {
-    nbParLigne = 8;
-  } else if (mediaResolution.isSmall()) {
-    nbParLigne = 5;
-    if (viewList) {
-      typeAff = "2";
-    }
-  } else if (mediaResolution.isMedium()) {
-    nbParLigne = 3;
-    if (viewList) {
-      typeAff = "3";
-      nbParLigne = 1;
-    }
-  }
-  largeurCellule = 100 / nbParLigne;
-%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <view:looknfeel/>
-    <view:progressMessage />
-    <script type="text/javascript" src="<%=m_context%>/gallery/jsp/javaScript/dragAndDrop.js"></script>
-    <script type="text/javascript" src="<%=m_context%>/util/javaScript/upload_applet.js"></script>
-    <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-    <script type="text/javascript">
+<head>
+  <view:looknfeel/>
+  <view:progressMessage/>
+  <script type="text/javascript" src="<c:url value="/gallery/jsp/javaScript/dragAndDrop.js"/>"></script>
+  <script type="text/javascript" src="<c:url value="/util/javaScript/upload_applet.js"/>"></script>
+  <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js"/>"></script>
+  <script type="text/javascript">
 
-var currentGallery = {
-  id: "<%= albumId%>",
-  name: "<%= EncodeHelper.javaStringToJsString(albumName)%>",
-  description: "<%= EncodeHelper.javaStringToJsString(albumDescription)%>"
-};
+    var currentGallery = {
+      'id' : "${currentAlbum.id}",
+      'name' : "${silfn:escapeJs(currentAlbum.name)}",
+      'description' : "${silfn:escapeJs(currentAlbum.description)}"
+    };
 
-$(document).ready(function(){
-<%if ("admin".equals(profile)) {%>
-  $("#albumList").sortable({opacity: 0.4, cursor: 'move'});
+    var albumWindow = window;
 
-  $('#albumList').bind('sortupdate', function(event, ui) {
-    var reg=new RegExp("album", "g");
-    var data = $('#albumList').sortable('serialize');
-    data += "&";  // pour que le dernier élément soit de la même longueur que les autres
-    var tableau=data.split(reg);
-    var param = "";
-    for (var i=0; i<tableau.length; i++) {
-      if (i > 0) {
-        param += ",";
+    function addFavorite(name, description, url) {
+      postNewLink(name, url, description);
+    }
+
+    function deleteConfirm(id, nom) {
+      // confirmation de suppression de l'album
+      if (window.confirm("<fmt:message key="gallery.confirmDeleteAlbum"/> '" + nom + "' ?")) {
+        document.albumForm.action = "DeleteAlbum";
+        document.albumForm.Id.value = id;
+        document.albumForm.submit();
       }
-      param += tableau[i].substring(3, tableau[i].length-1);
     }
-    sortAlbums(param);
-  });
-<%}%>
-});
 
-
-function sortAlbums(orderedList)
-{
-  $.get('<%=m_context%>/Album', { orderedList:orderedList,Action:'Sort'},
-  function(data){
-    data = data.replace(/^\s+/g,'').replace(/\s+$/g,'');
-    if (data == "error")
-    {
-      alert("Une erreur s'est produite !");
-    }
-  }, 'text');
-  if (pageMustBeReloadingAfterSorting) {
-    //force page reloading to reinit menus
-    reloadIncludingPage();
-  }
-}
-
-var albumWindow = window;
-
-function addFavorite(name, description, url) {
-  postNewLink(name, url, description);
-}
-
-function deleteConfirm(id,nom)  {
-  // confirmation de suppression de l'album
-  if(window.confirm("<%=resource.getString("gallery.confirmDeleteAlbum")%> '" + nom + "' ?")) {
-    document.albumForm.action = "DeleteAlbum";
-    document.albumForm.Id.value = id;
-    document.albumForm.submit();
-  }
-}
-
-function choiceGoTo(selectedIndex) {
-  // envoi du choix de la taille des vignettes
-  if (selectedIndex != 0 && selectedIndex != 1) {
-    document.ChoiceSelectForm.Choice.value = document.mediaForm.ChoiceSize[selectedIndex].value;
-    document.ChoiceSelectForm.submit();
-  }
-}
-
-function sendData() {
-  // envoi des photos selectionnees pour la modif par lot
-  var selectedPhotos = getObjects(true);
-  if (selectedPhotos && selectedPhotos.length > 0)
-  {
-    document.mediaForm.SelectedIds.value 	= selectedPhotos;
-    document.mediaForm.NotSelectedIds.value = getObjects(false);
-    document.mediaForm.submit();
-  }
-}
-
-function sendToBasket() {
-  // envoi des photos selectionnees dans le panier
-  var selectedPhotos = getObjects(true);
-  if (selectedPhotos && selectedPhotos.length > 0)
-  {
-    document.mediaForm.SelectedIds.value 	= selectedPhotos;
-    document.mediaForm.NotSelectedIds.value = getObjects(false);
-    document.mediaForm.action	= "BasketAddMediaList";
-    document.mediaForm.submit();
-  }
-}
-
-function sendDataDelete() {
-  //confirmation de suppression de l'album
-  var selectedPhotos = getObjects(true);
-  if (selectedPhotos && selectedPhotos.length > 0)
-  {
-    if(window.confirm("<%=resource.getString("gallery.confirmDeletePhotos")%> ")) {
+    function sendData() {
       // envoi des photos selectionnees pour la modif par lot
-      document.mediaForm.SelectedIds.value 	= selectedPhotos;
-      document.mediaForm.NotSelectedIds.value = getObjects(false);
-      document.mediaForm.action				= "DeleteSelectedMedia";
-      document.mediaForm.submit();
+      var selectedPhotos = getMediaIds(true);
+      if (selectedPhotos && selectedPhotos.length > 0) {
+        document.mediaForm.SelectedIds.value = selectedPhotos;
+        document.mediaForm.NotSelectedIds.value = getMediaIds(false);
+        document.mediaForm.submit();
+      }
     }
-  }
-}
 
-function sendDataCategorize() {
-  var selectedPhotos = getObjects(true);
-  if (selectedPhotos && selectedPhotos.length > 0)
-  {
-    var selectedIds = selectedPhotos;
-    var notSelectedIds = getObjects(false);
-
-    urlWindow = "CategorizeSelectedMedia?SelectedIds="+selectedIds+"&NotSelectedIds="+notSelectedIds;
-    windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
-    if (!albumWindow.closed && albumWindow.name== "albumWindow") {
-      albumWindow.close();
+    function sendToBasket() {
+      // envoi des photos selectionnees dans le panier
+      var selectedPhotos = getMediaIds(true);
+      if (selectedPhotos && selectedPhotos.length > 0) {
+        document.mediaForm.SelectedIds.value = selectedPhotos;
+        document.mediaForm.NotSelectedIds.value = getMediaIds(false);
+        document.mediaForm.action = "BasketAddMediaList";
+        document.mediaForm.submit();
+      }
     }
-    albumWindow = SP_openWindow(urlWindow, "albumWindow", "550", "250", windowParams);
-  }
-}
 
-function sendDataForAddPath()
-{
-  // envoi des photos selectionnees pour le placement par lot
-  var selectedPhotos = getObjects(true);
-  if (selectedPhotos && selectedPhotos.length > 0)
-  {
-    document.mediaForm.SelectedIds.value  = selectedPhotos;
-    document.mediaForm.NotSelectedIds.value = getObjects(false);
-    document.mediaForm.action       = "AddAlbumForSelectedMedia";
-    document.mediaForm.submit();
-  }
-}
-
-function getObjects(selected)	{
-  var  items = "";
-  try {
-    var boxItems = document.mediaForm.SelectPhoto;
-    if (boxItems != null) {
-      // au moins une checkbox exist
-      var nbBox = boxItems.length;
-      if ( (nbBox == null) && (boxItems.checked == selected) ) {
-        // il n'y a qu'une checkbox non selectionnee
-        items += boxItems.value+",";
-      } else {
-        // search not checked boxes
-        for (i=0;i<boxItems.length ;i++ ) {
-          if (boxItems[i].checked == selected) {
-            items += boxItems[i].value+",";
-          }
+    function sendDataDelete() {
+      //confirmation de suppression de l'album
+      var selectedPhotos = getMediaIds(true);
+      if (selectedPhotos && selectedPhotos.length > 0) {
+        if (window.confirm("<fmt:message key="gallery.confirmDeletePhotos"/> ")) {
+          // envoi des photos selectionnees pour la modif par lot
+          document.mediaForm.SelectedIds.value = selectedPhotos;
+          document.mediaForm.NotSelectedIds.value = getMediaIds(false);
+          document.mediaForm.action = "DeleteSelectedMedia";
+          document.mediaForm.submit();
         }
       }
     }
-  }
-  catch (e)  {
-    //Checkboxes are not displayed
-  }
-  return items;
-}
 
-function doPagination(index) {
-  document.mediaForm.SelectedIds.value 	= getObjects(true);
-  document.mediaForm.NotSelectedIds.value = getObjects(false);
-  document.mediaForm.Index.value 			= index;
-  document.mediaForm.action				= "Pagination";
-  document.mediaForm.submit();
-}
+    function sendDataCategorize() {
+      var selectedPhotos = getMediaIds(true);
+      if (selectedPhotos && selectedPhotos.length > 0) {
+        var selectedIds = selectedPhotos;
+        var notSelectedIds = getMediaIds(false);
 
-function sortGoTo(selectedIndex) {
-  // envoi du choix du tri
-  if (selectedIndex != 0 && selectedIndex != 1)  {
-    document.OrderBySelectForm.Tri.value = document.mediaForm.SortBy[selectedIndex].value;
-    document.OrderBySelectForm.submit();
-  }
-}
-
-function uploadCompleted(s)  {
-  //window.alert("In uploadCompleted !"+s);
-  location.href="<%=m_context + URLManager.getURL(null, componentId)%>ViewAlbum?Id=<%=currentAlbum.getNodePK().getId()%>";
-  //return true;
-}
-
-function showDnD() {
-  var url = "<%=URLManager.getFullApplicationURL(request)%>/RgalleryDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&AlbumId=<%=currentAlbum.getNodePK().getId()%>";
-  var message = "<%=URLManager.getFullApplicationURL(request)%>/upload/Gallery_<%=resource.getLanguage()%>.html";
-
-<%
-long maximumFileSize = FileRepositoryManager.getUploadMaximumFileSize();%>
-    showHideDragDrop(url, message,'<%=resource.getString("GML.applet.dnd.alt")%>','<%=maximumFileSize%>','<%=m_context%>','<%=resource.getString("GML.DragNDropExpand")%>','<%=resource.getString("GML.DragNDropCollapse")%>');
-  }
-
-function clipboardPaste() {
-  $.progressMessage();
-  document.albumForm.action = "paste";
-  document.albumForm.submit();
-}
-
-function clipboardCopy() {
-  top.IdleFrame.location.href = '../..<%=gallerySC.getComponentUrl()%>copy?Object=Node&Id=<%=currentAlbum.getNodePK().getId()%>';
-}
-
-function clipboardCut() {
-  top.IdleFrame.location.href = '../..<%=gallerySC.getComponentUrl()%>cut?Object=Node&Id=<%=currentAlbum.getNodePK().getId()%>';
-}
-
-function CopySelectedMedia()  {
-  var selectedPhotos = getObjects(true);
-  if (selectedPhotos && selectedPhotos.length > 0)
-  {
-    document.mediaForm.SelectedIds.value 	= selectedPhotos;
-    document.mediaForm.NotSelectedIds.value = getObjects(false);
-    document.mediaForm.action				= "CopySelectedMedia";
-    document.mediaForm.submit();
-  }
-}
-
-function CutSelectedMedia()  {
-  var selectedPhotos = getObjects(true);
-  if (selectedPhotos && selectedPhotos.length > 0)
-  {
-    document.mediaForm.SelectedIds.value  = selectedPhotos;
-    document.mediaForm.NotSelectedIds.value = getObjects(false);
-    document.mediaForm.action       = "CutSelectedMedia";
-    document.mediaForm.submit();
-  }
-}
-
-    </script>
-    <%@include file="diaporama.jsp" %>
-  </head>
-  <body>
-    <%
-      // creation de la barre de navigation
-      browseBar.setDomainName(spaceLabel);
-      browseBar.setComponentName(componentLabel, "Main");
-      displayPath(path, browseBar);
-
-      if ("admin".equals(profile) || "publisher".equals(profile)) {
-        operationPane.addOperationOfCreation(resource.getIcon("gallery.addAlbum"), resource.getString("gallery.addSubAlbum"), "javaScript:openGalleryEditor()");
-        // modification et suppression de l'album courant
-        if ("admin".equals(profile) || ("publisher".equals(profile) && currentAlbum.getCreatorId().equals(userId))) {
-          // avec gestion des droits pour les publieurs
-          operationPane.addOperation(resource.getIcon("gallery.updatelbum"), resource.getString("gallery.updateAlbum"), "javaScript:openGalleryEditor(currentGallery)");
-          operationPane.addOperation(resource.getIcon("gallery.deleteAlbum"), resource.getString("gallery.deleteThisAlbum"), "javaScript:deleteConfirm('" + albumId + "','"
-                  + EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(albumName))+ "')");
-          operationPane.addLine();
+        urlWindow = "CategorizeSelectedMedia?SelectedIds=" + selectedIds + "&NotSelectedIds=" +
+            notSelectedIds;
+        windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
+        if (!albumWindow.closed && albumWindow.name == "albumWindow") {
+          albumWindow.close();
         }
-
-        if ("admin".equals(profile)) {
-          operationPane.addOperation(resource.getIcon("gallery.copy"), resource.getString("gallery.copyAlbum"), "javascript:onClick=clipboardCopy()");
-          operationPane.addOperation(resource.getIcon("gallery.cut"), resource.getString("gallery.cutAlbum"), "javascript:onClick=clipboardCut()");
-          operationPane.addLine();
-        }
-
-        // possibilite de modifier ou supprimer les photos par lot
-        operationPane.addOperation(resource.getIcon("gallery.updateSelectedPhoto"), resource.getString("gallery.updateSelectedPhoto"), "javascript:onClick=sendData();");
-        operationPane.addOperation(resource.getIcon("gallery.deleteSelectedPhoto"), resource.getString("gallery.deleteSelectedPhoto"), "javascript:onClick=sendDataDelete();");
-        if (isPdcUsed) {
-          // si on a le classement Pdc : possibilite de classer par lot
-          operationPane.addOperation(resource.getIcon("gallery.categorizeSelectedPhoto"), resource.getString("gallery.categorizeSelectedPhoto"), "javascript:onClick=sendDataCategorize();");
-        }
-        if ("admin".equals(profile)) {
-          // possibilite de placer les photos par lot
-          operationPane.addOperation(resource.getIcon("gallery.addPathForSelectedPhoto"), resource.getString("gallery.addPathForSelectedPhoto"), "javascript:onClick=sendDataForAddPath()");
-        }
+        albumWindow = SP_openWindow(urlWindow, "albumWindow", "550", "250", windowParams);
       }
+    }
 
-      // bouton pour tout selectionner ou tout deselectionner
-      operationPane.addOperation(resource.getIcon("gallery.allSelect"), resource.getString("gallery.allSelect"), "AllSelected");
-
-      if ("admin".equals(profile)) {
-        operationPane.addOperation(resource.getIcon("gallery.copy"), resource.getString("gallery.copySelectedPhoto"), "javascript:onClick=CopySelectedMedia()");
-        operationPane.addOperation(resource.getIcon("gallery.cut"), resource.getString("gallery.cutSelectedPhoto"), "javascript:onClick=CutSelectedMedia()");
-        operationPane.addOperation(resource.getIcon("gallery.paste"), resource.getString("GML.paste"), "javascript:onClick=clipboardPaste()");
-        operationPane.addLine();
+    function sendDataForAddPath() {
+      // envoi des photos selectionnees pour le placement par lot
+      var selectedPhotos = getMediaIds(true);
+      if (selectedPhotos && selectedPhotos.length > 0) {
+        document.mediaForm.SelectedIds.value = selectedPhotos;
+        document.mediaForm.NotSelectedIds.value = getMediaIds(false);
+        document.mediaForm.action = "AddAlbumForSelectedMedia";
+        document.mediaForm.submit();
       }
-      if ("admin".equals(profile) || "publisher".equals(profile) || "writer".equals(profile)) {
-        // possibilite d'ajouter des photos pour les "admin", "publisher" et "writer"
-        operationPane.addOperationOfCreation(resource.getIcon("gallery.addPhoto"), resource.getString("gallery.addPhoto"), "AddMedia?type=Photo");
-        operationPane.addOperationOfCreation(resource.getIcon("gallery.video.add"), resource.getString("gallery.video.add"), "AddMedia?type=Video");
-        operationPane.addLine();
+    }
+
+    function uploadCompleted(s) {
+      location.href =
+          "<c:url value="${silfn:componentURL(componentId)}ViewAlbum?Id=${currentAlbum.id}"/>";
+    }
+
+    function showDnD() {
+      var url = "<c:url value="${silfn:fullApplicationURL(pageContext.request)}/RgalleryDragAndDrop/jsp/Drop?UserId=${userId}&ComponentId=${componentId}&AlbumId=${currentAlbum.id}"/>";
+      var message = "<c:url value="${silfn:fullApplicationURL(pageContext.request)}/upload/Gallery_${userLanguage}.html"/>";
+      showHideDragDrop(url, message, '<fmt:message key="GML.applet.dnd.alt"/>',
+          '${maximumFileSize}', '<c:url value="/"/>', '<fmt:message key="GML.DragNDropExpand"/>',
+          '<fmt:message key="GML.DragNDropCollapse"/>');
+    }
+
+    function clipboardPaste() {
+      $.progressMessage();
+      document.albumForm.action = "paste";
+      document.albumForm.submit();
+    }
+
+    function clipboardCopy() {
+      top.IdleFrame.location.href =
+          '<c:url value="${silfn:componentURL(componentId)}"/>copy?Object=Node&Id=${currentAlbum.id}';
+    }
+
+    function clipboardCut() {
+      top.IdleFrame.location.href =
+          '<c:url value="${silfn:componentURL(componentId)}"/>cut?Object=Node&Id=${currentAlbum.id}';
+    }
+
+    function CopySelectedMedia() {
+      var selectedPhotos = getMediaIds(true);
+      if (selectedPhotos && selectedPhotos.length > 0) {
+        document.mediaForm.SelectedIds.value = selectedPhotos;
+        document.mediaForm.NotSelectedIds.value = getMediaIds(false);
+        document.mediaForm.action = "CopySelectedMedia";
+        document.mediaForm.submit();
       }
+    }
 
-      if ("user".equals(profile) && isBasket) {
-        // ajouter les photos selectionnees au panier
-        operationPane.addOperation(resource.getIcon("gallery.addToBasketSelectedPhoto"), resource.getString("gallery.addToBasketSelectedPhoto"), "javascript:onClick=sendToBasket();");
-        // voir le panier
-        operationPane.addOperation(resource.getIcon("gallery.viewBasket"), resource.getString("gallery.viewBasket"), "BasketView");
-        operationPane.addLine();
+    function CutSelectedMedia() {
+      var selectedPhotos = getMediaIds(true);
+      if (selectedPhotos && selectedPhotos.length > 0) {
+        document.mediaForm.SelectedIds.value = selectedPhotos;
+        document.mediaForm.NotSelectedIds.value = getMediaIds(false);
+        document.mediaForm.action = "CutSelectedMedia";
+        document.mediaForm.submit();
       }
+    }
 
-      if (mediaList.size() > 1) {
-        // diaporama
-        operationPane.addOperation(resource.getIcon("gallery.startDiaporama"), resource.getString("gallery.diaporama"), "javascript:startSlideshow()");
-      }
-
-      // favoris
-      if (!isGuest) {
-        operationPane.addOperation(resource.getIcon("gallery.addFavorite"), resource.getString(
-                "gallery.addFavorite"), "javaScript:addFavorite('" + EncodeHelper.javaStringToJsString(galleryName) + "','"
-                + EncodeHelper.javaStringToJsString(albumDescription) + "','" + albumUrl + "')");
-      }
-
-      if (isPrivateSearch) {
-        // derniers resultat de la recherche
-        operationPane.addLine();
-        operationPane.addOperation(resource.getIcon("gallery.lastResult"), resource.getString("gallery.lastResult"), "LastResult");
-      }
-
-      out.println(window.printBefore());
-      out.println(frame.printBefore());
-%>
-<view:areaOfOperationOfCreation/>
-<%
-      // afficher les sous albums
-      // ------------------------
-      if (currentAlbum.getChildrenDetails() != null) {
-        out.println("<table width=\"98%\">");
-        out.println("<tr><td>");
-        out.println("<div id=\"subTopics\">");
-        out.println("<ul id=\"albumList\" >");
-        for (AlbumDetail unAlbum : albums) {
-          id = unAlbum.getId();
-    %>
-    <li id="album_<%=id%>" class="ui-state-default">
-      <a href="ViewAlbum?Id=<%=id%>">
-        <strong><%=unAlbum.getName()%>
-          <span><%=unAlbum.getNbMedia()%></span>
-        </strong>
-        <span><%=unAlbum.getDescription()%></span>
-      </a>
-    </li>
-    <%
-        }
-        out.println("</ul>");
-        out.println("</div>");
-      }
-      out.println("</td></tr></table>");
-    %>
-
-    <%if (!"user".equals(profile) && dragAndDropEnable != null
-              && dragAndDropEnable.booleanValue()) {%>
-    <!-- Affichage de la zone de drag And Drop -->
-    <center>
-      <table width="98%">
-        <tr>
-          <td align="right"><a href="javascript:showDnD()"
-                               id="dNdActionLabel"><%=resource.getString("GML.DragNDropExpand")%></a>
-            <div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding: 0px" align="top"></div>
-          </td>
-        </tr>
-      </table>
-    </center>
-    <%}%>
-
-    <%// afficher les photos
-      // -------------------
-      // affichage des photos sous forme de vignettes
-      if (mediaList != null) {%>
-    <br/>
-    <%String vignette_url = null;
-      int nbPhotos = mediaList.size();
-      Board board = gef.getBoard();
-
-      if (mediaList.size() > 0) {
-        out.println(board.printBefore());
-        // affichage de l'entete%>
-        <form name="mediaForm" action="EditSelectedMedia">
-        	<input type="hidden" name="AlbumId" value="<%=albumId%>"/>
-        	<input type="hidden" name="Index"/>
-        	<input type="hidden" name="SelectedIds"/> <input type="hidden" name="NotSelectedIds"/>
-    <table width="98%" border="0" cellspacing="0" cellpadding="0" align="center">
-        <tr>
-          <%int textColonne = 0;
-            if (typeAff.equals("3")) {
-              textColonne = 1;
-            }%>
-          <td colspan="<%=nbParLigne + textColonne%>" align="center">
-            <table border="0" width="100%">
-              <tr>
-                <td align="center" width="100%" class=ArrayNavigation><%=pagination.printCounter()%>
-                  <%if (mediaList.size() == 1) {
-                      out.println(resource.getString("gallery.media"));
-                    } else {
-                      out.println(resource.getString("gallery.media.several"));
-                    }%>
-                </td>
-                <td align="right" nowrap><select name="ChoiceSize" onchange="javascript:choiceGoTo(this.selectedIndex);">
-                    <option selected="selected"><fmt:message key="gallery.selectSize"/></option>
-                    <option>-------------------------------</option>
-                    <%String selected = "";
-                      if (mediaResolution.isTiny()) {
-                        selected = "selected";
-                      }%>
-                    <option value="66x50" <%=selected%>><%="66x50"%></option>
-                    <%selected = "";
-                      if (mediaResolution.isSmall()) {
-                        selected = "selected";
-                      }%>
-                    <option value="133x100" <%=selected%>><%="133x100"%></option>
-                    <%selected = "";
-                      if (mediaResolution.isMedium()) {
-                        selected = "selected";
-                      }%>
-                    <option value="266x150" <%=selected%>><%="266x150"%></option>
-                  </select>
-                  <select name="SortBy" onchange="javascript:sortGoTo(this.selectedIndex);">
-                    <option selected><fmt:message key="gallery.orderBy"/></option>
-                    <option>-------------------------------</option>
-                    <option value="CreationDateAsc"><fmt:message key="gallery.dateCreatAsc"/></option>
-                    <option value="CreationDateDesc"><fmt:message key="gallery.dateCreatDesc"/></option>
-                    <option value="Title"><fmt:message key="GML.title"/></option>
-                    <option value="Size"><fmt:message key="gallery.dimension"/></option>
-                    <option value="Author"><fmt:message key="GML.author"/></option>
-                  </select></td>
-              </tr>
-            </table></td>
-        </tr>
-    </table>
-    <%String photoColor = "";
-      Media media;
-      String idP;
-      Iterator<Media> it = subMediaList.iterator();
-      while (it.hasNext()) {
-        // affichage de la photo%>
-    <table width="98%" border="0" cellspacing="5" cellpadding="0"
-           align=center>
+  </script>
+  <%@include file="diaporama.jsp" %>
+</head>
+<body>
+<gallery:browseBar albumPath="${path}"/>
+<view:operationPane>
+  <c:if test="${greaterUserRole.isGreaterThanOrEquals(publisherRole)}">
+    <%-- Actions on album --%>
+    <view:operationOfCreation action="javaScript:openGalleryEditor()" altText="${addAlbumLabel}" icon="${addAlbumIcon}"/>
+    <c:if test="${greaterUserRole eq adminRole or userId eq currentAlbum.creatorId}">
+      <view:operation action="javaScript:openGalleryEditor(currentGallery)" altText="${updateAlbumLabel}" icon="${updateAlbumIcon}"/>
+      <c:set var="tmpLabel"><c:out value="${currentAlbum.name}"/></c:set>
+      <view:operation action="javaScript:deleteConfirm('${currentAlbum.id}','${silfn:escapeJs(tmpLabel)}')" altText="${deleteAlbumLabel}" icon="${deleteAlbumIcon}"/>
+    </c:if>
+    <view:operationSeparator/>
+    <%-- Copy/Cut of albums --%>
+    <c:if test="${greaterUserRole eq adminRole}">
+      <view:operation action="javascript:onClick=clipboardCopy()" altText="${copyAlbumLabel}" icon="${copyAlbumIcon}"/>
+      <view:operation action="javascript:onClick=clipboardCut()" altText="${cutAlbumLabel}" icon="${cutAlbumIcon}"/>
+      <view:operationSeparator/>
+    </c:if>
+  </c:if>
+  <%-- Manage media by massively way --%>
+  <view:operation action="AllSelected" altText="${allSelectMediaLabel}" icon="${allSelectMediaIcon}"/>
+  <c:if test="${greaterUserRole.isGreaterThanOrEquals(publisherRole)}">
+    <view:operation action="javascript:onClick=sendData()" altText="${updateSelectedMediaLabel}" icon="${updateSelectedMediaIcon}"/>
+    <view:operation action="javascript:onClick=sendDataDelete()" altText="${deleteSelectedMediaLabel}" icon="${deleteSelectedMediaIcon}"/>
+    <c:if test="${isPdcUsed}">
+      <view:operation action="javascript:onClick=sendDataCategorize()" altText="${categorizedSelectedMediaLabel}" icon="${categorizedSelectedMediaIcon}"/>
+    </c:if>
+  </c:if>
+  <c:if test="${greaterUserRole eq adminRole}">
+    <view:operation action="javascript:onClick=sendDataForAddPath()" altText="${addPathForSelectedMediaLabel}" icon="${addPathForSelectedMediaIcon}"/>
+    <view:operation action="javascript:onClick=CopySelectedMedia()" altText="${copySelectedMediaLabel}" icon="${copySelectedMediaIcon}"/>
+    <view:operation action="javascript:onClick=CutSelectedMedia()" altText="${cutSelectedMediaLabel}" icon="${cutSelectedMediaIcon}"/>
+    <view:operation action="javascript:onClick=clipboardPaste()" altText="${pasteSelectedMediaLabel}" icon="${pasteSelectedMediaIcon}"/>
+  </c:if>
+  <%-- Manage one media --%>
+  <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
+    <view:operationSeparator/>
+    <view:operationOfCreation action="AddMedia?type=Photo" altText="${addPhotoLabel}" icon="${addPhotoIcon}"/>
+    <view:operationOfCreation action="AddMedia?type=Video" altText="${addVideoLabel}" icon="${addVideoIcon}"/>
+  </c:if>
+  <%-- Basket for users --%>
+  <c:if test="${greaterUserRole eq userRole and isBasket}">
+    <view:operationSeparator/>
+    <view:operation action="javascript:onClick=sendToBasket()" altText="${addToBasketSelectedMediaLabel}" icon="${addToBasketSelectedMediaIcon}"/>
+    <view:operation action="BasketView" altText="${addVideoLabel}" icon="${addVideoIcon}"/>
+  </c:if>
+  <%-- Diaporama --%>
+  <c:if test="${not empty currentAlbum.media and fn:length(currentAlbum.media) > 1}">
+    <view:operationSeparator/>
+    <view:operation action="javascript:startSlideshow()" altText="${diaporamaLabel}" icon="${diaporamaIcon}"/>
+  </c:if>
+  <%-- Favorites --%>
+  <c:if test="${not isGuest}">
+    <view:operationSeparator/>
+    <c:set var="tmpDesc"><c:out value="${currentAlbum.description}"/></c:set>
+    <view:operation action="javaScript:addFavorite($('#breadCrumb').text(),'${silfn:escapeJs(tmpDesc)}','${currentAlbum.link}')" altText="${addFavoriteLabel}" icon="${addFavoriteIcon}"/>
+  </c:if>
+  <%-- Private search --%>
+  <c:if test="${isPrivateSearch}">
+    <view:operationSeparator/>
+    <view:operation action="LastResult" altText="${lastResultLabel}" icon="${lastResultIcon}"/>
+  </c:if>
+</view:operationPane>
+<view:window>
+  <view:frame>
+    <view:areaOfOperationOfCreation/>
+    <table width="98%">
       <tr>
-        <td colspan="<%=nbParLigne + textColonne%>">&nbsp;</td>
+        <td>
+          <gallery:listSubAlbums subAlbumList="${albums}"/>
+        </td>
       </tr>
-      <tr>
-        <%while (it.hasNext() && nbAffiche < nbParLigne) {
-            media = it.next();
-            if (media != null) {
-              idP = media.getMediaPK().getId();
-              String altTitle = EncodeHelper.javaStringToHtmlString(media.getTitle());
-              if (StringUtil.isDefined(media.getDescription())) {
-                altTitle += " : " + EncodeHelper.javaStringToHtmlString(media.getDescription());
-              }
-              vignette_url = media.getThumbnailUrl(mediaResolution);
-              photoColor = "fondPhoto";
-              if (!media.isVisible()) {
-                photoColor = "fondPhotoNotVisible";
-              }
+    </table>
+    <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole) and dragAndDropEnable}">
+      <!-- Displaying the Drag&Drop area -->
+      <center>
+        <table width="98%">
+          <tr>
+            <td align="right"><a href="javascript:showDnD()"
+                                 id="dNdActionLabel"><%=resource.getString("GML.DragNDropExpand")%>
+            </a>
 
-              nbAffiche = nbAffiche + 1;
-              if ("2".equals(typeAff)) {%>
-        <td valign="top" width="<%=largeurCellule%>%">
-          <table border="0" align="center" width="10" cellspacing="1"
-                 cellpadding="0" class="<%=photoColor%>">
-            <tr>
-              <td align="center" colspan="2">
-                <table cellspacing="1" cellpadding="3" border="0"
-                       class="cadrePhoto">
-                  <tr>
-                    <td bgcolor="#FFFFFF"><a
-                        href="MediaView?MediaId=<%=idP%>"><img src="<%=vignette_url%>" border="0" alt="<%=altTitle%>" title="<%=altTitle%>"/>
-                      </a></td>
-                  </tr>
-                </table></td>
-            </tr>
-            <tr>
-              <%//traitement de la case e cocher
-                String usedCheck = "";
-                if (selectedIds != null && selectedIds.contains(idP)) {
-                  usedCheck = "checked";
-                }%>
-              <td align="center" width="10"><input type="checkbox"
-                                                   name="SelectPhoto" value="<%=idP%>" <%=usedCheck%>/>
-              </td>
-              <td class="txtlibform"><%=media.getName()%></td>
-            </tr>
-            <%if (media.getDescription() != null) {%>
-            <tr>
-              <td>&nbsp;</td>
-              <td><%=media.getDescription()%></td>
-            </tr>
-            <%}%>
-          </table></td>
-          <%}
-            if ("1".equals(typeAff)) {%>
-        <td valign="bottom" width="<%=largeurCellule%>%">
-          <table border="0" width="10" cellspacing="1" cellpadding="0"
-                 align="center" class="<%=photoColor%>">
-            <tr>
-              <td align="center">
-                <table cellspacing="1" cellpadding="3" border="0"
-                       class="cadrePhoto">
-                  <tr>
-                    <td bgcolor="#FFFFFF"><a
-                        href="MediaView?MediaId=<%=idP%>"><img src="<%=vignette_url%>" border="0" alt="<%=altTitle%>" title="<%=altTitle%>"/>
-                      </a></td>
-                  </tr>
-                </table></td>
-            </tr>
-            <%//traitement de la case e cocher
-              String usedCheck = "";
-              if (selectedIds != null && selectedIds.contains(idP)) {
-                usedCheck = "checked";
-              }%>
-            <tr>
-              <td align="center"><input type="checkbox" name="SelectPhoto" value="<%=idP%>" <%=usedCheck%>/>
-              </td>
-            </tr>
-          </table></td>
-          <%}
-            // affichage du texte e cote de la photo pour le cas de l'affichage en liste
-            if ("3".equals(typeAff)) {
-              // on affiche les photos en colonne avec les metaData e droite%>
-        <td valign="middle" align="center">
-          <table border="0" width="10" cellspacing="1" cellpadding="0"
-                 align="center" class="<%=photoColor%>">
-            <tr>
-              <td align="center">
-                <table cellspacing="1" cellpadding="5" border="0"
-                       class="cadrePhoto">
-                  <tr>
-                    <td bgcolor="#FFFFFF"><a
-                        href="MediaView?MediaId=<%=idP%>"><img src="<%=vignette_url%>" border="0" alt="<%=altTitle%>" title="<%=altTitle%>"/>
-                      </a></td>
-                  </tr>
-                </table></td>
-            </tr>
-          </table></td>
-        <td valign="top" width="100%">
-          <table border="0" width="100%">
-            <tr>
-              <td class="txtlibform" nowrap><%=resource.getString("GML.title")%> :</td>
-              <td><%=media.getName()%></td>
-            </tr>
-            <%if (media.getDescription() != null) {%>
-            <tr>
-              <td class="txtlibform" nowrap><%=resource.getString("GML.description")%> :</td>
-              <td><%=media.getDescription()%></td>
-            </tr>
-            <%}
-              if (media.getAuthor() != null) {%>
-            <tr>
-              <td class="txtlibform" nowrap><%=resource.getString("GML.author")%> :</td>
-              <td><%=media.getAuthor()%></td>
-            </tr>
-            <%}
-              Photo photo = media.getPhoto();
-              if (viewMetadata && photo != null) {
-                final Collection<String> metaDataKeys = photo.getMetaDataProperties();
-                if (metaDataKeys != null && !metaDataKeys.isEmpty()) {
-                  MetaData metaData;
-                  for (final String property : metaDataKeys) {
-                    // traitement de la metaData
-                    metaData = photo.getMetaData(property);
-                    String mdLabel = metaData.getLabel();
-                    String mdValue = metaData.getValue();
-                    if (metaData.isDate()) {
-                      mdValue = resource.getOutputDateAndHour(metaData.getDateValue());
-                    }
-                    // affichage%>
-            <tr>
-              <td class="txtlibform" nowrap><%=mdLabel%> :</td>
-              <td><%=mdValue%></td>
-            </tr>
-            <%}
-                }
-              }
-              if (media.getKeyWord() != null) {%>
-            <tr>
-              <td class="txtlibform" nowrap><%=resource.getString("gallery.keyword")%>
-                :</td>
-              <td>
-                <%String keyWord = media.getKeyWord();
-                  // decouper la zone keyWord en mots
-                  StringTokenizer st = new StringTokenizer(keyWord);
-                  // traitement des mots cles
-                  while (st.hasMoreTokens()) {
-                    String searchKeyWord = (String) st.nextToken();%> <a href="SearchKeyWord?SearchKeyWord=<%=searchKeyWord%>">	<%=searchKeyWord%> </a> <%}
-                        out.println("</td></tr>");
-                      }
-                      //traitement de la case e cocher
-                      String usedCheck = "";
-                      if (selectedIds != null && selectedIds.contains(idP)) {
-                        usedCheck = "checked";
-                      }%>
-
-                <tr>
-                  <td align="left" valign="top" colspan="2"><input type="checkbox" name="SelectPhoto" value="<%=idP%>" <%=usedCheck%>/></td>
-                </tr>
-                </table></td>
-                <%}
-                    }
-                  }
-
-                  // on prepare pour la ligne suivante
-                  nbAffiche = 0;%>
-            </tr>
-            <%}
-
-              if (nbPhotos > nbPhotosPerPage) {%>
-            <tr>
-              <td colspan="<%=nbParLigne + textColonne%>">&nbsp;</td>
-            </tr>
-            <tr class=intfdcolor4>
-              <td colspan="<%=nbParLigne + textColonne%>"><%=pagination.printIndex("doPagination")%>
-              </td>
-            </tr>
-            <%}%>
-          </table>
-          </form>
-          <%out.println(board.printAfter());
-            }
-          %>
-
-          <%
-            String inlineMessage = null;
-            if (!somePhotos && ("user".equals(profile) || "privilegedUser".equals(profile))) {
-              inlineMessage = resource.getString("gallery.album.emptyForUser");
-            } else if (!somePhotos && "writer".equals(profile)) {
-              String[] params = new String[2];
-              params[0] = resource.getString("gallery.addPhoto");
-              params[1] = fctAddPhoto;
-              inlineMessage = resource.getStringWithParams("gallery.album.emptyForWriter", params);
-            } else if (!somePhotos && !someAlbums && ("publisher".equals(profile) || "admin".equals(
-                    profile))) {
-              // profile publisher et admin
-              String[] params = new String[4];
-              params[0] = resource.getString("gallery.addAlbum");
-              params[1] = "javaScript:addAlbum()";
-              params[2] = resource.getString("gallery.addPhoto");
-              params[3] = fctAddPhoto;
-              inlineMessage = resource.getStringWithParams("gallery.album.emptyForAdmin", params);
-            }
-          %>
-          <% if (StringUtil.isDefined(inlineMessage)) {%>
-          <div id="folder-empty" class="inlineMessage"><%=inlineMessage%></div>
-          <% }%>
-          <%
-            }
-          %>
-          <%@include file="albumManager.jsp" %>
-          <%
-
-            out.println(frame.printAfter());
-            out.println(window.printAfter());%>
-          <form name="albumForm" action="" method="post">
-            <input type="hidden" name="Id"/>
-            <input type="hidden" name="Name"/>
-            <input type="hidden" name="Description"/>
-          </form>
-          <form name="ChoiceSelectForm" action="ChoiceSize" method="post">
-            <input type="hidden" name="Choice"/>
-          </form>
-          <form name="OrderBySelectForm" action="SortBy" method="post">
-            <input type="hidden" name="Tri"/>
-          </form>
-          <form name="favorite" action="" method="post">
-            <input type="hidden" name="Id"/>
-          </form>
+              <div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; padding: 0" valign="top"></div>
+            </td>
+          </tr>
+        </table>
+      </center>
+    </c:if>
+    <br/>
+    <gallery:displayAlbumContent currentAlbum="${currentAlbum}"
+                                 mediaList="${currentAlbum.media}"
+                                 selectedIds="${selectedIds}"
+                                 isViewMetadata="${isViewMetadata}"
+                                 mediaResolution="${mediaResolution}"
+                                 nbMediaPerPage="${nbMediaPerPage}"
+                                 currentPageIndex="${currentPageIndex}"
+                                 isViewList="${isViewList}"/>
+    <c:choose>
+      <c:when test="${empty currentAlbum.media and empty albums and greaterUserRole.isGreaterThanOrEquals(publisherRole)}">
+        <c:set var="templateUserRole" value="${publisherRole}"/>
+      </c:when>
+      <c:when test="${empty currentAlbum.media and greaterUserRole.isGreaterThanOrEquals(writerRole)}">
+        <c:set var="templateUserRole" value="${writerRole}"/>
+      </c:when>
+      <c:when test="${empty currentAlbum.media and greaterUserRole.isGreaterThanOrEquals(userRole)}">
+        <c:set var="templateUserRole" value="${userRole}"/>
+      </c:when>
+    </c:choose>
+    <c:if test="${not empty templateUserRole}">
+      <div id="folder-empty" class="inlineMessage">
+        <view:applyTemplate locationBase="components:gallery" name="galleryEmptyAlbum">
+          <view:templateParam name="albumPart" value="${templateUserRole eq publisherRole}"/>
+          <view:templateParam name="mediaPart" value="${templateUserRole eq publisherRole or templateUserRole eq writerRole}"/>
+          <view:templateParam name="albumOperation" value="${addAlbumLabel}"/>
+          <view:templateParam name="albumUrl" value="javaScript:openGalleryEditor()"/>
+          <view:templateParam name="mediaOperation" value="${addPhotoLabel}"/>
+          <view:templateParam name="mediaUrl" value="${fctAddMedia}"/>
+        </view:applyTemplate>
+      </div>
+    </c:if>
+    <%@include file="albumManager.jsp" %>
+  </view:frame>
+</view:window>
+<form name="albumForm" action="" method="post">
+  <input type="hidden" name="Id"/>
+  <input type="hidden" name="Name"/>
+  <input type="hidden" name="Description"/>
+</form>
+<form name="favorite" action="" method="post">
+  <input type="hidden" name="Id"/>
+</form>
 </body>
 </html>

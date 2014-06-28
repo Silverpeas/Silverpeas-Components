@@ -27,6 +27,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/gallery" prefix="gallery" %>
 
 <%@ include file="check.jsp" %>
 
@@ -56,32 +57,32 @@
 
 <c:set var="nbPerLine" value="${5}"/>
 
-<c:set var="Silverpeas_Album_ComponentId" value="${15}" scope="session"/>
+<c:set var="Silverpeas_Album_ComponentId" value="${componentId}" scope="session"/>
 
 <fmt:message key="GML.PDCParam" var="pdcLabel"/>
 <fmt:message key="gallery.pdcUtilizationSrc" var="pdcIcon" bundle="${icons}"/>
-<c:url value="${pdcIcon}" var="pdcIcon" />
+<c:url value="${pdcIcon}" var="pdcIcon"/>
 <fmt:message key="gallery.addAlbum" var="addAlbumLabel"/>
 <fmt:message key="gallery.addAlbum" var="addAlbumIcon" bundle="${icons}"/>
-<c:url value="${addAlbumIcon}" var="addAlbumIcon" />
+<c:url value="${addAlbumIcon}" var="addAlbumIcon"/>
 <fmt:message key="gallery.viewNotVisible" var="viewNotVisibleLabel"/>
 <fmt:message key="gallery.viewNotVisible" var="viewNotVisibleIcon" bundle="${icons}"/>
-<c:url value="${viewNotVisibleIcon}" var="viewNotVisibleIcon" />
+<c:url value="${viewNotVisibleIcon}" var="viewNotVisibleIcon"/>
 <fmt:message key="gallery.viewBasket" var="viewBasketLabel"/>
 <fmt:message key="gallery.viewBasket" var="viewBasketIcon" bundle="${icons}"/>
-<c:url value="${viewBasketIcon}" var="viewBasketIcon" />
+<c:url value="${viewBasketIcon}" var="viewBasketIcon"/>
 <fmt:message key="gallery.viewOrderList" var="viewOrderListLabel"/>
 <fmt:message key="gallery.viewOrderList" var="viewOrderListIcon" bundle="${icons}"/>
-<c:url value="${viewOrderListIcon}" var="viewOrderListIcon" />
+<c:url value="${viewOrderListIcon}" var="viewOrderListIcon"/>
 <fmt:message key="gallery.askMedia" var="askMediaLabel"/>
 <fmt:message key="gallery.askMedia" var="askMediaIcon" bundle="${icons}"/>
-<c:url value="${askMediaIcon}" var="askMediaIcon" />
+<c:url value="${askMediaIcon}" var="askMediaIcon"/>
 <fmt:message key="GML.paste" var="pasteLabel"/>
 <fmt:message key="GML.paste" var="pasteIcon" bundle="${icons}"/>
-<c:url value="${pasteIcon}" var="pasteIcon" />
+<c:url value="${pasteIcon}" var="pasteIcon"/>
 <fmt:message key="gallery.lastResult" var="lastResultLabel"/>
 <fmt:message key="gallery.lastResult" var="lastResultIcon" bundle="${icons}"/>
-<c:url value="${lastResultIcon}" var="lastResultIcon" />
+<c:url value="${lastResultIcon}" var="lastResultIcon"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -94,23 +95,6 @@
     <c:if test="${greaterUserRole.isGreaterThanOrEquals(adminRole)}">
     $(document).ready(function() {
       showAlbumsHelp();
-
-      $("#albumList").sortable({opacity : 0.4, cursor : 'move'});
-
-      $('#albumList').bind('sortupdate', function(event, ui) {
-        var reg = new RegExp("album", "g");
-        var data = $('#albumList').sortable('serialize');
-        data += "&";  // pour que le dernier élément soit de la même longueur que les autres
-        var tableau = data.split(reg);
-        var param = "";
-        for (var i = 0; i < tableau.length; i++) {
-          if (i > 0) {
-            param += ",";
-          }
-          param += tableau[i].substring(3, tableau[i].length - 1);
-        }
-        sortAlbums(param);
-      });
     });
     </c:if>
 
@@ -136,20 +120,6 @@
             }
           }
         });
-      }
-    }
-
-    function sortAlbums(orderedList) {
-      $.get('<c:url value="/Album"/>', { orderedList : orderedList, Action : 'Sort'},
-          function(data) {
-            data = data.replace(/^\s+/g, '').replace(/\s+$/g, '');
-            if (data == "error") {
-              alert("Une erreur s'est produite !");
-            }
-          }, 'text');
-      if (pageMustBeReloadingAfterSorting) {
-        //force page reloading to reinit menus
-        reloadIncludingPage();
       }
     }
 
@@ -262,21 +232,8 @@
         <br/>
       </c:if>
 
-      <div id="subTopics">
-        <view:areaOfOperationOfCreation/>
-        <ul id="albumList">
-          <c:forEach var="aAlbum" items="${albumList}">
-            <li id="album_${aAlbum.id}" class="ui-state-default">
-              <a href="ViewAlbum?Id=${aAlbum.id}">
-                <strong>${aAlbum.name}
-                  <span>${aAlbum.nbMedia}</span>
-                </strong>
-                <span>${aAlbum.description}</span>
-              </a>
-            </li>
-          </c:forEach>
-        </ul>
-      </div>
+      <view:areaOfOperationOfCreation/>
+      <gallery:listSubAlbums subAlbumList="${albumList}"/>
       <br/>
       <view:board>
         <table width="100%" border="0" cellspacing="0" cellpadding="0" align=center>
@@ -289,13 +246,11 @@
             <c:when test="${not empty mediaList}">
               <c:forEach var="media" items="${mediaList}" varStatus="loop">
                 <c:set var="isNewLine" value="${loop.index % nbPerLine == 0}"/>
-                <c:set var="isEndLine" value="${loop.last or loop.index % nbPerLine == 4}"/>
+                <c:set var="isEndLine" value="${loop.last or loop.index % nbPerLine == (nbPerLine-1)}"/>
                 <c:if test="${isNewLine}">
                   <tr>
                     <td colspan="${nbPerLine}">&#160;</td>
                   </tr>
-                </c:if>
-                <c:if test="${isNewLine}">
                   <tr>
                 </c:if>
 

@@ -142,7 +142,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
     try {
       if (function.startsWith("Main")) {
         // récupération des albums de 1er niveau
-        gallerySC.setIndexOfFirstItemToDisplay("0");
+        gallerySC.setIndexOfCurrentPage("0");
 
         AlbumDetail root = gallerySC.goToAlbum("0");
         request.setAttribute("root", root);
@@ -160,7 +160,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         // récupération de l'Id de l'album en cours
         String albumId = request.getParameter("Id");
         gallerySC.goToAlbum(albumId);
-        gallerySC.setIndexOfFirstItemToDisplay("0");
+        gallerySC.setIndexOfCurrentPage("0");
         // Slideshow requirements
         request.setAttribute("albumId", albumId);
         request.setAttribute("wait", gallerySC.getSlideshowWait());
@@ -172,14 +172,14 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         // traitement de la pagination : passage des paramètres
         String index = request.getParameter("Index");
         if (index != null && index.length() > 0) {
-          gallerySC.setIndexOfFirstItemToDisplay(index);
+          gallerySC.setIndexOfCurrentPage(index);
         }
         destination = returnToAlbum(request, gallerySC);
 
       } else if (function.equals("GoToCurrentAlbum")) {
         // mise à blanc de l'index de pagination si on arrive de la recherche
         if (gallerySC.isSearchResult() || gallerySC.isViewNotVisible()) {
-          gallerySC.setIndexOfFirstItemToDisplay("0");
+          gallerySC.setIndexOfCurrentPage("0");
         }
         // mise à blanc de la liste des médias (pour les mots clé et pour les médias non visibles)
         gallerySC.setRestrictedListMedia(new ArrayList<Media>());
@@ -195,7 +195,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           // on est dans un album, on y retourne
           AlbumDetail currentAlbum = gallerySC.goToAlbum();
           request.setAttribute("NbMediaPerPage", gallerySC.getNbMediaPerPage());
-          request.setAttribute("FirstMediaIndex", gallerySC.getIndexOfFirstItemToDisplay());
+          request.setAttribute("CurrentPageIndex", gallerySC.getIndexOfCurrentPage());
           request.setAttribute("CurrentAlbum", currentAlbum);
           request.setAttribute("Albums",
               gallerySC.addNbMedia(currentAlbum.getChildrenAlbumsDetails()));
@@ -443,7 +443,8 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         String id = request.getParameter("Id");
         String type = request.getParameter("Type");
         try {
-          if (type.equals("Media")) {
+          MediaType mediaType = MediaType.from(type);
+          if (mediaType != MediaType.Unknown) {
             // traitement des médias
             request.setAttribute("MediaId", id);
             destination = getDestination("MediaView", gallerySC, request);
@@ -832,7 +833,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         destination = getDestination("SearchAdvanced", gallerySC, request);
       } else if (function.equals("LastResult")) {
         // mise à jour du compteur de paginiation
-        gallerySC.setIndexOfFirstItemToDisplay("0");
+        gallerySC.setIndexOfCurrentPage("0");
 
         destination = getDestination("ViewSearchResults", gallerySC, request);
       } else if (function.equals("SearchKeyWord")) {
@@ -852,7 +853,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           gallerySC.setSearchResultListMedia(new ArrayList<Media>());
           gallerySC.setSearchKeyWord(searchKeyWord);
           // mise à jour du compteur de pagination
-          gallerySC.setIndexOfFirstItemToDisplay("0");
+          gallerySC.setIndexOfCurrentPage("0");
         }
 
         // mise à jour du tag pour les retours
@@ -872,7 +873,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         // traitement de la pagination : passage des paramètres
         String index = request.getParameter("Index");
         if (index != null && index.length() > 0) {
-          gallerySC.setIndexOfFirstItemToDisplay(index);
+          gallerySC.setIndexOfCurrentPage(index);
         }
 
         destination = getDestination("ViewSearchResults", gallerySC, request);
@@ -881,7 +882,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         request.setAttribute("SearchKeyWord", gallerySC.getSearchKeyWord());
         request.setAttribute("MediaList", gallerySC.getSearchResultListMedia());
         request.setAttribute("NbMediaPerPage", gallerySC.getNbMediaPerPage());
-        request.setAttribute("FirstMediaIndex", gallerySC.getIndexOfFirstItemToDisplay());
+        request.setAttribute("CurrentPageIndex", gallerySC.getIndexOfCurrentPage());
         request.setAttribute("Tri", gallerySC.getTri());
         request.setAttribute("MediaResolution", gallerySC.getDisplayedMediaResolution());
         request.setAttribute("IsViewMetadata", gallerySC.isViewMetadata());
@@ -1033,7 +1034,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         }
 
         // mise à jour du compteur de paginiation
-        gallerySC.setIndexOfFirstItemToDisplay("0");
+        gallerySC.setIndexOfCurrentPage("0");
 
         destination = getDestination("ViewSearchResults", gallerySC, request);
       } else if (function.equals("ViewNotVisible")) {
@@ -1053,7 +1054,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         // passage des paramètres
         request.setAttribute("MediaList", media);
         request.setAttribute("NbMediaPerPage", gallerySC.getNbMediaPerPage());
-        request.setAttribute("FirstMediaIndex", gallerySC.getIndexOfFirstItemToDisplay());
+        request.setAttribute("CurrentPageIndex", gallerySC.getIndexOfCurrentPage());
         request.setAttribute("Tri", gallerySC.getTri());
         request.setAttribute("MediaResolution", gallerySC.getDisplayedMediaResolution());
         request.setAttribute("IsViewMetadata", gallerySC.isViewMetadata());
@@ -1066,7 +1067,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         destination = rootDest + "viewRestrictedMediaList.jsp";
       } else if (function.startsWith("portlet")) {
         // récupération des albums de 1er niveau
-        gallerySC.setIndexOfFirstItemToDisplay("0");
+        gallerySC.setIndexOfCurrentPage("0");
         request.setAttribute("root", gallerySC.goToAlbum("0"));
         // chercher les derniers médias
         Collection<Media> mediaList = gallerySC.getLastRegisteredMedia();
@@ -1156,7 +1157,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           // voir le panier
           request.setAttribute("MediaList", gallerySC.getBasketMediaIdList());
           request.setAttribute("NbMediaPerPage", gallerySC.getNbMediaPerPage());
-          // request.setAttribute("FirstMediaIndex", new
+          // request.setAttribute("CurrentPageIndex", new
           // Integer(gallerySC.getIndexOfFirstItemToDisplay()));
           request.setAttribute("SelectedIds", gallerySC.getListSelected());
           request.setAttribute("IsOrder", gallerySC.isOrder());

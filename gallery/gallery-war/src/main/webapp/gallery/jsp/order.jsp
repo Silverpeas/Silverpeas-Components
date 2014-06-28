@@ -249,7 +249,7 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
 		var  items = "";
 		try
 		{
-			var boxItems = document.orderForm.SelectPhoto;
+			var boxItems = document.orderForm.SelectMedia;
 			if (boxItems != null){
 				// au moins une checkbox exist
 				var nbBox = boxItems.length;

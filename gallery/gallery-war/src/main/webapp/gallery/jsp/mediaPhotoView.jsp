@@ -198,8 +198,8 @@ function goToNotify(url)
     operationPane.addLine();
 
     if (updateAllowed) {
-      operationPane.addOperation(resource.getIcon("gallery.deletePhoto"), resource.getString(
-          "gallery.deletePhoto"), "javaScript:deleteConfirm('" + photoId + "','" + EncodeHelper.
+      operationPane.addOperation(resource.getIcon("GML.delete"), resource.getString(
+          "GML.delete"), "javaScript:deleteConfirm('" + photoId + "','" + EncodeHelper.
           javaStringToHtmlString(EncodeHelper.javaStringToJsString(title)) + "')");
     }
     if ("admin".equals(profile)) {
@@ -218,8 +218,8 @@ function goToNotify(url)
     if ("user".equals(profile) && isBasket) {
       operationPane.addLine();
       // ajouter la photo au panier
-      operationPane.addOperation(resource.getIcon("gallery.addPhotoToBasket"), resource.getString(
-          "gallery.addPhotoToBasket"), "BasketAddMedia?MediaId=" + photoId);
+      operationPane.addOperation(resource.getIcon("gallery.addMediaToBasket"), resource.getString(
+          "gallery.addMediaToBasket"), "BasketAddMedia?MediaId=" + photoId);
     }
 
     if (isPrivateSearch) {
@@ -295,7 +295,7 @@ function goToNotify(url)
       <a title="${cpPhotoLinkAlt}" href="${curPhoto.permalink}">
         <img border="0" alt="${cpPhotoLinkAlt}" title="${cpPhotoLinkAlt}" src="${permalinkIconUrl}" />
       </a> <fmt:message key="GML.permalink"/> <br />
-      <input type="text" value="${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${curPhoto.permalink}" onfocus="select();" class="inputPermalink" />
+      <input type="text" value="${silfn:fullApplicationURL(pageContext.request)}}${curPhoto.permalink}" onfocus="select();" class="inputPermalink" />
     </p>
   </div>
   <c:if test="${curPhoto.downloadable and (curPhoto.visibilityPeriod.defined or curPhoto.downloadPeriod.defined)}">
@@ -432,14 +432,14 @@ function goToNotify(url)
     %>
 <% } %>
 
-
+</div>
+</form>
+<div class="principalContent">
   <c:if test="${requestScope.ShowCommentsTab}">
     <view:comments  userId="${userId}" componentId="${instanceId}"
-              resourceType="${photoResourceType}" resourceId="${photoId}" indexed="${callback}"/>
+                    resourceType="${photoResourceType}" resourceId="${photoId}" indexed="${callback}"/>
   </c:if>
 </div>
-
-</form>
 </view:frame>
 <%
 	out.println(window.printAfter());
