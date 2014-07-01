@@ -103,7 +103,16 @@
 
     <c:if test="${not empty mediaBean.internalMedia or (empty mediaBean and mediaType ne 'Streaming')}">
       <div class="field" id="downloadArea">
-        <label for="download" class="txtlibform"><fmt:message key="gallery.video.download"/></label>
+        <label for="download" class="txtlibform">
+          <c:choose>
+            <c:when test="${mediaType eq 'Photo'}">
+              <fmt:message key="gallery.download"/>
+            </c:when>
+            <c:otherwise>
+              <fmt:message key="gallery.video.download"/>
+            </c:otherwise>
+          </c:choose>
+        </label>
         <div class="champs">
           <c:set var="downloadChecked" value=""/>
           <c:if test="${mediaBean.downloadable}">

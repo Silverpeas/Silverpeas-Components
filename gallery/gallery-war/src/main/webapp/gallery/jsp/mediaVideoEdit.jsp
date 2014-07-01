@@ -30,7 +30,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
-<%@ taglib tagdir="/WEB-INF/tags/silverpeas/gallery" prefix="viewTags" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/gallery" prefix="gallery" %>
 
 <%-- Set resource bundle --%>
 <c:set var="language" value="${requestScope.resources.language}"/>
@@ -230,28 +230,23 @@ function isCorrectLocalForm()
 
 </head>
 <body class="gallery ${bodyCss} yui-skin-sam" id="${instanceId}">
-<%
-
-  browseBar.setDomainName(spaceLabel);
-  browseBar.setComponentName(componentLabel, "Main");
-  displayPath(path, browseBar);
-
-  TabbedPane tabbedPane = gef.getTabbedPane();
-  if (photo != null)
-  {
-    tabbedPane.addTab(resource.getString("gallery.media"), "MediaView?MediaId="+photoId, false);
-    tabbedPane.addTab(resource.getString("gallery.info"), "#", true);
-    tabbedPane.addTab(resource.getString("gallery.accessPath"), "AccessPath?MediaId="+photoId, false);
-  }
-
-  out.println(window.printBefore());
-  out.println(tabbedPane.print());
-%>
+<gallery:browseBar albumPath="${albumPath}"></gallery:browseBar>
+<view:window>
+  <c:if test="${not empty media}">
+    <view:tabs>
+      <fmt:message key="gallery.media" var="mediaViewLabel" />
+      <view:tab label="${mediaViewLabel}" action="MediaView?MediaId=${media.id}" selected="false"/>
+      <fmt:message key="gallery.info" var="mediaEditLabel" />
+      <view:tab label="${mediaEditLabel}" action="#" selected="true"/>
+      <fmt:message key="gallery.accessPath" var="accessLabel" />
+      <view:tab label="${accessLabel}" action="AccessPath?MediaId=${media.id}" selected="false"/>
+    </view:tabs>
+  </c:if>
 <view:frame>
 <form name="mediaForm" action="${action}" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
-<input type="hidden" name="MediaId" value="${media.id}" />
-<input type="hidden" name="type" value="${mediaType}" />
-<input type="hidden" name="Positions" />
+  <input type="hidden" name="MediaId" value="${media.id}" />
+  <input type="hidden" name="type" value="${mediaType}" />
+  <input type="hidden" name="Positions" />
 
 <table cellpadding="5" width="100%">
 <tr>
@@ -263,7 +258,7 @@ function isCorrectLocalForm()
   </td>
   <td>
 
-  <viewTags:editMedia mediaBean="${media}" mediaType="${mediaType}"/>
+  <gallery:editMedia mediaBean="${media}" mediaType="${mediaType}"/>
 
   <c:if test="${requestScope.IsUsePdc}">
     <%-- Display PDC form --%>
@@ -307,9 +302,7 @@ function isCorrectLocalForm()
 </view:buttonPane>
 
 </view:frame>
-<%
-  out.println(window.printAfter());
-%>
+</view:window>
 <div id="tipDiv" style="position:absolute; visibility:hidden; z-index:100000"></div>
 </body>
 </html>

@@ -59,6 +59,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="com.stratelia.webactiv.util.node.model.NodePK"%>
 <%@ page import="com.silverpeas.util.StringUtil"%>
 
+<%@ page import="com.silverpeas.gallery.constant.MediaResolution" %>
 <%@ page import="com.silverpeas.gallery.control.GallerySessionController"%>
 <%@ page import="com.silverpeas.gallery.model.AlbumDetail"%>
 <%@ page import="com.silverpeas.gallery.model.Media"%>

@@ -1,6 +1,3 @@
-<%@ page import="com.silverpeas.gallery.GalleryComponentSettings" %>
-<%@ page import="com.silverpeas.gallery.model.Media" %>
-<%@ page import="com.silverpeas.gallery.model.Photo" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -35,7 +32,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
-<%@ taglib tagdir="/WEB-INF/tags/silverpeas/gallery" prefix="viewTags" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/gallery" prefix="gallery" %>
 
 <%-- Set resource bundle --%>
 <c:set var="language" value="${requestScope.resources.language}"/>
@@ -52,6 +49,13 @@
 <c:set var="photoResourceType" value="${curPhoto.contributionType}"/>
 <c:set var="photoId" value="${curPhoto.id}"/>
 <c:set var="callback">function( event ) { if (event.type === 'listing') { commentCount = event.comments.length; $('#comment-tab').html('<c:out value="${commentTab}"/> ( ' + event.comments.length + ')'); } else if (event.type === 'deletion') { commentCount--; $('#comment-tab').html('<c:out value="${commentTab}"/> ( ' + commentCount + ')'); } else if (event.type === 'addition') { commentCount++; $('#comment-tab').html('<c:out value="${commentTab}"/> ( ' + commentCount + ')'); } }</c:set>
+<c:set var="albumPath" value="${requestScope.Path}" />
+<c:set var="greaterUserRole" value="${requestScope.greaterUserRole}"/>
+
+<view:setConstant var="adminRole" constant="com.stratelia.webactiv.SilverpeasRole.admin"/>
+<view:setConstant var="publisherRole" constant="com.stratelia.webactiv.SilverpeasRole.publisher"/>
+<view:setConstant var="writerRole" constant="com.stratelia.webactiv.SilverpeasRole.writer"/>
+<view:setConstant var="userRole" constant="com.stratelia.webactiv.SilverpeasRole.user"/>
 
 
 <fmt:message var="permalinkIcon" key='gallery.link' bundle='${icons}'/>
@@ -70,16 +74,9 @@
 <%
   // récupération des paramètres :
   Photo photo = (Photo) request.getAttribute("Media");
-  List<NodeDetail> path = (List<NodeDetail>) request.getAttribute("Path");
-  String profile = (String) request.getAttribute("Profile");
-  Integer rang = (Integer) request.getAttribute("Rang");
-  Integer albumSize = (Integer) request.getAttribute("NbMedia");
   boolean viewMetadata = (Boolean) request.getAttribute("IsViewMetadata");
   boolean watermark = (Boolean) request.getAttribute("IsWatermark");
-  boolean updateAllowed = (Boolean) request.getAttribute("UpdateMediaAllowed");
   String sizeParam = (String) request.getAttribute("PreviewSize");
-  boolean isBasket = (Boolean) request.getAttribute("IsBasket");
-  boolean isPrivateSearch = (Boolean) request.getAttribute("IsPrivateSearch");
 
   // paramètres du formulaire
   Form xmlForm = (Form) request.getAttribute("XMLForm");
@@ -186,65 +183,74 @@ function goToNotify(url)
 <%@include file="diaporama.jsp" %>
 </head>
 <body class="gallery gallery-fiche-image yui-skin-sam" id="${instanceId}">
-  <%
-    browseBar.setDomainName(spaceLabel);
-    browseBar.setComponentName(componentLabel, "Main");
-    displayPath(path, browseBar);
 
-    String url = "ToAlertUser?MediaId=" + photoId;
-    operationPane.addOperation(resource.getIcon("gallery.alert"), resource.getString("GML.notify"),
-        "javaScript:onClick=goToNotify('" + url + "')");
-    operationPane.addLine();
+<gallery:browseBar albumPath="${albumPath}"></gallery:browseBar>
 
-    if (updateAllowed) {
-      operationPane.addOperation(resource.getIcon("GML.delete"), resource.getString(
-          "GML.delete"), "javaScript:deleteConfirm('" + photoId + "','" + EncodeHelper.
-          javaStringToHtmlString(EncodeHelper.javaStringToJsString(title)) + "')");
-    }
-    if ("admin".equals(profile)) {
-      operationPane.addOperation(resource.getIcon("gallery.copy"), resource.getString("GML.copy"),
-          "javascript:onClick=clipboardCopy()");
-      operationPane.addOperation(resource.getIcon("gallery.cut"), resource.getString("GML.cut"),
-          "javascript:onClick=clipboardCut()");
-      operationPane.addLine();
-    }
-    if (albumSize.intValue() > 1) {
-      // diaporama
-      operationPane.addOperation(resource.getIcon("gallery.startDiaporama"), resource.getString(
-          "gallery.diaporama"), "javascript:startSlideshow('"+photoId+"')");
-    }
+<view:operationPane>
+  <fmt:message key="GML.notify" var="notifLabel"/>
+  <fmt:message key="gallery.alert" var="notifIcon" bundle="${icons}"/>
+  <c:url value="${notifIcon}" var="notifIcon" />
+  <view:operation altText="${notifLabel}" action="ToAlertUser?MediaId=${curPhoto.id}" icon="${notifIcon}"></view:operation>
+  <view:operationSeparator/>
+  <c:if test="${requestScope.UpdateMediaAllowed}">
+    <fmt:message key="GML.delete" var="deleteLabel"/>
+    <fmt:message key="GML.delete" var="deleteIcon" bundle="${icons}"/>
+    <c:url value="${deleteIcon}" var="deleteIcon" />
+    <c:set var="tmpLabel"><c:out value="${curPhoto.title}"/></c:set>
+    <c:set var="deleteAction" value="javaScript:deleteConfirm('${curPhoto.id}', '${silfn:escapeJs(tmpLabel)}')"/>
+    <view:operation altText="${deleteLabel}" action="${deleteAction}" icon="${deleteIcon}"></view:operation>
+  </c:if>
+  <c:if test="${greaterUserRole eq adminRole}">
+    <fmt:message key="GML.copy" var="copyLabel"/>
+    <fmt:message key="gallery.copy" var="copyIcon" bundle="${icons}"/>
+    <c:url var="copyIcon" value="${copyIcon}" />
+    <fmt:message key="GML.cut" var="cutLabel"/>
+    <fmt:message key="gallery.cut" var="cutIcon" bundle="${icons}"/>
+    <c:url var="cutIcon" value="${cutIcon}" />
+    <view:operation action="javascript:onClick=clipboardCopy()" altText="${copyLabel}" icon="${copyIcon}"/>
+    <view:operation action="javascript:onClick=clipboardCut()" altText="${cutLabel}" icon="${cutIcon}"/>
+    <view:operationSeparator/>
+  </c:if>
+  <c:if test="${requestScope.NbMedia gt 1}">
+    <view:operationSeparator/>
+    <fmt:message var="diapoLabel" key="gallery.diaporama"/>
+    <fmt:message var="diapoIcon" key="gallery.startDiaporama" bundle="${icons}"/>
+    <c:url var="diapoIcon" value="${diapoIcon}" />
+    <view:operation altText="${diapoLabel}" action="javascript:startSlideshow('${curPhoto.id}')" icon="${diapoIcon}"></view:operation>
+  </c:if>
+  <c:if test="${greaterUserRole eq userRole and requestScope.IsBasket}">
+    <view:operationSeparator/>
+    <fmt:message var="addBasketLabel" key="gallery.addMediaToBasket"/>
+    <fmt:message var="addBasketIcon" key="gallery.addMediaToBasket" bundle="${icons}"/>
+    <c:url var="addBasketIcon" value="${addBasketIcon}" />
+    <view:operation altText="${addBasketLabel}" action="BasketAddMedia?MediaId=${curPhoto.id}" icon="${addBasketIcon}"></view:operation>
+  </c:if>
+  <c:if test="${requestScope.IsPrivateSearch}">
+    <view:operationSeparator/>
+    <fmt:message var="lastResultLabel" key="gallery.lastResult"/>
+    <fmt:message var="lastResultIcon" key="gallery.lastResult" bundle="${icons}"/>
+    <c:url var="lastResultIcon" value="${lastResultIcon}" />
+    <view:operation altText="${lastResultLabel}" action="LastResult" icon="${lastResultIcon}"></view:operation>
 
-    if ("user".equals(profile) && isBasket) {
-      operationPane.addLine();
-      // ajouter la photo au panier
-      operationPane.addOperation(resource.getIcon("gallery.addMediaToBasket"), resource.getString(
-          "gallery.addMediaToBasket"), "BasketAddMedia?MediaId=" + photoId);
-    }
+  </c:if>
+</view:operationPane>
 
-    if (isPrivateSearch) {
-      // derniers résultat de la recherche
-      operationPane.addLine();
-      operationPane.addOperation(resource.getIcon("gallery.lastResult"), resource.getString(
-          "gallery.lastResult"), "LastResult");
-    }
+<view:window>
 
-    TabbedPane tabbedPane = gef.getTabbedPane();
-    tabbedPane.addTab(resource.getString("gallery.media"), "#", true);
-    if (updateAllowed) {
-      tabbedPane.addTab(resource.getString("gallery.info"), "EditInformation?MediaId=" + photoId,
-          false);
-    }
-    if (updateAllowed) {
-      tabbedPane.addTab(resource.getString("gallery.accessPath"), "AccessPath?MediaId=" + photoId,
-          false);
-    }
+<view:tabs>
+  <fmt:message key="gallery.media" var="mediaViewLabel" />
+  <view:tab label="${mediaViewLabel}" action="#" selected="true"/>
+  <c:if test="${requestScope.UpdateMediaAllowed}">
+    <fmt:message key="gallery.info" var="mediaEditLabel" />
+    <view:tab label="${mediaEditLabel}" action="EditInformation?MediaId=${curPhoto.id }" selected="false"/>
+    <fmt:message key="gallery.accessPath" var="accessLabel" />
+    <view:tab label="${accessLabel}" action="AccessPath?MediaId=${curPhoto.id}" selected="false"/>
+  </c:if>
+</view:tabs>
 
-    out.println(window.printBefore());
-    out.println(tabbedPane.print());
-  %>
 <view:frame>
-<form name="mediaForm" method="post" accept-charset="UTF-8">
 
+<form name="mediaForm" method="post" accept-charset="UTF-8">
 <div class="rightContent">
 
   <!-- nom du fichier -->
@@ -441,8 +447,6 @@ function goToNotify(url)
   </c:if>
 </div>
 </view:frame>
-<%
-	out.println(window.printAfter());
-%>
+</view:window>
 </body>
 </html>

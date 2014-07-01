@@ -1,6 +1,3 @@
-<%@ page import="com.silverpeas.gallery.GalleryComponentSettings" %>
-<%@ page import="com.silverpeas.gallery.model.Photo" %>
-<%@ page import="com.silverpeas.gallery.constant.MediaResolution" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -33,7 +30,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
-<%@ taglib tagdir="/WEB-INF/tags/silverpeas/gallery" prefix="viewTags" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/gallery" prefix="gallery" %>
 
 <%-- Set resource bundle --%>
 <c:set var="language" value="${requestScope.resources.language}"/>
@@ -54,6 +51,7 @@
   <c:set var="action" value="UpdateInformation"/>
   <c:set var="bodyCss" value="editMedia"/>
 </c:if>
+<c:set var="albumPath" value="${requestScope.Path}" />
 
 <%
 	// récupération des paramètres :
@@ -88,15 +86,6 @@
     if (viewMetadata) {
       metaDataKeys = photo.getMetaDataProperties();
     }
-  }
-
-  // déclaration des boutons
-  Button validateButton = gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
-  Button cancelButton;
-  if (action.equals("UpdateInformation")) {
-    cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "MediaView?MediaId=" + photoId, false);
-  } else {
-    cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "GoToCurrentAlbum", false);
   }
 
 %>
@@ -431,28 +420,23 @@ function hideTip() {
 </head>
 
 <body class="gallery ${bodyCss} yui-skin-sam" id="${instanceId}">
-<%
+<gallery:browseBar albumPath="${albumPath}"></gallery:browseBar>
 
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel, "Main");
-	displayPath(path, browseBar);
+<view:window>
+  <c:if test="${not empty photo}">
+    <view:tabs>
+      <fmt:message key="gallery.media" var="mediaViewLabel" />
+      <view:tab label="${mediaViewLabel}" action="MediaView?MediaId=${photo.id}" selected="false"/>
+      <fmt:message key="gallery.info" var="mediaEditLabel" />
+      <view:tab label="${mediaEditLabel}" action="#" selected="true"/>
+      <fmt:message key="gallery.accessPath" var="accessLabel" />
+      <view:tab label="${accessLabel}" action="AccessPath?MediaId=${photo.id}" selected="false"/>
+    </view:tabs>
+  </c:if>
 
-	Board board	= gef.getBoard();
-
-	TabbedPane tabbedPane = gef.getTabbedPane();
-	if (photo != null)
-	{
-		tabbedPane.addTab(resource.getString("gallery.media"), "MediaView?MediaId="+photoId, false);
-		tabbedPane.addTab(resource.getString("gallery.info"), "#", true);
-		tabbedPane.addTab(resource.getString("gallery.accessPath"), "AccessPath?MediaId="+photoId, false);
-	}
-
-	out.println(window.printBefore());
-	out.println(tabbedPane.print());
-%>
 <view:frame>
 <form name="mediaForm" action="${action}" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
-<input type="hidden" name="MediaId" value="<%=photoId%>"/>
+<input type="hidden" name="MediaId" value="${photo.id}"/>
 <input type="hidden" name="Positions"/>
 <input type="hidden" name="type" value="Photo"/>
 
@@ -500,7 +484,7 @@ function hideTip() {
 	</td>
 	<td>
 
-  <viewTags:editMedia mediaBean="${photo}" mediaType="Photo"/>
+  <gallery:editMedia mediaBean="${photo}" mediaType="Photo"/>
 
   <c:if test="${requestScope.IsUsePdc}">
     <%-- Display PDC form --%>
@@ -543,9 +527,7 @@ function hideTip() {
 </view:buttonPane>
 
 </view:frame>
-<%
-	out.println(window.printAfter());
-%>
+</view:window>
 <div id="tipDiv" style="position:absolute; visibility:hidden; z-index:100000"></div>
 </body>
 </html>
