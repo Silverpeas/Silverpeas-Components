@@ -113,7 +113,7 @@ function submitOnHomepage() {
 <!--INTEGRATION  UNE ACTU -->
 <div class="rightContent">
 	<c:if test="${not empty news.thumbnail}">
-		<div id="illustration"><img alt="" src="${news.thumbnail.URL}" /></div>
+		<div id="illustration"><view:image src="${news.thumbnail.URL}" alt="" size="350x"/></div>
 	</c:if>
 	<div class="bgDegradeGris" id="actualityInfoPublication">
 		<c:if test="${not news.draft}">

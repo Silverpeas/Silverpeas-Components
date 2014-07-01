@@ -100,7 +100,7 @@ $(document).ready(function() {
 			<c:choose>
 				<c:when test="${not empty news.thumbnail}">
 					<li>
-					<div class="content-actuality-illustration"><img class="actuality-illustration" alt="" src="${news.thumbnail.URL}" /></div>
+					<div class="content-actuality-illustration"><view:image src="${news.thumbnail.URL}" alt="" size="350x" css="actuality-illustration"/></div>
 				</c:when>
 				<c:otherwise>
 					<li class="actuality-without-illustration">
