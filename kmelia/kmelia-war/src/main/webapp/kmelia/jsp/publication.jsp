@@ -670,14 +670,14 @@
 								  	<div id="lastModificationInfo" class="paragraphe">
 								  		<%=resources.getString("PubDateUpdate")%>  <br />
                                         <b><%=resources.getOutputDate(pubDetail.getUpdateDate())%></b> <%=resources.getString("GML.by")%> <view:username userId="<%=kmeliaPublication.getLastModifier().getId()%>"/>
-								  		<div class="profilPhoto"><img src="<%=m_context %><%=kmeliaPublication.getLastModifier().getAvatar() %>" alt="" class="defaultAvatar"/></div>
+								  		<div class="profilPhoto"><view:image src="<%=kmeliaPublication.getLastModifier().getAvatar() %>" type="avatar" css="defaultAvatar"/></div>
 							  		</div>
 							  	 <% }%>
 								<c:if test="${view:isDefined(requestScope['Publication'].creator) && view:isDefined(requestScope['Publication'].creator.id)}">
                     <div id="creationInfo" class="paragraphe">
                      <%=resources.getString("PubDateCreation")%> <br/>
                      <b><%=resources.getOutputDate(pubDetail.getCreationDate())%></b> <%=resources.getString("GML.by")%> <view:username userId="${requestScope['Publication'].creator.id}"/>
-                     <div class="profilPhoto"><img src='<c:url value="${requestScope['Publication'].creator.avatar}" />' alt="" class="defaultAvatar"/></div>
+                     <div class="profilPhoto"><view:image src="<%=kmeliaPublication.getCreator().getAvatar() %>" type="avatar" css="defaultAvatar"/></div>
                    </div>
                 </c:if>
 							  	  <%
@@ -720,7 +720,7 @@
 									HistoryObjectDetail access = lastAccess.get(i);
 							%>
 									<li>
-	                          			<div class="profilPhoto"><img src="<%=URLManager.getApplicationURL() %><%=UserDetail.getById(access.getUserId()).getAvatar() %>" alt="" class="defaultAvatar"/></div>
+	                          			<div class="profilPhoto"><view:image src="<%=UserDetail.getById(access.getUserId()).getAvatar() %>" type="avatar" css="defaultAvatar"/></div>
 	                              		<view:username userId="<%=access.getUserId() %>" /> <span class="consultationDate"><%=resources.getString("kmelia.publication.lastvisitors.on") %> <%=resources.getOutputDate(access.getDate()) %></span>
 	                          		</li>
 							<% } %>

@@ -25,11 +25,9 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@page import="com.silverpeas.form.Form"%>
 <%@page import="com.silverpeas.form.PagesContext"%>
 <%@page import="com.silverpeas.form.DataRecord"%>
-<%@page import="org.silverpeas.attachment.model.SimpleDocument"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
@@ -74,7 +72,6 @@
 </c:if>
 
 <%
-  String m_context = GeneralPropertiesManager.getString("ApplicationURL");
 	String language = (String) pageContext.getAttribute("language");
 	String instanceId = (String) pageContext.getAttribute("instanceId");
 	Form formUpdate = (Form) pageContext.getAttribute("formUpdate");
@@ -88,7 +85,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
+<link type="text/css" href="<c:url value="/util/styleSheets/fieldset.css"/>" rel="stylesheet" />
 <view:looknfeel/>
 <c:if test="${not empty formUpdate}">
 	<%
@@ -315,11 +312,7 @@
 	     <c:forEach var="image" items="${images}" begin="0" end="0">
        <div class="thumbnailPreviewAndActions" id="imageFile1">
          <div class="thumbnailPreview">
-          <%
-          SimpleDocument simpleDocument = (SimpleDocument) pageContext.getAttribute("image");
-          String url = m_context +  simpleDocument.getAttachmentURL();
-          %>
-          <img src="<%=url%>" class="thumbnail" id="actualImage1"/>
+          <view:image src="${image.attachmentURL}" size="250x" css="thumbnail" id="actualImage1"/>
          </div>
          <div id="thumbnailActions">
           <a href="javascript:onClick=hideImageFile('1');"><img src="${pageContext.request.contextPath}<fmt:message key="classifieds.crossDelete" bundle="${icons}"/>" border="0"/></a>
@@ -338,11 +331,7 @@
        <c:forEach var="image" items="${images}" begin="1" end="1">
        <div class="thumbnailPreviewAndActions" id="imageFile2">
          <div class="thumbnailPreview">
-          <%
-          SimpleDocument simpleDocument = (SimpleDocument) pageContext.getAttribute("image");
-          String url = m_context +  simpleDocument.getAttachmentURL();
-          %>
-          <img src="<%=url%>" class="thumbnail" id="actualImage2"/>
+          <view:image src="${image.attachmentURL}" size="250x" css="thumbnail" id="actualImage2"/>
          </div>
          <div id="thumbnailActions">
           <a href="javascript:onClick=hideImageFile('2');"><img src="${pageContext.request.contextPath}<fmt:message key="classifieds.crossDelete" bundle="${icons}"/>" border="0"/></a>
@@ -361,11 +350,7 @@
        <c:forEach var="image" items="${images}" begin="2" end="2">
        <div class="thumbnailPreviewAndActions" id="imageFile3">
          <div class="thumbnailPreview">
-          <%
-          SimpleDocument simpleDocument = (SimpleDocument) pageContext.getAttribute("image");
-          String url = m_context +  simpleDocument.getAttachmentURL();
-          %>
-          <img src="<%=url%>" class="thumbnail" id="actualImage3"/>
+          <view:image src="${image.attachmentURL}" size="250x" css="thumbnail" id="actualImage3"/>
          </div>
          <div id="thumbnailActions">
           <a href="javascript:onClick=hideImageFile('3');"><img src="${pageContext.request.contextPath}<fmt:message key="classifieds.crossDelete" bundle="${icons}"/>" border="0"/></a>
@@ -384,11 +369,7 @@
        <c:forEach var="image" items="${images}" begin="3" end="3">
        <div class="thumbnailPreviewAndActions" id="imageFile4">
          <div class="thumbnailPreview">
-          <%
-          SimpleDocument simpleDocument = (SimpleDocument) pageContext.getAttribute("image");
-          String url = m_context +  simpleDocument.getAttachmentURL();
-          %>
-          <img src="<%=url%>" class="thumbnail" id="actualImage4"/>
+          <view:image src="${image.attachmentURL}" size="250x" css="thumbnail" id="actualImage4"/>
          </div>
          <div id="thumbnailActions">
           <a href="javascript:onClick=hideImageFile('4');"><img src="${pageContext.request.contextPath}<fmt:message key="classifieds.crossDelete" bundle="${icons}"/>" border="0"/></a>
