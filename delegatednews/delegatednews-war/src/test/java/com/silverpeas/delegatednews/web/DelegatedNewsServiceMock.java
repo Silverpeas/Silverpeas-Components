@@ -28,6 +28,9 @@ import java.util.List;
 
 import javax.inject.Named;
 
+import org.silverpeas.date.Period;
+
+import com.silverpeas.SilverpeasContent;
 import com.silverpeas.delegatednews.model.DelegatedNews;
 import com.silverpeas.delegatednews.service.DelegatedNewsService;
 
@@ -43,11 +46,10 @@ public class DelegatedNewsServiceMock implements DelegatedNewsService {
   public DelegatedNewsService getDelegatedNewsService() {
     return this.delegatedNewsService;
   }
-
+  
   @Override
-  public void addDelegatedNews(int pubId, String instanceId, String contributorId,
-      Date validationDate, Date beginDate, Date endDate) {
-    this.delegatedNewsService.addDelegatedNews(pubId, instanceId, contributorId, validationDate, beginDate, endDate);
+  public void submitNews(String id, SilverpeasContent news, String lastUpdaterId, Period visibilityPeriod, String userId) {
+    this.delegatedNewsService.submitNews(id, news, lastUpdaterId, visibilityPeriod, userId);
   }
 
   @Override
@@ -64,50 +66,30 @@ public class DelegatedNewsServiceMock implements DelegatedNewsService {
   public List<DelegatedNews> getAllValidDelegatedNews() {
     return this.delegatedNewsService.getAllValidDelegatedNews();
   }
-
+  
   @Override
   public void validateDelegatedNews(int pubId, String validatorId) {
     this.delegatedNewsService.validateDelegatedNews(pubId, validatorId);
   }
 
   @Override
-  public void refuseDelegatedNews(int pubId, String validatorId) {
-    this.delegatedNewsService.refuseDelegatedNews(pubId, validatorId);
+  public void refuseDelegatedNews(int pubId, String validatorId, String motive) {
+    this.delegatedNewsService.refuseDelegatedNews(pubId, validatorId, motive);
   }
 
   @Override
   public void updateDateDelegatedNews(int pubId, Date dateHourBegin, Date dateHourEnd) {
     this.delegatedNewsService.updateDateDelegatedNews(pubId, dateHourBegin, dateHourEnd);
-    
   }
 
   @Override
-  public void notifyDelegatedNewsToValidate(String pubId, String pubName, String senderId,
-      String senderName, String delegatednewsInstanceId) {
-    this.delegatedNewsService.notifyDelegatedNewsToValidate(pubId, pubName, senderId, senderName, delegatednewsInstanceId);
-  }
-
-  @Override
-  public void updateDelegatedNews(int pubId, String instanceId, String status, String updaterId,
-      String validatorId, Date validationDate, Date dateHourBegin, Date dateHourEnd) {
-    this.delegatedNewsService.updateDelegatedNews(pubId, instanceId, status, updaterId, validatorId, validationDate, dateHourBegin, dateHourEnd);    
+  public void updateDelegatedNews(String id, SilverpeasContent news, String updaterId, Period visibilityPeriod) {
+    this.delegatedNewsService.updateDelegatedNews(id, news, updaterId, visibilityPeriod);
   }
 
   @Override
   public void deleteDelegatedNews(int pubId) {
     this.delegatedNewsService.deleteDelegatedNews(pubId);
-  }
-
-  @Override
-  public void notifyDelegatedNewsValid(String pubId, String pubName, String senderId,
-      String senderName, String contributorId, String delegatednewsInstanceId) {
-      this.delegatedNewsService.notifyDelegatedNewsValid(pubId, pubName, senderId, senderName, contributorId, delegatednewsInstanceId); 
-  }
-
-  @Override
-  public void notifyDelegatedNewsRefused(String pubId, String pubName, String refusalMotive,
-      String senderId, String senderName, String contributorId, String delegatednewsInstanceId) {
-      this.delegatedNewsService.notifyDelegatedNewsRefused(pubId, pubName, refusalMotive, senderId, senderName, contributorId, delegatednewsInstanceId);
   }
 
   @Override

@@ -22,33 +22,30 @@ package com.stratelia.webactiv.quickinfo.servlets;
 
 import java.rmi.RemoteException;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Enumeration;
-import java.util.Iterator;
+import java.util.List;
 
 import javax.ejb.CreateException;
-import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.components.quickinfo.NewsByStatus;
+import org.silverpeas.components.quickinfo.model.News;
+import org.silverpeas.date.Period;
+import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.wysiwyg.WysiwygException;
-import org.silverpeas.wysiwyg.control.WysiwygController;
 
+import com.silverpeas.thumbnail.control.ThumbnailController;
+import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.clipboard.ClipboardSelection;
-import com.silverpeas.util.i18n.I18NHelper;
-
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.quickinfo.control.QuickInfoSessionController;
 import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import com.stratelia.webactiv.util.publication.model.PublicationSelection;
 
 public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSessionController> {
 
@@ -84,144 +81,110 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
     if (flag == null) {
       return null;
     }
-
+    request.setAttribute("Role", flag);
+    request.setAttribute("AppSettings", quickInfo.getInstanceSettings());
+    
     try {
-      if (function.startsWith("Main") || function.startsWith("quickInfoUser")
-          || function.startsWith("quickInfoPublisher")) {
-        Collection<PublicationDetail> infos;
-        if ("publisher".equals(flag)) {
-          infos = quickInfo.getQuickInfos();
-          request.setAttribute("infos", infos);
-          destination = "/quickinfo/jsp/quickInfoPublisher.jsp";
-        } else if ("admin".equals(flag)) {
-          infos = quickInfo.getQuickInfos();
-          request.setAttribute("infos", infos);
-          request.setAttribute("isAdmin", "true");
-          destination = "/quickinfo/jsp/quickInfoPublisher.jsp";
+      if ("Main".equals(function)) {
+        Collection<News> infos;
+        if (isContributor(flag)) {
+          NewsByStatus allNews = quickInfo.getQuickInfos();
+          request.setAttribute("NotVisibleNews", allNews);
+          infos = allNews.getVisibles();
         } else {
           infos = quickInfo.getVisibleQuickInfos();
-          if (infos == null) {
-            infos = new ArrayList<PublicationDetail>(0);
-          }
-          Iterator<PublicationDetail> iterator = infos.iterator();
-          request.setAttribute("infos", iterator);
-          destination = "/quickinfo/jsp/quickInfoUser.jsp";
         }
+        request.setAttribute("ListOfNews", infos);
+        request.setAttribute("AppSettings", quickInfo.getInstanceSettings());
+        request.setAttribute("IsSubscriberUser", quickInfo.isSubscriberUser());
+        destination = "/quickinfo/jsp/home.jsp";
       } else if (function.startsWith("portlet")) {
-        Collection<PublicationDetail> infos = null;
-        infos = quickInfo.getVisibleQuickInfos();
-        if (infos == null) {
-          infos = new ArrayList<PublicationDetail>(0);
+        List<News> infos = quickInfo.getVisibleQuickInfos();
+        request.setAttribute("infos", infos);
+        request.setAttribute("AppSettings", quickInfo.getInstanceSettings());
+        destination = "/portlets/jsp/quickInfos/portlet.jsp";
+      } else if ("Save".equals(function)) {
+        String id = saveQuickInfo(quickInfo, request, false);
+        request.setAttribute("Id", id);
+        destination = getDestination("View", quickInfo, request);
+      } else if ("Publish".equals(function)) {
+        String id = request.getParameter("Id");
+        quickInfo.publish(id);
+        request.setAttribute("Id", id);
+        destination = getDestination("View", quickInfo, request);
+      } else if ("SaveAndPublish".equals(function)) {
+        String id = saveQuickInfo(quickInfo, request, true);
+        request.setAttribute("Id", id);
+        destination = getDestination("View", quickInfo, request);
+      } else if ("View".equals(function)) {
+        News news = (News) request.getAttribute("News");
+        if (news == null) {
+          String id = request.getParameter("Id");
+          if (!StringUtil.isDefined(id)) {
+            id = (String) request.getAttribute("Id");
+          }
+          request.setAttribute("News", quickInfo.getNews(id, true));
         }
-        Iterator<PublicationDetail> iterator = infos.iterator();
-        request.setAttribute("infos", iterator);
-        destination = "/quickinfo/jsp/portlet.jsp";
-      } else if (function.startsWith("quickInfoEdit") || function.startsWith("searchResult")) {
-        if ("publisher".equals(flag) || "admin".equals(flag)) {
-          String action = request.getParameter("Action");
-          if (action == null) {
-            if (!function.startsWith("searchResult")) {
-              action = "Add";
-            } else {
-              action = "Edit";
-            }
-          }
-          if ("Edit".equals(action)) {
-            String id = request.getParameter("Id");
-            request.setAttribute("Id", id);
-            quickInfo.setPageId(QuickInfoSessionController.PAGE_HEADER);
-            PublicationDetail quickInfoDetail = quickInfo.getDetail(id);
-            request.setAttribute("info", quickInfoDetail);
-            destination = "/quickinfo/jsp/quickInfoEdit.jsp";
-          } else if ("Add".equals(action)) {
-            request.setAttribute("info", null);
-            destination = "/quickinfo/jsp/quickInfoEdit.jsp";
-          } else if ("ReallyRemove".equals(action)) {
-            String id = request.getParameter("Id");
-            quickInfo.remove(id);
-            destination = getDestination("Main", quickInfo, request);
-          } else if ("ReallyAdd".equals(action) || "ReallyUpdate".equals(action)) {
-            createOrUpdateQuickInfo(quickInfo, request, action);
-            destination = getDestination("quickInfoPublisher", quickInfo, request);
-          }
-        } else if ("user".equals(flag)) {
-          destination = getDestination("quickInfoUser", quickInfo, request);
+        String anchor = request.getParameter("Anchor");
+        request.setAttribute("AppSettings", quickInfo.getInstanceSettings());
+        destination = "/quickinfo/jsp/news.jsp";
+        if (StringUtil.isDefined(anchor)) {
+          destination += "#"+anchor;
+        }
+      } else if ("ViewOnly".equals(function)) {
+        String id = request.getParameter("Id");
+        News news = quickInfo.getNewsByForeignId(id);
+        request.setAttribute("News", news);
+        request.setAttribute("ViewOnly", true);
+        destination = getDestination("View", quickInfo, request);
+      } else if ("Add".equals(function)) {
+        if (!isContributor(flag)) {
+          throwHttpForbiddenError();
+        }
+        News news = quickInfo.createEmptyNews();
+        request.setAttribute("NewOneInProgress", true);
+        setCommonAttributesToAddOrUpdate(quickInfo, news, request);
+        destination = "/quickinfo/jsp/quickInfoEdit.jsp";
+      } else if ("Edit".equals(function)) {
+        if (!isContributor(flag)) {
+          throwHttpForbiddenError();
+        }
+        String id = request.getParameter("Id");
+        News news = quickInfo.getNews(id, false);
+        setCommonAttributesToAddOrUpdate(quickInfo, news, request);
+        destination = "/quickinfo/jsp/quickInfoEdit.jsp";
+      } else if ("Remove".equals(function)) {
+        if (!isContributor(flag)) {
+          throwHttpForbiddenError();
+        }
+        String id = request.getParameter("Id");
+        quickInfo.remove(id);
+        destination = getDestination("Main", quickInfo, request);
+      } else if (function.startsWith("searchResult")) {
+        String id = request.getParameter("Id");
+        News news = null;
+        if (StringUtil.isInteger(id)) {
+          // from a search result
+          news = quickInfo.getNewsByForeignId(id);
         } else {
-          destination =
-              GeneralPropertiesManager.getString("sessionTimeout");
+          // from a comment 
+          news = quickInfo.getNews(id, true);
         }
-      } else if (function.startsWith("multicopy")) {
-        try {
-          PublicationDetail pubDetail;
-          PublicationSelection pubSelect;
-          @SuppressWarnings("unchecked")
-          Enumeration<String> parameters = request.getParameterNames();
-          while (parameters.hasMoreElements()) {
-            String paramName = parameters.nextElement();
-            if (paramName.startsWith("selectItem")) {
-              String id = request.getParameter(paramName);
-              if (id != null) {
-                pubDetail = quickInfo.getDetail(id);
-                pubSelect = new PublicationSelection(pubDetail);
-                quickInfo.addClipboardSelection((ClipboardSelection) pubSelect);
-              }
-            }
-          }
-        } catch (Exception e) {
-          try {
-            quickInfo.setClipboardError("copyError", e);
-            // SilverTrace : mettre un warning
-          } catch (Exception ee) {
-            SilverTrace.error("quickinfo", "QuickInfoRequestRouter.getDestination()",
-                "quickinfo.NO_DATATOCOPY", ee);
-          }
+        if (news.isDraft() && !isContributor(flag)) {
+          throwHttpForbiddenError();
         }
-        destination = URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null)
-            + "Idle.jsp?message=REFRESHCLIPBOARD";
-      } else if (function.startsWith("copy")) {
-        try {
-          PublicationDetail pubDetail = quickInfo.getDetail(request.getParameter("Id"));
-          PublicationSelection pubSelect = new PublicationSelection(pubDetail);
-          quickInfo.addClipboardSelection((ClipboardSelection) pubSelect);
-        } catch (Exception e) {
-          try {
-            quickInfo.setClipboardError("copyError", e);
-            // SilverTrace : mettre un warning
-          } catch (Exception ee) {
-            SilverTrace.error("quickinfo", "QuickInfoRequestRouter.getDestination()",
-                "quickinfo.NO_DATATOCOPY", ee);
-          }
+        request.setAttribute("News", news);
+        destination = getDestination("View", quickInfo, request);
+      } else if ("Notify".equals(function)) {
+        String id = request.getParameter("Id");
+        destination = quickInfo.notify(id);
+      } else if ("SubmitOnHomepage".equals(function)) {
+        if (!isContributor(flag)) {
+          throwHttpForbiddenError();
         }
-        destination = URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null)
-            + "Idle.jsp?message=REFRESHCLIPBOARD";
-      } else if (function.startsWith("paste")) {
-        try {
-          SilverTrace.debug("quickinfo", "QuickInfoRequestRouter.getDestination()", "clipboard '"
-              + quickInfo.getClipboardName() + "' count=" + quickInfo.getClipboardCount());
-          Collection<ClipboardSelection> clipObjects = quickInfo.getClipboardSelectedObjects();
-          Iterator<ClipboardSelection> clipObjectIterator = clipObjects.iterator();
-          while (clipObjectIterator.hasNext()) {
-            ClipboardSelection clipObject = clipObjectIterator.next();
-            if ((clipObject != null)
-                && (clipObject
-                .isDataFlavorSupported(PublicationSelection.PublicationDetailFlavor))) {
-              PublicationDetail pubDetail;
-              pubDetail = (PublicationDetail) clipObject
-                  .getTransferData(PublicationSelection.PublicationDetailFlavor);
-
-              String description = WysiwygController.load(pubDetail.getPK().getInstanceId(),
-                  pubDetail.getPK().getId(), I18NHelper.defaultLanguage);
-              quickInfo.add(pubDetail.getName(), description, pubDetail.getBeginDate(),
-                  pubDetail.getEndDate(), null);
-            }
-          }
-          quickInfo.clipboardPasteDone();
-        } catch (Exception e) {
-          quickInfo.setClipboardError("pasteError", e);
-          SilverTrace.error("quickinfo", "QuickInfoRequestRouter.getDestination()",
-              "quickinfo.PASTE_ERROR", e);
-        }
-        destination = URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null) + "Idle.jsp";
+        String id = request.getParameter("Id");
+        quickInfo.submitNewsOnHomepage(id);
+        destination = getDestination("View", quickInfo, request);
       } else {
         destination = "/quickinfo/jsp/" + function;
       }
@@ -233,6 +196,15 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
         "root.MSG_GEN_PARAM_VALUE", "destination" + destination);
     return destination;
   }
+  
+  private boolean isContributor(String role) {
+    return "publisher".equals(role) || "admin".equals(role);
+  }
+  
+  private void setCommonAttributesToAddOrUpdate(QuickInfoSessionController quickInfo, News news, HttpRequest request) {
+    request.setAttribute("info", news);
+    request.setAttribute("ThumbnailSettings", quickInfo.getThumbnailSettings());
+  }
 
   /**
    * This method retrieve all the request parameters before creating or updating a quick info
@@ -240,42 +212,81 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
    * @param quickInfo the QuickInfoSessionController
    * @param request the HttpServletRequest
    * @param action a string representation of an action
-   * @throws ParseException
+   * @throws Exception 
    * @throws RemoteException
    * @throws CreateException
    * @throws WysiwygException
    */
-  private void createOrUpdateQuickInfo(QuickInfoSessionController quickInfo,
-      HttpServletRequest request, String action) throws ParseException, RemoteException,
-      CreateException, WysiwygException {
-    String name = request.getParameter("Name");
-    String description = request.getParameter("Description");
-    if (description == null) {
-      description = "";
-    }
-    Date beginDate = null;
-    String beginString = request.getParameter("BeginDate");
+  private String saveQuickInfo(QuickInfoSessionController quickInfo,
+      HttpRequest request, boolean publish) throws Exception {
 
-    if (StringUtil.isDefined(beginString) && beginString.trim().length() > 0) {
-      beginDate = DateUtil.stringToDate(beginString, quickInfo.getLanguage());
+    List<FileItem> items = request.getFileItems();
+    News news = requestToNews(items, quickInfo.getLanguage());
+    
+    String positions = request.getParameter("Positions");
+
+    String id = news.getId();
+    
+    // process thumbnail first to be stored in index when publication is updated
+    ThumbnailController.processThumbnail(
+        new ForeignPK(news.getPublicationId(), quickInfo.getComponentId()),
+        PublicationDetail.getResourceType(), items);
+    
+    quickInfo.update(id, news, positions, publish);
+    
+    return id;
+  }
+  
+  private News requestToNews(List<FileItem> items, String language) throws ParseException {
+    
+    String id = FileUploadUtil.getParameter(items, "Id");
+    String name = FileUploadUtil.getParameter(items, "Name");
+    String description = FileUploadUtil.getParameter(items, "Description");
+    String content = FileUploadUtil.getParameter(items, "Content");
+    String pubId = FileUploadUtil.getParameter(items, "PubId");
+    boolean important =
+        StringUtil.getBooleanValue(FileUploadUtil.getParameter(items, "BroadcastImportant"));
+    boolean ticker =
+        StringUtil.getBooleanValue(FileUploadUtil.getParameter(items, "BroadcastTicker"));
+    boolean mandatory =
+        StringUtil.getBooleanValue(FileUploadUtil.getParameter(items, "BroadcastMandatory"));
+    
+    Date beginDate = null;
+    String beginString = FileUploadUtil.getParameter(items, "BeginDate");
+    if (StringUtil.isDefined(beginString)) {
+      String hour = FileUploadUtil.getParameter(items, "BeginHour");
+      beginDate = DateUtil.stringToDate(beginString, hour, language);
     }
 
     Date endDate = null;
-    String endString = request.getParameter("EndDate");
-    if (StringUtil.isDefined(endString) && endString.trim().length() > 0) {
-      endDate = DateUtil.stringToDate(endString, quickInfo.getLanguage());
+    String endString = FileUploadUtil.getParameter(items, "EndDate");
+    if (StringUtil.isDefined(endString)) {
+      String hour = FileUploadUtil.getParameter(items, "EndHour");
+      endDate = DateUtil.stringToDate(endString, hour, language);
+    }    
+    
+    News news =
+        new News(name, description, getPeriod(beginDate, endDate), important, ticker, mandatory);
+    news.setId(id);
+    news.setContent(content);
+    if (StringUtil.isDefined(pubId)) {
+      news.setPublicationId(pubId);
     }
-
-    if ("ReallyAdd".equals(action)) {
-      String positions = request.getParameter("Positions");
-      quickInfo.add(name, description, beginDate, endDate, positions);
-    } else {
-      String id = request.getParameter("Id");
-      quickInfo.update(id, name, description, beginDate, endDate);
+    
+    return news;
+  }
+  
+  private Period getPeriod(Date begin, Date end) {
+    if (begin == null) {
+      begin = DateUtil.MINIMUM_DATE;
     }
+    if (end == null) {
+      end = DateUtil.MAXIMUM_DATE;
+    }
+    return Period.from(begin, end);
   }
 
-  public String getFlag(String[] profiles) {
+  private String getFlag(String[] profiles) {
     String flag = "user";
     for (int i = 0; i < profiles.length; i++) {
       // if admin, return it, we won't find a better profile

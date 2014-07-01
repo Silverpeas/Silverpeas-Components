@@ -20,22 +20,28 @@
  */
 package com.silverpeas.portlets;
 
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.quickinfo.control.QuickInfoTransversalSC;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
 import javax.portlet.GenericPortlet;
 import javax.portlet.PortletException;
+import javax.portlet.PortletMode;
+import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequestDispatcher;
 import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.silverpeas.components.quickinfo.model.QuickInfoService;
+import org.silverpeas.components.quickinfo.model.QuickInfoServiceFactory;
+
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+
 public class QuickInfosPortlet extends GenericPortlet implements FormNames {
+  
+  public final static String PARAM_DISPLAY = "displayMode";
 
   @Override
   public void doView(RenderRequest request, RenderResponse response) throws PortletException,
@@ -44,16 +50,11 @@ public class QuickInfosPortlet extends GenericPortlet implements FormNames {
     MainSessionController m_MainSessionCtrl =
         (MainSessionController) session.getAttribute(
         MainSessionController.MAIN_SESSION_CONTROLLER_ATT, PortletSession.APPLICATION_SCOPE);
+    
+    QuickInfoService service = QuickInfoServiceFactory.getQuickInfoService();
+    
+    request.setAttribute("QuickInfos", service.getPlatformNews(m_MainSessionCtrl.getUserId()));
 
-    QuickInfoTransversalSC quickinfoTransversal = new QuickInfoTransversalSC();
-    quickinfoTransversal.init(m_MainSessionCtrl);
-    List<PublicationDetail> quickinfos = new ArrayList<PublicationDetail>();
-    try {
-      quickinfos = new ArrayList<PublicationDetail>(quickinfoTransversal.getAllQuickInfos());
-    } catch (Exception e) {
-      SilverTrace.error("portlet", "QuickInfosPortlet", "portlet.ERROR", e);
-    }
-    request.setAttribute("QuickInfos", quickinfos.iterator());
     include(request, response, "portlet.jsp");
   }
 
@@ -86,6 +87,53 @@ public class QuickInfosPortlet extends GenericPortlet implements FormNames {
       dispatcher.include(request, response);
     } catch (IOException ioe) {
       throw new PortletException(ioe);
+    }
+  }
+  
+  /*
+   * Process Action.
+   */
+  @Override
+  public void processAction(ActionRequest request, ActionResponse response)
+      throws PortletException {
+    if (request.getParameter(SUBMIT_FINISHED) != null) {
+      processEditFinishedAction(request, response);
+    } else if (request.getParameter(SUBMIT_CANCEL) != null) {
+      processEditCancelAction(request, response);
+    }
+  }
+
+  /*
+   * Process the "cancel" action for the edit page.
+   */
+  private void processEditCancelAction(ActionRequest request,
+      ActionResponse response) throws PortletException {
+    response.setPortletMode(PortletMode.VIEW);
+  }
+
+  /*
+   * Process the "finished" action for the edit page. Set the "url" to the value specified in the
+   * edit page.
+   */
+  private void processEditFinishedAction(ActionRequest request, ActionResponse response)
+      throws PortletException {
+    
+    String displayMode = request.getParameter(PARAM_DISPLAY);
+
+    try {
+      // store preference
+      PortletPreferences pref = request.getPreferences();
+      try {
+        pref.setValue(PARAM_DISPLAY, displayMode);
+        pref.store();
+      } catch (IOException ioe) {
+        throw new PortletException("QuickInfosPortlet.processEditFinishedAction", ioe);
+      }
+      response.setPortletMode(PortletMode.VIEW);
+
+    } catch (NumberFormatException e) {
+      response.setRenderParameter(ERROR_BAD_VALUE, "true");
+      response.setPortletMode(PortletMode.EDIT);
     }
   }
 }

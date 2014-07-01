@@ -38,9 +38,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import com.silverpeas.thumbnail.ThumbnailRuntimeException;
 import com.silverpeas.thumbnail.control.ThumbnailController;
-import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.MimeTypes;
@@ -69,7 +67,6 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAAttributeValuePair;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
@@ -954,7 +951,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
         destination = getDestination("GoToCurrentTopic", kmelia, request);
       } else if (function.equals("ViewOnly")) {
-        String id = request.getParameter("documentId");
+        String id = request.getParameter("Id");
         destination = rootDestination + "publicationViewOnly.jsp?Id=" + id;
       } else if (function.equals("SeeAlso")) {
         String action = request.getParameter("Action");
@@ -1040,8 +1037,14 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         }
         PublicationDetail pubDetail = getPublicationDetail(parameters, kmelia);
         String newPubId = kmelia.createPublication(pubDetail, withClassification);
-        // create vignette if exists
-        processVignette(parameters, kmelia, pubDetail);
+        // create thumbnail if exists
+        boolean newThumbnail =
+            ThumbnailController.processThumbnail(new ForeignPK(newPubId, kmelia.getComponentId()),
+                PublicationDetail.getResourceType(), parameters);
+        // force indexation to taking into account new thumbnail
+        if (newThumbnail && pubDetail.isIndexable()) {
+          kmelia.getPublicationBm().createIndex(pubDetail.getPK());
+        }
         request.setAttribute("PubId", newPubId);
         processPath(kmelia, newPubId);
         String wizard = kmelia.getWizard();
@@ -1063,10 +1066,11 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         List<FileItem> parameters = request.getFileItems();
 
         PublicationDetail pubDetail = getPublicationDetail(parameters, kmelia);
-        kmelia.updatePublication(pubDetail);
-
         String id = pubDetail.getPK().getId();
-        processVignette(parameters, kmelia, pubDetail);
+        ThumbnailController.processThumbnail(new ForeignPK(id, kmelia.getComponentId()),
+            PublicationDetail.getResourceType(), parameters);
+        
+        kmelia.updatePublication(pubDetail);
 
         String wizard = kmelia.getWizard();
         if (wizard.equals("progress")) {
@@ -1861,73 +1865,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     I18NHelper.setI18NInfo(pubDetail, parameters);
 
     return pubDetail;
-  }
-
-  private void processVignette(List<FileItem> parameters, KmeliaSessionController kmelia,
-      PublicationDetail publication)
-      throws Exception {
-    // First, check if image have been uploaded
-    FileItem file = FileUploadUtil.getFile(parameters, "WAIMGVAR0");
-    String mimeType = null;
-    String physicalName = null;
-    if (file != null) {
-      String logicalName = file.getName().replace('\\', '/');
-      if (StringUtil.isDefined(logicalName)) {
-        logicalName = logicalName.substring(logicalName.lastIndexOf('/') + 1, logicalName.length());
-        mimeType = FileUtil.getMimeType(logicalName);
-        String type = FileRepositoryManager.getFileExtension(logicalName);
-        if (FileUtil.isImage(logicalName)) {
-          physicalName = String.valueOf(System.currentTimeMillis()) + '.' + type;
-          File dir = new File(FileRepositoryManager.getAbsolutePath(kmelia.getComponentId())
-              + kmelia.getPublicationSettings().getString("imagesSubDirectory"));
-          if (!dir.exists()) {
-            dir.mkdirs();
-          }
-          File target = new File(dir, physicalName);
-          file.write(target);
-        } else {
-          throw new ThumbnailRuntimeException("KmeliaRequestRouter.processVignette()",
-              SilverpeasRuntimeException.ERROR,
-              "thumbnail_EX_MSG_WRONG_TYPE_ERROR");
-        }
-      }
-    }
-
-    // If no image have been uploaded, check if one have been picked up from a gallery
-    if (physicalName == null) {
-      // on a pas d'image, regarder s'il y a une provenant de la galerie
-      String nameImageFromGallery = FileUploadUtil.getParameter(parameters, "valueImageGallery");
-      if (StringUtil.isDefined(nameImageFromGallery)) {
-        physicalName = nameImageFromGallery;
-        mimeType = "image/jpeg";
-      }
-    }
-
-    // If one image is defined, save it through Thumbnail service
-    if (StringUtil.isDefined(physicalName)) {
-      ThumbnailDetail detail = new ThumbnailDetail(kmelia.getComponentId(),
-          Integer.parseInt(publication.getPK().getId()),
-          ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
-      detail.setOriginalFileName(physicalName);
-      detail.setMimeType(mimeType);
-      try {
-        ThumbnailController.updateThumbnail(detail);
-
-        // force indexation to taking into account new thumbnail
-        if (publication.isIndexable()) {
-          kmelia.getPublicationBm().createIndex(publication.getPK());
-        }
-      } catch (ThumbnailRuntimeException e) {
-        SilverTrace.error("thumbnail", "KmeliaRequestRouter.processVignette",
-            "thumbnail_MSG_UPDATE_THUMBNAIL_KO", e);
-        try {
-          ThumbnailController.deleteThumbnail(detail);
-        } catch (Exception exp) {
-          SilverTrace.info("thumbnail", "KmeliaRequestRouter.processVignette",
-              "thumbnail_MSG_DELETE_THUMBNAIL_KO", exp);
-        }
-      }
-    }
   }
 
   /**

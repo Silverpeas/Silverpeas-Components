@@ -23,12 +23,17 @@
  */
 package com.stratelia.webactiv.quickinfo;
 
-import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
-import com.silverpeas.admin.components.InstanciationException;
 import java.sql.Connection;
 
+import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
+import com.silverpeas.admin.components.InstanciationException;
+import com.silverpeas.comment.service.CommentServiceFactory;
+import com.silverpeas.thumbnail.ThumbnailInstanciator;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.publication.PublicationInstanciator;
+import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.statistic.control.StatisticBm;
 
 public class QuickInfoInstanciator extends Object implements ComponentsInstanciatorIntf {
 
@@ -54,7 +59,23 @@ public class QuickInfoInstanciator extends Object implements ComponentsInstancia
         "delete called with: space=" + spaceId);
     PublicationInstanciator pub = new PublicationInstanciator("com.stratelia.webactiv.quickinfo");
     pub.delete(con, spaceId, componentId, userId);
+    
+    // deleting thumbnails
+    ThumbnailInstanciator thumbnails = new ThumbnailInstanciator();
+    thumbnails.delete(con, spaceId, componentId, userId);
+    
+    // deleting comments
+    CommentServiceFactory.getFactory().getCommentService()
+        .deleteAllCommentsByComponentInstanceId(componentId);
+    
+    // deleting stats
+    getStatisticService().deleteStatsOfComponent(componentId);
+    
     SilverTrace.debug("quickinfo", "QuickInfoInstanciator.delete()",
         "QuickInfoInstanciator.delete finished");
+  }
+  
+  private StatisticBm getStatisticService() {
+    return EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticBm.class);
   }
 }

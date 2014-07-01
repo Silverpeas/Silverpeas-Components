@@ -251,7 +251,7 @@ function hideStyleSheetFile() {
           String status = "";
           if (post.getPublication().isDraft()) {
           	blocClass = "postDraft";
-          	status = resource.getString("GML.saveDraft");
+          	status = resource.getString("GML.draft");
           }
           boolean visible = true;
           if (post.getPublication().isDraft() && !post.getPublication().getCreatorId().equals(userId)) {

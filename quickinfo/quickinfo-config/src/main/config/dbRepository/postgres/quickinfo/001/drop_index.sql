@@ -1,0 +1,1 @@
+DROP INDEX IF EXISTS idx_suggestion_box, idx_suggestion CASCADE;
