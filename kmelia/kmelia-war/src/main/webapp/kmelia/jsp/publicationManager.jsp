@@ -845,14 +845,14 @@
 					<% if (StringUtil.isDefined(updateDate) && updater != null) {%>
 					<div class="champs">
 						<%=resources.getString("PubDateUpdate")%> <br /><b><%=updateDate%></b> <%=resources.getString("kmelia.By")%> <view:username userId="<%=kmeliaPublication.getLastModifier().getId()%>"/>
-						<div class="profilPhoto"><img src="<%=m_context+kmeliaPublication.getLastModifier().getAvatar() %>" alt="" class="defaultAvatar"/></div>
+						<div class="profilPhoto"><view:image src="<%=kmeliaPublication.getLastModifier().getAvatar() %>" type="avatar" css="defaultAvatar"/></div>
 					</div>
 					<% } %>
 				</div>
 				<div class="field" id="updateArea">
 					<div class="champs">
 						<%=resources.getString("PubDateCreation")%> <br /><b><%=creationDate%></b> <%=resources.getString("kmelia.By")%> <view:username userId="<%=kmeliaPublication.getCreator().getId()%>"/>
-						<div class="profilPhoto"><img src="<%=m_context+kmeliaPublication.getCreator().getAvatar() %>" alt="" class="defaultAvatar"/></div>
+						<div class="profilPhoto"><view:image src="<%=kmeliaPublication.getCreator().getAvatar() %>" type="avatar" css="defaultAvatar"/></div>
 					</div>
 				</div>
 				<% } %>
