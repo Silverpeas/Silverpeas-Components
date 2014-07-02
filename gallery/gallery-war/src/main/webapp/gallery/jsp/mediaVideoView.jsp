@@ -32,7 +32,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
-<%@ taglib tagdir="/WEB-INF/tags/silverpeas/gallery" prefix="viewTags" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/gallery" prefix="gallery" %>
 
 <%-- Set resource bundle --%>
 <c:set var="language" value="${requestScope.resources.language}"/>
@@ -47,12 +47,15 @@
 <c:set var="instanceId" value="${browseContext[3]}"/>
 <c:set var="userId" value="${requestScope.UserId}"/>
 <c:set var="photoResourceType" value="${video.contributionType}"/>
-<c:set var="photoId" value="${video.id}"/>
+<c:set var="mediaId" value="${video.id}"/>
 <c:set var="callback">function( event ) { if (event.type === 'listing') { commentCount = event.comments.length; $('#comment-tab').html('<c:out value="${commentTab}"/> ( ' + event.comments.length + ')'); } else if (event.type === 'deletion') { commentCount--; $('#comment-tab').html('<c:out value="${commentTab}"/> ( ' + commentCount + ')'); } else if (event.type === 'addition') { commentCount++; $('#comment-tab').html('<c:out value="${commentTab}"/> ( ' + commentCount + ')'); } }</c:set>
 <c:set var="albumPath" value="${requestScope.Path}" />
 <c:set var="greaterUserRole" value="${requestScope.greaterUserRole}"/>
 
-
+<view:setConstant var="adminRole" constant="com.stratelia.webactiv.SilverpeasRole.admin"/>
+<view:setConstant var="publisherRole" constant="com.stratelia.webactiv.SilverpeasRole.publisher"/>
+<view:setConstant var="writerRole" constant="com.stratelia.webactiv.SilverpeasRole.writer"/>
+<view:setConstant var="userRole" constant="com.stratelia.webactiv.SilverpeasRole.user"/>
 
 <fmt:message var="permalinkIcon" key='gallery.link' bundle='${icons}'/>
 <c:url var="permalinkIconUrl" value="${permalinkIcon}"/>
@@ -70,23 +73,14 @@
 
 <%
   // récupération des paramètres :
-  Media photo = (Media) request.getAttribute("Media");
-  List<NodeDetail> path = (List<NodeDetail>) request.getAttribute("Path");
-  String profile = (String) request.getAttribute("Profile");
-  Integer rang = (Integer) request.getAttribute("Rang");
-  Integer albumSize = (Integer) request.getAttribute("NbMedia");
-  boolean updateAllowed = (Boolean) request.getAttribute("UpdateMediaAllowed");
-  boolean isBasket = (Boolean) request.getAttribute("IsBasket");
-  boolean isPrivateSearch = (Boolean) request.getAttribute("IsPrivateSearch");
+  Media media = (Media) request.getAttribute("Media");
 
   // paramètres du formulaire
   Form xmlForm = (Form) request.getAttribute("XMLForm");
   DataRecord xmlData = (DataRecord) request.getAttribute("XMLData");
 
   // déclaration des variables :
-  String title = photo.getTitle();
-  String photoId = photo.getMediaPK().getId();
-
+  String mediaId = media.getMediaPK().getId();
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -99,14 +93,14 @@
 <view:includePlugin name="messageme"/>
 <view:includePlugin name="invitme"/>
 <view:includePlugin name="userZoom"/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+<script type="text/javascript" src="<c:url value="/util/javaScript/animation.js" />"></script>
 <script language="javascript">
 
 var notifyWindow = window;
 
 function deleteConfirm(id,nom)
 {
-	if(window.confirm("<%=resource.getString("gallery.confirmDeletePhoto")%> '"+nom+"' ?"))
+	if(window.confirm("<fmt:message key="gallery.confirmDeletePhoto"/> '"+nom+"' ?"))
 	{
 		document.mediaForm.action = "DeleteMedia?MediaId="+id;
 		document.mediaForm.submit();
@@ -125,11 +119,11 @@ function goToNotify(url)
 }
 
 	function clipboardCopy() {
-	    top.IdleFrame.location.href = '../..<%=gallerySC.getComponentUrl()%>copy?Object=Image&Id=<%=photo.getId()%>';
+	    top.IdleFrame.location.href = '../..<%=gallerySC.getComponentUrl()%>copy?Object=Image&Id=<%=media.getId()%>';
 	}
 
 	function clipboardCut() {
-	    top.IdleFrame.location.href = '../..<%=gallerySC.getComponentUrl()%>cut?Object=Image&Id=<%=photo.getId()%>';
+	    top.IdleFrame.location.href = '../..<%=gallerySC.getComponentUrl()%>cut?Object=Image&Id=<%=media.getId()%>';
 	}
 
   $(window).keydown(function(e){
@@ -156,65 +150,71 @@ function goToNotify(url)
 </head>
 <body class="gallery gallery-fiche-image yui-skin-sam" id="${instanceId}">
 
-<%-- <viewTags:browseBar albumPath="${albumPath}"/>  --%>
+<gallery:browseBar albumPath="${albumPath}"/>
 
+<view:operationPane>
+  <fmt:message key="GML.notify" var="notifLabel"/>
+  <fmt:message key="gallery.alert" var="notifIcon" bundle="${icons}"/>
+  <c:url value="${notifIcon}" var="notifIcon" />
+  <view:operation altText="${notifLabel}" action="ToAlertUser?MediaId=${mediaId}" icon="${notifIcon}"></view:operation>
+  <view:operationSeparator/>
+  <c:if test="${requestScope.UpdateMediaAllowed}">
+    <fmt:message key="GML.delete" var="deleteLabel"/>
+    <fmt:message key="GML.delete" var="deleteIcon" bundle="${icons}"/>
+    <c:url value="${deleteIcon}" var="deleteIcon" />
+    <c:set var="tmpLabel"><c:out value="${video.title}"/></c:set>
+    <c:set var="deleteAction" value="javaScript:deleteConfirm('${mediaId}', '${silfn:escapeJs(tmpLabel)}')"/>
+    <view:operation altText="${deleteLabel}" action="${deleteAction}" icon="${deleteIcon}"></view:operation>
+  </c:if>
+  <c:if test="${greaterUserRole eq adminRole}">
+    <fmt:message key="GML.copy" var="copyLabel"/>
+    <fmt:message key="gallery.copy" var="copyIcon" bundle="${icons}"/>
+    <c:url var="copyIcon" value="${copyIcon}" />
+    <fmt:message key="GML.cut" var="cutLabel"/>
+    <fmt:message key="gallery.cut" var="cutIcon" bundle="${icons}"/>
+    <c:url var="cutIcon" value="${cutIcon}" />
+    <view:operation action="javascript:onClick=clipboardCopy()" altText="${copyLabel}" icon="${copyIcon}"/>
+    <view:operation action="javascript:onClick=clipboardCut()" altText="${cutLabel}" icon="${cutIcon}"/>
+    <view:operationSeparator/>
+  </c:if>
+  <%--
+  <c:if test="${requestScope.NbMedia gt 1}">
+    <view:operationSeparator/>
+    <fmt:message var="diapoLabel" key="gallery.diaporama"/>
+    <fmt:message var="diapoIcon" key="gallery.startDiaporama" bundle="${icons}"/>
+    <c:url var="diapoIcon" value="${diapoIcon}" />
+    <view:operation altText="${diapoLabel}" action="javascript:startSlideshow('${curPhoto.id}')" icon="${diapoIcon}"></view:operation>
+  </c:if>
+  --%>
+  <c:if test="${greaterUserRole eq userRole and requestScope.IsBasket}">
+    <view:operationSeparator/>
+    <fmt:message var="addBasketLabel" key="gallery.addMediaToBasket"/>
+    <fmt:message var="addBasketIcon" key="gallery.addMediaToBasket" bundle="${icons}"/>
+    <c:url var="addBasketIcon" value="${addBasketIcon}" />
+    <view:operation altText="${addBasketLabel}" action="BasketAddMedia?MediaId=${mediaId}" icon="${addBasketIcon}"></view:operation>
+  </c:if>
+  <c:if test="${requestScope.IsPrivateSearch}">
+    <view:operationSeparator/>
+    <fmt:message var="lastResultLabel" key="gallery.lastResult"/>
+    <fmt:message var="lastResultIcon" key="gallery.lastResult" bundle="${icons}"/>
+    <c:url var="lastResultIcon" value="${lastResultIcon}" />
+    <view:operation altText="${lastResultLabel}" action="LastResult" icon="${lastResultIcon}"></view:operation>
+  </c:if>
+</view:operationPane>
 
-  <%
-    browseBar.setDomainName(spaceLabel);
-    browseBar.setComponentName(componentLabel, "Main");
-    displayPath(path, browseBar);
+<view:window>
 
-    String url = "ToAlertUser?MediaId=" + photoId;
-    operationPane.addOperation(resource.getIcon("gallery.alert"), resource.getString("GML.notify"),
-        "javaScript:onClick=goToNotify('" + url + "')");
-    operationPane.addLine();
+<view:tabs>
+  <fmt:message key="gallery.media" var="mediaViewLabel" />
+  <view:tab label="${mediaViewLabel}" action="#" selected="true"/>
+  <c:if test="${requestScope.UpdateMediaAllowed}">
+    <fmt:message key="gallery.info" var="mediaEditLabel" />
+    <view:tab label="${mediaEditLabel}" action="EditInformation?MediaId=${mediaId}" selected="false"/>
+    <fmt:message key="gallery.accessPath" var="accessLabel" />
+    <view:tab label="${accessLabel}" action="AccessPath?MediaId=${mediaId}" selected="false"/>
+  </c:if>
+</view:tabs>
 
-    if (updateAllowed) {
-      operationPane.addOperation(resource.getIcon("gallery.deletePhoto"), resource.getString(
-          "gallery.deletePhoto"), "javaScript:deleteConfirm('" + photoId + "','" + EncodeHelper.
-          javaStringToHtmlString(EncodeHelper.javaStringToJsString(title)) + "')");
-    }
-    if ("admin".equals(profile)) {
-      operationPane.addOperation(resource.getIcon("gallery.copy"), resource.getString("GML.copy"),
-          "javascript:onClick=clipboardCopy()");
-      operationPane.addOperation(resource.getIcon("gallery.cut"), resource.getString("GML.cut"),
-          "javascript:onClick=clipboardCut()");
-      operationPane.addLine();
-    }
-    if (albumSize.intValue() > 1) {
-      // diaporama
-      operationPane.addOperation(resource.getIcon("gallery.startDiaporama"), resource.getString(
-          "gallery.diaporama"), "javascript:startSlideshow('"+photoId+"')");
-    }
-
-    if ("user".equals(profile) && isBasket) {
-      operationPane.addLine();
-      // ajouter la photo au panier
-      operationPane.addOperation(resource.getIcon("gallery.addPhotoToBasket"), resource.getString(
-          "gallery.addPhotoToBasket"), "BasketAddMedia?MediaId=" + photoId);
-    }
-
-    if (isPrivateSearch) {
-      // derniers résultat de la recherche
-      operationPane.addLine();
-      operationPane.addOperation(resource.getIcon("gallery.lastResult"), resource.getString(
-          "gallery.lastResult"), "LastResult");
-    }
-
-    TabbedPane tabbedPane = gef.getTabbedPane();
-    tabbedPane.addTab(resource.getString("gallery.media"), "#", true);
-    if (updateAllowed) {
-      tabbedPane.addTab(resource.getString("gallery.info"), "EditInformation?MediaId=" + photoId,
-          false);
-    }
-    if (updateAllowed) {
-      tabbedPane.addTab(resource.getString("gallery.accessPath"), "AccessPath?MediaId=" + photoId,
-          false);
-    }
-
-    out.println(window.printBefore());
-    out.println(tabbedPane.print());
-  %>
 <view:frame>
 <form name="mediaForm" method="post" accept-charset="UTF-8">
 
@@ -309,7 +309,7 @@ function goToNotify(url)
   </c:if>
 
   <c:if test="${requestScope.IsUsePdc}">
-    <view:pdcClassificationPreview componentId="${instanceId}" contentId="${photoId}" />
+    <view:pdcClassificationPreview componentId="${instanceId}" contentId="${mediaId}" />
   </c:if>
 
 </div>
@@ -358,7 +358,7 @@ function goToNotify(url)
       PagesContext xmlContext = new PagesContext("myForm", "0", resource.
           getLanguage(), false, componentId, gallerySC.getUserId(), gallerySC.
           getAlbum(gallerySC.getCurrentAlbumId()).getNodePK().getId());
-      xmlContext.setObjectId(photoId);
+      xmlContext.setObjectId(mediaId);
       xmlContext.setBorderPrinted(false);
       xmlContext.setIgnoreDefaultValues(true);
 
@@ -369,14 +369,12 @@ function goToNotify(url)
 
   <c:if test="${requestScope.ShowCommentsTab}">
     <view:comments  userId="${userId}" componentId="${instanceId}"
-              resourceType="${photoResourceType}" resourceId="${photoId}" indexed="${callback}"/>
+              resourceType="${photoResourceType}" resourceId="${mediaId}" indexed="${callback}"/>
   </c:if>
 </div>
 
 </form>
 </view:frame>
-<%
-	out.println(window.printAfter());
-%>
+</view:window>
 </body>
 </html>

@@ -80,14 +80,14 @@
 <html>
   <head>
   <view:looknfeel/>
-  <link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
+  <link type="text/css" href="<c:url value="/util/styleSheets/fieldset.css" />" rel="stylesheet" />
   <%
     if (formUpdate != null)
       formUpdate.displayScripts(out, context);
   %>
   <view:includePlugin name="datepicker"/>
-  <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-  <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+  <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js" />"></script>
+  <script type="text/javascript" src="<c:url value="/util/javaScript/checkForm.js" />"></script>
 
 <script type="text/javascript">
 // fonctions de contrôle des zones des formulaires avant validation

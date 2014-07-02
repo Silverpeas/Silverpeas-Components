@@ -127,14 +127,14 @@
 <view:includePlugin name="invitme"/>
 <view:includePlugin name="userZoom"/>
 
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+<script type="text/javascript" src="<c:url value="/util/javaScript/animation.js" />"></script>
 <script language="javascript">
 
 var notifyWindow = window;
 
 function deleteConfirm(id,nom)
 {
-	if(window.confirm("<%=resource.getString("gallery.confirmDeletePhoto")%> '"+nom+"' ?"))
+	if(window.confirm("<fmt:message key="gallery.confirmDeletePhoto"/> '"+nom+"' ?"))
 	{
 		document.mediaForm.action = "DeleteMedia?MediaId="+id;
 		document.mediaForm.submit();
