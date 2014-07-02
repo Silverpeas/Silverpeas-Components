@@ -70,9 +70,7 @@ function SubmitWithVerif(verifParams) {
 </script>
 </head>
 <body>
-<%
-out.println(window.printBefore());
-%>
+<view:window popup="true">
 <view:frame>
 <view:board>
 <form name="csvFileForm" action="ImportEmailsCsv" method="post" enctype="multipart/form-data">
@@ -110,8 +108,6 @@ out.println(window.printBefore());
 		  out.println(bouton.print());
 		%>
 </view:frame>
-<%
-out.println(window.printAfter());
-%>
+</view:window>
 </body>
 </html>

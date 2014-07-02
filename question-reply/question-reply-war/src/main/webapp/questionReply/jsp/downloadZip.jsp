@@ -46,11 +46,11 @@
     <title><c:out value="${page_title}" /></title>
     <view:looknfeel />
   </head>
-  <body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+  <body>
     <view:browseBar>
       <view:browseBarElt link="" label="${page_title}" />
     </view:browseBar>
-    <view:window>
+    <view:window popup="true">
       <view:frame>
         <view:board>
           <table>

@@ -125,58 +125,38 @@ function sendData() {
 
 
 <body class="websites" onload="document.topicForm.Name.focus()">
-<%
-  Window window = gef.getWindow();
-  BrowseBar browseBar = window.getBrowseBar();
-	browseBar.setDomainName(spaceLabel);
-  browseBar.setComponentName(componentLabel);
-  browseBar.setPath(resources.getString("RepCreationTitle"));
-
-  //Le cadre
-  Frame frame = gef.getFrame();
-
-	//Le board
-	Board board = gef.getBoard();
-
-  //Start code
-  out.println(window.printBefore());
-  out.println(frame.printBefore());
-	out.print(board.printBefore());
-
-%>
+<view:browseBar path='<%=resources.getString("RepCreationTitle")%>'/>
+<view:window popup="true">
+<view:frame>
+<view:board>
   <form name="topicForm">
-    <table align=center cellpadding=5 cellspacing=0 border=0 width="100%" class=intfdcolor4>
+    <table cellpadding="5" cellspacing="0" border="0" width="100%">
     <tr>
         <td class="txtlibform"><%=resources.getString("GML.name")%> : </TD>
-            <td valign="top"><input type="text" name="Name" value="" size="60" maxlength="50">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td>
+            <td valign="top"><input type="text" name="Name" value="" size="60" maxlength="50"/>&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"/></td>
       </tr>
 
       <tr>
-            <td colspan="2">(<img border="0" src="<%=mandatoryField%>" width="5" height="5">
+            <td colspan="2">(<img border="0" src="<%=mandatoryField%>" width="5" height="5"/>
               : <%=resources.getString("GML.requiredField")%>)</td>
       </tr>
     </table>
   </form>
+</view:board>
 <%
-  //end of code
-  out.print(board.printAfter());
-  out.println(frame.printMiddle());
-
   ButtonPane buttonPane = gef.getButtonPane();
   buttonPane.addButton(validateButton);
   buttonPane.addButton(cancelButton);
-
-	out.println("<br><center>"+buttonPane.print()+"</center><br>");
-  out.println(frame.printAfter());
-  out.println(window.printAfter());
-
+  out.println(buttonPane.print());
 %>
+</view:frame>
+</view:window>
 
-<form name="topicDetailForm" action="addRep.jsp" method=post>
-  <input type="hidden" name="Action">
-  <input type="hidden" name="Id" value="<%=fatherId%>">
-  <input type="hidden" name="Path" value="<%=path%>">
-  <input type="hidden" name="Name">
+<form name="topicDetailForm" action="addRep.jsp" method="post">
+  <input type="hidden" name="Action"/>
+  <input type="hidden" name="Id" value="<%=fatherId%>"/>
+  <input type="hidden" name="Path" value="<%=path%>"/>
+  <input type="hidden" name="Name"/>
 </form>
 </body>
 </html>
@@ -198,7 +178,7 @@ function verifServer(id, path, name) {
 </script>
 </head>
 
-<body onLoad="verifServer('<%=fatherId%>', '<%=EncodeHelper.javaStringToJsString(path)%>', '<%=EncodeHelper.javaStringToJsString(name)%>')">
+<body onload="verifServer('<%=fatherId%>', '<%=EncodeHelper.javaStringToJsString(path)%>', '<%=EncodeHelper.javaStringToJsString(name)%>')">
 </body>
 </html>
 <%

@@ -31,15 +31,6 @@
 <html>
 <head>
 <%
-	Window window = gef.getWindow();
-	Board board = gef.getBoard();
-	Frame frame = gef.getFrame();
-
-	BrowseBar browseBar = window.getBrowseBar();
-	browseBar.setClickable(false);
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel);
-	browseBar.setExtraInformation(resources.getString("yellowpages.importCSV"));
 	ImportReport report = (ImportReport) request.getAttribute("Result");
 	if (report != null) {
 	  	if (report.getNbAdded() > 0) {
@@ -86,11 +77,10 @@ function SubmitWithVerif(verifParams)
 </script>
 </head>
 <body>
-<%
-out.println(window.printBefore());
-out.println(frame.printBefore());
-out.println(board.printBefore());
-%>
+<view:browseBar extraInformations='<%=resources.getString("yellowpages.importCSV")%>'/>
+<view:window popup="true">
+<view:frame>
+<view:board>
 <form name="csvFileForm" action="ImportCSV" method="POST" enctype="multipart/form-data"  accept-charset="UTF-8">
     <table width="100%">
 			<% if (report != null) { %>
@@ -130,11 +120,8 @@ out.println(board.printBefore());
 		        </tr>
 			<% } %>
     </table>
-<%
-out.println(board.printAfter());
-%>
 </form>
-<br/>
+</view:board>
 <%
   ButtonPane bouton = gef.getButtonPane();
 	if (report != null) {
@@ -144,8 +131,8 @@ out.println(board.printAfter());
 		bouton.addButton(gef.getFormButton(resources.getString("GML.cancel"), "javascript:window.close()", false));
 	}
   out.println(bouton.print());
-out.println(frame.printAfter());
-out.println(window.printAfter());
 %>
+</view:frame>
+</view:window>
 </body>
 </html>

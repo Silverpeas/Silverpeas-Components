@@ -46,9 +46,8 @@
 		} else {
 			 statusMessage = resource.getString("GML.ExportFailed");
 		}
-	  
-	out.println(window.printBefore());
 %>
+<view:window popup="true">
 <view:frame>
 <view:board>
 
@@ -70,8 +69,6 @@
 %>
 </center>
 </view:frame>
-<%
-	out.println(window.printAfter());
-%>
+</view:window>
 </body>
 </html>

@@ -41,7 +41,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="java.beans.*"%>
 
 <%@ page import="java.util.*"%>
-<%@ page import="javax.ejb.*,java.sql.SQLException,javax.naming.*,javax.rmi.PortableRemoteObject"%>
 <%@ page import="com.stratelia.webactiv.almanach.control.*"%>
 <%@ page import="com.stratelia.webactiv.almanach.model.*"%>
 <%@ page import="com.stratelia.webactiv.util.*"%>
@@ -49,11 +48,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.*"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.*"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane"%>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
@@ -62,8 +56,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
   AlmanachCalendarView calendarView = (AlmanachCalendarView) request.getAttribute("calendarView");
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=resources.getString("GML.popupTitle")%></title>
@@ -75,17 +68,9 @@ function viewEvent(componentId, id) {
 </script>
 </head>
 <body>
+<view:window popup="true">
+<view:frame>
 <%
-	Frame 	frame 	= graphicFactory.getFrame();
-	Window 	window 	= graphicFactory.getWindow();
-	Board	board	= graphicFactory.getBoard();
-
-	BrowseBar browseBar = window.getBrowseBar();
-	browseBar.setClickable(false);
-
-	out.println(window.printBefore());
-	out.println(frame.printBefore());
-
 	int currentDay = -1;
 	Calendar calendar = Calendar.getInstance();
 	calendar.setTime(almanach.getCurrentDay());
@@ -151,9 +136,8 @@ function viewEvent(componentId, id) {
 
 	Button button = graphicFactory.getFormButton(resources.getString("GML.close"), "javascript:window.close()", false);
     out.print("<br/><center>"+button.print()+"</center>");
-
-	out.println(frame.printAfter());
-	out.println(window.printAfter());
 %>
+</view:frame>
+</view:window>
 </body>
 </html>

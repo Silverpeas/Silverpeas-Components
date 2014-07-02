@@ -63,29 +63,16 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ include file="checkScc.jsp" %>
 
-<!-- dictionnaireIcones -->
-
 <html>
 <title><%=resources.getString("GML.popupTitle")%></title>
 <head>
 <view:looknfeel/>
 </head>
-<body bgcolor="FFFFFF" topmargin="5" leftmargin="5">
-
+<body>
+<view:browseBar path='<%=resources.getString("NotationSites")%>'/>
+<view:window popup="true">
+<view:frame>
 <%
-    Window window = gef.getWindow();
-    BrowseBar browseBar = window.getBrowseBar();
-	  browseBar.setDomainName(spaceLabel);
-    browseBar.setComponentName(componentLabel);
-    browseBar.setPath(resources.getString("NotationSites"));
-
-
-    Frame frame = gef.getFrame();
-
-
-    out.println(window.printBefore());
-    out.println(frame.printBefore());
-
     Collection icones = scc.getAllIcons();
     Iterator i = icones.iterator();
     i.next(); //saute la premiere icone reference (site important)
@@ -94,12 +81,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
         out.println("<TABLE ALIGN=CENTER CELLPADDING=2 CELLSPACING=0 BORDER=0 WIDTH=\"98%\" CLASS=intfdcolor><tr><td><TABLE ALIGN=CENTER CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH=\"100%\" CLASS=intfdcolor4><tr><td><p align=justify><img src=\""+ic.getAddress()+"\" align=absmiddle>&nbsp;&nbsp;<font face=verdana size=2><b>"+resources.getString(ic.getName())+" :</b></font><br><font face=verdana size=1>");
         out.println(resources.getString(ic.getDescription())+"</p></font></td></tr></table></td></tr></table><br>");
     }
-
-    out.println(frame.printMiddle());
-    out.println(frame.printAfter());
-    out.println(window.printAfter());
-
 %>
-
+</view:frame>
+</view:window>
 </body>
 </html>
