@@ -600,7 +600,12 @@ public class GalleryBmEJB implements GalleryBm {
 
       if (silverObjectId == -1) {
         Media media = getMedia(mediaPK, MediaCriteria.VISIBILITY.FORCE_GET_ALL);
-        silverObjectId = createSilverContent(null, media, media.getCreatorId());
+        final Connection con = initCon();
+        try {
+          silverObjectId = createSilverContent(con, media, media.getCreatorId());
+        } finally {
+          DBUtil.close(con);
+        }
       }
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getSilverObjectId()",
