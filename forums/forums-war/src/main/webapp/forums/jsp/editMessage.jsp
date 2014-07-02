@@ -155,7 +155,7 @@ function validateMessage() {
     } else if (!isTextFilled()) {
         alert('<%=resource.getString("emptyMessageText")%>');
     } else {
-        document.forms["forumsForm"].submit();
+        $(document.forumsForm).submit();
     }
 }
 <% } %>
