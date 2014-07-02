@@ -1104,7 +1104,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
       if (row.getMediaId().equals(mediaId)) {
         // on est sur la bonne ligne
         InternalMedia media = getInternalMediaById(row.getMediaId());
-        String nomRep = GalleryComponentSettings.getMediaFolderNamePrefix() + mediaId;
+        String nomRep = media.getWorkspaceSubFolderName();
         String download = row.getDownloadDecision();
 
         if (!download.equals("T")) {

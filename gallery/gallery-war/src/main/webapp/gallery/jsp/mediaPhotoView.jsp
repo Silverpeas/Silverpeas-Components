@@ -83,7 +83,7 @@
   DataRecord xmlData = (DataRecord) request.getAttribute("XMLData");
 
   // déclaration des variables :
-  String nomRep = GalleryComponentSettings.getMediaFolderNamePrefix() + photo.getMediaPK().getId();
+  String nomRep = photo.getWorkspaceSubFolderName();
   String name = "";
   if (photo.getFileName() != null && !photo.getFileName().equals("")) {
     name = photo.getFileName();

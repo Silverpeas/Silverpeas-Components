@@ -85,14 +85,6 @@ public final class GalleryComponentSettings {
   }
 
   /**
-   * Gets the media folder prefix.
-   * @return the media folder prefix.
-   */
-  public static String getMediaFolderNamePrefix() {
-    return getSettings().getString("imagesSubDirectory", "image");
-  }
-
-  /**
    * Gets the max number of media displayed on homepage.
    * @return
    */

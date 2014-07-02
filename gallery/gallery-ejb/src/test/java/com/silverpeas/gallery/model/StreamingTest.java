@@ -66,6 +66,7 @@ public class StreamingTest {
 
   private Streaming defaultStreaming() {
     Streaming streaming = new Streaming();
+    streaming.setId("mediaId");
     streaming.setHomepageUrl("anUrl");
     streaming.setProvider(StreamingProvider.youtube);
     assertDefaultStreaming(streaming);
@@ -74,6 +75,7 @@ public class StreamingTest {
 
   private void assertDefaultStreaming(Streaming streaming) {
     assertThat(streaming.getType(), is(MediaType.Streaming));
+    assertThat(streaming.getWorkspaceSubFolderName(), is("streamingmediaId"));
     assertThat(streaming.getHomepageUrl(), is("anUrl"));
     assertThat(streaming.getProvider(), is(StreamingProvider.youtube));
   }

@@ -23,13 +23,11 @@
  */
 package com.silverpeas.gallery.process.photo;
 
-import com.silverpeas.gallery.GalleryComponentSettings;
 import com.silverpeas.gallery.model.Media;
-import org.silverpeas.process.io.file.FileHandler;
-import org.silverpeas.process.session.ProcessSession;
-
 import com.silverpeas.gallery.process.AbstractGalleryFileProcess;
 import com.silverpeas.gallery.process.GalleryProcessExecutionContext;
+import org.silverpeas.process.io.file.FileHandler;
+import org.silverpeas.process.session.ProcessSession;
 
 /**
  * Process to delete a media from file system
@@ -66,6 +64,6 @@ public class GalleryDeleteMediaFileProcess extends AbstractGalleryFileProcess {
 
     // Deleting repository with old media
     fileHandler.getHandledFile(BASE_PATH, context.getComponentInstanceId(),
-        GalleryComponentSettings.getMediaFolderNamePrefix() + getMedia().getId()).delete();
+        getMedia().getWorkspaceSubFolderName()).delete();
   }
 }

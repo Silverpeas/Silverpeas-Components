@@ -680,8 +680,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
         request.setAttribute("IsViewMetadata", gallerySC.isViewMetadata());
 
-        String repertoire = GalleryComponentSettings.getMediaFolderNamePrefix() + media.getId();
-        request.setAttribute("Repertoire", repertoire);
+        request.setAttribute("Repertoire", media.getWorkspaceSubFolderName());
 
         // récupération du formulaire et affichage
         String xmlFormName = gallerySC.getXMLFormName();

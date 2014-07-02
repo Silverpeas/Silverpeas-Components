@@ -83,8 +83,7 @@ public class GalleryIndexMediaDataProcess extends AbstractGalleryDataProcess {
         if (StringUtil.isDefined(iMedia.getFileName())) {
           indexEntry.setThumbnail(iMedia.getFileName());
           indexEntry.setThumbnailMimeType(iMedia.getFileMimeType());
-          indexEntry.setThumbnailDirectory(GalleryComponentSettings.getMediaFolderNamePrefix() +
-              getMedia().getMediaPK().getId());
+          indexEntry.setThumbnailDirectory(getMedia().getWorkspaceSubFolderName());
         }
       }
 

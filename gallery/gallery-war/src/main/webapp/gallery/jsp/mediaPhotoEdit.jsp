@@ -281,7 +281,7 @@ var messages = new Array();
 // optional: bgColor and color to be sent to tooltip
 <%
 if (photo != null) {
-    String nameRep = GalleryComponentSettings.getMediaFolderNamePrefix() + photo.getId();
+    String nameRep = photo.getWorkspaceSubFolderName();
 %>
 messages[0] = new Array('<%=FileServerUtils.getUrl( componentId,
     photo.getId() + extensionAlt, photo.getFileMimeType(), nameRep)%>','<%=EncodeHelper.javaStringToJsString(photo.

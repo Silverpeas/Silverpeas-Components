@@ -110,7 +110,7 @@ var messages = new Array();
 	{
 		OrderRow row = (OrderRow) itP.next();
 		InternalMedia iMedia = row.getInternalMedia();
-		String nomRep = GalleryComponentSettings.getMediaFolderNamePrefix() + iMedia.getId();
+		String nomRep = iMedia.getWorkspaceSubFolderName();
 %>
 		messages[<%=messagesId%>] = new Array('<%=FileServerUtils.getUrl( componentId, iMedia.getId()
 		    + extensionAlt.getThumbnailSuffix(), iMedia.getFileMimeType(), nomRep)%>',

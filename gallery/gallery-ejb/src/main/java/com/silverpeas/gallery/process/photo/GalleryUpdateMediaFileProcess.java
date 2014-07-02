@@ -23,19 +23,16 @@
  */
 package com.silverpeas.gallery.process.photo;
 
-import com.silverpeas.gallery.GalleryComponentSettings;
+import com.silverpeas.gallery.ImageHelper;
 import com.silverpeas.gallery.VideoHelper;
 import com.silverpeas.gallery.model.Media;
-
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.process.io.file.FileHandler;
-import org.silverpeas.process.session.ProcessSession;
-
-import com.silverpeas.gallery.ImageHelper;
 import com.silverpeas.gallery.process.AbstractGalleryFileProcess;
 import com.silverpeas.gallery.process.GalleryProcessExecutionContext;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.process.io.file.FileHandler;
+import org.silverpeas.process.session.ProcessSession;
 
 /**
  * Process to update a media on file system
@@ -99,7 +96,7 @@ public class GalleryUpdateMediaFileProcess extends AbstractGalleryFileProcess {
 
             // Deleting repository with old media
             fileHandler.getHandledFile(BASE_PATH, context.getComponentInstanceId(),
-                getMedia().getType().getTechnicalFolder() + getMedia().getId()).delete();
+                getMedia().getWorkspaceSubFolderName()).delete();
 
             // Creating new images
             ImageHelper
@@ -112,7 +109,7 @@ public class GalleryUpdateMediaFileProcess extends AbstractGalleryFileProcess {
         if (fileItem != null) {
           // Deleting repository with old media
           fileHandler.getHandledFile(BASE_PATH, context.getComponentInstanceId(),
-              getMedia().getType().getTechnicalFolder() + getMedia().getId()).delete();
+              getMedia().getWorkspaceSubFolderName()).delete();
 
           // Save new video
           VideoHelper.processVideoFile(fileHandler, fileItem, getMedia().getVideo());

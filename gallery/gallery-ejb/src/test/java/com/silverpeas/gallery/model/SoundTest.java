@@ -65,6 +65,7 @@ public class SoundTest {
 
   private Sound defaultSound() {
     Sound sound = new Sound();
+    sound.setId("mediaId");
     sound.setBitrate(2048);
     sound.setDuration(72000000);
     assertDefaultSound(sound);
@@ -73,6 +74,7 @@ public class SoundTest {
 
   private void assertDefaultSound(Sound sound) {
     assertThat(sound.getType(), is(MediaType.Sound));
+    assertThat(sound.getWorkspaceSubFolderName(), is("soundmediaId"));
     assertThat(sound.getBitrate(), is(2048L));
     assertThat(sound.getDuration(), is(72000000L));
   }

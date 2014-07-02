@@ -65,6 +65,7 @@ public class VideoTest {
 
   private Video defaultVideo() {
     Video video = new Video();
+    video.setId("mediaId");
     video.setResolutionW(800);
     video.setResolutionH(600);
     video.setBitrate(1024);
@@ -75,6 +76,7 @@ public class VideoTest {
 
   private void assertDefaultVideo(Video video) {
     assertThat(video.getType(), is(MediaType.Video));
+    assertThat(video.getWorkspaceSubFolderName(), is("videomediaId"));
     assertThat(video.getResolutionW(), is(800));
     assertThat(video.getResolutionH(), is(600));
     assertThat(video.getBitrate(), is(1024L));

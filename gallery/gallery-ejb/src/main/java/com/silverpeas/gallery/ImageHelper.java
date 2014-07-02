@@ -89,7 +89,7 @@ public class ImageHelper {
       try {
         return FileUtils.openInputStream(FileUtils
             .getFile(new File(BASE_PATH.getPath()), instanceId,
-                MediaType.Photo.getTechnicalFolder() + photoId, fileName));
+                photo.getWorkspaceSubFolderName(), fileName));
       } catch (IOException e) {
         SilverTrace.error("gallery", "ImageHelper.getBytes", "gallery.ERR_CANT_GET_IMAGE_BYTES",
             "image = " + photo.getTitle() + " (#" + photo.getId() + ")");
@@ -206,13 +206,12 @@ public class ImageHelper {
 
   public static void setMetaData(final FileHandler fileHandler, final Photo photo,
       final String lang) throws ImageMetadataException, IOException {
-    final String photoId = photo.getMediaPK().getId();
     final String name = photo.getFileName();
     final String mimeType = photo.getFileMimeType();
 
     if ("image/jpeg".equals(mimeType) || "image/pjpeg".equals(mimeType)) {
       final HandledFile handledFile = fileHandler.getHandledFile(BASE_PATH, photo.getInstanceId(),
-          MediaType.Photo.getTechnicalFolder() + photoId, name);
+          photo.getWorkspaceSubFolderName(), name);
       if (handledFile.exists()) {
         try {
           final ImageMetadataExtractor extractor = new DrewImageMetadataExtractor(photo.

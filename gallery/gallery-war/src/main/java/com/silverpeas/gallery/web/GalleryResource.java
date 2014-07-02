@@ -23,32 +23,6 @@
  */
 package com.silverpeas.gallery.web;
 
-import static com.silverpeas.gallery.web.GalleryResourceURIs.GALLERY_ALBUMS_URI_PART;
-import static com.silverpeas.gallery.web.GalleryResourceURIs.GALLERY_BASE_URI;
-import static com.silverpeas.gallery.web.GalleryResourceURIs.GALLERY_PHOTOS_PART;
-import static com.silverpeas.gallery.web.GalleryResourceURIs.GALLERY_PHOTO_CONTENT_PART;
-import static com.silverpeas.gallery.web.GalleryResourceURIs.GALLERY_PHOTO_PREVIEW_PART;
-import static com.silverpeas.gallery.web.GalleryResourceURIs.GALLERY_VIDEOS_PART;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.StreamingOutput;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.silverpeas.servlets.OnlineFile;
-
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
@@ -60,6 +34,25 @@ import com.silverpeas.gallery.model.Video;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.silverpeas.servlets.OnlineFile;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.StreamingOutput;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import static com.silverpeas.gallery.web.GalleryResourceURIs.*;
 
 /**
  * A REST Web resource giving gallery data.
@@ -225,8 +218,8 @@ public class GalleryResource extends AbstractGalleryResource {
     if (StringUtil.isDefined(videoId) && StringUtil.isDefined(instanceId)) {
       String fileName = video.getFileName();
       OnlineFile onlineFile =
-          new OnlineFile(video.getFileMimeType(), fileName, video.getType().getTechnicalFolder() +
-              videoId, instanceId);
+          new OnlineFile(video.getFileMimeType(), fileName, video.getWorkspaceSubFolderName(),
+              instanceId);
       try {
         return onlineFile.getContentFile();
       } catch (IOException e) {

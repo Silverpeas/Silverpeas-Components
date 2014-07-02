@@ -44,15 +44,14 @@ public class GalleryGlobalSilverpeasContentProcessor extends DefaultGlobalSilver
       UserDetail creatorDetail, String location) {
     GlobalSilverContent gsc = super.getGlobalSilverContent(sci, creatorDetail, location);
     String instanceId = sci.getInstanceId();
-    String directory = GalleryComponentSettings.getMediaFolderNamePrefix() + sci.getId();
     Media media = (Media) sci;
     gsc.setThumbnailURL(media.getThumbnailUrl(MediaResolution.TINY));
     InternalMedia internalMedia = media.getInternalMedia();
     if (internalMedia != null) {
       Size size = new Size(MediaResolution.TINY.getWidth(), MediaResolution.TINY.getHeight());
       try {
-        size = ImageHelper.getWidthAndHeight(instanceId, directory, internalMedia.getFileName(),
-            MediaResolution.TINY.getWidth());
+        size = ImageHelper.getWidthAndHeight(instanceId, media.getWorkspaceSubFolderName(),
+            internalMedia.getFileName(), MediaResolution.TINY.getWidth());
       } catch (IOException e) {
         SilverTrace
             .info("gallery", "GalleryGlobalSilverpeasContentProcessor.getGlobalSilverContent",

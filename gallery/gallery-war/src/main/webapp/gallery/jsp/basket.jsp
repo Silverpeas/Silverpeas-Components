@@ -161,8 +161,7 @@ var messages = new Array();
           while (itP.hasNext()) {
             String photoId = (String) itP.next();
             Media media = gallerySC.getMedia(photoId);
-            String nomRep = GalleryComponentSettings.getMediaFolderNamePrefix()
-                + media.getId();%>
+            String nomRep = media.getWorkspaceSubFolderName();%>
             messages[<%=messagesId%>] = new Array('<%=FileServerUtils.getUrl( componentId, media.getId()
             + extensionAlt.getThumbnailSuffix(), media.getInternalMedia().getFileMimeType(),
             nomRep)%>','<%=EncodeHelper.javaStringToJsString(media.getName()) %>',"#FFFFFF");

@@ -251,6 +251,14 @@ public abstract class Media implements SilverpeasContent, SilverContentInterface
   }
 
   /**
+   * Gets the sub folder name of the media in the Silverpeas workspace.
+   * @return the sub folder name of the media.
+   */
+  public String getWorkspaceSubFolderName() {
+    return getType().getTechnicalFolder() + getId();
+  }
+
+  /**
    * Gets the permalink of a media.
    * @return the permalink string of a media.
    */

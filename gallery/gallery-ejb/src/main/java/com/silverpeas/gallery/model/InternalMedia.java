@@ -118,7 +118,7 @@ public abstract class InternalMedia extends Media {
       if (StringUtil.isDefined(getFileName())) {
         thumbnailUrl = FileServerUtils
             .getUrl(getInstanceId(), getId() + mediaResolution.getThumbnailSuffix(),
-                getFileMimeType(), GalleryComponentSettings.getMediaFolderNamePrefix() + getId());
+                getFileMimeType(), getWorkspaceSubFolderName());
         if (!isPreviewable()) {
           thumbnailUrl =
               URLManager.getApplicationURL() + "/gallery/jsp/icons/notAvailable_" + MessageManager.
@@ -135,9 +135,8 @@ public abstract class InternalMedia extends Media {
   }
 
   public String getOriginalUrl() {
-    String originalUrl =
-        FileServerUtils.getUrl(getInstanceId(), getFileName(), getFileMimeType(), getType()
-            .getTechnicalFolder() + getId());
+    String originalUrl = FileServerUtils
+        .getUrl(getInstanceId(), getFileName(), getFileMimeType(), getWorkspaceSubFolderName());
     return FilenameUtils.normalize(originalUrl, true);
   }
 

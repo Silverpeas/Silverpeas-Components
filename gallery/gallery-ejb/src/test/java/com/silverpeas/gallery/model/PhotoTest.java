@@ -86,6 +86,7 @@ public class PhotoTest {
 
   private void assertDefaultPhoto(Photo photo) {
     assertThat(photo.getType(), is(MediaType.Photo));
+    assertThat(photo.getWorkspaceSubFolderName(), is("imagemediaId"));
     assertThat(photo.getResolutionW(), is(800));
     assertThat(photo.getResolutionH(), is(600));
     assertThat(photo.getMetaDataProperties(), hasSize(1));
