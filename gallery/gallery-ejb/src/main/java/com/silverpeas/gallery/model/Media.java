@@ -32,14 +32,20 @@ import com.silverpeas.gallery.control.ejb.MediaServiceFactory;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
+
 import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.cache.service.CacheServiceFactory;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.date.Period;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Set;
 
 /**
  * This class represents a Media and provides all the common data.
@@ -239,7 +245,9 @@ public abstract class Media implements SilverpeasContent, SilverContentInterface
     AccessController<String> accessController =
         AccessControllerProvider.getAccessController("componentAccessController");
     return accessController.isUserAuthorized(user.getId(), getComponentInstanceId()) &&
-        (user.isAccessAdmin() || isVisible(DateUtil.getNow()));
+        (isVisible(DateUtil.getNow()) || (user.isAccessAdmin() || getGreatestUserRole(user)
+            .isGreaterThanOrEquals(SilverpeasRole.publisher) || (getGreatestUserRole(user)
+            .isGreaterThanOrEquals(SilverpeasRole.writer) && user.getId().equals(getCreatorId()))));
   }
 
   /**
@@ -365,8 +373,8 @@ public abstract class Media implements SilverpeasContent, SilverContentInterface
   /**
    * Gets the internal media instance if type of the current media is {@link MediaType#Photo} or
    * {@link MediaType#Video} or {@link MediaType#Sound}.
-   * @return internal media instance, null if media type is not {@link MediaType#Photo} or {@link
-   * MediaType#Video} or {@link MediaType#Sound}.
+   * @return internal media instance, null if media type is not {@link MediaType#Photo} or
+   * {@link MediaType#Video} or {@link MediaType#Sound}.
    */
   public InternalMedia getInternalMedia() {
     if (this instanceof InternalMedia) {
@@ -435,12 +443,24 @@ public abstract class Media implements SilverpeasContent, SilverContentInterface
   }
 
   /**
-   * Sets the current media to the album represented by specified identifiers.
-   * (all not specified album attachments will be deleted)
+   * Sets the current media to the album represented by specified identifiers. (all not specified
+   * album attachments will be deleted)
    * @param albumIds the identifier of albums.
    */
   public void setToAlbums(String... albumIds) {
     removeFromAllAlbums();
     addToAlbums(albumIds);
+  }
+
+  /**
+   * Retrieve greatest user role
+   * @param user the current user detail
+   * @return the greatest user role
+   */
+  protected SilverpeasRole getGreatestUserRole(final UserDetail user) {
+    Set<SilverpeasRole> userRoles =
+        SilverpeasRole.from(OrganisationControllerFactory.getOrganisationController()
+            .getUserProfiles(user.getId(), getComponentInstanceId()));
+    return SilverpeasRole.getGreaterFrom(userRoles);
   }
 }

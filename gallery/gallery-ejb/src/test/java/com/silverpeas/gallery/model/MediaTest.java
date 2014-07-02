@@ -29,8 +29,10 @@ import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.MediaType;
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.control.ejb.MediaServiceFactory;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
+
 import org.apache.commons.lang.time.DateUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -334,6 +336,11 @@ public class MediaTest {
     @Override
     public String getThumbnailUrl(final MediaResolution mediaResolution) {
       return null;
+    }
+
+    @Override
+    protected SilverpeasRole getGreatestUserRole(final UserDetail user) {
+      return SilverpeasRole.reader;
     }
   }
 }

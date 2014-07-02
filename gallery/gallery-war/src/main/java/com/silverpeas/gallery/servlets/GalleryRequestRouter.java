@@ -123,10 +123,10 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
     String destination = "";
     String rootDest = "/gallery/jsp/";
     request.setAttribute("gallerySC", gallerySC);
-    SilverTrace.info("gallery", "GalleryRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
-        "User=" + gallerySC.getUserId() + " Function=" + function);
+    SilverTrace.info("gallery", "GalleryRequestRouter.getDestination()",
+        "root.MSG_GEN_PARAM_VALUE", "User=" + gallerySC.getUserId() + " Function=" + function);
 
-    // création des paramètres généraux
+    // Set common parameters
     SilverpeasRole highestUserRole = gallerySC.getHighestSilverpeasUserRole();
     String userId = gallerySC.getUserId();
 
@@ -135,9 +135,8 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
     request.setAttribute("UserId", userId);
     request.setAttribute("IsGuest", gallerySC.isGuest());
 
-    SilverTrace
-        .debug("gallery", "GalleryRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
-            "Profile=" + highestUserRole);
+    SilverTrace.debug("gallery", "GalleryRequestRouter.getDestination()",
+        "root.MSG_GEN_PARAM_VALUE", "Profile=" + highestUserRole);
 
     try {
       if (function.startsWith("Main")) {
@@ -154,9 +153,8 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         request.setAttribute("IsPrivateSearch", gallerySC.isPrivateSearch());
         request.setAttribute("IsBasket", gallerySC.isBasket());
         request.setAttribute("IsOrder", gallerySC.isOrder());
-        // appel jsp
         destination = rootDest + "accueil.jsp";
-      } else if (function.equals("ViewAlbum")) {
+      } else if ("ViewAlbum".equals(function)) {
         // récupération de l'Id de l'album en cours
         String albumId = request.getParameter("Id");
         gallerySC.goToAlbum(albumId);
@@ -166,7 +164,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         request.setAttribute("wait", gallerySC.getSlideshowWait());
         // retour à l'album courant
         destination = getDestination("GoToCurrentAlbum", gallerySC, request);
-      } else if (function.equals("Pagination")) {
+      } else if ("Pagination".equals(function)) {
         processSelection(request, gallerySC);
 
         // traitement de la pagination : passage des paramètres
@@ -176,7 +174,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         }
         destination = returnToAlbum(request, gallerySC);
 
-      } else if (function.equals("GoToCurrentAlbum")) {
+      } else if ("GoToCurrentAlbum".equals(function)) {
         // mise à blanc de l'index de pagination si on arrive de la recherche
         if (gallerySC.isSearchResult() || gallerySC.isViewNotVisible()) {
           gallerySC.setIndexOfCurrentPage("0");
@@ -211,16 +209,15 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           request.setAttribute("IsOrder", gallerySC.isOrder());
           request.setAttribute("IsPrivateSearch", gallerySC.isPrivateSearch());
 
-          // appel jsp
           destination = rootDest + "viewAlbum.jsp";
         }
-      } else if (function.equals("NewAlbum")) {
+      } else if ("NewAlbum".equals(function)) {
         // passage de l'album courant : null car en création
         request.setAttribute("CurrentAlbum", null);
         request.setAttribute("Path", gallerySC.getPath());
         // appel jsp
         destination = rootDest + "albumManager.jsp";
-      } else if (function.equals("CreateAlbum")) {
+      } else if ("CreateAlbum".equals(function)) {
         // check user rights
         if (!gallerySC.isAlbumAdmin(highestUserRole, null, userId)) {
           throw new AccessForbiddenException("GalleryRequestRouter.CreateAlbum",
@@ -237,7 +234,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         gallerySC.createAlbum(album);
         // retour à l'album courant
         destination = getDestination("GoToCurrentAlbum", gallerySC, request);
-      } else if (function.equals("EditAlbum")) {
+      } else if ("EditAlbum".equals(function)) {
         // récupération des paramètres
         String albumId = request.getParameter("Id");
 
@@ -252,9 +249,8 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         // passage des paramètres
         request.setAttribute("CurrentAlbum", currentAlbum);
         request.setAttribute("Path", gallerySC.getPath());
-        // appel jsp
         destination = rootDest + "albumManager.jsp";
-      } else if (function.equals("UpdateAlbum")) {
+      } else if ("UpdateAlbum".equals(function)) {
         String albumId = request.getParameter("Id");
 
         // check user rights
@@ -263,22 +259,21 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
               SilverpeasException.WARNING, null);
         }
 
-        // récupération des paramètres
+        // Retrieve album name and description
         String name = request.getParameter("Name");
         String description = request.getParameter("Description");
 
-        // récupération de l'album en cours
+        // Retrieve current album
         AlbumDetail album = gallerySC.getAlbum(albumId);
-        // modification des valeurs
+        // set new value
         album.setName(name);
         album.setDescription(description);
 
-        // mise à jour de l'album courant
         gallerySC.updateAlbum(album);
         // retour à l'album courant
         destination = getDestination("GoToCurrentAlbum", gallerySC, request);
-      } else if (function.equals("DeleteAlbum")) {
-        // récupération de l'Id de l'album
+      } else if ("DeleteAlbum".equals(function)) {
+        // Retrieve album identifier to delete
         String albumId = request.getParameter("Id");
 
         // check user rights
@@ -287,11 +282,10 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
               SilverpeasException.WARNING, null);
         }
 
-        // suppression de l'album
         gallerySC.deleteAlbum(albumId);
         // retour à l'album courant
         destination = getDestination("GoToCurrentAlbum", gallerySC, request);
-      } else if (function.equals("AddMedia")) {
+      } else if ("AddMedia".equals(function)) {
         // check user rights
         if (!gallerySC.isMediaAdmin(highestUserRole, null, userId)) {
           throw new AccessForbiddenException("GalleryRequestRouter.AddMedia",
@@ -315,7 +309,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         request.setAttribute("IsOrder", gallerySC.isOrder());
         request.setAttribute("IsViewMetadata", gallerySC.isViewMetadata());
 
-        // récupération du formulaire et affichage
+        // prepare xml form data
         String xmlFormName = gallerySC.getXMLFormName();
         String xmlFormShortName;
         Form formUpdate = null;
@@ -335,9 +329,8 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         request.setAttribute("Data", data);
 
         destination = rootDest + "media" + mediaType + "Edit.jsp";
-      } else if (function.equals("CreateMedia")) {
+      } else if ("CreateMedia".equals(function)) {
 
-        // création de le média dans la base de donnée
         if (!StringUtil.isDefined(request.getCharacterEncoding())) {
           request.setCharacterEncoding("UTF-8");
         }
@@ -356,7 +349,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         // preview of the new media
         request.setAttribute("MediaId", mediaId);
         destination = getDestination("MediaView", gallerySC, request);
-      } else if (function.equals("UpdateMedia") || function.equals("UpdateInformation")) {
+      } else if ("UpdateMedia".equals(function) || "UpdateInformation".equals(function)) {
         if (!StringUtil.isDefined(request.getCharacterEncoding())) {
           request.setCharacterEncoding("UTF-8");
         }
@@ -367,8 +360,8 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         // retour à la preview
         request.setAttribute("MediaId", mediaId);
         destination = getDestination("MediaView", gallerySC, request);
-      } else if (function.equals("DeleteMedia")) {
-        // récupération de l'Id du média
+      } else if ("DeleteMedia".equals(function)) {
+        // Retrieve media identifier to delete
         String mediaId = request.getParameter("MediaId");
 
         // check user rights
@@ -376,13 +369,11 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           throw new AccessForbiddenException("GalleryRequestRouter.DeleteMedia",
               SilverpeasException.WARNING, null);
         }
-
-        // suppression du média
         gallerySC.deleteMedia(mediaId);
 
         // retour à l'album courant
         destination = getDestination("GoToCurrentAlbum", gallerySC, request);
-      } else if (function.equals("MediaView")) {
+      } else if ("MediaView".equals(function)) {
         // mise à blanc de la liste restreintes des médias (pour les médias non visibles)
         gallerySC.setRestrictedListMedia(new ArrayList<Media>());
         // remise à blanc des médias selectionnés
@@ -408,15 +399,15 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
               .isGreaterThanOrEquals(SilverpeasRole.publisher) ||
               SilverpeasRole.privilegedUser == highestUserRole ||
               (SilverpeasRole.writer == highestUserRole &&
-                  media.getCreatorId().equals(gallerySC.getUserId()));
+              media.getCreatorId().equals(gallerySC.getUserId()));
           request.setAttribute("ViewLinkDownload", linkDownload);
 
           putMediaCommonParameters(request, gallerySC, media, highestUserRole);
 
-          // taille pour l'affichage de la preview
+          // Preview size attribute
           request.setAttribute("PreviewSize", gallerySC.getPreviewSize());
 
-          // pour l'affichage du formulaire
+          // Prepare XML form data
           putXMLDisplayerIntoRequest(media, request, gallerySC);
           // Slideshow requirements
           request.setAttribute("albumId", gallerySC.getCurrentAlbumId());
@@ -429,13 +420,11 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         } catch (Exception e) {
           destination = getDocumentNotFoundDestination(gallerySC, request);
         }
-      } else if (function.equals("PreviousMedia")) {
-        // récupération du média précédent
+      } else if ("PreviousMedia".equals(function)) {
         Media media = gallerySC.getPrevious();
         request.setAttribute("MediaId", media.getId());
         destination = getDestination("MediaView", gallerySC, request);
-      } else if (function.equals("NextMedia")) {
-        // récupération du média suivant
+      } else if ("NextMedia".equals(function)) {
         Media media = gallerySC.getNext();
         request.setAttribute("MediaId", media.getId());
         destination = getDestination("MediaView", gallerySC, request);
@@ -449,10 +438,6 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
             // traitement des médias
             request.setAttribute("MediaId", id);
             destination = getDestination("MediaView", gallerySC, request);
-          } else if (type.startsWith("Comment")) {
-            // traitement des commentaires
-            request.setAttribute("MediaId", id);
-            destination = getDestination("Comments", gallerySC, request);
           } else if (type.equals("Node")) {
             // traitement des noeuds = les albums
             destination = getDestination("ViewAlbum", gallerySC, request);
@@ -462,25 +447,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         } catch (Exception e) {
           destination = getDocumentNotFoundDestination(gallerySC, request);
         }
-      } else if (function.equals("Comments")) {
-        // visualisation des commentaires
-        request.setAttribute("Path", gallerySC.getPath());
-        // récupération du média
-        String mediaId = request.getParameter("MediaId");
-        if (mediaId == null || mediaId.equals("")) {
-          mediaId = request.getParameter("PubId");
-        }
-        if (mediaId == null || mediaId.equals("")) {
-          mediaId = (String) request.getAttribute("MediaId");
-        }
-        Media media = gallerySC.getMedia(mediaId);
-
-        // passage des paramètres
-        putMediaCommonParameters(request, gallerySC, media, highestUserRole);
-
-        // appel de la jsp
-        destination = rootDest + "comments.jsp";
-      } else if (function.equals("AccessPath")) {
+      } else if ("AccessPath".equals(function)) {
 
         // visualisation des emplacements
         request.setAttribute("Path", gallerySC.getPath());
@@ -508,7 +475,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         request.setAttribute("Albums", gallerySC.getAllAlbums());
 
         destination = rootDest + "albumsOfMedia.jsp";
-      } else if (function.equals("SelectPath")) {
+      } else if ("SelectPath".equals(function)) {
         // modification de la liste des emplacements du média
         String[] albums = request.getParameterValues("albumChoice");
         String mediaId = request.getParameter("MediaId");
@@ -521,15 +488,15 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
         gallerySC.setMediaToAlbums(mediaId, albums);
         destination = getDestination("MediaView", gallerySC, request);
-      } else if (function.equals("AskMedia")) {
+      } else if ("AskMedia".equals(function)) {
         // demande de médias auprès du gestionnaire de la médiathèque
         destination = rootDest + "askMedia.jsp";
-      } else if (function.equals("SendAsk")) {
+      } else if ("SendAsk".equals(function)) {
         // envoie d'une notification au gestionnaire
         // String title = request.getParameter("Title");
         String description = request.getParameter("Description");
         gallerySC.sendAskMedia(description);
-      } else if (function.equals("ChoiceSize")) {
+      } else if ("ChoiceSize".equals(function)) {
         // traitement du choix des tailles
         String choix = request.getParameter("Choice");
         // mettre à jour la taille avec le choix
@@ -539,7 +506,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         // retour ... en fonction d'ou on viens
         destination = returnToAlbum(request, gallerySC);
 
-      } else if (function.equals("SortBy")) {
+      } else if ("SortBy".equals(function)) {
         // traitement du tri selon l'écran en cours
         String tri = request.getParameter("Tri");
         if ((!gallerySC.isSearchResult() && !gallerySC.isViewNotVisible())) {
@@ -548,7 +515,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           gallerySC.setTriSearch(tri);
         }
         destination = returnToAlbum(request, gallerySC);
-      } else if (function.equals("ToAlertUser")) {
+      } else if ("ToAlertUser".equals(function)) {
         String mediaId = request.getParameter("MediaId");
         try {
           destination = gallerySC.initAlertUser(mediaId);
@@ -557,7 +524,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
               .warn("gallery", "GalleryRequestRouter.getDestination()", "root.EX_USERPANEL_FAILED",
                   "function = " + function, e);
         }
-      } else if (function.equals("EditSelectedMedia")) {
+      } else if ("EditSelectedMedia".equals(function)) {
         // traitement par lot
         String albumId = request.getParameter("AlbumId");
 
@@ -600,7 +567,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         } else {
           destination = returnToAlbum(request, gallerySC);
         }
-      } else if (function.equals("UpdateSelectedMedia")) {
+      } else if ("UpdateSelectedMedia".equals(function)) {
         // récupération des médias modifiés
         Collection<String> mediaIds = gallerySC.getListSelected();
 
@@ -614,7 +581,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         deselectAll(gallerySC);
         destination = returnToAlbum(request, gallerySC);
 
-      } else if (function.equals("UpdateSelectedPaths")) {
+      } else if ("UpdateSelectedPaths".equals(function)) {
         // récupération des médias modifiés
         Collection<String> mediaIds = gallerySC.getListSelected();
 
@@ -630,7 +597,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         deselectAll(gallerySC);
 
         destination = returnToAlbum(request, gallerySC);
-      } else if (function.equals("DeleteSelectedMedia")) {
+      } else if ("DeleteSelectedMedia".equals(function)) {
         processSelection(request, gallerySC);
 
         // liste des médias sélectionnés
@@ -646,7 +613,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           // retour à l'album en cours
           destination = getDestination("GoToCurrentAlbum", gallerySC, request);
         }
-      } else if (function.equals("CategorizeSelectedMedia")) {
+      } else if ("CategorizeSelectedMedia".equals(function)) {
         processSelection(request, gallerySC);
 
         // liste des médias sélectionnés
@@ -665,7 +632,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         } else {
           destination = rootDest + "closeWindow.jsp";
         }
-      } else if (function.equals("AddAlbumForSelectedMedia")) {
+      } else if ("AddAlbumForSelectedMedia".equals(function)) {
         // placement par lot
         String albumId = request.getParameter("AlbumId");
         // check user rights
@@ -685,7 +652,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         } else {
           destination = returnToAlbum(request, gallerySC);
         }
-      } else if (function.equals("UpdateXMLForm")) {
+      } else if ("UpdateXMLForm".equals(function)) {
         // mise à jour des données du formulaire
         if (!StringUtil.isDefined(request.getCharacterEncoding())) {
           request.setCharacterEncoding("UTF-8");
@@ -702,7 +669,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         updateXMLFormMedia(mediaId, items, gallerySC);
         request.setAttribute("MediaId", mediaId);
         destination = getDestination("MediaView", gallerySC, request);
-      } else if (function.equals("EditInformation")) {
+      } else if ("EditInformation".equals(function)) {
         // récupération des paramètres
         String mediaId = request.getParameter("MediaId");
         // récupération du média
@@ -743,8 +710,8 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         request.setAttribute("Data", data);
 
         // appel jsp
-        destination = rootDest + "mediaEdit.jsp";
-      } else if (function.equals("AllSelected")) {
+        destination = rootDest + "media" + media.getType().name() + "Edit.jsp";
+      } else if ("AllSelected".equals(function)) {
         // sélectionne (ou déselectionne) tous les médias de l'album (ou de la liste restreinte
         // dans le cas de la recherche)
         boolean select = !gallerySC.getSelect();
@@ -791,7 +758,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
           }
         }
-      } else if (function.equals("SearchAdvanced")) {
+      } else if ("SearchAdvanced".equals(function)) {
         // recherche avancée
         request.setAttribute("MetaDataKeys", gallerySC.getMetaDataKeys());
 
@@ -828,16 +795,16 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         }
 
         destination = rootDest + "searchAdvanced.jsp";
-      } else if (function.equals("ClearSearch")) {
+      } else if ("ClearSearch".equals(function)) {
         gallerySC.clearSearchContext();
 
         destination = getDestination("SearchAdvanced", gallerySC, request);
-      } else if (function.equals("LastResult")) {
-        // mise à jour du compteur de paginiation
+      } else if ("LastResult".equals(function)) {
+        // Reset pagination index
         gallerySC.setIndexOfCurrentPage("0");
 
         destination = getDestination("ViewSearchResults", gallerySC, request);
-      } else if (function.equals("SearchKeyWord")) {
+      } else if ("SearchKeyWord".equals(function)) {
         // traitement de la recherche par mot clé
         // et de la recherche dédiée
         // récupération du mot clé et de la liste des médias concernés si il existe
@@ -849,11 +816,11 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           searchKeyWord = gallerySC.getSearchKeyWord();
         }
 
-        // remise à blanc de la liste de recherche si on a changé de mot clé
+        // Reset search if keyword has changed
         if (!gallerySC.getSearchKeyWord().equals(searchKeyWord)) {
           gallerySC.setSearchResultListMedia(new ArrayList<Media>());
           gallerySC.setSearchKeyWord(searchKeyWord);
-          // mise à jour du compteur de pagination
+          // reset pagination index
           gallerySC.setIndexOfCurrentPage("0");
         }
 
@@ -868,7 +835,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         }
 
         destination = getDestination("ViewSearchResults", gallerySC, request);
-      } else if (function.equals("PaginationSearch")) {
+      } else if ("PaginationSearch".equals(function)) {
         processSelection(request, gallerySC);
 
         // traitement de la pagination : passage des paramètres
@@ -878,7 +845,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         }
 
         destination = getDestination("ViewSearchResults", gallerySC, request);
-      } else if (function.equals("ViewSearchResults")) {
+      } else if ("ViewSearchResults".equals(function)) {
         // passage des paramètres
         request.setAttribute("SearchKeyWord", gallerySC.getSearchKeyWord());
         request.setAttribute("MediaList", gallerySC.getSearchResultListMedia());
@@ -898,7 +865,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
         // appel jsp
         destination = rootDest + "viewRestrictedMediaList.jsp";
-      } else if (function.equals("Search")) {
+      } else if ("Search".equals(function)) {
         if (!StringUtil.isDefined(request.getCharacterEncoding())) {
           request.setCharacterEncoding("UTF-8");
         }
@@ -1038,7 +1005,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         gallerySC.setIndexOfCurrentPage("0");
 
         destination = getDestination("ViewSearchResults", gallerySC, request);
-      } else if (function.equals("ViewNotVisible")) {
+      } else if ("ViewNotVisible".equals(function)) {
         // traitement de la liste des médias plus visibles
         // récupération de la liste des médias plus visibles, ou création de cette liste si elle est
         // vide
@@ -1064,7 +1031,6 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         request.setAttribute("SearchKeyWord", "");
         request.setAttribute("IsBasket", gallerySC.isBasket());
 
-        // appel jsp
         destination = rootDest + "viewRestrictedMediaList.jsp";
       } else if (function.startsWith("portlet")) {
         // récupération des albums de 1er niveau
@@ -1073,11 +1039,10 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         // chercher les derniers médias
         Collection<Media> mediaList = gallerySC.getLastRegisteredMedia();
         request.setAttribute("MediaList", mediaList);
-        // appel jsp
         destination = rootDest + "portlet.jsp";
-      } else if (function.equals("copy")) {
+      } else if ("copy".equals(function)) {
         SilverTrace.debug("gallery", "GalleryRequestRouter.copy", "root.MSG_GEN_PARAM_VALUE",
-            "Entrée copie");
+            "copy process start");
 
         String objectType = request.getParameter("Object");
         String objectId = request.getParameter("Id");
@@ -1090,29 +1055,27 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         SilverTrace.debug("gallery", "GalleryRequestRouter.copy", "root.MSG_GEN_PARAM_VALUE",
             "objectType = " + objectType + " objectId = " + objectId);
         SilverTrace.debug("gallery", "GalleryRequestRouter.copy", "root.MSG_GEN_PARAM_VALUE",
-            "destination = " + URLManager.getURL(URLManager.CMP_CLIPBOARD) +
+            "destination = " + URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null) +
                 "Idle.jsp?message=REFRESHCLIPBOARD");
 
         destination =
-            URLManager.getURL(URLManager.CMP_CLIPBOARD) + "Idle.jsp?message=REFRESHCLIPBOARD";
-      } else if (function.equals("CopySelectedMedia")) {
+            URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null) +
+                "Idle.jsp?message=REFRESHCLIPBOARD";
+      } else if ("CopySelectedMedia".equals(function)) {
         processSelection(request, gallerySC);
-
-        // liste des médias sélectionnés
+        // check list of selected media
         if (gallerySC.getListSelected().size() > 0) {
-          // récupération des médias à copier
+          // retrieve media to copy
           Collection<String> mediaIds = gallerySC.getListSelected();
-
-          // copie des médias
+          // copy media
           gallerySC.copySelectedMedia(mediaIds);
-
           deselectAll(gallerySC);
         }
-        // retour à l'album en cours
+        // Get back to current album view
         destination = getDestination("GoToCurrentAlbum", gallerySC, request);
-      } else if (function.startsWith("cut")) {
+      } else if ("cut".startsWith(function)) {
         SilverTrace.debug("gallery", "GalleryRequestRouter.cut", "root.MSG_GEN_PARAM_VALUE",
-            "Entrée couper");
+            "cut process start");
 
         String objectType = request.getParameter("Object");
         String objectId = request.getParameter("Id");
@@ -1125,62 +1088,55 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         SilverTrace.debug("gallery", "GalleryRequestRouter.cut", "root.MSG_GEN_PARAM_VALUE",
             "objectType = " + objectType + " objectId = " + objectId);
         SilverTrace.debug("gallery", "GalleryRequestRouter.cut", "root.MSG_GEN_PARAM_VALUE",
-            "destination = " + URLManager.getURL(URLManager.CMP_CLIPBOARD) +
+            "destination = " + URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null) +
                 "Idle.jsp?message=REFRESHCLIPBOARD");
 
         destination =
-            URLManager.getURL(URLManager.CMP_CLIPBOARD) + "Idle.jsp?message=REFRESHCLIPBOARD";
-      } else if (function.equals("CutSelectedMedia")) {
+            URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null) +
+                "Idle.jsp?message=REFRESHCLIPBOARD";
+      } else if ("CutSelectedMedia".equals(function)) {
         processSelection(request, gallerySC);
 
-        // liste des médias sélectionnés
         if (gallerySC.getListSelected().size() > 0) {
-          // récupération des médias à couper
           Collection<String> mediaIds = gallerySC.getListSelected();
-
-          // coupe des médias
           gallerySC.cutSelectedMedia(mediaIds);
-
           deselectAll(gallerySC);
         }
-        // retour à l'album en cours
+        // Get back to current album view
         destination = getDestination("GoToCurrentAlbum", gallerySC, request);
       } else if (function.startsWith("paste")) {
         SilverTrace.debug("gallery", "GalleryRequestRouter.paste", "root.MSG_GEN_PARAM_VALUE",
-            "Entrée coller");
+            "past process start");
         gallerySC.paste();
         gallerySC.loadCurrentAlbum();
         destination = getDestination("GoToCurrentAlbum", gallerySC, request);
       }
-      // fonctions de gestion du panier et des demandes
+      // Manage media order
       else if (function.startsWith("Basket")) {
-        if (function.equals("BasketView")) {
-          // voir le panier
+        if ("BasketView".equals(function)) {
+          // Basket view
           request.setAttribute("MediaList", gallerySC.getBasketMediaIdList());
           request.setAttribute("NbMediaPerPage", gallerySC.getNbMediaPerPage());
-          // request.setAttribute("CurrentPageIndex", new
-          // Integer(gallerySC.getIndexOfFirstItemToDisplay()));
           request.setAttribute("SelectedIds", gallerySC.getListSelected());
           request.setAttribute("IsOrder", gallerySC.isOrder());
           destination = rootDest + "basket.jsp";
-
-        } else if (function.equals("BasketDelete")) {
+        } else if ("BasketDelete".equals(function)) {
           gallerySC.deleteBasket();
           destination = getDestination("BasketView", gallerySC, request);
-        } else if (function.equals("BasketDeleteMedia")) {
+        } else if ("BasketDeleteMedia".equals(function)) {
           // suppression du média du panier
           String mediaId = request.getParameter("MediaId");
           gallerySC.deleteToBasket(mediaId);
 
           destination = getDestination("BasketView", gallerySC, request);
-        } else if (function.equals("BasketDeleteSelectedMedia")) {
+        } else if ("BasketDeleteSelectedMedia".equals(function)) {
           // suppression les médias sélectionnés du panier
           processSelection(request, gallerySC);
           if (gallerySC.getListSelected().size() > 0) {
             gallerySC.deleteToBasket();
           }
           destination = getDestination("BasketView", gallerySC, request);
-        } else if (function.equals("BasketAddMediaList")) {
+        } else if ("BasketAddMediaList".equals(function)) {
           // ajouter les médias sélectionnés au panier
           processSelection(request, gallerySC);
           if (gallerySC.getListSelected().size() > 0) {
@@ -1191,20 +1147,20 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
             // si on a pas choisit de média, on reste sur l'album courant
             destination = getDestination("GoToCurrentAlbum", gallerySC, request);
           }
-        } else if (function.equals("BasketAddMedia")) {
+        } else if ("BasketAddMedia".equals(function)) {
           // ajouter le média au panier
           String mediaId = request.getParameter("MediaId");
           gallerySC.addMediaToBasket(mediaId);
           destination = getDestination("BasketView", gallerySC, request);
-        } else if (function.equals("BasketPagination")) {
+        } else if ("BasketPagination".equals(function)) {
           processSelection(request, gallerySC);
 
           // retour au panier
           destination = getDestination("BasketView", gallerySC, request);
         }
       } else if (function.startsWith("Order")) {
-        if (function.equals("OrderAdd")) {
-          // recherche du formulaire de demande
+        if ("OrderAdd".equals(function)) {
+          // Retrieve order form
           String xmlFormName = gallerySC.getOrderForm();
           String xmlFormShortName;
 
@@ -1222,14 +1178,13 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
             request.setAttribute("Data", data);
           }
 
-          // rechercher de la charte
+          // retrieve convention
           String charteUrl = gallerySC.getCharteUrl();
-
           request.setAttribute("CharteUrl", charteUrl);
 
           destination = rootDest + "basketForm.jsp";
-        } else if (function.equals("OrderCreate")) {
-          // création de la demande à partir du panier
+        } else if ("OrderCreate".equals(function)) {
+          // create order from basket
           String orderId = gallerySC.addOrder();
 
           // mise à jour des données du formulaire
@@ -1263,48 +1218,44 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
             set.save(data);
           }
 
-          // envoie d'une notification au gestionnaire
+          // notify gallery manager
           gallerySC.sendAskOrder(orderId);
 
-          // on va sur la liste des demandes
+          // view order list destination
           destination = getDestination("OrderViewList", gallerySC, request);
-        } else if (function.equals("OrderUpdate")) {
+        } else if ("OrderUpdate".equals(function)) {
           String orderId = request.getParameter("OrderId");
-          // mettre à jour la demande
+          // update order
           updateOrder(request, gallerySC, orderId, userId);
-          // envoie d'une notification au lecteur ayant fait la demande
+          // notify reader user
           gallerySC.sendAskOrderUser(orderId);
-          // retour à la liste des demandes
           destination = getDestination("OrderViewList", gallerySC, request);
-        } else if (function.equals("OrderViewList")) {
+        } else if ("OrderViewList".equals(function)) {
           Collection<Order> orders;
           if (highestUserRole == SilverpeasRole.admin) {
-            // si gestionnaire, liste de toutes les demandes
+            // if manager retrieve all orders
             orders = gallerySC.getAllOrders();
           } else {
-            // sinon, liste des demandes de l'utilisateur
+            // else if retrieve only user orders
             orders = gallerySC.getOrdersByUser();
           }
           request.setAttribute("NbOrdersProcess", getNbOrdersProcess(orders));
           request.setAttribute("Orders", orders);
-          // appel jsp
           destination = rootDest + "orders.jsp";
-        } else if (function.equals("OrderView")) {
+        } else if ("OrderView".equals(function)) {
           String orderId = request.getParameter("OrderId");
           if (orderId == null || orderId.length() == 0 || "null".equals(orderId)) {
             orderId = (String) request.getAttribute("OrderId");
           }
 
           if (highestUserRole == SilverpeasRole.admin || gallerySC.isAccessAuthorized(orderId)) {
-            // sauvegarder la demande en cours
             gallerySC.setCurrentOrderId(orderId);
 
             destination = getDestination("OrderViewPagin", gallerySC, request);
           } else {
             destination = "/admin/jsp/accessForbidden.jsp";
           }
-        } else if (function.equals("OrderViewPagin")) {
-          // voir la demande
+        } else if ("OrderViewPagin".equals(function)) {
           String orderId = gallerySC.getCurrentOrderId();
           request.setAttribute("Order", gallerySC.getOrder(orderId));
           request.setAttribute("NbMediaPerPage", gallerySC.getNbMediaPerPage());
@@ -1331,13 +1282,11 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
               }
             }
           }
-
           destination = rootDest + "order.jsp";
-
-        } else if (function.equals("OrderPagination")) {
+        } else if ("OrderPagination".equals(function)) {
           // retour à la demande
           destination = getDestination("OrderViewPagin", gallerySC, request);
-        } else if (function.equals("OrderDownloadMedia")) {
+        } else if ("OrderDownloadMedia".equals(function)) {
           String mediaId = request.getParameter("MediaId");
           String orderId = request.getParameter("OrderId");
 
@@ -1360,8 +1309,8 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 
-    SilverTrace.info("gallery", "GalleryRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
-        "Destination=" + destination);
+    SilverTrace.info("gallery", "GalleryRequestRouter.getDestination()",
+        "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
     return destination;
   }
 

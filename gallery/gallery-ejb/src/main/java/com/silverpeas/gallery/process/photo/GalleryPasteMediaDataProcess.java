@@ -23,6 +23,10 @@
  */
 package com.silverpeas.gallery.process.photo;
 
+import static com.silverpeas.util.StringUtil.isDefined;
+
+import org.silverpeas.process.session.ProcessSession;
+
 import com.silverpeas.comment.service.CommentServiceFactory;
 import com.silverpeas.form.record.IdentifiedRecordTemplate;
 import com.silverpeas.gallery.dao.MediaDAO;
@@ -35,9 +39,6 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.process.session.ProcessSession;
-
-import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * Process to paste a media in Database
