@@ -41,22 +41,22 @@
 
 <c:set var="mandatoryIcon"><fmt:message key='gallery.mandatory' bundle='${icons}'/></c:set>
 <c:set var="photo" value="${requestScope.Media}" />
+<jsp:useBean id="photo" type="com.silverpeas.gallery.model.Photo"/>
 <c:set var="browseContext" value="${requestScope.browseContext}"/>
 <c:set var="instanceId" value="${browseContext[3]}"/>
 
 <c:set var="action" value="CreateMedia"/>
 <c:set var="bodyCss" value="createMedia"/>
 <c:if test="${not empty photo}">
-  <c:set var="mediaType" value="${fn:toLowerCase(media.type)}"/>
+  <c:set var="mediaType" value="${fn:toLowerCase(photo.type)}"/>
   <c:set var="action" value="UpdateInformation"/>
   <c:set var="bodyCss" value="editMedia"/>
 </c:if>
 <c:set var="albumPath" value="${requestScope.Path}" />
+<jsp:useBean id="albumPath" type="java.util.List<com.silverpeas.gallery.model.AlbumDetail>"/>
+<c:set var="albumId" value="${albumPath[fn:length(albumPath)-1].id}" />
 
 <%
-	// récupération des paramètres :
-  Photo photo = (Photo) request.getAttribute("Media");
-
   boolean viewMetadata = ((Boolean) request.getAttribute("IsViewMetadata")).booleanValue();
 
   // paramètres pour le formulaire
@@ -64,11 +64,9 @@
   DataRecord data = (DataRecord) request.getAttribute("Data");
 
   // déclaration des variables :
-  String photoId = "";
   String vignette_url = null;
+  String preview_url = null;
   Collection<String> metaDataKeys = null;
-
-  String extensionAlt = "_preview.jpg";
 
   PagesContext context = new PagesContext("myForm", "0", resource.getLanguage(), false,
       componentId, null);
@@ -77,8 +75,8 @@
   context.setIgnoreDefaultValues(true);
 
   if (photo != null) {
-    photoId = String.valueOf(photo.getMediaPK().getId());
-    vignette_url = photo.getThumbnailUrl(MediaResolution.MEDIUM);
+    vignette_url = photo.getApplicationThumbnailUrl(MediaResolution.MEDIUM);
+    preview_url = photo.getApplicationThumbnailUrl(MediaResolution.PREVIEW);
 
     if (viewMetadata) {
       metaDataKeys = photo.getMetaDataProperties();
@@ -281,10 +279,8 @@ var messages = new Array();
 // optional: bgColor and color to be sent to tooltip
 <%
 if (photo != null) {
-    String nameRep = photo.getWorkspaceSubFolderName();
 %>
-messages[0] = new Array('<%=FileServerUtils.getUrl( componentId,
-    photo.getId() + extensionAlt, photo.getFileMimeType(), nameRep)%>','<%=EncodeHelper.javaStringToJsString(photo.
+messages[0] = new Array('<%=preview_url%>','<%=EncodeHelper.javaStringToJsString(photo.
     getName())%>',"#FFFFFF");
 
 <% } %>

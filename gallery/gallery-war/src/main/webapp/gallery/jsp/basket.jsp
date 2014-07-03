@@ -346,7 +346,7 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
          id = Integer.parseInt((String) itP.next());
          Media media = gallerySC.getMedia(Integer.toString(id));
          String name = id + extension.getThumbnailSuffix();
-         String vignette_url = media.getThumbnailUrl(extension);
+         String vignette_url = media.getApplicationThumbnailUrl(extension);
 
          ArrayCellText arrayCellText0 = ligne.addArrayCellText("<a href=\"MediaView?MediaId="
              + id

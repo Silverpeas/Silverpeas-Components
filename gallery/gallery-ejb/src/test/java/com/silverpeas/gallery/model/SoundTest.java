@@ -25,18 +25,19 @@ package com.silverpeas.gallery.model;
 
 import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.MediaType;
+import org.apache.commons.io.FilenameUtils;
 import org.junit.Test;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import static com.silverpeas.gallery.constant.MediaResolution.*;
-import static com.silverpeas.gallery.constant.MediaResolution.PREVIEW;
-import static com.silverpeas.gallery.constant.MediaResolution.WATERMARK;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 public class SoundTest {
+  protected final static Date TODAY = java.sql.Date.valueOf("2014-03-01");
 
   @Test
   public void justInstancedTest() {
@@ -59,15 +60,19 @@ public class SoundTest {
     expected.put(PREVIEW, "/silverpeas/gallery/jsp/icons/sound_266x150.png");
     expected.put(WATERMARK, "/silverpeas/gallery/jsp/icons/sound_266x150.png");
     for (MediaResolution mediaResolution : MediaResolution.values()) {
-      assertThat(sound.getThumbnailUrl(mediaResolution), is(expected.get(mediaResolution)));
+      assertThat(sound.getApplicationThumbnailUrl(mediaResolution),
+          is(expected.get(mediaResolution)));
     }
   }
 
   private Sound defaultSound() {
     Sound sound = new Sound();
     sound.setId("mediaId");
+    sound.setComponentInstanceId("instanceId");
     sound.setBitrate(2048);
     sound.setDuration(72000000);
+    sound.setCreationDate(TODAY);
+    sound.setFileName("soundFile.mp3");
     assertDefaultSound(sound);
     return sound;
   }
@@ -77,5 +82,10 @@ public class SoundTest {
     assertThat(sound.getWorkspaceSubFolderName(), is("soundmediaId"));
     assertThat(sound.getBitrate(), is(2048L));
     assertThat(sound.getDuration(), is(72000000L));
+    assertThat(sound.getApplicationOriginalUrl("albumId"),
+        is("/silverpeas/services/gallery/instanceId/albums/albumId/sounds/mediaId/content?_t" +
+            "=1393628400000"));
+    assertThat(FilenameUtils.normalize(sound.getFile(MediaResolution.ORIGINAL).getPath(), true),
+        is("//instanceId/soundmediaId/soundFile.mp3"));
   }
 }

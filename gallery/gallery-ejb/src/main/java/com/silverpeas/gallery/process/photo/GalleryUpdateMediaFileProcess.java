@@ -95,7 +95,7 @@ public class GalleryUpdateMediaFileProcess extends AbstractGalleryFileProcess {
           if (StringUtil.isDefined(name)) {
 
             // Deleting repository with old media
-            fileHandler.getHandledFile(BASE_PATH, context.getComponentInstanceId(),
+            fileHandler.getHandledFile(Media.BASE_PATH, context.getComponentInstanceId(),
                 getMedia().getWorkspaceSubFolderName()).delete();
 
             // Creating new images
@@ -108,7 +108,7 @@ public class GalleryUpdateMediaFileProcess extends AbstractGalleryFileProcess {
       case Video:
         if (fileItem != null) {
           // Deleting repository with old media
-          fileHandler.getHandledFile(BASE_PATH, context.getComponentInstanceId(),
+          fileHandler.getHandledFile(Media.BASE_PATH, context.getComponentInstanceId(),
               getMedia().getWorkspaceSubFolderName()).delete();
 
           // Save new video

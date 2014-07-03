@@ -607,14 +607,6 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     return !"no".equalsIgnoreCase(getComponentParameterValue("comments"));
   }
 
-  public String getPreviewSize() {
-    String previewSize = getComponentParameterValue("previewSize");
-    if (!StringUtil.isDefined(previewSize)) {
-      previewSize = "preview";
-    }
-    return previewSize;
-  }
-
   public Integer getSlideshowWait() {
     String wait = getComponentParameterValue("slideshow");
     if (wait == null || "null".equalsIgnoreCase(wait) || wait.length() == 0) {

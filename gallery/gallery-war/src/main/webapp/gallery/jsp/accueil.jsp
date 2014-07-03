@@ -262,7 +262,7 @@
                           <tr>
                             <td bgcolor="#FFFFFF">
                               <a href="MediaView?MediaId=${media.id}">
-                                <img src="${media.getThumbnailUrl(SMALL_RESOLUTION)}" border="0" alt="<c:out value='${media.title}'/>" title="<c:out value='${media.title}'/>"/>
+                                <img src="${media.getApplicationThumbnailUrl(SMALL_RESOLUTION)}" border="0" alt="<c:out value='${media.title}'/>" title="<c:out value='${media.title}'/>"/>
                               </a>
                             </td>
                           </tr>

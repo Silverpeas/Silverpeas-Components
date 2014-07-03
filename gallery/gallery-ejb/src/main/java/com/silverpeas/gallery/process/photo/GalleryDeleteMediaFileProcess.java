@@ -63,7 +63,7 @@ public class GalleryDeleteMediaFileProcess extends AbstractGalleryFileProcess {
       final ProcessSession session, final FileHandler fileHandler) throws Exception {
 
     // Deleting repository with old media
-    fileHandler.getHandledFile(BASE_PATH, context.getComponentInstanceId(),
+    fileHandler.getHandledFile(Media.BASE_PATH, context.getComponentInstanceId(),
         getMedia().getWorkspaceSubFolderName()).delete();
   }
 }

@@ -20,37 +20,12 @@
  */
 package com.silverpeas.gallery;
 
-import static com.silverpeas.gallery.constant.MediaResolution.LARGE;
-import static com.silverpeas.gallery.constant.MediaResolution.MEDIUM;
-import static com.silverpeas.gallery.constant.MediaResolution.PREVIEW;
-import static com.silverpeas.gallery.constant.MediaResolution.SMALL;
-import static com.silverpeas.gallery.constant.MediaResolution.TINY;
-import static com.silverpeas.gallery.constant.MediaResolution.WATERMARK;
-
-import java.awt.Font;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.List;
-
-import javax.imageio.ImageIO;
-
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.silverpeas.process.io.file.FileBasePath;
-import org.silverpeas.process.io.file.FileHandler;
-import org.silverpeas.process.io.file.HandledFile;
-import org.silverpeas.util.ImageLoader;
-
 import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.MediaType;
 import com.silverpeas.gallery.image.DrewImageMetadataExtractor;
 import com.silverpeas.gallery.image.ImageMetadataException;
 import com.silverpeas.gallery.image.ImageMetadataExtractor;
+import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.MediaPK;
 import com.silverpeas.gallery.model.MetaData;
 import com.silverpeas.gallery.model.Photo;
@@ -64,40 +39,27 @@ import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.IOUtils;
+import org.silverpeas.process.io.file.FileHandler;
+import org.silverpeas.process.io.file.HandledFile;
+import org.silverpeas.util.ImageLoader;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.List;
+
+import static com.silverpeas.gallery.constant.MediaResolution.*;
 
 public class ImageHelper {
 
-  private final static FileBasePath BASE_PATH = FileBasePath.UPLOAD_PATH;
   final static ResourceLocator gallerySettings =
       new ResourceLocator("org.silverpeas.gallery.settings.gallerySettings", "");
-
-  /**
-   * Open an output stream of an image according to given details of a photo.
-   * @param photo
-   * @param isOriginalRequired
-   * @return
-   * @throws IOException
-   */
-  public static InputStream openInputStream(final Photo photo, final boolean isOriginalRequired) {
-    final String photoId = photo.getMediaPK().getId();
-    final String instanceId = photo.getMediaPK().getInstanceId();
-    if (StringUtil.isDefined(photoId) && StringUtil.isDefined(instanceId)) {
-      String fileName = photoId + PREVIEW.getThumbnailSuffix();
-      if (isOriginalRequired) {
-        fileName = photo.getFileName();
-      }
-      try {
-        return FileUtils.openInputStream(FileUtils
-            .getFile(new File(BASE_PATH.getPath()), instanceId,
-                photo.getWorkspaceSubFolderName(), fileName));
-      } catch (IOException e) {
-        SilverTrace.error("gallery", "ImageHelper.getBytes", "gallery.ERR_CANT_GET_IMAGE_BYTES",
-            "image = " + photo.getTitle() + " (#" + photo.getId() + ")");
-        return null;
-      }
-    }
-    return null;
-  }
 
   /**
    * @param fileHandler
@@ -121,7 +83,7 @@ public class ImageHelper {
         if (ImageType.isImage(name)) {
           final String subDirectory = MediaType.Photo.getTechnicalFolder();
           final HandledFile handledImageFile =
-              fileHandler.getHandledFile(BASE_PATH, instanceId, subDirectory + photoId, name);
+              fileHandler.getHandledFile(Media.BASE_PATH, instanceId, subDirectory + photoId, name);
           handledImageFile.writeByteArrayToFile(image.get());
           photo.setFileName(name);
           photo.setFileMimeType(image.getContentType());
@@ -154,7 +116,7 @@ public class ImageHelper {
       if (ImageType.isImage(name)) {
         String subDirectory = MediaType.Photo.getTechnicalFolder();
         final HandledFile handledImageFile =
-            fileHandler.getHandledFile(BASE_PATH, instanceId, subDirectory + photoId, name);
+            fileHandler.getHandledFile(Media.BASE_PATH, instanceId, subDirectory + photoId, name);
         fileHandler.copyFile(image, handledImageFile);
         photo.setFileName(name);
         photo.setFileMimeType(FileUtil.getMimeType(name));
@@ -210,8 +172,8 @@ public class ImageHelper {
     final String mimeType = photo.getFileMimeType();
 
     if ("image/jpeg".equals(mimeType) || "image/pjpeg".equals(mimeType)) {
-      final HandledFile handledFile = fileHandler.getHandledFile(BASE_PATH, photo.getInstanceId(),
-          photo.getWorkspaceSubFolderName(), name);
+      final HandledFile handledFile = fileHandler
+          .getHandledFile(Media.BASE_PATH, photo.getInstanceId(), photo.getWorkspaceSubFolderName(), name);
       if (handledFile.exists()) {
         try {
           final ImageMetadataExtractor extractor = new DrewImageMetadataExtractor(photo.
@@ -375,9 +337,9 @@ public class ImageHelper {
     final MediaPK toPK = image.getMediaPK();
     final String subDirectory = MediaType.Photo.getTechnicalFolder();
     final HandledFile fromDir = fileHandler
-        .getHandledFile(BASE_PATH, fromPK.getInstanceId(), subDirectory + fromPK.getId());
-    final HandledFile toDir =
-        fileHandler.getHandledFile(BASE_PATH, toPK.getInstanceId(), subDirectory + toPK.getId());
+        .getHandledFile(Media.BASE_PATH, fromPK.getInstanceId(), subDirectory + fromPK.getId());
+    final HandledFile toDir = fileHandler
+        .getHandledFile(Media.BASE_PATH, toPK.getInstanceId(), subDirectory + toPK.getId());
 
     // copier et renommer chaque image présente dans le répertoire d'origine
     if (fromDir.exists()) {

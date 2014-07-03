@@ -34,7 +34,6 @@ import org.silverpeas.process.management.AbstractFileProcess;
  */
 public abstract class AbstractGalleryFileProcess
     extends AbstractFileProcess<GalleryProcessExecutionContext> {
-  protected final static FileBasePath BASE_PATH = FileBasePath.UPLOAD_PATH;
 
   private final Media media;
   private OrganisationController organizationController;

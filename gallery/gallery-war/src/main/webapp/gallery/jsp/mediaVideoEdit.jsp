@@ -41,6 +41,7 @@
 
 <c:set var="mandatoryIcon"><fmt:message key='gallery.mandatory' bundle='${icons}'/></c:set>
 <c:set var="media" value="${requestScope.Media}" />
+<jsp:useBean id="media" type="com.silverpeas.gallery.model.Video"/>
 <c:set var="browseContext" value="${requestScope.browseContext}"/>
 <c:set var="instanceId" value="${browseContext[3]}"/>
 
@@ -53,28 +54,20 @@
   <c:set var="bodyCss" value="editMedia"/>
 </c:if>
 <c:set var="albumPath" value="${requestScope.Path}" />
-<jsp:useBean id="now" class="java.util.Date" />
+<jsp:useBean id="albumPath" type="java.util.List<com.silverpeas.gallery.model.AlbumDetail>"/>
+<c:set var="albumId" value="${albumPath[fn:length(albumPath)-1].id}" />
+
+<c:set value="${media.getApplicationOriginalUrl(albumId)}" var="mediaUrl"/>
 
 <%
-  // récupération des paramètres :
-  Media photo = (Media) request.getAttribute("Media");
-  List<NodeDetail> path = (List<NodeDetail>) request.getAttribute("Path");
-
   // paramètres pour le formulaire
   Form formUpdate = (Form) request.getAttribute("Form");
   DataRecord data = (DataRecord) request.getAttribute("Data");
-
-  // déclaration des variables :
-  String photoId = "";
 
   PagesContext context = new PagesContext("myForm", "0", resource.getLanguage(), false, componentId, null);
   context.setBorderPrinted(false);
   context.setCurrentFieldIndex("11");
   context.setIgnoreDefaultValues(true);
-
-  if (photo != null) {
-    photoId = String.valueOf(photo.getMediaPK().getId());
-  }
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -203,7 +196,7 @@ function isCorrectLocalForm()
       }
     }
 
-  <c:if test="${requestScope.IsUsePdc and empty photo.id}">
+  <c:if test="${requestScope.IsUsePdc and empty media.id}">
     <view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>;
   </c:if>
 
@@ -251,9 +244,8 @@ function isCorrectLocalForm()
 <table cellpadding="5" width="100%">
 <tr>
   <td valign="top">
-  <c:if test="${not empty media.video}">
-    <c:url value="/services/gallery/${instanceId}/albums/${albumPath[fn:length(albumPath)-1].nodePK.id}/videos/${media.id}?_t=${now.time}" var="videoUrl"/>
-    <view:video url="${videoUrl}"></view:video>
+  <c:if test="${not empty media}">
+    <view:video url="${mediaUrl}"/>
   </c:if>
   </td>
   <td>

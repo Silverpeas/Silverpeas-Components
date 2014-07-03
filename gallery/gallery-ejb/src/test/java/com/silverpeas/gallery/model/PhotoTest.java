@@ -25,13 +25,17 @@ package com.silverpeas.gallery.model;
 
 import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.MediaType;
+import org.apache.commons.io.FilenameUtils;
 import org.junit.Test;
+
+import java.util.Date;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 public class PhotoTest {
+  protected final static Date TODAY = java.sql.Date.valueOf("2014-03-01");
 
   @Test
   public void justInstancedTest() {
@@ -40,7 +44,7 @@ public class PhotoTest {
     assertThat(photo.getResolutionW(), is(0));
     assertThat(photo.getResolutionH(), is(0));
     assertThat(photo.getMetaDataProperties(), hasSize(0));
-    assertThat(photo.getThumbnailUrl(MediaResolution.TINY),
+    assertThat(photo.getApplicationThumbnailUrl(MediaResolution.TINY),
         is("/silverpeas/gallery/jsp/icons/notAvailable_fr" +
             MediaResolution.TINY.getThumbnailSuffix()));
   }
@@ -54,16 +58,17 @@ public class PhotoTest {
   @Test
   public void previewable() {
     Photo photo = defaultPhoto();
+    photo.setFileName(null);
 
     assertThat(photo.isPreviewable(), is(false));
-    assertThat(photo.getThumbnailUrl(MediaResolution.MEDIUM),
+    assertThat(photo.getApplicationThumbnailUrl(MediaResolution.MEDIUM),
         is("/silverpeas/gallery/jsp/icons/notAvailable_fr" +
             MediaResolution.MEDIUM.getThumbnailSuffix()));
 
     photo.setFileName("image.jpg");
 
     assertThat(photo.isPreviewable(), is(true));
-    assertThat(photo.getThumbnailUrl(MediaResolution.LARGE),
+    assertThat(photo.getApplicationThumbnailUrl(MediaResolution.LARGE),
         is("/silverpeas/FileServer/mediaId" + MediaResolution.LARGE.getThumbnailSuffix() +
             "?ComponentId=instanceId&SourceFile" +
             "=mediaId" + MediaResolution.LARGE.getThumbnailSuffix() +
@@ -74,12 +79,13 @@ public class PhotoTest {
     Photo photo = new Photo();
     MediaPK mediaPK = new MediaPK("mediaId", "instanceId");
     photo.setMediaPK(mediaPK);
-    photo.setFileName("/FileName");
+    photo.setFileName("photoFile.jpg");
     photo.setFileSize(1024);
     photo.setFileMimeType("image/jpeg");
     photo.setResolutionW(800);
     photo.setResolutionH(600);
     photo.addMetaData(new MetaData("ok").setProperty("metadata"));
+    photo.setCreationDate(TODAY);
     assertDefaultPhoto(photo);
     return photo;
   }
@@ -92,8 +98,14 @@ public class PhotoTest {
     assertThat(photo.getMetaDataProperties(), hasSize(1));
     assertThat(photo.getMetaData(photo.getMetaDataProperties().iterator().next()).getValue(),
         is("ok"));
-    assertThat(photo.getThumbnailUrl(MediaResolution.PREVIEW),
-        is("/silverpeas/gallery/jsp/icons/notAvailable_fr" +
-            MediaResolution.PREVIEW.getThumbnailSuffix()));
+    assertThat(photo.getApplicationThumbnailUrl(MediaResolution.PREVIEW),
+        is("/silverpeas/FileServer/mediaId_preview" +
+            ".jpg?ComponentId=instanceId&SourceFile=mediaId_preview" +
+            ".jpg&MimeType=image/jpeg&Directory=imagemediaId"));
+    assertThat(photo.getApplicationOriginalUrl("albumId"),
+        is("/silverpeas/services/gallery/instanceId/albums/albumId/photos/mediaId/content?_t" +
+            "=1393628400000"));
+    assertThat(FilenameUtils.normalize(photo.getFile(MediaResolution.ORIGINAL).getPath(), true),
+        is("//instanceId/imagemediaId/photoFile.jpg"));
   }
 }

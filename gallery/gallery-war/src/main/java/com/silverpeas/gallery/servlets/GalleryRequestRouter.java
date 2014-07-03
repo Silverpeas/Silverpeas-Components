@@ -404,9 +404,6 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
           putMediaCommonParameters(request, gallerySC, media, highestUserRole);
 
-          // Preview size attribute
-          request.setAttribute("PreviewSize", gallerySC.getPreviewSize());
-
           // Prepare XML form data
           putXMLDisplayerIntoRequest(media, request, gallerySC);
           // Slideshow requirements

@@ -23,6 +23,7 @@
  */
 package com.silverpeas.gallery.web;
 
+import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.model.Photo;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -31,8 +32,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
 
-import static com.silverpeas.gallery.web.GalleryResourceURIs.GALLERY_PHOTO_CONTENT_PART;
-import static com.silverpeas.gallery.web.GalleryResourceURIs.GALLERY_PHOTO_PREVIEW_PART;
+import static com.silverpeas.gallery.web.GalleryResourceURIs.GALLERY_MEDIA_CONTENT_PART;
+import static com.silverpeas.gallery.web.GalleryResourceURIs.GALLERY_PHOTO_RESOLUTION_PARAM;
 
 /**
  * @author Yohann Chastagnier
@@ -56,8 +57,9 @@ public class PhotoEntity extends AbstractMediaEntity<PhotoEntity> {
 
   @Override
   public PhotoEntity withURI(final URI uri) {
-    previewUrl = uri.toString() + "/" + GALLERY_PHOTO_PREVIEW_PART;
-    url = uri.toString() + "/" + GALLERY_PHOTO_CONTENT_PART;
+    previewUrl =
+        uri.toString() + "?" + GALLERY_PHOTO_RESOLUTION_PARAM + "=" + MediaResolution.PREVIEW;
+    url = uri.toString() + "/" + GALLERY_MEDIA_CONTENT_PART;
     return super.withURI(uri);
   }
 

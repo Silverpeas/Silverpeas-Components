@@ -202,7 +202,7 @@
                 <div class="${mediaBackgroundClass}">
                   <div class="cadrePhoto">
                     <a href="MediaView?MediaId=${media.id}">
-                      <img src="${media.getThumbnailUrl(mediaResolution)}" border="0" alt="<c:out value='${media.title}'/>" title="<c:out value='${media.title}'/>"/>
+                      <img src="${media.getApplicationThumbnailUrl(mediaResolution)}" border="0" alt="<c:out value='${media.title}'/>" title="<c:out value='${media.title}'/>"/>
                     </a>
                   </div>
                   <div>
@@ -223,7 +223,7 @@
                 <div class="${mediaBackgroundClass}">
                   <div class="cadrePhoto">
                     <a href="MediaView?MediaId=${media.id}">
-                      <img src="${media.getThumbnailUrl(mediaResolution)}" border="0" alt="<c:out value='${media.title}'/>" title="<c:out value='${media.title}'/>"/>
+                      <img src="${media.getApplicationThumbnailUrl(mediaResolution)}" border="0" alt="<c:out value='${media.title}'/>" title="<c:out value='${media.title}'/>"/>
                     </a>
                   </div>
                 </div>

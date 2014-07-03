@@ -35,14 +35,14 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
-
 import org.apache.commons.io.FilenameUtils;
-import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.date.Period;
+import org.silverpeas.file.SilverpeasFile;
+import org.silverpeas.process.io.file.FileBasePath;
 
+import javax.ws.rs.core.UriBuilder;
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
@@ -52,6 +52,8 @@ import java.util.Set;
  */
 public abstract class Media implements SilverpeasContent, SilverContentInterface, Serializable {
   private static final long serialVersionUID = -3193781401588525351L;
+
+  public final static FileBasePath BASE_PATH = FileBasePath.UPLOAD_PATH;
 
   private MediaPK mediaPK;
   private String title = "";
@@ -271,11 +273,11 @@ public abstract class Media implements SilverpeasContent, SilverContentInterface
   }
 
   /**
-   * Gets the URL prefix the media thumbnail according the specified media resolution.
+   * Gets the Application URL thumbnail of the media according the specified media resolution.
    * @param mediaResolution
    * @return the URL of media thumbnail.
    */
-  public String getThumbnailUrl(MediaResolution mediaResolution) {
+  public String getApplicationThumbnailUrl(MediaResolution mediaResolution) {
     if (mediaResolution == null) {
       mediaResolution = MediaResolution.PREVIEW;
     }
@@ -295,10 +297,31 @@ public abstract class Media implements SilverpeasContent, SilverContentInterface
       case PREVIEW:
         thumbnailUrl += MediaResolution.MEDIUM.getLabel();
         break;
+      case ORIGINAL:
+        return null;
     }
     thumbnailUrl += ".png";
     return FilenameUtils.normalize(thumbnailUrl, true);
   }
+
+  /**
+   * Gets the original URL of a media with cache handling.
+   * @param albumId
+   * @return
+   */
+  public String getApplicationOriginalUrl(String albumId) {
+    return UriBuilder.fromPath(URLManager.getApplicationURL()).path("services").path("gallery")
+        .path(getComponentInstanceId()).path("albums").path(albumId)
+        .path(getType().name().toLowerCase() + "s").path(getId()).path("content")
+        .queryParam("_t", getLastUpdateDate().getTime()).build().toString();
+  }
+
+  /**
+   * Gets the Silverpeas file.
+   * @param mediaResolution
+   * @return
+   */
+  public abstract SilverpeasFile getFile(final MediaResolution mediaResolution);
 
   @Override
   public String getSilverpeasContentId() {

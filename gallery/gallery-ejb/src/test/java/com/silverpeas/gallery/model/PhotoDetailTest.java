@@ -183,14 +183,14 @@ public class PhotoDetailTest {
     assertThat(
         wrappedPhoto.getMetaData(wrappedPhoto.getMetaDataProperties().iterator().next()).getValue(),
         is("ok"));
-    Assert.assertThat(wrappedPhoto.getThumbnailUrl(MediaResolution.TINY),
+    assertThat(wrappedPhoto.getApplicationThumbnailUrl(MediaResolution.TINY),
         is("/silverpeas/gallery/jsp/icons/notAvailable_fr" +
             MediaResolution.TINY.getThumbnailSuffix()));
 
     // Previewable
     photoDetail.setImageName("image.jpg");
     assertThat(wrappedPhoto.isPreviewable(), is(true));
-    assertThat(wrappedPhoto.getThumbnailUrl(MediaResolution.TINY),
+    assertThat(wrappedPhoto.getApplicationThumbnailUrl(MediaResolution.TINY),
         is("/silverpeas/FileServer/mediaId" + MediaResolution.TINY.getThumbnailSuffix() +
             "?ComponentId=instanceId&SourceFile" +
             "=mediaId" + MediaResolution.TINY.getThumbnailSuffix() +

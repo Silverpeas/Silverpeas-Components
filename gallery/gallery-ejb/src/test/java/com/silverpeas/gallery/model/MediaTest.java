@@ -39,6 +39,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.date.Period;
+import org.silverpeas.file.SilverpeasFile;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -334,13 +335,18 @@ public class MediaTest {
     }
 
     @Override
-    public String getThumbnailUrl(final MediaResolution mediaResolution) {
+    public String getApplicationThumbnailUrl(final MediaResolution mediaResolution) {
       return null;
     }
 
     @Override
     protected SilverpeasRole getGreatestUserRole(final UserDetail user) {
       return SilverpeasRole.reader;
+    }
+
+    @Override
+    public SilverpeasFile getFile(final MediaResolution mediaResolution) {
+      return null;
     }
   }
 }

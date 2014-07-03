@@ -26,6 +26,7 @@ package com.silverpeas.gallery.web;
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
+import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.model.AlbumDetail;
 import com.silverpeas.gallery.model.InternalMedia;
 import com.silverpeas.gallery.model.Media;
@@ -37,6 +38,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -104,22 +106,6 @@ public class GalleryResource extends AbstractGalleryResource {
   }
 
   /**
-   * Gets the preview content of a photo. If it doesn't exist, a 404 HTTP code is returned. If the
-   * user isn't authentified, a 401 HTTP code is returned. If a problem occurs when processing the
-   * request, a 503 HTTP code is returned.
-   * @param photoId the identifier of the photo
-   * @return the response to the HTTP GET request preview content of the asked photo.
-   */
-  @GET
-  @Path(GALLERY_ALBUMS_URI_PART + "/{albumId}/" + GALLERY_PHOTOS_PART + "/{photoId}/" +
-      GALLERY_PHOTO_PREVIEW_PART)
-  @Produces("image/*")
-  public Response getPhotoPreviewContent(@PathParam("albumId") final String albumId,
-      @PathParam("photoId") final String photoId) {
-    return getMediaContent(albumId, photoId, false);
-  }
-
-  /**
    * Gets the content of a photo. If it doesn't exist, a 404 HTTP code is returned. If the user
    * isn't authentified, a 401 HTTP code is returned. If a problem occurs when processing the
    * request, a 503 HTTP code is returned.
@@ -128,11 +114,15 @@ public class GalleryResource extends AbstractGalleryResource {
    */
   @GET
   @Path(GALLERY_ALBUMS_URI_PART + "/{albumId}/" + GALLERY_PHOTOS_PART + "/{photoId}/" +
-      GALLERY_PHOTO_CONTENT_PART)
+      GALLERY_MEDIA_CONTENT_PART)
   @Produces("image/*")
-  public Response getPhotoOriginalContent(@PathParam("albumId") final String albumId,
-      @PathParam("photoId") final String photoId) {
-    return getMediaContent(albumId, photoId, true);
+  public Response getPhotoContent(@PathParam("albumId") final String albumId,
+      @PathParam("photoId") final String photoId,
+      @QueryParam(GALLERY_PHOTO_RESOLUTION_PARAM) MediaResolution mediaResolution) {
+    if (mediaResolution == null) {
+      mediaResolution = MediaResolution.ORIGINAL;
+    }
+    return getMediaContent(albumId, photoId, mediaResolution);
   }
 
   /**
@@ -143,37 +133,36 @@ public class GalleryResource extends AbstractGalleryResource {
    * @return the response to the HTTP GET request content of the asked video.
    */
   @GET
-  @Path(GALLERY_ALBUMS_URI_PART + "/{albumId}/" + GALLERY_VIDEOS_PART + "/{videoId}")
+  @Path(GALLERY_ALBUMS_URI_PART + "/{albumId}/" + GALLERY_VIDEOS_PART + "/{videoId}" +
+      GALLERY_MEDIA_CONTENT_PART)
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
-  public Response getVideoOriginalContent(@PathParam("albumId") final String albumId,
+  public Response getVideoContent(@PathParam("albumId") final String albumId,
       @PathParam("videoId") final String videoId) {
-    return getMediaContent(albumId, videoId, true);
+    return getMediaContent(albumId, videoId, MediaResolution.ORIGINAL);
   }
 
   /**
    * Centralization of getting of photo content.
    * @param albumId
    * @param mediaId
-   * @param isOriginalRequired
+   * @param mediaResolution
    * @return
    */
   private Response getMediaContent(final String albumId, final String mediaId,
-      final boolean isOriginalRequired) {
+      final MediaResolution mediaResolution) {
     try {
       final AlbumDetail album = getGalleryBm().getAlbum(new NodePK(albumId, getComponentId()));
       final Media media = getGalleryBm().getMedia(new MediaPK(mediaId, getComponentId()));
       checkNotFoundStatus(media);
-      checkNotFoundStatus(media.getPhoto());
       verifyUserMediaAccess(media);
       return Response.ok(new StreamingOutput() {
         @Override
         public void write(final OutputStream output) throws IOException, WebApplicationException {
-          final InputStream photoStream = asInputStream(media.getPhoto(), album,
-              (isOriginalRequired && (isUserPrivileged() || media.isDownloadable())));
+          final InputStream mediaStream = asInputStream(media.getPhoto(), album, mediaResolution);
           try {
-            IOUtils.copy(photoStream, output);
+            IOUtils.copy(mediaStream, output);
           } finally {
-            IOUtils.closeQuietly(photoStream);
+            IOUtils.closeQuietly(mediaStream);
           }
         }
       }).header("Content-Type", ((InternalMedia) media).getFileMimeType())

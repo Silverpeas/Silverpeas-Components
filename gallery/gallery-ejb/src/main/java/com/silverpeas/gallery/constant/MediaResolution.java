@@ -24,6 +24,9 @@
 package com.silverpeas.gallery.constant;
 
 import com.silverpeas.gallery.GalleryComponentSettings;
+import com.silverpeas.util.StringUtil;
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonValue;
 
 /**
  * @author: Yohann Chastagnier
@@ -34,18 +37,26 @@ public enum MediaResolution {
   MEDIUM("266x150", 266, 150, "266x150"),
   LARGE("600x400", 600, 400, null),
   PREVIEW("preview", 600, 400, "600x400"),
-  WATERMARK("watermark", null, null, null);
+  WATERMARK("watermark", null, null, null),
+  ORIGINAL("original", null, null, null);
 
+  @JsonCreator
   public static MediaResolution fromNameOrLabel(String nameOrLabel) {
     MediaResolution result = null;
     for (MediaResolution mediaResolution : values()) {
       if (mediaResolution.name().toLowerCase().equals(nameOrLabel.toLowerCase()) ||
-          nameOrLabel.contains(mediaResolution.getLabel())) {
+          (StringUtil.isDefined(mediaResolution.getLabel()) &&
+              nameOrLabel.contains(mediaResolution.getLabel()))) {
         result = mediaResolution;
         break;
       }
     }
     return result;
+  }
+
+  @JsonValue
+  public String getName() {
+    return name();
   }
 
   private final String label;
@@ -60,7 +71,7 @@ public enum MediaResolution {
     this.width = width;
     this.height = height;
     this.watermarkSize = GalleryComponentSettings.getWatermarkSize(bundlePartOfWaterwarkSizeLabel);
-    this.thumbnailSuffix = "_" + label + ".jpg";
+    this.thumbnailSuffix = "original".equals(label) ? "" : "_" + label + ".jpg";
   }
 
   public String getLabel() {

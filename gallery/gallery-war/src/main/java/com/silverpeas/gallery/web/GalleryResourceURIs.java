@@ -33,7 +33,7 @@ public final class GalleryResourceURIs {
   public static final String GALLERY_BASE_URI = "gallery";
   public static final String GALLERY_ALBUMS_URI_PART = "albums";
   public static final String GALLERY_PHOTOS_PART = "photos";
-  public static final String GALLERY_PHOTO_PREVIEW_PART = "previewContent";
-  public static final String GALLERY_PHOTO_CONTENT_PART = "content";
+  public static final String GALLERY_PHOTO_RESOLUTION_PARAM = "resolution";
   public static final String GALLERY_VIDEOS_PART = "videos";
+  public static final String GALLERY_MEDIA_CONTENT_PART = "content";
 }

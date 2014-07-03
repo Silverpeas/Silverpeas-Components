@@ -43,14 +43,19 @@
 <fmt:message var="commentTab" key="gallery.comments"/>
 
 <c:set var="video" value="${requestScope.Media}"/>
+<jsp:useBean id="video" type="com.silverpeas.gallery.model.Video"/>
 <c:set var="browseContext" value="${requestScope.browseContext}"/>
 <c:set var="instanceId" value="${browseContext[3]}"/>
 <c:set var="userId" value="${requestScope.UserId}"/>
-<c:set var="photoResourceType" value="${video.contributionType}"/>
+<c:set var="mediaResourceType" value="${video.contributionType}"/>
 <c:set var="mediaId" value="${video.id}"/>
 <c:set var="callback">function( event ) { if (event.type === 'listing') { commentCount = event.comments.length; $('#comment-tab').html('<c:out value="${commentTab}"/> ( ' + event.comments.length + ')'); } else if (event.type === 'deletion') { commentCount--; $('#comment-tab').html('<c:out value="${commentTab}"/> ( ' + commentCount + ')'); } else if (event.type === 'addition') { commentCount++; $('#comment-tab').html('<c:out value="${commentTab}"/> ( ' + commentCount + ')'); } }</c:set>
 <c:set var="albumPath" value="${requestScope.Path}" />
+<jsp:useBean id="albumPath" type="java.util.List<com.silverpeas.gallery.model.AlbumDetail>"/>
+<c:set var="albumId" value="${albumPath[fn:length(albumPath)-1].id}" />
 <c:set var="greaterUserRole" value="${requestScope.greaterUserRole}"/>
+
+<c:set value="${video.getApplicationOriginalUrl(albumId)}" var="mediaUrl"/>
 
 <view:setConstant var="adminRole" constant="com.stratelia.webactiv.SilverpeasRole.admin"/>
 <view:setConstant var="publisherRole" constant="com.stratelia.webactiv.SilverpeasRole.publisher"/>
@@ -224,7 +229,7 @@ function goToNotify(url)
   <div class="fileName">
     <c:choose>
       <c:when test="${requestScope.ViewLinkDownload or video.downloadable}">
-        <a href="${video.originalUrl}" target="_blank">${video.name} <img src="${downloadIconUrl}" alt="<fmt:message key='gallery.download.photo'/>" title="<fmt:message key='gallery.originale'/>"/></a>
+        <a href="${mediaUrl}" target="_blank">${video.name} <img src="${downloadIconUrl}" alt="<fmt:message key='gallery.download.photo'/>" title="<fmt:message key='gallery.originale'/>"/></a>
       </c:when>
       <c:otherwise>
         ${video.fileName} <img src="${downloadForbiddenIconUrl}" alt="<fmt:message key='gallery.download.forbidden'/>" title="<fmt:message key='gallery.download.forbidden'/>" class="forbidden-download-file"/>
@@ -330,8 +335,7 @@ function goToNotify(url)
   <div class="contentMedia">
     <div class="fondPhoto">
       <div class="cadrePhoto">
-        <c:url value="/services/gallery/${instanceId}/albums/${albumPath[fn:length(albumPath)-1].nodePK.id}/videos/${video.id}?_t=${now.time}" var="videoUrl"/>
-        <view:video url="${videoUrl}"></view:video>
+        <view:video url="${mediaUrl}"></view:video>
       </div>
       <c:if test="${video.title != video.name}">
         <h2 class="mediaTitle">${video.title}</h2>
@@ -369,7 +373,7 @@ function goToNotify(url)
 
   <c:if test="${requestScope.ShowCommentsTab}">
     <view:comments  userId="${userId}" componentId="${instanceId}"
-              resourceType="${photoResourceType}" resourceId="${mediaId}" indexed="${callback}"/>
+              resourceType="${mediaResourceType}" resourceId="${mediaId}" indexed="${callback}"/>
   </c:if>
 </div>
 

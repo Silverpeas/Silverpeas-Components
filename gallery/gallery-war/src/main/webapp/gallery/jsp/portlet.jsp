@@ -97,7 +97,7 @@
             <c:forEach var="media" items="${mediaList}">
               <div id="vignette">
                 <a href="javascript:onClick=goToImage('${media.id}')">
-                  <img src="${media.getThumbnailUrl(TINY_RESOLUTION)}" border="0" alt="<c:out value='${media.title}'/>" title="<c:out value='${media.title}'/>"></a>
+                  <img src="${media.getApplicationThumbnailUrl(TINY_RESOLUTION)}" border="0" alt="<c:out value='${media.title}'/>" title="<c:out value='${media.title}'/>"></a>
               </div>
             </c:forEach>
           </td>

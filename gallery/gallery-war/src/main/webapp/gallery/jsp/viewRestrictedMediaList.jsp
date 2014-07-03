@@ -253,7 +253,7 @@
             media = it.next();
             if (media != null) {
               idP = media.getMediaPK().getId();
-              vignette_url = media.getThumbnailUrl(mediaResolution);
+              vignette_url = media.getApplicationThumbnailUrl(mediaResolution);
               photoColor = "fondPhoto";
               if (!media.isVisible()) {
                 photoColor = "fondPhotoNotVisible";

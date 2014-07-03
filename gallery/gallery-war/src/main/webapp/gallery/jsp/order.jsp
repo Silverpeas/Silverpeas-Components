@@ -469,7 +469,7 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
 
       String name = mediaId + extension.getThumbnailSuffix();
       InternalMedia iMedia = row.getInternalMedia();
-      String vignette_url = iMedia.getThumbnailUrl(extension);
+      String vignette_url = iMedia.getApplicationThumbnailUrl(extension);
 
       ArrayCellText arrayCellText0 = ligne.addArrayCellText(
           "<a href=\"MediaView?MediaId=" + mediaId + "\" onmouseover=\"doTooltip(event," + indexPhoto + ")\" onmouseout=\"hideTip()\"><IMG SRC=\"" + vignette_url + "\" border=\"0\"></a>");
@@ -549,7 +549,7 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
       mediaId = row.getMediaId();
       String name = mediaId + extension.getThumbnailSuffix();
       InternalMedia iMedia = row.getInternalMedia();
-      String vignette_url = iMedia.getThumbnailUrl(extension);
+      String vignette_url = iMedia.getApplicationThumbnailUrl(extension);
 
       ArrayCellText arrayCellText0 = ligne.addArrayCellText(
           "<a href=\"MediaView?MediaId=" + mediaId + "\" onmouseover=\"doTooltip(event," + indexPhoto + ")\" onmouseout=\"hideTip()\"><IMG SRC=\"" + vignette_url + "\" border=\"0\"></a>");

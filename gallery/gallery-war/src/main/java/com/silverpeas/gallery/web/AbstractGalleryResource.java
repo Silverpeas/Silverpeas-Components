@@ -23,8 +23,7 @@
  */
 package com.silverpeas.gallery.web;
 
-import com.silverpeas.gallery.ImageHelper;
-import com.silverpeas.gallery.VideoHelper;
+import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.model.AlbumDetail;
 import com.silverpeas.gallery.model.GalleryRuntimeException;
@@ -37,11 +36,13 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.FileUtils;
 
 import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.EnumSet;
@@ -67,7 +68,6 @@ public abstract class AbstractGalleryResource extends RESTWebService {
 
   /**
    * Converts the album into its corresponding web entity.
-   *
    * @param album the album.
    * @return the corresponding photo entity.
    */
@@ -85,7 +85,6 @@ public abstract class AbstractGalleryResource extends RESTWebService {
 
   /**
    * Converts the photo into its corresponding web entity.
-   *
    * @param media the photo to convert.
    * @param album the album of the photo.
    * @return the corresponding photo entity.
@@ -104,38 +103,41 @@ public abstract class AbstractGalleryResource extends RESTWebService {
    * Converts the photo into an input stream.
    * @param media
    * @param album the album of the photo.
-   * @param isOriginalRequired the original or preview content
+   * @param requestedMediaResolution the original or preview content
    * @return the corresponding photo entity.
    */
-  protected InputStream asInputStream(Media media, AlbumDetail album, boolean isOriginalRequired) {
+  protected InputStream asInputStream(Media media, AlbumDetail album,
+      MediaResolution requestedMediaResolution) {
     checkNotFoundStatus(media);
     checkNotFoundStatus(album);
     verifyMediaIsInAlbum(media, album);
-    switch (media.getType()) {
-      case Photo:
-        return ImageHelper.openInputStream(media.getPhoto(), isOriginalRequired);
-      case Video:
-        return VideoHelper.openInputStream(media.getVideo());
-      case Sound:
-      case Streaming:
+    MediaResolution mediaResolution = MediaResolution.ORIGINAL;
+    if (media.getType().isPhoto()) {
+      mediaResolution = requestedMediaResolution;
+      if (MediaResolution.ORIGINAL == requestedMediaResolution &&
+          !isUserPrivileged() && !media.isDownloadable()) {
+        mediaResolution = MediaResolution.PREVIEW;
+      }
     }
-    return null;
+    try {
+      return FileUtils.openInputStream(media.getFile(mediaResolution));
+    } catch (IOException e) {
+      throw new WebApplicationException(Status.NOT_FOUND);
+    }
   }
 
   /**
    * Indicates if the current user is a privileged one.
-   *
    * @return
    */
   protected boolean isUserPrivileged() {
-    return !CollectionUtils.intersection(
-        EnumSet.of(SilverpeasRole.admin, SilverpeasRole.publisher, SilverpeasRole.privilegedUser),
-        getUserRoles()).isEmpty();
+    return !CollectionUtils.intersection(EnumSet
+        .of(SilverpeasRole.admin, SilverpeasRole.publisher, SilverpeasRole.writer,
+            SilverpeasRole.privilegedUser), getUserRoles()).isEmpty();
   }
 
   /**
    * Centralized build of album URI.
-   *
    * @param album
    * @return album URI
    */
@@ -149,7 +151,6 @@ public abstract class AbstractGalleryResource extends RESTWebService {
 
   /**
    * Centralized build of album URI.
-   *
    * @param photo
    * @param album
    * @return album URI
@@ -165,18 +166,37 @@ public abstract class AbstractGalleryResource extends RESTWebService {
 
   /**
    * Centralization
-   *
    * @param object any object
    */
   protected void checkNotFoundStatus(Object object) {
+    boolean isNotFound = false;
     if (object == null) {
+      isNotFound = true;
+    } else if (object instanceof Media) {
+      isNotFound = true;
+      Media media = ((Media) object);
+      switch (media.getType()) {
+        case Photo:
+          isNotFound = media.getPhoto() == null;
+          break;
+        case Video:
+          isNotFound = media.getVideo() == null;
+          break;
+        case Sound:
+          isNotFound = media.getSound() == null;
+          break;
+        case Streaming:
+          isNotFound = media.getStreaming() == null;
+          break;
+      }
+    }
+    if (isNotFound) {
       throw new WebApplicationException(Status.NOT_FOUND);
     }
   }
 
   /**
    * Centralization
-   *
    * @param media
    * @return
    */
@@ -186,9 +206,8 @@ public abstract class AbstractGalleryResource extends RESTWebService {
 
   /**
    * Verifying that the authenticated user is authorized to view the given photo.
-   *
-   * @return
    * @param media
+   * @return
    */
   protected void verifyUserMediaAccess(Media media) {
     if (!hasUserMediaAccess(media)) {
@@ -198,7 +217,6 @@ public abstract class AbstractGalleryResource extends RESTWebService {
 
   /**
    * Checking if the authenticated user is authorized to view all photos.
-   *
    * @return
    */
   protected boolean isViewAllPhotoAuthorized() {
@@ -207,7 +225,6 @@ public abstract class AbstractGalleryResource extends RESTWebService {
 
   /**
    * Verifying that the given photo is included in the given album.
-   *
    * @return
    */
   protected void verifyMediaIsInAlbum(Media media, AlbumDetail album) {
@@ -218,7 +235,6 @@ public abstract class AbstractGalleryResource extends RESTWebService {
 
   /**
    * Gets Gallery EJB.
-   *
    * @return
    */
   protected GalleryBm getGalleryBm() {

@@ -27,13 +27,12 @@ import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.MediaType;
 import com.silverpeas.gallery.constant.StreamingProvider;
 import org.junit.Test;
+import org.silverpeas.file.SilverpeasFile;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static com.silverpeas.gallery.constant.MediaResolution.*;
-import static com.silverpeas.gallery.constant.MediaResolution.PREVIEW;
-import static com.silverpeas.gallery.constant.MediaResolution.WATERMARK;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -60,7 +59,8 @@ public class StreamingTest {
     expected.put(PREVIEW, "/silverpeas/gallery/jsp/icons/streaming_266x150.png");
     expected.put(WATERMARK, "/silverpeas/gallery/jsp/icons/streaming_266x150.png");
     for (MediaResolution mediaResolution : MediaResolution.values()) {
-      assertThat(streaming.getThumbnailUrl(mediaResolution), is(expected.get(mediaResolution)));
+      assertThat(streaming.getApplicationThumbnailUrl(mediaResolution),
+          is(expected.get(mediaResolution)));
     }
   }
 
@@ -78,5 +78,8 @@ public class StreamingTest {
     assertThat(streaming.getWorkspaceSubFolderName(), is("streamingmediaId"));
     assertThat(streaming.getHomepageUrl(), is("anUrl"));
     assertThat(streaming.getProvider(), is(StreamingProvider.youtube));
+    assertThat(streaming.getApplicationOriginalUrl("albumId"),
+        is(streaming.getApplicationThumbnailUrl(MediaResolution.PREVIEW)));
+    assertThat(streaming.getFile(MediaResolution.ORIGINAL), is(SilverpeasFile.NO_FILE));
   }
 }

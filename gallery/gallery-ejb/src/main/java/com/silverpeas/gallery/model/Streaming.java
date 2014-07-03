@@ -23,8 +23,10 @@
  */
 package com.silverpeas.gallery.model;
 
+import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.MediaType;
 import com.silverpeas.gallery.constant.StreamingProvider;
+import org.silverpeas.file.SilverpeasFile;
 
 /**
  * This class represents a Streaming.
@@ -78,5 +80,15 @@ public class Streaming extends Media {
    */
   public static String getResourceType() {
     return MediaType.Streaming.name();
+  }
+
+  @Override
+  public String getApplicationOriginalUrl(final String albumId) {
+    return getApplicationThumbnailUrl(MediaResolution.PREVIEW);
+  }
+
+  @Override
+  public SilverpeasFile getFile(final MediaResolution mediaResolution) {
+    return SilverpeasFile.NO_FILE;
   }
 }
