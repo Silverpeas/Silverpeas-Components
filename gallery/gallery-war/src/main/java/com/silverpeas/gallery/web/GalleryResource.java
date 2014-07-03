@@ -30,13 +30,8 @@ import com.silverpeas.gallery.model.AlbumDetail;
 import com.silverpeas.gallery.model.InternalMedia;
 import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.MediaPK;
-import com.silverpeas.gallery.model.Video;
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.node.model.NodePK;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.silverpeas.servlets.OnlineFile;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -47,7 +42,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -122,7 +116,7 @@ public class GalleryResource extends AbstractGalleryResource {
   @Produces("image/*")
   public Response getPhotoPreviewContent(@PathParam("albumId") final String albumId,
       @PathParam("photoId") final String photoId) {
-    return getPhotoContent(albumId, photoId, false);
+    return getMediaContent(albumId, photoId, false);
   }
 
   /**
@@ -138,21 +132,36 @@ public class GalleryResource extends AbstractGalleryResource {
   @Produces("image/*")
   public Response getPhotoOriginalContent(@PathParam("albumId") final String albumId,
       @PathParam("photoId") final String photoId) {
-    return getPhotoContent(albumId, photoId, true);
+    return getMediaContent(albumId, photoId, true);
+  }
+
+  /**
+   * Gets the content of a video. If it doesn't exist, a 404 HTTP code is returned. If the user
+   * isn't authentified, a 401 HTTP code is returned. If a problem occurs when processing the
+   * request, a 503 HTTP code is returned.
+   * @param videoId the identifier of the video
+   * @return the response to the HTTP GET request content of the asked video.
+   */
+  @GET
+  @Path(GALLERY_ALBUMS_URI_PART + "/{albumId}/" + GALLERY_VIDEOS_PART + "/{videoId}")
+  @Produces(MediaType.APPLICATION_OCTET_STREAM)
+  public Response getVideoOriginalContent(@PathParam("albumId") final String albumId,
+      @PathParam("videoId") final String videoId) {
+    return getMediaContent(albumId, videoId, true);
   }
 
   /**
    * Centralization of getting of photo content.
    * @param albumId
-   * @param photoId
+   * @param mediaId
    * @param isOriginalRequired
    * @return
    */
-  private Response getPhotoContent(final String albumId, final String photoId,
+  private Response getMediaContent(final String albumId, final String mediaId,
       final boolean isOriginalRequired) {
     try {
       final AlbumDetail album = getGalleryBm().getAlbum(new NodePK(albumId, getComponentId()));
-      final Media media = getGalleryBm().getMedia(new MediaPK(photoId, getComponentId()));
+      final Media media = getGalleryBm().getMedia(new MediaPK(mediaId, getComponentId()));
       checkNotFoundStatus(media);
       checkNotFoundStatus(media.getPhoto());
       verifyUserMediaAccess(media);
@@ -167,68 +176,12 @@ public class GalleryResource extends AbstractGalleryResource {
             IOUtils.closeQuietly(photoStream);
           }
         }
-      }).header("Content-Type", ((InternalMedia) media).getFileMimeType()).build();
+      }).header("Content-Type", ((InternalMedia) media).getFileMimeType())
+          .header("Content-Length", ((InternalMedia) media).getFileSize()).build();
     } catch (final WebApplicationException ex) {
       throw ex;
     } catch (final Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
   }
-
-  /**
-   * Gets the content of a video. If it doesn't exist, a 404 HTTP code is returned. If the user
-   * isn't authentified, a 401 HTTP code is returned. If a problem occurs when processing the
-   * request, a 503 HTTP code is returned.
-   * @param videoId the identifier of the video
-   * @return the response to the HTTP GET request content of the asked video.
-   */
-  @GET
-  @Path(GALLERY_ALBUMS_URI_PART + "/{albumId}/" + GALLERY_VIDEOS_PART + "/{videoId}")
-  @Produces(MediaType.APPLICATION_OCTET_STREAM)
-  public Response getVideo(@PathParam("albumId") final String albumId,
-      @PathParam("videoId") final String videoId) {
-    final Media media = getGalleryBm().getMedia(new MediaPK(videoId, getComponentId()));
-    checkNotFoundStatus(media);
-    checkNotFoundStatus(media.getVideo());
-    verifyUserMediaAccess(media);
-    if (!com.silverpeas.gallery.constant.MediaType.Video.equals(media.getType())) {
-      throw new WebApplicationException(Status.NOT_FOUND);
-    }
-    return Response.ok(new StreamingOutput() {
-      @Override
-      public void write(final OutputStream output) throws IOException, WebApplicationException {
-        final File videoFile = openVideoFile(media.getVideo());
-        FileUtils.copyFile(videoFile, output);
-        output.flush();
-      }
-    }).header("Content-Type", media.getVideo().getFileMimeType())
-        .header("Content-Length", String.valueOf(media.getVideo().getFileSize())).build();
-
-  }
-
-  /**
-   * Open a file of a video according to given details of a video.
-   * @param video
-   * @return
-   * @throws IOException
-   */
-  private File openVideoFile(final Video video) {
-    final String videoId = video.getMediaPK().getId();
-    final String instanceId = video.getMediaPK().getInstanceId();
-    if (StringUtil.isDefined(videoId) && StringUtil.isDefined(instanceId)) {
-      String fileName = video.getFileName();
-      OnlineFile onlineFile =
-          new OnlineFile(video.getFileMimeType(), fileName, video.getWorkspaceSubFolderName(),
-              instanceId);
-      try {
-        return onlineFile.getContentFile();
-      } catch (IOException e) {
-        SilverTrace.error("gallery", "GalleryRessource", "gallery.ERR_CANT_GET_VIDEO_BYTES",
-            "video = " + video.getTitle() + " (#" + video.getId() + ")");
-        throw new WebApplicationException(Status.SERVICE_UNAVAILABLE);
-      }
-    }
-    return null;
-  }
-
 }

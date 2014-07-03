@@ -24,12 +24,12 @@
 package com.silverpeas.gallery.web;
 
 import com.silverpeas.gallery.ImageHelper;
+import com.silverpeas.gallery.VideoHelper;
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.model.AlbumDetail;
 import com.silverpeas.gallery.model.GalleryRuntimeException;
 import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.MediaPK;
-import com.silverpeas.gallery.model.Photo;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -44,7 +44,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.io.InputStream;
 import java.net.URI;
-import java.util.Date;
 import java.util.EnumSet;
 
 import static com.silverpeas.gallery.web.GalleryResourceURIs.*;
@@ -95,7 +94,7 @@ public abstract class AbstractGalleryResource extends RESTWebService {
     checkNotFoundStatus(media);
     checkNotFoundStatus(media.getPhoto());
     checkNotFoundStatus(album);
-    verifyPhotoIsInAlbum(media.getPhoto(), album);
+    verifyMediaIsInAlbum(media.getPhoto(), album);
     return PhotoEntity.createFrom(media.getPhoto(), getUserPreferences().getLanguage())
         .withURI(buildPhotoURI(media.getMediaPK(), album.getNodePK()))
         .withParentURI(buildAlbumURI(album.getNodePK()));
@@ -103,19 +102,24 @@ public abstract class AbstractGalleryResource extends RESTWebService {
 
   /**
    * Converts the photo into an input stream.
-   *
-   *
-   *
-   * @param photo
+   * @param media
    * @param album the album of the photo.
    * @param isOriginalRequired the original or preview content
    * @return the corresponding photo entity.
    */
-  protected InputStream asInputStream(Photo photo, AlbumDetail album, boolean isOriginalRequired) {
-    checkNotFoundStatus(photo);
+  protected InputStream asInputStream(Media media, AlbumDetail album, boolean isOriginalRequired) {
+    checkNotFoundStatus(media);
     checkNotFoundStatus(album);
-    verifyPhotoIsInAlbum(photo, album);
-    return ImageHelper.openInputStream(photo, isOriginalRequired);
+    verifyMediaIsInAlbum(media, album);
+    switch (media.getType()) {
+      case Photo:
+        return ImageHelper.openInputStream(media.getPhoto(), isOriginalRequired);
+      case Video:
+        return VideoHelper.openInputStream(media.getVideo());
+      case Sound:
+      case Streaming:
+    }
+    return null;
   }
 
   /**
@@ -206,8 +210,8 @@ public abstract class AbstractGalleryResource extends RESTWebService {
    *
    * @return
    */
-  protected void verifyPhotoIsInAlbum(Photo photo, AlbumDetail album) {
-    if (!album.getMedia().contains(photo)) {
+  protected void verifyMediaIsInAlbum(Media media, AlbumDetail album) {
+    if (!album.getMedia().contains(media)) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
   }
