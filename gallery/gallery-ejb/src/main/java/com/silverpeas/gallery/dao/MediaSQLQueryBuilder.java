@@ -40,6 +40,7 @@ import java.util.List;
 
 import static com.silverpeas.gallery.model.MediaCriteria.QUERY_ORDER_BY;
 import static com.silverpeas.gallery.model.MediaCriteria.VISIBILITY;
+import static com.silverpeas.gallery.model.MediaCriteria.VISIBILITY.HIDDEN_ONLY;
 
 /**
  * A dynamic builder of a SQL query.
@@ -95,17 +96,27 @@ public class MediaSQLQueryBuilder implements MediaCriteriaProcessor {
 
   @Override
   public MediaCriteriaProcessor processVisibility(final VISIBILITY visibility,
-      final Date dateReference) {
+      final Date dateReference, final UserDetail creator) {
     switch (visibility) {
       case VISIBLE_ONLY:
-      case BY_DEFAULT:
-        where(conjunction).append("? between M.beginVisibilityDate and M.endVisibilityDate");
-        parameters.add(dateReference.getTime());
-        break;
       case HIDDEN_ONLY:
-        where(conjunction).append("(? < M.beginVisibilityDate or ? > M.endVisibilityDate)");
-        parameters.add(dateReference.getTime());
-        parameters.add(dateReference.getTime());
+      case BY_DEFAULT:
+        final StringBuilder clause;
+        if (visibility == HIDDEN_ONLY) {
+          clause =
+              where(conjunction).append("((? < M.beginVisibilityDate or ? > M.endVisibilityDate)");
+          parameters.add(dateReference.getTime());
+          parameters.add(dateReference.getTime());
+        } else {
+          clause = where(conjunction)
+              .append("((? between M.beginVisibilityDate and M.endVisibilityDate)");
+          parameters.add(dateReference.getTime());
+        }
+        if (creator != null) {
+          clause.append(" or M.createdBy = ?");
+          parameters.add(creator.getId());
+        }
+        clause.append(")");
         break;
       case FORCE_GET_ALL:
         // No clause

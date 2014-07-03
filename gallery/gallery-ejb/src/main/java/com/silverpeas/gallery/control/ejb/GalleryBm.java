@@ -66,10 +66,6 @@ public interface GalleryBm {
 
   public void addMediaToAlbums(Media media, String... albums);
 
-  /*public void setMediaPath(Media media, String... albums);
-
-  public void addMediaPaths(Media media, String... albums);*/
-
   public PhotoDetail getPhoto(MediaPK mediaPK);
 
   public Media getMedia(MediaPK mediaPK);

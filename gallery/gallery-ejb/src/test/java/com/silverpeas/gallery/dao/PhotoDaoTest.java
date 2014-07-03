@@ -46,10 +46,6 @@ import static org.hamcrest.Matchers.*;
 
 public class PhotoDaoTest extends BaseGalleryTest {
 
-  private static final String GALLERY0 = "gallery25";
-  private static final String GALLERY1 = "gallery26";
-  private static final String GALLERY2 = "gallery27";
-
   @Override
   public String getDataSetPath() {
     return "com/silverpeas/gallery/dao/photo_dataset.xml";

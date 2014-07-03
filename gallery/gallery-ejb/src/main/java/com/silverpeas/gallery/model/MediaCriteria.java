@@ -100,7 +100,7 @@ public class MediaCriteria {
   }
 
   private UserDetail requester;
-  private SilverpeasRole requesterComponentLowerRole;
+  private SilverpeasRole componentHighestRequesterRole;
   private String componentInstanceId;
   private UserDetail creator;
   private final List<String> albumIds = new ArrayList<String>();
@@ -170,7 +170,7 @@ public class MediaCriteria {
    */
   public MediaCriteria setRequester(UserDetail requester) {
     this.requester = requester;
-    requesterComponentLowerRole = null;
+    componentHighestRequesterRole = null;
     return this;
   }
 
@@ -293,14 +293,14 @@ public class MediaCriteria {
     return requester;
   }
 
-  private SilverpeasRole getRequesterComponentLowerRole() {
-    if (requesterComponentLowerRole == null) {
+  private SilverpeasRole getComponentHighestRequesterRole() {
+    if (componentHighestRequesterRole == null) {
       Set<SilverpeasRole> requesterRoles = SilverpeasRole.from(
           OrganisationControllerFactory.getOrganisationController()
               .getUserProfiles(getRequester().getId(), getComponentInstanceId()));
-      requesterComponentLowerRole = SilverpeasRole.getGreaterFrom(requesterRoles);
+      componentHighestRequesterRole = SilverpeasRole.getGreaterFrom(requesterRoles);
     }
-    return requesterComponentLowerRole;
+    return componentHighestRequesterRole;
   }
 
   /**
@@ -381,13 +381,18 @@ public class MediaCriteria {
     if (StringUtil.isDefined(getComponentInstanceId())) {
       processor.processComponentInstance(getComponentInstanceId());
     }
+    UserDetail creatorForVisibility = null;
     VISIBILITY theVisibility = getVisibility();
-    if (theVisibility == BY_DEFAULT && getRequester() != null &&
-        (getRequester().isAccessAdmin() || getRequesterComponentLowerRole() == null ||
-            getRequesterComponentLowerRole().isGreaterThanOrEquals(SilverpeasRole.publisher))) {
-      theVisibility = FORCE_GET_ALL;
+    if (getRequester() != null) {
+      if (theVisibility == BY_DEFAULT && (getRequester().isAccessAdmin() ||
+          (getComponentHighestRequesterRole() != null && getComponentHighestRequesterRole()
+              .isGreaterThanOrEquals(SilverpeasRole.publisher)))) {
+        theVisibility = FORCE_GET_ALL;
+      } else if (getComponentHighestRequesterRole() == SilverpeasRole.writer) {
+        creatorForVisibility = getRequester();
+      }
     }
-    processor.then().processVisibility(theVisibility, getReferenceDate());
+    processor.then().processVisibility(theVisibility, getReferenceDate(), creatorForVisibility);
     if (!getAlbumIds().isEmpty()) {
       processor.then().processAlbums(getAlbumIds());
     }

@@ -320,6 +320,45 @@ public class MediaDaoTest extends BaseGalleryTest {
   }
 
   @Test
+  public void getSoundsAccordingToRequesterAndVisibility() throws Exception {
+    performDAOTest(new DAOTest() {
+      @Override
+      public void test(final Connection connection) throws Exception {
+        List<Media> media = MediaDAO.findByCriteria(connection,
+            mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Sound));
+        assertThat(media, hasSize(1));
+        assertMediaType(media, MediaType.Sound, Sound.class);
+        assertThat(media.get(0).getId(), is("s_2"));
+
+        media = MediaDAO.findByCriteria(connection,
+            mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Sound)
+                .setRequester(adminAccessUser));
+        assertThat(media, hasSize(2));
+        assertMediaType(media, MediaType.Sound, Sound.class);
+
+        media = MediaDAO.findByCriteria(connection,
+            mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Sound)
+                .setRequester(publisherUser));
+        assertThat(media, hasSize(2));
+        assertMediaType(media, MediaType.Sound, Sound.class);
+
+        media = MediaDAO.findByCriteria(connection,
+            mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Sound)
+                .setRequester(writerUser));
+        assertThat(media, hasSize(2));
+        assertMediaType(media, MediaType.Sound, Sound.class);
+
+        media = MediaDAO.findByCriteria(connection,
+            mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Sound)
+                .setRequester(userUser));
+        assertThat(media, hasSize(1));
+        assertMediaType(media, MediaType.Sound, Sound.class);
+        assertThat(media.get(0).getId(), is("s_2"));
+      }
+    });
+  }
+
+  @Test
   public void getMediaThatWillBeNotVisible() throws Exception {
     performDAOTest(new DAOTest() {
       @Override

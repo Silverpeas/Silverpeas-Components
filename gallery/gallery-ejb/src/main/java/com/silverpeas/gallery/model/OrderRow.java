@@ -63,7 +63,7 @@ public class OrderRow {
   }
 
   public void setMediaId(String mediaId) {
-    if (StringUtil.isNotDefined(mediaId) || mediaId.equals(this.mediaId)) {
+    if (StringUtil.isNotDefined(mediaId) || !mediaId.equals(this.mediaId)) {
       internalMedia = null;
     }
     this.mediaId = mediaId;

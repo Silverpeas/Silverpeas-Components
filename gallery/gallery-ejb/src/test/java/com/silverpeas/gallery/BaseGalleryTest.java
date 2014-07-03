@@ -49,6 +49,10 @@ import static org.mockito.Mockito.when;
  */
 public abstract class BaseGalleryTest extends DAOBasedTest {
 
+  protected static final String GALLERY0 = "gallery25";
+  protected static final String GALLERY1 = "gallery26";
+  protected static final String GALLERY2 = "gallery27";
+
   protected final static String INSTANCE_A = "instanceId_A";
   protected final static Date TODAY = java.sql.Date.valueOf("2014-03-01");
   protected final static Date CREATE_DATE = Timestamp.valueOf("2014-06-01 16:38:52.253");
@@ -67,6 +71,7 @@ public abstract class BaseGalleryTest extends DAOBasedTest {
   protected UserDetail adminAccessUser;
   protected UserDetail publisherUser;
   protected UserDetail writerUser;
+  protected UserDetail userUser;
 
   private OrganisationController organisationControllerMock;
 
@@ -98,21 +103,29 @@ public abstract class BaseGalleryTest extends DAOBasedTest {
     adminAccessUser.setAccessLevel(UserAccessLevel.ADMINISTRATOR);
     publisherUser = new UserDetail();
     publisherUser.setId("publisherUserId");
-    adminAccessUser.setLastName("publisherUserName");
+    publisherUser.setLastName("publisherUserName");
     writerUser = new UserDetail();
     writerUser.setId("writerUserId");
-    adminAccessUser.setLastName("writerUserName");
+    writerUser.setLastName("writerUserName");
+    userUser = new UserDetail();
+    userUser.setId("userUserId");
+    userUser.setLastName("userUserName");
 
     when(getOrganisationControllerMock().getUserDetail(adminAccessUser.getId()))
         .thenReturn(adminAccessUser);
     when(getOrganisationControllerMock().getUserDetail(publisherUser.getId()))
         .thenReturn(publisherUser);
     when(getOrganisationControllerMock().getUserDetail(writerUser.getId())).thenReturn(writerUser);
+    when(getOrganisationControllerMock().getUserDetail(userUser.getId())).thenReturn(userUser);
 
-    when(getOrganisationControllerMock().getUserProfiles(publisherUser.getId(), INSTANCE_A))
-        .thenReturn(new String[]{SilverpeasRole.reader.name(), SilverpeasRole.publisher.name()});
-    when(getOrganisationControllerMock().getUserProfiles(writerUser.getId(), INSTANCE_A))
-        .thenReturn(new String[]{SilverpeasRole.reader.name(), SilverpeasRole.writer.name()});
+    for (String instanceId : new String[]{INSTANCE_A, GALLERY0, GALLERY1, GALLERY2}) {
+      when(getOrganisationControllerMock().getUserProfiles(publisherUser.getId(), instanceId))
+          .thenReturn(new String[]{SilverpeasRole.reader.name(), SilverpeasRole.publisher.name()});
+      when(getOrganisationControllerMock().getUserProfiles(writerUser.getId(), instanceId))
+          .thenReturn(new String[]{SilverpeasRole.reader.name(), SilverpeasRole.writer.name()});
+      when(getOrganisationControllerMock().getUserProfiles(userUser.getId(), instanceId))
+          .thenReturn(new String[]{SilverpeasRole.reader.name()});
+    }
   }
 
   @Override

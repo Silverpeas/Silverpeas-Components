@@ -69,9 +69,11 @@ public interface MediaCriteriaProcessor {
    * Processes the criterion on the media visibility.
    * @param visibility the requested visibility.
    * @param dateReference
+   * @param creator
    * @return the processor itself.
    */
-  MediaCriteriaProcessor processVisibility(final VISIBILITY visibility, final Date dateReference);
+  MediaCriteriaProcessor processVisibility(final VISIBILITY visibility, final Date dateReference,
+      final UserDetail creator);
 
   /**
    * Processes the criterion on the media identifiers.
