@@ -1,6 +1,3 @@
-<%@ page import="com.silverpeas.gallery.GalleryComponentSettings" %>
-<%@ page import="com.silverpeas.gallery.model.InternalMedia" %>
-<%@ page import="com.silverpeas.gallery.constant.MediaResolution" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -26,15 +23,35 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
+<%@ include file="check.jsp"%>
+<%@ page import="com.silverpeas.gallery.model.InternalMedia"%>
+
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ include file="check.jsp" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
+
+<%-- Set resource bundle --%>
+<c:set var="_language" value="${requestScope.resources.language}"/>
+
+<fmt:setLocale value="${_language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
+
+
+<c:set var="instanceId" value="${requestScope.browseContext[3]}"/>
+<c:set var="profile" value="${requestScope.Profile}"/>
+<c:set var="order" value="${requestScope.Order}"/>
+
 
 <%
 	// récupération des paramètres :
 	String			profile				= (String) request.getAttribute("Profile");
 	Order			order				= (Order) request.getAttribute("Order");
-	Collection		selectedIds			= (Collection) request.getAttribute("SelectedIds");
 
 	// paramètres du formulaire
 	Form		xmlForm 		= (Form) request.getAttribute("XMLForm");
@@ -46,7 +63,7 @@
 	MediaResolution extension		= MediaResolution.TINY;
   MediaResolution 	extensionAlt 	= MediaResolution.MEDIUM;
 
-	List 		rows 	= order.getRows();
+	List<OrderRow> 		rows 	= order.getRows();
 	Iterator 	itP 	= (Iterator) rows.iterator();
 
 	PagesContext 		context 	= new PagesContext("myForm", "0", resource.getLanguage(), false, componentId, null);
@@ -56,350 +73,172 @@
 <html>
 <head>
 <view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+<view:includePlugin name="qtip"/>
+<script type="text/javascript" src="<c:url value="/util/javaScript/animation.js"/>"></script>
 <script type="text/javascript">
+$(document).ready(function() {
+  $('.imagePreview').qtip({
+    style: { classes: 'qtip-bootstrap' },
+    content: {
+      text: function(api) {
+          return "<img src='" + $(this).attr("rel") + "' />";
+      },
+      title: {text: '<fmt:message key="gallery.preview" />'}
+    }
+  });
+});
 
-/***********************************************
-* Image w/ description tooltip- By Dynamic Web Coding (www.dyn-web.com)
-* Copyright 2002-2007 by Sharon Paine
-* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
-***********************************************/
+var albumWindow = window;
 
-/* IMPORTANT: Put script after tooltip div or
-	 put tooltip div just before </BODY>. */
-
-var dom = (document.getElementById) ? true : false;
-var ns5 = (!document.all && dom || window.opera) ? true: false;
-var ie5 = ((navigator.userAgent.indexOf("MSIE")>-1) && dom) ? true : false;
-var ie4 = (document.all && !dom) ? true : false;
-var nodyn = (!ns5 && !ie4 && !ie5 && !dom) ? true : false;
-
-var origWidth, origHeight;
-
-// avoid error of passing event object in older browsers
-if (nodyn) { event = "nope" }
-
-///////////////////////  CUSTOMIZE HERE   ////////////////////
-// settings for tooltip
-// Do you want tip to move when mouse moves over link?
-var tipFollowMouse= false;
-// Be sure to set tipWidth wide enough for widest image
-var tipWidth= 160;
-var offX= 20;	// how far from mouse to show tip
-var offY= 12;
-var tipFontFamily= "Verdana, arial, helvetica, sans-serif";
-var tipFontSize= "8pt";
-// set default text color and background color for tooltip here
-// individual tooltips can have their own (set in messages arrays)
-// but don't have to
-var tipFontColor= "#000000";
-var tipBgColor= "#DDECFF";
-var tipBorderColor= "#000000";
-var tipBorderWidth= 1;
-var tipBorderStyle= "solid";
-var tipPadding= 0;
-
-// tooltip content goes here (image, description, optional bgColor, optional textcolor)
-var messages = new Array();
-// multi-dimensional arrays containing:
-// image and text for tooltip
-// optional: bgColor and color to be sent to tooltip
-<%
-	int messagesId = 0;
-	while (itP.hasNext())
+function getObjects(selected)
+{
+	var  items = "";
+	try
 	{
-		OrderRow row = (OrderRow) itP.next();
-		InternalMedia iMedia = row.getInternalMedia();
-		String nomRep = iMedia.getWorkspaceSubFolderName();
-%>
-		messages[<%=messagesId%>] = new Array('<%=FileServerUtils.getUrl( componentId, iMedia.getId()
-		    + extensionAlt.getThumbnailSuffix(), iMedia.getFileMimeType(), nomRep)%>',
-		    '<%=EncodeHelper.javaStringToJsString(iMedia.getName())%>',"#FFFFFF");
-<%
-		messagesId++;
-	}
-%>
-
-////////////////////  END OF CUSTOMIZATION AREA  ///////////////////
-
-// preload images that are to appear in tooltip
-// from arrays above
-if (document.images) {
-	var theImgs = new Array();
-	for (var i=0; i<messages.length; i++) {
-  	theImgs[i] = new Image();
-		theImgs[i].src = messages[i][0];
-  }
-}
-
-// to layout image and text, 2-row table, image centered in top cell
-// these go in var tip in doTooltip function
-// startStr goes before image, midStr goes between image and text
-var startStr = '<table><tr><td align="center" width="100%"><img src="';
-var midStr = '" border="0"></td></tr><tr><td valign="top" align="center">';
-var endStr = '</td></tr></table>';
-
-////////////////////////////////////////////////////////////
-//  initTip	- initialization for tooltip.
-//		Global variables for tooltip.
-//		Set styles
-//		Set up mousemove capture if tipFollowMouse set true.
-////////////////////////////////////////////////////////////
-var tooltip, tipcss;
-function initTip() {
-	if (nodyn) return;
-	tooltip = (ie4)? document.all['tipDiv']: (ie5||ns5)? document.getElementById('tipDiv'): null;
-	tipcss = tooltip.style;
-	if (ie4||ie5||ns5) {	// ns4 would lose all this on rewrites
-		//tipcss.width = tipWidth+"px";
-		tipcss.fontFamily = tipFontFamily;
-		tipcss.fontSize = tipFontSize;
-		tipcss.color = tipFontColor;
-		tipcss.backgroundColor = tipBgColor;
-		tipcss.borderColor = tipBorderColor;
-		tipcss.borderWidth = tipBorderWidth+"px";
-		tipcss.padding = tipPadding+"px";
-		tipcss.borderStyle = tipBorderStyle;
-	}
-	if (tooltip&&tipFollowMouse) {
-		document.onmousemove = trackMouse;
-	}
-}
-
-window.onload = initTip;
-
-/////////////////////////////////////////////////
-//  doTooltip function
-//			Assembles content for tooltip and writes
-//			it to tipDiv
-/////////////////////////////////////////////////
-var t1,t2;	// for setTimeouts
-var tipOn = false;	// check if over tooltip link
-function doTooltip(evt,num) {
-	if (!tooltip) return;
-	if (t1) clearTimeout(t1);	if (t2) clearTimeout(t2);
-	tipOn = true;
-	// set colors if included in messages array
-	if (messages[num][2])	var curBgColor = messages[num][2];
-	else curBgColor = tipBgColor;
-	if (messages[num][3])	var curFontColor = messages[num][3];
-	else curFontColor = tipFontColor;
-	if (ie4||ie5||ns5) {
-		var tip = startStr + messages[num][0] + midStr + '<span style="font-family:' + tipFontFamily + '; font-size:' + tipFontSize + '; color:' + curFontColor + ';">' + messages[num][1] + '</span>' + endStr;
-		tipcss.backgroundColor = curBgColor;
-	 	tooltip.innerHTML = tip;
-	}
-	if (!tipFollowMouse) positionTip(evt);
-	else t1=setTimeout("tipcss.visibility='visible'",100);
-}
-
-var mouseX, mouseY;
-function trackMouse(evt) {
-	standardbody=(document.compatMode=="CSS1Compat")? document.documentElement : document.body //create reference to common "body" across doctypes
-	mouseX = (ns5)? evt.pageX: window.event.clientX + standardbody.scrollLeft;
-	mouseY = (ns5)? evt.pageY: window.event.clientY + standardbody.scrollTop;
-	if (tipOn) positionTip(evt);
-}
-
-/////////////////////////////////////////////////////////////
-//  positionTip function
-//		If tipFollowMouse set false, so trackMouse function
-//		not being used, get position of mouseover event.
-//		Calculations use mouseover event position,
-//		offset amounts and tooltip width to position
-//		tooltip within window.
-/////////////////////////////////////////////////////////////
-function positionTip(evt) {
-	if (!tipFollowMouse) {
-		standardbody=(document.compatMode=="CSS1Compat")? document.documentElement : document.body
-		mouseX = (ns5)? evt.pageX: window.event.clientX + standardbody.scrollLeft;
-		mouseY = (ns5)? evt.pageY: window.event.clientY + standardbody.scrollTop;
-	}
-	// tooltip width and height
-	var tpWd = (ie4||ie5)? tooltip.clientWidth: tooltip.offsetWidth;
-	var tpHt = (ie4||ie5)? tooltip.clientHeight: tooltip.offsetHeight;
-	// document area in view (subtract scrollbar width for ns)
-	var winWd = (ns5)? window.innerWidth-20+window.pageXOffset: standardbody.clientWidth+standardbody.scrollLeft;
-	var winHt = (ns5)? window.innerHeight-20+window.pageYOffset: standardbody.clientHeight+standardbody.scrollTop;
-	// check mouse position against tip and window dimensions
-	// and position the tooltip
-	if ((mouseX+offX+tpWd)>winWd)
-		tipcss.left = mouseX-(tpWd+offX)+"px";
-	else tipcss.left = mouseX+offX+"px";
-	if ((mouseY+offY+tpHt)>winHt)
-		tipcss.top = winHt-(tpHt+offY)+"px";
-	else tipcss.top = mouseY+offY+"px";
-	if (!tipFollowMouse) t1=setTimeout("tipcss.visibility='visible'",100);
-}
-
-function hideTip() {
-	if (!tooltip) return;
-	t2=setTimeout("tipcss.visibility='hidden'",100);
-	tipOn = false;
-}
-
-document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-index:100"></div>')
-
-</script>
-<script language="javascript">
-	var albumWindow = window;
-
-	function getObjects(selected)
-	{
-		var  items = "";
-		try
-		{
-			var boxItems = document.orderForm.SelectMedia;
-			if (boxItems != null){
-				// au moins une checkbox exist
-				var nbBox = boxItems.length;
-				if ( (nbBox == null) && (boxItems.checked == selected) ){
-					// il n'y a qu'une checkbox non selectionnée
-					items += boxItems.value+",";
-				} else{
-					// search not checked boxes
-					for (i=0;i<boxItems.length ;i++ ){
-						if (boxItems[i].checked == selected){
-							items += boxItems[i].value+",";
-						}
+		var boxItems = document.orderForm.SelectMedia;
+		if (boxItems != null){
+			// au moins une checkbox exist
+			var nbBox = boxItems.length;
+			if ( (nbBox == null) && (boxItems.checked == selected) ){
+				// il n'y a qu'une checkbox non selectionnée
+				items += boxItems.value+",";
+			} else{
+				// search not checked boxes
+				for (i=0;i<boxItems.length ;i++ ){
+					if (boxItems[i].checked == selected){
+						items += boxItems[i].value+",";
 					}
 				}
 			}
 		}
-		catch (e)
-		{
-			//Checkboxes are not displayed
-		}
-		return items;
 	}
-
-	function doPagination(index)
+	catch (e)
 	{
-		document.orderForm.SelectedIds.value 	= getObjects(true);
-		document.orderForm.NotSelectedIds.value = getObjects(false);
-		document.orderForm.Index.value 			= index;
-		document.orderForm.action				= "OrderPagination";
-		document.orderForm.submit();
+		//Checkboxes are not displayed
 	}
+	return items;
+}
 
-	var orderWindow = window;
+function doPagination(index)
+{
+	document.orderForm.SelectedIds.value 	= getObjects(true);
+	document.orderForm.NotSelectedIds.value = getObjects(false);
+	document.orderForm.Index.value 			= index;
+	document.orderForm.action				= "OrderPagination";
+	document.orderForm.submit();
+}
 
-	function download(photoId)
+var orderWindow = window;
+
+function download(photoId)
+{
+	var url = "OrderDownloadMedia?MediaId="+photoId;
+    windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
+    if (!orderWindow.closed && orderWindow.name == "orderWindow")
+        orderWindow.close();
+    orderWindow = SP_openWindow(url, "orderWindow", "740", "600", windowParams);
+}
+
+function updateOrder()
+{
+	if (isCorrectForm())
 	{
-		var url = "OrderDownloadMedia?MediaId="+photoId;
-	    windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
-	    if (!orderWindow.closed && orderWindow.name == "orderWindow")
-	        orderWindow.close();
-	    orderWindow = SP_openWindow(url, "orderWindow", "740", "600", windowParams);
-	}
-
-	function updateOrder()
-	{
-		if (isCorrectForm())
+		if(window.confirm("<fmt:message key="gallery.confirmValidOrder"/> "))
 		{
-			if(window.confirm("<%=resource.getString("gallery.confirmValidOrder")%> "))
-			{
-				document.orderForm.action			= "OrderUpdate";
-				document.orderForm.submit();
-			}
-		}
-		else
-		{
-			var errorMsg = "<%=resource.getString("gallery.checkAll")%>";
-			window.alert(errorMsg);
+			document.orderForm.action			= "OrderUpdate";
+			document.orderForm.submit();
 		}
 	}
-
-	function isCorrectForm()
+	else
 	{
-		<%
-			// tableau des photoIds
-			itP = (Iterator) rows.iterator();
-			String elementIds = "";
-			while (itP.hasNext())
-			{
-				OrderRow row = (OrderRow) itP.next();
-
-				elementIds += "\"DownloadType"+row.getMediaId()+"\"";
-				if (itP.hasNext())
-					elementIds += ", ";
-			}
-		%>
-
-		var elementIds = new Array(<%=elementIds%>);
-
-		var selectItem;
-		var nbErrors = 0;
-		for (i=0; i<elementIds.length; i++)
-		{
-			selectItem = document.getElementById(elementIds[i]);
-			if (selectItem != null && selectItem.value == "0")
-			{
-				nbErrors++;
-			}
-		}
-
-		if (nbErrors > 0)
-			return false;
-		else
-			return true;
+		var errorMsg = "<fmt:message key="gallery.checkAll"/>";
+		window.alert(errorMsg);
 	}
+}
+
+function isCorrectForm()
+{
+	<%
+		// tableau des photoIds
+		itP = (Iterator) rows.iterator();
+		String elementIds = "";
+		while (itP.hasNext())
+		{
+			OrderRow row = (OrderRow) itP.next();
+
+			elementIds += "\"DownloadType"+row.getMediaId()+"\"";
+			if (itP.hasNext())
+				elementIds += ", ";
+		}
+	%>
+
+	var elementIds = new Array(<%=elementIds%>);
+
+	var selectItem;
+	var nbErrors = 0;
+	for (i=0; i<elementIds.length; i++)
+	{
+		selectItem = document.getElementById(elementIds[i]);
+		if (selectItem != null && selectItem.value == "0")
+		{
+			nbErrors++;
+		}
+	}
+
+	if (nbErrors > 0)
+		return false;
+	else
+		return true;
+}
 </script>
 </head>
-<body>
+<body id="${instanceId}" class="gallery gallery-order">
+
+<fmt:message var="orderLabel" key="gallery.order" />
+<view:browseBar extraInformations="${orderLabel}">
+  <fmt:message var="orderListLabel" key="gallery.viewOrderList" />
+  <view:browseBarElt label="${orderListLabel}" link="OrderViewList"></view:browseBarElt>
+</view:browseBar>
+
+<view:window>
+<view:frame>
+
+<table width="80%">
+  <tr>
+    <td class="txtlibform" nowrap><fmt:message key="gallery.descriptionOrder"/> :</td>
+    <td>${order.orderId}</td>
+  </tr>
+  <tr>
+    <td class="txtlibform" nowrap><fmt:message key="gallery.orderOf"/> :</td>
+    <td>${order.userName}</td>
+  </tr>
+  <tr>
+    <td class="txtlibform" nowrap><fmt:message key="gallery.orderDate"/> :</td>
+    <c:set var="orderDate">
+      <c:if test="${not empty order.creationDate}">
+        <view:formatDateTime value="${order.creationDate}" language="${_language}" />
+      </c:if>
+    </c:set>
+    <td>${orderDate}</td>
+  </tr>
+  <tr>
+    <td class="txtlibform" nowrap><fmt:message key="gallery.nbRows"/> :</td>
+    <td>${order.nbRows}</td>
+  </tr>
+  <tr>
+    <td class="txtlibform" nowrap><fmt:message key="GML.status"/> :</td>
+    <c:if test="${not empty order.processDate}">
+      <fmt:message key="gallery.processDate" var="processDateMsg" />
+      <c:set var="processDate"><view:formatDateTime value="${order.processDate}" language="${_language}" /></c:set>
+    </c:if>
+    <td>${processDateMsg} ${processDate}</td>
+  </tr>
+</table>
+
+
+
 <%
-	// création de la barre de navigation
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel, "Main");
-	String chemin = "<a href=\"OrderViewList\">" + resource.getString("gallery.viewOrderList")+"</a>" + " > " + resource.getString("gallery.order");
-	browseBar.setPath(chemin);
-
 	String orderId = order.getOrderId();
-
-	out.println(window.printBefore());
-    out.println(frame.printBefore());
-
- 	// déclaration des boutons
-	Button validateButton = gef.getFormButton(resource.getString("GML.validate"), "javascript:updateOrder()", false);
-	Button cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "OrderViewList", false);
-	Button returnButton	= gef.getFormButton(resource.getString("GML.back"), "OrderViewList", false);
-
-    // entête de la demande
-    // --------------------
-    Board board	= gef.getBoard();
-
-    board.printBefore();
-    %>
-	<table border="0" width="80%">
-		<tr>
-			<td class="txtlibform" nowrap><%=resource.getString("gallery.descriptionOrder")%> :</td>
-			<td><%=order.getOrderId()%></td>
-		</tr>
-		<tr>
-			<td class="txtlibform" nowrap><%=resource.getString("gallery.orderOf")%> :</td>
-			<td><%=order.getUserName()%></td>
-		</tr>
-		<tr>
-			<td class="txtlibform" nowrap><%=resource.getString("gallery.orderDate")%> :</td>
-			<td><%=resource.getOutputDateAndHour(order.getCreationDate())%></td>
-		</tr>
-		<tr>
-			<td class="txtlibform" nowrap><%=resource.getString("gallery.nbRows")%> :</td>
-			<td><%=order.getNbRows()%></td>
-		</tr>
-		<tr>
-			<td class="txtlibform" nowrap><%=resource.getString("GML.status")%> :</td>
-			<%
-			String processDate = resource.getOutputDateAndHour(order.getProcessDate());
-			String status = resource.getString("gallery.wait");
-			if (!processDate.equals(""))
-		    	status = resource.getString("gallery.processDate") + processDate;
-			%>
-			<td><%=status%></td>
-		</tr>
-	</table>
-	<%
-	board.printAfter();
 
 	// formulaire
 	if (xmlForm != null)
@@ -407,9 +246,7 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
 		%>
 			<br/>
 
-			<%=board.printBefore()%>
 			<table border="0" width="50%">
-			<!-- AFFICHAGE du formulaire -->
 				<tr>
 					<td colspan="2">
 					<%
@@ -421,193 +258,131 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
 					</td>
 				</tr>
 			</table>
-			<%=board.printAfter()%>
 			<br/>
 		<% }
-
-	// afficher la charte
-
 	%>
 		<table><tr>
-			<td><input type="checkbox" checked=true disabled=true name="CheckCharte"/> </td><td><%=resource.getString("gallery.validCharte")%></td>
+			<td><input type="checkbox" checked="checked" disabled="disabled" name="CheckCharte"/> </td><td><fmt:message key="gallery.validCharte"/></td>
 		</tr></table>
 
 
-	<FORM NAME="orderForm" Method="POST" accept-charset="UTF-8">
+	<form name="orderForm" method="POST" accept-charset="UTF-8">
 	<input type="hidden" name="SelectedIds">
 	<input type="hidden" name="NotSelectedIds">
-	<input type="hidden" name="OrderId" value="<%=orderId%>">
-	<%
-
-  // afficher les photos
-  // -------------------
-
-  // affichage des lignes de la demande dans un ArrayPane
-  ArrayPane arrayPane = gef.getArrayPane("order", "OrderViewPagin", request, session);
-  arrayPane.setVisibleLineNumber(100);
-  boolean viewValid = true;
-
-  if ("admin".equals(profile)) {
-
-    boolean ok = false;
-    itP = rows.iterator();
-    if (itP.hasNext()) {
-      ArrayColumn columnOp0 = arrayPane.addArrayColumn(resource.getString("gallery.media"));
-      columnOp0.setSortable(false);
-      ArrayColumn columnOp1 = arrayPane.addArrayColumn(resource.getString("gallery.choiceDownload"));
-      columnOp1.setSortable(false);
-      ok = true;
-    }
-    int indexPhoto = 0;
-    while (itP.hasNext()) {
-      ArrayLine ligne = arrayPane.addArrayLine();
-
-      OrderRow row = (OrderRow) itP.next();
-      mediaId = row.getMediaId();
-
-      String download = row.getDownloadDecision();
-
-      String name = mediaId + extension.getThumbnailSuffix();
-      InternalMedia iMedia = row.getInternalMedia();
-      String vignette_url = iMedia.getApplicationThumbnailUrl(extension);
-
-      ArrayCellText arrayCellText0 = ligne.addArrayCellText(
-          "<a href=\"MediaView?MediaId=" + mediaId + "\" onmouseover=\"doTooltip(event," + indexPhoto + ")\" onmouseout=\"hideTip()\"><IMG SRC=\"" + vignette_url + "\" border=\"0\"></a>");
-      arrayCellText0.setCompareOn(name);
-      indexPhoto++;
+	<input type="hidden" name="OrderId" value="${order.orderId}">
 
 
-      // colonne des choix de téléchargement
-      String choix = "";
-      if ("T".equals(download)) {
-        // la photo a été téléchargée
-        Date dateDownload = row.getDownloadDate();
-
-        choix = resource.getString("gallery.downloadDate") + resource.getOutputDateAndHour(
-            dateDownload);
-        viewValid = false;
-      } else {
-        if (!DBUtil.isSqlDefined(order.getProcessUserId())) {
-          // la demande est déjà traitée
-          if (("R").equals(download)) {
-            // la photo a été refusée
-            choix = resource.getString("gallery.refused");
-          } else if (("D").equals(download)) {
-            // la photo est autorisée en téléchargement
-            choix = resource.getString("gallery.downloadOk");
-          } else if (("DW").equals(download)) {
-            // la photo est autorisée en téléchargement avec le watermark
-            choix = resource.getString("gallery.downloadWithWatermark");
-          }
-          viewValid = false;
-        } else {
-          choix = "<select name=\"DownloadType" + mediaId + "\" id=\"DownloadType" + mediaId + "\" onChange=\"javascript:downloadGoTo(this.selectedIndex);\">";
-          choix = choix + "<option value=\"0\" selected>" + resource.getString(
-              "gallery.choiceDownload") + "</option>";
-          choix = choix + "<option value=\"0\">-------------------------------</option>";
-          String selected = "";
-          if ("R".equals(download)) {
-            selected = "selected";
-          }
-          choix = choix + "<option value=\"R\" " + selected + ">" + resource.getString(
-              "gallery.refused") + "</option>";
-          selected = "";
-          if ("D".equals(download)) {
-            selected = "selected";
-          }
-          choix = choix + "<option value=\"D\" " + selected + ">" + resource.getString(
-              "gallery.downloadOk") + "</option>";
-          selected = "";
-          if ("DW".equals(download)) {
-            selected = "selected";
-          }
-          choix = choix + "<option value=\"DW\" " + selected + ">" + resource.getString(
-              "gallery.downloadWithWatermark") + "</option>";
-          choix = choix + "</select>";
-        }
-      }
-      ligne.addArrayCellText(choix);
-    }
-    if (ok) {
-      out.println(arrayPane.print());
-    }
-  } else {
-    boolean ok = false;
-    itP = rows.iterator();
-    if (itP.hasNext()) {
-      ArrayColumn columnOp0 = arrayPane.addArrayColumn(resource.getString("gallery.media"));
-      columnOp0.setSortable(false);
-      ArrayColumn columnOp1 = arrayPane.addArrayColumn(resource.getString("gallery.downloadDate"));
-      columnOp1.setSortable(false);
-      ok = true;
-    }
-    int indexPhoto = 0;
-    while (itP.hasNext()) {
-      ArrayLine ligne = arrayPane.addArrayLine();
-
-      OrderRow row = (OrderRow) itP.next();
-      mediaId = row.getMediaId();
-      String name = mediaId + extension.getThumbnailSuffix();
-      InternalMedia iMedia = row.getInternalMedia();
-      String vignette_url = iMedia.getApplicationThumbnailUrl(extension);
-
-      ArrayCellText arrayCellText0 = ligne.addArrayCellText(
-          "<a href=\"MediaView?MediaId=" + mediaId + "\" onmouseover=\"doTooltip(event," + indexPhoto + ")\" onmouseout=\"hideTip()\"><IMG SRC=\"" + vignette_url + "\" border=\"0\"></a>");
-      arrayCellText0.setCompareOn(name);
-      indexPhoto++;
-
-      // SECOND TELECHARGEMENT AVEC MISE A JOUR
-      // traitement du téléchargement
-      String download = resource.getString("gallery.wait");
-
-      // rechercher l'état de la photo
-      String downloadDecision = row.getDownloadDecision();
-      if (("R").equals(downloadDecision)) {
-        // la photo a été refusée
-        download = resource.getString("gallery.refused");
-      } else if (("D").equals(downloadDecision)) {
-        // la photo est autorisée en téléchargement
-        download = "<a href=\"OrderDownloadMedia?MediaId=" + mediaId + "&OrderId=" + orderId + "\" target=_blank>" + EncodeHelper.
-            javaStringToHtmlString(resource.getString("gallery.download.photo")) + "</a>";
-      } else if (("DW").equals(downloadDecision)) {
-        // la photo est autorisée en téléchargement avec le watermark
-        download = "<a href=\"OrderDownloadMedia?MediaId=" + mediaId + "&OrderId=" + orderId + "\" target=_blank>" + EncodeHelper.
-            javaStringToHtmlString(resource.getString("gallery.download.photo")) + "</a>";
-      } else if (("T").equals(downloadDecision)) {
-        // la photo est déjà téléchargée
-        Date dateDownload = row.getDownloadDate();
-        if (dateDownload != null) {
-          download = resource.getString("gallery.downloadDate") + resource.getOutputDateAndHour(
-              dateDownload);
-        }
-      }
-      ligne.addArrayCellText(download);
-    }
-    if (ok) {
-      out.println(arrayPane.print());
-    }
-  }
+  <view:arrayPane var="order" routingAddress="OrderViewPagin" >
 
 
-  ButtonPane buttonPane = gef.getButtonPane();
+    <fmt:message key="gallery.media" var="mediaCol" />
+    <view:arrayColumn title="${mediaCol}" />
 
-  if ("admin".equals(profile)) {
-    if (viewValid) {
-      buttonPane.addButton(validateButton);
-      buttonPane.addButton(cancelButton);
-    } else {
-      buttonPane.addButton(returnButton);
-    }
-  } else {
-    buttonPane.addButton(returnButton);
-  }
 
-  out.println("<br/><center>" + buttonPane.print() + "</center><br/>");
+  <c:set var="viewValidation" value="true"/>
+  <c:url var="photoSvcUrl" value="/services/gallery/${instanceId}/photos/" />
+  <c:choose>
+    <c:when test="${profile eq 'admin'}">
+      <fmt:message key="gallery.choiceDownload" var="choiceDownloadCol" />
+      <view:arrayColumn title="${choiceDownloadCol}" />
 
-  out.println(frame.printAfter());
-  out.println(window.printAfter());
-%>
-</FORM>
+      <c:forEach var="row" items="${order.rows}">
+        <view:arrayLine>
+          <c:set var="mediaTitle"><view:encodeHtml string="${row.internalMedia.title}"/></c:set>
+          <c:set var="photoCellText"><a class="imagePreview" href="MediaView?MediaId=${row.mediaId}" rel="${photoSvcUrl}${row.mediaId}/content?resolution=MEDIUM"><img src="${photoSvcUrl}${row.mediaId}/content?resolution=TINY" title="${mediaTitle}" alt="${mediaTitle}" /></a></c:set>
+          <view:arrayCellText text="${photoCellText}" />
+
+        <c:choose>
+          <c:when test="${row.downloadDecision eq 'T'}">
+            <c:set var="viewValidation" value="false"/>
+            <c:set var="downloadTxt"><fmt:message key="gallery.downloadDate"/> <view:formatDateTime value="${row.downloadDate}" /></c:set>
+          </c:when>
+          <c:otherwise>
+            <c:if test="${not empty order.processUserId}">
+              <c:set var="viewValidation" value="false"/>
+              <c:choose>
+                <c:when test="${row.downloadDecision eq 'R'}">
+                  <fmt:message var="downloadTxt" key="gallery.refused" />
+                </c:when>
+                <c:when test="${row.downloadDecision eq 'D'}">
+                  <fmt:message var="downloadTxt" key="gallery.downloadOk" />
+                </c:when>
+                <c:when test="${row.downloadDecision eq 'DW'}">
+                  <fmt:message var="downloadTxt" key="gallery.downloadWithWatermark" />
+                </c:when>
+              </c:choose>
+            </c:if>
+            <c:if test="${empty order.processUserId}">
+              <c:set var="downloadTxt">
+                <select name="DownloadType${row.mediaId}" id="DownloadType${row.mediaId}" onChange="javascript:downloadGoTo(this.selectedIndex);">
+                  <option value="0" selected><fmt:message key="gallery.choiceDownload"/></option>
+                  <option value="R"><fmt:message key="gallery.refused"/></option>
+                  <option value="D"><fmt:message key="gallery.downloadOk"/></option>
+                  <option value="DW"><fmt:message key="gallery.downloadWithWatermark"/></option>
+                </select>
+              </c:set>
+            </c:if>
+          </c:otherwise>
+        </c:choose>
+
+          <view:arrayCellText text="${downloadTxt}" />
+        </view:arrayLine>
+      </c:forEach>
+
+    </c:when>
+    <c:otherwise>
+      <fmt:message key="gallery.downloadDate" var="downloadDateCol" />
+      <view:arrayColumn title="${downloadDateCol}" />
+
+      <c:forEach var="row" items="${order.rows}">
+        <view:arrayLine>
+          <c:set var="mediaTitle"><view:encodeHtml string="${row.internalMedia.title}"/></c:set>
+          <c:set var="photoCellText"><a class="imagePreview" href="MediaView?MediaId=${row.mediaId}" rel="${photoSvcUrl}${row.mediaId}/content?resolution=MEDIUM"><img src="${photoSvcUrl}${row.mediaId}/content?resolution=TINY" title="${mediaTitle}" alt="${mediaTitle}" /></a></c:set>
+          <view:arrayCellText text="${photoCellText}" />
+
+
+          <fmt:message var="downloadTxt" key="gallery.wait" />
+          <c:choose>
+            <c:when test="${row.downloadDecision eq 'R'}">
+              <fmt:message var="downloadTxt" key="gallery.refused" />
+            </c:when>
+            <c:when test="${row.downloadDecision eq 'D' or row.downloadDecision eq 'DW'}">
+              <c:set var="downloadTxt">
+                <a href="OrderDownloadMedia?MediaId=${row.mediaId}&OrderId=${row.orderId}" target="_blank"><fmt:message key="gallery.download.photo" /> </a>
+              </c:set>
+            </c:when>
+            <c:when test="${row.downloadDecision eq 'T' and not empty row.downloadDate}">
+              <c:set var="downloadTxt"><fmt:message key="gallery.downloadDate"/> <view:formatDateTime value="${row.downloadDate}" /></c:set>
+            </c:when>
+          </c:choose>
+          <view:arrayCellText text="${downloadTxt}" />
+        </view:arrayLine>
+
+      </c:forEach>
+    </c:otherwise>
+  </c:choose>
+  </view:arrayPane>
+
+
+<fmt:message key="GML.validate" var="validateLabel" />
+<fmt:message key="GML.cancel" var="cancelLabel" />
+<fmt:message key="GML.back" var="backLabel" />
+<view:buttonPane>
+  <c:choose>
+    <c:when test="${profile eq 'admin' and viewValidation eq 'true'}">
+      <view:button action="javascript:updateOrder()" label="${validateLabel}" />
+      <view:button action="OrderViewList" label="${cancelLabel}" />
+    </c:when>
+    <c:otherwise>
+      <view:button action="OrderViewList" label="${backLabel}" />
+    </c:otherwise>
+  </c:choose>
+</view:buttonPane>
+
+</form>
+
+</view:frame>
+</view:window>
 
 </body>
 </html>

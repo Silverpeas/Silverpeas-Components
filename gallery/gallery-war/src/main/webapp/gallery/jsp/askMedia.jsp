@@ -24,89 +24,100 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ include file="check.jsp" %>
+<%@ include file="check.jsp"%>
 
-<% 
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
+<%-- Set resource bundle --%>
+<c:set var="language" value="${requestScope.resources.language}"/>
+
+<fmt:setLocale value="${language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+
+<c:set var="instanceId" value="${requestScope.browseContext[3]}"/>
+
+<%
 	Button validateButton 	= gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
-    Button cancelButton 	= gef.getFormButton(resource.getString("GML.cancel"), "javaScript:window.close()", false);
+  Button cancelButton 	= gef.getFormButton(resource.getString("GML.cancel"), "javaScript:window.close()", false);
 %>
 
 <html>
-		<head>
-		<view:looknfeel/>
-		<TITLE>Titre de la fenetre</TITLE>
-		<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-		<script language="javascript">
-			
-			function sendData() 
-			{
-				if (isCorrectForm()) 
-				{
-					document.askMediaForm.action = "SendAsk";
-	        		document.askMediaForm.submit();
-	        		window.close();
-	    		}
-			}
-		
-			function isCorrectForm() 
-			{
-		     	var errorMsg = "";
-		     	var errorNb = 0;
-		     	var title = stripInitialWhitespace(document.askMediaForm.Description.value);
-		     	if (title == "") 
-		     	{
-		           	errorMsg+="  - '<%=resource.getString("gallery.request")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
-		           	errorNb++;
-		     	} 
-		     	switch(errorNb) 
-		     	{
-		        	case 0 :
-		            	result = true;
-		            	break;
-		        	case 1 :
-		            	errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
-		            	window.alert(errorMsg);
-		            	result = false;
-		            	break;
-		        	default :
-		            	errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
-		            	window.alert(errorMsg);
-		            	result = false;
-		            	break;
-		     	} 
-		     	return result;
-			}		
-		</script>
-	
-		</head>
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5" onLoad="javascript:document.askMediaForm.Description.focus();">
+<head>
+	<view:looknfeel/>
+	<title></title>
+	<script type="text/javascript" src="<c:url value="/util/javaScript/checkForm.js"/>"></script>
+	<script type="text/javascript">
+
+function sendData()
+{
+	if (isCorrectForm())
+	{
+		document.askMediaForm.action = "SendAsk";
+		document.askMediaForm.submit();
+		window.close();
+	}
+}
+
+function isCorrectForm()
+{
+   	var errorMsg = "";
+   	var errorNb = 0;
+   	var title = stripInitialWhitespace(document.askMediaForm.Description.value);
+   	if (title == "")
+   	{
+         	errorMsg+="  - '<fmt:message key="gallery.request"/>' <fmt:message key="GML.MustBeFilled"/>\n";
+         	errorNb++;
+   	}
+   	switch(errorNb)
+   	{
+      	case 0 :
+          	result = true;
+          	break;
+      	case 1 :
+          	errorMsg = "<fmt:message key="GML.ThisFormContains"/> 1 <fmt:message key="GML.error"/> : \n" + errorMsg;
+          	window.alert(errorMsg);
+          	result = false;
+          	break;
+      	default :
+          	errorMsg = "<fmt:message key="GML.ThisFormContains"/> " + errorNb + " <fmt:message key="GML.errors"/> :\n" + errorMsg;
+          	window.alert(errorMsg);
+          	result = false;
+          	break;
+   	}
+   	return result;
+}
+  </script>
+
+</head>
+<body id="${instanceId}" class="gallery order" onLoad="javascript:document.askMediaForm.Description.focus();">
 <%
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "Main");
-	
+
 	Board board	= gef.getBoard();
-	
+
 	out.println(window.printBefore());
-    out.println(frame.printBefore());
-    out.println(board.printBefore());
+  out.println(frame.printBefore());
+  out.println(board.printBefore());
 %>
 <form name="askMediaForm" method="post" action="SendAsk">
-<table CELLPADDING="5" WIDTH="100%">
+<table cellpadding="5" width="100%">
 	<tr>
-		<td class="txtlibform"><%=resource.getString("gallery.request")%> :<br><TEXTAREA ROWS="5" COLS="90" name="Description"></TEXTAREA></td>
+		<td class="txtlibform"><fmt:message key="gallery.request"/> :<br><textarea rows="5" cols="90" name="Description"></textarea></td>
     </tr>
 </table>
 </form>
-<% 
+<%
 	out.println(board.printAfter());
 	ButtonPane buttonPane = gef.getButtonPane();
-    buttonPane.addButton(validateButton);
-    buttonPane.addButton(cancelButton);
+  buttonPane.addButton(validateButton);
+  buttonPane.addButton(cancelButton);
 	out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
-
 </body>
 </html>

@@ -89,7 +89,6 @@
     name = photo.getFileName();
   }
   String preview_url = photo.getApplicationThumbnailUrl(MediaResolution.PREVIEW);
-  long size = photo.getFileSize();
   String photoId = photo.getMediaPK().getId();
   String lien = photo.getApplicationOriginalUrl();
   String lienWatermark = "";
@@ -262,8 +261,8 @@ function goToNotify(url)
   </div>
   <div class="fileCharacteristic  bgDegradeGris">
     <p>
-      <span class="fileCharacteristicWeight"><fmt:message key="gallery.weight" /> <b><%=FileRepositoryManager.formatFileSize(size)%></b></span>
-      <span class="fileCharacteristicSize"><fmt:message key="gallery.dimension" /> <b>${photo.resolutionW} x ${photo.resolutionH} <fmt:message key="gallery.pixels" /></b></span> <br class="clear" />
+      <span class="fileCharacteristicWeight"><fmt:message key="gallery.weight" /> <b>${silfn:formatMemSize(curPhoto.fileSize)}</b></span>
+      <span class="fileCharacteristicSize"><fmt:message key="gallery.dimension" /> <b>${curPhoto.resolutionW} x ${curPhoto.resolutionH} <fmt:message key="gallery.pixels" /></b></span> <br class="clear" />
     </p>
   </div>
 

@@ -1111,10 +1111,11 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
       else if (function.startsWith("Basket")) {
         if ("BasketView".equals(function)) {
           // Basket view
-          request.setAttribute("MediaList", gallerySC.getBasketMediaIdList());
+          request.setAttribute("MediaList", gallerySC.getBasketMedias());
           request.setAttribute("NbMediaPerPage", gallerySC.getNbMediaPerPage());
           request.setAttribute("SelectedIds", gallerySC.getListSelected());
           request.setAttribute("IsOrder", gallerySC.isOrder());
+
           destination = rootDest + "basket.jsp";
         } else if ("BasketDelete".equals(function)) {
           gallerySC.deleteBasket();

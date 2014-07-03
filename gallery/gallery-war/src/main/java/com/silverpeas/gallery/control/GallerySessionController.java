@@ -1056,6 +1056,16 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     return basket;
   }
 
+  public List<Media> getBasketMedias() {
+    List<Media> medias = new ArrayList<Media>();
+    if (!basket.isEmpty()) {
+      for (String mediaId : basket) {
+        medias.add(getMediaById(mediaId));
+      }
+    }
+    return medias;
+  }
+
   public Order getOrder(String orderId) {
     return getMediaService().getOrder(orderId, getComponentId());
   }
