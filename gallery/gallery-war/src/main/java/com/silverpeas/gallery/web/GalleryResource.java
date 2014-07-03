@@ -32,7 +32,9 @@ import com.silverpeas.gallery.model.InternalMedia;
 import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.MediaPK;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.silverpeas.file.SilverpeasFile;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -133,7 +135,7 @@ public class GalleryResource extends AbstractGalleryResource {
    * @return the response to the HTTP GET request content of the asked video.
    */
   @GET
-  @Path(GALLERY_ALBUMS_URI_PART + "/{albumId}/" + GALLERY_VIDEOS_PART + "/{videoId}" +
+  @Path(GALLERY_ALBUMS_URI_PART + "/{albumId}/" + GALLERY_VIDEOS_PART + "/{videoId}/" +
       GALLERY_MEDIA_CONTENT_PART)
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
   public Response getVideoContent(@PathParam("albumId") final String albumId,
@@ -142,35 +144,18 @@ public class GalleryResource extends AbstractGalleryResource {
   }
 
   /**
-   * Centralization of getting of photo content.
-   * @param albumId
-   * @param mediaId
-   * @param mediaResolution
-   * @return
+   * Gets the content of a sound. If it doesn't exist, a 404 HTTP code is returned. If the user
+   * isn't authentified, a 401 HTTP code is returned. If a problem occurs when processing the
+   * request, a 503 HTTP code is returned.
+   * @param soundId the identifier of the sound
+   * @return the response to the HTTP GET request content of the asked sound.
    */
-  private Response getMediaContent(final String albumId, final String mediaId,
-      final MediaResolution mediaResolution) {
-    try {
-      final AlbumDetail album = getGalleryBm().getAlbum(new NodePK(albumId, getComponentId()));
-      final Media media = getGalleryBm().getMedia(new MediaPK(mediaId, getComponentId()));
-      checkNotFoundStatus(media);
-      verifyUserMediaAccess(media);
-      return Response.ok(new StreamingOutput() {
-        @Override
-        public void write(final OutputStream output) throws IOException, WebApplicationException {
-          final InputStream mediaStream = asInputStream(media.getPhoto(), album, mediaResolution);
-          try {
-            IOUtils.copy(mediaStream, output);
-          } finally {
-            IOUtils.closeQuietly(mediaStream);
-          }
-        }
-      }).header("Content-Type", ((InternalMedia) media).getFileMimeType())
-          .header("Content-Length", ((InternalMedia) media).getFileSize()).build();
-    } catch (final WebApplicationException ex) {
-      throw ex;
-    } catch (final Exception ex) {
-      throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
-    }
+  @GET
+  @Path(GALLERY_ALBUMS_URI_PART + "/{albumId}/" + GALLERY_SOUNDS_PART + "/{soundId}/" +
+      GALLERY_MEDIA_CONTENT_PART)
+  @Produces(MediaType.APPLICATION_OCTET_STREAM)
+  public Response getSoundContent(@PathParam("albumId") final String albumId,
+      @PathParam("soundId") final String soundId) {
+    return getMediaContent(albumId, soundId, MediaResolution.ORIGINAL);
   }
 }

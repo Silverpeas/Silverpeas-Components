@@ -27,6 +27,7 @@ import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.model.AlbumDetail;
 import com.silverpeas.gallery.model.GalleryRuntimeException;
+import com.silverpeas.gallery.model.InternalMedia;
 import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.MediaPK;
 import com.silverpeas.web.RESTWebService;
@@ -37,13 +38,17 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.silverpeas.file.SilverpeasFile;
 
 import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.StreamingOutput;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.util.EnumSet;
 
@@ -100,29 +105,56 @@ public abstract class AbstractGalleryResource extends RESTWebService {
   }
 
   /**
-   * Converts the photo into an input stream.
-   * @param media
-   * @param album the album of the photo.
-   * @param requestedMediaResolution the original or preview content
-   * @return the corresponding photo entity.
+   * Centralization of getting of media content.
+   * @param albumId
+   * @param mediaId
+   * @param requestedMediaResolution
+   * @return
    */
-  protected InputStream asInputStream(Media media, AlbumDetail album,
-      MediaResolution requestedMediaResolution) {
-    checkNotFoundStatus(media);
-    checkNotFoundStatus(album);
-    verifyMediaIsInAlbum(media, album);
-    MediaResolution mediaResolution = MediaResolution.ORIGINAL;
-    if (media.getType().isPhoto()) {
-      mediaResolution = requestedMediaResolution;
-      if (MediaResolution.ORIGINAL == requestedMediaResolution &&
-          !isUserPrivileged() && !media.isDownloadable()) {
-        mediaResolution = MediaResolution.PREVIEW;
-      }
-    }
+  protected Response getMediaContent(final String albumId, final String mediaId,
+      final MediaResolution requestedMediaResolution) {
     try {
-      return FileUtils.openInputStream(media.getFile(mediaResolution));
-    } catch (IOException e) {
-      throw new WebApplicationException(Status.NOT_FOUND);
+      final Media media = getGalleryBm().getMedia(new MediaPK(mediaId, getComponentId()));
+      checkNotFoundStatus(media);
+      verifyUserMediaAccess(media);
+      final AlbumDetail album = getGalleryBm().getAlbum(new NodePK(albumId, getComponentId()));
+      checkNotFoundStatus(album);
+      verifyMediaIsInAlbum(media, album);
+      // Adjusting the resolution according to the user rights
+      MediaResolution mediaResolution = MediaResolution.ORIGINAL;
+      if (media.getType().isPhoto()) {
+        mediaResolution = requestedMediaResolution;
+        if (MediaResolution.ORIGINAL == requestedMediaResolution &&
+            !isUserPrivileged() && !media.isDownloadable()) {
+          mediaResolution = MediaResolution.PREVIEW;
+        }
+      }
+      // Verifying the physical file exists
+      final SilverpeasFile file = media.getFile(mediaResolution);
+      if (!file.exists()) {
+        throw new WebApplicationException(Status.NOT_FOUND);
+      }
+      return Response.ok(new StreamingOutput() {
+        @Override
+        public void write(final OutputStream output) throws IOException, WebApplicationException {
+          final InputStream mediaStream;
+          try {
+            mediaStream = FileUtils.openInputStream(file);
+          } catch (IOException e) {
+            throw new WebApplicationException(Status.NOT_FOUND);
+          }
+          try {
+            IOUtils.copy(mediaStream, output);
+          } finally {
+            IOUtils.closeQuietly(mediaStream);
+          }
+        }
+      }).header("Content-Type", ((InternalMedia) media).getFileMimeType())
+          .header("Content-Length", file.length()).build();
+    } catch (final WebApplicationException ex) {
+      throw ex;
+    } catch (final Exception ex) {
+      throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
   }
 
