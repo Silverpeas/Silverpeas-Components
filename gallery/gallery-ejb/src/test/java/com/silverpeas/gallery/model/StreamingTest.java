@@ -36,7 +36,7 @@ import static com.silverpeas.gallery.constant.MediaResolution.*;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-public class StreamingTest {
+public class StreamingTest extends AbstractMediaTest {
 
   @Test
   public void justInstancedTest() {
@@ -58,6 +58,7 @@ public class StreamingTest {
     expected.put(LARGE, "/silverpeas/gallery/jsp/icons/streaming_266x150.png");
     expected.put(PREVIEW, "/silverpeas/gallery/jsp/icons/streaming_266x150.png");
     expected.put(WATERMARK, "/silverpeas/gallery/jsp/icons/streaming_266x150.png");
+    expected.put(ORIGINAL, "/silverpeas/gallery/jsp/icons/streaming_266x150.png");
     for (MediaResolution mediaResolution : MediaResolution.values()) {
       assertThat(streaming.getApplicationThumbnailUrl(mediaResolution),
           is(expected.get(mediaResolution)));
@@ -78,7 +79,7 @@ public class StreamingTest {
     assertThat(streaming.getWorkspaceSubFolderName(), is("streamingmediaId"));
     assertThat(streaming.getHomepageUrl(), is("anUrl"));
     assertThat(streaming.getProvider(), is(StreamingProvider.youtube));
-    assertThat(streaming.getApplicationOriginalUrl("albumId"),
+    assertThat(streaming.getApplicationOriginalUrl(),
         is(streaming.getApplicationThumbnailUrl(MediaResolution.PREVIEW)));
     assertThat(streaming.getFile(MediaResolution.ORIGINAL), is(SilverpeasFile.NO_FILE));
   }

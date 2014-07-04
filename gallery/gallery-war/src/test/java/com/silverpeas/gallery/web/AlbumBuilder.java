@@ -56,7 +56,8 @@ public class AlbumBuilder {
       super(new NodeDetail());
       setName("name" + albumId);
       setDescription("description" + albumId);
-      setNodePK(new NodePK(albumId));
+      setNodePK(new NodePK(albumId, "componentName5"));
+      setFatherPK(new NodePK("0", "componentName5"));
       final Collection<Media> mediaList = new ArrayList<Media>();
       setMedia(mediaList);
     }

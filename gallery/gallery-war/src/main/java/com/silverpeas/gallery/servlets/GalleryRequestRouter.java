@@ -857,7 +857,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         // mise à jour du tag pour les retours
         gallerySC.setSearchResult(true);
         gallerySC.setViewNotVisible(false);
-        request.setAttribute("ViewVisible", gallerySC.isViewNotVisible());
+        request.setAttribute("ViewNotVisible", gallerySC.isViewNotVisible());
 
         // appel jsp
         destination = rootDest + "viewRestrictedMediaList.jsp";
@@ -1013,7 +1013,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         // mise à jour du tag pour les médias non visibles
         gallerySC.setSearchResult(false);
         gallerySC.setViewNotVisible(true);
-        request.setAttribute("ViewVisible", gallerySC.isViewNotVisible());
+        request.setAttribute("ViewNotVisible", gallerySC.isViewNotVisible());
 
         // passage des paramètres
         request.setAttribute("MediaList", media);

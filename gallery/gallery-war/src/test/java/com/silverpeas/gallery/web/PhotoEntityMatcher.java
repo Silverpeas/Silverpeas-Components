@@ -28,6 +28,9 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * @author Yohann Chastagnier
  */
@@ -62,10 +65,13 @@ public class PhotoEntityMatcher extends BaseMatcher<PhotoEntity> {
       matcher.append(expected.getId(), actual.getId());
       matcher.append(expected.getTitle(), actual.getTitle());
       matcher.append(expected.getDescription(), actual.getDescription());
-      matcher.appendSuper(actual.getPreviewUrl()
-          .endsWith("/gallery/componentName5/albums/3/photos/7/previewContent"));
-      matcher.appendSuper(
-          actual.getUrl().endsWith("/gallery/componentName5/albums/3/photos/7/content"));
+      Set<String> urlSet = new HashSet<String>();
+      for (String url : new String[]{actual.getUrl().toString(), actual.getPreviewUrl().toString(),
+          actual.getSmallUrl().toString()}) {
+        urlSet.add(url);
+        matcher.appendSuper(url.contains("/gallery/componentName5/photos/7/content"));
+      }
+      matcher.appendSuper(urlSet.size() == 3);
       match = matcher.isEquals();
     }
     return match;

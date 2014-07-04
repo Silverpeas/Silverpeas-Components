@@ -38,7 +38,6 @@
 <%-- Default values --%>
 <c:set var="_formName" value="mediaForm"/>
 <c:set var="_formAction" value="EditSelectedMedia"/>
-<c:set var="_searchKeyword" value=""/>
 
 <%@ attribute name="formName" required="false"
               type="java.lang.String"
@@ -54,7 +53,7 @@
   <c:set var="_formAction" value="${formAction}"/>
 </c:if>
 
-<%@ attribute name="currentAlbum" required="true"
+<%@ attribute name="currentAlbum" required="false"
               type="com.silverpeas.gallery.model.AlbumDetail"
               description="The current album." %>
 
@@ -91,9 +90,6 @@
 <%@ attribute name="searchKeyword" required="false"
               type="java.lang.String"
               description="Current keyword search." %>
-<c:if test="${searchKeyword != null}">
-  <c:set var="_searchKeyword" value="${searchKeyword}"/>
-</c:if>
 
 <c:set var="firstMediaIndex" value="${nbMediaPerPage * currentPageIndex}"/>
 <c:set var="lastMediaIndex" value="${firstMediaIndex + nbMediaPerPage - 1}"/>
@@ -165,8 +161,12 @@
 <c:if test="${not empty mediaList}">
   <view:board>
     <form name="${_formName}" action="${_formAction}">
-      <input type="hidden" name="AlbumId" value="${currentAlbum.id}"/>
-      <input type="hidden" name="SearchKeyWord" value="${_searchKeyword}">
+      <c:if test="${currentAlbum != null}">
+        <input type="hidden" name="AlbumId" value="${currentAlbum.id}"/>
+      </c:if>
+      <c:if test="${searchKeyword != null}">
+        <input type="hidden" name="SearchKeyWord" value="${searchKeyword}">
+      </c:if>
       <input type="hidden" name="Index"/>
       <input type="hidden" name="SelectedIds"/>
       <input type="hidden" name="NotSelectedIds"/>

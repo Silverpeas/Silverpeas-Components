@@ -35,7 +35,6 @@ import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.node.model.NodePK;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -49,10 +48,10 @@ import javax.ws.rs.core.StreamingOutput;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
 import java.util.EnumSet;
 
-import static com.silverpeas.gallery.web.GalleryResourceURIs.*;
+import static com.silverpeas.gallery.constant.GalleryResourceURIs.*;
+import static com.silverpeas.gallery.constant.MediaResolution.*;
 
 /**
  * @author Yohann Chastagnier
@@ -100,8 +99,10 @@ public abstract class AbstractGalleryResource extends RESTWebService {
     checkNotFoundStatus(album);
     verifyMediaIsInAlbum(media.getPhoto(), album);
     return PhotoEntity.createFrom(media.getPhoto(), getUserPreferences().getLanguage())
-        .withURI(buildPhotoURI(media.getMediaPK(), album.getNodePK()))
-        .withParentURI(buildAlbumURI(album.getNodePK()));
+        .withURI(buildMediaInAlbumURI(album, media)).withParentURI(buildAlbumURI(album))
+        .withOriginalUrl(buildMediaContentURI(media, ORIGINAL))
+        .withSmallUrl(buildMediaContentURI(media, SMALL))
+        .withPreviewUrl(buildMediaContentURI(media, PREVIEW));
   }
 
   /**
@@ -117,10 +118,10 @@ public abstract class AbstractGalleryResource extends RESTWebService {
       checkNotFoundStatus(media);
       verifyUserMediaAccess(media);
       // Adjusting the resolution according to the user rights
-      MediaResolution mediaResolution = MediaResolution.ORIGINAL;
+      MediaResolution mediaResolution = ORIGINAL;
       if (media.getType().isPhoto()) {
         mediaResolution = requestedMediaResolution;
-        if (MediaResolution.ORIGINAL == requestedMediaResolution &&
+        if (ORIGINAL == requestedMediaResolution &&
             !isUserPrivileged() && !media.isDownloadable()) {
           mediaResolution = MediaResolution.PREVIEW;
         }
@@ -162,34 +163,6 @@ public abstract class AbstractGalleryResource extends RESTWebService {
     return !CollectionUtils.intersection(EnumSet
         .of(SilverpeasRole.admin, SilverpeasRole.publisher, SilverpeasRole.writer,
             SilverpeasRole.privilegedUser), getUserRoles()).isEmpty();
-  }
-
-  /**
-   * Centralized build of album URI.
-   * @param album
-   * @return album URI
-   */
-  protected URI buildAlbumURI(NodePK album) {
-    if (album == null) {
-      return null;
-    }
-    return getUriInfo().getBaseUriBuilder().path(GALLERY_BASE_URI).path(getComponentId())
-        .path(GALLERY_ALBUMS_URI_PART).path(album.getId()).build();
-  }
-
-  /**
-   * Centralized build of album URI.
-   * @param photo
-   * @param album
-   * @return album URI
-   */
-  protected URI buildPhotoURI(MediaPK photo, NodePK album) {
-    if (photo == null || album == null) {
-      return null;
-    }
-    return getUriInfo().getBaseUriBuilder().path(GALLERY_BASE_URI).path(getComponentId())
-        .path(GALLERY_ALBUMS_URI_PART).path(album.getId()).path(GALLERY_PHOTOS_PART)
-        .path(photo.getId()).build();
   }
 
   /**

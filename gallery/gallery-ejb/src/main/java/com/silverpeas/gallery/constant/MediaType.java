@@ -31,6 +31,17 @@ import com.silverpeas.util.StringUtil;
 public enum MediaType {
   Unknown, Photo, Video, Sound, Streaming;
 
+  private final String mediaWebUriPart;
+
+  private MediaType() {
+    mediaWebUriPart = name().toLowerCase() + "s";
+  }
+
+  /**
+   * Gets the enum instance according to the specified type.
+   * @param type
+   * @return
+   */
   public static MediaType from(String type) {
     try {
       return valueOf(StringUtil.capitalize(type));
@@ -71,6 +82,10 @@ public enum MediaType {
     return Streaming == this;
   }
 
+  /**
+   * Gets the prefix folder name of a media on Silverpeas workspace.
+   * @return
+   */
   public String getTechnicalFolder() {
     switch (this) {
       case Photo:
@@ -78,5 +93,13 @@ public enum MediaType {
       default:
         return this.name().toLowerCase();
     }
+  }
+
+  /**
+   * Gets the media Web Uri part.
+   * @return
+   */
+  public String getMediaWebUriPart() {
+    return mediaWebUriPart;
   }
 }

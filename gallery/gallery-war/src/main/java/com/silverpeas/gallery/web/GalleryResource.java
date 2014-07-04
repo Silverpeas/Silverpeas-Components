@@ -42,7 +42,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import static com.silverpeas.gallery.web.GalleryResourceURIs.*;
+import static com.silverpeas.gallery.constant.GalleryResourceURIs.*;
 
 /**
  * A REST Web resource giving gallery data.

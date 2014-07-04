@@ -31,7 +31,6 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import org.apache.commons.lang.time.DateUtils;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
@@ -49,7 +48,7 @@ import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class PhotoDetailTest {
+public class PhotoDetailTest extends AbstractMediaTest {
 
   private ApplicationContext accessControllerProviderSave;
   private UserDetail userForTest = new UserDetail();
@@ -191,10 +190,8 @@ public class PhotoDetailTest {
     photoDetail.setImageName("image.jpg");
     assertThat(wrappedPhoto.isPreviewable(), is(true));
     assertThat(wrappedPhoto.getApplicationThumbnailUrl(MediaResolution.TINY),
-        is("/silverpeas/FileServer/mediaId" + MediaResolution.TINY.getThumbnailSuffix() +
-            "?ComponentId=instanceId&SourceFile" +
-            "=mediaId" + MediaResolution.TINY.getThumbnailSuffix() +
-            "&MimeType=image/jpeg&Directory=imagemediaId"));
+        is(GALLERY_REST_WEB_SERVICE_BASE_URI +
+            "photos/mediaId/content?_t=1364892430102&resolution=TINY"));
   }
 
   @Test

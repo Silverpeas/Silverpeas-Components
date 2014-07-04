@@ -36,8 +36,7 @@ import static com.silverpeas.gallery.constant.MediaResolution.*;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-public class VideoTest {
-  protected final static Date TODAY = java.sql.Date.valueOf("2014-03-01");
+public class VideoTest extends AbstractMediaTest {
 
   @Test
   public void justInstancedTest() {
@@ -61,6 +60,7 @@ public class VideoTest {
     expected.put(LARGE, "/silverpeas/gallery/jsp/icons/video_266x150.png");
     expected.put(PREVIEW, "/silverpeas/gallery/jsp/icons/video_266x150.png");
     expected.put(WATERMARK, "/silverpeas/gallery/jsp/icons/video_266x150.png");
+    expected.put(ORIGINAL, "/silverpeas/gallery/jsp/icons/video_266x150.png");
     for (MediaResolution mediaResolution : MediaResolution.values()) {
       assertThat(video.getApplicationThumbnailUrl(mediaResolution),
           is(expected.get(mediaResolution)));
@@ -88,9 +88,8 @@ public class VideoTest {
     assertThat(video.getResolutionH(), is(600));
     assertThat(video.getBitrate(), is(1024L));
     assertThat(video.getDuration(), is(36000000L));
-    assertThat(video.getApplicationOriginalUrl("albumId"),
-        is("/silverpeas/services/gallery/instanceId/albums/albumId/videos/mediaId/content?_t" +
-            "=1393628400000"));
+    assertThat(video.getApplicationOriginalUrl(),
+        is(GALLERY_REST_WEB_SERVICE_BASE_URI + "videos/mediaId/content?_t=1393628400000"));
     assertThat(FilenameUtils.normalize(video.getFile(MediaResolution.ORIGINAL).getPath(), true),
         is("//instanceId/videomediaId/videoFile.mp4"));
   }

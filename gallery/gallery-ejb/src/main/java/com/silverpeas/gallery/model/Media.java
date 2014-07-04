@@ -26,6 +26,7 @@ package com.silverpeas.gallery.model;
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.AccessControllerProvider;
+import com.silverpeas.gallery.constant.GalleryResourceURIs;
 import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.MediaType;
 import com.silverpeas.gallery.control.ejb.MediaServiceFactory;
@@ -41,7 +42,6 @@ import org.silverpeas.date.Period;
 import org.silverpeas.file.SilverpeasFile;
 import org.silverpeas.process.io.file.FileBasePath;
 
-import javax.ws.rs.core.UriBuilder;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Iterator;
@@ -291,14 +291,9 @@ public abstract class Media implements SilverpeasContent, SilverContentInterface
       case SMALL:
         thumbnailUrl += MediaResolution.SMALL.getLabel();
         break;
-      case MEDIUM:
-      case LARGE:
-      case WATERMARK:
-      case PREVIEW:
+      default:
         thumbnailUrl += MediaResolution.MEDIUM.getLabel();
         break;
-      case ORIGINAL:
-        return null;
     }
     thumbnailUrl += ".png";
     return FilenameUtils.normalize(thumbnailUrl, true);
@@ -306,14 +301,10 @@ public abstract class Media implements SilverpeasContent, SilverContentInterface
 
   /**
    * Gets the original URL of a media with cache handling.
-   * @param albumId
    * @return
    */
-  public String getApplicationOriginalUrl(String albumId) {
-    return UriBuilder.fromPath(URLManager.getApplicationURL()).path("services").path("gallery")
-        .path(getComponentInstanceId()).path("albums").path(albumId)
-        .path(getType().name().toLowerCase() + "s").path(getId()).path("content")
-        .queryParam("_t", getLastUpdateDate().getTime()).build().toString();
+  public String getApplicationOriginalUrl() {
+    return GalleryResourceURIs.buildMediaContentURI(this, MediaResolution.ORIGINAL).toString();
   }
 
   /**

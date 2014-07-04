@@ -23,7 +23,6 @@
  */
 package com.silverpeas.gallery.web;
 
-import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.model.Photo;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -31,9 +30,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
-
-import static com.silverpeas.gallery.web.GalleryResourceURIs.GALLERY_MEDIA_CONTENT_PART;
-import static com.silverpeas.gallery.web.GalleryResourceURIs.GALLERY_PHOTO_RESOLUTION_PARAM;
 
 /**
  * @author Yohann Chastagnier
@@ -44,10 +40,13 @@ public class PhotoEntity extends AbstractMediaEntity<PhotoEntity> {
   private static final long serialVersionUID = -4634076513167690314L;
 
   @XmlElement(defaultValue = "")
-  private String previewUrl;
+  private URI previewUrl;
 
   @XmlElement(defaultValue = "")
-  private String url;
+  private URI smallUrl;
+
+  @XmlElement(defaultValue = "")
+  private URI url;
 
   @XmlElement(defaultValue = "0")
   private int width;
@@ -57,10 +56,22 @@ public class PhotoEntity extends AbstractMediaEntity<PhotoEntity> {
 
   @Override
   public PhotoEntity withURI(final URI uri) {
-    previewUrl =
-        uri.toString() + "?" + GALLERY_PHOTO_RESOLUTION_PARAM + "=" + MediaResolution.PREVIEW;
-    url = uri.toString() + "/" + GALLERY_MEDIA_CONTENT_PART;
     return super.withURI(uri);
+  }
+
+  public PhotoEntity withOriginalUrl(final URI originalUrl) {
+    url = originalUrl;
+    return this;
+  }
+
+  public PhotoEntity withSmallUrl(final URI smallUrl) {
+    this.smallUrl = smallUrl;
+    return this;
+  }
+
+  public PhotoEntity withPreviewUrl(final URI previewUrl) {
+    this.previewUrl = previewUrl;
+    return this;
   }
 
   /**
@@ -90,14 +101,21 @@ public class PhotoEntity extends AbstractMediaEntity<PhotoEntity> {
   /**
    * @return the previewUrl
    */
-  public String getPreviewUrl() {
+  public URI getPreviewUrl() {
     return previewUrl;
+  }
+
+  /**
+   * @return the smallUrl
+   */
+  public URI getSmallUrl() {
+    return smallUrl;
   }
 
   /**
    * @return the url
    */
-  public String getUrl() {
+  public URI getUrl() {
     return url;
   }
 

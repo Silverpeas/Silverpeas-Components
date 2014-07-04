@@ -34,8 +34,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-public class PhotoTest {
-  protected final static Date TODAY = java.sql.Date.valueOf("2014-03-01");
+public class PhotoTest extends AbstractMediaTest {
 
   @Test
   public void justInstancedTest() {
@@ -69,10 +68,8 @@ public class PhotoTest {
 
     assertThat(photo.isPreviewable(), is(true));
     assertThat(photo.getApplicationThumbnailUrl(MediaResolution.LARGE),
-        is("/silverpeas/FileServer/mediaId" + MediaResolution.LARGE.getThumbnailSuffix() +
-            "?ComponentId=instanceId&SourceFile" +
-            "=mediaId" + MediaResolution.LARGE.getThumbnailSuffix() +
-            "&MimeType=image/jpeg&Directory=imagemediaId"));
+        is(GALLERY_REST_WEB_SERVICE_BASE_URI +
+            "photos/mediaId/content?_t=1393628400000&resolution=LARGE"));
   }
 
   private Photo defaultPhoto() {
@@ -99,12 +96,10 @@ public class PhotoTest {
     assertThat(photo.getMetaData(photo.getMetaDataProperties().iterator().next()).getValue(),
         is("ok"));
     assertThat(photo.getApplicationThumbnailUrl(MediaResolution.PREVIEW),
-        is("/silverpeas/FileServer/mediaId_preview" +
-            ".jpg?ComponentId=instanceId&SourceFile=mediaId_preview" +
-            ".jpg&MimeType=image/jpeg&Directory=imagemediaId"));
-    assertThat(photo.getApplicationOriginalUrl("albumId"),
-        is("/silverpeas/services/gallery/instanceId/albums/albumId/photos/mediaId/content?_t" +
-            "=1393628400000"));
+        is(GALLERY_REST_WEB_SERVICE_BASE_URI +
+            "photos/mediaId/content?_t=1393628400000&resolution=PREVIEW"));
+    assertThat(photo.getApplicationOriginalUrl(),
+        is(GALLERY_REST_WEB_SERVICE_BASE_URI + "photos/mediaId/content?_t=1393628400000"));
     assertThat(FilenameUtils.normalize(photo.getFile(MediaResolution.ORIGINAL).getPath(), true),
         is("//instanceId/imagemediaId/photoFile.jpg"));
   }

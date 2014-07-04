@@ -36,7 +36,7 @@ import org.mockito.stubbing.Answer;
 
 import javax.ws.rs.Path;
 
-import static com.silverpeas.gallery.web.GalleryResourceURIs.GALLERY_BASE_URI;
+import static com.silverpeas.gallery.constant.GalleryResourceURIs.GALLERY_BASE_URI;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

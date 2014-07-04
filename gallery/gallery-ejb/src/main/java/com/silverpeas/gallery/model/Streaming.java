@@ -83,7 +83,7 @@ public class Streaming extends Media {
   }
 
   @Override
-  public String getApplicationOriginalUrl(final String albumId) {
+  public String getApplicationOriginalUrl() {
     return getApplicationThumbnailUrl(MediaResolution.PREVIEW);
   }
 

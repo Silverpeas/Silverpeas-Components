@@ -23,11 +23,11 @@
  */
 package com.silverpeas.gallery.model;
 
+import com.silverpeas.gallery.constant.GalleryResourceURIs;
 import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.FileServerUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.date.Period;
@@ -112,26 +112,17 @@ public abstract class InternalMedia extends Media {
 
   @Override
   public String getApplicationThumbnailUrl(MediaResolution mediaResolution) {
-    String thumbnailUrl;
-    if (mediaResolution == null) {
+    if (mediaResolution == null || mediaResolution == MediaResolution.ORIGINAL) {
       mediaResolution = MediaResolution.PREVIEW;
     }
-    if (MediaResolution.ORIGINAL != mediaResolution && getType().isPhoto()) {
-      if (StringUtil.isDefined(getFileName())) {
-        if (!isPreviewable()) {
-          thumbnailUrl =
-              URLManager.getApplicationURL() + "/gallery/jsp/icons/notAvailable_" + MessageManager.
-                  getLanguage() + mediaResolution.getThumbnailSuffix();
-        } else {
-          thumbnailUrl = FileServerUtils
-              .getUrl(getInstanceId(), getId() + mediaResolution.getThumbnailSuffix(),
-                  getFileMimeType(), getWorkspaceSubFolderName());
-        }
+    if (getType().isPhoto()) {
+      if (StringUtil.isDefined(getFileName()) && isPreviewable()) {
+        return GalleryResourceURIs.buildMediaContentURI(this, mediaResolution).toString();
       } else {
-        thumbnailUrl = URLManager.getApplicationURL() + "/gallery/jsp/icons/notAvailable_" +
+        String thumbnailUrl = URLManager.getApplicationURL() + "/gallery/jsp/icons/notAvailable_" +
             MessageManager.getLanguage() + mediaResolution.getThumbnailSuffix();
+        return FilenameUtils.normalize(thumbnailUrl, true);
       }
-      return FilenameUtils.normalize(thumbnailUrl, true);
     } else {
       return super.getApplicationThumbnailUrl(mediaResolution);
     }
