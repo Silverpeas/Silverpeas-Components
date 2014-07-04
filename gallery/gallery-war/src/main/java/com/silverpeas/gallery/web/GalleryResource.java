@@ -28,13 +28,9 @@ import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.model.AlbumDetail;
-import com.silverpeas.gallery.model.InternalMedia;
 import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.MediaPK;
 import com.stratelia.webactiv.util.node.model.NodePK;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.silverpeas.file.SilverpeasFile;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -45,10 +41,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.StreamingOutput;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 import static com.silverpeas.gallery.web.GalleryResourceURIs.*;
 
@@ -115,16 +107,14 @@ public class GalleryResource extends AbstractGalleryResource {
    * @return the response to the HTTP GET request content of the asked photo.
    */
   @GET
-  @Path(GALLERY_ALBUMS_URI_PART + "/{albumId}/" + GALLERY_PHOTOS_PART + "/{photoId}/" +
-      GALLERY_MEDIA_CONTENT_PART)
+  @Path(GALLERY_PHOTOS_PART + "/{photoId}/" + GALLERY_MEDIA_CONTENT_PART)
   @Produces("image/*")
-  public Response getPhotoContent(@PathParam("albumId") final String albumId,
-      @PathParam("photoId") final String photoId,
+  public Response getPhotoContent(@PathParam("photoId") final String photoId,
       @QueryParam(GALLERY_PHOTO_RESOLUTION_PARAM) MediaResolution mediaResolution) {
     if (mediaResolution == null) {
       mediaResolution = MediaResolution.ORIGINAL;
     }
-    return getMediaContent(albumId, photoId, mediaResolution);
+    return getMediaContent(photoId, mediaResolution);
   }
 
   /**
@@ -135,12 +125,10 @@ public class GalleryResource extends AbstractGalleryResource {
    * @return the response to the HTTP GET request content of the asked video.
    */
   @GET
-  @Path(GALLERY_ALBUMS_URI_PART + "/{albumId}/" + GALLERY_VIDEOS_PART + "/{videoId}/" +
-      GALLERY_MEDIA_CONTENT_PART)
+  @Path(GALLERY_VIDEOS_PART + "/{videoId}/" + GALLERY_MEDIA_CONTENT_PART)
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
-  public Response getVideoContent(@PathParam("albumId") final String albumId,
-      @PathParam("videoId") final String videoId) {
-    return getMediaContent(albumId, videoId, MediaResolution.ORIGINAL);
+  public Response getVideoContent(@PathParam("videoId") final String videoId) {
+    return getMediaContent(videoId, MediaResolution.ORIGINAL);
   }
 
   /**
@@ -151,11 +139,9 @@ public class GalleryResource extends AbstractGalleryResource {
    * @return the response to the HTTP GET request content of the asked sound.
    */
   @GET
-  @Path(GALLERY_ALBUMS_URI_PART + "/{albumId}/" + GALLERY_SOUNDS_PART + "/{soundId}/" +
-      GALLERY_MEDIA_CONTENT_PART)
+  @Path(GALLERY_SOUNDS_PART + "/{soundId}/" + GALLERY_MEDIA_CONTENT_PART)
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
-  public Response getSoundContent(@PathParam("albumId") final String albumId,
-      @PathParam("soundId") final String soundId) {
-    return getMediaContent(albumId, soundId, MediaResolution.ORIGINAL);
+  public Response getSoundContent(@PathParam("soundId") final String soundId) {
+    return getMediaContent(soundId, MediaResolution.ORIGINAL);
   }
 }

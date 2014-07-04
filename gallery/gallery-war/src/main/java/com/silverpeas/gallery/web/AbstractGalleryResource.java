@@ -106,20 +106,16 @@ public abstract class AbstractGalleryResource extends RESTWebService {
 
   /**
    * Centralization of getting of media content.
-   * @param albumId
    * @param mediaId
    * @param requestedMediaResolution
    * @return
    */
-  protected Response getMediaContent(final String albumId, final String mediaId,
+  protected Response getMediaContent(final String mediaId,
       final MediaResolution requestedMediaResolution) {
     try {
       final Media media = getGalleryBm().getMedia(new MediaPK(mediaId, getComponentId()));
       checkNotFoundStatus(media);
       verifyUserMediaAccess(media);
-      final AlbumDetail album = getGalleryBm().getAlbum(new NodePK(albumId, getComponentId()));
-      checkNotFoundStatus(album);
-      verifyMediaIsInAlbum(media, album);
       // Adjusting the resolution according to the user rights
       MediaResolution mediaResolution = MediaResolution.ORIGINAL;
       if (media.getType().isPhoto()) {
