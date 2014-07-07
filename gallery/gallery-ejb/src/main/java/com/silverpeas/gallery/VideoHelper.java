@@ -1,20 +1,13 @@
 package com.silverpeas.gallery;
 
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.process.io.file.FileHandler;
+import org.silverpeas.process.io.file.HandledFile;
+
 import com.silverpeas.gallery.constant.VideoFormat;
 import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.Video;
 import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.FileUtils;
-import org.silverpeas.process.io.file.FileBasePath;
-import org.silverpeas.process.io.file.FileHandler;
-import org.silverpeas.process.io.file.HandledFile;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 
 public class VideoHelper {
 

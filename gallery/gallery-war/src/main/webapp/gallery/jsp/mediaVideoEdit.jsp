@@ -39,7 +39,6 @@
 
 <c:set var="mandatoryIcon"><fmt:message key='gallery.mandatory' bundle='${icons}'/></c:set>
 <c:set var="media" value="${requestScope.Media}" />
-<jsp:useBean id="media" type="com.silverpeas.gallery.model.Video"/>
 <c:set var="browseContext" value="${requestScope.browseContext}"/>
 <c:set var="instanceId" value="${browseContext[3]}"/>
 

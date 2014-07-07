@@ -41,7 +41,6 @@
 
 <c:set var="mandatoryIcon"><fmt:message key='gallery.mandatory' bundle='${icons}'/></c:set>
 <c:set var="photo" value="${requestScope.Media}" />
-<jsp:useBean id="photo" type="com.silverpeas.gallery.model.Photo"/>
 <c:set var="browseContext" value="${requestScope.browseContext}"/>
 <c:set var="instanceId" value="${browseContext[3]}"/>
 
@@ -57,6 +56,9 @@
 <c:set var="albumId" value="${albumPath[fn:length(albumPath)-1].id}" />
 
 <%
+  // récupération des paramètres :
+  Photo curPhoto = (Photo) request.getAttribute("Media");
+
   boolean viewMetadata = ((Boolean) request.getAttribute("IsViewMetadata")).booleanValue();
 
   // paramètres pour le formulaire
@@ -74,12 +76,12 @@
   context.setCurrentFieldIndex("11");
   context.setIgnoreDefaultValues(true);
 
-  if (photo != null) {
-    vignette_url = photo.getApplicationThumbnailUrl(MediaResolution.MEDIUM);
-    preview_url = photo.getApplicationThumbnailUrl(MediaResolution.PREVIEW);
+  if (curPhoto != null) {
+    vignette_url = curPhoto.getApplicationThumbnailUrl(MediaResolution.MEDIUM);
+    preview_url = curPhoto.getApplicationThumbnailUrl(MediaResolution.PREVIEW);
 
     if (viewMetadata) {
-      metaDataKeys = photo.getMetaDataProperties();
+      metaDataKeys = curPhoto.getMetaDataProperties();
     }
   }
 
@@ -278,9 +280,9 @@ var messages = new Array();
 // image and text for tooltip
 // optional: bgColor and color to be sent to tooltip
 <%
-if (photo != null) {
+if (curPhoto != null) {
 %>
-messages[0] = new Array('<%=preview_url%>','<%=EncodeHelper.javaStringToJsString(photo.
+messages[0] = new Array('<%=preview_url%>','<%=EncodeHelper.javaStringToJsString(curPhoto.
     getName())%>',"#FFFFFF");
 
 <% } %>
@@ -436,9 +438,9 @@ function hideTip() {
 <table cellpadding="5" width="100%">
 <tr>
 	<td valign="top">
-	<%if (photo != null) { %>
+	<%if (curPhoto != null) { %>
 		<%if (vignette_url != null) {
-			if (!photo.isPreviewable()) {
+			if (!curPhoto.isPreviewable()) {
 				vignette_url = m_context+"/gallery/jsp/icons/notAvailable_"+resource.getLanguage()+"_266x150.jpg";
 			}
 		%>
@@ -457,7 +459,7 @@ function hideTip() {
     <%
     MetaData metaData;
     for (final String propertyLong : metaDataKeys) {
-      metaData = photo.getMetaData(propertyLong);
+      metaData = curPhoto.getMetaData(propertyLong);
       String mdLabel = metaData.getLabel();
       String mdValue = metaData.getValue();
       if (metaData.isDate()) {
