@@ -24,6 +24,7 @@
 package com.silverpeas.gallery.dao;
 
 import com.silverpeas.gallery.BaseGalleryTest;
+import com.silverpeas.gallery.constant.MediaMimeType;
 import com.silverpeas.gallery.constant.MediaType;
 import com.silverpeas.gallery.constant.StreamingProvider;
 import com.silverpeas.gallery.model.Media;
@@ -482,7 +483,7 @@ public class MediaDaoTest extends BaseGalleryTest {
 
         assertThat(photo.getFileName(), is("fileName_1"));
         assertThat(photo.getFileSize(), is(101L));
-        assertThat(photo.getFileMimeType(), is("image/jpeg"));
+        assertThat(photo.getFileMimeType(), is(MediaMimeType.JPG));
         assertThat(photo.isDownloadAuthorized(), is(false));
         assertThat(photo.getDownloadPeriod(), sameInstance(Period.UNDEFINED));
 
@@ -518,7 +519,7 @@ public class MediaDaoTest extends BaseGalleryTest {
 
         assertThat(video.getFileName(), is("fileName_v_1"));
         assertThat(video.getFileSize(), is(201L));
-        assertThat(video.getFileMimeType(), is("video/mp4"));
+        assertThat(video.getFileMimeType(), is(MediaMimeType.MP4));
         assertThat(video.isDownloadAuthorized(), is(true));
         assertThat(video.getDownloadPeriod(), not(sameInstance(Period.UNDEFINED)));
         assertThat(video.getDownloadPeriod().getBeginDate().getTime(), is(1388530800000L));
@@ -558,7 +559,7 @@ public class MediaDaoTest extends BaseGalleryTest {
 
         assertThat(sound.getFileName(), is("fileName_s_1"));
         assertThat(sound.getFileSize(), is(301L));
-        assertThat(sound.getFileMimeType(), is("audio/x-mpeg"));
+        assertThat(sound.getFileMimeType(), is(MediaMimeType.MP3));
         assertThat(sound.isDownloadAuthorized(), is(false));
         assertThat(sound.getDownloadPeriod(), not(sameInstance(Period.UNDEFINED)));
         assertThat(sound.getDownloadPeriod().getBeginDate(), is(DateUtil.MINIMUM_DATE));
@@ -788,7 +789,7 @@ public class MediaDaoTest extends BaseGalleryTest {
 
         newPhoto.setFileName("new file name");
         newPhoto.setFileSize(2048);
-        newPhoto.setFileMimeType("image/tiff");
+        newPhoto.setFileMimeType(MediaMimeType.TIFF);
         newPhoto.setDownloadAuthorized(true);
         newPhoto.setDownloadPeriod(Period.from(beginDownloadDate, endDownloadDate));
 
@@ -915,7 +916,7 @@ public class MediaDaoTest extends BaseGalleryTest {
 
         photoToUpdate.setFileName(photoToUpdate.getFileName() + "_updated");
         photoToUpdate.setFileSize(2048);
-        photoToUpdate.setFileMimeType("image/tiff");
+        photoToUpdate.setFileMimeType(MediaMimeType.TIFF);
         photoToUpdate.setDownloadAuthorized(true);
         photoToUpdate.setDownloadPeriod(Period.from(beginDownloadDate, DateUtil.MAXIMUM_DATE));
 
@@ -1072,7 +1073,7 @@ public class MediaDaoTest extends BaseGalleryTest {
 
         newVideo.setFileName("new video file name");
         newVideo.setFileSize(2048);
-        newVideo.setFileMimeType("video/mp4");
+        newVideo.setFileMimeType(MediaMimeType.MP4);
         newVideo.setDownloadAuthorized(false);
         newVideo.setDownloadPeriod(Period.from(DateUtil.MINIMUM_DATE, endDownloadDate));
 
@@ -1290,7 +1291,7 @@ public class MediaDaoTest extends BaseGalleryTest {
 
         newSound.setFileName("new sound file name");
         newSound.setFileSize(5685);
-        newSound.setFileMimeType("sound/mp3");
+        newSound.setFileMimeType(MediaMimeType.MP3);
         newSound.setDownloadAuthorized(true);
 
         newSound.setBitrate(1500);
@@ -1338,7 +1339,7 @@ public class MediaDaoTest extends BaseGalleryTest {
         assertThat(iMediaRow.getString("mediaId"), is(newId));
         assertThat(iMediaRow.getString("fileName"), is("new sound file name"));
         assertThat(iMediaRow.getLong("fileSize"), is(5685L));
-        assertThat(iMediaRow.getString("fileMimeType"), is("sound/mp3"));
+        assertThat(iMediaRow.getString("fileMimeType"), is("audio/x-mpeg"));
         assertThat(iMediaRow.getInteger("download"), is(1));
         assertThat(iMediaRow.getLong("beginDownloadDate"), nullValue());
         assertThat(iMediaRow.getLong("endDownloadDate"), nullValue());

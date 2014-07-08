@@ -21,6 +21,7 @@
 package com.silverpeas.gallery.dao;
 
 import com.silverpeas.gallery.BaseGalleryTest;
+import com.silverpeas.gallery.constant.MediaMimeType;
 import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.MediaPK;
 import com.silverpeas.gallery.model.MediaWithStatus;
@@ -106,7 +107,7 @@ public class PhotoDaoTest extends BaseGalleryTest {
     fleur.setSizeL(110);
     fleur.setImageName("fleur.jpg");
     fleur.setImageSize(5146);
-    fleur.setImageMimeType("image/png");
+    fleur.setImageMimeType(MediaMimeType.PNG);
     try {
       PhotoDetail photo = PhotoDAO.getPhoto(connexion, fleurId);
       assertThat(photo, notNullValue());
@@ -140,7 +141,7 @@ public class PhotoDaoTest extends BaseGalleryTest {
     flower.setSizeL(220);
     flower.setImageName("flower.jpg");
     flower.setImageSize(imageSize);
-    flower.setImageMimeType("image/png");
+    flower.setImageMimeType(MediaMimeType.PNG);
     flower.setKeyWord("flower test");
     try {
       PhotoDAO.updatePhoto(con, flower);

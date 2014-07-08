@@ -23,9 +23,9 @@
  */
 package com.silverpeas.gallery.model;
 
-import com.silverpeas.gallery.ImageType;
 import com.silverpeas.gallery.constant.MediaType;
 import com.silverpeas.gallery.process.photo.GalleryLoadMetaDataProcess;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 import java.util.ArrayList;
@@ -135,6 +135,6 @@ public class Photo extends InternalMedia {
 
   @Override
   public boolean isPreviewable() {
-    return ImageType.isPreviewable(getFileName());
+    return StringUtil.isDefined(getFileName()) && getFileMimeType().isPreviewablePhoto();
   }
 }

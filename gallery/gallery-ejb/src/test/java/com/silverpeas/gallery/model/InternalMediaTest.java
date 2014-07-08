@@ -23,6 +23,7 @@
  */
 package com.silverpeas.gallery.model;
 
+import com.silverpeas.gallery.constant.MediaMimeType;
 import com.silverpeas.gallery.constant.MediaType;
 import com.stratelia.webactiv.util.DateUtil;
 import org.apache.commons.lang.time.DateUtils;
@@ -132,7 +133,7 @@ public class InternalMediaTest {
     InternalMedia iMedia = new InternalMediaForTest();
     iMedia.setFileName("/FileName");
     iMedia.setFileSize(1024);
-    iMedia.setFileMimeType("image/jpeg");
+    iMedia.setFileMimeType(MediaMimeType.JPG);
     iMedia.setDownloadAuthorized(true);
     iMedia.setDownloadPeriod(Period.from(beginDownloadDate, endDownloadDate));
     assertDefaultInternalMedia(iMedia);
@@ -142,7 +143,7 @@ public class InternalMediaTest {
   private void assertDefaultInternalMedia(InternalMedia iMedia) {
     assertThat(iMedia.getFileName(), is("/FileName"));
     assertThat(iMedia.getFileSize(), is(1024L));
-    assertThat(iMedia.getFileMimeType(), is("image/jpeg"));
+    assertThat(iMedia.getFileMimeType(), is(MediaMimeType.JPG));
     assertThat(iMedia.isDownloadAuthorized(), is(true));
     assertThat(iMedia.getDownloadPeriod(), not(sameInstance(Period.UNDEFINED)));
     assertThat(iMedia.getDownloadPeriod().getBeginDatable(), comparesEqualTo(beginDownloadDate));

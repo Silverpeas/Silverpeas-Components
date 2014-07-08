@@ -20,15 +20,18 @@
  */
 package com.silverpeas.gallery;
 
+import com.silverpeas.gallery.constant.MediaMimeType;
 import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.MediaType;
 import com.silverpeas.gallery.image.DrewImageMetadataExtractor;
 import com.silverpeas.gallery.image.ImageMetadataException;
 import com.silverpeas.gallery.image.ImageMetadataExtractor;
+import com.silverpeas.gallery.model.InternalMedia;
 import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.MediaPK;
 import com.silverpeas.gallery.model.MetaData;
 import com.silverpeas.gallery.model.Photo;
+import com.silverpeas.gallery.model.Video;
 import com.silverpeas.gallery.processing.ImageResizer;
 import com.silverpeas.gallery.processing.ImageUtility;
 import com.silverpeas.gallery.processing.Size;
@@ -37,7 +40,6 @@ import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.IOUtils;
@@ -52,16 +54,56 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.EnumSet;
 import java.util.List;
 
 import static com.silverpeas.gallery.constant.MediaResolution.*;
 
-public class ImageHelper {
+public class MediaHelper {
 
   final static ResourceLocator gallerySettings =
       new ResourceLocator("org.silverpeas.gallery.settings.gallerySettings", "");
 
   /**
+   * Saves uploaded video file on file system
+   * @param fileHandler
+   * @param video the current video media
+   * @param fileItem the current uploaded video
+   * @throws Exception
+   */
+  public static void processVideo(final FileHandler fileHandler, Video video,
+      final FileItem fileItem) throws Exception {
+    if (fileItem != null) {
+      String name = fileItem.getName();
+      if (name != null) {
+        video.setFileName(FileUtil.getFilename(name));
+        final HandledFile handledVideoFile = getHandledFile(fileHandler, video);
+        handledVideoFile.writeByteArrayToFile(fileItem.get());
+        setInternalMetadata(handledVideoFile, video, MediaMimeType.VIDEOS);
+      }
+    }
+  }
+
+  /**
+   * Saves uploaded video file on file system
+   * (In case of drag And Drop upload)
+   * @param fileHandler
+   * @param video the current video media
+   * @param uploadedFile the current uploaded video
+   * @throws Exception
+   */
+  public static void processVideo(final FileHandler fileHandler, Video video,
+      final File uploadedFile) throws Exception {
+    if (uploadedFile != null) {
+      video.setFileName(uploadedFile.getName());
+      final HandledFile handledVideoFile = getHandledFile(fileHandler, video);
+      fileHandler.copyFile(uploadedFile, handledVideoFile);
+      setInternalMetadata(handledVideoFile, video, MediaMimeType.VIDEOS);
+    }
+  }
+
+  /**
+   * Saves uploaded photo file on file system with associated thumbnails and watermarks.
    * @param fileHandler
    * @param photo
    * @param image
@@ -70,32 +112,25 @@ public class ImageHelper {
    * @param watermarkOther
    * @throws Exception
    */
-  public static void processImage(final FileHandler fileHandler, final Photo photo,
+  public static void processPhoto(final FileHandler fileHandler, final Photo photo,
       final FileItem image, final boolean watermark, final String watermarkHD,
       final String watermarkOther) throws Exception {
-    final String photoId = photo.getMediaPK().getId();
-    final String instanceId = photo.getMediaPK().getInstanceId();
-
     if (image != null) {
       String name = image.getName();
       if (name != null) {
-        name = FileUtil.getFilename(name);
-        if (ImageType.isImage(name)) {
-          final String subDirectory = MediaType.Photo.getTechnicalFolder();
-          final HandledFile handledImageFile =
-              fileHandler.getHandledFile(Media.BASE_PATH, instanceId, subDirectory + photoId, name);
-          handledImageFile.writeByteArrayToFile(image.get());
-          photo.setFileName(name);
-          photo.setFileMimeType(image.getContentType());
-          photo.setFileSize(image.getSize());
-          createImage(name, handledImageFile, photo, watermark, watermarkHD, watermarkOther);
+        photo.setFileName(FileUtil.getFilename(name));
+        final HandledFile handledImageFile = getHandledFile(fileHandler, photo);
+        handledImageFile.writeByteArrayToFile(image.get());
+        if (setInternalMetadata(handledImageFile, photo, MediaMimeType.PHOTOS)) {
+          createPhoto(handledImageFile, photo, watermark, watermarkHD, watermarkOther);
         }
       }
     }
   }
 
   /**
-   * In case of drag And Drop upload.
+   * Saves uploaded photo file on file system with associated thumbnails and watermarks.
+   * (In case of drag And Drop upload)
    * @param fileHandler
    * @param photo
    * @param image
@@ -104,31 +139,68 @@ public class ImageHelper {
    * @param watermarkOther
    * @throws Exception
    */
-  public static void processImage(final FileHandler fileHandler, final Photo photo,
+  public static void processPhoto(final FileHandler fileHandler, final Photo photo,
       final File image, final boolean watermark, final String watermarkHD,
       final String watermarkOther) throws Exception {
-    final String photoId = photo.getMediaPK().getId();
-    final String instanceId = photo.getMediaPK().getInstanceId();
-
     if (image != null) {
-      String name = image.getName();
-      name = name.substring(name.lastIndexOf(File.separator) + 1, name.length());
-      if (ImageType.isImage(name)) {
-        String subDirectory = MediaType.Photo.getTechnicalFolder();
-        final HandledFile handledImageFile =
-            fileHandler.getHandledFile(Media.BASE_PATH, instanceId, subDirectory + photoId, name);
-        fileHandler.copyFile(image, handledImageFile);
-        photo.setFileName(name);
-        photo.setFileMimeType(FileUtil.getMimeType(name));
-        photo.setFileSize(image.length());
-        createImage(name, handledImageFile, photo, watermark, watermarkHD, watermarkOther);
+      photo.setFileName(image.getName());
+      final HandledFile handledImageFile = getHandledFile(fileHandler, photo);
+      fileHandler.copyFile(image, handledImageFile);
+      if (setInternalMetadata(handledImageFile, photo, MediaMimeType.PHOTOS)) {
+        createPhoto(handledImageFile, photo, watermark, watermarkHD, watermarkOther);
       }
     }
   }
 
-  private static void createImage(final String name, final HandledFile handledImageFile,
-      final Photo photo, final boolean watermark, final String watermarkHD,
-      final String watermarkOther) throws Exception {
+  /**
+   * Gets a handled file.
+   * @param fileHandler
+   * @param media
+   * @return
+   */
+  private static HandledFile getHandledFile(FileHandler fileHandler, InternalMedia media) {
+    if (StringUtil.isNotDefined(media.getFileName())) {
+      throw new IllegalArgumentException("media.getFilename() must return a defined name");
+    }
+    return fileHandler.getHandledFile(Media.BASE_PATH, media.getComponentInstanceId(),
+        media.getWorkspaceSubFolderName(), media.getFileName());
+  }
+
+  /**
+   * Sets the internal metadata. If metadata
+   * @param handledImageFile
+   * @param iMedia
+   * @param supportedMimeTypes
+   * @return true if internal data have been set, false otherwise.
+   */
+  private static boolean setInternalMetadata(HandledFile handledImageFile, InternalMedia iMedia,
+      final EnumSet<MediaMimeType> supportedMimeTypes) throws Exception {
+    File fileForData = handledImageFile.getFile();
+    MediaMimeType mediaMimeType = MediaMimeType.fromFile(handledImageFile.getFile());
+    if (supportedMimeTypes.contains(mediaMimeType)) {
+      iMedia.setFileName(fileForData.getName());
+      iMedia.setFileMimeType(mediaMimeType);
+      iMedia.setFileSize(fileForData.length());
+      return true;
+    } else {
+      iMedia.setFileName(null);
+      handledImageFile.delete();
+      return false;
+    }
+  }
+
+  /**
+   * Creation treatment of all the preview image around a photo.
+   * @param handledImageFile
+   * @param photo
+   * @param watermark
+   * @param watermarkHD
+   * @param watermarkOther
+   * @throws Exception
+   */
+  private static void createPhoto(final HandledFile handledImageFile, final Photo photo,
+      final boolean watermark, final String watermarkHD, final String watermarkOther)
+      throws Exception {
     String percent = gallerySettings.getString("percentSizeWatermark");
     if (!StringUtil.isDefined(percent)) {
       percent = "1";
@@ -138,21 +210,20 @@ public class ImageHelper {
       percentSize = 1;
     }
 
-    if (ImageType.isReadable(name)) {
+    if (photo.isPreviewable()) {
 
       // Getting the size of the image
-      final String type = FileRepositoryManager.getFileExtension(name);
       final BufferedImage image = ImageLoader.loadImage(handledImageFile.getFile());
-      getDimension(image, photo);
+      setResolution(image, photo);
 
       // Computing watermark data
       final String nameForWatermark =
-          computeWatermarkText(watermarkHD, watermark, type, handledImageFile, photo, percentSize,
-              watermarkOther);
+          computeWatermarkText(handledImageFile, photo, watermark, watermarkHD, watermarkOther,
+              percentSize);
 
       // Creating preview and thumbnails
       try {
-        createThumbnails(photo, handledImageFile, image, watermark, nameForWatermark);
+        createThumbnails(handledImageFile, photo, image, watermark, nameForWatermark);
       } catch (final Exception e) {
         SilverTrace
             .error("gallery", "ImageHelper.createImage", "gallery.ERR_CANT_CREATE_THUMBNAILS",
@@ -168,12 +239,10 @@ public class ImageHelper {
 
   public static void setMetaData(final FileHandler fileHandler, final Photo photo,
       final String lang) throws ImageMetadataException, IOException {
-    final String name = photo.getFileName();
-    final String mimeType = photo.getFileMimeType();
-
-    if ("image/jpeg".equals(mimeType) || "image/pjpeg".equals(mimeType)) {
+    if (MediaMimeType.JPG == photo.getFileMimeType()) {
       final HandledFile handledFile = fileHandler
-          .getHandledFile(Media.BASE_PATH, photo.getInstanceId(), photo.getWorkspaceSubFolderName(), name);
+          .getHandledFile(Media.BASE_PATH, photo.getInstanceId(), photo.getWorkspaceSubFolderName(),
+              photo.getFileName());
       if (handledFile.exists()) {
         try {
           final ImageMetadataExtractor extractor = new DrewImageMetadataExtractor(photo.
@@ -194,7 +263,12 @@ public class ImageHelper {
     }
   }
 
-  private static void getDimension(final BufferedImage image, final Photo photo) {
+  /**
+   * Sets the resolution of a photo.
+   * @param image
+   * @param photo
+   */
+  private static void setResolution(final BufferedImage image, final Photo photo) {
     if (image == null) {
       photo.setResolutionW(0);
       photo.setResolutionH(0);
@@ -204,7 +278,16 @@ public class ImageHelper {
     }
   }
 
-  private static void createThumbnails(final Photo photo, final HandledFile originalHandedImageFile,
+  /**
+   * Creates all the thumbnails around a photo.
+   * @param originalHandedImageFile
+   * @param photo
+   * @param originalImage
+   * @param watermark
+   * @param nameWatermark
+   * @throws Exception
+   */
+  private static void createThumbnails(final HandledFile originalHandedImageFile, final Photo photo,
       final BufferedImage originalImage, final boolean watermark, final String nameWatermark)
       throws Exception {
 
@@ -215,20 +298,20 @@ public class ImageHelper {
     int originalImageWidth = Math.max(photo.getResolutionW(), photo.getResolutionH());
 
     // Processing order :
-    // XLarge (preview without watermark)
+    // Large (preview without watermark)
     // Preview
-    // Large
     // Medium
     // Small
+    // Tiny
     final MediaResolution[] mediaResolutions =
         new MediaResolution[]{LARGE, PREVIEW, MEDIUM, SMALL, TINY};
     BufferedImage previewImage = null;
     for (MediaResolution mediaResolution : mediaResolutions) {
       // Current thumbnail
-      HandledFile currentThumblail = originalHandedImageFile.getParentHandledFile()
+      HandledFile currentThumbnail = originalHandedImageFile.getParentHandledFile()
           .getHandledFile(photoId + mediaResolution.getThumbnailSuffix());
       // Thumbnail creation
-      redimPhoto((previewImage != null ? previewImage : originalImage), currentThumblail,
+      resizePhoto((previewImage != null ? previewImage : originalImage), currentThumbnail,
           (originalImageWidth > mediaResolution.getWidth() ? mediaResolution.getWidth() :
               originalImageWidth), (watermark && mediaResolution.isWatermarkApplicable()),
           nameWatermark,
@@ -236,7 +319,7 @@ public class ImageHelper {
       // The first thumbnail that has to be created must be the larger one and without watermark.
       // This first thumbnail is cached and reused for the following thumbnail creation.
       if (previewImage == null) {
-        previewImage = ImageLoader.loadImage(currentThumblail.getFile());
+        previewImage = ImageLoader.loadImage(currentThumbnail.getFile());
       }
     }
   }
@@ -256,7 +339,7 @@ public class ImageHelper {
    * @param sizeWatermark
    * @throws Exception
    */
-  private static void redimPhoto(final BufferedImage image, final HandledFile outputFile,
+  private static void resizePhoto(final BufferedImage image, final HandledFile outputFile,
       final int widthParam, final boolean watermark, final String nameWatermark,
       final int sizeWatermark) throws Exception {
     OutputStream outputStream = null;
@@ -373,12 +456,12 @@ public class ImageHelper {
     }
   }
 
-  private static String computeWatermarkText(final String watermarkHD, final boolean watermark,
-      final String type, final HandledFile image, final Photo photo, final int percentSize,
-      final String watermarkOther) throws Exception {
+  private static String computeWatermarkText(final HandledFile image, final Photo photo,
+      final boolean watermark, final String watermarkHD, final String watermarkOther,
+      final int percentSize) throws Exception {
     String nameAuthor = "";
     String nameForWatermark = "";
-    if (ImageType.isIPTCCompliant(type) && watermark) {
+    if (watermark && photo.getFileMimeType().isIPTCCompliant()) {
       final ImageMetadataExtractor extractor =
           new DrewImageMetadataExtractor(photo.getInstanceId());
       final List<MetaData> iptcMetadata;
@@ -386,8 +469,7 @@ public class ImageHelper {
         iptcMetadata = extractor.extractImageIptcMetaData(image.getFile());
         final BufferedImage bufferedImage = ImageLoader.loadImage(image.getFile());
         if (StringUtil.isDefined(watermarkHD)) {
-          // création d'un duplicata de l'image originale avec intégration du
-          // watermark
+          // Photo duplication that is stamped with a Watermark.
           final String value = getWatermarkValue(watermarkHD, iptcMetadata);
           if (value != null) {
             nameAuthor = value;
@@ -432,6 +514,6 @@ public class ImageHelper {
     return value;
   }
 
-  private ImageHelper() {
+  private MediaHelper() {
   }
 }

@@ -25,6 +25,7 @@ package com.silverpeas.gallery.model;
 
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.AccessControllerProvider;
+import com.silverpeas.gallery.constant.MediaMimeType;
 import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.MediaType;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -123,8 +124,7 @@ public class PhotoDetailTest extends AbstractMediaTest {
     photoDetail.addMetaData(new MetaData("ok").setProperty("metadata"));
     photoDetail.setDownload(true);
     photoDetail.setTitle("A title");
-    photoDetail.setImageMimeType("image/jpeg");
-    photoDetail.setImageName("/FileName");
+    photoDetail.setImageMimeType(MediaMimeType.JPG);
     photoDetail.setImageSize(1024);
     photoDetail.setBeginDownloadDate(beginDownloadDate);
     photoDetail.setEndDownloadDate(endDownloadDate);
@@ -167,9 +167,9 @@ public class PhotoDetailTest extends AbstractMediaTest {
     assertThat(wrappedPhoto.getLanguages(), nullValue());
     assertThat(wrappedPhoto.toString(),
         is("(pk = (id = mediaId, instanceId = instanceId), name = A title)"));
-    assertThat(wrappedPhoto.getFileName(), is("/FileName"));
+    assertThat(wrappedPhoto.getFileName(), nullValue());
     assertThat(wrappedPhoto.getFileSize(), is(1024L));
-    assertThat(wrappedPhoto.getFileMimeType(), is("image/jpeg"));
+    assertThat(wrappedPhoto.getFileMimeType(), is(MediaMimeType.JPG));
     assertThat(wrappedPhoto.isDownloadAuthorized(), is(true));
     assertThat(wrappedPhoto.getDownloadPeriod(), not(sameInstance(Period.UNDEFINED)));
     assertThat(wrappedPhoto.getDownloadPeriod().getBeginDatable(),

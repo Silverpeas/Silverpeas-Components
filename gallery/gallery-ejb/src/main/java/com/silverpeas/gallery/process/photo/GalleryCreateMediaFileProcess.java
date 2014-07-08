@@ -23,24 +23,18 @@
  */
 package com.silverpeas.gallery.process.photo;
 
-import java.io.File;
-
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.process.io.file.FileHandler;
-import org.silverpeas.process.io.file.HandledFile;
-import org.silverpeas.process.session.ProcessSession;
-
-import com.silverpeas.gallery.GalleryComponentSettings;
-import com.silverpeas.gallery.ImageHelper;
-import com.silverpeas.gallery.ImageType;
-import com.silverpeas.gallery.VideoHelper;
-import com.silverpeas.gallery.constant.VideoFormat;
+import com.silverpeas.gallery.MediaHelper;
 import com.silverpeas.gallery.model.Media;
+import com.silverpeas.gallery.model.Photo;
 import com.silverpeas.gallery.model.Video;
 import com.silverpeas.gallery.process.AbstractGalleryFileProcess;
 import com.silverpeas.gallery.process.GalleryProcessExecutionContext;
-import com.silverpeas.util.FileUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.process.io.file.FileHandler;
+import org.silverpeas.process.session.ProcessSession;
+
+import java.io.File;
 
 /**
  * Process to create a media on file system
@@ -113,20 +107,21 @@ public class GalleryCreateMediaFileProcess extends AbstractGalleryFileProcess {
     // Media
     switch (getMedia().getType()) {
       case Photo:
+        Photo photo = getMedia().getPhoto();
         if (fileItem != null) {
-          ImageHelper
-              .processImage(fileHandler, getMedia().getPhoto(), fileItem, watermark, watermarkHD,
-                  watermarkOther);
+          MediaHelper
+              .processPhoto(fileHandler, photo, fileItem, watermark, watermarkHD, watermarkOther);
         } else {
-          ImageHelper.processImage(fileHandler, getMedia().getPhoto(), file, watermark,
-              watermarkHD,
-              watermarkOther);
+          MediaHelper
+              .processPhoto(fileHandler, photo, file, watermark, watermarkHD, watermarkOther);
         }
         break;
       case Video:
         Video video = getMedia().getVideo();
         if (fileItem != null) {
-          VideoHelper.processVideoFile(fileHandler, fileItem, video);
+          MediaHelper.processVideo(fileHandler, video, fileItem);
+        } else {
+          MediaHelper.processVideo(fileHandler, video, file);
         }
         break;
 

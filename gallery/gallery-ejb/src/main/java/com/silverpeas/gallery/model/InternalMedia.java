@@ -23,6 +23,7 @@
  */
 package com.silverpeas.gallery.model;
 
+import com.silverpeas.gallery.constant.MediaMimeType;
 import com.silverpeas.gallery.constant.GalleryResourceURIs;
 import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.util.StringUtil;
@@ -47,7 +48,7 @@ public abstract class InternalMedia extends Media {
   private boolean downloadAuthorized = false;
   private String fileName;
   private long fileSize = 0;
-  private String fileMimeType;
+  private MediaMimeType fileMimeType;
   private Period downloadPeriod = Period.UNDEFINED;
 
   /**
@@ -90,11 +91,14 @@ public abstract class InternalMedia extends Media {
     this.fileSize = fileSize;
   }
 
-  public String getFileMimeType() {
+  public MediaMimeType getFileMimeType() {
+    if (fileMimeType == null) {
+      fileMimeType = MediaMimeType.ERROR;
+    }
     return fileMimeType;
   }
 
-  public void setFileMimeType(String fileMimeType) {
+  public void setFileMimeType(MediaMimeType fileMimeType) {
     this.fileMimeType = fileMimeType;
   }
 

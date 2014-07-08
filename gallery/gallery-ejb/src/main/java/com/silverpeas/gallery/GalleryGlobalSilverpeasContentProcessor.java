@@ -50,7 +50,7 @@ public class GalleryGlobalSilverpeasContentProcessor extends DefaultGlobalSilver
     if (internalMedia != null) {
       Size size = new Size(MediaResolution.TINY.getWidth(), MediaResolution.TINY.getHeight());
       try {
-        size = ImageHelper.getWidthAndHeight(instanceId, media.getWorkspaceSubFolderName(),
+        size = MediaHelper.getWidthAndHeight(instanceId, media.getWorkspaceSubFolderName(),
             internalMedia.getFileName(), MediaResolution.TINY.getWidth());
       } catch (IOException e) {
         SilverTrace

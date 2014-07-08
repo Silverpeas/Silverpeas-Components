@@ -23,7 +23,7 @@
  */
 package com.silverpeas.gallery.process.photo;
 
-import com.silverpeas.gallery.ImageHelper;
+import com.silverpeas.gallery.MediaHelper;
 import com.silverpeas.gallery.model.Photo;
 import org.silverpeas.process.ProcessFactory;
 import org.silverpeas.process.io.file.FileHandler;
@@ -66,6 +66,6 @@ public class GalleryLoadMetaDataProcess extends AbstractFileProcess<ProcessExecu
   @Override
   public void processFiles(final ProcessExecutionContext context, final ProcessSession session,
       final FileHandler fileHandler) throws Exception {
-    ImageHelper.setMetaData(fileHandler, photo);
+    MediaHelper.setMetaData(fileHandler, photo);
   }
 }

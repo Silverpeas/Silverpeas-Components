@@ -61,7 +61,7 @@ public class SocialInformationGallery implements SocialInformation {
     String id = picture.getMedia().getId();
     String mimeType = "streaming";
     if (picture.getMedia() instanceof InternalMedia) {
-      mimeType = ((InternalMedia) picture.getMedia()).getFileMimeType();
+      mimeType = ((InternalMedia) picture.getMedia()).getFileMimeType().getMimeType();
     }
     this.icon =
         "/FileServer/" + id + "_preview.jpg?ComponentId=" + picture.getMedia().getInstanceId() +

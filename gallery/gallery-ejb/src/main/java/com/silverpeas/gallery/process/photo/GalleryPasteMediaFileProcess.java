@@ -23,12 +23,12 @@
  */
 package com.silverpeas.gallery.process.photo;
 
+import com.silverpeas.gallery.MediaHelper;
 import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.MediaPK;
 import org.silverpeas.process.io.file.FileHandler;
 import org.silverpeas.process.session.ProcessSession;
 
-import com.silverpeas.gallery.ImageHelper;
 import com.silverpeas.gallery.process.AbstractGalleryFileProcess;
 import com.silverpeas.gallery.process.GalleryProcessExecutionContext;
 
@@ -77,7 +77,7 @@ public class GalleryPasteMediaFileProcess extends AbstractGalleryFileProcess {
       final ProcessSession session, final FileHandler fileHandler) throws Exception {
     if (getMedia().getType().isPhoto()) {
       if (!isCutted || !fromMediaPk.getInstanceId().equals(context.getComponentInstanceId())) {
-        ImageHelper.pasteImage(fileHandler, fromMediaPk, getMedia().getPhoto(), isCutted);
+        MediaHelper.pasteImage(fileHandler, fromMediaPk, getMedia().getPhoto(), isCutted);
       }
     }
   }

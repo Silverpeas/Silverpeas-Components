@@ -23,6 +23,7 @@
  */
 package com.silverpeas.gallery.model;
 
+import com.silverpeas.gallery.constant.MediaMimeType;
 import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.MediaType;
 import org.apache.commons.io.FilenameUtils;
@@ -78,7 +79,7 @@ public class PhotoTest extends AbstractMediaTest {
     photo.setMediaPK(mediaPK);
     photo.setFileName("photoFile.jpg");
     photo.setFileSize(1024);
-    photo.setFileMimeType("image/jpeg");
+    photo.setFileMimeType(MediaMimeType.JPG);
     photo.setResolutionW(800);
     photo.setResolutionH(600);
     photo.addMetaData(new MetaData("ok").setProperty("metadata"));

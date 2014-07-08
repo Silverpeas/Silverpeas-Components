@@ -23,7 +23,7 @@
  */
 package com.silverpeas.gallery.process;
 
-import com.silverpeas.gallery.ImageType;
+import com.silverpeas.gallery.constant.MediaMimeType;
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.delegate.MediaDataCreateDelegate;
 import com.silverpeas.gallery.delegate.MediaDataUpdateDelegate;
@@ -33,6 +33,7 @@ import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.MediaCriteria;
 import com.silverpeas.gallery.model.MediaPK;
 import com.silverpeas.gallery.model.Photo;
+import com.silverpeas.gallery.model.Video;
 import com.silverpeas.gallery.process.photo.*;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -184,9 +185,16 @@ public class GalleryProcessManagement {
     if (fileList != null) {
       for (final File file : fileList) {
         if (file.isFile()) {
-          if (ImageType.isImage(file.getName())) {
-            // Creation of the photo
-            addCreateMediaProcesses(new Photo(), albumId, file, watermark, watermarkHD,
+          MediaMimeType mediaMimeType = MediaMimeType.fromFile(file);
+          Media newMedia = null;
+          if (mediaMimeType.isSupportedPhotoType()) {
+            newMedia = new Photo();
+          } else if (mediaMimeType.isSupportedVideoType()) {
+            newMedia = new Video();
+          }
+          if (newMedia != null) {
+            // Creation of the media
+            addCreateMediaProcesses(newMedia, albumId, file, watermark, watermarkHD,
                 watermarkOther, delegate);
           }
         } else if (file.isDirectory()) {

@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 
+import com.silverpeas.gallery.constant.MediaMimeType;
 import org.silverpeas.date.Period;
 
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
@@ -256,12 +257,12 @@ public class PhotoDetail implements SilverContentInterface, Serializable {
     // TODO : at the end og media migration, this method must be removed
   }
 
-  public String getImageMimeType() {
+  public MediaMimeType getImageMimeType() {
     return photo.getFileMimeType();
   }
 
-  public void setImageMimeType(String imageMimeType) {
-    photo.setFileMimeType(imageMimeType);
+  public void setImageMimeType(MediaMimeType mediaMimeType) {
+    photo.setFileMimeType(mediaMimeType);
   }
 
   public String getImageName() {

@@ -1125,9 +1125,8 @@ public final class GallerySessionController extends AbstractComponentSessionCont
               title = EncodeHelper.javaStringToHtmlString(media.getFileName());
             }
           }
-          url = FileServerUtils
-              .getUrl(getComponentId(), getUrlEncodedParameter(title), media.getFileMimeType(),
-                  nomRep);
+          url = FileServerUtils.getUrl(getComponentId(), getUrlEncodedParameter(title),
+              media.getFileMimeType().getMimeType(), nomRep);
         }
       }
     }

@@ -24,6 +24,7 @@
 package com.silverpeas.gallery.dao;
 
 import com.silverpeas.gallery.GalleryComponentSettings;
+import com.silverpeas.gallery.constant.MediaMimeType;
 import com.silverpeas.gallery.constant.MediaType;
 import com.silverpeas.gallery.constant.StreamingProvider;
 import com.silverpeas.gallery.model.InternalMedia;
@@ -351,7 +352,7 @@ public class MediaDAO {
       throws SQLException {
     iMedia.setFileName(rs.getString(2));
     iMedia.setFileSize(rs.getLong(3));
-    iMedia.setFileMimeType(rs.getString(4));
+    iMedia.setFileMimeType(MediaMimeType.fromMimeType(rs.getString(4)));
     iMedia.setDownloadAuthorized((rs.getInt(5) == 1));
     iMedia.setDownloadPeriod(getPeriod(rs, 6, 7));
   }
@@ -616,8 +617,8 @@ public class MediaDAO {
     }
     appendSaveParameter(iMediaSave, "fileName", iMedia.getFileName(), isInsert, iMediaParams);
     appendSaveParameter(iMediaSave, "fileSize", iMedia.getFileSize(), isInsert, iMediaParams);
-    appendSaveParameter(iMediaSave, "fileMimeType", iMedia.getFileMimeType(), isInsert,
-        iMediaParams);
+    appendSaveParameter(iMediaSave, "fileMimeType", iMedia.getFileMimeType().getMimeType(),
+        isInsert, iMediaParams);
     appendSaveParameter(iMediaSave, "download", iMedia.isDownloadAuthorized() ? 1 : 0, isInsert,
         iMediaParams);
     Long beginDate = iMedia.getDownloadPeriod().getBeginDatable().isDefined() ?

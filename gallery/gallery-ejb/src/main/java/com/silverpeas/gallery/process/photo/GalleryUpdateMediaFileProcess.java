@@ -23,8 +23,7 @@
  */
 package com.silverpeas.gallery.process.photo;
 
-import com.silverpeas.gallery.ImageHelper;
-import com.silverpeas.gallery.VideoHelper;
+import com.silverpeas.gallery.MediaHelper;
 import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.process.AbstractGalleryFileProcess;
 import com.silverpeas.gallery.process.GalleryProcessExecutionContext;
@@ -99,8 +98,8 @@ public class GalleryUpdateMediaFileProcess extends AbstractGalleryFileProcess {
                 getMedia().getWorkspaceSubFolderName()).delete();
 
             // Creating new images
-            ImageHelper
-                .processImage(fileHandler, getMedia().getPhoto(), fileItem, watermark, watermarkHD,
+            MediaHelper
+                .processPhoto(fileHandler, getMedia().getPhoto(), fileItem, watermark, watermarkHD,
                     watermarkOther);
           }
         }
@@ -112,7 +111,7 @@ public class GalleryUpdateMediaFileProcess extends AbstractGalleryFileProcess {
               getMedia().getWorkspaceSubFolderName()).delete();
 
           // Save new video
-          VideoHelper.processVideoFile(fileHandler, fileItem, getMedia().getVideo());
+          MediaHelper.processVideo(fileHandler, getMedia().getVideo(), fileItem);
         }
         break;
       default:

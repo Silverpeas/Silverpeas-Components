@@ -146,7 +146,7 @@ public abstract class AbstractGalleryResource extends RESTWebService {
             IOUtils.closeQuietly(mediaStream);
           }
         }
-      }).header("Content-Type", ((InternalMedia) media).getFileMimeType())
+      }).header("Content-Type", ((InternalMedia) media).getFileMimeType().getMimeType())
           .header("Content-Length", file.length()).build();
     } catch (final WebApplicationException ex) {
       throw ex;

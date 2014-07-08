@@ -156,7 +156,7 @@ public class GalleryInWysiwygRouter extends HttpServlet {
 
   private void displayImage(HttpServletResponse res, PhotoDetail image,
       String size, boolean useOriginal) throws IOException {
-    res.setContentType(image.getImageMimeType());
+    res.setContentType(image.getImageMimeType().getMimeType());
     OutputStream out2 = res.getOutputStream();
     int read;
     BufferedInputStream input = null;

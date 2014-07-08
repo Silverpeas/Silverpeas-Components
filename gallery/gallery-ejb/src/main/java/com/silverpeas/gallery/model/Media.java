@@ -268,6 +268,10 @@ public abstract class Media implements SilverpeasContent, SilverContentInterface
     return URLManager.getPermalink(URLManager.Permalink.Media, getId());
   }
 
+  /**
+   * Indicates if the media is previewable.
+   * @return true if the media is previewable, false otherwise.
+   */
   public boolean isPreviewable() {
     return true;
   }
