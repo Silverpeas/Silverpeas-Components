@@ -28,7 +28,6 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.form.XmlSearchForm;
-import com.silverpeas.gallery.GalleryComponentSettings;
 import com.silverpeas.gallery.ParameterNames;
 import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.MediaType;
@@ -291,13 +290,11 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           throw new AccessForbiddenException("GalleryRequestRouter.AddMedia",
               SilverpeasException.WARNING, null);
         }
-        String mediaType = request.getParameter("type");
+        MediaType mediaType = MediaType.from(request.getParameter("type"));
 
         // passage des paramètres
-        request.setAttribute("Media", null);
-        request.setAttribute("MediaType", mediaType);
-        String repertoire = "";
-        request.setAttribute("Repertoire", repertoire);
+        request.setAttribute("Media", mediaType.newInstance());
+        request.setAttribute("Repertoire", "");
         request.setAttribute("Path", gallerySC.getPath());
         request.setAttribute("GetLanguage", gallerySC.getLanguage());
         request.setAttribute("UserName", gallerySC.getUserDetail(userId).getDisplayedName());

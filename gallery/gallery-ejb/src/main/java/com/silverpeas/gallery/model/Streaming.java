@@ -26,6 +26,7 @@ package com.silverpeas.gallery.model;
 import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.MediaType;
 import com.silverpeas.gallery.constant.StreamingProvider;
+import com.silverpeas.util.StringUtil;
 import org.silverpeas.file.SilverpeasFile;
 
 /**
@@ -84,6 +85,9 @@ public class Streaming extends Media {
 
   @Override
   public String getApplicationOriginalUrl() {
+    if (StringUtil.isNotDefined(getId())) {
+      return super.getApplicationOriginalUrl();
+    }
     return getApplicationThumbnailUrl(MediaResolution.PREVIEW);
   }
 

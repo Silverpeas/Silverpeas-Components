@@ -28,13 +28,16 @@ import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 
 /**
  * Enumeration for all supported media types in the gallery component.
  */
 public enum MediaMimeType {
-  BMP, GIF, PNG, JPG, TIFF,
+  BMP, GIF, PNG, JPG("jpeg", "pjpeg"), TIFF("tif"),
   MP4, FLV,
   MP3,
   ERROR;
@@ -50,9 +53,13 @@ public enum MediaMimeType {
   }
 
   private final String mimeType;
+  private final List<String> extensions;
 
-  MediaMimeType() {
+  MediaMimeType(String... otherExtensions) {
     mimeType = FileUtil.getMimeType("file." + this.name().toLowerCase());
+    extensions = new ArrayList<String>();
+    extensions.add(name().toLowerCase());
+    Collections.addAll(extensions, otherExtensions);
   }
 
   /**
@@ -86,11 +93,27 @@ public enum MediaMimeType {
   }
 
   /**
+   * Gets the name (useful for JSTL use)
+   * @return
+   */
+  public String getName() {
+    return name();
+  }
+
+  /**
    * Gets the mime type as string.
    * @return
    */
   public String getMimeType() {
     return mimeType;
+  }
+
+  /**
+   * Gets supported extensions.
+   * @return
+   */
+  public List<String> getExtensions() {
+    return extensions;
   }
 
   /**

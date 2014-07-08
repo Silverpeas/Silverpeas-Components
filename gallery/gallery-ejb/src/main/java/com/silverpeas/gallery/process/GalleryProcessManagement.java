@@ -35,7 +35,6 @@ import com.silverpeas.gallery.model.MediaPK;
 import com.silverpeas.gallery.model.Photo;
 import com.silverpeas.gallery.model.Video;
 import com.silverpeas.gallery.process.media.*;
-import com.silverpeas.gallery.process.photo.*;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
@@ -45,7 +44,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
-
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.process.util.ProcessList;
 
@@ -195,8 +193,8 @@ public class GalleryProcessManagement {
           }
           if (newMedia != null) {
             // Creation of the media
-            addCreateMediaProcesses(newMedia, albumId, file, watermark, watermarkHD,
-                watermarkOther, delegate);
+            addCreateMediaProcesses(newMedia, albumId, file, watermark, watermarkHD, watermarkOther,
+                delegate);
           }
         } else if (file.isDirectory()) {
           addImportFromRepositoryProcesses(file,
@@ -320,8 +318,7 @@ public class GalleryProcessManagement {
   private void addDeleteMediaAlbumProcesses(final NodePK albumPk) throws Exception {
     for (final Media media : getGalleryBm()
         .getAllMedia(albumPk, MediaCriteria.VISIBILITY.FORCE_GET_ALL)) {
-      Collection<String> albumIds =
-          getGalleryBm().getAlbumIdsOf(media);
+      Collection<String> albumIds = getGalleryBm().getAlbumIdsOf(media);
       if (albumIds.size() > 1) {
         // the image is in several albums
         // delete only the link between it and album to delete

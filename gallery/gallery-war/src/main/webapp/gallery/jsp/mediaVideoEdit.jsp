@@ -30,29 +30,32 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/gallery" prefix="gallery" %>
 
+<view:setConstant var="mediaType" constant="com.silverpeas.gallery.constant.MediaType.Video"/>
+<view:setConstant var="supportedMediaMimeTypes" constant="com.silverpeas.gallery.constant.MediaMimeType.VIDEOS"/>
+
 <%-- Set resource bundle --%>
 <c:set var="language" value="${requestScope.resources.language}"/>
 
-<fmt:setLocale value="${language}" />
+<fmt:setLocale value="${language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
 <c:set var="mandatoryIcon"><fmt:message key='gallery.mandatory' bundle='${icons}'/></c:set>
-<c:set var="media" value="${requestScope.Media}" />
+<c:set var="media" value="${requestScope.Media}"/>
+<jsp:useBean id="media" type="com.silverpeas.gallery.model.Video"/>
+<c:set var="isNewMediaCase" value="${empty media.id}"/>
 <c:set var="browseContext" value="${requestScope.browseContext}"/>
 <c:set var="instanceId" value="${browseContext[3]}"/>
 
-<c:set var="mediaType" value="${fn:toLowerCase(requestScope.MediaType)}"/>
 <c:set var="action" value="CreateMedia"/>
 <c:set var="bodyCss" value="createMedia"/>
-<c:if test="${not empty media}">
-  <c:set var="mediaType" value="${fn:toLowerCase(media.type)}"/>
+<c:if test="${not isNewMediaCase}">
   <c:set var="action" value="UpdateInformation"/>
   <c:set var="bodyCss" value="editMedia"/>
 </c:if>
-<c:set var="albumPath" value="${requestScope.Path}" />
+<c:set var="albumPath" value="${requestScope.Path}"/>
 <jsp:useBean id="albumPath" type="java.util.List<com.silverpeas.gallery.model.AlbumDetail>"/>
-<c:set var="albumId" value="${albumPath[fn:length(albumPath)-1].id}" />
+<c:set var="albumId" value="${albumPath[fn:length(albumPath)-1].id}"/>
 
 <c:set value="${media.applicationOriginalUrl}" var="mediaUrl"/>
 
@@ -61,236 +64,100 @@
   Form formUpdate = (Form) request.getAttribute("Form");
   DataRecord data = (DataRecord) request.getAttribute("Data");
 
-  PagesContext context = new PagesContext("myForm", "0", resource.getLanguage(), false, componentId, null);
+  PagesContext context =
+      new PagesContext("myForm", "0", resource.getLanguage(), false, componentId, null);
   context.setBorderPrinted(false);
   context.setCurrentFieldIndex("11");
   context.setIgnoreDefaultValues(true);
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
-  <head>
+<head>
   <view:looknfeel/>
-  <link type="text/css" href="<c:url value="/util/styleSheets/fieldset.css" />" rel="stylesheet" />
+  <link type="text/css" href="<c:url value="/util/styleSheets/fieldset.css" />" rel="stylesheet"/>
   <%
-    if (formUpdate != null)
+    if (formUpdate != null) {
       formUpdate.displayScripts(out, context);
+    }
   %>
-  <view:includePlugin name="datepicker"/>
   <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js" />"></script>
-  <script type="text/javascript" src="<c:url value="/util/javaScript/checkForm.js" />"></script>
-
-<script type="text/javascript">
-// fonctions de contrôle des zones des formulaires avant validation
-function sendData() {
-  <% if (formUpdate != null) { %>
-  if (isCorrectForm() && isCorrectLocalForm()) {
-  <% } else { %>
-  if (isCorrectLocalForm()) {
-  <% } %>
-    <c:if test="${requestScope.IsUsePdc and empty media.id}">
-      <view:pdcPositions setIn="document.mediaForm.Positions.value"/>
-    </c:if>
-    document.mediaForm.submit();
-  }
-}
-
-function isCorrectLocalForm()
-{
-  var errorMsg = "";
-  var errorNb = 0;
-  var title = stripInitialWhitespace(document.mediaForm.<%=ParameterNames.MediaTitle%>.value);
-  var descr = document.mediaForm.<%=ParameterNames.MediaDescription%>.value;
-  var file = stripInitialWhitespace(document.mediaForm.WAIMGVAR0.value);
-  var beginDownloadDate = document.mediaForm.<%=ParameterNames.MediaBeginDownloadDate%>.value;
-  var endDownloadDate = document.mediaForm.<%=ParameterNames.MediaEndDownloadDate%>.value;
-  var beginDate = document.mediaForm.<%=ParameterNames.MediaBeginVisibilityDate%>.value;
-  var endDate = document.mediaForm.<%=ParameterNames.MediaEndVisibilityDate%>.value;
-  var langue = "<%=resource.getLanguage()%>";
-  var beginDownloadDateOK = true;
-  var beginDateOK = true;
-
-     if (title.length > 255)
-     {
-      errorMsg+="  - '<fmt:message key="GML.title"/>'  <fmt:message key="gallery.MsgSize"/>\n";
-       errorNb++;
-     }
-     if (descr.length > 255)
-     {
-       errorMsg+="  - '<fmt:message key="GML.description"/>'  <fmt:message key="gallery.MsgSize"/>\n";
-       errorNb++;
-     }
-     <c:if test="${empty media}">
-     if (file == "") {
-       errorMsg+="  - '<fmt:message key="gallery.media"/>'  <fmt:message key="GML.MustBeFilled"/>\n";
-       errorNb++;
-     }
-     </c:if>
-
-     // check begin and end download date
-     if (!isWhitespace(beginDownloadDate)) {
-       if (!isDateOK(beginDownloadDate, langue)) {
-         errorMsg+="  - '<fmt:message key="gallery.beginDownloadDate"/>' <fmt:message key="GML.MustContainsCorrectDate"/>\n";
-         errorNb++;
-         beginDownloadDateOK = false;
-       }
-    }
-     if (!isWhitespace(endDownloadDate)) {
-       if (!isDateOK(endDownloadDate, langue)) {
-             errorMsg+="  - '<fmt:message key="GML.toDate"/>' <fmt:message key="GML.MustContainsCorrectDate"/>\n";
-             errorNb++;
-       } else {
-         if (!isWhitespace(beginDownloadDate) && !isWhitespace(endDownloadDate)) {
-           if (beginDownloadDateOK && !isDate1AfterDate2(endDownloadDate, beginDownloadDate, langue)) {
-              errorMsg+="  - '<fmt:message key="GML.toDate"/>' <fmt:message key="GML.MustContainsPostOrEqualDateTo"/> "+beginDownloadDate+"\n";
-              errorNb++;
-           }
-         } else {
-           if (isWhitespace(beginDownloadDate) && !isWhitespace(endDownloadDate)) {
-             if (!isFuture(endDownloadDate, langue)) {
-               errorMsg+="  - '<fmt:message key="GML.toDate"/>' <fmt:message key="GML.MustContainsPostDate"/>\n";
-               errorNb++;
-             }
-           }
-         }
-       }
-     }
-     // les dates de visibilité
-     if (!isWhitespace(beginDate)) {
-         if (!isDateOK(beginDate, langue)) {
-           errorMsg+="  - '<fmt:message key="GML.dateBegin"/>' <fmt:message key="GML.MustContainsCorrectDate"/>\n";
-           errorNb++;
-           beginDateOK = false;
-         }
-       }
-       if (!isWhitespace(endDate))
-       {
-           if (!isDateOK(endDate, langue)) {
-             errorMsg+="  - '<fmt:message key="GML.dateEnd"/>' <fmt:message key="GML.MustContainsCorrectDate"/>\n";
-             errorNb++;
-             } else {
-          if (!isWhitespace(beginDate) && !isWhitespace(endDate)) {
-                    if (beginDateOK && !isDate1AfterDate2(endDate, beginDate, langue)) {
-                      errorMsg+="  - '<fmt:message key="GML.dateEnd"/>' <fmt:message key="GML.MustContainsPostOrEqualDateTo"/> "+beginDate+"\n";
-                      errorNb++;
-                    }
-                  } else {
-            if (isWhitespace(beginDate) && !isWhitespace(endDate)) {
-              if (!isFuture(endDate, langue)) {
-                errorMsg+="  - '<fmt:message key="GML.dateEnd"/>' <fmt:message key="GML.MustContainsPostDate"/>\n";
-                errorNb++;
-              }
-            }
-          }
-        }
-       }
-
-     // check video file extension
-     if (file != "") {
-       var verif = /[.][flv,mp4]{3,4}$/;
-       if (verif.exec(file.toLowerCase()) == null) {
-        errorMsg+="  - '<fmt:message key="gallery.media"/>'  <fmt:message key="gallery.format"/>\n";
-        errorNb++;
-      }
-    }
-
-  <c:if test="${requestScope.IsUsePdc and empty media.id}">
-    <view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>;
-  </c:if>
-
-     switch(errorNb)
-     {
-        case 0 :
-            result = true;
-            break;
-        case 1 :
-            errorMsg = "<fmt:message key="GML.ThisFormContains"/> 1 <fmt:message key="GML.error"/> : \n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-        default :
-            errorMsg = "<fmt:message key="GML.ThisFormContains"/> " + errorNb + " <fmt:message key="GML.errors"/> :\n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-     }
-     return result;
-}
-
-</script>
-
 </head>
 <body class="gallery ${bodyCss} yui-skin-sam" id="${instanceId}">
-<gallery:browseBar albumPath="${albumPath}"></gallery:browseBar>
+<gallery:browseBar albumPath="${albumPath}"/>
 <view:window>
-  <c:if test="${not empty media}">
+  <c:if test="${not isNewMediaCase}">
     <view:tabs>
-      <fmt:message key="gallery.media" var="mediaViewLabel" />
+      <fmt:message key="gallery.media" var="mediaViewLabel"/>
       <view:tab label="${mediaViewLabel}" action="MediaView?MediaId=${media.id}" selected="false"/>
-      <fmt:message key="gallery.info" var="mediaEditLabel" />
+      <fmt:message key="gallery.info" var="mediaEditLabel"/>
       <view:tab label="${mediaEditLabel}" action="#" selected="true"/>
-      <fmt:message key="gallery.accessPath" var="accessLabel" />
+      <fmt:message key="gallery.accessPath" var="accessLabel"/>
       <view:tab label="${accessLabel}" action="AccessPath?MediaId=${media.id}" selected="false"/>
     </view:tabs>
   </c:if>
-<view:frame>
-<form name="mediaForm" action="${action}" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
-  <input type="hidden" name="MediaId" value="${media.id}" />
-  <input type="hidden" name="type" value="${mediaType}" />
-  <input type="hidden" name="Positions" />
+  <view:frame>
+    <form name="mediaForm" action="${action}" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
+      <input type="hidden" name="MediaId" value="${media.id}"/>
+      <input type="hidden" name="type" value="${mediaType}"/>
+      <input type="hidden" name="Positions"/>
 
-<table cellpadding="5" width="100%">
-<tr>
-  <td valign="top">
-  <c:if test="${not empty media}">
-    <view:video url="${mediaUrl}"/>
-  </c:if>
-  </td>
-  <td>
+      <table cellpadding="5" width="100%">
+        <tr>
+          <td valign="top">
+            <c:if test="${not isNewMediaCase}">
+              <view:video url="${mediaUrl}"/>
+            </c:if>
+          </td>
+          <td>
 
-  <gallery:editMedia mediaBean="${media}" mediaType="${mediaType}"/>
+            <gallery:editMedia media="${media}"
+                               mediaType="${mediaType}"
+                               supportedMediaMimeTypes="${supportedMediaMimeTypes}"
+                               formUpdate="<%=formUpdate%>"
+                               isUsePdc="${requestScope.IsUsePdc}"/>
 
-  <c:if test="${requestScope.IsUsePdc}">
-    <%-- Display PDC form --%>
-    <c:choose>
-      <c:when test="${not empty media.id}">
-        <view:pdcClassification componentId="${instanceId}" contentId="${media.id}" editable="true" />
-      </c:when>
-      <c:otherwise>
-        <view:pdcNewContentClassification componentId="${instanceId}"/>
-      </c:otherwise>
-  </c:choose>
-  </c:if>
+            <c:if test="${requestScope.IsUsePdc}">
+              <%-- Display PDC form --%>
+              <c:choose>
+                <c:when test="${not isNewMediaCase}">
+                  <view:pdcClassification componentId="${instanceId}" contentId="${media.id}" editable="true"/>
+                </c:when>
+                <c:otherwise>
+                  <view:pdcNewContentClassification componentId="${instanceId}"/>
+                </c:otherwise>
+              </c:choose>
+            </c:if>
 
-    <br/>
-    <% if (formUpdate != null) { %>
-      <%-- Display XML form --%>
-      <fieldset id="formInfo" class="skinFieldset">
-        <legend><fmt:message key="GML.bloc.further.information"/></legend>
-        <%
-          formUpdate.display(out, context, data);
-        %>
-      </fieldset>
-    <% } %>
-  </td>
-</tr>
-</table>
-</form>
+            <br/>
+            <% if (formUpdate != null) { %>
+              <%-- Display XML form --%>
+            <fieldset id="formInfo" class="skinFieldset">
+              <legend><fmt:message key="GML.bloc.further.information"/></legend>
+              <%
+                formUpdate.display(out, context, data);
+              %>
+            </fieldset>
+            <% } %>
+          </td>
+        </tr>
+      </table>
+    </form>
 
-<fmt:message key="GML.validate" var="validateLabel" />
-<fmt:message key="GML.cancel" var="cancelLabel" />
-<view:buttonPane>
-  <view:button action="javascript:onClick=sendData();" label="${validateLabel}" />
-  <c:choose>
-    <c:when test="${not empty media}">
-      <view:button action="MediaView?MediaId=${media.id}" label="${cancelLabel}" />
-    </c:when>
-    <c:otherwise>
-      <view:button action="GoToCurrentAlbum" label="${cancelLabel}" />
-    </c:otherwise>
-  </c:choose>
-</view:buttonPane>
+    <fmt:message key="GML.validate" var="validateLabel"/>
+    <fmt:message key="GML.cancel" var="cancelLabel"/>
+    <view:buttonPane>
+      <view:button action="javascript:onClick=sendData();" label="${validateLabel}"/>
+      <c:choose>
+        <c:when test="${not isNewMediaCase}">
+          <view:button action="MediaView?MediaId=${media.id}" label="${cancelLabel}"/>
+        </c:when>
+        <c:otherwise>
+          <view:button action="GoToCurrentAlbum" label="${cancelLabel}"/>
+        </c:otherwise>
+      </c:choose>
+    </view:buttonPane>
 
-</view:frame>
+  </view:frame>
 </view:window>
 <div id="tipDiv" style="position:absolute; visibility:hidden; z-index:100000"></div>
 </body>

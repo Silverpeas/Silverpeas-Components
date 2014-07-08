@@ -45,7 +45,7 @@ public class InternalMediaTest {
     InternalMedia iMedia = new InternalMediaForTest();
     assertThat(iMedia.getFileName(), nullValue());
     assertThat(iMedia.getFileSize(), is(0L));
-    assertThat(iMedia.getFileMimeType(), nullValue());
+    assertThat(iMedia.getFileMimeType(), is(MediaMimeType.ERROR));
     assertThat(iMedia.isDownloadAuthorized(), is(false));
     assertThat(iMedia.getDownloadPeriod(), sameInstance(Period.UNDEFINED));
   }

@@ -66,17 +66,6 @@ public class MediaDataCreateDelegate extends AbstractMediaDataDelegate {
    * @return
    */
   public Media newInstance() {
-    switch (getMediaType()) {
-      case Photo:
-        return new Photo();
-      case Video:
-        return new Video();
-      case Sound:
-        return new Sound();
-      case Streaming:
-        return new Streaming();
-      default:
-        return null;
-    }
+    return getMediaType().newInstance();
   }
 }

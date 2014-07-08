@@ -48,7 +48,7 @@ public abstract class InternalMedia extends Media {
   private boolean downloadAuthorized = false;
   private String fileName;
   private long fileSize = 0;
-  private MediaMimeType fileMimeType;
+  private MediaMimeType fileMimeType = MediaMimeType.ERROR;
   private Period downloadPeriod = Period.UNDEFINED;
 
   /**
@@ -92,14 +92,11 @@ public abstract class InternalMedia extends Media {
   }
 
   public MediaMimeType getFileMimeType() {
-    if (fileMimeType == null) {
-      fileMimeType = MediaMimeType.ERROR;
-    }
     return fileMimeType;
   }
 
   public void setFileMimeType(MediaMimeType fileMimeType) {
-    this.fileMimeType = fileMimeType;
+    this.fileMimeType = fileMimeType != null ? fileMimeType : MediaMimeType.ERROR;
   }
 
   public void setDownloadAuthorized(boolean downloadAuthorized) {

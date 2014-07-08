@@ -23,17 +23,23 @@
  */
 package com.silverpeas.gallery.constant;
 
+import com.silverpeas.gallery.model.Media;
 import com.silverpeas.util.StringUtil;
 
 /**
  * @author: Yohann Chastagnier
  */
 public enum MediaType {
-  Unknown, Photo, Video, Sound, Streaming;
+  Unknown(null), Photo(com.silverpeas.gallery.model.Photo.class),
+  Video(com.silverpeas.gallery.model.Video.class),
+  Sound(com.silverpeas.gallery.model.Sound.class),
+  Streaming(com.silverpeas.gallery.model.Streaming.class);
 
+  private final Class<? extends Media> mediaClass;
   private final String mediaWebUriPart;
 
-  private MediaType() {
+  private MediaType(final Class<? extends Media> mediaClass) {
+    this.mediaClass = mediaClass;
     mediaWebUriPart = name().toLowerCase() + "s";
   }
 
@@ -47,6 +53,20 @@ public enum MediaType {
       return valueOf(StringUtil.capitalize(type));
     } catch (Exception e) {
       return Unknown;
+    }
+  }
+
+  /**
+   * Instantiates a new model instance according to the media type.
+   * @param <MEDIA>
+   * @return
+   */
+  @SuppressWarnings("unchecked")
+  public <MEDIA extends Media> MEDIA newInstance() {
+    try {
+      return (MEDIA) mediaClass.newInstance();
+    } catch (Exception e) {
+      return null;
     }
   }
 

@@ -308,6 +308,9 @@ public abstract class Media implements SilverpeasContent, SilverContentInterface
    * @return
    */
   public String getApplicationOriginalUrl() {
+    if (StringUtil.isNotDefined(getId())) {
+      return "";
+    }
     return GalleryResourceURIs.buildMediaContentURI(this, MediaResolution.ORIGINAL).toString();
   }
 
