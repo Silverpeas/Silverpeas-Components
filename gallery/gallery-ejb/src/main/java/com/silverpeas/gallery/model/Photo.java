@@ -24,7 +24,7 @@
 package com.silverpeas.gallery.model;
 
 import com.silverpeas.gallery.constant.MediaType;
-import com.silverpeas.gallery.process.photo.GalleryLoadMetaDataProcess;
+import com.silverpeas.gallery.process.media.GalleryLoadMetaDataProcess;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 

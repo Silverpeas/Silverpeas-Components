@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.gallery.process.photo;
+package com.silverpeas.gallery.process.media;
 
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.gallery.GalleryComponentSettings;

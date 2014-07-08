@@ -34,6 +34,7 @@ import com.silverpeas.gallery.model.MediaCriteria;
 import com.silverpeas.gallery.model.MediaPK;
 import com.silverpeas.gallery.model.Photo;
 import com.silverpeas.gallery.model.Video;
+import com.silverpeas.gallery.process.media.*;
 import com.silverpeas.gallery.process.photo.*;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;

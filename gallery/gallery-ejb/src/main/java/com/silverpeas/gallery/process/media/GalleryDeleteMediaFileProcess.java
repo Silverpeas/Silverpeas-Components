@@ -21,49 +21,35 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.gallery.process.photo;
+package com.silverpeas.gallery.process.media;
 
-import com.silverpeas.gallery.MediaHelper;
 import com.silverpeas.gallery.model.Media;
-import com.silverpeas.gallery.model.MediaPK;
+import com.silverpeas.gallery.process.AbstractGalleryFileProcess;
+import com.silverpeas.gallery.process.GalleryProcessExecutionContext;
 import org.silverpeas.process.io.file.FileHandler;
 import org.silverpeas.process.session.ProcessSession;
 
-import com.silverpeas.gallery.process.AbstractGalleryFileProcess;
-import com.silverpeas.gallery.process.GalleryProcessExecutionContext;
-
 /**
- * Process to paste a media on file system
+ * Process to delete a media from file system
  * @author Yohann Chastagnier
  */
-public class GalleryPasteMediaFileProcess extends AbstractGalleryFileProcess {
-
-  private final MediaPK fromMediaPk;
-  private final boolean isCutted;
+public class GalleryDeleteMediaFileProcess extends AbstractGalleryFileProcess {
 
   /**
    * Gets an instance
    * @param media
-   * @param fromMediaPk
-   * @param isCutted
    * @return
    */
-  public static GalleryPasteMediaFileProcess getInstance(final Media media,
-      final MediaPK fromMediaPk, final boolean isCutted) {
-    return new GalleryPasteMediaFileProcess(media, fromMediaPk, isCutted);
+  public static GalleryDeleteMediaFileProcess getInstance(final Media media) {
+    return new GalleryDeleteMediaFileProcess(media);
   }
 
   /**
    * Default hidden constructor
    * @param media
-   * @param fromMediaPk
-   * @param isCutted
    */
-  protected GalleryPasteMediaFileProcess(final Media media, final MediaPK fromMediaPk,
-      final boolean isCutted) {
+  protected GalleryDeleteMediaFileProcess(final Media media) {
     super(media);
-    this.fromMediaPk = fromMediaPk;
-    this.isCutted = isCutted;
   }
 
   /*
@@ -75,10 +61,9 @@ public class GalleryPasteMediaFileProcess extends AbstractGalleryFileProcess {
   @Override
   public void processFiles(final GalleryProcessExecutionContext context,
       final ProcessSession session, final FileHandler fileHandler) throws Exception {
-    if (getMedia().getType().isPhoto()) {
-      if (!isCutted || !fromMediaPk.getInstanceId().equals(context.getComponentInstanceId())) {
-        MediaHelper.pasteImage(fileHandler, fromMediaPk, getMedia().getPhoto(), isCutted);
-      }
-    }
+
+    // Deleting repository with old media
+    fileHandler.getHandledFile(Media.BASE_PATH, context.getComponentInstanceId(),
+        getMedia().getWorkspaceSubFolderName()).delete();
   }
 }

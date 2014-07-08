@@ -21,24 +21,28 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.gallery.process.photo;
+package com.silverpeas.gallery.process.media;
 
 import com.silverpeas.gallery.MediaHelper;
 import com.silverpeas.gallery.model.Media;
+import com.silverpeas.gallery.model.Photo;
+import com.silverpeas.gallery.model.Video;
 import com.silverpeas.gallery.process.AbstractGalleryFileProcess;
 import com.silverpeas.gallery.process.GalleryProcessExecutionContext;
-import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.process.io.file.FileHandler;
 import org.silverpeas.process.session.ProcessSession;
 
+import java.io.File;
+
 /**
- * Process to update a media on file system
+ * Process to create a media on file system
  * @author Yohann Chastagnier
  */
-public class GalleryUpdateMediaFileProcess extends AbstractGalleryFileProcess {
+public class GalleryCreateMediaFileProcess extends AbstractGalleryFileProcess {
 
+  private final File file;
   private final FileItem fileItem;
   private final boolean watermark;
   private final String watermarkHD;
@@ -47,31 +51,44 @@ public class GalleryUpdateMediaFileProcess extends AbstractGalleryFileProcess {
   /**
    * Gets an instance
    * @param media
-   * @param fileItem
+   * @param file
    * @param watermark
    * @param watermarkHD
    * @param watermarkOther
    * @return
    */
-  public static GalleryUpdateMediaFileProcess getInstance(final Media media,
-      final FileItem fileItem, final boolean watermark, final String watermarkHD,
-      final String watermarkOther) {
-    return new GalleryUpdateMediaFileProcess(media, fileItem, watermark, watermarkHD,
-        watermarkOther);
+  public static GalleryCreateMediaFileProcess getInstance(final Media media, final Object file,
+      final boolean watermark, final String watermarkHD, final String watermarkOther) {
+    return new GalleryCreateMediaFileProcess(media, file, watermark, watermarkHD, watermarkOther);
   }
 
   /**
    * Default hidden constructor
    * @param media
-   * @param fileItem
+   * @param file
    * @param watermark
    * @param watermarkHD
    * @param watermarkOther
    */
-  protected GalleryUpdateMediaFileProcess(final Media media, final FileItem fileItem,
+  protected GalleryCreateMediaFileProcess(final Media media, final Object file,
       final boolean watermark, final String watermarkHD, final String watermarkOther) {
     super(media);
-    this.fileItem = fileItem;
+    if (file != null) {
+      if (file instanceof FileItem) {
+        fileItem = (FileItem) file;
+        this.file = null;
+      } else if (file instanceof File) {
+        this.file = (File) file;
+        fileItem = null;
+      } else {
+        throw new IllegalArgumentException(
+            "GalleryCreateMediaFileProcess() - parameter 'file' has to be a FileItem or File " +
+                "instance.");
+      }
+    } else {
+      fileItem = null;
+      this.file = null;
+    }
     this.watermark = watermark;
     this.watermarkHD = watermarkHD;
     this.watermarkOther = watermarkOther;
@@ -86,39 +103,33 @@ public class GalleryUpdateMediaFileProcess extends AbstractGalleryFileProcess {
   @Override
   public void processFiles(final GalleryProcessExecutionContext context,
       final ProcessSession session, final FileHandler fileHandler) throws Exception {
+
     // Media
     switch (getMedia().getType()) {
       case Photo:
+        Photo photo = getMedia().getPhoto();
         if (fileItem != null) {
-          final String name = fileItem.getName();
-          if (StringUtil.isDefined(name)) {
-
-            // Deleting repository with old media
-            fileHandler.getHandledFile(Media.BASE_PATH, context.getComponentInstanceId(),
-                getMedia().getWorkspaceSubFolderName()).delete();
-
-            // Creating new images
-            MediaHelper
-                .processPhoto(fileHandler, getMedia().getPhoto(), fileItem, watermark, watermarkHD,
-                    watermarkOther);
-          }
+          MediaHelper
+              .processPhoto(fileHandler, photo, fileItem, watermark, watermarkHD, watermarkOther);
+        } else {
+          MediaHelper
+              .processPhoto(fileHandler, photo, file, watermark, watermarkHD, watermarkOther);
         }
         break;
       case Video:
+        Video video = getMedia().getVideo();
         if (fileItem != null) {
-          // Deleting repository with old media
-          fileHandler.getHandledFile(Media.BASE_PATH, context.getComponentInstanceId(),
-              getMedia().getWorkspaceSubFolderName()).delete();
-
-          // Save new video
-          MediaHelper.processVideo(fileHandler, getMedia().getVideo(), fileItem);
+          MediaHelper.processVideo(fileHandler, video, fileItem);
+        } else {
+          MediaHelper.processVideo(fileHandler, video, file);
         }
         break;
+
       default:
         SilverTrace.warn("Gallery", GalleryUpdateMediaFileProcess.class.getName(),
             getMedia().getType().name() + " media type is never processed");
         break;
     }
-
   }
+
 }

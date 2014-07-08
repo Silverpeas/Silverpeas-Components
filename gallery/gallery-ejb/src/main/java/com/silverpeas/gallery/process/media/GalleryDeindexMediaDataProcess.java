@@ -1,4 +1,4 @@
-package com.silverpeas.gallery.process.photo;
+package com.silverpeas.gallery.process.media;
 
 import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.process.AbstractGalleryDataProcess;
