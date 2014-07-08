@@ -62,7 +62,7 @@
       <c:if test="${not empty albumPath}">
         <c:forEach var="albumPathPart" items="${albumPath}">
           <c:if test="${albumPathPart.id != 0}">
-            <view:browseBarElt label="${albumPathPart.name}" link="ViewAlbum?Id=${albumPathPart.id}" id="${albumPathPart.id}"/>
+            <view:browseBarElt label="${albumPathPart.name}" link="ViewAlbum?Id=${albumPathPart.id}" id="album${albumPathPart.id}"/>
           </c:if>
         </c:forEach>
       </c:if>

@@ -27,8 +27,6 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
-<%@ taglib prefix="plugins" tagdir="/WEB-INF/tags/silverpeas/gallery" %>
-
 
 <view:setConstant var="MediaTitleInputName" constant="com.silverpeas.gallery.ParameterNames.MediaTitle"/>
 <view:setConstant var="MediaDescriptionInputName" constant="com.silverpeas.gallery.ParameterNames.MediaDescription"/>

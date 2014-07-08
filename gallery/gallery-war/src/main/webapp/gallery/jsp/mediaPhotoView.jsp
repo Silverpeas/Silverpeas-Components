@@ -175,13 +175,13 @@
 </head>
 <body class="gallery gallery-fiche-image yui-skin-sam" id="${instanceId}">
 
-<gallery:browseBar albumPath="${albumPath}"></gallery:browseBar>
+<gallery:browseBar albumPath="${albumPath}"/>
 
 <view:operationPane>
   <fmt:message key="GML.notify" var="notifLabel"/>
   <fmt:message key="gallery.alert" var="notifIcon" bundle="${icons}"/>
   <c:url value="${notifIcon}" var="notifIcon"/>
-  <view:operation altText="${notifLabel}" action="ToAlertUser?MediaId=${photo.id}" icon="${notifIcon}"></view:operation>
+  <view:operation altText="${notifLabel}" action="ToAlertUser?MediaId=${photo.id}" icon="${notifIcon}"/>
   <view:operationSeparator/>
   <c:if test="${requestScope.UpdateMediaAllowed}">
     <fmt:message key="GML.delete" var="deleteLabel"/>
@@ -189,7 +189,7 @@
     <c:url value="${deleteIcon}" var="deleteIcon"/>
     <c:set var="tmpLabel"><c:out value="${photo.title}"/></c:set>
     <c:set var="deleteAction" value="javaScript:deleteConfirm('${photo.id}', '${silfn:escapeJs(tmpLabel)}')"/>
-    <view:operation altText="${deleteLabel}" action="${deleteAction}" icon="${deleteIcon}"></view:operation>
+    <view:operation altText="${deleteLabel}" action="${deleteAction}" icon="${deleteIcon}"/>
   </c:if>
   <c:if test="${greaterUserRole eq adminRole}">
     <fmt:message key="GML.copy" var="copyLabel"/>
@@ -207,21 +207,21 @@
     <fmt:message var="diapoLabel" key="gallery.diaporama"/>
     <fmt:message var="diapoIcon" key="gallery.startDiaporama" bundle="${icons}"/>
     <c:url var="diapoIcon" value="${diapoIcon}"/>
-    <view:operation altText="${diapoLabel}" action="javascript:startSlideshow('${photo.id}')" icon="${diapoIcon}"></view:operation>
+    <view:operation altText="${diapoLabel}" action="javascript:startSlideshow('${photo.id}')" icon="${diapoIcon}"/>
   </c:if>
   <c:if test="${greaterUserRole eq userRole and requestScope.IsBasket}">
     <view:operationSeparator/>
     <fmt:message var="addBasketLabel" key="gallery.addMediaToBasket"/>
     <fmt:message var="addBasketIcon" key="gallery.addMediaToBasket" bundle="${icons}"/>
     <c:url var="addBasketIcon" value="${addBasketIcon}"/>
-    <view:operation altText="${addBasketLabel}" action="BasketAddMedia?MediaId=${photo.id}" icon="${addBasketIcon}"></view:operation>
+    <view:operation altText="${addBasketLabel}" action="BasketAddMedia?MediaId=${photo.id}" icon="${addBasketIcon}"/>
   </c:if>
   <c:if test="${requestScope.IsPrivateSearch}">
     <view:operationSeparator/>
     <fmt:message var="lastResultLabel" key="gallery.lastResult"/>
     <fmt:message var="lastResultIcon" key="gallery.lastResult" bundle="${icons}"/>
     <c:url var="lastResultIcon" value="${lastResultIcon}"/>
-    <view:operation altText="${lastResultLabel}" action="LastResult" icon="${lastResultIcon}"></view:operation>
+    <view:operation altText="${lastResultLabel}" action="LastResult" icon="${lastResultIcon}"/>
 
   </c:if>
 </view:operationPane>
@@ -241,7 +241,7 @@
 
   <view:frame>
 
-    <form name="mediaForm" method="post" accept-charset="UTF-8">
+    <form name="mediaForm" method="post" accept-charset="UTF-8" action="#">
       <div class="rightContent">
 
         <!-- nom du fichier -->
@@ -397,22 +397,22 @@
           <div class="fondPhoto">
             <div class="cadrePhoto">
               <a href="#" onclick="javascript:startSlideshow('${photo.id}')">
-                <img alt="${photo.name}" src="<%=preview_url%>"/>
+                <img alt="<c:out value="${photo.name}"/>" src="<%=preview_url%>"/>
               </a>
             </div>
             <c:if test="${photo.title != photo.fileName}">
-              <h2 class="mediaTitle">${photo.title}</h2>
+              <h2 class="mediaTitle"><c:out value="${photo.title}"/></h2>
             </c:if>
             <c:if test="${not empty photo.keyWord}">
               <div class="motsClefs">
                 <c:set var="listKeys" value="${fn:split(photo.keyWord,' ')}"/>
                 <c:forEach items="${listKeys}" var="keyword">
-                  <span><a href="SearchKeyWord?SearchKeyWord=${keyword}">${keyword}</a></span>
+                  <span><a href="SearchKeyWord?SearchKeyWord=${keyword}"><c:out value="${keyword}"/></a></span>
                 </c:forEach>
               </div>
             </c:if>
             <c:if test="${not empty photo.description}">
-              <p class="description">${photo.description}</p>
+              <p class="description"><c:out value="${photo.description}"/></p>
             </c:if>
           </div>
         </div>
