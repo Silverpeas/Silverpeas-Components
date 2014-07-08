@@ -153,7 +153,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         request.setAttribute("IsPrivateSearch", gallerySC.isPrivateSearch());
         request.setAttribute("IsBasket", gallerySC.isBasket());
         request.setAttribute("IsOrder", gallerySC.isOrder());
-        destination = rootDest + "accueil.jsp";
+        destination = rootDest + "welcome.jsp";
       } else if ("ViewAlbum".equals(function)) {
         // récupération de l'Id de l'album en cours
         String albumId = request.getParameter("Id");
@@ -886,34 +886,36 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           String templateName = templateFileName.substring(0, templateFileName.lastIndexOf("."));
 
           RecordTemplate searchTemplate = template.getSearchTemplate();
-          DataRecord data = searchTemplate.getEmptyRecord();
+          if (searchTemplate != null) {
+            DataRecord data = searchTemplate.getEmptyRecord();
 
-          PagesContext context = new PagesContext("XMLSearchForm", "2", gallerySC.getLanguage(),
-              gallerySC.getUserId());
-          context.setEncoding("UTF-8");
-          XmlSearchForm searchForm = (XmlSearchForm) template.getSearchForm();
-          searchForm.update(items, data, context);
+            PagesContext context = new PagesContext("XMLSearchForm", "2", gallerySC.getLanguage(),
+                gallerySC.getUserId());
+            context.setEncoding("UTF-8");
+            XmlSearchForm searchForm = (XmlSearchForm) template.getSearchForm();
+            searchForm.update(items, data, context);
 
-          // store xml search data in session
-          gallerySC.setXMLSearchContext(data);
+            // store xml search data in session
+            gallerySC.setXMLSearchContext(data);
 
-          Field field;
-          String fieldValue;
-          String fieldQuery;
-          for (final String fieldName : searchTemplate.getFieldNames()) {
-            field = data.getField(fieldName);
-            fieldValue = field.getStringValue();
-            if (fieldValue != null && fieldValue.trim().length() > 0) {
-              fieldQuery = fieldValue.trim().replaceAll("##", " AND "); // case à cocher multiple
-              query.addFieldQuery(
-                  new FieldDescription(templateName + "$$" + fieldName, fieldQuery, null));
+            Field field;
+            String fieldValue;
+            String fieldQuery;
+            for (final String fieldName : searchTemplate.getFieldNames()) {
+              field = data.getField(fieldName);
+              fieldValue = field.getStringValue();
+              if (fieldValue != null && fieldValue.trim().length() > 0) {
+                fieldQuery = fieldValue.trim().replaceAll("##", " AND "); // case à cocher multiple
+                query.addFieldQuery(
+                    new FieldDescription(templateName + "$$" + fieldName, fieldQuery, null));
+              }
             }
           }
         }
 
-        // Ajout des éléments de recherche IPTC
+        // Add IPTC search elements
         List<MetaData> iptcFields = gallerySC.getMetaDataKeys();
-        // Parcours des champs XML recherchables
+        // Loop for each xml fields
         for (final MetaData iptcField : iptcFields) {
           // recuperation valeur dans request
           String property = iptcField.getProperty();

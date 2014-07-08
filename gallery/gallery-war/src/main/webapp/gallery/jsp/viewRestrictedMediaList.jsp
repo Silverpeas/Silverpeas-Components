@@ -71,26 +71,27 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <view:looknfeel/>
-  <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+  <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js"/>"></script>
+
   <script type="text/javascript">
-    var albumWindow = window;
 
-    function sendData() {
-      // envoi des photos sélectionnées pour la modif par lot
-      document.mediaForm.SelectedIds.value = getMediaIds(true);
-      document.mediaForm.NotSelectedIds.value = getMediaIds(false);
+var albumWindow = window;
 
-      document.mediaForm.submit();
-    }
+function sendData() {
+  // envoi des photos sélectionnées pour la modif par lot
+  document.mediaForm.SelectedIds.value = getMediaIds(true);
+  document.mediaForm.NotSelectedIds.value = getMediaIds(false);
 
-    function sendToBasket() {
-      // envoi des photos sélectionnées dans le panier
-      document.mediaForm.SelectedIds.value = getMediaIds(true);
-      document.mediaForm.NotSelectedIds.value = getMediaIds(false);
-      document.mediaForm.action = "BasketAddMediaList";
-      document.mediaForm.submit();
-    }
+  document.mediaForm.submit();
+}
 
+function sendToBasket() {
+  // envoi des photos sélectionnées dans le panier
+  document.mediaForm.SelectedIds.value = getMediaIds(true);
+  document.mediaForm.NotSelectedIds.value = getMediaIds(false);
+  document.mediaForm.action = "BasketAddMediaList";
+  document.mediaForm.submit();
+}
   </script>
 </head>
 <body>
@@ -123,9 +124,9 @@
           </c:when>
           <c:otherwise>
             <center>
-              <fmt:message key="gallery.noPhotoSearchBegin"/>
-              <span> <b>${searchKeyWord}</b> </span>
-              <fmt:message key="gallery.noPhotoSearchEnd"/></center>
+              <fmt:message key="gallery.search.empty.begin"/>
+              <span> <b>${ searchKeyWord}</b> </span>
+              <fmt:message key="gallery.search.empty.end"/></center>
           </c:otherwise>
         </c:choose>
         <br/>

@@ -64,12 +64,14 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.node.model.NodeSelection;
+
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.search.indexEngine.model.FieldDescription;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -85,7 +87,6 @@ import java.util.Properties;
 import static com.silverpeas.gallery.model.MediaCriteria.QUERY_ORDER_BY.*;
 
 public final class GallerySessionController extends AbstractComponentSessionController {
-  // déclaration des variables
 
   private String currentAlbumId = "0";
   private AlbumDetail currentAlbum = getAlbum(currentAlbumId);
@@ -95,7 +96,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   private String currentOrderId = "0";
   private List<String> listSelected = new ArrayList<String>();
   private boolean isViewNotVisible = false;
-  // gestion de la recherche par mot clé
+  // manage search keyword
   private String searchKeyWord = "";
   private List<Media> searchResultListMedia = new ArrayList<Media>();
   private List<Media> restrictedListMedia = new ArrayList<Media>();
@@ -103,14 +104,14 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   private QueryDescription query = new QueryDescription();
   private SearchContext pdcSearchContext;
   private DataRecord xmlSearchContext;
-  // pour tout selectionner / déselectionner
+  // select/deselect all
   private boolean select = false;
   private ResourceLocator metadataResources = null;
   private CommentService commentService = null;
   // pagination de la liste des résultats (PDC via DomainsBar)
   private int indexOfCurrentPage = 0;
-  // panier en cours
-  private List<String> basket = new ArrayList<String>(); // liste des photos mise dans le panier
+  // manage basket case (contains list of media identifier)
+  private List<String> basket = new ArrayList<String>();
   static final Properties defaultSettings = new Properties();
 
   static {
@@ -664,9 +665,15 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   public Collection<Media> search(QueryDescription query) {
     query.setSearchingUser(getUserId());
     query.addComponent(getComponentId());
-    Collection<Media> result = getMediaService().search(query);
-    // mise à jour de la liste
-    isSearchResult = true;
+
+    Collection<Media> result = new ArrayList<Media>();
+    try {
+      result = getMediaService().search(query);
+      // mise à jour de la liste
+      isSearchResult = true;
+    } catch (Exception e) {
+      SilverTrace.warn("gallery", "GallerySessionControler.search", "Gallery search error", e);
+    }
     // sauvegarde de la recherche
     setQuery(query);
     return result;

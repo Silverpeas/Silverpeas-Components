@@ -88,81 +88,96 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <view:looknfeel/>
+  <script type="text/javascript" src="<c:url value="/util/javaScript/lucene/luceneQueryValidator.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/util/javaScript/checkForm.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery.cookie.js"/>"></script>
   <script type="text/javascript">
-    <c:if test="${greaterUserRole.isGreaterThanOrEquals(adminRole)}">
-    $(document).ready(function() {
-      showAlbumsHelp();
+<c:if test="${greaterUserRole.isGreaterThanOrEquals(adminRole)}">
+$(document).ready(function() {
+  showAlbumsHelp();
+});
+</c:if>
+
+var albumsHelpAlreadyShown = false;
+
+function showAlbumsHelp() {
+  var albumsCookieName = "Silverpeas_GALLERY_AlbumsHelp";
+  var albumsCookieValue = $.cookie(albumsCookieName);
+  if (!albumsHelpAlreadyShown && "IKnowIt" != albumsCookieValue) {
+    albumsHelpAlreadyShown = true;
+    $("#albums-message").dialog({
+      modal : true,
+      resizable : false,
+      width : 400,
+      dialogClass : 'help-modal-message',
+      buttons : {
+        "<fmt:message key="gallery.help.albums.buttons.ok"/>" : function() {
+          $.cookie(albumsCookieName, "IKnowIt", { expires : 3650, path : '/' });
+          $(this).dialog("close");
+        },
+        "<fmt:message key="gallery.help.albums.buttons.remind"/>" : function() {
+          $(this).dialog("close");
+        }
+      }
     });
-    </c:if>
+  }
+}
 
-    var albumsHelpAlreadyShown = false;
+function clipboardPaste() {
+  $.progressMessage();
+  document.albumForm.action = "paste";
+  document.albumForm.submit();
+}
 
-    function showAlbumsHelp() {
-      var albumsCookieName = "Silverpeas_GALLERY_AlbumsHelp";
-      var albumsCookieValue = $.cookie(albumsCookieName);
-      if (!albumsHelpAlreadyShown && "IKnowIt" != albumsCookieValue) {
-        albumsHelpAlreadyShown = true;
-        $("#albums-message").dialog({
-          modal : true,
-          resizable : false,
-          width : 400,
-          dialogClass : 'help-modal-message',
-          buttons : {
-            "<fmt:message key="gallery.help.albums.buttons.ok"/>" : function() {
-              $.cookie(albumsCookieName, "IKnowIt", { expires : 3650, path : '/' });
-              $(this).dialog("close");
-            },
-            "<fmt:message key="gallery.help.albums.buttons.remind"/>" : function() {
-              $(this).dialog("close");
-            }
-          }
-        });
-      }
+var albumWindow = window;
+var askWindow = window;
+
+function openSPWindow(fonction, windowName) {
+  pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600', '400',
+      'scrollbars=yes, resizable, alwaysRaised');
+}
+
+function deleteConfirm(id, nom) {
+  if (window.confirm("<fmt:message key="gallery.confirmDeleteAlbum"/> '" + nom + "' ?")) {
+    document.albumForm.action = "DeleteAlbum";
+    document.albumForm.Id.value = id;
+    document.albumForm.submit();
+  }
+}
+
+function askMedia() {
+  windowName = "askWindow";
+  larg = "570";
+  haut = "250";
+  windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
+  if (!askWindow.closed && askWindow.name == "askWindow")
+    askWindow.close();
+  askWindow = SP_openWindow("AskMedia", windowName, larg, haut, windowParams);
+}
+
+function sendData() {
+  var query = stripInitialWhitespace($("#searchQuery").val());
+  if (checkLuceneQuery(query)) {
+    setTimeout("document.searchForm.submit();", 500);
+  }
+}
+
+function checkLuceneQuery(query) {
+  if(query != null && query.length > 0) {
+    query = removeEscapes(query);
+    // check question marks are used properly
+    if(!checkQuestionMark(query)) {
+      return false;
     }
-
-    function clipboardPaste() {
-      $.progressMessage();
-      document.albumForm.action = "paste";
-      document.albumForm.submit();
+    // check * is used properly
+    if(!checkAsterisk(query)) {
+      return false;
     }
-
-    var albumWindow = window;
-    var askWindow = window;
-
-    function openSPWindow(fonction, windowName) {
-      pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600', '400',
-          'scrollbars=yes, resizable, alwaysRaised');
-    }
-
-    function deleteConfirm(id, nom) {
-      if (window.confirm("<fmt:message key="gallery.confirmDeleteAlbum"/> '" + nom + "' ?")) {
-        document.albumForm.action = "DeleteAlbum";
-        document.albumForm.Id.value = id;
-        document.albumForm.submit();
-      }
-    }
-
-    function askMedia() {
-      windowName = "askWindow";
-      larg = "570";
-      haut = "250";
-      windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
-      if (!askWindow.closed && askWindow.name == "askWindow")
-        askWindow.close();
-      askWindow = SP_openWindow("AskMedia", windowName, larg, haut, windowParams);
-    }
-
-    function sendData() {
-      var query = stripInitialWhitespace(document.searchForm.SearchKeyWord.value);
-      if (!isWhitespace(query) && query != "*") {
-        //displayStaticMessage();
-        setTimeout("document.searchForm.submit();", 500);
-      }
-    }
-
+    return true;
+  }
+  return false;
+}
   </script>
 </head>
 <body>
@@ -202,7 +217,7 @@
       <c:if test="${isPrivateSearch}">
         <view:board>
           <center>
-            <form name="searchForm" action="SearchKeyWord" method="post" onsubmit="javascript:sendData();">
+            <form name="searchForm" action="SearchKeyWord" method="post" onsubmit="javascript:sendData();" onkeypress="return event.keyCode != 13;">
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr>
                   <td valign="middle" align="left" class="txtlibform" width="30%">
@@ -211,7 +226,7 @@
                   <td align="left" valign="middle">
                     <table border="0" cellspacing="0" cellpadding="0">
                       <tr valign="middle">
-                        <td valign="middle"><input type="text" name="SearchKeyWord" size="36"/></td>
+                        <td valign="middle"><input type="text" name="SearchKeyWord" size="36" id="searchQuery"/></td>
                         <td valign="middle">&nbsp;</td>
                         <td valign="middle" align="left" width="100%">
                           <fmt:message key="GML.ok" var="tmpLabel"/>
@@ -236,9 +251,9 @@
       <gallery:listSubAlbums subAlbumList="${albumList}"/>
       <br/>
       <view:board>
-        <table width="100%" border="0" cellspacing="0" cellpadding="0" align=center>
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
           <tr>
-            <td colspan="5" align="center" class=ArrayNavigation>
+            <td colspan="5" align="center" class="ArrayNavigation">
               <fmt:message key="gallery.last.media"/>
             </td>
           </tr>
