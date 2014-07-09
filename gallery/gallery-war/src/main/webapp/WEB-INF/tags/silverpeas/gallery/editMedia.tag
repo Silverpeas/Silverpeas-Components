@@ -182,7 +182,7 @@
 
 </script>
 
-<fieldset id="${mediaType}Info" class="skinFieldset">
+<fieldset id="${fn:toLowerCase(mediaType)}Info" class="skinFieldset">
   <legend><fmt:message key="GML.bloc.information.principals"/></legend>
   <div class="fields">
     <div class="field" id="fileArea">
@@ -241,7 +241,7 @@
   </div>
 </fieldset>
 
-<fieldset class="skinFieldset" id="${mediaType}Options">
+<fieldset class="skinFieldset" id="${fn:toLowerCase(mediaType)}Options">
   <legend><fmt:message key="gallery.options"/></legend>
   <div class="fields">
 

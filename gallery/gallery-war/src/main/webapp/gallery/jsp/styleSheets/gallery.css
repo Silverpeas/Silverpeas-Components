@@ -80,7 +80,7 @@
   border-radius: 10px;
   -moz-border-radius: 10px;
   -webkit-border-radius: 10px;
-  behavior: url("/silverpeas/util/styleSheets/PIE.htc");
+  behavior: url("../../../util/styleSheets/PIE.htc");
   background-color: #EAEAEA;
 }
 
@@ -211,7 +211,7 @@ ul#albumList li.ui-state-highlight {
 }
 
 .gallery-fiche-media .rightContent .periode .header h4 {
-  background: url("/silverpeas/util/icons/calendar_2.gif") no-repeat scroll right top transparent;
+  background: url("../../../util/icons/calendar_2.gif") no-repeat scroll right top transparent;
   height: 16px;
 }
 
@@ -276,70 +276,68 @@ br.clear {
   height: 3em;
 }
 
-#PhotoInfo legend {
-	background: transparent
-		url("/silverpeas/util/icons/component/gallerySmall.gif") 11px 0
-		no-repeat;
+#photoInfo legend {
+  background: transparent url("../icons/icon-photo.gif") 11px 0 no-repeat;
 }
 
 #videoInfo legend {
-	background: transparent
-		url("../icons/icon-video.png") 11px 0
-		no-repeat;
+  background: transparent url("../icons/icon-video.png") 11px 0 no-repeat;
 }
 
+#soundInfo legend {
+  background: transparent url("../icons/icon-sound.png") 11px 0 no-repeat;
+}
 
 #streamingInfo legend {
-	background: transparent
-		url("../icons/icon-streaming.png") 11px 0
-		no-repeat;
+  background: transparent url("../icons/icon-streaming.png") 11px 0 no-repeat;
 }
 
-#PhotoOptions legend,
+#photoOptions legend,
 #videoOptions legend,
-#stremingOptions legend
-{
-	background: transparent
-		url("/silverpeas/util/icons/cog.png") 11px 0
-		no-repeat;
+#soundOptions legend,
+#streamingOptions legend {
+  background: transparent url("../../../util/icons/cog.png") 11px 0 no-repeat;
 }
 
 #formInfo legend {
-  background: transparent url("/silverpeas/util/icons/component/formsOnlineSmall.gif") 11px 0 no-repeat;
+  background: transparent url("../../../util/icons/component/formsOnlineSmall.gif") 11px 0 no-repeat;
 }
 
-.editMedia   #metadata {
-	width: 300px;
-	margin-top: 1em;
+.editMedia #metadata {
+  width: 300px;
+  margin-top: 1em;
 }
 
-.editMedia   #metadata b {
-	display: block;
+.editMedia #metadata b {
+  display: block;
 }
 
 .createMedia #fileNameArea {
-	display:none;
+  display: none;
 }
 
 .createMedia #beginDownloadDateArea,
 .createMedia #endDownloadDateArea {
-	width:364px;
+  width: 364px;
 }
+
 .createMedia #beginDateArea {
-	clear:both;
+  clear: both;
 }
+
 .createMedia #beginDateArea,
 .createMedia #endDateArea {
-	width:364px;
+  width: 364px;
 }
 
 .createMedia #endDateArea label,
 .createMedia #endDownloadDateArea label {
-    width: 50px;
+  width: 50px;
 }
+
 .createMedia #endDateArea .champs,
 .createMedia #endDownloadDateArea .champs {
-    margin-left: 50px;
+  margin-left: 50px;
 }
 
 /************ inline message folder empty **********/

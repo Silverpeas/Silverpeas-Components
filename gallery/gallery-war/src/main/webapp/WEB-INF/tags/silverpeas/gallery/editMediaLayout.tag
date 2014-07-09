@@ -130,7 +130,7 @@
               <jsp:invoke fragment="mediaPreviewBloc"/>
             </c:if>
           </td>
-          <td>
+          <td valign="top">
 
             <gallery:editMedia media="${media}"
                                mediaType="${mediaType}"
