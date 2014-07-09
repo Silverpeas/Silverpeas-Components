@@ -40,6 +40,8 @@
 <c:set var="mandatoryIcon"><fmt:message key='gallery.mandatory' bundle='${icons}'/></c:set>
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
 <jsp:useBean id="componentId" type="java.lang.String"/>
+<c:set var="userId" value="${sessionScope.SilverSessionController.userId}"/>
+<jsp:useBean id="userId" type="java.lang.String"/>
 
 <%-- Fragments --%>
 <%@ attribute name="headerBloc" fragment="true"
@@ -71,7 +73,8 @@
 </c:if>
 <c:set var="albumPath" value="${requestScope.Path}"/>
 <jsp:useBean id="albumPath" type="java.util.List<com.silverpeas.gallery.model.AlbumDetail>"/>
-<c:set var="albumId" value="${albumPath[fn:length(albumPath)-1].id}"/>
+<c:set var="albumId" value="${albumPath[fn:length(albumPath)-1].nodePK.id}"/>
+<jsp:useBean id="albumId" type="java.lang.String"/>
 
 <c:set value="${media.applicationOriginalUrl}" var="mediaUrl" scope="request"/>
 

@@ -172,7 +172,7 @@ ul#albumList li.ui-state-highlight {
 }
 
 /** FICHE **/
-.gallery-fiche-image .fileName {
+.gallery-fiche-media .fileName {
   text-align: center;
   font-size: 120%;
   padding: 0 0 0.25em 0;
@@ -180,47 +180,47 @@ ul#albumList li.ui-state-highlight {
   font-weight: bold;
 }
 
-.gallery-fiche-image .fileName a {
+.gallery-fiche-media .fileName a {
   font-size: 100%;
   color: #333;
 }
 
-.gallery-fiche-image .rightContent .fileCharacteristic {
+.gallery-fiche-media .rightContent .fileCharacteristic {
   background-color: #efefef;
   background-image: url();
   -pie-background: linear-gradient(#efefef, #efefef);
   margin-bottom: 1em;
 }
 
-.gallery-fiche-image .rightContent b {
+.gallery-fiche-media .rightContent b {
   display: block;
 }
 
-.gallery-fiche-image .rightContent .fileCharacteristicSize {
+.gallery-fiche-media .rightContent .fileCharacteristicSize {
   float: left;
   background: transparent url(../icons/size.png) no-repeat 0 0;
   padding: 0 0 0 24px;
   width: 100px;
 }
 
-.gallery-fiche-image .rightContent .fileCharacteristicWeight {
+.gallery-fiche-media .rightContent .fileCharacteristicWeight {
   float: left;
   background: transparent url(../icons/weight.png) no-repeat 0 0;
   padding: 0 0 0 24px;
   width: 100px;
 }
 
-.gallery-fiche-image .rightContent .periode .header h4 {
+.gallery-fiche-media .rightContent .periode .header h4 {
   background: url("/silverpeas/util/icons/calendar_2.gif") no-repeat scroll right top transparent;
   height: 16px;
 }
 
-.gallery-fiche-image .rightContent .periode_visibility, .gallery-fiche-image .rightContent .periode_download {
+.gallery-fiche-media .rightContent .periode_visibility, .gallery-fiche-media .rightContent .periode_download {
   width: 120px;
   float: left;
 }
 
-.gallery-fiche-image .rightContent .fileCharacteristic b {
+.gallery-fiche-media .rightContent .fileCharacteristic b {
   display: block;
 }
 

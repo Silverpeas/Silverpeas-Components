@@ -57,7 +57,7 @@ public class StreamingTest extends AbstractMediaTest {
     expected.put(MEDIUM, "/silverpeas/gallery/jsp/icons/streaming_266x150.png");
     expected.put(LARGE, "/silverpeas/gallery/jsp/icons/streaming_266x150.png");
     expected.put(PREVIEW, "/silverpeas/gallery/jsp/icons/streaming_266x150.png");
-    expected.put(WATERMARK, "/silverpeas/gallery/jsp/icons/streaming_266x150.png");
+    expected.put(WATERMARK, "");
     expected.put(ORIGINAL, "/silverpeas/gallery/jsp/icons/streaming_266x150.png");
     for (MediaResolution mediaResolution : MediaResolution.values()) {
       assertThat(streaming.getApplicationThumbnailUrl(mediaResolution),

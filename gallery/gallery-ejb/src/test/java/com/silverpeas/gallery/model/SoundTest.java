@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.silverpeas.gallery.constant.MediaResolution.*;
+import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -56,7 +57,7 @@ public class SoundTest extends AbstractMediaTest {
     expected.put(MEDIUM, "/silverpeas/gallery/jsp/icons/sound_266x150.png");
     expected.put(LARGE, "/silverpeas/gallery/jsp/icons/sound_266x150.png");
     expected.put(PREVIEW, "/silverpeas/gallery/jsp/icons/sound_266x150.png");
-    expected.put(WATERMARK, "/silverpeas/gallery/jsp/icons/sound_266x150.png");
+    expected.put(WATERMARK, "");
     expected.put(ORIGINAL, "/silverpeas/gallery/jsp/icons/sound_266x150.png");
     for (MediaResolution mediaResolution : MediaResolution.values()) {
       assertThat(sound.getApplicationThumbnailUrl(mediaResolution),
@@ -84,6 +85,6 @@ public class SoundTest extends AbstractMediaTest {
     assertThat(sound.getApplicationOriginalUrl(),
         is(GALLERY_REST_WEB_SERVICE_BASE_URI + "sounds/mediaId/content?_t=1393628400000"));
     assertThat(FilenameUtils.normalize(sound.getFile(MediaResolution.ORIGINAL).getPath(), true),
-        is("//instanceId/soundmediaId/soundFile.mp3"));
+        endsWith("/instanceId/soundmediaId/soundFile.mp3"));
   }
 }

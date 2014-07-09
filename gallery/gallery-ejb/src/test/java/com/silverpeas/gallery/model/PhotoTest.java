@@ -31,6 +31,7 @@ import org.junit.Test;
 
 import java.util.Date;
 
+import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -102,6 +103,6 @@ public class PhotoTest extends AbstractMediaTest {
     assertThat(photo.getApplicationOriginalUrl(),
         is(GALLERY_REST_WEB_SERVICE_BASE_URI + "photos/mediaId/content?_t=1393628400000"));
     assertThat(FilenameUtils.normalize(photo.getFile(MediaResolution.ORIGINAL).getPath(), true),
-        is("//instanceId/imagemediaId/photoFile.jpg"));
+        endsWith("/instanceId/imagemediaId/photoFile.jpg"));
   }
 }

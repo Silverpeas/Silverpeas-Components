@@ -117,6 +117,12 @@ public abstract class InternalMedia extends Media {
       mediaResolution = MediaResolution.PREVIEW;
     }
     if (getType().isPhoto()) {
+      if (MediaResolution.WATERMARK == mediaResolution) {
+        SilverpeasFile fileWatermark = getFile(MediaResolution.WATERMARK);
+        if (!fileWatermark.exists()) {
+          return "";
+        }
+      }
       if (StringUtil.isDefined(getFileName()) && isPreviewable()) {
         return GalleryResourceURIs.buildMediaContentURI(this, mediaResolution).toString();
       } else {

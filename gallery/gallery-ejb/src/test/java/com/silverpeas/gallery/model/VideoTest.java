@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.silverpeas.gallery.constant.MediaResolution.*;
+import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -59,7 +60,7 @@ public class VideoTest extends AbstractMediaTest {
     expected.put(MEDIUM, "/silverpeas/gallery/jsp/icons/video_266x150.png");
     expected.put(LARGE, "/silverpeas/gallery/jsp/icons/video_266x150.png");
     expected.put(PREVIEW, "/silverpeas/gallery/jsp/icons/video_266x150.png");
-    expected.put(WATERMARK, "/silverpeas/gallery/jsp/icons/video_266x150.png");
+    expected.put(WATERMARK, "");
     expected.put(ORIGINAL, "/silverpeas/gallery/jsp/icons/video_266x150.png");
     for (MediaResolution mediaResolution : MediaResolution.values()) {
       assertThat(video.getApplicationThumbnailUrl(mediaResolution),
@@ -91,6 +92,6 @@ public class VideoTest extends AbstractMediaTest {
     assertThat(video.getApplicationOriginalUrl(),
         is(GALLERY_REST_WEB_SERVICE_BASE_URI + "videos/mediaId/content?_t=1393628400000"));
     assertThat(FilenameUtils.normalize(video.getFile(MediaResolution.ORIGINAL).getPath(), true),
-        is("//instanceId/videomediaId/videoFile.mp4"));
+        endsWith("/instanceId/videomediaId/videoFile.mp4"));
   }
 }

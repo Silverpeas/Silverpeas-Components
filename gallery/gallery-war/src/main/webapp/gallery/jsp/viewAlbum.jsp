@@ -157,6 +157,7 @@
       postNewLink(name, url, description);
     }
 
+    <c:if test="${greaterUserRole eq adminRole or userId eq currentAlbum.creatorId}">
     function deleteConfirm(id, nom) {
       // confirmation de suppression de l'album
       if (window.confirm("<fmt:message key="gallery.confirmDeleteAlbum"/> '" + nom + "' ?")) {
@@ -165,6 +166,24 @@
         document.albumForm.submit();
       }
     }
+    </c:if>
+
+    <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
+    <c:if test="${dragAndDropEnable}">
+    function uploadCompleted(s) {
+      location.href =
+          "<c:url value="${silfn:componentURL(componentId)}ViewAlbum?Id=${currentAlbum.id}"/>";
+    }
+
+    function showDnD() {
+      var url = "<c:url value="${silfn:fullApplicationURL(pageContext.request)}/RgalleryDragAndDrop/jsp/Drop?UserId=${userId}&ComponentId=${componentId}&AlbumId=${currentAlbum.id}"/>";
+      var message = "<c:url value="${silfn:fullApplicationURL(pageContext.request)}/upload/Gallery_${userLanguage}.html"/>";
+      showHideDragDrop(url, message, '<fmt:message key="GML.applet.dnd.alt"/>',
+          '${maximumFileSize}', '<c:url value="/"/>', '<fmt:message key="GML.DragNDropExpand"/>',
+          '<fmt:message key="GML.DragNDropCollapse"/>');
+    }
+    </c:if>
+    <c:if test="${greaterUserRole.isGreaterThanOrEquals(publisherRole)}">
 
     function sendData() {
       // envoi des photos selectionnees pour la modif par lot
@@ -176,22 +195,11 @@
       }
     }
 
-    function sendToBasket() {
-      // envoi des photos selectionnees dans le panier
-      var selectedPhotos = getMediaIds(true);
-      if (selectedPhotos && selectedPhotos.length > 0) {
-        document.mediaForm.SelectedIds.value = selectedPhotos;
-        document.mediaForm.NotSelectedIds.value = getMediaIds(false);
-        document.mediaForm.action = "BasketAddMediaList";
-        document.mediaForm.submit();
-      }
-    }
-
     function sendDataDelete() {
       //confirmation de suppression de l'album
       var selectedPhotos = getMediaIds(true);
       if (selectedPhotos && selectedPhotos.length > 0) {
-        if (window.confirm("<fmt:message key="gallery.confirmDeletePhotos"/> ")) {
+        if (window.confirm("<fmt:message key="gallery.confirmDeleteMedias"/> ")) {
           // envoi des photos selectionnees pour la modif par lot
           document.mediaForm.SelectedIds.value = selectedPhotos;
           document.mediaForm.NotSelectedIds.value = getMediaIds(false);
@@ -200,7 +208,7 @@
         }
       }
     }
-
+    <c:if test="${isPdcUsed}">
     function sendDataCategorize() {
       var selectedPhotos = getMediaIds(true);
       if (selectedPhotos && selectedPhotos.length > 0) {
@@ -216,7 +224,22 @@
         albumWindow = SP_openWindow(urlWindow, "albumWindow", "550", "250", windowParams);
       }
     }
+    </c:if>
+    </c:if>
+    </c:if>
 
+    function sendToBasket() {
+      // envoi des photos selectionnees dans le panier
+      var selectedPhotos = getMediaIds(true);
+      if (selectedPhotos && selectedPhotos.length > 0) {
+        document.mediaForm.SelectedIds.value = selectedPhotos;
+        document.mediaForm.NotSelectedIds.value = getMediaIds(false);
+        document.mediaForm.action = "BasketAddMediaList";
+        document.mediaForm.submit();
+      }
+    }
+
+    <c:if test="${greaterUserRole eq adminRole}">
     function sendDataForAddPath() {
       // envoi des photos selectionnees pour le placement par lot
       var selectedPhotos = getMediaIds(true);
@@ -226,19 +249,6 @@
         document.mediaForm.action = "AddAlbumForSelectedMedia";
         document.mediaForm.submit();
       }
-    }
-
-    function uploadCompleted(s) {
-      location.href =
-          "<c:url value="${silfn:componentURL(componentId)}ViewAlbum?Id=${currentAlbum.id}"/>";
-    }
-
-    function showDnD() {
-      var url = "<c:url value="${silfn:fullApplicationURL(pageContext.request)}/RgalleryDragAndDrop/jsp/Drop?UserId=${userId}&ComponentId=${componentId}&AlbumId=${currentAlbum.id}"/>";
-      var message = "<c:url value="${silfn:fullApplicationURL(pageContext.request)}/upload/Gallery_${userLanguage}.html"/>";
-      showHideDragDrop(url, message, '<fmt:message key="GML.applet.dnd.alt"/>',
-          '${maximumFileSize}', '<c:url value="/"/>', '<fmt:message key="GML.DragNDropExpand"/>',
-          '<fmt:message key="GML.DragNDropCollapse"/>');
     }
 
     function clipboardPaste() {
@@ -276,9 +286,10 @@
         document.mediaForm.submit();
       }
     }
+    </c:if>
 
   </script>
-  <%@include file="diaporama.jsp" %>
+  <gallery:diaporama/>
 </head>
 <body>
 <gallery:browseBar albumPath="${path}"/>

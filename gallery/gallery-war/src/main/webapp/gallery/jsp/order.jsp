@@ -309,7 +309,6 @@ function isCorrectForm() {
           <c:set var="photoCellText"><a class="imagePreview" href="MediaView?MediaId=${mediaWhenNotAdmin.id}" tipTitle="${mediaTitle}" tipUrl="${mediaWhenNotAdmin.getApplicationThumbnailUrl(MEDIUM_RESOLUTION)}"><img src="${mediaWhenNotAdmin.getApplicationThumbnailUrl(TINY_RESOLUTION)}" alt=""/></a></c:set>
           <view:arrayCellText text="${photoCellText}"/>
 
-
           <fmt:message var="downloadTxt" key="gallery.wait"/>
           <c:choose>
             <c:when test="${row.downloadDecision eq 'R'}">
@@ -317,7 +316,7 @@ function isCorrectForm() {
             </c:when>
             <c:when test="${row.downloadDecision eq 'D' or row.downloadDecision eq 'DW'}">
               <c:set var="downloadTxt">
-                <a href="OrderDownloadMedia?MediaId=${mediaWhenNotAdmin.id}&OrderId=${row.orderId}" target="_blank"><fmt:message key="gallery.download.photo"/> </a>
+                <a href="OrderDownloadMedia?MediaId=${mediaWhenNotAdmin.id}&OrderId=${row.orderId}" target="_blank"><fmt:message key="gallery.download.media"/> </a>
               </c:set>
             </c:when>
             <c:when test="${row.downloadDecision eq 'T' and not empty row.downloadDate}">

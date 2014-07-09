@@ -295,6 +295,8 @@ public abstract class Media implements SilverpeasContent, SilverContentInterface
       case SMALL:
         thumbnailUrl += MediaResolution.SMALL.getLabel();
         break;
+      case WATERMARK:
+        return "";
       default:
         thumbnailUrl += MediaResolution.MEDIUM.getLabel();
         break;

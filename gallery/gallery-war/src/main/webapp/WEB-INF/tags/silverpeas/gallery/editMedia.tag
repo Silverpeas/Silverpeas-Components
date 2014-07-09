@@ -204,15 +204,15 @@
       <label for="fileName" class="txtlibform"><fmt:message key="gallery.fileName"/></label>
 
       <div class="champs">
-        ${internalMedia != null ? internalMedia.fileName : ''}
+        <c:out value="${not empty internalMedia ? internalMedia.fileName : ''}"/>
       </div>
     </div>
     <div class="field" id="titleArea">
       <label for="title" class="txtlibform"><fmt:message key="GML.title"/></label>
 
       <div class="champs">
-        <c:if test="${media.title != (internalMedia != null ? internalMedia.fileName : '')}">
-          <c:set var="mediaTitle" value="${media.title}"/>
+        <c:if test="${media.title != (not empty internalMedia ? internalMedia.fileName : '')}">
+          <c:set var="mediaTitle"><c:out value="${media.title}"/></c:set>
         </c:if>
         <input id="title" type="text" name="SP$$MediaTitle" size="60" maxlength="150" value="${mediaTitle}"/>&nbsp;
       </div>

@@ -27,11 +27,13 @@
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/gallery" prefix="gallery" %>
 
 <view:setConstant var="mediaType" constant="com.silverpeas.gallery.constant.MediaType.Video"/>
+<view:setConstant var="SMALL_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.SMALL"/>
+<jsp:useBean id="SMALL_RESOLUTION" type="com.silverpeas.gallery.constant.MediaResolution"/>
 <view:setConstant var="supportedMediaMimeTypes" constant="com.silverpeas.gallery.constant.MediaMimeType.VIDEOS"/>
 
 <gallery:editMediaLayout mediaType="${mediaType}" supportedMediaMimeTypes="${supportedMediaMimeTypes}">
   <jsp:attribute name="mediaPreviewBloc">
     <jsp:useBean id="mediaUrl" scope="request" type="java.lang.String"/>
-    <view:video url="${mediaUrl}"/>
+    <view:video url="${mediaUrl}" width="${SMALL_RESOLUTION.width}" height="${SMALL_RESOLUTION.height}"/>
   </jsp:attribute>
 </gallery:editMediaLayout>

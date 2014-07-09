@@ -50,6 +50,14 @@
             text : $(this).attr("tipTitle")
           },
           text : "<img src='" + $(this).attr("tipUrl") + "' />"
+        },
+        position : {
+          adjust : {
+            method : "flip flip"
+          },
+          viewport : $(window),
+          my : "top left",
+          at : "top right"
         }
       });
     });

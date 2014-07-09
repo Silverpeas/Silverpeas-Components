@@ -38,12 +38,12 @@ import java.util.List;
  */
 public enum MediaMimeType {
   BMP, GIF, PNG, JPG("jpeg", "pjpeg"), TIFF("tif"),
-  MP4, FLV,
+  MOV, MP4, FLV,
   MP3,
   ERROR;
 
   public static final EnumSet<MediaMimeType> PHOTOS = EnumSet.of(BMP, GIF, PNG, JPG, TIFF);
-  public static final EnumSet<MediaMimeType> VIDEOS = EnumSet.of(MP4, FLV);
+  public static final EnumSet<MediaMimeType> VIDEOS = EnumSet.of(MOV, MP4, FLV);
   public static final EnumSet<MediaMimeType> SOUNDS = EnumSet.of(MP3);
 
   private static final EnumSet<MediaMimeType> ALL_VALIDS = EnumSet.allOf(MediaMimeType.class);
