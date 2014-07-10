@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Enumeration for all supported media types in the gallery component.
@@ -42,9 +43,9 @@ public enum MediaMimeType {
   MP3,
   ERROR;
 
-  public static final EnumSet<MediaMimeType> PHOTOS = EnumSet.of(BMP, GIF, PNG, JPG, TIFF);
-  public static final EnumSet<MediaMimeType> VIDEOS = EnumSet.of(MOV, MP4, FLV);
-  public static final EnumSet<MediaMimeType> SOUNDS = EnumSet.of(MP3);
+  public static final Set<MediaMimeType> PHOTOS = EnumSet.of(BMP, GIF, PNG, JPG, TIFF);
+  public static final Set<MediaMimeType> VIDEOS = EnumSet.of(MP4, FLV);
+  public static final Set<MediaMimeType> SOUNDS = EnumSet.of(MP3);
 
   private static final EnumSet<MediaMimeType> ALL_VALIDS = EnumSet.allOf(MediaMimeType.class);
 

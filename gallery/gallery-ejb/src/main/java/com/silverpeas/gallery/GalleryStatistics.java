@@ -22,14 +22,13 @@ package com.silverpeas.gallery;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.MediaCriteria;
-import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
-
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 
@@ -40,7 +39,7 @@ public class GalleryStatistics implements ComponentStatisticsInterface {
       throws Exception {
     Collection<Media> media = getGalleryBm().getAllMedia(componentId,
         MediaCriteria.VISIBILITY.FORCE_GET_ALL);
-    ArrayList<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>(media.size());
+    List<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>(media.size());
     for (Media aMedia : media) {
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
       myCouple.setUserId(aMedia.getCreatorId());

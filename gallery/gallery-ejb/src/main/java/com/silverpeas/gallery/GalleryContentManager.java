@@ -113,8 +113,8 @@ public class GalleryContentManager implements ContentInterface, java.io.Serializ
    * @param peasId the id of the instance
    * @return a list of MediaPK
    */
-  private ArrayList<MediaPK> makePKArray(List<Integer> idList, String peasId) {
-    ArrayList<MediaPK> pks = new ArrayList<MediaPK>();
+  private List<MediaPK> makePKArray(List<Integer> idList, String peasId) {
+    List<MediaPK> pks = new ArrayList<MediaPK>();
     // for each silverContentId, we get the corresponding mediaId
     for (int contentId : idList) {
       try {

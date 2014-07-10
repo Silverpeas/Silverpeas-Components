@@ -30,22 +30,23 @@ import java.util.Properties;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
-
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 public abstract class AbstractImageMetadataExtractor implements ImageMetadataExtractor {
 
-  static final Properties defaultSettings = new Properties();
+  static final Properties DEFAULT_SETTINGS = new Properties();
 
   static {
     try {
-      FileUtil.loadProperties(defaultSettings,
+      FileUtil.loadProperties(DEFAULT_SETTINGS,
           "org/silverpeas/gallery/settings/metadataSettings.properties");
     } catch (IOException e) {
-      e.printStackTrace();
+      SilverTrace.error("gallery", AbstractImageMetadataExtractor.class.getName(),
+          "Problem loading metadata settings", e);
     }
   }
-  protected Properties settings = new Properties(defaultSettings);
+  protected Properties settings = new Properties(DEFAULT_SETTINGS);
   protected Map<String, ResourceLocator> metaDataBundles;
   protected List<ExifProperty> imageProperties;
   protected List<IptcProperty> imageIptcProperties;
@@ -97,7 +98,7 @@ public abstract class AbstractImageMetadataExtractor implements ImageMetadataExt
       FileUtil.loadProperties(settings, "org/silverpeas/gallery/settings/metadataSettings_"
           + instanceId + ".properties");
     } catch (Exception e) {
-      this.settings = defaultSettings;
+      this.settings = DEFAULT_SETTINGS;
     }
     this.metaDataBundles = new HashMap<String, ResourceLocator>(I18NHelper.allLanguages.size());
     for (String lang : I18NHelper.allLanguages.keySet()) {

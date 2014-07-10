@@ -124,8 +124,9 @@ public class GalleryInWysiwygRouter extends HttpServlet {
         request.setAttribute("Language", language);
         RequestDispatcher requestDispatcher = getServletConfig()
             .getServletContext().getRequestDispatcher(destination);
-        if (requestDispatcher != null)
+        if (requestDispatcher != null) {
           requestDispatcher.forward(request, response);
+        }
       }
     }
   }

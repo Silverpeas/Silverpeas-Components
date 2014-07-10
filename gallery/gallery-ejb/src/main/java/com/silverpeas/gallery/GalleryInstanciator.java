@@ -69,9 +69,10 @@ public class GalleryInstanciator implements ComponentsInstanciatorIntf {
   private void insertRootNode(Connection con, String componentId, String userId) throws
       InstanciationException {
     String creationDate = DateUtil.today2SQLDate();
-    String query = "INSERT INTO SB_Node_Node(nodeId, nodeName, nodeDescription, nodeCreationDate, "
-        + "nodeCreatorId, nodePath, nodeLevelNumber, nodeFatherId, modelId, nodeStatus, instanceId)"
-        + "	VALUES (0, 'Accueil', 'La Racine', ? , ? , '/', 1, -1,'','Visible',?)";
+    String query =
+        "INSERT INTO SB_Node_Node(nodeId, nodeName, nodeDescription, nodeCreationDate, "
+            + "nodeCreatorId, nodePath, nodeLevelNumber, nodeFatherId, modelId, nodeStatus, instanceId)"
+            + "	VALUES (0, 'Accueil', 'La Racine', ? , ? , '/', 1, -1,'','Visible',?)";
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(query);
@@ -90,9 +91,10 @@ public class GalleryInstanciator implements ComponentsInstanciatorIntf {
   private void insertAlbumNode(Connection con, String componentId, String userId) throws
       InstanciationException {
     String creationDate = DateUtil.today2SQLDate();
-    String query = "INSERT INTO SB_Node_Node(nodeId, nodeName, nodeDescription, nodeCreationDate, "
-        + "nodeCreatorId, nodePath, nodeLevelNumber, nodeFatherId, modelId, nodeStatus, instanceId)"
-        + "VALUES (?, 'Mon Album',' ', ? , ? , ? , 2, 0, '', 'Invisible',?)";
+    String query =
+        "INSERT INTO SB_Node_Node(nodeId, nodeName, nodeDescription, nodeCreationDate, "
+            + "nodeCreatorId, nodePath, nodeLevelNumber, nodeFatherId, modelId, nodeStatus, instanceId)"
+            + "VALUES (?, 'Mon Album',' ', ? , ? , ? , 2, 0, '', 'Invisible',?)";
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(query);

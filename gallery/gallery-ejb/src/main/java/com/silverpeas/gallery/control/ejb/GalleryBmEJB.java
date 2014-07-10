@@ -485,7 +485,7 @@ public class GalleryBmEJB implements GalleryBm {
     String htmlPath = "";
     try {
       final List<NodeDetail> path = (List<NodeDetail>) getPath(nodePK);
-      if (path.size() > 0) {
+      if (!path.isEmpty()) {
         path.remove(path.size() - 1);
       }
       htmlPath = getSpacesPath(nodePK.getInstanceId()) + getComponentLabel(nodePK.getInstanceId())

@@ -20,6 +20,30 @@
  */
 package com.silverpeas.gallery;
 
+import static com.silverpeas.gallery.constant.MediaResolution.LARGE;
+import static com.silverpeas.gallery.constant.MediaResolution.MEDIUM;
+import static com.silverpeas.gallery.constant.MediaResolution.PREVIEW;
+import static com.silverpeas.gallery.constant.MediaResolution.SMALL;
+import static com.silverpeas.gallery.constant.MediaResolution.TINY;
+import static com.silverpeas.gallery.constant.MediaResolution.WATERMARK;
+
+import java.awt.Font;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.List;
+import java.util.Set;
+
+import javax.imageio.ImageIO;
+
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.IOUtils;
+import org.silverpeas.process.io.file.FileHandler;
+import org.silverpeas.process.io.file.HandledFile;
+import org.silverpeas.util.ImageLoader;
+
 import com.silverpeas.gallery.constant.MediaMimeType;
 import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.MediaType;
@@ -41,23 +65,6 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.IOUtils;
-import org.silverpeas.process.io.file.FileHandler;
-import org.silverpeas.process.io.file.HandledFile;
-import org.silverpeas.util.ImageLoader;
-
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.EnumSet;
-import java.util.List;
-
-import static com.silverpeas.gallery.constant.MediaResolution.*;
 
 public class MediaHelper {
 
@@ -174,7 +181,7 @@ public class MediaHelper {
    * @return true if internal data have been set, false otherwise.
    */
   private static boolean setInternalMetadata(HandledFile handledImageFile, InternalMedia iMedia,
-      final EnumSet<MediaMimeType> supportedMimeTypes) throws Exception {
+      final Set<MediaMimeType> supportedMimeTypes) throws Exception {
     File fileForData = handledImageFile.getFile();
     MediaMimeType mediaMimeType = MediaMimeType.fromFile(handledImageFile.getFile());
     if (supportedMimeTypes.contains(mediaMimeType)) {

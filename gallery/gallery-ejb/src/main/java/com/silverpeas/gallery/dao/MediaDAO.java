@@ -64,7 +64,7 @@ import static com.stratelia.webactiv.util.DBUtil.*;
 
 public class MediaDAO {
 
-  private final static String SELECT_INTERNAL_MEDIA_PREFIX =
+  private static final String SELECT_INTERNAL_MEDIA_PREFIX =
       "select I.mediaId, I.fileName, I.fileSize, I.fileMimeType, I.download, I.beginDownloadDate," +
           " I.endDownloadDate, ";
 
@@ -72,8 +72,8 @@ public class MediaDAO {
    * Gets the media behind the specified criteria.
    * @param con the database connection.
    * @param criteria the media criteria.
-   * @return the media behind the criteria, null if no media found and throws {@link
-   * IllegalArgumentException} if several media are found.
+   * @return the media behind the criteria, null if no media found and throws
+   * {@link IllegalArgumentException} if several media are found.
    * @throws SQLException
    * @throws IllegalArgumentException
    */
@@ -130,7 +130,8 @@ public class MediaDAO {
             }
             if (currentMedia == null) {
               // Unknown media ...
-              SilverTrace.warn(GalleryComponentSettings.COMPONENT_NAME, "MediaDAO.findByCriteria()",
+              SilverTrace.warn(GalleryComponentSettings.COMPONENT_NAME,
+                  "MediaDAO.findByCriteria()",
                   "root.MSG_GEN_PARAM_VALUE", "unknown media type: " + mediaType);
               return null;
             }
@@ -335,7 +336,8 @@ public class MediaDAO {
         for (String mediaIdNotFound : mediaIds) {
           Streaming currentStreaming = streamings.remove(mediaIdNotFound);
           media.remove(currentStreaming);
-          SilverTrace.warn(GalleryComponentSettings.COMPONENT_NAME, "MediaDAO.decorateStreamings()",
+          SilverTrace.warn(GalleryComponentSettings.COMPONENT_NAME,
+              "MediaDAO.decorateStreamings()",
               "root.MSG_GEN_PARAM_VALUE",
               "streaming not found (removed from result): " + mediaIdNotFound);
         }
@@ -353,7 +355,7 @@ public class MediaDAO {
     iMedia.setFileName(rs.getString(2));
     iMedia.setFileSize(rs.getLong(3));
     iMedia.setFileMimeType(MediaMimeType.fromMimeType(rs.getString(4)));
-    iMedia.setDownloadAuthorized((rs.getInt(5) == 1));
+    iMedia.setDownloadAuthorized(rs.getInt(5) == 1);
     iMedia.setDownloadPeriod(getPeriod(rs, 6, 7));
   }
 
@@ -588,7 +590,8 @@ public class MediaDAO {
     } else if (!context.isUpdatingInCaseOfCreation()) {
       media.setLastUpdateDate(saveDate);
       media.setLastUpdater(context.getUser());
-      appendSaveParameter(mediaSave, "lastUpdateDate", media.getLastUpdateDate(), false, mediaParams);
+      appendSaveParameter(mediaSave, "lastUpdateDate", media.getLastUpdateDate(), false,
+          mediaParams);
       appendSaveParameter(mediaSave, "lastUpdatedBy", media.getLastUpdatedBy(), false, mediaParams);
     }
     if (isInsert) {
@@ -663,6 +666,11 @@ public class MediaDAO {
         updateQueries
             .add(Pair.of("delete from SC_Gallery_Streaming where mediaId = ?", mediaIdParam));
         break;
+      default:
+        SilverTrace
+            .warn(GalleryComponentSettings.COMPONENT_NAME, "MediaDAO.deleteMedia",
+                "Unknown media type to delete id=" + media.getId());
+        break;
     }
     executeUpdate(con, updateQueries);
     deleteAllMediaPath(con, media);
@@ -686,7 +694,8 @@ public class MediaDAO {
             " = ?", pathParams) == 0;
 
     if (isInsert) {
-      executeUpdate(con, "insert into SC_Gallery_Path (mediaId, instanceId, nodeId) values (?,?,?)",
+      executeUpdate(con,
+          "insert into SC_Gallery_Path (mediaId, instanceId, nodeId) values (?,?,?)",
           pathParams);
     }
   }
