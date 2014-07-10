@@ -1105,46 +1105,46 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         gallerySC.paste();
         gallerySC.loadCurrentAlbum();
         destination = getDestination("GoToCurrentAlbum", gallerySC, request);
-      }
-      // Manage media order
-      else if (function.startsWith("Basket")) {
+      } else if (function.startsWith("Basket")) {
+        //Manage basket functions
         if ("BasketView".equals(function)) {
           // Basket view
           request.setAttribute("MediaList", gallerySC.getBasketMedias());
           request.setAttribute("NbMediaPerPage", gallerySC.getNbMediaPerPage());
           request.setAttribute("SelectedIds", gallerySC.getListSelected());
           request.setAttribute("IsOrder", gallerySC.isOrder());
+          request.setAttribute("MediaTypeAlert", request.getAttribute("MediaTypeAlert"));
 
           destination = rootDest + "basket.jsp";
         } else if ("BasketDelete".equals(function)) {
           gallerySC.deleteBasket();
           destination = getDestination("BasketView", gallerySC, request);
         } else if ("BasketDeleteMedia".equals(function)) {
-          // suppression du média du panier
+          // Delete media from basket
           String mediaId = request.getParameter("MediaId");
           gallerySC.deleteToBasket(mediaId);
 
           destination = getDestination("BasketView", gallerySC, request);
         } else if ("BasketDeleteSelectedMedia".equals(function)) {
-          // suppression les médias sélectionnés du panier
+          // delete selected medias from basket
           processSelection(request, gallerySC);
           if (gallerySC.getListSelected().size() > 0) {
             gallerySC.deleteToBasket();
           }
           destination = getDestination("BasketView", gallerySC, request);
         } else if ("BasketAddMediaList".equals(function)) {
-          // ajouter les médias sélectionnés au panier
+          // Add selected photo media inside basket
           processSelection(request, gallerySC);
-          if (gallerySC.getListSelected().size() > 0) {
-            gallerySC.addToBasket();
-            // on va sur le panier
+          if (!gallerySC.getListSelected().isEmpty()) {
+            if (!gallerySC.addToBasket()) {
+              request.setAttribute("MediaTypeAlert", true);
+            }
             destination = getDestination("BasketView", gallerySC, request);
           } else {
-            // si on a pas choisit de média, on reste sur l'album courant
             destination = getDestination("GoToCurrentAlbum", gallerySC, request);
           }
         } else if ("BasketAddMedia".equals(function)) {
-          // ajouter le média au panier
+          // Add this media inside basket
           String mediaId = request.getParameter("MediaId");
           gallerySC.addMediaToBasket(mediaId);
           destination = getDestination("BasketView", gallerySC, request);
@@ -1653,30 +1653,27 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
     request.setAttribute("ShowCommentsTab", gallerySC.areCommentsEnabled());
   }
 
+  /**
+   * update gallery session controller list of selected elements
+   * @param request
+   * @param gallerySC
+   */
   private void processSelection(HttpServletRequest request, GallerySessionController gallerySC) {
     String selectedIds = request.getParameter("SelectedIds");
     String notSelectedIds = request.getParameter("NotSelectedIds");
-
     Collection<String> memSelected = gallerySC.getListSelected();
 
-    StringTokenizer st;
-    String id;
-
     if (StringUtil.isDefined(selectedIds)) {
-      st = new StringTokenizer(selectedIds, ",");
-      while (st.hasMoreTokens()) {
-        id = st.nextToken();
-        if (!memSelected.contains(id)) {
-          memSelected.add(id);
+      for (String selectedId : selectedIds.split(",")) {
+        if (!memSelected.contains(selectedId)) {
+          memSelected.add(selectedId);
         }
       }
     }
 
     if (StringUtil.isDefined(notSelectedIds)) {
-      st = new StringTokenizer(notSelectedIds, ",");
-      while (st.hasMoreTokens()) {
-        id = st.nextToken();
-        memSelected.remove(id);
+      for (String notSelectedId : notSelectedIds.split(",")) {
+        memSelected.remove(notSelectedId);
       }
     }
   }

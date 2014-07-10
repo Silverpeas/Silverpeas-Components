@@ -42,6 +42,7 @@
 <c:set var="componentLabel" value="${requestScope.browseContext[1]}"/>
 <c:set var="instanceId" value="${requestScope.browseContext[3]}"/>
 <c:set var="medias" value="${requestScope.MediaList}" />
+<c:set var="userSelectionAlert" value="${requestScope.MediaTypeAlert}" />
 
 <html>
 <head>
@@ -124,6 +125,10 @@ $(document).ready(function() {
       title: {text: '<fmt:message key="gallery.preview" />'}
     }
   });
+  <c:if test="${userSelectionAlert}">
+  <fmt:message var="msgAlert" key="gallery.basket.media.type.alert"/>
+  notyWarning('${msgAlert}');
+  </c:if>
 });
 
 </script>

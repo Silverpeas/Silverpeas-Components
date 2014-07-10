@@ -44,10 +44,10 @@ public enum MediaMimeType {
   ERROR;
 
   public static final Set<MediaMimeType> PHOTOS = EnumSet.of(BMP, GIF, PNG, JPG, TIFF);
-  public static final Set<MediaMimeType> VIDEOS = EnumSet.of(MP4, FLV);
+  public static final Set<MediaMimeType> VIDEOS = EnumSet.of(MOV, MP4, FLV);
   public static final Set<MediaMimeType> SOUNDS = EnumSet.of(MP3);
 
-  private static final EnumSet<MediaMimeType> ALL_VALIDS = EnumSet.allOf(MediaMimeType.class);
+  private static final Set<MediaMimeType> ALL_VALIDS = EnumSet.allOf(MediaMimeType.class);
 
   static {
     ALL_VALIDS.remove(ERROR);
