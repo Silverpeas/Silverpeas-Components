@@ -35,6 +35,7 @@ import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.webactiv.util.DateUtil;
 
 /**
+ * @deprecated
  * This class is an old one. {@link Photo} must be used instead.
  * It became a wrapper of Photo class.
  */

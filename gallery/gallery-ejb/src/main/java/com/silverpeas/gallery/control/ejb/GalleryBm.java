@@ -30,6 +30,7 @@ import com.silverpeas.gallery.delegate.MediaDataCreateDelegate;
 import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.MediaCriteria;
 import com.silverpeas.gallery.model.MediaPK;
+
 import org.silverpeas.date.Period;
 import org.silverpeas.process.util.ProcessList;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
@@ -39,10 +40,10 @@ import com.silverpeas.gallery.delegate.MediaDataUpdateDelegate;
 import com.silverpeas.gallery.model.AlbumDetail;
 import com.silverpeas.gallery.model.Order;
 import com.silverpeas.gallery.model.OrderRow;
+import com.silverpeas.gallery.model.Photo;
 import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.gallery.process.GalleryProcessExecutionContext;
 import com.silverpeas.socialnetwork.model.SocialInformation;
-
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
@@ -66,15 +67,15 @@ public interface GalleryBm {
 
   public void addMediaToAlbums(Media media, String... albums);
 
-  public PhotoDetail getPhoto(MediaPK mediaPK);
+  public Photo getPhoto(MediaPK mediaPK);
 
   public Media getMedia(MediaPK mediaPK);
 
   public Media getMedia(MediaPK mediaPK, MediaCriteria.VISIBILITY visibility);
 
-  public Collection<PhotoDetail> getAllPhotos(NodePK nodePK);
+  public Collection<Photo> getAllPhotos(NodePK nodePK);
 
-  public Collection<PhotoDetail> getAllPhotos(NodePK nodePK, MediaCriteria.VISIBILITY visibility);
+  public Collection<Photo> getAllPhotos(NodePK nodePK, MediaCriteria.VISIBILITY visibility);
 
   public Collection<Media> getAllMedia(NodePK nodePK);
 

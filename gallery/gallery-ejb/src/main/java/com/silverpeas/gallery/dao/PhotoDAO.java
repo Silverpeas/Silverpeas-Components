@@ -23,14 +23,9 @@
  */
 package com.silverpeas.gallery.dao;
 
-import com.silverpeas.gallery.GalleryComponentSettings;
-import com.silverpeas.gallery.constant.MediaType;
-import com.silverpeas.gallery.model.Media;
-import com.silverpeas.gallery.model.MediaCriteria;
-import com.silverpeas.gallery.model.PhotoDetail;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.exception.UtilException;
-import org.silverpeas.persistence.repository.OperationContext;
+import static com.silverpeas.gallery.model.MediaCriteria.QUERY_ORDER_BY.CREATE_DATE_DESC;
+import static com.silverpeas.gallery.model.MediaCriteria.QUERY_ORDER_BY.IDENTIFIER_DESC;
+import static com.stratelia.webactiv.util.DBUtil.unique;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -38,61 +33,66 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static com.silverpeas.gallery.model.MediaCriteria.QUERY_ORDER_BY.CREATE_DATE_DESC;
-import static com.silverpeas.gallery.model.MediaCriteria.QUERY_ORDER_BY.IDENTIFIER_DESC;
-import static com.stratelia.webactiv.util.DBUtil.unique;
+import org.silverpeas.persistence.repository.OperationContext;
+
+import com.silverpeas.gallery.GalleryComponentSettings;
+import com.silverpeas.gallery.constant.MediaType;
+import com.silverpeas.gallery.model.Media;
+import com.silverpeas.gallery.model.MediaCriteria;
+import com.silverpeas.gallery.model.Photo;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.exception.UtilException;
 
 public class PhotoDAO {
 
-  public static PhotoDetail getPhoto(Connection con, String photoId) throws SQLException {
-    PhotoDetail photoDetail = getByCriteria(con, MediaCriteria.fromMediaId(photoId));
-    if (photoDetail == null) {
+  public static Photo getPhoto(Connection con, String photoId) throws SQLException {
+    Photo photo = getByCriteria(con, MediaCriteria.fromMediaId(photoId));
+    if (photo == null) {
       // It is very ugly, but it was like it before the photo to media migration...
-      photoDetail = new PhotoDetail();
+      photo = new Photo();
     }
-    return photoDetail;
+    return photo;
   }
 
-  public static Collection<PhotoDetail> getAllPhoto(Connection con, String albumId,
+  public static Collection<Photo> getAllPhoto(Connection con, String albumId,
       String instanceId, MediaCriteria.VISIBILITY visibility) throws SQLException {
     return findByCriteria(con,
         MediaCriteria.fromComponentInstanceId(instanceId).albumIdentifierIsOneOf(albumId)
             .withVisibility(visibility));
   }
 
-  public static Collection<PhotoDetail> getPhotoNotVisible(Connection con, String instanceId)
+  public static Collection<Photo> getPhotoNotVisible(Connection con, String instanceId)
       throws SQLException {
     return findByCriteria(con, MediaCriteria.fromComponentInstanceId(instanceId)
         .withVisibility(MediaCriteria.VISIBILITY.HIDDEN_ONLY));
   }
 
-  public static Collection<PhotoDetail> getAllPhotoEndVisible(Connection con, int nbDays)
+  public static Collection<Photo> getAllPhotoEndVisible(Connection con, int nbDays)
       throws SQLException {
     return findByCriteria(con, MediaCriteria.fromNbDaysBeforeThatMediaIsNotVisible(nbDays)
         .withVisibility(MediaCriteria.VISIBILITY.FORCE_GET_ALL));
   }
 
-  public static String createPhoto(Connection con, PhotoDetail photo)
-      throws SQLException, UtilException {
+  public static String createPhoto(Connection con, Photo photo) throws SQLException, UtilException {
     return MediaDAO.saveMedia(con, OperationContext.fromUser(UserDetail.getCurrentRequester()),
         photo.getPhoto());
   }
 
-  public static void createPath(Connection con, PhotoDetail photo,
-      String albumId) throws SQLException, UtilException {
-    MediaDAO.saveMediaPath(con, photo.getPhoto(), albumId);
+  public static void createPath(Connection con, Photo photo, String albumId) throws SQLException,
+      UtilException {
+    MediaDAO.saveMediaPath(con, photo, albumId);
   }
 
-  public static void updatePhoto(Connection con, PhotoDetail photo)
+  public static void updatePhoto(Connection con, Photo photo)
       throws SQLException {
     MediaDAO.saveMedia(con, OperationContext.fromUser(UserDetail.getCurrentRequester()),
         photo.getPhoto());
   }
 
   public static void removePhoto(Connection con, String photoId) throws SQLException {
-    PhotoDetail photo = getByCriteria(con, MediaCriteria.fromMediaId(photoId));
+    Photo photo = getByCriteria(con, MediaCriteria.fromMediaId(photoId));
     if (photo != null) {
-      MediaDAO.deleteMedia(con, photo.getPhoto());
+      MediaDAO.deleteMedia(con, photo);
     }
   }
 
@@ -103,8 +103,8 @@ public class PhotoDAO {
    * @return a collection of last uploaded photos
    * @throws SQLException
    */
-  public static Collection<PhotoDetail> getLastRegisteredMedia(Connection con, String instanceId)
-  throws SQLException {
+  public static Collection<Photo> getLastRegisteredMedia(Connection con, String instanceId)
+      throws SQLException {
     return findByCriteria(con, MediaCriteria.fromComponentInstanceId(instanceId)
         .orderedBy(CREATE_DATE_DESC, IDENTIFIER_DESC)
         .limitResultTo(GalleryComponentSettings.getNbMediaDisplayedPerPage()));
@@ -112,7 +112,7 @@ public class PhotoDAO {
 
   public static void deletePhotoPath(Connection con, String photoId,
       String instanceId) throws SQLException {
-    PhotoDetail photo = getByCriteria(con,
+    Photo photo = getByCriteria(con,
         MediaCriteria.fromComponentInstanceId(instanceId).identifierIsOneOf(photoId));
     if (photo != null) {
       MediaDAO.deleteAllMediaPath(con, photo.getPhoto());
@@ -121,7 +121,7 @@ public class PhotoDAO {
 
   public static void addPhotoPath(Connection con, String photoId,
       String albumId, String instanceId) throws SQLException {
-    PhotoDetail photo = getByCriteria(con,
+    Photo photo = getByCriteria(con,
         MediaCriteria.fromComponentInstanceId(instanceId).identifierIsOneOf(photoId));
     if (photo != null) {
       MediaDAO.saveMediaPath(con, photo.getPhoto(), albumId);
@@ -135,7 +135,7 @@ public class PhotoDAO {
    * @return
    * @throws SQLException
    */
-  private static PhotoDetail getByCriteria(Connection connection, MediaCriteria criteria)
+  private static Photo getByCriteria(Connection connection, MediaCriteria criteria)
       throws SQLException {
     return unique(findByCriteria(connection,
         criteria.withVisibility(MediaCriteria.VISIBILITY.FORCE_GET_ALL)));
@@ -148,12 +148,12 @@ public class PhotoDAO {
    * @return
    * @throws SQLException
    */
-  private static List<PhotoDetail> findByCriteria(Connection connection, MediaCriteria criteria)
+  private static List<Photo> findByCriteria(Connection connection, MediaCriteria criteria)
       throws SQLException {
     criteria.mediaTypeIsOneOf(MediaType.Photo);
-    List<PhotoDetail> photos = new ArrayList<PhotoDetail>();
+    List<Photo> photos = new ArrayList<Photo>();
     for (Media media : MediaDAO.findByCriteria(connection, criteria)) {
-      photos.add(new PhotoDetail(media.getPhoto()));
+      photos.add(media.getPhoto());
     }
     return photos;
   }

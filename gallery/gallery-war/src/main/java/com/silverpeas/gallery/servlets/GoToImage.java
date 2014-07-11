@@ -25,17 +25,16 @@ import java.net.URLEncoder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.CharEncoding;
+
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.model.MediaPK;
-import com.silverpeas.gallery.model.PhotoDetail;
+import com.silverpeas.gallery.model.Photo;
 import com.silverpeas.peasUtil.GoTo;
-
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
-
-import org.apache.commons.lang3.CharEncoding;
 
 public class GoToImage extends GoTo {
 
@@ -45,7 +44,7 @@ public class GoToImage extends GoTo {
   public String getDestination(String objectId, HttpServletRequest req,
       HttpServletResponse res) throws Exception {
     MediaPK mediaPK = new MediaPK(objectId);
-    PhotoDetail photo = getGalleryBm().getPhoto(mediaPK);
+    Photo photo = getGalleryBm().getPhoto(mediaPK);
     String componentId = photo.getMediaPK().getInstanceId();
     SilverTrace.info("gallery", "GoToImage.doPost", "root.MSG_GEN_PARAM_VALUE",
         "componentId = " + componentId);

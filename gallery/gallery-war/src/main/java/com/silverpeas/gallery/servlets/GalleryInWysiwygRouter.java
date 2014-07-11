@@ -38,15 +38,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.silverpeas.gallery.model.MediaPK;
 import org.silverpeas.core.admin.OrganisationController;
 
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.model.AlbumDetail;
 import com.silverpeas.gallery.model.GalleryRuntimeException;
-import com.silverpeas.gallery.model.PhotoDetail;
+import com.silverpeas.gallery.model.MediaPK;
+import com.silverpeas.gallery.model.Photo;
 import com.silverpeas.util.StringUtil;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -89,15 +88,12 @@ public class GalleryInWysiwygRouter extends HttpServlet {
     String size = request.getParameter("Size");
     boolean useOriginal = Boolean.parseBoolean(request.getParameter("UseOriginal"));
 
-    // contrôle que "componentId" est bien une photothèque ayant le droit d'être
-    // vu dans un Wysiwyg
-    boolean isViewInWysiwyg = "yes"
-        .equalsIgnoreCase(getOrganisationController()
+    // Check component instance application parameter viewInWysiwyg (shared picture) is activated
+    boolean isViewInWysiwyg = "yes".equalsIgnoreCase(getOrganisationController()
         .getComponentParameterValue(componentId, "viewInWysiwyg"));
     if (isViewInWysiwyg) {
-      SilverTrace.info("gallery", "GalleryInWysiwygRouter.doPost",
-          "root.MSG_GEN_PARAM_VALUE", "componentId = " + componentId
-          + " albumId = " + albumId);
+      SilverTrace.info("gallery", "GalleryInWysiwygRouter.doPost", "root.MSG_GEN_PARAM_VALUE",
+          "componentId = " + componentId + " albumId = " + albumId);
 
       String rootDest = "/gallery/jsp/";
       String destination = "";
@@ -105,25 +101,22 @@ public class GalleryInWysiwygRouter extends HttpServlet {
       // regarder si on demande l'affichage de l'arborescence ou l'affichage du
       // contenu d'un album
       if (StringUtil.isDefined(imageId)) {
-        // affichage de l'image
-        PhotoDetail image = getGalleryBm().getPhoto(
-            new MediaPK(imageId, componentId));
+        // Display image
+        Photo image = getGalleryBm().getPhoto(new MediaPK(imageId, componentId));
         displayImage(response, image, size, useOriginal);
       } else if (!StringUtil.isDefined(albumId)) {
-        // affichage de l'arborescence des albums
+        // Display albums content
         request.setAttribute("Albums", viewAllAlbums(componentId));
-        // appel jsp
         destination = rootDest + "wysiwygAlbums.jsp";
       } else {
-        // affichage du contenu d'un album
+        // Display album content
         request.setAttribute("MediaList", viewPhotosOfAlbum(componentId, albumId));
-        // appel jsp
         destination = rootDest + "wysiwygImages.jsp";
       }
       if (StringUtil.isDefined(destination)) {
         request.setAttribute("Language", language);
-        RequestDispatcher requestDispatcher = getServletConfig()
-            .getServletContext().getRequestDispatcher(destination);
+        RequestDispatcher requestDispatcher =
+            getServletConfig().getServletContext().getRequestDispatcher(destination);
         if (requestDispatcher != null) {
           requestDispatcher.forward(request, response);
         }
@@ -131,46 +124,52 @@ public class GalleryInWysiwygRouter extends HttpServlet {
     }
   }
 
+  /**
+   * Retrieve all albums from a multimedia application
+   * @param componentId the component instance identifier
+   * @return a collection of AlbumDetail
+   */
   private Collection<AlbumDetail> viewAllAlbums(String componentId) {
-    // récupération des albums de la photothèque
     try {
       return getGalleryBm().getAllAlbums(componentId);
     } catch (Exception e) {
-      throw new GalleryRuntimeException(
-          "GalleryInWysiwygRouter.viewAllAlbums()",
+      throw new GalleryRuntimeException("GalleryInWysiwygRouter.viewAllAlbums()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
 
   }
 
-  private Collection<PhotoDetail> viewPhotosOfAlbum(String componentId, String albumId) {
-    // récupération de toutes les photos d'un album
+  /**
+   * Retrieve all photos from an album
+   * @param componentId the component identifier
+   * @param albumId the album identifier
+   * @return a collection of Photo
+   */
+  private Collection<Photo> viewPhotosOfAlbum(String componentId, String albumId) {
     try {
       NodePK nodePK = new NodePK(albumId, componentId);
       return getGalleryBm().getAllPhotos(nodePK);
     } catch (Exception e) {
-      throw new GalleryRuntimeException(
-          "GalleryInWysiwygRouter.viewPhotosOfAlbum()",
+      throw new GalleryRuntimeException("GalleryInWysiwygRouter.viewPhotosOfAlbum()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }
 
-  private void displayImage(HttpServletResponse res, PhotoDetail image,
-      String size, boolean useOriginal) throws IOException {
-    res.setContentType(image.getImageMimeType().getMimeType());
+  private void displayImage(HttpServletResponse res, Photo image, String size, boolean useOriginal)
+      throws IOException {
+    res.setContentType(image.getFileMimeType().getMimeType());
     OutputStream out2 = res.getOutputStream();
     int read;
     BufferedInputStream input = null;
 
     String fileName = image.getId() + "_preview.jpg";
     if (useOriginal) {
-      fileName = image.getImageName();
+      fileName = image.getFileName();
     }
     if (StringUtil.isDefined(size)) {
       fileName = image.getId() + "_" + size + ".jpg";
     }
-    String filePath = FileRepositoryManager.getAbsolutePath(image.getMediaPK()
-        .getInstanceId())
+    String filePath = FileRepositoryManager.getAbsolutePath(image.getMediaPK().getInstanceId())
         + "image" + image.getId() + File.separator + fileName;
     SilverTrace.info("gallery", "GalleryInWysiwygRouter.displayImage()",
         "root.MSG_GEN_ENTER_METHOD", "filePath = " + filePath);
@@ -186,12 +185,11 @@ public class GalleryInWysiwygRouter extends HttpServlet {
         }
       }
     } catch (Exception e) {
-      SilverTrace.warn("gallery", "GalleryInWysiwygRouter.doPost",
-          "root.EX_CANT_READ_FILE", "filePath = " + filePath);
+      SilverTrace.warn("gallery", "GalleryInWysiwygRouter.doPost", "root.EX_CANT_READ_FILE",
+          "filePath = " + filePath);
       // displayWarningHtmlCode(res);
     } finally {
-      SilverTrace.info("gallery", "GalleryInWysiwygRouter.displayImage()", "",
-          " finally ");
+      SilverTrace.info("gallery", "GalleryInWysiwygRouter.displayImage()", "", " finally ");
       // we must close the in and out streams
       try {
         if (input != null) {

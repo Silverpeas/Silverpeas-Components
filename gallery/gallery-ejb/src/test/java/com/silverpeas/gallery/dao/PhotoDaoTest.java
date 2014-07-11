@@ -20,20 +20,14 @@
  */
 package com.silverpeas.gallery.dao;
 
-import com.silverpeas.gallery.BaseGalleryTest;
-import com.silverpeas.gallery.constant.MediaMimeType;
-import com.silverpeas.gallery.model.Media;
-import com.silverpeas.gallery.model.MediaPK;
-import com.silverpeas.gallery.model.MediaWithStatus;
-import com.silverpeas.gallery.model.Photo;
-import com.silverpeas.gallery.model.PhotoDetail;
-import com.silverpeas.gallery.socialNetwork.SocialInformationGallery;
-import com.silverpeas.socialnetwork.model.SocialInformation;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.DateUtil;
-import org.junit.Test;
-import org.silverpeas.cache.service.CacheServiceFactory;
-import org.silverpeas.date.Period;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 
 import java.sql.Connection;
 import java.sql.Timestamp;
@@ -42,8 +36,20 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import org.junit.Test;
+import org.silverpeas.cache.service.CacheServiceFactory;
+import org.silverpeas.date.Period;
+
+import com.silverpeas.gallery.BaseGalleryTest;
+import com.silverpeas.gallery.constant.MediaMimeType;
+import com.silverpeas.gallery.model.Media;
+import com.silverpeas.gallery.model.MediaPK;
+import com.silverpeas.gallery.model.MediaWithStatus;
+import com.silverpeas.gallery.model.Photo;
+import com.silverpeas.gallery.socialNetwork.SocialInformationGallery;
+import com.silverpeas.socialnetwork.model.SocialInformation;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.DateUtil;
 
 public class PhotoDaoTest extends BaseGalleryTest {
 
@@ -62,9 +68,9 @@ public class PhotoDaoTest extends BaseGalleryTest {
     Connection connexion = getConnection();
     String userid = "1";
     try {
-      PhotoDetail ciel = PhotoDAO.getPhoto(connexion, "0");
-      PhotoDetail fleur = PhotoDAO.getPhoto(connexion, "3");
-      PhotoDetail mer = PhotoDAO.getPhoto(connexion, "4");
+      Photo ciel = PhotoDAO.getPhoto(connexion, "0");
+      Photo fleur = PhotoDAO.getPhoto(connexion, "3");
+      Photo mer = PhotoDAO.getPhoto(connexion, "4");
       SocialInformation socialCiel =
           new SocialInformationGallery(new MediaWithStatus(ciel.getPhoto(), true));
       SocialInformation socialFleur =
@@ -95,27 +101,17 @@ public class PhotoDaoTest extends BaseGalleryTest {
     Connection connexion = getConnection();
     Date createFlowerDate = Timestamp.valueOf("2010-06-15 00:00:00.0");
     Date updateFlowerDate = Timestamp.valueOf("2010-06-16 00:00:00.0");
-    PhotoDetail fleur =
-        new PhotoDetail("fleur", "tulipe", createFlowerDate, updateFlowerDate, null, null, false,
-            false);
     String fleurId = "3";
     MediaPK mediaPK = new MediaPK(fleurId, GALLERY1);
-    fleur.setMediaPK(mediaPK);
-    fleur.setCreatorId("1");
-    fleur.setUpdateId("0");
-    fleur.setSizeH(110);
-    fleur.setSizeL(110);
-    fleur.setImageName("fleur.jpg");
-    fleur.setImageSize(5146);
-    fleur.setImageMimeType(MediaMimeType.PNG);
+    Photo fleur = prepareExpectedPhoto(createFlowerDate, updateFlowerDate, mediaPK);
     try {
-      PhotoDetail photo = PhotoDAO.getPhoto(connexion, fleurId);
+      Photo photo = PhotoDAO.getPhoto(connexion, fleurId);
       assertThat(photo, notNullValue());
       assertThat(photo.getTitle(), equalTo(fleur.getTitle()));
       assertThat(photo.getId(), equalTo(mediaPK.getId()));
       assertThat(photo.getDescription(), equalTo(fleur.getDescription()));
       assertThat(photo.getCreationDate(), equalTo(createFlowerDate));
-      assertThat(photo.getUpdateDate(), equalTo(updateFlowerDate));
+      assertThat(photo.getLastUpdateDate(), equalTo(updateFlowerDate));
       assertThat(photo, equalTo(fleur));
 
     } finally {
@@ -123,36 +119,51 @@ public class PhotoDaoTest extends BaseGalleryTest {
     }
   }
 
+  private Photo prepareExpectedPhoto(Date createFlowerDate, Date updateFlowerDate, MediaPK mediaPK) {
+    Photo fleur = new Photo();
+    fleur.setTitle("fleur");
+    fleur.setDescription("tulipe");
+    fleur.setCreationDate(createFlowerDate);
+    fleur.setLastUpdateDate(updateFlowerDate);
+    fleur.setAuthor(null);
+    fleur.setDownloadAuthorized(false);
+    fleur.setMediaPK(mediaPK);
+    fleur.setCreatorId("1");
+    fleur.setLastUpdatedBy("0");
+    fleur.setResolutionH(110);
+    fleur.setResolutionW(110);
+    fleur.setFileName("fleur.jpg");
+    fleur.setFileSize(5146);
+    fleur.setFileMimeType(MediaMimeType.PNG);
+    return fleur;
+  }
+
   @Test
   public void testUpdatePhotoDetail() throws Exception {
     Connection con = getConnection();
     Date now = DateUtil.getNow();
     Date createdFlowerDate = Timestamp.valueOf("2010-06-15 00:00:00.0");
-    PhotoDetail flower =
-        new PhotoDetail("Flower", "tulip", createdFlowerDate, createdFlowerDate, null, null,
-            false, true);
     String flowerId = "3";
-    long imageSize = 6000;
     MediaPK mediaPK = new MediaPK(String.valueOf(flowerId), GALLERY1);
-    flower.setMediaPK(mediaPK);
-    flower.setCreatorId("1");
-    flower.setUpdateId("0");
-    flower.setSizeH(220);
-    flower.setSizeL(220);
-    flower.setImageName("flower.jpg");
-    flower.setImageSize(imageSize);
-    flower.setImageMimeType(MediaMimeType.PNG);
+    Photo flower = prepareExpectedPhoto(createdFlowerDate, createdFlowerDate, mediaPK);
+    long imageSize = 6000;
+    flower.setLastUpdatedBy("0");
+    flower.setResolutionH(220);
+    flower.setResolutionW(220);
+    flower.setFileName("flower.jpg");
+    flower.setFileSize(imageSize);
+    flower.setFileMimeType(MediaMimeType.PNG);
     flower.setKeyWord("flower test");
     try {
       PhotoDAO.updatePhoto(con, flower);
-      PhotoDetail photo = PhotoDAO.getPhoto(con, flowerId);
+      Photo photo = PhotoDAO.getPhoto(con, flowerId);
       assertThat(photo, notNullValue());
       assertThat(photo.getTitle(), equalTo(flower.getTitle()));
       assertThat(photo.getId(), equalTo(mediaPK.getId()));
       assertThat(photo.getDescription(), equalTo(flower.getDescription()));
       assertThat(photo.getCreationDate(), equalTo(createdFlowerDate));
-      assertThat(photo.getUpdateDate(), greaterThanOrEqualTo(now));
-      assertThat(photo.getImageSize(), equalTo(imageSize));
+      assertThat(photo.getLastUpdateDate(), greaterThanOrEqualTo(now));
+      assertThat(photo.getFileSize(), equalTo(imageSize));
       assertThat(photo, equalTo(flower));
     } finally {
       con.close();
@@ -168,12 +179,12 @@ public class PhotoDaoTest extends BaseGalleryTest {
     List<String> listOfuserId = new ArrayList<String>();
     listOfuserId.add("1");
     try {
-      PhotoDetail ciel = PhotoDAO.getPhoto(connexion, "0");
-      PhotoDetail fleur = PhotoDAO.getPhoto(connexion, "3");
+      Photo ciel = PhotoDAO.getPhoto(connexion, "0");
+      Photo fleur = PhotoDAO.getPhoto(connexion, "3");
       SocialInformation socialCiel =
-          new SocialInformationGallery(new MediaWithStatus(ciel.getPhoto(), true));
+          new SocialInformationGallery(new MediaWithStatus(ciel, true));
       SocialInformation socialFleur =
-          new SocialInformationGallery(new MediaWithStatus(fleur.getPhoto(), false));
+          new SocialInformationGallery(new MediaWithStatus(fleur, false));
 
       Date begin = DateUtil.parse("2010/05/01");
       Date end = DateUtil.parse("2010/08/31");
@@ -199,7 +210,7 @@ public class PhotoDaoTest extends BaseGalleryTest {
     try {
       assertThat(PhotoDAO.getPhoto(con, photoIdToDelete), notNullValue());
       PhotoDAO.removePhoto(con, photoIdToDelete);
-      assertThat(PhotoDAO.getPhoto(con, photoIdToDelete).getMediaPK(), nullValue());
+      assertThat(PhotoDAO.getPhoto(con, photoIdToDelete).getMediaPK().getId(), nullValue());
     } finally {
       con.close();
     }
@@ -210,7 +221,7 @@ public class PhotoDaoTest extends BaseGalleryTest {
     Connection con = getConnection();
     try {
       String instanceWithNotVisiblePhoto = GALLERY1;
-      Collection<PhotoDetail> photos =
+      Collection<Photo> photos =
           PhotoDAO.getPhotoNotVisible(con, instanceWithNotVisiblePhoto);
       assertThat(photos, notNullValue());
       assertThat(photos, hasSize(1));
@@ -268,7 +279,7 @@ public class PhotoDaoTest extends BaseGalleryTest {
 
       Collection<String> pathList = MediaDAO.getAlbumIdsOf(con, media);
       assertThat(pathList, hasSize(1));
-      PhotoDetail mer = PhotoDAO.getPhoto(con, merPhotoId);
+      Photo mer = PhotoDAO.getPhoto(con, merPhotoId);
       PhotoDAO.createPath(con, mer, "2");
       pathList = MediaDAO.getAlbumIdsOf(con, media);
       assertThat(pathList, hasSize(2));
@@ -285,13 +296,13 @@ public class PhotoDaoTest extends BaseGalleryTest {
       CacheServiceFactory.getSessionCacheService()
           .put(UserDetail.CURRENT_REQUESTER_KEY, publisherUser);
 
-      Collection<PhotoDetail> allLastUploadedPhotos = PhotoDAO.getLastRegisteredMedia(con, GALLERY1);
+      Collection<Photo> allLastUploadedPhotos = PhotoDAO.getLastRegisteredMedia(con, GALLERY1);
       assertThat(allLastUploadedPhotos, notNullValue());
       assertThat(allLastUploadedPhotos, hasSize(4));
 
       CacheServiceFactory.getSessionCacheService().put(UserDetail.CURRENT_REQUESTER_KEY, null);
 
-      Collection<PhotoDetail> lastUploadedPhotos = PhotoDAO.getLastRegisteredMedia(con, GALLERY1);
+      Collection<Photo> lastUploadedPhotos = PhotoDAO.getLastRegisteredMedia(con, GALLERY1);
       assertThat(lastUploadedPhotos, notNullValue());
       assertThat(lastUploadedPhotos, hasSize(3));
 

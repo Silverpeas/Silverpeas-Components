@@ -20,6 +20,30 @@
  */
 package com.silverpeas.gallery.control.ejb;
 
+import static com.silverpeas.gallery.model.MediaCriteria.QUERY_ORDER_BY.CREATE_DATE_DESC;
+import static com.silverpeas.gallery.model.MediaCriteria.QUERY_ORDER_BY.IDENTIFIER_DESC;
+
+import java.io.File;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+
+import org.silverpeas.date.Period;
+import org.silverpeas.process.ProcessFactory;
+import org.silverpeas.process.util.ProcessList;
+import org.silverpeas.search.SearchEngineFactory;
+import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
+
 import com.silverpeas.gallery.GalleryComponentSettings;
 import com.silverpeas.gallery.GalleryContentManager;
 import com.silverpeas.gallery.constant.MediaType;
@@ -37,7 +61,7 @@ import com.silverpeas.gallery.model.MediaOrderCriteria;
 import com.silverpeas.gallery.model.MediaPK;
 import com.silverpeas.gallery.model.Order;
 import com.silverpeas.gallery.model.OrderRow;
-import com.silverpeas.gallery.model.PhotoDetail;
+import com.silverpeas.gallery.model.Photo;
 import com.silverpeas.gallery.process.GalleryProcessExecutionContext;
 import com.silverpeas.gallery.process.GalleryProcessManagement;
 import com.silverpeas.socialnetwork.model.SocialInformation;
@@ -55,28 +79,6 @@ import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.dao.NodeDAO;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
-import org.silverpeas.date.Period;
-import org.silverpeas.process.ProcessFactory;
-import org.silverpeas.process.util.ProcessList;
-import org.silverpeas.search.SearchEngineFactory;
-import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
-import org.silverpeas.search.searchEngine.model.QueryDescription;
-
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import java.io.File;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import static com.silverpeas.gallery.model.MediaCriteria.QUERY_ORDER_BY.CREATE_DATE_DESC;
-import static com.silverpeas.gallery.model.MediaCriteria.QUERY_ORDER_BY.IDENTIFIER_DESC;
 
 @Stateless(name = "Gallery", description = "Stateless session bean to manage an image gallery")
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
@@ -167,7 +169,7 @@ public class GalleryBmEJB implements GalleryBm {
   }
 
   @Override
-  public PhotoDetail getPhoto(final MediaPK mediaPK) {
+  public Photo getPhoto(final MediaPK mediaPK) {
     final Connection con = initCon();
     try {
       return PhotoDAO.getPhoto(con, mediaPK.getId());
@@ -243,12 +245,12 @@ public class GalleryBmEJB implements GalleryBm {
   }
 
   @Override
-  public Collection<PhotoDetail> getAllPhotos(final NodePK nodePK) {
+  public Collection<Photo> getAllPhotos(final NodePK nodePK) {
     return getAllPhotos(nodePK, MediaCriteria.VISIBILITY.BY_DEFAULT);
   }
 
   @Override
-  public Collection<PhotoDetail> getAllPhotos(final NodePK nodePK,
+  public Collection<Photo> getAllPhotos(final NodePK nodePK,
       final MediaCriteria.VISIBILITY visibility) {
     final Connection con = initCon();
     try {
