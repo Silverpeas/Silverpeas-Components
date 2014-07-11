@@ -24,14 +24,8 @@
 package com.silverpeas.gallery.model;
 
 import com.silverpeas.gallery.constant.MediaType;
-import com.silverpeas.gallery.process.media.GalleryLoadMetaDataProcess;
 import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import org.silverpeas.media.Definition;
 
 /**
  * This class represents a Photo.
@@ -39,9 +33,7 @@ import java.util.Map;
 public class Photo extends InternalMedia {
   private static final long serialVersionUID = 262504401033860860L;
 
-  private int resolutionH = 0;
-  private int resolutionW = 0;
-  private LinkedHashMap<String, MetaData> metaData = null;
+  private Definition definition = Definition.fromZero();
 
   @Override
   public MediaType getType() {
@@ -49,80 +41,19 @@ public class Photo extends InternalMedia {
   }
 
   /**
-   * Gets the height of the resolution.
-   * @return the height of the resolution.
+   * Gets the definition of the photo.
+   * @return the definition of the photo.
    */
-  public int getResolutionH() {
-    return resolutionH;
+  public Definition getDefinition() {
+    return definition;
   }
 
   /**
-   * Sets the height of the resolution.
-   * @param resolutionH the height of the resolution.
+   * Sets the definition of the resolution.
+   * @param definition the definition of the resolution.
    */
-  public void setResolutionH(int resolutionH) {
-    this.resolutionH = resolutionH;
-  }
-
-  /**
-   * Gets the width of the resolution.
-   * @return the width of the resolution.
-   */
-  public int getResolutionW() {
-    return resolutionW;
-  }
-
-  /**
-   * Sets the width of the resolution.
-   * @param resolutionW the width of the resolution.
-   */
-  public void setResolutionW(int resolutionW) {
-    this.resolutionW = resolutionW;
-  }
-
-  private Map<String, MetaData> getAllMetaData() {
-    if (metaData == null) {
-      metaData = new LinkedHashMap<String, MetaData>();
-      try {
-        GalleryLoadMetaDataProcess.load(this);
-      } catch (Exception e) {
-        SilverTrace.error("gallery", "Media.getAllMetaData", "gallery.MSG_NOT_ADD_METADATA",
-            "photoId =  " + getId());
-      }
-    }
-    return metaData;
-  }
-
-  /**
-   * Adds a metadata.
-   * @param data a metadata.
-   */
-  public void addMetaData(MetaData data) {
-    getAllMetaData().put(data.getProperty(), data);
-  }
-
-  /**
-   * Gets a metadata according to the specified property name.
-   * @param property the property name for which the metadata is requested.
-   * @return the metadata if it exists, null otherwise.
-   */
-  public MetaData getMetaData(String property) {
-    return getAllMetaData().get(property);
-  }
-
-  /**
-   * Gets all metadata property names.
-   * @return the list of metadata property names, empty list if no metadata.
-   */
-  public Collection<String> getMetaDataProperties() {
-    Collection<MetaData> values = getAllMetaData().values();
-    Collection<String> properties = new ArrayList<String>();
-    for (MetaData meta : values) {
-      if (meta != null) {
-        properties.add(meta.getProperty());
-      }
-    }
-    return properties;
+  public void setDefinition(Definition definition) {
+    this.definition = definition != null ? definition : Definition.fromZero();
   }
 
   /**

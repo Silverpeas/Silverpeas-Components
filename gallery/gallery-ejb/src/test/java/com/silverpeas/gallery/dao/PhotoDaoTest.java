@@ -20,26 +20,6 @@
  */
 package com.silverpeas.gallery.dao;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-
-import java.sql.Connection;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-
-import org.junit.Test;
-import org.silverpeas.cache.service.CacheServiceFactory;
-import org.silverpeas.date.Period;
-
 import com.silverpeas.gallery.BaseGalleryTest;
 import com.silverpeas.gallery.constant.MediaMimeType;
 import com.silverpeas.gallery.model.Media;
@@ -50,6 +30,20 @@ import com.silverpeas.gallery.socialNetwork.SocialInformationGallery;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
+import org.junit.Test;
+import org.silverpeas.cache.service.CacheServiceFactory;
+import org.silverpeas.date.Period;
+import org.silverpeas.media.Definition;
+
+import java.sql.Connection;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 public class PhotoDaoTest extends BaseGalleryTest {
 
@@ -130,8 +124,7 @@ public class PhotoDaoTest extends BaseGalleryTest {
     fleur.setMediaPK(mediaPK);
     fleur.setCreatorId("1");
     fleur.setLastUpdatedBy("0");
-    fleur.setResolutionH(110);
-    fleur.setResolutionW(110);
+    fleur.setDefinition(Definition.of(110, 110));
     fleur.setFileName("fleur.jpg");
     fleur.setFileSize(5146);
     fleur.setFileMimeType(MediaMimeType.PNG);
@@ -148,8 +141,7 @@ public class PhotoDaoTest extends BaseGalleryTest {
     Photo flower = prepareExpectedPhoto(createdFlowerDate, createdFlowerDate, mediaPK);
     long imageSize = 6000;
     flower.setLastUpdatedBy("0");
-    flower.setResolutionH(220);
-    flower.setResolutionW(220);
+    flower.setDefinition(Definition.of(220, 220));
     flower.setFileName("flower.jpg");
     flower.setFileSize(imageSize);
     flower.setFileMimeType(MediaMimeType.PNG);

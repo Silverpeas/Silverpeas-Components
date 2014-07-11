@@ -66,7 +66,7 @@ public class GalleryResource extends AbstractGalleryResource {
   @Produces(MediaType.APPLICATION_JSON)
   public AlbumEntity getAlbum(@PathParam("albumId") final String albumId) {
     try {
-      final AlbumDetail album = getGalleryBm().getAlbum(new NodePK(albumId, getComponentId()));
+      final AlbumDetail album = getMediaService().getAlbum(new NodePK(albumId, getComponentId()));
       return asWebEntity(album);
     } catch (final WebApplicationException ex) {
       throw ex;
@@ -88,8 +88,8 @@ public class GalleryResource extends AbstractGalleryResource {
   public PhotoEntity getPhoto(@PathParam("albumId") final String albumId,
       @PathParam("photoId") final String photoId) {
     try {
-      final AlbumDetail album = getGalleryBm().getAlbum(new NodePK(albumId, getComponentId()));
-      final Media media = getGalleryBm().getMedia(new MediaPK(photoId, getComponentId()));
+      final AlbumDetail album = getMediaService().getAlbum(new NodePK(albumId, getComponentId()));
+      final Media media = getMediaService().getMedia(new MediaPK(photoId, getComponentId()));
       verifyUserMediaAccess(media);
       return asWebEntity(media, album);
     } catch (final WebApplicationException ex) {

@@ -23,8 +23,6 @@
   --%>
 
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
-<%@ include file="check.jsp" %>
-
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
@@ -62,12 +60,19 @@
     </c:if>
   </jsp:attribute>
 
+  <jsp:attribute name="specificSpecificationBloc">
+    <c:if test="${media.definition.defined}">
+      <span class="fileCharacteristicSize"><fmt:message key="gallery.dimension"/> <b>${media.definition.width}
+        x ${media.definition.height} <fmt:message key="gallery.pixels"/></b></span>
+    </c:if>
+  </jsp:attribute>
+
   <jsp:attribute name="bottomContentTopBloc">
     <gallery:displayMediaMetadata media="${media}" isViewMetadata="${isViewMetadata}"/>
   </jsp:attribute>
 
   <jsp:attribute name="mediaPreviewBloc">
-    <a href="#" onclick="javascript:startSlideshow('${photo.id}')">
+    <a href="#" onclick="javascript:startSlideshow('${media.id}')">
       <img alt="<c:out value="${media.name}"/>" src="${media.getApplicationThumbnailUrl(PREVIEW_RESOLUTION)}"/>
     </a>
   </jsp:attribute>

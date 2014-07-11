@@ -176,8 +176,8 @@ public class PhotoDetailTest extends AbstractMediaTest {
         comparesEqualTo(beginDownloadDate));
     assertThat(wrappedPhoto.getDownloadPeriod().getEndDatable(), comparesEqualTo(endDownloadDate));
     assertThat(wrappedPhoto.getType(), is(MediaType.Photo));
-    assertThat(wrappedPhoto.getResolutionW(), is(800));
-    assertThat(wrappedPhoto.getResolutionH(), is(600));
+    assertThat(wrappedPhoto.getDefinition().getWidth(), is(800));
+    assertThat(wrappedPhoto.getDefinition().getHeight(), is(600));
     assertThat(wrappedPhoto.getMetaDataProperties(), hasSize(1));
     assertThat(
         wrappedPhoto.getMetaData(wrappedPhoto.getMetaDataProperties().iterator().next()).getValue(),

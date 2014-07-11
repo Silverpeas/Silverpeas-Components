@@ -12,7 +12,8 @@ $if(mediaPart)$<br/>
   Um eine hinzuzufügen, verwenden Sie eine der folgenden Lösungen:
   <ul>
     <li>Die Drag and Drop Zone</li>
-    <li>der Vorgang "$mediaOperation$"</li>
-    <li><a href="$mediaUrl$">Klicken Sie direkt hier</a></li>
+    <li>der Vorgang "$mediaOperation$"<br/>(<a href="$mediaUrl$">Klicken Sie direkt hier</a>)</li>
+    <li>der Vorgang "$videoOperation$"<br/>(<a href="$videoUrl$">Klicken Sie direkt hier</a>)</li>
+    <li>der Vorgang "$soundOperation$"<br/>(<a href="$soundUrl$">Klicken Sie direkt hier</a>)</li>
   </ul>
 $endif$

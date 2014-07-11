@@ -21,33 +21,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.gallery.image;
+package com.silverpeas.gallery.media;
 
 /**
  *
  * @author ehugonnet
  */
-public class IptcProperty extends ExifProperty {
+public class MediaMetadataException extends Exception  {
+  private static final long serialVersionUID = 1L;
 
-  private boolean isdate;
-
-  public IptcProperty(int property) {
-    super(property);
-    isdate = false;
+  public MediaMetadataException(Throwable cause) {
+    super(cause);
   }
 
-
-  /**
-   * @return the date
-   */
-  public boolean isDate() {
-    return isdate;
+  public MediaMetadataException(String message, Throwable cause) {
+    super(message, cause);
   }
 
-  /**
-   * @param date the date to set
-   */
-  public void setDate(boolean isdate) {
-    this.isdate = isdate;
+  public MediaMetadataException(String message) {
+    super(message);
   }
 }

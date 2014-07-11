@@ -21,35 +21,49 @@
   You should have received a copy of the GNU Affero General Public License
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
-
-<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+<%@ tag language="java" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
-<%@ taglib tagdir="/WEB-INF/tags/silverpeas/gallery" prefix="gallery" %>
 
-<c:set var="userLanguage" value="${requestScope.resources.language}" scope="request"/>
-<jsp:useBean id="userLanguage" type="java.lang.String" scope="request"/>
-<fmt:setLocale value="${userLanguage}"/>
+<%-- Set resource bundle --%>
+<fmt:setLocale value="${requestScope.resources.language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
-<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
+<%-- Constants --%>
 <view:setConstant var="PREVIEW_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.PREVIEW"/>
-<jsp:useBean id="PREVIEW_RESOLUTION" type="com.silverpeas.gallery.constant.MediaResolution"/>
 
-<gallery:viewMediaLayout>
-  <jsp:attribute name="specificSpecificationBloc">
-    <jsp:useBean id="media" scope="request" type="com.silverpeas.gallery.model.Video"/>
-    <c:if test="${media.definition.defined}">
-      <span class="fileCharacteristicSize"><fmt:message key="gallery.dimension"/> <b>${media.definition.width}
-        x ${media.definition.height} <fmt:message key="gallery.pixels"/></b></span>
-    </c:if>
-    <c:if test="${media.duration gt 0}">
-      <span class="fileCharacteristicDuration"><fmt:message key="gallery.duration"/> <b>${silfn:getTimeData(media.duration).formattedDurationAsHMSM}</b></span>
-    </c:if>
-  </jsp:attribute>
-  <jsp:attribute name="mediaPreviewBloc">
-    <gallery:videoPlayer video="${media}" mediaResolution="${PREVIEW_RESOLUTION}"/>
-  </jsp:attribute>
-</gallery:viewMediaLayout>
+<%-- Attributes --%>
+<%@ attribute name="video" required="true"
+              type="com.silverpeas.gallery.model.Video"
+              description="The Video" %>
+<c:set var="_mediaResolution" value="${PREVIEW_RESOLUTION}"/>
+<%@ attribute name="mediaResolution" required="false"
+              type="com.silverpeas.gallery.constant.MediaResolution"
+              description="The resolution of the video." %>
+<c:if test="${mediaResolution != null}">
+  <c:set var="_mediaResolution" value="${mediaResolution}"/>
+</c:if>
+
+<div id="videoContainer"></div>
+<script type="text/javascript">
+  <c:set var="headIncludes"><view:includePlugin name="player"/></c:set>
+  $(document.head).append("${silfn:escapeJs(headIncludes)}");
+  $(document).ready(function() {
+    $('#videoContainer').player('video', {
+      container : {
+        width : '${_mediaResolution.width}px',
+        height : '${_mediaResolution.height}px'
+      },
+      clip : {
+        url : '${silfn:escapeJs(video.applicationOriginalUrl)}',
+        mimeType : '${silfn:escapeJs(video.fileMimeType.mimeType)}'
+      },
+      canvas : {
+        backgroundColor : '#E1E1E1'
+      }
+    });
+  });
+</script>

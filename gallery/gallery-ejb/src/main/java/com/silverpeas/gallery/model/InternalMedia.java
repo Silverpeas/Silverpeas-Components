@@ -26,8 +26,10 @@ package com.silverpeas.gallery.model;
 import com.silverpeas.gallery.constant.MediaMimeType;
 import com.silverpeas.gallery.constant.GalleryResourceURIs;
 import com.silverpeas.gallery.constant.MediaResolution;
+import com.silverpeas.gallery.process.media.GalleryLoadMetaDataProcess;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -36,7 +38,11 @@ import org.silverpeas.file.SilverpeasFile;
 import org.silverpeas.file.SilverpeasFileProvider;
 import org.silverpeas.notification.message.MessageManager;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * This class represents a Media that the content (the file in other words) is saved on the
@@ -50,6 +56,8 @@ public abstract class InternalMedia extends Media {
   private long fileSize = 0;
   private MediaMimeType fileMimeType = MediaMimeType.ERROR;
   private Period downloadPeriod = Period.UNDEFINED;
+
+  private LinkedHashMap<String, MetaData> metaData = null;
 
   /**
    * Indicates if the media is marked as downloadable. The visibility period is not taken into
@@ -144,5 +152,50 @@ public abstract class InternalMedia extends Media {
     return SilverpeasFileProvider.getInstance().getSilverpeasFile(FileUtils
         .getFile(Media.BASE_PATH.getPath(), getComponentInstanceId(), getWorkspaceSubFolderName(),
             fileName).getPath());
+  }
+
+  private Map<String, MetaData> getAllMetaData() {
+    if (metaData == null) {
+      metaData = new LinkedHashMap<String, MetaData>();
+      try {
+        GalleryLoadMetaDataProcess.load(this);
+      } catch (Exception e) {
+        SilverTrace.error("gallery", "Media.getAllMetaData", "gallery.MSG_NOT_ADD_METADATA",
+            "mediaId =  " + getId());
+      }
+    }
+    return metaData;
+  }
+
+  /**
+   * Adds a metadata.
+   * @param data a metadata.
+   */
+  public void addMetaData(MetaData data) {
+    getAllMetaData().put(data.getProperty(), data);
+  }
+
+  /**
+   * Gets a metadata according to the specified property name.
+   * @param property the property name for which the metadata is requested.
+   * @return the metadata if it exists, null otherwise.
+   */
+  public MetaData getMetaData(String property) {
+    return getAllMetaData().get(property);
+  }
+
+  /**
+   * Gets all metadata property names.
+   * @return the list of metadata property names, empty list if no metadata.
+   */
+  public Collection<String> getMetaDataProperties() {
+    Collection<MetaData> values = getAllMetaData().values();
+    Collection<String> properties = new ArrayList<String>();
+    for (MetaData meta : values) {
+      if (meta != null) {
+        properties.add(meta.getProperty());
+      }
+    }
+    return properties;
   }
 }

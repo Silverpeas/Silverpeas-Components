@@ -1,136 +1,113 @@
-<%@ page import="com.silverpeas.gallery.model.Media" %>
 <%--
+  Copyright (C) 2000 - 2014 Silverpeas
 
-    Copyright (C) 2000 - 2013 Silverpeas
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as
+  published by the Free Software Foundation, either version 3 of the
+  License, or (at your option) any later version.
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation, either version 3 of the
-    License, or (at your option) any later version.
+  As a special exception to the terms and conditions of version 3.0 of
+  the GPL, you may redistribute this Program in connection with Free/Libre
+  Open Source Software ("FLOSS") applications as described in Silverpeas's
+  FLOSS exception. You should have recieved a copy of the text describing
+  the FLOSS exception, and it is also available here:
+  "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
-    As a special exception to the terms and conditions of version 3.0 of
-    the GPL, you may redistribute this Program in connection with Free/Libre
-    Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
-    the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU Affero General Public License for more details.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  --%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib prefix="gallery" tagdir="/WEB-INF/tags/silverpeas/gallery" %>
 
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+<c:set var="userLanguage" value="${requestScope.resources.language}" scope="request"/>
+<jsp:useBean id="userLanguage" type="java.lang.String" scope="request"/>
+<fmt:setLocale value="${userLanguage}"/>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
---%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ include file="check.jsp" %>
+<%-- Constants --%>
+<c:set var="TABULATION" value="&#160;&#160;&#160;&#160;&#160;"/>
 
-<%
-	Media media = (Media) request.getAttribute("Media");
-	List 	path 			= (List) request.getAttribute("Path");
-	Collection 	pathList 		= (Collection) request.getAttribute("PathList");
-	Collection 	albums			= (Collection) request.getAttribute("Albums");
-	String 		xmlFormName		= (String) request.getAttribute("XMLFormName");
+<%-- Request attributes --%>
+<c:set var="media" value="${requestScope.Media}" scope="request"/>
+<jsp:useBean id="media" type="com.silverpeas.gallery.model.Media" scope="request"/>
 
-	String mediaId = media.getMediaPK().getId();
+<c:set var="albumPath" value="${requestScope.Path}"/>
+<jsp:useBean id="albumPath" type="java.util.List<com.silverpeas.gallery.model.AlbumDetail>"/>
 
-	Button validateButton = gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
-	Button cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "MediaView?MediaId="+
-      mediaId, false);
-%>
+<c:set var="albumListIds" value="${requestScope.PathList}"/>
+<jsp:useBean id="albumListIds" type="java.util.List<java.lang.String>"/>
+<c:set var="allAlbums" value="${requestScope.Albums}"/>
+<jsp:useBean id="allAlbums" type="java.util.List<com.silverpeas.gallery.model.AlbumDetail>"/>
 
+<%-- Actions --%>
+<c:set var="viewMediaAction" value="MediaView?MediaId=${media.id}"/>
+<c:set var="editMediaAction" value="MediaEdit?MediaId=${media.id}"/>
+
+<%-- Labels --%>
+<fmt:message key="gallery.media" var="mediaViewLabel"/>
+<fmt:message key="gallery.info" var="mediaEditLabel"/>
+<fmt:message key="gallery.accessPath" var="accessLabel"/>
+<fmt:message key="GML.validate" var="validateLabel"/>
+<fmt:message key="GML.cancel" var="cancelLabel"/>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<view:looknfeel/>
-<script type="text/javascript">
-
-function sendData()
-{
-	document.paths.submit();
-}
-
-</script>
+  <view:looknfeel/>
+  <script type="text/javascript">
+    function sendData() {
+      document.paths.submit();
+    }
+  </script>
 </head>
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
-<%
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel, "Main");
-	displayPath(path, browseBar);
+<body>
+<c:set var="additionalBrowseBarElements" value="${silfn:truncate(media.title, 50)}@${viewMediaAction}"/>
+<c:set var="additionalBrowseBarElements" value="${additionalBrowseBarElements}|${accessLabel}@#"/>
+<gallery:browseBar albumPath="${albumPath}" additionalElements="${additionalBrowseBarElements}"/>
 
-   	TabbedPane tabbedPane = gef.getTabbedPane();
-	tabbedPane.addTab(resource.getString("gallery.media"), "MediaView?MediaId="+ mediaId, false);
-	tabbedPane.addTab(resource.getString("gallery.info"), "EditInformation?MediaId="+ mediaId, false);
-	tabbedPane.addTab(resource.getString("gallery.accessPath"), "#", true);
-
-	out.println(window.printBefore());
-	out.println(tabbedPane.print());
-    out.println(frame.printBefore());
-
-    Board board	= gef.getBoard();
-
-    out.println(board.printBefore());
-    %>
-  <form name="paths" action="SelectPath" method="POST">
-    <input type="hidden" name="MediaId" value="<%=mediaId%>">
-    <table>
-    <%
-	if(albums !=null && !albums.isEmpty())
-	{
-		Iterator iter = albums.iterator();
-		while(iter.hasNext())
-		{
-			NodeDetail album = (NodeDetail)iter.next();
-			if(album.getLevel() > 1)
-			{ // on n'affiche pas le noeud racine
-				String name = album.getName();
-
-				String ind = "";
-				if(album.getLevel() > 2)
-				{// calcul chemin arbre
-					int sizeOfInd = album.getLevel() - 2;
-					if(sizeOfInd > 0)
-					{
-						for(int i=0;i<sizeOfInd;i++)
-						{
-							ind += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-						}
-					}
-				}
-				name = ind + name;
-				// recherche si cet album est dans la liste des albums de la photo
-				boolean used = false;
-				Iterator i = pathList.iterator();
-				while (i.hasNext())
-			    {
-					String nodeId = (String) i.next();
-					if (new Integer(album.getId()).toString().equals(nodeId))
-						used = true;
-		        }
-		    	String usedCheck = "";
-				if (used)
-					usedCheck = " checked";
-	        	out.println("<tr><td>&nbsp;&nbsp;<input type=\"checkbox\" valign=\"absmiddle\" name=\"albumChoice\" value=\""+ album.getId() +"\""+usedCheck+">&nbsp;</td><td>"+name+"</td></tr>");
-				//ligne.addArrayCellText(name);
-			}
-		}
-	}
-%>
-	</table>
-</form>
-<%
-	out.println(board.printAfter());
-
-	ButtonPane buttonPane = gef.getButtonPane();
-	buttonPane.addButton(validateButton);
-	buttonPane.addButton(cancelButton);
-	out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
-
-	out.println(frame.printAfter());
-	out.println(window.printAfter());
-%>
-
+<view:window>
+  <view:tabs>
+    <view:tab label="${mediaViewLabel}" action="${viewMediaAction}" selected="false"/>
+    <view:tab label="${mediaEditLabel}" action="${editMediaAction}" selected="false"/>
+    <view:tab label="${accessLabel}" action="#" selected="true"/>
+  </view:tabs>
+  <view:frame>
+    <view:board>
+      <form name="paths" action="SelectPath" method="POST">
+        <input type="hidden" name="MediaId" value="${media.id}">
+        <table>
+          <c:forEach var="album" items="${allAlbums}">
+            <c:if test="${album.level gt 1}">
+              <c:set var="albumTabulation" value=""/>
+              <c:if test="${album.level gt 2}">
+                <c:set var="albumTabulation" value="${silfn:repeat(TABULATION, (album.level - 2))}"/>
+              </c:if>
+              <c:set var="checked" value="${albumListIds.contains(album.nodePK.id) ? 'checked': ''}"/>
+              <tr>
+                <td>
+                  &#160;&#160;<input type="checkbox" name="albumChoice" value="${album.id}" ${checked}>&#160;
+                </td>
+                <td>${albumTabulation}${album.name}</td>
+              </tr>
+            </c:if>
+          </c:forEach>
+        </table>
+      </form>
+    </view:board>
+    <view:buttonPane>
+      <view:button label="${validateLabel}" action="javascript:onClick=sendData();"/>
+      <view:button label="${cancelLabel}" action="${viewMediaAction}"/>
+    </view:buttonPane>
+  </view:frame>
+</view:window>
 </body>
 </html>

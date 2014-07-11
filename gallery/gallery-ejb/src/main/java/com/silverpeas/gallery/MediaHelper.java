@@ -20,14 +20,38 @@
  */
 package com.silverpeas.gallery;
 
-import static com.silverpeas.gallery.constant.MediaResolution.LARGE;
-import static com.silverpeas.gallery.constant.MediaResolution.MEDIUM;
-import static com.silverpeas.gallery.constant.MediaResolution.PREVIEW;
-import static com.silverpeas.gallery.constant.MediaResolution.SMALL;
-import static com.silverpeas.gallery.constant.MediaResolution.TINY;
-import static com.silverpeas.gallery.constant.MediaResolution.WATERMARK;
+import com.silverpeas.gallery.constant.MediaMimeType;
+import com.silverpeas.gallery.constant.MediaResolution;
+import com.silverpeas.gallery.constant.MediaType;
+import com.silverpeas.gallery.media.DrewMediaMetadataExtractor;
+import com.silverpeas.gallery.media.MediaMetadataException;
+import com.silverpeas.gallery.media.MediaMetadataExtractor;
+import com.silverpeas.gallery.model.InternalMedia;
+import com.silverpeas.gallery.model.Media;
+import com.silverpeas.gallery.model.MediaPK;
+import com.silverpeas.gallery.model.MetaData;
+import com.silverpeas.gallery.model.Photo;
+import com.silverpeas.gallery.model.Sound;
+import com.silverpeas.gallery.model.Video;
+import com.silverpeas.gallery.processing.ImageResizer;
+import com.silverpeas.gallery.processing.ImageUtility;
+import com.silverpeas.gallery.processing.Size;
+import com.silverpeas.gallery.processing.Watermarker;
+import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.MetadataExtractor;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.ResourceLocator;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.IOUtils;
+import org.silverpeas.media.Definition;
+import org.silverpeas.process.io.file.FileHandler;
+import org.silverpeas.process.io.file.HandledFile;
+import org.silverpeas.util.ImageLoader;
 
-import java.awt.Font;
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -36,40 +60,32 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Set;
 
-import javax.imageio.ImageIO;
-
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.IOUtils;
-import org.silverpeas.process.io.file.FileHandler;
-import org.silverpeas.process.io.file.HandledFile;
-import org.silverpeas.util.ImageLoader;
-
-import com.silverpeas.gallery.constant.MediaMimeType;
-import com.silverpeas.gallery.constant.MediaResolution;
-import com.silverpeas.gallery.constant.MediaType;
-import com.silverpeas.gallery.image.DrewImageMetadataExtractor;
-import com.silverpeas.gallery.image.ImageMetadataException;
-import com.silverpeas.gallery.image.ImageMetadataExtractor;
-import com.silverpeas.gallery.model.InternalMedia;
-import com.silverpeas.gallery.model.Media;
-import com.silverpeas.gallery.model.MediaPK;
-import com.silverpeas.gallery.model.MetaData;
-import com.silverpeas.gallery.model.Photo;
-import com.silverpeas.gallery.model.Video;
-import com.silverpeas.gallery.processing.ImageResizer;
-import com.silverpeas.gallery.processing.ImageUtility;
-import com.silverpeas.gallery.processing.Size;
-import com.silverpeas.gallery.processing.Watermarker;
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.ResourceLocator;
+import static com.silverpeas.gallery.constant.MediaResolution.*;
 
 public class MediaHelper {
 
   final static ResourceLocator gallerySettings =
       new ResourceLocator("org.silverpeas.gallery.settings.gallerySettings", "");
+
+  /**
+   * Saves uploaded sound file on file system
+   * @param fileHandler
+   * @param sound the current sound media
+   * @param fileItem the current uploaded sound
+   * @throws Exception
+   */
+  public static void processSound(final FileHandler fileHandler, Sound sound,
+      final FileItem fileItem) throws Exception {
+    if (fileItem != null) {
+      String name = fileItem.getName();
+      if (name != null) {
+        sound.setFileName(FileUtil.getFilename(name));
+        final HandledFile handledSoundFile = getHandledFile(fileHandler, sound);
+        handledSoundFile.writeByteArrayToFile(fileItem.get());
+        setInternalMetadata(handledSoundFile, sound, MediaMimeType.SOUNDS);
+      }
+    }
+  }
 
   /**
    * Saves uploaded video file on file system
@@ -188,6 +204,29 @@ public class MediaHelper {
       iMedia.setFileName(fileForData.getName());
       iMedia.setFileMimeType(mediaMimeType);
       iMedia.setFileSize(fileForData.length());
+      com.silverpeas.util.MetaData metaData =
+          MetadataExtractor.getInstance().extractMetadata(handledImageFile.getFile());
+      switch (iMedia.getType()) {
+        case Photo:
+          iMedia.getPhoto().setDefinition(metaData.getDefinition());
+          break;
+        case Video:
+          iMedia.getVideo().setDefinition(metaData.getDefinition());
+          break;
+      }
+      if (metaData.getDuration() != null) {
+        switch (iMedia.getType()) {
+          case Video:
+            iMedia.getVideo().setDuration(metaData.getDuration().getTimeAsLong());
+            break;
+          case Sound:
+            iMedia.getSound().setDuration(metaData.getDuration().getTimeAsLong());
+            break;
+        }
+      }
+      if (StringUtil.isNotDefined(iMedia.getTitle()) && StringUtil.isDefined(metaData.getTitle())) {
+        iMedia.setTitle(metaData.getTitle());
+      }
       return true;
     } else {
       iMedia.setFileName(null);
@@ -240,19 +279,19 @@ public class MediaHelper {
   }
 
   public static void setMetaData(final FileHandler fileHandler, final Photo photo)
-      throws IOException, ImageMetadataException {
+      throws IOException, MediaMetadataException {
     setMetaData(fileHandler, photo, I18NHelper.defaultLanguage);
   }
 
   public static void setMetaData(final FileHandler fileHandler, final Photo photo,
-      final String lang) throws ImageMetadataException, IOException {
+      final String lang) throws MediaMetadataException, IOException {
     if (MediaMimeType.JPG == photo.getFileMimeType()) {
       final HandledFile handledFile = fileHandler
           .getHandledFile(Media.BASE_PATH, photo.getInstanceId(), photo.getWorkspaceSubFolderName(),
               photo.getFileName());
       if (handledFile.exists()) {
         try {
-          final ImageMetadataExtractor extractor = new DrewImageMetadataExtractor(photo.
+          final MediaMetadataExtractor extractor = new DrewMediaMetadataExtractor(photo.
               getInstanceId());
           for (final MetaData meta : extractor
               .extractImageExifMetaData(handledFile.getFile(), lang)) {
@@ -277,11 +316,9 @@ public class MediaHelper {
    */
   private static void setResolution(final BufferedImage image, final Photo photo) {
     if (image == null) {
-      photo.setResolutionW(0);
-      photo.setResolutionH(0);
+      photo.setDefinition(Definition.fromZero());
     } else {
-      photo.setResolutionW(image.getWidth());
-      photo.setResolutionH(image.getHeight());
+      photo.setDefinition(Definition.of(image.getWidth(), image.getHeight()));
     }
   }
 
@@ -302,7 +339,8 @@ public class MediaHelper {
     final String photoId = photo.getId();
 
     // Preview image resizing only if the original image is larger than the preview
-    int originalImageWidth = Math.max(photo.getResolutionW(), photo.getResolutionH());
+    int originalImageWidth =
+        Math.max(photo.getDefinition().getWidth(), photo.getDefinition().getHeight());
 
     // Processing order :
     // Large (preview without watermark)
@@ -469,8 +507,8 @@ public class MediaHelper {
     String nameAuthor = "";
     String nameForWatermark = "";
     if (watermark && photo.getFileMimeType().isIPTCCompliant()) {
-      final ImageMetadataExtractor extractor =
-          new DrewImageMetadataExtractor(photo.getInstanceId());
+      final MediaMetadataExtractor extractor =
+          new DrewMediaMetadataExtractor(photo.getInstanceId());
       final List<MetaData> iptcMetadata;
       try {
         iptcMetadata = extractor.extractImageIptcMetaData(image.getFile());

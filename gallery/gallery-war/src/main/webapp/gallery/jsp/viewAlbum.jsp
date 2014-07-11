@@ -86,12 +86,22 @@
 <fmt:message key="GML.paste" var="pasteSelectedMediaLabel"/>
 <fmt:message key="gallery.paste" var="pasteSelectedMediaIcon" bundle="${icons}"/>
 <c:url value="${pasteSelectedMediaIcon}" var="pasteSelectedMediaIcon"/>
-<fmt:message key="gallery.addPhoto" var="addPhotoLabel"/>
-<fmt:message key="gallery.addPhoto" var="addPhotoIcon" bundle="${icons}"/>
+<fmt:message key="gallery.photo.add" var="addPhotoLabel"/>
+<fmt:message key="gallery.photo.add" var="addPhotoIcon" bundle="${icons}"/>
 <c:url value="${addPhotoIcon}" var="addPhotoIcon"/>
+<c:set var="addPhotoAction" value="AddMedia?type=Photo"/>
 <fmt:message key="gallery.video.add" var="addVideoLabel"/>
 <fmt:message key='gallery.video.add' var="addVideoIcon" bundle='${icons}'/>
 <c:url var="addVideoIcon" value="${addVideoIcon}"/>
+<c:set var="addVideoAction" value="AddMedia?type=Video"/>
+<fmt:message key="gallery.sound.add" var="addSoundLabel"/>
+<fmt:message key='gallery.sound.add' var="addSoundIcon" bundle='${icons}'/>
+<c:url var="addSoundIcon" value="${addSoundIcon}"/>
+<c:set var="addSoundAction" value="AddMedia?type=Sound"/>
+<fmt:message key="gallery.streaming.add" var="addStreamingLabel"/>
+<fmt:message key='gallery.streaming.add' var="addStreamingIcon" bundle='${icons}'/>
+<c:url var="addStreamingIcon" value="${addStreamingIcon}"/>
+<c:set var="addStreamingAction" value="AddMedia?type=Streaming"/>
 <fmt:message key="gallery.addToBasketSelectedMedia" var="addToBasketSelectedMediaLabel"/>
 <fmt:message key='gallery.addToBasketSelectedMedia' var="addToBasketSelectedMediaIcon" bundle='${icons}'/>
 <c:url var="addToBasketSelectedMediaIcon" value="${addToBasketSelectedMediaIcon}"/>
@@ -132,8 +142,6 @@
 <c:set var="isGuest" value="${requestScope.IsGuest}"/>
 
 <c:set var="Silverpeas_Album_ComponentId" value="${componentId}" scope="session"/>
-
-<c:set var="fctAddMedia" value="AddMedia"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -328,8 +336,9 @@
   <%-- Manage one media --%>
   <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
     <view:operationSeparator/>
-    <view:operationOfCreation action="AddMedia?type=Photo" altText="${addPhotoLabel}" icon="${addPhotoIcon}"/>
-    <view:operationOfCreation action="AddMedia?type=Video" altText="${addVideoLabel}" icon="${addVideoIcon}"/>
+    <view:operationOfCreation action="${addPhotoAction}" altText="${addPhotoLabel}" icon="${addPhotoIcon}"/>
+    <view:operationOfCreation action="${addVideoAction}" altText="${addVideoLabel}" icon="${addVideoIcon}"/>
+    <view:operationOfCreation action="${addSoundAction}" altText="${addSoundLabel}" icon="${addSoundIcon}"/>
   </c:if>
   <%-- Basket for users --%>
   <c:if test="${greaterUserRole eq userRole and isBasket}">
@@ -406,8 +415,12 @@
           <view:templateParam name="mediaPart" value="${templateUserRole eq publisherRole or templateUserRole eq writerRole}"/>
           <view:templateParam name="albumOperation" value="${addAlbumLabel}"/>
           <view:templateParam name="albumUrl" value="javaScript:openGalleryEditor()"/>
-          <view:templateParam name="mediaOperation" value="${addPhotoLabel}"/>
-          <view:templateParam name="mediaUrl" value="${fctAddMedia}"/>
+          <view:templateParam name="photoOperation" value="${addPhotoLabel}"/>
+          <view:templateParam name="photoUrl" value="${addPhotoAction}"/>
+          <view:templateParam name="videoOperation" value="${addVideoLabel}"/>
+          <view:templateParam name="videoUrl" value="${addVideoAction}"/>
+          <view:templateParam name="soundOperation" value="${addSoundLabel}"/>
+          <view:templateParam name="soundUrl" value="${addSoundAction}"/>
         </view:applyTemplate>
       </div>
     </c:if>

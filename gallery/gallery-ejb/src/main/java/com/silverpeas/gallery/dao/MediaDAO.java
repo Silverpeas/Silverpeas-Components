@@ -45,6 +45,7 @@ import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.exception.UtilException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.date.Period;
+import org.silverpeas.media.Definition;
 import org.silverpeas.persistence.repository.OperationContext;
 
 import java.sql.Connection;
@@ -172,7 +173,7 @@ public class MediaDAO {
       Collection<Collection<String>> idGroups =
           CollectionUtil.split(new ArrayList<String>(photos.keySet()));
       StringBuilder queryBase = new StringBuilder(SELECT_INTERNAL_MEDIA_PREFIX).append(
-          "P.resolutionH, P.resolutionW from SC_Gallery_Internal I join SC_Gallery_Photo P on I" +
+          "P.resolutionW, P.resolutionH from SC_Gallery_Internal I join SC_Gallery_Photo P on I" +
               ".mediaId = P.mediaId where I.mediaId in ");
       for (Collection<String> mediaIds : idGroups) {
         PreparedStatement prepStmt = null;
@@ -187,8 +188,7 @@ public class MediaDAO {
             mediaIds.remove(mediaId);
             Photo currentPhoto = photos.get(mediaId);
             decorateInternalMedia(rs, currentPhoto);
-            currentPhoto.setResolutionH(rs.getInt(8));
-            currentPhoto.setResolutionW(rs.getInt(9));
+            currentPhoto.setDefinition(Definition.of(rs.getInt(8),rs.getInt(9)));
           }
         } finally {
           DBUtil.close(rs, prepStmt);
@@ -218,7 +218,7 @@ public class MediaDAO {
       Collection<Collection<String>> idGroups =
           CollectionUtil.split(new ArrayList<String>(videos.keySet()));
       StringBuilder queryBase = new StringBuilder(SELECT_INTERNAL_MEDIA_PREFIX).append(
-          "V.resolutionH, V.resolutionW, V.bitrate, V.duration from SC_Gallery_Internal I join " +
+          "V.resolutionW, V.resolutionH, V.bitrate, V.duration from SC_Gallery_Internal I join " +
               "SC_Gallery_Video V on I.mediaId = V.mediaId where I.mediaId in ");
       for (Collection<String> mediaIds : idGroups) {
         PreparedStatement prepStmt = null;
@@ -233,8 +233,7 @@ public class MediaDAO {
             mediaIds.remove(mediaId);
             Video currentVideo = videos.get(mediaId);
             decorateInternalMedia(rs, currentVideo);
-            currentVideo.setResolutionH(rs.getInt(8));
-            currentVideo.setResolutionW(rs.getInt(9));
+            currentVideo.setDefinition(Definition.of(rs.getInt(8),rs.getInt(9)));
             currentVideo.setBitrate(rs.getLong(10));
             currentVideo.setDuration(rs.getLong(11));
           }
@@ -448,8 +447,9 @@ public class MediaDAO {
     } else {
       photoSave.append("update SC_Gallery_Photo set ");
     }
-    appendSaveParameter(photoSave, "resolutionH", photo.getResolutionH(), isInsert, photoParams);
-    appendSaveParameter(photoSave, "resolutionW", photo.getResolutionW(), isInsert, photoParams);
+    Definition definition = photo.getDefinition();
+    appendSaveParameter(photoSave, "resolutionW", definition.getWidth(), isInsert, photoParams);
+    appendSaveParameter(photoSave, "resolutionH", definition.getHeight(), isInsert, photoParams);
     if (isInsert) {
       appendListOfParameters(photoSave.append(") values "), photoParams);
     } else {
@@ -478,8 +478,9 @@ public class MediaDAO {
     } else {
       videoSave.append("update SC_Gallery_Video set ");
     }
-    appendSaveParameter(videoSave, "resolutionH", video.getResolutionH(), isInsert, videoParams);
-    appendSaveParameter(videoSave, "resolutionW", video.getResolutionW(), isInsert, videoParams);
+    Definition definition = video.getDefinition();
+    appendSaveParameter(videoSave, "resolutionW", definition.getWidth(), isInsert, videoParams);
+    appendSaveParameter(videoSave, "resolutionH", definition.getHeight(), isInsert, videoParams);
     appendSaveParameter(videoSave, "bitrate", video.getBitrate(), isInsert, videoParams);
     appendSaveParameter(videoSave, "duration", video.getDuration(), isInsert, videoParams);
     if (isInsert) {

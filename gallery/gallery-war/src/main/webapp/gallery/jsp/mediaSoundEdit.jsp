@@ -23,18 +23,16 @@
   --%>
 
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/gallery" prefix="gallery" %>
 
-<view:setConstant var="mediaType" constant="com.silverpeas.gallery.constant.MediaType.Video"/>
+<view:setConstant var="mediaType" constant="com.silverpeas.gallery.constant.MediaType.Sound"/>
 <view:setConstant var="SMALL_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.SMALL"/>
-<jsp:useBean id="SMALL_RESOLUTION" type="com.silverpeas.gallery.constant.MediaResolution"/>
-<view:setConstant var="supportedMediaMimeTypes" constant="com.silverpeas.gallery.constant.MediaMimeType.VIDEOS"/>
+<view:setConstant var="supportedMediaMimeTypes" constant="com.silverpeas.gallery.constant.MediaMimeType.SOUNDS"/>
 
 <gallery:editMediaLayout mediaType="${mediaType}" supportedMediaMimeTypes="${supportedMediaMimeTypes}">
   <jsp:attribute name="mediaPreviewBloc">
-    <jsp:useBean id="media" scope="request" type="com.silverpeas.gallery.model.Video"/>
-    <gallery:videoPlayer video="${media}" mediaResolution="${SMALL_RESOLUTION}"/>
+    <jsp:useBean id="media" scope="request" type="com.silverpeas.gallery.model.Sound"/>
+    <gallery:soundPlayer sound="${media}" mediaResolution="${SMALL_RESOLUTION}"/>
   </jsp:attribute>
 </gallery:editMediaLayout>

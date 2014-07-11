@@ -196,6 +196,13 @@ ul#albumList li.ui-state-highlight {
   display: block;
 }
 
+.gallery-fiche-media .rightContent .fileCharacteristicDuration {
+  float: left;
+  background: transparent url(../icons/duration.png) no-repeat 0 0;
+  padding: 0 0 0 24px;
+  width: 100px;
+}
+
 .gallery-fiche-media .rightContent .fileCharacteristicSize {
   float: left;
   background: transparent url(../icons/size.png) no-repeat 0 0;

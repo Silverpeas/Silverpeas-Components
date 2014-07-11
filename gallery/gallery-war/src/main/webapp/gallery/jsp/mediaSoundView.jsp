@@ -35,21 +35,14 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
-<view:setConstant var="PREVIEW_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.PREVIEW"/>
-<jsp:useBean id="PREVIEW_RESOLUTION" type="com.silverpeas.gallery.constant.MediaResolution"/>
-
 <gallery:viewMediaLayout>
   <jsp:attribute name="specificSpecificationBloc">
-    <jsp:useBean id="media" scope="request" type="com.silverpeas.gallery.model.Video"/>
-    <c:if test="${media.definition.defined}">
-      <span class="fileCharacteristicSize"><fmt:message key="gallery.dimension"/> <b>${media.definition.width}
-        x ${media.definition.height} <fmt:message key="gallery.pixels"/></b></span>
-    </c:if>
+    <jsp:useBean id="media" scope="request" type="com.silverpeas.gallery.model.Sound"/>
     <c:if test="${media.duration gt 0}">
       <span class="fileCharacteristicDuration"><fmt:message key="gallery.duration"/> <b>${silfn:getTimeData(media.duration).formattedDurationAsHMSM}</b></span>
     </c:if>
   </jsp:attribute>
   <jsp:attribute name="mediaPreviewBloc">
-    <gallery:videoPlayer video="${media}" mediaResolution="${PREVIEW_RESOLUTION}"/>
+    <gallery:soundPlayer sound="${media}"/>
   </jsp:attribute>
 </gallery:viewMediaLayout>

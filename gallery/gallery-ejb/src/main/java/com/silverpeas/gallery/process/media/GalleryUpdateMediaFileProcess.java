@@ -87,38 +87,35 @@ public class GalleryUpdateMediaFileProcess extends AbstractGalleryFileProcess {
   public void processFiles(final GalleryProcessExecutionContext context,
       final ProcessSession session, final FileHandler fileHandler) throws Exception {
     // Media
-    switch (getMedia().getType()) {
-      case Photo:
-        if (fileItem != null) {
-          final String name = fileItem.getName();
-          if (StringUtil.isDefined(name)) {
+    if (fileItem != null && !getMedia().getType().isStreaming()) {
+      final String name = fileItem.getName();
+      if (StringUtil.isDefined(name)) {
 
-            // Deleting repository with old media
-            fileHandler.getHandledFile(Media.BASE_PATH, context.getComponentInstanceId(),
-                getMedia().getWorkspaceSubFolderName()).delete();
+        // Deleting repository with old media
+        fileHandler.getHandledFile(Media.BASE_PATH, context.getComponentInstanceId(),
+            getMedia().getWorkspaceSubFolderName()).delete();
 
+        switch (getMedia().getType()) {
+          case Photo:
             // Creating new images
             MediaHelper
                 .processPhoto(fileHandler, getMedia().getPhoto(), fileItem, watermark, watermarkHD,
                     watermarkOther);
-          }
+            break;
+          case Video:
+            // Save new video
+            MediaHelper.processVideo(fileHandler, getMedia().getVideo(), fileItem);
+            break;
+          case Sound:
+            // Save new sound
+            MediaHelper.processSound(fileHandler, getMedia().getSound(), fileItem);
+            break;
+          default:
+            SilverTrace.warn("Gallery", GalleryUpdateMediaFileProcess.class.getName(),
+                getMedia().getType().name() + " media type is never processed");
+            break;
         }
-        break;
-      case Video:
-        if (fileItem != null) {
-          // Deleting repository with old media
-          fileHandler.getHandledFile(Media.BASE_PATH, context.getComponentInstanceId(),
-              getMedia().getWorkspaceSubFolderName()).delete();
-
-          // Save new video
-          MediaHelper.processVideo(fileHandler, getMedia().getVideo(), fileItem);
-        }
-        break;
-      default:
-        SilverTrace.warn("Gallery", GalleryUpdateMediaFileProcess.class.getName(),
-            getMedia().getType().name() + " media type is never processed");
-        break;
+      }
     }
-
   }
 }

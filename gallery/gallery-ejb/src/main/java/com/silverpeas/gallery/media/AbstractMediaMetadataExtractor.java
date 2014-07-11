@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.gallery.image;
+package com.silverpeas.gallery.media;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,7 +33,7 @@ import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
 
-public abstract class AbstractImageMetadataExtractor implements ImageMetadataExtractor {
+public abstract class AbstractMediaMetadataExtractor implements MediaMetadataExtractor {
 
   static final Properties DEFAULT_SETTINGS = new Properties();
 
@@ -42,7 +42,7 @@ public abstract class AbstractImageMetadataExtractor implements ImageMetadataExt
       FileUtil.loadProperties(DEFAULT_SETTINGS,
           "org/silverpeas/gallery/settings/metadataSettings.properties");
     } catch (IOException e) {
-      SilverTrace.error("gallery", AbstractImageMetadataExtractor.class.getName(),
+      SilverTrace.error("gallery", AbstractMediaMetadataExtractor.class.getName(),
           "Problem loading metadata settings", e);
     }
   }

@@ -89,8 +89,8 @@ public class PhotoEntity extends AbstractMediaEntity<PhotoEntity> {
    */
   private PhotoEntity(final Photo photo, final String language) {
     super("photo", photo.getId(), photo.getTitle(), photo.getDescription(language));
-    width = photo.getResolutionW();
-    height = photo.getResolutionH();
+    width = photo.getDefinition().getWidth();
+    height = photo.getDefinition().getHeight();
   }
 
   @SuppressWarnings("UnusedDeclaration")

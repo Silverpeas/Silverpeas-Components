@@ -57,7 +57,7 @@ public class GalleryResourceMock extends GalleryResource {
    * @see com.silverpeas.gallery.web.AbstractGalleryResource#getGalleryBm()
    */
   @Override
-  protected GalleryBm getGalleryBm() {
+  protected GalleryBm getMediaService() {
     try {
       if (galleryBmMock == null) {
         galleryBmMock = mock(GalleryBm.class);

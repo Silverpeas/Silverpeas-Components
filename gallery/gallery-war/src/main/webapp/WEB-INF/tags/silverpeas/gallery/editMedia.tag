@@ -274,11 +274,14 @@
       </c:set>
 
       <div class="field" id="beginDownloadDateArea">
-        <label for="beginDownloadDate" class="txtlibform"><fmt:message key="gallery.beginDownloadDate"/></label>
+        <fmt:message key="gallery.beginDownloadDate" var="tmpDateLabel">
+          <fmt:param value="${1}"/>
+        </fmt:message>
+        <label for="beginDownloadDate" class="txtlibform">${tmpDateLabel}</label>
 
         <div class="champs">
           <input id="beginDownloadDate" type="text" class="dateToPick" name="SP$$MediaBeginDownloadDate" size="12" maxlength="10" value="${beginDownloadDate}"/>
-          <span class="txtnote">(<fmt:message key='GML.dateFormatExemple'/>)</span>
+          <span class="txtnote"><br/>(<fmt:message key='GML.dateFormatExemple'/>)</span>
         </div>
       </div>
 
@@ -289,11 +292,14 @@
       </c:set>
 
       <div class="field" id="endDownloadDateArea">
-        <label for="endDownloadDate" class="txtlibform"><fmt:message key="GML.toDate"/></label>
+        <fmt:message key="gallery.endDownloadDate" var="tmpDateLabel">
+          <fmt:param value="${1}"/>
+        </fmt:message>
+        <label for="endDownloadDate" class="txtlibform">${tmpDateLabel}</label>
 
         <div class="champs">
           <input id="endDownloadDate" type="text" class="dateToPick" name="SP$$MediaEndDownloadDate" size="12" maxlength="10" value="${endDownloadDate}"/>
-          <span class="txtnote">(<fmt:message key='GML.dateFormatExemple'/>)</span>
+          <span class="txtnote"><br/>(<fmt:message key='GML.dateFormatExemple'/>)</span>
         </div>
       </div>
     </c:if>
@@ -304,11 +310,14 @@
       </c:if>
     </c:set>
     <div class="field" id="beginDateArea">
-      <label for="beginVisibilityDate" class="txtlibform"><fmt:message key="gallery.beginDate"/></label>
+      <fmt:message key="gallery.beginDate" var="tmpDateLabel">
+        <fmt:param value="${1}"/>
+      </fmt:message>
+      <label for="beginVisibilityDate" class="txtlibform">${tmpDateLabel}</label>
 
       <div class="champs">
         <input id="beginVisibilityDate" type="text" class="dateToPick" name="SP$$MediaBeginVisibilityDate" size="12" maxlength="10" value="${beginVisibilityDate}"/>
-        <span class="txtnote">(<fmt:message key='GML.dateFormatExemple'/>)</span>
+        <span class="txtnote"><br/>(<fmt:message key='GML.dateFormatExemple'/>)</span>
       </div>
     </div>
 
@@ -318,11 +327,14 @@
       </c:if>
     </c:set>
     <div class="field" id="endDateArea">
-      <label for="endVisibilityDate" class="txtlibform"><fmt:message key="GML.toDate"/></label>
+      <fmt:message key="gallery.endDate" var="tmpDateLabel">
+        <fmt:param value="${1}"/>
+      </fmt:message>
+      <label for="endVisibilityDate" class="txtlibform">${tmpDateLabel}</label>
 
       <div class="champs">
         <input id="endVisibilityDate" type="text" class="dateToPick" name="SP$$MediaEndVisibilityDate" size="12" maxlength="10" value="${endVisibilityDate}"/>
-        <span class="txtnote">(<fmt:message key='GML.dateFormatExemple'/>)</span>
+        <span class="txtnote"><br/>(<fmt:message key='GML.dateFormatExemple'/>)</span>
       </div>
     </div>
   </div>

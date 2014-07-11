@@ -27,8 +27,8 @@ import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.MediaType;
 import org.apache.commons.io.FilenameUtils;
 import org.junit.Test;
+import org.silverpeas.media.Definition;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,8 +43,9 @@ public class VideoTest extends AbstractMediaTest {
   public void justInstancedTest() {
     Video video = new Video();
     assertThat(video.getType(), is(MediaType.Video));
-    assertThat(video.getResolutionW(), is(0));
-    assertThat(video.getResolutionH(), is(0));
+    assertThat(video.getDefinition(), is(Definition.NULL));
+    assertThat(video.getDefinition().getWidth(), is(0));
+    assertThat(video.getDefinition().getHeight(), is(0));
     assertThat(video.getBitrate(), is(0L));
     assertThat(video.getDuration(), is(0L));
   }
@@ -72,8 +73,7 @@ public class VideoTest extends AbstractMediaTest {
     Video video = new Video();
     video.setId("mediaId");
     video.setComponentInstanceId("instanceId");
-    video.setResolutionW(800);
-    video.setResolutionH(600);
+    video.setDefinition(Definition.of(800, 600));
     video.setBitrate(1024);
     video.setDuration(36000000);
     video.setCreationDate(TODAY);
@@ -85,8 +85,8 @@ public class VideoTest extends AbstractMediaTest {
   private void assertDefaultVideo(Video video) {
     assertThat(video.getType(), is(MediaType.Video));
     assertThat(video.getWorkspaceSubFolderName(), is("videomediaId"));
-    assertThat(video.getResolutionW(), is(800));
-    assertThat(video.getResolutionH(), is(600));
+    assertThat(video.getDefinition().getWidth(), is(800));
+    assertThat(video.getDefinition().getHeight(), is(600));
     assertThat(video.getBitrate(), is(1024L));
     assertThat(video.getDuration(), is(36000000L));
     assertThat(video.getApplicationOriginalUrl(),

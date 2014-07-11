@@ -26,6 +26,7 @@ package com.silverpeas.gallery.process.media;
 import com.silverpeas.gallery.MediaHelper;
 import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.Photo;
+import com.silverpeas.gallery.model.Sound;
 import com.silverpeas.gallery.model.Video;
 import com.silverpeas.gallery.process.AbstractGalleryFileProcess;
 import com.silverpeas.gallery.process.GalleryProcessExecutionContext;
@@ -104,6 +105,8 @@ public class GalleryCreateMediaFileProcess extends AbstractGalleryFileProcess {
   public void processFiles(final GalleryProcessExecutionContext context,
       final ProcessSession session, final FileHandler fileHandler) throws Exception {
 
+    boolean hasBeenProcessed = true;
+
     // Media
     switch (getMedia().getType()) {
       case Photo:
@@ -124,11 +127,23 @@ public class GalleryCreateMediaFileProcess extends AbstractGalleryFileProcess {
           MediaHelper.processVideo(fileHandler, video, file);
         }
         break;
+      case Sound:
+        Sound sound = getMedia().getSound();
+        if (fileItem != null) {
+          MediaHelper.processSound(fileHandler, sound, fileItem);
+        } else {
+          hasBeenProcessed = false;
+        }
+        break;
 
       default:
-        SilverTrace.warn("Gallery", GalleryUpdateMediaFileProcess.class.getName(),
-            getMedia().getType().name() + " media type is never processed");
+        // In other cases, there is no file to manage.
         break;
+    }
+
+    if (!hasBeenProcessed) {
+      SilverTrace.warn("Gallery", GalleryUpdateMediaFileProcess.class.getName(),
+          getMedia().getType().name() + " media type is never processed");
     }
   }
 

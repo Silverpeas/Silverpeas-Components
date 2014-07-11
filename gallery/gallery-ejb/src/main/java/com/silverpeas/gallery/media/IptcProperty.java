@@ -21,51 +21,33 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.gallery.image;
-
-import com.silverpeas.util.i18n.I18NHelper;
-import java.util.HashMap;
-import java.util.Map;
+package com.silverpeas.gallery.media;
 
 /**
  *
  * @author ehugonnet
  */
-public class ExifProperty {
+public class IptcProperty extends ExifProperty {
 
-  private int property;
-  private Map<String, String> labels;
+  private boolean isdate;
 
-  public ExifProperty(int property) {
-    this.property = property;
-    this.labels = new HashMap<String, String>();
+  public IptcProperty(int property) {
+    super(property);
+    isdate = false;
+  }
+
+
+  /**
+   * @return the date
+   */
+  public boolean isDate() {
+    return isdate;
   }
 
   /**
-   * @return the property
+   * @param date the date to set
    */
-  public int getProperty() {
-    return property;
-  }
-
-  /**
-   * @return the label
-   */
-  public String getLabel() {
-    return labels.get(I18NHelper.defaultLanguage);
-  }
-
-  /**
-   * @return the label
-   */
-  public String getLabel(String lang) {
-    return labels.get(lang);
-  }
-
-  /**
-   * @param label the label to set
-   */
-  public void setLabel(String lang, String label) {
-    this.labels.put(lang, label);
+  public void setDate(boolean isdate) {
+    this.isdate = isdate;
   }
 }

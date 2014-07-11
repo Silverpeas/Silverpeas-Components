@@ -458,7 +458,7 @@
      */
 
     $.ajax({
-      url : webContext + "/gallery/jsp/javaScript/slider/galleria-1.2.9.min.js",
+      url : webContext + "/gallery/jsp/javaScript/slider/galleria-1.3.6.min.js",
       async : false,
       dataType : "script"
     });

@@ -42,6 +42,7 @@ import org.dbunit.dataset.ITable;
 import org.junit.Test;
 import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.date.Period;
+import org.silverpeas.media.Definition;
 import org.silverpeas.persistence.repository.OperationContext;
 
 import java.sql.Connection;
@@ -487,8 +488,8 @@ public class MediaDaoTest extends BaseGalleryTest {
         assertThat(photo.isDownloadAuthorized(), is(false));
         assertThat(photo.getDownloadPeriod(), sameInstance(Period.UNDEFINED));
 
-        assertThat(photo.getResolutionW(), is(1000));
-        assertThat(photo.getResolutionH(), is(750));
+        assertThat(photo.getDefinition().getWidth(), is(1000));
+        assertThat(photo.getDefinition().getHeight(), is(750));
       }
     });
   }
@@ -525,8 +526,8 @@ public class MediaDaoTest extends BaseGalleryTest {
         assertThat(video.getDownloadPeriod().getBeginDate().getTime(), is(1388530800000L));
         assertThat(video.getDownloadPeriod().getEndDate(), is(DateUtil.MAXIMUM_DATE));
 
-        assertThat(video.getResolutionW(), is(1920));
-        assertThat(video.getResolutionH(), is(1080));
+        assertThat(video.getDefinition().getWidth(), is(1920));
+        assertThat(video.getDefinition().getHeight(), is(1080));
         assertThat(video.getBitrate(), is(5000L));
         assertThat(video.getDuration(), is(36000000L));
       }
@@ -793,8 +794,7 @@ public class MediaDaoTest extends BaseGalleryTest {
         newPhoto.setDownloadAuthorized(true);
         newPhoto.setDownloadPeriod(Period.from(beginDownloadDate, endDownloadDate));
 
-        newPhoto.setResolutionH(100);
-        newPhoto.setResolutionW(200);
+        newPhoto.setDefinition(Definition.of(200, 100));
 
         assertThat(newPhoto.getId(), nullValue());
         String newId =
@@ -920,8 +920,7 @@ public class MediaDaoTest extends BaseGalleryTest {
         photoToUpdate.setDownloadAuthorized(true);
         photoToUpdate.setDownloadPeriod(Period.from(beginDownloadDate, DateUtil.MAXIMUM_DATE));
 
-        photoToUpdate.setResolutionH(100);
-        photoToUpdate.setResolutionW(200);
+        photoToUpdate.setDefinition(Definition.of(200, 100));
 
         String savedMediaId = photoToUpdate.getId();
         String mediaId =
@@ -1077,8 +1076,7 @@ public class MediaDaoTest extends BaseGalleryTest {
         newVideo.setDownloadAuthorized(false);
         newVideo.setDownloadPeriod(Period.from(DateUtil.MINIMUM_DATE, endDownloadDate));
 
-        newVideo.setResolutionH(1080);
-        newVideo.setResolutionW(1920);
+        newVideo.setDefinition(Definition.of(1920, 1080));
 
         assertThat(newVideo.getId(), nullValue());
         String newId =
@@ -1171,8 +1169,7 @@ public class MediaDaoTest extends BaseGalleryTest {
             .getByCriteria(connection, defaultMediaCriteria().identifierIsOneOf(mediaIdToUpdate))
             .getVideo();
 
-        videoToUpdate.setResolutionH(1080);
-        videoToUpdate.setResolutionW(1920);
+        videoToUpdate.setDefinition(Definition.of(1920, 1080));
         videoToUpdate.setBitrate(10000);
         videoToUpdate.setDuration(72000000);
 

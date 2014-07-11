@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.gallery.image;
+package com.silverpeas.gallery.media;
 
 import com.drew.metadata.exif.ExifIFD0Directory;
 import com.silverpeas.gallery.model.MetaData;
@@ -53,7 +53,7 @@ import java.util.Map;
 /**
  * @author ehugonnet
  */
-public class SanselanImageMetadataExtractor extends AbstractImageMetadataExtractor {
+public class SanselanMediaMetadataExtractor extends AbstractMediaMetadataExtractor {
 
   public static final int TAG_RECORD_VERSION = 0x0200;
   public static final int TAG_CAPTION = 0x0278;
@@ -80,21 +80,21 @@ public class SanselanImageMetadataExtractor extends AbstractImageMetadataExtract
   public static final int TAG_TIME_CREATED = 0x0200 | 60;
   public static final int TAG_ORIGINATING_PROGRAM = 0x0200 | 65;
 
-  public SanselanImageMetadataExtractor(String instanceId) {
+  public SanselanMediaMetadataExtractor(String instanceId) {
     init(instanceId);
   }
 
   
 
   @Override
-  public List<MetaData> extractImageExifMetaData(File image) throws ImageMetadataException,
+  public List<MetaData> extractImageExifMetaData(File image) throws MediaMetadataException,
       UnsupportedEncodingException {
     return extractImageExifMetaData(image, I18NHelper.defaultLanguage);
   }
 
   @Override
   public List<MetaData> extractImageExifMetaData(File image, String lang) throws
-      ImageMetadataException, UnsupportedEncodingException {
+      MediaMetadataException, UnsupportedEncodingException {
     try {
       List<MetaData> result = new ArrayList<MetaData>();
       Map<String, Boolean> params = new HashMap<String, Boolean>();
@@ -144,21 +144,21 @@ public class SanselanImageMetadataExtractor extends AbstractImageMetadataExtract
       }
       return result;
     } catch (ImageReadException ex) {
-      throw new ImageMetadataException(ex);
+      throw new MediaMetadataException(ex);
     } catch (IOException ex) {
-      throw new ImageMetadataException(ex);
+      throw new MediaMetadataException(ex);
     }
   }
 
   @Override
-  public List<MetaData> extractImageIptcMetaData(File image) throws ImageMetadataException,
+  public List<MetaData> extractImageIptcMetaData(File image) throws MediaMetadataException,
       UnsupportedEncodingException {
     return extractImageIptcMetaData(image, I18NHelper.defaultLanguage);
   }
 
   @Override
   public List<MetaData> extractImageIptcMetaData(File image, String lang) throws
-      ImageMetadataException, UnsupportedEncodingException {
+      MediaMetadataException, UnsupportedEncodingException {
     try {
       List<MetaData> result = new ArrayList<MetaData>();
       IImageMetadata metadata = Sanselan.getMetadata(image);
@@ -262,9 +262,9 @@ public class SanselanImageMetadataExtractor extends AbstractImageMetadataExtract
       }
       return result;
     } catch (ImageReadException ex) {
-      throw new ImageMetadataException(ex);
+      throw new MediaMetadataException(ex);
     } catch (IOException ex) {
-      throw new ImageMetadataException(ex);
+      throw new MediaMetadataException(ex);
     }
   }
 
@@ -295,7 +295,7 @@ public class SanselanImageMetadataExtractor extends AbstractImageMetadataExtract
     return result;
   }
 
-  private Date getDateValue(String value) throws ImageMetadataException {
+  private Date getDateValue(String value) throws MediaMetadataException {
     String datePatterns[] = {"yyyy-MM-dd HH:mm:ss Z","yyyyMMdd", "yyyy-MM-dd HH:mm:ss Z", "yyyy:MM:dd HH:mm:ss", "yyyy:MM:dd HH:mm",
         "yyyy-MM-dd HH:mm:ss",  "yyyy-MM-dd HH:mm", "HHmmssZ", "HHmmss" };
     for (String datePattern : datePatterns) {
@@ -306,6 +306,6 @@ public class SanselanImageMetadataExtractor extends AbstractImageMetadataExtract
         // simply try the next pattern
       }
     }
-    throw new ImageMetadataException("Value '" + value + "' cannot be cast to a java.util.Date.");
+    throw new MediaMetadataException("Value '" + value + "' cannot be cast to a java.util.Date.");
   }
 }

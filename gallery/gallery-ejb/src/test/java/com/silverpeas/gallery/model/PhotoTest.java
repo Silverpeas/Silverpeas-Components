@@ -28,12 +28,9 @@ import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.MediaType;
 import org.apache.commons.io.FilenameUtils;
 import org.junit.Test;
+import org.silverpeas.media.Definition;
 
-import java.util.Date;
-
-import static org.hamcrest.Matchers.endsWith;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class PhotoTest extends AbstractMediaTest {
@@ -42,8 +39,8 @@ public class PhotoTest extends AbstractMediaTest {
   public void justInstancedTest() {
     Photo photo = new Photo();
     assertThat(photo.getType(), is(MediaType.Photo));
-    assertThat(photo.getResolutionW(), is(0));
-    assertThat(photo.getResolutionH(), is(0));
+    assertThat(photo.getDefinition().getWidth(), is(0));
+    assertThat(photo.getDefinition().getHeight(), is(0));
     assertThat(photo.getMetaDataProperties(), hasSize(0));
     assertThat(photo.getApplicationThumbnailUrl(MediaResolution.TINY),
         is("/silverpeas/gallery/jsp/icons/notAvailable_fr" +
@@ -81,8 +78,7 @@ public class PhotoTest extends AbstractMediaTest {
     photo.setFileName("photoFile.jpg");
     photo.setFileSize(1024);
     photo.setFileMimeType(MediaMimeType.JPG);
-    photo.setResolutionW(800);
-    photo.setResolutionH(600);
+    photo.setDefinition(Definition.of(800, 600));
     photo.addMetaData(new MetaData("ok").setProperty("metadata"));
     photo.setCreationDate(TODAY);
     assertDefaultPhoto(photo);
@@ -92,8 +88,8 @@ public class PhotoTest extends AbstractMediaTest {
   private void assertDefaultPhoto(Photo photo) {
     assertThat(photo.getType(), is(MediaType.Photo));
     assertThat(photo.getWorkspaceSubFolderName(), is("imagemediaId"));
-    assertThat(photo.getResolutionW(), is(800));
-    assertThat(photo.getResolutionH(), is(600));
+    assertThat(photo.getDefinition().getWidth(), is(800));
+    assertThat(photo.getDefinition().getHeight(), is(600));
     assertThat(photo.getMetaDataProperties(), hasSize(1));
     assertThat(photo.getMetaData(photo.getMetaDataProperties().iterator().next()).getValue(),
         is("ok"));

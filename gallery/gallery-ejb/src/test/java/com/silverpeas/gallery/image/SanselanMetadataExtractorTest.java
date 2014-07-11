@@ -20,19 +20,22 @@
  */
 package com.silverpeas.gallery.image;
 
-import java.io.File;
-import java.util.Calendar;
-import java.util.List;
-
+import com.silverpeas.gallery.media.ExifProperty;
+import com.silverpeas.gallery.media.IptcProperty;
+import com.silverpeas.gallery.media.MediaMetadataExtractor;
+import com.silverpeas.gallery.media.SanselanMediaMetadataExtractor;
 import com.silverpeas.gallery.model.MetaData;
 import com.silverpeas.util.StringUtil;
-
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import static com.silverpeas.util.PathTestUtil.SEPARATOR;
-import static com.silverpeas.util.PathTestUtil.TARGET_DIR;
+import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.Calendar;
+import java.util.List;
+
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 
@@ -41,16 +44,16 @@ import static org.junit.Assert.*;
  */
 public class SanselanMetadataExtractorTest {
 
-  ImageMetadataExtractor extractor;
-  File koala = new File(TARGET_DIR + "test-classes" + SEPARATOR + "Koala.jpg");
-  File sunset = new File(TARGET_DIR + "test-classes" + SEPARATOR + "Sunset.jpg");
-  File gmt = new File(TARGET_DIR + "test-classes" + SEPARATOR + "w40_DSC_7481.jpg");
-  File dauphins = new File(TARGET_DIR + "test-classes" + SEPARATOR + "Dauphins-100.jpg");
-  File chefs = new File(TARGET_DIR + "test-classes" + SEPARATOR + "31605rc_utf-8.jpg");
+  MediaMetadataExtractor extractor;
+  File koala = getDocumentNamed("/Koala.jpg");
+  File sunset = getDocumentNamed("/Sunset.jpg");
+  File gmt = getDocumentNamed("/w40_DSC_7481.jpg");
+  File dauphins = getDocumentNamed("/Dauphins-100.jpg");
+  File chefs = getDocumentNamed("/31605rc_utf-8.jpg");
 
   @Before
   public void setUp() {
-    extractor = new SanselanImageMetadataExtractor("gallery52");
+    extractor = new SanselanMediaMetadataExtractor("gallery52");
   }
 
   @Test
@@ -270,7 +273,16 @@ public class SanselanMetadataExtractorTest {
     meta = metadata.get(7);
     assertThat(meta.getProperty(), is("537"));
     assertThat(meta.getLabel(), is("Mots clef"));
-    assertThat(meta.getValue(), is(
-        "Auberge des Dauphins /Architecture /Vue exterieure /Saou /Foret de Saou /"));
+    assertThat(meta.getValue(),
+        is("Auberge des Dauphins /Architecture /Vue exterieure /Saou /Foret de Saou /"));
+  }
+
+  private static File getDocumentNamed(final String name) {
+    final URL documentLocation = MetadataExtractorTest.class.getResource(name);
+    try {
+      return new File(documentLocation.toURI());
+    } catch (URISyntaxException e) {
+      return null;
+    }
   }
 }

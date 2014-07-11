@@ -24,6 +24,7 @@
 
 <%@ tag language="java" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
@@ -56,6 +57,10 @@
   <c:set var="_searchKeyword" value="'${searchKeyword}'"/>
 </c:if>
 
+<%@ attribute name="additionalElements" required="false"
+              type="java.lang.String"
+              description="Elements separated by '|' character and each part of an element is separated with '@' character" %>
+
 <view:browseBar>
   <c:choose>
     <c:when test="${albumPath != null}">
@@ -81,4 +86,10 @@
       </c:choose>
     </c:otherwise>
   </c:choose>
+  <c:if test="${not empty additionalElements}">
+    <c:forTokens var="element" items="${additionalElements}" delims="|">
+      <c:set var="elementParts" value="${fn:split(element, '@')}"/>
+      <view:browseBarElt label="${elementParts[0]}" link="${elementParts[1]}"/>
+    </c:forTokens>
+  </c:if>
 </view:browseBar>

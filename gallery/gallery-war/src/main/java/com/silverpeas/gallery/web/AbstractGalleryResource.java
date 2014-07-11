@@ -25,16 +25,13 @@ package com.silverpeas.gallery.web;
 
 import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.control.ejb.GalleryBm;
+import com.silverpeas.gallery.control.ejb.MediaServiceFactory;
 import com.silverpeas.gallery.model.AlbumDetail;
-import com.silverpeas.gallery.model.GalleryRuntimeException;
 import com.silverpeas.gallery.model.InternalMedia;
 import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.MediaPK;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -114,7 +111,7 @@ public abstract class AbstractGalleryResource extends RESTWebService {
   protected Response getMediaContent(final String mediaId,
       final MediaResolution requestedMediaResolution) {
     try {
-      final Media media = getGalleryBm().getMedia(new MediaPK(mediaId, getComponentId()));
+      final Media media = getMediaService().getMedia(new MediaPK(mediaId, getComponentId()));
       checkNotFoundStatus(media);
       verifyUserMediaAccess(media);
       // Adjusting the resolution according to the user rights
@@ -238,12 +235,7 @@ public abstract class AbstractGalleryResource extends RESTWebService {
    * Gets Gallery EJB.
    * @return
    */
-  protected GalleryBm getGalleryBm() {
-    try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.GALLERYBM_EJBHOME, GalleryBm.class);
-    } catch (Exception e) {
-      throw new GalleryRuntimeException("AbstractGalleryResource.getGalleryBm()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
+  protected GalleryBm getMediaService() {
+    return MediaServiceFactory.getMediaService();
   }
 }

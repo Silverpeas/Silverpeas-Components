@@ -24,16 +24,17 @@
  */
 package com.silverpeas.gallery.processing;
 
-import static com.silverpeas.util.PathTestUtil.SEPARATOR;
-import static com.silverpeas.util.PathTestUtil.TARGET_DIR;
-
-import java.awt.image.BufferedImage;
-import java.io.File;
-
-import javax.imageio.ImageIO;
-
 import org.junit.Test;
 import org.silverpeas.util.ImageLoader;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
+
+import static com.silverpeas.util.PathTestUtil.SEPARATOR;
+import static com.silverpeas.util.PathTestUtil.TARGET_DIR;
 
 /**
  *
@@ -44,9 +45,9 @@ public class ImageLoaderTest {
   public ImageLoaderTest() {
   }
 //Size of koala (1024 x 768)
-  File koala = new File(TARGET_DIR + "test-classes" + SEPARATOR + "Koala.jpg");
+File koala = getDocumentNamed("/Koala.jpg");
   //Size of koala (1024 x 768)
-  File cmyk = new File(TARGET_DIR + "test-classes" + SEPARATOR + "imageJpgCmjn.jpg");
+  File cmyk = getDocumentNamed("/imageJpgCmjn.jpg");
 
   /**
    * Test of loadImage method, of class ImageLoader.
@@ -61,5 +62,14 @@ public class ImageLoaderTest {
     result = ImageLoader.loadImage(cmyk);
     ImageIO.write(result, "JPEG", new File(
       TARGET_DIR + "result" + SEPARATOR + "imageJpgCmjn_loaded.jpg"));
+  }
+
+  private static File getDocumentNamed(final String name) {
+    final URL documentLocation = ImageLoaderTest.class.getResource(name);
+    try {
+      return new File(documentLocation.toURI());
+    } catch (URISyntaxException e) {
+      return null;
+    }
   }
 }

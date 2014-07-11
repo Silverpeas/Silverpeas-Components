@@ -24,6 +24,7 @@
 package com.silverpeas.gallery.model;
 
 import com.silverpeas.gallery.constant.MediaType;
+import org.silverpeas.media.Definition;
 
 /**
  * This class represents a Video.
@@ -31,8 +32,7 @@ import com.silverpeas.gallery.constant.MediaType;
 public class Video extends InternalMedia {
   private static final long serialVersionUID = 5772513957256327862L;
 
-  private int resolutionH = 0;
-  private int resolutionW = 0;
+  private Definition definition = Definition.fromZero();
   private long bitrate = 0;
   private long duration = 0;
 
@@ -42,35 +42,19 @@ public class Video extends InternalMedia {
   }
 
   /**
-   * Gets the height of the resolution.
-   * @return the height of the resolution.
+   * Gets the definition of the resolution.
+   * @return the definition of the resolution.
    */
-  public int getResolutionH() {
-    return resolutionH;
+  public Definition getDefinition() {
+    return definition;
   }
 
   /**
-   * Sets the height of the resolution.
-   * @param resolutionH the height of the resolution.
+   * Sets the definition of the resolution.
+   * @param definition the definition of the resolution.
    */
-  public void setResolutionH(int resolutionH) {
-    this.resolutionH = resolutionH;
-  }
-
-  /**
-   * Gets the width of the resolution.
-   * @return the width of the resolution.
-   */
-  public int getResolutionW() {
-    return resolutionW;
-  }
-
-  /**
-   * Sets the width of the resolution.
-   * @param resolutionW the width of the resolution.
-   */
-  public void setResolutionW(int resolutionW) {
-    this.resolutionW = resolutionW;
+  public void setDefinition(Definition definition) {
+    this.definition = definition != null ? definition : Definition.fromZero();
   }
 
   /**

@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -21,24 +21,20 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.gallery.image;
+package com.silverpeas.gallery.constant;
 
-/**
- *
- * @author ehugonnet
- */
-public class ImageMetadataException extends Exception  {
-  private static final long serialVersionUID = 1L;
+import org.junit.Test;
 
-  public ImageMetadataException(Throwable cause) {
-    super(cause);
-  }
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
 
-  public ImageMetadataException(String message, Throwable cause) {
-    super(message, cause);
-  }
+public class MediaDefinitionTest {
 
-  public ImageMetadataException(String message) {
-    super(message);
+  @Test
+  public void fromNameOrLabel() {
+    assertThat(MediaResolution.fromNameOrLabel("kljlkj"), nullValue());
+    assertThat(MediaResolution.fromNameOrLabel("tInY"), is(MediaResolution.TINY));
+    assertThat(MediaResolution.fromNameOrLabel("_266x150.jpg"), is(MediaResolution.MEDIUM));
   }
 }

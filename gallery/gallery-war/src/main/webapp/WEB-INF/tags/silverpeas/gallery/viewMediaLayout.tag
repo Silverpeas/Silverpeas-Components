@@ -169,7 +169,7 @@
 </head>
 <body class="gallery gallery-fiche-media yui-skin-sam" id="${instanceId}">
 
-<gallery:browseBar albumPath="${albumPath}"/>
+<gallery:browseBar albumPath="${albumPath}" additionalElements="${silfn:truncate(media.title, 50)}@#" />
 
 <view:operationPane>
   <fmt:message key="GML.notify" var="notifLabel"/>
@@ -178,11 +178,15 @@
   <view:operation altText="${notifLabel}" action="ToAlertUser?MediaId=${mediaId}" icon="${notifIcon}"/>
   <view:operationSeparator/>
   <c:if test="${requestScope.UpdateMediaAllowed}">
+    <fmt:message key="GML.modify" var="modifyLabel"/>
+    <fmt:message key="GML.modify" var="modifyIcon" bundle="${icons}"/>
+    <c:url value="${modifyIcon}" var="modifyIcon"/>
     <fmt:message key="GML.delete" var="deleteLabel"/>
     <fmt:message key="GML.delete" var="deleteIcon" bundle="${icons}"/>
     <c:url value="${deleteIcon}" var="deleteIcon"/>
     <c:set var="tmpLabel"><c:out value="${media.title}"/></c:set>
     <c:set var="deleteAction" value="javaScript:deleteConfirm('${mediaId}', '${silfn:escapeJs(tmpLabel)}')"/>
+    <view:operation altText="${modifyLabel}" action="EditInformation?MediaId=${mediaId}" icon="${modifyIcon}"/>
     <view:operation altText="${deleteLabel}" action="${deleteAction}" icon="${deleteIcon}"/>
   </c:if>
   <c:if test="${greaterUserRole eq adminRole}">
@@ -255,10 +259,6 @@
             <c:if test="${not empty internalMedia}">
               <span class="fileCharacteristicWeight"><fmt:message key="gallery.weight"/> <b>${silfn:formatMemSize(internalMedia.fileSize)}</b></span>
             </c:if>
-            <c:if test="${not empty internalMedia and not empty internalMedia.resolutionW and internalMedia.resolutionW gt 0}">
-              <span class="fileCharacteristicSize"><fmt:message key="gallery.dimension"/> <b>${media.resolutionW}
-                x ${media.resolutionH} <fmt:message key="gallery.pixels"/></b></span>
-            </c:if>
             <jsp:invoke fragment="specificSpecificationBloc"/>
             <br class="clear"/>
           </p>
@@ -288,37 +288,35 @@
             </div>
             <c:if test="${media.visibilityPeriod.defined}">
               <div class="periode_visibility paragraphe">
-                <fmt:message key="gallery.beginDate">
-                  <fmt:param value="${media.visibilityPeriod.beginDatable.defined ? 2 : 1}"/>
-                </fmt:message>
-                <b>
-                  <c:if test="${media.visibilityPeriod.beginDatable.defined}">
-                    <view:formatDate value="${media.visibilityPeriod.beginDate}" language="${_userLanguage}"/>
-                  </c:if>
-                </b>
-                <b>
-                  <c:if test="${media.visibilityPeriod.endDatable.defined}">
-                    <fmt:message key="GML.toDate"/>
-                    <view:formatDate value="${media.visibilityPeriod.endDate}" language="${_userLanguage}"/>
-                  </c:if>
-                </b>
+                <c:if test="${media.visibilityPeriod.beginDatable.defined}">
+                  <fmt:message key="gallery.beginDate">
+                    <fmt:param value="${media.visibilityPeriod.endDatable.defined ? 1 : 2}"/>
+                  </fmt:message>
+                  <b><view:formatDate value="${media.visibilityPeriod.beginDate}" language="${_userLanguage}"/></b>
+                </c:if>
+                <c:if test="${media.visibilityPeriod.endDatable.defined}">
+                  <fmt:message key="gallery.endDate">
+                    <fmt:param value="${media.visibilityPeriod.beginDatable.defined ? 1 : 2}"/>
+                  </fmt:message>
+                  <b><view:formatDate value="${media.visibilityPeriod.endDate}" language="${_userLanguage}"/></b>
+                </c:if>
               </div>
             </c:if>
             <c:if test="${not empty internalMedia and internalMedia.downloadPeriod.defined}">
               <div class="periode_download paragraphe">
-                <fmt:message key="gallery.beginDownloadDate">
-                  <fmt:param value="${internalMedia.downloadPeriod.beginDatable.defined ? 2 : 1}"/>
-                </fmt:message>
-                <b>
-                  <c:if test="${internalMedia.downloadPeriod.beginDatable.defined}">
-                    <view:formatDate value="${internalMedia.downloadPeriod.beginDate}" language="${_userLanguage}"/>
-                  </c:if>
-                </b>
-                <b><fmt:message key="GML.toDate"/>
-                  <c:if test="${internalMedia.downloadPeriod.endDatable.defined}">
-                    <view:formatDate value="${internalMedia.downloadPeriod.endDate}" language="${_userLanguage}"/>
-                  </c:if>
-                </b>
+                <c:if test="${internalMedia.downloadPeriod.beginDatable.defined}">
+                  <fmt:message key="gallery.beginDownloadDate">
+                    <fmt:param value="${internalMedia.downloadPeriod.endDatable.defined ? 1 : 2}"/>
+                  </fmt:message>
+                  <b><view:formatDate value="${internalMedia.downloadPeriod.beginDate}" language="${_userLanguage}"/></b>
+                </c:if>
+                <c:if test="${internalMedia.downloadPeriod.endDatable.defined}">
+                  <fmt:message key="gallery.endDate">
+                    <fmt:param value="${internalMedia.downloadPeriod.beginDatable.defined ? 1 : 2}"/>
+                  </fmt:message>
+                  <b><view:formatDate value="${internalMedia.downloadPeriod.endDate}" language="${_userLanguage}"/></b>
+                </c:if>
+
               </div>
             </c:if>
             <br class="clear"/>

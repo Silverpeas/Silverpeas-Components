@@ -12,7 +12,8 @@ $if(mediaPart)$<br/>
   Pour en ajouter un, utilisez une des solutions suivantes :
   <ul>
     <li>la zone de glisser-déposez</li>
-    <li>l'opération "$mediaOperation$"</li>
-    <li><a href="$mediaUrl$">cliquez ici directement</a></li>
+    <li>l'opération "$photoOperation$"<br/>(<a href="$photoUrl$">cliquez ici directement</a>)</li>
+    <li>l'opération "$videoOperation$"<br/>(<a href="$videoUrl$">cliquez ici directement</a>)</li>
+    <li>l'opération "$soundOperation$"<br/>(<a href="$soundUrl$">cliquez ici directement</a>)</li>
   </ul>
 $endif$

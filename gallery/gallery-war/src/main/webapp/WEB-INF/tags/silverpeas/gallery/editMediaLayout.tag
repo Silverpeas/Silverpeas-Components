@@ -1,5 +1,5 @@
-<%@ tag import="com.silverpeas.form.Form" %>
 <%@ tag import="com.silverpeas.form.DataRecord" %>
+<%@ tag import="com.silverpeas.form.Form" %>
 <%@ tag import="com.silverpeas.form.PagesContext" %>
 <%--
   Copyright (C) 2000 - 2014 Silverpeas
@@ -76,7 +76,11 @@
 <c:set var="albumId" value="${albumPath[fn:length(albumPath)-1].nodePK.id}"/>
 <jsp:useBean id="albumId" type="java.lang.String"/>
 
+<%-- Variables --%>
 <c:set value="${media.applicationOriginalUrl}" var="mediaUrl" scope="request"/>
+
+<%-- Actions --%>
+<c:set var="viewMediaAction" value="MediaView?MediaId=${media.id}"/>
 
 <%
   // paramètres pour le formulaire
@@ -105,12 +109,25 @@
   <jsp:invoke fragment="headerBloc"/>
 </head>
 <body class="gallery ${bodyCss} yui-skin-sam" id="${instanceId}">
-<gallery:browseBar albumPath="${albumPath}"/>
+<c:choose>
+  <c:when test="${isNewMediaCase}">
+    <fmt:message key="gallery.${fn:toLowerCase(mediaType)}.add" var="browseBarLabel"/>
+    <c:set var="additionalBrowseBarElements" value="${browseBarLabel}@#"/>
+  </c:when>
+  <c:otherwise>
+    <fmt:message key="GML.modify" var="modifyLabel"/>
+    <c:set var="additionalBrowseBarElements" value="${silfn:truncate(media.title, 50)}@${viewMediaAction}"/>
+    <c:set var="additionalBrowseBarElements" value="${additionalBrowseBarElements}|${modifyLabel}@#"/>
+  </c:otherwise>
+</c:choose>
+<c:if test="${not isNewMediaCase}">
+</c:if>
+<gallery:browseBar albumPath="${albumPath}" additionalElements="${additionalBrowseBarElements}" />
 <view:window>
   <c:if test="${not isNewMediaCase}">
     <view:tabs>
       <fmt:message key="gallery.media" var="mediaViewLabel"/>
-      <view:tab label="${mediaViewLabel}" action="MediaView?MediaId=${media.id}" selected="false"/>
+      <view:tab label="${mediaViewLabel}" action="${viewMediaAction}" selected="false"/>
       <fmt:message key="gallery.info" var="mediaEditLabel"/>
       <view:tab label="${mediaEditLabel}" action="#" selected="true"/>
       <fmt:message key="gallery.accessPath" var="accessLabel"/>

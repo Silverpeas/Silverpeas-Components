@@ -110,18 +110,22 @@ public class MediaLogicalComparator extends AbstractComplexComparator<Media> {
         case DIMENSION_DESC:
           if (media.getType().isPhoto()) {
             Photo photo = media.getPhoto();
-            if (photo.getResolutionH() > 0 && photo.getResolutionW() > 0) {
-              valueBuffer.append(Math.max(photo.getResolutionW(), photo.getResolutionH()),
+            if (photo.getDefinition().isDefined()) {
+              valueBuffer.append(
+                  Math.max(photo.getDefinition().getWidth(), photo.getDefinition().getHeight()),
                   queryOrderBy.isAsc());
-              valueBuffer.append(Math.min(photo.getResolutionW(), photo.getResolutionH()),
+              valueBuffer.append(
+                  Math.min(photo.getDefinition().getWidth(), photo.getDefinition().getHeight()),
                   queryOrderBy.isAsc());
             }
           } else if (media.getType().isVideo()) {
             Video video = media.getVideo();
-            if (video.getResolutionH() > 0 && video.getResolutionW() > 0) {
-              valueBuffer.append(Math.max(video.getResolutionW(), video.getResolutionH()),
+            if (video.getDefinition().isDefined()) {
+              valueBuffer.append(
+                  Math.max(video.getDefinition().getWidth(), video.getDefinition().getHeight()),
                   queryOrderBy.isAsc());
-              valueBuffer.append(Math.min(video.getResolutionW(), video.getResolutionH()),
+              valueBuffer.append(
+                  Math.min(video.getDefinition().getWidth(), video.getDefinition().getHeight()),
                   queryOrderBy.isAsc());
             }
           } else {

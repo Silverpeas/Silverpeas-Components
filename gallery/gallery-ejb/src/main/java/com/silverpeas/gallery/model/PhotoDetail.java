@@ -214,19 +214,19 @@ public class PhotoDetail implements SilverContentInterface, Serializable {
   }
 
   public int getSizeH() {
-    return photo.getResolutionH();
+    return photo.getDefinition().getHeight();
   }
 
   public void setSizeH(int sizeH) {
-    photo.setResolutionH(sizeH);
+    photo.getDefinition().heightOf(sizeH);
   }
 
   public int getSizeL() {
-    return photo.getResolutionW();
+    return photo.getDefinition().getWidth();
   }
 
   public void setSizeL(int sizeL) {
-    photo.setResolutionW(sizeL);
+    photo.getDefinition().widthOf(sizeL);
   }
 
   public boolean isDownload() {

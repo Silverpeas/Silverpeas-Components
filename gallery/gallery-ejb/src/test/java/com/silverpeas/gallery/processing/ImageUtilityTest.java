@@ -24,12 +24,14 @@
  */
 package com.silverpeas.gallery.processing;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import javax.imageio.ImageIO;
 import org.junit.Test;
 
-import static com.silverpeas.util.PathTestUtil.*;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
+
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -42,7 +44,7 @@ public class ImageUtilityTest {
   public ImageUtilityTest() {
   }
   //Size of koala (1024 x 768)
-  File koala = new File(TARGET_DIR + "test-classes" + SEPARATOR + "Koala.jpg");
+  File koala = getDocumentNamed("/Koala.jpg");
 
   /**
    * Test of getWidthAndHeight method, of class ImageUtility.
@@ -79,5 +81,14 @@ public class ImageUtilityTest {
     expResult = new Size(256, 192);
     result = ImageUtility.getWidthAndHeight(instanceId, subDir, imageName, baseWidth);
     assertThat(result, is(expResult));
+  }
+
+  private static File getDocumentNamed(final String name) {
+    final URL documentLocation = ImageUtilityTest.class.getResource(name);
+    try {
+      return new File(documentLocation.toURI());
+    } catch (URISyntaxException e) {
+      return null;
+    }
   }
 }

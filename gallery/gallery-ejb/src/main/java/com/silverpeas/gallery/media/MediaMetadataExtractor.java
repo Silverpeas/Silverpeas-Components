@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.gallery.image;
+package com.silverpeas.gallery.media;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,20 +30,20 @@ import com.silverpeas.gallery.model.MetaData;
  *
  * @author ehugonnet
  */
-public interface ImageMetadataExtractor {
+public interface MediaMetadataExtractor {
 
   List<IptcProperty> defineImageIptcProperties(Iterable<String> propertyNames);
 
   List<ExifProperty> defineImageProperties(Iterable<String> propertyNames);
 
-  List<MetaData> extractImageExifMetaData(File image) throws ImageMetadataException, IOException;
+  List<MetaData> extractImageExifMetaData(File image) throws MediaMetadataException, IOException;
 
-  List<MetaData> extractImageExifMetaData(File image, String lang) throws ImageMetadataException,
+  List<MetaData> extractImageExifMetaData(File image, String lang) throws MediaMetadataException,
       IOException;
 
-  List<MetaData> extractImageIptcMetaData(File image) throws ImageMetadataException, IOException;
+  List<MetaData> extractImageIptcMetaData(File image) throws MediaMetadataException, IOException;
 
-  List<MetaData> extractImageIptcMetaData(File image, String lang) throws ImageMetadataException,
+  List<MetaData> extractImageIptcMetaData(File image, String lang) throws MediaMetadataException,
       IOException;
 
 }

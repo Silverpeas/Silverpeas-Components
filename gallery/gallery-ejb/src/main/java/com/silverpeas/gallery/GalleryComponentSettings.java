@@ -45,18 +45,18 @@ public final class GalleryComponentSettings {
    * The relative path of the properties file containing the settings of the Gallery
    * component.
    */
-  public static final String SETTINGS_PATH = "org.silverpeas.gallery.settings.gallerySettings";
+  public static final String SETTINGS_PATH = "com.silverpeas.gallery.settings.gallerySettings";
 
   /**
    * The relative path of the i18n bundle of the Gallery component.
    */
-  public static final String MESSAGES_PATH = "org.silverpeas.gallery.multilang.galleryBundle";
+  public static final String MESSAGES_PATH = "com.silverpeas.gallery.multilang.galleryBundle";
 
   /**
    * The relative path of the properties file containing the references of the icons dedicated to
    * the Gallery component.
    */
-  public static final String ICONS_PATH = "org.silverpeas.gallery.settings.galleryIcons";
+  public static final String ICONS_PATH = "com.silverpeas.gallery.settings.galleryIcons";
 
   /**
    * Gets all the messages for the Gallery component and translated in the specified

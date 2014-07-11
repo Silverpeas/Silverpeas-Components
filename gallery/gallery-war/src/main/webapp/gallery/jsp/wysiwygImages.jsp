@@ -127,7 +127,7 @@ if (mediaList != null) {
                 <table cellspacing="1" cellpadding="3" border="0" class="cadrePhoto"><tr><td bgcolor="#FFFFFF">
                   <div style="text-align:right" class="imagename"><%=photo.getFileName() %></div>
                   <a href="javaScript:selectImage('<%=url%>','<%=idP%>');"><img src="<%=vignette_url%>" border="0" alt="<%=altTitle%>" title="<%=altTitle%>"/></a>
-                    <input id="useOriginalId<%=idP%>" type="checkbox" name="UseOriginal<%=idP%>" value="true"><font style="font-size: 9px"><%=photo.getResolutionW()%>x<%=photo.getResolutionH()%></font><br>
+                    <input id="useOriginalId<%=idP%>" type="checkbox" name="UseOriginal<%=idP%>" value="true"><font style="font-size: 9px"><%=photo.getDefinition().getWidth()%>x<%=photo.getDefinition().getHeight()%></font><br>
                 </td></tr></table>
               </td></tr>
             </table>

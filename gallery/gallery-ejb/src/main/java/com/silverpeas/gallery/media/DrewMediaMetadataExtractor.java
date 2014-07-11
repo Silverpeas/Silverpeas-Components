@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.gallery.image;
+package com.silverpeas.gallery.media;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -48,21 +48,21 @@ import static com.drew.metadata.iptc.IptcDirectory.*;
  *
  * @author ehugonnet
  */
-public class DrewImageMetadataExtractor extends AbstractImageMetadataExtractor {
+public class DrewMediaMetadataExtractor extends AbstractMediaMetadataExtractor {
 
-  public DrewImageMetadataExtractor(String instanceId) {
+  public DrewMediaMetadataExtractor(String instanceId) {
     init(instanceId);
   }
 
   @Override
-  public List<MetaData> extractImageExifMetaData(File image) throws ImageMetadataException,
+  public List<MetaData> extractImageExifMetaData(File image) throws MediaMetadataException,
     IOException {
     return extractImageExifMetaData(image, I18NHelper.defaultLanguage);
   }
 
   @Override
   public List<MetaData> extractImageExifMetaData(File image, String lang) throws
-    ImageMetadataException, IOException {
+                                                                          MediaMetadataException, IOException {
     try {
       List<MetaData> result = new ArrayList<MetaData>();
       // lire le fichier des properties
@@ -111,21 +111,21 @@ public class DrewImageMetadataExtractor extends AbstractImageMetadataExtractor {
       }
       return result;
     } catch (IOException ex) {
-      throw new ImageMetadataException(ex);
+      throw new MediaMetadataException(ex);
     } catch (ImageProcessingException ex) {
-      throw new ImageMetadataException(ex);
+      throw new MediaMetadataException(ex);
     }
   }
 
   @Override
-  public List<MetaData> extractImageIptcMetaData(File image) throws ImageMetadataException,
+  public List<MetaData> extractImageIptcMetaData(File image) throws MediaMetadataException,
     IOException {
     return extractImageIptcMetaData(image, I18NHelper.defaultLanguage);
   }
 
   @Override
   public List<MetaData> extractImageIptcMetaData(File image, String lang) throws
-    IOException, ImageMetadataException {
+    IOException, MediaMetadataException {
     try {
       List<MetaData> result = new ArrayList<MetaData>();
       Metadata metadata = ImageMetadataReader.readMetadata(image);
@@ -177,7 +177,7 @@ public class DrewImageMetadataExtractor extends AbstractImageMetadataExtractor {
       }
       return result;
     } catch (ImageProcessingException ex) {
-      throw new ImageMetadataException(ex);
+      throw new MediaMetadataException(ex);
     }
   }
 
