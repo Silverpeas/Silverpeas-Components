@@ -128,7 +128,7 @@
       // Visibility period
       var beginVisibilityDate = {dateId : 'beginVisibilityDate'};
       var endVisibilityDate = {dateId : 'endVisibilityDate'};
-      var dateErrors = isPeriodEndingInFuture(beginVisibilityDate, endVisibilityDate);
+      dateErrors = isPeriodEndingInFuture(beginVisibilityDate, endVisibilityDate);
       $(dateErrors).each(function(index, error) {
         errorMsg += " - " + error.message + "\n";
         errorNb++;

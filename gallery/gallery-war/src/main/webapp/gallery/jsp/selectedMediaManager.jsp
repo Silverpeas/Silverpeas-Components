@@ -23,263 +23,239 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ include file="check.jsp" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib prefix="gallery" tagdir="/WEB-INF/tags/silverpeas/gallery" %>
 
 <%-- Set resource bundle --%>
 <fmt:setLocale value="${requestScope.resources.language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
+<%-- Request attributes --%>
+<c:set var="selectedMediaIds" value="${requestScope.SelectedMediaIds}"/>
+<c:set var="albumId" value="${requestScope.AlbumId}"/>
+<c:set var="albumPath" value="${requestScope.Path}"/>
+<jsp:useBean id="albumPath" type="java.util.List<com.silverpeas.gallery.model.AlbumDetail>"/>
+<c:set var="searchKeyWord" value="${requestScope.SearchKeyWord}"/>
+
+<%-- Actions --%>
+<c:set var="validateAction" value="javascript:onClick=sendData();"/>
+<c:set var="cancelAction" value="${(not empty albumId and albumId != 'null') ? 'GoToCurrentAlbum?AlbumId='.concat(albumId) : 'SearchKeyWord?SearchKeyWord='.concat(searchKeyWord)}"/>
+
+<%-- Labels --%>
+<fmt:message key="GML.validate" var="validateLabel"/>
+<fmt:message key="GML.cancel" var="cancelLabel"/>
+
 <%
-	// retrieve parameters
-	String 		albumId			= (String) request.getAttribute("AlbumId");
-	List  	path 			= (List) request.getAttribute("Path");
-	Form 		formUpdate 		= (Form) request.getAttribute("Form");
-	DataRecord	data			= (DataRecord) request.getAttribute("Data");
-	String		searchKeyWord	= (String) request.getAttribute("SearchKeyWord");
-
-	// d�claration des variables :
-	String 		title 				= "";
-	String 		description 		= "";
-	String 		author 				= "";
-	boolean 	download 			= false;
-	String		beginDownloadDate	= "";
-	String		endDownloadDate		= "";
-	String 		keyWord 			= "";
-	String 		beginDate			= "";
-	String 		endDate				= "";
-
-	PagesContext 		context 	= new PagesContext("mediaForm", "0", resource.getLanguage(), false, componentId, gallerySC.getUserId(), gallerySC.getAlbum(gallerySC.getCurrentAlbumId()).getNodePK().getId()); //Pas de passage de l'objectId dans le contexte car on est en traitement par lot, ce passage se fera lors de la validation du formulaire
-	context.setBorderPrinted(false);
-	context.setCurrentFieldIndex("10");
-	context.setUseBlankFields(true);
-	context.setUseMandatory(false);
-
-	// d�claration des boutons
-	Button validateButton =
-      gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
-	Button cancelButton;
-	if (albumId != null && !albumId.equals("") &&  !albumId.equals("null"))
-		cancelButton   =
-        gef.getFormButton(resource.getString("GML.cancel"), "GoToCurrentAlbum?AlbumId="+albumId, false);
-	else
-		cancelButton   = gef.getFormButton(resource.getString("GML.cancel"), "SearchKeyWord?SearchKeyWord="+searchKeyWord, false);
+  // Pas de passage de l'objectId dans le contexte car on est en traitement par lot,
+  // ce passage se fera lors de la validation du formulaire
+  Form formUpdate = (Form) request.getAttribute("Form");
+  DataRecord formData = (DataRecord) request.getAttribute("Data");
+  PagesContext context =
+      new PagesContext("mediaForm", "0", resource.getLanguage(), false, componentId,
+          gallerySC.getUserId(),
+          gallerySC.getAlbum(gallerySC.getCurrentAlbumId()).getNodePK().getId());
+  context.setBorderPrinted(false);
+  context.setCurrentFieldIndex("10");
+  context.setUseBlankFields(true);
+  context.setUseMandatory(false);
 %>
+
+<c:set var="formUpdate" value="<%=formUpdate%>"/>
+<c:set var="formData" value="<%=formData%>"/>
 
 <html>
 <head>
   <view:looknfeel/>
   <view:includePlugin name="datepicker"/>
   <view:includePlugin name="wysiwyg"/>
-	<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-	<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-	<% if (formUpdate != null) {
-		formUpdate.displayScripts(out, context);
-	} %>
-<script type="text/javascript">
+  <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+  <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+  <c:if test="${not empty formUpdate}">
+    <%formUpdate.displayScripts(out, context);%>
+  </c:if>
+  <script type="text/javascript">
 
-// fonctions de contr�le des zones du formulaire avant validation
-function sendData()
-{
-	<% if (formUpdate != null) { %>
-		if (isCorrectHeaderForm() && isCorrectForm())
-		{
-       		document.mediaForm.submit();
-		}
-	<% } else { %>
-		if (isCorrectHeaderForm())
-		{
-       		document.mediaForm.submit();
-		}
-	<% } %>
-}
-
-function isCorrectHeaderForm()
-{
-   	var errorMsg = "";
-   	var errorNb = 0;
-   	var title = stripInitialWhitespace(document.mediaForm.Media$Title.value);
-   	var descr = document.mediaForm.Media$Description.value;
-   	var beginDownloadDate = document.mediaForm.Media$BeginDownloadDate.value;
-   	var endDownloadDate = document.mediaForm.Media$EndDownloadDate.value;
-   	var beginDate = document.mediaForm.Media$BeginVisibilityDate.value;
-   	var endDate = document.mediaForm.Media$EndVisibilityDate.value;
-   	var langue = "<%=resource.getLanguage()%>";
-    var beginDownloadDateOK = true;
-    var beginDateOK = true;
-
-   	if (title.length > 255)
-   	{
-   	  errorMsg+="  - '<%=resource.getString("GML.title")%>'  <%=resource.getString("gallery.MsgSize")%>\n";
-      errorNb++;
-   	}
- 		if (descr.length > 255)
-   	{
-   	  errorMsg+="  - '<%=resource.getString("GML.description")%>'  <%=resource.getString("gallery.MsgSize")%>\n";
-      errorNb++;
-   	}
- 		// vérifier les dates de début et de fin de période
-   	// les dates de téléchargements
-   	if (!isWhitespace(beginDownloadDate)) {
-   		if (!isDateOK(beginDownloadDate, langue)) {
-     			errorMsg+="  - '<%=resource.getString("gallery.beginDownloadDate")%>' <%=resource.getString("GML.MustContainsCorrectDate")%>\n";
-     			errorNb++;
-   			beginDownloadDateOK = false;
- 			}
-	 }
-     if (!isWhitespace(endDownloadDate)) {
-		   if (!isDateOK(endDownloadDate, langue)) {
-                 errorMsg+="  - '<%=resource.getString("GML.toDate")%>' <%=resource.getString("GML.MustContainsCorrectDate")%>\n";
-                 errorNb++;
-           } else {
-				if (!isWhitespace(beginDownloadDate) && !isWhitespace(endDownloadDate)) {
-					if (beginDownloadDateOK && !isDate1AfterDate2(endDownloadDate, beginDownloadDate, langue)) {
-                      	errorMsg+="  - '<%=resource.getString("GML.toDate")%>' <%=resource.getString("GML.MustContainsPostOrEqualDateTo")%> "+beginDownloadDate+"\n";
-						errorNb++;
-					}
-                  } else {
-					if (isWhitespace(beginDownloadDate) && !isWhitespace(endDownloadDate)) {
-						if (!isFuture(endDownloadDate, langue)) {
-							errorMsg+="  - '<%=resource.getString("GML.toDate")%>' <%=resource.getString("GML.MustContainsPostDate")%>\n";
-							errorNb++;
-						}
-					}
-				 }
-           }
-     }
-     // les dates de visibilité
-     if (!isWhitespace(beginDate)) {
-    	 	if (!isDateOK(beginDate, langue)) {
-   				errorMsg+="  - '<%=resource.getString("GML.dateBegin")%>' <%=resource.getString("GML.MustContainsCorrectDate")%>\n";
-       			errorNb++;
-	   			beginDateOK = false;
-   			}
-	 }
-     if (!isWhitespace(endDate)) {
-    	   if (!isDateOK(endDate, langue)) {
-                 errorMsg+="  - '<%=resource.getString("GML.dateEnd")%>' <%=resource.getString("GML.MustContainsCorrectDate")%>\n";
-                 errorNb++;
-           } else {
-				if (!isWhitespace(beginDate) && !isWhitespace(endDate)) {
-                	if (beginDateOK && !isDate1AfterDate2(endDate, beginDate, langue)) {
-                    	errorMsg+="  - '<%=resource.getString("GML.dateEnd")%>' <%=resource.getString("GML.MustContainsPostOrEqualDateTo")%> "+beginDate+"\n";
-                        errorNb++;
-                    }
-                } else {
-					if (isWhitespace(beginDate) && !isWhitespace(endDate)) {
-						if (!isFuture(endDate, langue)) {
-							errorMsg+="  - '<%=resource.getString("GML.dateEnd")%>' <%=resource.getString("GML.MustContainsPostDate")%>\n";
-							errorNb++;
-						}
-					}
-				}
-			}
+    // fonctions de contrôle des zones du formulaire avant validation
+    function sendData() {
+      <c:choose>
+      <c:when test="${not empty formUpdate}">
+      if (isCorrectHeaderForm() && isCorrectForm()) {
+        document.mediaForm.submit();
+      }
+      </c:when>
+      <c:otherwise>
+      if (isCorrectHeaderForm()) {
+        document.mediaForm.submit();
+      }
+      </c:otherwise>
+      </c:choose>
     }
-   	switch(errorNb)
-   	{
-      	case 0 :
-          	result = true;
-          	break;
-      	case 1 :
-          	errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
-          	window.alert(errorMsg);
-          	result = false;
-          	break;
-      	default :
-          	errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
-          	window.alert(errorMsg);
-          	result = false;
-          	break;
+
+    function isCorrectHeaderForm() {
+      var errorMsg = "";
+      var errorNb = 0;
+      var title = stripInitialWhitespace(document.mediaForm.Media$Title.value);
+      var descr = document.mediaForm.Media$Description.value;
+
+      if (title.length > 255) {
+        errorMsg +=
+            "  - '<%=resource.getString("GML.title")%>'  <%=resource.getString("gallery.MsgSize")%>\n";
+        errorNb++;
+      }
+      if (descr.length > 255) {
+        errorMsg +=
+            "  - '<%=resource.getString("GML.description")%>'  <%=resource.getString("gallery.MsgSize")%>\n";
+        errorNb++;
+      }
+
+      // Download period
+      var beginDownloadDate = {dateId : 'beginDownloadDate'};
+      var endDownloadDate = {dateId : 'endDownloadDate'};
+      var dateErrors = isPeriodEndingInFuture(beginDownloadDate, endDownloadDate);
+      $(dateErrors).each(function(index, error) {
+        errorMsg += " - " + error.message + "\n";
+        errorNb++;
+      });
+      // Visibility period
+      var beginVisibilityDate = {dateId : 'beginVisibilityDate'};
+      var endVisibilityDate = {dateId : 'endVisibilityDate'};
+      dateErrors = isPeriodEndingInFuture(beginVisibilityDate, endVisibilityDate);
+      $(dateErrors).each(function(index, error) {
+        errorMsg += " - " + error.message + "\n";
+        errorNb++;
+      });
+
+      var result = false;
+      switch (errorNb) {
+        case 0 :
+          result = true;
+          break;
+        case 1 :
+          errorMsg =
+              "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" +
+              errorMsg;
+          window.alert(errorMsg);
+          break;
+        default :
+          errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb +
+              " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
+          window.alert(errorMsg);
+          break;
+      }
+      return result;
     }
-    return result;
-}
-</script>
+  </script>
 
 </head>
-<body class="yui-skin-sam" onLoad="javascript:document.mediaForm.Media$Title.focus();">
-<%
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel, "Main");
-	displayPath(path, browseBar);
+<body class="yui-skin-sam" onLoad="document.mediaForm.Media$Title.focus();">
+<fmt:message key="gallery.updateSelectedMedia" var="updateSelectedMediaLabel"/>
+<gallery:browseBar albumPath="${albumPath}" additionalElements="${updateSelectedMediaLabel} (${fn:length(selectedMediaIds)})@#"/>
+<view:window>
+  <view:frame>
+    <form name="mediaForm" action="UpdateSelectedMedia" method="POST" enctype="multipart/form-data">
+      <view:board>
+        <table cellpadding="5">
+          <tr>
+            <td class="txtlibform"><fmt:message key="GML.title"/> :</td>
+            <td><input type="text" name="Media$Title" size="60" maxlength="150" value="">
+              <input type="hidden" name="Im$SearchKeyWord" value="${searchKeyWord}"></td>
+          </tr>
+          <tr>
+            <td class="txtlibform"><fmt:message key="GML.description"/> :</td>
+            <td>
+              <input type="text" name="Media$Description" size="60" maxlength="150" value="">
+            </td>
+          </tr>
+          <tr>
+            <td class="txtlibform"><fmt:message key="GML.author"/> :</td>
+            <td><input type="text" name="Media$Author" size="60" maxlength="150" value="">
+            </td>
+          </tr>
+          <tr>
+            <td class="txtlibform"><fmt:message key="gallery.keyword"/> :</td>
+            <td><input type="text" name="Media$KeyWord" size="60" maxlength="150" value="">
+            </td>
+          </tr>
+          <tr>
+            <td class="txtlibform"><fmt:message key="gallery.download"/> :</td>
+            <td>
+              <input type="checkbox" name="Media$DownloadAuthorized" value="true">
+            </td>
+          </tr>
+          <tr>
+            <td class="txtlibform">
+              <fmt:message key="gallery.beginDownloadDate" var="tmpDateLabel">
+                <fmt:param value="${1}"/>
+              </fmt:message>
+              <label for="beginDownloadDate">${tmpDateLabel} :</label>
+            </td>
+            <td>
+              <input type="text" class="dateToPick" id="beginDownloadDate" name="Media$BeginDownloadDate" size="12" maxlength="10" value=""/>
+            </td>
+          </tr>
+          <tr>
+            <td class="txtlibform">
+              <fmt:message key="gallery.endDownloadDate" var="tmpDateLabel">
+                <fmt:param value="${1}"/>
+              </fmt:message>
+              <label for="endDownloadDate">${tmpDateLabel} :</label>
+            </td>
+            <td>
+              <input type="text" class="dateToPick" id="endDownloadDate" name="Media$EndDownloadDate" size="12" maxlength="10" value=""/>
+            </td>
+          </tr>
+          <tr>
+            <td class="txtlibform">
+              <fmt:message key="gallery.beginDate" var="tmpDateLabel">
+                <fmt:param value="${1}"/>
+              </fmt:message>
+              <label for="beginVisibilityDate">${tmpDateLabel} :</label>
+            </td>
+            <td>
+              <input type="text" class="dateToPick" id="beginVisibilityDate" name="Media$BeginVisibilityDate" size="12" maxlength="10" value=""/>
+            </td>
+          </tr>
+          <tr>
+            <td class="txtlibform">
+              <fmt:message key="gallery.endDate" var="tmpDateLabel">
+                <fmt:param value="${1}"/>
+              </fmt:message>
+              <label for="endVisibilityDate">${tmpDateLabel} :</label>
+            </td>
+            <td>
+              <input type="text" class="dateToPick" id="endVisibilityDate" name="Media$EndVisibilityDate" size="12" maxlength="10" value=""/>&nbsp;
+            </td>
+          </tr>
+        </table>
+      </view:board>
 
-	Board board	= gef.getBoard();
+      <c:if test="${not empty formUpdate}">
+        <!-- Affichage du formulaire XML -->
+        <br/>
+        <view:board>
+          <table>
+            <tr>
+              <td>
+                <%
+                  formUpdate.display(out, context, formData);
+                %>
+              </td>
+            </tr>
+          </table>
+        </view:board>
+      </c:if>
+    </form>
 
-	out.println(window.printBefore());
-  out.println(frame.printBefore());
-%>
-<form name="mediaForm" action="UpdateSelectedMedia" method="POST" enctype="multipart/form-data">
-	<%=board.printBefore()%>
-	<table cellpadding="5">
-		<tr>
-			<td class="txtlibform"><fmt:message key="GML.title"/> :</td>
-			<td><input type="text" name="Media$Title" size="60" maxlength="150" value="<%=title%>">
-				<input type="hidden" name="Im$SearchKeyWord" value="<%=searchKeyWord%>"></td>
-		</tr>
-		<tr>
-			<td class="txtlibform"><fmt:message key="GML.description"/> :</td>
-			<td><input type="text" name="Media$Description" size="60" maxlength="150" value="<%=description%>"></td>
-		</tr>
-		<tr>
-			<td class="txtlibform"><fmt:message key="GML.author"/> :</td>
-			<td><input type="text" name="Media$Author" size="60" maxlength="150" value="<%=author%>"></td>
-		</tr>
-		<tr>
-			<td class="txtlibform"><fmt:message key="gallery.keyword"/> :</td>
-			<td><input type="text" name="Media$KeyWord" size="60" maxlength="150" value="<%=keyWord%>"></td>
-		</tr>
-		<tr>
-			<td class="txtlibform"><fmt:message key="gallery.download"/> :</td>
-			<%
-				String downloadCheck = "";
-				if (download)
-					downloadCheck = "checked";
-			%>
-		    <td><input type="checkbox" name="Media$DownloadAuthorized" value="true" <%=downloadCheck%>></td>
-		</tr>
-		<tr>
-			<td class="txtlibform"><fmt:message key="gallery.beginDownloadDate"/> :</td>
-			<td><input type="text" class="dateToPick" name="Media$BeginDownloadDate" size="12" maxlength="10" value="<%=beginDownloadDate%>"/></td>
-		</tr>
-		<tr>
-			<td class="txtlibform"><fmt:message key="GML.toDate"/> :</td>
-			<td><input type="text" class="dateToPick" name="Media$EndDownloadDate" size="12" maxlength="10" value="<%=endDownloadDate%>"/></td>
-		</tr>
-		<tr>
-			<td class="txtlibform"><fmt:message key="gallery.beginDate"/> :</td>
-			<td><input type="text" class="dateToPick" name="Media$BeginVisibilityDate" size="12" maxlength="10" value="<%=beginDate%>"/></td>
-		</tr>
-		<tr>
-			<td class="txtlibform"><fmt:message key="GML.toDate"/> :</td>
-			<td><input type="text" class="dateToPick" name="Media$EndVisibilityDate" size="12" maxlength="10" value="<%=endDate%>"/>&nbsp;</td>
-		</tr>
-	</table>
-	<%=board.printAfter()%>
-
-<% if (formUpdate != null) { %>
-<!-- Affichage du formulaire XML -->
-	<br/>
-	<%=board.printBefore()%>
-	<table><tr><td>
-	<%
-		formUpdate.display(out, context, data);
-	%>
-	</td></tr></table>
-	<%=board.printAfter()%>
-<% } %>
-</form>
-
-<%
-	ButtonPane buttonPane = gef.getButtonPane();
-  buttonPane.addButton(validateButton);
-  buttonPane.addButton(cancelButton);
-	out.println("<br><center>"+buttonPane.print()+"</center><br>");
- 	out.println(frame.printAfter());
-	out.println(window.printAfter());
-%>
-
+    <view:buttonPane>
+      <view:button label="${validateLabel}" action="${validateAction}"/>
+      <view:button label="${cancelLabel}" action="${cancelAction}"/>
+    </view:buttonPane>
+  </view:frame>
+</view:window>
 </body>
 </html>

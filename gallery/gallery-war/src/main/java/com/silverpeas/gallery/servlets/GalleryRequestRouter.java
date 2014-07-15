@@ -533,8 +533,9 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         processSelection(request, gallerySC);
 
         // liste des médias sélectionnés
-        if (gallerySC.getListSelected().size() > 0) {
+        if (!gallerySC.getListSelected().isEmpty()) {
           // passage des paramètres globaux
+          request.setAttribute("SelectedMediaIds", gallerySC.getListSelected());
           request.setAttribute("AlbumId", albumId);
           request.setAttribute("SearchKeyWord", searchKeyWord);
           request.setAttribute("Path", gallerySC.getPath());

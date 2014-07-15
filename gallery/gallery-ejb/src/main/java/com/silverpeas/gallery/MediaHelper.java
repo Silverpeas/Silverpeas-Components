@@ -26,6 +26,7 @@ import com.silverpeas.gallery.constant.MediaType;
 import com.silverpeas.gallery.media.DrewMediaMetadataExtractor;
 import com.silverpeas.gallery.media.MediaMetadataException;
 import com.silverpeas.gallery.media.MediaMetadataExtractor;
+import com.silverpeas.gallery.model.GalleryRuntimeException;
 import com.silverpeas.gallery.model.InternalMedia;
 import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.MediaPK;
@@ -43,6 +44,7 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.media.Definition;
@@ -230,8 +232,14 @@ public class MediaHelper {
       return true;
     } else {
       iMedia.setFileName(null);
-      handledImageFile.delete();
-      return false;
+      try {
+        throw new GalleryRuntimeException("MediaHelper.setInternalMetadata",
+            SilverpeasRuntimeException.ERROR,
+            "Mime-Type of " + handledImageFile.getFile().getName() + " is not supported (" +
+                FileUtil.getMimeType(handledImageFile.getFile().getPath()) + ")");
+      } finally {
+        handledImageFile.delete();
+      }
     }
   }
 
