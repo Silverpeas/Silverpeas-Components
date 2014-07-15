@@ -145,13 +145,13 @@ public abstract class InternalMedia extends Media {
 
   @Override
   public SilverpeasFile getFile(final MediaResolution mediaResolution) {
-    String fileName = getFileName();
+    String origOrThumbFileName = getFileName();
     if (getType().isPhoto() && StringUtil.isDefined(mediaResolution.getThumbnailSuffix())) {
-      fileName = getId() + mediaResolution.getThumbnailSuffix();
+      origOrThumbFileName = getId() + mediaResolution.getThumbnailSuffix();
     }
     return SilverpeasFileProvider.getInstance().getSilverpeasFile(FileUtils
         .getFile(Media.BASE_PATH.getPath(), getComponentInstanceId(), getWorkspaceSubFolderName(),
-            fileName).getPath());
+            origOrThumbFileName).getPath());
   }
 
   private Map<String, MetaData> getAllMetaData() {

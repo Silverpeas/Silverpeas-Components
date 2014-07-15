@@ -25,6 +25,9 @@ package com.silverpeas.gallery;
 
 public final class ParameterNames {
 
+  private ParameterNames() {
+  }
+
   public static final String MediaTitle = "SP$$MediaTitle";
   public static final String MediaDescription = "SP$$MediaDescription";
   public static final String MediaAuthor = "SP$$MediaAuthor";

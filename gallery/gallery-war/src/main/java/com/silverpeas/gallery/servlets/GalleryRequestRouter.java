@@ -20,6 +20,24 @@
  */
 package com.silverpeas.gallery.servlets;
 
+import static com.stratelia.webactiv.util.DBUtil.isSqlDefined;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.search.indexEngine.model.FieldDescription;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
+import org.silverpeas.servlet.FileUploadUtil;
+import org.silverpeas.servlet.HttpRequest;
+
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.Form;
@@ -60,23 +78,6 @@ import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.search.indexEngine.model.FieldDescription;
-import org.silverpeas.search.searchEngine.model.QueryDescription;
-import org.silverpeas.servlet.FileUploadUtil;
-import org.silverpeas.servlet.HttpRequest;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.StringTokenizer;
-import java.util.TreeSet;
-
-import static com.stratelia.webactiv.util.DBUtil.isSqlDefined;
 
 public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionController> {
 
@@ -1118,19 +1119,19 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
           destination = rootDest + "basket.jsp";
         } else if ("BasketDelete".equals(function)) {
-          gallerySC.deleteBasket();
+          gallerySC.clearBasket();
           destination = getDestination("BasketView", gallerySC, request);
         } else if ("BasketDeleteMedia".equals(function)) {
           // Delete media from basket
           String mediaId = request.getParameter("MediaId");
-          gallerySC.deleteToBasket(mediaId);
+          gallerySC.deletePhotoFromBasket(mediaId);
 
           destination = getDestination("BasketView", gallerySC, request);
         } else if ("BasketDeleteSelectedMedia".equals(function)) {
           // delete selected medias from basket
           processSelection(request, gallerySC);
           if (gallerySC.getListSelected().size() > 0) {
-            gallerySC.deleteToBasket();
+            gallerySC.deleteSelectedPhotosFromBasket();
           }
           destination = getDestination("BasketView", gallerySC, request);
         } else if ("BasketAddMediaList".equals(function)) {

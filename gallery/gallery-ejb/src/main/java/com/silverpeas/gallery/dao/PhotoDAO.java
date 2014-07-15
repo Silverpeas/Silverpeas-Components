@@ -45,6 +45,9 @@ import com.stratelia.webactiv.util.exception.UtilException;
 
 public class PhotoDAO {
 
+  private PhotoDAO() {
+  }
+
   public static Photo getPhoto(Connection con, String photoId) throws SQLException {
     Photo photo = getByCriteria(con, MediaCriteria.fromMediaId(photoId));
     if (photo == null) {

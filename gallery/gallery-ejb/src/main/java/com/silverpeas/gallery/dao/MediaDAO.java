@@ -65,6 +65,9 @@ import static com.stratelia.webactiv.util.DBUtil.*;
 
 public class MediaDAO {
 
+  private MediaDAO() {
+  }
+
   private static final String SELECT_INTERNAL_MEDIA_PREFIX =
       "select I.mediaId, I.fileName, I.fileSize, I.fileMimeType, I.download, I.beginDownloadDate," +
           " I.endDownloadDate, ";

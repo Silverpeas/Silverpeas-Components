@@ -31,6 +31,7 @@ import com.silverpeas.gallery.model.Video;
 import com.silverpeas.gallery.process.AbstractGalleryFileProcess;
 import com.silverpeas.gallery.process.GalleryProcessExecutionContext;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.process.io.file.FileHandler;
 import org.silverpeas.process.session.ProcessSession;
@@ -110,22 +111,10 @@ public class GalleryCreateMediaFileProcess extends AbstractGalleryFileProcess {
     // Media
     switch (getMedia().getType()) {
       case Photo:
-        Photo photo = getMedia().getPhoto();
-        if (fileItem != null) {
-          MediaHelper
-              .processPhoto(fileHandler, photo, fileItem, watermark, watermarkHD, watermarkOther);
-        } else {
-          MediaHelper
-              .processPhoto(fileHandler, photo, file, watermark, watermarkHD, watermarkOther);
-        }
+        processPhotoMedia(fileHandler);
         break;
       case Video:
-        Video video = getMedia().getVideo();
-        if (fileItem != null) {
-          MediaHelper.processVideo(fileHandler, video, fileItem);
-        } else {
-          MediaHelper.processVideo(fileHandler, video, file);
-        }
+        processVideoMedia(fileHandler);
         break;
       case Sound:
         Sound sound = getMedia().getSound();
@@ -144,6 +133,26 @@ public class GalleryCreateMediaFileProcess extends AbstractGalleryFileProcess {
     if (!hasBeenProcessed) {
       SilverTrace.warn("Gallery", GalleryUpdateMediaFileProcess.class.getName(),
           getMedia().getType().name() + " media type is never processed");
+    }
+  }
+
+  private void processVideoMedia(final FileHandler fileHandler) throws Exception {
+    Video video = getMedia().getVideo();
+    if (fileItem != null) {
+      MediaHelper.processVideo(fileHandler, video, fileItem);
+    } else {
+      MediaHelper.processVideo(fileHandler, video, file);
+    }
+  }
+
+  private void processPhotoMedia(final FileHandler fileHandler) throws Exception {
+    Photo photo = getMedia().getPhoto();
+    if (fileItem != null) {
+      MediaHelper
+          .processPhoto(fileHandler, photo, fileItem, watermark, watermarkHD, watermarkOther);
+    } else {
+      MediaHelper
+          .processPhoto(fileHandler, photo, file, watermark, watermarkHD, watermarkOther);
     }
   }
 

@@ -107,4 +107,7 @@ public final class GalleryResourceURIs {
     }
     return uriBuilder.build();
   }
+
+  private GalleryResourceURIs() {
+  }
 }

@@ -39,6 +39,7 @@ import com.stratelia.webactiv.util.DateUtil;
  * This class is an old one. {@link Photo} must be used instead.
  * It became a wrapper of Photo class.
  */
+@Deprecated
 public class PhotoDetail implements SilverContentInterface, Serializable {
   private static final long serialVersionUID = -1907932374204169173L;
 

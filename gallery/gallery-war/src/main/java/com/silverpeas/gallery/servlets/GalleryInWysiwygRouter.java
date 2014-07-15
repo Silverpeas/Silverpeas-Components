@@ -176,18 +176,14 @@ public class GalleryInWysiwygRouter extends HttpServlet {
     try {
       input = new BufferedInputStream(new FileInputStream(filePath));
       read = input.read();
-      if (read == -1) {
-        // displayWarningHtmlCode(res);
-      } else {
-        while (read != -1) {
-          out2.write(read); // writes bytes into the response
-          read = input.read();
-        }
+      while (read != -1) {
+        // writes bytes into the response
+        out2.write(read);
+        read = input.read();
       }
     } catch (Exception e) {
       SilverTrace.warn("gallery", "GalleryInWysiwygRouter.doPost", "root.EX_CANT_READ_FILE",
           "filePath = " + filePath);
-      // displayWarningHtmlCode(res);
     } finally {
       SilverTrace.info("gallery", "GalleryInWysiwygRouter.displayImage()", "", " finally ");
       // we must close the in and out streams

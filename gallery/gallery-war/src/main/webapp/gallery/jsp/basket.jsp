@@ -55,7 +55,7 @@ var albumWindow = window;
 
 function sendDataDelete()
 {
-	//confirmation de suppression des photos selectionnees
+	//Remove selected photo media from basket confirm message
 	if(window.confirm("<fmt:message key="gallery.confirmDeleteMedias"/> "))
 	{
 		// envoi des photos selectionnees pour la suppression
@@ -104,9 +104,8 @@ function doPagination(index)
 	document.mediaForm.submit();
 }
 
-function deleteConfirm(id)
-{
-	// confirmation de suppression d'une photo
+function deleteConfirm(id) {
+	// Delete a media from basket confirm message
 	if(window.confirm("<fmt:message key="gallery.confirmDeleteMedia"/>  ?"))
 	{
 			document.mediaFormDelete.action = "BasketDeleteMedia";

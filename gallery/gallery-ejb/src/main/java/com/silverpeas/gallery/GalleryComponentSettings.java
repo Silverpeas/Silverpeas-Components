@@ -23,12 +23,10 @@
  */
 package com.silverpeas.gallery;
 
-
 import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
-
 
 /**
  * It gathers all the settings and i18n relative to the Gallery component.
@@ -36,14 +34,16 @@ import org.silverpeas.core.admin.OrganisationControllerFactory;
  */
 public final class GalleryComponentSettings {
 
+  private GalleryComponentSettings() {
+  }
+
   /**
    * The name of the Gallery component in Silverpeas.
    */
   public static final String COMPONENT_NAME = "gallery";
 
   /**
-   * The relative path of the properties file containing the settings of the Gallery
-   * component.
+   * The relative path of the properties file containing the settings of the Gallery component.
    */
   public static final String SETTINGS_PATH = "com.silverpeas.gallery.settings.gallerySettings";
 
@@ -59,8 +59,7 @@ public final class GalleryComponentSettings {
   public static final String ICONS_PATH = "com.silverpeas.gallery.settings.galleryIcons";
 
   /**
-   * Gets all the messages for the Gallery component and translated in the specified
-   * language.
+   * Gets all the messages for the Gallery component and translated in the specified language.
    * @param language the language in which are written the messages.
    * @return the resource with the translated messages.
    */
