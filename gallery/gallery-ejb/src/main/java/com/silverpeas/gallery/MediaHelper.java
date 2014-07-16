@@ -46,6 +46,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.media.Definition;
 import org.silverpeas.process.io.file.FileHandler;
@@ -81,10 +82,14 @@ public class MediaHelper {
     if (fileItem != null) {
       String name = fileItem.getName();
       if (name != null) {
-        sound.setFileName(FileUtil.getFilename(name));
-        final HandledFile handledSoundFile = getHandledFile(fileHandler, sound);
-        handledSoundFile.writeByteArrayToFile(fileItem.get());
-        setInternalMetadata(handledSoundFile, sound, MediaMimeType.SOUNDS);
+        try {
+          sound.setFileName(FileUtil.getFilename(name));
+          final HandledFile handledSoundFile = getHandledFile(fileHandler, sound);
+          handledSoundFile.writeByteArrayToFile(fileItem.get());
+          setInternalMetadata(handledSoundFile, sound, MediaMimeType.SOUNDS);
+        } finally {
+          fileItem.delete();
+        }
       }
     }
   }
@@ -101,10 +106,14 @@ public class MediaHelper {
     if (fileItem != null) {
       String name = fileItem.getName();
       if (name != null) {
-        video.setFileName(FileUtil.getFilename(name));
-        final HandledFile handledVideoFile = getHandledFile(fileHandler, video);
-        handledVideoFile.writeByteArrayToFile(fileItem.get());
-        setInternalMetadata(handledVideoFile, video, MediaMimeType.VIDEOS);
+        try {
+          video.setFileName(FileUtil.getFilename(name));
+          final HandledFile handledVideoFile = getHandledFile(fileHandler, video);
+          handledVideoFile.writeByteArrayToFile(fileItem.get());
+          setInternalMetadata(handledVideoFile, video, MediaMimeType.VIDEOS);
+        } finally {
+          fileItem.delete();
+        }
       }
     }
   }
@@ -120,10 +129,14 @@ public class MediaHelper {
   public static void processVideo(final FileHandler fileHandler, Video video,
       final File uploadedFile) throws Exception {
     if (uploadedFile != null) {
-      video.setFileName(uploadedFile.getName());
-      final HandledFile handledVideoFile = getHandledFile(fileHandler, video);
-      fileHandler.copyFile(uploadedFile, handledVideoFile);
-      setInternalMetadata(handledVideoFile, video, MediaMimeType.VIDEOS);
+      try {
+        video.setFileName(uploadedFile.getName());
+        final HandledFile handledVideoFile = getHandledFile(fileHandler, video);
+        fileHandler.copyFile(uploadedFile, handledVideoFile);
+        setInternalMetadata(handledVideoFile, video, MediaMimeType.VIDEOS);
+      } finally {
+        FileUtils.deleteQuietly(uploadedFile);
+      }
     }
   }
 
@@ -143,11 +156,15 @@ public class MediaHelper {
     if (image != null) {
       String name = image.getName();
       if (name != null) {
-        photo.setFileName(FileUtil.getFilename(name));
-        final HandledFile handledImageFile = getHandledFile(fileHandler, photo);
-        handledImageFile.writeByteArrayToFile(image.get());
-        if (setInternalMetadata(handledImageFile, photo, MediaMimeType.PHOTOS)) {
-          createPhoto(handledImageFile, photo, watermark, watermarkHD, watermarkOther);
+        try {
+          photo.setFileName(FileUtil.getFilename(name));
+          final HandledFile handledImageFile = getHandledFile(fileHandler, photo);
+          handledImageFile.writeByteArrayToFile(image.get());
+          if (setInternalMetadata(handledImageFile, photo, MediaMimeType.PHOTOS)) {
+            createPhoto(handledImageFile, photo, watermark, watermarkHD, watermarkOther);
+          }
+        } finally {
+          image.delete();
         }
       }
     }
@@ -168,11 +185,15 @@ public class MediaHelper {
       final File image, final boolean watermark, final String watermarkHD,
       final String watermarkOther) throws Exception {
     if (image != null) {
-      photo.setFileName(image.getName());
-      final HandledFile handledImageFile = getHandledFile(fileHandler, photo);
-      fileHandler.copyFile(image, handledImageFile);
-      if (setInternalMetadata(handledImageFile, photo, MediaMimeType.PHOTOS)) {
-        createPhoto(handledImageFile, photo, watermark, watermarkHD, watermarkOther);
+      try {
+        photo.setFileName(image.getName());
+        final HandledFile handledImageFile = getHandledFile(fileHandler, photo);
+        fileHandler.copyFile(image, handledImageFile);
+        if (setInternalMetadata(handledImageFile, photo, MediaMimeType.PHOTOS)) {
+          createPhoto(handledImageFile, photo, watermark, watermarkHD, watermarkOther);
+        }
+      } finally {
+        FileUtils.deleteQuietly(image);
       }
     }
   }

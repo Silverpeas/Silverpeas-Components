@@ -208,9 +208,11 @@
                   <div>
                     <input type="checkbox" name="SelectMedia" value="${media.id}" ${mediaChecked}/>
                   </div>
-                  <div class="txtlibform"><c:out value="${media.title}"/></div>
                   <c:if test="${typeAff eq 'small_list' and not empty media.description}">
-                    <div class="media-description"><c:out value="${media.description}"/></div>
+                    <div class="txtlibform"><c:out value="${media.title}"/></div>
+                    <c:if test="${not empty media.description}">
+                      <div class="media-description"><c:out value="${media.description}"/></div>
+                    </c:if>
                   </c:if>
                 </div>
               </td>

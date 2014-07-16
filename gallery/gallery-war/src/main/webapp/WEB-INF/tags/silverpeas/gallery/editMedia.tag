@@ -186,7 +186,7 @@
   <legend><fmt:message key="GML.bloc.information.principals"/></legend>
   <div class="fields">
     <div class="field" id="fileArea">
-      <label for="WAIMGVAR0" class="txtlibform"><fmt:message key="gallery.media"/></label>
+      <label for="WAIMGVAR0" class="txtlibform"><fmt:message key="gallery.${fn:toLowerCase(mediaType)}"/></label>
 
       <div class="champs">
         <%--TODO choose if media is Streaming display input type text else display input type file --%>
@@ -248,14 +248,7 @@
     <c:if test="${not empty internalMedia or (isNewMediaCase and mediaType ne MediaTypeStreaming)}">
       <div class="field" id="downloadArea">
         <label for="download" class="txtlibform">
-          <c:choose>
-            <c:when test="${mediaType eq MediaTypePhoto}">
-            <fmt:message key="gallery.download"/>
-            </c:when>
-            <c:otherwise>
-              <fmt:message key="gallery.video.download"/>
-            </c:otherwise>
-          </c:choose>
+          <fmt:message key="gallery.${fn:toLowerCase(mediaType)}.download"/>
         </label>
 
         <div class="champs">

@@ -46,7 +46,7 @@
         x ${media.definition.height} <fmt:message key="gallery.pixels"/></b></span>
     </c:if>
     <c:if test="${media.duration gt 0}">
-      <span class="fileCharacteristicDuration"><fmt:message key="gallery.duration"/> <b>${silfn:getTimeData(media.duration).formattedDurationAsHMSM}</b></span>
+      <span class="fileCharacteristicDuration"><fmt:message key="gallery.duration"/> <b>${silfn:getTimeData(media.duration).formattedDurationAsHMS}</b></span>
     </c:if>
   </jsp:attribute>
   <jsp:attribute name="mediaPreviewBloc">
