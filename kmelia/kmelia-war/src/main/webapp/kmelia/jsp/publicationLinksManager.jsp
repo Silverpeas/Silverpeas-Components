@@ -62,6 +62,7 @@ if(request.getAttribute("NbLinks")!=null){
 <menuTree:head displayCssFile="true" displayJavascriptFile="true" displayIconsStyles="true" contextName="<%=m_context%>"></menuTree:head>
 <%-- personalizable Javascript for  YUI treeView menu --%>
 <script type="text/javascript" src="<%=m_context %>/util/javaScript/treeMenu/menu.js"></script>
+<script type="text/javascript" src="<%=m_context %>/kmelia/jsp/javaScript/publications.js"></script>
 
 <Script language="JavaScript">
 var context ='<%=m_context %>';
