@@ -1,1 +1,1 @@
-DROP TABLE sc_suggestion, sc_suggestion_box;
+DROP TABLE sc_quickinfo_news;

@@ -34,8 +34,6 @@ import org.silverpeas.components.quickinfo.model.QuickInfoServiceFactory;
 import org.silverpeas.components.quickinfo.notification.NewsManualUserNotification;
 import org.silverpeas.date.Period;
 
-import com.silverpeas.delegatednews.service.DelegatedNewsService;
-import com.silverpeas.delegatednews.service.ServicesFactory;
 import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
@@ -66,7 +64,7 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
 
   private PublicationBm publicationBm = null;
   private QuickInfoComponentSettings instanceSettings = null;
-  
+
   /**
    * Creates new QuickInfoSessionController
    *
@@ -93,10 +91,10 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     }
     return publicationBm;
   }
-  
+
   public QuickInfoComponentSettings getInstanceSettings() {
     if (instanceSettings == null) {
-      ComponentInstLight app = getOrganisationController().getComponentInstLight(getComponentId()); 
+      ComponentInstLight app = getOrganisationController().getComponentInstLight(getComponentId());
       instanceSettings = new QuickInfoComponentSettings(app.getDescription(getLanguage()));
     }
     instanceSettings.setCommentsEnabled(StringUtil
@@ -126,13 +124,13 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     }
     return news;
   }
-  
+
   public News getNewsByForeignId(String foreignId) {
     News news = getService().getNewsByForeignId(foreignId);
     addVisit(news);
     return news;
   }
-  
+
   private void addVisit(News news) {
     if (!news.isDraft()) {
       getStatisticService().addStat(getUserId(), news);
@@ -149,9 +147,9 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
    * @param positions the JSON positions
    */
   public void publish(String id) {
-    getService().publish(id, getUserId());    
+    getService().publish(id, getUserId());
   }
-  
+
   public News createEmptyNews() {
     Period period = Period.from(DateUtil.MINIMUM_DATE, DateUtil.MAXIMUM_DATE);
     News news = new News(getString("quickinfo.news.untitled"), null, period, false, false, false);
@@ -160,11 +158,11 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     news.setComponentInstanceId(getComponentId());
     return getService().create(news);
   }
-  
+
   private QuickInfoService getService() {
     return QuickInfoServiceFactory.getQuickInfoService();
   }
-  
+
   public void update(String id, News updatedNews, String pdcPositions, boolean forcePublish) {
     News news = getNews(id, false);
     news.setTitle(updatedNews.getTitle());
@@ -178,7 +176,7 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     if (forcePublish) {
       news.setPublished();
     }
-    
+
     getService().update(news, getPositionsFromJSON(pdcPositions), forcePublish);
   }
 
@@ -207,14 +205,14 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
       getPublicationBm().createIndex(news.getPublication().getPK());
     }
   }
-  
+
   public ThumbnailSettings getThumbnailSettings() {
     int width = getSettings().getInteger("thumbnail.width", 200);
     int height = getSettings().getInteger("thumbnail.height", 200);
     ThumbnailSettings settings = ThumbnailSettings.getInstance(getComponentId(), width, height);
     return settings;
   }
-    
+
   public Boolean isSubscriberUser() {
     Boolean subscriber = null;
     if (!getUserDetail().isAccessGuest()) {
@@ -222,11 +220,11 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
           getSubscribeService();
       boolean isUserSubscribed = subscriptionService.existsSubscription(
           new ComponentSubscription(getUserId(), getComponentId()));
-      subscriber = new Boolean(isUserSubscribed);
+      subscriber = Boolean.valueOf(isUserSubscribed);
     }
     return subscriber;
   }
-  
+
   public String notify(String newsId) {
     AlertUser sel = getAlertUser();
     sel.resetAll();
@@ -245,7 +243,7 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
 
     return AlertUser.getAlertUserURL();
   }
-  
+
   public void submitNewsOnHomepage(String id) {
     getService().submitNewsOnHomepage(id, getUserId());
   }
@@ -271,13 +269,9 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     }
     return pdcPositions;
   }
-  
+
   private StatisticBm getStatisticService() {
     return EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticBm.class);
   }
-  
-  private DelegatedNewsService getDelegatedNewsService() {
-    return ServicesFactory.getDelegatedNewsService();
-  }
-  
+
 }
