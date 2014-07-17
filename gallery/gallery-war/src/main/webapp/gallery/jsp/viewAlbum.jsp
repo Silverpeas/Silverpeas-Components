@@ -77,10 +77,10 @@
 <fmt:message key="gallery.allSelect" var="allSelectMediaLabel"/>
 <fmt:message key="gallery.allSelect" var="allSelectMediaIcon" bundle="${icons}"/>
 <c:url value="${allSelectMediaIcon}" var="allSelectMediaIcon"/>
-<fmt:message key="gallery.copySelectedPhoto" var="copySelectedMediaLabel"/>
+<fmt:message key="gallery.media.selected.copy" var="copySelectedMediaLabel"/>
 <fmt:message key="gallery.copy" var="copySelectedMediaIcon" bundle="${icons}"/>
 <c:url value="${copySelectedMediaIcon}" var="copySelectedMediaIcon"/>
-<fmt:message key="gallery.cutSelectedPhoto" var="cutSelectedMediaLabel"/>
+<fmt:message key="gallery.media.selected.cut" var="cutSelectedMediaLabel"/>
 <fmt:message key="gallery.cut" var="cutSelectedMediaIcon" bundle="${icons}"/>
 <c:url value="${cutSelectedMediaIcon}" var="cutSelectedMediaIcon"/>
 <fmt:message key="GML.paste" var="pasteSelectedMediaLabel"/>
@@ -339,6 +339,7 @@
     <view:operationOfCreation action="${addPhotoAction}" altText="${addPhotoLabel}" icon="${addPhotoIcon}"/>
     <view:operationOfCreation action="${addVideoAction}" altText="${addVideoLabel}" icon="${addVideoIcon}"/>
     <view:operationOfCreation action="${addSoundAction}" altText="${addSoundLabel}" icon="${addSoundIcon}"/>
+    <view:operationOfCreation action="${addStreamingAction}" altText="${addStreamingLabel}" icon="${addStreamingIcon}"/>
   </c:if>
   <%-- Basket for users --%>
   <c:if test="${greaterUserRole eq userRole and isBasket}">
@@ -411,6 +412,7 @@
     <c:if test="${not empty templateUserRole}">
       <div id="folder-empty" class="inlineMessage">
         <view:applyTemplate locationBase="components:gallery" name="galleryEmptyAlbum">
+          <view:templateParam name="dragAndDropEnable" value="${dragAndDropEnable}"/>
           <view:templateParam name="albumPart" value="${templateUserRole eq publisherRole}"/>
           <view:templateParam name="mediaPart" value="${templateUserRole eq publisherRole or templateUserRole eq writerRole}"/>
           <view:templateParam name="albumOperation" value="${addAlbumLabel}"/>
@@ -421,6 +423,8 @@
           <view:templateParam name="videoUrl" value="${addVideoAction}"/>
           <view:templateParam name="soundOperation" value="${addSoundLabel}"/>
           <view:templateParam name="soundUrl" value="${addSoundAction}"/>
+          <view:templateParam name="streamingOperation" value="${addStreamingLabel}"/>
+          <view:templateParam name="streamingUrl" value="${addStreamingAction}"/>
         </view:applyTemplate>
       </div>
     </c:if>

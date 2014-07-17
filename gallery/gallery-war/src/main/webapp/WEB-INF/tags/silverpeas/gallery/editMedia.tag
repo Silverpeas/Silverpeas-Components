@@ -41,7 +41,6 @@
 <fmt:setLocale value="${_language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
-<view:setBundle basename="org.silverpeas.multilang.generalMultilang" var="generalBundle"/>
 <c:set var="mandatoryIcon"><fmt:message key='gallery.mandatory' bundle='${icons}'/></c:set>
 
 <%-- Default values --%>
@@ -66,7 +65,9 @@
 <%@ attribute name="supportedMediaMimeTypes" required="true"
               type="java.util.Set"
               description="Supported media types." %>
-<jsp:useBean id="supportedMediaMimeTypes" type="java.util.Set<com.silverpeas.gallery.constant.MediaMimeType>"/>
+<c:if test="${not empty supportedMediaMimeTypes}">
+  <jsp:useBean id="supportedMediaMimeTypes" type="java.util.Set<com.silverpeas.gallery.constant.MediaMimeType>"/>
+</c:if>
 
 <c:set var="isNewMediaCase" value="${empty media.id}"/>
 <c:set var="internalMedia" value="${media.internalMedia}"/>
@@ -98,41 +99,10 @@
       var errorNb = 0;
       var title = stripInitialWhitespace(document.${_formName}.${MediaTitleInputName}.value);
       var descr = document.${_formName}.${MediaDescriptionInputName}.value;
-      var file = stripInitialWhitespace(document.${_formName}.WAIMGVAR0.value);
+      var media = stripInitialWhitespace(document.${_formName}.${mediaType eq MediaTypeStreaming ? 'SP$$StreamingHomepageUrl' : 'WAIMGVAR0'}.value);
 
-      if (title.length > 255) {
-        errorMsg += "  - '<fmt:message key="GML.title"/>'  <fmt:message key="gallery.MsgSize"/>\n";
-        errorNb++;
-      }
-      if (descr.length > 255) {
-        errorMsg +=
-            "  - '<fmt:message key="GML.description"/>'  <fmt:message key="gallery.MsgSize"/>\n";
-        errorNb++;
-      }
-      <c:if test="${isNewMediaCase}">
-      if (file == "") {
-        errorMsg +=
-            "  - '<fmt:message key="gallery.media"/>'  <fmt:message key="GML.MustBeFilled"/>\n";
-        errorNb++;
-      }
-      </c:if>
-
-      // Download period
-      var beginDownloadDate = {dateId : 'beginDownloadDate'};
-      var endDownloadDate = {dateId : 'endDownloadDate'};
-      var dateErrors = isPeriodEndingInFuture(beginDownloadDate, endDownloadDate);
-      $(dateErrors).each(function(index, error) {
-        errorMsg += " - " + error.message + "\n";
-        errorNb++;
-      });
-      // Visibility period
-      var beginVisibilityDate = {dateId : 'beginVisibilityDate'};
-      var endVisibilityDate = {dateId : 'endVisibilityDate'};
-      dateErrors = isPeriodEndingInFuture(beginVisibilityDate, endVisibilityDate);
-      $(dateErrors).each(function(index, error) {
-        errorMsg += " - " + error.message + "\n";
-        errorNb++;
-      });
+      <c:choose>
+      <c:when test="${mediaType ne MediaTypeStreaming}">
 
       <c:if test="${not empty supportedMediaMimeTypes}">
       <c:set var="supportedMediaTypeRegExpr" value=""/>
@@ -144,19 +114,68 @@
       <c:set var="supportedMediaTypeRegExpr" value="${supportedMediaTypeRegExpr}${supportedMediaExtension}"/>
       </c:forEach>
       </c:forEach>
-      // check media file extension
-      if (file && file.length > 0) {
+      if (media && media.length > 0) {
         var fileRegExprCheck = /[.](${supportedMediaTypeRegExpr})$/;
-        if (fileRegExprCheck.exec(file.toLowerCase()) == null) {
+        if (fileRegExprCheck.exec(media.toLowerCase()) == null) {
           errorMsg +=
-              "  - '<fmt:message key="gallery.media"/>' <fmt:message key="gallery.format"/>\n";
+              "<li>'<fmt:message key="gallery.${fn:toLowerCase(mediaType)}"/>' <fmt:message key="gallery.format"/></li>";
           errorNb++;
         }
       }
       </c:if>
 
+      </c:when>
+      <c:otherwise>
+
+      if (!detectSupportedProvider(media)) {
+        errorMsg +=
+            "<li>'<fmt:message key="gallery.${fn:toLowerCase(mediaType)}"/>' <fmt:message key="gallery.streaming.format"/></li>";
+        errorNb++;
+      }
+
+      </c:otherwise>
+      </c:choose>
+
+      if (title.length > 255) {
+        errorMsg +=
+            "<li>'<fmt:message key="GML.title"/>'  <fmt:message key="gallery.MsgSize"/></li>";
+        errorNb++;
+      }
+      if (descr.length > 255) {
+        errorMsg +=
+            "<li>'<fmt:message key="GML.description"/>'  <fmt:message key="gallery.MsgSize"/></li>";
+        errorNb++;
+      }
+      <c:if test="${isNewMediaCase}">
+      if (media == "") {
+        errorMsg +=
+            "<li>'<fmt:message key="gallery.${fn:toLowerCase(mediaType)}"/>'  <fmt:message key="GML.MustBeFilled"/></li>";
+        errorNb++;
+      }
+      </c:if>
+
+      var dateErrors;
+      <c:if test="${mediaType ne MediaTypeStreaming}">
+      // Download period
+      var beginDownloadDate = {dateId : 'beginDownloadDate'};
+      var endDownloadDate = {dateId : 'endDownloadDate'};
+      dateErrors = isPeriodEndingInFuture(beginDownloadDate, endDownloadDate);
+      $(dateErrors).each(function(index, error) {
+        errorMsg += "<li>" + error.message + "</li>";
+        errorNb++;
+      });
+      </c:if>
+      // Visibility period
+      var beginVisibilityDate = {dateId : 'beginVisibilityDate'};
+      var endVisibilityDate = {dateId : 'endVisibilityDate'};
+      dateErrors = isPeriodEndingInFuture(beginVisibilityDate, endVisibilityDate);
+      $(dateErrors).each(function(index, error) {
+        errorMsg += "<li>" + error.message + "</li>";
+        errorNb++;
+      });
+
       <c:if test="${isUsePdc and isNewMediaCase}">
-      <view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>;
+      <view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg" errorWebRender="true"/>;
       </c:if>
 
       var result = true;
@@ -165,15 +184,15 @@
           break;
         case 1 :
           errorMsg =
-              "<fmt:message key="GML.ThisFormContains"/> 1 <fmt:message key="GML.error"/> : \n" +
-              errorMsg;
-          window.alert(errorMsg);
+              "<b><fmt:message key="GML.ThisFormContains"/> 1 <fmt:message key="GML.error"/> : </b><ul>" +
+              errorMsg + "</ul>";
+          notyError(errorMsg);
           result = false;
           break;
         default :
-          errorMsg = "<fmt:message key="GML.ThisFormContains"/> " + errorNb +
-              " <fmt:message key="GML.errors"/> :\n" + errorMsg;
-          window.alert(errorMsg);
+          errorMsg = "<b><fmt:message key="GML.ThisFormContains"/> " + errorNb +
+              " <fmt:message key="GML.errors"/> :</b><ul>" + errorMsg + "</ul>";
+          notyError(errorMsg);
           result = false;
           break;
       }
@@ -185,23 +204,24 @@
 <fieldset id="${fn:toLowerCase(mediaType)}Info" class="skinFieldset">
   <legend><fmt:message key="GML.bloc.information.principals"/></legend>
   <div class="fields">
-    <div class="field" id="fileArea">
-      <label for="WAIMGVAR0" class="txtlibform"><fmt:message key="gallery.${fn:toLowerCase(mediaType)}"/></label>
+    <div class="field" id="${mediaType eq MediaTypeStreaming ? 'urlArea' : 'fileArea'}">
+      <label for="fileId" class="txtlibform"><fmt:message key="gallery.${fn:toLowerCase(mediaType)}"/>${mediaType eq MediaTypeStreaming ? ' (URL)' : ''}</label>
 
       <div class="champs">
         <%--TODO choose if media is Streaming display input type text else display input type file --%>
         <c:choose>
           <c:when test="${mediaType eq MediaTypeStreaming}">
-            <input id="fileId" type="file" name="streaming" size="60"/>&nbsp;<img alt="<fmt:message key="GML.mandatory"/>" src="<c:url value='${mandatoryIcon}'/>" width="5" height="5"/>
+            <input id="fileId" type="text" name="SP$$StreamingHomepageUrl" size="60" maxlength="150" value="${media.streaming.homepageUrl}"/>
           </c:when>
           <c:otherwise>
-            <input id="fileId" type="file" name="WAIMGVAR0" size="60"/>&nbsp;<img alt="<fmt:message key="GML.mandatory"/>" src="<c:url value='${mandatoryIcon}'/>" width="5" height="5"/>
+            <input id="fileId" type="file" name="WAIMGVAR0" size="60"/>
           </c:otherwise>
         </c:choose>
+        &nbsp;<img alt="<fmt:message key="GML.mandatory"/>" src="<c:url value='${mandatoryIcon}'/>" width="5" height="5"/>
       </div>
     </div>
     <div class="field" id="fileNameArea">
-      <label for="fileName" class="txtlibform"><fmt:message key="gallery.fileName"/></label>
+      <label class="txtlibform"><fmt:message key="gallery.fileName"/></label>
 
       <div class="champs">
         <c:out value="${not empty internalMedia ? internalMedia.fileName : ''}"/>
@@ -274,7 +294,7 @@
 
         <div class="champs">
           <input id="beginDownloadDate" type="text" class="dateToPick" name="SP$$MediaBeginDownloadDate" size="12" maxlength="10" value="${beginDownloadDate}"/>
-          <span class="txtnote"><br/>(<fmt:message key='GML.dateFormatExemple'/>)</span>
+          <span class="txtnote">(<fmt:message key='GML.dateFormatExemple'/>)</span>
         </div>
       </div>
 
@@ -292,7 +312,7 @@
 
         <div class="champs">
           <input id="endDownloadDate" type="text" class="dateToPick" name="SP$$MediaEndDownloadDate" size="12" maxlength="10" value="${endDownloadDate}"/>
-          <span class="txtnote"><br/>(<fmt:message key='GML.dateFormatExemple'/>)</span>
+          <span class="txtnote">(<fmt:message key='GML.dateFormatExemple'/>)</span>
         </div>
       </div>
     </c:if>
@@ -310,7 +330,7 @@
 
       <div class="champs">
         <input id="beginVisibilityDate" type="text" class="dateToPick" name="SP$$MediaBeginVisibilityDate" size="12" maxlength="10" value="${beginVisibilityDate}"/>
-        <span class="txtnote"><br/>(<fmt:message key='GML.dateFormatExemple'/>)</span>
+        <span class="txtnote">(<fmt:message key='GML.dateFormatExemple'/>)</span>
       </div>
     </div>
 
@@ -327,7 +347,7 @@
 
       <div class="champs">
         <input id="endVisibilityDate" type="text" class="dateToPick" name="SP$$MediaEndVisibilityDate" size="12" maxlength="10" value="${endVisibilityDate}"/>
-        <span class="txtnote"><br/>(<fmt:message key='GML.dateFormatExemple'/>)</span>
+        <span class="txtnote">(<fmt:message key='GML.dateFormatExemple'/>)</span>
       </div>
     </div>
   </div>

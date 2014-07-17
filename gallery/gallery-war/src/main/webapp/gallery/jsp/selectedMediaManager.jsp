@@ -104,12 +104,12 @@
 
       if (title.length > 255) {
         errorMsg +=
-            "  - '<%=resource.getString("GML.title")%>'  <%=resource.getString("gallery.MsgSize")%>\n";
+            "<li>'<%=resource.getString("GML.title")%>'  <%=resource.getString("gallery.MsgSize")%></li>";
         errorNb++;
       }
       if (descr.length > 255) {
         errorMsg +=
-            "  - '<%=resource.getString("GML.description")%>'  <%=resource.getString("gallery.MsgSize")%>\n";
+            "<li>'<%=resource.getString("GML.description")%>'  <%=resource.getString("gallery.MsgSize")%></li>";
         errorNb++;
       }
 
@@ -118,7 +118,7 @@
       var endDownloadDate = {dateId : 'endDownloadDate'};
       var dateErrors = isPeriodEndingInFuture(beginDownloadDate, endDownloadDate);
       $(dateErrors).each(function(index, error) {
-        errorMsg += " - " + error.message + "\n";
+        errorMsg += "<li>" + error.message + "</li>";
         errorNb++;
       });
       // Visibility period
@@ -126,7 +126,7 @@
       var endVisibilityDate = {dateId : 'endVisibilityDate'};
       dateErrors = isPeriodEndingInFuture(beginVisibilityDate, endVisibilityDate);
       $(dateErrors).each(function(index, error) {
-        errorMsg += " - " + error.message + "\n";
+        errorMsg += "<li>" + error.message + "</li>";
         errorNb++;
       });
 
@@ -137,14 +137,14 @@
           break;
         case 1 :
           errorMsg =
-              "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" +
-              errorMsg;
-          window.alert(errorMsg);
+              "<b><%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : </b><ul>" +
+              errorMsg + "</ul>";
+          notyError(errorMsg);
           break;
         default :
-          errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb +
-              " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
-          window.alert(errorMsg);
+          errorMsg = "<b><%=resource.getString("GML.ThisFormContains")%> " + errorNb +
+              " <%=resource.getString("GML.errors")%> :</b><ul>" + errorMsg + "</ul>";
+          notyError(errorMsg);
           break;
       }
       return result;

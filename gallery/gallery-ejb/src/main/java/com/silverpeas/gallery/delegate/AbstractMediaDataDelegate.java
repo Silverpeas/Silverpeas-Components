@@ -28,11 +28,15 @@ import com.silverpeas.form.Form;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.gallery.constant.MediaType;
+import com.silverpeas.gallery.constant.StreamingProvider;
+import com.silverpeas.gallery.model.GalleryRuntimeException;
 import com.silverpeas.gallery.model.InternalMedia;
 import com.silverpeas.gallery.model.Media;
+import com.silverpeas.gallery.model.Streaming;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.date.Period;
 import org.silverpeas.servlet.FileUploadUtil;
@@ -128,6 +132,18 @@ public abstract class AbstractMediaDataDelegate {
    * @param media
    */
   public void updateHeader(final Media media) {
+    if (!skipEmptyValues && media.getType().isStreaming()) {
+      StreamingProvider streamingProvider =
+          StreamingProvider.fromUrl(getHeaderData().getHompageUrl());
+      if (streamingProvider.isUnknown()) {
+        throw new GalleryRuntimeException("AbstractMediaDelegate.updateHeader",
+            SilverpeasRuntimeException.ERROR,
+            "streaming homepage URL must be defined and supported");
+      }
+      Streaming streaming = media.getStreaming();
+      streaming.setHomepageUrl(getHeaderData().getHompageUrl());
+      streaming.setProvider(streamingProvider);
+    }
     if (!skipEmptyValues || StringUtil.isDefined(getHeaderData().getTitle())) {
       media.setTitle(getHeaderData().getTitle());
     }
@@ -188,6 +204,7 @@ public abstract class AbstractMediaDataDelegate {
    */
   public class HeaderData {
 
+    private String hompageUrl = null;
     private String title = null;
     private String description = null;
     private String author = null;
@@ -198,6 +215,14 @@ public abstract class AbstractMediaDataDelegate {
     private Date beginDownloadDate = null;
     private Date endDownloadDate = null;
     private List<PdcPosition> pdcPositions = null;
+
+    private String getHompageUrl() {
+      return hompageUrl;
+    }
+
+    public void setHompageUrl(final String hompageUrl) {
+      this.hompageUrl = hompageUrl;
+    }
 
     private String getTitle() {
       return (title == null) ? "" : title;
@@ -314,7 +339,7 @@ public abstract class AbstractMediaDataDelegate {
   }
 
   /**
-   * Gets the photo from parameters
+   * Gets the file from parameters
    * @return
    */
   public FileItem getFileItem() {

@@ -73,8 +73,8 @@
               description="Fragment to put the display of the media" %>
 <%@ attribute name="specificSpecificationBloc" fragment="true"
               description="Fragment to put additional things into specifications of the media" %>
-<%@ attribute name="bottomContentTopBloc" fragment="true"
-              description="Fragment to put additional things at the bottom of the rightContent bloc" %>
+<%@ attribute name="metadataBloc" fragment="true"
+              description="Fragment to put additional bloc of metadata" %>
 
 <%-- Request attributes --%>
 <c:set var="greaterUserRole" value="${requestScope.greaterUserRole}"/>
@@ -95,6 +95,9 @@
 <jsp:useBean id="albumId" type="java.lang.String"/>
 
 <c:set var="callback">function( event ) { if (event.type === 'listing') { commentCount = event.comments.length; $('#comment-tab').html('<c:out value="${commentTab}"/> ( ' + event.comments.length + ')'); } else if (event.type === 'deletion') { commentCount--; $('#comment-tab').html('<c:out value="${commentTab}"/> ( ' + commentCount + ')'); } else if (event.type === 'addition') { commentCount++; $('#comment-tab').html('<c:out value="${commentTab}"/> ( ' + commentCount + ')'); } }</c:set>
+
+<c:set var="mediaSrcValue" value="${not empty internalMedia ? internalMedia.fileName : media.streaming.homepageUrl}"/>
+<c:set var="mediaTitle" value="${(not empty media.title and media.title != mediaSrcValue) ? media.title : mediaSrcValue}"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -169,7 +172,7 @@
 </head>
 <body class="gallery gallery-fiche-media yui-skin-sam" id="${instanceId}">
 
-<gallery:browseBar albumPath="${albumPath}" additionalElements="${silfn:truncate(media.title, 50)}@#" />
+<gallery:browseBar albumPath="${albumPath}" additionalElements="${silfn:truncate(mediaTitle, 50)}@#" />
 
 <view:operationPane>
   <fmt:message key="GML.notify" var="notifLabel"/>
@@ -184,7 +187,7 @@
     <fmt:message key="GML.delete" var="deleteLabel"/>
     <fmt:message key="GML.delete" var="deleteIcon" bundle="${icons}"/>
     <c:url value="${deleteIcon}" var="deleteIcon"/>
-    <c:set var="tmpLabel"><c:out value="${media.title}"/></c:set>
+    <c:set var="tmpLabel"><c:out value="${mediaTitle}"/></c:set>
     <c:set var="deleteAction" value="javaScript:deleteConfirm('${mediaId}', '${silfn:escapeJs(tmpLabel)}')"/>
     <view:operation altText="${modifyLabel}" action="EditInformation?MediaId=${mediaId}" icon="${modifyIcon}"/>
     <view:operation altText="${deleteLabel}" action="${deleteAction}" icon="${deleteIcon}"/>
@@ -241,18 +244,20 @@
 
       <div class="rightContent">
         <div class="fileName">
-          <c:choose>
-            <c:when test="${requestScope.ViewLinkDownload or media.downloadable}">
-              <a href="${mediaUrl}" target="_blank"><c:out value="${media.name}"/>
-                <img src="${downloadIconUrl}" alt="<fmt:message key='gallery.download.media'/>" title="<fmt:message key='gallery.original'/>"/>
-              </a>
-              <jsp:invoke fragment="additionalDownloadBloc"/>
-            </c:when>
-            <c:otherwise>
-              <c:out value="${internalMedia.fileName}"/>
-              <img src="${downloadForbiddenIconUrl}" alt="<fmt:message key='gallery.download.forbidden'/>" title="<fmt:message key='gallery.download.forbidden'/>" class="forbidden-download-file"/>
-            </c:otherwise>
-          </c:choose>
+          <c:if test="${not empty internalMedia}">
+            <c:choose>
+              <c:when test="${requestScope.ViewLinkDownload or media.downloadable}">
+                <a href="${mediaUrl}" target="_blank"><c:out value="${media.name}"/>
+                  <img src="${downloadIconUrl}" alt="<fmt:message key='gallery.download.media'/>" title="<fmt:message key='gallery.original'/>"/>
+                </a>
+                <jsp:invoke fragment="additionalDownloadBloc"/>
+              </c:when>
+              <c:otherwise>
+                <c:out value="${internalMedia.fileName}"/>
+                <img src="${downloadForbiddenIconUrl}" alt="<fmt:message key='gallery.download.forbidden'/>" title="<fmt:message key='gallery.download.forbidden'/>" class="forbidden-download-file"/>
+              </c:otherwise>
+            </c:choose>
+          </c:if>
         </div>
         <div class="fileCharacteristic bgDegradeGris">
           <p>
@@ -263,23 +268,8 @@
             <br class="clear"/>
           </p>
         </div>
-        <c:set var="createDate" value="${media.creationDate}"/>
-        <c:set var="lastUpdateDate" value="${media.lastUpdateDate}"/>
 
-        <fmt:message key="gallery.CopyMediaLink" var="cpMediaLinkAlt"/>
-        <viewTags:displayLastUserCRUD createDate="${media.creationDate}"
-                                      createdBy="${media.creator}"
-                                      updateDate="${media.lastUpdateDate}"
-                                      updatedBy="${media.lastUpdater}"
-                                      permalink="${media.permalink}"
-                                      permalinkHelp="${cpMediaLinkAlt}"
-                                      permalinkIconUrl="${permalinkIconUrl}">
-          <jsp:attribute name="beforeCommonContentBloc">
-          <c:if test="${not empty media.author}">
-            <p id="authorInfo"><b><fmt:message key="GML.author"/></b> ${media.author}</p>
-          </c:if>
-          </jsp:attribute>
-        </viewTags:displayLastUserCRUD>
+        <jsp:invoke fragment="metadataBloc"/>
 
         <c:if test="${media.visibilityPeriod.defined or (not empty internalMedia and internalMedia.downloadable and internalMedia.downloadPeriod.defined)}">
           <div class="periode bgDegradeGris" id="periode">
@@ -323,11 +313,24 @@
           </div>
         </c:if>
 
+        <fmt:message key="gallery.CopyMediaLink" var="cpMediaLinkAlt"/>
+        <viewTags:displayLastUserCRUD createDate="${media.creationDate}"
+                                      createdBy="${media.creator}"
+                                      updateDate="${media.lastUpdateDate}"
+                                      updatedBy="${media.lastUpdater}"
+                                      permalink="${media.permalink}"
+                                      permalinkHelp="${cpMediaLinkAlt}"
+                                      permalinkIconUrl="${permalinkIconUrl}">
+          <jsp:attribute name="beforeCommonContentBloc">
+          <c:if test="${not empty media.author}">
+            <p id="authorInfo"><b><fmt:message key="GML.author"/></b> ${media.author}</p>
+          </c:if>
+          </jsp:attribute>
+        </viewTags:displayLastUserCRUD>
+
         <c:if test="${requestScope.IsUsePdc}">
           <view:pdcClassificationPreview componentId="${instanceId}" contentId="${mediaId}"/>
         </c:if>
-
-        <jsp:invoke fragment="bottomContentTopBloc"/>
 
       </div>
       <div class="principalContent">
@@ -349,8 +352,8 @@
             <div class="cadrePhoto">
               <jsp:invoke fragment="mediaPreviewBloc"/>
             </div>
-            <c:if test="${media.title != (not empty internalMedia ? internalMedia.fileName : '')}">
-              <h2 class="mediaTitle">${media.title}</h2>
+            <c:if test="${not empty mediaTitle}">
+            <h2 class="mediaTitle">${mediaTitle}</h2>
             </c:if>
             <c:if test="${not empty media.keyWord}">
               <div class="motsClefs">

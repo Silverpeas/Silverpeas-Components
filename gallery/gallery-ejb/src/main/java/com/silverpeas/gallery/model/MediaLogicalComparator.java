@@ -104,6 +104,10 @@ public class MediaLogicalComparator extends AbstractComplexComparator<Media> {
         case SIZE_DESC:
           if (media instanceof InternalMedia) {
             valueBuffer.append(((InternalMedia) media).getFileSize(), queryOrderBy.isAsc());
+          } else {
+            valueBuffer.append(
+                queryOrderBy.isAsc() ? (long) EMPTY_DIMENSION_ASC : (long) EMPTY_DIMENSION_DESC,
+                queryOrderBy.isAsc());
           }
           break;
         case DIMENSION_ASC:

@@ -28,6 +28,7 @@ public final class ParameterNames {
   private ParameterNames() {
   }
 
+  public static final String StreamingHomepageUrl = "SP$$StreamingHomepageUrl";
   public static final String MediaTitle = "SP$$MediaTitle";
   public static final String MediaDescription = "SP$$MediaDescription";
   public static final String MediaAuthor = "SP$$MediaAuthor";

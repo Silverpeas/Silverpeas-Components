@@ -271,8 +271,14 @@ br.clear {
   color: #fff;
 }
 
+.validateNotAvailable {
+  -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+  filter: alpha(opacity=50);
+  opacity: 0.5;
+}
+
 /******** pour fieldset *************/
-#titleArea, #descriptionArea, #downloadArea {
+#urlArea, #titleArea, #descriptionArea, #downloadArea {
   clear: both;
   display: block;
   float: none;
@@ -281,6 +287,16 @@ br.clear {
 
 #downloadArea {
   height: 3em;
+}
+
+.legend {
+  margin-top: -20px;
+  padding-left: 15px;
+  clear: both;
+}
+
+.legende {
+  display: none;
 }
 
 #photoInfo legend {

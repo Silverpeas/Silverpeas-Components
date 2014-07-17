@@ -23,17 +23,94 @@
  */
 package com.silverpeas.gallery.constant;
 
+import com.silverpeas.util.StringUtil;
+import org.apache.commons.collections.set.UnmodifiableSet;
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonValue;
+
+import java.util.EnumSet;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * @author: Yohann Chastagnier
  */
 public enum StreamingProvider {
-  unknown, youtube, vimeo;
+  unknown(null), youtube("(?i)(\\?|&)v=([a-z0-9]+)"), vimeo("(?i)(/|=)([0-9]+)");
 
+  public static final Set<StreamingProvider> ALL_VALIDS;
+
+  private final Pattern isExtractorPattern;
+
+  static {
+    Set<StreamingProvider> allValids = EnumSet.allOf(StreamingProvider.class);
+    allValids.remove(unknown);
+    //noinspection unchecked
+    ALL_VALIDS = UnmodifiableSet.decorate(allValids);
+  }
+
+  StreamingProvider(final String idExtractorPattern) {
+    if (StringUtil.isDefined(idExtractorPattern)) {
+      isExtractorPattern = Pattern.compile(idExtractorPattern);
+    } else {
+      isExtractorPattern = null;
+    }
+  }
+
+  /**
+   * Retrieves from the specified string the streaming provider.
+   * @param provider the exact string of the provider (it is not case sensitive)
+   * @return the streaming provider found if any, {@link #unknown} otherwise.
+   */
+  @JsonCreator
   public static StreamingProvider from(String provider) {
     try {
       return valueOf(provider.toLowerCase());
     } catch (Exception e) {
       return unknown;
     }
+  }
+
+  /**
+   * Retrieves from the specified string the streaming provider.
+   * @param streamingUrl the exact string of the provider (it is not case sensitive)
+   * @return the streaming provider found if any, {@link #unknown} otherwise.
+   */
+  public static StreamingProvider fromUrl(String streamingUrl) {
+    if (StringUtil.isDefined(streamingUrl)) {
+      for (StreamingProvider streamingProvider : ALL_VALIDS) {
+        if (streamingUrl.toLowerCase().contains(streamingProvider.name())) {
+          return streamingProvider;
+        }
+      }
+    }
+    return unknown;
+  }
+
+  @JsonValue
+  public String getName() {
+    return name();
+  }
+
+  /**
+   * Indicates if the provider is an unknown one.
+   * @return true if unknown, false otherwise.
+   */
+  public boolean isUnknown() {
+    return this == unknown;
+  }
+
+  /**
+   * Gets the identifier of the stream from an url.
+   * @param url
+   * @return
+   */
+  public String extractStreamingId(String url) {
+    Matcher matcher = isExtractorPattern.matcher(url);
+    if (matcher.find()) {
+      return matcher.group(2);
+    }
+    return "";
   }
 }

@@ -185,6 +185,9 @@
       <table class="listing-media">
         <c:set var="cellWidth" value="${100 / nbMediaPerLine}"/>
         <c:forEach var="media" items="${mediaList}" begin="${firstMediaIndex}" end="${lastMediaIndex}" varStatus="loop">
+          <c:set var="internalMedia" value="${media.internalMedia}"/>
+          <c:set var="mediaSrcValue" value="${not empty internalMedia ? internalMedia.fileName : media.streaming.homepageUrl}"/>
+          <c:set var="mediaTitle" value="${(not empty media.title and media.title != mediaSrcValue) ? media.title : mediaSrcValue}"/>
           <c:set var="isNewLine" value="${loop.index % nbMediaPerLine == 0}"/>
           <c:set var="isEndLine"
                  value="${loop.last or loop.index % nbMediaPerLine == (nbMediaPerLine-1)}"/>
@@ -202,14 +205,14 @@
                 <div class="${mediaBackgroundClass}">
                   <div class="cadrePhoto">
                     <a href="MediaView?MediaId=${media.id}">
-                      <img id="imgId_${media.id}" src="${media.getApplicationThumbnailUrl(mediaResolution)}" border="0" alt="<c:out value='${media.title}'/>" title="<c:out value='${media.title}'/>"/>
+                      <img id="imgId_${media.id}" src="${media.getApplicationThumbnailUrl(mediaResolution)}" border="0" alt="<c:out value='${mediaTitle}'/>" title="<c:out value='${mediaTitle}'/>"/>
                     </a>
                   </div>
                   <div>
                     <input type="checkbox" name="SelectMedia" value="${media.id}" ${mediaChecked}/>
                   </div>
-                  <c:if test="${typeAff eq 'small_list' and not empty media.description}">
-                    <div class="txtlibform"><c:out value="${media.title}"/></div>
+                  <c:if test="${typeAff eq 'small_list'}">
+                    <div class="txtlibform"><c:out value="${silfn:truncate(mediaTitle, 50)}"/></div>
                     <c:if test="${not empty media.description}">
                       <div class="media-description"><c:out value="${media.description}"/></div>
                     </c:if>
@@ -225,7 +228,7 @@
                 <div class="${mediaBackgroundClass}">
                   <div class="cadrePhoto">
                     <a href="MediaView?MediaId=${media.id}">
-                      <img src="${media.getApplicationThumbnailUrl(mediaResolution)}" border="0" alt="<c:out value='${media.title}'/>" title="<c:out value='${media.title}'/>"/>
+                      <img src="${media.getApplicationThumbnailUrl(mediaResolution)}" border="0" alt="<c:out value='${mediaTitle}'/>" title="<c:out value='${mediaTitle}'/>"/>
                     </a>
                   </div>
                 </div>
@@ -235,7 +238,7 @@
                 <li class="field field_category media-name">
                   <label class="txtlibform"><fmt:message key="GML.title"/> :</label>
 
-                  <div class="fieldInput"><c:out value="${media.title}"/></div>
+                  <div class="fieldInput"><c:out value="${mediaTitle}"/></div>
                 </li>
                 <c:if test="${not empty media.description}">
                   <li class="field field_category media-name">

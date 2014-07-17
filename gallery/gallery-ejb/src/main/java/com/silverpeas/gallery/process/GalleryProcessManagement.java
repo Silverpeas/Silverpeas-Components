@@ -33,6 +33,7 @@ import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.MediaCriteria;
 import com.silverpeas.gallery.model.MediaPK;
 import com.silverpeas.gallery.model.Photo;
+import com.silverpeas.gallery.model.Sound;
 import com.silverpeas.gallery.model.Video;
 import com.silverpeas.gallery.process.media.*;
 import com.silverpeas.util.StringUtil;
@@ -190,6 +191,8 @@ public class GalleryProcessManagement {
             newMedia = new Photo();
           } else if (mediaMimeType.isSupportedVideoType()) {
             newMedia = new Video();
+          } else if (mediaMimeType.isSupportedSoundType()) {
+            newMedia = new Sound();
           }
           if (newMedia != null) {
             // Creation of the media

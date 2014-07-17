@@ -52,15 +52,17 @@
 <%-- Attributes --%>
 <%@ attribute name="mediaType" required="true" type="com.silverpeas.gallery.constant.MediaType"
               description="A type of media to create/update." %>
-<%@ attribute name="supportedMediaMimeTypes" required="true"
+<%@ attribute name="supportedMediaMimeTypes" required="false"
               type="java.util.Set"
               description="Supported media types." %>
-<jsp:useBean id="supportedMediaMimeTypes" type="java.util.Set<com.silverpeas.gallery.constant.MediaMimeType>"/>
+<c:if test="${not empty supportedMediaMimeTypes}">
+  <jsp:useBean id="supportedMediaMimeTypes" type="java.util.Set<com.silverpeas.gallery.constant.MediaMimeType>"/>
+</c:if>
 
 <%-- Request attributes --%>
-<c:set var="mandatoryIcon"><fmt:message key='gallery.mandatory' bundle='${icons}'/></c:set>
 <c:set var="media" value="${requestScope.Media}" scope="request"/>
 <jsp:useBean id="media" type="com.silverpeas.gallery.model.Media" scope="request"/>
+<c:set var="internalMedia" value="${media.internalMedia}"/>
 <c:set var="isNewMediaCase" value="${empty media.id}" scope="request"/>
 <c:set var="browseContext" value="${requestScope.browseContext}"/>
 <c:set var="instanceId" value="${browseContext[3]}"/>
@@ -78,6 +80,8 @@
 
 <%-- Variables --%>
 <c:set value="${media.applicationOriginalUrl}" var="mediaUrl" scope="request"/>
+<c:set var="mediaSrcValue" value="${not empty internalMedia ? internalMedia.fileName : media.streaming.homepageUrl}"/>
+<c:set var="mediaTitle" value="${(not empty media.title and media.title != mediaSrcValue) ? media.title : mediaSrcValue}"/>
 
 <%-- Actions --%>
 <c:set var="viewMediaAction" value="MediaView?MediaId=${media.id}"/>
@@ -116,7 +120,7 @@
   </c:when>
   <c:otherwise>
     <fmt:message key="GML.modify" var="modifyLabel"/>
-    <c:set var="additionalBrowseBarElements" value="${silfn:truncate(media.title, 50)}@${viewMediaAction}"/>
+    <c:set var="additionalBrowseBarElements" value="${silfn:truncate(mediaTitle, 50)}@${viewMediaAction}"/>
     <c:set var="additionalBrowseBarElements" value="${additionalBrowseBarElements}|${modifyLabel}@#"/>
   </c:otherwise>
 </c:choose>
@@ -177,27 +181,29 @@
               %>
             </fieldset>
             <% } %>
+            <div class="legend">
+              <img src="<c:url value='${mandatoryIcon}'/>" width="5" height="5" alt=""/> : <fmt:message key="GML.requiredField"/>
+            </div>
+
+            <fmt:message key="GML.validate" var="validateLabel"/>
+            <fmt:message key="GML.cancel" var="cancelLabel"/>
+            <view:buttonPane>
+              <view:button action="javascript:onClick=sendData();" label="${validateLabel}"/>
+              <c:choose>
+                <c:when test="${not isNewMediaCase}">
+                  <view:button action="MediaView?MediaId=${media.id}" label="${cancelLabel}"/>
+                </c:when>
+                <c:otherwise>
+                  <view:button action="GoToCurrentAlbum" label="${cancelLabel}"/>
+                </c:otherwise>
+              </c:choose>
+            </view:buttonPane>
           </td>
         </tr>
       </table>
     </form>
 
-    <fmt:message key="GML.validate" var="validateLabel"/>
-    <fmt:message key="GML.cancel" var="cancelLabel"/>
-    <view:buttonPane>
-      <view:button action="javascript:onClick=sendData();" label="${validateLabel}"/>
-      <c:choose>
-        <c:when test="${not isNewMediaCase}">
-          <view:button action="MediaView?MediaId=${media.id}" label="${cancelLabel}"/>
-        </c:when>
-        <c:otherwise>
-          <view:button action="GoToCurrentAlbum" label="${cancelLabel}"/>
-        </c:otherwise>
-      </c:choose>
-    </view:buttonPane>
-
   </view:frame>
 </view:window>
-<div id="tipDiv" style="position:absolute; visibility:hidden; z-index:100000"></div>
 </body>
 </html>

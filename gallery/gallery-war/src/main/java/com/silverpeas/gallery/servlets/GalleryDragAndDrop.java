@@ -20,7 +20,6 @@
  */
 package com.silverpeas.gallery.servlets;
 
-import com.silverpeas.gallery.constant.MediaType;
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.delegate.MediaDataCreateDelegate;
 import com.silverpeas.gallery.model.GalleryRuntimeException;
@@ -173,7 +172,7 @@ public class GalleryDragAndDrop extends HttpServlet {
       SilverTrace.info("gallery", "GalleryDragAndDrop.importRepository",
           "gallery.MSG_NOT_ADD_METADATA", "message = " + e.getMessage());
       if (e instanceof EJBException) {
-        throw (EJBException) e;
+        throw e;
       }
     }
   }

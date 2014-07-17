@@ -67,7 +67,7 @@
     </c:if>
   </jsp:attribute>
 
-  <jsp:attribute name="bottomContentTopBloc">
+  <jsp:attribute name="metadataBloc">
     <gallery:displayMediaMetadata media="${media}" isViewMetadata="${isViewMetadata}"/>
   </jsp:attribute>
 

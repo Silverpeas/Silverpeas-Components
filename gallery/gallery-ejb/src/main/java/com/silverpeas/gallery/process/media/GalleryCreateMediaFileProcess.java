@@ -106,8 +106,6 @@ public class GalleryCreateMediaFileProcess extends AbstractGalleryFileProcess {
   public void processFiles(final GalleryProcessExecutionContext context,
       final ProcessSession session, final FileHandler fileHandler) throws Exception {
 
-    boolean hasBeenProcessed = true;
-
     // Media
     switch (getMedia().getType()) {
       case Photo:
@@ -121,18 +119,15 @@ public class GalleryCreateMediaFileProcess extends AbstractGalleryFileProcess {
         if (fileItem != null) {
           MediaHelper.processSound(fileHandler, sound, fileItem);
         } else {
-          hasBeenProcessed = false;
+          MediaHelper.processSound(fileHandler, sound, file);
         }
         break;
 
       default:
         // In other cases, there is no file to manage.
+        SilverTrace.warn("Gallery", GalleryUpdateMediaFileProcess.class.getName(),
+            getMedia().getType().name() + " media type is never processed");
         break;
-    }
-
-    if (!hasBeenProcessed) {
-      SilverTrace.warn("Gallery", GalleryUpdateMediaFileProcess.class.getName(),
-          getMedia().getType().name() + " media type is never processed");
     }
   }
 

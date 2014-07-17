@@ -22,7 +22,6 @@ package com.silverpeas.gallery;
 
 import com.silverpeas.gallery.constant.MediaMimeType;
 import com.silverpeas.gallery.constant.MediaResolution;
-import com.silverpeas.gallery.constant.MediaType;
 import com.silverpeas.gallery.media.DrewMediaMetadataExtractor;
 import com.silverpeas.gallery.media.MediaMetadataException;
 import com.silverpeas.gallery.media.MediaMetadataExtractor;
@@ -90,6 +89,28 @@ public class MediaHelper {
         } finally {
           fileItem.delete();
         }
+      }
+    }
+  }
+
+  /**
+   * Saves uploaded sound file on file system
+   * (In case of drag And Drop upload)
+   * @param fileHandler
+   * @param sound the current sound media
+   * @param uploadedFile the current uploaded sound
+   * @throws Exception
+   */
+  public static void processSound(final FileHandler fileHandler, Sound sound,
+      final File uploadedFile) throws Exception {
+    if (uploadedFile != null) {
+      try {
+        sound.setFileName(uploadedFile.getName());
+        final HandledFile handledSoundFile = getHandledFile(fileHandler, sound);
+        fileHandler.copyFile(uploadedFile, handledSoundFile);
+        setInternalMetadata(handledSoundFile, sound, MediaMimeType.SOUNDS);
+      } finally {
+        FileUtils.deleteQuietly(uploadedFile);
       }
     }
   }
@@ -489,26 +510,25 @@ public class MediaHelper {
     ImageIO.write(outputBuf, "JPEG", watermarkedTargetStream);
   }
 
-  public static void pasteImage(final FileHandler fileHandler, final MediaPK fromPK,
-      final Photo image, final boolean cut) {
-    final MediaPK toPK = image.getMediaPK();
-    final String subDirectory = MediaType.Photo.getTechnicalFolder();
-    final HandledFile fromDir = fileHandler
-        .getHandledFile(Media.BASE_PATH, fromPK.getInstanceId(), subDirectory + fromPK.getId());
-    final HandledFile toDir = fileHandler
-        .getHandledFile(Media.BASE_PATH, toPK.getInstanceId(), subDirectory + toPK.getId());
+  public static void pasteInternalMedia(final FileHandler fileHandler, final MediaPK fromPK,
+      final InternalMedia media, final boolean cut) {
+    InternalMedia fromMedia = media.getType().newInstance();
+    fromMedia.setMediaPK(fromPK);
+    fromMedia.setFileName(media.getFileName());
+    final HandledFile fromDir = getHandledFile(fileHandler, fromMedia).getParentHandledFile();
+    final HandledFile toDir = getHandledFile(fileHandler, media).getParentHandledFile();
 
-    // copier et renommer chaque image présente dans le répertoire d'origine
+    // Copy and rename all media that exist into source folder
     if (fromDir.exists()) {
 
-      // copy thumbnails & watermark (only if it does exist)
+      // Copy thumbnails & watermark (only if it does exist)
       for (final MediaResolution mediaResolution : new MediaResolution[]{MEDIUM, SMALL, TINY,
           PREVIEW, LARGE, WATERMARK}) {
         pasteFile(fromDir.getHandledFile(fromPK.getId() + mediaResolution.getThumbnailSuffix()),
-            toDir.getHandledFile(toPK.getId() + mediaResolution.getThumbnailSuffix()), cut);
+            toDir.getHandledFile(media.getId() + mediaResolution.getThumbnailSuffix()), cut);
       }
-      // copy original image
-      pasteFile(fromDir.getHandledFile(image.getFileName()), toDir.getHandledFile(image.
+      // Copy original image
+      pasteFile(fromDir.getHandledFile(media.getFileName()), toDir.getHandledFile(media.
           getFileName()), cut);
     }
   }

@@ -24,6 +24,7 @@
 package com.silverpeas.gallery.web;
 
 import com.silverpeas.gallery.constant.MediaResolution;
+import com.silverpeas.gallery.constant.MediaType;
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.control.ejb.MediaServiceFactory;
 import com.silverpeas.gallery.model.AlbumDetail;
@@ -33,8 +34,13 @@ import com.silverpeas.gallery.model.MediaPK;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.SilverpeasRole;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.silverpeas.file.SilverpeasFile;
 
 import javax.ws.rs.PathParam;
@@ -104,11 +110,12 @@ public abstract class AbstractGalleryResource extends RESTWebService {
 
   /**
    * Centralization of getting of media content.
+   * @param expectedMediaType
    * @param mediaId
    * @param requestedMediaResolution
    * @return
    */
-  protected Response getMediaContent(final String mediaId,
+  protected Response getMediaContent(final MediaType expectedMediaType, final String mediaId,
       final MediaResolution requestedMediaResolution) {
     try {
       final Media media = getMediaService().getMedia(new MediaPK(mediaId, getComponentId()));
@@ -123,9 +130,9 @@ public abstract class AbstractGalleryResource extends RESTWebService {
           mediaResolution = MediaResolution.PREVIEW;
         }
       }
-      // Verifying the physical file exists
+      // Verifying the physical file exists and that the type of media is the one expected
       final SilverpeasFile file = media.getFile(mediaResolution);
-      if (!file.exists()) {
+      if (!file.exists() || expectedMediaType != media.getType()) {
         throw new WebApplicationException(Status.NOT_FOUND);
       }
       return Response.ok(new StreamingOutput() {
@@ -237,5 +244,30 @@ public abstract class AbstractGalleryResource extends RESTWebService {
    */
   protected GalleryBm getMediaService() {
     return MediaServiceFactory.getMediaService();
+  }
+
+  /**
+   * Perform an Http Get
+   * @param url
+   * @return a {@link JSONObject}
+   */
+  protected JSONObject getJSonFromUrl(String url) {
+    GetMethod httpGet = new GetMethod(url);
+    httpGet.setRequestHeader("User-Agent", getHttpRequest().getHeader("User-Agent"));
+    httpGet.addRequestHeader("Accept", "application/json");
+    try {
+      HttpClient client = new HttpClient();
+      int statusCode = client.executeMethod(httpGet);
+      if (statusCode != HttpStatus.SC_OK) {
+        throw new WebApplicationException(statusCode);
+      }
+      return new JSONObject(new JSONTokener(httpGet.getResponseBodyAsString()));
+    } catch (WebApplicationException wae) {
+      throw wae;
+    } catch (Exception e) {
+      throw new WebApplicationException(e);
+    } finally {
+      httpGet.releaseConnection();
+    }
   }
 }

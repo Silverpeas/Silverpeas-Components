@@ -24,13 +24,13 @@
 package com.silverpeas.gallery.process.media;
 
 import com.silverpeas.gallery.MediaHelper;
+import com.silverpeas.gallery.model.InternalMedia;
 import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.MediaPK;
-import org.silverpeas.process.io.file.FileHandler;
-import org.silverpeas.process.session.ProcessSession;
-
 import com.silverpeas.gallery.process.AbstractGalleryFileProcess;
 import com.silverpeas.gallery.process.GalleryProcessExecutionContext;
+import org.silverpeas.process.io.file.FileHandler;
+import org.silverpeas.process.session.ProcessSession;
 
 /**
  * Process to paste a media on file system
@@ -75,9 +75,10 @@ public class GalleryPasteMediaFileProcess extends AbstractGalleryFileProcess {
   @Override
   public void processFiles(final GalleryProcessExecutionContext context,
       final ProcessSession session, final FileHandler fileHandler) throws Exception {
-    if (getMedia().getType().isPhoto()) {
+    InternalMedia internalMedia = getMedia().getInternalMedia();
+    if (internalMedia != null) {
       if (!isCutted || !fromMediaPk.getInstanceId().equals(context.getComponentInstanceId())) {
-        MediaHelper.pasteImage(fileHandler, fromMediaPk, getMedia().getPhoto(), isCutted);
+        MediaHelper.pasteInternalMedia(fileHandler, fromMediaPk, internalMedia, isCutted);
       }
     }
   }

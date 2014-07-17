@@ -86,10 +86,15 @@ public class GalleryUpdateMediaFileProcess extends AbstractGalleryFileProcess {
   @Override
   public void processFiles(final GalleryProcessExecutionContext context,
       final ProcessSession session, final FileHandler fileHandler) throws Exception {
+
+    boolean hasBeenProcessed = false;
+
     // Media
     if (fileItem != null && !getMedia().getType().isStreaming()) {
       final String name = fileItem.getName();
       if (StringUtil.isDefined(name)) {
+
+        hasBeenProcessed = true;
 
         // Deleting repository with old media
         fileHandler.getHandledFile(Media.BASE_PATH, context.getComponentInstanceId(),
@@ -111,11 +116,15 @@ public class GalleryUpdateMediaFileProcess extends AbstractGalleryFileProcess {
             MediaHelper.processSound(fileHandler, getMedia().getSound(), fileItem);
             break;
           default:
-            SilverTrace.warn("Gallery", GalleryUpdateMediaFileProcess.class.getName(),
-                getMedia().getType().name() + " media type is never processed");
+            // In other cases, there is no file to manage.
             break;
         }
       }
+    }
+
+    if (!getMedia().getType().isStreaming() && !hasBeenProcessed) {
+      SilverTrace.warn("Gallery", GalleryUpdateMediaFileProcess.class.getName(),
+          getMedia().getType().name() + " media type is never processed");
     }
   }
 }

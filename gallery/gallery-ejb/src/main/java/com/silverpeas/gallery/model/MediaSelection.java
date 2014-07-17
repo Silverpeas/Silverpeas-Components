@@ -66,7 +66,8 @@ public class MediaSelection extends ClipboardSelection {
   public IndexEntry getIndexEntry() {
     MediaPK mediaPK = currentMedia.getMediaPK();
     IndexEntry indexEntry =
-        new IndexEntry(mediaPK.getComponentName(), "Media", currentMedia.getMediaPK().getId());
+        new IndexEntry(mediaPK.getComponentName(), currentMedia.getType().name(),
+            currentMedia.getMediaPK().getId());
     indexEntry.setTitle(currentMedia.getName());
     return indexEntry;
   }
