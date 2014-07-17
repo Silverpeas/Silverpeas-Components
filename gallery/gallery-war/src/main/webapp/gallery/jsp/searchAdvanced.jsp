@@ -25,10 +25,10 @@
 --%>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ include file="check.jsp" %>
-<%@page import="org.silverpeas.search.indexEngine.DateFormatter"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 
@@ -40,11 +40,8 @@
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
 <%
-	List 				metaDataKeys	= (List) request.getAttribute("MetaDataKeys");
 	Form				form	 		= (Form) request.getAttribute("Form");
 	DataRecord			data			= (DataRecord) request.getAttribute("Data");
-
-	String 				keyWord			= (String) request.getAttribute("KeyWord");
 %>
 
 <c:set var="browseContext" value="${requestScope.browseContext}"/>
@@ -54,6 +51,7 @@
 <html>
 <head>
   <view:looknfeel/>
+  <link type="text/css" href="<c:url value="/util/styleSheets/fieldset.css" />" rel="stylesheet"/>
   <view:includePlugin name="datepicker"/>
 <script type="text/javascript" src="<c:url value="/util/javaScript/lucene/luceneQueryValidator.js"/>"></script>
 <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js"/>"></script>
@@ -98,75 +96,56 @@ function checkLuceneQuery() {
 <view:frame>
 
 <form name="searchForm" action="Search" method="POST" onSubmit="javascript:sendData();" enctype="multipart/form-data" accept-charset="UTF-8">
-  <br/>
-  <view:board>
-		<table>
-			<tr>
-				<td class="txtlibform" nowrap width="200px"><fmt:message key="GML.search"/> :</td>
-				<td><input type="text" name="SearchKeyWord" value="<%=keyWord%>" size="36" id="searchQuery"></td>
-			</tr>
-		</table>
-  </view:board>
-		<%
-		// affichage des données IPTC
-		// --------------------------
-		if (metaDataKeys != null && metaDataKeys.size() > 0) {
-%>
-  <br/>
-  <view:board>
-    <table cellspacing="3" cellpadding="0">
 
-<%
-			Iterator it = (Iterator) metaDataKeys.iterator();
-			while (it.hasNext())
-			{
-				MetaData metaData = (MetaData) it.next();
-				String property = metaData.getProperty();
-				String metaDataLabel = metaData.getLabel();
-				String metaDataValue = metaData.getValue();
-				if (!StringUtil.isDefined(metaDataValue)) {
-					metaDataValue = "";
-				}
-				%>
-				<tr>
-					<td class="txtlibform" nowrap width="200px"><%=metaDataLabel%> :</td>
-					<% if (metaData.isDate()) {
-							String beginDate = "";
-							String endDate = "";
-							//metaDataValue looks like [20080101 TO 20081231]
-							if (StringUtil.isDefined(metaDataValue)) {
-								beginDate = metaDataValue.substring(1, 9);
-								if (!DateFormatter.nullBeginDate.equals(beginDate)) {
-									beginDate = resource.getOutputDate(DateFormatter.string2Date(beginDate));
-								} else {
-                  beginDate = "";
-                }
+  <fieldset id="generalFieldset" class="skinFieldset">
+    <div class="fields">
+      <div class="field" id="generalArea">
+        <label class="txtlibform" for="SearchKeyWord"><fmt:message key="GML.search"/></label>
+        <div class="champs">
+          <fmt:message key="gallery.search.field.keyword.help" var="searchTitle" />
+          <input id="searchQuery" type="text" name="SearchKeyWord" value="" size="36" title="${searchTitle}"/><a class="milieuBoutonV5" href="javascript:onClick=sendData();"><span><fmt:message key="GML.search"/></span></a>
+        </div>
+      </div>
+    </div>
+  </fieldset>
 
-								endDate = metaDataValue.substring(13, metaDataValue.length()-1);
-								if (!DateFormatter.nullEndDate.equals(endDate)) {
-									endDate = resource.getOutputDate(DateFormatter.string2Date(endDate));
-								} else {
-									endDate = "";
-								}
-							}
-					%>
-						<td>
-							<input type="text" class="dateToPick" id="<%=property%>_Begin" name="<%=property%>_Begin" size="12" value="<%= beginDate %>"/>
-							<input type="text" class="dateToPick" id="<%=property%>_End" name="<%=property%>_End" size="12" value="<%= endDate %>"/>
-						</td>
-					<% } else { %>
-						<td><input type="text" name="<%=property%>" value="<%=metaDataValue%>" size="36"/></td>
-					<% } %>
-				</tr>
-				<%
-			}
-      %>
-    </table>
-  </view:board>
-<%
-		}
-%>
-	<br/>
+<c:set var="metadataKeys" value="${requestScope.MetaDataKeys}" />
+<c:if test="${not empty metadataKeys}">
+  <fieldset id="metadataFieldset" class="skinFieldset">
+    <legend><fmt:message key="GML.metadata"/></legend>
+    <div class="fields">
+      <c:forEach var="metaData" items="${metadataKeys}">
+        <div class="field" id="metadata_${metaData.property}_area">
+          <label class="txtlibform" for="metadata_${metaData.property}">${metaData.label}</label>
+          <div class="champs">
+            <c:choose>
+              <c:when test="${metaData.date}">
+                <c:set var="parsedBeginDate" value="" />
+                <c:set var="parsedEndDate" value="" />
+                <c:if test="${not empty metaData.value}">
+                  <c:set var="beginDate" value="${fn:substring(metaData.value, 1, 9)}" />
+                  <fmt:parseDate var="parsedBeginDate" value="${beginDate}" pattern="yyyyMMdd" />
+                  <c:set var="endDate" value="${fn:substring(metaData.value, 13, fn:length(metaData.value) - 1)}" />
+                  <fmt:parseDate var="parsedEndDate" value="${endDate}" pattern="yyyyMMdd" />
+                </c:if>
+                <input type="text" class="dateToPick" id="metadonnee_${metaData.property}_Begin" name="${metaData.property}_Begin" size="12" value="<view:formatDate value="${parsedBeginDate}" language="${_language}" />"/>
+                <input type="text" class="dateToPick" id="metadonnee_${metaData.property}_End" name="${metaData.property}_End" size="12" value="<view:formatDate value="${parsedEndDate}" language="${_language}" />"/>
+              </c:when>
+              <c:otherwise>
+                <fmt:message var="metadataTitle" key="gallery.search.field.metadata.help">
+                  <fmt:param value="${metaData.label}" />
+                </fmt:message>
+                <input title="${metadataTitle}" id="metadata_${metaData.property}" type="text" name="${metaData.property}" value="${metaData.value}" size="36"/>
+              </c:otherwise>
+            </c:choose>
+          </div>
+        </div>
+      </c:forEach>
+    </div>
+  </fieldset>
+
+</c:if>
+
 <%
 		if (form != null)
 		{
@@ -182,13 +161,30 @@ function checkLuceneQuery() {
 			out.println("<br/>");
 		}
 
-		// Display PDC
-		out.println(board.printBefore());
-		out.flush();
-		getServletConfig().getServletContext().getRequestDispatcher("/pdcPeas/jsp/pdcInComponent.jsp?ComponentId="+componentId).include(request, response);
-		out.println(board.printAfter());
-
 	%>
+
+  <fieldset id="pdcFieldset" class="skinFieldset">
+    <legend><fmt:message key="GML.PDC"/></legend>
+  <%
+  out.flush();
+  getServletConfig().getServletContext().getRequestDispatcher("/pdcPeas/jsp/pdcInComponent.jsp?ComponentId="+componentId).include(request, response);
+  %>
+    <%--
+    <!-- TODO replace servlet request dispatcher with pdc javascript plugin displayer -->
+    <div class="fields">
+      <div class="field" id="numAffaireArea">
+        <label class="txtlibform" for="numAffaire">   <img src="/silverpeas/pdcPeas/jsp/icons/primary.gif" alt="primary"/>G&eacute;ographique&nbsp;
+         </label>
+        <div class="champs">
+          <select name="Axis1" size="1">
+                <option value=""></option>
+          </select>
+        </div>
+      </div>
+    </div>
+     --%>
+  </fieldset>
+
   <view:buttonPane>
     <fmt:message key="GML.search" var="searchButtonLabel" />
     <view:button label="${searchButtonLabel}" action="javascript:onClick=sendData();"></view:button>

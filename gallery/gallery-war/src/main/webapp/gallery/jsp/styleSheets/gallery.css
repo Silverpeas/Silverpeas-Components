@@ -404,3 +404,34 @@ table.listing-media {
   padding: 0;
   text-align: center;
 }
+
+/*********************** Specific advanced search CSS *********************/
+#generalFieldset {
+  min-height:20px;
+}
+#generalArea .milieuBoutonV5 {
+  display:inline-block;
+  height:17px;
+}
+#generalArea input {
+  width:50%;
+  margin-right:1em;
+}
+
+#metadataFieldset legend {
+ background:transparent url("/silverpeas/util/icons/cog.png")  11px 0 no-repeat ;
+}
+
+.formulaire legend {
+ background:transparent url("/silverpeas/util/icons/component/formulairesSmall.gif")  11px 0 no-repeat ;
+}
+
+#pdcFieldset legend {
+ background:transparent url("/silverpeas/util/icons/component/pdcPeasSmall.gif")  11px 0 no-repeat ;
+}
+#pdcFieldset .field {
+ clear:both;
+}
+#pdcFieldset label img {
+ margin-right:0.5em;
+}
