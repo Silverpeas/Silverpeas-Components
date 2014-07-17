@@ -80,7 +80,7 @@ import com.stratelia.webactiv.util.node.control.dao.NodeDAO;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 
-@Stateless(name = "Gallery", description = "Stateless session bean to manage an image gallery")
+@Stateless(name = "Gallery", description = "Stateless session bean to manage a media gallery")
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class GalleryBmEJB implements GalleryBm {
 

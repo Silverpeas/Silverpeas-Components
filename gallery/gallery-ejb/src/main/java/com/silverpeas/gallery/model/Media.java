@@ -351,7 +351,7 @@ public abstract class Media implements SilverpeasContent, SilverContentInterface
 
   @Override
   public String getURL() {
-    return "searchResult?Type=Media&Id=" + getId();
+    return "searchResult?Type=" + getType().name() + "&Id=" + getId();
   }
 
   @Override

@@ -433,7 +433,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
             // traitement des médias
             request.setAttribute("MediaId", id);
             destination = getDestination("MediaView", gallerySC, request);
-          } else if (type.equals("Node")) {
+          } else if ("Node".equals(type)) {
             // traitement des noeuds = les albums
             destination = getDestination("ViewAlbum", gallerySC, request);
           } else {

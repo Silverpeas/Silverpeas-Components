@@ -105,8 +105,8 @@ public class MediaTest {
     assertThat(media.getMediaPK().getInstanceId(), nullValue());
     assertThat(media.getId(), nullValue());
     assertThat(media.getInstanceId(), nullValue());
-    assertThat(media.getType(), is(MediaType.Unknown));
-    assertThat(media.getContributionType(), is(MediaType.Unknown.name()));
+    assertThat(media.getType(), is(MediaType.Photo));
+    assertThat(media.getContributionType(), is(MediaType.Photo.name()));
     assertThat(media.getTitle(), isEmptyString());
     assertThat(media.getName(), isEmptyString());
     assertThat(media.getName("en"), isEmptyString());
@@ -131,7 +131,7 @@ public class MediaTest {
     assertThat(media.getSilverpeasContentId(), nullValue());
     assertThat(media.getIconUrl(), nullValue());
     assertThat(media.isDownloadable(), is(true));
-    assertThat(media.getURL(), is("searchResult?Type=Media&Id=null"));
+    assertThat(media.getURL(), is("searchResult?Type=Photo&Id=null"));
     assertThat(media.getLanguages(), nullValue());
     assertThat(media.toString(), is("(pk = (id = null, instanceId = null), name = )"));
   }
@@ -271,8 +271,8 @@ public class MediaTest {
     assertThat(media.getMediaPK().getInstanceId(), is("instanceId"));
     assertThat(media.getId(), is("mediaId"));
     assertThat(media.getInstanceId(), is("instanceId"));
-    assertThat(media.getType(), is(MediaType.Unknown));
-    assertThat(media.getContributionType(), is(MediaType.Unknown.name()));
+    assertThat(media.getType(), is(MediaType.Photo));
+    assertThat(media.getContributionType(), is(MediaType.Photo.name()));
     assertThat(media.getTitle(), is("A title"));
     assertThat(media.getName(), is("A title"));
     assertThat(media.getName("en"), is("A title"));
@@ -298,7 +298,7 @@ public class MediaTest {
     assertThat(media.getSilverpeasContentId(), is("silverObjectId"));
     assertThat(media.getIconUrl(), is("iconUrl"));
     assertThat(media.isDownloadable(), is(true));
-    assertThat(media.getURL(), is("searchResult?Type=Media&Id=mediaId"));
+    assertThat(media.getURL(), is("searchResult?Type=Photo&Id=mediaId"));
     assertThat(media.getLanguages(), nullValue());
     assertThat(media.toString(),
         is("(pk = (id = mediaId, instanceId = instanceId), name = A title)"));
@@ -331,7 +331,7 @@ public class MediaTest {
 
     @Override
     public MediaType getType() {
-      return MediaType.Unknown;
+      return MediaType.Photo;
     }
 
     @Override

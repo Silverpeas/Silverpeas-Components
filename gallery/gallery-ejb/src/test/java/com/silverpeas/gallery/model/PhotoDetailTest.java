@@ -163,7 +163,7 @@ public class PhotoDetailTest extends AbstractMediaTest {
     assertThat(wrappedPhoto.getSilverpeasContentId(), is("silverObjectId"));
     assertThat(wrappedPhoto.getIconUrl(), is("iconUrl"));
     assertThat(wrappedPhoto.isDownloadable(), is(true));
-    assertThat(wrappedPhoto.getURL(), is("searchResult?Type=Media&Id=mediaId"));
+    assertThat(wrappedPhoto.getURL(), is("searchResult?Type=Photo&Id=mediaId"));
     assertThat(wrappedPhoto.getLanguages(), nullValue());
     assertThat(wrappedPhoto.toString(),
         is("(pk = (id = mediaId, instanceId = instanceId), name = A title)"));

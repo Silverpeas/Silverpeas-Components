@@ -71,4 +71,8 @@
     <servlet-name>AlbumAjaxServlet</servlet-name>
     <url-pattern>/Album/*</url-pattern>
   </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>GoToImage</servlet-name>
+    <url-pattern>/Media/*</url-pattern>
+  </servlet-mapping>
 </web-app>
