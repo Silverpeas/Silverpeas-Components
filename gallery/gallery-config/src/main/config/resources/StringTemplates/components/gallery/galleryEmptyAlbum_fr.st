@@ -3,8 +3,7 @@ $if(albumPart)$
   Pour en ajouter un, utilisez une des solutions suivantes :
   <ul>
     $if(dragAndDropEnable)$<li>glisser un dossier dans la zone de glisser-déposer</li>$endif$
-    <li>l'opération "$albumOperation$"</li>
-    <li><a href="$albumUrl$">cliquez ici directement</a></li>
+    <li>l'opération "$albumOperation$"<br/>(<a href="$albumUrl$">cliquez ici directement</a>)</li>
   </ul><br/><br/>
 $endif$
 Cet album ne contient pas encore de média.

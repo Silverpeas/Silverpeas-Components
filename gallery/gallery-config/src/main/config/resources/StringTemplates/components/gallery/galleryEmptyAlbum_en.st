@@ -3,8 +3,7 @@ $if(albumPart)$
   To add one, use one of the following:
   <ul>
     $if(dragAndDropEnable)$<li>drag a folder in the drag and drop zone</li>$endif$
-    <li>the operation "$albumOperation$"</li>
-    <li><a href="$albumUrl$">clic here</a></li>
+    <li>the operation "$albumOperation$"<br/>(<a href="$albumUrl$">clic here</a>)</li>
   </ul><br/><br/>
 $endif$
 This album contains no media yet.

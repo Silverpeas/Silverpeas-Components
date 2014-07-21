@@ -125,11 +125,14 @@
     }
 
     <c:if test="${requestScope.UpdateMediaAllowed}">
-    function deleteConfirm(id, name) {
-      if (window.confirm("<fmt:message key="gallery.confirmDeleteMedia"/> '" + name + "' ?")) {
-        document.mediaForm.action = "DeleteMedia?MediaId=" + id;
-        document.mediaForm.submit();
-      }
+    function deleteConfirm() {
+      $('#deleteConfirmationDialog').popup('confirmation', {
+        callback : function() {
+          document.mediaForm.action = "DeleteMedia?MediaId=${mediaId}";
+          document.mediaForm.submit();
+          return true;
+        }
+      });
     }
     </c:if>
 
@@ -187,10 +190,8 @@
     <fmt:message key="GML.delete" var="deleteLabel"/>
     <fmt:message key="GML.delete" var="deleteIcon" bundle="${icons}"/>
     <c:url value="${deleteIcon}" var="deleteIcon"/>
-    <c:set var="tmpLabel"><c:out value="${mediaTitle}"/></c:set>
-    <c:set var="deleteAction" value="javaScript:deleteConfirm('${mediaId}', '${silfn:escapeJs(tmpLabel)}')"/>
     <view:operation altText="${modifyLabel}" action="EditInformation?MediaId=${mediaId}" icon="${modifyIcon}"/>
-    <view:operation altText="${deleteLabel}" action="${deleteAction}" icon="${deleteIcon}"/>
+    <view:operation altText="${deleteLabel}" action="javaScript:deleteConfirm()" icon="${deleteIcon}"/>
   </c:if>
   <c:if test="${greaterUserRole eq adminRole}">
     <fmt:message key="GML.copy" var="copyLabel"/>
@@ -372,7 +373,7 @@
         <%
           Form xmlForm = (Form) request.getAttribute("XMLForm");
           DataRecord xmlData = (DataRecord) request.getAttribute("XMLData");
-          if (xmlForm != null) {
+          if (xmlForm != null && xmlData != null) {
         %>
         <br/>
         <%
@@ -396,5 +397,8 @@
     </c:if>
   </view:frame>
 </view:window>
+<div id="deleteConfirmationDialog" style="display: none">
+  <fmt:message key="gallery.confirmDeleteMedia"/> <b><c:out value="${mediaTitle}"/></b> ?
+</div>
 </body>
 </html>

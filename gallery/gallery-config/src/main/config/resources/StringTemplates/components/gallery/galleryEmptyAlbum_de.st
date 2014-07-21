@@ -3,8 +3,7 @@ $if(albumPart)$
   Um einen hinzuzufügen, verwenden Sie eine der folgenden Lösungen:
   <ul>
     $if(dragAndDropEnable)$<li>einen Ordner in der Drag and Drop Zone verschieben</li>$endif$
-    <li>der Vorgang "$albumOperation$"</li>
-    <li><a href="$albumUrl$">Klicken Sie direkt hier</a></li>
+    <li>der Vorgang "$albumOperation$"<br/>(<a href="$albumUrl$">Klicken Sie direkt hier</a>)</li>
   </ul><br/><br/>
 $endif$
 Dieses Album enthält noch keine Medien.

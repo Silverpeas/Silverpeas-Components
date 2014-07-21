@@ -278,7 +278,7 @@ br.clear {
 }
 
 /******** pour fieldset *************/
-#urlArea, #titleArea, #descriptionArea, #downloadArea {
+#urlArea, #titleArea, #descriptionArea, #downloadArea, .editMedia #fileArea , #authorArea, #keywordArea{
   clear: both;
   display: block;
   float: none;
@@ -290,7 +290,6 @@ br.clear {
 }
 
 .legend {
-  margin-top: -20px;
   padding-left: 15px;
   clear: both;
 }
@@ -328,38 +327,55 @@ br.clear {
 
 .editMedia #metadata {
   width: 300px;
-  margin-top: 1em;
+  margin: 1em auto 0;
 }
 
 .editMedia #metadata b {
   display: block;
 }
 
-.createMedia #fileNameArea {
+#fileNameArea {
   display: none;
 }
 
-.createMedia #beginDownloadDateArea,
-.createMedia #endDownloadDateArea {
-  width: 364px;
+.editMedia  #fileNameArea {
+  display: block;
+  clear:left;
+  padding-top:0
 }
 
-.createMedia #beginDateArea {
+.editMedia  #fileNameArea label{
+  display:none;
+}
+
+#beginDownloadDateArea,
+#beginDateArea{
+  width: 276px;
+}
+
+#beginDateArea {
   clear: both;
 }
 
-.createMedia #beginDateArea,
-.createMedia #endDateArea {
-  width: 364px;
+
+#endDateArea,
+#endDownloadDateArea  {
+  width: 150px;
 }
 
-.createMedia #endDateArea label,
-.createMedia #endDownloadDateArea label {
+#endDateArea label,
+#endDownloadDateArea label {
   width: 50px;
 }
 
-.createMedia #endDateArea .champs,
-.createMedia #endDownloadDateArea .champs {
+#beginDownloadDateArea .txtnote,
+#endDownloadDateArea .txtnote,
+#endDateArea .txtnote,
+#beginDateArea .txtnote {
+  font-size:80%;
+}
+#endDateArea .champs,
+#endDownloadDateArea .champs {
   margin-left: 50px;
 }
 

@@ -171,7 +171,6 @@
               </c:choose>
             </c:if>
 
-            <br/>
             <% if (formUpdate != null) { %>
               <%-- Display XML form --%>
             <fieldset id="formInfo" class="skinFieldset">

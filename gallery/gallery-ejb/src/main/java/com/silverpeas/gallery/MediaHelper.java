@@ -322,7 +322,7 @@ public class MediaHelper {
         createThumbnails(handledImageFile, photo, image, watermark, nameForWatermark);
       } catch (final Exception e) {
         SilverTrace
-            .error("gallery", "ImageHelper.createImage", "gallery.ERR_CANT_CREATE_THUMBNAILS",
+            .error("gallery", "MediaHelper.createImage", "gallery.ERR_CANT_CREATE_THUMBNAILS",
                 "image = " + photo.getTitle() + " (#" + photo.getId() + ")");
       }
     }
@@ -352,7 +352,7 @@ public class MediaHelper {
             photo.addMetaData(meta);
           }
         } catch (UnsupportedEncodingException e) {
-          SilverTrace.error("gallery", "ImageHelper.computeWatermarkText", "root.MSG_BAD_ENCODING",
+          SilverTrace.error("gallery", "MediaHelper.computeWatermarkText", "root.MSG_BAD_ENCODING",
               "Bad metadata encoding in image " + photo.getTitle() + ": " + e.getMessage());
         }
       }
@@ -530,6 +530,16 @@ public class MediaHelper {
       // Copy original image
       pasteFile(fromDir.getHandledFile(media.getFileName()), toDir.getHandledFile(media.
           getFileName()), cut);
+
+      // On cut operation, deleting the source repo
+      if (cut && !fromPK.getInstanceId().equals(media.getInstanceId())) {
+        try {
+          fromDir.delete();
+        } catch (Exception e) {
+          SilverTrace.error("gallery", "MediaHelper.pasteInternalMedia", "root.MSG_GEN_PARAM_VALUE",
+              "Unable to delete source folder : folder path = " + fromDir.getFile().getPath(), e);
+        }
+      }
     }
   }
 
@@ -543,8 +553,7 @@ public class MediaHelper {
           fromFile.copyFile(toFile);
         }
       } catch (final Exception e) {
-        SilverTrace.error("gallery", "ImageHelper.pasteFile", "root.MSG_GEN_PARAM_VALUE",
-            "Unable to copy file : fromImage = " + fromFile.getFile().getPath() + ", toImage = " +
+        SilverTrace.error("gallery", "MediaHelper.pasteFile", "root.MSG_GEN_PARAM_VALUE", "Unable to copy file : fromImage = " + fromFile.getFile().getPath() + ", toImage = " +
                 toFile.getFile().getPath(), e);
       }
     }
@@ -590,7 +599,7 @@ public class MediaHelper {
           }
         }
       } catch (UnsupportedEncodingException e) {
-        SilverTrace.error("gallery", "ImageHelper.computeWatermarkText", "root.MSG_BAD_ENCODING",
+        SilverTrace.error("gallery", "MediaHelper.computeWatermarkText", "root.MSG_BAD_ENCODING",
             "Bad metadata encoding in image " + image.getFile().getPath() + ": " + e.getMessage());
       }
     }

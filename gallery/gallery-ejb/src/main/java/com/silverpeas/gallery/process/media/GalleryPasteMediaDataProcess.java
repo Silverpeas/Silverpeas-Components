@@ -23,12 +23,9 @@
  */
 package com.silverpeas.gallery.process.media;
 
-import static com.silverpeas.util.StringUtil.isDefined;
-
-import org.silverpeas.process.session.ProcessSession;
-
 import com.silverpeas.comment.service.CommentServiceFactory;
-import com.silverpeas.form.record.IdentifiedRecordTemplate;
+import com.silverpeas.form.RecordSet;
+import com.silverpeas.form.record.GenericRecordSet;
 import com.silverpeas.gallery.dao.MediaDAO;
 import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.MediaPK;
@@ -38,7 +35,11 @@ import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.process.session.ProcessSession;
+
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * Process to paste a media in Database
@@ -187,27 +188,27 @@ public class GalleryPasteMediaDataProcess extends AbstractGalleryDataProcess {
         final String xmlFormName = getXMLFormName(context);
         if (isDefined(xmlFormName)) {
 
-          // if XMLForm
+          // Stopping if no defined xml form is detected
           final String xmlFormShortName =
               xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
-          getPublicationTemplateManager().addDynamicPublicationTemplate(
-              context.getComponentInstanceId() + ":" + xmlFormShortName, xmlFormShortName + ".xml");
+          if (StringUtil.isNotDefined(xmlFormShortName) && "0".equals(xmlFormShortName)) {
+            return;
+          }
 
-          // get xmlContent to paste
-          final PublicationTemplate pubTemplateFrom = getPublicationTemplateManager()
+          // Getting the recordset
+          GenericRecordSet toRecordset = getPublicationTemplateManager()
+              .addDynamicPublicationTemplate(toForeignPK.getInstanceId() + ":" + xmlFormShortName,
+                  xmlFormShortName + ".xml");
+
+          PublicationTemplate pubTemplate = getPublicationTemplateManager()
               .getPublicationTemplate(fromMediaPk.getInstanceId() + ":" + xmlFormShortName);
-          final IdentifiedRecordTemplate recordTemplateFrom =
-              (IdentifiedRecordTemplate) pubTemplateFrom.getRecordSet().getRecordTemplate();
+          RecordSet set = pubTemplate.getRecordSet();
 
-          final PublicationTemplate pubTemplate = getPublicationTemplateManager()
-              .getPublicationTemplate(context.getComponentInstanceId() + ":" + xmlFormShortName);
-          final IdentifiedRecordTemplate recordTemplate =
-              (IdentifiedRecordTemplate) pubTemplate.getRecordSet().getRecordTemplate();
-
-          // paste xml content
-          getGenericRecordSetManager()
-              .cloneRecord(recordTemplateFrom, fromMediaPk.getId(), recordTemplate,
-                  getMedia().getId(), null);
+          if (!isCutted) {
+            set.copy(fromForeignPK, toForeignPK, toRecordset.getRecordTemplate(), null);
+          } else {
+            set.move(fromForeignPK, toForeignPK, toRecordset.getRecordTemplate());
+          }
         }
       } catch (final PublicationTemplateException e) {
         SilverTrace.info("gallery", "GalleryPasteMediaDataProcess.processPasteCommons()",
