@@ -1074,10 +1074,13 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
 	                }
                     if (answer.isOpened())
                     {
-                        if (answer.getNbVoters() == 0)
+                        if (answer.getNbVoters() == 0) {
                             r += "<tr><td align=\"left\" nowrap >"+Encode.javaStringToHtmlString(answer.getLabel())+"</td><td>";
-                        else
-                        	r += "<tr><td align=\"left\" nowrap ><A href=\"javaScript:onClick=viewSuggestions('"+answer.getQuestionPK().getId()+"');\">"+Encode.javaStringToHtmlString(answer.getLabel())+"</a></td><td>";
+                        } else {
+                        	r += "<tr><td align=\"left\" nowrap >"+Encode.javaStringToHtmlString(answer.getLabel())+
+                        	    " <A href=\"javaScript:onClick=viewSuggestions('"+answer.getQuestionPK().getId()+"');\">"+
+                        		"<img src=\"icons/info.gif\" border=\"0\" align=\"absmiddle\" width=\"15\" height=\"15\"></a></td><td>";
+                        }
                     }
                     else
                     {
@@ -1103,7 +1106,7 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
                     if (!anonymous && nbSquareForThisAnswer != 0)
                     {
                     	// l'enquête n'est pas anonyme et le % de réponse n'est pas nulle : afficher l'icone pour visualiser les users
-                       	r += "<a href=\"javaScript:onClick=viewUsers('"+answer.getPK().getId()+"');\"><img src=\"icons/info.gif\" border=\"0\" align=\"absmiddle\" width=\"15\" height=\"15\"></a>";
+                       	r += " <a href=\"javaScript:onClick=viewUsers('"+answer.getPK().getId()+"');\"><img src=\"icons/info.gif\" border=\"0\" align=\"absmiddle\" width=\"15\" height=\"15\"></a>";
                     }
                     r += "</td>";
                 } // {while}
@@ -1132,8 +1135,13 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
                 {
                 	rang = rang + 1;
                     Answer answer = (Answer) itA.next();
-                    // affichage de la ligne des differentes réponses possibles
-                    r += "<th> "+Encode.javaStringToHtmlString(answer.getLabel())+" </th>";
+                 	// affichage de la ligne des differentes r�ponses possibles
+                    if (answer.isOpened() &&
+                        answer.getNbVoters() > 0) {
+						r += "<th> "+Encode.javaStringToHtmlString(answer.getLabel())+" <A href=\"javaScript:onClick=viewSuggestions('"+answer.getQuestionPK().getId()+"');\"><img src=\"icons/info.gif\" border=\"0\" align=\"absmiddle\" width=\"15\" height=\"15\"></a> </th>";
+                    } else {
+						r += "<th> "+Encode.javaStringToHtmlString(answer.getLabel())+" </th>";
+                    }
                     answerValues.put(answer.getPK().getId(), new Integer(rang));
                 }
                 r += "</tr> </thead>";
