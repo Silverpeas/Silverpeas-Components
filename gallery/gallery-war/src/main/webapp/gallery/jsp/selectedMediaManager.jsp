@@ -115,7 +115,7 @@
 
       // Download period
       var beginDownloadDate = {dateId : 'beginDownloadDate'};
-      var endDownloadDate = {dateId : 'endDownloadDate'};
+      var endDownloadDate = {dateId : 'endDownloadDate', defaultDateHour : '23:59'};
       var dateErrors = isPeriodEndingInFuture(beginDownloadDate, endDownloadDate);
       $(dateErrors).each(function(index, error) {
         errorMsg += "<li>" + error.message + "</li>";
@@ -123,7 +123,7 @@
       });
       // Visibility period
       var beginVisibilityDate = {dateId : 'beginVisibilityDate'};
-      var endVisibilityDate = {dateId : 'endVisibilityDate'};
+      var endVisibilityDate = {dateId : 'endVisibilityDate', defaultDateHour : '23:59'};
       dateErrors = isPeriodEndingInFuture(beginVisibilityDate, endVisibilityDate);
       $(dateErrors).each(function(index, error) {
         errorMsg += "<li>" + error.message + "</li>";

@@ -88,6 +88,7 @@
 <c:set var="mediaId" value="${media.id}"/>
 <jsp:useBean id="mediaId" type="java.lang.String"/>
 <c:set var="mediaUrl" value="${media.applicationOriginalUrl}" scope="request"/>
+<c:set var="searchKeyWord" value="${requestScope.SearchKeyWord}"/>
 
 <c:set var="albumPath" value="${requestScope.Path}"/>
 <jsp:useBean id="albumPath" type="java.util.List<com.silverpeas.gallery.model.AlbumDetail>"/>
@@ -173,9 +174,9 @@
   </c:if>
   <jsp:invoke fragment="headerBloc"/>
 </head>
-<body class="gallery gallery-fiche-media yui-skin-sam" id="${instanceId}">
+<body class="gallery gallery-fiche-media gallery-fiche-${fn:toLowerCase(media.type)} yui-skin-sam" id="${instanceId}">
 
-<gallery:browseBar albumPath="${albumPath}" additionalElements="${silfn:truncate(mediaTitle, 50)}@#" />
+<gallery:browseBar albumPath="${albumPath}" additionalElements="${silfn:truncate(mediaTitle, 50)}@#"/>
 
 <view:operationPane>
   <fmt:message key="GML.notify" var="notifLabel"/>
@@ -242,25 +243,33 @@
 
   <view:frame>
     <form name="mediaForm" method="post" accept-charset="UTF-8" action="#">
+      <div id="pagination">
+        <c:if test="${requestScope.Rang ne 0}">
+          <fmt:message var="previousMedia" key="gallery.previous"/>
+          <a id="previousButton" href="PreviousMedia">
+            <img alt="${previousMedia}" title="${previousMedia}" src="${previousIconUrl}"/>
+          </a>
+        </c:if>
+        <span class="txtnav"><span class="currentPage">${requestScope.Rang + 1}</span> / ${requestScope.NbMedia}</span>
+        <c:if test="${requestScope.Rang ne (requestScope.NbMedia - 1)}">
+          <fmt:message var="nextMedia" key="gallery.next"/>
+          <a id="nextButton" href="NextMedia"><img alt="${nextMedia}" title="${nextMedia}" src="${nextIconUrl}"/></a>
+        </c:if>
+      </div>
+
+      <!-- button to go back to search results or current folder -->
+      <fmt:message key="GML.back" var="backLabel"/>
+      <div id="backToSearch">
+        <a class="button" href="${not empty searchKeyWord ? 'SearchKeyWord?SearchKeyWord='.concat(searchKeyWord) : 'ViewAlbum?Id='.concat(albumId)}"><span>${backLabel}</span></a>
+      </div>
 
       <div class="rightContent">
-        <div class="fileName">
-          <c:if test="${not empty internalMedia}">
-            <c:choose>
-              <c:when test="${requestScope.ViewLinkDownload or media.downloadable}">
-                <a href="${mediaUrl}" target="_blank"><c:out value="${media.name}"/>
-                  <img src="${downloadIconUrl}" alt="<fmt:message key='gallery.download.media'/>" title="<fmt:message key='gallery.original'/>"/>
-                </a>
-                <jsp:invoke fragment="additionalDownloadBloc"/>
-              </c:when>
-              <c:otherwise>
-                <c:out value="${internalMedia.fileName}"/>
-                <img src="${downloadForbiddenIconUrl}" alt="<fmt:message key='gallery.download.forbidden'/>" title="<fmt:message key='gallery.download.forbidden'/>" class="forbidden-download-file"/>
-              </c:otherwise>
-            </c:choose>
-          </c:if>
-        </div>
         <div class="fileCharacteristic bgDegradeGris">
+          <c:if test="${not empty internalMedia}">
+            <div class="header bgDegradeGris">
+              <h4 class="clean"><c:out value="${internalMedia.fileName}"/></h4>
+            </div>
+          </c:if>
           <p>
             <c:if test="${not empty internalMedia}">
               <span class="fileCharacteristicWeight"><fmt:message key="gallery.weight"/> <b>${silfn:formatMemSize(internalMedia.fileSize)}</b></span>
@@ -268,6 +277,13 @@
             <jsp:invoke fragment="specificSpecificationBloc"/>
             <br class="clear"/>
           </p>
+          <c:if test="${not empty internalMedia and (requestScope.ViewLinkDownload or media.downloadable)}">
+            <a href="${mediaUrl}" class="download-link" target="_blank">
+              <img src="${downloadIconUrl}" alt="<fmt:message key='gallery.download.media'/>" title="<fmt:message key='gallery.original'/>"/>
+              <fmt:message key='gallery.download.media'/>
+            </a>
+            <jsp:invoke fragment="additionalDownloadBloc"/>
+          </c:if>
         </div>
 
         <jsp:invoke fragment="metadataBloc"/>
@@ -335,39 +351,26 @@
 
       </div>
       <div class="principalContent">
-        <div id="pagination">
-          <c:if test="${requestScope.Rang ne 0}">
-            <fmt:message var="previousMedia" key="gallery.previous"/>
-            <a id="previousButton" href="PreviousMedia">
-              <img alt="${previousMedia}" title="${previousMedia}" src="${previousIconUrl}"/>
-            </a>
-          </c:if>
-          <span class="txtnav"><span class="currentPage">${requestScope.Rang + 1}</span> / ${requestScope.NbMedia}</span>
-          <c:if test="${requestScope.Rang ne (requestScope.NbMedia - 1)}">
-            <fmt:message var="nextMedia" key="gallery.next"/>
-            <a id="nextButton" href="NextMedia"><img alt="${nextMedia}" title="${nextMedia}" src="${nextIconUrl}"/></a>
-          </c:if>
-        </div>
-        <div class="contentMedia">
+        <div class="contentMedia a-media">
           <div class="${media.visible ? 'fondPhoto' : 'fondPhotoNotVisible'}">
             <div class="cadrePhoto">
               <jsp:invoke fragment="mediaPreviewBloc"/>
             </div>
-            <c:if test="${not empty mediaTitle}">
-            <h2 class="mediaTitle">${mediaTitle}</h2>
-            </c:if>
-            <c:if test="${not empty media.keyWord}">
-              <div class="motsClefs">
-                <c:set var="listKeys" value="${fn:split(media.keyWord,' ')}"/>
-                <c:forEach items="${listKeys}" var="keyword">
-                  <span><a href="SearchKeyWord?SearchKeyWord=${keyword}">${keyword}</a></span>
-                </c:forEach>
-              </div>
-            </c:if>
-            <c:if test="${not empty media.description}">
-              <p class="description">${media.description}</p>
-            </c:if>
           </div>
+          <c:if test="${not empty mediaTitle}">
+            <h2 class="mediaTitle">${mediaTitle}</h2>
+          </c:if>
+          <c:if test="${not empty media.keyWord}">
+            <div class="motsClefs">
+              <c:set var="listKeys" value="${fn:split(media.keyWord,' ')}"/>
+              <c:forEach items="${listKeys}" var="keyword">
+                <span><a href="SearchKeyWord?SearchKeyWord=${keyword}">${keyword}</a></span>
+              </c:forEach>
+            </div>
+          </c:if>
+          <c:if test="${not empty media.description}">
+            <p class="description">${media.description}</p>
+          </c:if>
         </div>
 
         <%

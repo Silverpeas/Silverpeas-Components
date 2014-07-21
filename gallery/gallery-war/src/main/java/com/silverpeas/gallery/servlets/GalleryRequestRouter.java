@@ -382,6 +382,8 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         request.setAttribute("IsPrivateSearch", gallerySC.isPrivateSearch());
         try {
           Media media = gallerySC.getMedia(mediaId);
+
+          request.setAttribute("SearchKeyWord", request.getParameter("SearchKeyWord"));
           request.setAttribute("Rang", gallerySC.getRang());
           request.setAttribute("NbMedia", gallerySC.goToAlbum().getMedia().size());
 

@@ -49,8 +49,6 @@
 
 <div id="videoContainer"></div>
 <script type="text/javascript">
-  <c:set var="headIncludes"><view:includePlugin name="player"/></c:set>
-  $(document.head).append("${silfn:escapeJs(headIncludes)}");
   $(document).ready(function() {
     $('#videoContainer').player('video', {
       container : {

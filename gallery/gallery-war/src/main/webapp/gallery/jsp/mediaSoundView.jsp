@@ -36,6 +36,9 @@
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
 <gallery:viewMediaLayout>
+  <jsp:attribute name="headerBloc">
+    <view:includePlugin name="player"/>
+  </jsp:attribute>
   <jsp:attribute name="specificSpecificationBloc">
     <jsp:useBean id="media" scope="request" type="com.silverpeas.gallery.model.Sound"/>
     <c:if test="${media.duration gt 0}">

@@ -217,7 +217,7 @@ function checkLuceneQuery(query) {
       <c:if test="${isPrivateSearch}">
         <view:board>
           <center>
-            <form name="searchForm" action="SearchKeyWord" method="post" onsubmit="javascript:sendData();" onkeypress="return event.keyCode != 13;">
+            <form id="searchForm" name="searchForm" action="SearchKeyWord" method="post">
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr>
                   <td valign="middle" align="left" class="txtlibform" width="30%">
@@ -230,6 +230,7 @@ function checkLuceneQuery(query) {
                         <td valign="middle">&nbsp;</td>
                         <td valign="middle" align="left" width="100%">
                           <fmt:message key="GML.ok" var="tmpLabel"/>
+                          <input type="submit" style="width:0; height:0; border:0; padding:0"/>
                           <view:button label="${tmpLabel}" action="javascript:onClick=sendData();"/>
                         </td>
                         <td valign="middle">&nbsp;</td>
@@ -242,6 +243,16 @@ function checkLuceneQuery(query) {
                 </tr>
               </table>
             </form>
+            <script type="text/javascript">
+              $(document).ready(function() {
+                $('#searchForm').on("submit", function() {
+                  if ($.trim($('#searchQuery').val())) {
+                    sendData();
+                  }
+                  return false;
+                });
+              });
+            </script>
           </center>
         </view:board>
         <br/>

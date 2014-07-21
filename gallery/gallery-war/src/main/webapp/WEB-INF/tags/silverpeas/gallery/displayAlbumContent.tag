@@ -204,7 +204,7 @@
               <td class="a-media ${typeAff eq 'small_list' ? 'aff-small': 'aff-tiny'}" width="${cellWidth}%">
                 <div class="${mediaBackgroundClass}">
                   <div class="cadrePhoto">
-                    <a href="MediaView?MediaId=${media.id}">
+                    <a href="MediaView?MediaId=${media.id}${not empty searchKeyword ? '&SearchKeyWord='.concat(searchKeyword) : ''}">
                       <img id="imgId_${media.id}" src="${media.getApplicationThumbnailUrl(mediaResolution)}" border="0" alt="<c:out value='${mediaTitle}'/>" title="<c:out value='${mediaTitle}'/>"/>
                     </a>
                   </div>

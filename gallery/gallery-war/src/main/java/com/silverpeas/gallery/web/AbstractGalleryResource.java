@@ -151,7 +151,9 @@ public abstract class AbstractGalleryResource extends RESTWebService {
           }
         }
       }).header("Content-Type", ((InternalMedia) media).getFileMimeType().getMimeType())
-          .header("Content-Length", file.length()).build();
+          .header("Content-Length", file.length())
+          .header("Content-Disposition", "inline; filename=\"" + file.getName() + "\"")
+          .build();
     } catch (final WebApplicationException ex) {
       throw ex;
     } catch (final Exception ex) {

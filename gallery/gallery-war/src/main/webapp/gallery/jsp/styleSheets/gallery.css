@@ -196,11 +196,47 @@ ul#albumList li.ui-state-highlight {
   display: block;
 }
 
+.gallery-fiche-media .rightContent .fileCharacteristic .header h4 {
+  height: 16px;
+}
+
+.gallery-fiche-photo .rightContent .fileCharacteristic .header h4 {
+  background: url("../icons/icon-photo.gif") no-repeat scroll right top transparent;
+}
+
+.gallery-fiche-video .rightContent .fileCharacteristic .header h4 {
+  background: url("../icons/icon-video.png") no-repeat scroll right top transparent;
+}
+
+.gallery-fiche-sound .rightContent .fileCharacteristic .header h4 {
+  background: url("../icons/icon-sound.png") no-repeat scroll right top transparent;
+}
+
+.gallery-fiche-streaming .rightContent .fileCharacteristic .header h4 {
+  background: url("../icons/icon-streaming.png") no-repeat scroll right top transparent;
+}
+
 .gallery-fiche-media .rightContent .fileCharacteristicDuration {
   float: left;
   background: transparent url(../icons/duration.png) no-repeat 0 0;
   padding: 0 0 0 24px;
   width: 100px;
+}
+
+.gallery-fiche-media .rightContent .fileCharacteristic a.download-link {
+  display: block;
+  background-color: #FFF;
+  border-bottom: 1px solid #cdcdcd;
+  border-top: 1px solid #cdcdcd;
+  margin: 0.5em 0;
+  padding: 0.25em 0;
+  text-align: center;
+  text-align: center;
+}
+
+.gallery-fiche-media .rightContent .fileCharacteristic a.download-link img {
+  border: 0;
+  vertical-align: middle;
 }
 
 .gallery-fiche-media .rightContent .fileCharacteristicSize {
@@ -235,7 +271,77 @@ br.clear {
   clear: both
 }
 
-.principalContent #pagination, .principalContent .contentMedia {
+.commentaires {
+  border-top: 2px dotted #cecece;
+  clear: left;
+  margin-top: 15px;
+  overflow: auto;
+  width: 100%;
+}
+
+.principalContent #pagination,
+.principalContent .fondPhoto,
+.principalContent .fondPhotoNotVisible {
+  text-align: center;
+}
+
+.contentMedia .mediaTitle {
+  margin: 0;
+  padding: 0;
+}
+
+.contentMedia .mediaTitle,
+.contentMedia .motsClefs {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.contentMedia .description {
+  border-left: 6px solid #e4e4e4;
+  padding: 8px;
+  margin: 1em 0;
+}
+
+.gallery-fiche-media #pagination {
+  display: block;
+  float: right;
+  margin: 9px 0 1px;
+}
+
+.gallery-fiche-media .currentPage {
+  opacity: 0.6;
+}
+
+.gallery-fiche-media #pagination img {
+  border: 0 none;
+  vertical-align: top;
+}
+
+.gallery-fiche-media #backToSearch {
+  float: right;
+  height: 30px;
+  width: 252px;
+}
+
+.gallery-fiche-media #backToSearch a.button {
+  background-color: #f4f4f4;
+  background-image: url("/silverpeas/util/icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100");
+  border: 1px solid #cccccc;
+  border-radius: 5px;
+  color: #4c4c4c;
+  font-size: 100%;
+  padding: 7px 10px;
+  position: absolute;
+  right: 101px;
+  width: 187px;
+}
+
+.gallery-fiche-media #backToSearch a.button span {
+  background: url("../../../util/icons/back.png") no-repeat scroll 0 0 transparent;
+  display: block;
+  font-weight: bold;
+  line-height: 16px;
+  padding: 0 0 0 24px;
   text-align: center;
 }
 
@@ -250,7 +356,7 @@ br.clear {
 .principalContent .cadrePhoto {
   width: auto;
   display: inline-block;
-  margin: 1em auto;
+  margin: 0 auto 1em;
 }
 
 .motsClefs a {
@@ -272,13 +378,13 @@ br.clear {
 }
 
 .validateNotAvailable {
-  -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
   filter: alpha(opacity=50);
   opacity: 0.5;
 }
 
 /******** pour fieldset *************/
-#urlArea, #titleArea, #descriptionArea, #downloadArea, .editMedia #fileArea , #authorArea, #keywordArea{
+#urlArea, #titleArea, #descriptionArea, #downloadArea, .editMedia #fileArea, #authorArea, #keywordArea {
   clear: both;
   display: block;
   float: none;
@@ -338,18 +444,18 @@ br.clear {
   display: none;
 }
 
-.editMedia  #fileNameArea {
+.editMedia #fileNameArea {
   display: block;
-  clear:left;
-  padding-top:0
+  clear: left;
+  padding-top: 0
 }
 
-.editMedia  #fileNameArea label{
-  display:none;
+.editMedia #fileNameArea label {
+  display: none;
 }
 
 #beginDownloadDateArea,
-#beginDateArea{
+#beginDateArea {
   width: 276px;
 }
 
@@ -357,9 +463,8 @@ br.clear {
   clear: both;
 }
 
-
 #endDateArea,
-#endDownloadDateArea  {
+#endDownloadDateArea {
   width: 150px;
 }
 
@@ -372,8 +477,9 @@ br.clear {
 #endDownloadDateArea .txtnote,
 #endDateArea .txtnote,
 #beginDateArea .txtnote {
-  font-size:80%;
+  font-size: 80%;
 }
+
 #endDateArea .champs,
 #endDownloadDateArea .champs {
   margin-left: 50px;
@@ -439,31 +545,35 @@ table.listing-media {
 
 /*********************** Specific advanced search CSS *********************/
 #generalFieldset {
-  min-height:20px;
+  min-height: 20px;
 }
+
 #generalArea .milieuBoutonV5 {
-  display:inline-block;
-  height:17px;
+  display: inline-block;
+  height: 17px;
 }
+
 #generalArea input {
-  width:50%;
-  margin-right:1em;
+  width: 50%;
+  margin-right: 1em;
 }
 
 #metadataFieldset legend {
- background:transparent url("/silverpeas/util/icons/cog.png")  11px 0 no-repeat ;
+  background: transparent url("../../../util/icons/cog.png") 11px 0 no-repeat;
 }
 
 .formulaire legend {
- background:transparent url("/silverpeas/util/icons/component/formulairesSmall.gif")  11px 0 no-repeat ;
+  background: transparent url("../../../util/icons/component/formulairesSmall.gif") 11px 0 no-repeat;
 }
 
 #pdcFieldset legend {
- background:transparent url("/silverpeas/util/icons/component/pdcPeasSmall.gif")  11px 0 no-repeat ;
+  background: transparent url("../../../util/icons/component/pdcPeasSmall.gif") 11px 0 no-repeat;
 }
+
 #pdcFieldset .field {
- clear:both;
+  clear: both;
 }
+
 #pdcFieldset label img {
- margin-right:0.5em;
+  margin-right: 0.5em;
 }

@@ -33,6 +33,9 @@
 <view:setConstant var="supportedMediaMimeTypes" constant="com.silverpeas.gallery.constant.MediaMimeType.VIDEOS"/>
 
 <gallery:editMediaLayout mediaType="${mediaType}" supportedMediaMimeTypes="${supportedMediaMimeTypes}">
+  <jsp:attribute name="headerBloc">
+    <view:includePlugin name="player"/>
+  </jsp:attribute>
   <jsp:attribute name="mediaPreviewBloc">
     <jsp:useBean id="media" scope="request" type="com.silverpeas.gallery.model.Video"/>
     <gallery:videoPlayer video="${media}" mediaResolution="${SMALL_RESOLUTION}"/>

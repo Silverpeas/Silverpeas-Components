@@ -53,8 +53,9 @@
     <c:if test="${isWatermark}">
       <c:set var="watermarlUrl" value="${media.getApplicationThumbnailUrl(WATERMARK_RESOLUTION)}"/>
       <c:if test="${not empty watermarlUrl}">
-        <a href="${watermarlUrl}" target="_blank">
+        <a href="${watermarlUrl}" class="download-link" target="_blank">
           <img src="${downloadWatermarkIconUrl}" alt="<fmt:message key='gallery.originalWatermark'/>" title="<fmt:message key='gallery.originalWatermark'/>"/>
+          <fmt:message key='gallery.download.media.watermark'/>
         </a>
       </c:if>
     </c:if>

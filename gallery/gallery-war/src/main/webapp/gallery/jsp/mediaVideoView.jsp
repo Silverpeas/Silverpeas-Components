@@ -39,6 +39,9 @@
 <jsp:useBean id="PREVIEW_RESOLUTION" type="com.silverpeas.gallery.constant.MediaResolution"/>
 
 <gallery:viewMediaLayout>
+  <jsp:attribute name="headerBloc">
+    <view:includePlugin name="player"/>
+  </jsp:attribute>
   <jsp:attribute name="specificSpecificationBloc">
     <jsp:useBean id="media" scope="request" type="com.silverpeas.gallery.model.Video"/>
     <c:if test="${media.definition.defined}">

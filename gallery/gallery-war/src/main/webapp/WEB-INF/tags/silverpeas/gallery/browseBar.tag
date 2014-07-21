@@ -54,7 +54,7 @@
               type="java.lang.String"
               description="Parameter used if albumPath is not filled." %>
 <c:if test="${searchKeyword != null}">
-  <c:set var="_searchKeyword" value="'${searchKeyword}'"/>
+  <c:set var="_searchKeyword" value="${searchKeyword}"/>
 </c:if>
 
 <%@ attribute name="additionalElements" required="false"
@@ -81,7 +81,9 @@
         <c:otherwise>
           <fmt:message key="gallery.searchAdvanced" var="searchAdvancedLabel"/>
           <fmt:message key="gallery.resultSearch" var="resultSearchLabel"/>
-          <view:browseBarElt label="${searchAdvancedLabel} > ${resultSearchLabel} ${not empty _searchKeyword ? _searchKeyword : ''}" link="SearchAdvanced"/>
+          <c:set var="_searchKeywordFormatted" value="'${searchKeyword}'"/>
+          <view:browseBarElt label="${searchAdvancedLabel} - ${resultSearchLabel} ${not empty _searchKeyword ? _searchKeywordFormatted : ''}"
+                             link="SearchAdvanced${not empty _searchKeyword ? '?KeyWord='.concat(_searchKeyword) : ''}"/>
         </c:otherwise>
       </c:choose>
     </c:otherwise>
