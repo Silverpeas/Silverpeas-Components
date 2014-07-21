@@ -211,7 +211,8 @@
         <%--TODO choose if media is Streaming display input type text else display input type file --%>
         <c:choose>
           <c:when test="${mediaType eq MediaTypeStreaming}">
-            <input id="fileId" type="text" name="SP$$StreamingHomepageUrl" size="60" maxlength="150" value="${media.streaming.homepageUrl}"/>
+            <fmt:message var="fileIdHelp" key="gallery.streaming.field.help" />
+            <input id="fileId" type="text" name="SP$$StreamingHomepageUrl" size="60" maxlength="150" value="${media.streaming.homepageUrl}" title="${fileIdHelp}" />
           </c:when>
           <c:otherwise>
             <input id="fileId" type="file" name="WAIMGVAR0" size="60"/>
