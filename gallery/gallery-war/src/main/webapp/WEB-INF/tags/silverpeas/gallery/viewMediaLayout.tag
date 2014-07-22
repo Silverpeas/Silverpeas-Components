@@ -149,10 +149,12 @@
     }
     </c:if>
 
-    $(window).keydown(function(e) {
-      var keyCode = eval(e.keyCode);
+    $(document).keydown(function(e) {
+      var keyCode = eval(e.which);
       if (37 == keyCode || keyCode == 39) {
-        e.preventDefault();
+        if (typeof e.preventDefault === 'function') {
+          e.preventDefault();
+        }
         var button;
         if (37 == keyCode) {
           // Previous

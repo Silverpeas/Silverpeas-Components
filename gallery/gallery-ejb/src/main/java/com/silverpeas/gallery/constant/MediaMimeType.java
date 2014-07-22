@@ -91,7 +91,8 @@ public enum MediaMimeType {
         return JPG;
       }
       for (MediaMimeType mediaMimeType : ALL_VALIDS) {
-        if (mediaMimeType.mimeType.equals(mimeType)) {
+        if (mediaMimeType.mimeType.equals(mimeType) ||
+            mediaMimeType.mimeType.equals(mimeType.replace("x-ms-", ""))) {
           return mediaMimeType;
         }
       }
