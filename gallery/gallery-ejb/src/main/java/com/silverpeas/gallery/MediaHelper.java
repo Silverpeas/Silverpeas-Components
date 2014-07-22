@@ -598,6 +598,9 @@ public class MediaHelper {
             nameForWatermark = nameAuthor;
           }
         }
+      } catch (MediaMetadataException e) {
+        SilverTrace.error("gallery", "MediaHelper.computeWatermarkText", "root.MSG_BAD_FILE_FORMAT",
+            "Bad image file format " + image.getFile().getPath() + ": " + e.getMessage());
       } catch (UnsupportedEncodingException e) {
         SilverTrace.error("gallery", "MediaHelper.computeWatermarkText", "root.MSG_BAD_ENCODING",
             "Bad metadata encoding in image " + image.getFile().getPath() + ": " + e.getMessage());

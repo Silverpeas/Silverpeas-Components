@@ -34,6 +34,7 @@
 
 <%-- Constants --%>
 <view:setConstant var="supportedStreamingProviders" constant="com.silverpeas.gallery.constant.StreamingProvider.ALL_VALIDS"/>
+<jsp:useBean id="supportedStreamingProviders" type="java.util.Set<com.silverpeas.gallery.constant.StreamingProvider>"/>
 
 <%-- Common data --%>
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
@@ -81,10 +82,12 @@
     <c:if test="${not empty supportedStreamingProviders}">
     <c:set var="supportedStreamingProviderRegExpr" value=""/>
     <c:forEach var="supportedStreamingProvider" items="${supportedStreamingProviders}">
+    <c:forEach var="regexpDetectionPart" items="${supportedStreamingProvider.regexpDetectionParts}">
     <c:if test="${not empty supportedStreamingProviderRegExpr}">
     <c:set var="supportedStreamingProviderRegExpr" value="${supportedStreamingProviderRegExpr}|"/>
     </c:if>
-    <c:set var="supportedStreamingProviderRegExpr" value="${supportedStreamingProviderRegExpr}${supportedStreamingProvider}"/>
+    <c:set var="supportedStreamingProviderRegExpr" value="${supportedStreamingProviderRegExpr}${regexpDetectionPart}"/>
+    </c:forEach>
     </c:forEach>
     if (streamingUrl && streamingUrl.length > 0) {
       var urlRegExprCheck = /http.?:\/\/.*(${supportedStreamingProviderRegExpr})/;

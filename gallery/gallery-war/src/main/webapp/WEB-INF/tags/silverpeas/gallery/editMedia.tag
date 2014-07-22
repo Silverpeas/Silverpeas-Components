@@ -42,6 +42,8 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 <c:set var="mandatoryIcon"><fmt:message key='gallery.mandatory' bundle='${icons}'/></c:set>
+<c:set var="componentId" value="${requestScope.browseContext[3]}"/>
+<jsp:useBean id="componentId" type="java.lang.String"/>
 
 <%-- Default values --%>
 <c:set var="_formName" value="mediaForm"/>
@@ -52,6 +54,10 @@
 <c:if test="${formName != null}">
   <c:set var="_formName" value="${formName}"/>
 </c:if>
+
+<%-- Component parameters --%>
+<view:componentParam var="defaultDownload" componentId="${componentId}" parameter="download"/>
+<c:set var="defaultDownload" value="${silfn:booleanValue(defaultDownload)}"/>
 
 <%-- Media --%>
 <%@ attribute name="media" required="true" type="com.silverpeas.gallery.model.Media"
@@ -274,7 +280,7 @@
 
         <div class="champs">
           <c:set var="downloadChecked" value=""/>
-          <c:if test="${media.downloadable}">
+          <c:if test="${media.downloadable || (isNewMediaCase && defaultDownload)}">
             <c:set var="downloadChecked" value="checked=\"checked\""/>
           </c:if>
           <input id="download" type="checkbox" name="SP$$MediaDownloadAuthorized" value="true" ${downloadChecked} />

@@ -28,7 +28,10 @@ import org.apache.commons.collections.set.UnmodifiableSet;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonValue;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,11 +40,12 @@ import java.util.regex.Pattern;
  * @author: Yohann Chastagnier
  */
 public enum StreamingProvider {
-  unknown(null), youtube("(?i)(\\?|&)v=([a-z0-9]+)"), vimeo("(?i)(/|=)([0-9]+)");
+  unknown(null), youtube("(?i)(\\?|&)v=([a-z0-9]+)", "youtu"), vimeo("(?i)(/|=)([0-9]+)");
 
   public static final Set<StreamingProvider> ALL_VALIDS;
 
   private final Pattern isExtractorPattern;
+  private final List<String> regexpDetectionParts;
 
   static {
     Set<StreamingProvider> allValids = EnumSet.allOf(StreamingProvider.class);
@@ -50,12 +54,15 @@ public enum StreamingProvider {
     ALL_VALIDS = UnmodifiableSet.decorate(allValids);
   }
 
-  StreamingProvider(final String idExtractorPattern) {
+  StreamingProvider(final String idExtractorPattern, final String... regexpDetectionParts) {
     if (StringUtil.isDefined(idExtractorPattern)) {
       isExtractorPattern = Pattern.compile(idExtractorPattern);
     } else {
       isExtractorPattern = null;
     }
+    this.regexpDetectionParts = new ArrayList<String>();
+    this.regexpDetectionParts.add(name());
+    Collections.addAll(this.regexpDetectionParts, regexpDetectionParts);
   }
 
   /**
@@ -80,8 +87,10 @@ public enum StreamingProvider {
   public static StreamingProvider fromUrl(String streamingUrl) {
     if (StringUtil.isDefined(streamingUrl)) {
       for (StreamingProvider streamingProvider : ALL_VALIDS) {
-        if (streamingUrl.toLowerCase().contains(streamingProvider.name())) {
-          return streamingProvider;
+        for (String name : streamingProvider.getRegexpDetectionParts()) {
+          if (Pattern.compile(name).matcher(streamingUrl.toLowerCase()).find()) {
+            return streamingProvider;
+          }
         }
       }
     }
@@ -91,6 +100,14 @@ public enum StreamingProvider {
   @JsonValue
   public String getName() {
     return name();
+  }
+
+  /**
+   * Gets the regexp detection parts
+   * @return
+   */
+  public List<String> getRegexpDetectionParts() {
+    return regexpDetectionParts;
   }
 
   /**

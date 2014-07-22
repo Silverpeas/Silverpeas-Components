@@ -127,13 +127,10 @@
 
     <c:if test="${requestScope.UpdateMediaAllowed}">
     function deleteConfirm() {
-      $('#deleteConfirmationDialog').popup('confirmation', {
-        callback : function() {
-          document.mediaForm.action = "DeleteMedia?MediaId=${mediaId}";
-          document.mediaForm.submit();
-          return true;
-        }
-      });
+      if (window.confirm($('#deleteConfirmationDialog').text())) {
+        document.mediaForm.action = "DeleteMedia?MediaId=${mediaId}";
+        document.mediaForm.submit();
+      }
     }
     </c:if>
 
@@ -333,10 +330,11 @@
         </c:if>
 
         <fmt:message key="gallery.CopyMediaLink" var="cpMediaLinkAlt"/>
+        <c:set var="createDateEqualsLastUpdateDate" value="${media.creationDate.compareTo(media.lastUpdateDate) eq 0}"/>
         <viewTags:displayLastUserCRUD createDate="${media.creationDate}"
                                       createdBy="${media.creator}"
-                                      updateDate="${media.lastUpdateDate}"
-                                      updatedBy="${media.lastUpdater}"
+                                      updateDate="${createDateEqualsLastUpdateDate ? null : media.lastUpdateDate}"
+                                      updatedBy="${createDateEqualsLastUpdateDate ? null : media.lastUpdater}"
                                       permalink="${media.permalink}"
                                       permalinkHelp="${cpMediaLinkAlt}"
                                       permalinkIconUrl="${permalinkIconUrl}">

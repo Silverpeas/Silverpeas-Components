@@ -37,8 +37,8 @@ import static org.junit.Assert.assertThat;
 
 public class InternalMediaTest {
 
-  private Date beginDownloadDate = DateUtils.addDays(DateUtil.getNow(), -50);
-  private Date endDownloadDate = DateUtils.addDays(DateUtil.getNow(), 50);
+  private Date beginDownloadDate = DateUtils.addDays(DateUtil.getDate(), -50);
+  private Date endDownloadDate = DateUtils.addDays(DateUtil.getDate(), 50);
 
   @Test
   public void justInstancedTest() {
@@ -58,7 +58,7 @@ public class InternalMediaTest {
 
   @Test
   public void isDownloadable() {
-    Date dateOfDay = DateUtil.getNow();
+    Date dateOfDay = DateUtil.getDate();
     InternalMedia iMedia = defaultInternalMedia();
 
     assertThat(iMedia.isDownloadAuthorized(), is(true));
@@ -92,7 +92,7 @@ public class InternalMediaTest {
     assertThat(iMedia.getDownloadPeriod().getEndDatable(), comparesEqualTo(endDownloadDate));
     assertThat(iMedia.isDownloadable(), is(true));
 
-    dateOfDay = DateUtils.addSeconds(DateUtil.getNow(), 1);
+    dateOfDay = DateUtils.addSeconds(DateUtil.getDate(), 1);
     iMedia.setDownloadPeriod(Period.from(beginDownloadDate, dateOfDay));
 
     assertThat(iMedia.isDownloadAuthorized(), is(true));
@@ -101,7 +101,7 @@ public class InternalMediaTest {
     assertThat(iMedia.getDownloadPeriod().getEndDatable(), comparesEqualTo(dateOfDay));
     assertThat(iMedia.isDownloadable(), is(true));
 
-    dateOfDay = DateUtils.addSeconds(DateUtil.getNow(), -1);
+    dateOfDay = DateUtils.addSeconds(DateUtil.getDate(), -1);
     iMedia.setDownloadPeriod(Period.from(beginDownloadDate, dateOfDay));
 
     assertThat(iMedia.isDownloadAuthorized(), is(true));
@@ -110,7 +110,7 @@ public class InternalMediaTest {
     assertThat(iMedia.getDownloadPeriod().getEndDatable(), comparesEqualTo(dateOfDay));
     assertThat(iMedia.isDownloadable(), is(false));
 
-    dateOfDay = DateUtils.addSeconds(DateUtil.getNow(), -1);
+    dateOfDay = DateUtils.addSeconds(DateUtil.getDate(), -1);
     iMedia.setDownloadPeriod(Period.from(dateOfDay, endDownloadDate));
 
     assertThat(iMedia.isDownloadAuthorized(), is(true));
@@ -119,7 +119,7 @@ public class InternalMediaTest {
     assertThat(iMedia.getDownloadPeriod().getEndDatable(), comparesEqualTo(endDownloadDate));
     assertThat(iMedia.isDownloadable(), is(true));
 
-    dateOfDay = DateUtils.addSeconds(DateUtil.getNow(), 1);
+    dateOfDay = DateUtils.addSeconds(DateUtil.getDate(), 1);
     iMedia.setDownloadPeriod(Period.from(dateOfDay, endDownloadDate));
 
     assertThat(iMedia.isDownloadAuthorized(), is(true));

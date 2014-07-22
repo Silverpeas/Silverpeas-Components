@@ -395,7 +395,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
           boolean linkDownload = gallerySC.getHighestSilverpeasUserRole()
               .isGreaterThanOrEquals(SilverpeasRole.publisher) ||
-              SilverpeasRole.privilegedUser == highestUserRole ||
+              (SilverpeasRole.privilegedUser == highestUserRole && media.isDownloadable()) ||
               (SilverpeasRole.writer == highestUserRole &&
               media.getCreatorId().equals(gallerySC.getUserId()));
           request.setAttribute("ViewLinkDownload", linkDownload);

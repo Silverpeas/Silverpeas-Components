@@ -75,7 +75,7 @@ public abstract class InternalMedia extends Media {
    */
   @Override
   public boolean isDownloadable() {
-    Date dateOfDay = DateUtil.getNow();
+    Date dateOfDay = DateUtil.getDate();
     boolean isDownloadable = isDownloadAuthorized() && isVisible(dateOfDay);
     if (isDownloadable && getDownloadPeriod().isDefined()) {
       isDownloadable = getDownloadPeriod().contains(dateOfDay);

@@ -42,7 +42,7 @@ public class MediaOrderCriteria {
   private String componentInstanceId;
   private final List<String> identifiers = new ArrayList<String>();
   private String ordererId;
-  private Date referenceDate = DateUtil.getNow();
+  private Date referenceDate = DateUtil.getDate();
   private Integer nbDaysAfterThatDeleteAnOrder;
 
   private MediaOrderCriteria() {

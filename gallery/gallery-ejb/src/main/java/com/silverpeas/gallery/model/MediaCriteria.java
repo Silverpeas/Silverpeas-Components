@@ -108,7 +108,7 @@ public class MediaCriteria {
   private final List<QUERY_ORDER_BY> orderByList = new ArrayList<QUERY_ORDER_BY>();
   private final List<String> identifiers = new ArrayList<String>();
   private VISIBILITY visibility = BY_DEFAULT;
-  private Date referenceDate = DateUtil.getNow();
+  private Date referenceDate = DateUtil.getDate();
   private Integer nbDaysBeforeThatMediaIsNotVisible;
   private int resultLimit = 0;
 

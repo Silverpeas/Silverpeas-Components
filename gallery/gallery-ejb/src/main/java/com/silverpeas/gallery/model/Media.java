@@ -247,7 +247,7 @@ public abstract class Media implements SilverpeasContent, SilverContentInterface
     AccessController<String> accessController =
         AccessControllerProvider.getAccessController("componentAccessController");
     return accessController.isUserAuthorized(user.getId(), getComponentInstanceId()) &&
-        (isVisible(DateUtil.getNow()) || (user.isAccessAdmin() || getGreatestUserRole(user)
+        (isVisible(DateUtil.getDate()) || (user.isAccessAdmin() || getGreatestUserRole(user)
             .isGreaterThanOrEquals(SilverpeasRole.publisher) || (getGreatestUserRole(user)
             .isGreaterThanOrEquals(SilverpeasRole.writer) && user.getId().equals(getCreatorId()))));
   }
