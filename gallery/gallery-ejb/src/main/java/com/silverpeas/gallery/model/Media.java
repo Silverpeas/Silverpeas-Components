@@ -36,7 +36,9 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
+
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.date.Period;
 import org.silverpeas.file.SilverpeasFile;
@@ -399,6 +401,13 @@ public abstract class Media implements SilverpeasContent, SilverContentInterface
       return getMediaPK().equals(anotherPhoto.getMediaPK());
     }
     return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder(19, 29)
+        .append(getMediaPK()).append(getTitle()).append(getDescription()).append(getPermalink())
+        .toHashCode();
   }
 
   /**

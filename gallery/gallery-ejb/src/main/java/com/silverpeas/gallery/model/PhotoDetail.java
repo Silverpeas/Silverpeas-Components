@@ -29,6 +29,8 @@ import java.util.Date;
 import java.util.Iterator;
 
 import com.silverpeas.gallery.constant.MediaMimeType;
+
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.silverpeas.date.Period;
 
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
@@ -298,6 +300,11 @@ public class PhotoDetail implements SilverContentInterface, Serializable {
   @Override
   public boolean equals(Object o) {
     return photo.equals(o);
+  }
+
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder().append(getPhoto()).toHashCode();
   }
 
   public String getCreatorName() {

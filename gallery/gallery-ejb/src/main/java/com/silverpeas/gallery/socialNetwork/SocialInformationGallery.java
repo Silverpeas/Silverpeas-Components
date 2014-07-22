@@ -28,6 +28,8 @@ import com.silverpeas.util.StringUtil;
 
 import java.util.Date;
 
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 public class SocialInformationGallery implements SocialInformation {
 
   private final SocialInformationType type = SocialInformationType.MEDIA;
@@ -70,7 +72,6 @@ public class SocialInformationGallery implements SocialInformation {
 
   /**
    * return the Title of this SocialInformation
-   *
    * @return String
    */
   @Override
@@ -80,7 +81,6 @@ public class SocialInformationGallery implements SocialInformation {
 
   /**
    * return the Description of this SocialInformation
-   *
    * @return String
    */
   @Override
@@ -90,7 +90,6 @@ public class SocialInformationGallery implements SocialInformation {
 
   /**
    * return the Author of this SocialInfo
-   *
    * @return String
    */
   @Override
@@ -100,7 +99,6 @@ public class SocialInformationGallery implements SocialInformation {
 
   /**
    * return the Url of this SocialInfo
-   *
    * @return String
    */
   @Override
@@ -110,7 +108,6 @@ public class SocialInformationGallery implements SocialInformation {
 
   /**
    * return the Date of this SocialInfo
-   *
    * @return
    */
   @Override
@@ -120,7 +117,6 @@ public class SocialInformationGallery implements SocialInformation {
 
   /**
    * return the icon of this SocialInformation
-   *
    * @return String
    */
   @Override
@@ -130,7 +126,6 @@ public class SocialInformationGallery implements SocialInformation {
 
   /**
    * return the type of this SocialInformation
-   *
    * @return String
    */
   @Override
@@ -140,7 +135,6 @@ public class SocialInformationGallery implements SocialInformation {
 
   /**
    * return if this socialInfo was updtated or not
-   *
    * @return boolean
    */
   @Override
@@ -172,6 +166,13 @@ public class SocialInformationGallery implements SocialInformation {
     }
 
     return true;
+  }
+
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder(11, 19).append(getType()).append(getTitle())
+        .append(getDescription()).append(getAuthor()).append(getDate()).append(getUrl())
+        .toHashCode();
   }
 
   @Override
