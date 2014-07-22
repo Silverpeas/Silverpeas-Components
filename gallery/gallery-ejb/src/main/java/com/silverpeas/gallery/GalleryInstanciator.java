@@ -20,6 +20,7 @@
  */
 package com.silverpeas.gallery;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -28,12 +29,14 @@ import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.InstanciationException;
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 
+import com.silverpeas.util.FileUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.node.NodeInstanciator;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.node.model.NodePK;
 
@@ -61,8 +64,9 @@ public class GalleryInstanciator implements ComponentsInstanciatorIntf {
       InstanciationException {
     SilverTrace.info(COMPONENT_NAME, "GalleryInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD",
         "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
-    getGalleryBm().deleteAlbum(UserDetail.getById(userId), componentId, new NodePK(
-        NodePK.ROOT_NODE_ID, componentId));
+    getGalleryBm().deleteAlbum(UserDetail.getById(userId), componentId,
+        new NodePK(NodePK.ROOT_NODE_ID, componentId));
+    FileUtil.deleteEmptyDir(new File(FileRepositoryManager.getAbsolutePath(componentId)));
     SilverTrace.info(COMPONENT_NAME, "GalleryInstanciator.delete()", "root.MSG_GEN_EXIT_METHOD");
   }
 

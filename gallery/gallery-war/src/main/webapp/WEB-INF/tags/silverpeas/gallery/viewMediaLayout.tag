@@ -401,7 +401,7 @@
   </view:frame>
 </view:window>
 <div id="deleteConfirmationDialog" style="display: none">
-  <fmt:message key="gallery.confirmDeleteMedia"/> <b><c:out value="${mediaTitle}"/></b> ?
+  <fmt:message key="gallery.confirmDeleteMedia"/> '<c:out value="${mediaTitle}"/>' ?
 </div>
 </body>
 </html>

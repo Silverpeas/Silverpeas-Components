@@ -168,7 +168,8 @@
     <c:if test="${greaterUserRole eq adminRole or userId eq currentAlbum.creatorId}">
     function deleteConfirm(id, nom) {
       // confirmation de suppression de l'album
-      if (window.confirm("<fmt:message key="gallery.confirmDeleteAlbum"/> '" + nom + "' ?")) {
+      if (window.confirm("<fmt:message key="gallery.confirmDeleteAlbum"/> '" + $('<span>').html(nom).text() + "' ?")) {
+        $.progressMessage();
         document.albumForm.action = "DeleteAlbum";
         document.albumForm.Id.value = id;
         document.albumForm.submit();
@@ -208,6 +209,7 @@
       var selectedPhotos = getMediaIds(true);
       if (selectedPhotos && selectedPhotos.length > 0) {
         if (window.confirm("<fmt:message key="gallery.confirmDeleteMedias"/> ")) {
+          $.progressMessage();
           // envoi des photos selectionnees pour la modif par lot
           document.mediaForm.SelectedIds.value = selectedPhotos;
           document.mediaForm.NotSelectedIds.value = getMediaIds(false);
@@ -308,7 +310,7 @@
     <c:if test="${greaterUserRole eq adminRole or userId eq currentAlbum.creatorId}">
       <view:operation action="javaScript:openGalleryEditor(currentGallery)" altText="${updateAlbumLabel}" icon="${updateAlbumIcon}"/>
       <c:set var="tmpLabel"><c:out value="${currentAlbum.name}"/></c:set>
-      <view:operation action="javaScript:deleteConfirm('${currentAlbum.id}','${silfn:escapeJs(tmpLabel)}')" altText="${deleteAlbumLabel}" icon="${deleteAlbumIcon}"/>
+      <view:operation action="javaScript:deleteConfirm('${currentAlbum.id}','${silfn:escapeHtml(silfn:escapeJs(tmpLabel))}')" altText="${deleteAlbumLabel}" icon="${deleteAlbumIcon}"/>
     </c:if>
     <view:operationSeparator/>
     <%-- Copy/Cut of albums --%>

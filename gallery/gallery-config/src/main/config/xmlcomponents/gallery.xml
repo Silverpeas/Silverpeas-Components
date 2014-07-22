@@ -332,7 +332,7 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Si ce paramètre est activé, les médias seront téléchargeables, par defaut, dans leur format original. Ce paramètre pourra être changé à tout moment sur chaque photo.</message>
+        <message lang="fr">Si ce paramètre est activé, les médias seront téléchargeables, par defaut, dans leur format original. Ce paramètre pourra être changé à tout moment sur chaque média.</message>
         <message lang="en">If this parameter is enabled, original media will be downloadable.</message>
         <message lang="de">Wenn dieser Parameter aktiviert ist, können Original-Medien herunter geladen werden</message>
       </help>
