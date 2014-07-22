@@ -217,7 +217,7 @@ function checkLuceneQuery(query) {
       <c:if test="${isPrivateSearch}">
         <view:board>
           <center>
-            <form id="searchForm" name="searchForm" action="SearchKeyWord" method="post">
+            <form id="searchFormId" name="searchForm" action="SearchKeyWord" method="post">
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr>
                   <td valign="middle" align="left" class="txtlibform" width="30%">
@@ -245,7 +245,7 @@ function checkLuceneQuery(query) {
             </form>
             <script type="text/javascript">
               $(document).ready(function() {
-                $('#searchForm').on("submit", function() {
+                $('#searchFormId').on("submit", function() {
                   if ($.trim($('#searchQuery').val())) {
                     sendData();
                   }

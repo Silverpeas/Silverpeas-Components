@@ -95,7 +95,7 @@ function checkLuceneQuery() {
 <view:window>
 <view:frame>
 
-<form name="searchForm" action="Search" method="POST" onSubmit="javascript:sendData();" enctype="multipart/form-data" accept-charset="UTF-8">
+<form id="searchFormId" name="searchForm" action="Search" method="POST" enctype="multipart/form-data" accept-charset="UTF-8">
 
   <fieldset id="generalFieldset" class="skinFieldset">
     <div class="fields">
@@ -103,7 +103,9 @@ function checkLuceneQuery() {
         <label class="txtlibform" for="SearchKeyWord"><fmt:message key="GML.search"/></label>
         <div class="champs">
           <fmt:message key="gallery.search.field.keyword.help" var="searchTitle" />
-          <input id="searchQuery" type="text" name="SearchKeyWord" value="${keyword}" size="36" title="${searchTitle}"/><a class="milieuBoutonV5" href="javascript:onClick=sendData();"><span><fmt:message key="GML.search"/></span></a>
+          <input type="submit" style="width:0; height:0; border:0; padding:0"/>
+          <input id="searchQuery" type="text" name="SearchKeyWord" value="${keyword}" size="36" title="${searchTitle}"/>
+          <a class="milieuBoutonV5" href="javascript:onClick=sendData();"><span><fmt:message key="GML.search"/></span></a>
         </div>
       </div>
     </div>
@@ -187,11 +189,20 @@ function checkLuceneQuery() {
 
   <view:buttonPane>
     <fmt:message key="GML.search" var="searchButtonLabel" />
-    <view:button label="${searchButtonLabel}" action="javascript:onClick=sendData();"></view:button>
+    <view:button label="${searchButtonLabel}" action="javascript:onClick=sendData();"/>
     <fmt:message key="gallery.search.reset" var="resetButtonLabel" />
-    <view:button label="${resetButtonLabel}" action="ClearSearch"></view:button>
+    <view:button label="${resetButtonLabel}" action="ClearSearch"/>
   </view:buttonPane>
 </form>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $('#searchFormId').on("submit", function() {
+        sendData();
+        return false;
+      });
+    });
+  </script>
 
 </view:frame>
 </view:window>

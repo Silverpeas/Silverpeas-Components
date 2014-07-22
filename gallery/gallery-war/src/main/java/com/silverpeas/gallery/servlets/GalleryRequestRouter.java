@@ -946,8 +946,9 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
             }
 
             if (dateBegin != null || dateEnd != null) {
-              query.addFieldQuery(
-                  new FieldDescription("IPTC_" + property, dateBegin, dateEnd, null));
+              query.addFieldQuery(new FieldDescription("IPTC_" + property,
+                  (dateBegin != null ? dateBegin : DateUtil.MINIMUM_DATE),
+                  (dateEnd != null ? dateEnd : DateUtil.MAXIMUM_DATE), null));
             }
 
           }

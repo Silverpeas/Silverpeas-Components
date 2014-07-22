@@ -42,7 +42,6 @@
 <gallery:editMediaLayout mediaType="${mediaType}">
   <jsp:attribute name="headerBloc">
     <jsp:useBean id="media" scope="request" type="com.silverpeas.gallery.model.Streaming"/>
-    <jsp:useBean id="isNewMediaCase" scope="request" type="java.lang.Boolean"/>
     <gallery:streamingLibrary/>
     <script type="text/javascript">
       $(document).ready(function() {
@@ -50,21 +49,20 @@
         var $dummyValidate = $('<a>').append('${validateLabel}');
         var $validateButtonContainer = $validateButton.parent();
         var oldValue = '${media.homepageUrl}';
-        var isNewCase = ${isNewMediaCase};
         $('#fileId').on('blur', function() {
           var value = $.trim($(this).val());
           var $title = $('#title');
           var $author = $('#author');
-          if (value && value != oldValue && (isNewCase || !$.trim($title.val()) || !$.trim($author.val()))) {
+          if (value && value != oldValue) {
             $.progressMessage();
             getPromiseOfStreamingProviderData(value).then(function(providerData) {
               if (!providerData) {
                 return this;
               }
-              if (providerData.title && (isNewCase || !$.trim($title.val()))) {
+              if (providerData.title) {
                 $title.val(providerData.title);
               }
-              if (providerData.author && (isNewCase || !$.trim($author.val()))) {
+              if (providerData.author) {
                 $author.val(providerData.author);
               }
             }).always(function() {
