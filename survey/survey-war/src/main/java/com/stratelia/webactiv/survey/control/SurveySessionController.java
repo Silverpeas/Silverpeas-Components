@@ -57,8 +57,10 @@ import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.answer.model.Answer;
+import com.stratelia.webactiv.util.answer.model.AnswerPK;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.question.model.Question;
+import com.stratelia.webactiv.util.question.model.QuestionPK;
 import com.stratelia.webactiv.util.questionContainer.control.QuestionContainerBm;
 import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerDetail;
 import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerHeader;
@@ -1333,6 +1335,17 @@ public class SurveySessionController extends AbstractComponentSessionController 
     text = header.getTitle();
     if (StringUtil.isDefined(text)) {
       header.setTitle(Encode.forHtml(text));
+    }
+  }
+  
+  public QuestionResult getSuggestion(String userId, String questionId, String answerId) throws SurveyException {
+    try {
+      QuestionPK qPK = new QuestionPK(questionId, getSpaceId(), getComponentId());
+      AnswerPK aPK = new AnswerPK(answerId, getSpaceId(), getComponentId());
+      return questionContainerBm.getSuggestion(userId, qPK, aPK);
+    } catch (Exception e) {
+      throw new SurveyException("SurveySessionController.getSuggestion", SurveyException.WARNING,
+          "Survey.EX_PROBLEM_TO_RETURN_SUGGESTION", "userId="+userId+", questionId="+questionId+", answerId="+answerId, e);
     }
   }
 }
