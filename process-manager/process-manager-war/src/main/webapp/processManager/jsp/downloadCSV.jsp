@@ -33,19 +33,14 @@
 %>
 
 <html>
-	<head>
-	<view:looknfeel/>
-	</head>
-	<body>
-		<%
-			browseBar.setDomainName(spaceLabel);
-		  	browseBar.setComponentName(componentLabel);
-			browseBar.setExtraInformation(resource.getString("GML.export"));
-			
-			out.println(window.printBefore());
-			out.println(frame.printBefore());
-			out.println(board.printBefore());
-		%>
+<head>
+<view:looknfeel/>
+</head>
+<body>
+<view:browseBar extraInformations='<%=resource.getString("GML.export")%>'/>
+<view:window popup="true">
+<view:frame>
+<view:board>
 		<table>
 			<tr>
 				<td class="txtlibform"><%=resource.getString("GML.size")%> :</td>
@@ -56,14 +51,14 @@
 				<td><a href="<%=csvFileURL%>"><%=csvFileName%></a></td>
 			</tr>
 		</table>
+</view:board>
 		<%
-			out.println(board.printAfter());
 			ButtonPane buttonPane = gef.getButtonPane();
-			Button button = (Button) gef.getFormButton(resource.getString("GML.close"), "javaScript:window.close();", false);
+			Button button = gef.getFormButton(resource.getString("GML.close"), "javaScript:window.close();", false);
 			buttonPane.addButton(button);
-			out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
-			out.println(frame.printAfter());
-			out.println(window.printAfter());
+			out.println("<br/><center>"+buttonPane.print()+"</center>");
 		%>
+</view:frame>
+</view:window>
 	</body>
 </html>

@@ -51,14 +51,12 @@
 <%
 String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
 
-ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(kmeliaScc.getLanguage());
-
-Button cancelButton = gef.getFormButton(generalMessage.getString("GML.cancel"), "javascript:onClick=window.close();", false);
-Button validateButton = gef.getFormButton(generalMessage.getString("GML.validate"), "javascript:onClick=sendData()", false);
+Button cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=window.close();", false);
+Button validateButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData()", false);
 %>
 <HTML>
 <HEAD>
-<TITLE><%=generalMessage.getString("GML.popupTitle")%></TITLE>
+<TITLE><%=resources.getString("GML.popupTitle")%></TITLE>
 <view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script LANGUAGE="JavaScript" TYPE="text/javascript">
@@ -99,20 +97,10 @@ function isCorrectForm() {
 </script>
 </HEAD>
 <BODY>
-<%
-    Window window = gef.getWindow();
-    Frame frame = gef.getFrame();
-    Board board = gef.getBoard();
-
-    BrowseBar browseBar = window.getBrowseBar();
-    browseBar.setDomainName(kmeliaScc.getSpaceLabel());
-    browseBar.setComponentName(kmeliaScc.getComponentLabel());
-	browseBar.setExtraInformation(kmeliaScc.getString("AxisCreationTitle"));
-
-    out.println(window.printBefore());
-    out.println(frame.printBefore());
-    out.println(board.printBefore());
-%>
+<view:browseBar extraInformations='<%=kmeliaScc.getString("AxisCreationTitle")%>'/>
+<view:window popup="true">
+<view:frame>
+<view:board>
 	<TABLE ALIGN=CENTER CELLPADDING=5 CELLSPACING=0 BORDER=0>
 		<FORM NAME="axisForm" method="POST">
 				<%=I18NHelper.getFormLine(resources, null, kmeliaScc.getLanguage())%>
@@ -123,18 +111,17 @@ function isCorrectForm() {
 		  <TR><TD colspan="2">( <img border="0" src="<%=mandatoryField%>" width="5" height="5"> : <%=kmeliaScc.getString("ChampsObligatoires")%> )</TD></TR>
 		</FORM>
 	</TABLE>
+</view:board>
 <%
-	out.println(board.printAfter());
-
     ButtonPane buttonPane = gef.getButtonPane();
     buttonPane.addButton(validateButton);
     buttonPane.addButton(cancelButton);
  	out.println("<center><br>");
     out.println(buttonPane.print());
- 	out.println("<br><center>");	
-	out.println(frame.printAfter());
-    out.println(window.printAfter());
+ 	out.println("</center>");
 %>
+</view:frame>
+</view:window>
 </BODY>
 <script language="javascript">
 	document.axisForm.Name.focus();
