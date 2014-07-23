@@ -699,7 +699,7 @@ String displaySurveyResultOfUser(String userName, String userId, Collection resu
               if (style.equals("open")) {
                 r += displayOpenAnswersToQuestionByUser(userId, false, question.getPK().getId(), surveyScc);
               } else {
-             	r += displaySurveyResultChartByUser(resultsByUser, false, answers, m_context, settings);
+             	r += displaySurveyResultChartByUser(resultsByUser, userId, false, question.getPK().getId(), answers, m_context, settings, surveyScc);
               }
 	          r += "</td></tr>";
 	          r += "<tr class=\"questionResults-top\"><td class=\"questionResults-vide\" colspan=\"2\">&nbsp;</td></tr>";
@@ -1222,8 +1222,9 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
         return r;
   }
 
-  String displaySurveyResultChartByUser(Collection resultsByUser, boolean anonymous, Collection answers, String m_context, ResourceLocator settings) throws SurveyException
-  {
+  String displaySurveyResultChartByUser(Collection resultsByUser, String userId, boolean anonymous, String questionId, Collection answers, 
+      String m_context, ResourceLocator settings, SurveySessionController surveyScc) throws SurveyException
+  { 
         String r = "";
         try
         {
@@ -1242,10 +1243,18 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
                     Answer answer = (Answer) itA.next();
                     if (answer.isOpened())
                     {
-                        if (answer.getNbVoters() == 0)
+                        if (answer.getNbVoters() == 0) {
                             r += "<tr><td class=\"labelAnswer\" >"+Encode.javaStringToHtmlString(answer.getLabel())+"</td><td>";
-                        else
-                        	r += "<tr><td class=\"labelAnswer\" ><A href=\"javaScript:onClick=viewSuggestions('"+answer.getQuestionPK().getId()+"');\">"+Encode.javaStringToHtmlString(answer.getLabel())+"</a></td><td>";
+                        } else {
+                          String suggestion = "";
+                          if (resultsByUser.contains(answer.getPK().getId())) {
+                            QuestionResult questionResult = surveyScc.getSuggestion(userId, questionId, answer.getPK().getId());
+                            if(questionResult != null) {
+                           		suggestion = " : "+questionResult.getOpenedAnswer();
+                            }
+                          } 
+                          r += "<tr><td class=\"labelAnswer\" >"+Encode.javaStringToHtmlString(answer.getLabel())+suggestion+"</td><td>";
+                        }
                     }
                     else
                     {
@@ -1265,10 +1274,10 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
                             r += "<tr><td class=\"labelAnswer\" >"+Encode.javaStringToHtmlString(answer.getLabel())+"<BR>";
                             r += "<img src=\""+url+"\" border=\"0\" width=\"60%\"/></td><td>";
                         }
-                        // mettre en valeur cette rÃ©ponse si c'est le choix de l'utilisateur
-                        if (resultsByUser.contains(answer.getPK().getId()))
-	  	                	r += "<img src=\""+m_context+"/util/icons/finishedTask.gif\" border=\"0\" valign=\"center\" width=\"15\" height=\"15\"/>";
-
+                    }
+                 	// mettre en valeur cette réponse si c'est le choix de l'utilisateur
+                    if (resultsByUser.contains(answer.getPK().getId())) {
+	                	r += "<img src=\""+m_context+"/util/icons/finishedTask.gif\" border=\"0\" valign=\"center\" width=\"15\" height=\"15\"/>";
                     }
                     r += "</td>";
                 } // {while}
