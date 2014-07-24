@@ -84,13 +84,12 @@ public class GalleryBmEJB implements GalleryBm {
 
   @EJB
   private NodeBm nodeBm;
-  private static final long serialVersionUID = 8148021767416025104L;
   private final OrderDAO orderDao = new OrderDAO();
 
   @Override
   public AlbumDetail getAlbum(final NodePK nodePK, final boolean viewAllPhoto) {
     try {
-      final AlbumDetail album = new AlbumDetail(nodeBm.getDetail(nodePK));
+      final AlbumDetail album = new AlbumDetail(nodeBm.getDetailTransactionally(nodePK));
       // récupération des photos
       final Collection<PhotoDetail> photos = getAllPhoto(nodePK, viewAllPhoto);
       // ajout des photos à l'album
