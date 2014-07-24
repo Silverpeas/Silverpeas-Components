@@ -90,7 +90,7 @@ public class GalleryBmEJB implements GalleryBm {
   @Override
   public AlbumDetail getAlbum(final NodePK nodePK, final boolean viewAllPhoto) {
     try {
-      final AlbumDetail album = new AlbumDetail(nodeBm.getDetail(nodePK));
+      final AlbumDetail album = new AlbumDetail(nodeBm.getDetailTransactionally(nodePK));
       // récupération des photos
       final Collection<PhotoDetail> photos = getAllPhoto(nodePK, viewAllPhoto);
       // ajout des photos à l'album
