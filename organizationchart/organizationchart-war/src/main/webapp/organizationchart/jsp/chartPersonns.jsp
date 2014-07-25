@@ -54,7 +54,7 @@ jCells[cellIndex] = new JCell( {
 	title: "${organigramme.rootOrganization.name}",
 	roles : new Array(
 		<c:forEach items="${organigramme.rootOrganization.mainActors}" var="mainActor" varStatus="loopInfo">
-			{role : "${mainActor.role}", userFullName: "${mainActor.fullName}", login : "${mainActor.login}"} ${(not loopInfo.last) ? ',' : ''}
+			{role : "${mainActor.role}", userFullName: "${mainActor.fullName}", login : "${mainActor.login}", avatar:"${mainActor.avatar}"} ${(not loopInfo.last) ? ',' : ''}
 		</c:forEach>
 	),
 	userAttributes : new Array(
@@ -84,7 +84,7 @@ jCells[cellIndex] = new JCell( {
 		commonUserURL : "Details?login=",
 		innerUsers : new Array(
 			<c:forEach items="${category.users}" var="user" varStatus="mainLoopInfo">
-					{login : "${user.login}", userFullName: "${user.fullName}",
+					{login : "${user.login}", userFullName: "${user.fullName}", avatar:"${user.avatar}",
 					userAttributes: new Array(
 					<c:forEach items="${user.details}" var="detail" varStatus="loopInfo">
 						{label : "${detail.key}", value: "${detail.value}"} ${(not loopInfo.last) ? ',' : ''}

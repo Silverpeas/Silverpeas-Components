@@ -41,10 +41,21 @@
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 <fmt:message key="organizationChart.userDetails" var="userDetailsTitle"/>
 
+<c:set var="displayLabels" value="${requestScope['DisplayLabels']}"/>
+
 <html>
   <head>
 	<link type="text/css" href="<c:url value="/organizationchart/css/organizationchart.css" />" rel="StyleSheet"/>
     <view:looknfeel />
+    <style type="text/css">
+    <c:if test="${not displayLabels}">
+    	span.role,
+    	span.attribute {
+    		display: none;
+    	}
+    </c:if>
+    </style>
+    
     <script type="text/javascript">
     var organizationchartPath = '<%=request.getContextPath()%>/organizationchart/';
     </script>
@@ -72,6 +83,16 @@
         		}
             });
         });
+        
+        function activateUserZoom() {
+          $('.userToZoom').each(function() {
+            var $this = $(this);
+            if ($this.data('userZoom') == null)
+              $this.userZoom({
+                id: $this.attr('rel')
+              });
+          });
+        }
     </script>
   </head>
   <body>

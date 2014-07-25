@@ -50,6 +50,8 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.viewGenerator.html.UserNameGenerator;
 
 public class OrganizationChartSessionController extends AbstractComponentSessionController {
 
@@ -78,7 +80,9 @@ public class OrganizationChartSessionController extends AbstractComponentSession
   private static final String PARAM_PERSONNSCHART_OTHERSINFOS_KEYS = "personnsChartOthersInfosKeys";
   private static final String PARAM_LDAP_ATT_ACTIF = "ldapAttActif";
   private static final String PARAM_DOMAIN_ID = "chartDomainSilverpeas";
-
+  private static final String PARAM_LABELS = "labels";
+  private static final String PARAM_AVATARS = "avatars";
+  
   private OrganizationChartConfiguration config = null;
   private OrganizationChartLDAPConfiguration ldapConfig = null;
 
@@ -143,10 +147,25 @@ public class OrganizationChartSessionController extends AbstractComponentSession
   private UserVO organizationalPerson2UserVO(OrganizationalPerson person, OrganizationalRole role) {
     String displayedRole = (role == null) ? "" : role.getLabel();
     String loginOrId = person.getSilverpeasAccount();
+    String avatar = null;
+    String name = person.getName();
+    UserDetail user = null; 
     if (!isLDAP()) {
       loginOrId = String.valueOf(person.getId());
+      user = UserDetail.getById(loginOrId);
+    } else {
+      user = UserDetail.getById(getUserIdFromLogin(loginOrId));
     }
-    return new UserVO(person.getName(), loginOrId, displayedRole, person.getDetail());
+    if (user != null) {
+      if (displayAvatars()) {
+        avatar = user.getAvatar();
+      }
+      name = UserNameGenerator.toString(user, getUserId());
+    }
+    
+    UserVO userVO = new UserVO(name, loginOrId, displayedRole, person.getDetail());
+    userVO.setAvatar(avatar);    
+    return userVO;
   }
 
   private ChartVO buildChartUnitVO(OrganizationalChart chart) {
@@ -441,5 +460,21 @@ public class OrganizationChartSessionController extends AbstractComponentSession
     }
 
     return userId;
+  }
+  
+  private boolean displayAvatars() {
+    return getParameterValue(PARAM_AVATARS, true);
+  }
+  
+  public boolean displayLabels() {
+    return getParameterValue(PARAM_LABELS, true);
+  }
+  
+  private boolean getParameterValue(String paramName, boolean defaultValue) {
+    String value = getComponentParameterValue(paramName);
+    if (!StringUtil.isDefined(value)) {
+      return defaultValue;
+    }
+    return StringUtil.getBooleanValue(value);
   }
 }

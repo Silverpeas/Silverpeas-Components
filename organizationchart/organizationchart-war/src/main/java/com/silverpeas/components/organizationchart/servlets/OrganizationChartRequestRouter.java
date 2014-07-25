@@ -76,6 +76,7 @@ public class OrganizationChartRequestRouter extends ComponentRequestRouter<Organ
         "root.MSG_GEN_PARAM_VALUE", "User=" + orgaSC.getUserId() + " Function=" + function);
 
     String destination;
+    request.setAttribute("DisplayLabels", orgaSC.displayLabels());
 
     try {
       if (function.startsWith("Main")) {
