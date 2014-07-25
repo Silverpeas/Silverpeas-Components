@@ -264,7 +264,7 @@
         <div class="fileCharacteristic bgDegradeGris">
           <c:if test="${not empty internalMedia}">
             <div class="header bgDegradeGris">
-              <h4 class="clean"><c:out value="${internalMedia.fileName}"/></h4>
+              <h4 class="clean"><span title="<c:out value="${internalMedia.fileName}"/>"><c:out value="${silfn:truncate(internalMedia.fileName, 40)}"/></span></h4>
             </div>
           </c:if>
           <p>

@@ -24,6 +24,7 @@
 package com.silverpeas.gallery.model;
 
 import com.silverpeas.util.CollectionUtil;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.comparator.AbstractComplexComparator;
 import org.apache.commons.lang.NotImplementedException;
 
@@ -69,11 +70,16 @@ public class MediaLogicalComparator extends AbstractComplexComparator<Media> {
   @Override
   protected ValueBuffer getValuesToCompare(final Media media) {
     ValueBuffer valueBuffer = new ValueBuffer();
+    String author;
     for (QUERY_ORDER_BY queryOrderBy : logicalOrderBy) {
       switch (queryOrderBy) {
         case TITLE_DESC:
         case TITLE_ASC:
-          valueBuffer.append(media.getTitle(), queryOrderBy.isAsc());
+          String titre = media.getTitle();
+          if (StringUtil.isDefined(titre)) {
+            titre = titre.toLowerCase();
+          }
+          valueBuffer.append(titre, queryOrderBy.isAsc());
           break;
         case COMPONENT_INSTANCE_ASC:
         case COMPONENT_INSTANCE_DESC:
@@ -93,12 +99,20 @@ public class MediaLogicalComparator extends AbstractComplexComparator<Media> {
           break;
         case AUTHOR_ASC_EMPTY_END:
         case AUTHOR_DESC_EMPTY_END:
-          valueBuffer.append(new StringWrapper(media.getAuthor(), queryOrderBy.isAsc(), true),
+          author = media.getAuthor();
+          if (StringUtil.isDefined(author)) {
+            author = author.toLowerCase();
+          }
+          valueBuffer.append(new StringWrapper(author, queryOrderBy.isAsc(), true),
               queryOrderBy.isAsc());
           break;
         case AUTHOR_ASC:
         case AUTHOR_DESC:
-          valueBuffer.append(media.getAuthor(), queryOrderBy.isAsc());
+          author = media.getAuthor();
+          if (StringUtil.isDefined(author)) {
+            author = author.toLowerCase();
+          }
+          valueBuffer.append(author, queryOrderBy.isAsc());
           break;
         case SIZE_ASC:
         case SIZE_DESC:

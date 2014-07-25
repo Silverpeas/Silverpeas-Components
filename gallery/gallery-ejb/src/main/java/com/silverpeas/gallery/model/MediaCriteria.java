@@ -59,12 +59,12 @@ public class MediaCriteria {
     CREATE_DATE_ASC(true, "M.createDate", true), CREATE_DATE_DESC(true, "M.createDate", false),
     LAST_UPDATE_DATE_ASC(true, "M.lastUpdateDate", true),
     LAST_UPDATE_DATE_DESC(true, "M.lastUpdateDate", false),
-    TITLE_ASC(true, "M.title", true), TITLE_DESC(true, "M.title", false),
+    TITLE_ASC(true, "LOWER(M.title)", true), TITLE_DESC(true, "LOWER(M.title)", false),
     AUTHOR_ASC_EMPTY_END(false, "M.author", true), AUTHOR_DESC_EMPTY_END(false, "M.author", false),
-    AUTHOR_ASC(true, "M.author", true), AUTHOR_DESC(true, "M.author", false);
+    AUTHOR_ASC(true, "LOWER(M.author)", true), AUTHOR_DESC(true, "LOWER(M.author)", false);
 
     private final boolean applicableOnSQLQuery;
-    private final String propertyName;
+    private final String instructionBase;
     private final boolean asc;
 
     public static QUERY_ORDER_BY fromPropertyName(String property, String sort) {
@@ -79,10 +79,10 @@ public class MediaCriteria {
       return orderBy;
     }
 
-    private QUERY_ORDER_BY(final boolean applicableOnSQLQuery, final String propertyName,
+    private QUERY_ORDER_BY(final boolean applicableOnSQLQuery, final String instructionBase,
         final boolean asc) {
       this.applicableOnSQLQuery = applicableOnSQLQuery;
-      this.propertyName = propertyName;
+      this.instructionBase = instructionBase;
       this.asc = asc;
     }
 
@@ -90,8 +90,8 @@ public class MediaCriteria {
       return applicableOnSQLQuery;
     }
 
-    public String getPropertyName() {
-      return propertyName;
+    public String getInstructionBase() {
+      return instructionBase;
     }
 
     public boolean isAsc() {

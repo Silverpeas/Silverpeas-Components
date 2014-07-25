@@ -94,7 +94,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   private AlbumDetail currentAlbum = getAlbum(currentAlbumId);
   private int rang = 0;
   private MediaResolution displayedMediaResolution = MediaResolution.SMALL;
-  private String tri = "CreationDateAsc";
+  private String tri = "CreationDateDesc";
   private String currentOrderId = "0";
   private List<String> listSelected = new ArrayList<String>();
   private boolean isViewNotVisible = false;
@@ -224,6 +224,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     AlbumDetail album;
     try {
       album = getMediaService().getAlbum(nodePK);
+      sort(album.getMedia());
     } catch (Exception e) {
       throw new GalleryRuntimeException("GallerySessionController.getAlbum()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);

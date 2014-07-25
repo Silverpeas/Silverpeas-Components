@@ -35,6 +35,9 @@
 <%-- Default values --%>
 <c:set var="_formName" value="mediaForm"/>
 
+<%-- Request attributes --%>
+<c:set var="currentUserSort" value="${requestScope.Tri}"/>
+
 <%@ attribute name="formName" required="false"
               type="java.lang.String"
               description="The name of the HTML form TAG ('mediaForm' by default)." %>
@@ -60,11 +63,11 @@
 <select name="SortBy" onchange="__sortGoTo(this.selectedIndex);">
   <option selected><fmt:message key="gallery.orderBy"/></option>
   <option>-------------------------------</option>
-  <option value="CreationDateAsc"><fmt:message key="gallery.dateCreatAsc"/></option>
-  <option value="CreationDateDesc"><fmt:message key="gallery.dateCreatDesc"/></option>
-  <option value="Title"><fmt:message key="GML.title"/></option>
-  <option value="Size"><fmt:message key="gallery.media.size"/></option>
-  <option value="Author"><fmt:message key="GML.author"/></option>
+  <option value="CreationDateAsc" ${currentUserSort eq 'CreationDateAsc' ? 'selected' : ''}><fmt:message key="gallery.dateCreatAsc"/></option>
+  <option value="CreationDateDesc" ${currentUserSort eq 'CreationDateDesc' ? 'selected' : ''}><fmt:message key="gallery.dateCreatDesc"/></option>
+  <option value="Title" ${currentUserSort eq 'Title' ? 'selected' : ''}><fmt:message key="GML.title"/></option>
+  <option value="Size" ${currentUserSort eq 'Size' ? 'selected' : ''}><fmt:message key="gallery.media.size"/></option>
+  <option value="Author" ${currentUserSort eq 'Author' ? 'selected' : ''}><fmt:message key="GML.author"/></option>
 </select>
 
 <c:set var="albumListDisplaySelectorForms">

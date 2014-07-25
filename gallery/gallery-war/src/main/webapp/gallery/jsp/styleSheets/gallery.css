@@ -313,7 +313,7 @@ br.clear {
   margin: 1em 0;
 }
 
-#pagination {
+.gallery-fiche-media #pagination {
   display: block;
   float: right;
   height: 30px;
@@ -324,7 +324,7 @@ br.clear {
   width: 100px;
 }
 
-#pagination .txtnav {
+.gallery-fiche-media #pagination .txtnav {
   font-size: 10pt;
 }
 

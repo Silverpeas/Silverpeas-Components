@@ -132,6 +132,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
     request.setAttribute("greaterUserRole", highestUserRole);
     request.setAttribute("UserId", userId);
     request.setAttribute("IsGuest", gallerySC.isGuest());
+    request.setAttribute("Tri", gallerySC.getTri());
 
     SilverTrace.debug("gallery", "GalleryRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "Profile=" + highestUserRole);
@@ -201,7 +202,6 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           request.setAttribute("IsViewMetadata", gallerySC.isViewMetadata());
           request.setAttribute("IsViewList", gallerySC.isViewList());
           request.setAttribute("SelectedIds", gallerySC.getListSelected());
-          request.setAttribute("Tri", gallerySC.getTri());
           request.setAttribute("IsUsePdc", gallerySC.isUsePdc());
           request.setAttribute("IsBasket", gallerySC.isBasket());
           request.setAttribute("IsOrder", gallerySC.isOrder());

@@ -211,7 +211,7 @@ public class MediaSQLQueryBuilder implements MediaCriteriaProcessor {
         } else {
           orderBy.append(", ");
         }
-        orderBy.append(anOrdering.getPropertyName());
+        orderBy.append(anOrdering.getInstructionBase());
         orderBy.append(" ");
         orderBy.append(anOrdering.isAsc() ? "asc" : "desc");
       }
