@@ -92,7 +92,7 @@ public class GalleryBmEJBTest extends BaseGalleryTest {
 
     final NodeBm nodeBm = Mockito.mock(NodeBm.class);
 
-    when(nodeBm.getDetail(Mockito.any(NodePK.class))).thenAnswer(new Answer<NodeDetail>() {
+    when(nodeBm.getDetailTransactionally(Mockito.any(NodePK.class))).thenAnswer(new Answer<NodeDetail>() {
       @Override
       public NodeDetail answer(InvocationOnMock invocation) throws Throwable {
         Object[] arguments = invocation.getArguments();
