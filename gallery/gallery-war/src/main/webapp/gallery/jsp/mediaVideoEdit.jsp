@@ -28,8 +28,8 @@
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/gallery" prefix="gallery" %>
 
 <view:setConstant var="mediaType" constant="com.silverpeas.gallery.constant.MediaType.Video"/>
-<view:setConstant var="SMALL_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.SMALL"/>
-<jsp:useBean id="SMALL_RESOLUTION" type="com.silverpeas.gallery.constant.MediaResolution"/>
+<view:setConstant var="MEDIUM_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.MEDIUM"/>
+<jsp:useBean id="MEDIUM_RESOLUTION" type="com.silverpeas.gallery.constant.MediaResolution"/>
 <view:setConstant var="supportedMediaMimeTypes" constant="com.silverpeas.gallery.constant.MediaMimeType.VIDEOS"/>
 
 <gallery:editMediaLayout mediaType="${mediaType}" supportedMediaMimeTypes="${supportedMediaMimeTypes}">
@@ -38,6 +38,6 @@
   </jsp:attribute>
   <jsp:attribute name="mediaPreviewBloc">
     <jsp:useBean id="media" scope="request" type="com.silverpeas.gallery.model.Video"/>
-    <gallery:videoPlayer video="${media}" mediaResolution="${SMALL_RESOLUTION}"/>
+    <gallery:videoPlayer video="${media}" mediaResolution="${MEDIUM_RESOLUTION}"/>
   </jsp:attribute>
 </gallery:editMediaLayout>

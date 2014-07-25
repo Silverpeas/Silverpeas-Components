@@ -328,11 +328,10 @@
         </c:if>
 
         <fmt:message key="gallery.CopyMediaLink" var="cpMediaLinkAlt"/>
-        <c:set var="createDateEqualsLastUpdateDate" value="${media.creationDate.compareTo(media.lastUpdateDate) eq 0}"/>
         <viewTags:displayLastUserCRUD createDate="${media.creationDate}"
                                       createdBy="${media.creator}"
-                                      updateDate="${createDateEqualsLastUpdateDate ? null : media.lastUpdateDate}"
-                                      updatedBy="${createDateEqualsLastUpdateDate ? null : media.lastUpdater}"
+                                      updateDate="${media.lastUpdateDate}"
+                                      updatedBy="${media.lastUpdater}"
                                       permalink="${media.permalink}"
                                       permalinkHelp="${cpMediaLinkAlt}"
                                       permalinkIconUrl="${permalinkIconUrl}">

@@ -128,16 +128,6 @@
 </c:if>
 <gallery:browseBar albumPath="${albumPath}" additionalElements="${additionalBrowseBarElements}" />
 <view:window>
-  <c:if test="${not isNewMediaCase}">
-    <view:tabs>
-      <fmt:message key="gallery.media" var="mediaViewLabel"/>
-      <view:tab label="${mediaViewLabel}" action="${viewMediaAction}" selected="false"/>
-      <fmt:message key="gallery.info" var="mediaEditLabel"/>
-      <view:tab label="${mediaEditLabel}" action="#" selected="true"/>
-      <fmt:message key="gallery.accessPath" var="accessLabel"/>
-      <view:tab label="${accessLabel}" action="AccessPath?MediaId=${media.id}" selected="false"/>
-    </view:tabs>
-  </c:if>
   <view:frame>
     <form name="mediaForm" action="${action}" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
       <input type="hidden" name="MediaId" value="${media.id}"/>

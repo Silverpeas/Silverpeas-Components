@@ -33,7 +33,7 @@
 <view:setConstant var="mediaType" constant="com.silverpeas.gallery.constant.MediaType.Photo"/>
 <view:setConstant var="supportedMediaMimeTypes" constant="com.silverpeas.gallery.constant.MediaMimeType.PHOTOS"/>
 <view:setConstant var="PREVIEW_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.PREVIEW"/>
-<view:setConstant var="SMALL_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.SMALL"/>
+<view:setConstant var="MEDIUM_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.MEDIUM"/>
 
 <c:set var="isViewMetadata" value="${requestScope.IsViewMetadata}"/>
 
@@ -52,7 +52,7 @@
         <img id="photoPreview"
              tipTitle="<c:out value="${media.title}"/>"
              tipUrl="${media.getApplicationThumbnailUrl(PREVIEW_RESOLUTION)}"
-             src="${media.getApplicationThumbnailUrl(SMALL_RESOLUTION)}" border="0" alt=""/>
+             src="${media.getApplicationThumbnailUrl(MEDIUM_RESOLUTION)}" border="0" alt=""/>
       </div>
     </center>
     <gallery:displayMediaMetadata media="${media}" isViewMetadata="${isViewMetadata}"/>

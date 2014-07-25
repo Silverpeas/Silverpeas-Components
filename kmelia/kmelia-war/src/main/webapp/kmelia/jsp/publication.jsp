@@ -27,6 +27,7 @@
 <%@page import="com.stratelia.webactiv.util.statistic.model.HistoryObjectDetail"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
@@ -49,6 +50,10 @@
 <%@page import="com.silverpeas.delegatednews.model.DelegatedNews"%>
 <%@page import="org.silverpeas.component.kmelia.KmeliaPublicationHelper"%>
 <%@ page import="org.silverpeas.rating.web.RaterRatingEntity" %>
+
+<c:set var="userLanguage" value="${requestScope.resources.language}"/>
+<fmt:setLocale value="${userLanguage}"/>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
 <%
   ResourceLocator publicationSettings = new ResourceLocator("org.silverpeas.util.publication.publicationSettings", resources.getLanguage());
@@ -660,7 +665,7 @@
 			          /** Affichage des Info de publication																		**/
 			          /*********************************************************************************************************************/
 			        %>
-			         <div id="infoPublication" class="bgDegradeGris">
+			         <div id="infoPublication" class="bgDegradeGris crud-container">
 
 			         			<% if (kmeliaScc.isAuthorUsed() && StringUtil.isDefined(pubDetail.getAuthor())) { %>
 									<p id="authorInfo"><%=resources.getString("GML.author")%> : <b><%=pubDetail.getAuthor()%></b></p>
@@ -668,14 +673,14 @@
 
 			         			<% if (updaterId != null) {%>
 								  	<div id="lastModificationInfo" class="paragraphe">
-								  		<%=resources.getString("PubDateUpdate")%>  <br />
+								  		<%=resources.getString("PubDateUpdate")%>
                                         <b><%=resources.getOutputDate(pubDetail.getUpdateDate())%></b> <%=resources.getString("GML.by")%> <view:username userId="<%=kmeliaPublication.getLastModifier().getId()%>"/>
 								  		<div class="profilPhoto"><view:image src="<%=kmeliaPublication.getLastModifier().getAvatar() %>" type="avatar" css="defaultAvatar"/></div>
 							  		</div>
 							  	 <% }%>
 								<c:if test="${view:isDefined(requestScope['Publication'].creator) && view:isDefined(requestScope['Publication'].creator.id)}">
-                    <div id="creationInfo" class="paragraphe">
-                     <%=resources.getString("PubDateCreation")%> <br/>
+                    <div id="createdInfo" class="paragraphe">
+                     <%=resources.getString("PubDateCreation")%>
                      <b><%=resources.getOutputDate(pubDetail.getCreationDate())%></b> <%=resources.getString("GML.by")%> <view:username userId="${requestScope['Publication'].creator.id}"/>
                      <div class="profilPhoto"><view:image src="<%=kmeliaPublication.getCreator().getAvatar() %>" type="avatar" css="defaultAvatar"/></div>
                    </div>
@@ -683,8 +688,8 @@
 							  	  <%
 						          // Displaying all validator's name and final validation date
 						          if (pubDetail.isValid() && StringUtil.isDefined(pubDetail.getValidatorId()) && pubDetail.getValidateDate() != null) { %>
-						            <p id="validationInfo"><%=resources.getString("kmelia.validation")%> <br/>
-						            	<b><%=resources.getOutputDate(pubDetail.getValidateDate())%></b> <%=resources.getString("GML.by")%>
+						            <p id="validationInfo"><%=resources.getString("kmelia.validation")%> <fmt:message key="GML.date.the" var="theLabel"/>${fn:toLowerCase(theLabel)}
+						            	<b><%=resources.getOutputDate(pubDetail.getValidateDate())%></b> <br/> <%=resources.getString("GML.by")%>
 						            <% List<ValidationStep> validationSteps = pubComplete.getValidationSteps();
 						            if (validationSteps != null && !validationSteps.isEmpty()) {
 						              Collections.reverse(validationSteps); //display steps from in order of validation

@@ -313,10 +313,19 @@ br.clear {
   margin: 1em 0;
 }
 
-.gallery-fiche-media #pagination {
+#pagination {
   display: block;
   float: right;
-  margin: 9px 0 1px;
+  height: 30px;
+  line-height: 31px;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  width: 100px;
+}
+
+#pagination .txtnav {
+  font-size: 10pt;
 }
 
 .gallery-fiche-media .currentPage {
@@ -324,14 +333,15 @@ br.clear {
 }
 
 .gallery-fiche-media #pagination img {
-  border: 0 none;
-  vertical-align: top;
+  border: 0;
+  vertical-align: middle;
 }
 
 .gallery-fiche-media #backToSearch {
   float: right;
   height: 30px;
-  width: 252px;
+  width: 213px;
+  position:relative;
 }
 
 .gallery-fiche-media #backToSearch a.button {
@@ -343,7 +353,8 @@ br.clear {
   font-size: 100%;
   padding: 7px 10px;
   position: absolute;
-  right: 101px;
+  right: 0;
+  top:0;
   width: 187px;
 }
 
@@ -395,7 +406,7 @@ br.clear {
 }
 
 /******** pour fieldset *************/
-#urlArea, #titleArea, #descriptionArea, #downloadArea, .editMedia #fileArea, #authorArea, #keywordArea, #generalArea, #fileNameArea {
+#urlArea, #titleArea, #descriptionArea, #downloadArea,  #fileArea, #authorArea, #keywordArea, #generalArea, #fileNameArea {
   clear: both;
   display: block;
   float: none;
@@ -404,6 +415,10 @@ br.clear {
 
 #downloadArea {
   height: 2em;
+}
+
+#photoOptions #downloadArea {
+  height: 3em;
 }
 
 .legend {
@@ -604,4 +619,26 @@ table.listing-media {
   margin: 0 2em;
   padding: 0;
   text-align: left;
+}
+
+/* liste des emplacement **/
+#pathsId ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+#pathsId ul li {
+  padding: 0;
+  margin: 0;
+}
+
+#pathsId ul ul {
+  padding-left: 2em;
+}
+
+.locations {
+  margin-bottom: 1em;
+  max-height: 400px;
+  overflow: auto;
 }

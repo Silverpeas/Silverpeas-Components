@@ -45,35 +45,42 @@
 <%-- Labels --%>
 <fmt:message key="GML.validate" var="validateLabel"/>
 
-<view:board>
-  <view:form id="pathsId" name="paths" action="SelectPath" method="POST">
-    <input type="hidden" name="MediaId" value="${media.id}">
-    <c:set var="oldLevel" value="${0}"/>
-    <c:forEach var="album" items="${allAlbums}" varStatus="status">
-      <c:if test="${album.level gt 1}">
-        <c:set var="albumTabulation" value=""/>
-        <c:if test="${album.level gt oldLevel}">
+<div class="locations">
+  <view:board>
+    <view:form id="pathsId" name="paths" action="SelectPath" method="POST">
+      <input type="hidden" name="MediaId" value="${media.id}">
+      <c:set var="oldLevel" value="${0}"/>
+      <c:forEach var="album" items="${allAlbums}" varStatus="status">
+        <c:if test="${album.level gt 1}">
+          <c:set var="albumTabulation" value=""/>
+          <c:choose>
+            <c:when test="${album.level gt oldLevel}">
+              <ul>
+            </c:when>
+            <c:when test="${album.level lt oldLevel}">
+              </li>${silfn:repeat('</ul>', (oldLevel - album.level))}
+            </c:when>
+          </c:choose>
+          <c:set var="checked" value="${albumListIds.contains(album.nodePK.id) ? 'checked': ''}"/>
+          <c:if test="${album.level eq oldLevel}"></li></c:if>
+          <li><input type="checkbox" name="albumChoice" value="${album.id}" ${checked}>&#160;
+          ${albumTabulation}${album.name}
+          <c:if test="${status.last}">
+            </li>
+            ${silfn:repeat('</ul>', (oldLevel - album.level))}
+          </c:if>
           <c:set var="oldLevel" value="${album.level}"/>
-          <ul>
         </c:if>
-        <c:set var="checked" value="${albumListIds.contains(album.nodePK.id) ? 'checked': ''}"/>
-        <li><input type="checkbox" name="albumChoice" value="${album.id}" ${checked}>&#160;
-            ${albumTabulation}${album.name}
-        </li>
-        <c:if test="${status.last or album.level lt oldLevel}">
-          <c:set var="oldLevel" value="${album.level}"/>
-          </ul>
-        </c:if>
-      </c:if>
-    </c:forEach>
-  </view:form>
+      </c:forEach>
+    </view:form>
+  </view:board>
   <script type="text/javascript">
-    function sendData() {
+    function sendLocationData() {
       $.progressMessage();
       $('#pathsId').submit();
     }
   </script>
-</view:board>
+</div>
 <view:buttonPane>
-  <view:button label="${validateLabel}" action="javascript:onClick=sendData();"/>
+  <view:button label="${validateLabel}" action="javascript:onClick=sendLocationData();"/>
 </view:buttonPane>
