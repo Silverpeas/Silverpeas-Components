@@ -81,6 +81,9 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.CharEncoding;
+import org.silverpeas.file.SilverpeasFile;
+import org.silverpeas.file.SilverpeasFileDescriptor;
+import org.silverpeas.file.SilverpeasFileProvider;
 import org.silverpeas.importExport.versioning.DocumentVersion;
 import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.servlet.HttpRequest;
@@ -1867,7 +1870,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     return pubDetail;
   }
 
-  /**
+ /**
    * Process Form Upload for publications import
    *
    * @param kmeliaScc
