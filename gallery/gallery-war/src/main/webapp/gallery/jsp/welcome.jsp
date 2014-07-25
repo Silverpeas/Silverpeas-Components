@@ -150,8 +150,8 @@ function deleteConfirm(id, nom) {
 
 function askMedia() {
   windowName = "askWindow";
-  larg = "570";
-  haut = "250";
+  larg = "700";
+  haut = "290";
   windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
   if (!askWindow.closed && askWindow.name == "askWindow")
     askWindow.close();
