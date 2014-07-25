@@ -62,6 +62,8 @@
 <fmt:message var="downloadForbiddenIcon" key='gallery.image.download.forbidden' bundle='${icons}'/>
 <c:url var="downloadForbiddenIconUrl" value="${downloadForbiddenIcon}"/>
 
+<%-- Labels --%>
+<fmt:message key="gallery.media.path.choose" var="manageLocationLabel"/>
 <fmt:message var="commentTab" key="gallery.comments"/>
 
 <%-- Fragments --%>
@@ -104,6 +106,7 @@
 <html>
 <head>
   <view:looknfeel/>
+  <view:progressMessage/>
   <view:includePlugin name="popup"/>
   <view:includePlugin name="preview"/>
   <view:includePlugin name="wysiwyg"/>
@@ -131,6 +134,11 @@
         document.mediaForm.action = "DeleteMedia?MediaId=${mediaId}";
         document.mediaForm.submit();
       }
+    }
+    function manageLocations() {
+      displaySingleFreePopupFrom('<c:url value="${silfn:componentURL(componentId)}/AccessPath?MediaId=${mediaId}"/>', {
+        title : '${manageLocationLabel}'
+      });
     }
     </c:if>
 
@@ -191,6 +199,7 @@
     <fmt:message key="GML.delete" var="deleteIcon" bundle="${icons}"/>
     <c:url value="${deleteIcon}" var="deleteIcon"/>
     <view:operation altText="${modifyLabel}" action="EditInformation?MediaId=${mediaId}" icon="${modifyIcon}"/>
+    <view:operation altText="${manageLocationLabel}" action="javaScript:manageLocations()"/>
     <view:operation altText="${deleteLabel}" action="javaScript:deleteConfirm()" icon="${deleteIcon}"/>
   </c:if>
   <c:if test="${greaterUserRole eq adminRole}">
@@ -228,17 +237,6 @@
 </view:operationPane>
 
 <view:window>
-
-  <view:tabs>
-    <fmt:message key="gallery.media" var="mediaViewLabel"/>
-    <view:tab label="${mediaViewLabel}" action="#" selected="true"/>
-    <c:if test="${requestScope.UpdateMediaAllowed}">
-      <fmt:message key="gallery.info" var="mediaEditLabel"/>
-      <view:tab label="${mediaEditLabel}" action="EditInformation?MediaId=${mediaId}" selected="false"/>
-      <fmt:message key="gallery.accessPath" var="accessLabel"/>
-      <view:tab label="${accessLabel}" action="AccessPath?MediaId=${mediaId}" selected="false"/>
-    </c:if>
-  </view:tabs>
 
   <view:frame>
     <form name="mediaForm" method="post" accept-charset="UTF-8" action="#">

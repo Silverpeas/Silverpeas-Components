@@ -230,7 +230,7 @@ function checkLuceneQuery(query) {
                         <td valign="middle">&nbsp;</td>
                         <td valign="middle" align="left" width="100%">
                           <fmt:message key="GML.ok" var="tmpLabel"/>
-                          <input type="submit" style="width:0; height:0; border:0; padding:0"/>
+                          <input type="submit" class="hide"/>
                           <view:button label="${tmpLabel}" action="javascript:onClick=sendData();"/>
                         </td>
                         <td valign="middle">&nbsp;</td>
@@ -255,12 +255,10 @@ function checkLuceneQuery(query) {
             </script>
           </center>
         </view:board>
-        <br/>
       </c:if>
 
       <view:areaOfOperationOfCreation/>
       <gallery:listSubAlbums subAlbumList="${albumList}"/>
-      <br/>
       <view:board>
         <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
           <tr>

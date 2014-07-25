@@ -69,6 +69,7 @@ import com.stratelia.webactiv.util.node.model.NodeSelection;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.search.indexEngine.model.FieldDescription;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
+import org.silverpeas.util.NotifierUtil;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
@@ -270,6 +271,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
         SilverTrace.debug("gallery", "GallerySessionController.setMediaToAlbums()",
             "root.MSG_GEN_PARAM_VALUE", "mediaId = " + mediaId);
         media.setToAlbums(albums);
+        NotifierUtil.addSuccess(getString("gallery.media.path.choose.success"));
       }
     }
   }

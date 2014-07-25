@@ -391,7 +391,6 @@
         </table>
       </center>
     </c:if>
-    <br/>
     <gallery:displayAlbumContent currentAlbum="${currentAlbum}"
                                  mediaList="${currentAlbum.media}"
                                  selectedIds="${selectedIds}"

@@ -22,14 +22,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #subTopics {
-  width: 98%;
+  width: 100%;
   padding-bottom: 5px;
 }
 
 #subTopics ul {
   list-style-type: none;
   padding: 0;
-  margin: 5px;
+  margin: 5px 1em;
 }
 
 #subTopics ul li {
@@ -63,10 +63,21 @@
   display: inline;
   float: left;
   height: 63px;
-  margin-right: 0.5em;
+  margin-right: 1%;
   width: 24%;
   position: relative;
   border: 0;
+  padding: 0;
+}
+
+#subTopics ul li:nth-child(3n+1) {
+  margin-right: 0;
+  width: 25%;
+}
+
+#subTopics ul li:first-child {
+  margin-right: 1%;
+  width: 24%;
 }
 
 #subTopics ul li a {
@@ -384,7 +395,7 @@ br.clear {
 }
 
 /******** pour fieldset *************/
-#urlArea, #titleArea, #descriptionArea, #downloadArea, .editMedia #fileArea, #authorArea, #keywordArea {
+#urlArea, #titleArea, #descriptionArea, #downloadArea, .editMedia #fileArea, #authorArea, #keywordArea, #generalArea, #fileNameArea {
   clear: both;
   display: block;
   float: none;
@@ -392,7 +403,7 @@ br.clear {
 }
 
 #downloadArea {
-  height: 3em;
+  height: 2em;
 }
 
 .legend {
@@ -544,6 +555,18 @@ table.listing-media {
 }
 
 /*********************** Specific advanced search CSS *********************/
+
+#searchFormId .milieuBoutonV5 a,
+#searchFormId a.milieuBoutonV5,
+#searchFormId button {
+  font-size: 90% !important;
+  height: 18px;
+  line-height: 18px;
+  padding-bottom: 0;
+  padding-top: 0;
+  vertical-align: top;
+}
+
 #generalFieldset {
   min-height: 20px;
 }
@@ -554,8 +577,7 @@ table.listing-media {
 }
 
 #generalArea input {
-  width: 50%;
-  margin-right: 1em;
+  width: 62%;
 }
 
 #metadataFieldset legend {
@@ -576,4 +598,10 @@ table.listing-media {
 
 #pdcFieldset label img {
   margin-right: 0.5em;
+}
+
+.noty_text ul {
+  margin: 0 2em;
+  padding: 0;
+  text-align: left;
 }

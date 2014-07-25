@@ -50,20 +50,20 @@
               type="java.lang.String"
               description="The current search keywords." %>
 
-<select name="ChoiceSize" onchange="javascript:__choiceGoTo(this.selectedIndex);">
+<select name="ChoiceSize" onchange="__choiceGoTo(this.selectedIndex);">
   <option selected="selected"><fmt:message key="gallery.selectSize"/></option>
   <option>-------------------------------</option>
   <option value="66x50" ${currentMediaResolution.tiny ? 'selected' : ''}>66x50</option>
   <option value="133x100" ${currentMediaResolution.small ? 'selected' : ''}>133x100</option>
   <option value="266x150" ${currentMediaResolution.medium ? 'selected' : ''}>266x150</option>
 </select>
-<select name="SortBy" onchange="javascript:__sortGoTo(this.selectedIndex);">
+<select name="SortBy" onchange="__sortGoTo(this.selectedIndex);">
   <option selected><fmt:message key="gallery.orderBy"/></option>
   <option>-------------------------------</option>
   <option value="CreationDateAsc"><fmt:message key="gallery.dateCreatAsc"/></option>
   <option value="CreationDateDesc"><fmt:message key="gallery.dateCreatDesc"/></option>
   <option value="Title"><fmt:message key="GML.title"/></option>
-  <option value="Size"><fmt:message key="gallery.dimension"/></option>
+  <option value="Size"><fmt:message key="gallery.media.size"/></option>
   <option value="Author"><fmt:message key="GML.author"/></option>
 </select>
 
