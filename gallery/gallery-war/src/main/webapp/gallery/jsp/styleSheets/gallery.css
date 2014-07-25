@@ -70,7 +70,7 @@
   padding: 0;
 }
 
-#subTopics ul li:nth-child(3n+1) {
+#subTopics ul li:nth-child(4n+4) {
   margin-right: 0;
   width: 25%;
 }

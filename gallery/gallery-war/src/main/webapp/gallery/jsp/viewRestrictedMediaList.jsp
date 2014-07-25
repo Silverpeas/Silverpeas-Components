@@ -115,7 +115,9 @@ function sendToBasket() {
                                  mediaResolution="${mediaResolution}"
                                  nbMediaPerPage="${nbMediaPerPage}"
                                  currentPageIndex="${currentPageIndex}"
-                                 isViewList="${isViewList}"/>
+                                 isViewList="${isViewList}"
+                                 greaterUserRole="${greaterUserRole}"
+                                 isBasket="${isBasket}"/>
     <c:if test="${empty mediaList}">
       <view:board>
         <c:choose>

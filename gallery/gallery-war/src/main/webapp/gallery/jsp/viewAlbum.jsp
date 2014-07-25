@@ -323,7 +323,9 @@ function CutSelectedMedia() {
     </c:if>
   </c:if>
   <%-- Manage media by massively way --%>
-  <view:operation action="AllSelected" altText="${allSelectMediaLabel}" icon="${allSelectMediaIcon}"/>
+  <c:if test="${not (greaterUserRole eq userRole and not isBasket)}">
+    <view:operation action="AllSelected" altText="${allSelectMediaLabel}" icon="${allSelectMediaIcon}"/>
+  </c:if>
   <c:if test="${greaterUserRole.isGreaterThanOrEquals(publisherRole)}">
     <view:operation action="javascript:onClick=sendData()" altText="${updateSelectedMediaLabel}" icon="${updateSelectedMediaIcon}"/>
     <view:operation action="javascript:onClick=sendDataDelete()" altText="${deleteSelectedMediaLabel}" icon="${deleteSelectedMediaIcon}"/>
@@ -371,7 +373,7 @@ function CutSelectedMedia() {
 <view:window>
   <view:frame>
     <view:areaOfOperationOfCreation/>
-    <table width="98%">
+    <table width="100%">
       <tr>
         <td>
           <gallery:listSubAlbums subAlbumList="${albums}"/>
@@ -400,7 +402,9 @@ function CutSelectedMedia() {
                                  mediaResolution="${mediaResolution}"
                                  nbMediaPerPage="${nbMediaPerPage}"
                                  currentPageIndex="${currentPageIndex}"
-                                 isViewList="${isViewList}"/>
+                                 isViewList="${isViewList}"
+                                 greaterUserRole="${greaterUserRole}"
+                                 isBasket="${isBasket}"/>
     <c:choose>
       <c:when test="${empty currentAlbum.media and empty albums and greaterUserRole.isGreaterThanOrEquals(publisherRole)}">
         <c:set var="templateUserRole" value="${publisherRole}"/>

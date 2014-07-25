@@ -289,7 +289,7 @@ function checkLuceneQuery(query) {
                       <td align="center">
                         <table cellspacing="1" cellpadding="3" border="0" class="cadrePhoto">
                           <tr>
-                            <td bgcolor="#FFFFFF">
+                            <td>
                               <a href="MediaView?MediaId=${media.id}">
                                 <img class="mediaPreview"
                                      tipTitle="<c:out value="${media.title}"/>"

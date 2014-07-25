@@ -35,6 +35,8 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
+<view:setConstant var="userRole" constant="com.stratelia.webactiv.SilverpeasRole.user"/>
+
 <%-- Default values --%>
 <c:set var="_formName" value="mediaForm"/>
 <c:set var="_formAction" value="EditSelectedMedia"/>
@@ -90,6 +92,14 @@
 <%@ attribute name="searchKeyword" required="false"
               type="java.lang.String"
               description="Current keyword search." %>
+
+<%@ attribute name="greaterUserRole" required="true"
+              type="com.stratelia.webactiv.SilverpeasRole"
+              description="Greater user role." %>
+
+<%@ attribute name="isBasket" required="true"
+              type="java.lang.Boolean"
+              description="Greater user role." %>
 
 <c:set var="firstMediaIndex" value="${nbMediaPerPage * currentPageIndex}"/>
 <c:set var="lastMediaIndex" value="${firstMediaIndex + nbMediaPerPage - 1}"/>
@@ -210,9 +220,12 @@
                            src="${media.getApplicationThumbnailUrl(mediaResolution)}" border="0" alt="<c:out value='${media.title}'/>"/>
                     </a>
                   </div>
+                  <c:if test="${not (greaterUserRole eq userRole and not isBasket)}">
                   <div>
                     <input type="checkbox" name="SelectMedia" value="${media.id}" ${mediaChecked}/>
                   </div>
+                  </c:if>
+
                   <c:if test="${typeAff eq 'small_list'}">
                     <div class="txtlibform"><c:out value="${silfn:truncate(mediaTitle, 50)}"/></div>
                     <c:if test="${not empty media.description}">
