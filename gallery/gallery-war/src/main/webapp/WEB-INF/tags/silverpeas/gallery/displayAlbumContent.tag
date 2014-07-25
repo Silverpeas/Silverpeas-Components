@@ -205,7 +205,9 @@
                 <div class="${mediaBackgroundClass}">
                   <div class="cadrePhoto">
                     <a href="MediaView?MediaId=${media.id}${not empty searchKeyword ? '&SearchKeyWord='.concat(searchKeyword) : ''}">
-                      <img id="imgId_${media.id}" src="${media.getApplicationThumbnailUrl(mediaResolution)}" border="0" alt="<c:out value='${mediaTitle}'/>" title="<c:out value='${mediaTitle}'/>"/>
+                      <img id="imgId_${media.id}" class="mediaPreview" tipTitle="<c:out value="${media.title}"/>"
+                           tipUrl="${media.getApplicationThumbnailUrl(PREVIEW_RESOLUTION)}"
+                           src="${media.getApplicationThumbnailUrl(mediaResolution)}" border="0" alt="<c:out value='${media.title}'/>"/>
                     </a>
                   </div>
                   <div>
@@ -228,7 +230,9 @@
                 <div class="${mediaBackgroundClass}">
                   <div class="cadrePhoto">
                     <a href="MediaView?MediaId=${media.id}">
-                      <img src="${media.getApplicationThumbnailUrl(mediaResolution)}" border="0" alt="<c:out value='${mediaTitle}'/>" title="<c:out value='${mediaTitle}'/>"/>
+                      <img class="mediaPreview" tipTitle="<c:out value="${media.title}"/>"
+                           tipUrl="${media.getApplicationThumbnailUrl(PREVIEW_RESOLUTION)}"
+                           src="${media.getApplicationThumbnailUrl(mediaResolution)}" border="0" alt="<c:out value='${media.title}'/>"/>
                     </a>
                   </div>
                 </div>

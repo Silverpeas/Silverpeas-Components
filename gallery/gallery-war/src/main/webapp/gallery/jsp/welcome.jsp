@@ -40,6 +40,7 @@
 <view:setConstant var="userRole" constant="com.stratelia.webactiv.SilverpeasRole.user"/>
 
 <view:setConstant var="SMALL_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.SMALL"/>
+<view:setConstant var="PREVIEW_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.PREVIEW"/>
 
 <c:set var="greaterUserRole" value="${requestScope.greaterUserRole}"/>
 <jsp:useBean id="greaterUserRole" type="com.stratelia.webactiv.SilverpeasRole"/>
@@ -88,6 +89,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <view:looknfeel/>
+  <view:includePlugin name="qtip"/>
   <script type="text/javascript" src="<c:url value="/util/javaScript/lucene/luceneQueryValidator.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/util/javaScript/checkForm.js"/>"></script>
@@ -179,6 +181,9 @@ function checkLuceneQuery(query) {
   return false;
 }
   </script>
+<c:if test="${not empty mediaList}">
+  <gallery:handlePhotoPreview jquerySelector="${'.mediaPreview'}"/>
+</c:if>
 </head>
 <body>
 <view:operationPane>
@@ -286,7 +291,10 @@ function checkLuceneQuery(query) {
                           <tr>
                             <td bgcolor="#FFFFFF">
                               <a href="MediaView?MediaId=${media.id}">
-                                <img src="${media.getApplicationThumbnailUrl(SMALL_RESOLUTION)}" border="0" alt="<c:out value='${media.title}'/>" title="<c:out value='${media.title}'/>"/>
+                                <img class="mediaPreview"
+                                     tipTitle="<c:out value="${media.title}"/>"
+                                     tipUrl="${media.getApplicationThumbnailUrl(PREVIEW_RESOLUTION)}"
+                                     src="${media.getApplicationThumbnailUrl(SMALL_RESOLUTION)}" border="0" alt="<c:out value='${media.title}'/>"/>
                               </a>
                             </td>
                           </tr>

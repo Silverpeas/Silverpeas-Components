@@ -31,6 +31,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/gallery" prefix="gallery" %>
 
 <%-- Set resource bundle --%>
 <c:set var="language" value="${requestScope.resources.language}"/>
@@ -44,10 +45,12 @@
 <c:set var="medias" value="${requestScope.MediaList}" />
 <c:set var="userSelectionAlert" value="${requestScope.MediaTypeAlert}" />
 
+<view:setConstant var="TINY_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.TINY"/>
+<view:setConstant var="MEDIUM_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.MEDIUM"/>
+
 <html>
 <head>
 <view:looknfeel/>
-
 <view:includePlugin name="qtip"/>
 <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js"/>"></script>
 <script type="text/javascript">
@@ -115,22 +118,13 @@ function deleteConfirm(id) {
 }
 
 $(document).ready(function() {
-  $('.imagePreview').qtip({
-    style: { classes: 'qtip-bootstrap' },
-    content: {
-      text: function(api) {
-          return "<img src='" + $(this).attr("rel") + "' />";
-      },
-      title: {text: '<fmt:message key="gallery.preview" />'}
-    }
-  });
   <c:if test="${userSelectionAlert}">
   <fmt:message var="msgAlert" key="gallery.basket.media.type.alert"/>
   notyWarning('${msgAlert}');
   </c:if>
 });
-
 </script>
+<gallery:handlePhotoPreview jquerySelector="${'.imagePreview'}" />
 </head>
 <body class="gallery gallery-basket" id="${instanceId}">
 <fmt:message var="basketLabel" key="gallery.basket" />
@@ -178,7 +172,11 @@ $(document).ready(function() {
     <c:forEach items="${medias}" var="media">
       <view:arrayLine>
         <c:set var="mediaTitle"><view:encodeHtml string="${media.title}"/></c:set>
-        <c:set var="photoCellText"><a class="imagePreview" href="MediaView?MediaId=${media.id}" rel="${photoSvcUrl}${media.id}/content?resolution=MEDIUM"><img src="${photoSvcUrl}${media.id}/content?resolution=TINY" title="${mediaTitle}" alt="${mediaTitle}" /></a></c:set>
+        <c:set var="photoCellText">
+          <a class="imagePreview" href="MediaView?MediaId=${media.id}" tipTitle="${mediaTitle}" tipUrl="${media.getApplicationThumbnailUrl(MEDIUM_RESOLUTION)}">
+            <img src="${media.getApplicationThumbnailUrl(TINY_RESOLUTION)}" alt="${mediaTitle}" />
+          </a>
+        </c:set>
         <view:arrayCellText text="${photoCellText}" />
         <c:set var="mediaSelected" value=""/>
         <c:set var="selChecked" value="" />

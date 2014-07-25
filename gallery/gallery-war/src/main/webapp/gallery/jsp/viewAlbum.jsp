@@ -147,158 +147,160 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <view:looknfeel/>
+  <view:includePlugin name="qtip"/>
   <view:progressMessage/>
   <script type="text/javascript" src="<c:url value="/gallery/jsp/javaScript/dragAndDrop.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/util/javaScript/upload_applet.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js"/>"></script>
   <script type="text/javascript">
+var currentGallery = {
+  'id' : "${currentAlbum.id}",
+  'name' : "${silfn:escapeJs(currentAlbum.name)}",
+  'description' : "${silfn:escapeJs(currentAlbum.description)}"
+};
 
-    var currentGallery = {
-      'id' : "${currentAlbum.id}",
-      'name' : "${silfn:escapeJs(currentAlbum.name)}",
-      'description' : "${silfn:escapeJs(currentAlbum.description)}"
-    };
+var albumWindow = window;
 
-    var albumWindow = window;
+function addFavorite(name, description, url) {
+  postNewLink(name, url, description);
+}
 
-    function addFavorite(name, description, url) {
-      postNewLink(name, url, description);
-    }
+<c:if test="${greaterUserRole eq adminRole or userId eq currentAlbum.creatorId}">
+function deleteConfirm(id, nom) {
+  // confirmation de suppression de l'album
+  if (window.confirm("<fmt:message key="gallery.confirmDeleteAlbum"/> '" + $('<span>').html(nom).text() + "' ?")) {
+    $.progressMessage();
+    document.albumForm.action = "DeleteAlbum";
+    document.albumForm.Id.value = id;
+    document.albumForm.submit();
+  }
+}
+</c:if>
 
-    <c:if test="${greaterUserRole eq adminRole or userId eq currentAlbum.creatorId}">
-    function deleteConfirm(id, nom) {
-      // confirmation de suppression de l'album
-      if (window.confirm("<fmt:message key="gallery.confirmDeleteAlbum"/> '" + $('<span>').html(nom).text() + "' ?")) {
-        $.progressMessage();
-        document.albumForm.action = "DeleteAlbum";
-        document.albumForm.Id.value = id;
-        document.albumForm.submit();
-      }
-    }
-    </c:if>
+<c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
+  <c:if test="${dragAndDropEnable}">
+function uploadCompleted(s) {
+  location.href =
+      "<c:url value="${silfn:componentURL(componentId)}ViewAlbum?Id=${currentAlbum.id}"/>";
+}
 
-    <c:if test="${greaterUserRole.isGreaterThanOrEquals(writerRole)}">
-    <c:if test="${dragAndDropEnable}">
-    function uploadCompleted(s) {
-      location.href =
-          "<c:url value="${silfn:componentURL(componentId)}ViewAlbum?Id=${currentAlbum.id}"/>";
-    }
+function showDnD() {
+  var url = "<c:url value="${silfn:fullApplicationURL(pageContext.request)}/RgalleryDragAndDrop/jsp/Drop?UserId=${userId}&ComponentId=${componentId}&AlbumId=${currentAlbum.id}"/>";
+  var message = "<c:url value="${silfn:fullApplicationURL(pageContext.request)}/upload/Gallery_${userLanguage}.html"/>";
+  showHideDragDrop(url, message, '<fmt:message key="GML.applet.dnd.alt"/>',
+      '${maximumFileSize}', '<c:url value="/"/>', '<fmt:message key="GML.DragNDropExpand"/>',
+      '<fmt:message key="GML.DragNDropCollapse"/>');
+}
+  </c:if>
+  <c:if test="${greaterUserRole.isGreaterThanOrEquals(publisherRole)}">
 
-    function showDnD() {
-      var url = "<c:url value="${silfn:fullApplicationURL(pageContext.request)}/RgalleryDragAndDrop/jsp/Drop?UserId=${userId}&ComponentId=${componentId}&AlbumId=${currentAlbum.id}"/>";
-      var message = "<c:url value="${silfn:fullApplicationURL(pageContext.request)}/upload/Gallery_${userLanguage}.html"/>";
-      showHideDragDrop(url, message, '<fmt:message key="GML.applet.dnd.alt"/>',
-          '${maximumFileSize}', '<c:url value="/"/>', '<fmt:message key="GML.DragNDropExpand"/>',
-          '<fmt:message key="GML.DragNDropCollapse"/>');
-    }
-    </c:if>
-    <c:if test="${greaterUserRole.isGreaterThanOrEquals(publisherRole)}">
+function sendData() {
+  // envoi des photos selectionnees pour la modif par lot
+  var selectedPhotos = getMediaIds(true);
+  if (selectedPhotos && selectedPhotos.length > 0) {
+    document.mediaForm.SelectedIds.value = selectedPhotos;
+    document.mediaForm.NotSelectedIds.value = getMediaIds(false);
+    document.mediaForm.submit();
+  }
+}
 
-    function sendData() {
-      // envoi des photos selectionnees pour la modif par lot
-      var selectedPhotos = getMediaIds(true);
-      if (selectedPhotos && selectedPhotos.length > 0) {
-        document.mediaForm.SelectedIds.value = selectedPhotos;
-        document.mediaForm.NotSelectedIds.value = getMediaIds(false);
-        document.mediaForm.submit();
-      }
-    }
-
-    function sendDataDelete() {
-      //confirmation de suppression de l'album
-      var selectedPhotos = getMediaIds(true);
-      if (selectedPhotos && selectedPhotos.length > 0) {
-        if (window.confirm("<fmt:message key="gallery.confirmDeleteMedias"/> ")) {
-          $.progressMessage();
-          // envoi des photos selectionnees pour la modif par lot
-          document.mediaForm.SelectedIds.value = selectedPhotos;
-          document.mediaForm.NotSelectedIds.value = getMediaIds(false);
-          document.mediaForm.action = "DeleteSelectedMedia";
-          document.mediaForm.submit();
-        }
-      }
-    }
-    <c:if test="${isPdcUsed}">
-    function sendDataCategorize() {
-      var selectedPhotos = getMediaIds(true);
-      if (selectedPhotos && selectedPhotos.length > 0) {
-        var selectedIds = selectedPhotos;
-        var notSelectedIds = getMediaIds(false);
-
-        urlWindow = "CategorizeSelectedMedia?SelectedIds=" + selectedIds + "&NotSelectedIds=" +
-            notSelectedIds;
-        windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
-        if (!albumWindow.closed && albumWindow.name == "albumWindow") {
-          albumWindow.close();
-        }
-        albumWindow = SP_openWindow(urlWindow, "albumWindow", "550", "250", windowParams);
-      }
-    }
-    </c:if>
-    </c:if>
-    </c:if>
-
-    function sendToBasket() {
-      // envoi des photos selectionnees dans le panier
-      var selectedPhotos = getMediaIds(true);
-      if (selectedPhotos && selectedPhotos.length > 0) {
-        document.mediaForm.SelectedIds.value = selectedPhotos;
-        document.mediaForm.NotSelectedIds.value = getMediaIds(false);
-        document.mediaForm.action = "BasketAddMediaList";
-        document.mediaForm.submit();
-      }
-    }
-
-    <c:if test="${greaterUserRole eq adminRole}">
-    function sendDataForAddPath() {
-      // envoi des photos selectionnees pour le placement par lot
-      var selectedPhotos = getMediaIds(true);
-      if (selectedPhotos && selectedPhotos.length > 0) {
-        document.mediaForm.SelectedIds.value = selectedPhotos;
-        document.mediaForm.NotSelectedIds.value = getMediaIds(false);
-        document.mediaForm.action = "AddAlbumForSelectedMedia";
-        document.mediaForm.submit();
-      }
-    }
-
-    function clipboardPaste() {
+function sendDataDelete() {
+  //confirmation de suppression de l'album
+  var selectedPhotos = getMediaIds(true);
+  if (selectedPhotos && selectedPhotos.length > 0) {
+    if (window.confirm("<fmt:message key="gallery.confirmDeleteMedias"/> ")) {
       $.progressMessage();
-      document.albumForm.action = "paste";
-      document.albumForm.submit();
+      // envoi des photos selectionnees pour la modif par lot
+      document.mediaForm.SelectedIds.value = selectedPhotos;
+      document.mediaForm.NotSelectedIds.value = getMediaIds(false);
+      document.mediaForm.action = "DeleteSelectedMedia";
+      document.mediaForm.submit();
     }
+  }
+}
+    <c:if test="${isPdcUsed}">
+function sendDataCategorize() {
+  var selectedPhotos = getMediaIds(true);
+  if (selectedPhotos && selectedPhotos.length > 0) {
+    var selectedIds = selectedPhotos;
+    var notSelectedIds = getMediaIds(false);
 
-    function clipboardCopy() {
-      top.IdleFrame.location.href =
-          '<c:url value="${silfn:componentURL(componentId)}"/>copy?Object=Node&Id=${currentAlbum.id}';
+    urlWindow = "CategorizeSelectedMedia?SelectedIds=" + selectedIds + "&NotSelectedIds=" +
+        notSelectedIds;
+    windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
+    if (!albumWindow.closed && albumWindow.name == "albumWindow") {
+      albumWindow.close();
     }
-
-    function clipboardCut() {
-      top.IdleFrame.location.href =
-          '<c:url value="${silfn:componentURL(componentId)}"/>cut?Object=Node&Id=${currentAlbum.id}';
-    }
-
-    function CopySelectedMedia() {
-      var selectedPhotos = getMediaIds(true);
-      if (selectedPhotos && selectedPhotos.length > 0) {
-        document.mediaForm.SelectedIds.value = selectedPhotos;
-        document.mediaForm.NotSelectedIds.value = getMediaIds(false);
-        document.mediaForm.action = "CopySelectedMedia";
-        document.mediaForm.submit();
-      }
-    }
-
-    function CutSelectedMedia() {
-      var selectedPhotos = getMediaIds(true);
-      if (selectedPhotos && selectedPhotos.length > 0) {
-        document.mediaForm.SelectedIds.value = selectedPhotos;
-        document.mediaForm.NotSelectedIds.value = getMediaIds(false);
-        document.mediaForm.action = "CutSelectedMedia";
-        document.mediaForm.submit();
-      }
-    }
+    albumWindow = SP_openWindow(urlWindow, "albumWindow", "550", "250", windowParams);
+  }
+}
     </c:if>
+  </c:if>
+</c:if>
 
+function sendToBasket() {
+  // envoi des photos selectionnees dans le panier
+  var selectedPhotos = getMediaIds(true);
+  if (selectedPhotos && selectedPhotos.length > 0) {
+    document.mediaForm.SelectedIds.value = selectedPhotos;
+    document.mediaForm.NotSelectedIds.value = getMediaIds(false);
+    document.mediaForm.action = "BasketAddMediaList";
+    document.mediaForm.submit();
+  }
+}
+
+<c:if test="${greaterUserRole eq adminRole}">
+function sendDataForAddPath() {
+  // envoi des photos selectionnees pour le placement par lot
+  var selectedPhotos = getMediaIds(true);
+  if (selectedPhotos && selectedPhotos.length > 0) {
+    document.mediaForm.SelectedIds.value = selectedPhotos;
+    document.mediaForm.NotSelectedIds.value = getMediaIds(false);
+    document.mediaForm.action = "AddAlbumForSelectedMedia";
+    document.mediaForm.submit();
+  }
+}
+
+function clipboardPaste() {
+  $.progressMessage();
+  document.albumForm.action = "paste";
+  document.albumForm.submit();
+}
+
+function clipboardCopy() {
+  top.IdleFrame.location.href =
+      '<c:url value="${silfn:componentURL(componentId)}"/>copy?Object=Node&Id=${currentAlbum.id}';
+}
+
+function clipboardCut() {
+  top.IdleFrame.location.href =
+      '<c:url value="${silfn:componentURL(componentId)}"/>cut?Object=Node&Id=${currentAlbum.id}';
+}
+
+function CopySelectedMedia() {
+  var selectedPhotos = getMediaIds(true);
+  if (selectedPhotos && selectedPhotos.length > 0) {
+    document.mediaForm.SelectedIds.value = selectedPhotos;
+    document.mediaForm.NotSelectedIds.value = getMediaIds(false);
+    document.mediaForm.action = "CopySelectedMedia";
+    document.mediaForm.submit();
+  }
+}
+
+function CutSelectedMedia() {
+  var selectedPhotos = getMediaIds(true);
+  if (selectedPhotos && selectedPhotos.length > 0) {
+    document.mediaForm.SelectedIds.value = selectedPhotos;
+    document.mediaForm.NotSelectedIds.value = getMediaIds(false);
+    document.mediaForm.action = "CutSelectedMedia";
+    document.mediaForm.submit();
+  }
+}
+</c:if>
   </script>
+<c:if test="${not empty currentAlbum.media}">
+  <gallery:handlePhotoPreview jquerySelector="${'.mediaPreview'}" />
+</c:if>
   <gallery:diaporama/>
 </head>
 <body>
