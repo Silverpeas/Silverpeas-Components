@@ -23,8 +23,8 @@
  */
 package com.silverpeas.gallery.model;
 
-import com.silverpeas.gallery.constant.MediaMimeType;
 import com.silverpeas.gallery.constant.GalleryResourceURIs;
+import com.silverpeas.gallery.constant.MediaMimeType;
 import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.process.media.GalleryLoadMetaDataProcess;
 import com.silverpeas.util.StringUtil;
@@ -149,7 +149,7 @@ public abstract class InternalMedia extends Media {
     if (getType().isPhoto() && StringUtil.isDefined(mediaResolution.getThumbnailSuffix())) {
       origOrThumbFileName = getId() + mediaResolution.getThumbnailSuffix();
     }
-    return SilverpeasFileProvider.getInstance().getSilverpeasFile(FileUtils
+    return SilverpeasFileProvider.getFile(FileUtils
         .getFile(Media.BASE_PATH.getPath(), getComponentInstanceId(), getWorkspaceSubFolderName(),
             origOrThumbFileName).getPath());
   }
