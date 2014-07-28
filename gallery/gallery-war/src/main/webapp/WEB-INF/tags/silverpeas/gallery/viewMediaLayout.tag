@@ -189,7 +189,7 @@
   <fmt:message key="GML.notify" var="notifLabel"/>
   <fmt:message key="gallery.alert" var="notifIcon" bundle="${icons}"/>
   <c:url value="${notifIcon}" var="notifIcon"/>
-  <view:operation altText="${notifLabel}" action="ToAlertUser?MediaId=${mediaId}" icon="${notifIcon}"/>
+  <view:operation altText="${notifLabel}" action="javaScript:onClick=goToNotify('ToAlertUser?MediaId=${mediaId}')" icon="${notifIcon}"/>
   <view:operationSeparator/>
   <c:if test="${requestScope.UpdateMediaAllowed}">
     <fmt:message key="GML.modify" var="modifyLabel"/>
