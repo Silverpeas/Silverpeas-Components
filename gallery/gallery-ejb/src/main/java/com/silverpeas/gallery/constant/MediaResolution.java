@@ -25,20 +25,28 @@ package com.silverpeas.gallery.constant;
 
 import com.silverpeas.gallery.GalleryComponentSettings;
 import com.silverpeas.util.StringUtil;
+import org.apache.commons.collections.set.UnmodifiableSet;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonValue;
+
+import java.util.EnumSet;
+import java.util.Set;
 
 /**
  * @author: Yohann Chastagnier
  */
 public enum MediaResolution {
-  TINY("66x50", 66, 50, "66x50"),
-  SMALL("133x100", 133, 100, "133x100"),
-  MEDIUM("266x150", 266, 150, "266x150"),
-  LARGE("600x400", 600, 400, null),
-  PREVIEW("preview", 600, 400, "600x400"),
-  WATERMARK("watermark", null, null, null),
-  ORIGINAL("original", null, null, null);
+  TINY(true, "66x50", 66, 50, "66x50"),
+  SMALL(true, "133x100", 133, 100, "133x100"),
+  MEDIUM(true, "266x150", 266, 150, "266x150"),
+  LARGE(false, "600x400", 600, 400, null),
+  PREVIEW(false, "preview", 600, 400, "600x400"),
+  WATERMARK(false, "watermark", null, null, null),
+  ORIGINAL(false, "original", null, null, null);
+
+  @SuppressWarnings("unchecked")
+  public final static Set<MediaResolution> ALL =
+      UnmodifiableSet.decorate(EnumSet.allOf(MediaResolution.class));
 
   @JsonCreator
   public static MediaResolution fromNameOrLabel(String nameOrLabel) {
@@ -59,19 +67,29 @@ public enum MediaResolution {
     return name();
   }
 
+  private final boolean displayed;
   private final String label;
   private final Integer width;
   private final Integer height;
   private final String thumbnailSuffix;
   private final Integer watermarkSize;
 
-  private MediaResolution(final String label, final Integer width, final Integer height,
-      final String bundlePartOfWaterwarkSizeLabel) {
+  private MediaResolution(final boolean displayed, final String label, final Integer width,
+      final Integer height, final String bundlePartOfWaterwarkSizeLabel) {
+    this.displayed = displayed;
     this.label = label;
     this.width = width;
     this.height = height;
     this.watermarkSize = GalleryComponentSettings.getWatermarkSize(bundlePartOfWaterwarkSizeLabel);
     this.thumbnailSuffix = "original".equals(label) ? "" : "_" + label + ".jpg";
+  }
+
+  /**
+   * Indicates if the definition can be displayed to the user.
+   * @return true if the definition can be displayed, false otherwise.
+   */
+  public boolean isDisplayed() {
+    return displayed;
   }
 
   public String getLabel() {

@@ -50,6 +50,13 @@ import static org.mockito.Mockito.when;
 @Authorized
 public class GalleryResourceMock extends GalleryResource {
 
+  static String ALBUM_ID = "3";
+  static String PHOTO_ID = "7";
+  static String PHOTO_ID_DOESNT_EXISTS = "8";
+  static String VIDEO_ID = "26";
+  static String SOUND_ID = "38";
+  static String STREAMING_ID = "2638";
+
   private GalleryBm galleryBmMock = null;
 
   /*
@@ -63,21 +70,24 @@ public class GalleryResourceMock extends GalleryResource {
         galleryBmMock = mock(GalleryBm.class);
 
         // getAlbum
-        when(galleryBmMock.getAlbum(any(NodePK.class)))
-            .thenAnswer(
-                new Answer<AlbumDetail>() {
+        when(galleryBmMock.getAlbum(any(NodePK.class))).thenAnswer(new Answer<AlbumDetail>() {
 
-                  @Override
-                  public AlbumDetail answer(final InvocationOnMock invocation) throws Throwable {
-                    final NodePK nodePk = (NodePK) invocation.getArguments()[0];
-                    if (nodePk == null || !"3".equals(nodePk.getId())) {
-                      return null;
-                    }
-                    return AlbumBuilder.getAlbumBuilder()
-                        .buildAlbum(nodePk.getId()).addMedia(PhotoBuilder.getPhotoBuilder()
-                            .buildPhoto("7", nodePk.getComponentName()));
-                  }
-                });
+          @Override
+          public AlbumDetail answer(final InvocationOnMock invocation) throws Throwable {
+            final NodePK nodePk = (NodePK) invocation.getArguments()[0];
+            if (nodePk == null || !"3".equals(nodePk.getId())) {
+              return null;
+            }
+            return AlbumBuilder.getAlbumBuilder().buildAlbum(nodePk.getId()).addMedia(
+                MediaBuilder.getMediaBuilder().buildPhoto(PHOTO_ID, nodePk.getComponentName()))
+                .addMedia(
+                    MediaBuilder.getMediaBuilder().buildVideo(VIDEO_ID, nodePk.getComponentName()))
+                .addMedia(
+                    MediaBuilder.getMediaBuilder().buildSound(SOUND_ID, nodePk.getComponentName()))
+                .addMedia(MediaBuilder.getMediaBuilder()
+                    .buildStreaming(STREAMING_ID, nodePk.getComponentName()));
+          }
+        });
 
         // getPhoto
         when(galleryBmMock.getMedia(any(MediaPK.class))).thenAnswer(new Answer<Media>() {
@@ -85,11 +95,24 @@ public class GalleryResourceMock extends GalleryResource {
           @Override
           public Media answer(final InvocationOnMock invocation) throws Throwable {
             final MediaPK mediaPk = (MediaPK) invocation.getArguments()[0];
-            if (mediaPk == null || !"7".equals(mediaPk.getId())) {
+            if (mediaPk == null ||
+                (!PHOTO_ID.equals(mediaPk.getId()) && !VIDEO_ID.equals(mediaPk.getId()) &&
+                    !SOUND_ID.equals(mediaPk.getId()) && !STREAMING_ID.equals(mediaPk.getId()))) {
               return null;
             }
-            return PhotoBuilder.getPhotoBuilder().buildPhoto(mediaPk.getId(),
-                mediaPk.getComponentName());
+            if (VIDEO_ID.equals(mediaPk.getId())) {
+              return MediaBuilder.getMediaBuilder()
+                  .buildVideo(mediaPk.getId(), mediaPk.getComponentName());
+            } else if (SOUND_ID.equals(mediaPk.getId())) {
+              return MediaBuilder.getMediaBuilder()
+                  .buildSound(mediaPk.getId(), mediaPk.getComponentName());
+            } else if (STREAMING_ID.equals(mediaPk.getId())) {
+              return MediaBuilder.getMediaBuilder()
+                  .buildStreaming(mediaPk.getId(), mediaPk.getComponentName());
+            }
+            // Default
+            return MediaBuilder.getMediaBuilder()
+                .buildPhoto(mediaPk.getId(), mediaPk.getComponentName());
           }
         });
       }

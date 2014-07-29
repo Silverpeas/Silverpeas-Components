@@ -38,21 +38,28 @@
 <c:set var="componentInstanceId" value="${requestScope.browseContext[3]}"/>
 <c:set var="albumId" value="${requestScope.albumId}"/>
 <c:set var="wait" value="${requestScope.wait}"/>
-
-<view:includePlugin name="popup"/>
+<c:set var="currentUserSort" value="${requestScope.Sort}"/>
 
 <link href="<c:url value="/gallery/jsp/styleSheets/slider/themes/classic/galleria.classic.css"/>" type="text/css" rel="stylesheet">
+<script src="<c:url value="/util/javaScript/jquery/jquery-migrate-1.2.1.min.js"/>" type="text/javascript"></script>
 <script src="<c:url value="/gallery/jsp/javaScript/slider/galleria-1.3.6.min.js"/>" type="text/javascript"></script>
 <script src="<c:url value="/gallery/jsp/styleSheets/slider/themes/classic/galleria.classic.min.js"/>" type="text/javascript"></script>
 <script src="<c:url value="/gallery/jsp/javaScript/silverpeas-gallery-slider.js"/>" type="text/javascript"></script>
 <script type="text/JavaScript">
-  function startSlideshow(fromPhotoId) {
-    var nbPauses = -1;
-    displayAlbumGallerySlider({
-      componentInstanceId : '<c:out value="${componentInstanceId}" />',
-      albumId : '<c:out value="${albumId}" />',
-      fromPhotoId : fromPhotoId,
-      waitInSeconds : '<c:out value="${wait}" />',
+  function startSlideshow(fromMediaId) {
+    $.popup.showWaiting();
+    nbPauses = -1;
+    var $slider = $('#gallerySlider');
+    if ($slider.size() == 0) {
+      $slider = $("<div>").attr("id", "gallerySlider");
+      $(document.body).append($slider);
+    }
+    $slider.gallerySlider('album', {
+      mediaSort : '${currentUserSort}',
+      componentInstanceId : '${componentInstanceId}',
+      albumId : '${albumId}',
+      fromMediaId : fromMediaId,
+      waitInSeconds : '${wait}',
       width : 600,
       height : 400,
       dummyImage : '<view:componentUrl componentId=""/>/gallery/jsp/icons/notAvailable_<c:out value="${requestScope.resources.language}"/>_preview.jpg',
@@ -69,9 +76,9 @@
       callbackEnterFullScreen : function() {
         notyInfo('<c:out value="${sliderFullscreenInfo}" escapeXml="false" />');
       },
-      callbackLink : function(photo) {
+      callbackLink : function(media) {
         return webContext +
-            "/Rgallery/<c:out value="${componentInstanceId}" />/MediaView?MediaId=" + photo.id;
+            "/Rgallery/<c:out value="${componentInstanceId}" />/MediaView?MediaId=" + media.id;
       }
     });
   }

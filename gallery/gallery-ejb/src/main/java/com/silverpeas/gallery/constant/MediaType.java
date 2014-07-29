@@ -25,6 +25,8 @@ package com.silverpeas.gallery.constant;
 
 import com.silverpeas.gallery.model.Media;
 import com.silverpeas.util.StringUtil;
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonValue;
 
 /**
  * @author: Yohann Chastagnier
@@ -48,12 +50,18 @@ public enum MediaType {
    * @param type
    * @return
    */
+  @JsonCreator
   public static MediaType from(String type) {
     try {
       return valueOf(StringUtil.capitalize(type));
     } catch (Exception e) {
       return Unknown;
     }
+  }
+
+  @JsonValue
+  public String getName() {
+    return name();
   }
 
   /**

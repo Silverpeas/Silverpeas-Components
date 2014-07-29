@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -23,57 +23,40 @@
  */
 package com.silverpeas.gallery.web;
 
-import com.silverpeas.gallery.model.Photo;
+import com.silverpeas.gallery.model.Video;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.net.URI;
 
 /**
  * @author Yohann Chastagnier
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class PhotoEntity extends AbstractMediaEntity<PhotoEntity> {
-  private static final long serialVersionUID = -4634076513167690314L;
-
-  @XmlElement(defaultValue = "")
-  private URI previewUrl;
+public class VideoEntity extends AbstractMediaEntity<VideoEntity> {
+  private static final long serialVersionUID = -8597516375695922043L;
 
   /**
-   * Creates a new photo entity from the specified photo.
-   * @param photo
-   * @return the entity representing the specified photo.
+   * Creates a new video entity from the specified video.
+   * @param video
+   * @return the entity representing the specified video.
    */
-  public static PhotoEntity createFrom(final Photo photo) {
-    return new PhotoEntity(photo);
-  }
-
-  public PhotoEntity withPreviewUrl(final URI previewUrl) {
-    this.previewUrl = previewUrl;
-    return this;
-  }
-
-  /**
-   * @return the previewUrl
-   */
-  public URI getPreviewUrl() {
-    return previewUrl;
+  public static VideoEntity createFrom(final Video video) {
+    return new VideoEntity(video);
   }
 
   /**
    * Default hidden constructor.
    */
-  private PhotoEntity(final Photo photo) {
-    super(photo);
-    withWidth(photo.getDefinition().getWidth());
-    withHeight(photo.getDefinition().getHeight());
+  private VideoEntity(final Video video) {
+    super(video);
+    withWidth(video.getDefinition().getWidth());
+    withHeight(video.getDefinition().getHeight());
   }
 
   @SuppressWarnings("UnusedDeclaration")
-  protected PhotoEntity() {
+  protected VideoEntity() {
     super();
   }
 }

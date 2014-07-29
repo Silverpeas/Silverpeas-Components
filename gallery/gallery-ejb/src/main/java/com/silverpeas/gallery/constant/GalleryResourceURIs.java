@@ -46,7 +46,7 @@ public final class GalleryResourceURIs {
   public static final String GALLERY_VIDEOS_PART = "videos";
   public static final String GALLERY_SOUNDS_PART = "sounds";
   public static final String GALLERY_MEDIA_CONTENT_PART = "content";
-  public static final String GALLERY_STREAMING_PART = "streaming";
+  public static final String GALLERY_STREAMINGS_PART = "streamings";
   public static final String GALLERY_STREAMING_PROVIDER_DATA_PART = "providerData";
 
   /**

@@ -28,10 +28,17 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 
+import java.net.URI;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
+
+import static com.silverpeas.gallery.web.GalleryResourceMock.*;
+
 /**
  * @author Yohann Chastagnier
  */
-public class AlbumEntityMatcher extends BaseMatcher<AlbumEntity> {
+public class AlbumEntityMatcher extends BaseMatcher<LinkedHashMap<String, Object>> {
 
   private final AlbumDetail expected;
 
@@ -48,22 +55,26 @@ public class AlbumEntityMatcher extends BaseMatcher<AlbumEntity> {
    * (non-Javadoc)
    * @see org.hamcrest.Matcher#matches(java.lang.Object)
    */
+  @SuppressWarnings("unchecked")
   @Override
   public boolean matches(final Object item) {
     boolean match = false;
-    if (item instanceof AlbumEntity) {
-      final AlbumEntity actual = (AlbumEntity) item;
+    if (item instanceof LinkedHashMap) {
+      final AlbumEntity actual = from((LinkedHashMap<String, Object>) item);
       final EqualsBuilder matcher = new EqualsBuilder();
       matcher.appendSuper(actual.getURI().toString()
                                 .endsWith("/gallery/componentName5/albums/3"));
-      matcher.appendSuper(actual.getParentURI().toString().endsWith(
-          "/gallery/componentName5/albums/0"));
-      matcher.append("album", actual.getType());
+      matcher.appendSuper(
+          actual.getParentURI().toString().endsWith("/gallery/componentName5/albums/0"));
       matcher.append(String.valueOf(expected.getId()), actual.getId());
       matcher.append(expected.getName(), actual.getTitle());
       matcher.append(expected.getDescription(), actual.getDescription());
-      matcher.append(1, actual.getPhotos().size());
-      matcher.append("7", actual.getPhotos().keySet().iterator().next());
+      matcher.append(4, actual.getMediaList().size());
+      Set<String> keySet = actual.getMediaList().keySet();
+      matcher.appendSuper(keySet.contains(PHOTO_ID));
+      matcher.appendSuper(keySet.contains(VIDEO_ID));
+      matcher.appendSuper(keySet.contains(SOUND_ID));
+      matcher.appendSuper(keySet.contains(STREAMING_ID));
       match = matcher.isEquals();
     }
     return match;
@@ -71,5 +82,21 @@ public class AlbumEntityMatcher extends BaseMatcher<AlbumEntity> {
 
   public static AlbumEntityMatcher matches(final AlbumDetail expected) {
     return new AlbumEntityMatcher(expected);
+  }
+
+  @SuppressWarnings("unchecked")
+  public static AlbumEntity from(LinkedHashMap<String, Object> album) {
+    AlbumEntity albumEntity = new AlbumEntity();
+    albumEntity.withURI(URI.create((String) album.get("uri")));
+    albumEntity.withParentURI(URI.create((String) album.get("parentURI")));
+    albumEntity.setId((String) album.get("id"));
+    albumEntity.setTitle((String) album.get("title"));
+    albumEntity.setDescription((String) album.get("description"));
+    LinkedHashMap<String, LinkedHashMap<String, Object>> mediaList =
+        (LinkedHashMap<String, LinkedHashMap<String, Object>>) album.get("mediaList");
+    for (Map.Entry<String, LinkedHashMap<String, Object>> mediaEntry : mediaList.entrySet()) {
+      albumEntity.addMedia(MediaEntityMatcher.from(mediaEntry.getValue()));
+    }
+    return albumEntity;
   }
 }

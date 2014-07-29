@@ -39,6 +39,7 @@ import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.MetaData;
 import com.silverpeas.gallery.model.Order;
 import com.silverpeas.gallery.model.OrderRow;
+import com.silverpeas.gallery.web.MediaSort;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.peasUtil.AccessForbiddenException;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
@@ -132,7 +133,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
     request.setAttribute("greaterUserRole", highestUserRole);
     request.setAttribute("UserId", userId);
     request.setAttribute("IsGuest", gallerySC.isGuest());
-    request.setAttribute("Tri", gallerySC.getTri());
+    request.setAttribute("Sort", gallerySC.getSort());
 
     SilverTrace.debug("gallery", "GalleryRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "Profile=" + highestUserRole);
@@ -503,11 +504,11 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
       } else if ("SortBy".equals(function)) {
         // traitement du tri selon l'écran en cours
-        String tri = request.getParameter("Tri");
+        MediaSort sort = MediaSort.from(request.getParameter("Sort"));
         if ((!gallerySC.isSearchResult() && !gallerySC.isViewNotVisible())) {
-          gallerySC.setTri(tri);
+          gallerySC.setSort(sort);
         } else {
-          gallerySC.setTriSearch(tri);
+          gallerySC.setSortSearch(sort);
         }
         destination = returnToAlbum(request, gallerySC);
       } else if ("ToAlertUser".equals(function)) {
@@ -846,7 +847,6 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         request.setAttribute("MediaList", gallerySC.getSearchResultListMedia());
         request.setAttribute("NbMediaPerPage", gallerySC.getNbMediaPerPage());
         request.setAttribute("CurrentPageIndex", gallerySC.getIndexOfCurrentPage());
-        request.setAttribute("Tri", gallerySC.getTri());
         request.setAttribute("MediaResolution", gallerySC.getDisplayedMediaResolution());
         request.setAttribute("IsViewMetadata", gallerySC.isViewMetadata());
         request.setAttribute("IsViewList", gallerySC.isViewList());
@@ -1021,7 +1021,6 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         request.setAttribute("MediaList", media);
         request.setAttribute("NbMediaPerPage", gallerySC.getNbMediaPerPage());
         request.setAttribute("CurrentPageIndex", gallerySC.getIndexOfCurrentPage());
-        request.setAttribute("Tri", gallerySC.getTri());
         request.setAttribute("MediaResolution", gallerySC.getDisplayedMediaResolution());
         request.setAttribute("IsViewMetadata", gallerySC.isViewMetadata());
         request.setAttribute("IsViewList", gallerySC.isViewList());

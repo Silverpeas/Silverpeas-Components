@@ -33,6 +33,7 @@ import com.silverpeas.gallery.delegate.GalleryPasteDelegate;
 import com.silverpeas.gallery.delegate.MediaDataCreateDelegate;
 import com.silverpeas.gallery.delegate.MediaDataUpdateDelegate;
 import com.silverpeas.gallery.model.*;
+import com.silverpeas.gallery.web.MediaSort;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.EncodeHelper;
@@ -94,7 +95,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   private AlbumDetail currentAlbum = getAlbum(currentAlbumId);
   private int rang = 0;
   private MediaResolution displayedMediaResolution = MediaResolution.SMALL;
-  private String tri = "CreationDateDesc";
+  private MediaSort sort = MediaSort.CreationDateDesc;
   private String currentOrderId = "0";
   private List<String> listSelected = new ArrayList<String>();
   private boolean isViewNotVisible = false;
@@ -465,37 +466,6 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     loadCurrentAlbum();
   }
 
-  private void sortMedia() {
-    sort(currentAlbum.getMedia());
-  }
-
-  private void sortMediaSearch() {
-    sort(getSearchResultListMedia());
-    sort(getRestrictedListMedia());
-  }
-
-  private void sort(final List<Media> media) {
-    final Comparator<Media> comparator;
-    if ("CreationDateAsc".equals(tri)) {
-      comparator = MediaLogicalComparator.on(CREATE_DATE_ASC, IDENTIFIER_ASC);
-    } else if ("CreationDateDesc".equals(tri)) {
-      comparator = MediaLogicalComparator.on(CREATE_DATE_DESC, IDENTIFIER_ASC);
-    } else if ("Size".equals(tri)) {
-      comparator = MediaLogicalComparator.on(SIZE_ASC, CREATE_DATE_ASC, IDENTIFIER_ASC);
-    } else if ("Resolution".equals(tri)) {
-      comparator = MediaLogicalComparator.on(DIMENSION_ASC, CREATE_DATE_ASC, IDENTIFIER_ASC);
-    } else if ("Title".equals(tri)) {
-      comparator = MediaLogicalComparator.on(TITLE_ASC, CREATE_DATE_ASC, IDENTIFIER_ASC);
-    } else if ("Author".equals(tri)) {
-      comparator = MediaLogicalComparator.on(AUTHOR_ASC_EMPTY_END, CREATE_DATE_ASC, IDENTIFIER_ASC);
-    } else {
-      comparator = null;
-    }
-    if (comparator != null) {
-      Collections.sort(media, comparator);
-    }
-  }
-
   private static GalleryBm getMediaService() {
     return MediaServiceFactory.getMediaService();
   }
@@ -527,18 +497,33 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     this.displayedMediaResolution = displayedMediaResolution;
   }
 
-  public String getTri() {
-    return tri;
+  public MediaSort getSort() {
+    return sort;
   }
 
-  public void setTri(String tri) {
-    this.tri = tri;
+  public void setSort(MediaSort sort) {
+    this.sort = sort;
     sortMedia();
   }
 
-  public void setTriSearch(String tri) {
-    this.tri = tri;
+  public void setSortSearch(MediaSort sort) {
+    this.sort = sort;
     sortMediaSearch();
+  }
+
+  private void sortMedia() {
+    sort(currentAlbum.getMedia());
+  }
+
+  private void sortMediaSearch() {
+    sort(getSearchResultListMedia());
+    sort(getRestrictedListMedia());
+  }
+
+  private void sort(final List<Media> media) {
+    if (sort != null) {
+      sort.perform(media);
+    }
   }
 
   public void setIndexOfCurrentPage(String index) {
@@ -1124,7 +1109,6 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   }
 
   /**
-   * @param mediaId the media identifier
    * @param row the order row
    * @return
    */

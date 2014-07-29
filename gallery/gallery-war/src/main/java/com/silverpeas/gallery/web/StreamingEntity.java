@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -23,57 +23,38 @@
  */
 package com.silverpeas.gallery.web;
 
-import com.silverpeas.gallery.model.Photo;
+import com.silverpeas.gallery.model.Streaming;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.net.URI;
 
 /**
  * @author Yohann Chastagnier
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class PhotoEntity extends AbstractMediaEntity<PhotoEntity> {
-  private static final long serialVersionUID = -4634076513167690314L;
-
-  @XmlElement(defaultValue = "")
-  private URI previewUrl;
+public class StreamingEntity extends AbstractMediaEntity<StreamingEntity> {
+  private static final long serialVersionUID = 2338157869917224281L;
 
   /**
-   * Creates a new photo entity from the specified photo.
-   * @param photo
-   * @return the entity representing the specified photo.
+   * Creates a new streaming entity from the specified streaming.
+   * @param streaming
+   * @return the entity representing the specified streaming.
    */
-  public static PhotoEntity createFrom(final Photo photo) {
-    return new PhotoEntity(photo);
-  }
-
-  public PhotoEntity withPreviewUrl(final URI previewUrl) {
-    this.previewUrl = previewUrl;
-    return this;
-  }
-
-  /**
-   * @return the previewUrl
-   */
-  public URI getPreviewUrl() {
-    return previewUrl;
+  public static StreamingEntity createFrom(final Streaming streaming) {
+    return new StreamingEntity(streaming);
   }
 
   /**
    * Default hidden constructor.
    */
-  private PhotoEntity(final Photo photo) {
-    super(photo);
-    withWidth(photo.getDefinition().getWidth());
-    withHeight(photo.getDefinition().getHeight());
+  private StreamingEntity(final Streaming streaming) {
+    super(streaming);
   }
 
   @SuppressWarnings("UnusedDeclaration")
-  protected PhotoEntity() {
+  protected StreamingEntity() {
     super();
   }
 }

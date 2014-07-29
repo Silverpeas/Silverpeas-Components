@@ -24,15 +24,19 @@ package com.silverpeas.gallery.web;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import com.silverpeas.gallery.constant.MediaType;
 import com.silverpeas.gallery.model.Media;
 import com.silverpeas.web.ResourceGettingTest;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.LinkedHashMap;
+
+import static com.silverpeas.gallery.web.GalleryResourceMock.*;
 import static com.silverpeas.gallery.web.GalleryTestResources.JAVA_PACKAGE;
 import static com.silverpeas.gallery.web.GalleryTestResources.SPRING_CONTEXT;
-import static com.silverpeas.gallery.web.PhotoEntityMatcher.matches;
+import static com.silverpeas.gallery.web.MediaEntityMatcher.matches;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
@@ -40,17 +44,13 @@ import static org.junit.Assert.assertThat;
  * Tests on the gallery photo getting by the GalleryResource web service.
  * @author Yohann Chastagnier
  */
-public class GalleryPhotoGettingTest extends ResourceGettingTest<GalleryTestResources> {
+public class GalleryMediaGettingTest extends ResourceGettingTest<GalleryTestResources> {
 
   private UserDetail user;
   private String sessionKey;
   private Media expected;
 
-  private static String ALBUM_ID = "3";
-  private static String MEDIA_ID = "7";
-  private static String MEDIA_ID_DOESNT_EXISTS = "8";
-
-  public GalleryPhotoGettingTest() {
+  public GalleryMediaGettingTest() {
     super(JAVA_PACKAGE, SPRING_CONTEXT);
   }
 
@@ -59,29 +59,61 @@ public class GalleryPhotoGettingTest extends ResourceGettingTest<GalleryTestReso
     user = aUser();
     sessionKey = authenticate(user);
     expected =
-        PhotoBuilder.getPhotoBuilder().buildPhoto(MEDIA_ID, getExistingComponentInstances()[0]);
+        MediaBuilder.getMediaBuilder().buildPhoto(PHOTO_ID, getExistingComponentInstances()[0]);
   }
 
+  @SuppressWarnings("unchecked")
   @Test
   public void getPhoto() {
-    final PhotoEntity entity = getAt(aResourceURI(), PhotoEntity.class);
+    final LinkedHashMap<String, Object> entity = getAt(aResourceURI(), LinkedHashMap.class);
     assertNotNull(entity);
     assertThat(entity, matches(expected));
   }
 
-  @Override
-  public String aResourceURI() {
-    return aResourceURI(MEDIA_ID);
+  @SuppressWarnings("unchecked")
+  @Test
+  public void getVideo() {
+    final LinkedHashMap<String, Object> entity =
+        getAt(aResourceURI(MediaType.Video, VIDEO_ID), LinkedHashMap.class);
+    assertNotNull(entity);
+    assertThat(entity, matches(
+        MediaBuilder.getMediaBuilder().buildVideo(VIDEO_ID, getExistingComponentInstances()[0])));
   }
 
-  private String aResourceURI(final String photoId) {
-    return "gallery/" + getExistingComponentInstances()[0] + "/albums/" + ALBUM_ID + "/photos/" +
-        photoId;
+  @SuppressWarnings("unchecked")
+  @Test
+  public void getSound() {
+    final LinkedHashMap<String, Object> entity =
+        getAt(aResourceURI(MediaType.Sound, SOUND_ID), LinkedHashMap.class);
+    assertNotNull(entity);
+    assertThat(entity, matches(
+        MediaBuilder.getMediaBuilder().buildSound(SOUND_ID, getExistingComponentInstances()[0])));
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void getStreaming() {
+    final LinkedHashMap<String, Object> entity =
+        getAt(aResourceURI(MediaType.Streaming, STREAMING_ID), LinkedHashMap.class);
+    assertNotNull(entity);
+    assertThat(entity, matches(MediaBuilder.getMediaBuilder()
+        .buildStreaming(STREAMING_ID, getExistingComponentInstances()[0])));
+  }
+
+  @Override
+  public String aResourceURI() {
+    return aResourceURI(MediaType.Photo, PHOTO_ID);
+  }
+
+  private String aResourceURI(MediaType mediaType, String mediaId) {
+    return "gallery/" + getExistingComponentInstances()[0] + "/albums/" +
+        GalleryResourceMock.ALBUM_ID + "/" +
+        mediaType.getMediaWebUriPart() + "/" + mediaId;
   }
 
   @Override
   public String anUnexistingResourceURI() {
-    return aResourceURI(MEDIA_ID_DOESNT_EXISTS);
+    return aResourceURI(MediaType.Photo, GalleryResourceMock.PHOTO_ID_DOESNT_EXISTS);
   }
 
   @Override

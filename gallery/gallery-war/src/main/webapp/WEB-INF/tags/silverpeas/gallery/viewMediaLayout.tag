@@ -108,10 +108,8 @@
   <view:looknfeel/>
   <view:progressMessage/>
   <view:includePlugin name="popup"/>
-  <view:includePlugin name="preview"/>
+  <view:includePlugin name="player"/>
   <view:includePlugin name="wysiwyg"/>
-  <view:includePlugin name="messageme"/>
-  <view:includePlugin name="invitme"/>
   <view:includePlugin name="userZoom"/>
   <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js" />"></script>
   <script language="javascript">
@@ -176,8 +174,8 @@
     });
 
   </script>
-  <c:if test="${media.type.photo}">
-    <gallery:diaporama/>
+  <c:if test="${requestScope.NbMedia gt 1}">
+  <gallery:diaporama/>
   </c:if>
   <jsp:invoke fragment="headerBloc"/>
 </head>
@@ -213,7 +211,7 @@
     <view:operation action="javascript:onClick=clipboardCut()" altText="${cutLabel}" icon="${cutIcon}"/>
     <view:operationSeparator/>
   </c:if>
-  <c:if test="${media.type.photo and requestScope.NbMedia gt 1}">
+  <c:if test="${requestScope.NbMedia gt 1}">
     <view:operationSeparator/>
     <fmt:message var="diapoLabel" key="gallery.diaporama"/>
     <fmt:message var="diapoIcon" key="gallery.startDiaporama" bundle="${icons}"/>
@@ -264,7 +262,9 @@
         <div class="fileCharacteristic bgDegradeGris">
           <c:if test="${not empty internalMedia}">
             <div class="header bgDegradeGris">
-              <h4 class="clean"><span title="<c:out value="${internalMedia.fileName}"/>"><c:out value="${silfn:truncate(internalMedia.fileName, 40)}"/></span></h4>
+              <h4 class="clean">
+                <span title="<c:out value="${internalMedia.fileName}"/>"><c:out value="${silfn:truncate(internalMedia.fileName, 40)}"/></span>
+              </h4>
             </div>
           </c:if>
           <p>

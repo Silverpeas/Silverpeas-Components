@@ -29,8 +29,6 @@ import com.silverpeas.annotation.Service;
 import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.StreamingProvider;
 import com.silverpeas.gallery.model.AlbumDetail;
-import com.silverpeas.gallery.model.Media;
-import com.silverpeas.gallery.model.MediaPK;
 import com.stratelia.webactiv.util.node.model.NodePK;
 
 import javax.ws.rs.GET;
@@ -66,9 +64,13 @@ public class GalleryResource extends AbstractGalleryResource {
   @GET
   @Path(GALLERY_ALBUMS_URI_PART + "/{albumId}")
   @Produces(MediaType.APPLICATION_JSON)
-  public AlbumEntity getAlbum(@PathParam("albumId") final String albumId) {
+  public AlbumEntity getAlbum(@PathParam("albumId") final String albumId,
+      @QueryParam("sort") final MediaSort sort) {
     try {
       final AlbumDetail album = getMediaService().getAlbum(new NodePK(albumId, getComponentId()));
+      if (sort != null) {
+        sort.perform(album.getMedia());
+      }
       return asWebEntity(album);
     } catch (final WebApplicationException ex) {
       throw ex;
@@ -87,18 +89,55 @@ public class GalleryResource extends AbstractGalleryResource {
   @GET
   @Path(GALLERY_ALBUMS_URI_PART + "/{albumId}/" + GALLERY_PHOTOS_PART + "/{photoId}")
   @Produces(MediaType.APPLICATION_JSON)
-  public PhotoEntity getPhoto(@PathParam("albumId") final String albumId,
+  public AbstractMediaEntity getPhoto(@PathParam("albumId") final String albumId,
       @PathParam("photoId") final String photoId) {
-    try {
-      final AlbumDetail album = getMediaService().getAlbum(new NodePK(albumId, getComponentId()));
-      final Media media = getMediaService().getMedia(new MediaPK(photoId, getComponentId()));
-      verifyUserMediaAccess(media);
-      return asWebEntity(media, album);
-    } catch (final WebApplicationException ex) {
-      throw ex;
-    } catch (final Exception ex) {
-      throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
-    }
+    return getMediaEntity(Photo, albumId, photoId);
+  }
+
+  /**
+   * Gets the JSON representation of a video. If it doesn't exist, a 404 HTTP code is returned. If
+   * the user isn't authentified, a 401 HTTP code is returned. If a problem occurs when processing
+   * the request, a 503 HTTP code is returned.
+   * @param videoId the identifier of the video
+   * @return the response to the HTTP GET request with the JSON representation of the asked video.
+   */
+  @GET
+  @Path(GALLERY_ALBUMS_URI_PART + "/{albumId}/" + GALLERY_VIDEOS_PART + "/{videoId}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public AbstractMediaEntity getVideo(@PathParam("albumId") final String albumId,
+      @PathParam("videoId") final String videoId) {
+    return getMediaEntity(Video, albumId, videoId);
+  }
+
+  /**
+   * Gets the JSON representation of a sound. If it doesn't exist, a 404 HTTP code is returned. If
+   * the user isn't authentified, a 401 HTTP code is returned. If a problem occurs when processing
+   * the request, a 503 HTTP code is returned.
+   * @param soundId the identifier of the sound
+   * @return the response to the HTTP GET request with the JSON representation of the asked sound.
+   */
+  @GET
+  @Path(GALLERY_ALBUMS_URI_PART + "/{albumId}/" + GALLERY_SOUNDS_PART + "/{soundId}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public AbstractMediaEntity getSound(@PathParam("albumId") final String albumId,
+      @PathParam("soundId") final String soundId) {
+    return getMediaEntity(Sound, albumId, soundId);
+  }
+
+  /**
+   * Gets the JSON representation of a streaming. If it doesn't exist, a 404 HTTP code is returned.
+   * If the user isn't authentified, a 401 HTTP code is returned. If a problem occurs when
+   * processing the request, a 503 HTTP code is returned.
+   * @param streamingId the identifier of the streaming
+   * @return the response to the HTTP GET request with the JSON representation of the asked
+   * streaming.
+   */
+  @GET
+  @Path(GALLERY_ALBUMS_URI_PART + "/{albumId}/" + GALLERY_STREAMINGS_PART + "/{streamingId}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public AbstractMediaEntity getStreaming(@PathParam("albumId") final String albumId,
+      @PathParam("streamingId") final String streamingId) {
+    return getMediaEntity(Streaming, albumId, streamingId);
   }
 
   /**
@@ -157,7 +196,7 @@ public class GalleryResource extends AbstractGalleryResource {
    * @return the response to the HTTP GET request content of the asked streaming.
    */
   @GET
-  @Path(GALLERY_STREAMING_PART + "/" + GALLERY_STREAMING_PROVIDER_DATA_PART)
+  @Path(GALLERY_STREAMINGS_PART + "/" + GALLERY_STREAMING_PROVIDER_DATA_PART)
   @Produces(MediaType.APPLICATION_JSON)
   public StreamingProviderDataEntity getStreamingProviderDataFromUrl(
       @QueryParam("url") final String url) {

@@ -30,6 +30,8 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.LinkedHashMap;
+
 import static com.silverpeas.gallery.web.AlbumEntityMatcher.matches;
 import static com.silverpeas.gallery.web.GalleryTestResources.JAVA_PACKAGE;
 import static com.silverpeas.gallery.web.GalleryTestResources.SPRING_CONTEXT;
@@ -60,9 +62,10 @@ public class GalleryAlbumGettingTest extends ResourceGettingTest<GalleryTestReso
     expected = AlbumBuilder.getAlbumBuilder().buildAlbum(ALBUM_ID);
   }
 
+  @SuppressWarnings("unchecked")
   @Test
   public void getAlbum() {
-    final AlbumEntity entity = getAt(aResourceURI(), AlbumEntity.class);
+    final LinkedHashMap<String, Object> entity = getAt(aResourceURI(), LinkedHashMap.class);
     assertNotNull(entity);
     assertThat(entity, matches(expected));
   }

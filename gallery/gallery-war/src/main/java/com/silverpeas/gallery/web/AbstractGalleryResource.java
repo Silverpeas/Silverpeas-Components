@@ -33,6 +33,7 @@ import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.MediaPK;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.SilverpeasRole;
+import com.stratelia.webactiv.util.node.model.NodePK;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
@@ -51,6 +52,7 @@ import javax.ws.rs.core.StreamingOutput;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.util.EnumSet;
 
 import static com.silverpeas.gallery.constant.GalleryResourceURIs.*;
@@ -83,8 +85,8 @@ public abstract class AbstractGalleryResource extends RESTWebService {
     AlbumEntity albumEntity = AlbumEntity.createFrom(album, getUserPreferences().getLanguage())
         .withURI(getUriInfo().getRequestUri()).withParentURI(buildAlbumURI(album.getFatherPK()));
     for (Media media : album.getMedia()) {
-      if (media.getType().isPhoto() && hasUserMediaAccess(media.getPhoto())) {
-        albumEntity.addPhoto(asWebEntity(media.getPhoto(), album));
+      if (hasUserMediaAccess(media)) {
+        albumEntity.addMedia(asWebEntity(media, album));
       }
     }
     return albumEntity;
@@ -96,16 +98,62 @@ public abstract class AbstractGalleryResource extends RESTWebService {
    * @param album the album of the photo.
    * @return the corresponding photo entity.
    */
-  protected PhotoEntity asWebEntity(Media media, AlbumDetail album) {
-    checkNotFoundStatus(media);
-    checkNotFoundStatus(media.getPhoto());
-    checkNotFoundStatus(album);
-    verifyMediaIsInAlbum(media.getPhoto(), album);
-    return PhotoEntity.createFrom(media.getPhoto(), getUserPreferences().getLanguage())
-        .withURI(buildMediaInAlbumURI(album, media)).withParentURI(buildAlbumURI(album))
-        .withOriginalUrl(buildMediaContentURI(media, ORIGINAL))
-        .withSmallUrl(buildMediaContentURI(media, SMALL))
-        .withPreviewUrl(buildMediaContentURI(media, PREVIEW));
+  private AbstractMediaEntity asWebEntity(Media media, AlbumDetail album) {
+    final AbstractMediaEntity entity;
+    switch (media.getType()) {
+      case Photo:
+        entity = PhotoEntity.createFrom(media.getPhoto())
+            .withPreviewUrl(buildMediaContentURI(media, PREVIEW));
+        break;
+      case Video:
+        entity = VideoEntity.createFrom(media.getVideo());
+        break;
+      case Sound:
+        entity = SoundEntity.createFrom(media.getSound());
+        break;
+      case Streaming:
+        entity = StreamingEntity.createFrom(media.getStreaming())
+            .withOriginalUrl(URI.create(media.getStreaming().getHomepageUrl()));
+        break;
+      default:
+        throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+    }
+    if (media.getInternalMedia() != null) {
+      entity.withOriginalUrl(buildMediaContentURI(media, ORIGINAL));
+    }
+    return entity.withURI(buildMediaInAlbumURI(album, media)).withParentURI(buildAlbumURI(album))
+        .withThumbUrl(URI.create(media.getApplicationThumbnailUrl(SMALL)));
+  }
+
+  /**
+   * Centralization of getting of media data.
+   * @param expectedMediaType
+   * @param albumId the identifier of the album in which the media must exist
+   * @param mediaId the identifier of the expected media
+   * @return
+   */
+  protected AbstractMediaEntity getMediaEntity(final MediaType expectedMediaType,
+      final String albumId, final String mediaId) {
+    try {
+      final AlbumDetail album = getMediaService().getAlbum(new NodePK(albumId, getComponentId()));
+      final Media media = getMediaService().getMedia(new MediaPK(mediaId, getComponentId()));
+      checkNotFoundStatus(media);
+      verifyUserMediaAccess(media);
+      verifyMediaIsInAlbum(media, album);
+      // Verifying the physical file exists and that the type of media is the one expected
+      if (media.getInternalMedia() != null) {
+        final SilverpeasFile file = media.getFile(MediaResolution.PREVIEW);
+        if (!file.exists() || expectedMediaType != media.getType()) {
+          throw new WebApplicationException(Status.NOT_FOUND);
+        }
+      }
+      // Getting the web entity
+      return asWebEntity(media, album);
+    } catch (final WebApplicationException ex) {
+      throw ex;
+    } catch (final Exception ex) {
+      throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
+    }
   }
 
   /**

@@ -24,11 +24,15 @@
 package com.silverpeas.gallery.web;
 
 import com.silverpeas.gallery.model.AlbumDetail;
+import com.silverpeas.web.Exposable;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -37,11 +41,30 @@ import java.util.Map;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class AlbumEntity extends AbstractMediaEntity<AlbumEntity> {
+public class AlbumEntity implements Exposable {
   private static final long serialVersionUID = 9156616894162079317L;
 
+  @XmlElement(defaultValue = "")
+  private URI uri;
+
+  @XmlElement(defaultValue = "")
+  private URI parentURI = null;
+
+  @XmlElement(required = true)
+  @NotNull
+  private String id;
+
+  @XmlElement(required = true)
+  @NotNull
+  @Size(min = 1)
+  private String title;
+
+  @XmlElement(defaultValue = "")
+  private String description;
+
   @XmlElement
-  private final Map<String, PhotoEntity> photos = new LinkedHashMap<String, PhotoEntity>();
+  private final Map<String, AbstractMediaEntity> mediaList =
+      new LinkedHashMap<String, AbstractMediaEntity>();
 
   @XmlElement(defaultValue = "0")
   private int maxWidth = 0;
@@ -60,27 +83,85 @@ public class AlbumEntity extends AbstractMediaEntity<AlbumEntity> {
   }
 
   /**
-   * Default hidden constructor.
+   * Sets a URI to this entity. With this URI, it can then be accessed through the Web.
+   * @param uri the web entity URI.
+   * @return itself.
    */
-  private AlbumEntity(final AlbumDetail album, final String language) {
-    super("album", String.valueOf(album.getId()), album.getName(), album.getDescription(language));
-  }
-
-  protected AlbumEntity() {
-    super();
-  }
-
-  protected Map<String, PhotoEntity> getPhotos() {
-    return photos;
+  public AlbumEntity withURI(final URI uri) {
+    this.uri = uri;
+    return this;
   }
 
   /**
-   * Adding a photo the the album.
-   * @param photo
+   * Sets a parentURI to this entity.
+   * @param parentURI the parent web entity URI.
+   * @return itself.
    */
-  public void addPhoto(final PhotoEntity photo) {
-    photos.put(photo.getId(), photo);
-    maxWidth = Math.max(maxWidth, photo.getWidth());
-    maxHeight = Math.max(maxHeight, photo.getHeight());
+  public AlbumEntity withParentURI(final URI parentURI) {
+    this.parentURI = parentURI;
+    return this;
+  }
+
+  /*
+     * (non-Javadoc)
+     * @see com.silverpeas.web.Exposable#getURI()
+     */
+  @Override
+  public URI getURI() {
+    return uri;
+  }
+
+  protected URI getParentURI() {
+    return parentURI;
+  }
+
+  protected void setId(final String id) {
+    this.id = id;
+  }
+
+  protected String getId() {
+    return id;
+  }
+
+  protected void setTitle(final String title) {
+    this.title = title;
+  }
+
+  protected String getTitle() {
+    return title;
+  }
+
+  protected void setDescription(final String description) {
+    this.description = description;
+  }
+
+  protected String getDescription() {
+    return description;
+  }
+
+  /**
+   * Default hidden constructor.
+   */
+  private AlbumEntity(final AlbumDetail album, final String language) {
+    this.id = String.valueOf(album.getId());
+    this.title = album.getName();
+    this.description = album.getDescription(language);
+  }
+
+  protected AlbumEntity() {
+  }
+
+  protected Map<String, AbstractMediaEntity> getMediaList() {
+    return mediaList;
+  }
+
+  /**
+   * Adding a media the the album.
+   * @param mediaEntity
+   */
+  public void addMedia(final AbstractMediaEntity mediaEntity) {
+    mediaList.put(mediaEntity.getId(), mediaEntity);
+    maxWidth = Math.max(maxWidth, mediaEntity.getWidth());
+    maxHeight = Math.max(maxHeight, mediaEntity.getHeight());
   }
 }

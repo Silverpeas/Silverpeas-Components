@@ -32,11 +32,17 @@
 <fmt:setLocale value="${requestScope.resources.language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
+<%-- Constants --%>
+<view:setConstant var="MEDIA_DEFINITIONS" constant="com.silverpeas.gallery.constant.MediaResolution.ALL"/>
+<jsp:useBean id="MEDIA_DEFINITIONS" type="java.util.Set<com.silverpeas.gallery.constant.MediaResolution>"/>
+<view:setConstant var="MEDIA_SORTS" constant="com.silverpeas.gallery.web.MediaSort.ALL"/>
+<jsp:useBean id="MEDIA_SORTS" type="java.util.Set<com.silverpeas.gallery.web.MediaSort>"/>
+
 <%-- Default values --%>
 <c:set var="_formName" value="mediaForm"/>
 
 <%-- Request attributes --%>
-<c:set var="currentUserSort" value="${requestScope.Tri}"/>
+<c:set var="currentUserSort" value="${requestScope.Sort}"/>
 
 <%@ attribute name="formName" required="false"
               type="java.lang.String"
@@ -56,18 +62,21 @@
 <select name="ChoiceSize" onchange="__choiceGoTo(this.selectedIndex);">
   <option selected="selected"><fmt:message key="gallery.selectSize"/></option>
   <option>-------------------------------</option>
-  <option value="66x50" ${currentMediaResolution.tiny ? 'selected' : ''}>66x50</option>
-  <option value="133x100" ${currentMediaResolution.small ? 'selected' : ''}>133x100</option>
-  <option value="266x150" ${currentMediaResolution.medium ? 'selected' : ''}>266x150</option>
+  <c:forEach var="definition" items="${MEDIA_DEFINITIONS}">
+    <c:if test="${definition.displayed}">
+      <option value="${definition.label}" ${currentMediaResolution eq definition ? 'selected' : ''}>${definition.label}</option>
+    </c:if>
+  </c:forEach>
 </select>
 <select name="SortBy" onchange="__sortGoTo(this.selectedIndex);">
   <option selected><fmt:message key="gallery.orderBy"/></option>
   <option>-------------------------------</option>
-  <option value="CreationDateAsc" ${currentUserSort eq 'CreationDateAsc' ? 'selected' : ''}><fmt:message key="gallery.dateCreatAsc"/></option>
-  <option value="CreationDateDesc" ${currentUserSort eq 'CreationDateDesc' ? 'selected' : ''}><fmt:message key="gallery.dateCreatDesc"/></option>
-  <option value="Title" ${currentUserSort eq 'Title' ? 'selected' : ''}><fmt:message key="GML.title"/></option>
-  <option value="Size" ${currentUserSort eq 'Size' ? 'selected' : ''}><fmt:message key="gallery.media.size"/></option>
-  <option value="Author" ${currentUserSort eq 'Author' ? 'selected' : ''}><fmt:message key="GML.author"/></option>
+  <c:forEach var="mediaSort" items="${MEDIA_SORTS}">
+    <c:if test="${mediaSort.displayed}">
+      <option value="${mediaSort.name}" ${currentUserSort eq mediaSort ? 'selected' : ''}>
+        <fmt:message key="${mediaSort.bundleKey}"/></option>
+    </c:if>
+  </c:forEach>
 </select>
 
 <c:set var="albumListDisplaySelectorForms">
@@ -76,7 +85,7 @@
     <input type="hidden" name="SearchKeyWord" value="${currentSearchKeyWord}">
   </view:form>
   <view:form name="OrderBySelectForm" action="SortBy" method="POST">
-    <input type="hidden" name="Tri">
+    <input type="hidden" name="Sort">
     <input type="hidden" name="SearchKeyWord" value="${currentSearchKeyWord}">
   </view:form>
 </c:set>
@@ -91,7 +100,7 @@
   }
   function __sortGoTo(selectedIndex) {
     if (selectedIndex != 0 && selectedIndex != 1) {
-      document.OrderBySelectForm.Tri.value = document.${_formName}.SortBy[selectedIndex].value;
+      document.OrderBySelectForm.Sort.value = document.${_formName}.SortBy[selectedIndex].value;
       document.OrderBySelectForm.submit();
     }
   }

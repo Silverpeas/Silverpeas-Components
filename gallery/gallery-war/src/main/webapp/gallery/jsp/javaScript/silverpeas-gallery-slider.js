@@ -23,8 +23,17 @@
  */
 (function($) {
 
+  // Fullscreen is a little bit difficult to handle with videos & sounds ...
+  var isFullscreen = false;
+
   $.gallerySlider = {
     webServiceContext : webContext + '/services',
+    mediaType : {
+      photo : 'Photo',
+      video : 'Video',
+      sound : 'Sound',
+      streaming : 'Streaming'
+    },
     initialized : false,
     doInitialize : function() {
       if (!$.gallerySlider.initialized) {
@@ -37,7 +46,7 @@
         });
       }
     }
-  }
+  };
 
   /**
    * The different gallerySlider methods handled by the plugin.
@@ -56,7 +65,7 @@
      * object with two mandatory attributes at least and some other parameters :
      * - componentInstanceId : the id of the current component instance (mandatory),
      * - albumId : the id of the aimed album (mandatory)
-     * - fromPhotoId : the id of the photo from which the slider has to start,
+     * - fromMediaId : the id of the media from which the slider has to start,
      * - waitInSeconds : delay in seconds before sliding (5 seconds by defaults),
      * - width : width of the slider (90% of the window width by default),
      * - height : height of the slider (90 % of the window by default),
@@ -120,7 +129,7 @@
     // Default options
     options = $.extend({
       waitInSeconds : 5,
-      fromPhotoId : null,
+      fromMediaId : null,
       width : $(window).width() * 0.9,
       height : $(window).height() * 0.9,
       idleMode : false,
@@ -138,6 +147,9 @@
       // Getting gallery album data
       var url = $.gallerySlider.webServiceContext;
       url += "/gallery/" + options.componentInstanceId + "/albums/" + options.albumId;
+      if (options.mediaSort) {
+        url += "?sort=" + options.mediaSort;
+      }
       $.ajax({
         url : url,
         type : 'GET',
@@ -179,59 +191,124 @@
     var data = __toGalleriaData(options, album, sliderOptions);
     $.extend(sliderOptions, {dataSource : data, show : sliderOptions.startSlide});
 
-    // The first start of the slider
-    var $playPauseButton = __buildButton($base, $this, 'playPause');
-    var $stopButton = __buildButton($base, $this, 'stop');
-    $base.append($playPauseButton);
-    $base.append($stopButton);
+    var firstDisplay = (!$this.data('galleria'));
+    if (firstDisplay) {
+      // The first start of the slider
+      var $playPauseButton = __buildButton($base, $this, 'playPause');
+      var $stopButton = __buildButton($base, $this, 'stop');
+      $base.append($playPauseButton);
+      $base.append($stopButton);
 
-    // Start Slider
-    Galleria.run($this, sliderOptions);
-    Galleria.ready(function() {
-      var $slider = this;
-      __configureSlider($base, $slider, options);
+      // Start Slider
+      Galleria.run($this, sliderOptions);
+      Galleria.ready(function() {
+        var $slider = this;
+        if (firstDisplay) {
+          firstDisplay = false;
+          __configureSlider($base, $slider, sliderOptions, options);
 
-      // Popup
-      var settings = {
-        title : $.i18n.prop('gallery.diaporama'),
-        width : options.width,
-        height : options.height,
-        callbackOnClose : function() {
-          __onDialogClose($(this), $slider);
+          // Popup
+          var settings = {
+            title : $.i18n.prop('gallery.diaporama'),
+            width : options.width,
+            height : options.height,
+            callbackOnClose : function() {
+              __onDialogClose($slider);
+            }
+          };
+
+          // Buttons
+          $base.popup('basic', settings);
+          __configureButtonPosition('playPause', $base, $playPauseButton, options);
+          __configureButtonPosition('stop', $base, $stopButton, options);
+          $.popup.hideWaiting();
         }
-      };
-
-      // Buttons
-      $base.popup('basic', settings);
-      __configureButtonPosition('playPause', $base, $playPauseButton, options);
-      __configureButtonPosition('stop', $base, $stopButton, options);
+      });
+    } else {
+      var $slider = $this.data('galleria');
       $.popup.hideWaiting();
-    });
+      $base.dialog("open");
+      $slider.load(data);
+      __configureSlider($base, $slider, sliderOptions, options);
+      $slider.show(sliderOptions.startSlide);
+    }
   }
 
   /**
    * Private function that centralizes treatments on the diaog close event.
    * @private
    */
-  function __onDialogClose($dialog, $slider) {
-    // Removing the DOM elements
-    $slider.destroy();
-    $slider.remove();
-    // Cleaning caches of galleria.io plug-in
-    __clearCaches();
-    // Removing the dialog elements
-    $dialog.dialog("destroy");
-    $dialog.remove();
+  function __onDialogClose($slider) {
+    if (typeof $slider.closeMediaPlayer === 'function') {
+      $slider.closeMediaPlayer();
+    }
+    $slider.unbind("play");
+    $slider.unbind("pause");
+    $slider.unbind("fullscreen_enter");
+    $slider.unbind("fullscreen_exit");
+    $slider.detachKeyboard();
+    $slider.pause();
   }
 
   /**
    * Private function that centralizes the slider configuration.
    * @param $base
    * @param $slider
+   * @param sliderOptions
    * @param options
    * @private
    */
-  function __configureSlider($base, $slider, options) {
+  function __configureSlider($base, $slider, sliderOptions, options) {
+    $slider.bind("loadstart", function(event) {
+      var currentGalleriaMedia = sliderOptions.dataSource[event.index];
+      if (currentGalleriaMedia.mediaType === $.gallerySlider.mediaType.video) {
+        $slider.setPlaytime(86400000);
+        var options = {
+          container : {
+            width : (sliderOptions.width * 0.735),
+            height : (sliderOptions.height * 0.825)
+          },
+          clip : {
+            linkUrl : currentGalleriaMedia.link,
+            url : currentGalleriaMedia.sourceUrl,
+            onResume : function() {
+              if (!$slider.isPlaying()) {
+                $slider.play();
+              }
+            },
+            onPause : function() {
+              if ($slider.isPlaying()) {
+                $slider.pause();
+              }
+            },
+            onFinish : function() {
+              $slider.setPlaytime(sliderOptions.autoplay);
+            }
+          },
+          plugins : {
+            controls : {
+              fullscreen : false
+            }
+          }
+        };
+        var $playerContainer = $(currentGalleriaMedia.layer);
+        $playerContainer.player(options);
+        $slider.closeMediaPlayer = function() {
+          $playerContainer.trigger("closePlayer");
+        };
+        $slider.enterMediaPlayerFullscreen = function() {
+          $playerContainer.trigger("enterFullscreenPlayer");
+        };
+        $slider.exitMediaPlayerFullscreen = function() {
+          $playerContainer.trigger("exitFullscreenPlayer");
+        };
+      } else {
+        $slider.setPlaytime(sliderOptions.autoplay);
+        $slider.closeMediaPlayer = undefined;
+        $slider.enterMediaPlayerFullscreen = undefined;
+        $slider.exitMediaPlayerFullscreen = undefined;
+      }
+    });
     $slider.bind("play", function() {
       $base.trigger('galleryTogglePlay');
       if (options.callbackPlay) {
@@ -245,12 +322,18 @@
       }
     });
     $slider.bind("fullscreen_enter", function() {
+      if (typeof $slider.enterMediaPlayerFullscreen === 'function') {
+        $slider.enterMediaPlayerFullscreen();
+      }
       if (options.callbackEnterFullScreen) {
         options.callbackEnterFullScreen();
       }
     });
     $slider.bind("fullscreen_exit", function() {
       $base.trigger('_fromFullScreen', [$slider]);
+      if (typeof $slider.exitMediaPlayerFullscreen === 'function') {
+        $slider.exitMediaPlayerFullscreen();
+      }
       if (options.callbackExitFullScreen) {
         options.callbackExitFullScreen();
       }
@@ -282,27 +365,44 @@
    * @private
    */
   function __buildDialogContainer($sliderContainer) {
-    // Creating
-    var $base = $("<div>").css('display', 'block').css('border', '0px').css('padding',
-            '0px').css('margin', '0px auto').css('text-align', 'center').css('background-color',
-            'white');
-    $(document.body).append($base.append($sliderContainer));
+    var $base = $("#slideshow");
+    var $fullscreenSwitcher = $("#slideshow_fullscreenSwitcher");
+    if ($base.size() == 0) {
+      $base = $("<div>").attr('id', 'slideshow').css('display', 'block').css('border',
+          '0px').css('padding', '0px').css('margin', '0px auto').css('text-align',
+          'center').css('background-color', 'white');
+      $fullscreenSwitcher = $("<div>").attr('id', 'slideshow_fullscreenSwitcher').css('display',
+          'block').css('border', '0px').css('padding', '0px').css('margin',
+          '0px auto').css('text-align', 'center').css('background-color', 'white');
+      $(document.body).append($base);
+      $fullscreenSwitcher.append($sliderContainer);
+      $base.append($fullscreenSwitcher);
 
-    // Fullscreen handling
-    $base.on('_toFullScreen', function(e, $slider) {
-      $base.dialog("option", "closeOnEscape", false);
-      // Entering fullscreen if not yet done
-      if (!$slider.isFullscreen()) {
-        $slider.enterFullscreen();
-      }
-    });
-    $base.on('_fromFullScreen', function(e, $slider) {
-      // Exiting fullscreen if not yet done
-      if ($slider.isFullscreen()) {
-        $slider.exitFullscreen();
-      }
-      $base.dialog("option", "closeOnEscape", true);
-    });
+      // Fullscreen handling
+      $base.on('_toFullScreen', function(e, $slider) {
+        $base.dialog("option", "closeOnEscape", false);
+        // Hack for IE and fullscreen ...
+        if ($.browser.msie) {
+          $(document.body).append($sliderContainer);
+        }
+        // Entering fullscreen if not yet done
+        if (!$slider.isFullscreen()) {
+          $slider.enterFullscreen();
+        }
+      });
+      $base.on('_fromFullScreen', function(e, $slider) {
+        // Exiting fullscreen if not yet done
+        if ($slider.isFullscreen()) {
+          $slider.exitFullscreen();
+        }
+        // Hack for IE and fullscreen ...
+        if ($.browser.msie) {
+          $fullscreenSwitcher.append($sliderContainer);
+          $base.dialog('open');
+        }
+        $base.dialog("option", "closeOnEscape", true);
+      });
+    }
     return $base;
   }
 
@@ -334,29 +434,67 @@
    */
   function __toGalleriaData(options, album, sliderOptions) {
     var data = [];
-    if (album.photos) {
+    if (album.mediaList) {
       sliderOptions.startSlide = 0;
-      var photoIndex = 0;
-      for (var photoId in album.photos) {
-        var photo = album.photos[photoId];
+      var mediaIndex = 0;
+      $.each(album.mediaList, function(index, media) {
+        var currentMediaData = {};
+        switch (media.type) {
+          case $.gallerySlider.mediaType.photo :
+            currentMediaData.image = media.previewUrl;
+            currentMediaData.big = media.url;
+            break;
+          case $.gallerySlider.mediaType.video :
+            currentMediaData.sourceUrl = media.url;
+            currentMediaData.image = options.dummyImage;
+            currentMediaData.big = options.dummyImage;
+            currentMediaData.layer = __buildExtraPlayerHtmlLayer(sliderOptions);
+            currentMediaData = null;
+            break;
+          case $.gallerySlider.mediaType.sound :
+            currentMediaData = null;
+            break;
+          case $.gallerySlider.mediaType.streaming :
+            currentMediaData.video = media.url;
+            currentMediaData.thumb = null;
+            break;
+          default:
+            currentMediaData = null;
+            break;
+        }
 
-        data.push({
-          image : photo.previewUrl,
-          thumb : photo.previewUrl,
-          big : photo.url,
-          title : photo.title,
-          description : photo.description,
-          link : (options.callbackLink) ? options.callbackLink(photo) : null
-        });
+        // If media is not handled, then it is ignored.
+        if (currentMediaData == null) {
+          return;
+        }
+
+        if (typeof currentMediaData.thumb === 'undefined') {
+          currentMediaData.thumb = media.thumbUrl;
+        }
+        currentMediaData.title = media.title;
+        currentMediaData.description = media.description;
+        currentMediaData.link = (options.callbackLink) ? options.callbackLink(media) : null;
+        data.push(currentMediaData);
 
         // If slider has to start at a specific media
-        if (photo.id == options.fromPhotoId) {
-          sliderOptions.startSlide = photoIndex;
+        if (media.id == options.fromMediaId) {
+          sliderOptions.startSlide = mediaIndex;
         }
-        photoIndex++;
-      }
+        mediaIndex++;
+      });
     }
     return data;
+  }
+
+  /**
+   * Private function that centralizes the build of the extra player layer
+   * @param sliderOptions
+   * @private
+   */
+  function __buildExtraPlayerHtmlLayer(sliderOptions) {
+    return $('<div>', {
+      width : (sliderOptions.width * 0.735),
+      height : (sliderOptions.height * 0.825)}).css('background-color', 'black');
   }
 
   /**
@@ -445,39 +583,4 @@
       $buttonContainer.show();
     }
   }
-
-  /**
-   * Clears the caches of galleria.io plug-in.
-   * @private
-   */
-  function __clearCaches() {
-
-    /*
-     * Current version of galleria.io plugin has problems with its destroy feature and the
-     * technic here is to reload plugin to perform a destroy
-     */
-
-    $.ajax({
-      url : webContext + "/gallery/jsp/javaScript/slider/galleria-1.3.6.min.js",
-      async : false,
-      dataType : "script"
-    });
-    $.ajax({
-      url : webContext + "/gallery/jsp/styleSheets/slider/themes/classic/galleria.classic.min.js",
-      async : false,
-      dataType : "script"
-    });
-  }
 })(jQuery);
-
-/*
- HELPERS
- */
-
-/*
- * Display the slider of gallery component
- */
-function displayAlbumGallerySlider(options) {
-  $.popup.showWaiting();
-  $("<div>").appendTo(document.body).gallerySlider('album', options);
-}

@@ -57,7 +57,7 @@
     var deferred = new jQuery.Deferred();
     jQuery.support.cors = true;
     jQuery.ajax({
-      url : '<c:url value="/services/gallery/${componentId}/streaming/providerData?url="/>' +
+      url : '<c:url value="/services/gallery/${componentId}/streamings/providerData?url="/>' +
           streamingUrl,
       type : 'GET',
       dataType : 'json',

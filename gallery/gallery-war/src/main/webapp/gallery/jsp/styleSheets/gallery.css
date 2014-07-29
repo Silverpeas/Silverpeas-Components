@@ -290,6 +290,16 @@ br.clear {
   width: 100%;
 }
 
+.gallery-fiche-media .hautFrame {
+  padding-top: 0;
+}
+
+.gallery-fiche-media .hautFrame form {
+  padding: 0;
+  margin: 0;
+  border: 1px solid transparent;
+}
+
 .principalContent #pagination,
 .principalContent .fondPhoto,
 .principalContent .fondPhotoNotVisible {
