@@ -54,6 +54,9 @@
     var player = providerData.embedHtml.replace(/width="[0-9]+"/i,
         'width="${_mediaResolution.width}"');
     player = player.replace(/height="[0-9]+"/i, 'height="${_mediaResolution.height}"');
-    $('#streamingContainer').append(player);
+    var $playerContainer = $('#streamingContainer');
+    $playerContainer.css('width', '${_mediaResolution.width}px');
+    $playerContainer.css('height', '${_mediaResolution.height}px');
+    $playerContainer.append(player);
   }
 </script>

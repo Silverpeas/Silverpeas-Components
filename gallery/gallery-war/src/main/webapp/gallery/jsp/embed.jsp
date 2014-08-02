@@ -22,19 +22,28 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
 
-<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
-<%@ taglib tagdir="/WEB-INF/tags/silverpeas/gallery" prefix="gallery" %>
+<%@ taglib prefix="viewTags" tagdir="/WEB-INF/tags/silverpeas/util" %>
 
-<view:setConstant var="mediaType" constant="com.silverpeas.gallery.constant.MediaType.Video"/>
-<view:setConstant var="MEDIUM_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.MEDIUM"/>
-<jsp:useBean id="MEDIUM_RESOLUTION" type="com.silverpeas.gallery.constant.MediaResolution"/>
-<view:setConstant var="supportedMediaMimeTypes" constant="com.silverpeas.gallery.constant.MediaMimeType.VIDEOS"/>
+<%-- Request attributes --%>
+<c:set var="media" value="${requestScope.media}"/>
+<jsp:useBean id="media" type="com.silverpeas.gallery.model.Media"/>
+<c:set var="definition" value="${requestScope.definition}"/>
+<jsp:useBean id="definition" type="org.silverpeas.media.Definition"/>
+<c:set var="posterResolution" value="${requestScope.posterResolution}"/>
+<jsp:useBean id="posterResolution" type="com.silverpeas.gallery.constant.MediaResolution"/>
 
-<gallery:editMediaLayout mediaType="${mediaType}" supportedMediaMimeTypes="${supportedMediaMimeTypes}">
-  <jsp:attribute name="mediaPreviewBloc">
-    <jsp:useBean id="media" scope="request" type="com.silverpeas.gallery.model.Video"/>
-    <gallery:videoPlayer video="${media}" mediaResolution="${MEDIUM_RESOLUTION}"/>
-  </jsp:attribute>
-</gallery:editMediaLayout>
+<%-- Request parameters --%>
+<c:set var="autoPlay" value="${silfn:booleanValue(requestScope.autoPlay)}"/>
+<c:set var="backgroundColor" value="${requestScope.backgroundColor}"/>
+
+<viewTags:fullHtmlEmbedPlayer
+    url="${media.applicationOriginalUrl}"
+    posterUrl="${media.getApplicationThumbnailUrl(posterResolution)}"
+    type="${media.type.name}"
+    mimeType="${media.internalMedia.fileMimeType.mimeType}"
+    definition="${definition}"
+    backgroundColor="${backgroundColor}"
+    autoPlay="${autoPlay}"/>

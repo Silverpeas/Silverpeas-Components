@@ -23,6 +23,7 @@
  */
 package com.silverpeas.gallery.model;
 
+import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.MediaType;
 import com.silverpeas.util.StringUtil;
 import org.silverpeas.media.Definition;
@@ -67,5 +68,10 @@ public class Photo extends InternalMedia {
   @Override
   public boolean isPreviewable() {
     return StringUtil.isDefined(getFileName()) && getFileMimeType().isPreviewablePhoto();
+  }
+
+  @Override
+  public String getApplicationEmbedUrl(final MediaResolution mediaResolution) {
+    return "";
   }
 }

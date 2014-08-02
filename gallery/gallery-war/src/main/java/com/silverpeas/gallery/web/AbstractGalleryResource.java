@@ -34,6 +34,7 @@ import com.silverpeas.gallery.model.MediaPK;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import com.sun.jersey.api.view.Viewable;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
@@ -43,6 +44,7 @@ import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.silverpeas.file.SilverpeasFile;
+import org.silverpeas.media.Definition;
 
 import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
@@ -103,17 +105,21 @@ public abstract class AbstractGalleryResource extends RESTWebService {
     switch (media.getType()) {
       case Photo:
         entity = PhotoEntity.createFrom(media.getPhoto())
-            .withPreviewUrl(buildMediaContentURI(media, PREVIEW));
+            .withPreviewUrl(buildMediaContentURI(media, PREVIEW))
+            .withThumbUrl(URI.create(media.getApplicationThumbnailUrl(SMALL)));
         break;
       case Video:
-        entity = VideoEntity.createFrom(media.getVideo());
+        entity = VideoEntity.createFrom(media.getVideo())
+            .withThumbUrl(URI.create(media.getApplicationThumbnailUrl(MEDIUM)));
         break;
       case Sound:
-        entity = SoundEntity.createFrom(media.getSound());
+        entity = SoundEntity.createFrom(media.getSound())
+            .withThumbUrl(URI.create(media.getApplicationThumbnailUrl(MEDIUM)));
         break;
       case Streaming:
         entity = StreamingEntity.createFrom(media.getStreaming())
-            .withOriginalUrl(URI.create(media.getStreaming().getHomepageUrl()));
+            .withOriginalUrl(URI.create(media.getStreaming().getHomepageUrl()))
+            .withThumbUrl(URI.create(media.getApplicationThumbnailUrl(MEDIUM)));
         break;
       default:
         throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
@@ -121,8 +127,7 @@ public abstract class AbstractGalleryResource extends RESTWebService {
     if (media.getInternalMedia() != null) {
       entity.withOriginalUrl(buildMediaContentURI(media, ORIGINAL));
     }
-    return entity.withURI(buildMediaInAlbumURI(album, media)).withParentURI(buildAlbumURI(album))
-        .withThumbUrl(URI.create(media.getApplicationThumbnailUrl(SMALL)));
+    return entity.withURI(buildMediaInAlbumURI(album, media)).withParentURI(buildAlbumURI(album));
   }
 
   /**
@@ -202,6 +207,59 @@ public abstract class AbstractGalleryResource extends RESTWebService {
           .header("Content-Length", file.length())
           .header("Content-Disposition", "inline; filename=\"" + file.getName() + "\"")
           .build();
+    } catch (final WebApplicationException ex) {
+      throw ex;
+    } catch (final Exception ex) {
+      throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
+    }
+  }
+
+  /**
+   * Centralization of getting of media embed.
+   * @param expectedMediaType
+   * @param mediaId
+   * @param requestedMediaResolution
+   * @return
+   */
+  protected Viewable getMediaEmbed(final MediaType expectedMediaType, final String mediaId,
+      final MediaResolution requestedMediaResolution) {
+    try {
+      final Media media = getMediaService().getMedia(new MediaPK(mediaId, getComponentId()));
+      checkNotFoundStatus(media);
+      verifyUserMediaAccess(media);
+      // Adjusting the resolution according to the user rights
+      MediaResolution mediaResolution = PREVIEW;
+      if (requestedMediaResolution.getWidth() != null) {
+        mediaResolution = requestedMediaResolution;
+      }
+      // Verifying the physical file exists and that the type of media is the one expected
+      final SilverpeasFile file = media.getFile(mediaResolution);
+      if (!file.exists() || expectedMediaType != media.getType()) {
+        throw new WebApplicationException(Status.NOT_FOUND);
+      }
+
+      final Definition definition;
+      switch (media.getType()) {
+        case Video:
+          definition = media.getVideo().getDefinition();
+          break;
+        default:
+          definition = Definition.of(mediaResolution.getWidth(), mediaResolution.getHeight());
+          break;
+      }
+
+      // Set request attribute
+      getHttpServletRequest().setAttribute("media", media);
+      getHttpServletRequest().setAttribute("definition", definition);
+      getHttpServletRequest().setAttribute("posterResolution", mediaResolution);
+
+      // Handled parameters
+      getHttpServletRequest()
+          .setAttribute("backgroundColor", getHttpServletRequest().getParameter("backgroundColor"));
+      getHttpServletRequest()
+          .setAttribute("autoPlay", getHttpServletRequest().getParameter("autoPlay"));
+
+      return new Viewable("/gallery/jsp/embed.jsp", null);
     } catch (final WebApplicationException ex) {
       throw ex;
     } catch (final Exception ex) {

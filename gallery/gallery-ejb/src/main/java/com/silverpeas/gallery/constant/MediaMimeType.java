@@ -90,6 +90,9 @@ public enum MediaMimeType {
       if ("image/pjpeg".equals(mimeType)) {
         return JPG;
       }
+      if ("video/m4v".equals(mimeType.replace("/x-", "/"))) {
+        return MP4;
+      }
       for (MediaMimeType mediaMimeType : ALL_VALIDS) {
         if (mediaMimeType.mimeType.equals(mimeType) ||
             mediaMimeType.mimeType.equals(mimeType.replace("x-ms-", ""))) {

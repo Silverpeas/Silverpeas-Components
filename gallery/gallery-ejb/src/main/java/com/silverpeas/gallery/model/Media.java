@@ -36,7 +36,6 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
@@ -305,6 +304,15 @@ public abstract class Media implements SilverpeasContent, SilverContentInterface
     }
     thumbnailUrl += ".png";
     return FilenameUtils.normalize(thumbnailUrl, true);
+  }
+
+  /**
+   * Gets the Application URL thumbnail of the media according the specified media resolution.
+   * @param mediaResolution
+   * @return the URL of media thumbnail.
+   */
+  public String getApplicationEmbedUrl(MediaResolution mediaResolution) {
+    return GalleryResourceURIs.buildMediaEmbedURI(this, mediaResolution).toString();
   }
 
   /**

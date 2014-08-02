@@ -84,11 +84,11 @@ public class MediaEntityMatcher extends BaseMatcher<LinkedHashMap<String, Object
             "/silverpeas/services/gallery/componentName5/photos/7/content?_t=1325372400000" +
                 "&resolution=PREVIEW"));
         matcher.appendSuper(photoEntity.getThumbUrl().toString()
-            .contains("/silverpeas/gallery/jsp/icons/notAvailable_fr_66x50.jpg"));
+            .contains("/silverpeas/gallery/jsp/icons/notAvailable_fr_133x100.jpg"));
       } else {
         matcher.appendSuper(actual.getThumbUrl().toString()
             .equals("/silverpeas/gallery/jsp/icons/" + expected.getType().getName().toLowerCase() +
-                "_66x50.png"));
+                "_266x150.png"));
       }
       match = matcher.isEquals();
     }
@@ -124,7 +124,7 @@ public class MediaEntityMatcher extends BaseMatcher<LinkedHashMap<String, Object
     mediaEntity.withURI(URI.create((String) media.get("uri")));
     mediaEntity.withParentURI(URI.create((String) media.get("parentURI")));
     mediaEntity.withOriginalUrl(URI.create((String) media.get("url")));
-    mediaEntity.withThumbUrl(URI.create((String) media.get("tinyUrl")));
+    mediaEntity.withThumbUrl(URI.create((String) media.get("thumbUrl")));
     mediaEntity.setId((String) media.get("id"));
     mediaEntity.setTitle((String) media.get("title"));
     mediaEntity.setDescription((String) media.get("description"));

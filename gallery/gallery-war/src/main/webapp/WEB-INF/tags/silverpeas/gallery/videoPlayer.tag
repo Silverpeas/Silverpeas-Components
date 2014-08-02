@@ -50,16 +50,11 @@
 <div id="videoContainer"></div>
 <script type="text/javascript">
   $(document).ready(function() {
-    $('#videoContainer').player('video', {
-      container : {
-        width : '${_mediaResolution.width}px',
-        height : '${_mediaResolution.height}px'
-      },
-      clip : {
-        url : '${silfn:escapeJs(video.applicationOriginalUrl)}',
-        mimeType : '${silfn:escapeJs(video.fileMimeType.mimeType)}'
-      },
-      canvas : {
+    $('#videoContainer').embedPlayer({
+      url : '${silfn:escapeJs(video.getApplicationEmbedUrl(_mediaResolution))}',
+      width : ${_mediaResolution.width},
+      height : ${_mediaResolution.height},
+      playerParameters : {
         backgroundColor : '#E1E1E1'
       }
     });

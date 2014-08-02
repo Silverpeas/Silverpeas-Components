@@ -23,11 +23,14 @@
  */
 package com.silverpeas.gallery.web;
 
+import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.model.Sound;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.net.URI;
 
 /**
  * @author Yohann Chastagnier
@@ -36,6 +39,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SoundEntity extends AbstractMediaEntity<SoundEntity> {
   private static final long serialVersionUID = 3613940673764513915L;
+
+  @XmlElement(defaultValue = "")
+  private URI embedUrl;
 
   /**
    * Creates a new sound entity from the specified sound.
@@ -47,10 +53,19 @@ public class SoundEntity extends AbstractMediaEntity<SoundEntity> {
   }
 
   /**
+   * Get embed URL.
+   * @return
+   */
+  public URI getEmbedUrl() {
+    return embedUrl;
+  }
+
+  /**
    * Default hidden constructor.
    */
   private SoundEntity(final Sound sound) {
     super(sound);
+    embedUrl = URI.create(sound.getApplicationEmbedUrl(MediaResolution.PREVIEW));
   }
 
   @SuppressWarnings("UnusedDeclaration")

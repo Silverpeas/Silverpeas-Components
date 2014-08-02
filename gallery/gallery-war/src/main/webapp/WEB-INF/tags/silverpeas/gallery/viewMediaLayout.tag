@@ -108,7 +108,6 @@
   <view:looknfeel/>
   <view:progressMessage/>
   <view:includePlugin name="popup"/>
-  <view:includePlugin name="player"/>
   <view:includePlugin name="wysiwyg"/>
   <view:includePlugin name="userZoom"/>
   <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js" />"></script>

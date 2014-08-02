@@ -46,6 +46,7 @@ public final class GalleryResourceURIs {
   public static final String GALLERY_VIDEOS_PART = "videos";
   public static final String GALLERY_SOUNDS_PART = "sounds";
   public static final String GALLERY_MEDIA_CONTENT_PART = "content";
+  public static final String GALLERY_MEDIA_EMBED_PART = "embed";
   public static final String GALLERY_STREAMINGS_PART = "streamings";
   public static final String GALLERY_STREAMING_PROVIDER_DATA_PART = "providerData";
 
@@ -104,6 +105,26 @@ public final class GalleryResourceURIs {
         .path(media.getComponentInstanceId()).path(media.getType().getMediaWebUriPart())
         .path(media.getId()).path(GALLERY_MEDIA_CONTENT_PART)
         .queryParam("_t", media.getLastUpdateDate().getTime());
+    if (mediaResolution != null && mediaResolution != MediaResolution.ORIGINAL) {
+      uriBuilder.queryParam(GALLERY_PHOTO_RESOLUTION_PARAM, mediaResolution);
+    }
+    return uriBuilder.build();
+  }
+
+  /**
+   * Centralized the build of a media embed URI according to the specified resolution.
+   * @param media the media.
+   * @param mediaResolution the requested resolution.
+   * @return the computed URI.
+   */
+  public static URI buildMediaEmbedURI(Media media, MediaResolution mediaResolution) {
+    if (media == null) {
+      return null;
+    }
+    UriBuilder uriBuilder = UriBuilder.fromUri(URLManager.getApplicationURL())
+        .path(SilverpeasSettings.getRestWebServicesUriBase()).path(GALLERY_BASE_URI)
+        .path(media.getComponentInstanceId()).path(media.getType().getMediaWebUriPart())
+        .path(media.getId()).path(GALLERY_MEDIA_EMBED_PART);
     if (mediaResolution != null && mediaResolution != MediaResolution.ORIGINAL) {
       uriBuilder.queryParam(GALLERY_PHOTO_RESOLUTION_PARAM, mediaResolution);
     }

@@ -95,4 +95,9 @@ public class Streaming extends Media {
   public SilverpeasFile getFile(final MediaResolution mediaResolution) {
     return SilverpeasFile.NO_FILE;
   }
+
+  @Override
+  public String getApplicationEmbedUrl(final MediaResolution mediaResolution) {
+    return "";
+  }
 }

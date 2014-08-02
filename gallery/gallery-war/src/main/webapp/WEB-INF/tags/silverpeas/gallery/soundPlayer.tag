@@ -50,20 +50,11 @@
 <div id="videoContainer"></div>
 <script type="text/javascript">
   $(document).ready(function() {
-    $('#videoContainer').player('audio', {
-      container : {
-        width : '${_mediaResolution.width}px',
-        height : '${_mediaResolution.height}px'
-      },
-      clip : {
-        url : '${silfn:escapeJs(sound.applicationOriginalUrl)}.mp3',
-        coverImage : {
-          url : "${silfn:escapeJs(sound.getApplicationThumbnailUrl(_mediaResolution))}",
-          scaling : 'orig'
-        },
-        mimeType : '${silfn:escapeJs(sound.fileMimeType.mimeType)}'
-      },
-      canvas : {
+    $('#videoContainer').embedPlayer({
+      url : '${silfn:escapeJs(sound.getApplicationEmbedUrl(_mediaResolution))}',
+      width : ${_mediaResolution.width},
+      height : ${_mediaResolution.height},
+      playerParameters : {
         backgroundColor : '#E1E1E1'
       }
     });

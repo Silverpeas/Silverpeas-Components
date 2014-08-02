@@ -69,6 +69,9 @@ public abstract class AbstractMediaEntity<T extends AbstractMediaEntity<T>> impl
   private String description;
 
   @XmlElement(defaultValue = "")
+  private String author;
+
+  @XmlElement(defaultValue = "")
   private URI thumbUrl;
 
   @XmlElement(defaultValue = "")
@@ -171,8 +174,16 @@ public abstract class AbstractMediaEntity<T extends AbstractMediaEntity<T>> impl
     return description;
   }
 
+  protected void setAuthor(final String author) {
+    this.author = author;
+  }
+
+  protected String getAuthor() {
+    return author;
+  }
+
   /**
-   * @return the smallUrl
+   * @return the thumbUrl
    */
   public URI getThumbUrl() {
     return thumbUrl;
@@ -209,6 +220,7 @@ public abstract class AbstractMediaEntity<T extends AbstractMediaEntity<T>> impl
     this.title = media == null || media.getTitle() == null ? "" : media.getTitle();
     this.description =
         media == null || media.getDescription() == null ? "" : media.getDescription();
+    this.author = media == null || media.getAuthor() == null ? "" : media.getAuthor();
   }
 
   protected AbstractMediaEntity() {

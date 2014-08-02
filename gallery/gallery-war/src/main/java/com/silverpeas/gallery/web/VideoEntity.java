@@ -23,11 +23,14 @@
  */
 package com.silverpeas.gallery.web;
 
+import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.model.Video;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.net.URI;
 
 /**
  * @author Yohann Chastagnier
@@ -36,6 +39,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class VideoEntity extends AbstractMediaEntity<VideoEntity> {
   private static final long serialVersionUID = -8597516375695922043L;
+
+  @XmlElement(defaultValue = "")
+  private URI embedUrl;
 
   /**
    * Creates a new video entity from the specified video.
@@ -47,10 +53,19 @@ public class VideoEntity extends AbstractMediaEntity<VideoEntity> {
   }
 
   /**
+   * Get embed URL.
+   * @return
+   */
+  public URI getEmbedUrl() {
+    return embedUrl;
+  }
+
+  /**
    * Default hidden constructor.
    */
   private VideoEntity(final Video video) {
     super(video);
+    embedUrl = URI.create(video.getApplicationEmbedUrl(MediaResolution.PREVIEW));
     withWidth(video.getDefinition().getWidth());
     withHeight(video.getDefinition().getHeight());
   }

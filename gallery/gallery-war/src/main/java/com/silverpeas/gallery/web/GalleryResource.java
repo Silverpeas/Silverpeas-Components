@@ -30,6 +30,7 @@ import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.StreamingProvider;
 import com.silverpeas.gallery.model.AlbumDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import com.sun.jersey.api.view.Viewable;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -223,5 +224,31 @@ public class GalleryResource extends AbstractGalleryResource {
     } catch (final Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
+  }
+
+  /**
+   * Gets the embed centent of a video. If it doesn't exist, a 404 HTTP code is returned. If the user
+   * isn't authentified, a 401 HTTP code is returned. If a problem occurs when processing the
+   * request, a 503 HTTP code is returned.
+   * @param videoId the identifier of the video
+   * @return the response to the HTTP GET request embed centent of the asked video.
+   */
+  @GET
+  @Path(GALLERY_VIDEOS_PART + "/{videoId}/" + GALLERY_MEDIA_EMBED_PART)
+  public Viewable getVideoEmbed(@PathParam("videoId") final String videoId) {
+    return getMediaEmbed(Video, videoId, MediaResolution.ORIGINAL);
+  }
+
+  /**
+   * Gets the embed content of a sound. If it doesn't exist, a 404 HTTP code is returned. If the user
+   * isn't authentified, a 401 HTTP code is returned. If a problem occurs when processing the
+   * request, a 503 HTTP code is returned.
+   * @param soundId the identifier of the sound
+   * @return the response to the HTTP GET request embed content of the asked sound.
+   */
+  @GET
+  @Path(GALLERY_SOUNDS_PART + "/{soundId}/" + GALLERY_MEDIA_EMBED_PART)
+  public Viewable getSoundEmbed(@PathParam("soundId") final String soundId) {
+    return getMediaEmbed(Sound, soundId, MediaResolution.ORIGINAL);
   }
 }

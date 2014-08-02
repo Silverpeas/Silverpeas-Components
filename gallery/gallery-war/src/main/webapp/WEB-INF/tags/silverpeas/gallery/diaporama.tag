@@ -41,7 +41,8 @@
 <c:set var="currentUserSort" value="${requestScope.Sort}"/>
 
 <link href="<c:url value="/gallery/jsp/styleSheets/slider/themes/classic/galleria.classic.css"/>" type="text/css" rel="stylesheet">
-<script src="<c:url value="/util/javaScript/jquery/jquery-migrate-1.2.1.min.js"/>" type="text/javascript"></script>
+<view:includePlugin name="qtip"/>
+<view:includePlugin name="embedPlayer"/>
 <script src="<c:url value="/gallery/jsp/javaScript/slider/galleria-1.3.6.min.js"/>" type="text/javascript"></script>
 <script src="<c:url value="/gallery/jsp/styleSheets/slider/themes/classic/galleria.classic.min.js"/>" type="text/javascript"></script>
 <script src="<c:url value="/gallery/jsp/javaScript/silverpeas-gallery-slider.js"/>" type="text/javascript"></script>
@@ -55,6 +56,7 @@
       $(document.body).append($slider);
     }
     $slider.gallerySlider('album', {
+      $elementsToHide: $('#videoContainer,#audioContainer,#streamingContainer').children(),
       mediaSort : '${currentUserSort}',
       componentInstanceId : '${componentInstanceId}',
       albumId : '${albumId}',

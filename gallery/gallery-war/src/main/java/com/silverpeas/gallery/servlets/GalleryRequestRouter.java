@@ -195,6 +195,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           request.setAttribute("NbMediaPerPage", gallerySC.getNbMediaPerPage());
           request.setAttribute("CurrentPageIndex", gallerySC.getIndexOfCurrentPage());
           request.setAttribute("CurrentAlbum", currentAlbum);
+          request.setAttribute("albumId", currentAlbum.getId());
           request.setAttribute("Albums",
               gallerySC.addNbMedia(currentAlbum.getChildrenAlbumsDetails()));
           request.setAttribute("Path", gallerySC.getPath(currentAlbum.getNodePK()));
