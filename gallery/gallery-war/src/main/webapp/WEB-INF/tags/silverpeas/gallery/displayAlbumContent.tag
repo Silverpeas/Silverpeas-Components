@@ -166,6 +166,7 @@
     }
     return items;
   }
+
 </script>
 
 <c:if test="${not empty mediaList}">
@@ -210,14 +211,20 @@
           <c:set var="mediaBackgroundClass" value="${media.visible ? 'fondPhoto' : 'fondPhotoNotVisible'}"/>
           <c:set var="mediaChecked" value="${selectedIds.contains(media.id) ? 'checked' : ''}"/>
           <c:choose>
+            <%-- Default media display or small media display --%>
             <c:when test="${typeAff eq 'default' or typeAff eq 'small_list'}">
               <td class="a-media ${typeAff eq 'small_list' ? 'aff-small': 'aff-tiny'}" width="${cellWidth}%">
                 <div class="${mediaBackgroundClass}">
                   <div class="cadrePhoto">
                     <a href="MediaView?MediaId=${media.id}${not empty searchKeyword ? '&SearchKeyWord='.concat(searchKeyword) : ''}">
-                      <img id="imgId_${media.id}" class="mediaPreview" tipTitle="<c:out value="${media.title}"/>"
+                      <c:set var="classPreview" value="mediaPreview"/>
+                      <c:if test="${media.type.video}">
+                        <c:set var="classPreview" value="mediaPreview videoPreview"/>
+                      </c:if>
+                      <img id="imgId_${media.id}" class="${classPreview}" tipTitle="<c:out value="${media.title}"/>"
                            tipUrl="${media.getApplicationThumbnailUrl(PREVIEW_RESOLUTION)}"
-                           src="${media.getApplicationThumbnailUrl(mediaResolution)}" border="0" alt="<c:out value='${media.title}'/>"/>
+                           src="${media.getApplicationThumbnailUrl(mediaResolution)}" border="0"
+                           alt="<c:out value='${media.title}'/>" width="${mediaResolution.width}"/>
                     </a>
                   </div>
                   <c:if test="${not (greaterUserRole eq userRole and not isBasket)}">

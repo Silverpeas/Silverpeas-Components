@@ -291,7 +291,7 @@ function checkLuceneQuery(query) {
                           <tr>
                             <td>
                               <a href="MediaView?MediaId=${media.id}">
-                                <img class="mediaPreview"
+                                <img class="mediaPreview" width="${SMALL_RESOLUTION.width}"
                                      tipTitle="<c:out value="${media.title}"/>"
                                      tipUrl="${media.getApplicationThumbnailUrl(PREVIEW_RESOLUTION)}"
                                      src="${media.getApplicationThumbnailUrl(SMALL_RESOLUTION)}" border="0" alt="<c:out value='${media.title}'/>"/>

@@ -93,7 +93,7 @@ public class MediaHelper {
         try {
           sound.setFileName(FileUtil.getFilename(name));
           final HandledFile handledSoundFile = getHandledFile(fileHandler, sound);
-          handledSoundFile.writeInputStreamToFile(fileItem.getInputStream());
+          handledSoundFile.copyInputStreamToFile(fileItem.getInputStream());
           setInternalMetadata(handledSoundFile, sound, MediaMimeType.SOUNDS);
         } finally {
           fileItem.delete();
@@ -138,7 +138,7 @@ public class MediaHelper {
         try {
           video.setFileName(FileUtil.getFilename(name));
           final HandledFile handledVideoFile = getHandledFile(fileHandler, video);
-          handledVideoFile.writeInputStreamToFile(fileItem.getInputStream());
+          handledVideoFile.copyInputStreamToFile(fileItem.getInputStream());
           setInternalMetadata(handledVideoFile, video, MediaMimeType.VIDEOS);
           generateVideoThumbnails(handledVideoFile.getFile());
         } finally {
@@ -189,7 +189,7 @@ public class MediaHelper {
         try {
           photo.setFileName(FileUtil.getFilename(name));
           final HandledFile handledImageFile = getHandledFile(fileHandler, photo);
-          handledImageFile.writeInputStreamToFile(image.getInputStream());
+          handledImageFile.copyInputStreamToFile(image.getInputStream());
           if (setInternalMetadata(handledImageFile, photo, MediaMimeType.PHOTOS)) {
             createPhoto(handledImageFile, photo, watermark, watermarkHD, watermarkOther);
           }
@@ -638,7 +638,9 @@ public class MediaHelper {
   private static void generateVideoThumbnails(File videoFile) {
     VideoThumbnailExtractor vte =
         VideoThumbnailExtractorFactory.getInstance().getVideoThumbnailExtractor();
-    vte.generateThumbnailsFrom(videoFile);
+    if (vte.isActivated()) {
+      vte.generateThumbnailsFrom(videoFile);
+    }
   }
 
   private MediaHelper() {

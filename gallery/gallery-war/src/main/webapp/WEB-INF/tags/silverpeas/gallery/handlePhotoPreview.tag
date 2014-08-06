@@ -39,25 +39,74 @@
 </style>
 
 <script type="text/javascript">
-  $(document).ready(function() {
-    $('${jquerySelector}').each(function() {
-      $(this).qtip({
-        style : {
-          classes : 'qtip-bootstrap photoPreviewTip'
+
+var selectedVideoId = null;
+var intervalVariable = null;
+
+$(document).ready(function() {
+  $('${jquerySelector}').each(function() {
+    $(this).qtip({
+      style : {
+        classes : 'qtip-bootstrap photoPreviewTip'
+      },
+      content : {
+        title : {
+          text : $(this).attr("tipTitle")
         },
-        content : {
-          title : {
-            text : $(this).attr("tipTitle")
-          },
-          text : "<img src='" + $(this).attr("tipUrl") + "' />"
+        text : "<img src='" + $(this).attr("tipUrl") + "' id='tipUrl_" + $(this).attr("id") + "' />"
+      },
+      position : {
+        adjust : {
+          method : "flip flip"
         },
-        position : {
-          adjust : {
-            method : "flip flip"
-          },
-          viewport : $(window)
-        }
-      });
+        viewport : $(window)
+      }
     });
   });
+});
+
+$(document).delegate( ".videoPreview", "mouseover", function(event) {
+  if ( window.console && window.console.log ) {
+    console.log("event raised on id= " + $(this).attr("id"));
+  }
+  selectedVideoId = $(this).attr('id');
+  intervalVariable = setInterval(function() {
+    changePicture();
+  }, 1000);
+ });
+$(document).delegate( ".videoPreview", "mouseout", function(event) {
+  window.clearInterval(intervalVariable);
+  resetPicture();
+});
+
+function changePicture() {
+  var src = $("#tipUrl_" + selectedVideoId).attr("src");
+  if (src.indexOf("thumbnail/0") >= 0) {
+    src = src.replace("thumbnail/0", "thumbnail/1");
+  } else if (src.indexOf("thumbnail/1") >= 0) {
+    src = src.replace("thumbnail/1", "thumbnail/2");
+  } else if (src.indexOf("thumbnail/2") >= 0) {
+    src = src.replace("thumbnail/2", "thumbnail/3");
+  } else if (src.indexOf("thumbnail/3") >= 0) {
+    src = src.replace("thumbnail/3", "thumbnail/4");
+  } else if (src.indexOf("thumbnail/4") >= 0) {
+    src = src.replace("thumbnail/4", "thumbnail/0");
+  }
+  $("#" + selectedVideoId).attr("src", src);
+  $("#tipUrl_" + selectedVideoId).attr("src", src);
+}
+function resetPicture() {
+  var src = $("#tipUrl_" + selectedVideoId).attr("src");
+  if (src.indexOf("thumbnail/1") >= 0) {
+    src = src.replace("thumbnail/1", "thumbnail/0");
+  } else if (src.indexOf("thumbnail/2") >= 0) {
+    src = src.replace("thumbnail/2", "thumbnail/0");
+  } else if (src.indexOf("thumbnail/3") >= 0) {
+    src = src.replace("thumbnail/3", "thumbnail/0");
+  } else if (src.indexOf("thumbnail/4") >= 0) {
+    src = src.replace("thumbnail/4", "thumbnail/0");
+  }
+  $("#tipUrl_" + selectedVideoId).attr("src", src);
+  $("#" + selectedVideoId).attr("src", src);
+}
 </script>

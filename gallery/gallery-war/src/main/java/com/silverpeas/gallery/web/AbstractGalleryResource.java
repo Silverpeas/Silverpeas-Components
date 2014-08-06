@@ -33,6 +33,7 @@ import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.MediaPK;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.SilverpeasRole;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
@@ -42,12 +43,15 @@ import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.silverpeas.file.SilverpeasFile;
+import org.silverpeas.file.SilverpeasFileProvider;
+import org.silverpeas.media.video.ThumbnailPeriod;
 
 import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -160,6 +164,56 @@ public abstract class AbstractGalleryResource extends RESTWebService {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
   }
+
+  /**
+   * Centralization of getting video media thumbnail.
+   * @param expectedMediaType
+   * @param mediaId
+   * @param thumbnailId
+   * @return
+   */
+  protected Response getMediaThumbnail(final MediaType expectedMediaType, final String mediaId,
+      final String thumbnailId) {
+    try {
+      final Media media = getMediaService().getMedia(new MediaPK(mediaId, getComponentId()));
+      checkNotFoundStatus(media);
+      verifyUserMediaAccess(media);
+      // Verifying the physical file exists
+      final SilverpeasFile thumbFile =
+          SilverpeasFileProvider.getFile(FileUtils
+              .getFile(Media.BASE_PATH.getPath(), media.getComponentInstanceId(),
+                  media.getWorkspaceSubFolderName(),
+                  ThumbnailPeriod.fromIndex(thumbnailId).getFilename()).getPath());
+      if (!thumbFile.exists()) {
+        throw new WebApplicationException(Status.NOT_FOUND);
+      }
+
+      return Response.ok(new StreamingOutput() {
+        @Override
+        public void write(final OutputStream output) throws IOException, WebApplicationException {
+          final InputStream mediaStream;
+          try {
+            mediaStream = FileUtils.openInputStream(thumbFile);
+          } catch (IOException e) {
+            throw new WebApplicationException(Status.NOT_FOUND);
+          }
+          try {
+            IOUtils.copy(mediaStream, output);
+          } finally {
+            IOUtils.closeQuietly(mediaStream);
+          }
+        }
+      }).header("Content-Type", thumbFile.getMimeType())
+          .header("Content-Length", thumbFile.length())
+          .header("Content-Disposition", "inline; filename=\"" + thumbFile.getName() + "\"")
+          .build();
+    } catch (final WebApplicationException ex) {
+      throw ex;
+    } catch (final Exception ex) {
+      throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
+    }
+  }
+
 
   /**
    * Indicates if the current user is a privileged one.

@@ -134,6 +134,21 @@ public class GalleryResource extends AbstractGalleryResource {
   }
 
   /**
+   * Get the video thumbnail. If it doesn't exist, a 404 HTTP code is returned. If the user isn't
+   * authentified, a 401 HTTP code is returned. If a problem occurs when processing the request, a
+   * 503 HTTP code is returned.
+   * @param videoId the identifier of the video
+   * @return the response to the HTTP GET request content of the asked video.
+   */
+  @GET
+  @Path(GALLERY_VIDEOS_PART + "/{videoId}/" + GALLERY_MEDIA_THUMBNAIL_PART + "/{thumbnailId}")
+  @Produces(MediaType.APPLICATION_OCTET_STREAM)
+  public Response getVideoThumbnail(@PathParam("videoId") final String videoId,
+      @PathParam("thumbnailId") final String thumbnailId) {
+    return getMediaThumbnail(Video, videoId, thumbnailId);
+  }
+
+  /**
    * Gets the content of a sound. If it doesn't exist, a 404 HTTP code is returned. If the user
    * isn't authentified, a 401 HTTP code is returned. If a problem occurs when processing the
    * request, a 503 HTTP code is returned.
@@ -147,12 +162,10 @@ public class GalleryResource extends AbstractGalleryResource {
     return getMediaContent(Sound, soundId, MediaResolution.ORIGINAL);
   }
 
-
   /**
-   * Gets the provider data of a streamin from its url.
-   * If it doesn't exist, a 404 HTTP code is returned. If the user
-   * isn't authentified, a 401 HTTP code is returned. If a problem occurs when processing the
-   * request, a 503 HTTP code is returned.
+   * Gets the provider data of a streamin from its url. If it doesn't exist, a 404 HTTP code is
+   * returned. If the user isn't authentified, a 401 HTTP code is returned. If a problem occurs when
+   * processing the request, a 503 HTTP code is returned.
    * @param url the url of the streaming
    * @return the response to the HTTP GET request content of the asked streaming.
    */
@@ -177,7 +190,7 @@ public class GalleryResource extends AbstractGalleryResource {
           break;
       }
       checkNotFoundStatus(entity);
-      //noinspection ConstantConditions
+      // noinspection ConstantConditions
       return entity.withURI(getUriInfo().getRequestUri());
     } catch (final WebApplicationException ex) {
       throw ex;

@@ -31,11 +31,13 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.date.Period;
 import org.silverpeas.file.SilverpeasFile;
 import org.silverpeas.file.SilverpeasFileProvider;
+import org.silverpeas.media.video.ThumbnailPeriod;
 import org.silverpeas.notification.message.MessageManager;
 
 import java.util.ArrayList;
@@ -138,6 +140,17 @@ public abstract class InternalMedia extends Media {
             MessageManager.getLanguage() + mediaResolution.getThumbnailSuffix();
         return FilenameUtils.normalize(thumbnailUrl, true);
       }
+    } else if (getType().isVideo()) {
+      SilverpeasFile thumbFile =
+          SilverpeasFileProvider.getFile(FileUtils
+              .getFile(Media.BASE_PATH.getPath(), getComponentInstanceId(),
+                  getWorkspaceSubFolderName(),
+                  "img0.jpg").getPath());
+      if (thumbFile != null && thumbFile.exists()) {
+        return GalleryResourceURIs.buildVideoThumbnailURI(this, ThumbnailPeriod.Thumbnail0)
+            .toString();
+      }
+      return super.getApplicationThumbnailUrl(mediaResolution);
     } else {
       return super.getApplicationThumbnailUrl(mediaResolution);
     }
