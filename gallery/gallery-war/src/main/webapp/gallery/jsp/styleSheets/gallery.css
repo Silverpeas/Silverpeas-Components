@@ -642,3 +642,9 @@ table.listing-media {
   max-height: 400px;
   overflow: auto;
 }
+
+.type-media {
+  position:absolute;
+  top:-14px;
+  left:-14px;
+}

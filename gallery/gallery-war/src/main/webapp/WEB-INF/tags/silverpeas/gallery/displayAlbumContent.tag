@@ -217,14 +217,17 @@
                 <div class="${mediaBackgroundClass}">
                   <div class="cadrePhoto">
                     <a href="MediaView?MediaId=${media.id}${not empty searchKeyword ? '&SearchKeyWord='.concat(searchKeyword) : ''}">
-                      <c:set var="classPreview" value="mediaPreview"/>
+                      <c:set var="classPreview" value="mediaPreview" />
+                      <c:set var="thumbnailUrl" value="${media.getApplicationThumbnailUrl(PREVIEW_RESOLUTION)}"/>
                       <c:if test="${media.type.video}">
-                        <c:set var="classPreview" value="mediaPreview videoPreview"/>
+                        <c:if test="${fn:contains(thumbnailUrl, '/thumbnail/') }">
+                          <img class="type-media" src="<c:url value="/gallery/jsp/icons/video_66x50.png"/>" />
+                        </c:if>
+                        <c:set var="classPreview" value="mediaPreview videoPreview" />
                       </c:if>
                       <img id="imgId_${media.id}" class="${classPreview}" tipTitle="<c:out value="${media.title}"/>"
-                           tipUrl="${media.getApplicationThumbnailUrl(PREVIEW_RESOLUTION)}"
-                           src="${media.getApplicationThumbnailUrl(mediaResolution)}" border="0"
-                           alt="<c:out value='${media.title}'/>" width="${mediaResolution.width}"/>
+                           tipUrl="${thumbnailUrl}" src="${media.getApplicationThumbnailUrl(mediaResolution)}"
+                           border="0" alt="<c:out value='${media.title}'/>" width="${mediaResolution.width}" />
                     </a>
                   </div>
                   <c:if test="${not (greaterUserRole eq userRole and not isBasket)}">

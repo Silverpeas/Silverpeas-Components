@@ -57,7 +57,7 @@ $(document).ready(function() {
       },
       position : {
         adjust : {
-          method : "flip flip"
+          method : "flip"
         },
         viewport : $(window)
       }
@@ -92,7 +92,6 @@ function changePicture() {
   } else if (src.indexOf("thumbnail/4") >= 0) {
     src = src.replace("thumbnail/4", "thumbnail/0");
   }
-  $("#" + selectedVideoId).attr("src", src);
   $("#tipUrl_" + selectedVideoId).attr("src", src);
 }
 function resetPicture() {
@@ -107,6 +106,5 @@ function resetPicture() {
     src = src.replace("thumbnail/4", "thumbnail/0");
   }
   $("#tipUrl_" + selectedVideoId).attr("src", src);
-  $("#" + selectedVideoId).attr("src", src);
 }
 </script>

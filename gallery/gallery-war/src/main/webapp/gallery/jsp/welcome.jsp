@@ -290,10 +290,17 @@ function checkLuceneQuery(query) {
                         <table cellspacing="1" cellpadding="3" border="0" class="cadrePhoto">
                           <tr>
                             <td>
+                              <c:set var="classPreview" value="mediaPreview" />
+                              <c:set var="thumbnailUrl" value="${media.getApplicationThumbnailUrl(PREVIEW_RESOLUTION)}"/>
+                              <c:if test="${media.type.video}">
+                                <c:if test="${fn:contains(thumbnailUrl, '/thumbnail/') }">
+                                  <img class="type-media" src="<c:url value="/gallery/jsp/icons/video_66x50.png"/>" />
+                                </c:if>
+                                <c:set var="classPreview" value="mediaPreview videoPreview" />
+                              </c:if>
                               <a href="MediaView?MediaId=${media.id}">
-                                <img class="mediaPreview" width="${SMALL_RESOLUTION.width}"
-                                     tipTitle="<c:out value="${media.title}"/>"
-                                     tipUrl="${media.getApplicationThumbnailUrl(PREVIEW_RESOLUTION)}"
+                                <img id="imgId_${media.id}" class="mediaPreview videoPreview" width="${SMALL_RESOLUTION.width}"
+                                     tipTitle="<c:out value="${media.title}"/>" tipUrl="${thumbnailUrl}"
                                      src="${media.getApplicationThumbnailUrl(SMALL_RESOLUTION)}" border="0" alt="<c:out value='${media.title}'/>"/>
                               </a>
                             </td>
