@@ -70,6 +70,9 @@ $(document).delegate( ".videoPreview", "mouseover", function(event) {
     console.log("event raised on id= " + $(this).attr("id"));
   }
   selectedVideoId = $(this).attr('id');
+  if (intervalVariable) {
+    window.clearInterval(intervalVariable);
+  }
   intervalVariable = setInterval(function() {
     changePicture();
   }, 1000);
