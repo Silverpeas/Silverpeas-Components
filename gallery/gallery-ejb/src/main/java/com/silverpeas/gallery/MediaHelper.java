@@ -20,6 +20,34 @@
  */
 package com.silverpeas.gallery;
 
+import static com.silverpeas.gallery.constant.MediaResolution.LARGE;
+import static com.silverpeas.gallery.constant.MediaResolution.MEDIUM;
+import static com.silverpeas.gallery.constant.MediaResolution.PREVIEW;
+import static com.silverpeas.gallery.constant.MediaResolution.SMALL;
+import static com.silverpeas.gallery.constant.MediaResolution.TINY;
+import static com.silverpeas.gallery.constant.MediaResolution.WATERMARK;
+
+import java.awt.Font;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.List;
+import java.util.Set;
+
+import javax.imageio.ImageIO;
+
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.silverpeas.media.Definition;
+import org.silverpeas.media.video.VideoThumbnailExtractor;
+import org.silverpeas.media.video.VideoThumbnailExtractorFactory;
+import org.silverpeas.process.io.file.FileHandler;
+import org.silverpeas.process.io.file.HandledFile;
+import org.silverpeas.util.ImageLoader;
+
 import com.silverpeas.gallery.constant.MediaMimeType;
 import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.media.DrewMediaMetadataExtractor;
@@ -44,25 +72,6 @@ import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.silverpeas.media.Definition;
-import org.silverpeas.process.io.file.FileHandler;
-import org.silverpeas.process.io.file.HandledFile;
-import org.silverpeas.util.ImageLoader;
-
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.List;
-import java.util.Set;
-
-import static com.silverpeas.gallery.constant.MediaResolution.*;
 
 public class MediaHelper {
 
@@ -84,7 +93,7 @@ public class MediaHelper {
         try {
           sound.setFileName(FileUtil.getFilename(name));
           final HandledFile handledSoundFile = getHandledFile(fileHandler, sound);
-          handledSoundFile.writeByteArrayToFile(fileItem.get());
+          handledSoundFile.copyInputStreamToFile(fileItem.getInputStream());
           setInternalMetadata(handledSoundFile, sound, MediaMimeType.SOUNDS);
         } finally {
           fileItem.delete();
@@ -94,8 +103,7 @@ public class MediaHelper {
   }
 
   /**
-   * Saves uploaded sound file on file system
-   * (In case of drag And Drop upload)
+   * Saves uploaded sound file on file system (In case of drag And Drop upload)
    * @param fileHandler
    * @param sound the current sound media
    * @param uploadedFile the current uploaded sound
@@ -130,8 +138,9 @@ public class MediaHelper {
         try {
           video.setFileName(FileUtil.getFilename(name));
           final HandledFile handledVideoFile = getHandledFile(fileHandler, video);
-          handledVideoFile.writeByteArrayToFile(fileItem.get());
+          handledVideoFile.copyInputStreamToFile(fileItem.getInputStream());
           setInternalMetadata(handledVideoFile, video, MediaMimeType.VIDEOS);
+          generateVideoThumbnails(handledVideoFile.getFile());
         } finally {
           fileItem.delete();
         }
@@ -140,8 +149,7 @@ public class MediaHelper {
   }
 
   /**
-   * Saves uploaded video file on file system
-   * (In case of drag And Drop upload)
+   * Saves uploaded video file on file system (In case of drag And Drop upload)
    * @param fileHandler
    * @param video the current video media
    * @param uploadedFile the current uploaded video
@@ -155,6 +163,7 @@ public class MediaHelper {
         final HandledFile handledVideoFile = getHandledFile(fileHandler, video);
         fileHandler.copyFile(uploadedFile, handledVideoFile);
         setInternalMetadata(handledVideoFile, video, MediaMimeType.VIDEOS);
+        generateVideoThumbnails(handledVideoFile.getFile());
       } finally {
         FileUtils.deleteQuietly(uploadedFile);
       }
@@ -180,7 +189,7 @@ public class MediaHelper {
         try {
           photo.setFileName(FileUtil.getFilename(name));
           final HandledFile handledImageFile = getHandledFile(fileHandler, photo);
-          handledImageFile.writeByteArrayToFile(image.get());
+          handledImageFile.copyInputStreamToFile(image.getInputStream());
           if (setInternalMetadata(handledImageFile, photo, MediaMimeType.PHOTOS)) {
             createPhoto(handledImageFile, photo, watermark, watermarkHD, watermarkOther);
           }
@@ -192,8 +201,8 @@ public class MediaHelper {
   }
 
   /**
-   * Saves uploaded photo file on file system with associated thumbnails and watermarks.
-   * (In case of drag And Drop upload)
+   * Saves uploaded photo file on file system with associated thumbnails and watermarks. (In case of
+   * drag And Drop upload)
    * @param fileHandler
    * @param photo
    * @param image
@@ -336,9 +345,11 @@ public class MediaHelper {
   public static void setMetaData(final FileHandler fileHandler, final Photo photo,
       final String lang) throws MediaMetadataException, IOException {
     if (MediaMimeType.JPG == photo.getFileMimeType()) {
-      final HandledFile handledFile = fileHandler
-          .getHandledFile(Media.BASE_PATH, photo.getInstanceId(), photo.getWorkspaceSubFolderName(),
-              photo.getFileName());
+      final HandledFile handledFile =
+          fileHandler
+              .getHandledFile(Media.BASE_PATH, photo.getInstanceId(),
+                  photo.getWorkspaceSubFolderName(),
+                  photo.getFileName());
       if (handledFile.exists()) {
         try {
           final MediaMetadataExtractor extractor = new DrewMediaMetadataExtractor(photo.
@@ -381,7 +392,8 @@ public class MediaHelper {
    * @param nameWatermark
    * @throws Exception
    */
-  private static void createThumbnails(final HandledFile originalHandedImageFile, final Photo photo,
+  private static void createThumbnails(final HandledFile originalHandedImageFile,
+      final Photo photo,
       final BufferedImage originalImage, final boolean watermark, final String nameWatermark)
       throws Exception {
 
@@ -399,7 +411,7 @@ public class MediaHelper {
     // Small
     // Tiny
     final MediaResolution[] mediaResolutions =
-        new MediaResolution[]{LARGE, PREVIEW, MEDIUM, SMALL, TINY};
+        new MediaResolution[] { LARGE, PREVIEW, MEDIUM, SMALL, TINY };
     BufferedImage previewImage = null;
     for (MediaResolution mediaResolution : mediaResolutions) {
       // Current thumbnail
@@ -522,8 +534,8 @@ public class MediaHelper {
     if (fromDir.exists()) {
 
       // Copy thumbnails & watermark (only if it does exist)
-      for (final MediaResolution mediaResolution : new MediaResolution[]{MEDIUM, SMALL, TINY,
-          PREVIEW, LARGE, WATERMARK}) {
+      for (final MediaResolution mediaResolution : new MediaResolution[] { MEDIUM, SMALL, TINY,
+          PREVIEW, LARGE, WATERMARK }) {
         pasteFile(fromDir.getHandledFile(fromPK.getId() + mediaResolution.getThumbnailSuffix()),
             toDir.getHandledFile(media.getId() + mediaResolution.getThumbnailSuffix()), cut);
       }
@@ -536,7 +548,8 @@ public class MediaHelper {
         try {
           fromDir.delete();
         } catch (Exception e) {
-          SilverTrace.error("gallery", "MediaHelper.pasteInternalMedia", "root.MSG_GEN_PARAM_VALUE",
+          SilverTrace.error("gallery", "MediaHelper.pasteInternalMedia",
+              "root.MSG_GEN_PARAM_VALUE",
               "Unable to delete source folder : folder path = " + fromDir.getFile().getPath(), e);
         }
       }
@@ -553,7 +566,8 @@ public class MediaHelper {
           fromFile.copyFile(toFile);
         }
       } catch (final Exception e) {
-        SilverTrace.error("gallery", "MediaHelper.pasteFile", "root.MSG_GEN_PARAM_VALUE", "Unable to copy file : fromImage = " + fromFile.getFile().getPath() + ", toImage = " +
+        SilverTrace.error("gallery", "MediaHelper.pasteFile", "root.MSG_GEN_PARAM_VALUE",
+            "Unable to copy file : fromImage = " + fromFile.getFile().getPath() + ", toImage = " +
                 toFile.getFile().getPath(), e);
       }
     }
@@ -599,7 +613,8 @@ public class MediaHelper {
           }
         }
       } catch (MediaMetadataException e) {
-        SilverTrace.error("gallery", "MediaHelper.computeWatermarkText", "root.MSG_BAD_FILE_FORMAT",
+        SilverTrace.error("gallery", "MediaHelper.computeWatermarkText",
+            "root.MSG_BAD_FILE_FORMAT",
             "Bad image file format " + image.getFile().getPath() + ": " + e.getMessage());
       } catch (UnsupportedEncodingException e) {
         SilverTrace.error("gallery", "MediaHelper.computeWatermarkText", "root.MSG_BAD_ENCODING",
@@ -618,6 +633,14 @@ public class MediaHelper {
       }
     }
     return value;
+  }
+
+  private static void generateVideoThumbnails(File videoFile) {
+    VideoThumbnailExtractor vte =
+        VideoThumbnailExtractorFactory.getInstance().getVideoThumbnailExtractor();
+    if (vte.isActivated()) {
+      vte.generateThumbnailsFrom(videoFile);
+    }
   }
 
   private MediaHelper() {

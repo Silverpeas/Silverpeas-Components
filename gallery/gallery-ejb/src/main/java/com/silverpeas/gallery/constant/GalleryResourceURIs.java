@@ -23,14 +23,16 @@
  */
 package com.silverpeas.gallery.constant;
 
-
 import com.silverpeas.gallery.model.AlbumDetail;
 import com.silverpeas.gallery.model.Media;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.util.node.model.NodePK;
+
+import org.silverpeas.media.video.ThumbnailPeriod;
 import org.silverpeas.settings.SilverpeasSettings;
 
 import javax.ws.rs.core.UriBuilder;
+
 import java.net.URI;
 
 /**
@@ -48,6 +50,7 @@ public final class GalleryResourceURIs {
   public static final String GALLERY_MEDIA_CONTENT_PART = "content";
   public static final String GALLERY_MEDIA_EMBED_PART = "embed";
   public static final String GALLERY_STREAMINGS_PART = "streamings";
+  public static final String GALLERY_MEDIA_THUMBNAIL_PART = "thumbnail";
   public static final String GALLERY_STREAMING_PROVIDER_DATA_PART = "providerData";
 
   /**
@@ -128,6 +131,26 @@ public final class GalleryResourceURIs {
     if (mediaResolution != null && mediaResolution != MediaResolution.ORIGINAL) {
       uriBuilder.queryParam(GALLERY_PHOTO_RESOLUTION_PARAM, mediaResolution);
     }
+    return uriBuilder.build();
+  }
+  
+  /**
+   * Centralized the build of a video thumbnail URI according to the given ThumbnailPeriod.
+   * @param media the media.
+   * @param thumbnail the thumbnail period.
+   * @return the computed URI.
+   */
+  public static URI buildVideoThumbnailURI(Media media, ThumbnailPeriod thumbnail) {
+    if (media == null) {
+      return null;
+    }
+    UriBuilder uriBuilder =
+        UriBuilder.fromUri(URLManager.getApplicationURL())
+            .path(SilverpeasSettings.getRestWebServicesUriBase()).path(GALLERY_BASE_URI)
+            .path(media.getComponentInstanceId()).path(media.getType().getMediaWebUriPart())
+            .path(media.getId()).path(GALLERY_MEDIA_THUMBNAIL_PART)
+            .path(Integer.toString(thumbnail.getIndex()))
+            .queryParam("_t", media.getLastUpdateDate().getTime());
     return uriBuilder.build();
   }
 
