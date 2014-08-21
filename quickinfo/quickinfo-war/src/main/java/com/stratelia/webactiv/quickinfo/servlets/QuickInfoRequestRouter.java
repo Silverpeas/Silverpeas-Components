@@ -83,7 +83,7 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
     }
     request.setAttribute("Role", flag);
     request.setAttribute("AppSettings", quickInfo.getInstanceSettings());
-    
+
     try {
       if ("Main".equals(function)) {
         Collection<News> infos;
@@ -167,7 +167,7 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
           // from a search result
           news = quickInfo.getNewsByForeignId(id);
         } else {
-          // from a comment 
+          // from a comment
           news = quickInfo.getNews(id, true);
         }
         if (news.isDraft() && !isContributor(flag)) {
@@ -196,11 +196,11 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
         "root.MSG_GEN_PARAM_VALUE", "destination" + destination);
     return destination;
   }
-  
+
   private boolean isContributor(String role) {
     return "publisher".equals(role) || "admin".equals(role);
   }
-  
+
   private void setCommonAttributesToAddOrUpdate(QuickInfoSessionController quickInfo, News news, HttpRequest request) {
     request.setAttribute("info", news);
     request.setAttribute("ThumbnailSettings", quickInfo.getThumbnailSettings());
@@ -212,7 +212,7 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
    * @param quickInfo the QuickInfoSessionController
    * @param request the HttpServletRequest
    * @param action a string representation of an action
-   * @throws Exception 
+   * @throws Exception
    * @throws RemoteException
    * @throws CreateException
    * @throws WysiwygException
@@ -222,23 +222,23 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
 
     List<FileItem> items = request.getFileItems();
     News news = requestToNews(items, quickInfo.getLanguage());
-    
+
     String positions = request.getParameter("Positions");
 
     String id = news.getId();
-    
+
     // process thumbnail first to be stored in index when publication is updated
     ThumbnailController.processThumbnail(
         new ForeignPK(news.getPublicationId(), quickInfo.getComponentId()),
         PublicationDetail.getResourceType(), items);
-    
+
     quickInfo.update(id, news, positions, publish);
-    
+
     return id;
   }
-  
+
   private News requestToNews(List<FileItem> items, String language) throws ParseException {
-    
+
     String id = FileUploadUtil.getParameter(items, "Id");
     String name = FileUploadUtil.getParameter(items, "Name");
     String description = FileUploadUtil.getParameter(items, "Description");
@@ -250,7 +250,7 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
         StringUtil.getBooleanValue(FileUploadUtil.getParameter(items, "BroadcastTicker"));
     boolean mandatory =
         StringUtil.getBooleanValue(FileUploadUtil.getParameter(items, "BroadcastMandatory"));
-    
+
     Date beginDate = null;
     String beginString = FileUploadUtil.getParameter(items, "BeginDate");
     if (StringUtil.isDefined(beginString)) {
@@ -263,8 +263,8 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
     if (StringUtil.isDefined(endString)) {
       String hour = FileUploadUtil.getParameter(items, "EndHour");
       endDate = DateUtil.stringToDate(endString, hour, language);
-    }    
-    
+    }
+
     News news =
         new News(name, description, getPeriod(beginDate, endDate), important, ticker, mandatory);
     news.setId(id);
@@ -272,10 +272,10 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
     if (StringUtil.isDefined(pubId)) {
       news.setPublicationId(pubId);
     }
-    
+
     return news;
   }
-  
+
   private Period getPeriod(Date begin, Date end) {
     if (begin == null) {
       begin = DateUtil.MINIMUM_DATE;
@@ -290,10 +290,10 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
     String flag = "user";
     for (int i = 0; i < profiles.length; i++) {
       // if admin, return it, we won't find a better profile
-      if (profiles[i].equals("admin")) {
+      if ("admin".equals(profiles[i])) {
         return profiles[i];
       }
-      if (profiles[i].equals("publisher")) {
+      if ("publisher".equals(profiles[i])) {
         flag = profiles[i];
       }
     }

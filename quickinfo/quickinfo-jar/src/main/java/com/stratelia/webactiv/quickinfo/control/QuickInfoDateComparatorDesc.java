@@ -29,13 +29,13 @@ import java.util.Comparator;
 import org.silverpeas.components.quickinfo.model.News;
 
 public class QuickInfoDateComparatorDesc implements Comparator<News> {
-  static public QuickInfoDateComparatorDesc comparator = new QuickInfoDateComparatorDesc();
+  public static final QuickInfoDateComparatorDesc comparator = new QuickInfoDateComparatorDesc();
 
   /**
    * This result is reversed as we want a descending sort.
    */
   public int compare(News pd1, News pd2) {
-    
+
     int compareResult = 0;
     if (pd1.getOnlineDate() == null || pd2.getOnlineDate() == null) {
       if (pd1.getOnlineDate() != null) {
@@ -51,7 +51,7 @@ public class QuickInfoDateComparatorDesc implements Comparator<News> {
     }
     return 0 - compareResult;
   }
-  
+
   /**
    * This comparator equals self only. Use the shared comparator
    * QuickInfoDateComparatorDesc.comparator if multiples comparators are used.

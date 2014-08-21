@@ -20,9 +20,14 @@ public class NewsPK extends WAPrimaryKey {
     }
     NewsPK other = (NewsPK) obj;
     if (id == null) {
-      return (other.id == null);
+      return other.id == null;
     }
     return id.equals(other.id);
+  }
+
+  @Override
+  public int hashCode() {
+    return toString().hashCode();
   }
 
 }

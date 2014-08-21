@@ -2,9 +2,9 @@ CREATE TABLE sc_quickinfo_news (
   id             		VARCHAR(40) PRIMARY KEY,
   instanceId     		VARCHAR(30) NOT NULL,
   foreignId		 		VARCHAR(40) NOT NULL,
-  important      		BOOLEAN	 	NOT NULL,
-  broadcastTicker		BOOLEAN 	NOT NULL,
-  broadcastMandatory	BOOLEAN		NOT NULL,
+  important      		NUMBER(1)	 	NOT NULL,
+  broadcastTicker		NUMBER(1) 	NOT NULL,
+  broadcastMandatory	NUMBER(1)		NOT NULL,
   createDate     		TIMESTAMP   NOT NULL,
   createdBy      		VARCHAR(40) NOT NULL,
   lastUpdateDate 		TIMESTAMP   NOT NULL,
@@ -18,21 +18,21 @@ INSERT INTO sc_quickinfo_news (id, instanceId, foreignId,
 	important, broadcastTicker, broadcastMandatory,
 	createDate, createdBy, lastUpdateDate, lastUpdatedBy,
 	publishDate, publishedBy, version)
-  SELECT
-    to_char(pubId),
-    instanceId,
+SELECT
 	to_char(pubId),
-    false,
-    false,
-    false,
-    to_date(pubCreationDate, 'YYYY/MM/DD'),
+	instanceId,
+	to_char(pubId),
+	0,
+	0,
+	0,
+	to_date(pubCreationDate, 'YYYY/MM/DD'),
 	pubCreatorId,
 	to_date(pubUpdateDate, 'YYYY/MM/DD'),
-    pubUpdaterId,
-    to_date(pubCreationDate, 'YYYY/MM/DD'),
+	pubUpdaterId,
+	to_date(pubCreationDate, 'YYYY/MM/DD'),
 	pubCreatorId,
-    0
-  FROM
-    sb_publication_publi
-  WHERE
+	0
+FROM
+	sb_publication_publi
+WHERE
 	instanceId like 'quickinfo%';
