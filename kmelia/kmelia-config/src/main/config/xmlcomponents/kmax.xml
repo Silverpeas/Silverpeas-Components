@@ -409,6 +409,30 @@
       </help>
     </parameter>
 	<parameter>
+      <name>usePublicationSharing</name>
+      <label>
+        <message lang="fr">Publications partageables</message>
+        <message lang="en">Publications sharing</message>
+        <message lang="de">Publications sharing</message>
+      </label>
+      <order>15</order>
+      <mandatory>true</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Ce paramètre permet de partager des publications avec des tiers non utilisateurs de la plate-forme.</message>
+        <message lang="en">This feature allows to share publications with some persons who have no access to the platform.</message>
+        <message lang="de">This feature allows to share publications with some persons who have no access to the platform.</message>
+      </help>
+      <warning>
+        <message lang="fr">Attention! En cochant cette case, vous allez permettre aux gestionnaires de l'application de partager librement les publications avec des utilisateurs non référencés dans la plate-forme.</message>
+        <message lang="en">Caution! By checking this box, you will enable managers to the application to freely share publications with users not identified in the platform.</message>
+        <message lang="de">Caution! By checking this box, you will enable managers to the application to freely share publications with users not identified in the platform.</message>
+      </warning>
+      <personalSpaceValue>no</personalSpaceValue>
+    </parameter>
+	<parameter>
       <name>publicationSort</name>
       <label>
         <message lang="fr">Ordre des publications</message>
