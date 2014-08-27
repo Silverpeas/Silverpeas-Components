@@ -25,9 +25,10 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
 <%@ include file="imports.jsp" %>
 <%@ include file="init.jsp.inc" %>
-
 
 <%
 String[] allTables = null;
@@ -43,8 +44,8 @@ String selected = "";
 
 String m_context = GeneralPropertiesManager..getString("ApplicationURL");
 %>
-
-<HTML>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <Head>
 <TITLE><%=connecteurJDBC.getString("windowTitleParametrageRequete")%></TITLE>
 <view:looknfeel/>
@@ -122,11 +123,6 @@ String m_context = GeneralPropertiesManager..getString("ApplicationURL");
 <BODY marginwidth=5 marginheight=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
 
 <%
-
-
-
-  	//browse bar
-	//BrowseBar browseBar = window.getBrowseBar();
 	browseBar.setExtraInformation(connecteurJDBC.getString("titreParametrageRequete")) ;
 
 	//operation Pane 
@@ -155,7 +151,7 @@ String m_context = GeneralPropertiesManager..getString("ApplicationURL");
 	
 %>
 <form name="processForm" action="processForm.jsp" >
-	<input name="Sender" type="hidden" value = "requestParameters.jsp" >
+	<input name="Sender" type="hidden" value = "connecteurJDBC.jsp" >
 	<input name="Action" type="hidden" >
 	<input name="SqlReq" type="hidden" >
 
@@ -196,12 +192,9 @@ String m_context = GeneralPropertiesManager..getString("ApplicationURL");
 <%
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
-
 %>
 
 <form name="navigationForm" >
 </form>
-
-
 </BODY>
 </HTML>
