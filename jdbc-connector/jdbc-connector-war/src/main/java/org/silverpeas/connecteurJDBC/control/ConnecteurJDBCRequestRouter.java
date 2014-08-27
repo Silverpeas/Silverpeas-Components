@@ -115,12 +115,13 @@ public class ConnecteurJDBCRequestRouter extends ComponentRequestRouter<Connecte
       try {
         connecteurJDBC.setJDBCdriverName(JDBCdriverName);
         connecteurJDBC.updateConnection(JDBCdriverName, JDBCurl, login, password, rowLimit);
+        connecteurJDBC.loadDrivers();
       } catch (Exception e) {
         SilverTrace.warn("connecteurJDBC",
             "ConnecteurJDBCRequestRouter.getDestination()",
             "connecteurJDBC.MSG_CONNECTION_NOT_STARTED", e);
       }
-      return getDestination("ParameterConnection", connecteurJDBC, request);
+      destination = "connecteurJDBC.jsp";
     } else if (function.startsWith("processForm")) {
       destination = "processForm.jsp";
     } else {

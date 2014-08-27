@@ -26,6 +26,8 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
 <%@ include file="imports.jsp" %>
 <%!
 	GraphicElementFactory gef;
@@ -250,22 +252,15 @@ catch (Exception e)
 <%
 String separator = "<TABLE CELLPADDING=0 CELLSPACING=0 BORDER=0><TR><TD><img src=../../util/colorPix/1px.gif width=3></TD></TR></TABLE>";
 %>
-<HTML>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <Head>
 <TITLE>___/ Silverpeas - Corporate Portal Organizer \________________________________________________________________________</TITLE>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 </head>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <Script language="JavaScript">
-
-	function annule()
-	{
-		document.editForm.Action.value = "cancelSQLReq";
-		document.editForm.submit();
-	}
 	
 	function getColumnList()
 	{
@@ -288,12 +283,6 @@ out.println(gef.getLookStyleSheet());
 
 		document.editForm.submit();
 	}
-
-	function annulColumn()
-	{
-		document.editForm.Action.value = "cancelColumn";
-		document.editForm.submit();
-	}
 	
 	function writeTableName()
 	{
@@ -301,21 +290,6 @@ out.println(gef.getLookStyleSheet());
 		window.opener.document.processForm.table.value = document.editForm.tables.options[document.editForm.tables.selectedIndex].value;
 		window.opener.document.processForm.submit();
 		window.close();
-	}
-
-
-	function writeColumnName()
-	{
-		document.editForm.Temp.value = "true";
-		document.editForm.Action.value = "writeColumn";
-		document.editForm.submit();
-	}
-
-	function endSelectColumn()
-	{
-		document.editForm.Temp.value = "true";
-		document.editForm.Action.value = "end";
-		document.editForm.submit();
 	}
 
 	function addCriter()
@@ -341,10 +315,6 @@ out.println(gef.getLookStyleSheet());
 		window.opener.document.processForm.SqlReq.value = "<%=connecteurJDBC.getSQLreq()%>";
         window.opener.document.processForm.submit();
 		window.close();
-	}
-
-	function updateRequest()
-	{
 	}
 
 function move_groups(btn) {
@@ -529,8 +499,6 @@ function validateColumns() {
         
 </center>
 <%  
-connecteurJDBC.setColumn("");
-connecteurJDBC.setSQLreq("");
 } %>
  
 <%  
