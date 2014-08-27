@@ -423,7 +423,10 @@
           msg: errorMsg, 
           nb: errorNb
         };
+        
+        <% if (kmeliaMode && settings.getBoolean("isVignetteVisible", true)) {%>
         checkThumbnail(error);
+        <% } %>
 
         var result = false;
         switch(error.nb) {

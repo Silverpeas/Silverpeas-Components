@@ -517,6 +517,17 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public boolean isFolderSharingEnabled() {
     return StringUtil.getBooleanValue(getComponentParameterValue("useFolderSharing"));
   }
+  
+  public boolean isPublicationSharingEnabled() {
+    boolean enabled = StringUtil.getBooleanValue(getComponentParameterValue("usePublicationSharing"));
+    if (enabled) {
+      if (isKmaxMode) {
+        return isUserComponentAdmin();
+      }
+      return SilverpeasRole.admin.isInRole(getUserTopicProfile());
+    }
+    return false;
+  }
 
   public boolean isContentEnabled() {
     String parameterValue = getComponentParameterValue("tabContent");
@@ -658,15 +669,15 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     return document;
   }
 
-  public String getProfile() throws RemoteException {
+  public String getProfile() {
     return getUserTopicProfile();
   }
 
-  public String getUserTopicProfile() throws RemoteException {
+  public String getUserTopicProfile() {
     return getUserTopicProfile(null);
   }
 
-  public String getUserTopicProfile(String id) throws RemoteException {
+  public String getUserTopicProfile(String id) {
     String nodeId = id;
     if (!StringUtil.isDefined(id)) {
       nodeId = getCurrentFolderId();
@@ -3273,12 +3284,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public String getRole() {
-    try {
-      return getProfile();
-    } catch (RemoteException ex) {
-      throw new KmeliaRuntimeException("KmeliaBmEJB.getRole()",
-          SilverpeasRuntimeException.ERROR, "kmelia.MSG_ERR_GENERAL", ex);
-    }
+    return getProfile();
   }
 
   public String displayPath(Collection<NodeDetail> path, boolean linked, int beforeAfter) {
