@@ -35,7 +35,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
 <%@include file="checkKmelia.jsp" %>
-<%@include file="modelUtils.jsp" %>
 
 <%@page import="com.silverpeas.publicationTemplate.*"%>
 <%@page import="com.silverpeas.form.*"%>
@@ -280,9 +279,6 @@ $(function() {
 
         KmeliaDisplayHelper.displayAllOperations(id, kmeliaScc, gef, "ViewClone", resources, out);
         out.println(frame.printBefore());
-
-        InfoDetail infos = pubComplete.getInfoDetail();
-        ModelDetail model = pubComplete.getModelDetail();
 %>
 	<div class="rightContent">
 <%
@@ -399,8 +395,6 @@ $(function() {
 	          <view:displayWysiwyg objectId="<%=id%>" componentId="<%=componentId %>" language="<%=resources.getLanguage() %>" axisId="<%=kmeliaScc.
 	              getAxisIdGlossary() %>" highlightFirst="<%=String.valueOf(highlightFirst) %>"/>
 	          <%
-	        } else if (infos != null && model != null) {
-	          displayViewInfoModel(out, model, infos, resources, publicationSettings, m_context);
 	        } else {
 	          Form xmlForm = (Form) request.getAttribute("XMLForm");
 	          DataRecord xmlData = (DataRecord) request.getAttribute("XMLData");

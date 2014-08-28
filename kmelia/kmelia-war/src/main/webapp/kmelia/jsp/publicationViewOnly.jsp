@@ -33,15 +33,9 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
 <%@ include file="checkKmelia.jsp"%>
-<%@ include file="modelUtils.jsp"%>
 <%@ include file="topicReport.jsp.inc"%>
 
 <%
-  ResourceLocator uploadSettings = new
-          ResourceLocator("org.silverpeas.util.uploads.uploadSettings", kmeliaScc.getLanguage());
-  ResourceLocator publicationSettings = new ResourceLocator("org.silverpeas.util.publication.publicationSettings", kmeliaScc.getLanguage());
-
-  String folderSrc = m_context + "/util/icons/component/kmeliaSmall.gif";
   String topicId = "";
   String pubName = "";
   String action = "";
@@ -74,13 +68,13 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-<HEAD>
-<TITLE></TITLE>
+<head>
+<title></title>
 <view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
-</HEAD>
-<BODY onUnload="closeWindows()">
+</head>
+<body onunload="closeWindows()">
 <%
   Window window = gef.getWindow();
   Frame frame = gef.getFrame();
@@ -95,8 +89,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
   out.println(window.printBefore());
   out.println(frame.printBefore());
 
-  InfoDetail infos = pubComplete.getInfoDetail();
-  ModelDetail model = pubComplete.getModelDetail();
   PublicationDetail detail = pubComplete.getPublicationDetail();
   String status = detail.getStatus();
   int type = 0;
@@ -145,7 +137,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 			</td>
 <%
 	if (! ("bottom".equals(settings.getString("attachmentPosition") ) ) ) {
-	  if (infos != null) {
 %>
 			<td width="25%" valign="top" align="center">
 				<a NAME=attachments></a>
@@ -155,9 +146,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 			</td>
 <% 	
-	  } 
 	} else {
-	  if (infos != null) {
 %>	  
 		</tr>
 		
@@ -170,55 +159,14 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 			</td>
 <%
-		} 
-	} 
-%>
-		</tr>
-<%
-  } else {
-	if (infos != null) {
-%>      
-		<tr>
-      		<td align="center">
-<%       	
-	  if (model != null) {
-		displayViewInfoModel(out, model, infos, resources, publicationSettings, m_context);
-      }
-%>
-      		</td>
-<% 
-	  if (! ("bottom".equals(settings.getString("attachmentPosition") ) ) ) {
-%>	    
-			<td width="25%" valign="top" align="center">
-				<a NAME=attachments></a>
-<% 		
-		KmeliaDisplayHelper.displayUserAttachmentsView(detail, m_context, out,  kmeliaScc.getLanguage(), true, resources);
-%>
-			</td>
-<% 		
-	  } else {
-%>
-		</tr>
-	
-		<tr>
-			<td valign="top">
-        		<a NAME=attachments></a>
-<%        	
-        KmeliaDisplayHelper.displayUserAttachmentsView(detail, m_context, out, kmeliaScc.getLanguage(), false, resources);
-%>
-			</td>
-<%		
-	  }
-%>
-		</tr>
-<%	
 	}
   }
-%>		
+%>
+		</tr>	
 	</table>
 <%
   out.println(frame.printAfter());
   out.println(window.printAfter()); 
 %>
-</BODY>
-</HTML>
+</body>
+</html>
