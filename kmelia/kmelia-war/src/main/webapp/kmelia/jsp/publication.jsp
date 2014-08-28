@@ -38,7 +38,6 @@
 %>
 
 <%@ include file="checkKmelia.jsp" %>
-<%@ include file="modelUtils.jsp" %>
 <%@ include file="topicReport.jsp.inc" %>
 
 <%@page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
@@ -557,8 +556,6 @@
         }
         out.println(frame.printBefore());
 
-        InfoDetail infos = pubComplete.getInfoDetail();
-        ModelDetail model = pubComplete.getModelDetail();
         int type = 0;
         if (kmeliaScc.isVersionControlled()) {
           type = 1; // Versioning
@@ -816,9 +813,6 @@
 				        if (WysiwygController.haveGotWysiwygToDisplay(componentId, id, language)) {%>
                 <view:displayWysiwyg objectId="<%=id%>" componentId="<%=componentId%>" language="<%=language%>" axisId="<%=kmeliaScc.getAxisIdGlossary()%>" highlightFirst="<%=String.valueOf(highlightFirst)%>" />
                 <%
-                  } else if (infos != null && model != null) {
-                  displayViewInfoModel(out, model, infos, resources, publicationSettings, m_context);
-
 				        } else {
 				          Form xmlForm = (Form) request.getAttribute("XMLForm");
 				          DataRecord xmlData = (DataRecord) request.getAttribute("XMLData");

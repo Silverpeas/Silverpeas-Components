@@ -1,3 +1,4 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -28,7 +29,6 @@
 <%@ include file="checkKmelia.jsp" %>
 
 <%
-Collection 			dbForms		= (Collection) request.getAttribute("DBForms");
 List 				xmlForms	= (List) request.getAttribute("XMLForms");
 Collection			modelUsed	= (Collection) request.getAttribute("ModelUsed");
 
@@ -55,7 +55,7 @@ function closeWindows() {
 }
 </script>
 </head>
-<body onUnload="closeWindows()" id="<%=componentId%>">
+<body onunload="closeWindows()" id="<%=componentId%>">
 <%
     Window window = gef.getWindow();
     Frame frame = gef.getFrame();
@@ -77,35 +77,12 @@ function closeWindows() {
 <table cellpadding="5" width="100%" id="templates">
   <tr><td colspan="3" class="txtnav"><%=resources.getString("kmelia.ModelList")%></td></tr>
 <%
-    ModelDetail modelDetail;
     int nb = 0;
     out.println("<tr>");
-    Iterator iterator = dbForms.iterator();
-    while (iterator.hasNext()) {
-        modelDetail = (ModelDetail) iterator.next();
-        
-        if (nb != 0 && nb%3==0)
-	        out.println("</tr><tr>");
-	        
-        nb++;
-        // recherche si le mod�le est dans la liste
-        boolean used = false;
-        if (modelUsed.contains(modelDetail.getId()))
-        {
-        	used = true;
-        }
-    	String usedCheck = "";
-		if (used)
-			usedCheck = "checked";
-		
-        out.println("<td class=\"template\"><img src=\"../../util/icons/model/"+modelDetail.getImageName()+"\" border=\"0\" alt=\""+modelDetail.getDescription()+"\"/><br/>"+modelDetail.getName()+"<br/><input type=\"checkbox\" name=\"modelChoice\" value=\""+modelDetail.getId()+"\" "+usedCheck+"/></a></td>");
-    }
-    
-    if (xmlForms != null)
-    {
+    if (xmlForms != null) {
 	    PublicationTemplate xmlForm;
 	    String thumbnail = "";
-	    iterator = xmlForms.iterator();
+	    Iterator iterator = xmlForms.iterator();
 	    while (iterator.hasNext()) {
 	        xmlForm = (PublicationTemplate) iterator.next();
 	        
