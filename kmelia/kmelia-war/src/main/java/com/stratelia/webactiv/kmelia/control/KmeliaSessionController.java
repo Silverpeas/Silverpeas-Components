@@ -3044,7 +3044,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public String getAttachmentURL(String fileId) throws RemoteException {
     SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService().
         searchDocumentById(new SimpleDocumentPK(fileId), getLanguage());
-    return URLManager.getApplicationURL() + attachment.getLastPublicVersion().getAttachmentURL();
+    SimpleDocument version = attachment.getLastPublicVersion();
+    if (version == null) {
+      version = attachment.getVersionMaster();
+    }
+    return URLManager.getApplicationURL() + version.getAttachmentURL();
   }
 
   public boolean useUpdateChain() {

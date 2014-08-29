@@ -3137,10 +3137,14 @@ public class KmeliaBmEJB implements KmeliaBm {
         "root.MSG_GEN_ENTER_METHOD");
     final PublicationDetail pubDetail = getPublicationDetail(pubPK);
     final SimpleDocument document = AttachmentServiceFactory.getAttachmentService().
-        searchDocumentById(documentPk, null).getLastPublicVersion();
+        searchDocumentById(documentPk, null);
+    SimpleDocument version = document.getLastPublicVersion();
+    if (version == null) {
+      version = document.getVersionMaster();
+    }
     final NotificationMetaData notifMetaData = UserNotificationHelper
         .build(new KmeliaDocumentSubscriptionPublicationUserNotification(topicPK, pubDetail,
-        document, senderName));
+        version, senderName));
     SilverTrace.info("kmelia", "KmeliaBmEJB.getAlertNotificationMetaData(document)",
         "root.MSG_GEN_EXIT_METHOD");
     return notifMetaData;
