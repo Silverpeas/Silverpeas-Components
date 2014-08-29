@@ -212,7 +212,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   private String sessionTimeCriteria = null; // Specific Kmax
   private String sortValue = null;
   private String defaultSortValue = "2";
-  private String autoRedirectURL = null;
   private int rang = 0;
   private ResourceLocator publicationSettings = null;
   public final static String TAB_PREVIEW = "tabpreview";
@@ -497,6 +496,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public boolean isRightsOnTopicsEnabled() {
     return StringUtil.
         getBooleanValue(getComponentParameterValue(InstanceParameters.rightsOnFolders));
+  }
+  
+  private boolean isRightsOnTopicsEnabled(String componentId) {
+    return StringUtil.getBooleanValue(getOrganisationController().getComponentParameterValue(
+        componentId, InstanceParameters.rightsOnFolders));
   }
 
   public boolean isFoldersLinkedEnabled() {
@@ -2945,14 +2949,12 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         String instanceId = componentId;
 
         if (instanceId.startsWith("kmelia")) {
-          String[] profiles = getOrganisationController().getUserProfiles(getUserId(), instanceId);
-          String bestProfile = KmeliaHelper.getProfile(profiles);
-          if (SilverpeasRole.admin.isInRole(bestProfile) || SilverpeasRole.publisher.isInRole(
-              bestProfile) || instanceId.equals(getComponentId())) {
+          if (getKmeliaBm().isUserCanPublish(instanceId, getUserId()) ||
+              instanceId.equals(getComponentId())) {
             root.setComponentName(instanceId);
 
             if (instanceId.equals(getComponentId())) {
-              tree = getKmeliaBm().getTreeview(root, "useless", false, false, getUserId(),
+              tree = getKmeliaBm().getTreeview(root, null, false, false, getUserId(),
                   false, isRightsOnTopicsEnabled());
             }
 
@@ -2991,14 +2993,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public List<NodeDetail> getAliasTreeview(String instanceId) throws RemoteException {
-    String[] profiles = getOrganisationController().getUserProfiles(getUserId(), instanceId);
-    String bestProfile = KmeliaHelper.getProfile(profiles);
     List<NodeDetail> tree = null;
-    if ("admin".equalsIgnoreCase(bestProfile) || "publisher".equalsIgnoreCase(bestProfile)) {
+    if (getKmeliaBm().isUserCanPublish(instanceId, getUserId())) {
       NodePK root = new NodePK(NodePK.ROOT_NODE_ID, instanceId);
-
-      tree = getKmeliaBm().getTreeview(root, "useless", false, false, getUserId(), false,
-          isRightsOnTopicsEnabled());
+      tree = getKmeliaBm().getTreeview(root, null, false, false, getUserId(), false,
+          isRightsOnTopicsEnabled(instanceId));
     }
     return tree;
   }

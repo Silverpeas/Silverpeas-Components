@@ -780,13 +780,18 @@ public class KmeliaBmEJB implements KmeliaBm {
       boolean isRightsOnTopicsUsed) {
     String instanceId = nodePK.getInstanceId();
     List<NodeDetail> tree = nodeBm.getSubTree(nodePK);
+    
+    if (profile == null) {
+      profile = getProfile(userId, nodePK);
+    }
 
-    List<NodeDetail> allowedTree = new ArrayList<NodeDetail>();
     OrganisationController orga = getOrganisationController();
+    List<NodeDetail> allowedTree = new ArrayList<NodeDetail>();
     if (isRightsOnTopicsUsed) {
       // filter allowed nodes
       for (NodeDetail node2Check : tree) {
         if (!node2Check.haveRights()) {
+          node2Check.setUserRole(profile);
           allowedTree.add(node2Check);
           if (node2Check.getNodePK().isRoot()) {// case of root. Check if publications on root are
             // allowed
@@ -835,6 +840,11 @@ public class KmeliaBmEJB implements KmeliaBm {
         if (nbPublisOnRoot != 0) {
           NodeDetail root = tree.get(0);
           root.setUserRole("user");
+        }
+        for (NodeDetail node : tree) {
+          if (!node.getNodePK().isRoot()) {
+            node.setUserRole(profile);
+          }
         }
       }
       allowedTree.addAll(tree);
@@ -4740,47 +4750,33 @@ public class KmeliaBmEJB implements KmeliaBm {
     if (KmeliaHelper.isToolbox(componentId)) {
       return false;
     }
-
-    String profile = KmeliaHelper.getProfile(getUserRoles(componentId, userId));
-    boolean isPublisherOrAdmin = SilverpeasRole.admin.isInRole(profile) || SilverpeasRole.publisher
-        .isInRole(profile);
-
-    if (!isPublisherOrAdmin && isRightsOnTopicsEnabled(componentId)) {
-      // check if current user is publisher or admin on at least one descendant
-      Iterator<NodeDetail> descendants = nodeBm.getDescendantDetails(getRootPK(componentId))
-          .iterator();
-      while (!isPublisherOrAdmin && descendants.hasNext()) {
-        NodeDetail descendant = descendants.next();
-        AdminController admin = null;
-        if (descendant.haveLocalRights()) {
-          // check if user is admin or publisher on this topic
-          admin = new AdminController(userId);
-          String[] profiles = admin
-              .getProfilesByObjectAndUserId(descendant.getId(), ObjectType.NODE.getCode(),
-                  componentId, userId);
-          if (profiles != null && profiles.length > 0) {
-            List<String> lProfiles = Arrays.asList(profiles);
-            isPublisherOrAdmin = lProfiles.contains(SilverpeasRole.admin.name())
-                || lProfiles.contains(SilverpeasRole.publisher.name());
-          }
-        }
-      }
-    }
-    return isPublisherOrAdmin;
+    return isUserCanPublish(componentId, userId);
   }
 
   @Override
   public boolean isUserCanWrite(String componentId, String userId) {
-    String profile = KmeliaHelper.getProfile(getUserRoles(componentId, userId));
-    boolean userCanWrite = SilverpeasRole.admin.isInRole(profile) || SilverpeasRole.publisher
-        .isInRole(profile)
-        || SilverpeasRole.writer.isInRole(profile);
+    String[] grantedRoles =
+        new String[] { SilverpeasRole.admin.name(), SilverpeasRole.publisher.name(),
+            SilverpeasRole.writer.name() };
+    return checkUserRoles(componentId, userId, grantedRoles);
+  }
 
-    if (!userCanWrite && isRightsOnTopicsEnabled(componentId)) {
+  @Override
+  public boolean isUserCanPublish(String componentId, String userId) {
+    String[] grantedRoles =
+        new String[] { SilverpeasRole.admin.name(), SilverpeasRole.publisher.name() };
+    return checkUserRoles(componentId, userId, grantedRoles);
+  }
+  
+  private boolean checkUserRoles(String componentId, String userId, String... roles) {
+    SilverpeasRole userProfile = SilverpeasRole.from(KmeliaHelper.getProfile(getUserRoles(componentId, userId)));
+    boolean checked = userProfile.isInRole(roles);
+
+    if (!checked && isRightsOnTopicsEnabled(componentId)) {
       // check if current user is publisher or admin on at least one descendant
       Iterator<NodeDetail> descendants = nodeBm.getDescendantDetails(getRootPK(componentId))
           .iterator();
-      while (!userCanWrite && descendants.hasNext()) {
+      while (!checked && descendants.hasNext()) {
         NodeDetail descendant = descendants.next();
         AdminController admin = null;
         if (descendant.haveLocalRights()) {
@@ -4790,15 +4786,13 @@ public class KmeliaBmEJB implements KmeliaBm {
               .getProfilesByObjectAndUserId(descendant.getId(), ObjectType.NODE.getCode(),
                   componentId, userId);
           if (profiles != null && profiles.length > 0) {
-            List<String> lProfiles = Arrays.asList(profiles);
-            userCanWrite = lProfiles.contains(SilverpeasRole.admin.name())
-                || lProfiles.contains(SilverpeasRole.publisher.name())
-                || lProfiles.contains(SilverpeasRole.writer.name());
+            userProfile = SilverpeasRole.from(KmeliaHelper.getProfile(profiles));
+            checked = userProfile.isInRole(roles);
           }
         }
       }
     }
-    return userCanWrite;
+    return checked;
   }
 
   @Override
