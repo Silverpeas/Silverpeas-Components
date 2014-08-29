@@ -1389,6 +1389,12 @@ public class KmeliaBmEJB implements KmeliaBm {
         publicationBm.setDetail(pubDetail, forceUpdateDate);
       } else {
         PublicationDetail old = getPublicationDetail(pubDetail.getPK());
+        
+        if (StringUtil.isDefined(old.getTargetValidatorId()) &&
+            !StringUtil.isDefined(pubDetail.getTargetValidatorId())) {
+          // prevents to lose some data
+          pubDetail.setTargetValidatorId(old.getTargetValidatorId());
+        }
 
         boolean statusChanged = changePublicationStatusOnUpdate(pubDetail);
 
