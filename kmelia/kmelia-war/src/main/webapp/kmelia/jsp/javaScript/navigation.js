@@ -523,7 +523,7 @@ function storeTranslations(trans) {
     //display delete operation
     if ($("#deleteTranslation").length === 0) {
       var img = '<img src="' + getWebContext() + '/util/icons/delete.gif" title="' + getString('GML.translationRemove') + '" alt="' + getString('GML.translationRemove') + '"/>';
-      $("&nbsp;<a id=\"deleteTranslation\" href=\"javascript:document.getElementById('<%=I18NHelper.HTMLHiddenRemovedTranslationMode%>').value='true';document.topicForm.submit();\">" + img + "</a>").insertAfter(select);
+      $("<a id=\"deleteTranslation\" href=\"javascript:document.getElementById('TranslationRemoveIt').value='true';document.topicForm.submit();\">" + img + "</a>").insertAfter(select);
     }
   } else {
     //remove delete operation
