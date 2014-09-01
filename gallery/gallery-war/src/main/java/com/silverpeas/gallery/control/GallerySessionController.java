@@ -23,6 +23,9 @@ package com.silverpeas.gallery.control;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
+import com.silverpeas.export.ExportDescriptor;
+import com.silverpeas.export.ExportException;
+import com.silverpeas.export.ImportExportDescriptor;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.gallery.GalleryComponentSettings;
 import com.silverpeas.gallery.constant.MediaResolution;
@@ -34,6 +37,7 @@ import com.silverpeas.gallery.delegate.MediaDataCreateDelegate;
 import com.silverpeas.gallery.delegate.MediaDataUpdateDelegate;
 import com.silverpeas.gallery.model.*;
 import com.silverpeas.gallery.web.MediaSort;
+import com.silverpeas.importExport.report.ExportReport;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.EncodeHelper;
@@ -116,7 +120,8 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   // manage basket case (contains list of media identifier)
   private List<String> basket = new ArrayList<String>();
   static final Properties DEFAULT_SETTINGS = new Properties();
-  private static final String MULTILANG_GALLERY_BUNDLE = "com.silverpeas.gallery.multilang.galleryBundle";
+  private static final String MULTILANG_GALLERY_BUNDLE =
+      "com.silverpeas.gallery.multilang.galleryBundle";
 
   static {
     try {
@@ -1342,4 +1347,54 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     }
     throw new WebApplicationException(Response.Status.NOT_FOUND);
   }
+
+  /**
+   * Export all picture from an album with the given resolution
+   * @param albumId
+   */
+  public ExportReport exportAlbum(String albumId, MediaResolution mediaResolution)
+      throws ExportException {
+    ExportReport exportReport = new ExportReport();
+    if (StringUtil.isDefined(albumId)) {
+      // Create export folder then apply each picture from this folder
+      ImportExportDescriptor exportDesc =
+          new ExportDescriptor()
+              .withParameter(GalleryExporter.EXPORT_FOR_USER, getUserDetail()).
+              withParameter(GalleryExporter.EXPORT_ALBUM, getAlbum(albumId))
+              .withParameter(GalleryExporter.EXPORT_RESOLUTION, mediaResolution);
+      aGalleryExporter().exportAlbum(exportDesc, exportReport);
+    }
+    return exportReport;
+  }
+
+  /**
+   * Gets a new exporter of Kmelia publications.
+   * @return a KmeliaPublicationExporter instance.
+   */
+  public static GalleryExporter aGalleryExporter() {
+    return new GalleryExporter();
+  }
+
+  /**
+   * Export all picture from an album with the given resolution
+   * @param albumId
+   */
+  public ExportReport exportSelection(MediaResolution mediaResolution)
+      throws ExportException {
+    ExportReport exportReport = new ExportReport();
+    if (!basket.isEmpty()) {
+      // Create export folder then apply each picture from this folder
+      ImportExportDescriptor exportDesc =
+          new ExportDescriptor()
+              .withParameter(GalleryExporter.EXPORT_FOR_USER, getUserDetail())
+              .withParameter(GalleryExporter.EXPORT_RESOLUTION, mediaResolution);
+      List<Media> medias = new ArrayList<Media>();
+      for (String photoId : basket) {
+        medias.add(getMediaById(photoId));
+      }
+      aGalleryExporter().exportPhotos(exportDesc, medias, exportReport);
+    }
+    return exportReport;
+  }
+
 }

@@ -40,6 +40,7 @@ import com.silverpeas.gallery.model.MetaData;
 import com.silverpeas.gallery.model.Order;
 import com.silverpeas.gallery.model.OrderRow;
 import com.silverpeas.gallery.web.MediaSort;
+import com.silverpeas.importExport.report.ExportReport;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.peasUtil.AccessForbiddenException;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
@@ -61,6 +62,7 @@ import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
+
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.search.indexEngine.model.FieldDescription;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
@@ -68,6 +70,7 @@ import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.servlet.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -1109,7 +1112,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         gallerySC.loadCurrentAlbum();
         destination = getDestination("GoToCurrentAlbum", gallerySC, request);
       } else if (function.startsWith("Basket")) {
-        //Manage basket functions
+        // Manage basket functions
         if ("BasketView".equals(function)) {
           // Basket view
           request.setAttribute("MediaList", gallerySC.getBasketMedias());
@@ -1297,6 +1300,21 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
           request.setAttribute("Url", url);
           destination = rootDest + "download.jsp";
+        }
+      } else if (function.startsWith("Export")) {
+        if ("ExportAlbum".equals(function)) {
+          String albumId = request.getParameter("albumId");
+          String format = request.getParameter("format");
+          ExportReport exportRpt =
+              gallerySC.exportAlbum(albumId, MediaResolution.fromNameOrLabel(format));
+          request.setAttribute("ExportReport", exportRpt);
+          destination = rootDest +"downloadZip.jsp";
+        } else if ("ExportSelection".equals(function)) {
+          String format = request.getParameter("format");
+          ExportReport exportRpt =
+              gallerySC.exportSelection(MediaResolution.fromNameOrLabel(format));
+          request.setAttribute("ExportReport", exportRpt);
+          destination = rootDest +"downloadZip.jsp";
         }
       } else {
         destination = rootDest + function;
