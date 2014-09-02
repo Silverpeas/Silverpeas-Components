@@ -62,7 +62,8 @@
 <fmt:message key="gallery.cutAlbum" var="cutAlbumLabel"/>
 <fmt:message key="gallery.cut" var="cutAlbumIcon" bundle="${icons}"/>
 <c:url value="${cutAlbumIcon}" var="cutAlbumIcon"/>
-<fmt:message key="gallery.album.export" var="exportAlbumLabel"/>
+<fmt:message key="gallery.export.album" var="exportAlbumLabel"/>
+<fmt:message key="gallery.exported.album" var="exportedAlbumLabel"/>
 <fmt:message key="gallery.updateSelectedMedia" var="updateSelectedMediaLabel"/>
 <fmt:message key="gallery.updateSelectedMedia" var="updateSelectedMediaIcon" bundle="${icons}"/>
 <c:url value="${updateSelectedMediaIcon}" var="updateSelectedMediaIcon"/>
@@ -141,6 +142,7 @@
 <c:set var="isPrivateSearch" value="${requestScope.IsPrivateSearch}"/>
 <c:set var="isBasket" value="${requestScope.IsBasket}"/>
 <c:set var="isGuest" value="${requestScope.IsGuest}"/>
+<c:set var="isExportEnable" value="${requestScope.IsExportEnable}"/>
 
 <view:setConstant var="PREVIEW_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.PREVIEW"/>
 <view:setConstant var="ORIGINAL_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.ORIGINAL"/>
@@ -291,7 +293,7 @@ function exportAlbum() {
     minWidth: 350,
     buttons: {
       '<fmt:message key="GML.export"/>': function() {
-        $("#exportForm").submit();
+        callExport();
         $( this ).dialog( "close" );
       },
       '<fmt:message key="GML.cancel"/>': function() {
@@ -300,6 +302,31 @@ function exportAlbum() {
     }
   });
 }
+
+//make an ajax call here and then display a waiting message until we receive the asynchronous response
+function callExport() {
+  $.get("<c:url value='/Rgallery/${componentId}/ExportAlbum'/>", { albumId:'${currentAlbum.id}',format:$("input[name=format]:checked").val()},
+    function(data){
+      $.closeProgressMessage();
+      //alert('data = ' + data);
+      $("#album-export-result-dialog").html(data);
+      $("#album-export-result-dialog").dialog({
+        autoOpen: true,
+        title: "${exportedAlbumLabel}",
+        modal: true,
+        minWidth: 500,
+        buttons: {
+          '<fmt:message key="GML.close"/>': function() {
+            $("#album-export-result-dialog").html("");
+            $( this ).dialog( "close" );
+          }
+        }
+      });
+      $("#album-export-result-dialog").show();
+    }, 'text');
+  $.progressMessage();
+}
+
 
 function CopySelectedMedia() {
   var selectedPhotos = getMediaIds(true);
@@ -333,6 +360,9 @@ function CutSelectedMedia() {
   <c:if test="${greaterUserRole.isGreaterThanOrEquals(publisherRole)}">
     <%-- Actions on album --%>
     <view:operationOfCreation action="javaScript:openGalleryEditor()" altText="${addAlbumLabel}" icon="${addAlbumIcon}"/>
+    <c:if test="${isExportEnable}">
+      <view:operation action="javascript:onClick=exportAlbum()" altText="${exportAlbumLabel}" />
+    </c:if>
     <c:if test="${greaterUserRole eq adminRole or userId eq currentAlbum.creatorId}">
       <view:operation action="javaScript:openGalleryEditor(currentGallery)" altText="${updateAlbumLabel}" icon="${updateAlbumIcon}"/>
       <c:set var="tmpLabel"><c:out value="${currentAlbum.name}"/></c:set>
@@ -343,7 +373,6 @@ function CutSelectedMedia() {
     <c:if test="${greaterUserRole eq adminRole}">
       <view:operation action="javascript:onClick=clipboardCopy()" altText="${copyAlbumLabel}" icon="${copyAlbumIcon}"/>
       <view:operation action="javascript:onClick=clipboardCut()" altText="${cutAlbumLabel}" icon="${cutAlbumIcon}"/>
-      <view:operation action="javascript:onClick=exportAlbum()" altText="${exportAlbumLabel}" />
       <view:operationSeparator/>
     </c:if>
   </c:if>
@@ -373,7 +402,7 @@ function CutSelectedMedia() {
     <view:operationOfCreation action="${addStreamingAction}" altText="${addStreamingLabel}" icon="${addStreamingIcon}"/>
   </c:if>
   <%-- Basket for users --%>
-  <c:if test="${greaterUserRole eq userRole and isBasket}">
+  <c:if test="${greaterUserRole eq userRole and isBasket or isExportEnable}">
     <view:operationSeparator/>
     <view:operation action="javascript:onClick=sendToBasket()" altText="${addToBasketSelectedMediaLabel}" icon="${addToBasketSelectedMediaIcon}"/>
     <view:operation action="BasketView" altText="${viewBasketLabel}" icon="${viewBasketIcon}"/>
@@ -463,14 +492,14 @@ function CutSelectedMedia() {
 
 <div id="album-export-dialog" style="display: none;">
   <form id="exportForm" action="ExportAlbum" target="_blank">
-    <input type="hidden" name="albumId" value="${currentAlbum.id}"/>
-    <input type="hidden" name="ComponentId" value="${componentId}"/>
     <fieldset>
-      <legend>format d'exportation</legend>
-      <input type="radio" name="format" value="${ORIGINAL_RESOLUTION.label}" checked="checked" /><fmt:message key="gallery.album.export.format.original"/>
-      <input type="radio" name="format" value="${PREVIEW_RESOLUTION.label}" /><fmt:message key="gallery.album.export.format.preview"/>
+      <legend><fmt:message key="gallery.export.format" /></legend>
+      <input type="radio" name="format" value="${ORIGINAL_RESOLUTION.label}" checked="checked" /><fmt:message key="gallery.export.format.original"/>
+      <input type="radio" name="format" value="${PREVIEW_RESOLUTION.label}" /><fmt:message key="gallery.export.format.preview"/>
     </fieldset>
   </form>
+</div>
+<div id="album-export-result-dialog" style="display: none;">
 </div>
 
     <%@include file="albumManager.jsp" %>
@@ -484,5 +513,6 @@ function CutSelectedMedia() {
 <form name="favorite" action="" method="post">
   <input type="hidden" name="Id"/>
 </form>
+<view:progressMessage/>
 </body>
 </html>

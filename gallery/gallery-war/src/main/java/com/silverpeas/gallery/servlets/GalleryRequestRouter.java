@@ -136,6 +136,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
     request.setAttribute("greaterUserRole", highestUserRole);
     request.setAttribute("UserId", userId);
     request.setAttribute("IsGuest", gallerySC.isGuest());
+    request.setAttribute("IsExportEnable", gallerySC.isExportEnable());
     request.setAttribute("Sort", gallerySC.getSort());
 
     SilverTrace.debug("gallery", "GalleryRequestRouter.getDestination()",
@@ -1314,6 +1315,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           ExportReport exportRpt =
               gallerySC.exportSelection(MediaResolution.fromNameOrLabel(format));
           request.setAttribute("ExportReport", exportRpt);
+          gallerySC.clearBasket();
           destination = rootDest +"downloadZip.jsp";
         }
       } else {

@@ -49,6 +49,7 @@
 <c:set var="isBasket" value="${requestScope.IsBasket}"/>
 <c:set var="isOrder" value="${requestScope.IsOrder}"/>
 <c:set var="isGuest" value="${requestScope.IsGuest}"/>
+<c:set var="isExportEnable" value="${requestScope.IsExportEnable}" />
 
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
 <c:set var="albumList" value="${requestScope.Albums}"/>
@@ -198,7 +199,8 @@ function checkLuceneQuery(query) {
     <view:operation action="ViewNotVisible" altText="${viewNotVisibleLabel}" icon="${viewNotVisibleIcon}"/>
     <view:operationSeparator/>
   </c:if>
-  <c:if test="${greaterUserRole eq userRole and isBasket}">
+
+  <c:if test="${greaterUserRole eq userRole and isBasket or (greaterUserRole.isGreaterThanOrEquals(publisherRole) and isExportEnable)}">
     <view:operation action="BasketView" altText="${viewBasketLabel}" icon="${viewBasketIcon}"/>
   </c:if>
   <c:if test="${(greaterUserRole eq adminRole or greaterUserRole eq userRole) and isOrder}">

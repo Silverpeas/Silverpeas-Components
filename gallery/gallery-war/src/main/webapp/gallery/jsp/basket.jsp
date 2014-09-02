@@ -44,9 +44,15 @@
 <c:set var="instanceId" value="${requestScope.browseContext[3]}"/>
 <c:set var="medias" value="${requestScope.MediaList}" />
 <c:set var="userSelectionAlert" value="${requestScope.MediaTypeAlert}" />
+<c:set var="isExportEnable" value="${requestScope.IsExportEnable }" />
 
 <view:setConstant var="TINY_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.TINY"/>
 <view:setConstant var="MEDIUM_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.MEDIUM"/>
+<view:setConstant var="PREVIEW_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.PREVIEW"/>
+<view:setConstant var="ORIGINAL_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.ORIGINAL"/>
+
+<fmt:message key="gallery.export.basket" var="exportBasketLabel"/>
+<fmt:message key="gallery.exported.basket" var="exportedBasketLabel"/>
 
 <html>
 <head>
@@ -117,6 +123,49 @@ function deleteConfirm(id) {
 	}
 }
 
+function exportBasket() {
+  // Open jquery dialog with user export options
+  $("#basket-export-dialog").dialog({
+    autoOpen: true,
+    title: "${exportBasketLabel}",
+    modal: true,
+    minWidth: 350,
+    buttons: {
+      '<fmt:message key="GML.export"/>': function() {
+        callExport();
+        $( this ).dialog( "close" );
+      },
+      '<fmt:message key="GML.cancel"/>': function() {
+        $( this ).dialog( "close" );
+      }
+    }
+  });
+}
+
+//make an ajax call here and then display a waiting message until we receive the asynchronous response
+function callExport() {
+  $.get("<c:url value='/Rgallery/${instanceId}/ExportSelection'/>", {format:$("input[name=format]:checked").val()},
+    function(data){
+      $.closeProgressMessage();
+      //alert('data = ' + data);
+      $("#basket-export-result-dialog").html(data);
+      $("#basket-export-result-dialog").dialog({
+        autoOpen: true,
+        title: "${exportedBasketLabel}",
+        modal: true,
+        minWidth: 500,
+        buttons: {
+          '<fmt:message key="GML.close"/>': function() {
+            $("#basket-export-result-dialog").html("");
+            $( this ).dialog( "close" );
+          }
+        }
+      });
+      $("#basket-export-result-dialog").show();
+    }, 'text');
+  $.progressMessage();
+}
+
 $(document).ready(function() {
   <c:if test="${userSelectionAlert}">
   <fmt:message var="msgAlert" key="gallery.basket.media.type.alert"/>
@@ -131,12 +180,17 @@ $(document).ready(function() {
 <view:browseBar path="${basketLabel}" />
 <view:operationPane>
   <c:if test="${not empty medias}">
-    <c:if test="${requestScope.IsOrder}">
-      <fmt:message var="addOrderLabel" key="gallery.addOrder" />
-      <fmt:message var="addOrderIcon" key="gallery.AddOrder" bundle="${icons}" />
-      <c:url var="addOrderIcon" value="${addOrderIcon}" />
-      <view:operation altText="${addOrderLabel}" action="OrderAdd" icon="${addOrderIcon}" />
-    </c:if>
+    <c:choose>
+      <c:when test="${isExportEnable}">
+        <view:operation action="javascript:onClick=exportBasket()" altText="${exportBasketLabel}" />
+      </c:when>
+      <c:when test="${requestScope.IsOrder}">
+        <fmt:message var="addOrderLabel" key="gallery.addOrder" />
+        <fmt:message var="addOrderIcon" key="gallery.AddOrder" bundle="${icons}" />
+        <c:url var="addOrderIcon" value="${addOrderIcon}" />
+        <view:operation altText="${addOrderLabel}" action="OrderAdd" icon="${addOrderIcon}" />
+      </c:when>
+    </c:choose>
     <fmt:message var="deleteSelectedLabel" key="gallery.deleteSelectedMedia" />
     <fmt:message var="deleteSelectedIcon" key="gallery.deleteSelectedMedia" bundle="${icons}" />
     <c:url var="deleteSelectedIcon" value="${deleteSelectedIcon}" />
@@ -198,6 +252,19 @@ $(document).ready(function() {
 
 </form>
 
+<div id="basket-export-dialog" style="display: none;">
+  <form id="exportForm" action="ExportSelection" target="_blank">
+    <fieldset>
+      <legend><fmt:message key="gallery.export.format" /></legend>
+      <input type="radio" name="format" value="${ORIGINAL_RESOLUTION.label}" checked="checked" /><fmt:message key="gallery.export.format.original"/>
+      <input type="radio" name="format" value="${PREVIEW_RESOLUTION.label}" /><fmt:message key="gallery.export.format.preview"/>
+    </fieldset>
+  </form>
+</div>
+
+<div id="basket-export-result-dialog" style="display: none;">
+</div>
+
 <form name="mediaFormDelete" action="" method="POST">
   <input type="hidden" name="MediaId">
   <input type="hidden" name="Name">
@@ -210,6 +277,6 @@ $(document).ready(function() {
 
 </view:frame>
 </view:window>
-
+<view:progressMessage/>
 </body>
 </html>

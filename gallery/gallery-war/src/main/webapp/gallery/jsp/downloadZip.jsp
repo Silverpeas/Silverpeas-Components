@@ -39,55 +39,31 @@
   ExportReport report = (ExportReport) request.getAttribute("ExportReport");
 %>
 <c:set var="report" value="${requestScope.ExportReport}" />
-<html>
-<head>
-  <title>ZIP export</title>
-  <view:looknfeel/>
-</head>
-<body>
 <fmt:setLocale value="${sessionScope[sessionController].language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <fmt:message var="browseBarExport" key="GML.export.result"/>
 <fmt:message var="closeButton" key="GML.close"/>
-<view:browseBar>
-  <view:browseBarElt link="" label="${browseBarExport}"/>
-</view:browseBar>
-<view:window>
-  <view:frame>
-    <view:board>
-      <c:choose>
-        <c:when test="${ExportReport.error != null}">
-          <c:forEach var="element" items="${ExportReport.error.stackTrace}" >
-            <c:out value="${element}"  /> <br/>
-          </c:forEach>
-        </c:when>
-        <c:otherwise>
-          <table>
-          	<tr>
-              <td class="txtlibform"><fmt:message key="GML.export.file"/> :</td>
-              <td><a href="${ExportReport.zipFilePath}">${ExportReport.zipFileName}</a>
-              <a href="${ExportReport.zipFilePath}"><img src="<%=FileRepositoryManager.getFileIcon("zip")%>" border="0" align="absmiddle" alt="${ExportReport.zipFileName}"/></a></td>
-            </tr>
-            <tr>
-              <td class="txtlibform"><fmt:message key="GML.export.fileSize"/> :</td>
-              <td><%=FileRepositoryManager.formatFileSize(report.getZipFileSize())%></td>
-            </tr>
-            <tr>
-              <td class="txtlibform"><fmt:message key="GML.export.duration"/> :</td>
-              <td><%=DateUtil.formatDuration(report.getDuration())%></td>
-            </tr>
-          </table>
-        </c:otherwise>
-      </c:choose>
-    </view:board>
-    <br/>
-    <center>
-      <view:buttonPane>
-        <view:button label="${closeButton}" action="javaScript:window.close();"/>
-      </view:buttonPane>
-    </center>
-    <br/>
-  </view:frame>
-</view:window>
-</body>
-</html>
+<c:choose>
+  <c:when test="${ExportReport.error != null}">
+    <c:forEach var="element" items="${ExportReport.error.stackTrace}" >
+      <c:out value="${element}"  /> <br/>
+    </c:forEach>
+  </c:when>
+  <c:otherwise>
+    <table>
+    	<tr>
+        <td class="txtlibform"><fmt:message key="GML.export.file"/> :</td>
+        <td><a href="${ExportReport.zipFilePath}">${ExportReport.zipFileName}</a>
+        <a href="${ExportReport.zipFilePath}"><img src="<%=FileRepositoryManager.getFileIcon("zip")%>" border="0" align="absmiddle" alt="${ExportReport.zipFileName}"/></a></td>
+      </tr>
+      <tr>
+        <td class="txtlibform"><fmt:message key="GML.export.fileSize"/> :</td>
+        <td><%=FileRepositoryManager.formatFileSize(report.getZipFileSize())%></td>
+      </tr>
+      <tr>
+        <td class="txtlibform"><fmt:message key="GML.export.duration"/> :</td>
+        <td><%=DateUtil.formatDuration(report.getDuration())%></td>
+      </tr>
+    </table>
+  </c:otherwise>
+</c:choose>

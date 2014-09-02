@@ -94,7 +94,7 @@ public class GalleryExporter extends AbstractExportProcess {
   }
 
   /**
-   * Copy media of the given resolution inside given directory
+   * Copy media of the given resolution inside temporary given directory
    * @param medias the list of medias to export
    * @param tempExportDir the temporary exported directory
    * @param mediaResolution the exported media resolution

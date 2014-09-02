@@ -20,6 +20,25 @@
  */
 package com.silverpeas.gallery.control;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
+
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.search.indexEngine.model.FieldDescription;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
+import org.silverpeas.util.NotifierUtil;
+
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
@@ -35,7 +54,16 @@ import com.silverpeas.gallery.control.ejb.MediaServiceFactory;
 import com.silverpeas.gallery.delegate.GalleryPasteDelegate;
 import com.silverpeas.gallery.delegate.MediaDataCreateDelegate;
 import com.silverpeas.gallery.delegate.MediaDataUpdateDelegate;
-import com.silverpeas.gallery.model.*;
+import com.silverpeas.gallery.model.AlbumDetail;
+import com.silverpeas.gallery.model.GalleryRuntimeException;
+import com.silverpeas.gallery.model.InternalMedia;
+import com.silverpeas.gallery.model.Media;
+import com.silverpeas.gallery.model.MediaPK;
+import com.silverpeas.gallery.model.MediaSelection;
+import com.silverpeas.gallery.model.MetaData;
+import com.silverpeas.gallery.model.Order;
+import com.silverpeas.gallery.model.OrderRow;
+import com.silverpeas.gallery.web.ExportOptionValue;
 import com.silverpeas.gallery.web.MediaSort;
 import com.silverpeas.importExport.report.ExportReport;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
@@ -70,28 +98,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.node.model.NodeSelection;
-
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.search.indexEngine.model.FieldDescription;
-import org.silverpeas.search.searchEngine.model.QueryDescription;
-import org.silverpeas.util.NotifierUtil;
-
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
-import static com.silverpeas.gallery.model.MediaCriteria.QUERY_ORDER_BY.*;
 
 public final class GallerySessionController extends AbstractComponentSessionController {
 
@@ -1214,7 +1220,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   }
 
   public Boolean isBasket() {
-    return !isGuest() && StringUtil.getBooleanValue(getComponentParameterValue("basket"));
+    return isOrder();
   }
 
   public Boolean isGuest() {
@@ -1227,6 +1233,16 @@ public final class GallerySessionController extends AbstractComponentSessionCont
 
   public boolean isViewNotVisible() {
     return isViewNotVisible;
+  }
+
+  public boolean isExportEnable() {
+    String exportParam = getComponentParameterValue("exportImages");
+    if (ExportOptionValue.YES_ALL.name().equalsIgnoreCase(exportParam) ||
+        (ExportOptionValue.YES_PUBLISHER.name().equalsIgnoreCase(exportParam) &&
+        getHighestSilverpeasUserRole().isGreaterThanOrEquals(SilverpeasRole.publisher))) {
+      return true;
+    }
+    return false;
   }
 
   public void setViewNotVisible(boolean isViewNotVisible) {
@@ -1351,6 +1367,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   /**
    * Export all picture from an album with the given resolution
    * @param albumId
+   * @param mediaResolution
    */
   public ExportReport exportAlbum(String albumId, MediaResolution mediaResolution)
       throws ExportException {
@@ -1376,8 +1393,8 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   }
 
   /**
-   * Export all picture from an album with the given resolution
-   * @param albumId
+   * Export all selected images from basket with the given resolution
+   * @param mediaResolution
    */
   public ExportReport exportSelection(MediaResolution mediaResolution)
       throws ExportException {

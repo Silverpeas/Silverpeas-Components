@@ -420,11 +420,11 @@
       </help>
     </parameter>
     <parameter>
-      <name>basket</name>
+      <name>order</name>
       <label>
-        <message lang="fr">Panier</message>
-        <message lang="en">Basket</message>
-        <message lang="de">Korb</message>
+        <message lang="fr">Demandes de photos</message>
+        <message lang="en">Ask for photos</message>
+        <message lang="de">Fordern Sie ein Bildes</message>
       </label>
       <order>17</order>
       <mandatory>false</mandatory>
@@ -432,26 +432,8 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Si ce paramètre est activé, les lecteurs auront la possibilité de mettre des images dans leur panier</message>
-        <message lang="en">Readers can put images into their basket.</message>
-        <message lang="de">Leser können ihre Bilder in den Warenkorb legen.</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>order</name>
-      <label>
-        <message lang="fr">Demandes de photos</message>
-        <message lang="en">Ask for photos</message>
-        <message lang="de">Fordern Sie ein Bildes</message>
-      </label>
-      <order>18</order>
-      <mandatory>false</mandatory>
-      <value>no</value>
-      <type>checkbox</type>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Si ce paramètre est activé, les lecteurs auront la possibilité de faire des demandes de photos</message>
-        <message lang="en">Readers can ask for HD images</message>
+        <message lang="fr">Si ce paramètre est activé, les lecteurs auront la possibilité de faire des demandes de photos depuis le panier.</message>
+        <message lang="en">Readers can ask for HD images from basket</message>
         <message lang="de">Leser können das HD-Bildes anfordern</message>
       </help>
     </parameter>
@@ -462,7 +444,7 @@
         <message lang="en">Form to ask for images</message>
         <message lang="de">Formular für Bilder anforderung</message>
       </label>
-      <order>19</order>
+      <order>18</order>
       <mandatory>false</mandatory>
       <value/>
       <type>xmltemplates</type>
@@ -480,7 +462,7 @@
         <message lang="en">URL of the usage policy</message>
         <message lang="de">URL der Charta</message>
       </label>
-      <order>20</order>
+      <order>19</order>
       <mandatory>false</mandatory>
       <value/>
       <type>text</type>
@@ -490,6 +472,50 @@
         <message lang="fr">URL de la charte associée aux demandes de photos</message>
         <message lang="en">URL of the usage policy defining the images usage</message>
         <message lang="de">URL der an den Anforderung der Bilder gebundenen Charta</message>
+      </help>
+    </parameter>
+    <parameter>
+      <name>exportImages</name>
+      <label>
+        <message lang="fr">Export des images</message>
+        <message lang="en">Export images</message>
+        <message lang="de">Export images</message>
+      </label>
+      <order>20</order>
+      <mandatory>true</mandatory>
+      <value>no</value>
+      <options>
+        <option>
+          <name>
+            <message lang="fr">Oui, pour tout le monde</message>
+            <message lang="en">Yes, every users</message>
+            <message lang="de">Yes, every users</message>
+          </name>
+          <value>yes_all</value>
+        </option>
+        <option>
+          <name>
+            <message lang="fr">Oui, pour gestionnaire et publieur uniquement</message>
+            <message lang="en">Yes, only for administrators and publishers</message>
+            <message lang="de">Yes, only for administrators and publishers</message>
+          </name>
+          <value>yes_publisher</value>
+        </option>
+        <option>
+          <name>
+            <message lang="fr">Non</message>
+            <message lang="en">No</message>
+            <message lang="de">nein</message>
+          </name>
+          <value>no</value>
+        </option>
+      </options>
+      <type>select</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Si ce paramètre est activé, les utilisateurs auront la possibilité d'exporter les images d'un album ou du panier</message>
+        <message lang="en">Users can export images from an album or from their basket</message>
+        <message lang="de">Users can export images from an album or from their basket</message>
       </help>
     </parameter>
   </parameters>
