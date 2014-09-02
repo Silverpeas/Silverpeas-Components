@@ -56,8 +56,10 @@ $(document).ready(function() {
         text : "<img src='" + $(this).attr("tipUrl") + "' id='tipUrl_" + $(this).attr("id") + "' />"
       },
       position : {
+        my : 'right middle',
+        at : 'left middle',
         adjust : {
-          method : "flip"
+          method : "flipinvert"
         },
         viewport : $(window)
       }
