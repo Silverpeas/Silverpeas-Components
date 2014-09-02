@@ -1372,7 +1372,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   public ExportReport exportAlbum(String albumId, MediaResolution mediaResolution)
       throws ExportException {
     ExportReport exportReport = new ExportReport();
-    if (StringUtil.isDefined(albumId)) {
+    if (isExportEnable() && StringUtil.isDefined(albumId)) {
       // Create export folder then apply each picture from this folder
       ImportExportDescriptor exportDesc =
           new ExportDescriptor()
@@ -1399,7 +1399,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   public ExportReport exportSelection(MediaResolution mediaResolution)
       throws ExportException {
     ExportReport exportReport = new ExportReport();
-    if (!basket.isEmpty()) {
+    if (isExportEnable() && !basket.isEmpty()) {
       // Create export folder then apply each picture from this folder
       ImportExportDescriptor exportDesc =
           new ExportDescriptor()

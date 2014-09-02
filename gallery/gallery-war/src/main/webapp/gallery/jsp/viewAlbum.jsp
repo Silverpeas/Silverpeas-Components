@@ -360,9 +360,6 @@ function CutSelectedMedia() {
   <c:if test="${greaterUserRole.isGreaterThanOrEquals(publisherRole)}">
     <%-- Actions on album --%>
     <view:operationOfCreation action="javaScript:openGalleryEditor()" altText="${addAlbumLabel}" icon="${addAlbumIcon}"/>
-    <c:if test="${isExportEnable}">
-      <view:operation action="javascript:onClick=exportAlbum()" altText="${exportAlbumLabel}" />
-    </c:if>
     <c:if test="${greaterUserRole eq adminRole or userId eq currentAlbum.creatorId}">
       <view:operation action="javaScript:openGalleryEditor(currentGallery)" altText="${updateAlbumLabel}" icon="${updateAlbumIcon}"/>
       <c:set var="tmpLabel"><c:out value="${currentAlbum.name}"/></c:set>
@@ -373,6 +370,10 @@ function CutSelectedMedia() {
     <c:if test="${greaterUserRole eq adminRole}">
       <view:operation action="javascript:onClick=clipboardCopy()" altText="${copyAlbumLabel}" icon="${copyAlbumIcon}"/>
       <view:operation action="javascript:onClick=clipboardCut()" altText="${cutAlbumLabel}" icon="${cutAlbumIcon}"/>
+      <view:operationSeparator/>
+    </c:if>
+    <c:if test="${isExportEnable}">
+      <view:operation action="javascript:onClick=exportAlbum()" altText="${exportAlbumLabel}" />
       <view:operationSeparator/>
     </c:if>
   </c:if>
