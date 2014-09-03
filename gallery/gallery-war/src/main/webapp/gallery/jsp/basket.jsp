@@ -227,7 +227,7 @@ $(document).ready(function() {
       <view:arrayLine>
         <c:set var="mediaTitle"><view:encodeHtml string="${media.title}"/></c:set>
         <c:set var="photoCellText">
-          <a class="imagePreview" href="MediaView?MediaId=${media.id}" tipTitle="${mediaTitle}" tipUrl="${media.getApplicationThumbnailUrl(MEDIUM_RESOLUTION)}">
+          <a class="imagePreview" href="MediaView?MediaId=${media.id}" tipTitle="${mediaTitle}" tipUrl="${media.getApplicationThumbnailUrl(PREVIEW_RESOLUTION)}">
             <img src="${media.getApplicationThumbnailUrl(TINY_RESOLUTION)}" alt="${mediaTitle}" />
           </a>
         </c:set>

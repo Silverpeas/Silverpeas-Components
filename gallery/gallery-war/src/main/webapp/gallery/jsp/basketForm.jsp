@@ -24,12 +24,22 @@
 
 --%>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp"%>
+
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
+
+<%-- Set resource bundle --%>
+<c:set var="language" value="${requestScope.resources.language}"/>
+<fmt:setLocale value="${language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
 <%
 Form 			formUpdate 		= (Form) request.getAttribute("Form");
-DataRecord 		data 			= (DataRecord) request.getAttribute("Data"); 
+DataRecord 		data 			= (DataRecord) request.getAttribute("Data");
 Collection		path 			= (Collection) request.getAttribute("Path");
 
 String 			charteUrl		= (String) request.getAttribute("CharteUrl");
@@ -38,10 +48,10 @@ PagesContext 	context 		= new PagesContext("myForm", "0", resource.getLanguage()
 context.setBorderPrinted(false);
 
 %>
-<HTML>
-<HEAD>
+<html>
+<head>
 <view:looknfeel/>
-<% 
+<%
 if (formUpdate != null) {
 	formUpdate.displayScripts(out, context);
 }
@@ -63,42 +73,42 @@ function checkAcceptation() {
 		var errorMsg = "<%=resource.getString("gallery.mesValidCharte")%>";
 		window.alert(errorMsg);
 	} else {
+	  $.progressMessage();
 		document.myForm.submit();
 	}
 }
 </script>
-</HEAD>
-<BODY>
+</head>
+<body>
 <%
-    Board board = gef.getBoard();
-    
-    browseBar.setDomainName(spaceLabel);
-    browseBar.setComponentName(componentLabel, "Main");
-    displayPath(path, browseBar);
+  Board board = gef.getBoard();
+
+  browseBar.setDomainName(spaceLabel);
+  browseBar.setComponentName(componentLabel, "Main");
+  displayPath(path, browseBar);
 
 	Button cancelButton = (Button) gef.getFormButton(resource.getString("GML.cancel"), "BasketView", false);
 	Button validateButton = (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK();", false);
-	
-    out.println(window.printBefore());
-    out.println(frame.printBefore());
-    out.println(board.printBefore());
-    
+
+  out.println(window.printBefore());
+  out.println(frame.printBefore());
+  out.println(board.printBefore());
 %>
-<FORM NAME="myForm" METHOD="POST" ACTION="OrderCreate"
-	ENCTYPE="multipart/form-data" accept-charset="UTF-8">
-<% 
+<form name="myForm" method="post" action="OrderCreate" enctype="multipart/form-data" accept-charset="UTF-8">
+<%
 	if (formUpdate != null) {
 		formUpdate.display(out, context, data);
 	}
-	
+
 	if (StringUtil.isDefined(charteUrl)) {
-		  %> <!--  ajout de la zone de la charte --> 
+		  %>
+      <%-- Add charter --%>
 		  <iframe src="<%=charteUrl%>" height="200" width="600" scrolling="auto"></iframe>
 			<br />
 			<table>
 				<tr>
 					<td><input type="checkbox" name="CheckCharte" /></td>
-					<td><b><%=resource.getString("gallery.validCharte")%></b></td>
+					<td><b><fmt:message key="gallery.validCharte"/></b></td>
 				</tr>
 			</table>
 	<% } %>
@@ -108,15 +118,16 @@ function checkAcceptation() {
 	  out.println("<center>" + resource.getString("gallery.validOrder")+ "</center>");
 	}
 	out.println(board.printAfter());
-	
+
 	ButtonPane buttonPane = gef.getButtonPane();
 	buttonPane.addButton(validateButton);
 	buttonPane.addButton(cancelButton);
-	
+
 	out.println("<br/><center>"+buttonPane.print()+"</center>");
-	
+
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+<view:progressMessage />
+</body>
+</html>
