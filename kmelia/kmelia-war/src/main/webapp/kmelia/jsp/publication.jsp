@@ -496,7 +496,7 @@
             if (kmeliaScc.isDraftEnabled() && !pubDetail.haveGotClone()) {
               if (pubDetail.isDraft()) {
                 operationPane.addOperation(pubDraftOutSrc, resources.getString("PubDraftOut"), "javascript:pubDraftOut()");
-              } else if (pubDetail.isValid()) {
+              } else if (pubDetail.isRefused() || pubDetail.isValid()) {
                 operationPane.addOperation(pubDraftInSrc, resources.getString("PubDraftIn"), "javascript:pubDraftIn()");
               }
             }
