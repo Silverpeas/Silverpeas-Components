@@ -300,6 +300,9 @@ function deleteImage(idImage)
 
 function choixImageInGallery(url)
 {
+
+  deleteImage(currentAnswer);
+	
   var newLink = document.createElement("img");
   newLink.setAttribute("src", url);
   newLink.setAttribute("height", "40px");
@@ -633,7 +636,7 @@ function insertHTMLAnswer(answerId) {
             <input type="hidden" id="valueImageGallery1" name="valueImageGallery1" />
             <c:set var="gallery" value="${requestScope['Gallery']}" />
             <c:if test="${not empty(gallery)}">
-              <select id="galleries" name="galleries" onchange="javascript:choixGallery(this, '0');this.selectedIndex=0;">
+              <select id="galleries" name="galleries" onchange="javascript:choixGallery(this, '1');this.selectedIndex=0;">
                 <option selected><fmt:message key="survey.galleries" /></option>
               <c:forEach var="curGal" items="${gallery}" varStatus="galIndex">
                  <option value="<c:out value="${curGal.id}"/>"><c:out value="${curGal.label}"/></option> 
