@@ -86,18 +86,11 @@ if (channel.getDisplayImage() == 1)
 	}
 </script>
 </head>
-<body bgcolor="#ffffff">
+<body>
+<view:window popup="true">
+<view:frame>
+<view:board>
 <form name="channel" action="UpdateChannel" method="post">
-<%
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel);
-	
-	Board board = gef.getBoard();
-	
-	out.println(window.printBefore());
-	out.println(frame.printBefore());
-	out.println(board.printBefore());
-%>
 <input type="hidden" name="Id" value="<%=channel.getPK().getId()%>"/>
 <table width="100%" border="0" cellspacing="0" cellpadding="4">
 	<tr>
@@ -120,20 +113,18 @@ if (channel.getDisplayImage() == 1)
         <td colspan="2" valign="top">( <img src="<%=resource.getIcon("rss.mandatoryField")%>" width=5 align="absmiddle"/>&nbsp;: <%=resource.getString("GML.requiredField")%> )</td>
   </tr>
 </table>
+</form>
+</view:board>
 <%	 
-	out.println(board.printAfter()+"<br/>");
-	
 	ButtonPane buttonPane = gef.getButtonPane();
-    buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:sendData()", false));
-	buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.close"), "javascript:window.close()", false));
+    buttonPane.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:sendData()", false));
+	buttonPane.addButton(gef.getFormButton(resource.getString("GML.close"), "javascript:window.close()", false));
 
 	out.println("<center>");
     out.println(buttonPane.print());
 	out.println("</center>");
-	
-	out.println(frame.printAfter());
-	out.println(window.printAfter());
 %>
-</form>
+</view:frame>
+</view:window>
 </body>
 </html>

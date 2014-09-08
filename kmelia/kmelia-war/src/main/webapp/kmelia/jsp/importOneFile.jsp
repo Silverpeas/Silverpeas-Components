@@ -64,16 +64,9 @@ function validateForm() {
 </script>
 </head>
 <body>
-<%
-  Window window = gef.getWindow();
-  BrowseBar browseBar = window.getBrowseBar();
-  browseBar.setPath(resources.getString("kmelia.ImportFile"));
-
-  Frame frame = gef.getFrame();
-
-  out.println(window.printBefore());
-  out.println(frame.printBefore());
-%>
+<view:browseBar path='<%=kmeliaScc.getString("kmelia.ImportFile")%>'/>
+<view:window popup="true">
+<view:frame>
 <view:board>
 <form name="frm_import" action="ImportFileUpload" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
 		<input type="hidden" name="topicId" value="<%=topicId%>"/>
@@ -113,12 +106,9 @@ function validateForm() {
     buttonPane.addButton(cancelButton);
     out.println(buttonPane.print());
 %>
-<br/>
-<%
-	out.println(frame.printAfter());
-	out.println(window.printAfter());
-%>
 </div>
+</view:frame>
+</view:window>
 <view:progressMessage/>
 </body>
 </html>

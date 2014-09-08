@@ -23,31 +23,20 @@
  */
 package com.silverpeas.gallery.process;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.Date;
-
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.process.util.ProcessList;
-
-import com.silverpeas.gallery.ImageType;
+import com.silverpeas.gallery.constant.MediaMimeType;
 import com.silverpeas.gallery.control.ejb.GalleryBm;
-import com.silverpeas.gallery.delegate.PhotoDataCreateDelegate;
-import com.silverpeas.gallery.delegate.PhotoDataUpdateDelegate;
+import com.silverpeas.gallery.delegate.MediaDataCreateDelegate;
+import com.silverpeas.gallery.delegate.MediaDataUpdateDelegate;
 import com.silverpeas.gallery.model.AlbumDetail;
 import com.silverpeas.gallery.model.GalleryRuntimeException;
-import com.silverpeas.gallery.model.PhotoDetail;
-import com.silverpeas.gallery.model.PhotoPK;
-import com.silverpeas.gallery.process.photo.GalleryCreatePhotoDataProcess;
-import com.silverpeas.gallery.process.photo.GalleryCreatePhotoFileProcess;
-import com.silverpeas.gallery.process.photo.GalleryDeindexPhotoDataProcess;
-import com.silverpeas.gallery.process.photo.GalleryDeletePhotoDataProcess;
-import com.silverpeas.gallery.process.photo.GalleryDeletePhotoFileProcess;
-import com.silverpeas.gallery.process.photo.GalleryIndexPhotoDataProcess;
-import com.silverpeas.gallery.process.photo.GalleryPastePhotoDataProcess;
-import com.silverpeas.gallery.process.photo.GalleryPastePhotoFileProcess;
-import com.silverpeas.gallery.process.photo.GalleryUpdatePhotoDataProcess;
-import com.silverpeas.gallery.process.photo.GalleryUpdatePhotoFileProcess;
+import com.silverpeas.gallery.model.Media;
+import com.silverpeas.gallery.model.MediaCriteria;
+import com.silverpeas.gallery.model.MediaPK;
+import com.silverpeas.gallery.model.Photo;
+import com.silverpeas.gallery.model.Sound;
+import com.silverpeas.gallery.model.Video;
+import com.silverpeas.gallery.process.media.*;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -56,6 +45,12 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.process.util.ProcessList;
+
+import java.io.File;
+import java.util.Collection;
+import java.util.Date;
 
 /**
  * @author Yohann Chastagnier
@@ -89,12 +84,12 @@ public class GalleryProcessManagement {
   }
 
   /*
-   * Photo
+   * Media
    */
 
   /**
-   * Adds processes to create the given photo
-   * @param photo
+   * Adds processes to create the given media
+   * @param media
    * @param albumId
    * @param file
    * @param watermark
@@ -102,60 +97,70 @@ public class GalleryProcessManagement {
    * @param watermarkOther
    * @param delegate
    */
-  public void addCreatePhotoProcesses(final PhotoDetail photo, final String albumId,
-      final Object file, final boolean watermark, final String watermarkHD,
-      final String watermarkOther, final PhotoDataCreateDelegate delegate) {
-    processList.add(GalleryCreatePhotoDataProcess.getInstance(photo, albumId, delegate));
-    processList.add(GalleryCreatePhotoFileProcess.getInstance(photo, file, watermark, watermarkHD,
-        watermarkOther));
-    processList.add(GalleryUpdatePhotoDataProcess.getInstance(photo));
-    processList.add(GalleryIndexPhotoDataProcess.getInstance(photo));
+  public void addCreateMediaProcesses(final Media media, final String albumId, final Object file,
+      final boolean watermark, final String watermarkHD, final String watermarkOther,
+      final MediaDataCreateDelegate delegate) {
+    processList.add(GalleryCreateMediaDataProcess.getInstance(media, albumId, delegate));
+    processList.add(GalleryCreateMediaFileProcess
+        .getInstance(media, file, watermark, watermarkHD, watermarkOther));
+    processList.add(GalleryUpdateMediaDataProcess.getInstance(media));
+    processList.add(GalleryIndexMediaDataProcess.getInstance(media));
   }
 
   /**
-   * Adds processes to update the given photo
-   * @param photo
+   * Adds processes to update the given media
+   * @param media
    * @param watermark
    * @param watermarkHD
    * @param watermarkOther
    * @param delegate
    */
-  public void addUpdatePhotoProcesses(final PhotoDetail photo, final boolean watermark,
-      final String watermarkHD, final String watermarkOther, final PhotoDataUpdateDelegate delegate) {
-    processList.add(GalleryUpdatePhotoDataProcess.getInstance(photo, delegate));
+  public void addUpdateMediaProcesses(final Media media, final boolean watermark,
+      final String watermarkHD, final String watermarkOther,
+      final MediaDataUpdateDelegate delegate) {
+    processList.add(GalleryUpdateMediaDataProcess.getInstance(media, delegate));
     final FileItem fileItem = delegate.getFileItem();
-    if (fileItem != null) {
-      processList.add(GalleryUpdatePhotoFileProcess.getInstance(photo, fileItem, watermark,
-          watermarkHD, watermarkOther));
+    if (fileItem != null && StringUtil.isDefined(fileItem.getName())) {
+      processList.add(GalleryUpdateMediaFileProcess
+          .getInstance(media, fileItem, watermark, watermarkHD, watermarkOther));
+      processList.add(GalleryUpdateMediaDataProcess.getInstance(media));
     }
-    processList.add(GalleryIndexPhotoDataProcess.getInstance(photo));
+    processList.add(GalleryIndexMediaDataProcess.getInstance(media));
   }
 
   /**
-   * Adds processes to delete the given photo
-   * @param photo
+   * Adds processes to index the given media
+   * @param media
    */
-  public void addDeletePhotoProcesses(final PhotoDetail photo) {
-    processList.add(GalleryDeletePhotoDataProcess.getInstance(photo));
-    processList.add(GalleryDeletePhotoFileProcess.getInstance(photo));
-    processList.add(GalleryDeindexPhotoDataProcess.getInstance(photo));
+  public void addIndexMediaProcesses(final Media media) {
+    processList.add(GalleryIndexMediaDataProcess.getInstance(media));
   }
 
   /**
-   * Adds processes to paste the given photo to the given album
-   * @param photoToPaste
+   * Adds processes to delete the given media
+   * @param media
+   */
+  public void addDeleteMediaProcesses(final Media media) {
+    processList.add(GalleryDeleteMediaDataProcess.getInstance(media));
+    processList.add(GalleryDeleteMediaFileProcess.getInstance(media));
+    processList.add(GalleryDeindexMediaDataProcess.getInstance(media));
+  }
+
+  /**
+   * Adds processes to paste the given media to the given album
+   * @param mediaToPaste
    * @param toAlbum
    * @param isCutted
    */
-  public void addPastePhotoProcesses(final PhotoDetail photoToPaste, final NodePK toAlbum,
+  public void addPasteMediaProcesses(final Media mediaToPaste, final NodePK toAlbum,
       final boolean isCutted) {
-    final PhotoPK fromPhotoPk = new PhotoPK(photoToPaste.getId(), photoToPaste.getInstanceId());
-    processList.add(GalleryPastePhotoDataProcess.getInstance(photoToPaste, toAlbum.getId(),
-        fromPhotoPk, isCutted));
-    processList.add(GalleryPastePhotoFileProcess.getInstance(photoToPaste, fromPhotoPk, isCutted));
+    final MediaPK fromMediaPk = new MediaPK(mediaToPaste.getId(), mediaToPaste.getInstanceId());
+    processList.add(GalleryPasteMediaDataProcess
+        .getInstance(mediaToPaste, toAlbum.getId(), fromMediaPk, isCutted));
+    processList.add(GalleryPasteMediaFileProcess.getInstance(mediaToPaste, fromMediaPk, isCutted));
     if (isCutted) {
-      processList.add(GalleryDeindexPhotoDataProcess.getInstance(photoToPaste));
-      processList.add(GalleryIndexPhotoDataProcess.getInstance(photoToPaste));
+      processList.add(GalleryDeindexMediaDataProcess.getInstance(mediaToPaste));
+      processList.add(GalleryIndexMediaDataProcess.getInstance(mediaToPaste));
     }
   }
 
@@ -175,15 +180,24 @@ public class GalleryProcessManagement {
    */
   public void addImportFromRepositoryProcesses(final File repository, final String albumId,
       final boolean watermark, final String watermarkHD, final String watermarkOther,
-      final PhotoDataCreateDelegate delegate) throws Exception {
+      final MediaDataCreateDelegate delegate) throws Exception {
     final File[] fileList = repository.listFiles();
     if (fileList != null) {
       for (final File file : fileList) {
         if (file.isFile()) {
-          if (ImageType.isImage(file.getName())) {
-            // création de la photo
-            addCreatePhotoProcesses(new PhotoDetail(), albumId, file, watermark, watermarkHD,
-                watermarkOther, delegate);
+          MediaMimeType mediaMimeType = MediaMimeType.fromFile(file);
+          Media newMedia = null;
+          if (mediaMimeType.isSupportedPhotoType()) {
+            newMedia = new Photo();
+          } else if (mediaMimeType.isSupportedVideoType()) {
+            newMedia = new Video();
+          } else if (mediaMimeType.isSupportedSoundType()) {
+            newMedia = new Sound();
+          }
+          if (newMedia != null) {
+            // Creation of the media
+            addCreateMediaProcesses(newMedia, albumId, file, watermark, watermarkHD, watermarkOther,
+                delegate);
           }
         } else if (file.isDirectory()) {
           addImportFromRepositoryProcesses(file,
@@ -202,18 +216,18 @@ public class GalleryProcessManagement {
    * @throws Exception
    */
   private AlbumDetail createAlbum(final String name, final String albumId) throws Exception {
-    final AlbumDetail newAlbum = new AlbumDetail(new NodeDetail("unknown", name, null, null, null,
-        null, "0", "unknown"));
+    final AlbumDetail newAlbum =
+        new AlbumDetail(new NodeDetail("unknown", name, null, null, null, null, "0", "unknown"));
     newAlbum.setCreationDate(DateUtil.date2SQLDate(new Date()));
     newAlbum.setCreatorId(user.getId());
     newAlbum.getNodePK().setComponentName(componentInstanceId);
-    newAlbum.setNodePK(getGalleryBm().createAlbum(newAlbum,
-        new NodePK(albumId, componentInstanceId)));
+    newAlbum
+        .setNodePK(getGalleryBm().createAlbum(newAlbum, new NodePK(albumId, componentInstanceId)));
     return newAlbum;
   }
 
   /**
-   * Recursive method to add photo paste processes for given albums (because of sub album)
+   * Recursive method to add media paste processes for given albums (because of sub album)
    * @param fromAlbum
    * @param toAlbum
    * @param isCutted
@@ -236,7 +250,7 @@ public class GalleryProcessManagement {
       NodePK toSubAlbumPK;
       for (final NodeDetail subAlbumToPaste : getNodeBm().getSubTree(fromAlbum.getNodePK())) {
         toSubAlbumPK = new NodePK(subAlbumToPaste.getNodePK().getId(), componentInstanceId);
-        addPastePhotoAlbumProcesses(subAlbumToPaste.getNodePK(), toSubAlbumPK, isCutted);
+        addPasteMediaAlbumProcesses(subAlbumToPaste.getNodePK(), toSubAlbumPK, true);
       }
 
       // Move album
@@ -261,11 +275,11 @@ public class GalleryProcessManagement {
       getNodeBm().createNode(newAlbum, toAlbum);
 
       // Paste images of album
-      addPastePhotoAlbumProcesses(fromAlbum.getNodePK(), newAlbum.getNodePK(), isCutted);
+      addPasteMediaAlbumProcesses(fromAlbum.getNodePK(), newAlbum.getNodePK(), false);
 
       // Perform sub albums
       for (final NodeDetail subNode : getNodeBm().getChildrenDetails(fromAlbum.getNodePK())) {
-        addPasteAlbumProcesses(new AlbumDetail(subNode), newAlbum, isCutted);
+        addPasteAlbumProcesses(new AlbumDetail(subNode), newAlbum, false);
       }
     }
   }
@@ -277,20 +291,21 @@ public class GalleryProcessManagement {
    * @param isCutted
    * @throws Exception
    */
-  private void addPastePhotoAlbumProcesses(final NodePK fromAlbumPk, final NodePK toAlbumPk,
+  private void addPasteMediaAlbumProcesses(final NodePK fromAlbumPk, final NodePK toAlbumPk,
       final boolean isCutted) throws Exception {
-    for (final PhotoDetail photo : getGalleryBm().getAllPhoto(fromAlbumPk, true)) {
-      addPastePhotoProcesses(photo, toAlbumPk, isCutted);
+    for (final Media media : getGalleryBm()
+        .getAllMedia(fromAlbumPk, MediaCriteria.VISIBILITY.FORCE_GET_ALL)) {
+      addPasteMediaProcesses(media, toAlbumPk, isCutted);
     }
   }
 
   /**
-   * Recursive method to add photo delete processes for the given album (because of sub album)
+   * Recursive method to add media delete processes for the given album (because of sub album)
    * @param albumPk
    * @throws Exception
    */
   public void addDeleteAlbumProcesses(final NodePK albumPk) throws Exception {
-    addDeletePhotoAlbumProcesses(albumPk);
+    addDeleteMediaAlbumProcesses(albumPk);
     final Collection<NodeDetail> childrens = getNodeBm().getChildrenDetails(albumPk);
     for (final NodeDetail node : childrens) {
       addDeleteAlbumProcesses(node.getNodePK());
@@ -299,21 +314,21 @@ public class GalleryProcessManagement {
   }
 
   /**
-   * Adds processes to delete all photos from the given album
+   * Adds processes to delete all media from the given album
    * @param albumPk
    * @throws Exception
    */
-  private void addDeletePhotoAlbumProcesses(final NodePK albumPk) throws Exception {
-    for (final PhotoDetail photo : getGalleryBm().getAllPhoto(albumPk, true)) {
-      Collection<String> albumIds = getGalleryBm().getPathList(photo.getInstanceId(), photo.getId());
-      if (albumIds.size() >= 2) {
+  private void addDeleteMediaAlbumProcesses(final NodePK albumPk) throws Exception {
+    for (final Media media : getGalleryBm()
+        .getAllMedia(albumPk, MediaCriteria.VISIBILITY.FORCE_GET_ALL)) {
+      Collection<String> albumIds = getGalleryBm().getAlbumIdsOf(media);
+      if (albumIds.size() > 1) {
         // the image is in several albums
         // delete only the link between it and album to delete
         albumIds.remove(albumPk.getId());
-        getGalleryBm().setPhotoPath(photo.getId(), photo.getInstanceId(),
-            albumIds.toArray(new String[0]));
+        media.setToAlbums(albumIds.toArray(new String[albumIds.size()]));
       } else {
-        addDeletePhotoProcesses(photo);
+        addDeleteMediaProcesses(media);
       }
     }
   }

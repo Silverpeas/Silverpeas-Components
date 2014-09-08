@@ -35,21 +35,11 @@
 	String userId = (String) request.getAttribute("UserId");
 	String folderName = (String) request.getAttribute("FolderName");
 %>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script language="JavaScript">
-</script>
 </head>
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
-<%
-browseBar.setDomainName(spaceLabel);
-browseBar.setComponentName(componentLabel, "historyByUser.jsp");
-
-Board	board		 = gef.getBoard();
-
-out.println(window.printBefore());
-out.println(frame.printBefore());
-out.println(board.printBefore());
-%>
+<body>
+<view:window popup="true">
+<view:frame>
+<view:board>
 <table>
 <tr>
 	<td>
@@ -94,15 +84,15 @@ out.println(board.printBefore());
 		out.println("</td></tr>");
 		out.println("</table>");
 	}
-	out.println(board.printAfter());
-	out.println(frame.printMiddle());
+%>
+</view:board>
+<%
 	ButtonPane buttonPane = gef.getButtonPane();
-	Button button = (Button) gef.getFormButton(resource.getString("GML.close"), "javaScript:window.close();", false);
+	Button button = gef.getFormButton(resource.getString("GML.close"), "javaScript:window.close();", false);
 	buttonPane.addButton(button);
-	out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
-	out.println(frame.printAfter());
-	out.println(window.printAfter());
-	%>
-
+	out.println("<BR><center>"+buttonPane.print()+"</center>");
+%>
+</view:frame>
+</view:window>
 </body>
 </html>

@@ -23,42 +23,61 @@
  */
 package com.silverpeas.gallery.model;
 
+import com.silverpeas.util.StringUtil;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+
 import java.util.Date;
 import java.util.List;
 
 public class Order {
-  private int orderId;
-  private int userId;
-  private String userName;
+  private String orderId;
+  private UserDetail orderer;
+  private String userId;
   private String instanceId;
   private Date creationDate;
-  private int processUserId;
+  private String processUserId;
   private Date processDate;
   private List<OrderRow> rows; // List of OrderRow
 
-  public Order(int userId, String instanceId, Date creationDate) {
+  public Order(String userId, String instanceId, Date creationDate) {
     setUserId(userId);
     setInstanceId(instanceId);
     setCreationDate(creationDate);
   }
 
-  public Order(int orderId) {
+  public Order(String orderId) {
     setOrderId(orderId);
   }
 
-  public int getOrderId() {
+  public String getOrderId() {
     return orderId;
   }
 
-  public void setOrderId(int orderId) {
+  public void setOrderId(String orderId) {
     this.orderId = orderId;
   }
 
-  public int getUserId() {
+  public String getUserId() {
     return userId;
   }
 
-  public void setUserId(int userId) {
+  public UserDetail getOrderer() {
+    if (StringUtil.isDefined(getUserId())) {
+      if (orderer == null || !getUserId().equals(orderer.getId())) {
+        orderer = UserDetail.getById(getUserId());
+      }
+    } else {
+      orderer = null;
+    }
+    return orderer;
+  }
+
+  public void setOrderer(UserDetail orderer) {
+    this.orderer = orderer;
+    setUserId((orderer != null) ? orderer.getId() : null);
+  }
+
+  public void setUserId(String userId) {
     this.userId = userId;
   }
 
@@ -79,11 +98,7 @@ public class Order {
   }
 
   public String getUserName() {
-    return userName;
-  }
-
-  public void setUserName(String userName) {
-    this.userName = userName;
+    return getOrderer() != null ? getOrderer().getDisplayedName() : null;
   }
 
   public int getNbRows() {
@@ -94,11 +109,11 @@ public class Order {
     return (processDate != null);
   }
 
-  public int getProcessUserId() {
+  public String getProcessUserId() {
     return processUserId;
   }
 
-  public void setProcessUserId(int processUserId) {
+  public void setProcessUserId(String processUserId) {
     this.processUserId = processUserId;
   }
 

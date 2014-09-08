@@ -48,9 +48,9 @@
     <servlet-class>com.silverpeas.gallery.servlets.GoToImage</servlet-class>
   </servlet>
   <servlet>
-        <servlet-name>AlbumAjaxServlet</servlet-name>
-        <servlet-class>com.silverpeas.gallery.servlets.AjaxServlet</servlet-class>
-    </servlet>
+    <servlet-name>AlbumAjaxServlet</servlet-name>
+    <servlet-class>com.silverpeas.gallery.servlets.AjaxServlet</servlet-class>
+  </servlet>
   <servlet-mapping>
     <servlet-name>GalleryRequestRouter</servlet-name>
     <url-pattern>/Rgallery/*</url-pattern>
@@ -68,8 +68,11 @@
     <url-pattern>/Image/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-        <servlet-name>AlbumAjaxServlet</servlet-name>
-        <url-pattern>/Album/*</url-pattern>
-    </servlet-mapping>
-  
+    <servlet-name>AlbumAjaxServlet</servlet-name>
+    <url-pattern>/Album/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>GoToImage</servlet-name>
+    <url-pattern>/Media/*</url-pattern>
+  </servlet-mapping>
 </web-app>

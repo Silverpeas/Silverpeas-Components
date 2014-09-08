@@ -100,20 +100,10 @@ function isCorrectForm() {
 </script>
 </HEAD>
 <BODY>
-<%
-Window window = gef.getWindow();
-Frame frame = gef.getFrame();
-Board board = gef.getBoard();
-
-BrowseBar browseBar = window.getBrowseBar();
-browseBar.setDomainName(kmeliaScc.getSpaceLabel());
-browseBar.setComponentName(kmeliaScc.getComponentLabel());
-browseBar.setExtraInformation(kmeliaScc.getString("ComponentCreationTitle"));
-
-out.println(window.printBefore());
-out.println(frame.printBefore());
-out.println(board.printBefore());
-%>
+<view:browseBar extraInformations='<%=kmeliaScc.getString("ComponentCreationTitle")%>'/>
+<view:window popup="true">
+<view:frame>
+<view:board>
 	<FORM NAME="axisForm" method="POST" target="MyMain">
 		<input type="hidden" name="Translation" value="<%=translation%>">
 		<TABLE cellPadding="5" cellSpacing="0" border="0">
@@ -126,18 +116,17 @@ out.println(board.printBefore());
 		  <TR><TD colspan="2">( <img border="0" src="<%=mandatoryField%>" width="5" height="5"> = <%=kmeliaScc.getString("ChampsObligatoires")%> )</TD></TR>
 		</TABLE>
 	</FORM>
+</view:board>
 <%
-out.println(board.printAfter());
-
 ButtonPane buttonPane = gef.getButtonPane();
 buttonPane.addButton(validateButton);
 buttonPane.addButton(cancelButton);
-out.println("<center><br>");
+out.println("<center>");
 out.println(buttonPane.print());
-out.println("<br><center>");	
-out.println(frame.printAfter());
-out.println(window.printAfter());
+out.println("</center>");
 %>
+</view:frame>
+</view:window>
 </BODY>
 <script language="javascript">
 	document.axisForm.Name.focus();

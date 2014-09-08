@@ -54,19 +54,11 @@ PagesContext context = (PagesContext) request.getAttribute("PagesContext");
 <view:looknfeel/>
 </head>
 <body>
-<%
-Window window = gef.getWindow();
-        
-OperationPane operationPane = window.getOperationPane();
-operationPane.addOperation(resources.getIcon("yellowpages.contactPrint"), resources.getString("GML.print"), "javaScript:window.print();");
-
-BrowseBar browseBar = window.getBrowseBar();
-browseBar.setComponentId(componentId);
-browseBar.setPath(resources.getString("BBarconsultManager"));
-browseBar.setClickable(false);
-
-out.println(window.printBefore());
-%>
+<view:browseBar path='<%=resources.getString("BBarconsultManager")%>'/>
+<view:operationPane>
+<view:operation altText='<%=resources.getString("GML.print")%>' action='javaScript:window.print();'/>
+</view:operationPane>
+<view:window popup="true">
 <view:frame>
 <view:board>
 
@@ -97,8 +89,6 @@ if (formView != null) {
 
 </view:board>
 </view:frame>
-<%
-	out.println(window.printAfter());
-%>
+</view:window>
 </body>
 </html>

@@ -81,6 +81,11 @@
       <artifactId>validation-api</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>com.metaparadigm</groupId>
+      <artifactId>json-rpc</artifactId>
+      <scope>provided</scope>
+    </dependency>
 
     <!-- TESTS -->
     <dependency>

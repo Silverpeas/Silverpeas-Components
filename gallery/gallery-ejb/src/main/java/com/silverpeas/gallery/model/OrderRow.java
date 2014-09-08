@@ -23,27 +23,30 @@
  */
 package com.silverpeas.gallery.model;
 
+import com.silverpeas.gallery.control.ejb.MediaServiceFactory;
+import com.silverpeas.util.StringUtil;
+
 import java.util.Date;
 
 public class OrderRow {
-  private int orderId;
-  private int photoId;
-  private PhotoDetail photo;
+  private String orderId;
+  private String mediaId;
+  private InternalMedia internalMedia;
   private String instanceId;
   private Date downloadDate;
   private String downloadDecision;
 
-  public OrderRow(int orderId, int photoId, String instanceId) {
+  public OrderRow(String orderId, String mediaId, String instanceId) {
     setOrderId(orderId);
-    setPhotoId(photoId);
+    setMediaId(mediaId);
     setInstanceId(instanceId);
   }
 
-  public int getOrderId() {
+  public String getOrderId() {
     return orderId;
   }
 
-  public void setOrderId(int orderId) {
+  public void setOrderId(String orderId) {
     this.orderId = orderId;
   }
 
@@ -55,12 +58,15 @@ public class OrderRow {
     this.instanceId = instanceId;
   }
 
-  public int getPhotoId() {
-    return photoId;
+  public String getMediaId() {
+    return mediaId;
   }
 
-  public void setPhotoId(int photoId) {
-    this.photoId = photoId;
+  public void setMediaId(String mediaId) {
+    if (StringUtil.isNotDefined(mediaId) || !mediaId.equals(this.mediaId)) {
+      internalMedia = null;
+    }
+    this.mediaId = mediaId;
   }
 
   public Date getDownloadDate() {
@@ -79,12 +85,11 @@ public class OrderRow {
     this.downloadDecision = downloadDecision;
   }
 
-  public PhotoDetail getPhoto() {
-    return photo;
+  public InternalMedia getInternalMedia() {
+    if (internalMedia == null) {
+      internalMedia = (InternalMedia) MediaServiceFactory.getMediaService()
+          .getMedia(new MediaPK(getMediaId(), getInstanceId()));
+    }
+    return internalMedia;
   }
-
-  public void setPhoto(PhotoDetail photo) {
-    this.photo = photo;
-  }
-
 }

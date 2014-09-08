@@ -67,7 +67,7 @@
 	}
 
   function exportICal() {
-    getHtmlAndDisplayInPopup('<c:url value="/Rscheduleevent/jsp/ExportToICal"/>', {
+    displaySingleFreePopupFrom('<c:url value="/Rscheduleevent/jsp/ExportToICal"/>', {
       title : '${scheduleEventDetail.title}',
       width : '500'
     });

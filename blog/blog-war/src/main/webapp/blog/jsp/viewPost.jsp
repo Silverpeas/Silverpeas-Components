@@ -131,9 +131,9 @@ out.println(window.printBefore());
 		<%
 			String blocClass = "viewPost";
 			String status = "";
-          	if (PublicationDetail.DRAFT.equals(post.getPublication().getStatus())) {
+          	if (post.getPublication().isDraft()) {
            		blocClass = "viewPostDraft";
-           		status = resource.getString("GML.saveDraft");
+           		status = resource.getString("GML.draft");
           	}
          %>
 		 

@@ -20,15 +20,19 @@
  */
 package com.silverpeas.gallery.socialNetwork;
 
-import com.silverpeas.gallery.model.PhotoWithStatus;
+import com.silverpeas.gallery.model.InternalMedia;
+import com.silverpeas.gallery.model.MediaWithStatus;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.model.SocialInformationType;
 import com.silverpeas.util.StringUtil;
+
 import java.util.Date;
+
+import org.apache.commons.lang.builder.HashCodeBuilder;
 
 public class SocialInformationGallery implements SocialInformation {
 
-  private final SocialInformationType type = SocialInformationType.PHOTO;
+  private final SocialInformationType type = SocialInformationType.MEDIA;
   private String title;
   private String description;
   private boolean socialInformationWasupdated = false;
@@ -37,34 +41,37 @@ public class SocialInformationGallery implements SocialInformation {
   private String url;
   private String icon;
 
-  public SocialInformationGallery(PhotoWithStatus picture) {
+  public SocialInformationGallery(MediaWithStatus picture) {
 
-    this.title = picture.getPhoto().getTitle();
+    this.title = picture.getMedia().getTitle();
 
     this.socialInformationWasupdated = picture.isUpdate();
 
-    this.description = picture.getPhoto().getDescription();
+    this.description = picture.getMedia().getDescription();
     if (!StringUtil.isDefined(description)) {
       description = "";
     }
     if (socialInformationWasupdated) {
-      this.author = picture.getPhoto().getUpdateId();
-      this.dateTime = picture.getPhoto().getUpdateDate().getTime();
+      this.author = picture.getMedia().getLastUpdatedBy();
+      this.dateTime = picture.getMedia().getLastUpdateDate().getTime();
     } else {
-      this.author = picture.getPhoto().getCreatorId();
-      dateTime = picture.getPhoto().getCreationDate().getTime();
+      this.author = picture.getMedia().getCreatorId();
+      dateTime = picture.getMedia().getCreationDate().getTime();
     }
-    this.url = "/Rgallery/" + picture.getPhoto().getInstanceId() + "/" + picture.getPhoto().getURL();
-    String id = picture.getPhoto().getId();
-    this.icon = "/FileServer/" + id + "_preview.jpg?ComponentId=" + picture.getPhoto().getInstanceId() + "&SourceFile=" + id + "_preview.jpg&MimeType="
-            + picture.getPhoto().getImageMimeType() + "&Directory=image" + id;
-
-
+    this.url =
+        "/Rgallery/" + picture.getMedia().getInstanceId() + "/" + picture.getMedia().getURL();
+    String id = picture.getMedia().getId();
+    String mimeType = "streaming";
+    if (picture.getMedia() instanceof InternalMedia) {
+      mimeType = ((InternalMedia) picture.getMedia()).getFileMimeType().getMimeType();
+    }
+    this.icon =
+        "/FileServer/" + id + "_preview.jpg?ComponentId=" + picture.getMedia().getInstanceId() +
+            "&SourceFile=" + id + "_preview.jpg&MimeType=" + mimeType + "&Directory=image" + id;
   }
 
   /**
    * return the Title of this SocialInformation
-   *
    * @return String
    */
   @Override
@@ -74,7 +81,6 @@ public class SocialInformationGallery implements SocialInformation {
 
   /**
    * return the Description of this SocialInformation
-   *
    * @return String
    */
   @Override
@@ -84,7 +90,6 @@ public class SocialInformationGallery implements SocialInformation {
 
   /**
    * return the Author of this SocialInfo
-   *
    * @return String
    */
   @Override
@@ -94,7 +99,6 @@ public class SocialInformationGallery implements SocialInformation {
 
   /**
    * return the Url of this SocialInfo
-   *
    * @return String
    */
   @Override
@@ -104,7 +108,6 @@ public class SocialInformationGallery implements SocialInformation {
 
   /**
    * return the Date of this SocialInfo
-   *
    * @return
    */
   @Override
@@ -114,7 +117,6 @@ public class SocialInformationGallery implements SocialInformation {
 
   /**
    * return the icon of this SocialInformation
-   *
    * @return String
    */
   @Override
@@ -124,7 +126,6 @@ public class SocialInformationGallery implements SocialInformation {
 
   /**
    * return the type of this SocialInformation
-   *
    * @return String
    */
   @Override
@@ -134,7 +135,6 @@ public class SocialInformationGallery implements SocialInformation {
 
   /**
    * return if this socialInfo was updtated or not
-   *
    * @return boolean
    */
   @Override
@@ -166,6 +166,13 @@ public class SocialInformationGallery implements SocialInformation {
     }
 
     return true;
+  }
+
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder(11, 19).append(getType()).append(getTitle())
+        .append(getDescription()).append(getAuthor()).append(getDate()).append(getUrl())
+        .toHashCode();
   }
 
   @Override

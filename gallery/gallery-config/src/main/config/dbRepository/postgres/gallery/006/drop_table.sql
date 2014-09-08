@@ -1,0 +1,9 @@
+DROP TABLE SC_Gallery_Media;
+DROP TABLE SC_Gallery_Internal;
+DROP TABLE SC_Gallery_Photo;
+DROP TABLE SC_Gallery_Video;
+DROP TABLE SC_Gallery_Sound;
+DROP TABLE SC_Gallery_Streaming;
+DROP TABLE SC_Gallery_Path;
+DROP TABLE SC_Gallery_Order;
+DROP TABLE SC_Gallery_OrderDetail;

@@ -21,14 +21,11 @@
 package com.silverpeas.gallery.servlets;
 
 import com.silverpeas.gallery.control.ejb.GalleryBm;
-import com.silverpeas.gallery.delegate.PhotoDataCreateDelegate;
+import com.silverpeas.gallery.delegate.MediaDataCreateDelegate;
 import com.silverpeas.gallery.model.GalleryRuntimeException;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.ZipManager;
-import org.silverpeas.servlet.FileUploadUtil;
-import org.silverpeas.servlet.HttpRequest;
-import org.silverpeas.web.util.SilverpeasTransverseWebErrorUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -38,7 +35,11 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.servlet.FileUploadUtil;
+import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.web.util.SilverpeasTransverseWebErrorUtil;
 
 import javax.ejb.EJBException;
 import javax.servlet.ServletConfig;
@@ -159,9 +160,11 @@ public class GalleryDragAndDrop extends HttpServlet {
     try {
 
       final UserDetail user = UserDetail.getById(userId);
-      final PhotoDataCreateDelegate delegate =
-          new PhotoDataCreateDelegate(user.getUserPreferences().getLanguage(), albumId);
-      delegate.getHeaderData().setDownload(download);
+      CacheServiceFactory.getSessionCacheService().put(UserDetail.CURRENT_REQUESTER_KEY, user);
+      final MediaDataCreateDelegate delegate =
+          new MediaDataCreateDelegate(null, user.getUserPreferences().getLanguage(),
+              albumId);
+      delegate.getHeaderData().setDownloadAuthorized(download);
       getGalleryBm().importFromRepository(user, componentId, repository, watermark, watermarkHD,
           watermarkOther, delegate);
 
@@ -169,7 +172,7 @@ public class GalleryDragAndDrop extends HttpServlet {
       SilverTrace.info("gallery", "GalleryDragAndDrop.importRepository",
           "gallery.MSG_NOT_ADD_METADATA", "message = " + e.getMessage());
       if (e instanceof EJBException) {
-        throw (EJBException) e;
+        throw e;
       }
     }
   }

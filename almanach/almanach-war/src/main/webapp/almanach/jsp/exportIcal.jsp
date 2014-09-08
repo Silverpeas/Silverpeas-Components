@@ -42,15 +42,14 @@
 <c:set var="icsName" value="${requestScope.icsName}"/>
 <c:set var="icsURL" value="${requestScope.icsURL}"/>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <view:looknfeel />
   </head>
   <body>
   	<view:browseBar clickable="false"/>
-    <view:window>
+    <view:window popup="true">
       <view:frame>
       	<c:if test="${icsName ne null and fn:length(icsName) > 0}">
       		<div class="inlineMessage-ok">

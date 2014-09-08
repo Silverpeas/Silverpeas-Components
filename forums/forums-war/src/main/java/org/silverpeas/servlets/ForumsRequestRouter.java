@@ -205,19 +205,20 @@ public class ForumsRequestRouter extends ComponentRequestRouter<ForumsSessionCon
    */
   private String displayForum(HttpServletRequest request, ForumsSessionController forumsSC,
       int forumId) {
+    String destinationPage = "main.jsp";
     int currentForumId = (forumId < 0 ? 0 : forumId);
     if (currentForumId > 0) {
       Forum forum = forumsSC.getForum(currentForumId);
       if (forum == null) {
         return ROOT_DEST + "forumNotFound";
       }
+      request.setAttribute("currentForum", forum);
+      request.setAttribute("currentForumRaterRatingEntity", RaterRatingEntity.fromRateable(forum));
+      request.setAttribute("parents", forumsSC.getForumAncestors(currentForumId));
+      request.setAttribute("nbChildrens", forumsSC.getForumSonsNb(currentForumId));
+      destinationPage = "viewForum.jsp";
     }
-    Forum forum = forumsSC.getForum(currentForumId);
-    request.setAttribute("currentForum", forum);
-    request.setAttribute("currentForumRaterRatingEntity", RaterRatingEntity.fromRateable(forum));
-    request.setAttribute("parents", forumsSC.getForumAncestors(currentForumId));
-    request.setAttribute("nbChildrens", forumsSC.getForumSonsNb(currentForumId));
-    return ROOT_DEST +
-        (currentForumId == 0 ? "main.jsp" : "viewForum.jsp") + "?forumId=" + currentForumId;
+    
+    return ROOT_DEST + destinationPage + "?forumId=" + currentForumId;
   }
 }

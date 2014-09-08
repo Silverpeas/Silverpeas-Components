@@ -20,18 +20,21 @@
  */
 package com.silverpeas.gallery.image;
 
-import java.io.File;
-import java.util.Calendar;
-import java.util.List;
-
+import com.silverpeas.gallery.media.DrewMediaMetadataExtractor;
+import com.silverpeas.gallery.media.ExifProperty;
+import com.silverpeas.gallery.media.IptcProperty;
+import com.silverpeas.gallery.media.MediaMetadataExtractor;
 import com.silverpeas.gallery.model.MetaData;
 import com.silverpeas.util.StringUtil;
-
 import org.junit.Before;
 import org.junit.Test;
 
-import static com.silverpeas.util.PathTestUtil.SEPARATOR;
-import static com.silverpeas.util.PathTestUtil.TARGET_DIR;
+import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.Calendar;
+import java.util.List;
+
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 
@@ -41,19 +44,16 @@ import static org.junit.Assert.*;
  */
 public class MetadataExtractorTest {
 
-  private ImageMetadataExtractor extractor;
-  private final File koala = new File(TARGET_DIR + "test-classes" + SEPARATOR + "Koala.jpg");
-  private final File sunset = new File(
-      TARGET_DIR + "test-classes" + SEPARATOR + "Coucher de soleil.jpg");
-  private final File dauphins = new File(
-      TARGET_DIR + "test-classes" + SEPARATOR + "Dauphins-100.jpg");
-  private final File chefsUtf8 = new File(
-      TARGET_DIR + "test-classes" + SEPARATOR + "31605rc_utf-8.jpg");
-  private final File pingouin = new File(TARGET_DIR + "test-classes" + SEPARATOR + "pingouin.jpg");
+  private MediaMetadataExtractor extractor;
+  private final File koala = getDocumentNamed("/Koala.jpg");
+  private final File sunset = getDocumentNamed("/Coucher de soleil.jpg");
+  private final File dauphins = getDocumentNamed("/Dauphins-100.jpg");
+  private final File chefsUtf8 = getDocumentNamed("/31605rc_utf-8.jpg");
+  private final File pingouin = getDocumentNamed("/pingouin.jpg");
 
   @Before
   public void setUp() {
-    extractor = new DrewImageMetadataExtractor("gallery52");
+    extractor = new DrewMediaMetadataExtractor("gallery52");
   }
 
   @Test
@@ -131,8 +131,8 @@ public class MetadataExtractorTest {
     meta = metadata.get(7);
     assertThat(meta.getProperty(), is("537"));
     assertThat(meta.getLabel(), is("Mots clef"));
-    assertThat(meta.getValue(), is(
-        "Auberge des Dauphins / Architecture / Vue exterieure / Saou / Foret de Saou /"));
+    assertThat(meta.getValue(),
+        is("Auberge des Dauphins / Architecture / Vue exterieure / Saou / Foret de Saou /"));
   }
 
   @Test
@@ -241,5 +241,14 @@ public class MetadataExtractorTest {
     assertThat(meta.getProperty(), is("572"));
     assertThat(meta.getLabel(), is("572"));
     assertThat(meta.getValue(), is("113641"));
+  }
+
+  private static File getDocumentNamed(final String name) {
+    final URL documentLocation = MetadataExtractorTest.class.getResource(name);
+    try {
+      return new File(documentLocation.toURI());
+    } catch (URISyntaxException e) {
+      return null;
+    }
   }
 }

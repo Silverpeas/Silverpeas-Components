@@ -23,17 +23,13 @@
  */
 package com.silverpeas.gallery.web;
 
-import com.silverpeas.gallery.model.PhotoDetail;
+import com.silverpeas.gallery.model.Photo;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 import java.net.URI;
-
-import static com.silverpeas.gallery.web.GalleryResourceURIs.GALLERY_PHOTO_CONTENT_PART;
-import static com.silverpeas.gallery.web.GalleryResourceURIs.GALLERY_PHOTO_PREVIEW_PART;
 
 /**
  * @author Yohann Chastagnier
@@ -44,77 +40,40 @@ public class PhotoEntity extends AbstractMediaEntity<PhotoEntity> {
   private static final long serialVersionUID = -4634076513167690314L;
 
   @XmlElement(defaultValue = "")
-  private String previewUrl;
-
-  @XmlElement(defaultValue = "")
-  private String url;
-
-  @XmlElement(defaultValue = "0")
-  private int width;
-
-  @XmlElement(defaultValue = "0")
-  private int height;
-
-  @XmlTransient
-  private final PhotoDetail photo;
-
-  @Override
-  public PhotoEntity withURI(final URI uri) {
-    previewUrl = uri.toString() + "/" + GALLERY_PHOTO_PREVIEW_PART;
-    url = uri.toString() + "/" + GALLERY_PHOTO_CONTENT_PART;
-    return super.withURI(uri);
-  }
+  private URI previewUrl;
 
   /**
    * Creates a new photo entity from the specified photo.
    * @param photo
-   * @param language
    * @return the entity representing the specified photo.
    */
-  public static PhotoEntity createFrom(final PhotoDetail photo, final String language) {
-    return new PhotoEntity(photo, language);
+  public static PhotoEntity createFrom(final Photo photo) {
+    return new PhotoEntity(photo);
   }
 
-  /**
-   * Default hidden constructor.
-   */
-  private PhotoEntity(final PhotoDetail photo, final String language) {
-    super("photo", photo.getId(), photo.getTitle(), photo.getDescription(language));
-    this.photo = photo;
-    width = photo.getSizeL();
-    height = photo.getSizeH();
-  }
-
-  protected PhotoEntity() {
-    super();
-    photo = null;
+  public PhotoEntity withPreviewUrl(final URI previewUrl) {
+    this.previewUrl = previewUrl;
+    return this;
   }
 
   /**
    * @return the previewUrl
    */
-  public String getPreviewUrl() {
+  public URI getPreviewUrl() {
     return previewUrl;
   }
 
   /**
-   * @return the url
+   * Default hidden constructor.
    */
-  public String getUrl() {
-    return url;
+  private PhotoEntity(final Photo photo) {
+    super(photo);
+    withWidth(photo.getDefinition().getWidth());
+    withHeight(photo.getDefinition().getHeight());
   }
 
-  /**
-   * @return the height
-   */
-  public int getHeight() {
-    return height;
-  }
-
-  /**
-   * @return the width
-   */
-  public int getWidth() {
-    return width;
+  @SuppressWarnings("UnusedDeclaration")
+  protected PhotoEntity() {
+    super();
   }
 }

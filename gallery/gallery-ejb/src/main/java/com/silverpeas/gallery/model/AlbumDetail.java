@@ -32,8 +32,8 @@ import java.util.List;
 public class AlbumDetail extends NodeDetail {
 
   private static final long serialVersionUID = 1L;
-  private List<PhotoDetail> photos;
-  private int nbPhotos;
+  private List<Media> media;
+  private int nbMedia;
 
   public AlbumDetail(NodeDetail node) {
     setNodePK(node.getNodePK());
@@ -50,20 +50,20 @@ public class AlbumDetail extends NodeDetail {
     setOrder(node.getOrder());
   }
 
-  public List<PhotoDetail> getPhotos() {
-    return photos;
+  public List<Media> getMedia() {
+    return media;
   }
 
-  public void setPhotos(Collection<PhotoDetail> photos) {
-    this.photos = new ArrayList<PhotoDetail>(photos);
+  public void setMedia(Collection<Media> media) {
+    this.media = new ArrayList<Media>(media);
   }
 
-  public int getNbPhotos() {
-    return nbPhotos;
+  public int getNbMedia() {
+    return nbMedia;
   }
 
-  public void setNbPhotos(int nbPhotos) {
-    this.nbPhotos = nbPhotos;
+  public void setNbMedia(int nbMedia) {
+    this.nbMedia = nbMedia;
   }
 
   public Collection<AlbumDetail> getChildrenAlbumsDetails() {

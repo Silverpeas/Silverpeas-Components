@@ -27,21 +27,21 @@ package com.silverpeas.delegatednews.service;
 import java.util.Date;
 import java.util.List;
 
+import org.silverpeas.date.Period;
+
+import com.silverpeas.SilverpeasContent;
 import com.silverpeas.delegatednews.model.DelegatedNews;
 
 public interface DelegatedNewsService {
 
-	public void addDelegatedNews(int pubId, String instanceId, String contributorId, Date validationDate, Date beginDate, Date endDate); 
+	public void submitNews(String id, SilverpeasContent news, String lastUpdaterId, Period visibilityPeriod, String userId);
 	public DelegatedNews getDelegatedNews(int pubId); 
 	public List<DelegatedNews> getAllDelegatedNews();
 	public List<DelegatedNews> getAllValidDelegatedNews();
   public void validateDelegatedNews(int pubId, String validatorId);
-  public void refuseDelegatedNews(int pubId, String validatorId);
+  public void refuseDelegatedNews(int pubId, String validatorId, String refusalMotive);
   public void updateDateDelegatedNews(int pubId, Date dateHourBegin, Date dateHourEnd);
-  public void notifyDelegatedNewsToValidate(String pubId, String pubName, String senderId, String senderName, String delegatednewsInstanceId);
-  public void updateDelegatedNews(int pubId, String instanceId, String status, String updaterId, String validatorId, Date validationDate, Date dateHourBegin, Date dateHourEnd);
+  public void updateDelegatedNews(String id, SilverpeasContent news, String updaterId, Period visibilityPeriod);
   public void deleteDelegatedNews(int pubId);
-  public void notifyDelegatedNewsValid(String pubId, String pubName, String senderId, String senderName, String contributorId, String delegatednewsInstanceId);
-  public void notifyDelegatedNewsRefused(String pubId, String pubName, String refusalMotive, String senderId, String senderName, String contributorId, String delegatednewsInstanceId);
   public DelegatedNews updateOrderDelegatedNews(int pubId, int newsOrder);
 }

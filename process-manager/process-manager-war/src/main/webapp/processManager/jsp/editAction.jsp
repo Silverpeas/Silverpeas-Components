@@ -57,11 +57,11 @@
 		false));
 	if (isSaveButtonEnabled) {
 		buttonPane.addButton(gef.getFormButton(
-			   generalMessage.getString("GML.saveDraft"),
+			   generalMessage.getString("GML.draft.save"),
 				"javascript:onClick=B_SAUVEGARDER_ONCLICK();",
 				false));
 	}
-	buttonPane.addButton((Button) gef.getFormButton(
+	buttonPane.addButton(gef.getFormButton(
 	   generalMessage.getString("GML.cancel"),
 		"javascript:onClick=B_ANNULER_ONCLICK();",
 		false));

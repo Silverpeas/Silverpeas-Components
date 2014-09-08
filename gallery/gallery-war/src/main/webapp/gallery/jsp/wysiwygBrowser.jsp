@@ -44,7 +44,7 @@ String m_context = GeneralPropertiesManager.getString("ApplicationURL");
 <html>
 <head>
 <title></title>
-<script language="javascript">
+<script type="text/javascript">
 function selectImage(url)
 {
 <%if(fieldName != null){%>

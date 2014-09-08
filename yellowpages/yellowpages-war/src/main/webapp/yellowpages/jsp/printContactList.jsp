@@ -43,30 +43,19 @@ Collection contacts = (Collection) request.getAttribute("Contacts");
 <TITLE><%=resources.getString("GML.popupTitle")%></TITLE>
 <view:looknfeel/>
 </head>
-<BODY marginwidth=5 marginheight=5 leftmargin=5 topmargin=5>
+<BODY>
+<view:browseBar path='<%=yellowpagesScc.getString("GML.print")%>'/>
+<view:operationPane>
+<view:operation altText='<%=yellowpagesScc.getString("GML.print")%>' action='javaScript:window.print();'/>
+</view:operationPane>
+<view:window popup="true">
+<view:frame>
+<view:board>
 <%
-Window window = gef.getWindow();
-
-BrowseBar browseBar=window.getBrowseBar();
-browseBar.setDomainName(spaceLabel);
-browseBar.setComponentName(componentLabel);
-browseBar.setPath(resources.getString("GML.print"));
-
-OperationPane operationPane = window.getOperationPane();
-operationPane.addOperation(resources.getIcon("yellowpages.printPage"), resources.getString("GML.print"), "javaScript:window.print();");
-
-Frame frame=gef.getFrame();
-Board board = gef.getBoard();
-
-out.println(window.printBefore());
-out.println(frame.printBefore());
-out.println(board.printBefore());
-
 DisplayContactsHelper.displayContactsUser(yellowpagesScc, contacts, null, componentLabel, gef, request, session, resources, out);
-
-out.println(board.printAfter());
-out.println(frame.printAfter());
-out.println(window.printAfter());
 %>
+</view:board>
+</view:frame>
+</view:window>
 </body>
 </html>

@@ -21,28 +21,29 @@
 package com.silverpeas.gallery.control.ejb;
 
 import java.io.File;
-import java.rmi.RemoteException;
 import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.ejb.Local;
 
+import com.silverpeas.gallery.delegate.MediaDataCreateDelegate;
+import com.silverpeas.gallery.model.Media;
+import com.silverpeas.gallery.model.MediaCriteria;
+import com.silverpeas.gallery.model.MediaPK;
+
+import org.silverpeas.date.Period;
 import org.silverpeas.process.util.ProcessList;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
 
 import com.silverpeas.gallery.delegate.GalleryPasteDelegate;
-import com.silverpeas.gallery.delegate.PhotoDataCreateDelegate;
-import com.silverpeas.gallery.delegate.PhotoDataUpdateDelegate;
+import com.silverpeas.gallery.delegate.MediaDataUpdateDelegate;
 import com.silverpeas.gallery.model.AlbumDetail;
 import com.silverpeas.gallery.model.Order;
 import com.silverpeas.gallery.model.OrderRow;
+import com.silverpeas.gallery.model.Photo;
 import com.silverpeas.gallery.model.PhotoDetail;
-import com.silverpeas.gallery.model.PhotoPK;
 import com.silverpeas.gallery.process.GalleryProcessExecutionContext;
 import com.silverpeas.socialnetwork.model.SocialInformation;
-
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
@@ -50,7 +51,9 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 @Local
 public interface GalleryBm {
 
-  public AlbumDetail getAlbum(NodePK nodePK, boolean viewAllPhoto);
+  public AlbumDetail getAlbum(NodePK nodePK);
+
+  public AlbumDetail getAlbum(NodePK nodePK, MediaCriteria.VISIBILITY visibility);
 
   public NodePK createAlbum(AlbumDetail album, NodePK nodePK);
 
@@ -60,59 +63,62 @@ public interface GalleryBm {
 
   public Collection<AlbumDetail> getAllAlbums(String instanceId);
 
-  public void setPhotoPath(String photoId, String instanceId, String... albums);
+  public void removeMediaFromAllAlbums(Media media);
 
-  public void addPhotoPaths(String photoId, String instanceId, String... albums);
+  public void addMediaToAlbums(Media media, String... albums);
 
-  public void updatePhotoPath(String photoId, String instanceIdFrom,
-      String instanceIdTo, String... albums);
+  public Photo getPhoto(MediaPK mediaPK);
 
-  // les photos ...
-  public PhotoDetail getPhoto(PhotoPK photoPK);
+  public Media getMedia(MediaPK mediaPK);
 
-  public Collection<PhotoDetail> getAllPhoto(NodePK nodePK, boolean viewAllPhoto);
+  public Media getMedia(MediaPK mediaPK, MediaCriteria.VISIBILITY visibility);
 
-  public Collection<PhotoDetail> getAllPhotosSorted(NodePK nodePK,
-      HashMap<String, String> parsedParameters, boolean viewAllPhoto);
+  public Collection<Photo> getAllPhotos(NodePK nodePK);
 
-  public Collection<PhotoDetail> getAllPhotos(String instanceId);
+  public Collection<Photo> getAllPhotos(NodePK nodePK, MediaCriteria.VISIBILITY visibility);
+
+  public Collection<Media> getAllMedia(NodePK nodePK);
+
+  public Collection<Media> getAllMedia(NodePK nodePK, MediaCriteria.VISIBILITY visibility);
+
+  public Collection<Media> getAllMedia(String instanceId);
+
+  public Collection<Media> getAllMedia(String instanceId, MediaCriteria.VISIBILITY visibility);
 
   public void paste(UserDetail user, String componentInstanceId, GalleryPasteDelegate delegate);
 
   public void importFromRepository(UserDetail user, String componentInstanceId, File repository,
-      boolean watermark, String watermarkHD, String watermarkOther, PhotoDataCreateDelegate delegate);
+      boolean watermark, String watermarkHD, String watermarkOther, MediaDataCreateDelegate delegate);
 
-  public void createPhoto(UserDetail user, String componentInstanceId, PhotoDetail photo,
-      boolean watermark, String watermarkHD, String watermarkOther, PhotoDataCreateDelegate delegate);
+  public Media createMedia(UserDetail user, String componentInstanceId, boolean watermark,
+      String watermarkHD, String watermarkOther, MediaDataCreateDelegate delegate);
 
-  public void updatePhoto(UserDetail user, String componentInstanceId, Collection<String> photoIds,
-      String albumId, PhotoDataUpdateDelegate delegate);
+  public void updateMedia(UserDetail user, String componentInstanceId, Collection<String> mediaIds,
+      String albumId, MediaDataUpdateDelegate delegate);
 
-  public void updatePhoto(UserDetail user, String componentInstanceId, PhotoDetail photo,
-      boolean watermark, String watermarkHD, String watermarkOther, PhotoDataUpdateDelegate delegate);
+  public void updateMedia(UserDetail user, String componentInstanceId, Media media,
+      boolean watermark, String watermarkHD, String watermarkOther,
+      MediaDataUpdateDelegate delegate);
 
-  public void deletePhoto(UserDetail user, String componentInstanceId, Collection<String> photoIds);
+  public void deleteMedia(UserDetail user, String componentInstanceId, Collection<String> mediaIds);
 
-  public Collection<PhotoDetail> getDernieres(String instanceId, boolean viewAllPhoto) throws
-      RemoteException;
+  public List<Media> getLastRegisteredMedia(String instanceId);
 
-  public Collection<PhotoDetail> getAllPhotoEndVisible(int nbDays);
+  public Collection<Media> getAllMediaThatWillBeNotVisible(int nbDays);
 
-  public Collection<PhotoDetail> getNotVisible(String instanceId);
+  public Collection<Media> getNotVisible(String instanceId);
 
   public Collection<NodeDetail> getPath(NodePK nodePK);
 
-  public Collection<String> getPathList(String instanceId, String photoId);
+  public Collection<String> getAlbumIdsOf(Media media);
 
   public String getHTMLNodePath(NodePK nodePK);
 
-  public void createIndex(PhotoDetail photo);
+  public void indexGallery(final UserDetail user, String instanceId);
 
-  public void indexGallery(String instanceId);
+  public int getSilverObjectId(MediaPK mediaPK);
 
-  public int getSilverObjectId(PhotoPK photoPK);
-
-  public Collection<PhotoDetail> search(QueryDescription query);
+  public Collection<Media> search(QueryDescription query);
 
   public String createOrder(Collection<String> basket, String userId, String instanceId);
 
@@ -120,15 +126,13 @@ public interface GalleryBm {
 
   public List<Order> getAllOrders(String userId, String instanceId);
 
-  public Date getDownloadDate(String orderId, String photoId);
-
   public void updateOrderRow(OrderRow row);
 
   public void updateOrder(Order order);
 
-  public Collection<Order> getAllOrderToDelete(int nbDays);
+  public List<Order> getAllOrderToDelete(int nbDays);
 
-  public void deleteOrder(String orderId);
+  public void deleteOrders(List<Order> orders);
 
   /**
    * get my list of SocialInformationGallery according to options and number of Item and the first
@@ -136,12 +140,10 @@ public interface GalleryBm {
    *
    * @return: List <SocialInformation>
    * @param userId
-   * @param begin
-   * @param end
+   * @param period
    * @return
-   * @
    */
-  public List<SocialInformation> getAllPhotosByUserid(String userId, Date begin, Date end);
+  public List<SocialInformation> getAllMediaByUserId(String userId, Period period);
 
   /**
    * get list of SocialInformationGallery of my contacts according to options and number of Item and
@@ -149,13 +151,11 @@ public interface GalleryBm {
    *
    * @param listOfuserId
    * @param availableComponent
-   * @param begin
-   * @param end
+   * @param period
    * @return List<SocialInformation>
-   * @
    */
-  public List<SocialInformation> getSocialInformationsListOfMyContacts(List<String> listOfuserId,
-      List<String> availableComponent, Date begin, Date end);
+  public List<SocialInformation> getSocialInformationListOfMyContacts(List<String> listOfuserId,
+      List<String> availableComponent, Period period);
 
   public void sortAlbums(List<NodePK> albumIds);
 

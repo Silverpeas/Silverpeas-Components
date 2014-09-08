@@ -55,16 +55,10 @@ function viewResultByUser(userId, userName) {
 </script>
 </head>
 <body>
+<view:browseBar extraInformations='<%=survey.getHeader().getTitle()%>'/>
+<view:window popup="true">
+<view:frame>
 <% 
-	Window window = gef.getWindow();
-	BrowseBar browseBar = window.getBrowseBar();
-	browseBar.setExtraInformation(survey.getHeader().getTitle());
-	browseBar.setClickable(false);
-	Frame frame = gef.getFrame();
-	
-	out.println(window.printBefore());
-	out.println(frame.printBefore());
-
 	ArrayPane arrayPane = gef.getArrayPane("SurveyParticipantsList", "ViewAllUsers?SurveyId="+survey.getId(), request, session);
 	arrayPane.addArrayColumn(resources.getString("GML.name"));
 	
@@ -84,8 +78,8 @@ function viewResultByUser(userId, userName) {
 	ButtonPane buttonPane = gef.getButtonPane();
   	buttonPane.addButton(close);
 	out.print("<br/>"+buttonPane.print());
-	out.print(frame.printAfter());
-	out.print(window.printAfter());
 %>
+</view:frame>
+</view:window>
 </body>
 </html>

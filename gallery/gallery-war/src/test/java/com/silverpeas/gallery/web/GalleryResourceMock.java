@@ -28,17 +28,16 @@ import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.model.AlbumDetail;
-import com.silverpeas.gallery.model.PhotoDetail;
-import com.silverpeas.gallery.model.PhotoPK;
+import com.silverpeas.gallery.model.Media;
+import com.silverpeas.gallery.model.MediaPK;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import javax.ws.rs.Path;
 
-import static com.silverpeas.gallery.web.GalleryResourceURIs.GALLERY_BASE_URI;
+import static com.silverpeas.gallery.constant.GalleryResourceURIs.GALLERY_BASE_URI;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -51,6 +50,13 @@ import static org.mockito.Mockito.when;
 @Authorized
 public class GalleryResourceMock extends GalleryResource {
 
+  static String ALBUM_ID = "3";
+  static String PHOTO_ID = "7";
+  static String PHOTO_ID_DOESNT_EXISTS = "8";
+  static String VIDEO_ID = "26";
+  static String SOUND_ID = "38";
+  static String STREAMING_ID = "2638";
+
   private GalleryBm galleryBmMock = null;
 
   /*
@@ -58,40 +64,55 @@ public class GalleryResourceMock extends GalleryResource {
    * @see com.silverpeas.gallery.web.AbstractGalleryResource#getGalleryBm()
    */
   @Override
-  protected GalleryBm getGalleryBm() {
+  protected GalleryBm getMediaService() {
     try {
       if (galleryBmMock == null) {
         galleryBmMock = mock(GalleryBm.class);
 
         // getAlbum
-        when(galleryBmMock.getAlbum(any(NodePK.class), anyBoolean())).thenAnswer(
-            new Answer<AlbumDetail>() {
-
-              @Override
-              public AlbumDetail answer(final InvocationOnMock invocation) throws Throwable {
-                final NodePK nodePk = (NodePK) invocation.getArguments()[0];
-                if (nodePk == null || !"3".equals(nodePk.getId())) {
-                  return null;
-                }
-                return AlbumBuilder
-                    .getAlbumBuilder()
-                    .buildAlbum(nodePk.getId())
-                    .addPhoto(
-                        PhotoBuilder.getPhotoBuilder().buildPhoto("7", nodePk.getComponentName()));
-              }
-            });
-
-        // getPhoto
-        when(galleryBmMock.getPhoto(any(PhotoPK.class))).thenAnswer(new Answer<PhotoDetail>() {
+        when(galleryBmMock.getAlbum(any(NodePK.class))).thenAnswer(new Answer<AlbumDetail>() {
 
           @Override
-          public PhotoDetail answer(final InvocationOnMock invocation) throws Throwable {
-            final PhotoPK photoPk = (PhotoPK) invocation.getArguments()[0];
-            if (photoPk == null || !"7".equals(photoPk.getId())) {
+          public AlbumDetail answer(final InvocationOnMock invocation) throws Throwable {
+            final NodePK nodePk = (NodePK) invocation.getArguments()[0];
+            if (nodePk == null || !"3".equals(nodePk.getId())) {
               return null;
             }
-            return PhotoBuilder.getPhotoBuilder().buildPhoto(photoPk.getId(),
-                photoPk.getComponentName());
+            return AlbumBuilder.getAlbumBuilder().buildAlbum(nodePk.getId()).addMedia(
+                MediaBuilder.getMediaBuilder().buildPhoto(PHOTO_ID, nodePk.getComponentName()))
+                .addMedia(
+                    MediaBuilder.getMediaBuilder().buildVideo(VIDEO_ID, nodePk.getComponentName()))
+                .addMedia(
+                    MediaBuilder.getMediaBuilder().buildSound(SOUND_ID, nodePk.getComponentName()))
+                .addMedia(MediaBuilder.getMediaBuilder()
+                    .buildStreaming(STREAMING_ID, nodePk.getComponentName()));
+          }
+        });
+
+        // getPhoto
+        when(galleryBmMock.getMedia(any(MediaPK.class))).thenAnswer(new Answer<Media>() {
+
+          @Override
+          public Media answer(final InvocationOnMock invocation) throws Throwable {
+            final MediaPK mediaPk = (MediaPK) invocation.getArguments()[0];
+            if (mediaPk == null ||
+                (!PHOTO_ID.equals(mediaPk.getId()) && !VIDEO_ID.equals(mediaPk.getId()) &&
+                    !SOUND_ID.equals(mediaPk.getId()) && !STREAMING_ID.equals(mediaPk.getId()))) {
+              return null;
+            }
+            if (VIDEO_ID.equals(mediaPk.getId())) {
+              return MediaBuilder.getMediaBuilder()
+                  .buildVideo(mediaPk.getId(), mediaPk.getComponentName());
+            } else if (SOUND_ID.equals(mediaPk.getId())) {
+              return MediaBuilder.getMediaBuilder()
+                  .buildSound(mediaPk.getId(), mediaPk.getComponentName());
+            } else if (STREAMING_ID.equals(mediaPk.getId())) {
+              return MediaBuilder.getMediaBuilder()
+                  .buildStreaming(mediaPk.getId(), mediaPk.getComponentName());
+            }
+            // Default
+            return MediaBuilder.getMediaBuilder()
+                .buildPhoto(mediaPk.getId(), mediaPk.getComponentName());
           }
         });
       }
@@ -108,7 +129,7 @@ public class GalleryResourceMock extends GalleryResource {
    * .gallery.model.PhotoDetail)
    */
   @Override
-  protected void verifyUserPhotoAccess(final PhotoDetail photo) {
+  protected void verifyUserMediaAccess(final Media media) {
     // Nothing to do.
   }
 }

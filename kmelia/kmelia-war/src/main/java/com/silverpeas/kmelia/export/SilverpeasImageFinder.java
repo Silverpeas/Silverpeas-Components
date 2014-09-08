@@ -26,20 +26,18 @@ package com.silverpeas.kmelia.export;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.SystemUtils;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 import com.silverpeas.gallery.control.ejb.GalleryBm;
-import com.silverpeas.gallery.model.PhotoDetail;
-import com.silverpeas.gallery.model.PhotoPK;
-
+import com.silverpeas.gallery.model.MediaPK;
+import com.silverpeas.gallery.model.Photo;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.JNDINames;
-
-import org.apache.commons.lang.SystemUtils;
 
 /**
  * A finder of images that were uploaded by a Silverpeas component instance, whatever this component
@@ -143,10 +141,9 @@ public class SilverpeasImageFinder {
     Map<String, String> parameters = getQueryParameters(href);
     String imageId = parameters.get("ImageId");
     String componentId = parameters.get("ComponentId");
-    PhotoDetail image = getGalleryBm().getPhoto(
-        new PhotoPK(imageId, componentId));
-    return FileRepositoryManager.getAbsolutePath(image.getPhotoPK().getInstanceId()) + "image"
-        + image.getId() + "/" + image.getImageName();
+    Photo image = getGalleryBm().getPhoto(new MediaPK(imageId, componentId));
+    return FileRepositoryManager.getAbsolutePath(image.getMediaPK().getInstanceId()) + "image"
+        + image.getId() + "/" + image.getFileName();
   }
 
   private Map<String, String> getQueryParameters(String href) {

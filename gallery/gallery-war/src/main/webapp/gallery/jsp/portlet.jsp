@@ -24,171 +24,100 @@
 
 --%>
 
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ include file="check.jsp" %>
+<fmt:setLocale value="${requestScope.resources.language}"/>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
-<%
-  AlbumDetail root = (AlbumDetail) request.getAttribute("root");
-  List photos = (List) request.getAttribute("Photos");
+<view:setConstant var="TINY_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.TINY"/>
 
-// parametrage pour l'affichage des dernieres photos telechargees
-  int nbTotal = 10;
-  int nbAffiche = 0;
-%>
+<c:set var="componentId" value="${requestScope.browseContext[3]}"/>
+<c:set var="root" value="${requestScope.root}"/>
+<jsp:useBean id="root" type="com.silverpeas.gallery.model.AlbumDetail"/>
+<c:set var="mediaList" value="${requestScope.MediaList}"/>
+<jsp:useBean id="mediaList" type="java.util.List<com.silverpeas.gallery.model.Media>"/>
 
 <html>
 <head>
-<view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script language="javascript">
+  <view:looknfeel/>
+  <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+  <script language="javascript">
 
-function goToAlbum(id) {
-    document.albumForm.Id.value = id;
-    document.albumForm.submit();
-}
-
-function goToImage(photoId) {
-    document.imageForm.PhotoId.value = photoId;
-    document.imageForm.submit();
-}
-
-</script>
-<style type="text/css">
-<!--
-div {
-	position: relative;
-	display:inline;
-}
-#vignette img {
-	margin: 1px;
-	padding: 2px;
-	border: 2px solid #B3BFD1;
-}
--->
-</style>
-</head>
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
-
-  <%
-    browseBar.setDomainName(spaceLabel);
-    browseBar.setComponentName(componentLabel, "Main");
-
-    NavigationList navList = gef.getNavigationList();
-    navList.setTitle(root.getName());
-    Iterator it = root.getChildrenDetails().iterator();
-
-    while (it.hasNext()) {
-      NodeDetail unAlbum = (NodeDetail) it.next();
-      int id = unAlbum.getId();
-      String nom = unAlbum.getName();
-      String lien = null;
-      navList.addItem(nom, "javascript:onClick=goToAlbum('" + id + "')", -1, unAlbum.getDescription(),
-          lien);
+    function goToAlbum(id) {
+      document.albumForm.Id.value = id;
+      document.albumForm.submit();
     }
-    out.println(navList.print());
 
+    function goToImage(photoId) {
+      document.imageForm.MediaId.value = photoId;
+      document.imageForm.submit();
+    }
 
-    // afficher les dernieres photos telechargees
-    // ------------------------------------------
+  </script>
+  <style type="text/css">
 
-    Board board = gef.getBoard();
-  %>
-			<br>
-	<%
-	out.println(board.printBefore());
+    div {
+      position: relative;
+      display: inline;
+    }
 
-	// affichage de l'entete
-	%>
-		<table border="0" cellspacing="0" cellpadding="0" align=center width="100%">
-		<tr>
-			<td align="center" class=ArrayNavigation>
-				<%
-					out.println(resource.getString("gallery.dernieres"));
-				%>
-			</td>
-		</tr>
-        <%
-          if (photos != null) {
-            String vignette_url = null;
-            String altTitle = "";
-            int nbPhotos = photos.size();
+    #vignette img {
+      margin: 1px;
+      padding: 2px;
+      border: 2px solid #B3BFD1;
+    }
 
-            if (nbPhotos > 0) {
-              PhotoDetail photo;
-              String idP;
-              Iterator itP = photos.iterator();
-              while (itP.hasNext() && nbTotal != 0 && nbAffiche < nbTotal) {
-                // affichage de la photo
-                out.println("<tr><td>&nbsp;</td></tr>");
-                out.println("<tr><td align=\"center\">");
-
-                while (itP.hasNext() && nbAffiche < nbTotal) {
-                  photo = (PhotoDetail) itP.next();
-                  altTitle = "";
-                  if (photo != null) {
-                    idP = photo.getPhotoPK().getId();
-                    String nomRep = resource.getSetting("imagesSubDirectory") + idP;
-                    String name = photo.getImageName();
-                    if (name != null) {
-                      name = photo.getId() + "_66x50.jpg";
-                      vignette_url = FileServerUtils.getUrl(componentId, name, photo.
-                          getImageMimeType(), nomRep);
-                      if (!photo.isPreviewable()) {
-                        vignette_url = m_context + "/gallery/jsp/icons/notAvailable_" + resource.
-                            getLanguage() + "_66x50.jpg";
-                      }
-
-                      altTitle = EncodeHelper.javaStringToHtmlString(photo.getTitle());
-                      if (photo.getDescription() != null && photo.getDescription().length() > 0) {
-                        altTitle += " : " + EncodeHelper.javaStringToHtmlString(photo.getDescription());
-                      }
-                    } else {
-                      vignette_url = m_context + "/gallery/jsp/icons/notAvailable_" + resource.
-                          getLanguage() + "_66x50.jpg";
-                    }
-        %>
-        <div id="vignette">
-          <a href="javascript:onClick=goToImage('<%=idP%>')"><IMG SRC="<%=vignette_url%>" border="0" alt="<%=altTitle%>" title="<%=altTitle%>"></a>
-        </div>
-        <%
-                nbAffiche = nbAffiche + 1;
-              }
-            }
-            // on passe e la ligne suivante
-            out.println("</td></tr>");
-            if (itP.hasNext()) {
-              out.println("<tr><td>&nbsp;</td></tr>");
-            }
-          }
-        } else {
-        %>
-				<tr>
-					<td colspan="5" valign="middle" align="center" width="100%">
-						<br>
-						<%
-							out.println(resource.getString("gallery.pasPhoto"));
-						%>
-						<br>
-					</td>
-				</tr>
-			<%
-		}
-	}
-	%>
-		</table>
-	<%
-
-  	out.println(board.printAfter());
-
-  	out.println(frame.printAfter());
-	out.println(window.printAfter());
-%>
+  </style>
+</head>
+<body>
+<view:navigationList title="${root.name}">
+  <c:forEach var="album" items="${root.childrenDetails}">
+    <view:navigationListItem label="${album.name}" action="javascript:onClick=goToAlbum('${album.id}')"
+                             description="${album.description}"/>
+  </c:forEach>
+</view:navigationList>
+<view:board>
+  <table border="0" cellspacing="0" cellpadding="0" align=center width="100%">
+    <tr>
+      <td align="center" class=ArrayNavigation>
+        <fmt:message key="gallery.last.media"/>
+      </td>
+    </tr>
+    <c:choose>
+      <c:when test="${not empty mediaList}">
+        <tr>
+          <td>&#160;</td>
+        </tr>
+        <tr>
+          <td align="center">
+            <c:forEach var="media" items="${mediaList}">
+              <div id="vignette">
+                <a href="javascript:onClick=goToImage('${media.id}')">
+                  <img src="${media.getApplicationThumbnailUrl(TINY_RESOLUTION)}" border="0" alt="<c:out value='${media.title}'/>" title="<c:out value='${media.title}'/>"></a>
+              </div>
+            </c:forEach>
+          </td>
+        </tr>
+      </c:when>
+      <c:otherwise>
+        <tr>
+          <td colspan="5" valign="middle" align="center" width="100%">
+            <br><fmt:message key="gallery.empty.data"/><br>
+          </td>
+        </tr>
+      </c:otherwise>
+    </c:choose>
+  </table>
+</view:board>
 <form name="albumForm" action="ViewAlbum" Method="POST" target="MyMain">
-	<input type="hidden" name="Id">
+  <input type="hidden" name="Id">
 </form>
-<form name="imageForm" action="PreviewPhoto" Method="POST" target="MyMain">
-	<input type="hidden" name="PhotoId">
+<form name="imageForm" action="MediaView" Method="POST" target="MyMain">
+  <input type="hidden" name="MediaId">
 </form>
 </body>
 </html>

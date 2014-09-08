@@ -136,23 +136,10 @@ function goToSubscription(id) {
 </script>
 </head>
 <body>
-<%
-
-    Window window = gef.getWindow();
-    BrowseBar browseBar = window.getBrowseBar();
-    browseBar.setDomainName(kmeliaScc.getSpaceLabel());
-    browseBar.setComponentName(kmeliaScc.getComponentLabel());
-    browseBar.setPath(kmeliaScc.getString("MySubscriptions"));
-	
-	//Le cadre
-    Frame frame = gef.getFrame();
-    Board board = gef.getBoard();
-
-    //Debut code
-    out.println(window.printBefore());
-    out.println(frame.printBefore());
-    out.println(board.printBefore());
-%>
+<view:browseBar path='<%=kmeliaScc.getString("MySubscriptions")%>'/>
+<view:window popup="true">
+<view:frame>
+<view:board>
 <!-- Cadre exterieur -->
   <TABLE CELLPADDING="5" CELLSPACING="0" BORDER="0" WIDTH="100%" align="center">
     <tr>
@@ -161,18 +148,16 @@ function goToSubscription(id) {
         displaySubscriptionsList(kmeliaScc, deleteSrc, hLineSrc, resources, out);
 %>	
 	</td></tr></table>
-<%		
-	out.println(board.printAfter());
-    
+	</view:board>
+<%		    
 	ButtonPane buttonPane = gef.getButtonPane();
     buttonPane.addButton(cancelButton);
-    out.println("<br/><center>"+buttonPane.print()+"</center></br>");
-        
-	out.println(frame.printAfter());
-	out.println(window.printAfter());
+    out.println("<br/><center>"+buttonPane.print()+"</center>");
 %>
+</view:frame>
+</view:window>
 <FORM NAME="subscriptionForm" ACTION="subscriptionsManager.jsp" METHOD="POST">
-<input type="hidden" name="Action"><input type="hidden" name="Id"></FORM>
+<input type="hidden" name="Action"/><input type="hidden" name="Id"/></FORM>
 </BODY>
 </HTML>
 <% } %>

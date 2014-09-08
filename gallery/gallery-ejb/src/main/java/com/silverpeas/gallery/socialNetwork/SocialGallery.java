@@ -29,20 +29,20 @@ package com.silverpeas.gallery.socialNetwork;
  * @see SocialInformationGallery
  *
  */
-import java.util.ArrayList;
-import java.util.List;
-
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import com.silverpeas.calendar.Date;
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.provider.SocialGalleryInterface;
-
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.date.Period;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SocialGallery implements SocialGalleryInterface {
 
@@ -56,8 +56,7 @@ public class SocialGallery implements SocialGalleryInterface {
    */
   @Override
   public List<SocialInformation> getSocialInformationsList(String userId, Date begin, Date end) {
-    return getGalleryBm().getAllPhotosByUserid(userId, begin, end);
-
+    return getGalleryBm().getAllMediaByUserId(userId, Period.from(begin, end));
   }
 
   /**
@@ -73,8 +72,8 @@ public class SocialGallery implements SocialGalleryInterface {
   @Override
   public List<SocialInformation> getSocialInformationsListOfMyContacts(String myId,
       List<String> myContactsIds, Date begin, Date end) throws SilverpeasException {
-    return getGalleryBm().getSocialInformationsListOfMyContacts(myContactsIds, this.
-        getListAvailable(myId), begin, end);
+    return getGalleryBm().getSocialInformationListOfMyContacts(myContactsIds, this.
+        getListAvailable(myId), Period.from(begin, end));
   }
 
   private GalleryBm getGalleryBm() {
@@ -84,14 +83,12 @@ public class SocialGallery implements SocialGalleryInterface {
   /**
    * gets the available component for a given users list
    *
-   * @param myId
-   * @param myContactsIds
-   * @param firstIndex
+   * @param userId
    * @return List<String>
    */
-  private List<String> getListAvailable(String userid) {
+  private List<String> getListAvailable(String userId) {
     List<ComponentInstLight> availableList = OrganisationControllerFactory.
-        getOrganisationController().getAvailComponentInstLights(userid, "gallery");
+        getOrganisationController().getAvailComponentInstLights(userId, "gallery");
     List<String> idsList = new ArrayList<String>(availableList.size());
     for (ComponentInstLight comp : availableList) {
       idsList.add(comp.getId());

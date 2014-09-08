@@ -41,7 +41,6 @@ Button validateButton 	= gef.getFormButton(resources.getString("GML.validate"), 
 <HTML>
 <HEAD>
 <TITLE><%=resources.getString("GML.popupTitle")%></TITLE>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script LANGUAGE="JavaScript" TYPE="text/javascript">
@@ -81,21 +80,11 @@ function isCorrectForm() {
 }
 </script>
 </HEAD>
-
 <BODY>
-<%
-    Window window = gef.getWindow();
-    BrowseBar browseBar = window.getBrowseBar();
-    browseBar.setDomainName(spaceLabel);
-    browseBar.setComponentName(componentLabel);
-    browseBar.setPath(kmeliaScc.getString("kmelia.PublicationSuspended"));
-	
-    Frame frame = gef.getFrame();
-
-    out.println(window.printBefore());
-    out.println(frame.printBefore());
-%>
-
+<view:browseBar path='<%=kmeliaScc.getString("kmelia.PublicationSuspended")%>'/>
+<view:window popup="true">
+<view:frame>
+<view:board>
 <FORM NAME="refusalForm" Action="SuspendPublication" Method="POST">
 <TABLE ALIGN=CENTER CELLPADDING=2 CELLSPACING=0 BORDER=0 WIDTH="98%" CLASS=intfdcolor>
 	<tr>
@@ -110,19 +99,16 @@ function isCorrectForm() {
 		</td>
 	</tr>
 </TABLE>
-
 </FORM>
+</view:board>
 <%
-    out.println(frame.printMiddle());
-
     ButtonPane buttonPane = gef.getButtonPane();
     buttonPane.addButton(validateButton);
     buttonPane.addButton(cancelButton);
 	
 	out.println("<br><center>"+buttonPane.print()+"</center>");
-
-	out.println(frame.printAfter());
-	out.println(window.printAfter());	
 %>
+</view:frame>
+</view:window>
 </BODY>
 </HTML>

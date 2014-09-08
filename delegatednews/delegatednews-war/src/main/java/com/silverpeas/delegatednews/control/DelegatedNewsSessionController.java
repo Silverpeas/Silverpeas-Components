@@ -24,6 +24,9 @@
 
 package com.silverpeas.delegatednews.control;
 
+import static com.stratelia.webactiv.SilverpeasRole.admin;
+import static com.stratelia.webactiv.SilverpeasRole.user;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -31,30 +34,20 @@ import java.util.Date;
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
-import org.codehaus.jackson.xc.JaxbAnnotationIntrospector;
+
 import org.codehaus.jackson.map.AnnotationIntrospector;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.xc.JaxbAnnotationIntrospector;
 
 import com.silverpeas.delegatednews.DelegatedNewsRuntimeException;
 import com.silverpeas.delegatednews.model.DelegatedNews;
 import com.silverpeas.delegatednews.service.DelegatedNewsService;
 import com.silverpeas.delegatednews.service.ServicesFactory;
 import com.silverpeas.delegatednews.web.DelegatedNewsEntity;
-import com.silverpeas.pdc.web.PdcClassificationEntity;
-import com.silverpeas.pdc.web.PdcPositionEntity;
-import com.silverpeas.pdc.web.PdcPositionValueEntity;
-import com.silverpeas.profile.web.UserProfileEntity;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import com.sun.jersey.api.json.JSONConfiguration;
-import com.sun.jersey.api.json.JSONJAXBContext;
-import com.sun.jersey.api.json.JSONMarshaller;
-import com.sun.jersey.json.impl.JSONMarshallerImpl;
-
-import static com.stratelia.webactiv.SilverpeasRole.*;
 
 public class DelegatedNewsSessionController extends AbstractComponentSessionController {
 
@@ -69,8 +62,8 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
   public DelegatedNewsSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-        "com.silverpeas.delegatednews.multilang.DelegatedNewsBundle",
-        "com.silverpeas.delegatednews.settings.DelegatedNewsIcons");
+        "org.silverpeas.delegatednews.multilang.DelegatedNewsBundle",
+        "org.silverpeas.delegatednews.settings.DelegatedNewsIcons");
 
     service = ServicesFactory.getDelegatedNewsService();
   }
@@ -137,16 +130,7 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
    */
   public void validateDelegatedNews(int pubId) {
     // valide l'actualité
-    service.validateDelegatedNews(pubId, this.getUserId());
-
-    DelegatedNews delegatedNews = service.getDelegatedNews(pubId);
-    PublicationDetail pubDetail = delegatedNews.getPublicationDetail();
-
-    // alerte le dernier contributeur de la décision
-    service.notifyDelegatedNewsValid(pubDetail.getPK().getId(), pubDetail.getName(this
-        .getLanguage()), this.getUserId(), this.getUserDetail().getDisplayedName(), delegatedNews
-        .getContributorId(), this.getComponentId());
-
+    service.validateDelegatedNews(pubId, getUserId());
   }
 
   /**
@@ -154,23 +138,13 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
    */
   public void refuseDelegatedNews(int pubId, String refuseReasonText) {
     // refuse l'actualité
-    service.refuseDelegatedNews(pubId, this.getUserId());
-
-    DelegatedNews delegatedNews = service.getDelegatedNews(pubId);
-    PublicationDetail pubDetail = delegatedNews.getPublicationDetail();
-
-    // alerte le dernier contributeur de la décision
-    service.notifyDelegatedNewsRefused(pubDetail.getPK().getId(), pubDetail.getName(this
-        .getLanguage()), refuseReasonText, this.getUserId(), this.getUserDetail()
-        .getDisplayedName(), delegatedNews.getContributorId(), this.getComponentId());
-
+    service.refuseDelegatedNews(pubId, this.getUserId(), refuseReasonText);
   }
 
   /**
    * Met à jour les dates de visibilité de l'actualité déléguée passée en paramètre
    */
   public void updateDateDelegatedNews(int pubId, Date beginDate, Date endDate) {
-
     service.updateDateDelegatedNews(pubId, beginDate, endDate);
   }
 

@@ -24,17 +24,19 @@
  */
 package com.silverpeas.gallery.processing;
 
+import org.junit.Test;
 import org.silverpeas.util.ImageLoader;
+
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
 
-import javax.imageio.ImageIO;
-import org.junit.Test;
-
-import static com.silverpeas.util.PathTestUtil.*;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 
@@ -48,16 +50,16 @@ public class ImageResizerTest {
   }
 
    //Size of koala (1024 x 768)
-  File jpegCmyk = new File(TARGET_DIR + "test-classes" + SEPARATOR + "imageJpgCmjn.jpg");
-   //Size of koala (1024 x 768)
-  File koala = new File(TARGET_DIR + "test-classes" + SEPARATOR + "Koala.jpg");
+   File jpegCmyk = getDocumentNamed("/imageJpgCmjn.jpg");
+  //Size of koala (1024 x 768)
+  File koala = getDocumentNamed("/Koala.jpg");
 
   /**
    * Test of resizeImage method, of class ImageResizer.
    */
   @Test
   public void testResizeImage() throws Exception {
-    File outputFile = new File(TARGET_DIR + "test-classes" + SEPARATOR + "resizedKoala.jpg");
+    File outputFile = new File(koala.getParentFile(), "resizedKoala.jpg");
     ImageResizer instance = new ImageResizer(ImageLoader.loadImage(koala), 512);
     OutputStream os = new FileOutputStream(outputFile);
     try {
@@ -73,7 +75,7 @@ public class ImageResizerTest {
 
   @Test
   public void testResizeCMYKImage() throws Exception {
-    File outputFile = new File(TARGET_DIR + "test-classes" + SEPARATOR + "resizedImageJpgCmjn.jpg");
+    File outputFile = new File(jpegCmyk.getParentFile() , "resizedImageJpgCmjn.jpg");
     ImageResizer instance = new ImageResizer(ImageLoader.loadImage(jpegCmyk), 512);
     OutputStream os = new FileOutputStream(outputFile);
     try {
@@ -97,5 +99,12 @@ public class ImageResizerTest {
     assertThat(result, is(notNullValue()));
   }
 
-
+  private static File getDocumentNamed(final String name) {
+    final URL documentLocation = ImageResizerTest.class.getResource(name);
+    try {
+      return new File(documentLocation.toURI());
+    } catch (URISyntaxException e) {
+      return null;
+    }
+  }
 }

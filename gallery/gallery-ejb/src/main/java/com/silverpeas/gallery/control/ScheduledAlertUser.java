@@ -20,20 +20,14 @@
  */
 package com.silverpeas.gallery.control;
 
-import java.util.Collection;
-
-import org.silverpeas.core.admin.OrganisationController;
-
-import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.model.GalleryRuntimeException;
-import com.silverpeas.gallery.model.PhotoDetail;
+import com.silverpeas.gallery.model.Media;
 import com.silverpeas.scheduler.Scheduler;
 import com.silverpeas.scheduler.SchedulerEvent;
 import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.SchedulerFactory;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.silverpeas.util.StringUtil;
-
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -43,10 +37,13 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.admin.OrganisationController;
+
+import java.util.Collection;
+
+import static com.silverpeas.gallery.control.ejb.MediaServiceFactory.getMediaService;
 
 public class ScheduledAlertUser implements SchedulerEventListener {
 
@@ -77,9 +74,9 @@ public class ScheduledAlertUser implements SchedulerEventListener {
       int nbDays = Integer.parseInt(resources.getString("nbDaysForAlertUser"));
 
       // rechercher la liste des photos arrivant à échéance
-      Collection<PhotoDetail> photos = getGalleryBm().getAllPhotoEndVisible(nbDays);
+      Collection<Media> mediaList = getMediaService().getAllMediaThatWillBeNotVisible(nbDays);
       SilverTrace.info("gallery", "ScheduledAlertUser.doScheduledAlertUser()",
-          "root.MSG_GEN_PARAM_VALUE", "Photos=" + photos.toString());
+          "root.MSG_GEN_PARAM_VALUE", "MediaList=" + mediaList.toString());
 
       OrganisationController orga = new OrganizationController();
 
@@ -93,29 +90,29 @@ public class ScheduledAlertUser implements SchedulerEventListener {
 
       StringBuilder messageBody = new StringBuilder();
       StringBuilder messageBody_en = new StringBuilder();
-      PhotoDetail nextPhoto = new PhotoDetail();
+      Media nextMedia = null;
 
-      for (PhotoDetail photo : photos) {
-        nextPhoto = photo;
-        if (photo.getInstanceId().equals(currentInstanceId)) {
+      for (Media media : mediaList) {
+        nextMedia = media;
+        if (media.getInstanceId().equals(currentInstanceId)) {
           // construire la liste des images pour cette instance (a mettre dans
           // le corps du message)
-          messageBody.append(message.getString("gallery.notifName")).append(" : ").append(photo.
+          messageBody.append(message.getString("gallery.notifName")).append(" : ").append(media.
               getName()).append("\n");
           messageBody_en.append(message_en.getString("gallery.notifName")).append(" : ").append(
-              photo.
-              getName()).append("\n");
+              media.
+                  getName()).append("\n");
           SilverTrace.info("gallery", "ScheduledAlertUser.doScheduledAlertUser()",
               "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
         } else {
           if (currentInstanceId != null) {
             // Création du message à envoyer aux admins
             UserDetail[] admins = orga.getUsers("useless", currentInstanceId, "admin");
-            createMessage(message, messageBody, message_en, messageBody_en, photo, admins);
+            createMessage(message, messageBody, message_en, messageBody_en, media, admins);
             messageBody = new StringBuilder();
             messageBody_en = new StringBuilder();
           }
-          currentInstanceId = photo.getInstanceId();
+          currentInstanceId = media.getInstanceId();
           String nameInstance = orga.getComponentInst(currentInstanceId).getLabel();
           SilverTrace.info("gallery", "ScheduledAlertUser.doScheduledAlertUser()",
               "root.MSG_GEN_PARAM_VALUE", "currentInstanceId = " + currentInstanceId);
@@ -124,14 +121,14 @@ public class ScheduledAlertUser implements SchedulerEventListener {
           // l'instance en cours
           messageBody.append(message.getString("gallery.notifTitle")).append(
               nameInstance).append("\n").append("\n");
-          messageBody.append(message.getString("gallery.notifName")).append(
-              " : ").append(photo.getName()).append("\n");
+          messageBody.append(message.getString("gallery.notifName")).append(" : ")
+              .append(media.getName()).append("\n");
           messageBody_en.append(message.getString("gallery.notifTitle")).append(nameInstance).
               append(
               "\n").append("\n");
           messageBody_en.append(message_en.getString("gallery.notifName")).append(" : ").append(
-              photo.
-              getName()).append("\n");
+              media.
+                  getName()).append("\n");
 
           SilverTrace.info("gallery", "ScheduledAlertUser.doScheduledAlertUser()",
               "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
@@ -141,7 +138,7 @@ public class ScheduledAlertUser implements SchedulerEventListener {
       // cours
       if (currentInstanceId != null) {
         UserDetail[] admins = orga.getUsers("useless", currentInstanceId, "admin");
-        createMessage(message, messageBody, message_en, messageBody_en, nextPhoto, admins);
+        createMessage(message, messageBody, message_en, messageBody_en, nextMedia, admins);
       }
     } catch (Exception e) {
       throw new GalleryRuntimeException("ScheduledAlertUser.doScheduledAlertUser()",
@@ -153,8 +150,7 @@ public class ScheduledAlertUser implements SchedulerEventListener {
   }
 
   private void createMessage(ResourceLocator message, StringBuilder messageBody,
-      ResourceLocator message_en, StringBuilder messageBody_en, PhotoDetail photo,
-      UserDetail[] admins) {
+      ResourceLocator message_en, StringBuilder messageBody_en, Media media, UserDetail[] admins) {
     if (admins == null || admins.length == 0) {
       return;
     }
@@ -177,14 +173,14 @@ public class ScheduledAlertUser implements SchedulerEventListener {
     for (UserDetail admin : admins) {
       notifMetaData.addUserRecipient(new UserRecipient(admin));
     }
-    notifMetaData.setLink(getPhotoUrl(photo));
-    notifMetaData.setComponentId(photo.getInstanceId());
+    notifMetaData.setLink(getPhotoUrl(media));
+    notifMetaData.setComponentId(media.getInstanceId());
 
     // 2. envoie de la notification aux admin
-    if (StringUtil.isDefined(photo.getCreatorId())) {
-      notifMetaData.setSender(photo.getCreatorId());
+    if (StringUtil.isDefined(media.getCreatorId())) {
+      notifMetaData.setSender(media.getCreatorId());
     }
-    NotificationSender notifSender = new NotificationSender(photo.getInstanceId());
+    NotificationSender notifSender = new NotificationSender(media.getInstanceId());
     try {
       notifSender.notifyUser(notifMetaData);
     } catch (NotificationManagerException e) {
@@ -193,13 +189,8 @@ public class ScheduledAlertUser implements SchedulerEventListener {
     }
   }
 
-  private String getPhotoUrl(PhotoDetail photoDetail) {
-    return URLManager.getURL(null, photoDetail.getInstanceId())
-        + photoDetail.getURL();
-  }
-
-  private GalleryBm getGalleryBm() {
-    return EJBUtilitaire.getEJBObjectRef(JNDINames.GALLERYBM_EJBHOME, GalleryBm.class);
+  private String getPhotoUrl(Media media) {
+    return URLManager.getURL(null, media.getInstanceId()) + media.getURL();
   }
 
   @Override

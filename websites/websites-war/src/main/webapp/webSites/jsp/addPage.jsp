@@ -179,30 +179,13 @@ function sendData() {
 }
 </script>
 </HEAD>
+<BODY onload="document.topicForm.Name.focus()">
+<view:browseBar path='<%=resources.getString("NomPage")%>'/>
+<view:window popup="true">
+<view:frame>
+<view:board>
 
-
-<BODY bgcolor="white" topmargin="15" leftmargin="20" onload="document.topicForm.Name.focus()">
-<%
-    Window window = gef.getWindow();
-    BrowseBar browseBar = window.getBrowseBar();
-    browseBar.setDomainName(spaceLabel);
-    browseBar.setComponentName(componentLabel);
-    browseBar.setPath(resources.getString("NomPage"));
-
-    //Le cadre
-    Frame frame = gef.getFrame();
-
-	//Le board
-	Board board = gef.getBoard();
-
-    //Debut code
-    out.println(window.printBefore());
-    out.println(frame.printBefore());
-	out.print(board.printBefore());
-
-%>
-
-	<TABLE ALIGN=CENTER CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%" CLASS=intfdcolor4>
+	<TABLE ALIGN=CENTER CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%">
 	<FORM NAME="topicForm">
     <TR>
         <TD class="txtlibform"><%=resources.getString("GML.name")+" "+resources.getString("Ex")%> : </TD>
@@ -214,22 +197,15 @@ function sendData() {
         </TR>
 	</FORM>
     </TABLE>
-
+</view:board>
 <%
-	//fin code
-	out.print(board.printAfter());
-    out.println(frame.printMiddle());
-
     ButtonPane buttonPane = gef.getButtonPane();
     buttonPane.addButton(validateButton);
     buttonPane.addButton(cancelButton);
-
-	out.println("<br><center>"+buttonPane.print()+"</center><br>");
-
-    out.println(frame.printAfter());
-    out.println(window.printAfter());
+	out.println(buttonPane.print());
 %>
-
+</view:frame>
+</view:window>
 
 <FORM NAME="topicDetailForm" ACTION="addPage.jsp" METHOD=POST>
   <input type="hidden" name="Action" value="verif">

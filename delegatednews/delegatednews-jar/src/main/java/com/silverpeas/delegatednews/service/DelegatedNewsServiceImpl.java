@@ -20,6 +20,7 @@
  */
 package com.silverpeas.delegatednews.service;
 
+import com.silverpeas.SilverpeasContent;
 import com.silverpeas.delegatednews.dao.DelegatedNewsDao;
 import com.silverpeas.delegatednews.model.DelegatedNews;
 import com.silverpeas.ui.DisplayI18NHelper;
@@ -31,18 +32,22 @@ import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import javax.inject.Inject;
 
 import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.date.Period;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
@@ -61,11 +66,13 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
    * Ajout d'une actualité déléguée
    */
   @Override
-  public void addDelegatedNews(int pubId, String instanceId, String contributorId,
-      Date validationDate, Date beginDate, Date endDate) {
+  public void submitNews(String id, SilverpeasContent news, String lastUpdaterId, Period visibilityPeriod, String userId) {
     DelegatedNews delegatedNews =
-        new DelegatedNews(pubId, instanceId, contributorId, validationDate,
-            beginDate, endDate);
+      new DelegatedNews(Integer.parseInt(id), news.getComponentInstanceId(), lastUpdaterId, new Date(),
+          visibilityPeriod.getBeginDate(), visibilityPeriod.getEndDate());
+    
+    notifyDelegatedNewsToValidate(id, news, userId);
+    
     dao.saveAndFlush(delegatedNews);
   }
 
@@ -113,6 +120,8 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
       delegatedNews.setValidatorId(validatorId);
       delegatedNews.setValidationDate(new Date());
       dao.saveAndFlush(delegatedNews);
+      
+      notifyValidation(delegatedNews, validatorId);
     }
   }
 
@@ -120,13 +129,15 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
    * Refuse l'actualité déléguée passée en paramètre
    */
   @Override
-  public void refuseDelegatedNews(int pubId, String validatorId) {
+  public void refuseDelegatedNews(int pubId, String validatorId, String refusalMotive) {
     DelegatedNews delegatedNews = dao.findOne(Integer.valueOf(pubId));
     if (delegatedNews != null) {
       delegatedNews.setStatus(DelegatedNews.NEWS_REFUSED);
       delegatedNews.setValidatorId(validatorId);
       delegatedNews.setValidationDate(new Date());
       dao.saveAndFlush(delegatedNews);
+      
+      notifyDelegatedNewsRefused(delegatedNews, refusalMotive, validatorId);
     }
   }
 
@@ -147,15 +158,7 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
    * @return
    */
   protected SilverpeasTemplate getNewTemplate() {
-    ResourceLocator rs =
-        new ResourceLocator("com.silverpeas.delegatednews.settings.DelegatedNewsSettings", "");
-    Properties templateConfiguration = new Properties();
-    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, rs.getString(
-        "templatePath"));
-    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, rs.getString(
-        "customersTemplatePath"));
-
-    return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfiguration);
+    return SilverpeasTemplateFactory.createSilverpeasTemplateOnComponents("delegatednews");
   }
 
   /**
@@ -166,6 +169,16 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
     // This is to resolve Serializable problems
     OrganisationController orga = new OrganizationController();
     return orga;
+  }
+  
+  private String getAppId() {
+    String[] tabInstanceId = getOrganisationController().getCompoId("delegatednews");
+    String delegatednewsInstanceId = null;
+    for (String element : tabInstanceId) {
+      delegatednewsInstanceId = element;
+      break;
+    }
+    return delegatednewsInstanceId;
   }
 
   /**
@@ -198,10 +211,8 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
   /**
    * Notifie l'Equipe éditoriale d'une actualité à valider
    */
-  @Override
-  public void notifyDelegatedNewsToValidate(String pubId, String pubName, String senderId,
-      String senderName, String delegatednewsInstanceId) {
-
+  private void notifyDelegatedNewsToValidate(String id, SilverpeasContent news, String senderId) {
+    String delegatednewsInstanceId = getAppId();
     // Notification des membres de l'équipe éditoriale
     try {
       if (delegatednewsInstanceId == null) {
@@ -211,7 +222,7 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
       } else {
         Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
         ResourceLocator message = new ResourceLocator(
-            "com.silverpeas.delegatednews.multilang.DelegatedNewsBundle", DisplayI18NHelper.
+            "org.silverpeas.delegatednews.multilang.DelegatedNewsBundle", DisplayI18NHelper.
                 getDefaultLanguage());
         String subject = message.getString("delegatednews.newsSuggest");
 
@@ -221,11 +232,11 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
         for (String lang : DisplayI18NHelper.getLanguages()) {
           SilverpeasTemplate template = getNewTemplate();
           templates.put(lang, template);
-          template.setAttribute("publicationId", pubId);
-          template.setAttribute("publicationName", pubName);
-          template.setAttribute("senderName", senderName);
+          template.setAttribute("publicationId", id);
+          template.setAttribute("publicationName", news.getTitle());
+          template.setAttribute("senderName", UserDetail.getById(senderId).getDisplayedName());
           ResourceLocator localizedMessage = new ResourceLocator(
-              "com.silverpeas.delegatednews.multilang.DelegatedNewsBundle", lang);
+              "org.silverpeas.delegatednews.multilang.DelegatedNewsBundle", lang);
           subject = localizedMessage.getString("delegatednews.newsSuggest");
           notifMetaData.addLanguage(lang, subject, "");
         }
@@ -237,12 +248,13 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
           notifMetaData.addUserRecipient(new UserRecipient(editorId));
         }
         notifMetaData.setComponentId(delegatednewsInstanceId);
+        notifMetaData.setLink(URLManager.getSimpleURL(URLManager.URL_PUBLI, id, false));
         notifyUsers(notifMetaData, senderId);
       }
     } catch (Exception e) {
       SilverTrace.warn("delegatednews", "DelegatedNewsServiceImpl.notifyDelegatedNewsToValidate()",
           "delegatednews.EX_IMPOSSIBLE_DALERTER_LES_EDITEURS", "pubId = " +
-              pubId + ", pubName = " + pubName, e);
+              news.getId() + ", pubName = " + news.getTitle(), e);
     }
   }
 
@@ -250,18 +262,19 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
    * Met à jour l'actualité déléguée passée en paramètre
    */
   @Override
-  public void updateDelegatedNews(int pubId, String instanceId, String status, String updaterId,
-      String validatorId, Date validationDate, Date dateHourBegin, Date dateHourEnd) {
-    DelegatedNews delegatedNews = dao.findOne(Integer.valueOf(pubId));
+  public void updateDelegatedNews(String id, SilverpeasContent news, String updaterId, Period visibilityPeriod) {
+    DelegatedNews delegatedNews = dao.findOne(Integer.valueOf(id));
     if (delegatedNews != null) {
-      delegatedNews.setInstanceId(instanceId);
-      delegatedNews.setStatus(status);
+      delegatedNews.setInstanceId(news.getComponentInstanceId());
+      delegatedNews.setStatus(DelegatedNews.NEWS_TO_VALIDATE);
       delegatedNews.setContributorId(updaterId);
-      delegatedNews.setValidatorId(validatorId);
-      delegatedNews.setValidationDate(validationDate);
-      delegatedNews.setBeginDate(dateHourBegin);
-      delegatedNews.setEndDate(dateHourEnd);
+      delegatedNews.setValidatorId(null);
+      delegatedNews.setValidationDate(new Date());
+      delegatedNews.setBeginDate(visibilityPeriod.getBeginDate());
+      delegatedNews.setEndDate(visibilityPeriod.getEndDate());
       dao.saveAndFlush(delegatedNews);
+      
+      notifyDelegatedNewsToValidate(id, news, updaterId);
     }
   }
 
@@ -279,19 +292,18 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
   /**
    * Notifie le dernier contributeur que l'actualité est validée
    */
-  @Override
-  public void notifyDelegatedNewsValid(String pubId, String pubName, String senderId,
-      String senderName, String contributorId, String delegatednewsInstanceId) {
-
+  private void notifyValidation(DelegatedNews news, String senderId) {
+    String delegatednewsInstanceId = getAppId();
     // Notification du dernier contributeur
     try {
       if (delegatednewsInstanceId == null) {
         SilverTrace.warn("delegatednews", "DelegatedNewsServiceImpl.notifyDelegatedNewsValid()",
             "delegatednews.EX_AUCUNE_INSTANCE_DISPONIBLE");
       } else {
+        PublicationDetail publication = news.getPublicationDetail();
         Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
         ResourceLocator message = new ResourceLocator(
-            "com.silverpeas.delegatednews.multilang.DelegatedNewsBundle", DisplayI18NHelper.
+            "org.silverpeas.delegatednews.multilang.DelegatedNewsBundle", DisplayI18NHelper.
                 getDefaultLanguage());
         String subject = message.getString("delegatednews.newsValid");
 
@@ -301,41 +313,40 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
         for (String lang : DisplayI18NHelper.getLanguages()) {
           SilverpeasTemplate template = getNewTemplate();
           templates.put(lang, template);
-          template.setAttribute("publicationId", pubId);
-          template.setAttribute("publicationName", pubName);
-          template.setAttribute("senderName", senderName);
+          template.setAttribute("publicationId", publication.getId());
+          template.setAttribute("publicationName", publication.getName());
+          template.setAttribute("senderName", UserDetail.getById(senderId).getDisplayedName());
           ResourceLocator localizedMessage = new ResourceLocator(
-              "com.silverpeas.delegatednews.multilang.DelegatedNewsBundle", lang);
+              "org.silverpeas.delegatednews.multilang.DelegatedNewsBundle", lang);
           subject = localizedMessage.getString("delegatednews.newsValid");
           notifMetaData.addLanguage(lang, subject, "");
         }
-        notifMetaData.addUserRecipient(new UserRecipient(contributorId));
+        notifMetaData.addUserRecipient(new UserRecipient(publication.getUpdaterId()));
         notifMetaData.setComponentId(delegatednewsInstanceId);
         notifyUsers(notifMetaData, senderId);
       }
     } catch (Exception e) {
       SilverTrace.warn("delegatednews", "DelegatedNewsServiceImpl.notifyDelegatedNewsValid()",
           "delegatednews.EX_IMPOSSIBLE_DALERTER_LE_CONTRIBUTEUR", "pubId = " +
-              pubId + ", pubName = " + pubName, e);
+              news.getPubId(), e);
     }
   }
 
   /**
    * Notifie le dernier contributeur que l'actualité est refusée
    */
-  @Override
-  public void notifyDelegatedNewsRefused(String pubId, String pubName, String refusalMotive,
-      String senderId, String senderName, String contributorId, String delegatednewsInstanceId) {
-
+  private void notifyDelegatedNewsRefused(DelegatedNews news, String refusalMotive, String userId) {
+    String delegatednewsInstanceId = getAppId();
     // Notification du dernier contributeur
     try {
       if (delegatednewsInstanceId == null) {
         SilverTrace.warn("delegatednews", "DelegatedNewsServiceImpl.notifyDelegatedNewsRefused()",
             "delegatednews.EX_AUCUNE_INSTANCE_DISPONIBLE");
       } else {
+        PublicationDetail publication = news.getPublicationDetail();
         Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
         ResourceLocator message = new ResourceLocator(
-            "com.silverpeas.delegatednews.multilang.DelegatedNewsBundle", DisplayI18NHelper.
+            "org.silverpeas.delegatednews.multilang.DelegatedNewsBundle", DisplayI18NHelper.
                 getDefaultLanguage());
         String subject = message.getString("delegatednews.newsRefused");
 
@@ -345,23 +356,23 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
         for (String lang : DisplayI18NHelper.getLanguages()) {
           SilverpeasTemplate template = getNewTemplate();
           templates.put(lang, template);
-          template.setAttribute("publicationId", pubId);
-          template.setAttribute("publicationName", pubName);
+          template.setAttribute("publicationId", news.getPubId());
+          template.setAttribute("publicationName", publication.getName(lang));
           template.setAttribute("refusalMotive", refusalMotive);
-          template.setAttribute("senderName", senderName);
+          template.setAttribute("senderName", UserDetail.getById(userId).getDisplayedName());
           ResourceLocator localizedMessage = new ResourceLocator(
-              "com.silverpeas.delegatednews.multilang.DelegatedNewsBundle", lang);
+              "org.silverpeas.delegatednews.multilang.DelegatedNewsBundle", lang);
           subject = localizedMessage.getString("delegatednews.newsRefused");
           notifMetaData.addLanguage(lang, subject, "");
         }
-        notifMetaData.addUserRecipient(new UserRecipient(contributorId));
+        notifMetaData.addUserRecipient(new UserRecipient(publication.getUpdaterId()));
         notifMetaData.setComponentId(delegatednewsInstanceId);
-        notifyUsers(notifMetaData, senderId);
+        notifyUsers(notifMetaData, userId);
       }
     } catch (Exception e) {
       SilverTrace.warn("delegatednews", "DelegatedNewsServiceImpl.notifyDelegatedNewsRefused()",
           "delegatednews.EX_IMPOSSIBLE_DALERTER_LE_CONTRIBUTEUR", "pubId = " +
-              pubId + ", pubName = " + pubName, e);
+              news.getPubId(), e);
     }
   }
 

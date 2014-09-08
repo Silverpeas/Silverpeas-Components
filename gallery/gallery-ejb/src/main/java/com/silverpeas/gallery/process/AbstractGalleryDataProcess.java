@@ -23,44 +23,38 @@
  */
 package com.silverpeas.gallery.process;
 
-import java.util.Date;
-
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-import org.silverpeas.process.management.AbstractDataProcess;
-import org.silverpeas.process.session.ProcessSession;
-
 import com.silverpeas.form.record.GenericRecordSetManager;
 import com.silverpeas.gallery.GalleryContentManager;
 import com.silverpeas.gallery.control.ejb.GalleryBm;
-import com.silverpeas.gallery.dao.PhotoDAO;
-import com.silverpeas.gallery.model.GalleryRuntimeException;
-import com.silverpeas.gallery.model.PhotoDetail;
-import com.silverpeas.gallery.model.PhotoPK;
+import com.silverpeas.gallery.control.ejb.MediaServiceFactory;
+import com.silverpeas.gallery.dao.MediaDAO;
+import com.silverpeas.gallery.model.InternalMedia;
+import com.silverpeas.gallery.model.Media;
+import com.silverpeas.gallery.model.MediaPK;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
-
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.node.control.NodeBm;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.persistence.repository.OperationContext;
+import org.silverpeas.process.management.AbstractDataProcess;
+import org.silverpeas.process.session.ProcessSession;
 
 /**
  * @author Yohann Chastagnier
  */
 public abstract class AbstractGalleryDataProcess extends
     AbstractDataProcess<GalleryProcessExecutionContext> {
-  private final PhotoDetail photo;
+  private final Media media;
   private GalleryContentManager galleryContentManager;
   private OrganisationController organizationController;
 
   /**
    * Default constructor
-   * @param photo
+   * @param media
    */
-  protected AbstractGalleryDataProcess(final PhotoDetail photo) {
-    this.photo = photo;
+  protected AbstractGalleryDataProcess(final Media media) {
+    this.media = media;
   }
 
   /*
@@ -87,32 +81,14 @@ public abstract class AbstractGalleryDataProcess extends
    * @return
    */
   protected GalleryBm getGalleryBm() {
-    try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.GALLERYBM_EJBHOME, GalleryBm.class);
-    } catch (final Exception e) {
-      throw new GalleryRuntimeException("AbstractGalleryDataProcess.getGalleryBm()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
+    return MediaServiceFactory.getMediaService();
   }
 
   /**
-   * Access to the NodeBm
-   * @return
+   * @return the media
    */
-  public NodeBm getNodeBm() {
-    try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
-    } catch (final Exception e) {
-      throw new GalleryRuntimeException("AbstractGalleryDataProcess.getNodeBm()",
-          SilverpeasRuntimeException.ERROR, "gallery.EX_IMPOSSIBLE_DE_FABRIQUER_NODEBM_HOME", e);
-    }
-  }
-
-  /**
-   * @return the photo
-   */
-  protected PhotoDetail getPhoto() {
-    return photo;
+  protected Media getMedia() {
+    return media;
   }
 
   /**
@@ -143,7 +119,7 @@ public abstract class AbstractGalleryDataProcess extends
   }
 
   /**
-   * Gets an XML form name if it exists for the photo
+   * Gets an XML form name if it exists for the media
    * @param context
    * @return
    */
@@ -166,58 +142,42 @@ public abstract class AbstractGalleryDataProcess extends
   }
 
   /**
-   * Centralizes the photo creation
+   * Centralizes the media creation
    * @param albumId
    * @param context
    * @throws Exception
    */
-  protected void createPhoto(final String albumId, final GalleryProcessExecutionContext context)
+  protected void createMedia(final String albumId, final GalleryProcessExecutionContext context)
       throws Exception {
 
     // Sets technical data
-    getPhoto().setPhotoPK(new PhotoPK("unknown", context.getComponentInstanceId()));
-    getPhoto().setCreatorId(context.getUser().getId());
-    getPhoto().setUpdateId(null);
-    getPhoto().setCreationDate(new Date());
-    getPhoto().setUpdateDate(null);
+    getMedia().setMediaPK(new MediaPK("unknown", context.getComponentInstanceId()));
+    getMedia().setCreator(context.getUser());
 
-    // Insert photo in database
-    getPhoto().getPhotoPK().setId(PhotoDAO.createPhoto(context.getConnection(), getPhoto()));
+    // Insert media in database
+    getMedia().getMediaPK().setId(MediaDAO
+        .saveMedia(context.getConnection(), OperationContext.fromUser(context.getUser()),
+            getMedia()));
 
-    // Insert path of the photo
-    PhotoDAO.createPath(context.getConnection(), getPhoto(), albumId);
+    // Insert path of the media
+    MediaDAO.saveMediaPath(context.getConnection(), getMedia(), albumId);
   }
 
   /**
-   * Centralizes the photo update
+   * Centralizes the media update
    * @param updateTechnicalDataRequired
    * @param context
    * @throws Exception
    */
-  protected void updatePhoto(final boolean updateTechnicalDataRequired,
+  protected void updateMedia(final boolean updateTechnicalDataRequired,
       final GalleryProcessExecutionContext context) throws Exception {
-    if (updateTechnicalDataRequired) {
-      getPhoto().setUpdateDate(new Date());
-      getPhoto().setUpdateId(context.getUser().getId());
+    if (getMedia() instanceof InternalMedia) {
+      if (!StringUtil.isDefined(getMedia().getTitle())) {
+        getMedia().setTitle(((InternalMedia) getMedia()).getFileName());
+      }
     }
-    if (!StringUtil.isDefined(getPhoto().getTitle())) {
-      getPhoto().setTitle(getPhoto().getImageName());
-    }
-    PhotoDAO.updatePhoto(context.getConnection(), getPhoto());
-  }
-
-  /**
-   * Centralizes the photo path update
-   * @param fromComponentInstanceId
-   * @param albumId
-   * @param context
-   * @throws Exception
-   */
-  protected void updatePhotoPath(final String fromComponentInstanceId, final String albumId,
-      final GalleryProcessExecutionContext context) throws Exception {
-    PhotoDAO.deletePhotoPath(context.getConnection(), getPhoto().getId(), fromComponentInstanceId);
-    PhotoDAO.addPhotoPath(context.getConnection(), getPhoto().getId(), albumId,
-        context.getComponentInstanceId());
+    MediaDAO.saveMedia(context.getConnection(), OperationContext.fromUser(context.getUser())
+        .setUpdatingInCaseOfCreation(!updateTechnicalDataRequired), getMedia());
   }
 
   /**

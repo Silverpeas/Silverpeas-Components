@@ -27,18 +27,17 @@
 <WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>gallery</name>
   <label>
-    <message lang="fr">Galerie d'images</message>
-    <message lang="en">Image gallery</message>
-    <message lang="de">Bildergalerie</message>
+    <message lang="fr">Médiathèque</message>
+    <message lang="en">Multimedia library</message>
+    <message lang="de">Multimedia-Bibliothek</message>
   </label>
   <description>
-    <message lang="fr">Les images peuvent être définies avec précision grâce à un formulaire personnalisable.
-      Organisées en albums, elles peuvent être ajoutées par glisser/
-      déposer. Le moteur de recherche exploite les données EXIF, IPTC et les
-      données personnalisées. Retaillées automatiquement, de nombreux traitements
-      par lot sont possibles.
+    <message lang="fr">Bibliothèque multimédia qui comprend images, vidéos, sons et streaming (Youtube et Vimeo).
+    Organisées en albums, les images, vidéos et sons peuvent être ajoutés par glisser/déposer.
+    Cette médiathèque comprend des fonctionnalités avancées pour la gestion des médias :
+    formulaire personnalisable, données EXIF / IPTC (photos), traitement par lot...
     </message>
-    <message lang="en">Images are stored into albums. Creating albums and uploading images is easy with the drag and drop.</message>
+    <message lang="en">Multimedia library which includes photos, videos, sounds and streaming. Organized into albums, pictures, videos and sounds can be easily added by drag and drop. This library includes advanced media management features: customizable form, EXIF ​​/ IPTC data (photos), batch ... </message>
     <message lang="de">Die Bilder werden in Alben abgelegt. Erstellen von Alben und das Hochladen von Bildern geht einfach durch der Drag and Drop.</message>
   </description>
   <suite>
@@ -60,7 +59,7 @@
       <help>
         <message lang="fr">Les gestionnaires créent les albums et paramètrent le Plan de Classement</message>
         <message lang="en">Administrators create albums and set up the Classification Scheme</message>
-        <message lang="de">Administrator</message>
+        <message lang="de">Administrators create albums and set up the Classification Scheme</message>
       </help>
     </profile>
     <profile name="publisher">
@@ -70,9 +69,9 @@
         <message lang="de">Herausgeber</message>
       </label>
       <help>
-        <message lang="fr">Publieurs</message>
-        <message lang="en">Publishers</message>
-        <message lang="de">Herausgeber</message>
+        <message lang="fr">Les publieurs gèrent le contenu des albums.</message>
+        <message lang="en">The publishers manage the content of the albums.</message>
+        <message lang="de">Die herausgeber verwalten den Inhalt der Alben.</message>
       </help>
     </profile>
     <profile name="writer">
@@ -82,9 +81,9 @@
         <message lang="de">Beiträger</message>
       </label>
       <help>
-        <message lang="fr">Contributeurs</message>
-        <message lang="en">Contributors</message>
-        <message lang="de">Beiträger</message>
+        <message lang="fr">Les contributeurs ajoutent des médias (photos, vidéos, sons et streaming) aux albums.</message>
+        <message lang="en">Contributors upload medias (photos, videos, sounds and streaming) inside album.</message>
+        <message lang="de">Beiträger Uploads Medien (Fotos, Videos, Klänge und Streaming) in Alben.</message>
       </help>
     </profile>
     <profile name="privilegedUser">
@@ -94,9 +93,9 @@
         <message lang="de">Leser mit Privileg</message>
       </label>
       <help>
-        <message lang="fr">Lecteurs privilégiés</message>
-        <message lang="en">Readers with priviledge</message>
-        <message lang="de">Leser mit Privileg</message>
+        <message lang="fr">Les lecteurs privilégiés peuvent télécharger les images en haute définition.</message>
+        <message lang="en">Readers with privilege can download pictures in High Definition format.</message>
+        <message lang="de">Readers with privilege can download pictures in High Definition format.</message>
       </help>
     </profile>
     <profile name="user">
@@ -106,9 +105,9 @@
         <message lang="de">Leser</message>
       </label>
       <help>
-        <message lang="fr">Les lecteurs visualisent les images.</message>
-        <message lang="en">Readers visualize images.</message>
-        <message lang="de">Leser</message>
+        <message lang="fr">Les lecteurs visualisent les médias.</message>
+        <message lang="en">Readers can watch media.</message>
+        <message lang="de">Leser können Medien zu beobachten.</message>
       </help>
     </profile>
   </profiles>
@@ -127,8 +126,8 @@
       <size>5</size>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Temps d'attente entre deux images (en secondes)</message>
-        <message lang="en">Time wait between two images (in seconds)</message>
+        <message lang="fr">Temps d'attente entre deux médias (en secondes)</message>
+        <message lang="en">Time wait between two media (in seconds)</message>
         <message lang="de">Zeit zwischen zwei Bildern (in Sekunden)</message>
       </help>
     </parameter>
@@ -145,8 +144,8 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Permet de publier très rapidement des images par glisser/déposer. Les fichiers zip sont également pris en charge.</message>
-        <message lang="en">Allow you to quickly publish some images by drag and drop. Zip files are also allowed.</message>
+        <message lang="fr">Permet de publier très rapidement des images, des vidéos et des sons par glisser/déposer. Les fichiers zip sont également pris en charge.</message>
+        <message lang="en">Allow you to quickly publish some images, videos or sounds by drag and drop. Zip files are also allowed.</message>
         <message lang="de">Damit können Sie schnell einige Bilder per Drag and Drop veröffentlichen . Zip-Dateien sind ebenfalls erlaubt.</message>
       </help>
     </parameter>
@@ -163,8 +162,8 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Les images créées au sein de cette instance pourront être classées sur le Plan de Classement</message>
-        <message lang="en">Images would be classified on taxonomy</message>
+        <message lang="fr">Les médias créées au sein de cette instance pourront être classées sur le Plan de Classement</message>
+        <message lang="en">Media would be classified on taxonomy</message>
         <message lang="de">Bilder werden auf dem KP Klassifiziert</message>
       </help>
     </parameter>
@@ -199,9 +198,9 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Permet de visualiser les images détaillées pour le format 266x150</message>
-        <message lang="en">Display a detailed list of images (size 266x150 only)</message>
-        <message lang="de">Zeigt eine detaillierte Liste der Bild (Größe nur 266x150)</message>
+        <message lang="fr">Permet de visualiser les informations détaillées des médias dans le format 266x150</message>
+        <message lang="en">Display detailed information of media (size 266x150 only)</message>
+        <message lang="de">Zeigt eine detaillierte Liste die Medien (Größe nur 266x150)</message>
       </help>
     </parameter>
     <parameter>
@@ -225,9 +224,9 @@
     <parameter>
       <name>dayBeforeEndVisible</name>
       <label>
-        <message lang="fr">Nb de jours avant fin de visibilité</message>
-        <message lang="en">Number of days before the images are no longer visible.</message>
-        <message lang="de">Anzahl der Tage, bevor die Bilder nicht mehr sichtbar sind.</message>
+        <message lang="fr">Nb de jours avant la fin de visibilité des médias</message>
+        <message lang="en">Number of days before the media are no longer visible.</message>
+        <message lang="de">Anzahl der Tage, bevor die Medien nicht mehr sichtbar sind.</message>
       </label>
       <order>8</order>
       <mandatory>true</mandatory>
@@ -254,8 +253,8 @@
       <type>xmltemplates</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Nom du formulaire associé à la photothèque</message>
-        <message lang="en">Form name attached to this gallery</message>
+        <message lang="fr">Nom du formulaire associé à la médiathèque</message>
+        <message lang="en">Form name attached to this multimedia library</message>
         <message lang="de">Name des XML Formulars, der an der Fotothek gebunden ist</message>
       </help>
     </parameter>
@@ -295,9 +294,9 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Les lecteurs peuvent laisser des commentaires sur chaque image</message>
-        <message lang="en">Readers are able to post comments on an image</message>
-        <message lang="de">Leser können Kommentare auf ein Bild lassen</message>
+        <message lang="fr">Les lecteurs peuvent laisser des commentaires sur chaque média</message>
+        <message lang="en">Readers are able to post comments on a media</message>
+        <message lang="de">Leser können Kommentare auf eine Medien lassen</message>
       </help>
       <personalSpaceValue>no</personalSpaceValue>
     </parameter>
@@ -314,8 +313,8 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Si ce paramètre est activé, les images indexées ne seront pas retrouvables par le moteur de recherche général mais uniquement par le moteur de recherche dédié à cette application.</message>
-        <message lang="en">If this parameter is enabled, indexed images will not be findable by global search engine but only by the dedicated search engine of this application.</message>
+        <message lang="fr">Si ce paramètre est activé, les médias indexés ne seront pas retrouvables par le moteur de recherche général mais uniquement par le moteur de recherche dédié à cette application.</message>
+        <message lang="en">If this parameter is enabled, indexed media will not be findable by global search engine but only by the dedicated search engine of this application.</message>
         <message lang="de">Wenn dieser Parameter aktiviert ist, werden indexierte Bilder von der globalen Suchmaschinen nicht auffindbaren sein, sondern nur durch die spezielle Suchmaschinen dieser Komponente.</message>
       </help>
       <personalSpaceValue>yes</personalSpaceValue>
@@ -323,9 +322,9 @@
     <parameter>
       <name>download</name>
       <label>
-        <message lang="fr">Image originale téléchargeable</message>
-        <message lang="en">Enable download of the original image</message>
-        <message lang="de">Aktivieren Sie des Download der Original-Bildes</message>
+        <message lang="fr">Média original téléchargeable</message>
+        <message lang="en">Enable download of the original media</message>
+        <message lang="de">Aktivieren Sie des Download der Original-Medien</message>
       </label>
       <order>13</order>
       <mandatory>false</mandatory>
@@ -333,9 +332,9 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Si ce paramètre est activé, les images seront téléchargeables, par defaut, dans leur format original. Ce paramètre pourra être changé à tout moment sur chaque photo.</message>
-        <message lang="en">If this parameter is enabled, original images will be downloadable.</message>
-        <message lang="de">Wenn dieser Parameter aktiviert ist, können Original-Bilder herunter geladen werden</message>
+        <message lang="fr">Si ce paramètre est activé, les médias seront téléchargeables, par defaut, dans leur format original. Ce paramètre pourra être changé à tout moment sur chaque média.</message>
+        <message lang="en">If this parameter is enabled, original media will be downloadable.</message>
+        <message lang="de">Wenn dieser Parameter aktiviert ist, können Original-Medien herunter geladen werden</message>
       </help>
     </parameter>
     <parameter>
@@ -433,7 +432,7 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Si ce paramètre est activé, les lecteurs aurons la possibilité de mettre des photos dans leur panier</message>
+        <message lang="fr">Si ce paramètre est activé, les lecteurs auront la possibilité de mettre des images dans leur panier</message>
         <message lang="en">Readers can put images into their basket.</message>
         <message lang="de">Leser können ihre Bilder in den Warenkorb legen.</message>
       </help>
@@ -442,7 +441,7 @@
       <name>order</name>
       <label>
         <message lang="fr">Demandes de photos</message>
-        <message lang="en">Ask for images</message>
+        <message lang="en">Ask for photos</message>
         <message lang="de">Fordern Sie ein Bildes</message>
       </label>
       <order>18</order>
@@ -451,7 +450,7 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Si ce paramètre est activé, les lecteurs aurons la possibilité de faire des demandes de photos</message>
+        <message lang="fr">Si ce paramètre est activé, les lecteurs auront la possibilité de faire des demandes de photos</message>
         <message lang="en">Readers can ask for HD images</message>
         <message lang="de">Leser können das HD-Bildes anfordern</message>
       </help>

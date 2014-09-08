@@ -29,6 +29,7 @@ import com.silverpeas.delegatednews.model.DelegatedNews;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
@@ -91,7 +92,7 @@ public class DelegatedNewsRequestRouter extends ComponentRequestRouter<Delegated
       else if ("OpenPublication".equals(function)) {
         String pubId = request.getParameter("PubId");
         String instanceId = request.getParameter("InstanceId");
-        destination = "/Rkmelia/"+instanceId+"/ViewOnly?documentId="+pubId;
+        destination = URLManager.getURL(null, instanceId)+"ViewOnly?Id="+pubId;
       } 
       else if ("ValidateDelegatedNews".equals(function)) {
         String pubId = request.getParameter("PubId");

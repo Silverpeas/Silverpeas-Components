@@ -32,10 +32,6 @@
 <%@ include file="checkWhitePages.jsp" %>
 
 <%
-	browseBar.setDomainName(spaceLabel);
-    browseBar.setComponentName(componentLabel);
-	browseBar.setPath(resource.getString("whitePages.usersList") + " > "+ resource.getString("whitePages.editCard"));
-		
 	Card			card		= (Card) request.getAttribute("card");
 	Form			updateForm	= (Form) request.getAttribute("Form");
 	PagesContext	context		= (PagesContext) request.getAttribute("context"); 
@@ -69,31 +65,24 @@
 </script>
 </HEAD>
 
-<BODY class="yui-skin-sam" marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
+<BODY class="yui-skin-sam">
+<view:browseBar path='<%=resource.getString("whitePages.usersList") + " > "+ resource.getString("whitePages.editCard")%>'/>
+<view:window popup="true">
+<view:frame>
 
 <FORM NAME="myForm" METHOD="POST" ENCTYPE="multipart/form-data">
 
 <%
-out.println(window.printBefore());
-out.println(tabbedPane.print());
-out.println(frame.printBefore());
-%>
-<center>
-<%
 	updateForm.display(out, context, data);
 %>
-<br>
+</FORM>
 <%
     ButtonPane buttonPane = gef.getButtonPane();
     buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK('"+card.getPK().getId()+"');", false));
     buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"), "javascript:onClick=B_ANNULER_ONCLICK('"+card.getPK().getId()+"');", false));
     out.println(buttonPane.print());
 %>
-</center>
-<%
-out.println(frame.printAfter());
-out.println(window.printAfter());
-%>
-</FORM>
+</view:frame>
+</view:window>
 </BODY>
 </HTML>

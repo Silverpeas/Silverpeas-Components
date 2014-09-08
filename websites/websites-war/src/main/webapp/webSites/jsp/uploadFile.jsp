@@ -130,28 +130,13 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
       </Script>
       </HEAD>
 
-      <BODY bgcolor="white" topmargin="15" leftmargin="20">
-      <%
-        Window window = gef.getWindow();
-        BrowseBar browseBar = window.getBrowseBar();
-		browseBar.setDomainName(spaceLabel);
-		browseBar.setComponentName(componentLabel);
-        browseBar.setPath(resources.getString("UploadTitle"));
-    
-        //Le cadre
-        Frame frame = gef.getFrame();
+      <BODY>
+      <view:browseBar path='<%=resources.getString("UploadTitle")%>'/>
+	<view:window popup="true">
+	<view:frame>
+	<view:board>      
 
-		//Le board
-		Board board = gef.getBoard();
-
-        //D�but code
-        out.println(window.printBefore());
-        out.println(frame.printBefore());
-		out.print(board.printBefore());
-      %>
-      
-
-     <TABLE ALIGN=CENTER CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%" CLASS=intfdcolor4>      
+     <TABLE CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%">      
 		 <FORM NAME="descriptionFile" ACTION="EffectiveUploadFile" METHOD="POST" ENCTYPE="multipart/form-data">
 		 <input type="hidden" name="path" value="<%=thePath%>">
 	    <TR>
@@ -164,23 +149,17 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
         </TR>      
 	</FORM>
     </TABLE> 
-
+</view:board>
 
   <%
-	//fin du code
-    out.print(board.printAfter());
-	out.println(frame.printMiddle());
-	
 	ButtonPane buttonPane = gef.getButtonPane();
 	Button validerButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK();", false);
 	buttonPane.addButton(validerButton);
 	Button cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=window.close();", false);
     buttonPane.addButton(cancelButton);
-            
-    out.println("<br><center>"+buttonPane.print()+"</center><br>");
-
-	out.println(frame.printAfter());
-	out.println(window.printAfter());
+    out.println(buttonPane.print());
  %>
+ </view:frame>
+ </view:window>
       </BODY>       
       </HTML>

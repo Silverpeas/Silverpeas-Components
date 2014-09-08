@@ -25,6 +25,7 @@ import com.silverpeas.kmelia.KmeliaConstants;
 import com.silverpeas.kmelia.domain.TopicSearch;
 import com.silverpeas.kmelia.search.KmeliaSearchServiceFactory;
 import com.silverpeas.thumbnail.ThumbnailException;
+import com.silverpeas.thumbnail.ThumbnailSettings;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.ForeignPK;
@@ -52,6 +53,7 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
+import com.stratelia.webactiv.util.viewGenerator.html.ImageTag;
 import com.stratelia.webactiv.util.viewGenerator.html.UserNameGenerator;
 import com.stratelia.webactiv.util.viewGenerator.html.board.Board;
 import com.stratelia.webactiv.util.viewGenerator.html.pagination.Pagination;
@@ -61,7 +63,6 @@ import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
 import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.rating.RaterRating;
 import org.silverpeas.rating.web.RaterRatingEntity;
 import org.silverpeas.viewer.ViewerFactory;
 
@@ -778,37 +779,38 @@ public class AjaxPublicationsListServlet extends HttpServlet {
   void displayThumbnail(PublicationDetail pub, KmeliaSessionController ksc,
       ResourceLocator publicationSettings, Writer out) throws IOException, NumberFormatException,
       ThumbnailException {
-    int[] defaultSizes = ksc.getThumbnailWidthAndHeight();
+    ThumbnailSettings thumbnailSettings = ksc.getThumbnailSettings();
     String vignette_url;
+    String size = null;
     if (pub.getImage().startsWith("/")) {
-      vignette_url = pub.getImage() + "&Size=133x100";
-      out.write("<img src=\"" + vignette_url + "\" alt=\"\"/>&#160;");
+      vignette_url = pub.getImage();
+      size = "133x100";
     } else {
       vignette_url = FileServerUtils.getUrl(pub.getPK().
           getComponentName(),
           "vignette", pub.getImage(), pub.getImageMimeType(),
           publicationSettings.getString("imagesSubDirectory"));
-      String height = "";
-      String width = "";
       if (!StringUtil.isDefined(pub.getThumbnail().getCropFileName())) {
-        // thumbnail is not cropable, process sizes
-        String[] size = new String[2];
+        // thumbnail is not cropped, process sizes
+        String[] computedSize = new String[2];
         File image = getThumbnail(pub, publicationSettings);
-        if (defaultSizes[0] != -1) {
-          size = ImageUtil.getWidthAndHeightByWidth(image, defaultSizes[0]);
-        } else if (defaultSizes[1] != -1) {
-          size = ImageUtil.getWidthAndHeightByHeight(image, defaultSizes[1]);
+        if (thumbnailSettings.getWidth() != -1) {
+          computedSize = ImageUtil.getWidthAndHeightByWidth(image, thumbnailSettings.getWidth());
+        } else if (thumbnailSettings.getHeight() != -1) {
+          computedSize = ImageUtil.getWidthAndHeightByHeight(image, thumbnailSettings.getHeight());
         }
-        if (StringUtil.isDefined(size[0]) && StringUtil.isDefined(size[1])) {
-          width = size[0];
-          height = size[1];
+        if (StringUtil.isDefined(computedSize[0]) && StringUtil.isDefined(computedSize[1])) {
+          size = computedSize[0] + "x" + computedSize[1];
         }
       }
-      out.write("<img src=\"" + vignette_url + "\""
-          + (!StringUtil.isDefined(height) ? "" : " height=\"" + height + "\"")
-          + (!StringUtil.isDefined(width) ? "" : " width=\"" + width + "\"")
-          + "/ alt=\"\">&#160;");
     }
+    ImageTag imageTag = new ImageTag();
+    imageTag.setSrc(vignette_url);
+    imageTag.setType("vignette");
+    if (StringUtil.isDefined(size)) {
+      imageTag.setSize(size);
+    }
+    out.write(imageTag.toString());
   }
 
   String displayPermalink(PublicationDetail pub, KmeliaSessionController kmeliaScc,

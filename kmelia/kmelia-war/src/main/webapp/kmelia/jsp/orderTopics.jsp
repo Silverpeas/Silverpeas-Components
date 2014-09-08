@@ -63,7 +63,7 @@ li {
 </HEAD>
 <body>
 <view:browseBar extraInformations='<%=resources.getString("kmelia.SortTopics")%>'/>
-<view:window>
+<view:window popup="true">
 <view:frame>
 <view:board>
 <img src="<%=resources.getIcon("kmelia.info")%>" align="absmiddle"/> <%=resources.getString("kmelia.SortTopicsHelp")%><br/><br/>

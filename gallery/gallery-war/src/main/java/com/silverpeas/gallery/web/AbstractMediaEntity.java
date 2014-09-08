@@ -23,21 +23,20 @@
  */
 package com.silverpeas.gallery.web;
 
-import java.net.URI;
+import com.silverpeas.gallery.constant.MediaResolution;
+import com.silverpeas.gallery.constant.MediaType;
+import com.silverpeas.gallery.model.Media;
+import com.silverpeas.web.Exposable;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
-import com.silverpeas.web.Exposable;
-import com.stratelia.webactiv.util.ResourceLocator;
+import java.net.URI;
 
 /**
  * Web entity abstraction which provides common media informations of the entity
@@ -48,11 +47,8 @@ import com.stratelia.webactiv.util.ResourceLocator;
 public abstract class AbstractMediaEntity<T extends AbstractMediaEntity<T>> implements Exposable {
   private static final long serialVersionUID = -5619051121965308574L;
 
-  protected final static ResourceLocator gallerySettings = new ResourceLocator(
-      "com.silverpeas.gallery.settings.gallerySettings", "");
-
   @XmlElement(required = true, defaultValue = "")
-  private final String type;
+  private MediaType type;
 
   @XmlElement(defaultValue = "")
   private URI uri;
@@ -62,16 +58,30 @@ public abstract class AbstractMediaEntity<T extends AbstractMediaEntity<T>> impl
 
   @XmlElement(required = true)
   @NotNull
-  @Pattern(regexp = "^[0-9]+$")
-  private final String id;
+  private String id;
 
   @XmlElement(required = true)
   @NotNull
   @Size(min = 1)
-  private final String title;
+  private String title;
 
   @XmlElement(defaultValue = "")
-  private final String description;
+  private String description;
+
+  @XmlElement(defaultValue = "")
+  private String author;
+
+  @XmlElement(defaultValue = "")
+  private URI thumbUrl;
+
+  @XmlElement(defaultValue = "")
+  private URI url;
+
+  @XmlElement(defaultValue = "0")
+  private int width = MediaResolution.MEDIUM.getWidth();
+
+  @XmlElement(defaultValue = "0")
+  private int height = MediaResolution.MEDIUM.getHeight();
 
   /**
    * Sets a URI to this entity. With this URI, it can then be accessed through the Web.
@@ -95,8 +105,28 @@ public abstract class AbstractMediaEntity<T extends AbstractMediaEntity<T>> impl
     return (T) this;
   }
 
-  public String getType() {
-    return type;
+  @SuppressWarnings("unchecked")
+  public T withOriginalUrl(final URI originalUrl) {
+    url = originalUrl;
+    return (T) this;
+  }
+
+  @SuppressWarnings("unchecked")
+  public T withThumbUrl(final URI thumbUrl) {
+    this.thumbUrl = thumbUrl;
+    return (T) this;
+  }
+
+  @SuppressWarnings("unchecked")
+  public T withWidth(final int width) {
+    this.width = width;
+    return (T) this;
+  }
+
+  @SuppressWarnings("unchecked")
+  public T withHeight(final int height) {
+    this.height = height;
+    return (T) this;
   }
 
   /*
@@ -112,37 +142,94 @@ public abstract class AbstractMediaEntity<T extends AbstractMediaEntity<T>> impl
     return parentURI;
   }
 
+  public void setType(final MediaType type) {
+    this.type = type;
+  }
+
+  public MediaType getType() {
+    return type;
+  }
+
+  protected void setId(final String id) {
+    this.id = id;
+  }
+
   protected String getId() {
     return id;
+  }
+
+  protected void setTitle(final String title) {
+    this.title = title;
   }
 
   protected String getTitle() {
     return title;
   }
 
+  protected void setDescription(final String description) {
+    this.description = description;
+  }
+
   protected String getDescription() {
     return description;
   }
 
+  protected void setAuthor(final String author) {
+    this.author = author;
+  }
+
+  protected String getAuthor() {
+    return author;
+  }
+
+  /**
+   * @return the thumbUrl
+   */
+  public URI getThumbUrl() {
+    return thumbUrl;
+  }
+
+  /**
+   * @return the url
+   */
+  public URI getUrl() {
+    return url;
+  }
+
+  /**
+   * @return the height
+   */
+  public int getHeight() {
+    return height;
+  }
+
+  /**
+   * @return the width
+   */
+  public int getWidth() {
+    return width;
+  }
+
   /**
    * Instantiating a new web entity from the corresponding data
-   * @param component
+   * @param media the media
    */
-  protected AbstractMediaEntity(final String type, final String id, final String title,
-      final String description) {
-    this.type = type;
-    this.id = id == null ? "" : id;
-    this.title = title == null ? "" : title;
-    this.description = description == null ? "" : description;
+  protected AbstractMediaEntity(final Media media) {
+    this.type = media != null ? media.getType() : MediaType.Unknown;
+    this.id = media == null || media.getId() == null ? "" : media.getId();
+    this.title = media == null || media.getTitle() == null ? "" : media.getTitle();
+    this.description =
+        media == null || media.getDescription() == null ? "" : media.getDescription();
+    this.author = media == null || media.getAuthor() == null ? "" : media.getAuthor();
   }
 
   protected AbstractMediaEntity() {
-    this("", "", "", "");
+    this(null);
   }
 
   @Override
   public int hashCode() {
-    return new HashCodeBuilder().append(getType()).append(id).toHashCode();
+    return new HashCodeBuilder().append(getType()).append(getId()).toHashCode();
   }
 
   @Override
@@ -157,7 +244,7 @@ public abstract class AbstractMediaEntity<T extends AbstractMediaEntity<T>> impl
       return false;
     }
     final AbstractMediaEntity<?> other = (AbstractMediaEntity<?>) obj;
-    return new EqualsBuilder().append(getType(), other.getType()).append(id, other.getId())
+    return new EqualsBuilder().append(getType(), other.getType()).append(getId(), other.getId())
         .isEquals();
   }
 }

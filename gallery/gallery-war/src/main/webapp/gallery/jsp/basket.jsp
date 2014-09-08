@@ -24,381 +24,192 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp"%>
-<%
-  // recuperation des parametres :
-    Collection photos = (List) request.getAttribute("Photos");
-    Collection selectedIds = (Collection) request.getAttribute("SelectedIds");
-    boolean isOrder = ((Boolean) request.getAttribute("IsOrder")).booleanValue();
 
-    // declaration des variables :
-    int id = 0;
-    String extension = "_66x50.jpg";
-    String extensionAlt = "_266x150.jpg";
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/gallery" prefix="gallery" %>
 
-    Iterator itP = photos.iterator();
-%>
+<%-- Set resource bundle --%>
+<c:set var="language" value="${requestScope.resources.language}"/>
+
+<fmt:setLocale value="${language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
+
+<c:set var="componentLabel" value="${requestScope.browseContext[1]}"/>
+<c:set var="instanceId" value="${requestScope.browseContext[3]}"/>
+<c:set var="medias" value="${requestScope.MediaList}" />
+<c:set var="userSelectionAlert" value="${requestScope.MediaTypeAlert}" />
+
+<view:setConstant var="TINY_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.TINY"/>
+<view:setConstant var="MEDIUM_RESOLUTION" constant="com.silverpeas.gallery.constant.MediaResolution.MEDIUM"/>
 
 <html>
 <head>
 <view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script language="javascript">
-	var albumWindow = window;
+<view:includePlugin name="qtip"/>
+<script type="text/javascript" src="<c:url value="/util/javaScript/animation.js"/>"></script>
+<script type="text/javascript">
+var albumWindow = window;
 
-	function sendDataDelete()
+function sendDataDelete()
+{
+	//Remove selected photo media from basket confirm message
+	if(window.confirm("<fmt:message key="gallery.confirmDeleteMedias"/> "))
 	{
-		//confirmation de suppression des photos selectionnees
-		if(window.confirm("<%=resource.getString("gallery.confirmDeletePhotos")%> "))
-		{
-			// envoi des photos selectionnees pour la suppression
-			document.photoForm.SelectedIds.value 	= getObjects(true);
-			document.photoForm.NotSelectedIds.value = getObjects(false);
-			document.photoForm.action				= "BasketDeleteSelectedPhoto";
-			document.photoForm.submit();
-		}
+		// envoi des photos selectionnees pour la suppression
+		document.mediaForm.SelectedIds.value 	= getObjects(true);
+		document.mediaForm.NotSelectedIds.value = getObjects(false);
+		document.mediaForm.action				= "BasketDeleteSelectedMedia";
+		document.mediaForm.submit();
 	}
+}
 
-	function getObjects(selected)
+function getObjects(selected)
+{
+	var  items = "";
+	try
 	{
-		var  items = "";
-		try
-		{
-			var boxItems = document.photoForm.SelectPhoto;
-			if (boxItems != null){
-				// au moins une checkbox exist
-				var nbBox = boxItems.length;
-				if ( (nbBox == null) && (boxItems.checked == selected) ){
-					// il n'y a qu'une checkbox non selectionnee
-					items += boxItems.value+",";
-				} else{
-					// search not checked boxes
-					for (i=0;i<boxItems.length ;i++ ){
-						if (boxItems[i].checked == selected){
-							items += boxItems[i].value+",";
-						}
+		var boxItems = document.mediaForm.SelectMedia;
+		if (boxItems != null){
+			// au moins une checkbox exist
+			var nbBox = boxItems.length;
+			if ( (nbBox == null) && (boxItems.checked == selected) ){
+				// il n'y a qu'une checkbox non selectionnee
+				items += boxItems.value+",";
+			} else{
+				// search not checked boxes
+				for (i=0;i<boxItems.length ;i++ ){
+					if (boxItems[i].checked == selected){
+						items += boxItems[i].value+",";
 					}
 				}
 			}
 		}
-		catch (e)
-		{
-			//Checkboxes are not displayed
-		}
-		return items;
 	}
-
-	function doPagination(index)
+	catch (e)
 	{
-		document.photoForm.SelectedIds.value 	= getObjects(true);
-		document.photoForm.NotSelectedIds.value = getObjects(false);
-		document.photoForm.Index.value 			= index;
-		document.photoForm.action				= "BasketPagination";
-		document.photoForm.submit();
+		//Checkboxes are not displayed
 	}
+	return items;
+}
 
-	function deleteConfirm(id)
+function doPagination(index)
+{
+	document.mediaForm.SelectedIds.value 	= getObjects(true);
+	document.mediaForm.NotSelectedIds.value = getObjects(false);
+	document.mediaForm.Index.value 			= index;
+	document.mediaForm.action				= "BasketPagination";
+	document.mediaForm.submit();
+}
+
+function deleteConfirm(id) {
+	// Delete a media from basket confirm message
+	if(window.confirm("<fmt:message key="gallery.confirmDeleteMedia"/>  ?"))
 	{
-		// confirmation de suppression d'une photo
-		if(window.confirm("<%=resource.getString("gallery.confirmDeletePhoto")%>  ?"))
-		{
-  			document.photoFormDelete.action = "BasketDeletePhoto";
-  			document.photoFormDelete.PhotoId.value = id;
-  			document.photoFormDelete.submit();
-		}
-	}
-
-	/***********************************************
-* Image w/ description tooltip- By Dynamic Web Coding (www.dyn-web.com)
-* Copyright 2002-2007 by Sharon Paine
-* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
-***********************************************/
-
-/* IMPORTANT: Put script after tooltip div or
-	 put tooltip div just before </BODY>. */
-
-var dom = (document.getElementById) ? true : false;
-var ns5 = (!document.all && dom || window.opera) ? true: false;
-var ie5 = ((navigator.userAgent.indexOf("MSIE")>-1) && dom) ? true : false;
-var ie4 = (document.all && !dom) ? true : false;
-var nodyn = (!ns5 && !ie4 && !ie5 && !dom) ? true : false;
-
-var origWidth, origHeight;
-
-// avoid error of passing event object in older browsers
-if (nodyn) { event = "nope" }
-
-///////////////////////  CUSTOMIZE HERE   ////////////////////
-// settings for tooltip
-// Do you want tip to move when mouse moves over link?
-var tipFollowMouse= false;
-// Be sure to set tipWidth wide enough for widest image
-var tipWidth= 160;
-var offX= 20;	// how far from mouse to show tip
-var offY= 12;
-var tipFontFamily= "Verdana, arial, helvetica, sans-serif";
-var tipFontSize= "8pt";
-// set default text color and background color for tooltip here
-// individual tooltips can have their own (set in messages arrays)
-// but don't have to
-var tipFontColor= "#000000";
-var tipBgColor= "#DDECFF";
-var tipBorderColor= "#000000";
-var tipBorderWidth= 1;
-var tipBorderStyle= "solid";
-var tipPadding= 0;
-
-// tooltip content goes here (image, description, optional bgColor, optional textcolor)
-var messages = new Array();
-// multi-dimensional arrays containing:
-// image and text for tooltip
-// optional: bgColor and color to be sent to tooltip
-  <%int messagesId = 0;
-          while (itP.hasNext()) {
-            String photoId = (String) itP.next();
-            PhotoDetail photo = gallerySC.getPhoto(photoId);
-            String nomRep = resource.getSetting("imagesSubDirectory")
-                + photo.getId();%>
-            messages[<%=messagesId%>] = new Array('<%=FileServerUtils.getUrl( componentId, photo.getId()
-            + extensionAlt, photo.getImageMimeType(),
-            nomRep)%>','<%=EncodeHelper.javaStringToJsString(photo.getName()) %>',"#FFFFFF");
-        <%messagesId++;
-      }%>
-
-////////////////////  END OF CUSTOMIZATION AREA  ///////////////////
-
-// preload images that are to appear in tooltip
-// from arrays above
-if (document.images) {
-	var theImgs = new Array();
-	for (var i=0; i<messages.length; i++) {
-  	theImgs[i] = new Image();
-		theImgs[i].src = messages[i][0];
-  }
-}
-
-// to layout image and text, 2-row table, image centered in top cell
-// these go in var tip in doTooltip function
-// startStr goes before image, midStr goes between image and text
-var startStr = '<table><tr><td align="center" width="100%"><img src="';
-var midStr = '" border="0"></td></tr><tr><td valign="top" align="center">';
-var endStr = '</td></tr></table>';
-
-////////////////////////////////////////////////////////////
-//  initTip	- initialization for tooltip.
-//		Global variables for tooltip.
-//		Set styles
-//		Set up mousemove capture if tipFollowMouse set true.
-////////////////////////////////////////////////////////////
-var tooltip, tipcss;
-function initTip() {
-	if (nodyn) return;
-	tooltip = (ie4)? document.all['tipDiv']: (ie5||ns5)? document.getElementById('tipDiv'): null;
-	tipcss = tooltip.style;
-	if (ie4||ie5||ns5) {	// ns4 would lose all this on rewrites
-		//tipcss.width = tipWidth+"px";
-		tipcss.fontFamily = tipFontFamily;
-		tipcss.fontSize = tipFontSize;
-		tipcss.color = tipFontColor;
-		tipcss.backgroundColor = tipBgColor;
-		tipcss.borderColor = tipBorderColor;
-		tipcss.borderWidth = tipBorderWidth+"px";
-		tipcss.padding = tipPadding+"px";
-		tipcss.borderStyle = tipBorderStyle;
-	}
-	if (tooltip&&tipFollowMouse) {
-		document.onmousemove = trackMouse;
+			document.mediaFormDelete.action = "BasketDeleteMedia";
+			document.mediaFormDelete.MediaId.value = id;
+			document.mediaFormDelete.submit();
 	}
 }
 
-window.onload = initTip;
-
-/////////////////////////////////////////////////
-//  doTooltip function
-//			Assembles content for tooltip and writes
-//			it to tipDiv
-/////////////////////////////////////////////////
-var t1,t2;	// for setTimeouts
-var tipOn = false;	// check if over tooltip link
-function doTooltip(evt,num) {
-	if (!tooltip) return;
-	if (t1) clearTimeout(t1);	if (t2) clearTimeout(t2);
-	tipOn = true;
-	// set colors if included in messages array
-	if (messages[num][2])	var curBgColor = messages[num][2];
-	else curBgColor = tipBgColor;
-	if (messages[num][3])	var curFontColor = messages[num][3];
-	else curFontColor = tipFontColor;
-	if (ie4||ie5||ns5) {
-		var tip = startStr + messages[num][0] + midStr + '<span style="font-family:' + tipFontFamily + '; font-size:' + tipFontSize + '; color:' + curFontColor + ';">' + messages[num][1] + '</span>' + endStr;
-		tipcss.backgroundColor = curBgColor;
-	 	tooltip.innerHTML = tip;
-	}
-	if (!tipFollowMouse) positionTip(evt);
-	else t1=setTimeout("tipcss.visibility='visible'",100);
-}
-
-var mouseX, mouseY;
-function trackMouse(evt) {
-	standardbody=(document.compatMode=="CSS1Compat")? document.documentElement : document.body //create reference to common "body" across doctypes
-	mouseX = (ns5)? evt.pageX: window.event.clientX + standardbody.scrollLeft;
-	mouseY = (ns5)? evt.pageY: window.event.clientY + standardbody.scrollTop;
-	if (tipOn) positionTip(evt);
-}
-
-/////////////////////////////////////////////////////////////
-//  positionTip function
-//		If tipFollowMouse set false, so trackMouse function
-//		not being used, get position of mouseover event.
-//		Calculations use mouseover event position,
-//		offset amounts and tooltip width to position
-//		tooltip within window.
-/////////////////////////////////////////////////////////////
-function positionTip(evt) {
-	if (!tipFollowMouse) {
-		standardbody=(document.compatMode=="CSS1Compat")? document.documentElement : document.body
-		mouseX = (ns5)? evt.pageX: window.event.clientX + standardbody.scrollLeft;
-		mouseY = (ns5)? evt.pageY: window.event.clientY + standardbody.scrollTop;
-	}
-	// tooltip width and height
-	var tpWd = (ie4||ie5)? tooltip.clientWidth: tooltip.offsetWidth;
-	var tpHt = (ie4||ie5)? tooltip.clientHeight: tooltip.offsetHeight;
-	// document area in view (subtract scrollbar width for ns)
-	var winWd = (ns5)? window.innerWidth-20+window.pageXOffset: standardbody.clientWidth+standardbody.scrollLeft;
-	var winHt = (ns5)? window.innerHeight-20+window.pageYOffset: standardbody.clientHeight+standardbody.scrollTop;
-	// check mouse position against tip and window dimensions
-	// and position the tooltip
-	if ((mouseX+offX+tpWd)>winWd)
-		tipcss.left = mouseX-(tpWd+offX)+"px";
-	else tipcss.left = mouseX+offX+"px";
-	if ((mouseY+offY+tpHt)>winHt)
-		tipcss.top = winHt-(tpHt+offY)+"px";
-	else tipcss.top = mouseY+offY+"px";
-	if (!tipFollowMouse) t1=setTimeout("tipcss.visibility='visible'",100);
-}
-
-function hideTip() {
-	if (!tooltip) return;
-	t2=setTimeout("tipcss.visibility='hidden'",100);
-	tipOn = false;
-}
-
-document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-index:100"></div>')
+$(document).ready(function() {
+  <c:if test="${userSelectionAlert}">
+  <fmt:message var="msgAlert" key="gallery.basket.media.type.alert"/>
+  notyWarning('${msgAlert}');
+  </c:if>
+});
 </script>
+<gallery:handlePhotoPreview jquerySelector="${'.imagePreview'}" />
 </head>
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5"
-	marginheight="5">
-  <%
-    // creation de la barre de navigation
-    browseBar.setDomainName(spaceLabel);
-    browseBar.setComponentName(componentLabel, "Main");
-    browseBar.setPath(resource.getString("gallery.basket"));
+<body class="gallery gallery-basket" id="${instanceId}">
+<fmt:message var="basketLabel" key="gallery.basket" />
+<view:browseBar path="${basketLabel}" />
+<view:operationPane>
+  <c:if test="${not empty medias}">
+    <c:if test="${requestScope.IsOrder}">
+      <fmt:message var="addOrderLabel" key="gallery.addOrder" />
+      <fmt:message var="addOrderIcon" key="gallery.AddOrder" bundle="${icons}" />
+      <c:url var="addOrderIcon" value="${addOrderIcon}" />
+      <view:operation altText="${addOrderLabel}" action="OrderAdd" icon="${addOrderIcon}" />
+    </c:if>
+    <fmt:message var="deleteSelectedLabel" key="gallery.deleteSelectedMedia" />
+    <fmt:message var="deleteSelectedIcon" key="gallery.deleteSelectedMedia" bundle="${icons}" />
+    <c:url var="deleteSelectedIcon" value="${deleteSelectedIcon}" />
+    <view:operation altText="${deleteSelectedLabel}" action="javascript:onClick=sendDataDelete();" icon="${deleteSelectedIcon}" />
 
-    if (photos.size() != 0) {
-      if (isOrder) {
-        // transformer le panier en demande
-        operationPane.addOperation(resource.getIcon("gallery.AddOrder"), resource.getString(
-            "gallery.addOrder"), "OrderAdd");
-        operationPane.addLine();
-      }
+    <fmt:message var="deleteBasketLabel" key="gallery.deleteBasket" />
+    <fmt:message var="deleteBasketIcon" key="gallery.deleteBasket" bundle="${icons}" />
+    <c:url var="deleteBasketIcon" value="${deleteBasketIcon}" />
+    <view:operation altText="${deleteBasketLabel}" action="BasketDelete" icon="${deleteBasketIcon}"/>
+  </c:if>
+</view:operationPane>
 
-      // possibilite de modifier ou supprimer les photos par lot
-      operationPane.addOperation(resource.getIcon("gallery.deleteSelectedPhoto"), resource.getString(
-          "gallery.deleteSelectedPhoto"),
-          "javascript:onClick=sendDataDelete();");
+<view:window>
+<view:frame>
+<form name="mediaForm">
+  <input type="hidden" name="SelectedIds">
+  <input type="hidden" name="NotSelectedIds">
 
-      // vider le panier
-      operationPane.addOperation(resource.getIcon("gallery.deleteBasket"), resource.getString(
-          "gallery.deleteBasket"), "BasketDelete");
-    }
+<c:if test="${empty medias}">
+  <fmt:message key="gallery.emptyBasket" />
+</c:if>
 
-    out.println(window.printBefore());
-    out.println(frame.printBefore());
+<c:if test="${not empty medias}">
+  <view:arrayPane var="basketList" routingAddress="BasketView">
+    <fmt:message key="gallery.media" var="mediaCol" />
+    <view:arrayColumn title="${mediaCol}" />
+    <fmt:message key="gallery.operation" var="operationCol" />
+    <view:arrayColumn title="${operationCol}" sortable="false" />
 
-    // afficher les photos du panier
-    // -------------------
-%>
-<FORM NAME="photoForm"><input type="hidden" name="SelectedIds">
-<input type="hidden" name="NotSelectedIds"> <%
-   if (photos.size() == 0) {
-       out.println("<center>"
-           + resource.getString("gallery.emptyBasket")
-           + "</center>");
-     } else {
-       // affichage des photos dans un ArrayPane
-       ArrayPane arrayPane = gef.getArrayPane("basket", "BasketView",
-           request, session);
-       boolean ok = false;
-       itP = photos.iterator();
-       if (itP.hasNext()) {
-         arrayPane.addArrayColumn(resource.getString("gallery.photo"));
-         ArrayColumn columnOp = arrayPane.addArrayColumn(resource.getString("gallery.operation"));
-         columnOp.setSortable(false);
-         ok = true;
-       }
-       int indexPhoto = 0;
-       while (itP.hasNext()) {
-         ArrayLine ligne = arrayPane.addArrayLine();
+    <fmt:message var="deleteIcon" key="gallery.deleteSrc" bundle="${icons}" />
+    <c:url var="deleteIcon" value="${deleteIcon}" />
+    <c:url var="photoSvcUrl" value="/services/gallery/${instanceId}/photos/" />
+    <c:forEach items="${medias}" var="media">
+      <view:arrayLine>
+        <c:set var="mediaTitle"><view:encodeHtml string="${media.title}"/></c:set>
+        <c:set var="photoCellText">
+          <a class="imagePreview" href="MediaView?MediaId=${media.id}" tipTitle="${mediaTitle}" tipUrl="${media.getApplicationThumbnailUrl(MEDIUM_RESOLUTION)}">
+            <img src="${media.getApplicationThumbnailUrl(TINY_RESOLUTION)}" alt="${mediaTitle}" />
+          </a>
+        </c:set>
+        <view:arrayCellText text="${photoCellText}" />
+        <c:set var="mediaSelected" value=""/>
+        <c:set var="selChecked" value="" />
+        <c:forEach var="selectedId" items="${requestScope.SelectedIds}">
+          <c:if test="${id == media.id}">
+            <c:set var="selChecked" value="checked" />
+          </c:if>
+        </c:forEach>
+        <c:set var="operationLabel"><a href="#" onclick="javaScript:deleteConfirm('${media.id}')">
+        <img src="${deleteIcon}" alt="<fmt:message key="GML.delete"/>" align="absmiddle" /></a>
+        <input type="checkbox" name="SelectMedia" value="${media.id}" ${selChecked} />
+        </c:set>
+        <view:arrayCellText text="${operationLabel}"></view:arrayCellText>
+      </view:arrayLine>
+    </c:forEach>
+  </view:arrayPane>
 
-         id = Integer.parseInt((String) itP.next());
-         PhotoDetail photo = gallerySC.getPhoto(Integer.toString(id));
-         String nomRep = resource.getSetting("imagesSubDirectory")
-             + id;
-         String name = id + extension;
-         String altTitle = EncodeHelper.javaStringToHtmlString(photo.getTitle());
-         if (photo.getDescription() != null
-             && photo.getDescription().length() > 0) {
-           altTitle += " : "
-               + EncodeHelper.javaStringToHtmlString(photo.getDescription());
-         }
-         String vignette_url = FileServerUtils.getUrl(componentId, name, photo.
-             getImageMimeType(), nomRep);
-         String vignetteAlt = FileServerUtils.getUrl(componentId, photo.getId() + extensionAlt, photo.getImageMimeType(), nomRep);
-         String alt = EncodeHelper.javaStringToHtmlString("<IMG SRC=\""
-             + vignetteAlt + "\" border=\"0\">");
+</c:if>
 
-         ArrayCellText arrayCellText0 = ligne.addArrayCellText("<a href=\"PreviewPhoto?PhotoId="
-             + id
-             + "\" onmouseover=\"doTooltip(event,"
-             + indexPhoto
-             + ")\" onmouseout=\"hideTip()\"><IMG SRC=\""
-             + vignette_url + "\" border=\"0\"></a>");
-         arrayCellText0.setCompareOn(name);
-         indexPhoto++;
+</form>
 
-         // case e cocher pour traitement par lot
-         String usedCheck = "";
-         if (selectedIds != null
-             && selectedIds.contains(Integer.toString(id))) {
-           usedCheck = "checked";
-         }
-         ligne.addArrayCellText("<a href=\"#\" onclick=\"javaScript:deleteConfirm('"
-             + id
-             + "')\"><img src=\""
-             + resource.getIcon("gallery.deleteSrc")
-             + "\" alt=\""
-             + resource.getString("gallery.deletePhoto")
-             + "\" border=\"0\" align=\"absmiddle\"></a> <input type=\"checkbox\" name=\"SelectPhoto\" value=\""
-             + EncodeHelper.javaStringToHtmlString(String.valueOf(id)) + usedCheck + "\">");
+<form name="mediaFormDelete" action="" method="POST">
+  <input type="hidden" name="MediaId">
+  <input type="hidden" name="Name">
+  <input type="hidden" name="Description">
+</form>
 
-       }
-       if (ok) {
-         out.println(arrayPane.print());
-       }
-     }
+<form name="favorite" action="" method="POST">
+  <input type="hidden" name="Id">
+</form>
 
-     out.println(frame.printAfter());
-     out.println(window.printAfter());
- %>
-</FORM>
-
-<form name="photoFormDelete" action="" Method="POST"><input
-	type="hidden" name="PhotoId"> <input type="hidden" name="Name">
-<input type="hidden" name="Description"></form>
-
-<form name="favorite" action="" Method="POST"><input
-	type="hidden" name="Id"></form>
+</view:frame>
+</view:window>
 
 </body>
 </html>

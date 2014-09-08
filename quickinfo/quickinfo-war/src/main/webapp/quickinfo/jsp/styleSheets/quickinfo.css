@@ -21,9 +21,149 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+ 
+ /*** home***/
+.quickInfo-description {
+    border-left: 6px solid #E4E4E4;
+    color: #666666;
+    padding: 8px;
+	max-height:90px;
+	overflow:hidden;
+}
+
+.inlineMessage.forContributor {
+  	float: right;
+   	margin: 1em 2% 1em 0;
+   	padding: 1em 0;
+   	width: 59%
+}
+
+#list-news {
+	list-style-type:none;
+	padding:0;
+	margin:1em 0 0;
+    float: right;
+    padding-right: 3%;
+    width: 59%;
+}
+#list-news.reader {
+    float: none;
+    padding-right: 0;
+    width: 100%;
+}
+#list-news li{
+	padding:0;
+	margin:0 0 2em 0;
+}
+
+#list-news .news-illustration {
+	width:100px;
+	float:left;
+	margin:0 1em 0.5em 0;
+}
+#list-news .news-title {	
+	font-size:125%;
+	line-height:110%;
+	margin:0 0 0.25em 0;
+	padding:0;
+}
+#list-news .news-title a{	
+	font-size:100%;
+	color:#2d2d2d;
+}
+
+#list-news .news-title a:hover{	
+	color:#1c94d4;
+}
+#list-news .news-teasing {	
+	line-height:100%;
+	color:#8f8f8f;
+	margin:0 0 0.5em 0;
+	padding:0;
+}
+
+#list-news .news-info-fonctionality {
+	background-color:#f3f3f3;
+	border-top:1px solid #e8e8e8;
+	border-bottom:1px solid #e8e8e8;
+	clear:left;
+	padding:3px 5px 1px;
+	color:#8f8f8f;
+    font-size: 0.9em;
+	position:relative;
+	height:19px;
+}
+
+#list-news .news-nb-comments img{
+	border:0;
+	vertical-align:text-top;
+}
+
+
+
+#list-news .news-broadcast {
+	margin-left:0.5em;
+}
+
+#list-news .news-broadcast span{
+	background-color: #ec9c01;
+    border: 1px solid #ec9c01;
+    border-radius: 3px;
+    color: #FFFFFF;
+    display: inline-block;
+    line-height: 1em;
+    margin: 0 0.25em 0.15em 0;
+    padding: 0.20em 0.5em;
+    position: relative;
+    z-index: 10;
+}
+
+#list-news .news-broadcast span.news-broadcast-important {
+	text-indent:-3000px;
+	background:#EC9C01 url("../icons/important.png") 0.5em 0.20em no-repeat;
+	width:10px;
+}
+
+#list-news .news-broadcast span.news-delegated {
+	padding-left:20px;
+    border: 1px solid #1c94d4;
+	background:#1c94d4 url("../icons/home.png")  5px 3px no-repeat;
+}
+
+#list-news .news-info-fonctionality .operation {
+	position:absolute;
+	top:0.3em;
+	right:0.5em;
+}
+
+.quickInfo-title {
+    color: #333333;
+    font-size: 130%;
+    font-weight: 100;
+    margin: 0 0 1em;
+    padding: 0;
+}
+
+#illustration img {
+	width:310px;
+	margin-bottom:1em;
+	border-radius:12px;
+}
+
+#commentInfo a {
+	background:transparent url(/silverpeas/util/icons/talk2user.gif) 0 0 no-repeat;
+	padding-left:20px;
+}
+
+#permalinkInfo input {
+	width:100%;
+}
+#permalinkInfo img {
+	border:0;
+}
 
  
- fieldset#infoFieldset legend {
+fieldset#infoFieldset legend {
   background:transparent url(../../../util/icons/component/quickinfoSmall.gif) 11px 0px no-repeat;
 }
 
@@ -31,14 +171,158 @@ fieldset#datesFieldset legend {
   background:transparent url(../../../util/icons/calendar_1.png) 11px 0px no-repeat;
 }
 
-#infoFieldset .field, 
-#datesFieldset .field {
-  clear: both;
-  display: block;
-  float: none;
-  width: 98%;
+fieldset#news-thumbnail legend {
+    background: url("../../../util/icons/images.png") no-repeat scroll 11px 0 rgba(0, 0, 0, 0);
 }
 
-#infoFieldset #nameArea input {
-  width: 46%;
+#nameArea,
+#descriptionArea,
+#contentArea,
+#broadcastArea,
+#BeginDateArea,
+#EndDateArea,
+#thumb  {
+    clear: both;
+    width: 98%;
+    display:block;
+	float:none;
+}
+
+#descriptionArea textarea {
+	width:90%;
+}
+
+
+#my-quickInfo {
+    float: right;
+    margin-left: 3%;
+    margin-right: 2%;
+    padding-top: 1em;
+    width: 33%;
+}
+
+#my-quickInfo .header h3 {
+    font-size: 130%;
+    font-weight: 100;
+    line-height: 90%;
+    margin: 2em 0 1em;
+    padding: 0;
+}
+
+#my-quickInfo  .header h3 strong {
+    color: #1c94d4;
+    display: block;
+    font-size: 90%;
+    font-weight: 100;
+}
+#my-quickInfo ul {
+    list-style-image: url("/silverpeas/util/icons/bullet.png");
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+#my-quickInfo ul li {
+    margin:0 0 1em 1em;
+	padding:0;
+}
+#my-quickInfo ul li a{
+	display:block;
+}
+
+#my-quickInfo ul li .date{
+    font-size:100%;
+	color:#8f8f8f;
+	display:block;
+}
+
+#my-quickInfo #menubar-creation-actions {
+	margin:0;	
+}
+
+.quickInfo  .publiDesc {
+    border-left: 6px solid #e4e4e4;
+    color: #666666;
+    padding: 8px;
+}
+
+.txt-no-content {
+	color: #575757;
+	font-style: italic;
+	font-size: 90%;
+}
+
+/*************** ALERTE *******************/
+.alert-quickInfo {
+	background-color:#fbf7aa;
+	position:relative;
+}
+
+.alert-quickInfo #header .logo {
+    background-color: #fff;
+    border:8px solid #f9e98e ;
+    border-radius: 0 0 16px 16px;
+	border-top:0;
+    left: 1em;
+    padding: 8px 32px 16px;
+    position: fixed;
+    right: 1em;
+    top: 0;
+}
+
+.alert-quickInfo .content-alert-quickInfo {
+	background-color:#FFF;
+	border-top:8px solid #f9e98e;
+	border-bottom:8px solid #f9e98e;
+	margin-top:150px;
+	padding:1em;
+	height:300px;
+	overflow:auto;
+} 
+.alert-quickInfo .titre {
+    color: #f9e98e;
+    display: inline;
+    font-family: Arial,Helvetica,sans-serif;
+    font-size: 48px;
+    line-height: 48px;
+    position: absolute;
+    right: 0.5em;
+    text-align: left;
+    top:-40px;
+	margin:0;
+	padding:0;
+}
+.alert-quickInfo .actuality-title {
+	color: #333;
+    font-family: Arial,Helvetica,sans-serif;
+    font-size: 32px;
+    text-align: left;
+	margin:0;
+	padding:0;
+}
+.alert-quickInfo #richContent {
+	padding:0;
+}
+
+.alert-quickInfo .validate-actuality {    
+	border-radius: 12px;
+    font-size: 16px;
+    line-height: 24px;
+    padding: 8px 16px 8px 16px;
+	margin:1em 1em 0 0;
+	float:right;
+	display:inline-block;
+	border:1px solid #ec8001;    
+	background-image: url("../../../util/icons/gradientSVG.jsp?from=ec9c01&to=db7700&vertical=0&horizontal=100");
+	 -moz-background-size: 100%;
+ 	 -pie-background: linear-gradient(#ec9c01, #db7700);
+ 	 behavior: url("/silverpeas/util/styleSheets/PIE.htc");
+}
+.alert-quickInfo .validate-actuality span{
+	background:transparent url("../../../util/icons/arrow/arrowRightWhite.png") right 6px no-repeat;
+	padding-right:24px;
+	color:#FFF;
+}
+
+.alert-quickInfo #illustration img {
+    position: fixed;
 }

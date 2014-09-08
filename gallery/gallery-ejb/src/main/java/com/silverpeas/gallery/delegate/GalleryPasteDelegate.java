@@ -23,11 +23,11 @@
  */
 package com.silverpeas.gallery.delegate;
 
+import com.silverpeas.gallery.model.AlbumDetail;
+import com.silverpeas.gallery.model.Media;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import com.silverpeas.gallery.model.AlbumDetail;
-import com.silverpeas.gallery.model.PhotoDetail;
 
 /**
  * @author Yohann Chastagnier
@@ -35,7 +35,7 @@ import com.silverpeas.gallery.model.PhotoDetail;
 public class GalleryPasteDelegate {
 
   private final AlbumDetail album;
-  private final Map<PhotoDetail, Boolean> photosToPaste = new LinkedHashMap<PhotoDetail, Boolean>();
+  private final Map<Media, Boolean> mediaToPaste = new LinkedHashMap<Media, Boolean>();
   private final Map<AlbumDetail, Boolean> albumsToPaste = new LinkedHashMap<AlbumDetail, Boolean>();
 
   /**
@@ -46,12 +46,12 @@ public class GalleryPasteDelegate {
   }
 
   /**
-   * Adds a photo to paste
-   * @param photo
+   * Adds a media to paste
+   * @param media
    * @param isCutted
    */
-  public void addPhoto(final PhotoDetail photo, final boolean isCutted) {
-    photosToPaste.put(photo, isCutted);
+  public void addMedia(final Media media, final boolean isCutted) {
+    mediaToPaste.put(media, isCutted);
   }
 
   /**
@@ -71,10 +71,10 @@ public class GalleryPasteDelegate {
   }
 
   /**
-   * @return the photosToPaste
+   * @return the mediaToPaste
    */
-  public Map<PhotoDetail, Boolean> getPhotosToPaste() {
-    return photosToPaste;
+  public Map<Media, Boolean> getMediaToPaste() {
+    return mediaToPaste;
   }
 
   /**

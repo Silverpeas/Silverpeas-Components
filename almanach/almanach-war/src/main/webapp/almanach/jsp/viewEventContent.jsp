@@ -305,7 +305,7 @@ $(document).ready(function(){
 		   <div id="eventInfoPublication" class="bgDegradeGris">
 		   	<div class="paragraphe">
 		   		<b><%=resources.getString("almanach.createdBy")%></b> <view:username userId="<%=contributor.getId()%>" />
-		   		<div class="profilPhoto"><img src="<%=m_context %><%=contributor.getAvatar() %>" alt="" class="defaultAvatar"/></div>
+		   		<div class="profilPhoto"><view:image src="<%=contributor.getAvatar() %>" type="avatar" /></div>
 	   		</div>
 
 			<%	if (StringUtil.isDefined(link)) {	%>

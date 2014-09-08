@@ -23,14 +23,10 @@
  */
 package com.stratelia.webactiv.kmelia.servlets;
 
-import com.silverpeas.util.EncodeHelper;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
 import com.stratelia.webactiv.kmelia.servlets.ajax.AjaxOperation;
-import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;

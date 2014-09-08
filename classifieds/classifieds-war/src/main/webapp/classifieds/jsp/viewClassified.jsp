@@ -26,13 +26,11 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"
 	isELIgnored="false"%>
 
-<%@page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@ page import="com.silverpeas.util.EncodeHelper"%>
 <%@page import="com.silverpeas.form.Form"%>
 <%@page import="com.silverpeas.form.PagesContext"%>
 <%@page import="com.silverpeas.form.DataRecord"%>
 <%@page import="com.silverpeas.classifieds.model.ClassifiedDetail"%>
-<%@page import="org.silverpeas.attachment.model.SimpleDocument"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
@@ -71,9 +69,6 @@
 <c:set var="description" value="${classified.description}" />
 <c:set var="displayedTitle"><view:encodeHtml string="${title}" /></c:set>
 <c:set var="displayedDescription"><view:encodeHtmlParagraph string="${description}" /></c:set>
-<%
-String m_context = GeneralPropertiesManager.getString("ApplicationURL");
-%>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -174,8 +169,13 @@ String m_context = GeneralPropertiesManager.getString("ApplicationURL");
 		});
 	
 	function openImage(url) {
-		  SP_openWindow(url,'image','700','500','scrollbars=yes, noresize, alwaysRaised');
-  }
+  		var urlPart = "/size/250x/";
+  		var i = url.indexOf(urlPart);
+  		if (i != -1) {
+    		url = url.substring(0, i) + url.substring(i+urlPart.length, url.length);
+  		}
+		SP_openWindow(url,'image','700','500','scrollbars=yes, noresize, alwaysRaised');
+  	}
 </script>
 </head>
 <body id="classifieds">
@@ -263,7 +263,7 @@ String m_context = GeneralPropertiesManager.getString("ApplicationURL");
                    </c:if>
                    <fmt:message key="classifieds.by" />&nbsp;
                     <view:username userId="${classified.creatorId}" />
-                    <div class="profilPhoto"><img class="defaultAvatar" alt="" src="${pageContext.request.contextPath}${classified.creator.avatar}"/></div><br/>
+                    <div class="profilPhoto"><view:image src="${classified.creator.avatar}" type="avatar.profil" css="defaultAvatar" alt=""/></div><br/>
 									 <c:if test="${fn:length(updateDate) > 0}">
 									   <fmt:message key="classifieds.updateDate" /> : <b><c:out value="${updateDate}" /></b><br/>
 									 </c:if>
@@ -285,14 +285,12 @@ String m_context = GeneralPropertiesManager.getString("ApplicationURL");
                     %>
 		                <c:forEach var="image" items="${classified.images}">
 		                <%
-		                SimpleDocument simpleDocument = (SimpleDocument) pageContext.getAttribute("image");
-		                String url = m_context +  simpleDocument.getAttachmentURL();
 		                String select = "";
 		                if (i == 0) {
 		                  select = "class=\"selected\"";
 		                }
 		                %>
-		                  <a <%=select%> href="#"><img src="<%=url%>"/></a>
+		                  <a <%=select%> href="#"><view:image src="${image.attachmentURL}" size="250x"/></a>
 		                <%
 		                i++;
 		                %>
@@ -301,11 +299,7 @@ String m_context = GeneralPropertiesManager.getString("ApplicationURL");
                     <c:if test="${not empty classified.images}">
                     <div class="classified_selected_photo">
                     <c:forEach var="image" items="${classified.images}" begin="0" end="0">
-                    <%
-                    SimpleDocument simpleDocument = (SimpleDocument) pageContext.getAttribute("image");
-                    String url = m_context +  simpleDocument.getAttachmentURL();
-                    %>
-                      <a href="javascript:onClick=openImage('<%=url%>')"><img src="<%=url%>"/></a>
+                      <a href="javascript:onclick=openImage(webContext+'${image.attachmentURL}')"><view:image src="${image.attachmentURL}" size="250x"/></a>
                     </c:forEach>
                     </div>
                     </c:if>

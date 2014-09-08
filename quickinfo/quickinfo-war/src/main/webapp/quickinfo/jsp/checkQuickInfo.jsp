@@ -43,7 +43,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="java.beans.*"%>
 
 <%@ page import="java.util.*"%>
-<%@ page import="javax.ejb.*,java.sql.SQLException,javax.naming.*,javax.rmi.PortableRemoteObject"%>
 <%@ page import="com.stratelia.webactiv.util.*"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.*"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.*"%>
@@ -57,7 +56,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.*"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.iconPanes.IconPane"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.icons.Icon"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane"%>
 <%@ page import="com.stratelia.webactiv.quickinfo.control.*"%>
 <%@ page import="com.stratelia.webactiv.util.publication.model.*"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
@@ -84,10 +82,10 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
   if (quickinfo == null) {
       // No quickinfo session controller in the request -> security exception
-      String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+      String sessionTimeout = GeneralPropertiesManager.getString("sessionTimeout");
       getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
       return;
   }
 
-  String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+  String m_context = URLManager.getApplicationURL();
 %>

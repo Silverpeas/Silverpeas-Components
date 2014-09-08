@@ -20,8 +20,6 @@
  */
 package com.silverpeas.gallery.control;
 
-import java.util.Collection;
-
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.model.GalleryRuntimeException;
 import com.silverpeas.gallery.model.Order;
@@ -30,12 +28,13 @@ import com.silverpeas.scheduler.SchedulerEvent;
 import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.SchedulerFactory;
 import com.silverpeas.scheduler.trigger.JobTrigger;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+
+import java.util.List;
 
 public class ScheduledDeleteOrder
     implements SchedulerEventListener {
@@ -67,16 +66,10 @@ public class ScheduledDeleteOrder
       // recherche du nombre de jours avant suppression
       int nbDays = Integer.parseInt(resources.getString("nbDaysForDeleteOrder"));
       // rechercher toutes les demandes arrivant à échéance
-      Collection<Order> orders = getGalleryBm().getAllOrderToDelete(nbDays);
+      List<Order> orders = getGalleryBm().getAllOrderToDelete(nbDays);
       SilverTrace.info("gallery", "ScheduledAlertUser.doScheduledDeleteOrder()",
           "root.MSG_GEN_PARAM_VALUE", "Demandes = " + orders);
-      if (orders != null) {
-        for (Order order : orders) {
-          // pour chaque demande, la supprimer
-          int orderId = order.getOrderId();
-          getGalleryBm().deleteOrder(Integer.toString(orderId));
-        }
-      }
+      getGalleryBm().deleteOrders(orders);
     } catch (Exception e) {
       throw new GalleryRuntimeException("ScheduledDeleteOrder.doScheduledDeleteOrder()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);

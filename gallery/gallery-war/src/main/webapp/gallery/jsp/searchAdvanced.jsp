@@ -25,166 +25,193 @@
 --%>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ include file="check.jsp" %>
+
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<% 	
-	List 				metaDataKeys	= (List) request.getAttribute("MetaDataKeys");
-	Form				form	 		= (Form) request.getAttribute("Form");
-	DataRecord			data			= (DataRecord) request.getAttribute("Data");
-	
-	String 				keyWord			= (String) request.getAttribute("KeyWord");
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
+
+<%-- Resources --%>
+<c:set var="_language" value="${requestScope.resources.language}"/>
+<c:set var="componentId" value="${requestScope.browseContext[3]}"/>
+
+
+<fmt:setLocale value="${_language}"/>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
+
+<%-- Component parameters --%>
+<view:componentParam var="pdcActivatedParameter" componentId="${componentId}" parameter="usePdc"/>
+<c:set var="isPdcActivated" value="${silfn:booleanValue(pdcActivatedParameter)}"/>
+
+<%
+  Form form = (Form) request.getAttribute("Form");
+  DataRecord data = (DataRecord) request.getAttribute("Data");
 %>
 
-<%@page import="org.silverpeas.search.indexEngine.DateFormatter"%>
+<c:set var="browseContext" value="${requestScope.browseContext}"/>
+<c:set var="instanceId" value="${browseContext[3]}"/>
+<c:set var="keyword" value="${requestScope.KeyWord}"/>
+
 <html>
 <head>
   <view:looknfeel/>
+  <link type="text/css" href="<c:url value="/util/styleSheets/fieldset.css" />" rel="stylesheet"/>
   <view:includePlugin name="datepicker"/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script type="text/javascript">
-function sendData() 
-{
-    //var query = stripInitialWhitespace(document.searchForm.SearchKeyWord.value);
-	//if (!isWhitespace(query) && query != "*") {
-    	//displayStaticMessage();
-  		setTimeout("document.searchForm.submit();", 500);
-    //}
-}
-</script>
+  <script type="text/javascript" src="<c:url value="/util/javaScript/lucene/luceneQueryValidator.js"/>"></script>
+  <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js"/>"></script>
+  <script type="text/javascript" src="<c:url value="/util/javaScript/checkForm.js"/>"></script>
+  <script type="text/javascript">
+    function sendData() {
+      if (checkLuceneQuery()) {
+        setTimeout("document.searchForm.submit();", 500);
+      }
+    }
+
+    // this method requires luceneQueryValidator.js
+    function checkLuceneQuery() {
+      var query = $("#searchQuery").val();
+      if (query != null && query.length > 0) {
+        query = removeEscapes(query);
+        // check question marks are used properly
+        if (!checkQuestionMark(query)) {
+          return false;
+        }
+        // check * is used properly
+        if (!checkAsterisk(query)) {
+          return false;
+        }
+        return true;
+      }
+      return true;
+    }
+
+  </script>
 </head>
-<body class="yui-skin-sam">
+<body id="${instanceId}" class="gallery gallery-search yui-skin-sam">
 
-<%
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel, "Main");
-	browseBar.setPath(resource.getString("gallery.searchAdvanced"));
-	
-	Board board = gef.getBoard();
-	Button validateButton 	= (Button) gef.getFormButton(resource.getString("GML.search"), "javascript:onClick=sendData();", false);
-	Button razButton		= (Button) gef.getFormButton(resource.getString("gallery.raz"), "ClearSearch", false);
-	
-	out.println(window.printBefore());
-    out.println(frame.printBefore());
-    
-	%>
-	<form name="searchForm" action="Search" method="POST" onSubmit="javascript:sendData();" ENCTYPE="multipart/form-data" accept-charset="UTF-8">
-	
-		<%
- 		// affichage de la zone de recherche
-		// ---------------------------------
-		out.println("<br/>");
-		out.println(board.printBefore());
-		%>
-		<table>
-			<tr>
-				<td class="txtlibform" nowrap width="200px"><%=resource.getString("GML.search")%> :</td>
-				<td><input type="text" name="SearchKeyWord" value="<%=keyWord%>" size="36"></td>
-			</tr>
-		</table>
-		<%
-		out.println(board.printAfter());
-		 
-		// affichage des données IPTC
-		// --------------------------
-			 
-		if (metaDataKeys != null && metaDataKeys.size() > 0) 
-		{
-			out.println("<br/>");
-			out.println(board.printBefore());
-			out.println("<table cellspacing=\"3\" cellpadding=\"0\">");
-			Iterator it = (Iterator) metaDataKeys.iterator();
-			while (it.hasNext())
-			{
-				MetaData metaData = (MetaData) it.next();
-	
-				// extraire les données
-				String property = metaData.getProperty();
-				String metaDataLabel = metaData.getLabel();
-				String metaDataValue = metaData.getValue();
-				if (!StringUtil.isDefined(metaDataValue))
-					metaDataValue = "";
-				// affichage
-				%>
-				<tr>
-					<td class="txtlibform" nowrap width="200px"><%=metaDataLabel%> :</td>
-					
-					<% if (metaData.isDate()) {
-							String beginDate = "";
-							String endDate = "";
-							//metaDataValue looks like [20080101 TO 20081231]
-							if (StringUtil.isDefined(metaDataValue))
-							{
-								beginDate = metaDataValue.substring(1, 9);
-								if (!DateFormatter.nullBeginDate.equals(beginDate))
-									beginDate = resource.getOutputDate(DateFormatter.string2Date(beginDate));
-								else
-									beginDate = "";
-								
-								endDate = metaDataValue.substring(13, metaDataValue.length()-1);
-								if (!DateFormatter.nullEndDate.equals(endDate))
-									endDate = resource.getOutputDate(DateFormatter.string2Date(endDate));
-								else
-									endDate = "";
-							}
-					%>
-						<td>
-							<input type="text" class="dateToPick" id="<%=property%>_Begin" name="<%=property%>_Begin" size="12" value="<%= beginDate %>"/>
-							<input type="text" class="dateToPick" id="<%=property%>_End" name="<%=property%>_End" size="12" value="<%= endDate %>"/>
-						</td>
-					<% } else { %>
-						<td><input type="text" name="<%=property%>" value="<%=metaDataValue%>" size="36"/></td>
-					<% } %>
-				</tr>
-				<%
-			}
-			out.println("</table>");
-			out.println(board.printAfter());
-		}
-			 
-		// affichage du formulaire XML
-		// ---------------------------
-		
-		out.println("<br/>");
-		
-		if (form != null) 
-		{
-			out.println(board.printBefore());
-			out.println("<table><tr><td>");
-				PagesContext xmlContext = new PagesContext("myForm", "0", resource.getLanguage(), false, componentId, null);
-				xmlContext.setBorderPrinted(false);
-				xmlContext.setUseMandatory(false);
-				xmlContext.setUseBlankFields(true);
-		    	form.display(out, xmlContext, data);
-	    	out.println("</table></td></tr>");
-			out.println(board.printAfter());
-			out.println("<br/>");
-		}
-			 
-		// affichage du PDC
-		// ----------------
-		out.println(board.printBefore());
-		out.flush();
-		getServletConfig().getServletContext().getRequestDispatcher("/pdcPeas/jsp/pdcInComponent.jsp?ComponentId="+componentId).include(request, response);
-		out.println(board.printAfter());
-		
-		// bouton de validation
-		// --------------------
-		
-		ButtonPane buttonPane = gef.getButtonPane();
-	    buttonPane.addButton(validateButton);
-	    buttonPane.addButton(razButton);
-		out.println("<BR/><center>"+buttonPane.print()+"</center><BR/>");
-		
-		
+<fmt:message key="gallery.searchAdvanced" var="searchLabel"/>
+<view:browseBar path="${searchLabel}">
+</view:browseBar>
 
-	%>
-	</form>
+<view:window>
+  <view:frame>
 
-	<%
-	out.println(frame.printAfter());
-	out.println(window.printAfter());
-	%>
+    <form id="searchFormId" name="searchForm" action="Search" method="POST" enctype="multipart/form-data" accept-charset="UTF-8">
 
+      <fieldset id="generalFieldset" class="skinFieldset">
+        <div class="fields">
+          <div class="field" id="generalArea">
+            <label class="txtlibform" for="SearchKeyWord"><fmt:message key="GML.search"/></label>
+
+            <div class="champs">
+              <fmt:message key="gallery.search.field.keyword.help" var="searchTitle"/>
+              <input type="submit" class="hide"/>
+              <input id="searchQuery" type="text" name="SearchKeyWord" value="${keyword}" size="36" title="${searchTitle}"/>
+              <a class="milieuBoutonV5" href="javascript:onClick=sendData();"><span><fmt:message key="GML.search"/></span></a>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <c:set var="metadataKeys" value="${requestScope.MetaDataKeys}"/>
+      <c:if test="${not empty metadataKeys}">
+        <fieldset id="metadataFieldset" class="skinFieldset">
+          <legend><fmt:message key="GML.metadata"/></legend>
+          <div class="fields">
+            <c:forEach var="metaData" items="${metadataKeys}">
+              <div class="field" id="metadata_${metaData.property}_area">
+                <label class="txtlibform" for="metadata_${metaData.property}">${metaData.label}</label>
+
+                <div class="champs">
+                  <c:choose>
+                    <c:when test="${metaData.date}">
+                      <c:set var="parsedBeginDate" value=""/>
+                      <c:set var="parsedEndDate" value=""/>
+                      <c:if test="${not empty metaData.value}">
+                        <c:set var="beginDate" value="${fn:substring(metaData.value, 1, 9)}"/>
+                        <fmt:parseDate var="parsedBeginDate" value="${beginDate}" pattern="yyyyMMdd"/>
+                        <c:set var="endDate" value="${fn:substring(metaData.value, 13, fn:length(metaData.value) - 1)}"/>
+                        <fmt:parseDate var="parsedEndDate" value="${endDate}" pattern="yyyyMMdd"/>
+                      </c:if>
+                      <input type="text" class="dateToPick" id="metadonnee_${metaData.property}_Begin" name="${metaData.property}_Begin" size="12" value="<view:formatDate value="${parsedBeginDate}" language="${_language}" />"/>
+                      <input type="text" class="dateToPick" id="metadonnee_${metaData.property}_End" name="${metaData.property}_End" size="12" value="<view:formatDate value="${parsedEndDate}" language="${_language}" />"/>
+                    </c:when>
+                    <c:otherwise>
+                      <fmt:message var="metadataTitle" key="gallery.search.field.metadata.help">
+                        <fmt:param value="${metaData.label}"/>
+                      </fmt:message>
+                      <input title="${metadataTitle}" id="metadata_${metaData.property}" type="text" name="${metaData.property}" value="${metaData.value}" size="36"/>
+                    </c:otherwise>
+                  </c:choose>
+                </div>
+              </div>
+            </c:forEach>
+          </div>
+        </fieldset>
+
+      </c:if>
+
+      <% if (form != null && data != null) { %>
+      <view:board>
+        <table>
+          <tr>
+            <td>
+              <%
+                PagesContext xmlContext =
+                    new PagesContext("myForm", "0", resource.getLanguage(), false, componentId,
+                        null);
+                xmlContext.setBorderPrinted(false);
+                xmlContext.setUseMandatory(false);
+                xmlContext.setUseBlankFields(true);
+                form.display(out, xmlContext, data);
+              %>
+            </td>
+          </tr>
+        </table>
+      </view:board>
+      <% } %>
+
+      <c:if test="${isPdcActivated}">
+        <fieldset id="pdcFieldset" class="skinFieldset">
+          <legend><fmt:message key="GML.PDC"/></legend>
+          <c:import url="/pdcPeas/jsp/pdcInComponent.jsp?ComponentId=${componentId}"/>
+            <%--
+            <!-- TODO replace servlet request dispatcher with pdc javascript plugin displayer -->
+            <div class="fields">
+              <div class="field" id="numAffaireArea">
+                <label class="txtlibform" for="numAffaire">   <img src="/silverpeas/pdcPeas/jsp/icons/primary.gif" alt="primary"/>G&eacute;ographique&nbsp;
+                 </label>
+                <div class="champs">
+                  <select name="Axis1" size="1">
+                        <option value=""></option>
+                  </select>
+                </div>
+              </div>
+            </div>
+             --%>
+        </fieldset>
+      </c:if>
+
+      <view:buttonPane>
+        <fmt:message key="GML.search" var="searchButtonLabel"/>
+        <view:button label="${searchButtonLabel}" action="javascript:onClick=sendData();"/>
+        <fmt:message key="gallery.search.reset" var="resetButtonLabel"/>
+        <view:button label="${resetButtonLabel}" action="ClearSearch"/>
+      </view:buttonPane>
+    </form>
+
+    <script type="text/javascript">
+      $(document).ready(function() {
+        $('#searchFormId').on("submit", function() {
+          sendData();
+          return false;
+        });
+      });
+    </script>
+
+  </view:frame>
+</view:window>
 </body>
 </html>

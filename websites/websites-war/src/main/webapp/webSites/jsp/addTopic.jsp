@@ -139,27 +139,12 @@ function isCorrectForm() {
 </script>
 </HEAD>
 
-<BODY bgcolor="white" topmargin="15" leftmargin="20" onload="document.topicForm.Name.focus()">
-<%
-    Window window = gef.getWindow();
-    BrowseBar browseBar = window.getBrowseBar();
-    browseBar.setDomainName(spaceLabel);
-    browseBar.setComponentName(componentLabel);
-    browseBar.setPath(resources.getString("FolderCreationTitle"));
-
-    //Le cadre
-    Frame frame = gef.getFrame();
-
-	//Le board
-	Board board = gef.getBoard();
-
-    //Debut code
-    out.println(window.printBefore());
-    out.println(frame.printBefore());
-	out.print(board.printBefore());
-
-%>
-    <TABLE ALIGN=CENTER CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%" CLASS=intfdcolor4>
+<BODY onload="document.topicForm.Name.focus()">
+<view:browseBar path='<%=resources.getString("FolderCreationTitle")%>'/>
+<view:window popup="true">
+<view:frame>
+<view:board>
+    <TABLE CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%">
 	<FORM NAME="topicForm">
     <TR>
         <TD class="txtlibform"><%=resources.getString("GML.path")%> : </TD>
@@ -188,20 +173,15 @@ function isCorrectForm() {
       </TR>
 	</FORM>
     </TABLE>
+</view:board>
 <%
-   //fin du code
-	out.print(board.printAfter());
-    out.println(frame.printMiddle());
-
     ButtonPane buttonPane = gef.getButtonPane();
     buttonPane.addButton(validateButton);
     buttonPane.addButton(cancelButton);
-
-    out.println("<br><center>"+buttonPane.print()+"</center><br>");
-
-    out.println(frame.printAfter());
-    out.println(window.printAfter());
+    out.println(buttonPane.print());
 %>
+</view:frame>
+</view:window>
 <FORM NAME="topicDetailForm" ACTION="AddTopic" METHOD=POST>
   <input type="hidden" name="Action">
   <input type="hidden" name="Id" value="<%=fatherId%>">

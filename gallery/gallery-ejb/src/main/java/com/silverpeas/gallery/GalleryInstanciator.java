@@ -20,6 +20,7 @@
  */
 package com.silverpeas.gallery;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -28,16 +29,20 @@ import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.InstanciationException;
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 
+import com.silverpeas.util.FileUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.node.NodeInstanciator;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.node.model.NodePK;
 
 public class GalleryInstanciator implements ComponentsInstanciatorIntf {
+
+  private static final String COMPONENT_NAME = GalleryComponentSettings.COMPONENT_NAME;
 
   public GalleryInstanciator() {
   }
@@ -45,31 +50,33 @@ public class GalleryInstanciator implements ComponentsInstanciatorIntf {
   @Override
   public void create(Connection con, String spaceId, String componentId,
       String userId) throws InstanciationException {
-    SilverTrace.info("gallery", "GalleryInstanciator.create()", "root.MSG_GEN_ENTER_METHOD",
+    SilverTrace.info(COMPONENT_NAME, "GalleryInstanciator.create()", "root.MSG_GEN_ENTER_METHOD",
         "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
     NodeInstanciator node = new NodeInstanciator("com.silverpeas.gallery");
     node.create(con, spaceId, componentId, userId);
     insertRootNode(con, componentId, userId);
     insertAlbumNode(con, componentId, userId);
-    SilverTrace.info("gallery", "GalleryInstanciator.create()", "root.MSG_GEN_EXIT_METHOD");
+    SilverTrace.info(COMPONENT_NAME, "GalleryInstanciator.create()", "root.MSG_GEN_EXIT_METHOD");
   }
 
   @Override
   public void delete(Connection con, String spaceId, String componentId, String userId) throws
       InstanciationException {
-    SilverTrace.info("gallery", "GalleryInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD",
+    SilverTrace.info(COMPONENT_NAME, "GalleryInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD",
         "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
-    getGalleryBm().deleteAlbum(UserDetail.getById(userId), componentId, new NodePK(
-        NodePK.ROOT_NODE_ID, componentId));
-    SilverTrace.info("gallery", "GalleryInstanciator.delete()", "root.MSG_GEN_EXIT_METHOD");
+    getGalleryBm().deleteAlbum(UserDetail.getById(userId), componentId,
+        new NodePK(NodePK.ROOT_NODE_ID, componentId));
+    FileUtil.deleteEmptyDir(new File(FileRepositoryManager.getAbsolutePath(componentId)));
+    SilverTrace.info(COMPONENT_NAME, "GalleryInstanciator.delete()", "root.MSG_GEN_EXIT_METHOD");
   }
 
   private void insertRootNode(Connection con, String componentId, String userId) throws
       InstanciationException {
     String creationDate = DateUtil.today2SQLDate();
-    String query = "INSERT INTO SB_Node_Node(nodeId, nodeName, nodeDescription, nodeCreationDate, "
-        + "nodeCreatorId, nodePath, nodeLevelNumber, nodeFatherId, modelId, nodeStatus, instanceId)"
-        + "	VALUES (0, 'Accueil', 'La Racine', ? , ? , '/', 1, -1,'','Visible',?)";
+    String query =
+        "INSERT INTO SB_Node_Node(nodeId, nodeName, nodeDescription, nodeCreationDate, "
+            + "nodeCreatorId, nodePath, nodeLevelNumber, nodeFatherId, modelId, nodeStatus, instanceId)"
+            + "	VALUES (0, 'Accueil', 'La Racine', ? , ? , '/', 1, -1,'','Visible',?)";
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(query);
@@ -88,9 +95,10 @@ public class GalleryInstanciator implements ComponentsInstanciatorIntf {
   private void insertAlbumNode(Connection con, String componentId, String userId) throws
       InstanciationException {
     String creationDate = DateUtil.today2SQLDate();
-    String query = "INSERT INTO SB_Node_Node(nodeId, nodeName, nodeDescription, nodeCreationDate, "
-        + "nodeCreatorId, nodePath, nodeLevelNumber, nodeFatherId, modelId, nodeStatus, instanceId)"
-        + "VALUES (?, 'Mon Album',' ', ? , ? , ? , 2, 0, '', 'Invisible',?)";
+    String query =
+        "INSERT INTO SB_Node_Node(nodeId, nodeName, nodeDescription, nodeCreationDate, "
+            + "nodeCreatorId, nodePath, nodeLevelNumber, nodeFatherId, modelId, nodeStatus, instanceId)"
+            + "VALUES (?, 'Mon Album',' ', ? , ? , ? , 2, 0, '', 'Invisible',?)";
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(query);

@@ -21,156 +21,640 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-		
-
-
 #subTopics {
-		width:98%;
-		padding-bottom:5px;
+  width: 100%;
+  padding-bottom: 5px;
 }
 
 #subTopics ul {
-	list-style-type:none;
-	padding:0;
-	margin:5px;
+  list-style-type: none;
+  padding: 0;
+  margin: 5px 1em;
 }
-
-
 
 #subTopics ul li {
-	margin:2px 0 0 0;
-	height: 63px;
-	position:relative;
-	background-color:#EAEAEAEA;
+  margin: 2px 0 0 0;
+  height: 63px;
+  position: relative;
+  background-color: #EAEAEAEA;
 }
 
-/*** presentation sur 2 colonnes 
+/*** presentation sur 2 colonnes
 #subTopics ul li  {
     display: inline;
     float: left;
     height: 63px;
     margin-right: 0.5em;
     width: 48%;
-	position:relative;
-	}***/
+  position:relative;
+  }***/
 /*** presentation sur 3 colonnes
 #subTopics ul li  {
-	display: inline;
+  display: inline;
     float: left;
     height: 63px;
     margin-right: 0.5em;
     width:32%;
-	position:relative;
-	} ***/
-	
-/*** presentation sur 4 colonnes***/
-#subTopics ul li  {
-	display: inline;
-    float: left;
-    height: 63px;
-    margin-right: 0.5em;
-    width:24%;
-	position:relative;
-	border:0;
-} 
+  position:relative;
+  } ***/
 
-#subTopics ul li a { 
-    background: url("../icons/pack_big_icons.gif") 3px 5px no-repeat;
-    display: block;
-	overflow:hidden;
-	height: 32px;
-	padding:8px 3px 16px 50px;
-    line-height: 100%;
-	border:1px solid #EAEAEA ;
-	border-radius:10px;
-	-moz-border-radius:10px;
-	-webkit-border-radius:10px;
-	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
-	background-color:#EAEAEA;
+/*** presentation sur 4 colonnes***/
+#subTopics ul li {
+  display: inline;
+  float: left;
+  height: 63px;
+  margin-right: 1%;
+  width: 24%;
+  position: relative;
+  border: 0;
+  padding: 0;
 }
-	
+
+#subTopics ul li:nth-child(4n+4) {
+  margin-right: 0;
+  width: 25%;
+}
+
+#subTopics ul li:first-child {
+  margin-right: 1%;
+  width: 24%;
+}
+
+#subTopics ul li a {
+  background: url("../icons/pack_big_icons.gif") 3px 5px no-repeat;
+  display: block;
+  overflow: hidden;
+  height: 32px;
+  padding: 8px 3px 16px 50px;
+  line-height: 100%;
+  border: 1px solid #EAEAEA;
+  border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  behavior: url("../../../util/styleSheets/PIE.htc");
+  background-color: #EAEAEA;
+}
+
 #subTopics ul li a strong {
-	display:block;
-	padding:0 30px 2px 0;
+  display: block;
+  padding: 0 30px 2px 0;
 }
-	
+
 #subTopics ul li a strong span {
-	background: url("../icons/mini_publi.gif")  top right no-repeat;
-	display:block;
-    height: 20px;
-	width: 25px;
-    position: absolute;
-    right: 10px;
-    top: 8px;
-    padding: 1px 17px 0 0;
-	color: #000000;
-	text-align: right;
-	}	
-#subTopics ul li a:hover { 
-    background: url("../icons/pack_big_icons.gif") 3px -95px no-repeat;
-	border:1px solid #FFFBBB;
-	background-color:#FFFFDC;
-	color:#000;
+  background: url("../icons/mini_publi.gif") top right no-repeat;
+  display: block;
+  height: 20px;
+  width: 25px;
+  position: absolute;
+  right: 10px;
+  top: 8px;
+  padding: 1px 17px 0 0;
+  color: #000000;
+  text-align: right;
 }
-#subTopics ul li a span{
-	color: #666666;
-    display: block;
-    font-size: 11px;
-    height: 33px;
-    line-height: 11px;
-    overflow: hidden;
-    font-weight: normal;
+
+#subTopics ul li a:hover {
+  background: url("../icons/pack_big_icons.gif") 3px -95px no-repeat;
+  border: 1px solid #FFFBBB;
+  background-color: #FFFFDC;
+  color: #000;
 }
+
+#subTopics ul li a span {
+  color: #666666;
+  display: block;
+  font-size: 11px;
+  height: 33px;
+  line-height: 11px;
+  overflow: hidden;
+  font-weight: normal;
+}
+
 /*** pour masquer les descriptions des topics
 #subTopics ul li a span {
-	display:none;}
-	  **/ 
-
+  display:none;}
+    **/
 #topicDescription {
-	color:#666;
+  color: #666;
 }
 
-#albumList { 
-	list-style-type: none; 
-	margin: 0; 
-	padding: 0; 
+#albumList {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
 }
 
-#albumList li { 
-	margin: 3px 3px 3px 0; 
-	padding: 1px; 
-	float: left; 
-	width: 100px; 
-	height: 90px; 
+#albumList li {
+  margin: 3px 3px 3px 0;
+  padding: 1px;
+  float: left;
+  width: 100px;
+  height: 90px;
 }
 
 .ui-state-default a, .ui-state-default a:link, .ui-state-default a:visited {
-    color: #000000;
-    text-decoration: none;
+  color: #000000;
+  text-decoration: none;
 }
 
 ul#albumList li.ui-state-highlight {
-	border: 1px dashed #BFBFBF;
-	border-width: 1px;
-	padding:10px;
-	background-image: none;
-	background-color: #EAEAEA;
+  border: 1px dashed #BFBFBF;
+  border-width: 1px;
+  padding: 10px;
+  background-image: none;
+  background-color: #EAEAEA;
 }
 
 /* Slider */
 .gallery-slider-player-buttons {
-    z-index: 10;
-    width: 20px;
-    height: 20px;
-    margin: 0 auto;
-    cursor: pointer;
-    opacity:0.7;
-    position: absolute;
-    filter: alpha(opacity=70);
+  z-index: 10;
+  width: 20px;
+  height: 20px;
+  margin: 0 auto;
+  cursor: pointer;
+  opacity: 0.7;
+  position: absolute;
+  filter: alpha(opacity=70);
 }
+
 .gallery-slider-player-buttons:hover {
-    opacity:1;
-    filter: alpha(opacity=100);
+  opacity: 1;
+  filter: alpha(opacity=100);
 }
 
+/** FICHE **/
+.gallery-fiche-media .fileName {
+  text-align: center;
+  font-size: 120%;
+  padding: 0 0 0.25em 0;
+  color: #333;
+  font-weight: bold;
+}
 
+.gallery-fiche-media .fileName a {
+  font-size: 100%;
+  color: #333;
+}
+
+.gallery-fiche-media .rightContent .fileCharacteristic {
+  background-color: #efefef;
+  background-image: url();
+  -pie-background: linear-gradient(#efefef, #efefef);
+  margin-bottom: 1em;
+}
+
+.gallery-fiche-media .rightContent b {
+  display: block;
+}
+
+.gallery-fiche-media .rightContent .fileCharacteristic .header h4 {
+  height: 16px;
+}
+
+.gallery-fiche-photo .rightContent .fileCharacteristic .header h4 {
+  background: url("../icons/icon-photo.gif") no-repeat scroll right top transparent;
+}
+
+.gallery-fiche-video .rightContent .fileCharacteristic .header h4 {
+  background: url("../icons/icon-video.png") no-repeat scroll right top transparent;
+}
+
+.gallery-fiche-sound .rightContent .fileCharacteristic .header h4 {
+  background: url("../icons/icon-sound.png") no-repeat scroll right top transparent;
+}
+
+.gallery-fiche-streaming .rightContent .fileCharacteristic .header h4 {
+  background: url("../icons/icon-streaming.png") no-repeat scroll right top transparent;
+}
+
+.gallery-fiche-media .rightContent .fileCharacteristicDuration {
+  float: left;
+  background: transparent url(../icons/duration.png) no-repeat 0 0;
+  padding: 0 0 0 24px;
+  width: 100px;
+}
+
+.gallery-fiche-media .rightContent .fileCharacteristic a.download-link {
+  display: block;
+  background-color: #FFF;
+  border-bottom: 1px solid #cdcdcd;
+  border-top: 1px solid #cdcdcd;
+  margin: 0.5em 0;
+  padding: 0.25em 0;
+  text-align: center;
+  text-align: center;
+}
+
+.gallery-fiche-media .rightContent .fileCharacteristic a.download-link img {
+  border: 0;
+  vertical-align: middle;
+}
+
+.gallery-fiche-media .rightContent .fileCharacteristicSize {
+  float: left;
+  background: transparent url(../icons/size.png) no-repeat 0 0;
+  padding: 0 0 0 24px;
+  width: 100px;
+}
+
+.gallery-fiche-media .rightContent .fileCharacteristicWeight {
+  float: left;
+  background: transparent url(../icons/weight.png) no-repeat 0 0;
+  padding: 0 0 0 24px;
+  width: 100px;
+}
+
+.gallery-fiche-media .rightContent .periode .header h4 {
+  background: url("../../../util/icons/calendar_2.gif") no-repeat scroll right top transparent;
+  height: 16px;
+}
+
+.gallery-fiche-media .rightContent .periode_visibility, .gallery-fiche-media .rightContent .periode_download {
+  width: 120px;
+  float: left;
+}
+
+.gallery-fiche-media .rightContent .fileCharacteristic b {
+  display: block;
+}
+
+br.clear {
+  clear: both
+}
+
+.commentaires {
+  border-top: 2px dotted #cecece;
+  clear: left;
+  margin-top: 15px;
+  overflow: auto;
+  width: 100%;
+}
+
+.gallery-fiche-media .hautFrame {
+  padding-top: 0;
+}
+
+.gallery-fiche-media .hautFrame form {
+  padding: 0;
+  margin: 0;
+  border: 1px solid transparent;
+}
+
+.principalContent #pagination,
+.principalContent .fondPhoto,
+.principalContent .fondPhotoNotVisible {
+  text-align: center;
+}
+
+.contentMedia .mediaTitle {
+  margin: 0;
+  padding: 0;
+}
+
+.contentMedia .mediaTitle,
+.contentMedia .motsClefs {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.contentMedia .description {
+  border-left: 6px solid #e4e4e4;
+  padding: 8px;
+  margin: 1em 0;
+}
+
+.gallery-fiche-media #pagination {
+  display: block;
+  float: right;
+  height: 30px;
+  line-height: 31px;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  width: 100px;
+}
+
+.gallery-fiche-media #pagination .txtnav {
+  font-size: 10pt;
+}
+
+.gallery-fiche-media .currentPage {
+  opacity: 0.6;
+}
+
+.gallery-fiche-media #pagination img {
+  border: 0;
+  vertical-align: middle;
+}
+
+.gallery-fiche-media #backToSearch {
+  float: right;
+  height: 30px;
+  width: 213px;
+  position:relative;
+}
+
+.gallery-fiche-media #backToSearch a.button {
+  background-color: #f4f4f4;
+  background-image: url("/silverpeas/util/icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100");
+  border: 1px solid #cccccc;
+  border-radius: 5px;
+  color: #4c4c4c;
+  font-size: 100%;
+  padding: 7px 10px;
+  position: absolute;
+  right: 0;
+  top:0;
+  width: 187px;
+}
+
+.gallery-fiche-media #backToSearch a.button span {
+  background: url("../../../util/icons/back.png") no-repeat scroll 0 0 transparent;
+  display: block;
+  font-weight: bold;
+  line-height: 16px;
+  padding: 0 0 0 24px;
+  text-align: center;
+}
+
+.principalContent #pagination img, .principalContent .contentMedia img {
+  border: 0;
+}
+
+.principalContent .fondPhoto {
+
+}
+
+.principalContent .cadrePhoto {
+  width: auto;
+  display: inline-block;
+  margin: 0 auto 1em;
+}
+
+.motsClefs a {
+  background-color: #acacac;
+  border: 1px solid #acacac;
+  border-radius: 3px;
+  color: #fff;
+  font-size: 0.9em;
+  line-height: 1em;
+  margin: 0 0.25em 0.15em 0;
+  padding: 0.35em 0.5em;
+  position: relative;
+  z-index: 10;
+}
+
+.motsClefs a:hover {
+  background-color: #5c5c5c;
+  color: #fff;
+}
+
+.validateNotAvailable {
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+  filter: alpha(opacity=50);
+  opacity: 0.5;
+}
+
+/******** pour fieldset *************/
+#urlArea, #titleArea, #descriptionArea, #downloadArea,  #fileArea, #authorArea, #keywordArea, #generalArea, #fileNameArea {
+  clear: both;
+  display: block;
+  float: none;
+  width: 98%;
+}
+
+#downloadArea {
+  height: 2em;
+}
+
+#photoOptions #downloadArea {
+  height: 3em;
+}
+
+.legend {
+  padding-left: 15px;
+  clear: both;
+}
+
+.legende {
+  display: none;
+}
+
+#photoInfo legend {
+  background: transparent url("../icons/icon-photo.gif") 11px 0 no-repeat;
+}
+
+#videoInfo legend {
+  background: transparent url("../icons/icon-video.png") 11px 0 no-repeat;
+}
+
+#soundInfo legend {
+  background: transparent url("../icons/icon-sound.png") 11px 0 no-repeat;
+}
+
+#streamingInfo legend {
+  background: transparent url("../icons/icon-streaming.png") 11px 0 no-repeat;
+}
+
+#photoOptions legend,
+#videoOptions legend,
+#soundOptions legend,
+#streamingOptions legend {
+  background: transparent url("../../../util/icons/cog.png") 11px 0 no-repeat;
+}
+
+#formInfo legend {
+  background: transparent url("../../../util/icons/component/formsOnlineSmall.gif") 11px 0 no-repeat;
+}
+
+.editMedia #metadata {
+  width: 300px;
+  margin: 1em auto 0;
+}
+
+.editMedia #metadata b {
+  display: block;
+}
+
+#fileNameArea {
+  display: none;
+}
+
+.editMedia #fileNameArea {
+  display: block;
+  clear: left;
+  padding-top: 0
+}
+
+.editMedia #fileNameArea label {
+  display: none;
+}
+
+#beginDownloadDateArea,
+#beginDateArea {
+  width: 276px;
+}
+
+#beginDateArea {
+  clear: both;
+}
+
+#endDateArea,
+#endDownloadDateArea {
+  width: 150px;
+}
+
+#endDateArea label,
+#endDownloadDateArea label {
+  width: 50px;
+}
+
+#beginDownloadDateArea .txtnote,
+#endDownloadDateArea .txtnote,
+#endDateArea .txtnote,
+#beginDateArea .txtnote {
+  font-size: 80%;
+}
+
+#endDateArea .champs,
+#endDownloadDateArea .champs {
+  margin-left: 50px;
+}
+
+/************ inline message folder empty **********/
+#folder-empty ul {
+  width: 300px;
+  text-align: left;
+  margin: 1em auto;
+}
+
+/************ listing des media dans un album **********/
+table.listing-media {
+  width: 95%;
+}
+
+.a-media.aff-list.vignette {
+  width: 300px;
+}
+
+.a-media.aff-list.checkbox {
+  width: 22px;
+}
+
+.a-media .fondPhoto,
+.a-media .fondPhotoNotVisible {
+  text-align: center;
+  padding: 0 0 18px;
+}
+
+.a-media .fondPhotoNotVisible .cadrePhoto {
+  background-color: #ff9933;
+}
+
+.a-media .fondPhotoNotVisible {
+  background-color: transparent;
+}
+
+.a-media .cadrePhoto {
+  margin: 0 auto;
+  display: inline-block;
+}
+
+.a-media.aff-small,
+.a-media.aff-list.details {
+  vertical-align: top;
+}
+
+.a-media.aff-tiny {
+  vertical-align: bottom;
+}
+
+.a-media.aff-small .cadrePhoto {
+  height: 133px;
+}
+
+.a-media.aff-tiny .txtlibform,
+.a-media.aff-small .txtlibform {
+  padding: 0;
+  text-align: center;
+}
+
+/*********************** Specific advanced search CSS *********************/
+
+#searchFormId .milieuBoutonV5 a,
+#searchFormId a.milieuBoutonV5,
+#searchFormId button {
+  font-size: 90% !important;
+  height: 18px;
+  line-height: 18px;
+  padding-bottom: 0;
+  padding-top: 0;
+  vertical-align: top;
+}
+
+#generalFieldset {
+  min-height: 20px;
+}
+
+#generalArea .milieuBoutonV5 {
+  display: inline-block;
+  height: 17px;
+}
+
+#generalArea input {
+  width: 62%;
+}
+
+#metadataFieldset legend {
+  background: transparent url("../../../util/icons/cog.png") 11px 0 no-repeat;
+}
+
+.formulaire legend {
+  background: transparent url("../../../util/icons/component/formulairesSmall.gif") 11px 0 no-repeat;
+}
+
+#pdcFieldset legend {
+  background: transparent url("../../../util/icons/component/pdcPeasSmall.gif") 11px 0 no-repeat;
+}
+
+#pdcFieldset .field {
+  clear: both;
+}
+
+#pdcFieldset label img {
+  margin-right: 0.5em;
+}
+
+.noty_text ul {
+  margin: 0 2em;
+  padding: 0;
+  text-align: left;
+}
+
+/* liste des emplacement **/
+#pathsId ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+#pathsId ul li {
+  padding: 0;
+  margin: 0;
+}
+
+#pathsId ul ul {
+  padding-left: 2em;
+}
+
+.locations {
+  margin-bottom: 1em;
+  max-height: 400px;
+  overflow: auto;
+}
+
+.type-media {
+  position:absolute;
+  top:-14px;
+  left:-14px;
+}

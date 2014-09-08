@@ -63,14 +63,14 @@ function openSPWindow(fonction, windowName){
     out.println(frame.printBefore());
 
 	out.flush();    
-	String url = URLManager.getURL("useless", componentId) + "PdcPositions?PhotoId="+photoId;
+	String url = URLManager.getURL("useless", componentId) + "PdcPositions?MediaId="+photoId;
 	getServletConfig().getServletContext().getRequestDispatcher("/RpdcClassify/jsp/NewPosition?ComponentId="+componentId+"&ReturnURL="+URLEncoder.encode(url)).include(request, response);
 
   	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
 <FORM NAME="toComponent" ACTION="PdcPositions" METHOD=POST>
-	<input type="hidden" name="PhotoId" value="<%=photoId%>">
+	<input type="hidden" name="MediaId" value="<%=photoId%>">
 </FORM>
 </body>
 </html>

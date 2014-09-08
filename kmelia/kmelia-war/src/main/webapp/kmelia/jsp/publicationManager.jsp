@@ -27,8 +27,9 @@
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
-
+<%@page import="com.silverpeas.thumbnail.ThumbnailSettings"%>
 <%@page import="com.silverpeas.thumbnail.model.ThumbnailDetail"%>
 <%@page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
 <%@page import="com.stratelia.webactiv.util.FileServerUtils" %>
@@ -92,8 +93,6 @@
 
     String language = kmeliaScc.getCurrentLanguage();
 
-    String vignette_url = null;
-
     String profile = (String) request.getAttribute("Profile");
     String action = (String) request.getAttribute("Action");
     String id = (String) request.getAttribute("PubId");
@@ -138,7 +137,8 @@
     boolean isFieldImportanceVisible = kmeliaScc.isFieldImportanceVisible();
     boolean isFieldVersionVisible = kmeliaScc.isFieldVersionVisible();
     boolean isNotificationAllowed = kmeliaScc.isNotificationAllowed();
-    boolean isThumbnailMandatory = kmeliaScc.isThumbnailMandatory();
+    ThumbnailSettings thumbnailSettings = kmeliaScc.getThumbnailSettings();
+    ThumbnailDetail thumbnail = null;
 
     boolean isAutomaticDraftOutEnabled = StringUtil.isDefined(resources.getSetting("cronAutomaticDraftOut"));
 
@@ -155,16 +155,7 @@
       
       pubDetail = kmeliaPublication.getDetail();
       pubName = pubDetail.getName(language);
-      if (pubDetail.getImage() != null) {
-        if (pubDetail.getImage().startsWith("/")) {
-          vignette_url = pubDetail.getImage() + "&Size=133x100";
-        } else {
-          vignette_url = FileServerUtils
-              .getUrl(pubDetail.getPK().getComponentName(), "vignette",
-                  pubDetail.getImage(), pubDetail.getImageMimeType(),
-                  publicationSettings.getString("imagesSubDirectory"));
-        }
-      }
+      thumbnail = pubDetail.getThumbnail();
       ownerDetail = kmeliaPublication.getCreator();
 
       if (action.equals("ValidateView")) {
@@ -278,55 +269,7 @@
 
     validateButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendPublicationDataToRouter('" + nextAction + "');", false);
 
-    String sRequestURL = request.getRequestURL().toString();
-    String m_sAbsolute = sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().length());
-    ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
-    //Example: http://myserver
-    String httpServerBase = generalSettings.getString("httpServerBase", m_sAbsolute);
-
-    //some thumbnail stuff to move in router
-    String objectId = "";
-	if(pubDetail != null) {
-		objectId =  pubDetail.getPK().getId();
-	}
-
-	String backUrl = httpServerBase + URLManager.getApplicationURL() + URLManager.getURL("kmelia", null, componentId) + "ToUpdatePublicationHeader";
-
-	String standardParamaters = "&ComponentId=" + componentId + "&ObjectId=" + objectId
-        + "&BackUrl=" + URLEncoder.encode(backUrl) + "&ObjectType="
-        + ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE;
-
-	int[] thumbnailSize = kmeliaScc.getThumbnailWidthAndHeight();
-
-	//definition size of thumbnail selector
-	String thumbnailWidth = "";
-	String thumbnailHeight = "";
-	String vignetteSizeParameters = "";
-	String vignetteSizeParametersForUpdateFile = "";
-    if (vignette_url != null) {
-		if (thumbnailSize[0] != -1) {
-			thumbnailWidth = String.valueOf(thumbnailSize[0]);
-			vignetteSizeParametersForUpdateFile += "&ThumbnailWidth=" + thumbnailWidth;
-        } else if(thumbnailSize[1] != -1) {
-			// square id one selected
-          	thumbnailWidth = String.valueOf(thumbnailSize[1]);
-        }
-		if (thumbnailSize[1] != -1) {
-			thumbnailHeight = String.valueOf(thumbnailSize[1]);
-			vignetteSizeParametersForUpdateFile += "&ThumbnailHeight=" + thumbnailHeight;
-		} else if(thumbnailSize[0] != -1) {
-		  	// square id one selected
-        	thumbnailHeight = String.valueOf(thumbnailSize[0]);
-     	}
-		vignetteSizeParameters = "&ThumbnailWidth=" + thumbnailWidth + "&ThumbnailHeight=" + thumbnailHeight;
-	} else {
-      	if (thumbnailSize[0] != -1) {
-			vignetteSizeParameters += "&ThumbnailWidth=" + String.valueOf(thumbnailSize[0]);
-		}
-		if(thumbnailSize[1] != -1){
-			vignetteSizeParameters += "&ThumbnailHeight=" + String.valueOf(thumbnailSize[1]);
-		}
-    }
+	String backUrl = URLManager.getFullApplicationURL(request) + URLManager.getURL("kmelia", null, componentId) + "ToUpdatePublicationHeader";
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -337,13 +280,6 @@
     <view:includePlugin name="datepicker"/>
     <view:includePlugin name="popup"/>
     <link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
-    <style type="text/css">
-      #thumbnailPreviewAndActions {
-        <% if (vignette_url == null) {%>
-        display: none;
-        <% }%>
-      }
-    </style>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/i18n.js"></script>
@@ -479,34 +415,18 @@
           errorNb++;
         });
 
-        if (<%=isThumbnailMandatory%>) {
-          if ($('#thumbnailFile').val() == '' && $('#thumbnail').attr("src") == 'null') {
-            errorMsg += " - '<%=resources.getString("Thumbnail")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
-            errorNb++;
-          }
-        }
-
-        if ($('#thumbnailFile').length && $('#thumbnailFile').val() != '') {
-          var logicalName = $('#thumbnailFile').val();
-          var extension = getExtension(logicalName);
-          if (extension == null) {
-            errorMsg += " - '<%=resources.getString("Thumbnail")%>' <%=resources.getString("kmelia.EX_MSG_WRONG_TYPE_ERROR")%>\n";
-            errorNb++;
-          } else {
-            extension = extension.toLowerCase();
-            if ((extension != "gif") && (extension != "jpeg") && (extension != "jpg") && (extension != "png")) {
-              errorMsg += " - '<%=resources.getString("Thumbnail")%>' <%=resources.getString("kmelia.EX_MSG_WRONG_TYPE_ERROR")%>\n";
-              errorNb++;
-            }
-          }
-        }
-
         <% if(!kmaxMode && "New".equals(action)) { %>
         <view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>
         <% } %>
+        
+        var error = {
+          msg: errorMsg, 
+          nb: errorNb
+        };
+        checkThumbnail(error);
 
         var result = false;
-        switch (errorNb) {
+        switch(error.nb) {
           case 0 :
             result = true;
             break;
@@ -559,49 +479,13 @@
           document.pubForm.submit();
         }
 
-        var galleryWindow = window;
-
-        function choixGallery(liste)
-        {
-          index = liste.selectedIndex;
-          var componentId = liste.options[index].value;
-      	  if (index != 0)
-          {
-            url = "<%=m_context%>/gallery/jsp/wysiwygBrowser.jsp?ComponentId="+componentId+"&Language=<%=kmeliaScc.getLanguage()%>";
-            windowName = "galleryWindow";
-            larg = "820";
-            haut = "600";
-            windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
-            if (!galleryWindow.closed && galleryWindow.name=="galleryWindow")
-            {
-              galleryWindow.close();
-            }
-            galleryWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
-          }
-        }
-
-        function choixImageInGallery(url)
-        {
-          $("#thumbnailPreviewAndActions").css("display", "block");
-          $("#thumbnailActions").css("display", "none");
-          $("#thumbnail").attr("src", url);
-          $("#valueImageGallery").attr("value", url);
-        }
-
         function addFavorite(name,description,url)
         {
           postNewLink(name, url, description);
         }
 
         $(document).ready(function(){
-
-	        var dialogOpts = {
-	                modal: true,
-	                autoOpen: false,
-	                height: "auto"
-	        };
-
-	        $("#thumbnailDialog").dialog(dialogOpts);    //end dialog
+          	document.pubForm.Name.focus();
 
 	        $("#publication-draftout").dialog({
 	            autoOpen: false,
@@ -616,26 +500,6 @@
 	            }
 	          });
         });
-
-        function updateThumbnail() {
-        	$("#thumbnailInputs").css("display", "block");
-        }
-
-        function cropThumbnail() {
-        	$("#thumbnailDialog").dialog("option", "title", "<%=resources.getString("ThumbnailUpdate")%>");
-        	$("#thumbnailDialog").dialog("option", "width", 850);
-			var url = "<%=httpServerBase + m_context%>/Thumbnail/jsp/thumbnailManager.jsp?Action=Update<%=standardParamaters + vignetteSizeParametersForUpdateFile%>&modal=true";
-        	$("#thumbnailDialog").load(url).dialog("open");
-        }
-
-        function deleteThumbnail() {
-          jQuery('#genericForm').attr('action', "<%=httpServerBase + m_context%>/Thumbnail/jsp/thumbnailManager.jsp?Action=Delete<%=standardParamaters%>").submit();
-        }
-
-        function closeThumbnailDialog() {
-        	$("#thumbnailDialog").dialog("close");
-        }
-
     </script>
   </head>
   <body id="<%=componentId%>" class="publicationManager" onunload="closeWindows()">
@@ -854,14 +718,14 @@
 					<% if (StringUtil.isDefined(updateDate) && updater != null) {%>
 					<div class="champs">
 						<%=resources.getString("PubDateUpdate")%> <br /><b><%=updateDate%></b> <%=resources.getString("kmelia.By")%> <view:username userId="<%=kmeliaPublication.getLastModifier().getId()%>"/>
-						<div class="profilPhoto"><img src="<%=m_context+kmeliaPublication.getLastModifier().getAvatar() %>" alt="" class="defaultAvatar"/></div>
+						<div class="profilPhoto"><view:image src="<%=kmeliaPublication.getLastModifier().getAvatar() %>" type="avatar" css="defaultAvatar"/></div>
 					</div>
 					<% } %>
 				</div>
 				<div class="field" id="updateArea">
 					<div class="champs">
 						<%=resources.getString("PubDateCreation")%> <br /><b><%=creationDate%></b> <%=resources.getString("kmelia.By")%> <view:username userId="<%=kmeliaPublication.getCreator().getId()%>"/>
-						<div class="profilPhoto"><img src="<%=m_context+kmeliaPublication.getCreator().getAvatar() %>" alt="" class="defaultAvatar"/></div>
+						<div class="profilPhoto"><view:image src="<%=kmeliaPublication.getCreator().getAvatar() %>" type="avatar" css="defaultAvatar"/></div>
 					</div>
 				</div>
 				<% } %>
@@ -904,54 +768,9 @@
 		<% if (kmeliaMode && settings.getBoolean("isVignetteVisible", true)) {%>
 		<div class="cell">
 			<fieldset id="pubThumb" class="skinFieldset">
-				<legend><%=resources.getString("Thumbnail")%></legend>
-				<div class="fields">
-					<div class="field" id="thumb">
-						<div id="thumbnailPreviewAndActions">
-							<div id="thumbnailPreview">
-								<img src="<%=vignette_url %>" id="thumbnail" alt=""/>
-							</div>
-							<div id="thumbnailActions">
-								<% if (pubDetail != null && pubDetail.getThumbnail() != null && pubDetail.getThumbnail().isCropable()) { %>
-									<a href="javascript:cropThumbnail()"><img src="<%=resources.getIcon("kmelia.cropThumbnail") %>" alt=""/> <%=resources.getString("ThumbnailUpdate") %></a>
-								<% } %>
-								<% if (!isThumbnailMandatory) { %>
-									<a href="javascript:deleteThumbnail()"><img src="<%=resources.getIcon("kmelia.deleteThumbnail") %>" alt="<%=resources.getString("ThumbnailDelete") %>" title="<%=resources.getString("ThumbnailDelete") %>"/> <%=resources.getString("ThumbnailDelete") %></a>
-								<% } %>
-							</div>
-						</div>
-
-						<div id="thumbnailInputs">
-							<img src="<%=resources.getIcon("kmelia.changeThumbnail") %>" alt="<%=resources.getString("ThumbnailUpdateFile") %>" title="<%=resources.getString("ThumbnailUpdateFile") %>"/> <input type="file" name="WAIMGVAR0" size="40" id="thumbnailFile"/>
-				          	<%
-				             // liste pour choisir une galerie
-				             List galleries = kmeliaScc.getGalleries();
-				             if (galleries != null) {
-				               //zone pour le lien vers l'image
-				               out.println("<span class=\"txtsublibform\"> ou </span><input type=\"hidden\" id=\"valueImageGallery\" name=\"valueImageGallery\"/>");
-
-				               out.println(" <select id=\"galleries\" name=\"galleries\" onchange=\"choixGallery(this);this.selectedIndex=0;\"> ");
-				               out.println(" <option selected>" + resources.getString("kmelia.galleries") + "</option> ");
-				               for (int k = 0; k < galleries.size(); k++) {
-				                 ComponentInstLight gallery = (ComponentInstLight) galleries.get(k);
-				                 out.println(" <option value=\"" + gallery.getId() + "\">" + gallery.getLabel() + "</option> ");
-				               }
-				               out.println("</select>");
-				             }
-				          	%>
-				          	<% if (isThumbnailMandatory) { %>
-								<img src="<%=mandatorySrc%>" width="5" height="5" border="0" alt=""/>
-						    <% } %>
-						</div>
-						<% if(errorThumbnail) { %>
-							<br/>
-							<div style="font-style: italic;color:red;"><%=resources.getString("kmelia." + resultThumbnail)%></div>
-							<br/>
-						<% } %>
-					</div>
-				</div>
+				<legend><%=resources.getString("GML.thumbnail")%></legend>
+				<viewTags:displayThumbnail thumbnail="<%=thumbnail %>" mandatory="<%=thumbnailSettings.isMandatory() %>" componentId="<%=componentId %>" objectId="<%=id %>" backURL="<%=backUrl%>" objectType="<%=ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE %>" width="<%=thumbnailSettings.getWidth() %>" height="<%=thumbnailSettings.getHeight() %>"/>
 			</fieldset>
-
 		</div>
 		<% } %>
 
@@ -988,7 +807,6 @@
         out.println(frame.printAfter());
         out.println(window.printAfter());
   %>
-  <div id="thumbnailDialog"></div>
   <form name="toRouterForm">
     <input type="hidden" name="PubId" value="<%=id%>"/>
   </form>
@@ -1003,11 +821,5 @@
       	<% } %>
       	</ul>
       </div>
-  <script type="text/javascript">
-     $(document).ready(function() {
-      document.pubForm.Name.focus();
-     });
-  </script>
-<form id="genericForm" action="" method="POST"></form>
 </body>
 </html>

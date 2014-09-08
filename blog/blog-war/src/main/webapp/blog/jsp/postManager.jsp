@@ -257,7 +257,7 @@
 	<center>
 	<fmt:message key="GML.validate" var="validateLabel"/>
     <fmt:message key="GML.publish" var="publishLabel"/>
-    <fmt:message key="blog.draftPost" var="draftLabel"/>
+    <fmt:message key="GML.draft.save" var="draftLabel"/>
     <fmt:message key="GML.cancel" var="cancelLabel"/>
     <view:buttonPane>
     <% if("CreatePost".equals(action) || 

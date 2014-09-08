@@ -23,51 +23,34 @@
  */
 package com.silverpeas.gallery.process;
 
+import com.silverpeas.gallery.model.Media;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.process.io.file.FileBasePath;
 import org.silverpeas.process.management.AbstractFileProcess;
-import org.silverpeas.process.management.ProcessExecutionContext;
-
-import com.silverpeas.gallery.model.PhotoDetail;
-import com.silverpeas.publicationTemplate.PublicationTemplateException;
-import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import com.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * @author Yohann Chastagnier
  */
-public abstract class AbstractGalleryFileProcess extends
-    AbstractFileProcess<GalleryProcessExecutionContext> {
-  protected final static FileBasePath BASE_PATH = FileBasePath.UPLOAD_PATH;
-  protected final static ResourceLocator gallerySettings = new ResourceLocator(
-      "com.silverpeas.gallery.settings.gallerySettings", "");
+public abstract class AbstractGalleryFileProcess
+    extends AbstractFileProcess<GalleryProcessExecutionContext> {
 
-  private final PhotoDetail photo;
+  private final Media media;
   private OrganisationController organizationController;
 
   /**
    * Default constructor
-   * @param photo
+   * @param media
    */
-  protected AbstractGalleryFileProcess(final PhotoDetail photo) {
-    this.photo = photo;
+  protected AbstractGalleryFileProcess(final Media media) {
+    this.media = media;
   }
 
   /**
-   * @return the photo
+   * @return the media
    */
-  protected PhotoDetail getPhoto() {
-    return photo;
-  }
-
-  /**
-   * Gets an instance of PublicationTemplateManager.
-   * @return an instance of PublicationTemplateManager.
-   */
-  protected PublicationTemplateManager getPublicationTemplateManager() {
-    return PublicationTemplateManager.getInstance();
+  protected Media getMedia() {
+    return media;
   }
 
   /**
@@ -79,26 +62,5 @@ public abstract class AbstractGalleryFileProcess extends
       organizationController = OrganisationControllerFactory.getOrganisationController();
     }
     return organizationController;
-  }
-
-  /**
-   * Gets an XML form name if it exists for the photo
-   * @return
-   */
-  protected String getXMLFormName(final ProcessExecutionContext context) {
-    String formName = getOrganisationController().getComponentParameterValue(
-        context.getComponentInstanceId(), "XMLFormName");
-    // contrôle du formulaire et retour du nom si convenable
-    if (StringUtil.isDefined(formName)) {
-      try {
-        final String xmlFormShortName =
-            formName.substring(formName.indexOf('/') + 1, formName.indexOf('.'));
-        getPublicationTemplateManager().getPublicationTemplate(
-            context.getComponentInstanceId() + ":" + xmlFormShortName, formName);
-      } catch (final PublicationTemplateException e) {
-        formName = null;
-      }
-    }
-    return formName;
   }
 }

@@ -24,7 +24,7 @@ CREATE TABLE SC_Gallery_Photo
 	keyWord			varchar(1000)	NULL,
 	beginDownloadDate	varchar(10)	NULL,
 	endDownloadDate		varchar(10)	NULL
-); 
+);
 
 CREATE TABLE SC_Gallery_Path 
 (
