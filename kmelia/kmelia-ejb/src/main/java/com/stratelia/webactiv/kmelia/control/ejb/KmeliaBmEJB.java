@@ -780,13 +780,18 @@ public class KmeliaBmEJB implements KmeliaBm {
       boolean isRightsOnTopicsUsed) {
     String instanceId = nodePK.getInstanceId();
     List<NodeDetail> tree = nodeBm.getSubTree(nodePK);
+    
+    if (profile == null) {
+      profile = getProfile(userId, nodePK);
+    }
 
-    List<NodeDetail> allowedTree = new ArrayList<NodeDetail>();
     OrganisationController orga = getOrganisationController();
+    List<NodeDetail> allowedTree = new ArrayList<NodeDetail>();
     if (isRightsOnTopicsUsed) {
       // filter allowed nodes
       for (NodeDetail node2Check : tree) {
         if (!node2Check.haveRights()) {
+          node2Check.setUserRole(profile);
           allowedTree.add(node2Check);
           if (node2Check.getNodePK().isRoot()) {// case of root. Check if publications on root are
             // allowed
@@ -835,6 +840,11 @@ public class KmeliaBmEJB implements KmeliaBm {
         if (nbPublisOnRoot != 0) {
           NodeDetail root = tree.get(0);
           root.setUserRole("user");
+        }
+        for (NodeDetail node : tree) {
+          if (!node.getNodePK().isRoot()) {
+            node.setUserRole(profile);
+          }
         }
       }
       allowedTree.addAll(tree);
@@ -1384,14 +1394,19 @@ public class KmeliaBmEJB implements KmeliaBm {
       boolean isClone = isClone(pubDetail);
       SilverTrace.info("kmelia", "KmeliaBmEJB.updatePublication()", "root.MSG_GEN_PARAM_VALUE",
           "This publication is clone ? " + isClone);
+      
+      PublicationDetail old = getPublicationDetail(pubDetail.getPK());
+      
+      // prevents to lose some data
+      if (StringUtil.isDefined(old.getTargetValidatorId()) &&
+          !StringUtil.isDefined(pubDetail.getTargetValidatorId())) {
+        pubDetail.setTargetValidatorId(old.getTargetValidatorId());
+      }
       if (isClone) {
         // update only updateDate
         publicationBm.setDetail(pubDetail, forceUpdateDate);
       } else {
-        PublicationDetail old = getPublicationDetail(pubDetail.getPK());
-
         boolean statusChanged = changePublicationStatusOnUpdate(pubDetail);
-
         publicationBm.setDetail(pubDetail, forceUpdateDate);
 
         if (!isPublicationInBasket(pubDetail.getPK())) {
@@ -2569,6 +2584,11 @@ public class KmeliaBmEJB implements KmeliaBm {
       if (validationOnClone) {
         validatedPK = currentPubDetail.getClonePK();
       }
+      if (!isUserCanValidatePublication(validatedPK, userId)) {
+        SilverTrace.info("kmelia", "KmeliaBmEJB.validatePublication()", "root.MSG_GEN_PARAM_VALUE",
+            "user " + userId + " is not allowed to validate publication " + pubPK.toString());
+        return false;
+      }
       if (force) {
         validationComplete = true;
       } else {
@@ -3051,23 +3071,24 @@ public class KmeliaBmEJB implements KmeliaBm {
       PublicationDetail pubDetail = publicationBm.getDetail(pubPK);
       SilverTrace.info("kmelia", "KmeliaBmEJB.draftInPublication()",
           "root.MSG_GEN_PARAM_VALUE", "actual status = " + pubDetail.getStatus());
-      pubDetail.setStatus(PublicationDetail.DRAFT);
-      pubDetail.setUpdaterId(userId);
-      KmeliaHelper.checkIndex(pubDetail);
-      publicationBm.setDetail(pubDetail);
-      updateSilverContentVisibility(pubDetail);
-      unIndexExternalElementsOfPublication(pubDetail.getPK());
-      removeAllTodosForPublication(pubPK);
-
-      boolean isNewsManage = getBooleanValue(getOrganisationController().getComponentParameterValue(
-          pubDetail.getPK().getInstanceId(), "isNewsManage"));
-      if (isNewsManage) {
-        // mécanisme de callback
-        CallBackManager callBackManager = CallBackManager.get();
-        callBackManager.invoke(CallBackManager.ACTION_PUBLICATION_REMOVE,
-            Integer.parseInt(pubDetail.getId()), pubDetail.getInstanceId(), pubDetail);
+      if (pubDetail.isRefused() || pubDetail.isValid()) {
+        pubDetail.setStatus(PublicationDetail.DRAFT);
+        pubDetail.setUpdaterId(userId);
+        KmeliaHelper.checkIndex(pubDetail);
+        publicationBm.setDetail(pubDetail);
+        updateSilverContentVisibility(pubDetail);
+        unIndexExternalElementsOfPublication(pubDetail.getPK());
+        removeAllTodosForPublication(pubPK);
+  
+        boolean isNewsManage = getBooleanValue(getOrganisationController().getComponentParameterValue(
+            pubDetail.getPK().getInstanceId(), "isNewsManage"));
+        if (isNewsManage) {
+          // mécanisme de callback
+          CallBackManager callBackManager = CallBackManager.get();
+          callBackManager.invoke(CallBackManager.ACTION_PUBLICATION_REMOVE,
+              Integer.parseInt(pubDetail.getId()), pubDetail.getInstanceId(), pubDetail);
+        }
       }
-
       SilverTrace.info("kmelia", "KmeliaBmEJB.draftInPublication()",
           "root.MSG_GEN_PARAM_VALUE", "new status = " + pubDetail.getStatus());
     } catch (Exception e) {
@@ -3121,10 +3142,14 @@ public class KmeliaBmEJB implements KmeliaBm {
         "root.MSG_GEN_ENTER_METHOD");
     final PublicationDetail pubDetail = getPublicationDetail(pubPK);
     final SimpleDocument document = AttachmentServiceFactory.getAttachmentService().
-        searchDocumentById(documentPk, null).getLastPublicVersion();
+        searchDocumentById(documentPk, null);
+    SimpleDocument version = document.getLastPublicVersion();
+    if (version == null) {
+      version = document.getVersionMaster();
+    }
     final NotificationMetaData notifMetaData = UserNotificationHelper
         .build(new KmeliaDocumentSubscriptionPublicationUserNotification(topicPK, pubDetail,
-        document, senderName));
+        version, senderName));
     SilverTrace.info("kmelia", "KmeliaBmEJB.getAlertNotificationMetaData(document)",
         "root.MSG_GEN_EXIT_METHOD");
     return notifMetaData;
@@ -4708,6 +4733,16 @@ public class KmeliaBmEJB implements KmeliaBm {
     return new NodePK(NodePK.ROOT_NODE_ID, componentId);
   }
 
+  /**
+   * This method verifies if the user behind the given user identifier can validate the publication
+   * represented by the given primary key.
+   * The verification is strictly applied on the given primary key, that is to say that no
+   * publication clone information are retrieved.
+   * To perform a verification on a publication clone, the primary key of the clone must be given.
+   * @param pubPK the primary key of the publication or of the clone of a publication.
+   * @param userId the identifier of the user fo which rights must be verified.
+   * @return true if the user can validate, false otherwise.
+   */
   @Override
   public boolean isUserCanValidatePublication(PublicationPK pubPK, String userId) {
     PublicationDetail publi = getPublicationDetail(pubPK);
@@ -4734,47 +4769,33 @@ public class KmeliaBmEJB implements KmeliaBm {
     if (KmeliaHelper.isToolbox(componentId)) {
       return false;
     }
-
-    String profile = KmeliaHelper.getProfile(getUserRoles(componentId, userId));
-    boolean isPublisherOrAdmin = SilverpeasRole.admin.isInRole(profile) || SilverpeasRole.publisher
-        .isInRole(profile);
-
-    if (!isPublisherOrAdmin && isRightsOnTopicsEnabled(componentId)) {
-      // check if current user is publisher or admin on at least one descendant
-      Iterator<NodeDetail> descendants = nodeBm.getDescendantDetails(getRootPK(componentId))
-          .iterator();
-      while (!isPublisherOrAdmin && descendants.hasNext()) {
-        NodeDetail descendant = descendants.next();
-        AdminController admin = null;
-        if (descendant.haveLocalRights()) {
-          // check if user is admin or publisher on this topic
-          admin = new AdminController(userId);
-          String[] profiles = admin
-              .getProfilesByObjectAndUserId(descendant.getId(), ObjectType.NODE.getCode(),
-                  componentId, userId);
-          if (profiles != null && profiles.length > 0) {
-            List<String> lProfiles = Arrays.asList(profiles);
-            isPublisherOrAdmin = lProfiles.contains(SilverpeasRole.admin.name())
-                || lProfiles.contains(SilverpeasRole.publisher.name());
-          }
-        }
-      }
-    }
-    return isPublisherOrAdmin;
+    return isUserCanPublish(componentId, userId);
   }
 
   @Override
   public boolean isUserCanWrite(String componentId, String userId) {
-    String profile = KmeliaHelper.getProfile(getUserRoles(componentId, userId));
-    boolean userCanWrite = SilverpeasRole.admin.isInRole(profile) || SilverpeasRole.publisher
-        .isInRole(profile)
-        || SilverpeasRole.writer.isInRole(profile);
+    String[] grantedRoles =
+        new String[] { SilverpeasRole.admin.name(), SilverpeasRole.publisher.name(),
+            SilverpeasRole.writer.name() };
+    return checkUserRoles(componentId, userId, grantedRoles);
+  }
 
-    if (!userCanWrite && isRightsOnTopicsEnabled(componentId)) {
+  @Override
+  public boolean isUserCanPublish(String componentId, String userId) {
+    String[] grantedRoles =
+        new String[] { SilverpeasRole.admin.name(), SilverpeasRole.publisher.name() };
+    return checkUserRoles(componentId, userId, grantedRoles);
+  }
+  
+  private boolean checkUserRoles(String componentId, String userId, String... roles) {
+    SilverpeasRole userProfile = SilverpeasRole.from(KmeliaHelper.getProfile(getUserRoles(componentId, userId)));
+    boolean checked = userProfile.isInRole(roles);
+
+    if (!checked && isRightsOnTopicsEnabled(componentId)) {
       // check if current user is publisher or admin on at least one descendant
       Iterator<NodeDetail> descendants = nodeBm.getDescendantDetails(getRootPK(componentId))
           .iterator();
-      while (!userCanWrite && descendants.hasNext()) {
+      while (!checked && descendants.hasNext()) {
         NodeDetail descendant = descendants.next();
         AdminController admin = null;
         if (descendant.haveLocalRights()) {
@@ -4784,15 +4805,13 @@ public class KmeliaBmEJB implements KmeliaBm {
               .getProfilesByObjectAndUserId(descendant.getId(), ObjectType.NODE.getCode(),
                   componentId, userId);
           if (profiles != null && profiles.length > 0) {
-            List<String> lProfiles = Arrays.asList(profiles);
-            userCanWrite = lProfiles.contains(SilverpeasRole.admin.name())
-                || lProfiles.contains(SilverpeasRole.publisher.name())
-                || lProfiles.contains(SilverpeasRole.writer.name());
+            userProfile = SilverpeasRole.from(KmeliaHelper.getProfile(profiles));
+            checked = userProfile.isInRole(roles);
           }
         }
       }
     }
-    return userCanWrite;
+    return checked;
   }
 
   @Override
@@ -5205,15 +5224,15 @@ public class KmeliaBmEJB implements KmeliaBm {
           // si le theme est en co-rédaction et si on autorise le mode brouillon visible par tous
           // toutes les publications en mode brouillon sont visibles par tous, sauf les lecteurs
           // sinon, seule les publications brouillon de l'utilisateur sont visibles
-          if (userId.equals(detail.getUpdaterId())
-              || (coWriting && isDraftVisibleWithCoWriting() && profile != SilverpeasRole.user)) {
+          if (userId.equals(detail.getCreatorId()) || userId.equals(detail.getUpdaterId()) ||
+              (coWriting && isDraftVisibleWithCoWriting() && profile != SilverpeasRole.user)) {
             return true;
           }
         } else {
           // si le thème est en co-rédaction, toutes les publications sont visibles par tous,
           // sauf les lecteurs
-          if (profile == SilverpeasRole.admin || profile == SilverpeasRole.publisher
-              || userId.equals(detail.getUpdaterId())
+          if (profile == SilverpeasRole.admin || profile == SilverpeasRole.publisher ||
+              userId.equals(detail.getCreatorId()) || userId.equals(detail.getUpdaterId())
               || (profile != SilverpeasRole.user && coWriting)) {
             return true;
           }
