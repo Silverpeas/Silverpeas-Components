@@ -1394,20 +1394,19 @@ public class KmeliaBmEJB implements KmeliaBm {
       boolean isClone = isClone(pubDetail);
       SilverTrace.info("kmelia", "KmeliaBmEJB.updatePublication()", "root.MSG_GEN_PARAM_VALUE",
           "This publication is clone ? " + isClone);
+      
+      PublicationDetail old = getPublicationDetail(pubDetail.getPK());
+      
+      // prevents to lose some data
+      if (StringUtil.isDefined(old.getTargetValidatorId()) &&
+          !StringUtil.isDefined(pubDetail.getTargetValidatorId())) {
+        pubDetail.setTargetValidatorId(old.getTargetValidatorId());
+      }
       if (isClone) {
         // update only updateDate
         publicationBm.setDetail(pubDetail, forceUpdateDate);
       } else {
-        PublicationDetail old = getPublicationDetail(pubDetail.getPK());
-        
-        if (StringUtil.isDefined(old.getTargetValidatorId()) &&
-            !StringUtil.isDefined(pubDetail.getTargetValidatorId())) {
-          // prevents to lose some data
-          pubDetail.setTargetValidatorId(old.getTargetValidatorId());
-        }
-
         boolean statusChanged = changePublicationStatusOnUpdate(pubDetail);
-
         publicationBm.setDetail(pubDetail, forceUpdateDate);
 
         if (!isPublicationInBasket(pubDetail.getPK())) {
@@ -2575,6 +2574,11 @@ public class KmeliaBmEJB implements KmeliaBm {
   @Override
   public boolean validatePublication(PublicationPK pubPK, String userId, boolean force) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.validatePublication()", "root.MSG_GEN_ENTER_METHOD");
+    if (!isUserCanValidatePublication(pubPK, userId)) {
+      SilverTrace.info("kmelia", "KmeliaBmEJB.validatePublication()", "root.MSG_GEN_PARAM_VALUE",
+          "user " + userId + " is not allowed to validate publication " + pubPK.toString());
+      return false;
+    }
     boolean validationComplete = false;
     boolean update = false;
     try {
@@ -3067,23 +3071,24 @@ public class KmeliaBmEJB implements KmeliaBm {
       PublicationDetail pubDetail = publicationBm.getDetail(pubPK);
       SilverTrace.info("kmelia", "KmeliaBmEJB.draftInPublication()",
           "root.MSG_GEN_PARAM_VALUE", "actual status = " + pubDetail.getStatus());
-      pubDetail.setStatus(PublicationDetail.DRAFT);
-      pubDetail.setUpdaterId(userId);
-      KmeliaHelper.checkIndex(pubDetail);
-      publicationBm.setDetail(pubDetail);
-      updateSilverContentVisibility(pubDetail);
-      unIndexExternalElementsOfPublication(pubDetail.getPK());
-      removeAllTodosForPublication(pubPK);
-
-      boolean isNewsManage = getBooleanValue(getOrganisationController().getComponentParameterValue(
-          pubDetail.getPK().getInstanceId(), "isNewsManage"));
-      if (isNewsManage) {
-        // mécanisme de callback
-        CallBackManager callBackManager = CallBackManager.get();
-        callBackManager.invoke(CallBackManager.ACTION_PUBLICATION_REMOVE,
-            Integer.parseInt(pubDetail.getId()), pubDetail.getInstanceId(), pubDetail);
+      if (pubDetail.isValid()) {
+        pubDetail.setStatus(PublicationDetail.DRAFT);
+        pubDetail.setUpdaterId(userId);
+        KmeliaHelper.checkIndex(pubDetail);
+        publicationBm.setDetail(pubDetail);
+        updateSilverContentVisibility(pubDetail);
+        unIndexExternalElementsOfPublication(pubDetail.getPK());
+        removeAllTodosForPublication(pubPK);
+  
+        boolean isNewsManage = getBooleanValue(getOrganisationController().getComponentParameterValue(
+            pubDetail.getPK().getInstanceId(), "isNewsManage"));
+        if (isNewsManage) {
+          // mécanisme de callback
+          CallBackManager callBackManager = CallBackManager.get();
+          callBackManager.invoke(CallBackManager.ACTION_PUBLICATION_REMOVE,
+              Integer.parseInt(pubDetail.getId()), pubDetail.getInstanceId(), pubDetail);
+        }
       }
-
       SilverTrace.info("kmelia", "KmeliaBmEJB.draftInPublication()",
           "root.MSG_GEN_PARAM_VALUE", "new status = " + pubDetail.getStatus());
     } catch (Exception e) {
