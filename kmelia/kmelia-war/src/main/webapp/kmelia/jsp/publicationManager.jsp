@@ -694,7 +694,7 @@
             operationPane.addLine();
             if (pubDetail.isDraft()) {
               operationPane.addOperation(pubDraftOutSrc, resources.getString("PubDraftOut"), "javaScript:pubDraftOut()");
-            } else if (pubDetail.isValid()) {
+            } else if (pubDetail.isRefused() || pubDetail.isValid()) {
               operationPane.addOperation(pubDraftInSrc, resources.getString("PubDraftIn"), "javaScript:pubDraftIn()");
             }
           }

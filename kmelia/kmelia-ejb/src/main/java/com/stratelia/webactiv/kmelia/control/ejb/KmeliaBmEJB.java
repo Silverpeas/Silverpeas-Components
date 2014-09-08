@@ -2574,11 +2574,6 @@ public class KmeliaBmEJB implements KmeliaBm {
   @Override
   public boolean validatePublication(PublicationPK pubPK, String userId, boolean force) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.validatePublication()", "root.MSG_GEN_ENTER_METHOD");
-    if (!isUserCanValidatePublication(pubPK, userId)) {
-      SilverTrace.info("kmelia", "KmeliaBmEJB.validatePublication()", "root.MSG_GEN_PARAM_VALUE",
-          "user " + userId + " is not allowed to validate publication " + pubPK.toString());
-      return false;
-    }
     boolean validationComplete = false;
     boolean update = false;
     try {
@@ -2588,6 +2583,11 @@ public class KmeliaBmEJB implements KmeliaBm {
       PublicationPK validatedPK = pubPK;
       if (validationOnClone) {
         validatedPK = currentPubDetail.getClonePK();
+      }
+      if (!isUserCanValidatePublication(validatedPK, userId)) {
+        SilverTrace.info("kmelia", "KmeliaBmEJB.validatePublication()", "root.MSG_GEN_PARAM_VALUE",
+            "user " + userId + " is not allowed to validate publication " + pubPK.toString());
+        return false;
       }
       if (force) {
         validationComplete = true;
@@ -3071,7 +3071,7 @@ public class KmeliaBmEJB implements KmeliaBm {
       PublicationDetail pubDetail = publicationBm.getDetail(pubPK);
       SilverTrace.info("kmelia", "KmeliaBmEJB.draftInPublication()",
           "root.MSG_GEN_PARAM_VALUE", "actual status = " + pubDetail.getStatus());
-      if (pubDetail.isValid()) {
+      if (pubDetail.isRefused() || pubDetail.isValid()) {
         pubDetail.setStatus(PublicationDetail.DRAFT);
         pubDetail.setUpdaterId(userId);
         KmeliaHelper.checkIndex(pubDetail);
@@ -4733,6 +4733,16 @@ public class KmeliaBmEJB implements KmeliaBm {
     return new NodePK(NodePK.ROOT_NODE_ID, componentId);
   }
 
+  /**
+   * This method verifies if the user behind the given user identifier can validate the publication
+   * represented by the given primary key.
+   * The verification is strictly applied on the given primary key, that is to say that no
+   * publication clone information are retrieved.
+   * To perform a verification on a publication clone, the primary key of the clone must be given.
+   * @param pubPK the primary key of the publication or of the clone of a publication.
+   * @param userId the identifier of the user fo which rights must be verified.
+   * @return true if the user can validate, false otherwise.
+   */
   @Override
   public boolean isUserCanValidatePublication(PublicationPK pubPK, String userId) {
     PublicationDetail publi = getPublicationDetail(pubPK);
@@ -5214,15 +5224,15 @@ public class KmeliaBmEJB implements KmeliaBm {
           // si le theme est en co-rédaction et si on autorise le mode brouillon visible par tous
           // toutes les publications en mode brouillon sont visibles par tous, sauf les lecteurs
           // sinon, seule les publications brouillon de l'utilisateur sont visibles
-          if (userId.equals(detail.getUpdaterId())
-              || (coWriting && isDraftVisibleWithCoWriting() && profile != SilverpeasRole.user)) {
+          if (userId.equals(detail.getCreatorId()) || userId.equals(detail.getUpdaterId()) ||
+              (coWriting && isDraftVisibleWithCoWriting() && profile != SilverpeasRole.user)) {
             return true;
           }
         } else {
           // si le thème est en co-rédaction, toutes les publications sont visibles par tous,
           // sauf les lecteurs
-          if (profile == SilverpeasRole.admin || profile == SilverpeasRole.publisher
-              || userId.equals(detail.getUpdaterId())
+          if (profile == SilverpeasRole.admin || profile == SilverpeasRole.publisher ||
+              userId.equals(detail.getCreatorId()) || userId.equals(detail.getUpdaterId())
               || (profile != SilverpeasRole.user && coWriting)) {
             return true;
           }

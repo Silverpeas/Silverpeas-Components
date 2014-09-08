@@ -1655,10 +1655,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public synchronized void draftInPublication() throws RemoteException {
     if (isCloneNeededWithDraft()) {
       clonePublication();
-      // getKmeliaBm().draftInPublication(getPublicationPK(cloneId));
     } else {
-      getKmeliaBm().draftInPublication(
-          getSessionPublication().getDetail().getPK(), getUserId());
+      getKmeliaBm().draftInPublication(getSessionPubliOrClone().getDetail().getPK(), getUserId());
     }
     refreshSessionPubliAndClone();
   }
