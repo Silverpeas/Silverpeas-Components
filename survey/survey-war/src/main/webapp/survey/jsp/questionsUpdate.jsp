@@ -75,6 +75,7 @@ QuestionContainerDetail survey = null;
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel />
+<view:includePlugin name="popup"/>
 <script type="text/javascript">
 function addQuestion() {
   document.questionForm.submit();
@@ -82,38 +83,20 @@ function addQuestion() {
 function updateQuestion(questionId) {
   $("#questionFormActionId").val("UpdateQuestion");
   $("#questionFormQuestionId").val(questionId);
-  //alert("value= " +$("#questionFormActionId").val());
   document.questionForm.submit();
 }
 function deleteQuestion(questionId) {
   $("#delQuestionFormId").val(questionId);
   $("#ui-dialog-title-modalDialogContentDivId").html($("#questionTitle"+ questionId).text());
-  $("#modalDialogContentDivId").dialog("open");
-
-  /*
-  if(confirm("<fmt:message key="survey.question.delete.confirm"/>")) {
-  }
-  */
-}
-// Jquery dialog message
-$(document).ready(function(){
-  // Your code here
-  $( "#dialog:ui-dialog" ).dialog("destroy");
-
-  $( "#modalDialogContentDivId" ).dialog({
-    resizable: false,
-    height:140,
-    modal: true,
-    autoOpen: false,
-    buttons: {
-	  "<fmt:message key="GML.delete"/>": function() {
+  $("#modalDialogContentDivId").popup('confirmation', {
+    callback : function() {
       document.deleteQuestionForm.submit();
-      },
-      "<fmt:message key="GML.cancel"/>": function() {
-        $(this).dialog( "close" );
-      }
     }
   });
+}
+// Jquery dialog message
+$(document).ready(function() {
+  $("#dialog:ui-dialog").dialog("destroy");
 });
 
 </script>
@@ -311,7 +294,7 @@ try
     </form>
 </view:window>
 <div id="modalDialogContentDivId" title="" style="display:none;">
-  <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span><fmt:message key="survey.question.delete.confirm"/></p>
+  <p><fmt:message key="survey.question.delete.confirm"/></p>
 </div>
 </body>
 </html>
