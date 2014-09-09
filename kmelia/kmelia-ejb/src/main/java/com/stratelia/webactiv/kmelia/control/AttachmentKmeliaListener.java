@@ -40,6 +40,7 @@ import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
 import static com.silverpeas.notification.NotificationTopic.onTopic;
@@ -77,7 +78,10 @@ public class AttachmentKmeliaListener extends DefaultNotificationSubscriber {
 
   private void anExternalPublicationElementHaveChanged(PublicationPK pubPK) {
     try {
-      getKmeliaBm().externalElementsOfPublicationHaveChanged(pubPK, null, -1);
+      PublicationDetail pub = getKmeliaBm().getPublicationDetail(pubPK);
+      if (pub != null) {
+        getKmeliaBm().externalElementsOfPublicationHaveChanged(pubPK, null, -1);
+      }
     } catch (Exception e) {
       // if exception is throw, JMS will attempt to execute it again and again...
       SilverTrace.error("kmelia", "AttachmentKmeliaListener.onNotification",
