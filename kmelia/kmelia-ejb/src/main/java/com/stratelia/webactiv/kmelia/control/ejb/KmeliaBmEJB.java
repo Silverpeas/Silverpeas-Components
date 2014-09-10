@@ -1402,6 +1402,7 @@ public class KmeliaBmEJB implements KmeliaBm {
           !StringUtil.isDefined(pubDetail.getTargetValidatorId())) {
         pubDetail.setTargetValidatorId(old.getTargetValidatorId());
       }
+      final boolean isPublicationInBasket = isPublicationInBasket(pubDetail.getPK());
       if (isClone) {
         // update only updateDate
         publicationBm.setDetail(pubDetail, forceUpdateDate);
@@ -1409,7 +1410,7 @@ public class KmeliaBmEJB implements KmeliaBm {
         boolean statusChanged = changePublicationStatusOnUpdate(pubDetail);
         publicationBm.setDetail(pubDetail, forceUpdateDate);
 
-        if (!isPublicationInBasket(pubDetail.getPK())) {
+        if (!isPublicationInBasket) {
           if (statusChanged) {
             // creates todos for publishers
             this.createTodosForPublication(pubDetail, false);
@@ -1437,7 +1438,9 @@ public class KmeliaBmEJB implements KmeliaBm {
         }
       }
       // notification pour modification
-      sendSubscriptionsNotification(pubDetail, true, false);
+      if (!isPublicationInBasket) {
+        sendSubscriptionsNotification(pubDetail, true, false);
+      }
 
       boolean isNewsManage = getBooleanValue(getOrganisationController().getComponentParameterValue(
           pubDetail.getPK().getInstanceId(), "isNewsManage"));
