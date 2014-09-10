@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2013 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
+  <name>spaceMembers</name>
+  <label>
+    <message lang="fr">Membres de l'espace</message>
+    <message lang="en">Space members</message>
+    <message lang="de">Raum Mitglieder</message>
+  </label>
+  <description>
+    <message lang="fr">Cette application permet d'afficher l'annuaire des membres de l'espace.</message>
+    <message lang="en">This application allows you to view the member directory space.</message>
+    <message lang="de">Diese Anwendung ermöglicht es Ihnen, die Mitgliederverzeichnis Raum zu sehen.</message>
+  </description>
+  <suite>
+    <message lang="fr">02 Gestion Collaborative</message>
+    <message lang="en">02 Collaborative Management</message>
+    <message lang="de">02 kollaborative Verwaltung</message>
+  </suite>
+  <visible>true</visible>
+  <portlet>true</portlet>
+  <instanceClassName>org.silverpeas.components.spaceMembers.SpaceMembersInstanciator</instanceClassName>
+  <profiles>
+    <profile name="user">
+      <label>
+        <message lang="fr">Lecteurs</message>
+        <message lang="en">Readers</message>
+        <message lang="de">Leser</message>
+      </label>
+      <help>
+        <message lang="fr">Les lecteurs visualisent l'annulaire.</message>
+        <message lang="en">Readers visualize the directory.</message>
+        <message lang="de">Leser visualisieren das Verzeichnis</message>
+      </help>
+    </profile>
+  </profiles>
+  <parameters>
+  </parameters>
+</WAComponent>

@@ -218,6 +218,7 @@
     <module>scheduleevent</module>
     <module>crm</module>
     <module>suggestion-box</module>
+    <module>spaceMembers</module>
   </modules>
 
 </project>
