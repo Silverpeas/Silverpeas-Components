@@ -495,7 +495,7 @@
         </option>
         <option>
           <name>
-            <message lang="fr">Oui, pour gestionnaire et publieur uniquement</message>
+            <message lang="fr">Oui, pour les gestionnaires et publieurs</message>
             <message lang="en">Yes, only for administrators and publishers</message>
             <message lang="de">Yes, only for administrators and publishers</message>
           </name>

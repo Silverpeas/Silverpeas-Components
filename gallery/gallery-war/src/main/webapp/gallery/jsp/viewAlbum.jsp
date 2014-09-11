@@ -155,6 +155,7 @@
   <view:looknfeel/>
   <view:includePlugin name="qtip"/>
   <view:includePlugin name="popup"/>
+  <view:includePlugin name="embedPlayer"/>
   <view:progressMessage/>
   <script type="text/javascript" src="<c:url value="/gallery/jsp/javaScript/dragAndDrop.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/util/javaScript/upload_applet.js"/>"></script>

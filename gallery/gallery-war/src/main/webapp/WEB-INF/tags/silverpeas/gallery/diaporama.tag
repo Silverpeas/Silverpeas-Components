@@ -42,7 +42,6 @@
 
 <link href="<c:url value="/gallery/jsp/styleSheets/slider/themes/classic/galleria.classic.css"/>" type="text/css" rel="stylesheet">
 <view:includePlugin name="qtip"/>
-<view:includePlugin name="embedPlayer"/>
 <script src="<c:url value="/gallery/jsp/javaScript/slider/galleria-1.3.6.min.js"/>" type="text/javascript"></script>
 <script src="<c:url value="/gallery/jsp/styleSheets/slider/themes/classic/galleria.classic.min.js"/>" type="text/javascript"></script>
 <script src="<c:url value="/gallery/jsp/javaScript/silverpeas-gallery-slider.js"/>" type="text/javascript"></script>

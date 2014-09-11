@@ -185,8 +185,8 @@ public class MediaCriteria {
   }
 
   /**
-   * Sets the list of media album identifiers criterion to find media which are attached to one
-   * of the given ones.
+   * Sets the list of media album identifiers criterion to find media which are attached to one of
+   * the given ones.
    * @param albumIds the media album identifier list that the media must be attached.
    * @return the media criteria itself with the new criterion on the media types.
    */
@@ -196,8 +196,8 @@ public class MediaCriteria {
   }
 
   /**
-   * Sets the list of media type criterion to find media which have their type equals to one
-   * of the given ones.
+   * Sets the list of media type criterion to find media which have their type equals to one of the
+   * given ones.
    * @param mediaTypes the media type list that the media type must verify.
    * @return the media criteria itself with the new criterion on the media types.
    */
@@ -228,9 +228,9 @@ public class MediaCriteria {
   }
 
   /**
-   * Sets the visibility criterion to find the medias according to their period of visibility.
-   * If visibility is {@link VISIBILITY#BY_DEFAULT}, then the requester is verified to get
-   * VISIBLE (all user roles) or VISIBLE + HIDDEN (lowest user role must be the publisher one).
+   * Sets the visibility criterion to find the medias according to their period of visibility. If
+   * visibility is {@link VISIBILITY#BY_DEFAULT}, then the requester is verified to get VISIBLE (all
+   * user roles) or VISIBLE + HIDDEN (lowest user role must be the publisher one).
    * @param visibility the visibility requested.
    * @return the media criteria itself with the new criterion on the media visibility.
    */
@@ -274,8 +274,7 @@ public class MediaCriteria {
   }
 
   /**
-   * Gets the indetifier of media instance.
-   * {@link #fromComponentInstanceId(String)}
+   * Gets the indetifier of media instance. {@link #fromComponentInstanceId(String)}
    * @return the criterion on the media instance to which the medias should belong.
    */
   public String getComponentInstanceId() {
@@ -304,8 +303,7 @@ public class MediaCriteria {
   }
 
   /**
-   * Gets the creator criteria value.
-   * {@link #createdBy(UserDetail)}
+   * Gets the creator criteria value. {@link #createdBy(UserDetail)}
    * @return the criterion on the creator of the medias.
    */
   private UserDetail getCreator() {
@@ -313,8 +311,7 @@ public class MediaCriteria {
   }
 
   /**
-   * Gets the media album identifier criteria value.
-   * {@link #albumIdentifierIsOneOf(String...)}
+   * Gets the media album identifier criteria value. {@link #albumIdentifierIsOneOf(String...)}
    * @return the criterion on the album identifiers the medias must be attached.
    */
   private List<String> getAlbumIds() {
@@ -322,8 +319,7 @@ public class MediaCriteria {
   }
 
   /**
-   * Gets the media type criteria value.
-   * {@link #mediaTypeIsOneOf(MediaType...)}
+   * Gets the media type criteria value. {@link #mediaTypeIsOneOf(MediaType...)}
    * @return the criterion on the status the medias should match.
    */
   private List<MediaType> getMediaTypes() {
@@ -331,8 +327,7 @@ public class MediaCriteria {
   }
 
   /**
-   * Gets the identifiers criteria value.
-   * {@link #identifierIsOneOf(String...)}
+   * Gets the identifiers criteria value. {@link #identifierIsOneOf(String...)}
    * @return the criterion on the identifiers the medias should match.
    */
   private List<String> getIdentifiers() {
@@ -372,23 +367,27 @@ public class MediaCriteria {
   }
 
   /**
-   * Processes this criteria with the specified processor.
-   * It chains in a given order the different criterion to process.
+   * Processes this criteria with the specified processor. It chains in a given order the different
+   * criterion to process.
    * @param processor the processor to use for processing each criterion in this criteria.
    */
   public void processWith(final MediaCriteriaProcessor processor) {
     processor.startProcessing();
-    if (StringUtil.isDefined(getComponentInstanceId())) {
+    boolean isComponentCriteriaDefined = StringUtil.isDefined(getComponentInstanceId());
+    if (isComponentCriteriaDefined) {
       processor.processComponentInstance(getComponentInstanceId());
     }
     UserDetail creatorForVisibility = null;
     VISIBILITY theVisibility = getVisibility();
     if (getRequester() != null) {
-      if (theVisibility == BY_DEFAULT && (getRequester().isAccessAdmin() ||
-          (getComponentHighestRequesterRole() != null && getComponentHighestRequesterRole()
+      if (theVisibility == BY_DEFAULT &&
+          (getRequester().isAccessAdmin() ||
+          (isComponentCriteriaDefined && getComponentHighestRequesterRole() != null &&
+          getComponentHighestRequesterRole()
               .isGreaterThanOrEquals(SilverpeasRole.publisher)))) {
         theVisibility = FORCE_GET_ALL;
-      } else if (getComponentHighestRequesterRole() == SilverpeasRole.writer) {
+      } else if (isComponentCriteriaDefined &&
+          getComponentHighestRequesterRole() == SilverpeasRole.writer) {
         creatorForVisibility = getRequester();
       }
     }
