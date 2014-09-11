@@ -146,7 +146,7 @@ $(document).ready(function() {
 function sortNode(updatedNodeJSON)
 {
 	$.ajax({
-        url:"<%=m_context%>/services/nodes/<%=instanceId%>",
+        url:"<%=m_context%>/services/sharing/nodes/<%=instanceId%>",
         type: "PUT",
         contentType: "application/json",
         dataType: "json",

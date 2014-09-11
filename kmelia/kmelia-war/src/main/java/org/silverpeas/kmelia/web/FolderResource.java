@@ -25,24 +25,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-
+import org.apache.commons.lang3.StringUtils;
 import org.owasp.encoder.Encode;
-import org.silverpeas.node.web.NodeEntity;
-
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.web.RESTWebService;
-
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
@@ -50,7 +42,8 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
-
+import org.silverpeas.node.web.NodeAttrEntity;
+import org.silverpeas.node.web.NodeEntity;
 import static com.stratelia.webactiv.util.JNDINames.NODEBM_EJBHOME;
 
 /**
@@ -62,7 +55,7 @@ import static com.stratelia.webactiv.util.JNDINames.NODEBM_EJBHOME;
 @Authorized
 @Path("folders/{componentId}")
 public class FolderResource extends RESTWebService {
-
+  
   @PathParam("componentId")
   private String componentId;
 
@@ -185,6 +178,63 @@ public class FolderResource extends RESTWebService {
     }
 
     return aEntities;
+  }
+  
+  /**
+   * Creates a node corresponding to the given node entity and whose parent matches the specified
+   * path.
+   * 
+   * @param path The path of the parent node.
+   * @param nodeEntity The description of the node to create.
+   * @return a response containing the entity describing the newly created node.
+   */
+  @Path("{path: [0-9]+(/[0-9]+)*}")
+  @POST
+  @Produces(MediaType.APPLICATION_JSON)
+  @Consumes(MediaType.APPLICATION_JSON)
+  public Response createNode(@PathParam("path") String path, final NodeEntity nodeEntity) {
+    String parentNodeId = getNodeIdFromURI(path);
+    NodePK nodePK = getNodePK(parentNodeId);
+    
+    String nodeName = nodeEntity.getData();
+    if (StringUtils.isEmpty(nodeName)) {
+      throw new WebApplicationException(Status.NO_CONTENT);
+    }
+    
+    Collection<NodeDetail> children = null;
+    try {
+      children = getKmeliaBm().getFolderChildren(nodePK, getUserDetail().getId());
+    } catch (Exception e) {
+      throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+    }
+    
+    if (children != null) {
+      for (NodeDetail node : children) {
+        if (nodeName.equals(node.getName())) {
+          throw new WebApplicationException(Status.NOT_ACCEPTABLE);
+        }
+      }
+    }
+    
+    NodeAttrEntity nodeAttr = nodeEntity.getAttr();
+    String userId = nodeAttr.getCreatorId();
+    if (StringUtils.isEmpty(userId) && nodeAttr.getCreator() != null) {
+      userId = nodeAttr.getCreator().getId();
+    }
+    String description = nodeAttr.getDescription();
+    
+    try {
+      String nodeId = getKmeliaBm().createTopic(
+          componentId, parentNodeId, null, userId, nodeName, description);
+            
+      NodeDetail node = getNodeDetail(nodeId);
+      URI uri = getUriInfo().getRequestUri();
+      NodeEntity newNodeEntity = NodeEntity.fromNodeDetail(node, uri);
+
+      return Response.created(uri).entity(newNodeEntity).build();
+    } catch (Exception ex) {
+      throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
+    }
   }
 
   private void decorateRoot(NodeEntity root, String lang) {
