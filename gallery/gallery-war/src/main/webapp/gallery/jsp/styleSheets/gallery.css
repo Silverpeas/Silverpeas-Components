@@ -655,6 +655,7 @@ table.listing-media {
 
 .type-media {
   position:absolute;
+  border: 0;
   top:-14px;
   left:-14px;
 }
