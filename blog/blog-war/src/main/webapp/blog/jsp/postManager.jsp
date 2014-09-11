@@ -210,7 +210,7 @@
 			        objectId="<%=post.getId()%>" />
 			</div>
 			
-			<textarea rows="5" cols="10" name="Content" id="Content"><%=content %></textarea>
+			<textarea rows="5" cols="10" name="Content" id="Content"><c:out value="<%=content%>" escapeXml="true"/></textarea>
 		</div>
 	</div>
     

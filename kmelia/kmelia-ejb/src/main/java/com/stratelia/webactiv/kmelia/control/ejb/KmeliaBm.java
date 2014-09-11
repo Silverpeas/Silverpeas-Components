@@ -758,6 +758,8 @@ public interface KmeliaBm extends SilverpeasComponentService<KmeliaPublication> 
   public boolean isUserCanWrite(String componentId, String userId);
 
   public boolean isUserCanValidate(String componentId, String userId);
+  
+  public boolean isUserCanPublish(String componentId, String userId);
 
   public String getUserTopicProfile(NodePK pk, String userId);
 

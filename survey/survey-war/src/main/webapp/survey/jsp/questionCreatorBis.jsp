@@ -339,28 +339,31 @@ function deleteImage(idImage)
 
 function choixImageInGallery(url)
 {
-	var newLink = document.createElement("a");
-	newLink.setAttribute("href", url);
-	newLink.setAttribute("target", "_blank");
+  deleteImage(currentAnswer);
 
-	var newLabel = document.createTextNode("<fmt:message key="survey.imageGallery"/>");
-	newLink.appendChild(newLabel);
+  var newLink = document.createElement("img");
+  newLink.setAttribute("src", url);
+  newLink.setAttribute("height", "40px");
+  newLink.setAttribute("align", "top");
 
-	var removeLink =  document.createElement("a");
-	removeLink.setAttribute("href", "javascript:deleteImage('"+currentAnswer+"')");
-	var removeIcon = document.createElement("img");
-	removeIcon.setAttribute("src", "icons/questionDelete.gif");
-	removeIcon.setAttribute("border", "0");
-	removeIcon.setAttribute("align", "absmiddle");
-	removeIcon.setAttribute("alt", "<fmt:message key="GML.delete"/>");
-	removeIcon.setAttribute("title", "<fmt:message key="GML.delete"/>");
+  var newLabel = document.createTextNode("<fmt:message key="survey.imageGallery"/>");
+  newLink.appendChild(newLabel);
 
-	removeLink.appendChild(removeIcon);
+  var removeLink =  document.createElement("a");
+  removeLink.setAttribute("href", "javascript:deleteImage('"+currentAnswer+"')");
+  var removeIcon = document.createElement("img");
+  removeIcon.setAttribute("src", '<c:url value="/util/icons/delete.gif"/>');
+  removeIcon.setAttribute("border", "0");
+  removeIcon.setAttribute("align", "top");
+  removeIcon.setAttribute("alt", "<fmt:message key="GML.delete"/>");
+  removeIcon.setAttribute("title", "<fmt:message key="GML.delete"/>");
 
-	document.getElementById('imageGallery'+currentAnswer).appendChild(newLink);
-	document.getElementById('imageGallery'+currentAnswer).appendChild(removeLink);
+  removeLink.appendChild(removeIcon);
 
-	document.getElementById('valueImageGallery'+currentAnswer).value = url;
+  document.getElementById('imageGallery'+currentAnswer).appendChild(newLink);
+  document.getElementById('imageGallery'+currentAnswer).appendChild(removeLink);
+
+  document.getElementById('valueImageGallery'+currentAnswer).value = url;
 }
 
 function showQuestionOptions(value)

@@ -549,9 +549,9 @@
 
           if (kmeliaScc.isDraftEnabled() && !"supervisor".equals(profile)) {
             operationPane.addLine();
-            if ("Draft".equals(pubDetail.getStatus())) {
+            if (pubDetail.isDraft()) {
               operationPane.addOperation(pubDraftOutSrc, resources.getString("PubDraftOut"), "javaScript:pubDraftOut()");
-            } else {
+            } else if (pubDetail.isRefused() || pubDetail.isValid()) {
               operationPane.addOperation(pubDraftInSrc, resources.getString("PubDraftIn"), "javaScript:pubDraftIn()");
             }
           }

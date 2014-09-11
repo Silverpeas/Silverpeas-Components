@@ -108,7 +108,7 @@
 	
 	if (action.equals("cancelSQLReq"))
 	{
-		connecteurJDBC.setSQLreq(connecteurJDBC.getLastValidRequest());
+		//do nothing
 	}
 	
 	if(action.equals("cancelColumn"))
