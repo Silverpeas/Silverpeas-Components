@@ -3054,8 +3054,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    */
   private String getDocumentVersionURL(SimpleDocument document) throws RemoteException {
     SimpleDocument version = document.getLastPublicVersion();
-    SilverpeasRole role = SilverpeasRole.from(getUserTopicProfile());
-    if (role.isGreaterThan(SilverpeasRole.user)) {
+    if (document.getVersionMaster().canBeAccessedBy(getUserDetail())) {
       version = document.getVersionMaster();
     }
     if (version != null) {
