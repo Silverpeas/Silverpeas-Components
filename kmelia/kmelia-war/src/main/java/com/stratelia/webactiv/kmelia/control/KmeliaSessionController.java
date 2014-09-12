@@ -1540,9 +1540,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public boolean isPublicationValidatorsOK() throws RemoteException {
-    if (getSessionPublication() != null && SilverpeasRole.writer.isInRole(getUserTopicProfile())
+    if (getSessionPubliOrClone() != null && SilverpeasRole.writer.isInRole(getUserTopicProfile())
         && (isTargetValidationEnable() || isTargetMultiValidationEnable())) {
-      return StringUtil.isDefined(getSessionPublication().getDetail().getTargetValidatorId());
+      return StringUtil.isDefined(getSessionPubliOrClone().getDetail().getTargetValidatorId());
     }
     return true;
   }
@@ -1626,15 +1626,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   public synchronized void draftOutPublication() throws RemoteException {
     SilverTrace.info("kmelia", "KmeliaSessionController.draftOutPublication()",
-        "root.MSG_GEN_ENTER_METHOD", "getSessionPublication().getPublication() = "
-        + getSessionPublication().getCompleteDetail());
+        "root.MSG_GEN_ENTER_METHOD", "pubId = " + getSessionPublication().getId());
+    NodePK currentFolderPK = getCurrentFolderPK();
     if (isKmaxMode) {
-      getKmeliaBm().draftOutPublication(getSessionPublication().getDetail().getPK(), null,
-          getProfile());
-    } else {
-      getKmeliaBm().draftOutPublication(getSessionPublication().getDetail().getPK(),
-          getCurrentFolderPK(), getProfile());
+      currentFolderPK = null;
     }
+    getKmeliaBm().draftOutPublication(getSessionPublication().getDetail().getPK(),
+        currentFolderPK, getProfile());
 
     if (!KmeliaHelper.ROLE_WRITER.equals(getUserTopicProfile())) {
       setSessionClone(null); // always reset clone

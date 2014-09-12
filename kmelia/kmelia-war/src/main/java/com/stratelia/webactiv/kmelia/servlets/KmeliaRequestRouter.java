@@ -278,6 +278,18 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
             || type.startsWith("Comment"))) {
           KmeliaSecurity security = new KmeliaSecurity(kmelia.getOrganisationController());
           try {
+            PublicationDetail pub2Check = kmelia.getPublicationDetail(id);
+            // If given PK defines a clone, change PK to master
+            if (pub2Check.haveGotClone()) {
+              // check if publication is really the master or the clone ?
+              int pubId = Integer.parseInt(pub2Check.getId());
+              int cloneId = Integer.parseInt(pub2Check.getCloneId());
+              boolean clone = pubId > cloneId;
+              if (clone) {
+                id = pub2Check.getCloneId();
+                request.setAttribute("ForcedId", id);
+              }
+            }
             boolean accessAuthorized = security.isAccessAuthorized(kmelia.getComponentId(), kmelia
                 .getUserId(), id, "Publication");
             if (accessAuthorized) {
@@ -558,11 +570,14 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
         destination = rootDestination + "clone.jsp";
       } else if ("ViewPublication".equals(function)) {
-        String id = request.getParameter("PubId");
+        String id = (String) request.getAttribute("ForcedId");
         if (!StringUtil.isDefined(id)) {
-          id = request.getParameter("Id");
+          id = request.getParameter("PubId");
           if (!StringUtil.isDefined(id)) {
-            id = (String) request.getAttribute("PubId");
+            id = request.getParameter("Id");
+            if (!StringUtil.isDefined(id)) {
+              id = (String) request.getAttribute("PubId");
+            }
           }
         }
 
