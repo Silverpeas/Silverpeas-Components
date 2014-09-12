@@ -2989,6 +2989,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     SilverTrace.info("kmelia", "KmeliaBmEJB.draftOutPublication()",
         "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubPK.getId());
     try {
+      PublicationDetail changedPublication = null;
       boolean update = false;
       CompletePublication currentPub = publicationBm.getCompletePublication(pubPK);
       PublicationDetail pubDetail = currentPub.getPublicationDetail();
@@ -3003,8 +3004,8 @@ public class KmeliaBmEJB implements KmeliaBm {
           
           pubDetail = mergeClone(currentPub, null);
         }
-
         pubDetail.setStatus(PublicationDetail.VALID);
+        changedPublication = pubDetail;
       } else {
         if (pubDetail.haveGotClone()) {
           // changement du statut du clone
@@ -3013,8 +3014,10 @@ public class KmeliaBmEJB implements KmeliaBm {
           clone.setIndexOperation(IndexManager.NONE);
           clone.setUpdateDateMustBeSet(false);
           publicationBm.setDetail(clone);
+          changedPublication = clone;
           pubDetail.setCloneStatus(PublicationDetail.TO_VALIDATE);
         } else {
+          changedPublication = pubDetail;
           pubDetail.setStatus(PublicationDetail.TO_VALIDATE);
         }
       }
@@ -3028,11 +3031,11 @@ public class KmeliaBmEJB implements KmeliaBm {
           "root.MSG_GEN_PARAM_VALUE", "new status = " + pubDetail.getStatus());
       if (!inTransaction) {
         // index all publication's elements
-        indexExternalElementsOfPublication(pubDetail);
-        sendTodosAndNotificationsOnDraftOut(pubDetail, topicPK, userProfile, update);
+        indexExternalElementsOfPublication(changedPublication);
+        sendTodosAndNotificationsOnDraftOut(changedPublication, topicPK, userProfile, update);
       }
 
-      return pubDetail;
+      return changedPublication;
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.draftOutPublication()", ERROR,
           "kmelia.EX_IMPOSSIBLE_DE_MODIFIER_LA_PUBLICATION", e);
