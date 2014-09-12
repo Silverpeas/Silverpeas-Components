@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2013 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<document>
+  <properties>
+    <author>Miguel Moquillon</author>
+    <title>Silverpeas Applications Introduction</title>
+  </properties>
+  <head>
+  </head>
+  <body>
+    <section name="Silverpeas Applications">
+      <p>
+        <img align="right" src="images/bus_silverpeas.png" alt="" />
+      </p>
+      <p>The Silverpeas Applications module (aka Silverpeas Components) provide the usual and standard applications that were made by us or
+        by our contributors for aiding customers to enhance their organizational work and collaboration.</p>
+      <p>Each application is built atop of Silverpeas Core and it provides to the user a way to manage some
+        kind of information, of content or of events. Currently, there is 30 applications, all of them
+        categorized into dedicated domains:</p>
+      <table width="100%" cellspacing="1" cellpadding="1" border="0">
+        <tbody>
+          <tr>
+            <td rowspan="2">Document management</td>
+            <td style="text-align: center;"><img width="35" height="36" src="images/applications/kmeliaBig.png" alt="" /></td>
+            <td style="text-align: center;"><img width="35" height="36" src="images/applications/kmaxBig.png" alt="" /></td>
+            <td style="text-align: center;"><img width="35" height="36" src="images/applications/mailinglistBig.png" alt="" /></td>
+            <td style="text-align: center;"><img width="35" height="36" src="images/applications/galleryBig.png" alt="" /></td>
+          </tr>
+          <tr>
+            <td style="text-align: center;"><span style="font-size: 13px;">Electronic<br />
+              Document<br />
+              Management<br />
+            </span></td>
+            <td style="text-align: center;"><span style="font-size: 13px;">Taxonomy<br />
+              Management<br />
+            </span></td>
+            <td style="text-align: center;"><span style="font-size: 13px;">Email Archiving<br />
+            </span></td>
+            <td style="text-align: center;"><span style="font-size: 13px;">Image Gallery<br />
+            </span></td>
+          </tr>
+          <tr>
+            <td colspan="5"><hr />
+            </td>
+          </tr>
+          <tr>
+            <td rowspan="2">Groupware tools</td>
+            <td style="text-align: center;"><img width="35" height="36" src="images/applications/almanachBig.png" alt="" /></td>
+            <td style="text-align: center;"><img width="35" height="36" src="images/applications/yellowpagesBig.png" alt="" /></td>
+            <td style="text-align: center;"><img width="35" height="36" src="images/applications/projectManagerBig.png" alt="" /></td>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td style="text-align: center;"><span style="font-size: 13px;">Almanac</span></td>
+            <td style="text-align: center;"><span style="font-size: 13px;">Contact Directory<br />
+            </span></td>
+            <td style="text-align: center;"><span style="font-size: 13px;">Tasks Management<br />
+            </span></td>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td colspan="5"><hr />
+            </td>
+          </tr>
+          <tr>
+            <td rowspan="2">Opinion tools</td>
+            <td style="text-align: center;"><img width="35" height="36" src="images/applications/quizzBig.png" alt="" /></td>
+            <td style="text-align: center;"><img width="35" height="36" src="images/applications/surveyBig.png" alt="" /></td>
+            <td style="text-align: center;"><img width="35" height="36" src="images/applications/pollingStationBig.png" alt="" /></td>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td style="text-align: center;"><span style="font-size: 13px;">Quiz</span></td>
+            <td style="text-align: center;"><span style="font-size: 13px;">Survey</span></td>
+            <td style="text-align: center;"><span style="font-size: 13px;">Vote</span></td>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td colspan="5"><hr />
+            </td>
+          </tr>
+          <tr>
+            <td rowspan="2">Collaborative tools</td>
+            <td style="text-align: center;"><img width="35" height="36" src="images/applications/projectManagerBig.png" alt="" /></td>
+            <td style="text-align: center;"><img width="35" height="36" src="images/applications/resourcesManagerBig.png" alt="" /></td>
+            <td style="text-align: center;"><img width="35" height="36" src="images/applications/forumsBig.png" alt="" /></td>
+            <td style="text-align: center;"><img width="35" height="36" src="images/applications/formsOnlineBig.png" alt="" /></td>
+          </tr>
+          <tr>
+            <td style="text-align: center;"><span style="font-size: 13px;">Project<br />
+              Management<br />
+            </span></td>
+            <td style="text-align: center;"><span style="font-size: 13px;">Ressources<br />
+              Management<br />
+            </span></td>
+            <td style="text-align: center;"><span style="font-size: 13px;">Forum</span></td>
+            <td style="text-align: center;"><span style="font-size: 13px;">On-line Forms</span></td>
+          </tr>
+          <tr>
+            <td colspan="5"><hr />
+            </td>
+          </tr>
+          <tr>
+            <td rowspan="2">KM Tools</td>
+            <td style="text-align: center;"><img width="35" height="36" src="images/applications/whitePagesBig.png" alt="" /></td>
+            <td style="text-align: center;"><img width="35" height="36" src="images/applications/questionReplyBig.png" /></td>
+            <td style="text-align: center;"><img width="35" height="36" src="images/applications/wikiBig.png" /></td>
+            <td style="text-align: center;"><img width="35" height="36" src="images/applications/blogBig.png" /></td>
+          </tr>
+          <tr>
+            <td style="text-align: center;"><span style="font-size: 13px;">Expert locator<br />
+            </span></td>
+            <td style="text-align: center;"><span style="font-size: 13px;">Knowledge DB<br />
+            </span></td>
+            <td style="text-align: center;"><span style="font-size: 13px;">Wiki</span></td>
+            <td style="text-align: center;"><span style="font-size: 13px;">Blog</span></td>
+          </tr>
+          <tr>
+            <td colspan="5"><hr />
+            </td>
+          </tr>
+          <tr>
+            <td rowspan="2">Communication tools</td>
+            <td style="text-align: center;"><img width="35" height="36" src="images/applications/quickinfoBig.png" alt="" /></td>
+            <td style="text-align: center;"><img width="35" height="36" src="images/applications/infoLetterBig.png" alt="" /></td>
+            <td style="text-align: center;"><img width="35" height="36" src="images/applications/webPagesBig.png" alt="" /></td>
+            <td style="text-align: center;"><img width="35" height="36" src="images/applications/classifiedsBig.png" alt="" /></td>
+          </tr>
+          <tr>
+            <td style="text-align: center;"><span style="font-size: 13px;">News</span></td>
+            <td style="text-align: center;"><span style="font-size: 13px;">Newsletter</span></td>
+            <td style="text-align: center;"><span style="font-size: 13px;">Web page editor<br />
+            </span></td>
+            <td style="text-align: center;"><span style="font-size: 13px;">Ads</span></td>
+          </tr>
+          <tr>
+            <td colspan="5"><hr />
+            </td>
+          </tr>
+          <tr>
+            <td rowspan="2">Connectors</td>
+            <td style="text-align: center;"><img width="35" height="36" src="images/applications/myDBBig.png" alt="" /></td>
+            <td style="text-align: center;"><img width="35" height="36" src="images/applications/connecteurJDBCBig.png" alt="" /></td>
+            <td style="text-align: center;"><img width="35" height="36" src="images/applications/hyperlinkBig.png" alt="" /></td>
+            <td style="text-align: center;"><img width="35" height="36" src="images/applications/rssAgregatorBig.png" alt="" /></td>
+          </tr>
+          <tr>
+            <td style="text-align: center;"><span style="font-size: 13px;">My DB</span></td>
+            <td style="text-align: center;"><span style="font-size: 13px;">JDBC</span></td>
+            <td style="text-align: center;"><span style="font-size: 13px;">Hyperlink</span></td>
+            <td style="text-align: center;"><span style="font-size: 13px;">Feed</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </body>
+</document>

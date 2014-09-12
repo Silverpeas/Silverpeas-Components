@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2014 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<project xmlns="http://maven.apache.org/DECORATION/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/DECORATION/1.0.0 http://maven.apache.org/xsd/decoration-1.0.0.xsd">
+  <bannerLeft>
+    <name>Silverpeas</name>
+    <src>images/logo-silverpeas.png</src>
+    <href>http://www.silverpeas.org/</href>
+  </bannerLeft>
+  <publishDate position="right" format="yyyy-MM-dd" />
+  <version position="right" />
+  <skin>
+    <groupId>org.apache.maven.skins</groupId>
+    <artifactId>maven-fluido-skin</artifactId>
+    <version>1.3.0</version>
+  </skin>
+  <custom>
+    <fluidoSkin>
+      <topBarEnabled>true</topBarEnabled>
+      <sideBarEnabled>false</sideBarEnabled>
+      <sourceLineNumbersEnabled>false</sourceLineNumbersEnabled>
+      <navBarStyle>navbar-inverse</navBarStyle>
+      <gitHub>
+        <projectId>Silverpeas</projectId>
+        <ribbonOrientation>right</ribbonOrientation>
+        <ribbonColor>orange</ribbonColor>
+      </gitHub>
+      <!--
+      <twitter>
+        <user>Silverpeas</user>
+        <showUser>true</showUser>
+        <showFollowers>true</showFollowers>
+      </twitter>
+      -->
+    </fluidoSkin>
+  </custom>
+  <!-- Powered By -->
+  <poweredBy>
+    <logo name="Netbeans 7.3" href="http://netbeans.org/downloads/index.html" img="http://repository.silverpeas.org/docs/core/images/logos/logo_netBeans.gif" />
+    <logo name="Eclipse 3.7"  href="http://www.eclipse.org" img="http://repository.silverpeas.org/docs/core/images/logos/logo_eclipse.png" />
+    <logo name="Intellij Idea" href="http://www.jetbrains.com/idea/" img="http://www.jetbrains.com/idea/opensource/img/all/banners/idea120x60_white.gif" />
+    <logo name="Maven 3.0.x" href="http://maven.apache.org/" img="http://repository.silverpeas.org/docs/core/images/logos/logo_maven.png" />
+    <!-- logo name="Zeroturnaround" href="http://www.zeroturnaround.com/" img="http://repository.silverpeas.org/docs/core/images/logos/logo_zeroTurnaround.png" / -->
+    <logo name="Izpack" href="http://izpack.org/" img="http://repository.silverpeas.org/docs/core/images/logos/logo_izPack.png" />
+    <logo name="Subshell Toromiro" href="http://www.subshell.com/en/toromiro/" img="http://repository.silverpeas.org/docs/core/images/logos/toromiro-logo.png" />
+    <logo name="Yourkit" href="http://www.yourkit.com" img="http://repository.silverpeas.org/docs/core/images/logos/yourkit-logo.png" />
+  </poweredBy>
+  <body>
+    <head>
+      <script type="text/javascript">
+        var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+        document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+      </script>
+      <script type="text/javascript">
+        try {
+        var pageTracker = _gat._getTracker("UA-2015926-3");
+        pageTracker._trackPageview();
+        } catch(err) {}
+      </script>
+    </head>
+    <breadcrumbs>
+      <item name="Silverpeas" href="http://www.silverpeas.org"/>
+      <item name="Silverpeas Components" href="index.html"/>
+    </breadcrumbs>
+    <menu name="Silverpeas" inherit="top">
+      <item name="About" href="../../intro.html" collapse="false"/>
+      <item name="Key Features" href="../../product/features.html" collapse="true"/>
+      <item name="Applications" href="../../product/applications.html" collapse="true">
+        <item name="Social Network" href="../../product/social_network.html" collapse="true"/>
+        <item name="Electronic Documentation Management" href="../../product/documentation_management.html" collapse="true"/>
+        <item name="Content Management" href="../../product/content_management.html" collapse="true"/>
+        <item name="Data Collection" href="../../product/data_collection.html" collapse="true"/>
+        <item name="Pictures Management" href="../../product/gallery.html" collapse="true"/>
+        <item name="Knowledge Management" href="../../product/knowledge_management.html" collapse="true"/>
+        <item name="Project Documentation" href="../../product/project_documentation.html" collapse="true"/>
+      </item>
+      <item name="Screenshots" href="../../screenshots.html" collapse="true"/>
+      <item name="Install Silverpeas" href="../../installation/index.html" collapse="true">
+        <item name="Try Silverpeas" href="../../installation/izpack.html" collapse="false"/>
+        <item name="Installation" href="../../installation/installation.html" collapse="false"/>
+        <item name="GNU/Linux Native Packages" href="http://www.silverpeas.org/repo/index.html" collapse="false" />
+        <item name="Silverpeas in the Cloud" href="../../installation/cloud.html" collapse="false" />
+      </item>
+      <item name="Our versions" href="#" collapse="true">
+        <item name="Roadmap" href="https://tracker.silverpeas.org/projects/silverpeas/roadmap?completed=1" collapse="false"/>
+        <item name="Changelog" href="https://tracker.silverpeas.org/projects/silverpeas/roadmap?completed=1&amp;with_subprojects=1"/>
+        <item name="Release Notes" href="../../releasenotes.html" collapse="false"/>
+      </item>
+      <item name="Source Code" href="../../source-repository.html" collapse="true"/>
+      <item name="Configuration" href="#" collapse="true">
+        <item name="Securing JBoss" href="../../configuration/securing_jboss.html" collapse="false"/>
+        <item name="Security" href="../../configuration/securing.html" collapse="false"/>
+        <item name="Migration" href="../../configuration/migration.html"  collapse="false"/>
+        <item name="LDAP Synchronization" href="../../configuration/ldap.html" collapse="false"/>
+        <item name="Configuring a reverse-proxy" href="../../configuration/proxy.html"  collapse="true"/>
+        <item name="CAS" href="../../cas/SSO-CAS.html" collapse="true">
+          <item name="Introduction" href="../../cas/SSO-CAS.html" collapse="true"/>
+          <item name="Certificates Configuration" href="../../cas/certificates.html" collapse="true" />
+          <item name="Tomcat as CAS Server Configuration" href="../../cas/configuring_tomcat.html" collapse="true" />
+          <item name="Silverpeas Configuration" href="../../cas/configuring_silverpeas.html" collapse="true" />
+        </item>
+      </item>
+      <item name="FAQ" href="../../faq.html" collapse="true"/>
+    </menu>
+    <menu name="Silverpeas Projects" inherit="top">
+      <item name="Global information" href="#" collapse="true">
+        <item name="About Silverpeas" href="../../intro.html"/>
+        <item name="Team" href="../../team-list.html"/>
+        <item name="Mailing List" href="../../mail-lists.html"/>
+        <item name="Issue Tracking" href="../../issue-tracking.html"/>
+        <item name="Source Repository" href="../../source-repository.html"/>
+        <item name="Continuous Integration" href="../../integration.html"/>
+      </item>
+      <item name="Silverpeas Core" href="../core/index.html"/>
+      <item name="Silverpeas Applications" href="index.html"/>
+    </menu>
+    <menu name="How to contribute" inherit="top">
+      <item name="Contribution" href="../../dev/collaboration.html" collapse="true"/>
+      <item name="Code Quality" href="../../dev/quality.html" collapse="true"/>
+      <item name="Testing the LDAP code" href="../../dev/ldap_testing.html" collapse="true"/>
+    </menu>
+    <menu name="Licensing" inherit="top">
+      <item name="License" href="../../legal/licensing_gnu_affero.html" collapse="true"/>
+      <item name="Licensing FAQ" href="../../legal/licensing_faq.html" collapse="true"/>
+      <item name="FLOSS Exception" href="../../legal/floss_exception.html" collapse="true"/>
+      <item name="Silverpeas Trade Mark" href="../../legal/trademark.html" collapse="true"/>
+    </menu>
+    <menu name="Silverpeas Applications Documentation" ref="reports"/>
+  </body>
+</project>

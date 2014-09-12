@@ -34,6 +34,8 @@
   <version>5.15-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Silverpeas Components</name>
+  <url>http://www.silverpeas.org/docs/components</url>
+  <description>The different applications that are deployed in standard in Silverpeas</description>
 
   <properties>
     <!-- Default JDBC properties for test, can be overriden by -D arguments -->
@@ -131,10 +133,48 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>3.4</version>
+        <configuration>
+          <relativizeDecorationLinks>false</relativizeDecorationLinks>
+          <generateSitemap>true</generateSitemap>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
-
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>2.7</version>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>index</report>
+              <report>summary</report>
+              <report>scm</report>
+              <report>dependencies</report>
+              <report>dependency-convergence</report>
+              <report>dependency-management</report>
+              <report>modules</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+        <configuration>
+          <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
+          <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.9</version>
+      </plugin>
+    </plugins>
+  </reporting>
 
   <modules>
     <module>hyperlink</module>

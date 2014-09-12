@@ -1,0 +1,249 @@
+/**
+ * Copyright (C) 2000 - 2013 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/* You can override this file with your own styles */
+
+
+@font-face {
+	font-family: 'HandWritting';
+	src: url('../font/handwritting.eot');
+	src: url('../font/handwritting.eot?#iefix') format('embedded-opentype'),
+	url('../font/handwritting.woff') format('woff'),
+	url('../font/handwritting.ttf') format('truetype'),
+	url('../font/handwritting.svg#handwritting') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+#home #discours-mr-coss {
+	font-family: 'HandWritting';
+	background:transparent url(../images/imgDesignHome/bulle.png) top left no-repeat;
+	font-size: 20px;
+	height: 93px;
+	padding: 40px 20px;
+	position: absolute;
+	right: 183px;
+	text-align: center;
+	top: 163px;
+	width: 177px;
+}
+
+#home #zone-bouton {
+	position:absolute;
+	bottom:20px;
+	left:35px;
+	padding:0;
+	margin:0;
+}
+#home #zone-bouton img {
+	margin-right:40px;
+}
+
+#discours-mr-coss strong {
+	color:#ec9c01
+}
+
+#banner #bannerLeft img {
+	border: medium none;
+	left: 45px;
+	top:0;
+	position: absolute;
+}
+
+body.topBarEnabled {
+	background:transparent url("../images/bg_header.jpg")  left 40px no-repeat ;
+	padding-top: 183px;
+}
+body.topBarEnabled#home {
+	background:transparent url("../images/coss-deguise-gnou.png")  right 40px no-repeat ;
+	padding-top:35px;
+}
+#home #banner #bannerLeft img {
+	left: 35px;
+	top:55px;
+}
+
+#home #banner  {
+	position:relative;
+	height:400px;
+}
+
+#home #principal-link  {
+	display:table;
+	background:#1D1D1D;
+	width:100%;
+	margin-bottom: 16px;
+}
+
+#home #banner  h1{
+	font-family:Georgia;
+	font-size:30px;
+	line-height:48px;
+	color:#363839;
+	font-weight:100;
+	position:absolute;
+	left:237px;
+	top:57px;
+
+}
+#home #banner  .accroche{
+	position:absolute;
+	left:35px;
+	right:420px;
+	top:186px;
+	font-size:16px;
+	line-height:28px;
+}
+#home #banner  h1 strong{
+	color:#7eb73b;
+	font-weight:100;
+}
+
+#home #principal-link ul {
+	list-style-type:none;
+	margin:0;
+	padding:0;
+	display:table-row;
+}
+
+#home #principal-link ul li{
+	display:table-cell;
+	width:20%;
+	margin:0;
+	padding:0;
+}
+
+#home #principal-link ul li a{
+	color:#FFF;
+	text-transform:uppercase;
+	font-size:18px;
+	padding:5px 5px 5px 35px;
+	display:block;
+}
+
+#home #principal-link ul li a[href^="http"] {
+     background:transparent url("../images/imgDesignHome/externalLink.png") top right no-repeat ;
+	color:#7eb73b
+}
+
+#home #principal-link ul li a span {
+	color:#999999;
+	text-transform:capitalize;
+	display:block;
+	font-size:14px;
+}
+
+#home #principal-link ul li a:hover{
+	color:#999;
+	text-decoration:none;
+}
+
+#home #principal-link ul li a:hover span {
+	color:#FFF;
+}
+
+p {
+	color: #444444;
+	margin-bottom: 8px;
+}
+
+h2 {
+	background:transparent url("../images/puce-pate.gif") 0 4px no-repeat  ;
+	border-bottom: 1px solid #CCCCCC;
+	color: #AAAAAA;
+	font-size: 24px;
+	line-height: 36px;
+	margin-bottom: 15px;
+	margin-top: 28px;
+	padding: 0 0 0 38px;
+}
+
+a {
+	color:#7eb73b;
+}
+a:hover {
+	color:#ec9c01;
+}
+
+.span9, h3 {
+	color: #888888;
+	font-size: 15px;
+}
+
+a.externalLink {
+	background: url("../images/external-classic.png") no-repeat scroll right center transparent;
+	padding-right: 18px;
+}
+
+a.externalLink[href^="https"] {
+	background: url("../images/external-classic.png") no-repeat scroll right center transparent;
+	padding-right: 18px;
+}
+
+a.externalLink[href^="http"] {
+	background: url("../images/external-classic.png") no-repeat scroll right center transparent;
+	padding-right: 18px;
+}
+
+.typ {
+	color: #56A3D9;
+}
+
+.com {
+	color: #F1790F;
+}
+
+pre.prettyprint {
+	background-color: #F8F8F8;
+	border: 1px solid #D0DBAD;
+	display: block;
+	margin-left: 70px;
+	margin-top: 10px;
+	padding: 10px 0px 10px 20px;
+}
+
+
+.nav-list > .active > a, .nav-list > .active > a:hover {
+	background-color: #7eb73b;
+}
+
+#leftColumn {
+	max-width:300px;
+}
+
+#bodyColumn {
+	margin-left: 150px;
+	width:auto;
+}
+
+p#poweredBy {
+	background-color: #F5F5F5;
+	border: 1px solid #E3E3E3;
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05) inset;
+	margin-bottom: 20px;
+	min-height: 20px;
+	width: 120px;
+	position: absolute;
+	top: 300px;
+}
