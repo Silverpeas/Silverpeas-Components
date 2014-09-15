@@ -23,9 +23,9 @@
  */
 package org.silverpeas.components.spaceMembers.servlets;
 
+
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
@@ -72,7 +72,15 @@ public class SpaceMembersRequestRouter extends ComponentRequestRouter<SpaceMembe
     String destination = "";
 
     if (function.startsWith("Main") || function.startsWith("portlet")) {
-      destination = "/Rdirectory/jsp/Main?SpaceId="+spaceMembersSCC.getSpaceId();
+      
+      destination = "/Rdirectory/jsp/Main?SpaceId="+spaceMembersSCC.getSpaceId(); 
+      
+      //Affichage page d'accueil : Seulement les membres connectés
+      if(spaceMembersSCC.isHomePageDisplayOnlyConnectedMembers()) {
+        
+        destination += "&View=connected";
+        
+      } 
     } else {
       destination = "/Rdirectory/jsp/"+function;
     }

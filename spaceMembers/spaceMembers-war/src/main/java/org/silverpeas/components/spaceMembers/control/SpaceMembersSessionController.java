@@ -26,6 +26,7 @@ package org.silverpeas.components.spaceMembers.control;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.silverpeas.util.StringUtil;
 
 public class SpaceMembersSessionController extends AbstractComponentSessionController {
 
@@ -38,5 +39,17 @@ public class SpaceMembersSessionController extends AbstractComponentSessionContr
   public SpaceMembersSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext);
+  }
+  
+  /**
+   * return true if Home page displays only connected members
+   * @return boolean
+   */
+  public boolean isHomePageDisplayOnlyConnectedMembers() {
+    String parameterHomePage = getComponentParameterValue("homePage");
+    if(StringUtil.isDefined(parameterHomePage)) {
+      return "1".equalsIgnoreCase(getComponentParameterValue("homePage"));
+    }
+    return false;
   }
 }

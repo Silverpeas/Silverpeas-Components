@@ -34,9 +34,9 @@
     <message lang="de">Raum Mitglieder</message>
   </label>
   <description>
-    <message lang="fr">Cette application permet d'afficher l'annuaire des membres de l'espace.</message>
-    <message lang="en">This application allows you to view the member directory space.</message>
-    <message lang="de">Diese Anwendung ermöglicht es Ihnen, die Mitgliederverzeichnis Raum zu sehen.</message>
+    <message lang="fr">Cette application permet d'afficher l'annuaire des utilisateurs ayant des droits déclarés dans l'espace.</message>
+    <message lang="en">This application allows you to view the user directory with rights declared in space.</message>
+    <message lang="de">Diese Anwendung ermöglicht es Ihnen, das Benutzerverzeichnis mit im Raum erklärt Rechte anzuzeigen.</message>
   </description>
   <suite>
     <message lang="fr">02 Gestion Collaborative</message>
@@ -61,5 +61,41 @@
     </profile>
   </profiles>
   <parameters>
+  	<parameter>
+      <name>homePage</name>
+      <label>
+        <message lang="fr">Page d'accueil</message>
+        <message lang="en">Homepage</message>
+		<message lang="de">Home page</message>
+      </label>
+      <order>1</order>
+      <mandatory>true</mandatory>
+      <value>0</value>
+      <options>
+        <option>
+          <name>
+            <message lang="fr">Tous les membres</message>
+            <message lang="en">All members</message>
+            <message lang="de">Alle Mitglieder</message>
+          </name>
+          <value>0</value>
+        </option>
+        <option>
+          <name>
+            <message lang="fr">Seulement les membres connectés</message>
+            <message lang="en">Only members online</message>
+            <message lang="de">Nur Mitglieder Online</message>
+          </name>
+          <value>1</value>
+        </option>
+      </options>
+      <type>select</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Type d'affichage de la page d'accueil des membres de l'espace</message>
+        <message lang="en">Type of display of the space members home page</message>
+        <message lang="de">Art der Darstellung des Raumes Mitglieder Startseite</message>
+      </help>
+    </parameter>  
   </parameters>
 </WAComponent>
