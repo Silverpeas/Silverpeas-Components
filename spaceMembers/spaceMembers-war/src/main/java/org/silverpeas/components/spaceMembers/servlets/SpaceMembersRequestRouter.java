@@ -23,14 +23,6 @@
  */
 package org.silverpeas.components.spaceMembers.servlets;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
-import com.silverpeas.util.StringUtil;
-
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -57,7 +49,7 @@ public class SpaceMembersRequestRouter extends ComponentRequestRouter<SpaceMembe
    */
   @Override
   public String getSessionControlBeanName() {
-    return "spaceMembersScc";
+    return "spaceMembers";
   }
 
   /**
@@ -80,9 +72,10 @@ public class SpaceMembersRequestRouter extends ComponentRequestRouter<SpaceMembe
     String destination = "";
 
     if (function.startsWith("Main") || function.startsWith("portlet")) {
-      
-      return URLManager.getApplicationURL()+"/Rdirectory/jsp/Main?SpaceId="+spaceMembersSCC.getComponentId();
-    } 
+      destination = "/Rdirectory/jsp/Main?SpaceId="+spaceMembersSCC.getSpaceId();
+    } else {
+      destination = "/Rdirectory/jsp/"+function;
+    }
     
     SilverTrace.info("spaceMembers", "SpaceMembersRequestRooter.getDestination()",
         "root.MSG_GEN_RETURN_VALUE", "destination = " + destination);
