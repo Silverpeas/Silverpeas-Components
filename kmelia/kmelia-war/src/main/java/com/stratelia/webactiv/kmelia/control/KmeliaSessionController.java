@@ -1545,9 +1545,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public boolean isPublicationValidatorsOK() throws RemoteException {
-    if (getSessionPublication() != null && SilverpeasRole.writer.isInRole(getUserTopicProfile())
+    if (getSessionPubliOrClone() != null && SilverpeasRole.writer.isInRole(getUserTopicProfile())
         && (isTargetValidationEnable() || isTargetMultiValidationEnable())) {
-      return StringUtil.isDefined(getSessionPublication().getDetail().getTargetValidatorId());
+      return StringUtil.isDefined(getSessionPubliOrClone().getDetail().getTargetValidatorId());
     }
     return true;
   }
@@ -1631,15 +1631,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   public synchronized void draftOutPublication() throws RemoteException {
     SilverTrace.info("kmelia", "KmeliaSessionController.draftOutPublication()",
-        "root.MSG_GEN_ENTER_METHOD", "getSessionPublication().getPublication() = "
-        + getSessionPublication().getCompleteDetail());
+        "root.MSG_GEN_ENTER_METHOD", "pubId = " + getSessionPublication().getId());
+    NodePK currentFolderPK = getCurrentFolderPK();
     if (isKmaxMode) {
-      getKmeliaBm().draftOutPublication(getSessionPublication().getDetail().getPK(), null,
-          getProfile());
-    } else {
-      getKmeliaBm().draftOutPublication(getSessionPublication().getDetail().getPK(),
-          getCurrentFolderPK(), getProfile());
+      currentFolderPK = null;
     }
+    getKmeliaBm().draftOutPublication(getSessionPublication().getDetail().getPK(),
+        currentFolderPK, getProfile());
 
     if (!KmeliaHelper.ROLE_WRITER.equals(getUserTopicProfile())) {
       setSessionClone(null); // always reset clone
@@ -3022,14 +3020,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    */
   public String getFirstAttachmentURLOfCurrentPublication() throws RemoteException {
     PublicationPK pubPK = getSessionPublication().getDetail().getPK();
-    String url = null;
-    List< SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService().
+    List<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService().
         listDocumentsByForeignKey(pubPK, getLanguage());
     if (!attachments.isEmpty()) {
-      url = URLManager.getApplicationURL() + attachments.get(0).getLastPublicVersion().
-          getAttachmentURL();
+      SimpleDocument document = attachments.get(0);
+      return getDocumentVersionURL(document);
     }
-    return url;
+    return null;
   }
 
   /**
@@ -3042,11 +3039,26 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public String getAttachmentURL(String fileId) throws RemoteException {
     SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService().
         searchDocumentById(new SimpleDocumentPK(fileId), getLanguage());
-    SimpleDocument version = attachment.getLastPublicVersion();
-    if (version == null) {
-      version = attachment.getVersionMaster();
+    return getDocumentVersionURL(attachment);
+  }
+  
+  /**
+   * Returns URL of the right version of the given document according to current folder rights
+   * if user is a reader, returns last public version (null if it does not exist) 
+   * if user is not a reader, returns last version (public or working one)
+   * @param document
+   * @return the URL of right version or null
+   * @throws RemoteException
+   */
+  private String getDocumentVersionURL(SimpleDocument document) throws RemoteException {
+    SimpleDocument version = document.getLastPublicVersion();
+    if (document.getVersionMaster().canBeAccessedBy(getUserDetail())) {
+      version = document.getVersionMaster();
     }
-    return URLManager.getApplicationURL() + version.getAttachmentURL();
+    if (version != null) {
+      return URLManager.getApplicationURL() + version.getAttachmentURL();
+    }
+    return null;
   }
 
   public boolean useUpdateChain() {
