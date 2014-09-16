@@ -70,7 +70,6 @@
     max-height: none;
   }
 </style>
-<script type="text/javascript" src="<c:url value="/util/javaScript/animation.js"/>"></script>
 <gallery:handlePhotoPreview jquerySelector=".imagePreview"/>
 <script type="text/javascript">
 

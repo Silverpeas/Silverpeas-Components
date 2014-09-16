@@ -45,7 +45,6 @@ boolean isOwner = kmeliaScc.getSessionOwner();
 <head>
 <title><%=resources.getString("ReadingControlTitle")%></title>
 <view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 function topicGoTo(id) {
 	closeWindows();

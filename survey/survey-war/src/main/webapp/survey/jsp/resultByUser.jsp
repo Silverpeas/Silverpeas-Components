@@ -52,7 +52,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <head>
 <title></title>
 <view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 function viewUsers(id) {
     url = "ViewListResult?AnswerId="+id;

@@ -73,7 +73,6 @@
 <head>
 	<view:looknfeel />
 	<link rel="stylesheet" type="text/css" href="css/question-reply-css.jsp" />
-	<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 	<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 	<script language="javascript">
 	

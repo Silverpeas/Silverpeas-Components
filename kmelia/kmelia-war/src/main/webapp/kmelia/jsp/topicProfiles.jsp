@@ -47,7 +47,6 @@ String nodeId = node.getNodePK().getId();
 <html>
 <head>
 <view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 function topicGoTo(id) {
 	location.href="GoToTopic?Id="+id;

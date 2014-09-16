@@ -34,9 +34,7 @@ String translation = (String) request.getAttribute("Language");
 
 <HTML>
 <HEAD>
-<meta http-equiv="content-type" content="text/html; charset=utf-8">
 <view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 function displayPublications(id)
 {

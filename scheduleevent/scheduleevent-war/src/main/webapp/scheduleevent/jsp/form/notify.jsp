@@ -41,11 +41,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel />
-<c:url var="animationUrl" value="/util/javaScript/animation.js" />
 <c:url var="openUserPopupUrl" value="/Rscheduleevent/jsp/OpenUserPopup" />
 <c:url var="backPopupUrl" value="/Rscheduleevent/jsp/ConfirmScreen" />
 <c:url var="confirmUrl" value="/Rscheduleevent/jsp/Confirm" />
-<script type="text/javascript" src="${animationUrl}"></script>
 <script type="text/javascript">
 	function setUsers(){
 		SP_openUserPanel('${openUserPopupUrl}', 'OpenUserPanel', 'menubar=no,scrollbars=no,statusbar=no');

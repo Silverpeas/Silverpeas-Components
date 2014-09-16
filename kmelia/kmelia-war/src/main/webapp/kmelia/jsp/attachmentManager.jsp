@@ -81,7 +81,6 @@ if (request.getParameter("OpenUrl") != null)  {
 <head>
 <title></title>
 <view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 function showTranslation(lang) {
 	location.href="ViewAttachments?SwitchLanguage="+lang;

@@ -61,7 +61,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel/>
-<script type="text/javascript" src="<%=context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 var addChannelWindow = window;
 var updateChannelWindow = window;

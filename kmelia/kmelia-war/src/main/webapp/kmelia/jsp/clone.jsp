@@ -140,7 +140,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <view:looknfeel/>
 <view:includePlugin name="wysiwyg"/>
 <view:includePlugin name="popup"/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 
 var publicVersionsWindow = window;

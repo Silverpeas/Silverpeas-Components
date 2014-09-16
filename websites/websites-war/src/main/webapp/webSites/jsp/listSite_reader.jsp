@@ -183,7 +183,6 @@ if (action == null) {
 %>
       
 <script type="text/javascript" src="javaScript/spacesInURL.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script Language="JavaScript">
 
 function topicGoTo(id) {

@@ -159,7 +159,6 @@
   <view:progressMessage/>
   <script type="text/javascript" src="<c:url value="/gallery/jsp/javaScript/dragAndDrop.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/util/javaScript/upload_applet.js"/>"></script>
-  <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js"/>"></script>
   <script type="text/javascript">
 var currentGallery = {
   'id' : "${currentAlbum.id}",

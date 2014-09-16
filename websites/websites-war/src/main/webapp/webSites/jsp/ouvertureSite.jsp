@@ -63,7 +63,6 @@ String popup = (String) request.getParameter("Popup");
 <HEAD>
 <TITLE><%=resources.getString("GML.popupTitle")%></TITLE>
 <view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <Script language="JavaScript">
 function openSite(URL, popup) {
 	winName = "Site";

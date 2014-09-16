@@ -76,7 +76,6 @@
 <head>
 <view:looknfeel />
 <view:includePlugin name="messageme"/>
-<script type="text/javascript" src="<c:url value='/util/javaScript/animation.js'/>"></script>
 <fmt:message var="deletionConfirm" key="classifieds.confirmDeleteClassified" />
 <script type="text/javascript">
 	function deleteConfirm(id) {

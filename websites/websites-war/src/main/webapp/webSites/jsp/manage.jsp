@@ -66,7 +66,6 @@ Collection listeSites = (Collection) request.getAttribute("ListSites");
 <head>
 <title><%=resources.getString("GML.popupTitle")%></title>
 <view:looknfeel />
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 
 function URLENCODE(URL){

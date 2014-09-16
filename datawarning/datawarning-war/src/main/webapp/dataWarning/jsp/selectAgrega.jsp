@@ -34,7 +34,6 @@
 <Head>
 <view:looknfeel/>
 </head>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <Script language="JavaScript">
 	function viewRequete()
 	{

@@ -62,14 +62,13 @@ String displayCredits(int nb_max_user_votes , int nb_user_votes) throws QuizzExc
 <head>
 <title>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</title>
 <view:looknfeel/>
-<script type="text/javascript" src="<%=m_Context%>/util/javaScript/animation.js"></script>
 <script language="javascript">
 function notifyPopup2(context,compoId,users,groups) {
     SP_openWindow(context+'/RnotificationUser/jsp/Main.jsp?popupMode=Yes&editTargets=No&compoId=' + compoId + '&theTargetsUsers='+users+'&theTargetsGroups='+groups, 'notifyUserPopup', '700', '400', 'menubar=no,scrollbars=no,statusbar=no');
 }
 </script>
 </head>
-<body bgcolor=#FFFFFF leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+<body>
  <%
   //objet window
   Window window = gef.getWindow();

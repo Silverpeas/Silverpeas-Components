@@ -44,7 +44,6 @@
 <html>
 <head>
   <view:looknfeel/>
-  <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
   <script language="javascript">
 
     function goToAlbum(id) {

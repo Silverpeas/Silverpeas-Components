@@ -36,7 +36,6 @@
 <view:looknfeel/>
 </HEAD>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <Script language="JavaScript">
 	function changeQuery()
 	{

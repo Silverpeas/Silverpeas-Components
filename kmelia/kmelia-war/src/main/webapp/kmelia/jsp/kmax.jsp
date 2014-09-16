@@ -73,7 +73,6 @@ if (action == null) {
 <title></title>
 <view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/i18n.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="javaScript/publications.js"></script>
 <script type="text/javascript">
 <!--

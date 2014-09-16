@@ -93,7 +93,6 @@ StyleSheet styleSheet = (StyleSheet) request.getAttribute("StyleSheet");
   <%=styleSheet.getContent()%>
 </style>
 <% } %>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
 	var notifyWindow = window;

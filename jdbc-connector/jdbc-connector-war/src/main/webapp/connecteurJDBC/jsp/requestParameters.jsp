@@ -51,7 +51,6 @@ String m_context = GeneralPropertiesManager..getString("ApplicationURL");
 <view:looknfeel/>
 </head>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <Script language="JavaScript">
 	function processUpdate()
 	{

@@ -66,7 +66,6 @@ ResourceLocator multilang = new ResourceLocator("com.silverpeas.gallery.multilan
 <head>
 <view:looknfeel/>
 <link type="text/css" rel="stylesheet" href="<c:url value="/util/styleSheets/treeview.css"/>">
-<script type="text/javascript" src="<c:url value="/util/javaScript/animation.js"/>"></script>
 <script type="text/javascript">
 function selectImage(url, idP) {
 	window.parent.selectImage(url+"&UseOriginal="+$('#useOriginalId' + idP).prop('checked'));

@@ -44,7 +44,6 @@
         <c:out value=".fc-event.${almanach.instanceId} { background-color: ${almanach.color}; border-color: ${almanach.color}; color: white; }"/>
       </c:forEach>
     </style>
-    <script type="text/javascript" src="<c:url value='/util/javaScript/animation.js'/>"></script>
     <view:includePlugin name="calendar"/>
     <script type="text/javascript">
       <!--

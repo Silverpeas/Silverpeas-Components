@@ -208,7 +208,6 @@ void displayAnswer(int i, String style, ResourcesWrapper resources, List<Compone
       }
     </style>
     <view:includePlugin name="datepicker"/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
   function sendData()

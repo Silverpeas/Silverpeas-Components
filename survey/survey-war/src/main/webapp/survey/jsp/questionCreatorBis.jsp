@@ -159,7 +159,6 @@
 <head>
   <title></title>
 <view:looknfeel />
-<script type="text/javascript" src="<c:out value="${ctxPath}" />/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<c:out value="${ctxPath}" />/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript" src="<c:out value="${ctxPath}" />/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">

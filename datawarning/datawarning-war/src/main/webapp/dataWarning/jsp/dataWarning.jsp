@@ -43,7 +43,6 @@
 <view:looknfeel/>
 </HEAD>
 <BODY marginwidth=5 marginheight=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script language=javascript>
 	function suscribe()
 	{

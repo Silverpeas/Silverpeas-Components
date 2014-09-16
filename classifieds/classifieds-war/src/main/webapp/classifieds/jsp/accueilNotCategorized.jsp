@@ -60,7 +60,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel />
-<script type="text/javascript" src="${pageContext.request.contextPath}/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 function doPagination(index) {
 	document.classifiedForm.action = "Pagination";
