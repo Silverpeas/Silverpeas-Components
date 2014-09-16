@@ -140,7 +140,6 @@ List			 	holidays	= (List) request.getAttribute("HolidayDates");
 <head>
 <title></title>
 <view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script language="javascript">
 function changeDateStatus(day, status)
 {

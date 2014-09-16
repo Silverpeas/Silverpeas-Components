@@ -41,8 +41,6 @@
 <c:set var="appSettings" value="${requestScope['AppSettings']}"/>
 <c:set var="viewOnly" value="${requestScope['ViewOnly']}"/>
 
-<c:url var="SilverpeasAnimationJS" value="/util/javaScript/animation.js"/>
-
 <%@ include file="checkQuickInfo.jsp" %>
 <%
 pageContext.setAttribute("componentURL", URLManager.getFullApplicationURL(request)+URLManager.getURL("useless", componentId), PageContext.PAGE_SCOPE);
@@ -54,7 +52,6 @@ pageContext.setAttribute("componentURL", URLManager.getFullApplicationURL(reques
 <head>
 <title>QuickInfo - View</title>
 <view:looknfeel/>
-<script type="text/javascript" src="${SilverpeasAnimationJS}"></script>
 <script type="text/javascript" src="js/quickinfo.js"></script>
 <script type="text/javascript">
 function notify() {

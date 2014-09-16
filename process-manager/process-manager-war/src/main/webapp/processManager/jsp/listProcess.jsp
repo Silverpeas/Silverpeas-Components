@@ -105,7 +105,6 @@ Item getItem(Item[] items, String itemName)
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
 <link rel="stylesheet" type="text/css" href="<%=m_context%>/processManager/jsp/css/processManager.css"/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <%
 	if (collapse.equals("false")) {
 		form.displayScripts(out, context);

@@ -119,7 +119,6 @@ if (action == null) {
 <title><%=resources.getString("GML.popupTitle")%></title>
 <view:looknfeel />
 <script type="text/javascript" src="javaScript/spacesInURL.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 
 function topicGoTo(id) {

@@ -45,7 +45,6 @@
 <%
 String parution = (String) request.getAttribute("parution");
 %>
-<script type="text/javascript" src='<c:url value="/util/javaScript/animation.js" />' ></script>
 <script type="text/javascript" src='<c:url value="/util/javaScript/checkForm.js" />' ></script>
 <script type="text/javascript">
 function call_wysiwyg () {

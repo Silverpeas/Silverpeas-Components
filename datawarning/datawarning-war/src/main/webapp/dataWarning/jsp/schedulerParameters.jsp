@@ -37,7 +37,6 @@
 <view:looknfeel/>
 </HEAD>
 <script type="text/javascript"	src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script type="text/javascript"	src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script language="JavaScript">
 	function openNotificationSender() {
 		SP_openWindow('Notification', 'NotificationSender', '700', '760',

@@ -77,7 +77,6 @@ CoordinatePoint getPoint(NodeDetail nodeDetail, Collection points, String transl
 <head>
 <title></title>
 <view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 	function search() {
 	    z = "";

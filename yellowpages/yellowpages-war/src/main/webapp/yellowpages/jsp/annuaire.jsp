@@ -101,7 +101,6 @@ private String afficheArbo(String idNodeSelected,
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/overlib.js"></script>
 <script type="text/javascript">
 var printWindow = window;

@@ -302,7 +302,6 @@
 <head>
 <title></title>
 <view:looknfeel />
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 </head>
 <body>
@@ -328,8 +327,6 @@
 <head>
 <title></title>
 <view:looknfeel />
-
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
 function sendVote(roundId) {
@@ -512,7 +509,6 @@ function clipboardCopy() {
 <title></title>
 <view:looknfeel />
 <view:includePlugin name="popup"/>
-<script type="text/javascript" src="<%=iconsPath%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 
  		function viewSuggestions(id) {

@@ -77,7 +77,6 @@ String httpServerBase = GeneralPropertiesManager.getString("httpServerBase", m_s
 <head>
 <view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/browseBarComplete.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/upload_applet.js"></script>
 <script type="text/javascript" src="<%=m_context%>/kmelia/jsp/javaScript/dragAndDrop.js"></script>
 <script type="text/javascript" src="<c:url value="/util/javaScript/checkForm.js" />"></script>

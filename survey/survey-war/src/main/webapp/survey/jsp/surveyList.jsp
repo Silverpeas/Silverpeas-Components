@@ -358,7 +358,6 @@
 <head>
 <title></title>
 <view:looknfeel />
-<script type="text/javascript" src="<%=iconsPath%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 function viewOpenedSurveys() {
   document.surveysForm.Action.value = "ViewOpenedSurveys";

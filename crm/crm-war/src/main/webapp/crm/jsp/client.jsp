@@ -35,7 +35,6 @@
 <head>
 	<title><fmt:message key="GML.popupTitle"/></title>
 	<view:looknfeel/>
-	<script type="text/javascript" src="${context}/util/javaScript/animation.js"></script>
 	<script type="text/javascript" src="${context}/util/javaScript/checkForm.js"></script>
 	<c:if test="${admin}">
 		<script type="text/javascript">

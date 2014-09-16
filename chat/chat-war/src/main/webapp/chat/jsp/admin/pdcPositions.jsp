@@ -52,7 +52,6 @@
 <HEAD>
 <TITLE></TITLE>
 <view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 </HEAD>
 <BODY>
 <%

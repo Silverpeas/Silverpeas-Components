@@ -36,7 +36,6 @@ String		role	= (String) request.getAttribute("Role");
 <head>
 <title></title>
 <view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 </head>
 <body>
 <%

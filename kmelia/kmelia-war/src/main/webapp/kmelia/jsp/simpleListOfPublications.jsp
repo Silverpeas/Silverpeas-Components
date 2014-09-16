@@ -76,7 +76,6 @@ boolean userCanSeeStats =
 <html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.kmelia">
 <head>
 <view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/upload_applet.js"></script>
 <view:includePlugin name="popup"/>
 <view:includePlugin name="preview"/>

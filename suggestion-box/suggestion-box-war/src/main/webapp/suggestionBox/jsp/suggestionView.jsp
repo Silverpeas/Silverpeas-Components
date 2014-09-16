@@ -62,7 +62,6 @@
 <c:url var="suggestionBoxServicesJS" value="/suggestionBox/jsp/javaScript/angularjs/services/suggestionbox.js"/>
 <c:url var="suggestionBoxValidationDirectiveJS" value="/suggestionBox/jsp/javaScript/angularjs/directives/suggestionbox-validation.js"/>
 <c:url var="suggestionBoxDeletionDirectiveJS" value="/suggestionBox/jsp/javaScript/angularjs/directives/suggestionbox-deletion.js"/>
-<c:url var="SilverpeasAnimationJS" value="/util/javaScript/animation.js"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.suggestionBox">
@@ -72,7 +71,6 @@
   <script type="text/javascript" src="${suggestionBoxServicesJS}"></script>
   <script type="text/javascript" src="${suggestionBoxValidationDirectiveJS}"></script>
   <script type="text/javascript" src="${suggestionBoxDeletionDirectiveJS}"></script>
-  <script type="text/javascript" src="${SilverpeasAnimationJS}"></script>
   <script type="text/javascript">
     <c:if test="${isEditable}">
     function modify() {

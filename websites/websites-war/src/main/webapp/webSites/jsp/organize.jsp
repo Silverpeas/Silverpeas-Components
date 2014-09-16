@@ -132,7 +132,6 @@ else SilverTrace.info("websites", "JSPorganize", "root.MSG_GEN_PARAM_VALUE", "ac
 <title><%=resources.getString("GML.popupTitle")%></title>
 <view:looknfeel />
 <script type="text/javascript" src="javaScript/spacesInURL.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 var topicAddWindow = window;
 var topicUpdateWindow = window;

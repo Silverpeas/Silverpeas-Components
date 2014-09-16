@@ -39,10 +39,8 @@
 <head>
 <view:looknfeel />
 <view:includePlugin name="popup"/>
-<c:url var="animationUrl" value="/util/javaScript/animation.js" />
 <c:url var="openUserPopupUrl" value="/Rscheduleevent/jsp/OpenUserPopup" />
 <c:url var="backPopupUrl" value="/Rscheduleevent/jsp/Detail" />
-<script type="text/javascript" src="${animationUrl}"></script>
 <script type="text/javascript">
 	function deleteScheduleEvent() {
 		if (confirm('<fmt:message key="scheduleevent.form.delete.confirm"/>')) {

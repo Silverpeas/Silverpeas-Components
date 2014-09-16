@@ -92,7 +92,6 @@
   <view:looknfeel/>
   <view:includePlugin name="qtip"/>
   <script type="text/javascript" src="<c:url value="/util/javaScript/lucene/luceneQueryValidator.js"/>"></script>
-  <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/util/javaScript/checkForm.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery.cookie.js"/>"></script>
   <script type="text/javascript">

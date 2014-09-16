@@ -127,7 +127,6 @@ String returnURL = (String) request.getAttribute("ReturnURL");
 browseBar.setComponentName(componentLabel, "Main");
 
 %>
-<script type="text/javascript" src="<c:url value='/util/javaScript/animation.js'/>" ></script>
 <script type="text/javascript" src="<c:url value='/util/javaScript/dateUtils.js'/>"></script>
 <script type="text/javascript" src="<c:url value='/util/javaScript/checkForm.js'/>"></script>
 <%!

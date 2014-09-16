@@ -54,10 +54,6 @@
   <head>
     <title></title>
     <view:looknfeel/>
-    <script type="text/javascript" src="<c:url value='/util/javaScript/animation.js'/>"></script>
-    <script language="javascript">
-    </script>
-
   </head>
   <body>
     <view:browseBar></view:browseBar>

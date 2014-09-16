@@ -85,7 +85,6 @@ Button cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "View
 	display: none;
 }
 </style>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 	$(document).ready(function(){
 		$('#accordion').accordion({   

@@ -74,7 +74,6 @@
     <view:looknfeel/>
     <view:includePlugin name="datepicker"/>
     <view:includePlugin name="wysiwyg"/>
-	<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 	<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 	
 	<fmt:message var="GML_title" key="GML.title"/>

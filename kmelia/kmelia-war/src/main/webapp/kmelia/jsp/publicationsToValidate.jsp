@@ -34,7 +34,6 @@ String translation = (String) request.getAttribute("Language");
 <HTML>
 <HEAD>
 <view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="javaScript/navigation.js"></script>
 <script type="text/javascript">
 

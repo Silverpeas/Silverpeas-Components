@@ -139,7 +139,6 @@ FolderDetail webSitesCurrentFolder = (FolderDetail) request.getAttribute("Curren
 <HEAD>
 <TITLE><%=resources.getString("GML.popupTitle")%></TITLE>
 <view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script Language="JavaScript">
 
 function topicGoTo(id) {

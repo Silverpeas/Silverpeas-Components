@@ -41,7 +41,6 @@ String iconsPath = GeneralPropertiesManager.getString("ApplicationURL");
 <head>
 <title></title>
 <view:looknfeel/>
-<script type="text/javascript" src="<%=iconsPath%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 function viewResultByUser(userId, userName) {
 	url = "UserResult?UserId="+userId+"&UserName="+userName;

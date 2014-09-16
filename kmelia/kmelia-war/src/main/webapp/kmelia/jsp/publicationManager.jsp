@@ -280,7 +280,6 @@
     <view:includePlugin name="datepicker"/>
     <view:includePlugin name="popup"/>
     <link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
-    <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/i18n.js"></script>
     <script type="text/javascript">

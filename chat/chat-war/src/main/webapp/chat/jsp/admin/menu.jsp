@@ -63,7 +63,6 @@ tabbedPane.addTab(resource.getString("chat.administration"),"#",true);
 <head>
 <title>jChatBox Manager</title>
 <view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script language="JavaScript">
 
 function manage(opt)

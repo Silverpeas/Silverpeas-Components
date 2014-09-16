@@ -36,7 +36,6 @@
 <Head>
 <view:looknfeel/>
 </head>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <Script language="JavaScript">
 	var isTriggerQuery = <%=((query.getType() == DataWarningQuery.QUERY_TYPE_TRIGGER)?"true":"false")%>;
 	function getAgregas()

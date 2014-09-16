@@ -61,7 +61,6 @@
   <view:includePlugin name="calendar"/>
   <view:includePlugin name="datepicker"/>
   <script type="text/javascript" src="<c:url value="/resourcesManager/jsp/javaScript/resourceManager-calendar.js" />"></script>
-  <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js" />"></script>
   <script type="text/javascript">
 
     function viewReservationData() {

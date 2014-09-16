@@ -48,7 +48,6 @@
 <html>
 <head>
 <view:looknfeel/>
-<script type="text/javascript" src="<c:url value="/util/javaScript/animation.js"/>" ></script>
 </head>
 <body id="${instanceId}" class="gallery gallery-orders">
 
