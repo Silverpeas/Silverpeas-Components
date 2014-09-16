@@ -39,7 +39,6 @@ import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
-import org.silverpeas.publication.web.PrivatePublicationEntity;
 import org.silverpeas.publication.web.PublicationEntity;
 import static com.stratelia.webactiv.util.JNDINames.KMELIABM_EJBHOME;
 
@@ -73,7 +72,7 @@ public class KmeliaResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
   public Response savePublication(@PathParam("nodeId") String nodeId,
-      final PrivatePublicationEntity publicationEntity) {
+      final PublicationEntity publicationEntity) {
     try {
       PublicationDetail publication = publicationEntity.toPublicationDetail();
       
@@ -102,7 +101,7 @@ public class KmeliaResource extends RESTWebService {
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
-  public Response updatePublication(final PrivatePublicationEntity publicationEntity) {
+  public Response updatePublication(final PublicationEntity publicationEntity) {
     try {
       PublicationDetail publication = publicationEntity.toPublicationDetail();
             
@@ -128,7 +127,7 @@ public class KmeliaResource extends RESTWebService {
   }
   
   private PublicationEntity asWebEntity(final PublicationDetail publication, URI publicationURI) {
-    return PrivatePublicationEntity.fromPublicationDetail(publication, publicationURI);
+    return PublicationEntity.fromPublicationDetail(publication, publicationURI);
   }
   
   private KmeliaBm getKmeliaBm() {
