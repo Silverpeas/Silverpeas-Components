@@ -120,9 +120,6 @@ import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.node.model.NodeSelection;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
-import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
-import com.stratelia.webactiv.util.publication.info.model.ModelPK;
 import com.stratelia.webactiv.util.publication.model.Alias;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
@@ -517,6 +514,17 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public boolean isFolderSharingEnabled() {
     return StringUtil.getBooleanValue(getComponentParameterValue("useFolderSharing"));
   }
+  
+  public boolean isPublicationSharingEnabled() {
+    boolean enabled = StringUtil.getBooleanValue(getComponentParameterValue("usePublicationSharing"));
+    if (enabled) {
+      if (isKmaxMode) {
+        return isUserComponentAdmin();
+      }
+      return SilverpeasRole.admin.isInRole(getUserTopicProfile());
+    }
+    return false;
+  }
 
   public boolean isContentEnabled() {
     String parameterValue = getComponentParameterValue("tabContent");
@@ -658,15 +666,15 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     return document;
   }
 
-  public String getProfile() throws RemoteException {
+  public String getProfile() {
     return getUserTopicProfile();
   }
 
-  public String getUserTopicProfile() throws RemoteException {
+  public String getUserTopicProfile() {
     return getUserTopicProfile(null);
   }
 
-  public String getUserTopicProfile(String id) throws RemoteException {
+  public String getUserTopicProfile(String id) {
     String nodeId = id;
     if (!StringUtil.isDefined(id)) {
       nodeId = getCurrentFolderId();
@@ -1096,29 +1104,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     getKmeliaBm().deletePublicationFromAllTopics(getPublicationPK(pubId));
   }
 
-  public synchronized Collection<ModelDetail> getAllModels() throws RemoteException {
-    return getKmeliaBm().getAllModels();
-  }
-
-  public synchronized ModelDetail getModelDetail(String modelId) throws RemoteException {
-    return getKmeliaBm().getModelDetail(modelId);
-  }
-
-  public synchronized void createInfoModelDetail(String pubId, String modelId, InfoDetail infos)
-      throws RemoteException {
-    String currentPubId = getSessionPubliOrClone().getDetail().getPK().getId();
-    if (isCloneNeeded()) {
-      currentPubId = clonePublication();
-    }
-    if (getSessionClone() != null) {
-      ModelPK modelPK = new ModelPK(modelId, getPublicationPK(currentPubId));
-      getPublicationBm().createInfoModelDetail(getPublicationPK(currentPubId), modelPK, infos);
-    } else {
-      getKmeliaBm().createInfoModelDetail(getPublicationPK(currentPubId), modelId, infos);
-    }
-    refreshSessionPubliAndClone();
-  }
-
   public void refreshSessionPubliAndClone() throws RemoteException {
     if (getSessionClone() != null) {
       // refresh du clone
@@ -1129,23 +1114,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       KmeliaPublication pub = getPublication(getSessionPublication().getDetail().getPK().getId());
       setSessionPublication(pub);
     }
-  }
-
-  public synchronized InfoDetail getInfoDetail(String pubId) throws RemoteException {
-    return getKmeliaBm().getInfoDetail(getPublicationPK(pubId));
-  }
-
-  public synchronized void updateInfoDetail(String pubId, InfoDetail infos) throws RemoteException {
-    String currentPubId = getSessionPubliOrClone().getDetail().getPK().getId();
-    if (isCloneNeeded()) {
-      currentPubId = clonePublication();
-    }
-    if (getSessionClone() != null) {
-      getPublicationBm().updateInfoDetail(getPublicationPK(currentPubId), infos);
-    } else {
-      getKmeliaBm().updateInfoDetail(getPublicationPK(currentPubId), infos);
-    }
-    refreshSessionPubliAndClone();
   }
 
   /**
@@ -2055,11 +2023,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public boolean isCurrentPublicationHaveContent() throws WysiwygException {
-    return (getSessionPublication().getCompleteDetail().getModelDetail() != null
-        || StringUtil.isDefined(WysiwygController.load(getComponentId(), getSessionPublication().
+    return (StringUtil.isDefined(WysiwygController.load(getComponentId(), getSessionPublication().
                 getId(), getCurrentLanguage())) || !isInteger(getSessionPublication()
-            .getCompleteDetail().
-            getPublicationDetail().getInfoId()));
+            .getCompleteDetail().getPublicationDetail().getInfoId()));
   }
 
   public boolean isPDCClassifyingMandatory() {
@@ -3273,12 +3239,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public String getRole() {
-    try {
-      return getProfile();
-    } catch (RemoteException ex) {
-      throw new KmeliaRuntimeException("KmeliaBmEJB.getRole()",
-          SilverpeasRuntimeException.ERROR, "kmelia.MSG_ERR_GENERAL", ex);
-    }
+    return getProfile();
   }
 
   public String displayPath(Collection<NodeDetail> path, boolean linked, int beforeAfter) {

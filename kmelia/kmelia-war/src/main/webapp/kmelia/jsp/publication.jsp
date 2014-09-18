@@ -38,7 +38,6 @@
 %>
 
 <%@ include file="checkKmelia.jsp" %>
-<%@ include file="modelUtils.jsp" %>
 <%@ include file="topicReport.jsp.inc" %>
 
 <%@page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
@@ -76,6 +75,7 @@
   boolean isWriterApproval = (Boolean) request.getAttribute("WriterApproval");
   boolean notificationAllowed = (Boolean) request.getAttribute("NotificationAllowed");
   boolean ratingsAllowed = (Boolean) request.getAttribute("PublicationRatingsAllowed");
+  boolean sharingAllowed = (Boolean) request.getAttribute("PublicationSharingAllowed");
   boolean attachmentsEnabled = (Boolean) request.getAttribute("AttachmentsEnabled");
   boolean draftOutTaxonomyOK = (Boolean) request.getAttribute("TaxonomyOK");
   boolean validatorsOK = (Boolean) request.getAttribute("ValidatorsOK");
@@ -445,6 +445,16 @@
         function suggestDelegatedNews() {
           location.href= "<%=routerUrl%>SuggestDelegatedNews";
         }
+        
+        function pubShare() {
+          var sharingObject = {
+              componentId: "<%=contextComponentId%>",
+              type       : "Publication",
+              id         : "<%=id%>",
+              name   : "<%=pubDetail.getName(language)%>"
+          };
+          createSharingTicketPopup(sharingObject);
+        }
     </script>
   </head>
   <body class="yui-skin-sam" onunload="closeWindows()" onload="openSingleAttachment()" id="<%=componentId%>">
@@ -500,9 +510,14 @@
               }
             }
 
+	        if (sharingAllowed) {
+	         	operationPane.addOperation("useless", resources.getString("GML.share"), "javascript:pubShare()");
+	        }
             if (suppressionAllowed) {
+              operationPane.addLine();
               operationPane.addOperation(deletePubliSrc, resources.getString("GML.delete"), "javascript:pubDeleteConfirm()");
             }
+            
             operationPane.addLine();
           }
         }
@@ -541,8 +556,6 @@
         }
         out.println(frame.printBefore());
 
-        InfoDetail infos = pubComplete.getInfoDetail();
-        ModelDetail model = pubComplete.getModelDetail();
         int type = 0;
         if (kmeliaScc.isVersionControlled()) {
           type = 1; // Versioning
@@ -800,9 +813,6 @@
 				        if (WysiwygController.haveGotWysiwygToDisplay(componentId, id, language)) {%>
                 <view:displayWysiwyg objectId="<%=id%>" componentId="<%=componentId%>" language="<%=language%>" axisId="<%=kmeliaScc.getAxisIdGlossary()%>" highlightFirst="<%=String.valueOf(highlightFirst)%>" />
                 <%
-                  } else if (infos != null && model != null) {
-                  displayViewInfoModel(out, model, infos, resources, publicationSettings, m_context);
-
 				        } else {
 				          Form xmlForm = (Form) request.getAttribute("XMLForm");
 				          DataRecord xmlData = (DataRecord) request.getAttribute("XMLData");
@@ -895,9 +905,10 @@
         <input type="hidden" name="ComponentId" value="<%=componentId%>"/>
       </form>
     </div>
+ <%@ include file="../../sharing/jsp/createTicketPopin.jsp" %>
  <script type="text/javascript">
  /* declare the module myapp and its dependencies (here in the silverpeas module) */
  var myapp = angular.module('silverpeas.kmelia', ['silverpeas.services', 'silverpeas.directives']);
  </script>
-  </body>
+ </body>
 </html>

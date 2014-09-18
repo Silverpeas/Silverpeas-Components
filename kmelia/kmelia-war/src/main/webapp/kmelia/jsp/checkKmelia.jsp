@@ -77,11 +77,6 @@
 <%@ page import="com.stratelia.webactiv.util.publication.model.PublicationPK"%>
 <%@ page import="com.stratelia.webactiv.util.publication.model.CompletePublication"%>
 <%@ page import="com.stratelia.webactiv.util.publication.model.ValidationStep"%>
-<%@ page import="com.stratelia.webactiv.util.publication.info.model.InfoDetail"%>
-<%@ page import="com.stratelia.webactiv.util.publication.info.model.InfoLinkDetail"%>
-<%@ page import="com.stratelia.webactiv.util.publication.info.model.InfoTextDetail"%>
-<%@ page import="com.stratelia.webactiv.util.publication.info.model.InfoImageDetail"%>
-<%@ page import="com.stratelia.webactiv.util.publication.info.model.ModelDetail"%>
 <%@ page import="com.stratelia.webactiv.util.node.model.NodePK"%>
 <%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail"%>
 <%@ page import="com.stratelia.webactiv.util.node.model.NodeI18NDetail"%>
