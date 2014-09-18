@@ -77,7 +77,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <HEAD>
 <TITLE></TITLE>
 <view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 </HEAD>
 <BODY onUnload="closeWindows()">

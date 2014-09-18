@@ -40,7 +40,6 @@
 <head>
 <title></title>
 <view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script language='javascript1.2'>
 function fct_redirect()
 {

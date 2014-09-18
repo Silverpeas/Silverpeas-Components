@@ -122,12 +122,9 @@ Button updateAllButton = (Button) gef.getFormButton(resources.getString("kmelia.
 }
 
 </style>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-
 <script language="javascript">
-
 function topicGoTo(id) {
 	location.href="GoToTopic?Id="+id;
 }

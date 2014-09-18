@@ -63,7 +63,6 @@ if (!StringUtil.isDefined(id)) {
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel />
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<c:url value="/util/javaScript/checkForm.js" />"></script>
 <script type="text/javascript" src="javaScript/spacesInURL.js"></script>
 <view:includePlugin name="popup"/>

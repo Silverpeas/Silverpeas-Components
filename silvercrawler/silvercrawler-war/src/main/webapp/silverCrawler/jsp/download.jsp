@@ -39,7 +39,6 @@
 	long sizeZip = sizeZipP.longValue();
 	long sizeMax = sizeMaxP.longValue();
 %>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 </head>
 <body>
 <view:window popup="true">

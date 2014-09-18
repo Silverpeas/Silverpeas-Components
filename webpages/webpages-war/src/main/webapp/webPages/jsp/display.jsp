@@ -54,7 +54,6 @@
 <html>
 <head>
 <view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 </head>
 <body>
 <%

@@ -95,7 +95,6 @@ if (currentTopic != null) {
 <HTML>
 <HEAD>
 <view:looknfeel/>
-<SCRIPT LANGUAGE="JAVASCRIPT" SRC="<%=m_context%>/util/javaScript/animation.js"></SCRIPT>
 <script type="text/javascript" src="javaScript/spacesInURL.js"></script>
 <script language="JavaScript1.2">
 var contactWindow = window;

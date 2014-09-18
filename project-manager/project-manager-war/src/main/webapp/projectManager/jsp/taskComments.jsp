@@ -51,8 +51,6 @@
   <head>
     <title></title>
     <view:looknfeel/>
-    <script type="text/javascript" src="<c:url value='/util/javaScript/animation.js'/>"></script>
-
   </head>
   <body>
     <view:browseBar extraInformations="${task.nom}"/>

@@ -55,7 +55,6 @@
 %>
 	<script type="text/javascript" src="<%=applicationURL%>/myDB/jsp/javaScript/tableUpdate.js"></script>
 	<script type="text/javascript" src="<%=applicationURL%>/myDB/jsp/javaScript/util.js"></script>
-	<script type="text/javascript" src="<%=applicationURL%>/util/javaScript/animation.js"></script>
 	<script type="text/javascript">
 		function init()
 		{

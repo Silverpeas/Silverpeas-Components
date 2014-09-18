@@ -65,9 +65,8 @@ function notifyPopup(context,compoId,users,groups)
     SP_openWindow(context+'/RnotificationUser/jsp/Main.jsp?popupMode=Yes&editTargets=No&compoId=' + compoId + '&theTargetsUsers='+users+'&theTargetsGroups='+groups, 'notifyUserPopup', '700', '400', 'menubar=no,scrollbars=no,statusbar=no');
 }
 </script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 </head>
-<body bgcolor="#FFFFFF" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+<body leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
 
   <%
   //objet window

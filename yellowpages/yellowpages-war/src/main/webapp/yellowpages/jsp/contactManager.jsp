@@ -130,7 +130,6 @@ Button validateButton = gef.getFormButton(resources.getString("GML.validate"), "
 <view:includePlugin name="preview"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 function topicGoTo(id) {
     document.topicDetailForm.Action.value = "Search";

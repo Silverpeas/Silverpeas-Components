@@ -58,7 +58,6 @@
 <head>
 <title></title>
 <view:looknfeel />
-<script type="text/javascript" src="<%=context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=context%>/forums/jsp/javaScript/forums.js"></script>
 <script type="text/javascript">

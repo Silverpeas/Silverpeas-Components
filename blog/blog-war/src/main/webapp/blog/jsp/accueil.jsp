@@ -83,7 +83,6 @@ if (!m_MainSessionCtrl.getCurrentUserDetail().isAccessGuest() && isUserSubscribe
 <% if (StringUtil.isDefined(rssURL)) { %>
 <link rel="alternate" type="application/rss+xml" title="<%=componentLabel%> : <%=resource.getString("blog.rssLast")%>" href="<%=m_context+rssURL%>"/>
 <% } %>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
 <!--

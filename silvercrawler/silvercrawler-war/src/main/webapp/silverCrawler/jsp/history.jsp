@@ -33,7 +33,6 @@
 	Collection downloads = (Collection) request.getAttribute("Downloads");
 	String name = (String) request.getAttribute("Name");
 %>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script language="JavaScript">
 
 var userWindow = window;

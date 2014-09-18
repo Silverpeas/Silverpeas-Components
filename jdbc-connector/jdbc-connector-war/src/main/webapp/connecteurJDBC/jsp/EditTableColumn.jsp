@@ -259,7 +259,6 @@ String separator = "<TABLE CELLPADDING=0 CELLSPACING=0 BORDER=0><TR><TD><img src
 <view:looknfeel/>
 </head>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <Script language="JavaScript">
 	
 	function getColumnList()

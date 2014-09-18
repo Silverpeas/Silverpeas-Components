@@ -85,7 +85,6 @@
     <view:looknfeel />
     <view:includePlugin name="rating" />
     <script type="text/javascript" src="<c:url value="/forums/jsp/javaScript/forums.js" />" ></script>
-    <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js" />" ></script>
     <script type="text/javascript">
       <% if (isAdmin || isUser || isModerator) { %>
         <fmt:message key="confirmDeleteForum" var="confirmationSuppressionForum" />

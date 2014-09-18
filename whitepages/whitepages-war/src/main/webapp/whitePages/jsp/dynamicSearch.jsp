@@ -52,7 +52,6 @@
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
 <view:includePlugin name="messageme"/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
 <%

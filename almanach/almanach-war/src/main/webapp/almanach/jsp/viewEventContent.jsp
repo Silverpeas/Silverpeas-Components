@@ -79,7 +79,6 @@
 <head>
 <title><%=generalMessage.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 
 var notifyWindow = window;

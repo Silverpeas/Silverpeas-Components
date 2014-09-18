@@ -44,7 +44,6 @@
         <c:out value=".${almanach.instanceId} .fc-event-skin { background-color: ${almanach.color}; border-color: ${almanach.color}; color: white; }"/>
       </c:forEach>
     </style>
-    <script type="text/javascript" src="<c:url value='/util/javaScript/animation.js'/>"></script>
     <script type="text/javascript" src="<c:url value='/util/javaScript/jquery/fullcalendar.min.js'/>"></script>
     <script type="text/javascript">
       <c:if test="${calendarView.viewType.nextEventsView}">

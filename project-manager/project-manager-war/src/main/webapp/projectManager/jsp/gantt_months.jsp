@@ -52,7 +52,6 @@
 <view:looknfeel />
 <view:includePlugin name="qtip"/>
 <link href="<c:out value="${ctxPath}"/>/projectManager/jsp/css/gantt.css" type="text/css" rel="stylesheet" />
-<script type="text/javascript" src="<c:out value="${ctxPath}"/>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<c:out value="${ctxPath}"/>/projectManager/jsp/js/ajax_project.js"></script>
 <script language="javascript" type="text/javascript">
 

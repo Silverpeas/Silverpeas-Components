@@ -70,7 +70,6 @@ if (taskInProgress != null)
 <head>
 <view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 
 <script type="text/javascript" src="<%=m_context%>/util/ajax/prototype.js"></script>

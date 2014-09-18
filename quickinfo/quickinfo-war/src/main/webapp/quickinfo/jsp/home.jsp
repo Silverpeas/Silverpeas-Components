@@ -56,7 +56,6 @@
 <title>QuickInfo - Home</title>
 <view:looknfeel/>
 <script type="text/javascript" src="js/quickinfo.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 function openPDCSetup() {
   var url = webContext+'/RpdcUtilization/jsp/Main?ComponentId=${componentId}';

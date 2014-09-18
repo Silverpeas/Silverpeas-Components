@@ -35,7 +35,6 @@
 <TITLE><%=resource.getString("operationPaneReqExpert")%></TITLE>
 <view:looknfeel/>
 </HEAD>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <BODY marginwidth=5 marginheight=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF" onload=document.form.SQLReq.focus()>
 <%
 	//operation Pane 

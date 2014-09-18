@@ -31,15 +31,11 @@
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
-function goto_jsp(jsp, param)
-{
-  //    alert("../../RinfoLetter/<%=spaceId%>_<%=componentId%>/"+jsp+"?"+param);
+function goto_jsp(jsp, param) {
 	window.open("../../RinfoLetter/<%=spaceId%>_<%=componentId%>/"+jsp+"?"+param,"MyMain");
 }
-
 
 function openViewParution(par) {
     document.viewParution.parution.value = par;
@@ -47,7 +43,7 @@ function openViewParution(par) {
 }
 </script>
 </head>
-<body bgcolor="#FFFFFF">
+<body>
 <%
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "javascript:goto_jsp('Main','')");

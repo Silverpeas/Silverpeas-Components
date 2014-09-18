@@ -36,9 +36,7 @@ Collection	posts		= (Collection) request.getAttribute("Posts");
 <head>
 <title></title>
 <view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
-
 function goToPost(id) {
     document.postForm.PostId.value = id;
     document.postForm.submit();
@@ -48,10 +46,8 @@ function goToCategory(id) {
     document.categoryForm.CategoryId.value = id;
     document.categoryForm.submit();
 }
-
 </script>
 </head>
-
 <body id="blog" class="blog portlet">
 <div id="<%=instanceId %>">
 

@@ -60,7 +60,6 @@
   <link type="text/css" href="<c:url value="/util/styleSheets/fieldset.css" />" rel="stylesheet"/>
   <view:includePlugin name="datepicker"/>
   <script type="text/javascript" src="<c:url value="/util/javaScript/lucene/luceneQueryValidator.js"/>"></script>
-  <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/util/javaScript/checkForm.js"/>"></script>
   <script type="text/javascript">
     function sendData() {

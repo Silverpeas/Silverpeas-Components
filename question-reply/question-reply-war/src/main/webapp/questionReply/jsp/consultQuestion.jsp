@@ -51,7 +51,6 @@
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 function deleteConfirm(replyId) {
 	//confirmation de suppression de la question
