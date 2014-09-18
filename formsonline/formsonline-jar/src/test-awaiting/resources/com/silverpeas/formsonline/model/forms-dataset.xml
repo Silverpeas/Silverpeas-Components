@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ If you change the data defined in this file, don't forget to change also the events generated
+ by the EventDetailBuilder builder used to build event details for tests.
+-->
+<dataset>
+  <uniqueid tableName="sc_formsonline_forms" maxId="1001" />
+  <uniqueid tableName="sc_formsonline_forminstances" maxId="20" />
+
+  <sc_formsonline_forms id="1000" xmlformname="descriptif_salle.xml" name="Référencement des salles"
+    description="Formulaire de description d'une salle" creationdate="2012-01-09" state="1" instanceid="formsOnline100"
+    alreadyused="1" creatorid="1" title="Titre de mon formulaire en ligne" />
+
+  <sc_formsonline_forms id="1001" xmlformname="voitureetab.xml" name="Demande de voitures"
+    description="Formulaire de réservation d'une voiture" creationdate="2012-01-08" state="0" instanceid="formsOnline100"
+    alreadyused="0" creatorid="1" title="Titre de mon formulaire en ligne" />
+
+  <sc_formsonline_forminstances id="20" formid="1000" state="3" creatorid="1" creationdate="2012-01-28"
+    validatorid="29" validationdate="2012-01-29" comments="Salle 18 disponible" instanceid="formsOnline100"/>
+
+  <sc_formsonline_userrights formid="1000" instanceid="formsOnline100" userid="1" righttype="S"/>
+  <sc_formsonline_userrights formid="1000" instanceid="formsOnline100" userid="29" righttype="R"/>
+
+</dataset>

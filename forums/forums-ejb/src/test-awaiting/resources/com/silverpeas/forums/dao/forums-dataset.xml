@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+  <uniqueid tableName="sc_forums_forum" maxId="10" />
+  <sc_forums_forum  forumid="8" forumname="Utilisation de Silverpeas"
+  forumdescription="Les applications de Silverpeas sont riches et paramétrables. Ceci vous permet d'en faire une utilisation multiple et parfois détournée de leur vocation initial. Partagez vos expériences à ce sujet..."
+  forumcreationdate="2004/03/26" forumclosedate="" forumcreator="1"
+  forumactive="1" forumparent="0" forummodes="[NULL]" forumlocklevel="[NULL]" instanceid="forums130"
+  categoryid="2" />
+
+
+  <sc_forums_forum  forumid="1" forumname="Forum racine"
+  forumdescription="Forum racine frère du forum père"
+  forumcreationdate="2004/03/26" forumclosedate="" forumcreator="1"
+  forumactive="1" forumparent="0" forummodes="[NULL]" forumlocklevel="[NULL]" instanceid="forums122"
+  categoryid="[NULL]" />
+  <sc_forums_forum  forumid="2" forumname="Forum Père"
+  forumdescription="Forum père du forum fils"
+  forumcreationdate="2004/03/26" forumclosedate="" forumcreator="1"
+  forumactive="1" forumparent="0" forummodes="[NULL]" forumlocklevel="[NULL]" instanceid="forums122"
+  categoryid="[NULL]" />
+  <sc_forums_forum  forumid="3" forumname="Forum Fils"
+  forumdescription="Forum fils du forum  père"
+  forumcreationdate="2004/03/26" forumclosedate="" forumcreator="1"
+  forumactive="1" forumparent="2" forummodes="[NULL]" forumlocklevel="[NULL]" instanceid="forums122"
+  categoryid="2" />
+
+  <sc_forums_forum  forumid="5" forumname="Forum Fermé"
+  forumdescription="forum fermé"
+  forumcreationdate="2004/03/26" forumclosedate="2010/10/10" forumcreator="10"
+  forumactive="0" forumparent="0" forummodes="[NULL]" forumlocklevel="1" instanceid="forums100"
+  categoryid="[NULL]" />
+  <sc_forums_forum  forumid="6" forumname="Forum Modéré"
+  forumdescription="forum fermé par modérateur"
+  forumcreationdate="2004/03/26" forumclosedate="2010/10/10" forumcreator="10"
+  forumactive="0" forumparent="0" forummodes="[NULL]" forumlocklevel="2" instanceid="forums100"
+  categoryid="[NULL]"/>
+
+  <!-- Forum Racine -->
+  <!-- Sujet Forum racine -->
+  <!-- ... Re : Sujet Forum racine -->
+  <!-- ...... Re : Re : Sujet Forum racine -->
+  <sc_forums_message messageid="10" messagetitle="Sujet Forum racine" messageauthor='26' forumid="1"
+                     messageparentid="0" messagedate="2013-06-17 19:05:27" status="V"/>
+  <sc_forums_message messageid="11" messagetitle="Re : Sujet Forum racine" messageauthor='26'
+                     forumid="1" messageparentid="10" messagedate="2013-06-17 19:05:27" status="V"/>
+  <sc_forums_message messageid="12" messagetitle="Re : Re : Sujet Forum racine" messageauthor='26'
+                     forumid="1" messageparentid="11" messagedate="2013-06-17 19:05:27" status="V"/>
+  <!-- Forum Père -->
+  <!-- Sujet Forum Père -->
+  <sc_forums_message messageid="20" messagetitle="Sujet Forum Père" messageauthor='26' forumid="2"
+                     messageparentid="0" messagedate="2013-06-17 19:05:27" status="V"/>
+  <!-- Forum Fils -->
+  <!-- Sujet Forum Fils -->
+  <sc_forums_message messageid="30" messagetitle="Sujet Forum Fils" messageauthor='26' forumid="3"
+                     messageparentid="0" messagedate="2013-06-17 19:05:27" status="V"/>
+</dataset>
