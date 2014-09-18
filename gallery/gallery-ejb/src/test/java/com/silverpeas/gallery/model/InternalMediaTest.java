@@ -26,7 +26,7 @@ package com.silverpeas.gallery.model;
 import com.silverpeas.gallery.constant.MediaMimeType;
 import com.silverpeas.gallery.constant.MediaType;
 import com.stratelia.webactiv.util.DateUtil;
-import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Test;
 import org.silverpeas.date.Period;
 

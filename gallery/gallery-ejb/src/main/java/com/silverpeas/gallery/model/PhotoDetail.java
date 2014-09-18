@@ -30,7 +30,7 @@ import java.util.Iterator;
 
 import com.silverpeas.gallery.constant.MediaMimeType;
 
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.date.Period;
 
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;

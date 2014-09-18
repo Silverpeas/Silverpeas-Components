@@ -200,7 +200,9 @@
     <module>chat</module>
     <module>mailinglist</module>
     <module>infoletter</module>
+    <!-- deprecated. In instance to be removed
     <module>wiki</module>
+    -->
     <module>almanach</module>
     <module>yellowpages</module>
     <module>silvercrawler</module>

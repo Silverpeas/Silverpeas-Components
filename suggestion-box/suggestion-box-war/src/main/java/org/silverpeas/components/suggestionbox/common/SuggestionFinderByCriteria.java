@@ -31,11 +31,8 @@ import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.comparator.AbstractComplexComparator;
 import com.stratelia.webactiv.beans.admin.PaginationPage;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.apache.commons.lang.NotImplementedException;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
-import org.silverpeas.components.suggestionbox.model.SuggestionBoxService;
-import org.silverpeas.components.suggestionbox.model.SuggestionBoxServiceFactory;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_ORDER_BY;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteriaProcessor;
@@ -197,7 +194,7 @@ public class SuggestionFinderByCriteria implements SuggestionCriteriaProcessor {
             valueBuffer.append(suggestion.getCommentCount(), queryOrderBy.isAsc());
             break;
           default:
-            throw new NotImplementedException(
+            throw new UnsupportedOperationException(
                 "You must add a new logical data order by management...");
         }
       }

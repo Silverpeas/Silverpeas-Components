@@ -790,7 +790,7 @@ public class SilverpeasAttachmentServlet extends WebdavServlet {
     // importantly - characters that might stop processing
     // of the URL.
     //
-    filename = org.apache.commons.lang.StringUtils.replaceChars(filename, "#?\"'", "____");
+    filename = org.apache.commons.lang3.StringUtils.replaceChars(filename, "#?\"'", "____");
 
     return filename;
   }

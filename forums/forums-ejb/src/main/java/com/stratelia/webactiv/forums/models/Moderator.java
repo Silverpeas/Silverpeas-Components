@@ -24,8 +24,8 @@
 package com.stratelia.webactiv.forums.models;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
  * User: Yohann Chastagnier

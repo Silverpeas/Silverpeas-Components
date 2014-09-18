@@ -26,7 +26,6 @@ package com.silverpeas.gallery.model;
 import com.silverpeas.util.CollectionUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.comparator.AbstractComplexComparator;
-import org.apache.commons.lang.NotImplementedException;
 
 import java.util.List;
 
@@ -152,7 +151,7 @@ public class MediaLogicalComparator extends AbstractComplexComparator<Media> {
           }
           break;
         default:
-          throw new NotImplementedException(
+          throw new UnsupportedOperationException(
               "You must add a new logical data order by management...");
       }
     }

@@ -26,6 +26,7 @@
       <groupId>com.ecyrd.jspwiki</groupId>
       <artifactId>jspwiki_silverpeas</artifactId>
     </dependency>
+    <!--
     <dependency>
       <groupId>jaxen</groupId>
       <artifactId>jaxen</artifactId>
@@ -41,26 +42,33 @@
         </exclusion>
       </exclusions>
     </dependency>
+    -->
     <dependency>
       <groupId>ecs</groupId>
       <artifactId>ecs</artifactId>
     </dependency>
+    <!--
     <dependency>
       <groupId>org.freshcookies</groupId>
       <artifactId>freshcookies-security</artifactId>
     </dependency>
+    -->
     <dependency>
       <groupId>opensymphony</groupId>
       <artifactId>oscache</artifactId>
     </dependency>
+    <!--
     <dependency>
       <groupId>oro</groupId>
       <artifactId>oro</artifactId>
     </dependency>
+    -->
+    <!--
     <dependency>
       <groupId>commons-jrcs</groupId>
       <artifactId>jrcs-diff</artifactId>
     </dependency>
+    -->
     <dependency>
       <groupId>com.metaparadigm</groupId>
       <artifactId>json-rpc</artifactId>
@@ -70,10 +78,12 @@
       <artifactId>xmlrpc</artifactId>
       <scope>provided</scope>
     </dependency>
+    <!--
     <dependency>
       <groupId>sandler</groupId>
       <artifactId>sandler</artifactId>
     </dependency>
+    -->
     <dependency>
       <groupId>com.silverpeas.core</groupId>
       <artifactId>test-core</artifactId>

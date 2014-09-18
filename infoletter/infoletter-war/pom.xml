@@ -20,10 +20,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>jstl</artifactId>
-    </dependency>
-    <dependency>
       <groupId>com.silverpeas.components.infoletter</groupId>
       <artifactId>infoletter-jar</artifactId>
       <version>${project.version}</version>

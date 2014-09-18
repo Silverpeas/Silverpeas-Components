@@ -25,7 +25,7 @@ package com.silverpeas.gallery.dao;
 
 import com.silverpeas.gallery.model.MediaOrderCriteriaProcessor;
 import com.silverpeas.gallery.model.Order;
-import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
