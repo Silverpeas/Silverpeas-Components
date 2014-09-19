@@ -2,38 +2,38 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>com.silverpeas.components</groupId>
+    <groupId>org.silverpeas.components</groupId>
     <artifactId>yellowpages</artifactId>
-    <version>5.15-SNAPSHOT</version>
+    <version>6.0-SNAPSHOT</version>
   </parent>
 
-  <groupId>com.silverpeas.components.yellowpages</groupId>
+  <groupId>org.silverpeas.components.yellowpages</groupId>
   <artifactId>yellowpages-ejb</artifactId>
   <packaging>ejb</packaging>
   <name>EJB yellowpages</name>
 
   <dependencies>
     <dependency>
-      <groupId>com.silverpeas.core</groupId>
+      <groupId>org.silverpeas.core</groupId>
       <artifactId>lib-core</artifactId>
       <version>${core.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.ejb-core</groupId>
       <artifactId>contact</artifactId>
       <version>${core.version}</version>
       <classifier>client</classifier>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.ejb-core</groupId>
       <artifactId>node</artifactId>
       <version>${core.version}</version>
       <classifier>client</classifier>
       <scope>provided</scope>
     </dependency>
      <dependency>
-      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.ejb-core</groupId>
       <artifactId>formtemplate</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>

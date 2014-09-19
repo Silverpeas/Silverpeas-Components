@@ -2,71 +2,75 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>com.silverpeas.components</groupId>
+    <groupId>org.silverpeas.components</groupId>
     <artifactId>gallery</artifactId>
-    <version>5.15-SNAPSHOT</version>
+    <version>6.0-SNAPSHOT</version>
   </parent>
 
-  <groupId>com.silverpeas.components.gallery</groupId>
+  <groupId>org.silverpeas.components.gallery</groupId>
   <artifactId>gallery-war</artifactId>
   <packaging>war</packaging>
   <name>gallery Webapp</name>
 
   <dependencies>
     <dependency>
-      <groupId>com.silverpeas.core</groupId>
+      <groupId>org.silverpeas.core</groupId>
       <artifactId>web-core</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.silverpeas.core</groupId>
+      <groupId>javax.servlet.jsp.jstl</groupId>
+      <artifactId>javax.servlet.jsp.jstl-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.silverpeas.core</groupId>
       <artifactId>lib-core</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.silverpeas.components.gallery</groupId>
+      <groupId>org.silverpeas.components.gallery</groupId>
       <artifactId>gallery-ejb</artifactId>
       <classifier>client</classifier>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.ejb-core</groupId>
       <artifactId>formtemplate</artifactId>
       <classifier>client</classifier>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.ejb-core</groupId>
       <artifactId>pdc</artifactId>
       <classifier>client</classifier>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.ejb-core</groupId>
       <artifactId>comment</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.ejb-core</groupId>
       <artifactId>searchengine</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.ejb-core</groupId>
       <artifactId>node</artifactId>
       <classifier>client</classifier>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.ejb-core</groupId>
       <artifactId>clipboard</artifactId>
       <classifier>client</classifier>
       <version>${core.version}</version>
@@ -83,7 +87,7 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.ejb-core</groupId>
       <artifactId>importExport</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
@@ -91,13 +95,13 @@
 
     <!-- TESTS -->
     <dependency>
-      <groupId>com.silverpeas.core</groupId>
+      <groupId>org.silverpeas.core</groupId>
       <artifactId>ws-test-core</artifactId>
       <version>${core.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.silverpeas.components.gallery</groupId>
+      <groupId>org.silverpeas.components.gallery</groupId>
       <artifactId>gallery-ejb</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>

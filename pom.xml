@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>com.silverpeas</groupId>
+    <groupId>org.silverpeas</groupId>
     <artifactId>parent</artifactId>
     <version>28-SNAPSHOT</version>
   </parent>
@@ -29,9 +29,9 @@
     </repository>
   </repositories>
 
-  <groupId>com.silverpeas</groupId>
+  <groupId>org.silverpeas</groupId>
   <artifactId>components</artifactId>
-  <version>5.15-SNAPSHOT</version>
+  <version>6.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Silverpeas Components</name>
   <url>http://www.silverpeas.org/docs/components</url>
@@ -44,7 +44,7 @@
     <test.jdbc.user>postgres</test.jdbc.user>
     <test.jdbc.password>postgres</test.jdbc.password>
     <!-- Version of Silverpeas-Core on which it depends -->
-    <core.version>5.15-SNAPSHOT</core.version>
+    <core.version>6.0-SNAPSHOT</core.version>
   </properties>
 
   <dependencies>
@@ -82,7 +82,7 @@
       <artifactId>hibernate-entitymanager</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.silverpeas.core</groupId>
+      <groupId>org.silverpeas.core</groupId>
       <artifactId>test-core</artifactId>
       <version>${core.version}</version>
       <scope>test</scope>
@@ -114,8 +114,8 @@
         </executions>
         <dependencies>
           <dependency>
-            <groupId>com.silverpeas</groupId>
-            <artifactId>assembly-configuration</artifactId>
+            <groupId>org.silverpeas</groupId>
+            <artifactId>configuration-assembly</artifactId>
             <version>${config.version}</version>
           </dependency>
         </dependencies>

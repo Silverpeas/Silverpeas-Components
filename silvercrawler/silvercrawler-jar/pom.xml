@@ -2,19 +2,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>com.silverpeas.components</groupId>
+    <groupId>org.silverpeas.components</groupId>
     <artifactId>silvercrawler</artifactId>
-    <version>5.15-SNAPSHOT</version>
+    <version>6.0-SNAPSHOT</version>
   </parent>
 	
-  <groupId>com.silverpeas.components.silvercrawler</groupId>
+  <groupId>org.silverpeas.components.silvercrawler</groupId>
   <artifactId>silvercrawler-jar</artifactId>
   <packaging>jar</packaging>
   <name>Lib silvercrawler</name>
 	
   <dependencies>
     <dependency>
-      <groupId>com.silverpeas.core</groupId>
+      <groupId>org.silverpeas.core</groupId>
       <artifactId>lib-core</artifactId>
       <version>${core.version}</version>
     </dependency>

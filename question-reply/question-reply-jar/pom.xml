@@ -2,49 +2,49 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>com.silverpeas.components</groupId>
+    <groupId>org.silverpeas.components</groupId>
     <artifactId>question-reply</artifactId>
-    <version>5.15-SNAPSHOT</version>
+    <version>6.0-SNAPSHOT</version>
   </parent>
 
-  <groupId>com.silverpeas.components.question-reply</groupId>
+  <groupId>org.silverpeas.components.question-reply</groupId>
   <artifactId>question-reply-jar</artifactId>
   <packaging>jar</packaging>
   <name>Lib question-reply</name>
 
   <dependencies>
     <dependency>
-      <groupId>com.silverpeas.core</groupId>
+      <groupId>org.silverpeas.core</groupId>
       <artifactId>lib-core</artifactId>
       <version>${core.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.ejb-core</groupId>
       <artifactId>pdc</artifactId>
       <version>${core.version}</version>
       <classifier>client</classifier>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.ejb-core</groupId>
       <artifactId>node</artifactId>
       <version>${core.version}</version>
       <classifier>client</classifier>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.silverpeas.components.whitepages</groupId>
+      <groupId>org.silverpeas.components.whitepages</groupId>
       <artifactId>whitepages-jar</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.ejb-core</groupId>
       <artifactId>pdc</artifactId>
       <version>${core.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.silverpeas.core</groupId>
+      <groupId>org.silverpeas.core</groupId>
       <artifactId>ws-test-core</artifactId>
       <version>${core.version}</version>
       <scope>test</scope>
