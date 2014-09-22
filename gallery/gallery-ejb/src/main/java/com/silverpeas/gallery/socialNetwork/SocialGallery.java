@@ -72,8 +72,12 @@ public class SocialGallery implements SocialGalleryInterface {
   @Override
   public List<SocialInformation> getSocialInformationsListOfMyContacts(String myId,
       List<String> myContactsIds, Date begin, Date end) throws SilverpeasException {
-    return getGalleryBm().getSocialInformationListOfMyContacts(myContactsIds, this.
-        getListAvailable(myId), Period.from(begin, end));
+    List<SocialInformation> listSocialInfo = new ArrayList<SocialInformation>();
+    List<String> listComponents = this.getListAvailable(myId);
+    if(listComponents != null && listComponents.size() > 0) {
+      listSocialInfo = getGalleryBm().getSocialInformationListOfMyContacts(myContactsIds, listComponents, Period.from(begin, end));
+    }
+    return listSocialInfo;
   }
 
   private GalleryBm getGalleryBm() {
