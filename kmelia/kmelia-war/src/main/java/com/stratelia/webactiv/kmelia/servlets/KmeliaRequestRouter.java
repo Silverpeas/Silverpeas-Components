@@ -70,20 +70,12 @@ import com.stratelia.webactiv.util.WAAttributeValuePair;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
-import com.stratelia.webactiv.util.publication.info.model.InfoImageDetail;
-import com.stratelia.webactiv.util.publication.info.model.InfoTextDetail;
-import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
 import com.stratelia.webactiv.util.publication.model.Alias;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.CharEncoding;
-import org.silverpeas.file.SilverpeasFile;
-import org.silverpeas.file.SilverpeasFileDescriptor;
-import org.silverpeas.file.SilverpeasFileProvider;
 import org.silverpeas.importExport.versioning.DocumentVersion;
 import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.servlet.HttpRequest;
@@ -697,6 +689,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
           request.setAttribute("LastAccess", kmelia.getLastAccess(kmeliaPublication.getPk()));
           request.setAttribute("PublicationRatingsAllowed", kmelia.isPublicationRatingAllowed());
+          request.setAttribute("PublicationSharingAllowed", kmelia.isPublicationSharingEnabled() &&
+              kmeliaPublication.getDetail().isValid());
 
           destination = rootDestination + "publication.jsp";
         }
@@ -1222,9 +1216,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       } else if (function.equals("ToPubliContent")) {
         CompletePublication completePublication = kmelia.getSessionPubliOrClone()
             .getCompleteDetail();
-        if (completePublication.getModelDetail() != null) {
-          destination = getDestination("ToDBModel", kmelia, request);
-        } else if (WysiwygController.haveGotWysiwyg(kmelia.getComponentId(),
+        if (WysiwygController.haveGotWysiwyg(kmelia.getComponentId(),
             completePublication.getPublicationDetail().getPK().getId(),
             kmelia.getCurrentLanguage())) {
 
@@ -1238,11 +1230,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
               if ("WYSIWYG".equals(modelId)) {
                 // Wysiwyg content
                 destination = getDestination("ToWysiwyg", kmelia, request);
-              } else if (StringUtil.isInteger(modelId)) {
-                // DB template
-                ModelDetail model = kmelia.getModelDetail(modelId);
-                request.setAttribute("ModelDetail", model);
-                destination = getDestination("ToDBModel", kmelia, request);
               } else {
                 // XML template
                 request.setAttribute("Name", modelId);
@@ -1267,9 +1254,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         destination = rootDestination + "modelsList.jsp";
       } else if (function.equals("ModelUsed")) {
         request.setAttribute("XMLForms", kmelia.getForms());
-        // put dbForms
-        Collection<ModelDetail> dbForms = kmelia.getAllModels();
-        request.setAttribute("DBForms", dbForms);
 
         Collection<String> modelUsed = kmelia.getModelUsed();
         request.setAttribute("ModelUsed", modelUsed);
@@ -1331,94 +1315,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           } else {
             destination = getDestination("ViewPublication", kmelia, request);
           }
-        }
-      } else if (function.equals("ToDBModel")) {
-        String modelId = request.getParameter("ModelId");
-        if (StringUtil.isDefined(modelId)) {
-          ModelDetail model = kmelia.getModelDetail(modelId);
-          request.setAttribute("ModelDetail", model);
-        }
-
-        // put current publication
-        request.setAttribute("CompletePublication", kmelia.getSessionPubliOrClone().
-            getCompleteDetail());
-        request.setAttribute("NotificationAllowed", kmelia.isNotificationAllowed());
-
-        // Paramètres du wizard
-        setWizardParams(request, kmelia);
-
-        destination = rootDestination + "modelManager.jsp";
-      } else if (function.equals("UpdateDBModelContent")) {
-        ResourceLocator publicationSettings = kmelia.getPublicationSettings();
-
-        List<InfoTextDetail> textDetails = new ArrayList<InfoTextDetail>();
-        List<InfoImageDetail> imageDetails = new ArrayList<InfoImageDetail>();
-        int imageOrder = 0;
-        boolean imageTrouble = false;
-        List<FileItem> parameters = request.getFileItems();
-        String modelId = FileUploadUtil.getParameter(parameters, "ModelId");
-        // Parametres du Wizard
-        setWizardParams(request, kmelia);
-
-        for (FileItem item : parameters) {
-          if (item.isFormField() && item.getFieldName().startsWith("WATXTVAR")) {
-            String theText = item.getString();
-            int textOrder = Integer.parseInt(item.getFieldName().substring(8,
-                item.getFieldName().length()));
-            textDetails.add(new InfoTextDetail(null, Integer.toString(textOrder), null, theText));
-          } else if (!item.isFormField()) {
-            String logicalName = item.getName();
-            if (logicalName != null && logicalName.length() > 0) {
-              if (!FileUtil.isWindows()) {
-                logicalName = logicalName.replace('\\', File.separatorChar);
-                SilverTrace.info("kmelia", "KmeliaRequestRouter.UpdateDBModelContent",
-                    "root.MSG_GEN_PARAM_VALUE", "fileName on Unix = " + logicalName);
-              }
-              logicalName = FilenameUtils.getName(logicalName);
-              String physicalName = Long.toString(System.currentTimeMillis()) + "." + FilenameUtils
-                  .getExtension(logicalName);
-              String mimeType = item.getContentType();
-              long size = item.getSize();
-
-              File dir = new File(FileRepositoryManager.getAbsolutePath(kmelia.getComponentId())
-                  + publicationSettings.getString("imagesSubDirectory") + File.separatorChar
-                  + physicalName);
-              if (FileUtil.isImage(logicalName)) {
-                item.write(dir);
-                imageOrder++;
-                if (size > 0L) {
-                  imageDetails.add(new InfoImageDetail(null, Integer.toString(imageOrder),
-                      null, physicalName, logicalName, "", mimeType, size));
-                  imageTrouble = false;
-                } else {
-                  imageTrouble = true;
-                }
-              } else {
-                imageTrouble = true;
-              }
-            } else {
-              // the field did not contain a file
-            }
-          }
-        }
-
-        InfoDetail infos = new InfoDetail(null, textDetails, imageDetails, null, "");
-        CompletePublication completePub = kmelia.getSessionPubliOrClone().getCompleteDetail();
-        if (completePub.getModelDetail() == null) {
-          kmelia.createInfoModelDetail("useless", modelId, infos);
-        } else {
-          kmelia.updateInfoDetail("useless", infos);
-        }
-        if (imageTrouble) {
-          request.setAttribute("ImageTrouble", Boolean.TRUE);
-        }
-
-        String wizard = kmelia.getWizard();
-        if (wizard.equals("progress")) {
-          request.setAttribute("Position", "Content");
-          destination = getDestination("WizardNext", kmelia, request);
-        } else {
-          destination = getDestination("ToDBModel", kmelia, request);
         }
       } else if (function.equals("GoToXMLForm")) {
         String xmlFormName = request.getParameter("Name");
@@ -2550,18 +2446,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
     request.setAttribute("XMLForms", listModelXml);
 
-    // put dbForms
-    Collection<ModelDetail> dbForms = kmelia.getAllModels();
-    // recherche de la liste des modèles utilisables
-    Collection<ModelDetail> listModelForm = new ArrayList<ModelDetail>();
-    for (ModelDetail modelDetail : dbForms) {
-      // recherche si le modèle est dans la liste
-      if (modelUsed.contains(modelDetail.getId())) {
-        listModelForm.add(modelDetail);
-      }
-    }
-    request.setAttribute("DBForms", listModelForm);
-
     // recherche si modele Wysiwyg utilisable
     boolean wysiwygValid = false;
     if (modelUsed.contains("WYSIWYG")) {
@@ -2570,9 +2454,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     request.setAttribute("WysiwygValid", wysiwygValid);
 
     // s'il n'y a pas de modèles selectionnés, les présenter tous
-    if ((listModelXml.isEmpty()) && (listModelForm.isEmpty()) && !wysiwygValid) {
+    if (listModelXml.isEmpty() && !wysiwygValid) {
       request.setAttribute("XMLForms", templates);
-      request.setAttribute("DBForms", dbForms);
       request.setAttribute("WysiwygValid", Boolean.TRUE);
     }
   }

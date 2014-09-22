@@ -103,10 +103,6 @@ import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
-import com.stratelia.webactiv.util.publication.info.model.InfoImageDetail;
-import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
-import com.stratelia.webactiv.util.publication.info.model.ModelPK;
 import com.stratelia.webactiv.util.publication.model.Alias;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.NodeTree;
@@ -441,22 +437,6 @@ public class KmeliaBmEJB implements KmeliaBm {
     }
     SilverTrace.info("kmelia", "KmeliaBmEJB.addSubTopic()", "root.MSG_GEN_EXIT_METHOD");
     return pk;
-  }
-
-  private String displayPath(Collection<NodeDetail> path, int beforeAfter, String language) {
-    StringBuilder pathString = new StringBuilder();
-    boolean first = true;
-
-    List<NodeDetail> pathAsList = new ArrayList<NodeDetail>(path);
-    Collections.reverse(pathAsList); // reverse path from root to node
-    for (NodeDetail nodeInPath : pathAsList) {
-      if (!first) {
-        pathString.append(" > ");
-      }
-      first = false;
-      pathString.append(nodeInPath.getName(language));
-    }
-    return pathString.toString();
   }
 
   /**
@@ -1657,11 +1637,6 @@ public class KmeliaBmEJB implements KmeliaBm {
     sendSubscriptionsNotification(pub, false, false);
   }
 
-  private void updatePublication(PublicationPK pubPK, int updateScope) {
-    PublicationDetail pubDetail = getPublicationDetail(pubPK);
-    updatePublication(pubDetail, updateScope, false);
-  }
-
   @Override
   public void externalElementsOfPublicationHaveChanged(PublicationPK pubPK, String userId,
       int action) {
@@ -2034,125 +2009,6 @@ public class KmeliaBmEJB implements KmeliaBm {
           ERROR, "kmelia.EX_IMPOSSIBLE_DE_SUPPRIMER_LA_PUBLICATION_DE_CE_THEME", e);
     }
     SilverTrace.info("kmelia", "KmeliaBmEJB.deletePublicationFromAllTopics()",
-        "root.MSG_GEN_EXIT_METHOD");
-  }
-
-  /**
-   * get all available models
-   *
-   * @return a Collection of ModelDetail
-   * @see com.stratelia.webactiv.util.publication.info.model.ModelDetail
-   * @since 1.0
-   */
-  @Override
-  public Collection<ModelDetail> getAllModels() {
-    SilverTrace.info("kmelia", "KmeliaBmEJB.getAllModels()", "root.MSG_GEN_ENTER_METHOD");
-    return publicationBm.getAllModelsDetail();
-  }
-
-  /**
-   * Return the detail of a model
-   *
-   * @param modelId the id of the model
-   * @return a ModelDetail
-   * @since 1.0
-   */
-  @Override
-  public ModelDetail getModelDetail(String modelId) {
-    SilverTrace.info("kmelia", "KmeliaBmEJB.getModelDetail()", "root.MSG_GEN_ENTER_METHOD");
-    ModelPK modelPK = new ModelPK(modelId);
-    SilverTrace.info("kmelia", "KmeliaBmEJB.getModelDetail()", "root.MSG_GEN_EXIT_METHOD");
-    return publicationBm.getModelDetail(modelPK);
-  }
-
-  /**
-   * Create info attached to a publication
-   *
-   * @param pubPK the id of the publication
-   * @param modelId the id of the selected model
-   * @param infos an InfoDetail containing info
-   * @since 1.0
-   */
-  @Override
-  public void createInfoDetail(PublicationPK pubPK, String modelId, InfoDetail infos) {
-    SilverTrace.info("kmelia", "KmeliaBmEJB.createInfoDetail()",
-        "root.MSG_GEN_ENTER_METHOD");
-    try {
-      ModelPK modelPK = new ModelPK(modelId, pubPK);
-      checkIndex(pubPK, infos);
-      publicationBm.createInfoDetail(pubPK, modelPK, infos);
-    } catch (Exception e) {
-      throw new KmeliaRuntimeException("KmeliaBmEJB.createInfoDetail()",
-          ERROR, "kmelia.EX_IMPOSSIBLE_DENREGISTRER_LE_CONTENU_DU_MODELE", e);
-    }
-    updatePublication(pubPK, KmeliaHelper.PUBLICATION_CONTENT);
-    SilverTrace.info("kmelia", "KmeliaBmEJB.createInfoDetail()", "root.MSG_GEN_EXIT_METHOD");
-  }
-
-  /**
-   * Create model info attached to a publication
-   *
-   * @param pubPK the id of the publication
-   * @param modelId the id of the selected model
-   * @param infos an InfoDetail containing info
-   * @since 1.0
-   */
-  @Override
-  public void createInfoModelDetail(PublicationPK pubPK, String modelId, InfoDetail infos) {
-    SilverTrace.info("kmelia", "KmeliaBmEJB.createInfoModelDetail()", "root.MSG_GEN_ENTER_METHOD");
-    try {
-      ModelPK modelPK = new ModelPK(modelId, pubPK);
-      checkIndex(pubPK, infos);
-      publicationBm.createInfoModelDetail(pubPK, modelPK, infos);
-    } catch (Exception e) {
-      throw new KmeliaRuntimeException("KmeliaBmEJB.createInfoModelDetail()", ERROR,
-          "kmelia.EX_IMPOSSIBLE_DENREGISTRER_LE_CONTENU_DU_MODELE", e);
-    }
-    updatePublication(pubPK, KmeliaHelper.PUBLICATION_CONTENT);
-    SilverTrace.info("kmelia", "KmeliaBmEJB.createInfoModelDetail()",
-        "root.MSG_GEN_EXIT_METHOD");
-  }
-
-  /**
-   * get info attached to a publication
-   *
-   * @param pubPK the id of the publication
-   * @return an InfoDetail
-   * @since 1.0
-   */
-  @Override
-  public InfoDetail getInfoDetail(PublicationPK pubPK) {
-    SilverTrace.info("kmelia", "KmeliaBmEJB.getInfoDetail()", "root.MSG_GEN_ENTER_METHOD");
-    try {
-      return publicationBm.getInfoDetail(pubPK);
-    } catch (Exception e) {
-      throw new KmeliaRuntimeException("KmeliaBmEJB.getInfoDetail()",
-          ERROR,
-          "kmelia.EX_IMPOSSIBLE_DOBTENIR_LE_CONTENU_DU_MODELE", e);
-    }
-  }
-
-  /**
-   * Update info attached to a publication
-   *
-   * @param pubPK the id of the publication
-   * @param infos an InfoDetail containing info to updated
-   * @since 1.0
-   */
-  @Override
-  public void updateInfoDetail(PublicationPK pubPK, InfoDetail infos) {
-    SilverTrace.info("kmelia", "KmeliaBmEJB.updateInfoDetail()",
-        "root.MSG_GEN_ENTER_METHOD");
-    try {
-      checkIndex(pubPK, infos);
-      publicationBm.updateInfoDetail(pubPK, infos);
-    } catch (Exception e) {
-      throw new KmeliaRuntimeException("KmeliaBmEJB.updateInfoDetail()",
-          ERROR,
-          "kmelia.EX_IMPOSSIBLE_DE_MODIFIER_LE_CONTENU_DU_MODELE", e);
-    }
-    updatePublication(pubPK, KmeliaHelper.PUBLICATION_CONTENT);
-    SilverTrace.info("kmelia", "KmeliaBmEJB.updateInfoDetail()",
         "root.MSG_GEN_EXIT_METHOD");
   }
 
@@ -2761,52 +2617,33 @@ public class KmeliaBmEJB implements KmeliaBm {
       ForeignPK pkTo = new ForeignPK(cloneId, tempPK.getInstanceId());
       Map<String, String> attachmentIds = AttachmentServiceFactory.getAttachmentService().
           mergeDocuments(pkFrom, pkTo, DocumentType.attachment);
-      // merge du contenu DBModel
-      if (tempPubli.getModelDetail() != null) {
-        if (currentPub.getModelDetail() != null) {
-          currentPubDetail.setInfoId(memInfoId);
+      // merge du contenu XMLModel
+      String infoId = tempPubli.getPublicationDetail().getInfoId();
+      if (infoId != null && !"0".equals(infoId) && !isInteger(infoId)) {
+        // register xmlForm to publication
+        String xmlFormShortName = infoId;
 
+        // get xmlContent to paste
+        PublicationTemplateManager publicationTemplateManager = PublicationTemplateManager.
+            getInstance();
+        PublicationTemplate pubTemplate = publicationTemplateManager.
+            getPublicationTemplate(
+            tempPK.getInstanceId() + ":" + xmlFormShortName);
+
+        RecordSet set = pubTemplate.getRecordSet();
+        // DataRecord data = set.getRecord(fromId);
+
+        if (memInfoId != null && !"0".equals(memInfoId)) {
           // il existait déjà un contenu
-          publicationBm.updateInfoDetail(pubPK, tempPubli.getInfoDetail());
+          set.merge(cloneId, pubPK.getInstanceId(), pubPK.getId(), pubPK.getInstanceId(),
+              attachmentIds);
         } else {
           // il n'y avait pas encore de contenu
-          ModelPK modelPK = new ModelPK(tempPubli.getModelDetail().getId(), "useless",
-              tempPK.getInstanceId());
-          publicationBm.createInfoModelDetail(pubPK, modelPK, tempPubli.getInfoDetail());
+          publicationTemplateManager.addDynamicPublicationTemplate(tempPK.getInstanceId()
+              + ":" + xmlFormShortName, xmlFormShortName + ".xml");
 
-          // recupere nouvel infoId
-          PublicationDetail modifiedPubli = getPublicationDetail(pubPK);
-          currentPubDetail.setInfoId(modifiedPubli.getInfoId());
-        }
-      } else {
-        // merge du contenu XMLModel
-        String infoId = tempPubli.getPublicationDetail().getInfoId();
-        if (infoId != null && !"0".equals(infoId) && !isInteger(infoId)) {
-          // register xmlForm to publication
-          String xmlFormShortName = infoId;
-
-          // get xmlContent to paste
-          PublicationTemplateManager publicationTemplateManager = PublicationTemplateManager.
-              getInstance();
-          PublicationTemplate pubTemplate = publicationTemplateManager.
-              getPublicationTemplate(
-              tempPK.getInstanceId() + ":" + xmlFormShortName);
-
-          RecordSet set = pubTemplate.getRecordSet();
-          // DataRecord data = set.getRecord(fromId);
-
-          if (memInfoId != null && !"0".equals(memInfoId)) {
-            // il existait déjà un contenu
-            set.merge(cloneId, pubPK.getInstanceId(), pubPK.getId(), pubPK.getInstanceId(),
-                attachmentIds);
-          } else {
-            // il n'y avait pas encore de contenu
-            publicationTemplateManager.addDynamicPublicationTemplate(tempPK.getInstanceId()
-                + ":" + xmlFormShortName, xmlFormShortName + ".xml");
-
-            set.clone(cloneId, pubPK.getInstanceId(), pubPK.getId(), pubPK.getInstanceId(),
-                attachmentIds);
-          }
+          set.clone(cloneId, pubPK.getInstanceId(), pubPK.getId(), pubPK.getInstanceId(),
+              attachmentIds);
         }
       }
       // merge du contenu Wysiwyg
@@ -3467,10 +3304,6 @@ public class KmeliaBmEJB implements KmeliaBm {
 
   private KmeliaContentManager getKmeliaContentManager() {
     return new KmeliaContentManager();
-  }
-
-  private void checkIndex(PublicationPK pubPK, InfoDetail infos) {
-    infos.setIndexOperation(IndexManager.NONE);
   }
 
   private void indexExternalElementsOfPublication(PublicationDetail pubDetail) {
@@ -4409,7 +4242,6 @@ public class KmeliaBmEJB implements KmeliaBm {
 
       ResourceLocator publicationSettings = new ResourceLocator(
           "org.silverpeas.util.publication.publicationSettings", "");
-      String imagesSubDirectory = publicationSettings.getString("imagesSubDirectory");
       String absolutePath = FileRepositoryManager.getAbsolutePath(fromComponentId);
 
       if (pubDetail != null) {
@@ -4444,43 +4276,23 @@ public class KmeliaBmEJB implements KmeliaBm {
         AttachmentServiceFactory.getAttachmentService().cloneDocument(document, cloneId);
       }
 
-      // eventually, paste the model content
-      if (refPubComplete.getModelDetail() != null && refPubComplete.getInfoDetail() != null) {
-        // Paste images of model
-        if (refPubComplete.getInfoDetail().getInfoImageList() != null) {
-          for (InfoImageDetail attachment : refPubComplete.getInfoDetail().getInfoImageList()) {
-            String from = absolutePath + imagesSubDirectory + File.separator + attachment.
-                getPhysicalName();
-            String type = attachment.getPhysicalName().substring(attachment.getPhysicalName().
-                lastIndexOf('.') + 1, attachment.getPhysicalName().length());
-            String newName = Long.toString(System.currentTimeMillis()) + "." + type;
-            attachment.setPhysicalName(newName);
-            String to = absolutePath + imagesSubDirectory + File.separator + newName;
-            FileRepositoryManager.copyFile(from, to);
-          }
-        }
+      // eventually, paste the form content
+      String xmlFormShortName = refPub.getInfoId();
+      if (xmlFormShortName != null && !"0".equals(xmlFormShortName) &&
+          !isInteger(xmlFormShortName)) {
+        PublicationTemplateManager templateManager = PublicationTemplateManager.getInstance();
+        // Content = XMLForm
+        // register xmlForm to publication
+        templateManager.addDynamicPublicationTemplate(fromComponentId + ":"
+            + xmlFormShortName, xmlFormShortName + ".xml");
 
-        // Paste model content
-        createInfoModelDetail(clonePK, refPubComplete.getModelDetail().getId(), refPubComplete.
-            getInfoDetail());
-      } else {
-        String xmlFormShortName = refPub.getInfoId();
-        if (xmlFormShortName != null && !"0".equals(xmlFormShortName) &&
-            !isInteger(xmlFormShortName)) {
-          PublicationTemplateManager templateManager = PublicationTemplateManager.getInstance();
-          // Content = XMLForm
-          // register xmlForm to publication
-          templateManager.addDynamicPublicationTemplate(fromComponentId + ":"
-              + xmlFormShortName, xmlFormShortName + ".xml");
+        PublicationTemplate pubTemplate = templateManager.getPublicationTemplate(fromComponentId
+            + ":" + xmlFormShortName);
 
-          PublicationTemplate pubTemplate = templateManager.getPublicationTemplate(fromComponentId
-              + ":" + xmlFormShortName);
+        RecordSet set = pubTemplate.getRecordSet();
 
-          RecordSet set = pubTemplate.getRecordSet();
-
-          // clone dataRecord
-          set.clone(fromId, fromComponentId, cloneId, fromComponentId, attachmentIds);
-        }
+        // clone dataRecord
+        set.clone(fromId, fromComponentId, cloneId, fromComponentId, attachmentIds);
       }
       // paste only links, reverseLinks can't be cloned because it'is a new content not referenced
       // by any publication
@@ -4659,7 +4471,6 @@ public class KmeliaBmEJB implements KmeliaBm {
     }
   }
 
-  @SuppressWarnings("StatementWithEmptyBody")
   private void setAllowedSubfolders(NodeDetail node, String userId) {
     String instanceId = node.getNodePK().getInstanceId();
     if (isRightsOnTopicsEnabled(instanceId)) {

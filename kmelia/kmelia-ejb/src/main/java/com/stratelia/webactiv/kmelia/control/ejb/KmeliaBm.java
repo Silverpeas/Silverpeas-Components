@@ -33,8 +33,6 @@ import com.stratelia.webactiv.util.coordinates.model.Coordinate;
 import com.stratelia.webactiv.util.coordinates.model.CoordinatePK;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
-import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
 import com.stratelia.webactiv.util.publication.model.Alias;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
@@ -289,60 +287,6 @@ public interface KmeliaBm extends SilverpeasComponentService<KmeliaPublication> 
    * @since 1.0
    */
   public void deletePublicationFromAllTopics(PublicationPK pubPK);
-
-  /**
-   * get all available models
-   *
-   * @return a Collection of ModelDetail
-   * @see com.stratelia.webactiv.util.publication.info.model.ModelDetail
-   * @since 1.0
-   */
-  public Collection<ModelDetail> getAllModels();
-
-  /**
-   * Return the detail of a model
-   *
-   * @param modelId the id of the model
-   * @return a ModelDetail
-   * @since 1.0
-   */
-  public ModelDetail getModelDetail(String modelId);
-
-  /**
-   * Create info attached to a publication
-   *
-   * @param pubPK the id of the publication
-   * @param modelId the id of the selected model
-   * @param infos an InfoDetail containing info
-   */
-  public void createInfoDetail(PublicationPK pubPK, String modelId, InfoDetail infos);
-
-  /**
-   * Create model info attached to a publication
-   *
-   * @param pubPK the id of the publication
-   * @param modelId the id of the selected model
-   * @param infos an InfoDetail containing info
-   */
-  public void createInfoModelDetail(PublicationPK pubPK, String modelId, InfoDetail infos);
-
-  /**
-   * get info attached to a publication
-   *
-   * @param pubPK the id of the publication
-   * @return an InfoDetail
-   * @since 1.0
-   */
-  public InfoDetail getInfoDetail(PublicationPK pubPK);
-
-  /**
-   * Update info attached to a publication
-   *
-   * @param pubPK the id of the publication
-   * @param infos an InfoDetail containing info to updated
-   * @since 1.0
-   */
-  public void updateInfoDetail(PublicationPK pubPK, InfoDetail infos);
 
   /**
    * Updates the publication links

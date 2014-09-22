@@ -29,7 +29,6 @@
 <%@ include file="checkKmelia.jsp" %>
 
 <%
-Collection 			dbForms		= (Collection) request.getAttribute("DBForms");
 List 				xmlForms	= (List) request.getAttribute("XMLForms");
 PublicationDetail 	pubDetail 	= (PublicationDetail) request.getAttribute("CurrentPublicationDetail");
 Boolean				wysiwyg		= (Boolean) request.getAttribute("WysiwygValid");
@@ -138,30 +137,16 @@ function closeWindows() {
 <table cellpadding="5" width="100%" id="templates">
   <tr><td colspan="3" class="txtnav"><%=resources.getString("ModelChoiceTitle")%></td></tr>
 <%
-    ModelDetail modelDetail;
     int nb = 0;
-    out.println("<tr>");
-    Iterator iterator = dbForms.iterator();
-    while (iterator.hasNext()) {
-        modelDetail = (ModelDetail) iterator.next();
-        
-        if (nb != 0 && nb%3==0)
-	        out.println("</tr><tr>");
-	        
-        nb++;
-        out.println("<td class=\"template\"><a href=\"javaScript:changeModel('"+modelDetail.getId()+"')\"><img src=\"../../util/icons/model/"+modelDetail.getImageName()+"\" border=\"0\" alt=\""+modelDetail.getDescription()+"\"/><br/>"+modelDetail.getName()+"</a></td>");
-    }
-    
-    if (xmlForms != null)
-    {
+    out.println("<tr>");    
+    if (xmlForms != null) {
 	    PublicationTemplate xmlForm;
-	    iterator = xmlForms.iterator();
+	    Iterator iterator = xmlForms.iterator();
 	    String thumbnail = "";
 	    while (iterator.hasNext()) {
 	        xmlForm = (PublicationTemplate) iterator.next();
 	        
-	        if (nb != 0 && nb%3==0)
-	        {
+	        if (nb != 0 && nb%3==0) {
 		        out.println("</tr><tr>");
 	        }   
 	        nb++;
@@ -174,10 +159,10 @@ function closeWindows() {
 	    }
 	}
     
-	if (wysiwygValid)
-	{
-	    if (nb != 0 && nb%3 == 0)
+	if (wysiwygValid) {
+	    if (nb != 0 && nb%3 == 0) {
 			out.println("</tr><tr>");
+	    }
 			
 	    out.println("<td class=\"template\"><a href=\"javaScript:sendToWysiwyg();\"><img src=\"../../util/icons/model/wysiwyg.gif\" border=\"0\" alt=\"Wysiwyg\"/><br/>WYSIWYG</a></td>");
 	    out.println("</tr>");
@@ -187,8 +172,7 @@ function closeWindows() {
 
 <%
 	out.println(board.printAfter());
-	if (wizard.equals("progress"))
-	{
+	if (wizard.equals("progress")) {
 		ButtonPane buttonPane = gef.getButtonPane();
 		buttonPane.addButton(nextButton);
 		buttonPane.addButton(cancelButton);

@@ -25,8 +25,14 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
 <%@include file="checkKmelia.jsp" %>
+
+<c:set var="userLanguage" value="${requestScope.resources.language}"/>
+<fmt:setLocale value="${userLanguage}"/>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
 <%
 PublicationDetail 	pubDetail 	= (PublicationDetail) request.getAttribute("CurrentPublicationDetail");
@@ -141,5 +147,6 @@ function topicGoTo(id) {
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
+<%@ include file="../../sharing/jsp/createTicketPopin.jsp" %>
 </body>
 </html>
