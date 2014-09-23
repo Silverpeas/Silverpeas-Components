@@ -39,13 +39,13 @@ import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
-import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.publication.model.CompletePublication;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import com.stratelia.webactiv.node.model.NodeDetail;
+import com.stratelia.webactiv.node.model.NodePK;
+import com.stratelia.webactiv.publication.model.CompletePublication;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationPK;
 
-import static com.stratelia.webactiv.util.publication.model.PublicationDetail.*;
+import static com.stratelia.webactiv.publication.model.PublicationDetail.*;
 
 /**
  * Classe métier de création d'entités silverpeas utilisée par le moteur d'importExport.
@@ -145,7 +145,7 @@ public class KmeliaImportExport extends GEDImportExport {
    * identifiant non modifié).
    * @throws ImportExportException en cas d'anomalie lors de la création du noeud.
    * @see
-   * com.silverpeas.importExport.control.GEDImportExport#addSubTopicToTopic(com.stratelia.webactiv.util.node.model.NodeDetail,
+   * com.silverpeas.importExport.control.GEDImportExport#addSubTopicToTopic(com.stratelia.webactiv.node.model.NodeDetail,
    * int, com.silverpeas.importExport.report.UnitReport)
    */
   @Override
@@ -198,7 +198,7 @@ public class KmeliaImportExport extends GEDImportExport {
    * @return un objet clé primaire du nouveau thème créé.
    * @throws ImportExportException en cas d'anomalie lors de la création du noeud.
    * @see
-   * com.silverpeas.importExport.control.GEDImportExport#addSubTopicToTopic(com.stratelia.webactiv.util.node.model.NodeDetail,
+   * com.silverpeas.importExport.control.GEDImportExport#addSubTopicToTopic(com.stratelia.webactiv.node.model.NodeDetail,
    * int, com.silverpeas.importExport.report.MassiveReport)
    */
   @Override

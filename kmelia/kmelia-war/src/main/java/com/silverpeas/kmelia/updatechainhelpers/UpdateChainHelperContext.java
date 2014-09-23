@@ -28,8 +28,8 @@ import java.util.List;
 
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
 import com.stratelia.webactiv.kmelia.model.updatechain.FieldUpdateChainDescriptor;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.stratelia.webactiv.node.model.NodeDetail;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
 
 public class UpdateChainHelperContext {
 

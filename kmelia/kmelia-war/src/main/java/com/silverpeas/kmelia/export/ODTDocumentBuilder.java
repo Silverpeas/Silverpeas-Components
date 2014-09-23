@@ -57,8 +57,8 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.stratelia.webactiv.node.model.NodePK;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;

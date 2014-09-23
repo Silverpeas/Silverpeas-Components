@@ -48,8 +48,8 @@ import com.stratelia.webactiv.survey.control.SurveySessionController;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerDetail;
-import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerHeader;
+import com.stratelia.webactiv.questionContainer.model.QuestionContainerDetail;
+import com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader;
 import org.silverpeas.servlet.HttpRequest;
 
 public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionController> {

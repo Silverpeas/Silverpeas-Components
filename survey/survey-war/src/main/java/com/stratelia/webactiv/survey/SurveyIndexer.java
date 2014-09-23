@@ -31,7 +31,7 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
 import com.stratelia.webactiv.survey.control.SurveySessionController;
-import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerHeader;
+import com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader;
 /**
  * This class is the main entry point to index the content of survey component
  *

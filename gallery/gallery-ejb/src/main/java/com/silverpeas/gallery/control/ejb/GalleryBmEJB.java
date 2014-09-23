@@ -75,10 +75,10 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
-import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.dao.NodeDAO;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
-import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.control.dao.NodeDAO;
+import com.stratelia.webactiv.node.model.NodeDetail;
+import com.stratelia.webactiv.node.model.NodePK;
 
 @Stateless(name = "Gallery", description = "Stateless session bean to manage a media gallery")
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)

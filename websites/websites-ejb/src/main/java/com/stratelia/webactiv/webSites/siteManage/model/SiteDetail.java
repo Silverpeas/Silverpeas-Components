@@ -32,7 +32,7 @@ import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.contentManager.ContentManagerFactory;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
 
 //CBO : UPDATE
 //public class SiteDetail extends AbstractI18NBean implements Serializable, SilverContentInterface

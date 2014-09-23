@@ -30,7 +30,7 @@
 <%@ page import="javax.servlet.*"%>
 <%@ page import="javax.servlet.http.*"%>
 <%@ page import="javax.servlet.jsp.*"%>
-<%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail"%>
+<%@ page import="com.stratelia.webactiv.node.model.NodeDetail"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.*"%>
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>

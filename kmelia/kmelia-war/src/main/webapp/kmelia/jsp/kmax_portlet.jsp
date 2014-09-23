@@ -38,8 +38,8 @@
 <%@ page import="java.util.*"%>
 <%@ page import="javax.naming.Context,javax.naming.InitialContext,javax.rmi.PortableRemoteObject"%>
 
-<%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail"%>
-<%@ page import="com.stratelia.webactiv.util.node.model.NodePK"%>
+<%@ page import="com.stratelia.webactiv.node.model.NodeDetail"%>
+<%@ page import="com.stratelia.webactiv.node.model.NodePK"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane"%>

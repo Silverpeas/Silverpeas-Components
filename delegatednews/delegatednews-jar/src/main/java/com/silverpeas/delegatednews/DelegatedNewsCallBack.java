@@ -30,7 +30,7 @@ import com.silverpeas.delegatednews.service.ServicesFactory;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBack;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
 
 public class DelegatedNewsCallBack implements CallBack {
 

@@ -31,7 +31,7 @@ import java.util.Set;
 
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
 
 /**
  * @author Yohann Chastagnier

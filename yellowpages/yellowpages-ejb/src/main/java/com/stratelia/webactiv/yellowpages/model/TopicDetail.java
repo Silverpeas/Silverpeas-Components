@@ -25,8 +25,8 @@ package com.stratelia.webactiv.yellowpages.model;
 
 import java.util.Collection;
 
-import com.stratelia.webactiv.util.node.model.NodeDetail;
-import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.node.model.NodeDetail;
+import com.stratelia.webactiv.node.model.NodePK;
 
 /**
  * This object contains elements which are displayed in a yellowpages Topic
@@ -102,7 +102,7 @@ public class TopicDetail extends Object implements java.io.Serializable {
    * Get the Topic nodePK
    * 
    * @return the Topic nodePK
-   * @see com.stratelia.webactiv.util.node.model.NodePK
+   * @see com.stratelia.webactiv.node.model.NodePK
    * @since 1.0
    */
   public NodePK getNodePK() {
@@ -113,7 +113,7 @@ public class TopicDetail extends Object implements java.io.Serializable {
    * Get the detail of this topic
    * 
    * @return the detail of this topic
-   * @see com.stratelia.webactiv.util.node.model.NodeDetail
+   * @see com.stratelia.webactiv.node.model.NodeDetail
    * @since 1.0
    */
   public NodeDetail getNodeDetail() {
@@ -125,7 +125,7 @@ public class TopicDetail extends Object implements java.io.Serializable {
    * 
    * @return a ContactDetail collection containing all the contacts in this
    *         topic
-   * @see com.stratelia.webactiv.util.contact.model.ContactDetail
+   * @see com.stratelia.webactiv.contact.model.ContactDetail
    * @see java.util.Collection
    * @since 1.0
    */

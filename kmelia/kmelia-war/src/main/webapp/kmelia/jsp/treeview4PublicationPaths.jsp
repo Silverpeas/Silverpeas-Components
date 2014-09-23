@@ -27,8 +27,8 @@
 
 <%@ page import="java.util.List"%>
 <%@ page import="java.util.Iterator"%>
-<%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail"%>
-<%@ page import="com.stratelia.webactiv.util.publication.model.Alias" %>
+<%@ page import="com.stratelia.webactiv.node.model.NodeDetail"%>
+<%@ page import="com.stratelia.webactiv.publication.model.Alias" %>
 <%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
 <%@ page import="com.silverpeas.util.EncodeHelper" %>
 

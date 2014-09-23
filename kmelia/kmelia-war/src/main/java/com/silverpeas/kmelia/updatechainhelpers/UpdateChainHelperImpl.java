@@ -24,7 +24,7 @@
 
 package com.silverpeas.kmelia.updatechainhelpers;
 
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
 
 public class UpdateChainHelperImpl implements UpdateChainHelper {
 

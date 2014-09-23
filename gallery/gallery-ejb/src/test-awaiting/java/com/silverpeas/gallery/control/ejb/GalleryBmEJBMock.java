@@ -26,7 +26,7 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
-import com.stratelia.webactiv.util.node.control.NodeBm;
+import com.stratelia.webactiv.node.control.NodeBm;
 
 public class GalleryBmEJBMock extends GalleryBmEJB {
 

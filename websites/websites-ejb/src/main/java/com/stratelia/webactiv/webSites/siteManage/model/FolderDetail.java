@@ -24,9 +24,9 @@
 
 package com.stratelia.webactiv.webSites.siteManage.model;
 
-import com.stratelia.webactiv.util.node.model.NodeDetail;
-import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.stratelia.webactiv.node.model.NodeDetail;
+import com.stratelia.webactiv.node.model.NodePK;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
 
 import java.util.Collection;
 

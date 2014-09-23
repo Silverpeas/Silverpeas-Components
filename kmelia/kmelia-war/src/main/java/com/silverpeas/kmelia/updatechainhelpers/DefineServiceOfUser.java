@@ -28,8 +28,8 @@ import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.stratelia.webactiv.node.model.NodeDetail;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

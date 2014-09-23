@@ -30,7 +30,7 @@ import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.model.AlbumDetail;
 import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.MediaPK;
-import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.node.model.NodePK;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 

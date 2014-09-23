@@ -24,7 +24,7 @@
 package com.stratelia.webactiv.yellowpages.model;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.contact.model.CompleteContact;
+import com.stratelia.webactiv.contact.model.CompleteContact;
 
 /**
  * This object contains elements which are displayed in a yellowpages Topic
@@ -84,7 +84,7 @@ public class UserCompleteContact extends Object implements java.io.Serializable 
    * Get the Topic nodePK
    * 
    * @return the Topic nodePK
-   * @see com.stratelia.webactiv.util.node.model.NodePK
+   * @see com.stratelia.webactiv.node.model.NodePK
    * @since 1.0
    */
   public CompleteContact getContact() {

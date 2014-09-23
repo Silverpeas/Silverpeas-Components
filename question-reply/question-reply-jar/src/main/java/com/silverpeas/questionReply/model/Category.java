@@ -24,7 +24,7 @@
 
 package com.silverpeas.questionReply.model;
 
-import com.stratelia.webactiv.util.node.model.NodeDetail;
+import com.stratelia.webactiv.node.model.NodeDetail;
 
 public class Category extends NodeDetail {
   private static final long serialVersionUID = -4256474981844347672L;

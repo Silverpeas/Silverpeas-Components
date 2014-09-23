@@ -26,7 +26,7 @@ package com.silverpeas.gallery.constant;
 import com.silverpeas.gallery.model.AlbumDetail;
 import com.silverpeas.gallery.model.Media;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.node.model.NodePK;
 
 import org.silverpeas.media.video.ThumbnailPeriod;
 import org.silverpeas.settings.SilverpeasSettings;

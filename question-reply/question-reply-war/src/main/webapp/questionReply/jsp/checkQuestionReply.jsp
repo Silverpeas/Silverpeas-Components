@@ -81,7 +81,7 @@
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
 <%@ page import="com.stratelia.silverpeas.containerManager.*"%>
 
-<%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail"%>
+<%@ page import="com.stratelia.webactiv.node.model.NodeDetail"%>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%

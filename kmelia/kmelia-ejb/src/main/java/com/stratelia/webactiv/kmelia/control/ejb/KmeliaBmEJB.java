@@ -95,22 +95,22 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.annotation.Action;
 import com.stratelia.webactiv.util.annotation.SourcePK;
 import com.stratelia.webactiv.util.annotation.TargetPK;
-import com.stratelia.webactiv.util.coordinates.control.CoordinatesBm;
-import com.stratelia.webactiv.util.coordinates.model.Coordinate;
-import com.stratelia.webactiv.util.coordinates.model.CoordinatePK;
-import com.stratelia.webactiv.util.coordinates.model.CoordinatePoint;
-import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
-import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.model.Alias;
-import com.stratelia.webactiv.util.publication.model.CompletePublication;
-import com.stratelia.webactiv.util.publication.model.NodeTree;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import com.stratelia.webactiv.util.publication.model.ValidationStep;
-import com.stratelia.webactiv.util.statistic.control.StatisticBm;
-import com.stratelia.webactiv.util.statistic.model.HistoryObjectDetail;
+import com.stratelia.webactiv.coordinates.control.CoordinatesBm;
+import com.stratelia.webactiv.coordinates.model.Coordinate;
+import com.stratelia.webactiv.coordinates.model.CoordinatePK;
+import com.stratelia.webactiv.coordinates.model.CoordinatePoint;
+import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.model.NodeDetail;
+import com.stratelia.webactiv.node.model.NodePK;
+import com.stratelia.webactiv.publication.control.PublicationBm;
+import com.stratelia.webactiv.publication.model.Alias;
+import com.stratelia.webactiv.publication.model.CompletePublication;
+import com.stratelia.webactiv.publication.model.NodeTree;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationPK;
+import com.stratelia.webactiv.publication.model.ValidationStep;
+import com.stratelia.webactiv.statistic.control.StatisticBm;
+import com.stratelia.webactiv.statistic.model.HistoryObjectDetail;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.attachment.AttachmentException;
 import org.silverpeas.attachment.AttachmentServiceFactory;
@@ -390,8 +390,8 @@ public class KmeliaBmEJB implements KmeliaBm {
    * @param subTopic the NodeDetail of the new sub topic
    * @return If a subtopic of same name already exists a NodePK with id=-1 is returned else the new
    * topic NodePK
-   * @see com.stratelia.webactiv.util.node.model.NodeDetail
-   * @see com.stratelia.webactiv.util.node.model.NodePK
+   * @see com.stratelia.webactiv.node.model.NodeDetail
+   * @see com.stratelia.webactiv.node.model.NodePK
    */
   @Override
   public NodePK addToTopic(NodePK fatherPK, NodeDetail subTopic) {
@@ -445,7 +445,7 @@ public class KmeliaBmEJB implements KmeliaBm {
    * @param nodePK the NodePK of the new sub topic
    * @param fatherPK the NodePK of the parent topic
    * @param alertType alertType = "All"|"Publisher"|"None"
-   * @see com.stratelia.webactiv.util.node.model.NodePK
+   * @see com.stratelia.webactiv.node.model.NodePK
    * @since 1.0
    */
   private void topicCreationAlert(final NodePK nodePK, final NodePK fatherPK, final String alertType) {
@@ -469,8 +469,8 @@ public class KmeliaBmEJB implements KmeliaBm {
    * "All"|"Publisher"|"None"
    * @return If a subtopic of same name already exists a NodePK with id=-1 is returned else the new
    * topic NodePK
-   * @see com.stratelia.webactiv.util.node.model.NodeDetail
-   * @see com.stratelia.webactiv.util.node.model.NodePK
+   * @see com.stratelia.webactiv.node.model.NodeDetail
+   * @see com.stratelia.webactiv.node.model.NodePK
    * @since 1.0
    */
   @Override
@@ -996,7 +996,7 @@ public class KmeliaBmEJB implements KmeliaBm {
    * @param userId
    * @param componentId
    * @return a Path Collection - it's a Collection of NodeDetail collection
-   * @see com.stratelia.webactiv.util.node.model.NodeDetail
+   * @see com.stratelia.webactiv.node.model.NodeDetail
    * @since 1.0
    */
   @Override
@@ -1108,7 +1108,7 @@ public class KmeliaBmEJB implements KmeliaBm {
    *
    * @param pubPK the id of the publication
    * @return a PublicationDetail
-   * @see com.stratelia.webactiv.util.publication.model.PublicationDetail
+   * @see com.stratelia.webactiv.publication.model.PublicationDetail
    * @since 1.0
    */
   @Override
@@ -1128,7 +1128,7 @@ public class KmeliaBmEJB implements KmeliaBm {
    *
    * @param pubPK the id of the publication
    * @return a Collection of NodeDetail collection
-   * @see com.stratelia.webactiv.util.node.model.NodeDetail
+   * @see com.stratelia.webactiv.node.model.NodeDetail
    * @since 1.0
    */
   @Override
@@ -1165,7 +1165,7 @@ public class KmeliaBmEJB implements KmeliaBm {
    *
    * @param pubDetail a PublicationDetail
    * @return the id of the new publication
-   * @see com.stratelia.webactiv.util.publication.model.PublicationDetail
+   * @see com.stratelia.webactiv.publication.model.PublicationDetail
    * @since 1.0
    */
   @Override
@@ -1352,7 +1352,7 @@ public class KmeliaBmEJB implements KmeliaBm {
    * Update a publication (only the header - parameters)
    *
    * @param pubDetail a PublicationDetail
-   * @see com.stratelia.webactiv.util.publication.model.PublicationDetail
+   * @see com.stratelia.webactiv.publication.model.PublicationDetail
    * @since 1.0
    */
   @Override
@@ -2428,7 +2428,7 @@ public class KmeliaBmEJB implements KmeliaBm {
   }
 
   /* (non-Javadoc)
-   * @see com.stratelia.webactiv.kmelia.control.ejb.KmeliaBmBusinessSkeleton#validatePublication(com.stratelia.webactiv.util.publication.model.PublicationPK, java.lang.String, boolean)
+   * @see com.stratelia.webactiv.kmelia.control.ejb.KmeliaBmBusinessSkeleton#validatePublication(com.stratelia.webactiv.publication.model.PublicationPK, java.lang.String, boolean)
    */
   @Override
   public boolean validatePublication(PublicationPK pubPK, String userId, boolean force) {
@@ -3483,7 +3483,7 @@ public class KmeliaBmEJB implements KmeliaBm {
   @Override
   public List<NodeDetail> getAxis(String componentId) {
     ResourceLocator nodeSettings = new ResourceLocator(
-        "com.stratelia.webactiv.util.node.nodeSettings", "");
+        "com.stratelia.webactiv.node.nodeSettings", "");
     String sortField = nodeSettings.getString("sortField", "nodepath");
     String sortOrder = nodeSettings.getString("sortOrder", "asc");
     SilverTrace.info("kmax", "KmeliaBmEjb.getAxis()",
@@ -3996,7 +3996,7 @@ public class KmeliaBmEJB implements KmeliaBm {
    *
    * @param pubDetail a PublicationDetail
    * @return the id of the new publication
-   * @see com.stratelia.webactiv.util.publication.model.PublicationDetail
+   * @see com.stratelia.webactiv.publication.model.PublicationDetail
    * @since 1.0
    */
   @Override
@@ -4241,7 +4241,7 @@ public class KmeliaBmEJB implements KmeliaBm {
       PublicationDetail clone = getClone(refPub);
 
       ResourceLocator publicationSettings = new ResourceLocator(
-          "org.silverpeas.util.publication.publicationSettings", "");
+          "org.silverpeas.publication.publicationSettings", "");
       String absolutePath = FileRepositoryManager.getAbsolutePath(fromComponentId);
 
       if (pubDetail != null) {

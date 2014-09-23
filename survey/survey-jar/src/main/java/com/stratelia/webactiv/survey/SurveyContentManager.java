@@ -32,9 +32,9 @@ import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.questionContainer.control.QuestionContainerBm;
-import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerHeader;
-import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerPK;
+import com.stratelia.webactiv.questionContainer.control.QuestionContainerBm;
+import com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader;
+import com.stratelia.webactiv.questionContainer.model.QuestionContainerPK;
 
 /**
  * The survey implementation of ContentInterface

@@ -26,7 +26,7 @@ package com.stratelia.webactiv.kmelia.model;
 
 import java.util.List;
 
-import com.stratelia.webactiv.util.node.model.NodeDetail;
+import com.stratelia.webactiv.node.model.NodeDetail;
 
 public class Treeview {
 

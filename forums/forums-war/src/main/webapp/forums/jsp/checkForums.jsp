@@ -43,7 +43,7 @@
 <%@ page import="com.stratelia.webactiv.util.DBUtil"%>
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
-<%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail"%>
+<%@ page import="com.stratelia.webactiv.node.model.NodeDetail"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.board.Board"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar"%>

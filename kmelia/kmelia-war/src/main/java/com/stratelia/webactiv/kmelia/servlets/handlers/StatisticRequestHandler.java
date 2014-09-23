@@ -47,7 +47,7 @@ import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.node.model.NodePK;
 /**
  * This class aims to manage Kmelia statistic request.
  */

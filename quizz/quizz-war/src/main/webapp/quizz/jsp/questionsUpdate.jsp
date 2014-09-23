@@ -31,7 +31,7 @@ response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
-<jsp:useBean id="quizzUnderConstruction" scope="session" class="com.stratelia.webactiv.util.questionContainer.model.QuestionContainerDetail" />
+<jsp:useBean id="quizzUnderConstruction" scope="session" class="com.stratelia.webactiv.questionContainer.model.QuestionContainerDetail" />
 <jsp:useBean id="questionsVector" scope="session" class="java.util.ArrayList" />
 <jsp:useBean id="questionsResponses" scope="session" class="java.util.HashMap" />
 <jsp:useBean id="currentQuizzId" scope="session" class="java.lang.String" />

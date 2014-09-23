@@ -34,8 +34,8 @@ import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import com.stratelia.webactiv.node.model.NodePK;
+import com.stratelia.webactiv.publication.model.PublicationPK;
 
 /**
  * @author neysseri

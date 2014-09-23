@@ -29,7 +29,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.kmelia.KmeliaTransversal;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;

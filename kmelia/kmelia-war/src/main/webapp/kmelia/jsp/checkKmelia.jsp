@@ -73,13 +73,13 @@
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.icons.Icon"%>
 
 <%@ page import="com.stratelia.webactiv.util.exception.*"%>
-<%@ page import="com.stratelia.webactiv.util.publication.model.PublicationDetail"%>
-<%@ page import="com.stratelia.webactiv.util.publication.model.PublicationPK"%>
-<%@ page import="com.stratelia.webactiv.util.publication.model.CompletePublication"%>
-<%@ page import="com.stratelia.webactiv.util.publication.model.ValidationStep"%>
-<%@ page import="com.stratelia.webactiv.util.node.model.NodePK"%>
-<%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail"%>
-<%@ page import="com.stratelia.webactiv.util.node.model.NodeI18NDetail"%>
+<%@ page import="com.stratelia.webactiv.publication.model.PublicationDetail"%>
+<%@ page import="com.stratelia.webactiv.publication.model.PublicationPK"%>
+<%@ page import="com.stratelia.webactiv.publication.model.CompletePublication"%>
+<%@ page import="com.stratelia.webactiv.publication.model.ValidationStep"%>
+<%@ page import="com.stratelia.webactiv.node.model.NodePK"%>
+<%@ page import="com.stratelia.webactiv.node.model.NodeDetail"%>
+<%@ page import="com.stratelia.webactiv.node.model.NodeI18NDetail"%>
 
 
 <%@ page import="org.silverpeas.search.searchEngine.model.* "%>
@@ -103,7 +103,7 @@
 <%@ page import="com.silverpeas.util.EncodeHelper"%>
 <%@ page import="com.silverpeas.util.i18n.*"%>
 <%@ page import="com.silverpeas.publicationTemplate.PublicationTemplate"%>
-<%@ page import="com.stratelia.webactiv.util.statistic.model.HistoryByUser"%>
+<%@ page import="com.stratelia.webactiv.statistic.model.HistoryByUser"%>
 <%@page import="com.silverpeas.kmelia.KmeliaConstants"%>
 <%@ page import="com.silverpeas.form.*"%>
 <%@ page import="com.silverpeas.publicationTemplate.*"%>

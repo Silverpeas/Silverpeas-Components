@@ -61,7 +61,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
+import com.stratelia.webactiv.node.model.NodeDetail;
 
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.search.indexEngine.model.FieldDescription;

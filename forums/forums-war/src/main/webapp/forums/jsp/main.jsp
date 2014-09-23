@@ -48,7 +48,7 @@
 <%@ page import="com.stratelia.webactiv.forums.control.helpers.ForumListHelper"%>
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
-<%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail" %>
+<%@ page import="com.stratelia.webactiv.node.model.NodeDetail" %>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%
 ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(

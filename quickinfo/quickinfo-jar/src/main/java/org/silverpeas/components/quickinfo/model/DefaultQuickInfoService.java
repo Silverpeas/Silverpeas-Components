@@ -75,10 +75,10 @@ import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import com.stratelia.webactiv.util.statistic.control.StatisticBm;
+import com.stratelia.webactiv.publication.control.PublicationBm;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationPK;
+import com.stratelia.webactiv.statistic.control.StatisticBm;
 
 @Service
 public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComponentService<News> {

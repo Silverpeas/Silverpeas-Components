@@ -37,7 +37,7 @@
               description="The album path." %>
 <c:if test="${albumPath != null}">
   <jsp:useBean id="albumPath"
-               type="java.util.List<com.stratelia.webactiv.util.node.model.NodeDetail>"
+               type="java.util.List<com.stratelia.webactiv.node.model.NodeDetail>"
                scope="page"/>
 </c:if>
 

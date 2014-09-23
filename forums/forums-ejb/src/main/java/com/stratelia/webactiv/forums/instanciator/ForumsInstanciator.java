@@ -33,7 +33,7 @@ import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsBM;
 import com.stratelia.webactiv.forums.models.Forum;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
+import com.stratelia.webactiv.node.model.NodeDetail;
 import org.silverpeas.attachment.SimpleDocumentInstanciator;
 
 import javax.ejb.EJBException;

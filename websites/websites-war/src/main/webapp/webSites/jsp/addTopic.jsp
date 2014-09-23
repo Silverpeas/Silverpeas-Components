@@ -43,8 +43,8 @@
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.board.Board"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPane"%>
-<%@ page import="com.stratelia.webactiv.util.node.model.NodePK"%>
-<%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail"%>
+<%@ page import="com.stratelia.webactiv.node.model.NodePK"%>
+<%@ page import="com.stratelia.webactiv.node.model.NodeDetail"%>
 
 <%@ page import="com.stratelia.webactiv.util.exception.*"%>
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>

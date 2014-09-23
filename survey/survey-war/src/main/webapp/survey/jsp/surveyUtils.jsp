@@ -1,5 +1,5 @@
 <%@page import="com.silverpeas.util.StringUtil"%>
-<%@page import="com.stratelia.webactiv.util.questionContainer.model.QuestionContainerHeader"%>
+<%@page import="com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader"%>
 <%@ page import="java.text.ParseException"%>
 <%@ page import="com.stratelia.webactiv.SilverpeasRole"%>
 <%@ page import="com.stratelia.webactiv.util.FileRepositoryManager"%>
@@ -177,7 +177,7 @@ ResourcesWrapper resources, ResourceLocator settings, String profile, boolean po
 
                		if (end >= questions.size())
                		{
-						//Mode anonyme ou enquete anonyme -> force les commentaires a etre tous anonymes
+						//Mode anonyme ou enquete anonyme -> force les commentaires aï¿½etre tous anonymes
 						String anonymousCommentCheck = "";
 						String anonymousCommentDisabled = "";
 						if(surveyScc.isAnonymousModeEnabled() || surveyHeader.isAnonymous()) {
@@ -753,7 +753,7 @@ String displaySurveyResult(String choice, QuestionContainerDetail survey, Graphi
      	int participationRate = Math.round(((float)nbVoters*100)/((float)nbRegistered));
      	boolean anonymous = surveyHeader.isAnonymous();
 
-     	//Mode anonyme -> force les enquetes a etre toutes anonymes
+	//Mode anonyme -> force les enquetes aï¿½etre toutes anonymes
      	if(surveyScc.isAnonymousModeEnabled()) {
      	  anonymous = true;
      	}
@@ -1135,7 +1135,7 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
                 {
                 	rang = rang + 1;
                     Answer answer = (Answer) itA.next();
-                 	// affichage de la ligne des differentes réponses possibles
+			// affichage de la ligne des differentes rï¿½ponses possibles
                     if (answer.isOpened() &&
                         answer.getNbVoters() > 0) {
 						r += "<th> "+Encode.javaStringToHtmlString(answer.getLabel())+" <A href=\"javaScript:onClick=viewSuggestions('"+answer.getQuestionPK().getId()+"');\"><img src=\"icons/info.gif\" border=\"0\" align=\"absmiddle\" width=\"15\" height=\"15\"></a> </th>";
@@ -1275,7 +1275,7 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
                             r += "<img src=\""+url+"\" border=\"0\" width=\"60%\"/></td><td>";
                         }
                     }
-                 	// mettre en valeur cette réponse si c'est le choix de l'utilisateur
+			// mettre en valeur cette rï¿½ponse si c'est le choix de l'utilisateur
                     if (resultsByUser.contains(answer.getPK().getId())) {
 	                	r += "<img src=\""+m_context+"/util/icons/finishedTask.gif\" border=\"0\" valign=\"center\" width=\"15\" height=\"15\"/>";
                     }

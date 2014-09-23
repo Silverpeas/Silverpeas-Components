@@ -41,12 +41,11 @@ import com.silverpeas.gallery.model.AlbumDetail;
 import com.silverpeas.gallery.model.Order;
 import com.silverpeas.gallery.model.OrderRow;
 import com.silverpeas.gallery.model.Photo;
-import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.gallery.process.GalleryProcessExecutionContext;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
-import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.node.model.NodeDetail;
+import com.stratelia.webactiv.node.model.NodePK;
 
 @Local
 public interface GalleryBm {

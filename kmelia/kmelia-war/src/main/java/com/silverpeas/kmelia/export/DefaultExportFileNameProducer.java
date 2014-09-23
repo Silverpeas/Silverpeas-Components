@@ -25,7 +25,7 @@ package com.silverpeas.kmelia.export;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.silverpeas.core.admin.OrganisationController;
 
 import java.util.List;

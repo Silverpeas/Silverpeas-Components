@@ -39,7 +39,7 @@ import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
 import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
 import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane;
 

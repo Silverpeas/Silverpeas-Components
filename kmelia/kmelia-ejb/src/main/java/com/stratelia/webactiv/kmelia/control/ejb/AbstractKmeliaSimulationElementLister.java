@@ -26,8 +26,8 @@ package com.stratelia.webactiv.kmelia.control.ejb;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.WAPrimaryKey;
-import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.publication.control.PublicationBm;
+import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.publication.control.PublicationBm;
 import org.silverpeas.process.annotation.SimulationElementLister;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 

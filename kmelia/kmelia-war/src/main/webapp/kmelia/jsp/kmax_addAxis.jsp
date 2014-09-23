@@ -36,8 +36,8 @@
 <%@ page import="java.beans.*"%>
 
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
-<%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail"%>
-<%@ page import="com.stratelia.webactiv.util.node.model.NodePK"%>
+<%@ page import="com.stratelia.webactiv.node.model.NodeDetail"%>
+<%@ page import="com.stratelia.webactiv.node.model.NodePK"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>

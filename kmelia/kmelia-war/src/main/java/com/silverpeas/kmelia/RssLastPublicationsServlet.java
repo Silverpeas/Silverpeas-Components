@@ -39,7 +39,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.kmelia.KmeliaTransversal;
 import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
 import de.nava.informa.core.ChannelIF;
 import de.nava.informa.core.ItemIF;
 import de.nava.informa.exporters.RSS_2_0_Exporter;

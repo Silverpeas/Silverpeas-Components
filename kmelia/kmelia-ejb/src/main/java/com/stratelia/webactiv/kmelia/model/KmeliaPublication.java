@@ -28,7 +28,6 @@ import java.util.Date;
 import java.util.List;
 
 import com.silverpeas.SilverpeasContent;
-import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
@@ -46,12 +45,11 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.publication.model.CompletePublication;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import com.stratelia.webactiv.util.statistic.control.StatisticBm;
-import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
+import com.stratelia.webactiv.publication.model.CompletePublication;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationPK;
+import com.stratelia.webactiv.statistic.control.StatisticBm;
+import com.stratelia.webactiv.statistic.model.StatisticRuntimeException;
 
 /**
  * A publication as defined in a Kmelia component. A publication in Kmelia can be positionned in the

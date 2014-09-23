@@ -38,13 +38,13 @@
 <%@ page import="javax.ejb.RemoveException, javax.ejb.CreateException, java.sql.SQLException, javax.naming.NamingException, java.rmi.RemoteException, javax.ejb.FinderException"%>
 
 <%@ page import="com.stratelia.webactiv.util.*"%>
-<%@ page import="com.stratelia.webactiv.util.contact.model.*"%>
-<%@ page import="com.stratelia.webactiv.util.contact.info.model.*"%>
+<%@ page import="com.stratelia.webactiv.contact.model.*"%>
+<%@ page import="com.stratelia.webactiv.contact.info.model.*"%>
 <%@ page import="com.stratelia.webactiv.util.exception.*"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
-<%@ page import="com.stratelia.webactiv.util.node.model.NodePK"%>
-<%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail"%>
+<%@ page import="com.stratelia.webactiv.node.model.NodePK"%>
+<%@ page import="com.stratelia.webactiv.node.model.NodeDetail"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.*"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.*"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.board.Board"%>

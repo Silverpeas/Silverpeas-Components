@@ -29,15 +29,15 @@ import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
 import com.stratelia.webactiv.kmelia.model.TopicDetail;
-import com.stratelia.webactiv.util.coordinates.model.Coordinate;
-import com.stratelia.webactiv.util.coordinates.model.CoordinatePK;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
-import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.publication.model.Alias;
-import com.stratelia.webactiv.util.publication.model.CompletePublication;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import com.stratelia.webactiv.util.statistic.model.HistoryObjectDetail;
+import com.stratelia.webactiv.coordinates.model.Coordinate;
+import com.stratelia.webactiv.coordinates.model.CoordinatePK;
+import com.stratelia.webactiv.node.model.NodeDetail;
+import com.stratelia.webactiv.node.model.NodePK;
+import com.stratelia.webactiv.publication.model.Alias;
+import com.stratelia.webactiv.publication.model.CompletePublication;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationPK;
+import com.stratelia.webactiv.statistic.model.HistoryObjectDetail;
 
 import java.util.Collection;
 import java.util.Date;
@@ -80,8 +80,8 @@ public interface KmeliaBm extends SilverpeasComponentService<KmeliaPublication> 
    * @param subtopic the NodeDetail of the new sub topic
    * @return If a subtopic of same name already exists a NodePK with id=-1 is returned else the new
    * topic NodePK
-   * @see com.stratelia.webactiv.util.node.model.NodeDetail
-   * @see com.stratelia.webactiv.util.node.model.NodePK
+   * @see com.stratelia.webactiv.node.model.NodeDetail
+   * @see com.stratelia.webactiv.node.model.NodePK
    * @since 1.0
    */
   public NodePK addToTopic(NodePK fatherPK, NodeDetail subtopic);
@@ -95,8 +95,8 @@ public interface KmeliaBm extends SilverpeasComponentService<KmeliaPublication> 
    * "All"|"Publisher"|"None"
    * @return If a subtopic of same name already exists a NodePK with id=-1 is returned else the new
    * topic NodePK
-   * @see com.stratelia.webactiv.util.node.model.NodeDetail
-   * @see com.stratelia.webactiv.util.node.model.NodePK
+   * @see com.stratelia.webactiv.node.model.NodeDetail
+   * @see com.stratelia.webactiv.node.model.NodePK
    * @since 1.0
    */
   public NodePK addSubTopic(NodePK fatherPK, NodeDetail subtopic, String alertType);
@@ -110,8 +110,8 @@ public interface KmeliaBm extends SilverpeasComponentService<KmeliaPublication> 
    * "All"|"Publisher"|"None"
    * @return If a subtopic of same name already exists a NodePK with id=-1 is returned else the new
    * topic NodePK
-   * @see com.stratelia.webactiv.util.node.model.NodeDetail
-   * @see com.stratelia.webactiv.util.node.model.NodePK
+   * @see com.stratelia.webactiv.node.model.NodeDetail
+   * @see com.stratelia.webactiv.node.model.NodePK
    * @since 1.0
    */
   public NodePK updateTopic(NodeDetail topic, String alertType);
@@ -121,7 +121,7 @@ public interface KmeliaBm extends SilverpeasComponentService<KmeliaPublication> 
    *
    * @param nodePK the id of the researched topic
    * @return the detail of the specified topic
-   * @see com.stratelia.webactiv.util.node.model.NodeDetail
+   * @see com.stratelia.webactiv.node.model.NodeDetail
    * @since 1.0
    */
   public NodeDetail getSubTopicDetail(NodePK nodePK);
@@ -159,7 +159,7 @@ public interface KmeliaBm extends SilverpeasComponentService<KmeliaPublication> 
    * Subscriptions - get the subscription list of the current user
    *
    * @return a Path Collection - it's a Collection of NodeDetail collection
-   * @see com.stratelia.webactiv.util.node.model.NodeDetail
+   * @see com.stratelia.webactiv.node.model.NodeDetail
    * @since 1.0
    */
   public Collection<Collection<NodeDetail>> getSubscriptionList(String userId, String componentId);
@@ -187,7 +187,7 @@ public interface KmeliaBm extends SilverpeasComponentService<KmeliaPublication> 
    *
    * @param pubPK the id of the publication
    * @return a PublicationDetail
-   * @see com.stratelia.webactiv.util.publication.model.PublicationDetail
+   * @see com.stratelia.webactiv.publication.model.PublicationDetail
    * @since 1.0
    */
   public PublicationDetail getPublicationDetail(PublicationPK pubPK);
@@ -203,7 +203,7 @@ public interface KmeliaBm extends SilverpeasComponentService<KmeliaPublication> 
    *
    * @param pubPK the id of the publication
    * @return a Collection of NodeDetail collection
-   * @see com.stratelia.webactiv.util.node.model.NodeDetail
+   * @see com.stratelia.webactiv.node.model.NodeDetail
    * @since 1.0
    */
   public Collection<Collection<NodeDetail>> getPathList(PublicationPK pubPK);
@@ -215,7 +215,7 @@ public interface KmeliaBm extends SilverpeasComponentService<KmeliaPublication> 
    *
    * @param pubDetail a PublicationDetail
    * @return the id of the new publication
-   * @see com.stratelia.webactiv.util.publication.model.PublicationDetail
+   * @see com.stratelia.webactiv.publication.model.PublicationDetail
    * @since 1.0
    */
   public String createPublicationIntoTopic(PublicationDetail pubDetail, NodePK fatherPK);
@@ -237,7 +237,7 @@ public interface KmeliaBm extends SilverpeasComponentService<KmeliaPublication> 
    * Update a publication (only the header - parameters)
    *
    * @param detail a PublicationDetail
-   * @see com.stratelia.webactiv.util.publication.model.PublicationDetail
+   * @see com.stratelia.webactiv.publication.model.PublicationDetail
    * @since 1.0
    */
   public void updatePublication(PublicationDetail detail);
@@ -618,7 +618,7 @@ public interface KmeliaBm extends SilverpeasComponentService<KmeliaPublication> 
    *
    * @param pubDetail a PublicationDetail
    * @return the id of the new publication
-   * @see com.stratelia.webactiv.util.publication.model.PublicationDetail
+   * @see com.stratelia.webactiv.publication.model.PublicationDetail
    * @since 1.0
    */
   public String createKmaxPublication(PublicationDetail pubDetail);

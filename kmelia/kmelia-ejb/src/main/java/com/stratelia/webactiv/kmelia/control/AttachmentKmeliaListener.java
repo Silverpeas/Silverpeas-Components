@@ -40,7 +40,7 @@ import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import com.stratelia.webactiv.publication.model.PublicationPK;
 
 import static com.silverpeas.notification.NotificationTopic.onTopic;
 import static com.silverpeas.notification.RegisteredTopics.ATTACHMENT_TOPIC;

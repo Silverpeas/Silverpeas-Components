@@ -33,7 +33,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ include file="checkQuizz.jsp" %>
 
 
-<jsp:useBean id="currentQuizz" scope="session" class="com.stratelia.webactiv.util.questionContainer.model.QuestionContainerDetail" />
+<jsp:useBean id="currentQuizz" scope="session" class="com.stratelia.webactiv.questionContainer.model.QuestionContainerDetail" />
 
 <%
 String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");

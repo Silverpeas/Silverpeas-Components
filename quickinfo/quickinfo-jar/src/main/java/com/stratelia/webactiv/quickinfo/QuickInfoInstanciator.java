@@ -33,7 +33,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.publication.PublicationInstanciator;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.statistic.control.StatisticBm;
+import com.stratelia.webactiv.statistic.control.StatisticBm;
 
 public class QuickInfoInstanciator extends Object implements ComponentsInstanciatorIntf {
 

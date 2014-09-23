@@ -32,7 +32,7 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerDetail;
+import com.stratelia.webactiv.questionContainer.model.QuestionContainerDetail;
 
 /**
  * The centralization of the construction of the survey notifications

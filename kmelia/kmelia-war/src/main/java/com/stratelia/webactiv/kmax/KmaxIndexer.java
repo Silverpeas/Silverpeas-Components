@@ -28,7 +28,7 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 
 public class KmaxIndexer implements ComponentIndexerInterface {

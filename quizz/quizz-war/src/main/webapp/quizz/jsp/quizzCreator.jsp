@@ -26,7 +26,7 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<jsp:useBean id="quizzUnderConstruction" scope="session" class="com.stratelia.webactiv.util.questionContainer.model.QuestionContainerDetail" />
+<jsp:useBean id="quizzUnderConstruction" scope="session" class="com.stratelia.webactiv.questionContainer.model.QuestionContainerDetail" />
 
 <%@ include file="checkQuizz.jsp" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>

@@ -30,17 +30,17 @@ import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.contact.control.ContactBm;
-import com.stratelia.webactiv.util.contact.model.CompleteContact;
-import com.stratelia.webactiv.util.contact.model.ContactDetail;
-import com.stratelia.webactiv.util.contact.model.ContactFatherDetail;
-import com.stratelia.webactiv.util.contact.model.ContactPK;
+import com.stratelia.webactiv.contact.control.ContactBm;
+import com.stratelia.webactiv.contact.model.CompleteContact;
+import com.stratelia.webactiv.contact.model.ContactDetail;
+import com.stratelia.webactiv.contact.model.ContactFatherDetail;
+import com.stratelia.webactiv.contact.model.ContactPK;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
-import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
-import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.model.NodeDetail;
+import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.yellowpages.dao.GroupDAO;
 import com.stratelia.webactiv.yellowpages.model.TopicDetail;
 import com.stratelia.webactiv.yellowpages.model.UserCompleteContact;
@@ -255,8 +255,8 @@ public class YellowpagesBmEJB implements YellowpagesBm {
    * @param subTopic the NodeDetail of the new sub topic
    * @return If a subtopic of same name already exists a NodePK with id=-1 is returned else the new
    * topic NodePK
-   * @see com.stratelia.webactiv.util.node.model.NodeDetail
-   * @see com.stratelia.webactiv.util.node.model.NodePK
+   * @see com.stratelia.webactiv.node.model.NodeDetail
+   * @see com.stratelia.webactiv.node.model.NodePK
    * @since 1.0
    */
   @Override
@@ -280,7 +280,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
    *
    * @param subTopic the NodeDetail of the new sub topic
    * @return true if a subtopic of same name already exists under the currentTopic else false
-   * @see com.stratelia.webactiv.util.node.model.NodeDetail
+   * @see com.stratelia.webactiv.node.model.NodeDetail
    * @since 1.0
    */
   private boolean isSameTopicSameLevelOnCreation(NodeDetail subTopic) {
@@ -297,7 +297,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
    *
    * @param subTopic the NodeDetail of the new sub topic
    * @return true if a subtopic of same name already exists under the currentTopic else false
-   * @see com.stratelia.webactiv.util.node.model.NodeDetail
+   * @see com.stratelia.webactiv.node.model.NodeDetail
    * @since 1.0
    */
   private boolean isSameTopicSameLevelOnUpdate(NodeDetail subTopic) {
@@ -318,8 +318,8 @@ public class YellowpagesBmEJB implements YellowpagesBm {
    * "All"|"Publisher"|"None"
    * @return If a subtopic of same name already exists a NodePK with id=-1 is returned else the new
    * topic NodePK
-   * @see com.stratelia.webactiv.util.node.model.NodeDetail
-   * @see com.stratelia.webactiv.util.node.model.NodePK
+   * @see com.stratelia.webactiv.node.model.NodeDetail
+   * @see com.stratelia.webactiv.node.model.NodePK
    * @since 1.0
    */
   @Override
@@ -420,7 +420,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
    *
    * @param contactId the id of the contact
    * @return a ContactDetail
-   * @see com.stratelia.webactiv.util.contact.model.ContactDetail
+   * @see com.stratelia.webactiv.contact.model.ContactDetail
    * @since 1.0
    */
   @Override
@@ -563,7 +563,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
    *
    * @param ContactId the id of the contact
    * @return a Collection of NodeDetail collection
-   * @see com.stratelia.webactiv.util.node.model.NodeDetail
+   * @see com.stratelia.webactiv.node.model.NodeDetail
    * @since 1.0
    */
   @Override
@@ -601,7 +601,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
    *
    * @param contactDetail a ContactDetail
    * @return the id of the new contact
-   * @see com.stratelia.webactiv.util.contact.model.ContactDetail
+   * @see com.stratelia.webactiv.contact.model.ContactDetail
    * @since 1.0
    */
   @Override
@@ -633,7 +633,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
    * Update a contact (only the header - parameters)
    *
    * @param contactDetail a ContactDetail
-   * @see com.stratelia.webactiv.util.contact.model.ContactDetail
+   * @see com.stratelia.webactiv.contact.model.ContactDetail
    * @since 1.0
    */
   @Override
@@ -825,7 +825,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
    * @param ContactId the id of a contact
    * @param nodeId the id of the node
    * @return a CompleteContact
-   * @see com.stratelia.webactiv.util.contact.model.CompleteContact
+   * @see com.stratelia.webactiv.contact.model.CompleteContact
    */
   @Override
   public UserCompleteContact getCompleteContactInNode(ContactPK contactPK, String nodeId) {
@@ -872,7 +872,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
    *
    * @param contactIds a collection of contact ids
    * @return a collection of ContactDetail
-   * @see com.stratelia.webactiv.util.contact.model.ContactDetail
+   * @see com.stratelia.webactiv.contact.model.ContactDetail
    * @since 1.0
    */
   @Override

@@ -49,9 +49,9 @@ import com.stratelia.webactiv.kmelia.model.TopicDetail;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import com.stratelia.webactiv.node.model.NodePK;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import com.stratelia.webactiv.util.viewGenerator.html.ImageTag;
 import com.stratelia.webactiv.util.viewGenerator.html.UserNameGenerator;
@@ -82,7 +82,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import static com.stratelia.webactiv.SilverpeasRole.*;
-import static com.stratelia.webactiv.util.publication.model.PublicationDetail.*;
+import static com.stratelia.webactiv.publication.model.PublicationDetail.*;
 
 /**
  * @author ehugonnet
@@ -287,7 +287,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
     String publicationSrc = resources.getIcon("kmelia.publication");
     ResourceLocator publicationSettings = new ResourceLocator(
-        "org.silverpeas.util.publication.publicationSettings", kmeliaScc.getLanguage());
+        "org.silverpeas.publication.publicationSettings", kmeliaScc.getLanguage());
     boolean showNoPublisMessage = resources.getSetting("showNoPublisMessage", true);
 
     String language = kmeliaScc.getCurrentLanguage();

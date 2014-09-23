@@ -31,9 +31,9 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.questionContainer.control.QuestionContainerBm;
-import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerHeader;
-import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerPK;
+import com.stratelia.webactiv.questionContainer.control.QuestionContainerBm;
+import com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader;
+import com.stratelia.webactiv.questionContainer.model.QuestionContainerPK;
 
 public class GoToQuizz extends GoTo {
 

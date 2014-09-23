@@ -32,7 +32,7 @@ import java.util.Date;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
 
 public final class PostDetail implements SilverpeasContent {
 

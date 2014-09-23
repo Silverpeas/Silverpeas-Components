@@ -25,11 +25,11 @@ import java.util.List;
 
 import javax.ejb.Local;
 
-import com.stratelia.webactiv.util.contact.model.ContactDetail;
-import com.stratelia.webactiv.util.contact.model.ContactFatherDetail;
-import com.stratelia.webactiv.util.contact.model.ContactPK;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
-import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.contact.model.ContactDetail;
+import com.stratelia.webactiv.contact.model.ContactFatherDetail;
+import com.stratelia.webactiv.contact.model.ContactPK;
+import com.stratelia.webactiv.node.model.NodeDetail;
+import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.yellowpages.model.TopicDetail;
 import com.stratelia.webactiv.yellowpages.model.UserCompleteContact;
 import com.stratelia.webactiv.yellowpages.model.UserContact;
@@ -57,8 +57,8 @@ public interface YellowpagesBm {
    * @param subTopic the NodeDetail of the new sub topic
    * @return If a subtopic of same name already exists a NodePK with id=-1 is returned else the new
    * topic NodePK
-   * @see com.stratelia.webactiv.util.node.model.NodeDetail
-   * @see com.stratelia.webactiv.util.node.model.NodePK
+   * @see com.stratelia.webactiv.node.model.NodeDetail
+   * @see com.stratelia.webactiv.node.model.NodePK
    * @since 1.0
    */
   public NodePK addToTopic(NodeDetail father, NodeDetail subtopic);
@@ -72,8 +72,8 @@ public interface YellowpagesBm {
    * "All"|"Publisher"|"None"
    * @return If a subtopic of same name already exists a NodePK with id=-1 is returned else the new
    * topic NodePK
-   * @see com.stratelia.webactiv.util.node.model.NodeDetail
-   * @see com.stratelia.webactiv.util.node.model.NodePK
+   * @see com.stratelia.webactiv.node.model.NodeDetail
+   * @see com.stratelia.webactiv.node.model.NodePK
    * @since 1.0
    */
   public NodePK updateTopic(NodeDetail topic);
@@ -83,7 +83,7 @@ public interface YellowpagesBm {
    *
    * @param subTopicId the id of the researched topic
    * @return the detail of the specified topic
-   * @see com.stratelia.webactiv.util.node.model.NodeDetail
+   * @see com.stratelia.webactiv.node.model.NodeDetail
    * @since 1.0
    */
   public NodeDetail getSubTopicDetail(NodePK pk);
@@ -105,7 +105,7 @@ public interface YellowpagesBm {
    *
    * @param pubId the id of the contact
    * @return a ContactDetail
-   * @see com.stratelia.webactiv.util.contact.model.ContactDetail
+   * @see com.stratelia.webactiv.contact.model.ContactDetail
    * @since 1.0
    */
   public ContactDetail getContactDetail(ContactPK pk);
@@ -115,7 +115,7 @@ public interface YellowpagesBm {
    *
    * @param pubId the id of the contact
    * @return a Collection of NodeDetail collection
-   * @see com.stratelia.webactiv.util.node.model.NodeDetail
+   * @see com.stratelia.webactiv.node.model.NodeDetail
    * @since 1.0
    */
   public List<Collection<NodeDetail>> getPathList(ContactPK contactPK);
@@ -125,7 +125,7 @@ public interface YellowpagesBm {
    *
    * @param pubDetail a ContactDetail
    * @return the id of the new contact
-   * @see com.stratelia.webactiv.util.contact.model.ContactDetail
+   * @see com.stratelia.webactiv.contact.model.ContactDetail
    * @since 1.0
    */
   public String createContact(ContactDetail contactDetail, NodePK nodePK);
@@ -134,7 +134,7 @@ public interface YellowpagesBm {
    * Update a contact (only the header - parameters)
    *
    * @param pubDetail a ContactDetail
-   * @see com.stratelia.webactiv.util.contact.model.ContactDetail
+   * @see com.stratelia.webactiv.contact.model.ContactDetail
    * @since 1.0
    */
   public void updateContact(ContactDetail detail);
@@ -183,7 +183,7 @@ public interface YellowpagesBm {
    * @param ContactId the id of a contact
    * @param nodeId the id of the node
    * @return a CompleteContact
-   * @see com.stratelia.webactiv.util.contact.model.CompleteContact
+   * @see com.stratelia.webactiv.contact.model.CompleteContact
    */
   public UserCompleteContact getCompleteContactInNode(ContactPK contactPK, String nodeId);
 
@@ -192,7 +192,7 @@ public interface YellowpagesBm {
    *
    * @param contactIds a collection of contact ids
    * @return a collection of ContactDetail
-   * @see com.stratelia.webactiv.util.contact.model.ContactDetail
+   * @see com.stratelia.webactiv.contact.model.ContactDetail
    * @since 1.0
    */
   public Collection<UserContact> getContacts(Collection<String> contactIds, String instanceId);

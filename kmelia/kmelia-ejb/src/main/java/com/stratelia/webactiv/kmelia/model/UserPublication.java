@@ -25,7 +25,7 @@
 package com.stratelia.webactiv.kmelia.model;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
 
 /**
  * This object contains elements which are displayed in a kmelia Topic
@@ -80,7 +80,7 @@ public class UserPublication extends Object implements java.io.Serializable {
   /**
    * Get the Topic nodePK
    * @return the Topic nodePK
-   * @see com.stratelia.webactiv.util.node.model.NodePK
+   * @see com.stratelia.webactiv.node.model.NodePK
    * @since 1.0
    */
   public PublicationDetail getPublication() {

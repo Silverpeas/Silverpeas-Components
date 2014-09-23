@@ -64,11 +64,11 @@
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.util.*"%>
-<%@ page import="com.stratelia.webactiv.util.score.model.ScoreDetail"%>
-<%@ page import="com.stratelia.webactiv.util.question.model.Question"%>
-<%@ page import="com.stratelia.webactiv.util.questionContainer.model.QuestionContainerHeader"%>
-<%@ page import="com.stratelia.webactiv.util.questionContainer.model.QuestionContainerDetail"%>
-<%@ page import="com.stratelia.webactiv.util.questionResult.model.QuestionResult"%>
+<%@ page import="com.stratelia.webactiv.score.model.ScoreDetail"%>
+<%@ page import="com.stratelia.webactiv.question.model.Question"%>
+<%@ page import="com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader"%>
+<%@ page import="com.stratelia.webactiv.questionContainer.model.QuestionContainerDetail"%>
+<%@ page import="com.stratelia.webactiv.questionResult.model.QuestionResult"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.*"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar"%>
@@ -82,11 +82,11 @@
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.tabs.*"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
 <%@ page import="com.stratelia.webactiv.util.FileRepositoryManager"%>
-<%@ page import="com.stratelia.webactiv.util.questionContainer.model.*"%>
-<%@ page import="com.stratelia.webactiv.util.questionContainer.control.*"%>
-<%@ page import="com.stratelia.webactiv.util.answer.model.Answer"%>
-<%@ page import="com.stratelia.webactiv.util.score.model.*"%>
-<%@ page import="com.stratelia.webactiv.util.score.control.*"%>
+<%@ page import="com.stratelia.webactiv.questionContainer.model.*"%>
+<%@ page import="com.stratelia.webactiv.questionContainer.control.*"%>
+<%@ page import="com.stratelia.webactiv.answer.model.Answer"%>
+<%@ page import="com.stratelia.webactiv.score.model.*"%>
+<%@ page import="com.stratelia.webactiv.score.control.*"%>
 
 <%@ page import="org.apache.commons.fileupload.FileItem"%>
 

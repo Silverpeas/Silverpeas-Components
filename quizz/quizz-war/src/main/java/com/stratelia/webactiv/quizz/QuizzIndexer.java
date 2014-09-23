@@ -30,7 +30,7 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
 import com.stratelia.webactiv.quizz.control.QuizzSessionController;
-import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerHeader;
+import com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader;
 
 public class QuizzIndexer implements ComponentIndexerInterface {
 

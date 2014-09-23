@@ -34,7 +34,7 @@ import com.stratelia.webactiv.forums.control.helpers.ForumHelper;
 import com.stratelia.webactiv.forums.models.Forum;
 import com.stratelia.webactiv.forums.models.Message;
 import com.stratelia.webactiv.forums.url.ActionUrl;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
+import com.stratelia.webactiv.node.model.NodeDetail;
 import org.silverpeas.rating.web.RaterRatingEntity;
 import org.silverpeas.servlet.HttpRequest;
 

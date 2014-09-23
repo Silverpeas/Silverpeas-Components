@@ -33,7 +33,7 @@ import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.MediaPK;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.node.model.NodePK;
 import com.sun.jersey.api.view.Viewable;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.httpclient.HttpClient;

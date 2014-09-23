@@ -29,7 +29,7 @@ import com.silverpeas.annotation.Service;
 import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.StreamingProvider;
 import com.silverpeas.gallery.model.AlbumDetail;
-import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.node.model.NodePK;
 import com.sun.jersey.api.view.Viewable;
 
 import javax.ws.rs.GET;

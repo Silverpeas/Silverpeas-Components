@@ -53,7 +53,7 @@
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
-<%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail"%>
+<%@ page import="com.stratelia.webactiv.node.model.NodeDetail"%>
 
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayPane"%>
@@ -70,7 +70,6 @@
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.board.Board"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory "%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.navigationList.Link"%>
 
@@ -79,7 +78,6 @@
 <%@ page import="com.stratelia.webactiv.webSites.siteManage.model.SiteDetail"%>
 <%@ page import="com.stratelia.webactiv.webSites.siteManage.model.IconDetail"%>
 
-<%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>

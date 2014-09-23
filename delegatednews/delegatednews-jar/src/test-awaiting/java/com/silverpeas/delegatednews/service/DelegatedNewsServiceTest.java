@@ -10,12 +10,11 @@ import static org.hamcrest.Matchers.*;
 
 import javax.sql.DataSource;
 
-import com.silverpeas.calendar.DateTime;
 import com.silverpeas.delegatednews.dao.DelegatedNewsDaoTest;
 import com.silverpeas.delegatednews.model.DelegatedNews;
 import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationPK;
 
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.database.DatabaseConnection;

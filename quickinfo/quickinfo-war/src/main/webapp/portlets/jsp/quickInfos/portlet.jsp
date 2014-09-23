@@ -34,7 +34,7 @@
 
 <%@ page import="com.silverpeas.portlets.FormNames" %>
 
-<%@ page import="com.stratelia.webactiv.util.publication.model.PublicationDetail" %>
+<%@ page import="com.stratelia.webactiv.publication.model.PublicationDetail" %>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail" %>
 
 <%@ include file="../portletImport.jsp"%>

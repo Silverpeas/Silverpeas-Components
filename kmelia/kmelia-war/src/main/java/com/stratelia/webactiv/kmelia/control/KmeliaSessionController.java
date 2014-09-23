@@ -111,24 +111,24 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAAttributeValuePair;
-import com.stratelia.webactiv.util.coordinates.model.Coordinate;
+import com.stratelia.webactiv.coordinates.model.Coordinate;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
-import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.node.model.NodeSelection;
-import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.model.Alias;
-import com.stratelia.webactiv.util.publication.model.CompletePublication;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import com.stratelia.webactiv.util.publication.model.PublicationSelection;
-import com.stratelia.webactiv.util.publication.model.ValidationStep;
-import com.stratelia.webactiv.util.statistic.control.StatisticBm;
-import com.stratelia.webactiv.util.statistic.model.HistoryObjectDetail;
-import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
+import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.model.NodeDetail;
+import com.stratelia.webactiv.node.model.NodePK;
+import com.stratelia.webactiv.node.model.NodeSelection;
+import com.stratelia.webactiv.publication.control.PublicationBm;
+import com.stratelia.webactiv.publication.model.Alias;
+import com.stratelia.webactiv.publication.model.CompletePublication;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationPK;
+import com.stratelia.webactiv.publication.model.PublicationSelection;
+import com.stratelia.webactiv.publication.model.ValidationStep;
+import com.stratelia.webactiv.statistic.control.StatisticBm;
+import com.stratelia.webactiv.statistic.model.HistoryObjectDetail;
+import com.stratelia.webactiv.statistic.model.StatisticRuntimeException;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 import java.util.ArrayList;
@@ -336,7 +336,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public ResourceLocator getPublicationSettings() {
     if (publicationSettings == null) {
       publicationSettings = new ResourceLocator(
-          "org.silverpeas.util.publication.publicationSettings", getLanguage());
+          "org.silverpeas.publication.publicationSettings", getLanguage());
     }
     return publicationSettings;
   }

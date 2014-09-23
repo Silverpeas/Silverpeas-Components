@@ -3,7 +3,7 @@ package com.silverpeas.component.kmelia;
 import com.silverpeas.admin.components.PasteDetail;
 import com.silverpeas.admin.components.PasteDetailFromToPK;
 import com.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.node.model.NodePK;
 
 import java.util.HashMap;
 

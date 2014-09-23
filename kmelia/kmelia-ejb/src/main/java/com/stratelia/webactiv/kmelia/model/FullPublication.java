@@ -26,7 +26,7 @@ package com.stratelia.webactiv.kmelia.model;
 
 import java.util.List;
 
-import com.stratelia.webactiv.util.publication.model.CompletePublication;
+import com.stratelia.webactiv.publication.model.CompletePublication;
 
 /**
  * This object contains elements which are displayed in a kmelia Topic

@@ -25,7 +25,7 @@
 --%>
 <%@page import="com.silverpeas.util.i18n.I18NHelper"%>
 <%@page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
-<%@page import="com.stratelia.webactiv.util.node.model.NodeDetail"%>
+<%@page import="com.stratelia.webactiv.node.model.NodeDetail"%>
 <%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>

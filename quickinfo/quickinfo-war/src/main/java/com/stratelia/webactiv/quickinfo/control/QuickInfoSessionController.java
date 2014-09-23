@@ -53,8 +53,8 @@ import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.statistic.control.StatisticBm;
+import com.stratelia.webactiv.publication.control.PublicationBm;
+import com.stratelia.webactiv.statistic.control.StatisticBm;
 
 /**
  * @author squere

@@ -25,9 +25,9 @@ package com.stratelia.webactiv.kmelia.control.ejb;
 
 import com.silverpeas.thumbnail.control.ThumbnailSimulationElement;
 import com.stratelia.webactiv.util.WAPrimaryKey;
-import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import com.stratelia.webactiv.node.model.NodePK;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.silverpeas.attachment.process.AttachmentSimulationElementLister;
 import org.silverpeas.process.annotation.SimulationElementLister;
 

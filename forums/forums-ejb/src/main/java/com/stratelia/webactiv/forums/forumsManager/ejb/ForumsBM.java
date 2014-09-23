@@ -34,8 +34,8 @@ import com.stratelia.webactiv.forums.models.ForumPK;
 import com.stratelia.webactiv.forums.models.Message;
 import com.stratelia.webactiv.forums.models.MessagePK;
 import com.stratelia.webactiv.forums.models.Moderator;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
-import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.node.model.NodeDetail;
+import com.stratelia.webactiv.node.model.NodePK;
 
 /**
  * Cette classe est l'interface Remote du Business Manager qui gere les forums

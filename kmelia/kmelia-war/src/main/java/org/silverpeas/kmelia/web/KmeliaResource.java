@@ -36,9 +36,9 @@ import com.silverpeas.annotation.Service;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
 import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
+import com.stratelia.webactiv.node.model.NodePK;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationRuntimeException;
 import org.silverpeas.publication.web.PublicationEntity;
 import static com.stratelia.webactiv.util.JNDINames.KMELIABM_EJBHOME;
 
