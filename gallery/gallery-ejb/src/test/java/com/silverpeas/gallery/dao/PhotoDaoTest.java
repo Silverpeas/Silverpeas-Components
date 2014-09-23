@@ -80,9 +80,9 @@ public class PhotoDaoTest extends BaseGalleryTest {
       assertThat(photos, notNullValue());
       assertThat(photos, hasSize(4));
       assertThat(photos.get(0), equalTo(socialmer1));
-      assertThat(photos.get(0).isUpdeted(), equalTo(true));
+      assertThat(photos.get(0).isUpdated(), equalTo(true));
       assertThat(photos.get(1), equalTo(socialmer2));
-      assertThat(photos.get(1).isUpdeted(), equalTo(false));
+      assertThat(photos.get(1).isUpdated(), equalTo(false));
       assertThat(photos.get(2), equalTo(socialFleur));
       assertThat(photos.get(3), equalTo(socialCiel));
     } finally {
