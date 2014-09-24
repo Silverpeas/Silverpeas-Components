@@ -153,6 +153,8 @@ function chartinit()
   mainDiv.style.height = maxHeight;
 
   centerBoxesAndLinks();
+  
+  activateUserZoom();
 }
 
 function centerBoxesAndLinks() {
@@ -237,15 +239,16 @@ function buildCellDIV(jCell)
 			
 			// Roles
 			for (var i = 0; i < jCell.roles.length; i++) {
-				var user = jCell.roles[i]['userFullName'];
-				if (user.length > 0) {
-					var roleRow = table.insertRow(-1);
-					var roleCell = roleRow.insertCell(-1);
-					roleCell.className = "cellInfos";
-					roleCell.colSpan = 2;
-					roleCell.align = "center";
-					roleCell.innerHTML = "<span class=\"role\">"+jCell.roles[i]['role'] + " : </span><a target=\"_blank\" href=\"" + jCell.commonUserURL + jCell.roles[i]['login'] + "\">" + user + "</a>";
-				}
+				  var user = jCell.roles[i]['userFullName'];
+				  if (user.length > 0) {
+				    var roleRow = table.insertRow(-1);
+				    var roleCell = roleRow.insertCell(-1);
+				    roleCell.className = "cellInfos";
+				    roleCell.colSpan = 2;
+				    roleCell.align = "center";
+				    var avatar = getAvatar(jCell.roles[i]);
+				    roleCell.innerHTML = "<span class=\"role\">"+jCell.roles[i]['role'] + " : </span>" + avatar + user;
+				  }
 			}
 
 			// Links
@@ -276,7 +279,8 @@ function buildCellDIV(jCell)
 					memberCell.className = "cellInfos";
 					memberCell.colSpan = 2;
 					memberCell.align = "center";
-					memberCell.innerHTML = "<a target=\"_blank\" href=\"" + jCell.commonUserURL + jCell.catMembers[i]['login'] + "\">" + jCell.catMembers[i]['userFullName'] + "</a>";
+var avatar = getAvatar(jCell.catMembers[i]);
+memberCell.innerHTML = "<a target=\"_blank\" href=\"" + jCell.commonUserURL + jCell.catMembers[i]['login'] + "\">" + avatar + jCell.catMembers[i]['userFullName'] + "</a>";
 				}
 			}
 
@@ -284,7 +288,8 @@ function buildCellDIV(jCell)
 				for (var i = 0; i < jCell.innerUsers.length; i++) {
 					var divMembers = document.createElement("DIV");
 					divMembers.className = "innerUser";
-					divMembers.innerHTML = "<a target=\"_blank\" href=\"" + jCell.commonUserURL + jCell.innerUsers[i]['login'] + "\">" + jCell.innerUsers[i]['userFullName'] + "</a>";
+var avatar = getAvatar(jCell.innerUsers[i]);
+divMembers.innerHTML = "<a target=\"_blank\" href=\"" + jCell.commonUserURL + jCell.innerUsers[i]['login'] + "\">" + avatar + jCell.innerUsers[i]['userFullName'] + "</a>";
 					div.appendChild(divMembers);
 
 					// DIV Content as a HTML table
@@ -338,6 +343,14 @@ function buildCellDIV(jCell)
 
 	div.style.width = CELLSIZE; // table.offsetWidth + 10; on fixe pour eviter les pbs
 	jCell.div = div;
+}
+
+function getAvatar(user) {
+  var avatar = "";
+  if (user['avatar'].length > 0) {
+    avatar = "<img src=\""+webContext+user['avatar']+"\" class=\"avatar\" alt=\"\"/>";
+  }
+  return avatar;
 }
 
 /**

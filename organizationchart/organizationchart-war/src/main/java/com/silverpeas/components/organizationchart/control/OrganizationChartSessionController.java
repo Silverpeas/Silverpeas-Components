@@ -21,11 +21,15 @@
 
 package com.silverpeas.components.organizationchart.control;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.ListUtils;
 
 import com.silverpeas.components.organizationchart.model.OrganizationalChart;
 import com.silverpeas.components.organizationchart.model.OrganizationalChartType;
@@ -44,12 +48,13 @@ import com.silverpeas.components.organizationchart.view.ChartVO;
 import com.silverpeas.components.organizationchart.view.OrganizationBox;
 import com.silverpeas.components.organizationchart.view.UserVO;
 import com.silverpeas.util.StringUtil;
-
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.viewGenerator.html.UserNameGenerator;
 
 public class OrganizationChartSessionController extends AbstractComponentSessionController {
 
@@ -78,9 +83,13 @@ public class OrganizationChartSessionController extends AbstractComponentSession
   private static final String PARAM_PERSONNSCHART_OTHERSINFOS_KEYS = "personnsChartOthersInfosKeys";
   private static final String PARAM_LDAP_ATT_ACTIF = "ldapAttActif";
   private static final String PARAM_DOMAIN_ID = "chartDomainSilverpeas";
-
+  private static final String PARAM_LABELS = "labels";
+  private static final String PARAM_AVATARS = "avatars";
+  
   private OrganizationChartConfiguration config = null;
   private OrganizationChartLDAPConfiguration ldapConfig = null;
+  
+  private List<OrganizationBox> breadcrumb = new ArrayList<OrganizationBox>();
 
   /**
    * Standard Session Controller Constructeur
@@ -126,6 +135,7 @@ public class OrganizationChartSessionController extends AbstractComponentSession
       switch (chartType) {
         case TYPE_UNITCHART:
           chartVO = buildChartUnitVO(chart);
+          processBreadcrumb(chartVO.getRootOrganization());
           break;
 
         case TYPE_PERSONNCHART:
@@ -139,14 +149,52 @@ public class OrganizationChartSessionController extends AbstractComponentSession
 
     return chartVO;
   }
+  
+  private void processBreadcrumb(OrganizationBox currentOU) {
+    try {
+      boolean inBreadcrumb = false;
+      int i = 0;
+      for (i=0; i<breadcrumb.size() && !inBreadcrumb; i++) {
+        OrganizationBox element = breadcrumb.get(i);
+        if (element.getUrl().equals(currentOU.getUrl())) {
+          inBreadcrumb = true;
+        }
+      }
+      if (!inBreadcrumb) {
+        breadcrumb.add(currentOU);
+      } else {
+        while (breadcrumb.size() > i) {
+          breadcrumb.remove(breadcrumb.size()-1);
+        }
+      }
+    } catch (UnsupportedEncodingException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
 
   private UserVO organizationalPerson2UserVO(OrganizationalPerson person, OrganizationalRole role) {
     String displayedRole = (role == null) ? "" : role.getLabel();
     String loginOrId = person.getSilverpeasAccount();
+    String avatar = null;
+    String name = person.getName();
+    UserDetail user = null; 
     if (!isLDAP()) {
       loginOrId = String.valueOf(person.getId());
+      user = UserDetail.getById(loginOrId);
+    } else {
+      user = UserDetail.getById(getUserIdFromLogin(loginOrId));
     }
-    return new UserVO(person.getName(), loginOrId, displayedRole, person.getDetail());
+    if (user != null) {
+      if (displayAvatars()) {
+        avatar = user.getSmallAvatar();
+      }
+      name = UserNameGenerator.toString(user, getUserId());
+    }
+    
+    UserVO userVO = new UserVO(name, loginOrId, displayedRole, person.getDetail());
+    userVO.setAvatar(avatar);    
+    return userVO;
   }
 
   private ChartVO buildChartUnitVO(OrganizationalChart chart) {
@@ -441,5 +489,25 @@ public class OrganizationChartSessionController extends AbstractComponentSession
     }
 
     return userId;
+  }
+  
+  private boolean displayAvatars() {
+    return getParameterValue(PARAM_AVATARS, true);
+  }
+  
+  public boolean displayLabels() {
+    return getParameterValue(PARAM_LABELS, true);
+  }
+  
+  private boolean getParameterValue(String paramName, boolean defaultValue) {
+    String value = getComponentParameterValue(paramName);
+    if (!StringUtil.isDefined(value)) {
+      return defaultValue;
+    }
+    return StringUtil.getBooleanValue(value);
+  }
+  
+  public List<OrganizationBox> getBreadcrumb() {
+    return breadcrumb;
   }
 }

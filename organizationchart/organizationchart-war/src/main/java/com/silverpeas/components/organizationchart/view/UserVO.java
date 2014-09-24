@@ -31,6 +31,7 @@ public class UserVO {
   private String login = null;
   private String role = null;
   private Map<String, String> details = null;
+  private String avatar = null;
 
   /**
    * @return the details
@@ -98,6 +99,14 @@ public class UserVO {
    */
   public void setLogin(String login) {
     this.login = login;
+  }
+
+  public void setAvatar(String avatar) {
+    this.avatar = avatar;
+  }
+
+  public String getAvatar() {
+    return avatar;
   }
 
 }

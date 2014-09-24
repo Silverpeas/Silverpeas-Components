@@ -210,5 +210,37 @@
         <message lang="en">Attribute(s) of field to display</message>
       </help>
     </parameter>
+    <parameter>
+      <name>labels</name>
+      <label>
+        <message lang="fr">Libellés</message>
+        <message lang="en">Labels</message>
+      </label>
+      <order>22</order>
+      <mandatory>false</mandatory>
+      <value>true</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Permet d'afficher/masquer le libellé des champs</message>
+        <message lang="en">Allows to display/hide label of fields</message>
+      </help>
+    </parameter>
+    <parameter>
+      <name>avatars</name>
+      <label>
+        <message lang="fr">Avatars</message>
+        <message lang="en">Avatars</message>
+      </label>
+      <order>23</order>
+      <mandatory>false</mandatory>
+      <value>true</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Permet d'afficher/masquer l'avatar de chaque personne</message>
+        <message lang="en">Allows to display/hide avatar of each people</message>
+      </help>
+    </parameter>
   </parameters>
 </WAComponent>

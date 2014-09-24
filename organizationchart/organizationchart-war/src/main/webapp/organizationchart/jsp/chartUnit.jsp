@@ -58,7 +58,7 @@ jCells[cellIndex] = new JCell( {
 	title: "${organigramme.rootOrganization.name}",
 	roles : new Array(
 		<c:forEach items="${organigramme.rootOrganization.mainActors}" var="mainActor" varStatus="mainLoopInfo">
-			{role : "${mainActor.role}", userFullName: "${mainActor.fullName}", login : "${mainActor.login}",
+			{role : "${mainActor.role}", userFullName: "${mainActor.fullName}", login : "${mainActor.login}", avatar:"${mainActor.avatar}",
 				userAttributes: new Array(
 					<c:forEach items="${mainActor.details}" var="detail" varStatus="loopInfo">
 						{label : "${detail.key}", value: "${detail.value}"} ${(not loopInfo.last) ? ',' : ''}
@@ -92,7 +92,7 @@ jCells[cellIndex] = new JCell( {
 	title: "${organigramme.rightRole.name}",
 	innerUsers : new Array(
 		<c:forEach items="${organigramme.rightRole.users}" var="user" varStatus="mainLoopInfo">
-			{userFullName: "${user.fullName}", login : "${user.login}",
+			{userFullName: "${user.fullName}", login : "${user.login}", avatar:"${user.avatar}",
 				userAttributes: new Array(
 					<c:forEach items="${user.details}" var="detail" varStatus="loopInfo">
 						{label : "${detail.key}", value: "${detail.value}"} ${(not loopInfo.last) ? ',' : ''}
@@ -119,7 +119,7 @@ jCells[cellIndex] = new JCell( {
 	title: "${organigramme.leftRole.name}",
 	innerUsers : new Array(
 		<c:forEach items="${organigramme.leftRole.users}" var="user" varStatus="mainLoopInfo">
-			{userFullName: "${user.fullName}", login : "${user.login}",
+			{userFullName: "${user.fullName}", login : "${user.login}", avatar:"${user.avatar}",
 				userAttributes: new Array(
 					<c:forEach items="${user.details}" var="detail" varStatus="loopInfo">
 						{label : "${detail.key}", value: "${detail.value}"} ${(not loopInfo.last) ? ',' : ''}
@@ -146,7 +146,7 @@ jCells[cellIndex] = new JCell( {
 	title: "${organization.name}",
 	roles : new Array(
 		<c:forEach items="${organization.mainActors}" var="mainActor" varStatus="loopInfo">
-			{role : "${mainActor.role}", userFullName: "${mainActor.fullName}", login : "${mainActor.login}"} ${(not loopInfo.last) ? ',' : ''}
+			{role : "${mainActor.role}", userFullName: "${mainActor.fullName}", login : "${mainActor.login}", avatar:"${mainActor.avatar}"} ${(not loopInfo.last) ? ',' : ''}
 		</c:forEach>
 	),
 	userAttributes : new Array(

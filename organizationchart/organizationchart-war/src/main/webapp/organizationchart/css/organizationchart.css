@@ -168,4 +168,10 @@
 }
 .gotoParent:hover {
 	background-color:#56A3D9;
-} 
+}
+
+.avatar {
+  width: 30px;
+  border: 1px solid rgb(200, 200, 200);
+  margin-right: 1em;
+}
