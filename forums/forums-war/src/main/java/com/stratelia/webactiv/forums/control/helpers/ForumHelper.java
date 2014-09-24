@@ -26,7 +26,7 @@ package com.stratelia.webactiv.forums.control.helpers;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.web.RequestHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.forums.control.ForumsSessionController;
 import com.stratelia.webactiv.forums.models.Message;

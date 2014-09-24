@@ -41,7 +41,7 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
-<%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
 <%@ page import="com.stratelia.webactiv.forums.control.ForumsSessionController"%>
 <%@ page import="com.stratelia.webactiv.forums.control.helpers.ForumActionHelper"%>
 <%@ page import="com.stratelia.webactiv.forums.control.helpers.ForumHelper"%>

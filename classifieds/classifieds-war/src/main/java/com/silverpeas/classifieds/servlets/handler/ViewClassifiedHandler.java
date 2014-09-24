@@ -9,7 +9,7 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.ResourcesWrapper;
 import org.silverpeas.servlet.HttpRequest;
 
 /**

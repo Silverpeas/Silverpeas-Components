@@ -58,7 +58,7 @@ import com.stratelia.silverpeas.pdc.model.*;
 import com.stratelia.silverpeas.peasCore.*;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.util.PairObject;
+import org.silverpeas.util.PairObject;
 import com.stratelia.webactiv.beans.admin.*;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;

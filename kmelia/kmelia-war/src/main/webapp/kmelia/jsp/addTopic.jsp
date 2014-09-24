@@ -24,7 +24,7 @@
 
 --%>
 <%@page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
-<%@page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
+<%@page import="org.silverpeas.util.ResourcesWrapper"%>
 <%@page import="org.silverpeas.util.i18n.I18NHelper"%>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>

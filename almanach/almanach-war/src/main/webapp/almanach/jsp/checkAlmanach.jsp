@@ -69,7 +69,7 @@
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.board.Board"%>
 <%@ page import="com.stratelia.webactiv.almanach.control.AlmanachSessionController"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
 <%@ page import="org.silverpeas.util.StringUtil"%>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>

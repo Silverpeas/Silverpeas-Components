@@ -29,7 +29,7 @@ import com.silverpeas.mydb.data.db.DbColumn;
 import com.silverpeas.mydb.data.db.DbTable;
 import org.silverpeas.util.StringUtil;
 
-import com.stratelia.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.ResourcesWrapper;
 
 /**
  * Table foreign keys list.

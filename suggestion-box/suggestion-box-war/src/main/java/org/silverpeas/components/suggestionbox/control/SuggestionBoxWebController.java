@@ -44,7 +44,7 @@ import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToInternalJ
 import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToPreviousNavigationStep;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.WebComponentController;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
-import com.stratelia.silverpeas.util.PairObject;
+import org.silverpeas.util.PairObject;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.util.ResourceLocator;
 import org.silverpeas.components.suggestionbox.SuggestionBoxComponentSettings;

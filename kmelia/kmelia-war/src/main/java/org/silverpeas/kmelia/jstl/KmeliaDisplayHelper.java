@@ -35,7 +35,7 @@ import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.StringUtil;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
 import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
 import com.stratelia.webactiv.util.FileRepositoryManager;

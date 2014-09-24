@@ -25,7 +25,7 @@
 package com.silverpeas.crm.vo;
 
 import com.silverpeas.crm.model.CrmParticipant;
-import com.stratelia.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.ResourcesWrapper;
 
 public class ParticipantVO extends ElementVO {
 

@@ -48,7 +48,7 @@
 <%@ page import="org.silverpeas.servlet.FileUploadUtil"%>
 
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
 
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>

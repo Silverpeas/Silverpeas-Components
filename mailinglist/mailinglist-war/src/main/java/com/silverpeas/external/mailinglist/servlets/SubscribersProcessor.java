@@ -28,7 +28,7 @@ import com.silverpeas.mailinglist.service.model.beans.MailingList;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
-import com.stratelia.silverpeas.util.PairObject;
+import org.silverpeas.util.PairObject;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import java.util.ArrayList;
 import java.util.Arrays;

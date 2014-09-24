@@ -24,7 +24,7 @@
 
 --%>
 <%@page import="org.silverpeas.util.i18n.I18NHelper"%>
-<%@page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
+<%@page import="org.silverpeas.util.ResourcesWrapper"%>
 <%@page import="com.stratelia.webactiv.node.model.NodeDetail"%>
 <%@page import="org.silverpeas.util.EncodeHelper"%>
 <%@page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>

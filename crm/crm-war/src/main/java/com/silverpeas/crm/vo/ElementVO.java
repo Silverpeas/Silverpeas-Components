@@ -36,7 +36,7 @@ import org.apache.ecs.xhtml.img;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 public abstract class ElementVO {

@@ -29,7 +29,7 @@
 <%@ page import="java.util.Iterator"%>
 <%@ page import="com.stratelia.webactiv.node.model.NodeDetail"%>
 <%@ page import="com.stratelia.webactiv.publication.model.Alias" %>
-<%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
 <%@ page import="org.silverpeas.util.EncodeHelper" %>
 
 <%

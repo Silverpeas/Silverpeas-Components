@@ -39,7 +39,7 @@ import com.silverpeas.mydb.data.key.UnicityKey;
 import com.silverpeas.mydb.data.key.UnicityKeys;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.ResourcesWrapper;
 
 /**
  * Manager used to create or modify a database table, not its content but its description. For the

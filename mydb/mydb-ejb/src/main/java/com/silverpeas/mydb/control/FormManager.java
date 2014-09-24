@@ -46,7 +46,7 @@ import com.silverpeas.mydb.data.db.DbTable;
 import com.silverpeas.mydb.data.db.DbUtil;
 import com.silverpeas.mydb.exception.MyDBException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**

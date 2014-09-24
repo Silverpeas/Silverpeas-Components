@@ -28,10 +28,11 @@ import org.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.peasCore.*;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.util.*;
 import com.stratelia.webactiv.beans.admin.*;
 import com.stratelia.webactiv.util.*;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.PairObject;
+
 import java.util.*;
 
 public class DataWarningSessionController extends AbstractComponentSessionController {

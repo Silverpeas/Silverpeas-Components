@@ -56,7 +56,7 @@
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.navigationList.NavigationList"%>
 
 <%@ page import="org.silverpeas.util.i18n.*"%>
-<%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
 <%@ page import="org.silverpeas.util.i18n.I18NHelper" %>
 <%!
 

@@ -56,7 +56,7 @@
 %><%@ page import="com.silverpeas.mydb.data.key.PrimaryKey"
 %><%@ page import="com.silverpeas.mydb.data.key.UnicityKey"
 %><%@ page import="com.silverpeas.mydb.data.key.UnicityKeys"
-%><%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"
+%><%@ page import="org.silverpeas.util.ResourcesWrapper"
 %><%@ page import="com.stratelia.webactiv.util.DBUtil"
 %><%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"
 %><%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"
