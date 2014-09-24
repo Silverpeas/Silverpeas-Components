@@ -28,7 +28,7 @@ import org.junit.Test;
 import com.silverpeas.mailinglist.service.job.TestMessageChecker;
 import org.silverpeas.util.crypto.CryptMD5;
 
-import com.stratelia.webactiv.util.exception.UtilException;
+import org.silverpeas.util.exception.UtilException;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;

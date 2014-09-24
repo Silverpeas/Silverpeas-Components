@@ -68,8 +68,8 @@ import com.silverpeas.workflow.engine.user.UserImpl;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.FileRepositoryManager;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.FileRepositoryManager;
 
 import static org.silverpeas.attachment.AttachmentService.VERSION_MODE;
 

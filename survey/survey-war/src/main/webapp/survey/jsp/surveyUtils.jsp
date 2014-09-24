@@ -2,7 +2,7 @@
 <%@page import="com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader"%>
 <%@ page import="java.text.ParseException"%>
 <%@ page import="com.stratelia.webactiv.SilverpeasRole"%>
-<%@ page import="com.stratelia.webactiv.util.FileRepositoryManager"%>
+<%@ page import="org.silverpeas.util.FileRepositoryManager"%>
 
 <%!
 

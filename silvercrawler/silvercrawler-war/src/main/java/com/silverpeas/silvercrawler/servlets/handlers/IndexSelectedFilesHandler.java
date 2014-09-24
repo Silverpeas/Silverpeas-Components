@@ -3,7 +3,7 @@ package com.silverpeas.silvercrawler.servlets.handlers;
 import com.silverpeas.silvercrawler.control.SilverCrawlerSessionController;
 import com.silverpeas.silvercrawler.model.SilverCrawlerForbiddenActionException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;

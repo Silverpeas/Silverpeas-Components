@@ -23,7 +23,7 @@
  */
 package com.stratelia.webactiv.almanach.model;
 
-import static com.stratelia.webactiv.util.DateUtil.*;
+import static org.silverpeas.util.DateUtil.*;
 
 /**
  * A builder of event details used in tests.

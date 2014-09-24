@@ -1,6 +1,6 @@
 package org.silverpeas.components.quickinfo;
 
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 public class QuickInfoComponentSettings {
   

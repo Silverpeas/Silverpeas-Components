@@ -24,7 +24,7 @@
 
 package org.silverpeas.connecteurJDBC.control;
 
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 public class ConnecteurJDBCRuntimeException extends SilverpeasRuntimeException {
 

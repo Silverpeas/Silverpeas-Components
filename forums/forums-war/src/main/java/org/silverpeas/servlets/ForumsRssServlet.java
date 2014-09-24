@@ -34,9 +34,9 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.forums.forumsException.ForumsRuntimeException;
 import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsBM;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 public class ForumsRssServlet extends RssServlet {
 

@@ -28,7 +28,7 @@ import com.silverpeas.notification.builder.helper.UserNotificationManager;
 import org.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.util.DateUtil;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
 import org.junit.Test;

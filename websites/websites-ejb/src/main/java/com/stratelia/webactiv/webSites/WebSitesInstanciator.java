@@ -35,10 +35,10 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
 import com.stratelia.webactiv.node.NodeInstanciator;
 import com.stratelia.webactiv.publication.PublicationInstanciator;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.util.fileFolder.FileFolderManager;
 
 /**
  * Implements ComponentsInstanciatorIntf for specific websites component.

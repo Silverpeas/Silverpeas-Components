@@ -25,7 +25,7 @@ package com.silverpeas.gallery;
 
 import com.silverpeas.gallery.constant.MediaResolution;
 import org.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 /**

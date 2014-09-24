@@ -43,8 +43,8 @@ import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.exception.SilverpeasException;
 
 import de.nava.informa.core.ParseException;
 import de.nava.informa.impl.basic.Channel;

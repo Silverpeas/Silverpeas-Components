@@ -29,7 +29,7 @@ import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.webactiv.persistence.IdPK;
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.WAPrimaryKey;
 import org.junit.Before;
 import org.mockito.Matchers;
 import org.mockito.Mockito;

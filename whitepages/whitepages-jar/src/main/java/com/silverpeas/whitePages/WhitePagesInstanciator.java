@@ -27,7 +27,7 @@ import com.silverpeas.whitePages.service.ServicesFactory;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;

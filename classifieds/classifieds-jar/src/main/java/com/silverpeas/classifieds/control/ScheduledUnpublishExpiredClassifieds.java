@@ -31,8 +31,8 @@ import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.OrganisationController;
 
 import javax.annotation.PostConstruct;

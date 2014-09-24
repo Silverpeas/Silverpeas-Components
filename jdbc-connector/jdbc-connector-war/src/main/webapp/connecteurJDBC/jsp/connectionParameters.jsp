@@ -1,3 +1,5 @@
+<%@ page import="org.silverpeas.util.DBUtil" %>
+<%@ page import="org.silverpeas.util.GeneralPropertiesManager" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas

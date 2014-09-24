@@ -25,7 +25,7 @@ package com.silverpeas.gallery.dao;
 
 import static com.silverpeas.gallery.model.MediaCriteria.QUERY_ORDER_BY.CREATE_DATE_DESC;
 import static com.silverpeas.gallery.model.MediaCriteria.QUERY_ORDER_BY.IDENTIFIER_DESC;
-import static com.stratelia.webactiv.util.DBUtil.unique;
+import static org.silverpeas.util.DBUtil.unique;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -41,7 +41,7 @@ import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.MediaCriteria;
 import com.silverpeas.gallery.model.Photo;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.exception.UtilException;
+import org.silverpeas.util.exception.UtilException;
 
 public class PhotoDAO {
 

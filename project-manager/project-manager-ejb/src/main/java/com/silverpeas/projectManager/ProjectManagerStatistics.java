@@ -30,9 +30,9 @@ import com.silverpeas.projectManager.model.TaskDetail;
 import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
 
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 public class ProjectManagerStatistics implements ComponentStatisticsInterface {
 

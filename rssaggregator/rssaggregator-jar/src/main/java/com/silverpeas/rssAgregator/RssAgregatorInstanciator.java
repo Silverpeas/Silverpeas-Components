@@ -30,7 +30,7 @@ import java.sql.Connection;
 import com.silverpeas.rssAgregator.control.RssAgregatorBm;
 import com.silverpeas.rssAgregator.control.RssAgregatorBmImpl;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 
 /**
  * @author nesseric

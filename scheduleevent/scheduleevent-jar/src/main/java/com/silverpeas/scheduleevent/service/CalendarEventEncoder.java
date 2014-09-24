@@ -32,8 +32,8 @@ import com.silverpeas.scheduleevent.service.model.beans.DateOption;
 import com.silverpeas.scheduleevent.service.model.beans.Response;
 import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
 
-import static com.stratelia.webactiv.util.DateUtil.asDatable;
-import com.stratelia.webactiv.util.ResourceLocator;
+import static org.silverpeas.util.DateUtil.asDatable;
+import org.silverpeas.util.ResourceLocator;
 
 import java.util.ArrayList;
 import java.util.Calendar;

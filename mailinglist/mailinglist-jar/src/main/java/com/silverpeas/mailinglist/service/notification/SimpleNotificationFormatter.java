@@ -22,7 +22,7 @@ package com.silverpeas.mailinglist.service.notification;
 
 import com.silverpeas.annotation.Service;
 import com.silverpeas.mailinglist.service.model.beans.Message;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 import java.text.MessageFormat;
 
 @Service("notificationFormatter")

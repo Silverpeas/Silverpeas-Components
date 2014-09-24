@@ -21,7 +21,7 @@
 package org.silverpeas.resourcesmanager.servlets;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.util.DateUtil;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Date;

@@ -29,7 +29,7 @@ import java.util.Map;
 
 import com.silverpeas.rssAgregator.model.SPChannel;
 import com.silverpeas.rssAgregator.model.SPChannelPK;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 /**
  * @author sv

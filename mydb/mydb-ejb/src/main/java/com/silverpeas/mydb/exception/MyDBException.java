@@ -24,7 +24,7 @@
 
 package com.silverpeas.mydb.exception;
 
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 
 /**
  * MDB exception.

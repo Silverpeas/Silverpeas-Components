@@ -1,6 +1,6 @@
 package org.silverpeas.components.quickinfo.model;
 
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.WAPrimaryKey;
 
 public class NewsPK extends WAPrimaryKey {
 

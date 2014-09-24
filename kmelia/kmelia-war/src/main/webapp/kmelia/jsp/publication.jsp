@@ -49,6 +49,7 @@
 <%@page import="com.silverpeas.delegatednews.model.DelegatedNews"%>
 <%@page import="org.silverpeas.component.kmelia.KmeliaPublicationHelper"%>
 <%@ page import="org.silverpeas.rating.web.RaterRatingEntity" %>
+<%@ page import="org.silverpeas.util.exception.SilverpeasException" %>
 
 <c:set var="userLanguage" value="${requestScope.resources.language}"/>
 <fmt:setLocale value="${userLanguage}"/>

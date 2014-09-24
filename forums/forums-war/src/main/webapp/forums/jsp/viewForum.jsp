@@ -44,8 +44,8 @@
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
 <%@ page import="org.silverpeas.util.ResourcesWrapper"%>
-<%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
-<%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
+<%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.forums.control.helpers.*"%>
 <%@ page import="com.stratelia.webactiv.forums.control.ForumsSessionController"%>
 <%

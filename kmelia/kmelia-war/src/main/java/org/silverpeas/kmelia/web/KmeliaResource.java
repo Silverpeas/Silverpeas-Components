@@ -35,12 +35,12 @@ import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
-import com.stratelia.webactiv.util.EJBUtilitaire;
+import org.silverpeas.util.EJBUtilitaire;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationRuntimeException;
 import org.silverpeas.publication.web.PublicationEntity;
-import static com.stratelia.webactiv.util.JNDINames.KMELIABM_EJBHOME;
+import static org.silverpeas.util.JNDINames.KMELIABM_EJBHOME;
 
 /**
  * A REST Web resource allowing to update data related to a publication.

@@ -24,7 +24,7 @@
 
 package com.stratelia.webactiv.kmelia.model;
 
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 public class KmeliaRuntimeException extends SilverpeasRuntimeException {
   private static final long serialVersionUID = 3262113459027359252L;

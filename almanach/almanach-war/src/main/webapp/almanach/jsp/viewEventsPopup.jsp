@@ -30,24 +30,13 @@ response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
-<%@ page import="javax.servlet.*"%>
-<%@ page import="javax.servlet.http.*"%>
-<%@ page import="javax.servlet.jsp.*"%>
-<%@ page import="java.io.PrintWriter"%>
-<%@ page import="java.io.IOException"%>
-<%@ page import="java.io.FileInputStream"%>
-<%@ page import="java.io.ObjectInputStream"%>
-<%@ page import="java.util.Vector"%>
-<%@ page import="java.beans.*"%>
+<%@ page import="com.stratelia.webactiv.almanach.control.AlmanachCalendarView"%>
+<%@ page import="com.stratelia.webactiv.almanach.control.DisplayableEventOccurrence"%>
+<%@ page import="com.stratelia.webactiv.almanach.model.EventDetail"%>
 
-<%@ page import="java.util.*"%>
-<%@ page import="com.stratelia.webactiv.almanach.control.*"%>
-<%@ page import="com.stratelia.webactiv.almanach.model.*"%>
-<%@ page import="com.stratelia.webactiv.util.*"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.*"%>
+<%@ page import="java.util.Calendar"%>
+<%@ page import="java.util.List"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.*" %>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 

@@ -31,7 +31,7 @@ import com.stratelia.webactiv.SilverpeasRole;
 import static com.stratelia.webactiv.SilverpeasRole.admin;
 import static com.stratelia.webactiv.SilverpeasRole.writer;
 import com.stratelia.webactiv.persistence.IdPK;
-import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.util.DateUtil;
 import org.silverpeas.attachment.model.SimpleDocument;
 
 import java.net.URI;

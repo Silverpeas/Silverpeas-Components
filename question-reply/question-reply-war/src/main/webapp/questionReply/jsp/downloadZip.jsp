@@ -1,3 +1,5 @@
+<%@ page import="org.silverpeas.util.DateUtil" %>
+<%@ page import="org.silverpeas.util.FileRepositoryManager" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas

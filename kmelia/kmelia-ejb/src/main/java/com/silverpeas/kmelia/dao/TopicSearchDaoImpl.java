@@ -37,7 +37,7 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 
 import com.silverpeas.kmelia.model.MostInterestedQueryVO;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 /**
  * This class is the Jdbc Dao implementation of TopicSearchDao

@@ -13,7 +13,7 @@ import com.silverpeas.processManager.ProcessManagerSessionController;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.exception.UtilException;
+import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.servlet.HttpRequest;
 
 /**

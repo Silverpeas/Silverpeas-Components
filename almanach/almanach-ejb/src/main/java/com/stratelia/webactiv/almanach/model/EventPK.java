@@ -24,7 +24,8 @@
 package com.stratelia.webactiv.almanach.model;
 
 import java.io.Serializable;
-import com.stratelia.webactiv.util.*;
+
+import org.silverpeas.util.WAPrimaryKey;
 
 /**
  * It's the Event PrimaryKey object It identify a Event

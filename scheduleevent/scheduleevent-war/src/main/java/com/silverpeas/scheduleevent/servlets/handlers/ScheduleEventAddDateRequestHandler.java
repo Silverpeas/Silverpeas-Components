@@ -34,7 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.silverpeas.scheduleevent.control.ScheduleEventSessionController;
 import com.silverpeas.scheduleevent.service.model.beans.DateOption;
 import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
-import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.util.DateUtil;
 
 public class ScheduleEventAddDateRequestHandler extends ScheduleEventActionDateRequestHandler {
   private final static DateFormat JS_DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd");

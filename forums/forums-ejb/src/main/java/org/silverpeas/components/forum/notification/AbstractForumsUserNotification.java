@@ -25,9 +25,9 @@ package org.silverpeas.components.forum.notification;
 
 import com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuilder;
 import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsBM;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ResourceLocator;
 
 import javax.ejb.EJBException;
 

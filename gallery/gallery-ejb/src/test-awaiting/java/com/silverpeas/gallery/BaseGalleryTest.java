@@ -25,7 +25,7 @@ package com.silverpeas.gallery;
 
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.DBUtil;
+import org.silverpeas.util.DBUtil;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
 import org.silverpeas.admin.user.constant.UserAccessLevel;

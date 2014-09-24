@@ -30,7 +30,7 @@
 
 package com.stratelia.silverpeas.infoLetter;
 
-import com.stratelia.webactiv.util.exception.SilverpeasTrappedException;
+import org.silverpeas.util.exception.SilverpeasTrappedException;
 
 /**
  * Class declaration

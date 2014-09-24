@@ -55,9 +55,9 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.calendar.backbone.TodoBackboneAccess;
 import com.stratelia.webactiv.calendar.backbone.TodoDetail;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 @Stateless(name = "ProjectManager", description = "Stateless session bean to manage a project.")
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)

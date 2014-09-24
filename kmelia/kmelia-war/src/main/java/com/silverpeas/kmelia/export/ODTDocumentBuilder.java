@@ -52,11 +52,11 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
 import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 
@@ -79,7 +79,7 @@ import static com.silverpeas.kmelia.export.ODTDocumentsMerging.atSection;
 import static com.silverpeas.kmelia.export.ODTDocumentsMerging.decorates;
 import static org.silverpeas.util.StringUtil.isDefined;
 import static org.silverpeas.util.StringUtil.isInteger;
-import static com.stratelia.webactiv.util.DateUtil.*;
+import static org.silverpeas.util.DateUtil.*;
 
 /**
  * A builder of an ODT document based on a given template and from a specified Kmelia publication.

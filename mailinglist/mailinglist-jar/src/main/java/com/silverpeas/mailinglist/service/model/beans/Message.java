@@ -20,7 +20,7 @@
  */
 package com.silverpeas.mailinglist.service.model.beans;
 
-import com.stratelia.webactiv.util.FileRepositoryManager;
+import org.silverpeas.util.FileRepositoryManager;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;

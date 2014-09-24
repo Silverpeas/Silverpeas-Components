@@ -39,7 +39,7 @@ import org.apache.commons.fileupload.FileItem;
 
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.servlet.FileUploadUtil;
-import com.stratelia.webactiv.util.FileRepositoryManager;
+import org.silverpeas.util.FileRepositoryManager;
 import com.stratelia.webactiv.answer.model.Answer;
 
 /**

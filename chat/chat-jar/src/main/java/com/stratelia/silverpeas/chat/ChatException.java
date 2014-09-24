@@ -28,7 +28,7 @@ package com.stratelia.silverpeas.chat;
  * ChatException.java
  */
 
-import com.stratelia.webactiv.util.exception.*;
+import org.silverpeas.util.exception.SilverpeasException;
 
 public class ChatException extends SilverpeasException {
 

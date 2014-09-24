@@ -23,7 +23,7 @@
  */
 package org.silverpeas.resourcesmanager.web;
 
-import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.util.DateUtil;
 import org.silverpeas.resourcemanager.model.Reservation;
 import org.silverpeas.resourcemanager.model.Resource;
 

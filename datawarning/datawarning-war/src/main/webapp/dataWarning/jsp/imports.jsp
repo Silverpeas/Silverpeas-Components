@@ -25,24 +25,23 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.tabs.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.icons.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.iconPanes.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPane"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane"%>
+<%@ page import="org.silverpeas.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.*"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.*"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.*"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.tabs.*"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.window.*"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.icons.*"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.iconPanes.*"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.*"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.*"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane"%>
 <%@ page import="com.silverpeas.dataWarning.control.DataWarningSessionController"%>
 <%@ page import="com.silverpeas.dataWarning.model.*"%>
-<%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
-<%@ page import="com.stratelia.webactiv.util.*"%>
+<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
+<%@ page import="org.silverpeas.util.*"%>
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
 
 <%@ page import="java.util.*"%>

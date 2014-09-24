@@ -29,8 +29,8 @@ import com.stratelia.silverpeas.infoLetter.control.ServiceFactory;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetter;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetterDataInterface;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 

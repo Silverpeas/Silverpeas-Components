@@ -24,7 +24,7 @@
 
 package org.silverpeas.connecteurJDBC.control;
 
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 
 /**
  * Title: Connecteur JDBC Description: Ce composant a pour objet de permettre de recuperer

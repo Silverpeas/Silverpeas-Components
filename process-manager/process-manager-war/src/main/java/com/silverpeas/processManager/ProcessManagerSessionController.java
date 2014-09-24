@@ -89,9 +89,9 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.ResourceLocator;
 
 import static org.silverpeas.attachment.AttachmentService.VERSION_MODE;
 

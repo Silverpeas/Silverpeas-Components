@@ -37,7 +37,7 @@ import org.odftoolkit.simple.text.Section;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 /**
  * It is a translator of text containing in some parts of an ODT documents.

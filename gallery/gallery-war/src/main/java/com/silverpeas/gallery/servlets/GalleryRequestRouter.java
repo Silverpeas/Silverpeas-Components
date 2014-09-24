@@ -59,8 +59,8 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.exception.SilverpeasException;
 import com.stratelia.webactiv.node.model.NodeDetail;
 
 import org.apache.commons.fileupload.FileItem;
@@ -79,7 +79,7 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import static com.stratelia.webactiv.util.DBUtil.isSqlDefined;
+import static org.silverpeas.util.DBUtil.isSqlDefined;
 
 public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionController> {
 

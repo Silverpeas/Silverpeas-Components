@@ -46,7 +46,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="java.io.ObjectInputStream"%>
 <%@ page import="java.util.Vector"%>
 <%@ page import="java.beans.*"%> 
-<%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.util.ResourceLocator"%>
 
 <%@ include file="checkScc.jsp" %>
 

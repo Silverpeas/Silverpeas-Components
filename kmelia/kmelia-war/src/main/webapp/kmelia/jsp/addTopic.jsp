@@ -23,7 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
+<%@page import="org.silverpeas.util.GeneralPropertiesManager"%>
 <%@page import="org.silverpeas.util.ResourcesWrapper"%>
 <%@page import="org.silverpeas.util.i18n.I18NHelper"%>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>

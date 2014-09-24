@@ -24,7 +24,7 @@
 
 package com.silverpeas.formsonline.model;
 
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 public class FormsOnlineRuntimeException extends SilverpeasRuntimeException {
   private static final long serialVersionUID = 581380633250529755L;

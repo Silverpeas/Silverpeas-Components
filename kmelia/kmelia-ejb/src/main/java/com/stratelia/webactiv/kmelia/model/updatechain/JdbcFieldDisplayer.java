@@ -28,8 +28,8 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.Util;
 import org.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.GeneralPropertiesManager;
 
 import java.io.PrintWriter;
 import java.sql.Connection;

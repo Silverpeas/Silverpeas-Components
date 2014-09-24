@@ -32,7 +32,7 @@ import com.silverpeas.mailinglist.service.model.dao.MailingListDao;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;

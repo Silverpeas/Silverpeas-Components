@@ -25,13 +25,13 @@ package com.silverpeas.gallery.model;
 
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.util.DateUtil;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static com.stratelia.webactiv.util.DBUtil.isSqlDefined;
+import static org.silverpeas.util.DBUtil.isSqlDefined;
 
 /**
  * Class that permits to set order search criteria for order application.

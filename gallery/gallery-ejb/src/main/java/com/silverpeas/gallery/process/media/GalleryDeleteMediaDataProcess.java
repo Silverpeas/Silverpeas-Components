@@ -34,7 +34,7 @@ import com.silverpeas.gallery.process.AbstractGalleryDataProcess;
 import com.silverpeas.gallery.process.GalleryProcessExecutionContext;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.process.session.ProcessSession;
 
 import static org.silverpeas.util.StringUtil.isDefined;

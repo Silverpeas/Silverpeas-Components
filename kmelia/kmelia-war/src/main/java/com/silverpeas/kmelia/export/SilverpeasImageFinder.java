@@ -34,10 +34,10 @@ import org.silverpeas.attachment.model.SimpleDocumentPK;
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.model.MediaPK;
 import com.silverpeas.gallery.model.Photo;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.FileServerUtils;
-import com.stratelia.webactiv.util.JNDINames;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.FileServerUtils;
+import org.silverpeas.util.JNDINames;
 
 /**
  * A finder of images that were uploaded by a Silverpeas component instance, whatever this component

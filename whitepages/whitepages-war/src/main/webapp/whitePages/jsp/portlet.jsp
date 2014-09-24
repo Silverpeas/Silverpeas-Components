@@ -28,6 +28,7 @@
 <%@ page import="java.util.*"%>
 <%@ page import="com.silverpeas.whitePages.model.*"%>
 <%@ page import="com.silverpeas.whitePages.record.*"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.Encode" %>
 
 <%@ include file="checkWhitePages.jsp" %>
 

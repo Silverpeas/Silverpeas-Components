@@ -28,7 +28,7 @@ import com.silverpeas.admin.components.InstanciationException;
 import com.silverpeas.comment.CommentInstanciator;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.calendar.backbone.TodoBackboneAccess;
-import com.stratelia.webactiv.util.DBUtil;
+import org.silverpeas.util.DBUtil;
 import org.silverpeas.attachment.SimpleDocumentInstanciator;
 
 import java.sql.Connection;

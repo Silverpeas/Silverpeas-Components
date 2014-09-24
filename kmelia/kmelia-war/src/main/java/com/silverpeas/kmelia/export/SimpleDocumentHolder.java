@@ -27,7 +27,7 @@ import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import org.silverpeas.util.StringUtil;
 
-import static com.stratelia.webactiv.util.DateUtil.getOutputDate;
+import static org.silverpeas.util.DateUtil.getOutputDate;
 
 /**
  * Holder of a simple document for the ODTDocumentBuilder. It provides useful operation on the

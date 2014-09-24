@@ -29,8 +29,8 @@ import org.silverpeas.util.exception.RelativeFileAccessException;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.SilverpeasAuthenticatedHttpServlet;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.ResourceLocator;
 import org.apache.commons.io.FileUtils;
 import org.apache.tika.io.IOUtils;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
@@ -143,7 +143,7 @@ public class SilverCrawlerFileServer extends SilverpeasAuthenticatedHttpServlet 
 
   private void displayWarningHtmlCode(HttpServletResponse res) throws IOException {
     ResourceLocator resourceLocator =
-        new ResourceLocator("com.stratelia.webactiv.util.peasUtil.multiLang.fileServerBundle", "");
+        new ResourceLocator("org.silverpeas.util.peasUtil.multiLang.fileServerBundle", "");
 
     OutputStream out = res.getOutputStream();
     StringReader sr = new StringReader(resourceLocator.getString("warning"));

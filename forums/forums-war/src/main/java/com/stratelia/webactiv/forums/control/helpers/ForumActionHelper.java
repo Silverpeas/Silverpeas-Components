@@ -29,7 +29,7 @@ import com.stratelia.webactiv.forums.control.ForumsSessionController;
 import com.stratelia.webactiv.forums.forumsException.ForumsException;
 import com.stratelia.webactiv.forums.models.Forum;
 import com.stratelia.webactiv.forums.models.Message;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.upload.FileUploadManager;
 import org.silverpeas.upload.UploadedFile;
 import org.silverpeas.util.NotifierUtil;

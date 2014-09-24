@@ -8,8 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Calendar;
 import com.silverpeas.components.model.AbstractTestDao;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.DateUtil;
 
 import static com.silverpeas.jcrutil.RandomGenerator.*;
 import java.sql.Connection;

@@ -24,7 +24,7 @@
 package com.silverpeas.silvercrawler.model;
 
 import com.silverpeas.silvercrawler.util.FileServerUtils;
-import com.stratelia.webactiv.util.FileRepositoryManager;
+import org.silverpeas.util.FileRepositoryManager;
 
 public class FileDetail implements java.io.Serializable {
 

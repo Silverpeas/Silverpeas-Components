@@ -22,10 +22,10 @@ package com.stratelia.webactiv.almanach.model;
 
 import static org.silverpeas.util.StringUtil.isDefined;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
-import static com.stratelia.webactiv.util.DateUtil.*;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.UtilException;
+import org.silverpeas.util.DBUtil;
+import static org.silverpeas.util.DateUtil.*;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.date.Period;
 
 import java.sql.*;
@@ -124,7 +124,7 @@ public class EventDAO {
       insertStmt.setString(12, event.getPK().getComponentName());
 
       insertStmt.executeUpdate();
-    } catch (com.stratelia.webactiv.util.exception.UtilException ue) {
+    } catch (UtilException ue) {
       SilverTrace.warn("almanach", "EventDAO.addEvent()",
               "almanach.EXE_ADD_EVENT_FAIL", "id : " + id, ue);
     }

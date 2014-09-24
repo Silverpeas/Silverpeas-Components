@@ -4,7 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.silverpeas.silvercrawler.control.SilverCrawlerSessionController;
 import com.silverpeas.silvercrawler.model.SilverCrawlerForbiddenActionException;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 
 /**
  * Handler for use case : admin request new folder creation.

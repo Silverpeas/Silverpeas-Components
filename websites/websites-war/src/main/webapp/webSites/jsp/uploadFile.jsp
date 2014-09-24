@@ -38,14 +38,14 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="javax.naming.InitialContext"%>
 <%@ page import="javax.rmi.PortableRemoteObject"%>
 <%@ page import="com.stratelia.webactiv.webSites.siteManage.model.SiteDetail"%>
-<%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.board.Board"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPane"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
+<%@ page import="org.silverpeas.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.tabs.TabbedPane"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.board.Board"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button"%>
 <%@ page import="com.stratelia.webactiv.webSites.control.WebSiteSessionController"%>
 <%@ page import="java.io.File"%>
 <%@ page import="javax.servlet.*"%>
@@ -58,7 +58,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="java.util.Vector"%>
 <%@ page import="java.beans.*"%>
 <%@ page import="com.stratelia.webactiv.node.model.NodeDetail"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.Encode"%>
 
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
 <%@ include file="util.jsp" %>

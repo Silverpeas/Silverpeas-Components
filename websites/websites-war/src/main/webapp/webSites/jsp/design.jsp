@@ -34,16 +34,17 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 
 <%@ page import="java.io.*"%>
-<%@ page import="com.stratelia.webactiv.util.*"%>
+<%@ page import="org.silverpeas.util.*"%>
 
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.*"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.*"%>
 <%@ page import="com.stratelia.webactiv.webSites.control.*"%>
 <%@ page import="com.stratelia.webactiv.publication.model.*"%>
 <%@ page import="com.stratelia.webactiv.publication.info.model.*"%>
 <%@ page import="com.stratelia.webactiv.node.model.NodeDetail"%>
 
-<%@ page import="com.stratelia.webactiv.util.exception.*"%>
+<%@ page import="org.silverpeas.util.exception.*"%>
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.Encode" %>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
@@ -349,7 +350,7 @@ function deletePage(id, path, name) {
 
 	//Recuperation du tableau dans le haut du cadre
 	// desc site + path
-	bodyRep += "<br><span class=\"txtnav\">"+Encode.javaStringToHtmlString(nomSite)+"</span>";
+	bodyRep += "<br><span class=\"txtnav\">"+ Encode.javaStringToHtmlString(nomSite)+"</span>";
 	bodyRep += "<span class=\"txtnote\">&nbsp;("+Encode.javaStringToHtmlString(auteur)+" - "+date+")<br>\n";
 	bodyRep += "<b>&nbsp;"+resources.getString("PagePrincipale")+" : </b>"+Encode.javaStringToHtmlString(nomPage)+"</span>\n";
 	bodyRep += "<br><br>\n";

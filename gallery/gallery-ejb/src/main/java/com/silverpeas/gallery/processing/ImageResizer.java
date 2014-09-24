@@ -35,7 +35,7 @@ import java.io.OutputStream;
 
 import javax.imageio.ImageIO;
 
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 /**
  *

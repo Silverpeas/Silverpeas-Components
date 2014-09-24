@@ -27,7 +27,7 @@ import com.silverpeas.mailinglist.service.model.beans.Message;
 import com.silverpeas.mailinglist.service.util.HtmlCleaner;
 import org.silverpeas.util.MimeTypes;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.FileRepositoryManager;
+import org.silverpeas.util.FileRepositoryManager;
 
 import java.io.File;
 import java.io.IOException;

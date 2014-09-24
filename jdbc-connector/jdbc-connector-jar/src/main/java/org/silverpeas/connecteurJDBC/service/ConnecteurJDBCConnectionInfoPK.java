@@ -24,7 +24,7 @@
 
 package org.silverpeas.connecteurJDBC.service;
 
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.WAPrimaryKey;
 
 import java.io.Serializable;
 

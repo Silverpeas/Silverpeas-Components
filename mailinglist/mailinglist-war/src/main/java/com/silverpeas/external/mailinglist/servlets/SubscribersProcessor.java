@@ -29,7 +29,7 @@ import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import org.silverpeas.util.PairObject;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import org.silverpeas.util.GeneralPropertiesManager;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;

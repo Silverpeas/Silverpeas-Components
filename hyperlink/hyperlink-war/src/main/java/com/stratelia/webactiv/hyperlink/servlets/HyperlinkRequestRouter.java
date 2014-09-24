@@ -37,7 +37,7 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.hyperlink.control.HyperlinkSessionController;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.servlet.HttpRequest;
 
 public class HyperlinkRequestRouter extends ComponentRequestRouter<HyperlinkSessionController> {

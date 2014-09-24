@@ -27,10 +27,10 @@ import java.util.*;
 import java.sql.*;
 
 import com.stratelia.webactiv.persistence.*;
-import com.stratelia.webactiv.util.*;
 import com.silverpeas.dataWarning.*;
-import com.stratelia.webactiv.util.exception.*;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.exception.SilverpeasException;
 
 public class DataWarning extends SilverpeasBean {
 

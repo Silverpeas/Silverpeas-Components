@@ -36,16 +36,16 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="javax.servlet.jsp.*"%>
 
 <%@ page import="java.util.*"%>
-<%@ page import="com.stratelia.webactiv.util.*"%>
+<%@ page import="org.silverpeas.util.*"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.tabs.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.*"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.tabs.*"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.*"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.*"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.window.*"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.*"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.*"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
 <%@ page import="org.silverpeas.util.ResourcesWrapper"%>
 
 <%@ page import="com.silverpeas.scheduleevent.control.ScheduleEventSessionController"%>

@@ -21,7 +21,7 @@
 package com.stratelia.webactiv.webSites.siteManage.util;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 import com.stratelia.webactiv.webSites.control.WebSitesException;
 import java.io.File;
 import java.io.FileNotFoundException;

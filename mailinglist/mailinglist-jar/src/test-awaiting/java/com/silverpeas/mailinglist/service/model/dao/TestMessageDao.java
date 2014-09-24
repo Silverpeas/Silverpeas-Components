@@ -25,7 +25,7 @@ import com.silverpeas.mailinglist.service.model.beans.Activity;
 import com.silverpeas.mailinglist.service.model.beans.Attachment;
 import com.silverpeas.mailinglist.service.model.beans.Message;
 import com.silverpeas.mailinglist.service.util.OrderBy;
-import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import org.silverpeas.util.fileFolder.FileFolderManager;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;

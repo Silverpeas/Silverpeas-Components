@@ -28,7 +28,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
-<%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
+<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
 
 <view:setBundle basename="com.silverpeas.crm.multilang.crmBundle"/>
 

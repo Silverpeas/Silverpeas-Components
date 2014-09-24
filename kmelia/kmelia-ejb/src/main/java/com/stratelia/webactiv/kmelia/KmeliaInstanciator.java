@@ -32,8 +32,7 @@ import com.stratelia.webactiv.beans.admin.SQLRequest;
 import com.stratelia.webactiv.calendar.backbone.TodoBackboneAccess;
 import com.stratelia.webactiv.node.NodeInstanciator;
 import com.stratelia.webactiv.publication.PublicationInstanciator;
-import com.stratelia.webactiv.util.DateUtil;
-import org.silverpeas.attachment.SimpleDocumentInstanciator;
+import org.silverpeas.util.DateUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

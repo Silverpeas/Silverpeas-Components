@@ -40,7 +40,7 @@ import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.FileUtil;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.util.DateUtil;
 
 import org.apache.commons.lang3.CharEncoding;
 import org.json.JSONArray;

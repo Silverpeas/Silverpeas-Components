@@ -39,8 +39,8 @@ import java.util.Date;
 import java.util.List;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.exception.UtilException;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.exception.UtilException;
 
 /**
  * @author neysseri

@@ -28,7 +28,7 @@ import com.silverpeas.gallery.model.Order;
 import com.silverpeas.gallery.model.OrderRow;
 import org.silverpeas.util.CollectionUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.DBUtil;
+import org.silverpeas.util.DBUtil;
 import org.junit.Test;
 
 import java.sql.Connection;

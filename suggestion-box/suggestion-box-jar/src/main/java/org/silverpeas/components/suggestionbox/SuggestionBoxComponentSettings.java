@@ -24,7 +24,7 @@
 package org.silverpeas.components.suggestionbox;
 
 
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 
 /**

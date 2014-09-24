@@ -24,8 +24,8 @@ import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.JNDINames;
 
 public class GalleryIndexer implements ComponentIndexerInterface {
 

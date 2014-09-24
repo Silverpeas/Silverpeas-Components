@@ -40,17 +40,17 @@
 <%@ page import="com.stratelia.webactiv.forums.models.Message"%>
 <%@ page import="com.stratelia.webactiv.forums.control.ForumsSessionController"%>
 <%@ page import="com.stratelia.webactiv.forums.url.ActionUrl"%>
-<%@ page import="com.stratelia.webactiv.util.DBUtil"%>
-<%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
-<%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.util.DBUtil"%>
+<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
+<%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.node.model.NodeDetail"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.board.Board"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPane"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.board.Board"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%!  
   public static String IMAGE_UPDATE = "../../util/icons/update.gif";

@@ -38,10 +38,10 @@ import java.util.Vector;
 
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-import com.stratelia.webactiv.util.exception.UtilException;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.UtilException;
 
 public class ChatDataAccess {
   private static final String DATASOURCE = JNDINames.CHAT_DATASOURCE;

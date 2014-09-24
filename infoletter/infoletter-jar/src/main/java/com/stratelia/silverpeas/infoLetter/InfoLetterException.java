@@ -27,7 +27,7 @@
 
 package com.stratelia.silverpeas.infoLetter;
 
-import com.stratelia.webactiv.util.exception.*;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 /**
  * Class declaration

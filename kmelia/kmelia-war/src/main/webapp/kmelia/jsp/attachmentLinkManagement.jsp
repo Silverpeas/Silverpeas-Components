@@ -31,16 +31,16 @@
 			response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 <%-- Import area --%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPane"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
-<%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.Encode"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
+<%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.wysiwyg.control.WysiwygController"%>
 <%@page import="java.util.List"%>
-<%@page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
+<%@page import="org.silverpeas.util.GeneralPropertiesManager"%>
 <%@page import="com.silverpeas.treeMenu.process.TreeHandler"%>
 <%@page import="com.silverpeas.treeMenu.model.MenuConstants"%>
 

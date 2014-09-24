@@ -1,6 +1,6 @@
 package com.silverpeas.silvercrawler.control;
 
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 import java.io.File;
 import java.util.ArrayList;

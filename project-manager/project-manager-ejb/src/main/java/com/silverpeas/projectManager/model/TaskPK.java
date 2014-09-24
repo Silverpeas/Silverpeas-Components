@@ -28,7 +28,7 @@
  */
 package com.silverpeas.projectManager.model;
 
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.WAPrimaryKey;
 
 /**
  * @author neysseri

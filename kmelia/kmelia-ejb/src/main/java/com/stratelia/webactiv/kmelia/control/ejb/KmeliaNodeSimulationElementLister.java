@@ -24,7 +24,7 @@
 package com.stratelia.webactiv.kmelia.control.ejb;
 
 import org.silverpeas.util.ForeignPK;
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.WAPrimaryKey;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.silverpeas.attachment.process.AttachmentSimulationElementLister;

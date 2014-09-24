@@ -32,7 +32,7 @@ import java.util.Collection;
 import java.util.Date;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
+import org.silverpeas.util.DBUtil;
 
 public class HistoryDAO {
   public static Collection<HistoryDetail> getHistoryDetails(ResultSet rs) throws SQLException {

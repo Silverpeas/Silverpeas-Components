@@ -21,7 +21,7 @@
 package com.silverpeas.dataWarning.model;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 public class DataWarningResult extends Object {
   // Trigger static values

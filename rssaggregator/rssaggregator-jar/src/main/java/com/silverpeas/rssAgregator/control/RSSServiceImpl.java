@@ -39,7 +39,7 @@ import com.silverpeas.rssAgregator.model.SPChannel;
 import com.silverpeas.rssAgregator.model.SPChannelPK;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 
 import de.nava.informa.core.ParseException;
 import de.nava.informa.impl.basic.Channel;

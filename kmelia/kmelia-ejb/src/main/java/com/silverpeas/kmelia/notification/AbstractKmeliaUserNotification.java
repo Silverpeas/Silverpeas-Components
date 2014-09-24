@@ -40,13 +40,13 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.kmelia.model.KmaxRuntimeException;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
-import com.stratelia.webactiv.util.EJBUtilitaire;
+import org.silverpeas.util.EJBUtilitaire;
 import com.stratelia.webactiv.node.control.NodeBm;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 
-import static com.stratelia.webactiv.util.JNDINames.NODEBM_EJBHOME;
-import static com.stratelia.webactiv.util.exception.SilverpeasRuntimeException.ERROR;
+import static org.silverpeas.util.JNDINames.NODEBM_EJBHOME;
+import static org.silverpeas.util.exception.SilverpeasRuntimeException.ERROR;
 
 /**
  * @author Yohann Chastagnier

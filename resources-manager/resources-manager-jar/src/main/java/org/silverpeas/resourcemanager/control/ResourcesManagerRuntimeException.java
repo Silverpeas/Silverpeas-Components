@@ -23,7 +23,7 @@
  */
 package org.silverpeas.resourcemanager.control;
 
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 public class ResourcesManagerRuntimeException extends SilverpeasRuntimeException {
 

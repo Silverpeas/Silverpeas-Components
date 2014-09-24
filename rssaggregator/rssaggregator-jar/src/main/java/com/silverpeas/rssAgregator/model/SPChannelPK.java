@@ -24,7 +24,7 @@
 
 package com.silverpeas.rssAgregator.model;
 
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.WAPrimaryKey;
 
 public class SPChannelPK extends WAPrimaryKey {
 

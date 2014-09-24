@@ -95,12 +95,12 @@ import org.silverpeas.util.PairObject;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.IdPK;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.WAPrimaryKey;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.exception.UtilTrappedException;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.exception.UtilTrappedException;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;

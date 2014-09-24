@@ -27,7 +27,7 @@
 <%@page import="org.silverpeas.util.ResourcesWrapper"%>
 <%@page import="com.stratelia.webactiv.node.model.NodeDetail"%>
 <%@page import="org.silverpeas.util.EncodeHelper"%>
-<%@page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
+<%@page import="org.silverpeas.util.GeneralPropertiesManager"%>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>

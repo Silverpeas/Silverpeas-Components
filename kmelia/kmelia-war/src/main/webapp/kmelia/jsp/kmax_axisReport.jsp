@@ -40,20 +40,20 @@
 <%@ page import="com.stratelia.webactiv.node.model.NodeDetail, java.util.Collection, java.util.Iterator"%>
 <%@ page import="com.stratelia.webactiv.node.model.NodePK"%>
 <%@ page import="javax.ejb.RemoveException, javax.ejb.CreateException, java.sql.SQLException, javax.naming.NamingException, java.rmi.RemoteException, javax.ejb.FinderException"%>
-<%@ page import="com.stratelia.webactiv.util.*"%>
+<%@ page import="org.silverpeas.util.*"%>
 <%@ page import="com.stratelia.webactiv.kmelia.control.KmeliaSessionController"%>
 
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.board.Board"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPane"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayPane"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayLine"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayColumn"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.iconPanes.IconPane"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.icons.Icon"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.navigationList.NavigationList"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.Encode"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.board.Board"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayLine"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayColumn"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.iconPanes.IconPane"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.icons.Icon"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.navigationList.NavigationList"%>
 
 <%@ page import="org.silverpeas.util.i18n.*"%>
 <%@ page import="org.silverpeas.util.ResourcesWrapper"%>

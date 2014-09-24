@@ -28,7 +28,7 @@ import java.util.Comparator;
 
 import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.almanach.model.EventDetail;
-import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.util.DateUtil;
 
 public class EventDetailBeginDateComparatorAsc implements Comparator<EventDetail> {
   static public EventDetailBeginDateComparatorAsc comparator = new EventDetailBeginDateComparatorAsc();

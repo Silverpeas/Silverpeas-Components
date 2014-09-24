@@ -23,7 +23,7 @@
  */
 package org.silverpeas.resourcemanager.services;
 
-import com.stratelia.webactiv.util.DBUtil;
+import org.silverpeas.util.DBUtil;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.ReplacementDataSet;

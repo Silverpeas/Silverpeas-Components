@@ -35,9 +35,9 @@ import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.provider.SocialGalleryInterface;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.date.Period;
 

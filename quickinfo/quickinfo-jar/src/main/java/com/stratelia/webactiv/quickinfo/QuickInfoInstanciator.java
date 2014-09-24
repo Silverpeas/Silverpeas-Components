@@ -31,8 +31,8 @@ import com.silverpeas.comment.service.CommentServiceFactory;
 import com.silverpeas.thumbnail.ThumbnailInstanciator;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.publication.PublicationInstanciator;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.JNDINames;
 import com.stratelia.webactiv.statistic.control.StatisticBm;
 
 public class QuickInfoInstanciator extends Object implements ComponentsInstanciatorIntf {

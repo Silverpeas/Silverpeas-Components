@@ -28,7 +28,7 @@ import com.silverpeas.calendar.Date;
 import com.silverpeas.calendar.DateTime;
 import java.util.Calendar;
 import static org.silverpeas.util.StringUtil.*;
-import static com.stratelia.webactiv.util.DateUtil.*;
+import static org.silverpeas.util.DateUtil.*;
 
 /**
  * An occurrence of an event in the time. Periodic events are made up of several of occurrences in

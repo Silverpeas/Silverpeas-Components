@@ -1,3 +1,4 @@
+<%@ page import="org.silverpeas.util.DateUtil" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -183,8 +184,7 @@ function clipboardPaste() {
 						.javaStringToHtmlParagraphe(quizzHeader
 								.getDescription()));
 
-				Date creationDate = DateUtil.parse(quizzHeader
-						.getCreationDate());
+				Date creationDate = DateUtil.parse(quizzHeader.getCreationDate());
 				ArrayCellText arrayCellText = arrayLine
 						.addArrayCellText(resources.getOutputDate(creationDate));
 				arrayCellText.setCompareOn(creationDate);

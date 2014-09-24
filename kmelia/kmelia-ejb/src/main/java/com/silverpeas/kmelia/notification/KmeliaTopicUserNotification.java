@@ -23,7 +23,7 @@
  */
 package com.silverpeas.kmelia.notification;
 
-import static com.stratelia.webactiv.util.exception.SilverpeasRuntimeException.ERROR;
+import static org.silverpeas.util.exception.SilverpeasRuntimeException.ERROR;
 
 import java.util.ArrayList;
 import java.util.Arrays;

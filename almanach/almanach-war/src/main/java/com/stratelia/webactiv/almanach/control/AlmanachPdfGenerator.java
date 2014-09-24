@@ -53,9 +53,9 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.almanach.control.ejb.AlmanachException;
 import com.stratelia.webactiv.almanach.control.ejb.AlmanachRuntimeException;
 import com.stratelia.webactiv.almanach.model.EventDetail;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.exception.SilverpeasException;
 
 /**
  * @author squere

@@ -35,7 +35,7 @@ import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.util.DateUtil;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.admin.OrganisationControllerFactory;

@@ -31,7 +31,7 @@
 	response.setHeader( "Last-Modified", "Fri, Jan 25 2099 23:59:59 GMT" );
 	response.setStatus( HttpServletResponse.SC_CREATED );
 %>
-<%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
+<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
 
 <%
 String componentId 	= request.getParameter("ComponentId");

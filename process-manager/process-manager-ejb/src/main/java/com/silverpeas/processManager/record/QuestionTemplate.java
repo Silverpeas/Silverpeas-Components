@@ -30,7 +30,7 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.fieldType.TextField;
 import com.silverpeas.form.record.GenericFieldTemplate;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 public class QuestionTemplate implements RecordTemplate {
   private static ResourceLocator label = null;

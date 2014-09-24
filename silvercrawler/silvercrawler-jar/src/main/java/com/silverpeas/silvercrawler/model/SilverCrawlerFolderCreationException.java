@@ -1,6 +1,6 @@
 package com.silverpeas.silvercrawler.model;
 
-import com.stratelia.webactiv.util.exception.SilverpeasTrappedException;
+import org.silverpeas.util.exception.SilverpeasTrappedException;
 
 public class SilverCrawlerFolderCreationException extends SilverpeasTrappedException {
 

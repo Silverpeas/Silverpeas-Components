@@ -24,7 +24,9 @@
 package com.silverpeas.dataWarning;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.*;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.XMLConfigurationStore;
+
 import java.io.*;
 import java.util.*;
 
@@ -57,8 +59,8 @@ public final class DataWarningDBDrivers extends Object {
         SilverTrace.info("dataWarning", "DataWarningDBDrivers.loadDrivers",
             "DataWarning.MSG_DRIVER_NAME", "DriverUniqueId=" + driversUniqueIds[j]);
 
-        configFileInputStream = ResourceLocator.getResourceAsStream(this, null, configFileStr,
-            ".xml");
+        configFileInputStream = ResourceLocator
+            .getResourceAsStream(this, null, configFileStr, ".xml");
         m_XMLConfig = new XMLConfigurationStore(null, configFileInputStream, driversUniqueIds[j]
             + "-configuration");
         sortedDBDrivers[j] = new DataWarningDBDriver(driversUniqueIds[j], m_XMLConfig.getString(

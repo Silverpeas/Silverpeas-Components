@@ -1,4 +1,5 @@
 <%@ page import="org.silverpeas.servlet.HttpRequest" %>
+<%@ page import="org.silverpeas.util.DBUtil" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -52,7 +53,7 @@ if (galleries != null) {
 String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
 String ligne = m_context + "/util/icons/colorPix/1px.gif";
 
-ResourceLocator uploadSettings = new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings", quizzScc.getLanguage());
+ResourceLocator uploadSettings = new ResourceLocator("org.silverpeas.util.uploads.uploadSettings", quizzScc.getLanguage());
 ResourceLocator quizzSettings = quizzScc.getSettings();
 
 Button validateButton = null;

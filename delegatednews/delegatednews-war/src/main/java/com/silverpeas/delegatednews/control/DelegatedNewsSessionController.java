@@ -47,7 +47,7 @@ import com.silverpeas.delegatednews.web.DelegatedNewsEntity;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 public class DelegatedNewsSessionController extends AbstractComponentSessionController {
 

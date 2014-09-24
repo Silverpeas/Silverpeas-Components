@@ -29,10 +29,10 @@ import com.stratelia.webactiv.forums.models.ForumPK;
 import com.stratelia.webactiv.forums.models.Message;
 import com.stratelia.webactiv.forums.models.MessagePK;
 import com.stratelia.webactiv.forums.models.Moderator;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.exception.UtilException;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.exception.UtilException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

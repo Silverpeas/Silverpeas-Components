@@ -27,7 +27,7 @@
 
 package com.stratelia.webactiv.almanach.control.ejb;
 
-import com.stratelia.webactiv.util.exception.*;
+import org.silverpeas.util.exception.SilverpeasException;
 
 public class AlmanachException extends SilverpeasException {
 

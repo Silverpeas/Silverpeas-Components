@@ -36,7 +36,7 @@ package com.stratelia.webactiv.webSites.siteManage.model;
  * @version
  */
 
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.WAPrimaryKey;
 
 import java.io.Serializable;
 

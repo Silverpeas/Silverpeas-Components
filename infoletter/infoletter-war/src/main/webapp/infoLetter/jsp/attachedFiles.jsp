@@ -28,6 +28,7 @@
 <%@ page import="java.net.URLEncoder"%>
 <%@ page import="org.silverpeas.util.URLUtils" %>
 <%@ page import="org.silverpeas.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.util.exception.SilverpeasRuntimeException" %>
 
 <%!
 void displayAttachmentEdit(String id, String spaceId, String componentId, String url, HttpServletRequest request, HttpServletResponse response)
@@ -39,7 +40,7 @@ void displayAttachmentEdit(String id, String spaceId, String componentId, String
 
     } catch (Exception e) {
 		throw new com.stratelia.silverpeas.infoLetter.InfoLetterException("viewLetter_JSP.displayViewWysiwyg",
-		com.stratelia.webactiv.util.exception.SilverpeasRuntimeException.ERROR, e.getMessage());
+		SilverpeasRuntimeException.ERROR, e.getMessage());
     }
 }
 %>

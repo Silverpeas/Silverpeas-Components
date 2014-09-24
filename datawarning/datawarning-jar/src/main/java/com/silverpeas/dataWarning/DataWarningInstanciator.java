@@ -30,7 +30,7 @@ import com.silverpeas.dataWarning.model.DataWarningDataManager;
 import com.silverpeas.dataWarning.model.DataWarningQuery;
 import com.silverpeas.dataWarning.model.DataWarningScheduler;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 import java.sql.Connection;
 
 /**

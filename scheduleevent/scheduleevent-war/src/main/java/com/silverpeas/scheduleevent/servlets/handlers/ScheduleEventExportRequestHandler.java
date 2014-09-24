@@ -30,7 +30,7 @@ import com.silverpeas.export.ExportException;
 import com.silverpeas.scheduleevent.control.ScheduleEventSessionController;
 import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.FileServerUtils;
+import org.silverpeas.util.FileServerUtils;
 
 public class ScheduleEventExportRequestHandler implements ScheduleEventRequestHandler {
   private String jspDestination;

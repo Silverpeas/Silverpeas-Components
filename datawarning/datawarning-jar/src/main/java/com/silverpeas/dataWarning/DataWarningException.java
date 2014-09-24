@@ -23,7 +23,7 @@
  */
 package com.silverpeas.dataWarning;
 
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 
 public class DataWarningException extends SilverpeasException {
 

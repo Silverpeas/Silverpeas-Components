@@ -24,7 +24,7 @@
  */
 package com.silverpeas.gallery.processing;
 
-import com.stratelia.webactiv.util.FileRepositoryManager;
+import org.silverpeas.util.FileRepositoryManager;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;

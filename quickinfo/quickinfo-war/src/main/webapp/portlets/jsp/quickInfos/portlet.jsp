@@ -24,7 +24,7 @@
 
 --%>
 
-<%@page import="com.stratelia.webactiv.util.DateUtil"%>
+<%@page import="org.silverpeas.util.DateUtil"%>
 <%@page import="org.silverpeas.util.StringUtil"%>
 <%@page import="org.silverpeas.components.quickinfo.model.News"%>
 <%@page import="java.util.List"%>

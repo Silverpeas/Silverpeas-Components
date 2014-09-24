@@ -37,9 +37,9 @@ import com.stratelia.webactiv.forums.forumsException.ForumsRuntimeException;
 import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsBM;
 import com.stratelia.webactiv.forums.models.ForumDetail;
 import com.stratelia.webactiv.forums.models.ForumPK;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 /**
  * The forums implementation of ContentInterface.

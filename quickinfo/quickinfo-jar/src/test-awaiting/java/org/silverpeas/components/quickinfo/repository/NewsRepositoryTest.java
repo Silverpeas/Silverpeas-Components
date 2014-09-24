@@ -22,7 +22,7 @@ import org.silverpeas.persistence.jpa.RepositoryBasedTest;
 import org.silverpeas.persistence.repository.OperationContext;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.DBUtil;
+import org.silverpeas.util.DBUtil;
 
 
 public class NewsRepositoryTest extends RepositoryBasedTest {

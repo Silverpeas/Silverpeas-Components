@@ -25,7 +25,7 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%!
 	/**--------------------------------------------------------------*/
 	/**        MODIFY THE FILENAME BELOW TO YOUR jchatbox.xml        */

@@ -25,7 +25,7 @@
 --%>
 <%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@page import="org.silverpeas.util.StringUtil"%>
-<%@page import="com.stratelia.webactiv.util.ResourceLocator"%>
+<%@page import="org.silverpeas.util.ResourceLocator"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>

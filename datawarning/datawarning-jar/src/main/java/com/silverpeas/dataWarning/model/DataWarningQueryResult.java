@@ -30,8 +30,8 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-import com.stratelia.webactiv.util.exception.WithNested;
+import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.WithNested;
 import org.silverpeas.core.admin.OrganisationController;
 
 public class DataWarningQueryResult extends Object {

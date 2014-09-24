@@ -33,7 +33,7 @@ import com.silverpeas.notification.model.NotificationResourceData;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.util.DateUtil;
 
 /**
  * The centralization of the construction of the blog notifications

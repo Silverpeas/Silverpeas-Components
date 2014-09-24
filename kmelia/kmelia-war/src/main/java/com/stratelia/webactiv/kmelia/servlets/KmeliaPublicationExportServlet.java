@@ -21,7 +21,7 @@ import com.silverpeas.converter.DocumentFormat;
 import org.silverpeas.util.MimeTypes;
 
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
-import com.stratelia.webactiv.util.ClientBrowserUtil;
+import org.silverpeas.util.ClientBrowserUtil;
 
 import org.apache.commons.io.IOUtils;
 

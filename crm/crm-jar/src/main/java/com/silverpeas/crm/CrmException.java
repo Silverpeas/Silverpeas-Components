@@ -24,7 +24,7 @@
 
 package com.silverpeas.crm;
 
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 /**
  * @author

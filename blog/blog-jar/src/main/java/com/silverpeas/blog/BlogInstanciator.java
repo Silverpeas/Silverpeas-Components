@@ -34,8 +34,8 @@ import com.silverpeas.myLinks.MyLinksInstanciator;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.node.NodeInstanciator;
 import com.stratelia.webactiv.publication.PublicationInstanciator;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.DateUtil;
 
 public class BlogInstanciator implements ComponentsInstanciatorIntf {
 

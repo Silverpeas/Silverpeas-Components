@@ -47,7 +47,7 @@ import com.silverpeas.mydb.data.db.DbUtil;
 import com.silverpeas.mydb.exception.MyDBException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.ResourcesWrapper;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 
 /**
  * Database record form manager.

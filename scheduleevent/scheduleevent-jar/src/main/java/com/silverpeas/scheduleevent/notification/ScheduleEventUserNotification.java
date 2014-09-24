@@ -35,7 +35,7 @@ import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.util.DateUtil;
 
 /**
  * @author Yohann Chastagnier

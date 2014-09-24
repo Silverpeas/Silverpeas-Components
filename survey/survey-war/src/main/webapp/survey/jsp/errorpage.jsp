@@ -39,7 +39,7 @@
 <%@ page import="java.beans.*"%>
 
 <%@ page import="javax.ejb.FinderException, javax.ejb.NoSuchEntityException, java.rmi.RemoteException, java.sql.SQLException, javax.ejb.RemoveException, javax.ejb.CreateException, javax.naming.NamingException"%>
-<%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.util.ResourceLocator"%>
 
 <%@ include file="checkSurvey.jsp" %>
 

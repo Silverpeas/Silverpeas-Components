@@ -21,16 +21,6 @@
 
 package com.silverpeas.components.organizationchart.control;
 
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.ListUtils;
-
 import com.silverpeas.components.organizationchart.model.OrganizationalChart;
 import com.silverpeas.components.organizationchart.model.OrganizationalChartType;
 import com.silverpeas.components.organizationchart.model.OrganizationalPerson;
@@ -47,15 +37,21 @@ import com.silverpeas.components.organizationchart.view.ChartUnitVO;
 import com.silverpeas.components.organizationchart.view.ChartVO;
 import com.silverpeas.components.organizationchart.view.OrganizationBox;
 import com.silverpeas.components.organizationchart.view.UserVO;
-import org.silverpeas.util.StringUtil;
-
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.viewGenerator.html.UserNameGenerator;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.viewGenerator.html.UserNameGenerator;
+
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class OrganizationChartSessionController extends AbstractComponentSessionController {
 

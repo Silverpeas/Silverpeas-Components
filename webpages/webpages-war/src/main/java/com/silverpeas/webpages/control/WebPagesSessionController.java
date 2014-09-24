@@ -47,7 +47,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;

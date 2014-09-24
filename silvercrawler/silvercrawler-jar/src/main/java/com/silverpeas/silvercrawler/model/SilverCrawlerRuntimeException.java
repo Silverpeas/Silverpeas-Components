@@ -23,7 +23,7 @@
  */
 package com.silverpeas.silvercrawler.model;
 
-import com.stratelia.webactiv.util.exception.*;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 public class SilverCrawlerRuntimeException extends SilverpeasRuntimeException {
 

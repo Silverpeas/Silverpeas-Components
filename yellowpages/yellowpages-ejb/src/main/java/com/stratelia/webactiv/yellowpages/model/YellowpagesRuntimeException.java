@@ -24,7 +24,7 @@
 
 package com.stratelia.webactiv.yellowpages.model;
 
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 /**
  * Class declaration

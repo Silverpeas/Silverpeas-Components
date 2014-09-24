@@ -24,7 +24,7 @@
 
 package com.silverpeas.rssAgregator;
 
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 public class RssAgregatorRuntimeException extends SilverpeasRuntimeException {
   private static final long serialVersionUID = -8258500003916960093L;

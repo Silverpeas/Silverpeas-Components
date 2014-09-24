@@ -46,8 +46,8 @@
 <%@ page import="com.stratelia.webactiv.forums.control.helpers.ForumActionHelper"%>
 <%@ page import="com.stratelia.webactiv.forums.control.helpers.ForumHelper"%>
 <%@ page import="com.stratelia.webactiv.forums.control.helpers.ForumListHelper"%>
-<%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
-<%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
+<%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.node.model.NodeDetail" %>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%

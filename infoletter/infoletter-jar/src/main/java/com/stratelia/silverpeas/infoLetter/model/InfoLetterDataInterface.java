@@ -33,7 +33,7 @@ import com.silverpeas.subscribe.constant.SubscriberType;
 import com.stratelia.silverpeas.infoLetter.InfoLetterException;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.WAPrimaryKey;
 
 /**
  * Interface declaration

@@ -31,7 +31,7 @@ import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.instance.ProcessInstance;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.calendar.backbone.TodoBackboneAccess;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.attachment.SimpleDocumentInstanciator;
 
 import java.sql.Connection;

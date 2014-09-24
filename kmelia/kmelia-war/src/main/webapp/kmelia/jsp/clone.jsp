@@ -39,9 +39,10 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@page import="com.silverpeas.publicationTemplate.*"%>
 <%@page import="com.silverpeas.form.*"%>
 <%@page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
+<%@ page import="org.silverpeas.util.exception.SilverpeasException" %>
 
 <%
-  	ResourceLocator publicationSettings = new ResourceLocator("com.stratelia.webactiv.util.publication.publicationSettings", resources.getLanguage());
+	ResourceLocator publicationSettings = new ResourceLocator("org.silverpeas.util.publication.publicationSettings", resources.getLanguage());
 
 	//Recuperation des parametres
 	String 					profile 		= (String) request.getAttribute("Profile");
@@ -316,7 +317,8 @@ $(function() {
                       .include(request, response);
 				}
 			} catch (Exception e) {
-				throw new KmeliaException("JSPpublicationManager.displayUserModelAndAttachmentsView()",SilverpeasException.ERROR,"root.EX_DISPLAY_ATTACHMENTS_FAILED", e);
+				throw new KmeliaException("JSPpublicationManager.displayUserModelAndAttachmentsView()",
+            SilverpeasException.ERROR,"root.EX_DISPLAY_ATTACHMENTS_FAILED", e);
 			}
     	}
 

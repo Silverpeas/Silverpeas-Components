@@ -30,7 +30,7 @@ import com.silverpeas.export.ExportException;
 import com.silverpeas.export.Exporter;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
-import com.stratelia.webactiv.util.FileRepositoryManager;
+import org.silverpeas.util.FileRepositoryManager;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;

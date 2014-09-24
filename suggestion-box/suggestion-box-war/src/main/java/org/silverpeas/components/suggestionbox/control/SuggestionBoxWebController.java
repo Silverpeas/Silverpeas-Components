@@ -46,7 +46,7 @@ import com.stratelia.silverpeas.peasCore.servlets.annotation.WebComponentControl
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import org.silverpeas.util.PairObject;
 import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.components.suggestionbox.SuggestionBoxComponentSettings;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;

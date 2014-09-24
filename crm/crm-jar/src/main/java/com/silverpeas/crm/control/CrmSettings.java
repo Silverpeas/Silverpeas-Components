@@ -24,7 +24,7 @@
 
 package com.silverpeas.crm.control;
 
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 public class CrmSettings {
   static private String[] m_Function = null;

@@ -23,7 +23,7 @@
  */
 package com.stratelia.webactiv.forums.models;
 
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.WAPrimaryKey;
 
 /**
  * Clé primaire associée à un forum.

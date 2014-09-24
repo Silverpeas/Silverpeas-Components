@@ -29,7 +29,7 @@ import com.silverpeas.crm.model.CrmContact;
 import com.silverpeas.crm.model.CrmDelivery;
 import com.silverpeas.crm.model.CrmEvent;
 import com.silverpeas.crm.model.CrmParticipant;
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.WAPrimaryKey;
 
 import java.util.List;
 

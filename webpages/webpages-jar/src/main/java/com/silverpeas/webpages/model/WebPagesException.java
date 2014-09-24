@@ -30,7 +30,7 @@
  */
 package com.silverpeas.webpages.model;
 
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 
 /**
  * @author sdevolder
@@ -84,7 +84,7 @@ public class WebPagesException extends SilverpeasException {
 
   /*
    * (non-Javadoc)
-   * @see com.stratelia.webactiv.util.exception.FromModule#getModule()
+   * @see org.silverpeas.util.exception.FromModule#getModule()
    */
   public String getModule() {
     return "webPages";

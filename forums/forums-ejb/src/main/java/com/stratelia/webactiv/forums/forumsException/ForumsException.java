@@ -27,7 +27,7 @@
 
 package com.stratelia.webactiv.forums.forumsException;
 
-import com.stratelia.webactiv.util.exception.*;
+import org.silverpeas.util.exception.SilverpeasException;
 
 public class ForumsException extends SilverpeasException {
 

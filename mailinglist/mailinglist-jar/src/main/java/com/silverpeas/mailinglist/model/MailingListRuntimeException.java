@@ -24,7 +24,7 @@
 
 package com.silverpeas.mailinglist.model;
 
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 public class MailingListRuntimeException extends SilverpeasRuntimeException {
   /**

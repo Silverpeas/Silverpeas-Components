@@ -30,8 +30,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.exception.UtilException;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.exception.UtilException;
 
 public class GroupDAO {
   public static Collection<String> getGroupIds(Connection con, String fatherId,

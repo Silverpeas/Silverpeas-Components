@@ -35,7 +35,7 @@
 
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
-<view:setBundle basename="com.stratelia.webactiv.util.date.multilang.date" var="dateBundle" />
+<view:setBundle basename="org.silverpeas.util.date.multilang.date" var="dateBundle" />
 
 
 <c:set var="filterGroups" value="${requestScope.filterGroups}" />

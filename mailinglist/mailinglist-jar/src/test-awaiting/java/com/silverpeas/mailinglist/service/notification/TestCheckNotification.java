@@ -30,7 +30,7 @@ import com.silverpeas.mailinglist.service.model.beans.Message;
 import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.notificationserver.NotificationServerUtil;
 import com.stratelia.webactiv.beans.admin.AdminReference;
-import com.stratelia.webactiv.util.JNDINames;
+import org.silverpeas.util.JNDINames;
 import java.io.IOException;
 import java.util.List;
 import javax.jms.QueueConnectionFactory;

@@ -43,25 +43,27 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="java.beans.*"%>
 
 <%@ page import="java.util.*"%>
-<%@ page import="com.stratelia.webactiv.util.*"%>
+<%@ page import="org.silverpeas.util.*"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.board.Board"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.iconPanes.IconPane"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.icons.Icon"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.*"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.*"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.*"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.board.Board"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.window.*"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.*"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.*"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.*"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.iconPanes.IconPane"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.icons.Icon"%>
 <%@ page import="com.stratelia.webactiv.quickinfo.control.*"%>
 <%@ page import="com.stratelia.webactiv.publication.model.*"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="com.stratelia.silverpeas.silvertrace.SilverTrace"%>
 <%@ page import="org.silverpeas.util.ResourcesWrapper"%>
 <%@ page import="org.silverpeas.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.util.GeneralPropertiesManager" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 

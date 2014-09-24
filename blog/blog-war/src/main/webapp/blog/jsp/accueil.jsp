@@ -30,6 +30,7 @@
 <%@page import="com.silverpeas.blog.control.StyleSheet"%>
 <%@ page import="org.silverpeas.util.StringUtil" %>
 <%@ page import="org.silverpeas.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.util.DateUtil" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 <%

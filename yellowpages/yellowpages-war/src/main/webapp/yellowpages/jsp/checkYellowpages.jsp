@@ -37,39 +37,40 @@
 <%@ page import="javax.naming.Context,javax.naming.InitialContext,javax.rmi.PortableRemoteObject"%>
 <%@ page import="javax.ejb.RemoveException, javax.ejb.CreateException, java.sql.SQLException, javax.naming.NamingException, java.rmi.RemoteException, javax.ejb.FinderException"%>
 
-<%@ page import="com.stratelia.webactiv.util.*"%>
+<%@ page import="org.silverpeas.util.*"%>
 <%@ page import="com.stratelia.webactiv.contact.model.*"%>
 <%@ page import="com.stratelia.webactiv.contact.info.model.*"%>
-<%@ page import="com.stratelia.webactiv.util.exception.*"%>
-<%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
-<%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
+<%@ page import="org.silverpeas.util.exception.*"%>
+<%@ page import="org.silverpeas.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
 <%@ page import="com.stratelia.webactiv.node.model.NodePK"%>
 <%@ page import="com.stratelia.webactiv.node.model.NodeDetail"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.board.Board"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPane"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.iconPanes.IconPane"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.icons.Icon"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.navigationList.NavigationList"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.*"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.*"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.board.Board"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.tabs.TabbedPane"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.iconPanes.IconPane"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.icons.Icon"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.navigationList.NavigationList"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.*"%>
 <%@ page import="com.stratelia.webactiv.yellowpages.control.YellowpagesSessionController"%>
 <%@ page import="com.stratelia.webactiv.yellowpages.model.*"%>
 <%@page import="org.silverpeas.util.StringUtil"%>
 <%@page import="org.silverpeas.util.EncodeHelper"%>
 <%@ page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%
 ResourcesWrapper 				resources 		= (ResourcesWrapper)request.getAttribute("resources");
 YellowpagesSessionController 	yellowpagesScc 	= (YellowpagesSessionController) request.getAttribute("yellowpagesScc");
-GraphicElementFactory 			gef 			= (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
+GraphicElementFactory gef 			= (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 String[] 						browseContext 	= (String[]) request.getAttribute("browseContext");
 
 if (yellowpagesScc == null) {

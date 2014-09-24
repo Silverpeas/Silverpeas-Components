@@ -26,7 +26,7 @@ package com.stratelia.webactiv.almanach.control;
 import static com.silverpeas.calendar.CalendarEvent.anEventAt;
 import static com.silverpeas.calendar.CalendarEventRecurrence.every;
 import static org.silverpeas.util.StringUtil.isDefined;
-import static com.stratelia.webactiv.util.DateUtil.asDatable;
+import static org.silverpeas.util.DateUtil.asDatable;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -51,7 +51,7 @@ import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.Periodicity;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 /**
  * An encoder of EventDetail instances to EventCalendar instances.

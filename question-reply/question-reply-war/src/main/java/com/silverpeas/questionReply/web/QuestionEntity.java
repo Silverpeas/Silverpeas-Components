@@ -30,7 +30,7 @@ import com.stratelia.webactiv.SilverpeasRole;
 import static com.stratelia.webactiv.SilverpeasRole.*;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.IdPK;
-import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.util.DateUtil;
 import java.net.URI;
 import java.text.ParseException;
 import java.util.ArrayList;

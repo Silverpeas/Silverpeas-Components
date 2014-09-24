@@ -33,7 +33,7 @@ import com.silverpeas.whitePages.record.UserTemplate;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.AdminReference;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 import java.util.HashMap;
 import java.util.Map;

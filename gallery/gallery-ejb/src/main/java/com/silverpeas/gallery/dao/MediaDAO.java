@@ -40,9 +40,9 @@ import com.silverpeas.gallery.socialNetwork.SocialInformationGallery;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import org.silverpeas.util.CollectionUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.exception.UtilException;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.exception.UtilException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.date.Period;
 import org.silverpeas.media.Definition;
@@ -61,7 +61,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.stratelia.webactiv.util.DBUtil.*;
+import static org.silverpeas.util.DBUtil.*;
 
 public class MediaDAO {
 

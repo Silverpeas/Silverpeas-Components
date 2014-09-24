@@ -1,3 +1,6 @@
+<%@ page import="org.silverpeas.util.GeneralPropertiesManager" %>
+<%@ page import="org.silverpeas.util.ResourceLocator" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas

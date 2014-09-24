@@ -37,13 +37,13 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.contact.model.ContactDetail;
 import com.stratelia.webactiv.contact.model.ContactFatherDetail;
-import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
-import com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayCellText;
-import com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayColumn;
-import com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayLine;
-import com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayPane;
-import com.stratelia.webactiv.util.viewGenerator.html.iconPanes.IconPane;
-import com.stratelia.webactiv.util.viewGenerator.html.icons.Icon;
+import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayCellText;
+import org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayColumn;
+import org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayLine;
+import org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane;
+import org.silverpeas.util.viewGenerator.html.iconPanes.IconPane;
+import org.silverpeas.util.viewGenerator.html.icons.Icon;
 import com.stratelia.webactiv.yellowpages.model.UserContact;
 
 public class DisplayContactsHelper {

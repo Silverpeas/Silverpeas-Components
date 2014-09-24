@@ -31,7 +31,7 @@ import com.silverpeas.classifieds.control.ClassifiedServiceFactory;
 import com.silverpeas.classifieds.model.ClassifiedsRuntimeException;
 import com.silverpeas.comment.service.CommentServiceFactory;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 public class ClassifiedsInstanciator implements ComponentsInstanciatorIntf {
 

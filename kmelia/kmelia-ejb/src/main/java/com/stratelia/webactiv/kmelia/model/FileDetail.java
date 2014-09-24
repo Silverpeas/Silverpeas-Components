@@ -24,8 +24,9 @@
 
 package com.stratelia.webactiv.kmelia.model;
 
+import org.silverpeas.util.FileServerUtils;
 import org.silverpeas.util.FileUtil;
-import com.stratelia.webactiv.util.FileRepositoryManager;
+import org.silverpeas.util.FileRepositoryManager;
 
 public class FileDetail extends Object implements java.io.Serializable {
   private static final long serialVersionUID = -9137458562237749139L;
@@ -64,8 +65,7 @@ public class FileDetail extends Object implements java.io.Serializable {
   }
 
   public String getFileURL() {
-    return com.stratelia.webactiv.util.FileServerUtils.getUrl(name, path,
-        getMimeType());
+    return FileServerUtils.getUrl(name, path, getMimeType());
   }
 
   public boolean isIsDirectory() {

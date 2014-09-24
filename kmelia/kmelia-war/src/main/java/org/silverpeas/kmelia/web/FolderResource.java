@@ -36,15 +36,15 @@ import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ResourceLocator;
 import com.stratelia.webactiv.node.control.NodeBm;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.silverpeas.node.web.NodeAttrEntity;
 import org.silverpeas.node.web.NodeEntity;
-import static com.stratelia.webactiv.util.JNDINames.NODEBM_EJBHOME;
+import static org.silverpeas.util.JNDINames.NODEBM_EJBHOME;
 
 /**
  * A REST Web resource representing a given node. It is a web service that provides an access to a

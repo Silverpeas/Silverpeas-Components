@@ -124,7 +124,7 @@ void displayAnswer(int i, String style, ResourcesWrapper resources, List<Compone
       action = "CreatePoll";
     }
 
-    ResourceLocator uploadSettings = new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings",
+    ResourceLocator uploadSettings = new ResourceLocator("org.silverpeas.util.uploads.uploadSettings",
         surveyScc.getLanguage());
     ResourceLocator settings = new ResourceLocator("org.silverpeas.survey.surveySettings",
         surveyScc.getLanguage());

@@ -26,7 +26,7 @@ import com.silverpeas.mailinglist.service.model.beans.MailingList;
 import com.silverpeas.mailinglist.service.model.beans.MailingListActivity;
 import com.silverpeas.mailinglist.service.model.beans.Message;
 import com.silverpeas.mailinglist.service.util.OrderBy;
-import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import org.silverpeas.util.fileFolder.FileFolderManager;
 import java.util.Calendar;
 import java.util.List;
 import org.dbunit.dataset.IDataSet;

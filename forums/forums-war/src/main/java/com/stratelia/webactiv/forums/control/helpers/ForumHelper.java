@@ -31,7 +31,7 @@ import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.forums.control.ForumsSessionController;
 import com.stratelia.webactiv.forums.models.Message;
 import com.stratelia.webactiv.forums.url.ActionUrl;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.rating.web.RaterRatingEntity;
 
 import javax.servlet.http.HttpServletRequest;

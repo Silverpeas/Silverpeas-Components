@@ -24,7 +24,7 @@
 
 package com.silverpeas.processManager;
 
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 
 /**
  * Thrown by the processManager components.

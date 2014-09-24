@@ -32,7 +32,7 @@
 <%@page import="com.silverpeas.thumbnail.ThumbnailSettings"%>
 <%@page import="com.silverpeas.thumbnail.model.ThumbnailDetail"%>
 <%@page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
-<%@page import="com.stratelia.webactiv.util.FileServerUtils" %>
+<%@page import="org.silverpeas.util.FileServerUtils" %>
 <%@page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
 <%@page import="org.silverpeas.util.URLUtils"%>
 <%@page import="com.stratelia.webactiv.kmelia.model.KmeliaPublication" %>

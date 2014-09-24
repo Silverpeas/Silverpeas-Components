@@ -41,7 +41,7 @@ import com.silverpeas.web.mock.UserDetailWithProfiles;
 
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.persistence.IdPK;
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.attachment.util.SimpleDocumentList;
 
 import static com.silverpeas.questionReply.web.QuestionReplyTestResources.COMPONENT_INSTANCE_ID;

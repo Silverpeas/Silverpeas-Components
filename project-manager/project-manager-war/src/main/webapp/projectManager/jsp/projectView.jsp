@@ -24,7 +24,7 @@
 
 --%>
 <%@page import="org.silverpeas.util.EncodeHelper"%>
-<%@page import="com.stratelia.webactiv.util.FileRepositoryManager"%>
+<%@page import="org.silverpeas.util.FileRepositoryManager"%>
 <%@page import="org.silverpeas.util.StringUtil"%>
 <%@page import="org.silverpeas.attachment.model.SimpleDocument"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>

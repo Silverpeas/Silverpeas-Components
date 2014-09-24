@@ -24,8 +24,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.silverpeas.formsonline.model.mock.FormsOnlineDAOJdbcMock;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.DateUtil;
 
 
 /**

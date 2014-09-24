@@ -36,8 +36,8 @@ import com.silverpeas.mydb.data.datatype.DataType;
 import com.silverpeas.mydb.data.datatype.DataTypeList;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.XMLConfigurationStore;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.XMLConfigurationStore;
 import java.util.List;
 
 /**

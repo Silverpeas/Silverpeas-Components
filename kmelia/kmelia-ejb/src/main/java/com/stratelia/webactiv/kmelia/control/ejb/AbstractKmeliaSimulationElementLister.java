@@ -23,9 +23,9 @@
  */
 package com.stratelia.webactiv.kmelia.control.ejb;
 
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.WAPrimaryKey;
 import com.stratelia.webactiv.node.control.NodeBm;
 import com.stratelia.webactiv.publication.control.PublicationBm;
 import org.silverpeas.process.annotation.SimulationElementLister;

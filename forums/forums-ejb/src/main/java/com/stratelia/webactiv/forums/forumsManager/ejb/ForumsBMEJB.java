@@ -42,10 +42,10 @@ import com.stratelia.webactiv.forums.models.ForumPK;
 import com.stratelia.webactiv.forums.models.Message;
 import com.stratelia.webactiv.forums.models.MessagePK;
 import com.stratelia.webactiv.forums.models.Moderator;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.exception.UtilException;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.exception.UtilException;
 import com.stratelia.webactiv.node.control.NodeBm;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
@@ -1316,7 +1316,7 @@ public class ForumsBMEJB implements ForumsBM {
   protected Connection openConnection() {
     try {
       return DBUtil.makeConnection(JNDINames.FORUMS_DATASOURCE);
-    } catch (com.stratelia.webactiv.util.exception.UtilException ue) {
+    } catch (UtilException ue) {
       throw new ForumsRuntimeException("ForumsBmEJB.openConnection()",
           SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", ue);
     }

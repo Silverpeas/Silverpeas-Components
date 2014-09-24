@@ -12,7 +12,7 @@ import javax.sql.DataSource;
 
 import com.silverpeas.delegatednews.dao.DelegatedNewsDaoTest;
 import com.silverpeas.delegatednews.model.DelegatedNews;
-import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.util.DateUtil;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 

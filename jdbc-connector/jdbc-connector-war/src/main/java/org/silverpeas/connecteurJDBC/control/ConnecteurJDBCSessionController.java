@@ -25,9 +25,9 @@ import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.XMLConfigurationStore;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.XMLConfigurationStore;
+import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.connecteurJDBC.service.ConnecteurJDBCConnectionInfoDetail;
 import org.silverpeas.connecteurJDBC.service.ConnecteurJDBCConnectionInfoPK;
 

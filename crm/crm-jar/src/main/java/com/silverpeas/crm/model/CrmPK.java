@@ -28,7 +28,7 @@ import java.io.Serializable;
 
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.core.admin.OrganisationController;
 
 /**

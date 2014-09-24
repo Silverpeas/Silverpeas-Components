@@ -31,7 +31,11 @@ import com.silverpeas.projectManager.model.*;
 import com.silverpeas.projectManager.vo.DayVO;
 import com.silverpeas.projectManager.vo.MonthVO;
 import com.silverpeas.projectManager.vo.WeekVO;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 
@@ -45,8 +49,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.PairObject;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.*;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 /**
  * This class contains all the business model for project manager component
@@ -635,8 +638,8 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   private ProjectManagerBm getProjectManagerBm() {
     if (projectManagerBm == null) {
       try {
-        projectManagerBm = EJBUtilitaire.getEJBObjectRef(JNDINames.PROJECTMANAGERBM_EJBHOME,
-            ProjectManagerBm.class);
+        projectManagerBm = EJBUtilitaire
+            .getEJBObjectRef(JNDINames.PROJECTMANAGERBM_EJBHOME, ProjectManagerBm.class);
       } catch (Exception e) {
         throw new ProjectManagerRuntimeException(
             "ProjectManagerSessionController.getProjectManagerBm()",

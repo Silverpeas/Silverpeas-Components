@@ -29,9 +29,10 @@ import com.stratelia.silverpeas.peasCore.*;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.*;
-import com.stratelia.webactiv.util.*;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.PairObject;
+import org.silverpeas.util.ResourceLocator;
 
 import java.util.*;
 

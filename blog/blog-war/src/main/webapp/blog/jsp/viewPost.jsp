@@ -28,6 +28,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@page import="java.util.GregorianCalendar"%>
+<%@ page import="org.silverpeas.util.DateUtil" %>
 <%@ include file="check.jsp" %>
 
 <% 

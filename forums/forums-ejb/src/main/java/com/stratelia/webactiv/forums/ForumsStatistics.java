@@ -27,8 +27,8 @@ import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
 import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsBM;
 import com.stratelia.webactiv.forums.models.Forum;
 import com.stratelia.webactiv.forums.models.ForumPK;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.JNDINames;
 
 import javax.ejb.EJBException;
 import java.util.ArrayList;

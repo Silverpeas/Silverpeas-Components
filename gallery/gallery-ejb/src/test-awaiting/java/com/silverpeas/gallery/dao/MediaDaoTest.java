@@ -35,7 +35,7 @@ import com.silverpeas.gallery.model.Streaming;
 import com.silverpeas.gallery.model.Video;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.util.DateUtil;
 import org.apache.commons.lang3.time.DateUtils;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;

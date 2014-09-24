@@ -35,7 +35,7 @@ import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
 import org.silverpeas.util.MapUtil;
 import com.stratelia.webactiv.forums.models.ForumPK;
 import com.stratelia.webactiv.forums.models.MessagePK;
-import com.stratelia.webactiv.util.DBUtil;
+import org.silverpeas.util.DBUtil;
 import org.dbunit.database.IDatabaseConnection;
 import org.junit.After;
 import org.junit.AfterClass;

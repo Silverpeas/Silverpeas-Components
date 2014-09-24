@@ -25,7 +25,7 @@
 package com.silverpeas.external.mailinglist.servlets;
 
 import com.silverpeas.mailinglist.service.model.beans.Attachment;
-import com.stratelia.webactiv.util.FileRepositoryManager;
+import org.silverpeas.util.FileRepositoryManager;
 
 public class DisplayableAttachment implements MailingListRoutage {
   private long size;

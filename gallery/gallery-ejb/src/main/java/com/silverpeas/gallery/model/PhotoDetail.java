@@ -34,7 +34,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.date.Period;
 
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
-import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.util.DateUtil;
 
 /**
  * @deprecated

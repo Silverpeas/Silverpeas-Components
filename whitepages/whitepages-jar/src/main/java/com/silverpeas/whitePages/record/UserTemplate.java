@@ -25,10 +25,11 @@ import com.silverpeas.form.fieldType.TextField;
 import com.silverpeas.form.form.*;
 import com.silverpeas.form.record.*;
 import com.stratelia.webactiv.beans.admin.*;
-import com.stratelia.webactiv.util.*;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.util.ResourceLocator;
 
 public class UserTemplate implements RecordTemplate {
 

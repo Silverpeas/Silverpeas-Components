@@ -26,7 +26,7 @@ import com.silverpeas.scheduleevent.constant.ScheduleEventConstant;
 import com.silverpeas.scheduleevent.service.model.beans.Contributor;
 import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
 import com.silverpeas.scheduleevent.service.model.dao.ScheduleEventDao;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;

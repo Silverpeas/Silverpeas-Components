@@ -37,7 +37,7 @@ import java.util.List;
 
 import static com.stratelia.webactiv.almanach.model.EventDetailBuilder.anEventDetailOfId;
 import static com.stratelia.webactiv.almanach.model.EventDetailMatcher.theEventDetail;
-import static com.stratelia.webactiv.util.DateUtil.date2SQLDate;
+import static org.silverpeas.util.DateUtil.date2SQLDate;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;

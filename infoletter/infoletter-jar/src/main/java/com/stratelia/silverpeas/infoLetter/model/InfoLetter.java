@@ -25,7 +25,7 @@ package com.stratelia.silverpeas.infoLetter.model;
 
 import com.stratelia.webactiv.persistence.SilverpeasBean;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.WAPrimaryKey;
 
 public class InfoLetter extends SilverpeasBean implements Comparable<InfoLetter> {
 

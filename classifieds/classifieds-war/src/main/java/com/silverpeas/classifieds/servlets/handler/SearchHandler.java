@@ -17,7 +17,7 @@ import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.form.XmlSearchForm;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
-import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 import org.silverpeas.servlet.HttpRequest;
 
 /**

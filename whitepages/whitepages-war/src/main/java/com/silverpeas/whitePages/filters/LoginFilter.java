@@ -31,7 +31,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.CompoSpace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import org.silverpeas.util.GeneralPropertiesManager;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;

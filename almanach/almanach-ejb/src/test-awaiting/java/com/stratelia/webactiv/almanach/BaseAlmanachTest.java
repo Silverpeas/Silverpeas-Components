@@ -25,7 +25,7 @@ package com.stratelia.webactiv.almanach;
 
 import com.silverpeas.components.model.AbstractJndiCase;
 import com.silverpeas.components.model.SilverpeasJndiCase;
-import com.stratelia.webactiv.util.DBUtil;
+import org.silverpeas.util.DBUtil;
 import java.io.IOException;
 import java.sql.Connection;
 import java.util.Calendar;

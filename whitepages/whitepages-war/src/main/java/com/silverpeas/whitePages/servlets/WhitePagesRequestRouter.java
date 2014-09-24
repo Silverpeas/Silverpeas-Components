@@ -41,7 +41,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.exception.UtilException;
+import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.search.indexEngine.model.FieldDescription;
 import org.silverpeas.servlet.HttpRequest;
 

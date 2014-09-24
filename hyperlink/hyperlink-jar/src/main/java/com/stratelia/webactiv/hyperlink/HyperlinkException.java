@@ -24,7 +24,7 @@
 
 package com.stratelia.webactiv.hyperlink;
 
-import com.stratelia.webactiv.util.exception.*;
+import org.silverpeas.util.exception.SilverpeasException;
 
 public class HyperlinkException extends SilverpeasException {
   /**

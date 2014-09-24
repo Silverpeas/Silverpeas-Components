@@ -28,7 +28,7 @@
 
 package com.stratelia.webactiv.webSites.control;
 
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasException;
 
 public class WebSitesException extends SilverpeasException {
 

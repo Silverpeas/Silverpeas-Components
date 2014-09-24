@@ -24,7 +24,7 @@
 
 package com.silverpeas.delegatednews;
 
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 public class DelegatedNewsRuntimeException extends SilverpeasRuntimeException {
   /**

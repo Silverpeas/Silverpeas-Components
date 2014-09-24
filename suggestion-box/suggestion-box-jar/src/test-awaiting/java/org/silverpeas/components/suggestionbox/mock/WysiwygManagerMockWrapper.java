@@ -25,7 +25,7 @@ package org.silverpeas.components.suggestionbox.mock;
 
 import org.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.WAPrimaryKey;
 import org.mockito.Mockito;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;

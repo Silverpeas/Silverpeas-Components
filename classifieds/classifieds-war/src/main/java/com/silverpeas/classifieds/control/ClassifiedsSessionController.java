@@ -59,9 +59,9 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
 
-import com.stratelia.webactiv.util.WAPrimaryKey;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.viewGenerator.html.pagination.Pagination;
+import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.viewGenerator.html.pagination.Pagination;
 
 import java.util.Collections;
 import java.util.HashMap;

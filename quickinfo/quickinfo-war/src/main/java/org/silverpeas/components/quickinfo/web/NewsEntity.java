@@ -14,7 +14,7 @@ import org.silverpeas.util.time.TimeUnit;
 
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.web.Exposable;
-import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.util.DateUtil;
 
 /*
  * Copyright (C) 2000 - 2014 Silverpeas

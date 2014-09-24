@@ -32,7 +32,7 @@ import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.infoLetter.InfoLetterContentManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.util.WAPrimaryKey;
 
 /**
  * @author lbertin

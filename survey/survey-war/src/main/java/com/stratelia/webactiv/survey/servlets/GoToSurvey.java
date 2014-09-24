@@ -29,8 +29,8 @@ import com.silverpeas.peasUtil.GoTo;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.JNDINames;
 import com.stratelia.webactiv.questionContainer.control.QuestionContainerBm;
 import com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader;
 import com.stratelia.webactiv.questionContainer.model.QuestionContainerPK;

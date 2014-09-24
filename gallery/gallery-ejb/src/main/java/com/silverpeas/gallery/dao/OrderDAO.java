@@ -26,7 +26,7 @@ package com.silverpeas.gallery.dao;
 import com.silverpeas.gallery.model.MediaOrderCriteria;
 import com.silverpeas.gallery.model.Order;
 import com.silverpeas.gallery.model.OrderRow;
-import com.stratelia.webactiv.util.exception.UtilException;
+import org.silverpeas.util.exception.UtilException;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.sql.Connection;
@@ -37,7 +37,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import static com.stratelia.webactiv.util.DBUtil.*;
+import static org.silverpeas.util.DBUtil.*;
 
 public class OrderDAO {
 

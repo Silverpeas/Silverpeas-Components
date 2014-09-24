@@ -23,7 +23,7 @@ package com.silverpeas.mailinglist;
 import com.mockrunner.mock.jms.MockQueue;
 import com.silverpeas.jndi.SimpleMemoryContextFactory;
 import com.silverpeas.mailinglist.jms.MockObjectFactory;
-import com.stratelia.webactiv.util.JNDINames;
+import org.silverpeas.util.JNDINames;
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
