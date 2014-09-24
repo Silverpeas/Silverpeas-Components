@@ -24,7 +24,7 @@ import com.silverpeas.dataWarning.DataWarningDBDriver;
 import com.silverpeas.dataWarning.DataWarningDBDrivers;
 import com.silverpeas.dataWarning.DataWarningException;
 import com.silverpeas.dataWarning.model.*;
-import com.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.peasCore.*;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;

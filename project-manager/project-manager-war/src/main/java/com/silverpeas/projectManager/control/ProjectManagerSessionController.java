@@ -31,9 +31,9 @@ import com.silverpeas.projectManager.model.*;
 import com.silverpeas.projectManager.vo.DayVO;
 import com.silverpeas.projectManager.vo.MonthVO;
 import com.silverpeas.projectManager.vo.WeekVO;
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.i18n.I18NHelper;
 
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;

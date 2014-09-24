@@ -30,8 +30,8 @@ import com.silverpeas.tagcloud.ejb.TagCloudBm;
 import com.silverpeas.tagcloud.model.TagCloud;
 import com.silverpeas.tagcloud.model.TagCloudPK;
 import com.silverpeas.tagcloud.model.TagCloudUtil;
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.forums.ForumsContentManager;
@@ -74,7 +74,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import static com.silverpeas.util.i18n.I18NHelper.defaultLanguage;
+import static org.silverpeas.util.i18n.I18NHelper.defaultLanguage;
 
 /**
  * Cette classe est le Business Manager qui gere les forums

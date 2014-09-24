@@ -36,8 +36,8 @@ import javax.servlet.http.HttpSession;
 
 import com.silverpeas.projectManager.control.ProjectManagerSessionController;
 import com.silverpeas.projectManager.model.TaskDetail;
-import com.silverpeas.util.EncodeHelper;
-import com.silverpeas.util.FileUtil;
+import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.FileUtil;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;

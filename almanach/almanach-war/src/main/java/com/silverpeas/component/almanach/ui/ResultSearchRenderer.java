@@ -32,10 +32,10 @@ import com.silverpeas.search.AbstractResultDisplayer;
 import com.silverpeas.search.ResultDisplayer;
 import com.silverpeas.search.SearchResultContentVO;
 import com.silverpeas.ui.DisplayI18NHelper;
-import com.silverpeas.util.EncodeHelper;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.template.SilverpeasTemplate;
-import com.silverpeas.util.template.SilverpeasTemplateFactory;
+import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.template.SilverpeasTemplateFactory;
 
 import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;

@@ -21,8 +21,8 @@
  */
 package org.silverpeas.servlets;
 
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.web.RequestHelper;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.web.RequestHelper;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;

@@ -31,10 +31,8 @@
 package com.stratelia.silverpeas.chat;
 
 import java.io.Serializable;
-import java.util.Iterator;
 
-import com.silverpeas.util.i18n.AbstractBean;
-import com.silverpeas.util.i18n.AbstractI18NBean;
+import org.silverpeas.util.i18n.AbstractBean;
 import com.stratelia.silverpeas.contentManager.*;
 
 public class ChatRoomDetail extends AbstractBean implements SilverContentInterface,

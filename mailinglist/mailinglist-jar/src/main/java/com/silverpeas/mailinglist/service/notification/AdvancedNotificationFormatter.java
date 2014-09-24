@@ -24,10 +24,10 @@
 package com.silverpeas.mailinglist.service.notification;
 
 import com.silverpeas.mailinglist.service.model.beans.Message;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.util.template.SilverpeasTemplate;
-import com.silverpeas.util.template.SilverpeasTemplateFactory;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.webactiv.util.ResourceLocator;
 import java.util.Properties;
 

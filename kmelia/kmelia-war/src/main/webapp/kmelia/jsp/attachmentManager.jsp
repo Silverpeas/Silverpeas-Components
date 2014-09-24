@@ -28,6 +28,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
+<%@ page import="org.silverpeas.util.StringUtil" %>
 <%@include file="checkKmelia.jsp" %>
 
 <c:set var="userLanguage" value="${requestScope.resources.language}"/>

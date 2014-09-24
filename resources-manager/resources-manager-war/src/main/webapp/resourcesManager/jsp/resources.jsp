@@ -43,6 +43,7 @@
 <%@ page import="org.silverpeas.resourcemanager.model.Category"%>
 <%@ page import="org.silverpeas.resourcemanager.model.Resource"%>
 <%@ page import="java.util.List" %>
+<%@ page import="org.silverpeas.util.EncodeHelper" %>
 <%@ include file="check.jsp" %>
 <%
   //Recuperation des details de l'utilsateur
@@ -84,7 +85,8 @@ function deleteResource(resourceId, name,categoryId) {
 		browseBar.setDomainName(spaceLabel);
 		browseBar.setComponentName(componentLabel,"Main");
 		
-		String chemin = "<a href=\"ViewCategories\">" + EncodeHelper.javaStringToHtmlString(resource.getString("resourcesManager.listCategorie"))+"</a>";
+		String chemin = "<a href=\"ViewCategories\">" + EncodeHelper
+        .javaStringToHtmlString(resource.getString("resourcesManager.listCategorie"))+"</a>";
 		browseBar.setExtraInformation(resource.getString("resourcesManager.gererresource") + " " + categoryName);	
 		browseBar.setPath(chemin);
 

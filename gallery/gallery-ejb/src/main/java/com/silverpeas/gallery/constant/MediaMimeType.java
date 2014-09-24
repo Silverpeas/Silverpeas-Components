@@ -24,8 +24,8 @@
 
 package com.silverpeas.gallery.constant;
 
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.StringUtil;
 import org.apache.commons.collections.set.UnmodifiableSet;
 
 import java.io.File;

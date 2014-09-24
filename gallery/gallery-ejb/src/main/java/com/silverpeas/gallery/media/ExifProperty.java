@@ -23,7 +23,7 @@
  */
 package com.silverpeas.gallery.media;
 
-import com.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.i18n.I18NHelper;
 import java.util.HashMap;
 import java.util.Map;
 

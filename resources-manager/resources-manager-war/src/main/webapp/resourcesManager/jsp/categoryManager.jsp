@@ -28,6 +28,7 @@
 <%@ page import="org.silverpeas.resourcemanager.model.Category"%>
 <%@ page import="java.util.List" %>
 <%@ page import="com.silverpeas.publicationTemplate.PublicationTemplate" %>
+<%@ page import="org.silverpeas.util.EncodeHelper" %>
 <%@ include file="check.jsp" %>
 <% 
 // Recuperation des details de l'utilsateur

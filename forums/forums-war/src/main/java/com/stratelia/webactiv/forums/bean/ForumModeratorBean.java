@@ -23,7 +23,7 @@
  */
 package com.stratelia.webactiv.forums.bean;
 
-import com.silverpeas.util.comparator.AbstractComplexComparator;
+import org.silverpeas.util.comparator.AbstractComplexComparator;
 import com.stratelia.webactiv.forums.models.Moderator;
 
 import java.util.ArrayList;

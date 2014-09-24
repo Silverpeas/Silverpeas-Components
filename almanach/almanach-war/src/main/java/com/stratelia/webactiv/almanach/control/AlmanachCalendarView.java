@@ -23,20 +23,14 @@
  */
 package com.stratelia.webactiv.almanach.control;
 
-import com.stratelia.webactiv.util.DateUtil;
 import org.silverpeas.calendar.CalendarDay;
 import org.silverpeas.calendar.CalendarViewContext;
 import org.silverpeas.calendar.CalendarViewType;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-
-import static com.silverpeas.util.StringUtil.isDefined;
-import static org.silverpeas.calendar.CalendarViewType.MONTHLY;
 
 /**
  * It defines a window in time of the calendar belonging to a given almanach instance. The type of

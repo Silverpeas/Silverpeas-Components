@@ -42,7 +42,7 @@
 
 <%@ include file="checkQuickInfo.jsp" %>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager" %>
-<%@ page import="com.silverpeas.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.util.EncodeHelper" %>
 
 <%
 News news = (News) request.getAttribute("info");

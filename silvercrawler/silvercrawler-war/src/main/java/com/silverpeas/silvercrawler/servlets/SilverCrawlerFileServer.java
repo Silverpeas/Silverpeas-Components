@@ -24,8 +24,8 @@
 package com.silverpeas.silvercrawler.servlets;
 
 import com.silverpeas.silvercrawler.statistic.Statistic;
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.exception.RelativeFileAccessException;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.exception.RelativeFileAccessException;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.SilverpeasAuthenticatedHttpServlet;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;

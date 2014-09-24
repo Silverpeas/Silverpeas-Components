@@ -26,12 +26,10 @@ package com.silverpeas.gallery.dao;
 import com.silverpeas.gallery.BaseGalleryTest;
 import com.silverpeas.gallery.model.Order;
 import com.silverpeas.gallery.model.OrderRow;
-import com.silverpeas.util.CollectionUtil;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
+import org.silverpeas.util.CollectionUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
 import org.junit.Test;
-import org.silverpeas.core.admin.OrganisationController;
 
 import java.sql.Connection;
 import java.util.Collection;

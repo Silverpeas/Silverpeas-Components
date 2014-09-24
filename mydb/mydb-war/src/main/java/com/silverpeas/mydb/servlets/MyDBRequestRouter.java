@@ -37,7 +37,7 @@ import com.silverpeas.mydb.data.key.ForeignKey;
 import com.silverpeas.mydb.data.key.PrimaryKey;
 import com.silverpeas.mydb.data.key.UnicityKey;
 import com.silverpeas.mydb.exception.MyDBException;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;

@@ -26,7 +26,7 @@ package com.stratelia.webactiv.kmelia.model.updatechain;
 
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.Util;
-import com.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.EncodeHelper;
 
 import java.io.PrintWriter;
 import java.util.List;

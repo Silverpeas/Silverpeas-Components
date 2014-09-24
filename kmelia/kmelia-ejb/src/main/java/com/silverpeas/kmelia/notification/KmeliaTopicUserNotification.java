@@ -31,7 +31,7 @@ import java.util.Collection;
 import java.util.List;
 
 import com.silverpeas.notification.model.NotificationResourceData;
-import com.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.beans.admin.UserDetail;

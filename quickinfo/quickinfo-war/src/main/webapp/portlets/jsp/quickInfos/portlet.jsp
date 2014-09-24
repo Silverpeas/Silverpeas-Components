@@ -25,11 +25,11 @@
 --%>
 
 <%@page import="com.stratelia.webactiv.util.DateUtil"%>
-<%@page import="com.silverpeas.util.StringUtil"%>
+<%@page import="org.silverpeas.util.StringUtil"%>
 <%@page import="org.silverpeas.components.quickinfo.model.News"%>
 <%@page import="java.util.List"%>
 <%@page import="javax.portlet.RenderRequest"%>
-<%@page import="com.silverpeas.util.EncodeHelper"%>
+<%@page import="org.silverpeas.util.EncodeHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="com.silverpeas.portlets.FormNames" %>

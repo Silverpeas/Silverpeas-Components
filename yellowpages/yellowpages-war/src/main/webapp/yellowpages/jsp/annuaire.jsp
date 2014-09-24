@@ -1,4 +1,4 @@
-<%@ page import="com.silverpeas.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.util.EncodeHelper" %>
 <%@ page import="com.stratelia.webactiv.yellowpages.control.DisplayContactsHelper" %>
 <%--
 

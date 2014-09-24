@@ -24,7 +24,7 @@
 package com.silverpeas.gallery.web;
 
 import com.silverpeas.gallery.constant.StreamingProvider;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import org.json.JSONObject;
 import org.silverpeas.media.Definition;
 import org.silverpeas.media.web.MediaDefinitionEntity;

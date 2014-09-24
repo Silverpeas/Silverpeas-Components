@@ -30,7 +30,7 @@
 <%@ page import="com.stratelia.webactiv.node.model.NodeDetail"%>
 <%@ page import="com.stratelia.webactiv.publication.model.Alias" %>
 <%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
-<%@ page import="com.silverpeas.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.util.EncodeHelper" %>
 
 <%
 ResourcesWrapper resources = (ResourcesWrapper)request.getAttribute("resources");

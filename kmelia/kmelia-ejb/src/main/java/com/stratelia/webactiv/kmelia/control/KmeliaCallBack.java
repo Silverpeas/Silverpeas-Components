@@ -24,7 +24,7 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.importExport.attachment.AttachmentDetail;
 import org.silverpeas.importExport.versioning.Document;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 
 import com.stratelia.silverpeas.silverpeasinitialize.CallBack;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;

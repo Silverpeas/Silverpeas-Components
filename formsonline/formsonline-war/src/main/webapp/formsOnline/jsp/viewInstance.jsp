@@ -41,7 +41,7 @@
 <%@page import="com.silverpeas.formsonline.model.FormInstance"%>
 <%@page import="com.silverpeas.form.DataRecord"%>
 <%@page import="com.silverpeas.publicationTemplate.PublicationTemplate"%>
-<%@page import="com.silverpeas.util.StringUtil"%>
+<%@page import="org.silverpeas.util.StringUtil"%>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 

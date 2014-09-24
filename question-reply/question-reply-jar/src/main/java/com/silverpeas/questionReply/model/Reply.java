@@ -20,7 +20,7 @@
  */
 package com.silverpeas.questionReply.model;
 
-import com.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.i18n.I18NHelper;
 
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.wysiwyg.control.WysiwygController;

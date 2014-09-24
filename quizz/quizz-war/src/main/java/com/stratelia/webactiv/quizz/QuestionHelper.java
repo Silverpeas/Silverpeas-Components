@@ -37,7 +37,7 @@ import java.util.List;
 
 import org.apache.commons.fileupload.FileItem;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.servlet.FileUploadUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.answer.model.Answer;

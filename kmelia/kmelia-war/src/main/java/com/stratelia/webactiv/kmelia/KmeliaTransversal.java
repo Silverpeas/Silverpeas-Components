@@ -32,7 +32,7 @@ import javax.ejb.EJBException;
 import org.silverpeas.core.admin.OrganisationController;
 
 import com.silverpeas.look.PublicationHelper;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;

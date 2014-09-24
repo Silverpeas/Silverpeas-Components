@@ -25,7 +25,7 @@ package com.silverpeas.gallery.model;
 
 import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.MediaType;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.media.Definition;
 
 /**

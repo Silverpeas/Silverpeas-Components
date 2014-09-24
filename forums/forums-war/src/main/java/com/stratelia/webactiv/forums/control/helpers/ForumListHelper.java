@@ -20,7 +20,7 @@
  */
 package com.stratelia.webactiv.forums.control.helpers;
 
-import com.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.SilverpeasRole;
@@ -28,7 +28,6 @@ import com.stratelia.webactiv.forums.control.ForumsSessionController;
 import com.stratelia.webactiv.forums.models.Forum;
 import com.stratelia.webactiv.forums.url.ActionUrl;
 import com.stratelia.webactiv.util.ResourceLocator;
-import org.silverpeas.rating.RaterRating;
 import org.silverpeas.rating.web.RaterRatingEntity;
 
 import javax.servlet.jsp.JspWriter;

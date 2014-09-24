@@ -98,8 +98,8 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="com.silverpeas.gallery.GalleryComponentSettings" %>
 
 <%@ page import="com.silverpeas.publicationTemplate.*"%>
-<%@ page import="com.silverpeas.util.StringUtil"%>
-<%@ page import="com.silverpeas.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.util.StringUtil"%>
+<%@ page import="org.silverpeas.util.EncodeHelper"%>
 <%@ page import="org.silverpeas.search.searchEngine.model.* "%>
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>

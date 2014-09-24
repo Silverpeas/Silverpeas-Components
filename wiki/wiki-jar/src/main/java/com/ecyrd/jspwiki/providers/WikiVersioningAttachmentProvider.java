@@ -24,9 +24,9 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import com.ecyrd.jspwiki.*;
 import com.ecyrd.jspwiki.attachment.Attachment;
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.StringUtil;
 import com.silverpeas.wiki.control.WikiException;
 import com.silverpeas.wiki.control.WikiMultiInstanceManager;
 import com.silverpeas.wiki.control.WikiPageDAO;
@@ -49,7 +49,7 @@ import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocumentVersion;
 import org.silverpeas.attachment.model.UnlockContext;
 
-import com.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.i18n.I18NHelper;
 
 public class WikiVersioningAttachmentProvider implements WikiAttachmentProvider {
 

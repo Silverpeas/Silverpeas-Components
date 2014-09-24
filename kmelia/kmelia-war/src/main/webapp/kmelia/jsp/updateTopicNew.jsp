@@ -23,10 +23,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="com.silverpeas.util.i18n.I18NHelper"%>
+<%@page import="org.silverpeas.util.i18n.I18NHelper"%>
 <%@page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
 <%@page import="com.stratelia.webactiv.node.model.NodeDetail"%>
-<%@page import="com.silverpeas.util.EncodeHelper"%>
+<%@page import="org.silverpeas.util.EncodeHelper"%>
 <%@page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>

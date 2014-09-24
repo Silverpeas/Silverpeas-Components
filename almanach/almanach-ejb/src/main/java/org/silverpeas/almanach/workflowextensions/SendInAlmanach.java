@@ -27,7 +27,7 @@ import java.util.Date;
 import org.silverpeas.upload.UploadedFile;
 
 import com.silverpeas.form.DataRecordUtil;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.model.Parameter;
 import com.silverpeas.workflow.external.impl.ExternalActionImpl;

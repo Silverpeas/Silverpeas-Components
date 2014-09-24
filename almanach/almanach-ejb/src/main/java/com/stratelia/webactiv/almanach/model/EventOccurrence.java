@@ -27,7 +27,7 @@ import com.silverpeas.calendar.Datable;
 import com.silverpeas.calendar.Date;
 import com.silverpeas.calendar.DateTime;
 import java.util.Calendar;
-import static com.silverpeas.util.StringUtil.*;
+import static org.silverpeas.util.StringUtil.*;
 import static com.stratelia.webactiv.util.DateUtil.*;
 
 /**

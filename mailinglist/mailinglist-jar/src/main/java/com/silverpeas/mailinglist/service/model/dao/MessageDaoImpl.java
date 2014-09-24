@@ -25,7 +25,7 @@ import com.silverpeas.mailinglist.service.model.beans.Activity;
 import com.silverpeas.mailinglist.service.model.beans.Attachment;
 import com.silverpeas.mailinglist.service.model.beans.Message;
 import com.silverpeas.mailinglist.service.util.OrderBy;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.crypto.CryptMD5;
 import com.stratelia.webactiv.util.exception.UtilException;
 import java.io.File;

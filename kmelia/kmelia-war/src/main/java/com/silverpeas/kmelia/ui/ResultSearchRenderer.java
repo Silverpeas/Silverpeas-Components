@@ -39,10 +39,10 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.search.AbstractResultDisplayer;
 import com.silverpeas.search.SearchResultContentVO;
 import com.silverpeas.ui.DisplayI18NHelper;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.util.template.SilverpeasTemplate;
-import com.silverpeas.util.template.SilverpeasTemplateFactory;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement;
 
 import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;

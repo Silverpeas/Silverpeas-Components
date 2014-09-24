@@ -29,7 +29,7 @@
 
 <%@page import="java.util.List"%>
 <%@page import="com.silverpeas.formsonline.model.FormDetail"%>
-<%@page import="com.silverpeas.util.StringUtil"%>
+<%@page import="org.silverpeas.util.StringUtil"%>
 <%@page import="java.util.Iterator"%>
 <%@page import="com.stratelia.webactiv.beans.admin.OrganizationController"%>
 <%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%>

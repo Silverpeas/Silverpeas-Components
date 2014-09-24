@@ -32,7 +32,7 @@ import java.util.TreeSet;
 import com.silverpeas.components.organizationchart.model.OrganizationalPerson;
 import com.silverpeas.components.organizationchart.model.OrganizationalRole;
 import com.silverpeas.components.organizationchart.model.PersonCategory;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 
 public class AbstractOrganizationChartServiceImpl {
 

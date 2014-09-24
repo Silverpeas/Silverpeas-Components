@@ -31,7 +31,7 @@ import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.constant.SubscriberType;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.silverpeas.subscribe.util.SubscriptionUtil;
-import com.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -93,7 +93,7 @@ public class WebPagesUserNotifier extends AbstractTemplateUserNotificationBuilde
      * @see
      * com.silverpeas.notification.builder
      * .AbstractTemplateUserNotificationBuilder#performTemplateData
-     * (java.lang.String, java.lang.Object, com.silverpeas.util.template.SilverpeasTemplate)
+     * (java.lang.String, java.lang.Object, org.silverpeas.util.template.SilverpeasTemplate)
      */
   @Override
   protected void performTemplateData(final String language, final NodePK resource,

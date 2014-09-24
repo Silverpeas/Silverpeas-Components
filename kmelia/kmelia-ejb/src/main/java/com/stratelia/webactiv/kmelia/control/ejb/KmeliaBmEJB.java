@@ -59,11 +59,11 @@ import com.silverpeas.thumbnail.ThumbnailException;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.thumbnail.service.ThumbnailServiceFactory;
-import com.silverpeas.util.CollectionUtil;
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
@@ -144,7 +144,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.silverpeas.util.StringUtil.*;
+import static org.silverpeas.util.StringUtil.*;
 import static com.stratelia.webactiv.util.JNDINames.SILVERPEAS_DATASOURCE;
 import static com.stratelia.webactiv.util.exception.SilverpeasRuntimeException.ERROR;
 import static org.silverpeas.attachment.AttachmentService.VERSION_MODE;
@@ -3382,7 +3382,7 @@ public class KmeliaBmEJB implements KmeliaBm {
   public void removeContentOfPublication(PublicationPK pubPK) {
     // remove XML content
     PublicationDetail publication = getPublicationDetail(pubPK);
-    if (!com.silverpeas.util.StringUtil.isInteger(publication.getInfoId())) {
+    if (!StringUtil.isInteger(publication.getInfoId())) {
       removeXMLContentOfPublication(pubPK);
     }
     // reset reference to content

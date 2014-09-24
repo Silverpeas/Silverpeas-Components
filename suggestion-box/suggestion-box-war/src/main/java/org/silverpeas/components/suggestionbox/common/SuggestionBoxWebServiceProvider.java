@@ -24,9 +24,9 @@
 package org.silverpeas.components.suggestionbox.common;
 
 import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.util.CollectionUtil;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.comparator.AbstractComplexComparator;
+import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.comparator.AbstractComplexComparator;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;

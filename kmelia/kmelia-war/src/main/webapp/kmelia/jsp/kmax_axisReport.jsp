@@ -55,8 +55,9 @@
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.icons.Icon"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.navigationList.NavigationList"%>
 
-<%@ page import="com.silverpeas.util.i18n.*"%>
+<%@ page import="org.silverpeas.util.i18n.*"%>
 <%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.i18n.I18NHelper" %>
 <%!
 
 String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");

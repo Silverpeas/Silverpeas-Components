@@ -26,7 +26,7 @@ package com.silverpeas.whitePages.control;
 
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
-import com.silverpeas.util.i18n.AbstractBean;
+import org.silverpeas.util.i18n.AbstractBean;
 import com.silverpeas.whitePages.model.Card;
 import com.silverpeas.whitePages.record.UserRecord;
 import com.silverpeas.whitePages.record.UserTemplate;

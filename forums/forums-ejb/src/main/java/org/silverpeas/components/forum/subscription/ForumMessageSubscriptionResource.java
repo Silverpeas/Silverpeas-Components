@@ -25,7 +25,6 @@ package org.silverpeas.components.forum.subscription;
 
 import com.silverpeas.subscribe.constant.SubscriptionResourceType;
 import com.silverpeas.subscribe.service.PKSubscriptionResource;
-import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.forums.models.MessagePK;
 
 /**

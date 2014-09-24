@@ -23,8 +23,8 @@ package com.stratelia.webactiv.almanach.control.ejb;
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.service.PdcClassificationService;
-import com.silverpeas.util.CollectionUtil;
-import com.silverpeas.util.ForeignPK;
+import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.almanach.AlmanachContentManager;
 import com.stratelia.webactiv.almanach.model.EventDAO;
@@ -77,7 +77,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import static com.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.isDefined;
 import static com.stratelia.webactiv.util.DateUtil.*;
 
 @Stateless(name = "Almanach", description

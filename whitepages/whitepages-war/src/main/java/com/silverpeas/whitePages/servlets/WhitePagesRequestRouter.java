@@ -24,7 +24,7 @@ import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.PagesContext;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.silverpeas.whitePages.WhitePagesException;
 import com.silverpeas.whitePages.control.WhitePagesSessionController;
 import com.silverpeas.whitePages.filters.LoginFilter;

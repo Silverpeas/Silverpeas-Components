@@ -24,7 +24,7 @@
 
 package com.stratelia.webactiv.almanach.control;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
 import java.util.Date;

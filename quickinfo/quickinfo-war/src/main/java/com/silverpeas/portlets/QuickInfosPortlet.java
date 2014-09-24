@@ -36,7 +36,7 @@ import javax.portlet.RenderResponse;
 import org.silverpeas.components.quickinfo.model.QuickInfoService;
 import org.silverpeas.components.quickinfo.model.QuickInfoServiceFactory;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 
 public class QuickInfosPortlet extends GenericPortlet implements FormNames {

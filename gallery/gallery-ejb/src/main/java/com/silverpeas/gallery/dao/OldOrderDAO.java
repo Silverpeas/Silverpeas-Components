@@ -22,7 +22,7 @@ package com.silverpeas.gallery.dao;
 
 import com.silverpeas.gallery.model.Order;
 import com.silverpeas.gallery.model.OrderRow;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.exception.UtilException;

@@ -23,7 +23,7 @@
  */
 package com.silverpeas.gallery.constant;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import org.apache.commons.collections.set.UnmodifiableSet;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonValue;

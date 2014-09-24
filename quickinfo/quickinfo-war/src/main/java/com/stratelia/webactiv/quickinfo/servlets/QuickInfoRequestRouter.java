@@ -37,8 +37,8 @@ import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.wysiwyg.WysiwygException;
 
 import com.silverpeas.thumbnail.control.ThumbnailController;
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;

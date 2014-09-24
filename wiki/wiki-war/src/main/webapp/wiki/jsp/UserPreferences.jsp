@@ -107,7 +107,7 @@
         CookieAssertionLoginModule.setUserCookie( response, assertedName );
 
         String redirectPage = request.getParameter( "redirect" );
-        String viewUrl = ( "UserPreferences".equals( redirectPage )  || !com.silverpeas.util.StringUtil.isDefined( redirectPage ) ) ? "Wiki.jsp" : wiki.getViewURL( redirectPage );
+        String viewUrl = ( "UserPreferences".equals( redirectPage )  || !org.silverpeas.util.StringUtil.isDefined( redirectPage ) ) ? "Wiki.jsp" : wiki.getViewURL( redirectPage );
 
         log.info( "Redirecting user to " + viewUrl );
         response.sendRedirect( viewUrl );

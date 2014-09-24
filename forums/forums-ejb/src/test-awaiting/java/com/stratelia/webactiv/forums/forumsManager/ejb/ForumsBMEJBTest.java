@@ -32,7 +32,7 @@ import com.silverpeas.subscribe.SubscriptionSubscriber;
 import com.silverpeas.subscribe.constant.SubscriberType;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
-import com.silverpeas.util.MapUtil;
+import org.silverpeas.util.MapUtil;
 import com.stratelia.webactiv.forums.models.ForumPK;
 import com.stratelia.webactiv.forums.models.MessagePK;
 import com.stratelia.webactiv.util.DBUtil;

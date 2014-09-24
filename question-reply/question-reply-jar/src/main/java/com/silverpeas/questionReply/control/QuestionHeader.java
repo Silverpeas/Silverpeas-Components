@@ -24,12 +24,9 @@
 package com.silverpeas.questionReply.control;
 
 import com.silverpeas.questionReply.model.Question;
-import com.silverpeas.util.i18n.AbstractBean;
-import com.silverpeas.util.i18n.AbstractI18NBean;
+import org.silverpeas.util.i18n.AbstractBean;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.webactiv.persistence.IdPK;
-
-import java.util.Iterator;
 
 /**
  * The questionReply implementation of SilverContentInterface

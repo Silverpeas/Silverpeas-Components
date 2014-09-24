@@ -35,7 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.silverpeas.kmelia.model.StatsFilterVO;
 import com.silverpeas.kmelia.search.KmeliaSearchServiceFactory;
 import com.silverpeas.kmelia.stats.StatisticService;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;

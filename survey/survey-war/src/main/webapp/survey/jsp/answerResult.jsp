@@ -1,3 +1,4 @@
+<%@ page import="org.silverpeas.util.EncodeHelper" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -66,7 +67,8 @@ function viewResultByUser(userId, userName) {
 	    for (String userId : users) {
 			 UserDetail user = surveyScc.getUserDetail(userId);	
 			 ArrayLine ligne = arrayPane.addArrayLine();
-			 String url = "<a href=\"javaScript:onclick=viewResultByUser('"+userId+"','"+EncodeHelper.javaStringToHtmlString(user.getDisplayedName())+"');\">"+EncodeHelper.javaStringToHtmlString(user.getLastName()+" "+user.getFirstName())+"</a>";
+			 String url = "<a href=\"javaScript:onclick=viewResultByUser('"+userId+"','"+
+           EncodeHelper.javaStringToHtmlString(user.getDisplayedName())+"');\">"+EncodeHelper.javaStringToHtmlString(user.getLastName()+" "+user.getFirstName())+"</a>";
 			 cell = ligne.addArrayCellText(url);
 			 cell.setCompareOn(user.getLastName()+" "+user.getFirstName());
       	}

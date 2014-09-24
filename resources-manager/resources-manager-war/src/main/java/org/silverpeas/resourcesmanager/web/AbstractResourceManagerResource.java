@@ -23,7 +23,7 @@
  */
 package org.silverpeas.resourcesmanager.web;
 
-import com.silverpeas.util.comparator.AbstractComplexComparator;
+import org.silverpeas.util.comparator.AbstractComplexComparator;
 import com.silverpeas.web.RESTWebService;
 import org.silverpeas.resourcemanager.ResourcesManagerFactory;
 import org.silverpeas.resourcemanager.control.ResourcesManager;

@@ -28,9 +28,9 @@ import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.service.ComponentSubscription;
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -465,7 +465,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
     // Attach uploaded files
     try {
-      if (com.silverpeas.util.CollectionUtil.isNotEmpty(uploadedFiles)) {
+      if (org.silverpeas.util.CollectionUtil.isNotEmpty(uploadedFiles)) {
         for (UploadedFile uploadedFile : uploadedFiles) {
           // Register attachment
           uploadedFile.registerAttachment(messagePK, I18NHelper.defaultLanguage, false);

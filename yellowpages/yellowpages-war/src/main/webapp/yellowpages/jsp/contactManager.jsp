@@ -36,7 +36,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.silverpeas.form.Form"%>
 <%@ page import="com.silverpeas.form.RecordSet"%>
 <%@ page import="com.silverpeas.form.PagesContext"%>
-<%@ page import="com.silverpeas.util.StringUtil"%>
+<%@ page import="org.silverpeas.util.StringUtil"%>
 
 <%@ include file="checkYellowpages.jsp" %>
 <%@ include file="topicReport.jsp.inc" %>

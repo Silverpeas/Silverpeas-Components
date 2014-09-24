@@ -23,7 +23,7 @@
  */
 package org.silverpeas.resourcemanager.util;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.silverpeas.resourcemanager.model.Resource;
 

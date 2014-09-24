@@ -26,8 +26,8 @@ package org.silverpeas.components.quickinfo.notification;
 import org.silverpeas.components.quickinfo.model.News;
 
 import com.silverpeas.notification.model.NotificationResourceData;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 

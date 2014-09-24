@@ -34,7 +34,7 @@
 <%@ page import="com.stratelia.silverpeas.pdc.model.SearchAxis"%>
 <%@ page import="com.stratelia.silverpeas.pdc.model.Value"%>
 <%@ page import="com.stratelia.silverpeas.pdc.model.SearchContext"%>
-<%@ page import="com.silverpeas.util.StringUtil"%>
+<%@ page import="org.silverpeas.util.StringUtil"%>
 <%@ page import="com.stratelia.silverpeas.notificationManager.NotificationParameters"%>
 
 <%@ include file="checkWhitePages.jsp" %>

@@ -24,8 +24,8 @@
 package com.silverpeas.gallery.model;
 
 import com.silverpeas.gallery.constant.MediaType;
-import com.silverpeas.util.CollectionUtil;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;

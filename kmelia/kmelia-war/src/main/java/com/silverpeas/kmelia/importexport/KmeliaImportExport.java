@@ -29,7 +29,7 @@ import com.silverpeas.importExport.control.GEDImportExport;
 import com.silverpeas.importExport.model.ImportExportException;
 import com.silverpeas.importExport.report.MassiveReport;
 import com.silverpeas.importExport.report.UnitReport;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ObjectType;

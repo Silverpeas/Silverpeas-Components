@@ -41,7 +41,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
 
-import static com.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.isDefined;
 import static com.stratelia.webactiv.almanach.model.EventOccurrence.*;
 import static com.stratelia.webactiv.util.DateUtil.extractHour;
 import static com.stratelia.webactiv.util.DateUtil.extractMinutes;

@@ -3,8 +3,6 @@ package com.silverpeas.classifieds.servlets.handler;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.silverpeas.classifieds.control.ClassifiedsSessionController;
 import com.silverpeas.classifieds.model.Category;
 import com.silverpeas.classifieds.model.ClassifiedDetail;
@@ -14,7 +12,7 @@ import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 
 import org.silverpeas.search.searchEngine.model.QueryDescription;
 import org.silverpeas.search.indexEngine.model.FieldDescription;

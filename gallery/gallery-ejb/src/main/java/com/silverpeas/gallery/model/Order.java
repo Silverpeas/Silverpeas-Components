@@ -23,7 +23,7 @@
  */
 package com.silverpeas.gallery.model;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
 import java.util.Date;

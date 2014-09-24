@@ -24,7 +24,7 @@ import java.rmi.RemoteException;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.silverpeas.util.clipboard.ClipboardException;
+import org.silverpeas.util.clipboard.ClipboardException;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;

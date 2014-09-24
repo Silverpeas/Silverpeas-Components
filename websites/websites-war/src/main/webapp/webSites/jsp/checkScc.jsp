@@ -84,7 +84,7 @@
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
 <%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
 
-<%@ page import="com.silverpeas.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.util.EncodeHelper"%>
 
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>

@@ -25,13 +25,11 @@ import com.silverpeas.mailinglist.service.event.MessageListener;
 import com.silverpeas.mailinglist.service.model.beans.Attachment;
 import com.silverpeas.mailinglist.service.model.beans.Message;
 import com.silverpeas.mailinglist.service.util.HtmlCleaner;
-import com.silverpeas.util.MimeTypes;
+import org.silverpeas.util.MimeTypes;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
+
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -46,7 +44,7 @@ import javax.mail.internet.ParseException;
 
 import org.apache.commons.io.IOUtils;
 
-import com.silverpeas.util.FileUtil;
+import org.silverpeas.util.FileUtil;
 
 public class MailProcessor {
 

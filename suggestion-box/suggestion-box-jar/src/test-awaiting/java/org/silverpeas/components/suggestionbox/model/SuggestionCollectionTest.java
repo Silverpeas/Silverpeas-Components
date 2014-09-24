@@ -25,7 +25,7 @@ package org.silverpeas.components.suggestionbox.model;
 
 import com.silverpeas.notification.builder.UserNotificationBuider;
 import com.silverpeas.notification.builder.helper.UserNotificationManager;
-import com.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.CollectionUtil;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.hamcrest.MatcherAssert;

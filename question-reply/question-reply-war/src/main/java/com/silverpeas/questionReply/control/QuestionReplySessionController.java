@@ -52,8 +52,8 @@ import com.silverpeas.questionReply.model.Question;
 import com.silverpeas.questionReply.model.QuestionDetail;
 import com.silverpeas.questionReply.model.Recipient;
 import com.silverpeas.questionReply.model.Reply;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.ZipManager;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.ZipManager;
 import com.silverpeas.whitePages.control.CardManager;
 import com.silverpeas.whitePages.model.Card;
 

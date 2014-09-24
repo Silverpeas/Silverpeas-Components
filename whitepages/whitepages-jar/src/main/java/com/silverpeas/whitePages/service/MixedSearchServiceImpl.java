@@ -23,7 +23,7 @@ package com.silverpeas.whitePages.service;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.pdc.ejb.PdcBm;
 import com.silverpeas.pdc.ejb.PdcBmRuntimeException;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
 import com.stratelia.silverpeas.contentManager.GlobalSilverContentI18N;
 import com.stratelia.silverpeas.pdc.model.SearchContext;

@@ -24,7 +24,7 @@
 
 package com.stratelia.webactiv.kmelia.model;
 
-import com.silverpeas.util.FileUtil;
+import org.silverpeas.util.FileUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 
 public class FileDetail extends Object implements java.io.Serializable {

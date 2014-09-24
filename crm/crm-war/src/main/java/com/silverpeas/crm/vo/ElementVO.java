@@ -34,8 +34,8 @@ import org.apache.ecs.xhtml.a;
 import org.apache.ecs.xhtml.img;
 
 import org.silverpeas.attachment.model.SimpleDocument;
-import com.silverpeas.util.EncodeHelper;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 

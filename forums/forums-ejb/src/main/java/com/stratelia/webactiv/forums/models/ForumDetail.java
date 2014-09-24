@@ -27,7 +27,7 @@ package com.stratelia.webactiv.forums.models;
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.AccessControllerProvider;
-import com.silverpeas.util.i18n.AbstractBean;
+import org.silverpeas.util.i18n.AbstractBean;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -36,7 +36,6 @@ import com.stratelia.webactiv.util.DateUtil;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Iterator;
 
 /**
  * This object contains the description of a forum

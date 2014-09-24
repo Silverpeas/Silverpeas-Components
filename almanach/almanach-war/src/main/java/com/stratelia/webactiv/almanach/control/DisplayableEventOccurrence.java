@@ -33,7 +33,7 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.silverpeas.attachment.model.SimpleDocument;
-import static com.silverpeas.util.StringUtil.*;
+import static org.silverpeas.util.StringUtil.*;
 
 /**
  * An occurrence of an event in the time and that can be rendered in a calendar view.

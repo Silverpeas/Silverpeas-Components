@@ -25,7 +25,7 @@ import com.silverpeas.gallery.BaseGalleryTest;
 import com.silverpeas.gallery.model.MediaOrderCriteria;
 import com.silverpeas.gallery.model.Order;
 import com.silverpeas.gallery.model.OrderRow;
-import com.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.CollectionUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import org.apache.commons.lang3.time.DateUtils;
 import org.dbunit.dataset.IDataSet;

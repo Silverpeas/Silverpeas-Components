@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import com.silverpeas.classifieds.model.ClassifiedDetail;
-import com.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 
 /**

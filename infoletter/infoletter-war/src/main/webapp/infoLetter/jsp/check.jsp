@@ -60,10 +60,9 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="com.stratelia.silverpeas.infoLetter.model.*"%>
 <%@ page import="com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController"%>
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
-<%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 
-<%@ page import="com.silverpeas.util.EncodeHelper"%>
-<%@ page import="com.silverpeas.util.StringUtil"%>
+<%@ page import="org.silverpeas.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.util.StringUtil"%>
 
 <%@ page import="java.util.List"%>
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>

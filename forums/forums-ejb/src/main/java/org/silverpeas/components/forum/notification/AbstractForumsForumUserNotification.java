@@ -24,7 +24,7 @@
 package org.silverpeas.components.forum.notification;
 
 import com.silverpeas.notification.model.NotificationResourceData;
-import com.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.webactiv.forums.models.ForumDetail;
 
 /**

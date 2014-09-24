@@ -47,7 +47,7 @@
 <%@ page import="com.silverpeas.importExport.report.ExportReport"%>
 <%@ page import="com.silverpeas.questionReply.control.*"%>
 <%@ page import="com.silverpeas.questionReply.model.*"%>
-<%@ page import="com.silverpeas.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.util.EncodeHelper"%>
 
 
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.*"%>

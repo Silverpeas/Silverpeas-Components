@@ -20,7 +20,7 @@
  */
 package com.stratelia.webactiv.almanach.model;
 
-import static com.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.isDefined;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import static com.stratelia.webactiv.util.DateUtil.*;

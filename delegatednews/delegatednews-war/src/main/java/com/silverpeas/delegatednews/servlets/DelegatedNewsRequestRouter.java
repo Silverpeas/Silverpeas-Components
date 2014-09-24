@@ -26,7 +26,7 @@ package com.silverpeas.delegatednews.servlets;
 
 import com.silverpeas.delegatednews.control.DelegatedNewsSessionController;
 import com.silverpeas.delegatednews.model.DelegatedNews;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;

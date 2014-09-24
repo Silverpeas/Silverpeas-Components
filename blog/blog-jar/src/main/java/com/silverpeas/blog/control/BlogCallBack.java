@@ -28,7 +28,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import com.silverpeas.blog.model.BlogRuntimeException;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBack;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;

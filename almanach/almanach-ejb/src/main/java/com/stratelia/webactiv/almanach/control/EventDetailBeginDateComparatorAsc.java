@@ -26,7 +26,7 @@ package com.stratelia.webactiv.almanach.control;
 import java.util.Calendar;
 import java.util.Comparator;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.util.DateUtil;
 

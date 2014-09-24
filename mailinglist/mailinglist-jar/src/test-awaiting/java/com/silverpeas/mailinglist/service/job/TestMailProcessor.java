@@ -51,8 +51,8 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-import static com.silverpeas.util.PathTestUtil.BUILD_PATH;
-import static com.silverpeas.util.PathTestUtil.SEPARATOR;
+import static org.silverpeas.util.PathTestUtil.BUILD_PATH;
+import static org.silverpeas.util.PathTestUtil.SEPARATOR;
 
 public class TestMailProcessor {
 

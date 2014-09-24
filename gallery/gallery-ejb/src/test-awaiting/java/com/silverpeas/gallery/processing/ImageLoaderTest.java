@@ -33,8 +33,8 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import static com.silverpeas.util.PathTestUtil.SEPARATOR;
-import static com.silverpeas.util.PathTestUtil.TARGET_DIR;
+import static org.silverpeas.util.PathTestUtil.SEPARATOR;
+import static org.silverpeas.util.PathTestUtil.TARGET_DIR;
 
 /**
  *

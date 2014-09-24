@@ -33,7 +33,7 @@ import com.silverpeas.crm.vo.ContactVO;
 import com.silverpeas.crm.vo.DeliveryVO;
 import com.silverpeas.crm.vo.EventVO;
 import com.silverpeas.crm.vo.ParticipantVO;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.containerManager.ContainerContext;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;

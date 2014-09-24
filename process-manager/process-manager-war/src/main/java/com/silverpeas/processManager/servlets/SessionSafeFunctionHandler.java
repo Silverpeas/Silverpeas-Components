@@ -10,7 +10,7 @@ import org.apache.commons.fileupload.FileItem;
 
 import com.silverpeas.processManager.ProcessManagerException;
 import com.silverpeas.processManager.ProcessManagerSessionController;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.UtilException;

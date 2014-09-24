@@ -77,8 +77,8 @@ import static com.silverpeas.kmelia.export.DocumentTemplateParts.*;
 import static com.silverpeas.kmelia.export.ODTDocumentTextTranslator.aTranslatorWith;
 import static com.silverpeas.kmelia.export.ODTDocumentsMerging.atSection;
 import static com.silverpeas.kmelia.export.ODTDocumentsMerging.decorates;
-import static com.silverpeas.util.StringUtil.isDefined;
-import static com.silverpeas.util.StringUtil.isInteger;
+import static org.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.isInteger;
 import static com.stratelia.webactiv.util.DateUtil.*;
 
 /**

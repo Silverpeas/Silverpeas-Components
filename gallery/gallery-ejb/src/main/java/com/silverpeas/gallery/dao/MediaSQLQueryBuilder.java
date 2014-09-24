@@ -28,7 +28,7 @@ import com.silverpeas.gallery.constant.MediaType;
 import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.MediaCriteriaProcessor;
 import com.silverpeas.gallery.model.MediaLogicalComparator;
-import com.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.CollectionUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.commons.lang3.tuple.Pair;

@@ -28,9 +28,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.silverpeas.gallery.model.MetaData;
-import com.silverpeas.util.ArrayUtil;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.ArrayUtil;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.i18n.I18NHelper;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 

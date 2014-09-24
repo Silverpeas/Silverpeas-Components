@@ -23,8 +23,8 @@
  */
 package com.silverpeas.gallery.model;
 
-import com.silverpeas.util.CollectionUtil;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.DateUtil;
 
 import java.util.ArrayList;

@@ -67,7 +67,7 @@ import com.ecyrd.jspwiki.i18n.InternationalizationManager;
 import com.ecyrd.jspwiki.providers.ProviderException;
 import com.ecyrd.jspwiki.ui.progress.ProgressItem;
 import com.ecyrd.jspwiki.util.HttpUtil;
-import com.silverpeas.util.FileUtil;
+import org.silverpeas.util.FileUtil;
 import com.silverpeas.wiki.control.WikiMultiInstanceManager;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 

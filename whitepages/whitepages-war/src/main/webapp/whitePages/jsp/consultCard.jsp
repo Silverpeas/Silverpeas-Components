@@ -30,7 +30,7 @@
 <%@ page import="com.silverpeas.form.*"%>
 <%@ page import="com.silverpeas.whitePages.record.UserRecord"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserFull"%>
-<%@ page import="com.silverpeas.util.StringUtil"%>
+<%@ page import="org.silverpeas.util.StringUtil"%>
 <%@ page import="com.stratelia.silverpeas.notificationManager.NotificationParameters"%>
 <%@ page import="com.stratelia.silverpeas.pdc.model.ClassifyValue"%>
 <%@ page import="com.stratelia.silverpeas.pdc.model.Value"%>

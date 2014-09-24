@@ -36,7 +36,7 @@ import com.silverpeas.gallery.model.Photo;
 import com.silverpeas.gallery.model.Sound;
 import com.silverpeas.gallery.model.Video;
 import com.silverpeas.gallery.process.media.*;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;

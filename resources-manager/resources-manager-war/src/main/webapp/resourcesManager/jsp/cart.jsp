@@ -32,6 +32,7 @@
 <%@ page import="org.silverpeas.resourcemanager.model.Resource"%>
 <%@ page import="org.silverpeas.resourcemanager.model.Reservation"%>
 <%@ page import="java.util.List" %>
+<%@ page import="org.silverpeas.util.EncodeHelper" %>
 <%@ include file="check.jsp" %>
 
 <fmt:setLocale value="${requestScope.resources.language}" />

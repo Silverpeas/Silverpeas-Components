@@ -23,7 +23,7 @@ package com.stratelia.webactiv.almanach.model;
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.AccessControllerProvider;
-import com.silverpeas.util.i18n.AbstractBean;
+import org.silverpeas.util.i18n.AbstractBean;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -54,7 +54,7 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.isDefined;
 
 public class EventDetail extends AbstractBean
     implements SilverContentInterface, Serializable, SilverpeasContent {

@@ -98,10 +98,10 @@
 <%@ page import="org.silverpeas.wysiwyg.WysiwygException"%>
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
 
-<%@ page import="com.silverpeas.util.ForeignPK"%>
-<%@ page import="com.silverpeas.util.StringUtil"%>
-<%@ page import="com.silverpeas.util.EncodeHelper"%>
-<%@ page import="com.silverpeas.util.i18n.*"%>
+<%@ page import="org.silverpeas.util.ForeignPK"%>
+<%@ page import="org.silverpeas.util.StringUtil"%>
+<%@ page import="org.silverpeas.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.util.i18n.*"%>
 <%@ page import="com.silverpeas.publicationTemplate.PublicationTemplate"%>
 <%@ page import="com.stratelia.webactiv.statistic.model.HistoryByUser"%>
 <%@page import="com.silverpeas.kmelia.KmeliaConstants"%>

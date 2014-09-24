@@ -30,7 +30,7 @@ import com.silverpeas.crm.model.CrmContact;
 import com.silverpeas.crm.model.CrmDelivery;
 import com.silverpeas.crm.model.CrmEvent;
 import com.silverpeas.crm.model.CrmParticipant;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.containerManager.ContainerContext;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;

@@ -28,6 +28,7 @@
 <%@ page import="org.silverpeas.resourcemanager.model.Category"%>
 <%@ page import="org.silverpeas.resourcemanager.model.Resource"%>
 <%@ page import="java.util.List" %>
+<%@ page import="org.silverpeas.util.EncodeHelper" %>
 
 <%@taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
@@ -47,7 +48,7 @@
 	String objectView = request.getParameter("objectView");
 	
 	String name=maResource.getName();
-	String description=EncodeHelper.javaStringToHtmlParagraphe(maResource.getDescription());
+	String description= EncodeHelper.javaStringToHtmlParagraphe(maResource.getDescription());
 	boolean bookable=maResource.isBookable();
 	Long resourceId=maResource.getId();
 	Button cancelButton = null;

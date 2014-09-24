@@ -26,7 +26,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import com.silverpeas.kmelia.KmeliaConstants;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
 import com.stratelia.webactiv.kmelia.servlets.ajax.AjaxHandler;

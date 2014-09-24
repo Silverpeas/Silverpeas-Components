@@ -25,7 +25,7 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.processManager.*;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.servlet.FileUploadUtil;
 import com.silverpeas.workflow.api.error.WorkflowError;
 import com.silverpeas.workflow.api.instance.HistoryStep;

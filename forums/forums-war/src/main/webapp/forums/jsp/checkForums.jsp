@@ -29,8 +29,8 @@
 <%@ page import="java.util.Collection"%>
 <%@ page import="java.util.Date"%>
 <%@ page import="java.util.Iterator"%>
-<%@ page import="com.silverpeas.util.StringUtil"%>
-<%@ page import="com.silverpeas.util.EncodeHelper"%>
+<%@ page import="org.silverpeas.util.StringUtil"%>
+<%@ page import="org.silverpeas.util.EncodeHelper"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="com.stratelia.silverpeas.silvertrace.SilverTrace"%>
 <%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>

@@ -28,7 +28,7 @@ import java.util.Hashtable;
 
 import javax.naming.Context;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 
 public class OrganizationChartLDAPConfiguration extends OrganizationChartConfiguration {
   Hashtable<String, String> env = null;

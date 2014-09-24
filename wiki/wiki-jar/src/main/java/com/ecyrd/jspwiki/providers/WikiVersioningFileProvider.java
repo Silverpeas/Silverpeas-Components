@@ -21,7 +21,7 @@
 package com.ecyrd.jspwiki.providers;
 
 import com.ecyrd.jspwiki.*;
-import com.silverpeas.util.ForeignPK;
+import org.silverpeas.util.ForeignPK;
 import com.silverpeas.wiki.control.WikiException;
 import com.silverpeas.wiki.control.WikiMultiInstanceManager;
 import com.silverpeas.wiki.control.WikiPageDAO;

@@ -1,4 +1,4 @@
-<%@page import="com.silverpeas.util.StringUtil"%>
+<%@page import="org.silverpeas.util.StringUtil"%>
 <%@page import="com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader"%>
 <%@ page import="java.text.ParseException"%>
 <%@ page import="com.stratelia.webactiv.SilverpeasRole"%>

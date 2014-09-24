@@ -23,14 +23,14 @@
  */
 package org.silverpeas.components.forum.notification;
 
-import com.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.webactiv.forums.models.Message;
 
 import java.util.Collection;
 import java.util.Collections;
 
-import static com.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
  * User: Yohann Chastagnier

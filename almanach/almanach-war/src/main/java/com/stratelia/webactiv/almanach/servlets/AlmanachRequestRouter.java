@@ -23,7 +23,7 @@ package com.stratelia.webactiv.almanach.servlets;
 import com.silverpeas.export.ExportException;
 import com.silverpeas.export.NoDataToExportException;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
@@ -46,8 +46,8 @@ import org.silverpeas.upload.UploadedFile;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
 
-import static com.silverpeas.util.StringUtil.isDefined;
-import static com.silverpeas.util.StringUtil.isInteger;
+import static org.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.isInteger;
 import static org.silverpeas.calendar.CalendarViewType.*;
 
 

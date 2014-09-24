@@ -43,7 +43,7 @@ import org.odftoolkit.simple.draw.Frame;
 import org.odftoolkit.simple.draw.Image;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import static com.silverpeas.util.StringUtil.*;
+import static org.silverpeas.util.StringUtil.*;
 
 /**
  * A decorator of an OpenDocument text document. It decorates an ODT document by adding document

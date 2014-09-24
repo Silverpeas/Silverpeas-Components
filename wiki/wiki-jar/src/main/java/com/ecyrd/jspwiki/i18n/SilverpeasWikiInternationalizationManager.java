@@ -28,7 +28,7 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import com.ecyrd.jspwiki.WikiEngine;
-import com.silverpeas.util.FileUtil;
+import org.silverpeas.util.FileUtil;
 
 /**
  * Manages all internationalization in JSPWiki.

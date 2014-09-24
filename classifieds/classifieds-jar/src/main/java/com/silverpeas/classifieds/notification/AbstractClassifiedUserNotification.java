@@ -27,7 +27,7 @@ import com.silverpeas.classifieds.ClassifiedUtil;
 import com.silverpeas.classifieds.model.ClassifiedDetail;
 import com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuilder;
 import com.silverpeas.notification.model.NotificationResourceData;
-import com.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.template.SilverpeasTemplate;
 
 /**
  * @author Yohann Chastagnier

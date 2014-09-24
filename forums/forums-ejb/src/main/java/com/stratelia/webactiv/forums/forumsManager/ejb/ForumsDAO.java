@@ -20,7 +20,7 @@
  */
 package com.stratelia.webactiv.forums.forumsManager.ejb;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.forums.forumsException.ForumsRuntimeException;
 import com.stratelia.webactiv.forums.models.Forum;

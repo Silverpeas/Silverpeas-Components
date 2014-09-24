@@ -26,7 +26,7 @@ package org.silverpeas.components.suggestionbox.repository;
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.notation.ejb.RatingServiceFactory;
-import com.silverpeas.util.ForeignPK;
+import org.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;

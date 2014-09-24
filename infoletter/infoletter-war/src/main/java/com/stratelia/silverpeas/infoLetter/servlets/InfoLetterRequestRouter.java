@@ -20,7 +20,7 @@
  */
 package com.stratelia.silverpeas.infoLetter.servlets;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetter;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetterPublication;

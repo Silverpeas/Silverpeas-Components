@@ -36,6 +36,7 @@
 <%@page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
 <%@page import="org.silverpeas.util.URLUtils"%>
 <%@page import="com.stratelia.webactiv.kmelia.model.KmeliaPublication" %>
+<%@ page import="org.silverpeas.util.i18n.I18NHelper" %>
 
 <%@include file="checkKmelia.jsp" %>
 <%@include file="publicationsList.jsp.inc" %>

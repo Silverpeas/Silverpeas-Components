@@ -37,7 +37,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.process.session.ProcessSession;
 
-import static com.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
  * Process to delete a media from Database

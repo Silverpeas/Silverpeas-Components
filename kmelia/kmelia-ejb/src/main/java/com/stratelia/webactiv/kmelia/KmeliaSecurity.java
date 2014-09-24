@@ -31,8 +31,8 @@ import java.util.Map;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.security.ComponentSecurity;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.security.ComponentSecurity;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;

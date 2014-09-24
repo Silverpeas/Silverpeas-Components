@@ -1,7 +1,7 @@
 package org.silverpeas.component.kmelia;
 
 import org.silverpeas.core.admin.OrganisationControllerFactory;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;

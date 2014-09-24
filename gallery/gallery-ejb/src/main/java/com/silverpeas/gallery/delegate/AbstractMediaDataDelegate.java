@@ -34,7 +34,7 @@ import com.silverpeas.gallery.model.InternalMedia;
 import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.Streaming;
 import com.silverpeas.pdc.model.PdcPosition;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import org.apache.commons.fileupload.FileItem;

@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.silverpeas.converter.DocumentFormat;
-import com.silverpeas.util.MimeTypes;
+import org.silverpeas.util.MimeTypes;
 
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
 import com.stratelia.webactiv.util.ClientBrowserUtil;
@@ -26,7 +26,7 @@ import com.stratelia.webactiv.util.ClientBrowserUtil;
 import org.apache.commons.io.IOUtils;
 
 import static com.silverpeas.converter.DocumentFormat.inFormat;
-import static com.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
  * An HTTP servlet dedicated to the export of Kmelia publications.

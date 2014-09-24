@@ -25,7 +25,7 @@ package com.stratelia.webactiv.almanach.control;
 
 import static com.silverpeas.calendar.CalendarEvent.anEventAt;
 import static com.silverpeas.calendar.CalendarEventRecurrence.every;
-import static com.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.isDefined;
 import static com.stratelia.webactiv.util.DateUtil.asDatable;
 
 import java.net.MalformedURLException;
@@ -47,7 +47,7 @@ import com.silverpeas.calendar.DateTime;
 import com.silverpeas.calendar.DayOfWeek;
 import com.silverpeas.calendar.DayOfWeekOccurrence;
 import com.silverpeas.calendar.TimeUnit;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.Periodicity;

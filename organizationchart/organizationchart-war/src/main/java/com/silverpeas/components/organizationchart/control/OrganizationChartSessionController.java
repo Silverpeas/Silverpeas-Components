@@ -47,7 +47,8 @@ import com.silverpeas.components.organizationchart.view.ChartUnitVO;
 import com.silverpeas.components.organizationchart.view.ChartVO;
 import com.silverpeas.components.organizationchart.view.OrganizationBox;
 import com.silverpeas.components.organizationchart.view.UserVO;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
+
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;

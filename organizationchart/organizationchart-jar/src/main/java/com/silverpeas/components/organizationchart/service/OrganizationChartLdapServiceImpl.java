@@ -48,7 +48,7 @@ import com.silverpeas.components.organizationchart.model.OrganizationalPerson;
 import com.silverpeas.components.organizationchart.model.OrganizationalPersonComparator;
 import com.silverpeas.components.organizationchart.model.OrganizationalUnit;
 import com.silverpeas.components.organizationchart.model.PersonCategory;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 

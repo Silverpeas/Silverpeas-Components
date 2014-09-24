@@ -5,8 +5,8 @@
 package com.silverpeas.mailinglist.service.notification;
 
 import com.silverpeas.mailinglist.service.model.beans.Message;
-import com.silverpeas.util.PathTestUtil;
-import com.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.PathTestUtil;
+import org.silverpeas.util.template.SilverpeasTemplate;
 import java.io.File;
 import java.util.Properties;
 import org.junit.After;

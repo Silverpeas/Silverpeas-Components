@@ -25,8 +25,8 @@ package com.silverpeas.wiki;
 
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.InstanciationException;
-import com.silverpeas.util.ConfigurationClassLoader;
-import com.silverpeas.util.FileUtil;
+import org.silverpeas.util.ConfigurationClassLoader;
+import org.silverpeas.util.FileUtil;
 import com.silverpeas.wiki.control.WikiException;
 import com.silverpeas.wiki.control.WikiPageDAO;
 import com.silverpeas.wiki.control.model.PageDetail;

@@ -32,7 +32,7 @@ import com.silverpeas.admin.notification.ComponentJsonPatch;
 import com.silverpeas.notification.DefaultNotificationSubscriber;
 import com.silverpeas.notification.NotificationTopic;
 import com.silverpeas.notification.SilverpeasNotification;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 
 import static com.silverpeas.notification.NotificationTopic.onTopic;
 import static com.silverpeas.notification.RegisteredTopics.ADMIN_COMPONENT_TOPIC;

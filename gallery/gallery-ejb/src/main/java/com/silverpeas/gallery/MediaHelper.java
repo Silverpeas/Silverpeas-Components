@@ -65,10 +65,10 @@ import com.silverpeas.gallery.processing.ImageResizer;
 import com.silverpeas.gallery.processing.ImageUtility;
 import com.silverpeas.gallery.processing.Size;
 import com.silverpeas.gallery.processing.Watermarker;
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.MetadataExtractor;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.MetadataExtractor;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
@@ -257,7 +257,7 @@ public class MediaHelper {
       iMedia.setFileName(fileForData.getName());
       iMedia.setFileMimeType(mediaMimeType);
       iMedia.setFileSize(fileForData.length());
-      com.silverpeas.util.MetaData metaData =
+      org.silverpeas.util.MetaData metaData =
           MetadataExtractor.getInstance().extractMetadata(handledImageFile.getFile());
       switch (iMedia.getType()) {
         case Photo:

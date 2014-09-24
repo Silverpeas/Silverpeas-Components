@@ -25,8 +25,8 @@ package com.silverpeas.kmelia;
 
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.util.MimeTypes;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.MimeTypes;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;

@@ -28,6 +28,8 @@
 <%@page import="java.io.File"%>
 <%@page import="com.silverpeas.blog.control.WallPaper"%>
 <%@page import="com.silverpeas.blog.control.StyleSheet"%>
+<%@ page import="org.silverpeas.util.StringUtil" %>
+<%@ page import="org.silverpeas.util.EncodeHelper" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 <%
@@ -265,7 +267,8 @@ function hideStyleSheetFile() {
           if (visible) {
           %>
       <div id="post<%=postId%>" class="post <%=blocClass%>">
-        <div class="titreTicket"> <a href="<%="ViewPost?PostId=" + postId%>"><%=EncodeHelper.javaStringToHtmlString(post.getPublication().getName())%></a> <span class="status">(<%=status%>)</span>
+        <div class="titreTicket"> <a href="<%="ViewPost?PostId=" + postId%>"><%=EncodeHelper
+            .javaStringToHtmlString(post.getPublication().getName())%></a> <span class="status">(<%=status%>)</span>
           <%  if ( link != null && !link.equals("")) {  %>
           <span class="permalink"><a href="<%=link%>"><img src="<%=resource.getIcon("blog.link")%>" alt='<%=resource.getString("blog.CopyPostLink")%>' title='<%=resource.getString("blog.CopyPostLink")%>'/></a></span>
           <%  } %>

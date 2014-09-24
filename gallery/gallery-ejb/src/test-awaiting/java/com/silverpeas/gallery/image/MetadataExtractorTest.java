@@ -25,7 +25,7 @@ import com.silverpeas.gallery.media.ExifProperty;
 import com.silverpeas.gallery.media.IptcProperty;
 import com.silverpeas.gallery.media.MediaMetadataExtractor;
 import com.silverpeas.gallery.model.MetaData;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import org.junit.Before;
 import org.junit.Test;
 

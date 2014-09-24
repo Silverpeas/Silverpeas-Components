@@ -25,7 +25,7 @@ package com.silverpeas.gallery.media;
 
 import com.drew.metadata.exif.ExifIFD0Directory;
 import com.silverpeas.gallery.model.MetaData;
-import com.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.apache.sanselan.ImageReadException;
 import org.apache.sanselan.Sanselan;

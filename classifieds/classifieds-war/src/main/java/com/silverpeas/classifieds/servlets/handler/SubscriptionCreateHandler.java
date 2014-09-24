@@ -3,7 +3,7 @@ package com.silverpeas.classifieds.servlets.handler;
 import com.silverpeas.classifieds.control.ClassifiedsSessionController;
 import com.silverpeas.classifieds.model.Subscribe;
 import com.silverpeas.classifieds.servlets.FunctionHandler;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.servlet.HttpRequest;
 
 /**

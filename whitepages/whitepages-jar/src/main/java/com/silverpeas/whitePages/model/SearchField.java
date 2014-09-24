@@ -20,7 +20,7 @@
  */
 package com.silverpeas.whitePages.model;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import java.io.Serializable;
 import java.util.UUID;
 import javax.persistence.Entity;

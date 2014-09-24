@@ -27,6 +27,7 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page import="java.net.URLEncoder"%>
 <%@ page import="org.silverpeas.util.URLUtils" %>
+<%@ page import="org.silverpeas.util.EncodeHelper" %>
 
 <%!
 void displayAttachmentEdit(String id, String spaceId, String componentId, String url, HttpServletRequest request, HttpServletResponse response)

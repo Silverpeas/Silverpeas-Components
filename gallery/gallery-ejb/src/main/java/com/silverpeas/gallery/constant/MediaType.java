@@ -24,7 +24,7 @@
 package com.silverpeas.gallery.constant;
 
 import com.silverpeas.gallery.model.Media;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonValue;
 

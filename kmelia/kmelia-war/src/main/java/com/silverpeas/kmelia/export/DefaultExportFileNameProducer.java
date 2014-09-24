@@ -30,7 +30,7 @@ import org.silverpeas.core.admin.OrganisationController;
 
 import java.util.List;
 import java.util.UUID;
-import static com.silverpeas.util.StringUtil.*;
+import static org.silverpeas.util.StringUtil.*;
 
 /**
  * A default export file name producer.
