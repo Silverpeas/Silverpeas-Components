@@ -77,6 +77,7 @@ public class OrganizationChartRequestRouter extends ComponentRequestRouter<Organ
 
     String destination;
     request.setAttribute("DisplayLabels", orgaSC.displayLabels());
+    request.setAttribute("Breadcrumb", orgaSC.getBreadcrumb());
 
     try {
       if (function.startsWith("Main")) {

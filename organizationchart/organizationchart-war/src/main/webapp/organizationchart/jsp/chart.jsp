@@ -42,6 +42,7 @@
 <fmt:message key="organizationChart.userDetails" var="userDetailsTitle"/>
 
 <c:set var="displayLabels" value="${requestScope['DisplayLabels']}"/>
+<c:set var="breadcrumb" value="${requestScope['Breadcrumb']}"/>
 
 <html>
   <head>
@@ -105,6 +106,12 @@
 	<view:operationPane>
 		<view:operation altText="${printMessageAltText}" icon="${printIconUrl}" action="javascript:window.print();" />
 	</view:operationPane>
+	
+	<view:browseBar>
+		<c:forEach items="${breadcrumb}" var="element">
+			<view:browseBarElt label="${element.name}" link="${element.url}"/>
+		</c:forEach>
+	</view:browseBar>
 
     <view:window>
           <c:out value="${error}"/>

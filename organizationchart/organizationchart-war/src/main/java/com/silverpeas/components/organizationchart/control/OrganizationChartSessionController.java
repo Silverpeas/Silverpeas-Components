@@ -21,11 +21,15 @@
 
 package com.silverpeas.components.organizationchart.control;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.ListUtils;
 
 import com.silverpeas.components.organizationchart.model.OrganizationalChart;
 import com.silverpeas.components.organizationchart.model.OrganizationalChartType;
@@ -44,7 +48,6 @@ import com.silverpeas.components.organizationchart.view.ChartVO;
 import com.silverpeas.components.organizationchart.view.OrganizationBox;
 import com.silverpeas.components.organizationchart.view.UserVO;
 import com.silverpeas.util.StringUtil;
-
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -85,6 +88,8 @@ public class OrganizationChartSessionController extends AbstractComponentSession
   
   private OrganizationChartConfiguration config = null;
   private OrganizationChartLDAPConfiguration ldapConfig = null;
+  
+  private List<OrganizationBox> breadcrumb = new ArrayList<OrganizationBox>();
 
   /**
    * Standard Session Controller Constructeur
@@ -130,6 +135,7 @@ public class OrganizationChartSessionController extends AbstractComponentSession
       switch (chartType) {
         case TYPE_UNITCHART:
           chartVO = buildChartUnitVO(chart);
+          processBreadcrumb(chartVO.getRootOrganization());
           break;
 
         case TYPE_PERSONNCHART:
@@ -142,6 +148,29 @@ public class OrganizationChartSessionController extends AbstractComponentSession
     }
 
     return chartVO;
+  }
+  
+  private void processBreadcrumb(OrganizationBox currentOU) {
+    try {
+      boolean inBreadcrumb = false;
+      int i = 0;
+      for (i=0; i<breadcrumb.size() && !inBreadcrumb; i++) {
+        OrganizationBox element = breadcrumb.get(i);
+        if (element.getUrl().equals(currentOU.getUrl())) {
+          inBreadcrumb = true;
+        }
+      }
+      if (!inBreadcrumb) {
+        breadcrumb.add(currentOU);
+      } else {
+        while (breadcrumb.size() > i) {
+          breadcrumb.remove(breadcrumb.size()-1);
+        }
+      }
+    } catch (UnsupportedEncodingException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
   }
 
   private UserVO organizationalPerson2UserVO(OrganizationalPerson person, OrganizationalRole role) {
@@ -158,7 +187,7 @@ public class OrganizationChartSessionController extends AbstractComponentSession
     }
     if (user != null) {
       if (displayAvatars()) {
-        avatar = user.getAvatar();
+        avatar = user.getSmallAvatar();
       }
       name = UserNameGenerator.toString(user, getUserId());
     }
@@ -476,5 +505,9 @@ public class OrganizationChartSessionController extends AbstractComponentSession
       return defaultValue;
     }
     return StringUtil.getBooleanValue(value);
+  }
+  
+  public List<OrganizationBox> getBreadcrumb() {
+    return breadcrumb;
   }
 }
