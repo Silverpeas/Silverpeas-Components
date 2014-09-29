@@ -22,7 +22,7 @@ package com.silverpeas.scheduleevent.service.model.dao;
 
 import com.silverpeas.annotation.Repository;
 import com.silverpeas.comment.model.CommentPK;
-import com.silverpeas.comment.service.CommentServiceFactory;
+import com.silverpeas.comment.service.CommentServiceProvider;
 import com.silverpeas.scheduleevent.constant.ScheduleEventConstant;
 import com.silverpeas.scheduleevent.service.model.beans.Contributor;
 import com.silverpeas.scheduleevent.service.model.beans.Response;
@@ -66,8 +66,7 @@ public class ScheduleEventDaoImpl implements ScheduleEventDao {
     entityManager.remove(attachedEvent);
 
     // delete related schedule event comments
-    CommentServiceFactory
-        .getFactory()
+    CommentServiceProvider
         .getCommentService()
         .deleteAllCommentsOnPublication(ScheduleEvent.getResourceType(),
             new CommentPK(scheduleEvent.getId().toString(), ScheduleEventConstant.TOOL_ID));

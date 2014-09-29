@@ -42,8 +42,8 @@
   <bean id="scheduleeventServiceFactory" class="com.silverpeas.scheduleevent.service.ServicesFactory"
         factory-method="getFactory"/>
 
-  <bean id="commentServiceFactory" class="com.silverpeas.comment.service.CommentServiceFactory"
-        factory-method="getFactory"/>
+  <!-- ebo <bean id="commentServiceFactory" class="com.silverpeas.comment.service.CommentServiceFactory"
+        factory-method="getFactory"/> -->
 
   <import resource="spring-jpa.xml"/>
 

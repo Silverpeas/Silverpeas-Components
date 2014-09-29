@@ -25,7 +25,7 @@ package com.stratelia.webactiv.kmelia;
 
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.InstanciationException;
-import com.silverpeas.comment.service.CommentServiceFactory;
+import com.silverpeas.comment.service.CommentServiceProvider;
 import com.silverpeas.thumbnail.ThumbnailInstanciator;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
@@ -75,7 +75,7 @@ public class KmeliaInstanciator extends SQLRequest implements ComponentsInstanci
     ThumbnailInstanciator thumbnail = new ThumbnailInstanciator();
     thumbnail.delete(con, spaceId, componentId, userId);
     // delete all comments related to the component instance id (also any indexes)
-    CommentServiceFactory.getFactory().getCommentService()
+    CommentServiceProvider.getCommentService()
         .deleteAllCommentsByComponentInstanceId(componentId);
   }
 

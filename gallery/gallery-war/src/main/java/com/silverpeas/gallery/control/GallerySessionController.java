@@ -41,7 +41,7 @@ import org.silverpeas.util.NotifierUtil;
 
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.service.CommentService;
-import com.silverpeas.comment.service.CommentServiceFactory;
+import com.silverpeas.comment.service.CommentServiceProvider;
 import com.silverpeas.export.ExportDescriptor;
 import com.silverpeas.export.ExportException;
 import com.silverpeas.export.ImportExportDescriptor;
@@ -146,7 +146,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
    */
   private CommentService getCommentService() {
     if (commentService == null) {
-      commentService = CommentServiceFactory.getFactory().getCommentService();
+      commentService = CommentServiceProvider.getCommentService();
     }
     return commentService;
   }

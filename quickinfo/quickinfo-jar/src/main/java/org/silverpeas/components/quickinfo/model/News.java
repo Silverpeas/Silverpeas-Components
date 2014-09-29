@@ -1,26 +1,8 @@
 package org.silverpeas.components.quickinfo.model;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-import org.silverpeas.date.Period;
-import org.silverpeas.persistence.model.identifier.UuidIdentifier;
-import org.silverpeas.persistence.model.jpa.AbstractJpaEntity;
-
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.comment.service.CommentService;
-import com.silverpeas.comment.service.CommentServiceFactory;
+import com.silverpeas.comment.service.CommentServiceProvider;
 import com.silverpeas.delegatednews.model.DelegatedNews;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
@@ -30,12 +12,28 @@ import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import com.stratelia.webactiv.statistic.control.StatisticBm;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.date.Period;
+import org.silverpeas.persistence.model.identifier.UuidIdentifier;
+import org.silverpeas.persistence.model.jpa.AbstractJpaEntity;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.JNDINames;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "sc_quickinfo_news")
@@ -189,7 +187,7 @@ public class News extends AbstractJpaEntity<News, UuidIdentifier> implements Sil
   }
   
   public int getNumberOfComments() {
-    CommentService commentService = CommentServiceFactory.getFactory().getCommentService();
+    CommentService commentService = CommentServiceProvider.getCommentService();
     return commentService.getCommentsCountOnPublication(CONTRIBUTION_TYPE, getPK());
   }
 

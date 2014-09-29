@@ -54,8 +54,8 @@
   <bean id="commentService"
         class="org.silverpeas.components.suggestionbox.mock.CommentServiceMockWrapper"/>
 
-  <bean id="commentServiceFactory" class="com.silverpeas.comment.service.CommentServiceFactory"
-        factory-method="getFactory"/>
+  <!-- ebo <bean id="commentServiceFactory" class="com.silverpeas.comment.service.CommentServiceFactory"
+        factory-method="getFactory"/> -->
 
   <bean id="transactionFactory" class="org.silverpeas.persistence.TransactionFactory"
         factory-method="getFactory"/>

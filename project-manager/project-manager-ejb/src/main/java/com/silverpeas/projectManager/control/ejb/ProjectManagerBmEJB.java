@@ -20,24 +20,8 @@
  */
 package com.silverpeas.projectManager.control.ejb;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
-import org.silverpeas.search.indexEngine.model.IndexEntryPK;
-
 import com.silverpeas.comment.service.CommentService;
-import com.silverpeas.comment.service.CommentServiceFactory;
+import com.silverpeas.comment.service.CommentServiceProvider;
 import com.silverpeas.projectManager.model.Filtre;
 import com.silverpeas.projectManager.model.HolidayDetail;
 import com.silverpeas.projectManager.model.ProjectManagerCalendarDAO;
@@ -45,7 +29,6 @@ import com.silverpeas.projectManager.model.ProjectManagerDAO;
 import com.silverpeas.projectManager.model.ProjectManagerRuntimeException;
 import com.silverpeas.projectManager.model.TaskDetail;
 import com.silverpeas.projectManager.model.TaskPK;
-
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -55,9 +38,23 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.calendar.backbone.TodoBackboneAccess;
 import com.stratelia.webactiv.calendar.backbone.TodoDetail;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
+
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 @Stateless(name = "ProjectManager", description = "Stateless session bean to manage a project.")
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
@@ -73,7 +70,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
    */
   private CommentService getCommentService() {
     if (commentController == null) {
-      commentController = CommentServiceFactory.getFactory().getCommentService();
+      commentController = CommentServiceProvider.getCommentService();
     }
     return commentController;
   }

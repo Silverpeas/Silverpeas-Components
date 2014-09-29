@@ -30,7 +30,7 @@ import java.util.List;
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.service.CommentService;
-import com.silverpeas.comment.service.CommentServiceFactory;
+import com.silverpeas.comment.service.CommentServiceProvider;
 import com.silverpeas.pdc.ejb.PdcBm;
 import org.silverpeas.util.ForeignPK;
 
@@ -303,7 +303,7 @@ public class KmeliaPublication implements SilverpeasContent {
   }
 
   private CommentService getCommentService() {
-    return CommentServiceFactory.getFactory().getCommentService();
+    return CommentServiceProvider.getCommentService();
   }
 
   private OrganizationController getOrganizationController() {

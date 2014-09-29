@@ -23,17 +23,17 @@
  */
 package com.stratelia.webactiv.quickinfo;
 
-import java.sql.Connection;
-
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.InstanciationException;
-import com.silverpeas.comment.service.CommentServiceFactory;
+import com.silverpeas.comment.service.CommentServiceProvider;
 import com.silverpeas.thumbnail.ThumbnailInstanciator;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.publication.PublicationInstanciator;
+import com.stratelia.webactiv.statistic.control.StatisticBm;
 import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.JNDINames;
-import com.stratelia.webactiv.statistic.control.StatisticBm;
+
+import java.sql.Connection;
 
 public class QuickInfoInstanciator extends Object implements ComponentsInstanciatorIntf {
 
@@ -65,7 +65,7 @@ public class QuickInfoInstanciator extends Object implements ComponentsInstancia
     thumbnails.delete(con, spaceId, componentId, userId);
     
     // deleting comments
-    CommentServiceFactory.getFactory().getCommentService()
+    CommentServiceProvider.getCommentService()
         .deleteAllCommentsByComponentInstanceId(componentId);
     
     // deleting stats

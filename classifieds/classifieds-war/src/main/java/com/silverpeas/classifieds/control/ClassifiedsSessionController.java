@@ -32,6 +32,7 @@ import com.silverpeas.classifieds.model.ClassifiedDetail;
 import com.silverpeas.classifieds.model.ClassifiedsRuntimeException;
 import com.silverpeas.classifieds.model.Subscribe;
 import com.silverpeas.comment.service.CommentService;
+import com.silverpeas.comment.service.CommentServiceProvider;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
@@ -43,7 +44,6 @@ import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.StringUtil;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
-import com.silverpeas.comment.service.CommentServiceFactory;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -526,7 +526,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    */
   private CommentService getCommentService() {
     if (commentService == null) {
-      commentService = CommentServiceFactory.getFactory().getCommentService();
+      commentService = CommentServiceProvider.getCommentService();
     }
     return commentService;
   }

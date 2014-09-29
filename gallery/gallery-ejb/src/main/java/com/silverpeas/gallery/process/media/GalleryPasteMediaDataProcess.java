@@ -23,7 +23,7 @@
  */
 package com.silverpeas.gallery.process.media;
 
-import com.silverpeas.comment.service.CommentServiceFactory;
+import com.silverpeas.comment.service.CommentServiceProvider;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.record.GenericRecordSet;
 import com.silverpeas.gallery.dao.MediaDAO;
@@ -169,7 +169,7 @@ public class GalleryPasteMediaDataProcess extends AbstractGalleryDataProcess {
               context.getComponentInstanceId());
 
       // move comments
-      CommentServiceFactory.getFactory().getCommentService()
+      CommentServiceProvider.getCommentService()
           .moveAndReindexComments(getMedia().getContributionType(), fromForeignPK, toForeignPK);
 
       // XML Form

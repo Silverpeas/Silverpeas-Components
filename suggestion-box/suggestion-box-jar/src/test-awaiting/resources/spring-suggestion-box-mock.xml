@@ -81,8 +81,8 @@
   <bean id="attachmentServiceFactory" class="org.silverpeas.attachment.AttachmentServiceFactory"
         factory-method="getInstance"/>
 
-  <bean id="commentServiceFactory" class="com.silverpeas.comment.service.CommentServiceFactory"
-        factory-method="getFactory"/>
+  <!-- ebo <bean id="commentServiceFactory" class="com.silverpeas.comment.service.CommentServiceFactory"
+        factory-method="getFactory"/> -->
 
   <bean id="subscriptionServiceFactory" class="com.silverpeas.subscribe.SubscriptionServiceFactory"
         factory-method="getFactory"/>

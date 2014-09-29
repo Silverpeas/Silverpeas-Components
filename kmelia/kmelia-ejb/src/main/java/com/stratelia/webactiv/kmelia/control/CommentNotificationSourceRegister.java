@@ -23,7 +23,7 @@
  */
 package com.stratelia.webactiv.kmelia.control;
 
-import com.silverpeas.comment.service.CommentServiceFactory;
+import com.silverpeas.comment.service.CommentServiceProvider;
 import com.silverpeas.comment.service.CommentUserNotificationService;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
@@ -49,8 +49,7 @@ public class CommentNotificationSourceRegister {
    * with a CommentUserNotificationService instance.
    */
   public void initialize() {
-    CommentServiceFactory commentServiceFactory = CommentServiceFactory.getFactory();
-    CommentUserNotificationService service = commentServiceFactory.
+    CommentUserNotificationService service = CommentServiceProvider.
         getCommentUserNotificationService();
     service.register(COMPONENT_NAME, getKmeliaService());
   }

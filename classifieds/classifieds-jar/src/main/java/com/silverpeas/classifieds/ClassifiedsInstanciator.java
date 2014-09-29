@@ -29,7 +29,7 @@ import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.classifieds.control.ClassifiedService;
 import com.silverpeas.classifieds.control.ClassifiedServiceFactory;
 import com.silverpeas.classifieds.model.ClassifiedsRuntimeException;
-import com.silverpeas.comment.service.CommentServiceFactory;
+import com.silverpeas.comment.service.CommentServiceProvider;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
@@ -54,7 +54,7 @@ public class ClassifiedsInstanciator implements ComponentsInstanciatorIntf {
       ClassifiedService service = factory.getClassifiedService();
       service.deleteAllClassifieds(componentId);
       service.deleteAllSubscribes(componentId);
-      CommentServiceFactory.getFactory().getCommentService()
+      CommentServiceProvider.getCommentService()
           .deleteAllCommentsByComponentInstanceId(componentId);
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException("ClassifiedsInstanciator.delete()",

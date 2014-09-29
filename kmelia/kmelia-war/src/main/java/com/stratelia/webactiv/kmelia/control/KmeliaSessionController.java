@@ -25,7 +25,7 @@ package com.stratelia.webactiv.kmelia.control;
 
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.service.CommentService;
-import com.silverpeas.comment.service.CommentServiceFactory;
+import com.silverpeas.comment.service.CommentServiceProvider;
 import com.silverpeas.component.kmelia.KmeliaCopyDetail;
 import com.silverpeas.converter.DocumentFormat;
 import com.silverpeas.delegatednews.model.DelegatedNews;
@@ -306,7 +306,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    */
   protected CommentService getCommentService() {
     if (commentService == null) {
-      commentService = CommentServiceFactory.getFactory().getCommentService();
+      commentService = CommentServiceProvider.getCommentService();
     }
     return commentService;
   }

@@ -30,7 +30,7 @@ import com.silverpeas.comment.CommentRuntimeException;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.service.CommentService;
-import com.silverpeas.comment.service.CommentServiceFactory;
+import com.silverpeas.comment.service.CommentServiceProvider;
 import com.silverpeas.myLinks.ejb.MyLinksBm;
 import com.silverpeas.myLinks.model.LinkDetail;
 import com.silverpeas.notification.builder.helper.UserNotificationHelper;
@@ -388,7 +388,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
    * @return a DefaultCommentService instance.
    */
   protected CommentService getCommentService() {
-    return CommentServiceFactory.getFactory().getCommentService();
+    return CommentServiceProvider.getCommentService();
   }
 
   public MyLinksBm getMyLinksBm() {

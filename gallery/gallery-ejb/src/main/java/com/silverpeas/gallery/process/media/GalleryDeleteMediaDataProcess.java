@@ -23,7 +23,7 @@
  */
 package com.silverpeas.gallery.process.media;
 
-import com.silverpeas.comment.service.CommentServiceFactory;
+import com.silverpeas.comment.service.CommentServiceProvider;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
@@ -77,7 +77,7 @@ public class GalleryDeleteMediaDataProcess extends AbstractGalleryDataProcess {
     removeXMLContentOfMedia(getMedia().getId(), context);
 
     // Supprimer les commentaires
-    CommentServiceFactory.getFactory().getCommentService()
+    CommentServiceProvider.getCommentService()
         .deleteAllCommentsOnPublication(getMedia().getContributionType(), getMedia().getMediaPK());
 
     // Supprime le silverObject correspond
