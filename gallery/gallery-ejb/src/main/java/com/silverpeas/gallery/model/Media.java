@@ -30,18 +30,19 @@ import com.silverpeas.gallery.constant.GalleryResourceURIs;
 import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.MediaType;
 import com.silverpeas.gallery.control.ejb.MediaServiceFactory;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.DateUtil;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.silverpeas.accesscontrol.ComponentAccessControl;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.date.Period;
 import org.silverpeas.file.SilverpeasFile;
 import org.silverpeas.process.io.file.FileBasePath;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.StringUtil;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -246,7 +247,7 @@ public abstract class Media implements SilverpeasContent, SilverContentInterface
   @Override
   public boolean canBeAccessedBy(final UserDetail user) {
     AccessController<String> accessController =
-        AccessControllerProvider.getAccessController("componentAccessController");
+        AccessControllerProvider.getAccessController(ComponentAccessControl.class);
     return accessController.isUserAuthorized(user.getId(), getComponentInstanceId()) &&
         (isVisible(DateUtil.getDate()) || (user.isAccessAdmin() || getGreatestUserRole(user)
             .isGreaterThanOrEquals(SilverpeasRole.publisher) || (getGreatestUserRole(user)

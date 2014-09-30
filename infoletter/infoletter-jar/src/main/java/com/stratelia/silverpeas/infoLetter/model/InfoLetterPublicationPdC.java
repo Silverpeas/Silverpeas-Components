@@ -23,16 +23,17 @@
  */
 package com.stratelia.silverpeas.infoLetter.model;
 
-import java.util.Date;
-import java.util.Iterator;
-
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.infoLetter.InfoLetterContentManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.accesscontrol.ComponentAccessControl;
 import org.silverpeas.util.WAPrimaryKey;
+
+import java.util.Date;
+import java.util.Iterator;
 
 /**
  * @author lbertin
@@ -71,14 +72,12 @@ public class InfoLetterPublicationPdC extends InfoLetterPublication implements
 
   /**
    * Constructeur a 6 parametres
-   * @param WAPrimaryKey pk
-   * @param String title
-   * @param String description
-   * @param String parutionDate
-   * @param int publicationState
-   * @param String letterId
-   * @author frageade
-   * @since February 2002
+   * @param pk
+   * @param title
+   * @param description
+   * @param parutionDate
+   * @param publicationState
+   * @param letterId
    */
   public InfoLetterPublicationPdC(WAPrimaryKey pk, String title,
       String description, String parutionDate, int publicationState,
@@ -191,7 +190,7 @@ public class InfoLetterPublicationPdC extends InfoLetterPublication implements
   @Override
   public boolean canBeAccessedBy(final UserDetail user) {
     AccessController<String> accessController =
-        AccessControllerProvider.getAccessController("componentAccessController");
+        AccessControllerProvider.getAccessController(ComponentAccessControl.class);
     return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
   }
 }

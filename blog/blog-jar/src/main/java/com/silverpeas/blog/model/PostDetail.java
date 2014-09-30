@@ -26,13 +26,13 @@ package com.silverpeas.blog.model;
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.AccessControllerProvider;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import java.util.Date;
-
+import com.stratelia.webactiv.publication.model.PublicationDetail;
+import org.silverpeas.accesscontrol.ComponentAccessControl;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
+import java.util.Date;
 
 public final class PostDetail implements SilverpeasContent {
 
@@ -186,7 +186,7 @@ public final class PostDetail implements SilverpeasContent {
   @Override
   public boolean canBeAccessedBy(final UserDetail user) {
     AccessController<String> accessController =
-        AccessControllerProvider.getAccessController("componentAccessController");
+        AccessControllerProvider.getAccessController(ComponentAccessControl.class);
     return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
   }
 

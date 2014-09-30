@@ -1,8 +1,5 @@
 package com.silverpeas.questionReply.model;
 
-import java.text.ParseException;
-import java.util.Date;
-
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.AccessControllerProvider;
@@ -11,7 +8,11 @@ import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.contentManager.ContentManagerFactory;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.accesscontrol.ComponentAccessControl;
 import org.silverpeas.util.DateUtil;
+
+import java.text.ParseException;
+import java.util.Date;
 
 public class QuestionDetail implements SilverpeasContent {
 
@@ -114,7 +115,7 @@ public class QuestionDetail implements SilverpeasContent {
   @Override
   public boolean canBeAccessedBy(final UserDetail user) {
     AccessController<String> accessController =
-        AccessControllerProvider.getAccessController("componentAccessController");
+        AccessControllerProvider.getAccessController(ComponentAccessControl.class);
     return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
   }
 

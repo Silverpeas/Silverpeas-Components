@@ -28,12 +28,13 @@ import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import java.util.ArrayList;
+import org.silverpeas.accesscontrol.ComponentAccessControl;
+import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.core.admin.OrganisationController;
+
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import org.silverpeas.attachment.model.SimpleDocument;
 
 public class ClassifiedDetail implements SilverpeasContent {
   private static final long serialVersionUID = -355125879163002184L;
@@ -225,7 +226,7 @@ public class ClassifiedDetail implements SilverpeasContent {
   @Override
   public boolean canBeAccessedBy(final UserDetail user) {
     AccessController<String> accessController =
-        AccessControllerProvider.getAccessController("componentAccessController");
+        AccessControllerProvider.getAccessController(ComponentAccessControl.class);
     return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
   }
 

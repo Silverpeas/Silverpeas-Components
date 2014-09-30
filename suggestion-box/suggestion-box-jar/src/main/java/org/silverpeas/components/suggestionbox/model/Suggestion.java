@@ -27,15 +27,16 @@ import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.accesscontrol.ComponentAccessControl;
 import org.silverpeas.components.suggestionbox.repository.SuggestionRepositoryProvider;
 import org.silverpeas.contribution.ValidableContribution;
 import org.silverpeas.contribution.model.ContributionValidation;
 import org.silverpeas.persistence.Transaction;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.persistence.model.jpa.AbstractJpaEntity;
-import org.silverpeas.rating.Rateable;
-import org.silverpeas.rating.ContributionRating;
 import org.silverpeas.persistence.repository.OperationContext;
+import org.silverpeas.rating.ContributionRating;
+import org.silverpeas.rating.Rateable;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -292,8 +293,8 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
    */
   @Override
   public boolean canBeAccessedBy(final UserDetail user) {
-    AccessController<String> accessController = AccessControllerProvider.getAccessController(
-        "componentAccessController");
+    AccessController<String> accessController =
+        AccessControllerProvider.getAccessController(ComponentAccessControl.class);
     return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
   }
 

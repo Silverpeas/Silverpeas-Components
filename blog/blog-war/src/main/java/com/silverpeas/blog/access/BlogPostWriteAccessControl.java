@@ -1,0 +1,18 @@
+package com.silverpeas.blog.access;
+
+import javax.inject.Qualifier;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+/**
+ * This annotation qualifies an implementation of access controller of a Post resource in writing
+ * mode.
+ * @author: Yohann Chastagnier
+ */
+@Qualifier
+@Documented
+@Retention(RUNTIME)
+public @interface BlogPostWriteAccessControl {
+}

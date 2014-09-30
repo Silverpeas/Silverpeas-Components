@@ -27,12 +27,13 @@ package com.stratelia.webactiv.forums.models;
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.AccessControllerProvider;
-import org.silverpeas.util.i18n.AbstractBean;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.forums.ForumsContentManager;
+import org.silverpeas.accesscontrol.ComponentAccessControl;
 import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.i18n.AbstractBean;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -219,7 +220,7 @@ public class ForumDetail extends AbstractBean
   @Override
   public boolean canBeAccessedBy(final UserDetail user) {
     AccessController<String> accessController =
-        AccessControllerProvider.getAccessController("componentAccessController");
+        AccessControllerProvider.getAccessController(ComponentAccessControl.class);
     return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
   }
 

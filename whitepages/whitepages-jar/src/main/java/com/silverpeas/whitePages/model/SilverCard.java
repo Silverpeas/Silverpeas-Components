@@ -4,7 +4,9 @@ import com.silverpeas.SilverpeasContent;
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.accesscontrol.ComponentAccessControl;
 import org.silverpeas.util.DateUtil;
+
 import java.text.ParseException;
 import java.util.Date;
 import java.util.logging.Level;
@@ -82,7 +84,7 @@ public class SilverCard implements SilverpeasContent {
   @Override
   public boolean canBeAccessedBy(final UserDetail user) {
     AccessController<String> accessController =
-        AccessControllerProvider.getAccessController("componentAccessController");
+        AccessControllerProvider.getAccessController(ComponentAccessControl.class);
     return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
   }
 }

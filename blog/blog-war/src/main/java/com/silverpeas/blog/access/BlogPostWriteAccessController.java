@@ -25,29 +25,45 @@ package com.silverpeas.blog.access;
 
 import com.silverpeas.accesscontrol.AbstractAccessController;
 import com.silverpeas.accesscontrol.AccessControlContext;
-import com.silverpeas.accesscontrol.ComponentAccessController;
+import com.silverpeas.accesscontrol.AccessController;
 import com.stratelia.webactiv.SilverpeasRole;
+import org.silverpeas.accesscontrol.ComponentAccessControl;
+import org.silverpeas.accesscontrol.ComponentAccessController;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * A controller of write access on a blog. It controls the user can access the blog and have enough
  * privileges to contribute in the blog.
- *
+ * <p/>
  * With right accesses, a user can create/modify/delete a post.
- *
  * @author mmoquillon
  */
+@Singleton
+@BlogPostWriteAccessControl
 public class BlogPostWriteAccessController extends AbstractAccessController<String> {
+
+  @Inject
+  private OrganisationController organisationController;
+
+  @Inject
+  @ComponentAccessControl
+  private AccessController<String> componentAccessController;
+
+  /**
+   * Hidden constructor.
+   */
+  protected BlogPostWriteAccessController() {
+  }
 
   @Override
   public boolean isUserAuthorized(String userId, String blogId,
       final AccessControlContext context) {
-    ComponentAccessController componentAccessController = new ComponentAccessController();
-    OrganisationController organisationController = OrganisationControllerFactory.
-        getOrganisationController();
     String[] roles = organisationController.getUserProfiles(userId, blogId);
-    return componentAccessController.isUserAuthorized(userId, blogId)
-        && (SilverpeasRole.publisher.isInRole(roles) || SilverpeasRole.admin.isInRole(roles));
+    return componentAccessController.isUserAuthorized(userId, blogId) &&
+        (SilverpeasRole.publisher.isInRole(roles) || SilverpeasRole.admin.isInRole(roles));
   }
 }

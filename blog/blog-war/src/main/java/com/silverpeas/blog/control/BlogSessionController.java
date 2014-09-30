@@ -70,6 +70,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import javax.inject.Inject;
 import javax.xml.bind.JAXBException;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
@@ -89,9 +90,10 @@ public final class BlogSessionController extends AbstractComponentSessionControl
   private String serverURL = null;
   private WallPaper wallPaper = null;
   private StyleSheet styleSheet = null;
-  private static BlogPostWriteAccessController accessController =
-      new BlogPostWriteAccessController();
   private static final String FORBIDEN_ACCESS_MSG = "blog.error.access";
+
+  @Inject
+  private BlogPostWriteAccessController accessController;
 
   /**
    * Standard Session Controller Constructeur

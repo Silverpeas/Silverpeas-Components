@@ -23,7 +23,6 @@ package com.stratelia.webactiv.almanach.model;
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.AccessControllerProvider;
-import org.silverpeas.util.i18n.AbstractBean;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -31,11 +30,6 @@ import com.stratelia.webactiv.almanach.AlmanachContentManager;
 import com.stratelia.webactiv.almanach.control.ejb.AlmanachBm;
 import com.stratelia.webactiv.almanach.control.ejb.AlmanachRuntimeException;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.TimeZone;
 import net.fortuna.ical4j.model.TimeZoneRegistry;
@@ -44,7 +38,14 @@ import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.Description;
 import net.fortuna.ical4j.model.property.ExDate;
 import net.fortuna.ical4j.model.property.Uid;
+import org.silverpeas.accesscontrol.ComponentAccessControl;
 import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.i18n.AbstractBean;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import java.io.Serializable;
@@ -431,7 +432,7 @@ public class EventDetail extends AbstractBean
   @Override
   public boolean canBeAccessedBy(final UserDetail user) {
     AccessController<String> accessController =
-        AccessControllerProvider.getAccessController("componentAccessController");
+        AccessControllerProvider.getAccessController(ComponentAccessControl.class);
     return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
   }
 }
