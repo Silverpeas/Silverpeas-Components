@@ -23,7 +23,7 @@
 package com.silverpeas.kmelia.export;
 
 import com.silverpeas.converter.DocumentFormat;
-import com.silverpeas.converter.DocumentFormatConverterFactory;
+import com.silverpeas.converter.DocumentFormatConverterProvider;
 import com.silverpeas.converter.ODTConverter;
 import com.silverpeas.export.ExportDescriptor;
 import com.silverpeas.export.ExportException;
@@ -102,7 +102,7 @@ public class KmeliaPublicationExporter implements Exporter<KmeliaPublication> {
               inTopic(folderId);
       odtDocument = builder.buildFrom(publication, anODTAt(documentPath));
       if (targetFormat != odt) {
-        ODTConverter converter = DocumentFormatConverterFactory.getFactory().getODTConverter();
+        ODTConverter converter = DocumentFormatConverterProvider.getODTConverter();
         exportFile = converter.convert(odtDocument, inFormat(targetFormat));
       } else {
         exportFile = odtDocument;

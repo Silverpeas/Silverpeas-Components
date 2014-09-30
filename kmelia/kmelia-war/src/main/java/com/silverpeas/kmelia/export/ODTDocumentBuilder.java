@@ -34,7 +34,7 @@ import org.silverpeas.util.UnitUtil;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import com.silverpeas.comment.model.Comment;
-import com.silverpeas.converter.DocumentFormatConverterFactory;
+import com.silverpeas.converter.DocumentFormatConverterProvider;
 import com.silverpeas.converter.HTMLConverter;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
@@ -290,7 +290,7 @@ public class ODTDocumentBuilder {
             FileRepositoryManager.getTemporaryPath() + UUID.randomUUID().toString() + ".html");
         // warning: the content of HTML text is actually in ISO-8859-1!
         FileUtils.writeStringToFile(htmlFile, html, "ISO-8859-1");
-        HTMLConverter converter = DocumentFormatConverterFactory.getFactory().getHTMLConverter();
+        HTMLConverter converter = DocumentFormatConverterProvider.getHTMLConverter();
         odtConvertedHtmlFile = converter.convert(htmlFile, inFormat(odt));
         TextDocument htmlContent = TextDocument.loadDocument(odtConvertedHtmlFile);
         decorates(odtDocument).merge(htmlContent, atSection(SECTION_CONTENT));
