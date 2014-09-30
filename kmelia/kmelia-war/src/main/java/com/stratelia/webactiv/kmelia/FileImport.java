@@ -32,7 +32,8 @@ import com.silverpeas.importExport.report.MassiveReport;
 import com.silverpeas.node.importexport.NodePositionType;
 import com.silverpeas.node.importexport.NodePositionsType;
 import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.ZipManager;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.ZipUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.ResourcesWrapper;
@@ -112,7 +113,7 @@ public class FileImport {
     ImportReportManager reportManager = new ImportReportManager();
     String tempFolderPath = null;
     try {
-      PublicationsTypeManager typeMgr = new PublicationsTypeManager();
+      PublicationsTypeManager typeMgr = ServiceProvider.getService(PublicationsTypeManager.class);
 
       ImportSettings settings = getImportSettings(fileUploaded.getParent(), draft);
 
@@ -172,7 +173,7 @@ public class FileImport {
   }
 
   private String unzipUploadedFile() {
-    int nbFiles = ZipManager.getNbFiles(fileUploaded);
+    int nbFiles = ZipUtil.getNbFiles(fileUploaded);
     String tempFolderName = Long.toString(System.currentTimeMillis()) + '_' + kmeliaScc.getUserId();
     String tempFolderPath =
         FileRepositoryManager.getTemporaryPath() + File.separator + tempFolderName;
@@ -182,7 +183,7 @@ public class FileImport {
     }
     SilverTrace.info("kmelia", "FileImport.importFiles()", "root.MSG_GEN_PARAM_VALUE",
         "nbFiles = " + nbFiles);
-    ZipManager.extract(fileUploaded, tempFolder);
+    ZipUtil.extract(fileUploaded, tempFolder);
     SilverTrace.info("kmelia", "FileImport.importFiles()", "root.MSG_GEN_PARAM_VALUE",
         "tempFolderPath.getPath() = " + tempFolder.getPath());
     return tempFolderPath;

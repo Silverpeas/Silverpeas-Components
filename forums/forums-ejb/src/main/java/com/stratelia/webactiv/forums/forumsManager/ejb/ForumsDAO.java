@@ -607,11 +607,10 @@ public class ForumsDAO {
    * @param categoryId The id of the category.
    * @return The id of the newly created forum.
    * @throws SQLException An SQL exception.
-   * @throws UtilException
    */
   public static int createForum(Connection con, ForumPK forumPK,
       String forumName, String forumDescription, String forumCreator,
-      int forumParent, String categoryId) throws SQLException, UtilException {
+      int forumParent, String categoryId) throws SQLException {
     SilverTrace.info("forums", "ForumsDAO.createForum()",
         "root.MSG_GEN_PARAM_VALUE", "insertQuery = " + QUERY_CREATE_FORUM);
 

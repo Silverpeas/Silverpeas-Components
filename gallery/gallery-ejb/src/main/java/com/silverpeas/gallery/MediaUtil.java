@@ -67,13 +67,14 @@ import com.silverpeas.gallery.processing.Size;
 import com.silverpeas.gallery.processing.Watermarker;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.MetadataExtractor;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
-public class MediaHelper {
+public class MediaUtil {
 
   final static ResourceLocator gallerySettings =
       new ResourceLocator("org.silverpeas.gallery.settings.gallerySettings", "");
@@ -257,8 +258,9 @@ public class MediaHelper {
       iMedia.setFileName(fileForData.getName());
       iMedia.setFileMimeType(mediaMimeType);
       iMedia.setFileSize(fileForData.length());
+      MetadataExtractor metadataExtractor = ServiceProvider.getService(MetadataExtractor.class);
       org.silverpeas.util.MetaData metaData =
-          MetadataExtractor.getInstance().extractMetadata(handledImageFile.getFile());
+          metadataExtractor.extractMetadata(handledImageFile.getFile());
       switch (iMedia.getType()) {
         case Photo:
           iMedia.getPhoto().setDefinition(metaData.getDefinition());
@@ -643,6 +645,6 @@ public class MediaHelper {
     }
   }
 
-  private MediaHelper() {
+  private MediaUtil() {
   }
 }

@@ -46,7 +46,6 @@ import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.util.exception.SilverpeasException;
 import java.sql.Connection;
@@ -87,7 +86,7 @@ public class CardManager {
     try {
       SilverpeasBeanDAO dao = SilverpeasBeanDAOFactory
           .getDAO("com.silverpeas.whitePages.model.Card");
-      con = DBUtil.makeConnection(JNDINames.WHITEPAGES_DATASOURCE);
+      con = DBUtil.openConnection();
       con.setAutoCommit(false);
 
       card.setCreationDate(DateUtil.date2SQLDate(new Date()));
@@ -125,7 +124,7 @@ public class CardManager {
 
     if (ids != null) {
       try {
-        con = DBUtil.makeConnection(JNDINames.WHITEPAGES_DATASOURCE);
+        con = DBUtil.openConnection();
         con.setAutoCommit(false);
 
         SilverpeasBeanDAO dao = SilverpeasBeanDAOFactory

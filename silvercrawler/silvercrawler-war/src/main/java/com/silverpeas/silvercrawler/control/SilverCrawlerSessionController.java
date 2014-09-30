@@ -34,7 +34,7 @@ import com.silverpeas.silvercrawler.statistic.Statistic;
 import com.silverpeas.silvercrawler.util.FileServerUtils;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.ZipManager;
+import org.silverpeas.util.ZipUtil;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -261,7 +261,7 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
     // si la taille est inferieur à celle autorisée :
     if (sizeOk) {
       try {
-        zipSize = ZipManager.compressPathToZip(downloadPath, zipFile);
+        zipSize = ZipUtil.compressPathToZip(downloadPath, zipFile);
         url = FileServerUtils
             .getSilverCrawlerUrl(zipFile.getName(), zipFile.getName(), getComponentId(),
                 downloadPath.getPath().substring(getRootPath().length()));

@@ -79,7 +79,7 @@ public class ProjectManagerDAO {
   }
 
   public static int addTask(Connection con, TaskDetail task)
-      throws SQLException, UtilException {
+      throws SQLException {
     SilverTrace.debug("projectManager", "ProjectManagerDAO.addTask()",
         "root.MSG_GEN_ENTER_METHOD", task.toString());
     StringBuilder insertStatement = new StringBuilder();
@@ -143,7 +143,7 @@ public class ProjectManagerDAO {
   }
 
   public static int addResource(Connection con, TaskResourceDetail resource)
-      throws SQLException, UtilException {
+      throws SQLException {
     SilverTrace.debug("projectManager", "ProjectManagerDAO.addResources()",
         "root.MSG_GEN_ENTER_METHOD", resource.toString());
     StringBuilder insertStatement = new StringBuilder();

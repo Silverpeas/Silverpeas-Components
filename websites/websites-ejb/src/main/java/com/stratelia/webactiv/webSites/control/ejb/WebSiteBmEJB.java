@@ -32,7 +32,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.node.control.NodeBm;
 import com.stratelia.webactiv.node.model.NodeDetail;
@@ -854,7 +853,7 @@ public class WebSiteBmEJB implements WebSiteBm {
    */
   private Connection getConnection() {
     try {
-      Connection con = DBUtil.makeConnection(JNDINames.SILVERPEAS_DATASOURCE);
+      Connection con = DBUtil.openConnection();
       return con;
     } catch (Exception e) {
       throw new WebSitesRuntimeException("WebSiteBmEJB.getConnection()",

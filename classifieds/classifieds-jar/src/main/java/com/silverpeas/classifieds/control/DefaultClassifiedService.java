@@ -41,7 +41,6 @@ import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.util.exception.SilverpeasException;
@@ -733,8 +732,8 @@ public class DefaultClassifiedService implements ClassifiedService {
   private Connection openConnection() {
     Connection con;
     try {
-      con = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
-    } catch (UtilException e) {
+      con = DBUtil.openConnection();
+    } catch (SQLException e) {
       throw new ClassifiedsRuntimeException("DefaultClassifiedService.openConnection()",
           SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
     }

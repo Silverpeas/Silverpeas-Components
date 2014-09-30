@@ -52,7 +52,7 @@ public class OldOrderDAO {
   }
 
   public String createOrder(Connection con, Collection<String> basket,
-          String userId, String instanceId) throws SQLException, UtilException {
+          String userId, String instanceId) throws SQLException {
     // Création d'une commande
     String id = "";
     PreparedStatement prepStmt = null;

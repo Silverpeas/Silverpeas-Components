@@ -28,7 +28,6 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.ResourceLocator;
 import com.stratelia.webactiv.contact.control.ContactBm;
 import com.stratelia.webactiv.contact.model.CompleteContact;
@@ -47,6 +46,7 @@ import com.stratelia.webactiv.yellowpages.model.UserCompleteContact;
 import com.stratelia.webactiv.yellowpages.model.UserContact;
 import com.stratelia.webactiv.yellowpages.model.YellowpagesRuntimeException;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -1025,8 +1025,8 @@ public class YellowpagesBmEJB implements YellowpagesBm {
   private Connection getConnection() {
     // initialisation de la connexion
     try {
-      return DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
-    } catch (UtilException e) {
+      return DBUtil.openConnection();
+    } catch (SQLException e) {
       // traitement des exceptions
       throw new YellowpagesRuntimeException("YellowpagesBmEJB.getConnection()",
           SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);

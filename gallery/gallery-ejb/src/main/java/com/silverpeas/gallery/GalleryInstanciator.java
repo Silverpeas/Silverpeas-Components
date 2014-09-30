@@ -102,7 +102,7 @@ public class GalleryInstanciator implements ComponentsInstanciatorIntf {
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(query);
-      int newId = DBUtil.getNextId(con, "sb_node_node", "nodeId");
+      int newId = DBUtil.getNextId("sb_node_node", "nodeId");
       prepStmt.setInt(1, newId);
       prepStmt.setString(2, creationDate);
       prepStmt.setString(3, userId);

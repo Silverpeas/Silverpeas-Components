@@ -23,6 +23,7 @@ package org.silverpeas.components.quickinfo.model;
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -298,15 +299,13 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
     getPublicationBm().removePublication(foreignPK);
 
     // De-reffering contribution in taxonomy
-    Connection connection = DBUtil.makeConnection(JNDINames.SILVERPEAS_DATASOURCE);
-    try {
+    try(Connection connection = DBUtil.openConnection()) {
       new QuickInfoContentManager().deleteSilverContent(connection, foreignPK);
-    } catch (ContentManagerException e) {
+    } catch (ContentManagerException|SQLException e) {
       SilverTrace.error("quickinfo", "DefaultQuickInfoService.removeNews",
-          "ContentManagerExceptino", e);
-    } finally {
-      DBUtil.close(connection);
+          e.getClass().getSimpleName(), e);
     }
+
 
     // Deleting all attached files (WYSIWYG, WYSIWYG images...)
     AttachmentService attachmentService = AttachmentServiceFactory.getAttachmentService();
@@ -405,7 +404,7 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
    * Classify the info letter publication on the PdC only if the positions parameter is filled
    *
    * @param publi the quickInfo PublicationDetail to classify
-   * @param positions the string json positions
+   * @param pdcPositions the string json positions
    */
   private void classifyQuickInfo(PublicationDetail publi, List<PdcPosition> pdcPositions) {
     if (pdcPositions != null && !pdcPositions.isEmpty()) {

@@ -313,8 +313,8 @@ public class DefaultBlogService implements BlogService {
     Connection con;
     // initialisation de la connexion
     try {
-      con = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
-    } catch (UtilException e) {
+      con = DBUtil.openConnection();
+    } catch (SQLException e) {
       // traitement des exceptions
       throw new BlogRuntimeException("DefaultBlogService.openConnection()", SilverpeasRuntimeException.ERROR,
           "root.EX_CONNECTION_OPEN_FAILED", e);

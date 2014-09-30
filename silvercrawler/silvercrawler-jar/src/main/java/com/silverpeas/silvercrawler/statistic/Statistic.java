@@ -28,7 +28,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.exception.UtilException;
@@ -52,8 +51,8 @@ public class Statistic {
     Connection con;
     // initialisation de la connexion
     try {
-      con = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
-    } catch (UtilException e) {
+      con = DBUtil.openConnection();
+    } catch (SQLException e) {
       // traitement des exceptions
       throw new SilverCrawlerRuntimeException("Statistic.getConnection()",
           SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);

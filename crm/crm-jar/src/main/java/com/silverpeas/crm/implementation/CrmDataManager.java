@@ -16,7 +16,6 @@ import com.stratelia.webactiv.persistence.PersistenceException;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.OrganisationController;
@@ -355,7 +354,7 @@ public class CrmDataManager implements CrmDataInterface {
    */
   public Connection openConnection() throws CrmException {
     try {
-      return DBUtil.makeConnection(JNDINames.CRM_DATASOURCE);
+      return DBUtil.openConnection();
     } catch (Exception e) {
       throw new CrmException("com.silverpeas.crm.implementation.CrmDataManager",
         SilverpeasRuntimeException.FATAL, e.getMessage());

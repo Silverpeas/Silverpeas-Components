@@ -57,7 +57,7 @@ import com.silverpeas.thumbnail.ThumbnailSettings;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.ZipManager;
+import org.silverpeas.util.ZipUtil;
 import org.silverpeas.util.clipboard.ClipboardException;
 import org.silverpeas.util.clipboard.ClipboardSelection;
 import org.silverpeas.util.i18n.I18NHelper;
@@ -3169,7 +3169,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
       String zipFileName = FileRepositoryManager.getTemporaryPath() + fileName + ".zip";
       // zip PDF and files
-      ZipManager.compressPathToZip(subDirPath, zipFileName);
+      ZipUtil.compressPathToZip(subDirPath, zipFileName);
 
       return new File(zipFileName);
     } catch (Exception e) {

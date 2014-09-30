@@ -48,7 +48,6 @@ import java.util.List;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.UtilException;
 import com.stratelia.webactiv.webSites.siteManage.model.IconDetail;
 import com.stratelia.webactiv.webSites.siteManage.model.SiteDetail;
@@ -69,8 +68,8 @@ public class SiteDAO {
   }
 
   /* DBConnection methods */
-  private Connection openConnection() throws UtilException {
-    return DBUtil.makeConnection(JNDINames.BOOKMARK_DATASOURCE);
+  private Connection openConnection() throws SQLException {
+    return DBUtil.openConnection();
   }
 
   private void closeConnection(Connection dbConnect) {
@@ -495,7 +494,7 @@ public class SiteDAO {
    * @throws SQLException
    * @throws UtilException
    */
-  private String daoGetNextId() throws UtilException {
+  private String daoGetNextId() throws SQLException {
 
     int nextid = DBUtil.getNextId(tableSiteName, "siteId");
 

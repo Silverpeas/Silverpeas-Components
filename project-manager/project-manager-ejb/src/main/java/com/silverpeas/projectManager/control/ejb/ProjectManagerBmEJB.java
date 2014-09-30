@@ -44,7 +44,6 @@ import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 import javax.ejb.Stateless;
@@ -872,7 +871,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
 
   private Connection getConnection() {
     try {
-      return DBUtil.makeConnection(JNDINames.SILVERPEAS_DATASOURCE);
+      return DBUtil.openConnection();
     } catch (Exception e) {
       throw new ProjectManagerRuntimeException("ProjectManagerBmEJB.getConnection()",
           SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);

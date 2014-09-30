@@ -25,7 +25,7 @@ import com.silverpeas.gallery.delegate.MediaDataCreateDelegate;
 import com.silverpeas.gallery.model.GalleryRuntimeException;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.ZipManager;
+import org.silverpeas.util.ZipUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -118,7 +118,7 @@ public class GalleryDragAndDrop extends HttpServlet {
             item.write(f);
             // Cas du zip
             if (FileUtil.isArchive(fileName)) {
-              ZipManager.extract(f, parent);
+              ZipUtil.extract(f, parent);
             }
           }
         }

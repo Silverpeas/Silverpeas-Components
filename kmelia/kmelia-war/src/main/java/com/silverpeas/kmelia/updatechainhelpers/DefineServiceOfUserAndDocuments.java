@@ -31,7 +31,6 @@ import com.stratelia.silverpeas.pdc.model.Value;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
@@ -125,7 +124,7 @@ public class DefineServiceOfUserAndDocuments extends UpdateChainHelperImpl {
 
   private Connection getConnection() {
     try {
-      Connection con = DBUtil.makeConnection(JNDINames.SILVERPEAS_DATASOURCE);
+      Connection con = DBUtil.openConnection();
       return con;
     } catch (Exception e) {
       throw new KmeliaRuntimeException("DefineServiceOfUser.getConnection()",

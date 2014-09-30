@@ -71,7 +71,6 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.exception.UtilException;
@@ -419,8 +418,8 @@ public class GalleryBmEJB implements GalleryBm {
     Connection con;
     // initialisation de la connexion
     try {
-      con = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
-    } catch (final UtilException e) {
+      con = DBUtil.openConnection();
+    } catch (final SQLException e) {
       // traitement des exceptions
 
       throw new GalleryRuntimeException("GalleryBmEJB.initCon()", SilverpeasException.ERROR,

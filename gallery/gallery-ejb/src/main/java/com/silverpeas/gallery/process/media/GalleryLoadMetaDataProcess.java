@@ -23,9 +23,8 @@
  */
 package com.silverpeas.gallery.process.media;
 
-import com.silverpeas.gallery.MediaHelper;
+import com.silverpeas.gallery.MediaUtil;
 import com.silverpeas.gallery.model.InternalMedia;
-import com.silverpeas.gallery.model.Photo;
 import org.silverpeas.process.ProcessFactory;
 import org.silverpeas.process.io.file.FileHandler;
 import org.silverpeas.process.management.AbstractFileProcess;
@@ -68,7 +67,7 @@ public class GalleryLoadMetaDataProcess extends AbstractFileProcess<ProcessExecu
   public void processFiles(final ProcessExecutionContext context, final ProcessSession session,
       final FileHandler fileHandler) throws Exception {
     if (media.getType().isPhoto()) {
-      MediaHelper.setMetaData(fileHandler, media.getPhoto());
+      MediaUtil.setMetaData(fileHandler, media.getPhoto());
     }
   }
 }

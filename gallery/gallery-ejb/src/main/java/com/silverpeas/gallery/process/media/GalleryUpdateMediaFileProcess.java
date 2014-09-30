@@ -23,7 +23,7 @@
  */
 package com.silverpeas.gallery.process.media;
 
-import com.silverpeas.gallery.MediaHelper;
+import com.silverpeas.gallery.MediaUtil;
 import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.process.AbstractGalleryFileProcess;
 import com.silverpeas.gallery.process.GalleryProcessExecutionContext;
@@ -103,17 +103,17 @@ public class GalleryUpdateMediaFileProcess extends AbstractGalleryFileProcess {
         switch (getMedia().getType()) {
           case Photo:
             // Creating new images
-            MediaHelper
+            MediaUtil
                 .processPhoto(fileHandler, getMedia().getPhoto(), fileItem, watermark, watermarkHD,
                     watermarkOther);
             break;
           case Video:
             // Save new video
-            MediaHelper.processVideo(fileHandler, getMedia().getVideo(), fileItem);
+            MediaUtil.processVideo(fileHandler, getMedia().getVideo(), fileItem);
             break;
           case Sound:
             // Save new sound
-            MediaHelper.processSound(fileHandler, getMedia().getSound(), fileItem);
+            MediaUtil.processSound(fileHandler, getMedia().getSound(), fileItem);
             break;
           default:
             // In other cases, there is no file to manage.

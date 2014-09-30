@@ -61,7 +61,7 @@ public class ChatDataAccess {
   public Connection CreateConnexion() throws ChatException {
     Connection con = null;
     try {
-      con = DBUtil.makeConnection(DATASOURCE);
+      con = DBUtil.openConnection();
     } catch (Exception e) {
       throw new ChatException("ChatDataAccess.CreateConnexion()",
           SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", null, e);
@@ -160,11 +160,6 @@ public class ChatDataAccess {
       throw new ChatException("ChatDataAccess.InsertChatroom()",
           SilverpeasException.ERROR, "root.EX_RECORD_INSERTION_FAILED",
           "InsertStatement = " + insertStatement, se);
-    } catch (UtilException ue) {
-      haveToThrow = false;
-      throw new ChatException("ChatDataAccess.InsertChatroom()",
-          SilverpeasException.ERROR, "root.EX_RECORD_INSERTION_FAILED",
-          "InsertStatement = " + insertStatement, ue);
     } catch (ContentManagerException cme) {
       haveToThrow = false;
       throw new ChatException("ChatDataAccess.InsertChatroom()",
@@ -341,11 +336,6 @@ public class ChatDataAccess {
       throw new ChatException("ChatDataAccess.InsertBanned()",
           SilverpeasException.ERROR, "root.EX_RECORD_INSERTION_FAILED",
           "InsertStatement = " + insertStatement, se);
-    } catch (UtilException ue) {
-      haveToThrow = false;
-      throw new ChatException("ChatDataAccess.InsertBanned()",
-          SilverpeasException.ERROR, "root.EX_RECORD_INSERTION_FAILED",
-          "InsertStatement = " + insertStatement, ue);
     }
 
     finally {

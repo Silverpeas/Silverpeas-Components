@@ -23,7 +23,7 @@
  */
 package com.silverpeas.gallery.process.media;
 
-import com.silverpeas.gallery.MediaHelper;
+import com.silverpeas.gallery.MediaUtil;
 import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.Photo;
 import com.silverpeas.gallery.model.Sound;
@@ -117,9 +117,9 @@ public class GalleryCreateMediaFileProcess extends AbstractGalleryFileProcess {
       case Sound:
         Sound sound = getMedia().getSound();
         if (fileItem != null) {
-          MediaHelper.processSound(fileHandler, sound, fileItem);
+          MediaUtil.processSound(fileHandler, sound, fileItem);
         } else {
-          MediaHelper.processSound(fileHandler, sound, file);
+          MediaUtil.processSound(fileHandler, sound, file);
         }
         break;
 
@@ -134,19 +134,19 @@ public class GalleryCreateMediaFileProcess extends AbstractGalleryFileProcess {
   private void processVideoMedia(final FileHandler fileHandler) throws Exception {
     Video video = getMedia().getVideo();
     if (fileItem != null) {
-      MediaHelper.processVideo(fileHandler, video, fileItem);
+      MediaUtil.processVideo(fileHandler, video, fileItem);
     } else {
-      MediaHelper.processVideo(fileHandler, video, file);
+      MediaUtil.processVideo(fileHandler, video, file);
     }
   }
 
   private void processPhotoMedia(final FileHandler fileHandler) throws Exception {
     Photo photo = getMedia().getPhoto();
     if (fileItem != null) {
-      MediaHelper
+      MediaUtil
           .processPhoto(fileHandler, photo, fileItem, watermark, watermarkHD, watermarkOther);
     } else {
-      MediaHelper
+      MediaUtil
           .processPhoto(fileHandler, photo, file, watermark, watermarkHD, watermarkOther);
     }
   }

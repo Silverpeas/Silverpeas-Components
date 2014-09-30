@@ -37,7 +37,6 @@ import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.pool.ConnectionPool;
@@ -284,7 +283,7 @@ public class DataWarningDataManager {
     Statement stmt = null;
     ResultSet rs_Schedulers = null;
     try {
-      con = ConnectionPool.getConnection();
+      con = DBUtil.openConnection();
       String sqlForSchedulers = "SELECT DISTINCT instanceId FROM SC_DataWarning_Scheduler WHERE SCHEDULERSTATE="
           + DataWarningScheduler.SCHEDULER_STATE_ON;
       stmt = con.createStatement();
@@ -481,7 +480,7 @@ public class DataWarningDataManager {
   public Connection openConnection() throws DataWarningException {
     Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.DATAWARNING_DATASOURCE);
+      con = DBUtil.openConnection();
     } catch (RuntimeException e) {
       throw new DataWarningException(
           "com.silverpeas.dataWarning.implementation.DataWarningDataManager",

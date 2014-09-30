@@ -23,7 +23,7 @@
  */
 package com.silverpeas.gallery.process.media;
 
-import com.silverpeas.gallery.MediaHelper;
+import com.silverpeas.gallery.MediaUtil;
 import com.silverpeas.gallery.model.InternalMedia;
 import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.MediaPK;
@@ -78,7 +78,7 @@ public class GalleryPasteMediaFileProcess extends AbstractGalleryFileProcess {
     InternalMedia internalMedia = getMedia().getInternalMedia();
     if (internalMedia != null) {
       if (!isCutted || !fromMediaPk.getInstanceId().equals(context.getComponentInstanceId())) {
-        MediaHelper.pasteInternalMedia(fileHandler, fromMediaPk, internalMedia, isCutted);
+        MediaUtil.pasteInternalMedia(fileHandler, fromMediaPk, internalMedia, isCutted);
       }
     }
   }

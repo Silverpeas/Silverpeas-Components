@@ -134,9 +134,6 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
       formDetail.setId(id);
 
       return formDetail;
-    } catch (UtilException se) {
-      throw new FormsOnlineDatabaseException("FormsOnlineDAOJdbc.createForm()",
-          SilverpeasException.ERROR, "formsOnline.INSERTING_FORM_FAILED", se);
     } catch (SQLException se) {
       throw new FormsOnlineDatabaseException("FormsOnlineDAOJdbc.createForm()",
           SilverpeasException.ERROR, "formsOnline.INSERTING_FORM_FAILED", se);
@@ -729,9 +726,6 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
       instance.setId(id);
 
       return instance;
-    } catch (UtilException se) {
-      throw new FormsOnlineDatabaseException("FormsOnlineDAOJdbc.createInstance()",
-          SilverpeasException.ERROR, "formsOnline.INSERTING_FORMINSTANCE_FAILED", se);
     } catch (SQLException se) {
       throw new FormsOnlineDatabaseException("FormsOnlineDAOJdbc.createInstance()",
           SilverpeasException.ERROR, "formsOnline.INSERTING_FORMINSTANCE_FAILED", se);
@@ -844,8 +838,8 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
    */
   protected Connection getConnection() throws FormsOnlineDatabaseException {
     try {
-      return DBUtil.makeConnection(DB_NAME);
-    } catch (UtilException e) {
+      return DBUtil.openConnection();
+    } catch (SQLException e) {
       throw new FormsOnlineDatabaseException(
           "FormsOnlineDAOJdbc.getConnection()",
           SilverpeasException.FATAL,

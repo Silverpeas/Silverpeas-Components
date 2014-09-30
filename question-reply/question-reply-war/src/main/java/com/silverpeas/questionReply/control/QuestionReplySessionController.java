@@ -53,7 +53,7 @@ import com.silverpeas.questionReply.model.QuestionDetail;
 import com.silverpeas.questionReply.model.Recipient;
 import com.silverpeas.questionReply.model.Reply;
 import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.ZipManager;
+import org.silverpeas.util.ZipUtil;
 import com.silverpeas.whitePages.control.CardManager;
 import com.silverpeas.whitePages.model.Card;
 
@@ -891,8 +891,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     // Création du zip
     try {
       String zipFileName = fileExportDir.getName() + ".zip";
-      long zipFileSize = ZipManager.compressPathToZip(fileExportDir.getPath(), tempDir
-          + zipFileName);
+      long zipFileSize = ZipUtil.compressPathToZip(fileExportDir.getPath(), tempDir + zipFileName);
       exportReport.setZipFileName(zipFileName);
       exportReport.setZipFileSize(zipFileSize);
       exportReport.setZipFilePath(FileServerUtils.getUrlToTempDir(zipFileName));

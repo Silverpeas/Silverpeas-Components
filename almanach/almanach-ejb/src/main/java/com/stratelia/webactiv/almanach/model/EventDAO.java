@@ -24,7 +24,7 @@ import static org.silverpeas.util.StringUtil.isDefined;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
 import static org.silverpeas.util.DateUtil.*;
-import org.silverpeas.util.JNDINames;
+
 import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.date.Period;
 
@@ -124,7 +124,7 @@ public class EventDAO {
       insertStmt.setString(12, event.getPK().getComponentName());
 
       insertStmt.executeUpdate();
-    } catch (UtilException ue) {
+    } catch (SQLException ue) {
       SilverTrace.warn("almanach", "EventDAO.addEvent()",
               "almanach.EXE_ADD_EVENT_FAIL", "id : " + id, ue);
     }
@@ -347,8 +347,8 @@ public class EventDAO {
     }
   }
 
-  protected Connection openConnection() throws UtilException {
-    return DBUtil.makeConnection(JNDINames.ALMANACH_DATASOURCE);
+  protected Connection openConnection() throws SQLException {
+    return DBUtil.openConnection();
   }
 
   protected void closeConnection(final Connection connection) {

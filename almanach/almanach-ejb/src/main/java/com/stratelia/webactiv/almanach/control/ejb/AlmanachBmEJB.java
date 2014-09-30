@@ -41,7 +41,6 @@ import com.stratelia.webactiv.persistence.PersistenceException;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import net.fortuna.ical4j.model.Calendar;
@@ -185,7 +184,7 @@ public class AlmanachBmEJB implements AlmanachBm {
     checkEventDates(event);
     Connection connection = null;
     try {
-      connection = DBUtil.makeConnection(JNDINames.ALMANACH_DATASOURCE);
+      connection = DBUtil.openConnection();
       String id = getEventDAO().addEvent(connection, event);
       event.setPK(new EventPK(id, event.getPK()));
 
@@ -271,7 +270,7 @@ public class AlmanachBmEJB implements AlmanachBm {
         "root.MSG_GEN_ENTER_METHOD");
     Connection connection = null;
     try {
-      connection = DBUtil.makeConnection(JNDINames.ALMANACH_DATASOURCE);
+      connection = DBUtil.openConnection();
       // remove periodicity and periodicity exceptions
       Periodicity periodicity = getPeriodicity(pk.getId());
       if (periodicity != null) {
