@@ -32,6 +32,7 @@ import org.silverpeas.accesscontrol.ComponentAccessControl;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.core.admin.OrganisationController;
 
+import javax.enterprise.util.AnnotationLiteral;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -225,8 +226,8 @@ public class ClassifiedDetail implements SilverpeasContent {
    */
   @Override
   public boolean canBeAccessedBy(final UserDetail user) {
-    AccessController<String> accessController =
-        AccessControllerProvider.getAccessController(ComponentAccessControl.class);
+    AccessController<String> accessController = AccessControllerProvider
+        .getAccessController(new AnnotationLiteral<ComponentAccessControl>() {});
     return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
   }
 

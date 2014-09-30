@@ -44,6 +44,7 @@ import org.silverpeas.process.io.file.FileBasePath;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.StringUtil;
 
+import javax.enterprise.util.AnnotationLiteral;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Iterator;
@@ -246,8 +247,8 @@ public abstract class Media implements SilverpeasContent, SilverContentInterface
 
   @Override
   public boolean canBeAccessedBy(final UserDetail user) {
-    AccessController<String> accessController =
-        AccessControllerProvider.getAccessController(ComponentAccessControl.class);
+    AccessController<String> accessController = AccessControllerProvider
+        .getAccessController(new AnnotationLiteral<ComponentAccessControl>() {});
     return accessController.isUserAuthorized(user.getId(), getComponentInstanceId()) &&
         (isVisible(DateUtil.getDate()) || (user.isAccessAdmin() || getGreatestUserRole(user)
             .isGreaterThanOrEquals(SilverpeasRole.publisher) || (getGreatestUserRole(user)

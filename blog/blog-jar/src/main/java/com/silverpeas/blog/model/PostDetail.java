@@ -32,6 +32,7 @@ import com.stratelia.webactiv.publication.model.PublicationDetail;
 import org.silverpeas.accesscontrol.ComponentAccessControl;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
+import javax.enterprise.util.AnnotationLiteral;
 import java.util.Date;
 
 public final class PostDetail implements SilverpeasContent {
@@ -185,8 +186,8 @@ public final class PostDetail implements SilverpeasContent {
    */
   @Override
   public boolean canBeAccessedBy(final UserDetail user) {
-    AccessController<String> accessController =
-        AccessControllerProvider.getAccessController(ComponentAccessControl.class);
+    AccessController<String> accessController = AccessControllerProvider
+        .getAccessController(new AnnotationLiteral<ComponentAccessControl>() {});
     return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
   }
 

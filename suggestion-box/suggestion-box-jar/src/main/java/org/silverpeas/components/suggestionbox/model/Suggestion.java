@@ -38,6 +38,7 @@ import org.silverpeas.persistence.repository.OperationContext;
 import org.silverpeas.rating.ContributionRating;
 import org.silverpeas.rating.Rateable;
 
+import javax.enterprise.util.AnnotationLiteral;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -293,8 +294,8 @@ public class Suggestion extends AbstractJpaEntity<Suggestion, UuidIdentifier>
    */
   @Override
   public boolean canBeAccessedBy(final UserDetail user) {
-    AccessController<String> accessController =
-        AccessControllerProvider.getAccessController(ComponentAccessControl.class);
+    AccessController<String> accessController = AccessControllerProvider
+        .getAccessController(new AnnotationLiteral<ComponentAccessControl>() {});
     return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
   }
 

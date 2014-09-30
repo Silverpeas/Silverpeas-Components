@@ -48,6 +48,7 @@ import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.i18n.AbstractBean;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
+import javax.enterprise.util.AnnotationLiteral;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Collection;
@@ -431,8 +432,8 @@ public class EventDetail extends AbstractBean
    */
   @Override
   public boolean canBeAccessedBy(final UserDetail user) {
-    AccessController<String> accessController =
-        AccessControllerProvider.getAccessController(ComponentAccessControl.class);
+    AccessController<String> accessController = AccessControllerProvider
+        .getAccessController(new AnnotationLiteral<ComponentAccessControl>() {});
     return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
   }
 }

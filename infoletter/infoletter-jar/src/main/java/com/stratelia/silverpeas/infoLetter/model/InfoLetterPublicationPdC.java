@@ -32,6 +32,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.accesscontrol.ComponentAccessControl;
 import org.silverpeas.util.WAPrimaryKey;
 
+import javax.enterprise.util.AnnotationLiteral;
 import java.util.Date;
 import java.util.Iterator;
 
@@ -189,8 +190,8 @@ public class InfoLetterPublicationPdC extends InfoLetterPublication implements
    */
   @Override
   public boolean canBeAccessedBy(final UserDetail user) {
-    AccessController<String> accessController =
-        AccessControllerProvider.getAccessController(ComponentAccessControl.class);
+    AccessController<String> accessController = AccessControllerProvider
+        .getAccessController(new AnnotationLiteral<ComponentAccessControl>() {});
     return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
   }
 }

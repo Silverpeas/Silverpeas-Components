@@ -35,6 +35,7 @@ import org.silverpeas.accesscontrol.ComponentAccessControl;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.i18n.AbstractBean;
 
+import javax.enterprise.util.AnnotationLiteral;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -219,8 +220,8 @@ public class ForumDetail extends AbstractBean
    */
   @Override
   public boolean canBeAccessedBy(final UserDetail user) {
-    AccessController<String> accessController =
-        AccessControllerProvider.getAccessController(ComponentAccessControl.class);
+    AccessController<String> accessController = AccessControllerProvider
+        .getAccessController(new AnnotationLiteral<ComponentAccessControl>() {});
     return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
   }
 
