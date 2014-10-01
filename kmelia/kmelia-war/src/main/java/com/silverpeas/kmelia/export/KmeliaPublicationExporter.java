@@ -33,6 +33,7 @@ import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
 import org.silverpeas.util.FileRepositoryManager;
 import org.apache.commons.io.FileUtils;
 
+import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -52,6 +53,7 @@ import static com.silverpeas.kmelia.export.ODTDocumentBuilder.anODTDocumentBuild
  * <li>the language with which the export of the publication has to be done.</li>
  * </ul>
  */
+@Singleton
 public class KmeliaPublicationExporter implements Exporter<KmeliaPublication> {
 
   /**
@@ -69,14 +71,6 @@ public class KmeliaPublicationExporter implements Exporter<KmeliaPublication> {
    * performed.
    */
   public static final String EXPORT_TOPIC = "kmelia.export.topic";
-
-  /**
-   * Gets a new exporter of Kmelia publications.
-   * @return a KmeliaPublicationExporter instance.
-   */
-  public static KmeliaPublicationExporter aKmeliaPublicationExporter() {
-    return new KmeliaPublicationExporter();
-  }
 
   /**
    * Only the first publication is taken in charge by this exporter.

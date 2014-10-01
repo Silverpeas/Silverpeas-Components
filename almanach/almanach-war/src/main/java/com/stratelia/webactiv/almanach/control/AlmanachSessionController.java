@@ -45,7 +45,7 @@ import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.silverpeas.calendar.CalendarEvent;
 import com.silverpeas.export.ExportException;
 import com.silverpeas.export.Exporter;
-import com.silverpeas.export.ExporterFactory;
+import com.silverpeas.export.ExporterProvider;
 import com.silverpeas.export.ical.ExportableCalendar;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
@@ -989,8 +989,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
           "almanach.EXE_GET_ALL_EVENTS_FAIL", ex);
       throw new ExportException(ex.getMessage(), ex);
     }
-    ExporterFactory exporterFactory = ExporterFactory.getFactory();
-    Exporter<ExportableCalendar> iCalExporter = exporterFactory.getICalExporter();
+    Exporter<ExportableCalendar> iCalExporter = ExporterProvider.getICalExporter();
     FileWriter fileWriter = new FileWriter(icsFilePath);
     try {
       iCalExporter.export(withWriter(fileWriter), ExportableCalendar.with(eventsToExport));

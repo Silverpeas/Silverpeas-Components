@@ -23,7 +23,7 @@ package com.silverpeas.scheduleevent.control;
 import com.silverpeas.calendar.CalendarEvent;
 import com.silverpeas.export.ExportException;
 import com.silverpeas.export.Exporter;
-import com.silverpeas.export.ExporterFactory;
+import com.silverpeas.export.ExporterProvider;
 import com.silverpeas.export.ical.ExportableCalendar;
 import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.scheduleevent.notification.ScheduleEventUserNotification;
@@ -435,8 +435,7 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
     List<CalendarEvent> eventsToExport = asCalendarEvents(event, listDateOption);
 
     //export iCal
-    ExporterFactory exporterFactory = ExporterFactory.getFactory();
-    Exporter<ExportableCalendar> iCalExporter = exporterFactory.getICalExporter();
+    Exporter<ExportableCalendar> iCalExporter = ExporterProvider.getICalExporter();
     String icsFileName = ICS_PREFIX + getUserId() + ".ics";
     String icsFilePath = FileRepositoryManager.getTemporaryPath() + icsFileName;
     FileWriter fileWriter = new FileWriter(icsFilePath);
