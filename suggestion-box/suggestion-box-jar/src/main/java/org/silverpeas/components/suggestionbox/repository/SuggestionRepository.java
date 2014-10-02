@@ -31,7 +31,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
-import org.silverpeas.persistence.repository.EntityRepository;
+import org.silverpeas.persistence.repository.SilverpeasEntityRepository;
 import org.silverpeas.persistence.repository.OperationContext;
 import org.silverpeas.persistence.repository.jpa.NamedParameters;
 import org.silverpeas.rating.ContributionRating;
@@ -52,7 +52,8 @@ import java.util.Map;
  * @author Yohann Chastagnier
  */
 @Named
-public class SuggestionRepository implements EntityRepository<Suggestion, UuidIdentifier> {
+public class SuggestionRepository implements
+    SilverpeasEntityRepository<Suggestion, UuidIdentifier> {
 
   @Inject
   private CommentService commentService;
