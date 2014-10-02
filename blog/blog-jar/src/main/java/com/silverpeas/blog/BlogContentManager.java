@@ -191,7 +191,7 @@ public class BlogContentManager implements ContentInterface, java.io.Serializabl
    * PublicationDetail
    *
    * @param pubDetail the content
-   * @param boolean is pubDetail visible
+   * @param isVisible is the publication visible
    */
   public void updateSilverContentVisibility(PublicationDetail pubDetail,
       boolean isVisible) throws ContentManagerException {

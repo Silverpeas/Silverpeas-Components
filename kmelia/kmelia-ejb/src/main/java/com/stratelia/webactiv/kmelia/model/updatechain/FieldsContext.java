@@ -25,31 +25,13 @@
 package com.stratelia.webactiv.kmelia.model.updatechain;
 
 public class FieldsContext {
-  public static int ON_UPDATE_REPLACE_EMPTY_VALUES = 0;
-  public static int ON_UPDATE_IGNORE_EMPTY_VALUES = 1;
 
-  // String formName = "";
-  // String formIndex = "0";
   String currentFieldIndex = "0";
   String language = "fr";
-  // boolean printTitle = false;
   String componentId = null;
   String userId = null;
-  // String objectId = null;
-  // boolean versioningUsed = false;
-  // boolean printBorder = true;
-  // String contentLanguage = "fr";
-  // int nbFields = 0;
-  // String nodeId = null;
   int lastFieldIndex;
-  boolean useMandatory = true; // used to modify several objects at the same
-
-  // time.
-
-  // boolean useBlankFields = false; //display all fields blank
-  // boolean ignoreDefaultValues = false; //do not display default value
-  // String xmlFormName = "";
-  // int updatePolicy = ON_UPDATE_REPLACE_EMPTY_VALUES;
+  boolean useMandatory = true; // used to modify several objects at the same time.
 
   public FieldsContext() {
   }
@@ -116,5 +98,4 @@ public class FieldsContext {
   public void setComponentId(String componentId) {
     this.componentId = componentId;
   }
-
 }
