@@ -87,8 +87,8 @@
   <bean id="subscriptionServiceFactory" class="com.silverpeas.subscribe.SubscriptionServiceFactory"
         factory-method="getFactory"/>
 
-  <bean id="ratingServiceFactory" class="com.silverpeas.notation.ejb.RatingServiceFactory"
-        factory-method="getInstance"/>
+  <!-- ebo <bean id="ratingServiceFactory" class="com.silverpeas.notation.ejb.RatingServiceProvider"
+        factory-method="getInstance"/> -->
 
   <bean id="userNotificationHelper" class="com.silverpeas.notification.builder.helper.UserNotificationHelper"
         factory-method="getInstance"/>

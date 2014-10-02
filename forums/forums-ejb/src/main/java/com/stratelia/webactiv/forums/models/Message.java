@@ -23,7 +23,7 @@
  */
 package com.stratelia.webactiv.forums.models;
 
-import com.silverpeas.notation.ejb.RatingServiceFactory;
+import com.silverpeas.notation.ejb.RatingServiceProvider;
 import org.silverpeas.rating.Rateable;
 import org.silverpeas.rating.ContributionRating;
 import org.silverpeas.rating.ContributionRatingPK;
@@ -265,7 +265,7 @@ public class Message implements Rateable, Serializable {
   @Override
   public ContributionRating getRating() {
     if (contributionRating == null) {
-      contributionRating = RatingServiceFactory.getRatingService()
+      contributionRating = RatingServiceProvider.getRatingService()
           .getRating(new ContributionRatingPK(String.valueOf(getId()), getInstanceId(), RESOURCE_TYPE));
     }
     return contributionRating;

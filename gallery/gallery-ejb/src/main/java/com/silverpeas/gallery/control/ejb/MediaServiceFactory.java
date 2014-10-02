@@ -58,7 +58,7 @@ public class MediaServiceFactory {
   }
 
   /**
-   * @return a RatingServiceFactory instance.
+   * @return a MediaServiceFactory instance.
    */
   public static MediaServiceFactory getInstance() {
     return instance;

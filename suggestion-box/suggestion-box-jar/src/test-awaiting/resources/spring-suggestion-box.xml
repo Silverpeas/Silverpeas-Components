@@ -51,8 +51,8 @@
         factory-method="getInstance"/>
   <bean id="suggestionRepositoryProvider" class="org.silverpeas.components.suggestionbox.repository.SuggestionRepositoryProvider"
         factory-method="getInstance"/>
-  <bean id="ratingServiceFactory" class="com.silverpeas.notation.ejb.RatingServiceFactory"
-        factory-method="getInstance"/>
+  <!-- ebo <bean id="ratingServiceFactory" class="com.silverpeas.notation.ejb.RatingServiceProvider"
+        factory-method="getInstance"/> -->
   <bean id="userNotificationHelper" class="com.silverpeas.notification.builder.helper.UserNotificationHelper"
         factory-method="getInstance"/>
   <bean id="wywiwygController" class="org.silverpeas.wysiwyg.control.WysiwygController"

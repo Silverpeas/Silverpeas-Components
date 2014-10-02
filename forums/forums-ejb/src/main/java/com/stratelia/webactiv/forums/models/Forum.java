@@ -25,7 +25,7 @@ package com.stratelia.webactiv.forums.models;
 
 import java.io.Serializable;
 
-import com.silverpeas.notation.ejb.RatingServiceFactory;
+import com.silverpeas.notation.ejb.RatingServiceProvider;
 import org.silverpeas.rating.Rateable;
 import org.silverpeas.rating.ContributionRating;
 import org.silverpeas.rating.ContributionRatingPK;
@@ -211,7 +211,7 @@ public class Forum implements Rateable, Serializable {
   @Override
   public ContributionRating getRating() {
     if (contributionRating == null) {
-      contributionRating = RatingServiceFactory.getRatingService()
+      contributionRating = RatingServiceProvider.getRatingService()
           .getRating(new ContributionRatingPK(String.valueOf(id), getInstanceId(), RESOURCE_TYPE));
     }
     return contributionRating;
