@@ -34,8 +34,10 @@ import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
+import javax.inject.Named;
 import java.io.IOException;
 
+@Named("galleryGlobalSilverpeasContentProcessor")
 public class GalleryGlobalSilverpeasContentProcessor extends DefaultGlobalSilverContentProcessor
     implements IGlobalSilverContentProcessor {
 

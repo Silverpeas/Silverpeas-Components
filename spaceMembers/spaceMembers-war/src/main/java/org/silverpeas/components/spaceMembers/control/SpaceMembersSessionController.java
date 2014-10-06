@@ -26,7 +26,7 @@ package org.silverpeas.components.spaceMembers.control;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 
 public class SpaceMembersSessionController extends AbstractComponentSessionController {
 
