@@ -37,10 +37,10 @@
   <ctx:annotation-config/>
 
   <ctx:component-scan base-package="org.silverpeas.components.quickinfo.model"/>
-  <ctx:component-scan base-package="org.silverpeas.persistence" />
+  <!-- YCH <context:component-scan base-package="org.silverpeas.persistence" />-->
 
-  <bean id="transactionFactory" class="org.silverpeas.persistence.TransactionFactory"
-        factory-method="getFactory"/>
+  <!-- YCH <bean id="transactionFactory" class="org.silverpeas.persistence.TransactionFactory"-->
+        <!--factory-method="getFactory"/>-->
 
   <bean id="commentService"
         class="org.silverpeas.components.quickinfo.mock.CommentServiceMockWrapper"/>

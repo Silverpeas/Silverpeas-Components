@@ -45,8 +45,8 @@
   <bean id="suggestionBoxService"
         class="org.silverpeas.components.suggestionbox.mock.SuggestionBoxServiceMockWrapper"/>
 
-  <bean name="personalizationServiceFactory"
-        class="com.silverpeas.personalization.service.PersonalizationServiceFactory"
-        factory-method="getFactory"/>
+  <!-- YCH <bean name="personalizationServiceFactory"-->
+        <!--class="com.silverpeas.personalization.service.PersonalizationServiceProviderr"-->
+        <!--factory-method="getFactory"/>-->
 
 </beans>

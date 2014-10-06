@@ -37,9 +37,9 @@
   <ctx:annotation-config/>
 
   <ctx:component-scan base-package="org.silverpeas.components.suggestionbox.model"/>
-  <ctx:component-scan base-package="org.silverpeas.persistence" />
+  <!-- YCH <context:component-scan base-package="org.silverpeas.persistence" />-->
 
-  <bean id="transactionFactory" class="org.silverpeas.persistence.TransactionFactory"
+  <!-- YCH <bean id="transactionFactory" class="org.silverpeas.persistence.TransactionFactory"-->
         factory-method="getFactory"/>
 
   <bean id="organizationController"

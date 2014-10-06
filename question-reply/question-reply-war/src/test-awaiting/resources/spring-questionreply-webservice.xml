@@ -46,8 +46,8 @@
   <bean id="questionManagerFactory" class="com.silverpeas.questionReply.control.QuestionManagerFactory"
         factory-method="getFactory"/>
 
-  <bean name="personalizationServiceFactory"
-        class="com.silverpeas.personalization.service.PersonalizationServiceFactory" factory-method="getFactory"/>
+  <!-- YCH <bean name="personalizationServiceFactory"-->
+        <!--class="com.silverpeas.personalization.service.PersonalizationServiceProviderr" factory-method="getFactory"/>-->
 
   <import resource="spring-silverpeas.xml"/>
   <import resource="spring-webservice.xml"/>

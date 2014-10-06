@@ -39,7 +39,7 @@
 
   <context:component-scan base-package="org.silverpeas.components.suggestionbox.model"/>
   <context:component-scan base-package="org.silverpeas.components.suggestionbox.repository"/>
-  <context:component-scan base-package="org.silverpeas.persistence" />
+  <!-- YCH <context:component-scan base-package="org.silverpeas.persistence" />-->
 
   <bean id="organizationController"
         class="org.silverpeas.components.suggestionbox.mock.OrganisationControllerMockWrapper"/>
@@ -57,8 +57,8 @@
   <!-- ebo <bean id="commentServiceFactory" class="com.silverpeas.comment.service.CommentServiceFactory"
         factory-method="getFactory"/> -->
 
-  <bean id="transactionFactory" class="org.silverpeas.persistence.TransactionFactory"
-        factory-method="getFactory"/>
+  <!-- YCH <bean id="transactionFactory" class="org.silverpeas.persistence.TransactionFactory"-->
+        <!--factory-method="getFactory"/>-->
 
   <jpa:repositories base-package="org.silverpeas.components.suggestionbox.repository"
                     transaction-manager-ref="jpaTransactionManager"/>
