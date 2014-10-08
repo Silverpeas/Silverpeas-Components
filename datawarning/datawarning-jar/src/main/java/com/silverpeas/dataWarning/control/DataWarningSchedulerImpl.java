@@ -30,7 +30,7 @@ import com.silverpeas.dataWarning.model.*;
 import com.silverpeas.scheduler.ScheduledJob;
 import com.silverpeas.scheduler.Scheduler;
 import com.silverpeas.scheduler.SchedulerEventListener;
-import com.silverpeas.scheduler.SchedulerFactory;
+import com.silverpeas.scheduler.SchedulerProvider;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.notificationManager.*;
@@ -88,8 +88,7 @@ public class DataWarningSchedulerImpl implements SchedulerEventListener {
       }
       idAllUniqueUsers = (String[]) hs.toArray(new String[0]);
 
-      SchedulerFactory schedulerFactory = SchedulerFactory.getFactory();
-      this.scheduler = schedulerFactory.getScheduler();
+      this.scheduler = SchedulerProvider.getScheduler();
     } catch (Exception e) {
       SilverTrace.error("dataWarning", "DataWarning_TimeoutManagerImpl.initialize()", "", e);
     }

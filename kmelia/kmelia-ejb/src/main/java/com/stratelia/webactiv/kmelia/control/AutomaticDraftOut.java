@@ -23,7 +23,7 @@ package com.stratelia.webactiv.kmelia.control;
 import com.silverpeas.scheduler.Scheduler;
 import com.silverpeas.scheduler.SchedulerEvent;
 import com.silverpeas.scheduler.SchedulerEventListener;
-import com.silverpeas.scheduler.SchedulerFactory;
+import com.silverpeas.scheduler.SchedulerProvider;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import org.silverpeas.util.StringUtil;
 
@@ -46,8 +46,7 @@ public class AutomaticDraftOut
     SilverTrace.info("kmelia", "AutomaticDraftOut.initialize()", "root.MSG_GEN_ENTER_METHOD");
     try {
       String cron = resources.getString("cronAutomaticDraftOut");
-      SchedulerFactory schedulerFactory = SchedulerFactory.getFactory();
-      Scheduler scheduler = schedulerFactory.getScheduler();
+      Scheduler scheduler = SchedulerProvider.getScheduler();
       scheduler.unscheduleJob(AUTOMATICDRAFTOUT_JOB_NAME);
       if (StringUtil.isDefined(cron)) {
         JobTrigger trigger = JobTrigger.triggerAt(cron);

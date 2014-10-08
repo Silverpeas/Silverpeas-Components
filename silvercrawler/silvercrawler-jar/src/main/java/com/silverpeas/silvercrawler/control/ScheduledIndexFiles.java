@@ -32,7 +32,7 @@ import com.silverpeas.silvercrawler.model.SilverCrawlerRuntimeException;
 import com.silverpeas.scheduler.Scheduler;
 import com.silverpeas.scheduler.SchedulerEvent;
 import com.silverpeas.scheduler.SchedulerEventListener;
-import com.silverpeas.scheduler.SchedulerFactory;
+import com.silverpeas.scheduler.SchedulerProvider;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
@@ -52,8 +52,7 @@ public class ScheduledIndexFiles
   public void initialize() {
     try {
       String cron = resources.getString("cronScheduledIndex");
-      SchedulerFactory schedulerFactory = SchedulerFactory.getFactory();
-      Scheduler scheduler = schedulerFactory.getScheduler();
+      Scheduler scheduler = SchedulerProvider.getScheduler();
       scheduler.unscheduleJob(SILVERCRAWLERENGINE_JOB_NAME);
       JobTrigger trigger = JobTrigger.triggerAt(cron);
       scheduler.scheduleJob(SILVERCRAWLERENGINE_JOB_NAME, trigger, this);

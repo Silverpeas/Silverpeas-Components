@@ -32,7 +32,7 @@ import com.silverpeas.mailinglist.service.model.beans.MailingList;
 import com.silverpeas.scheduler.Scheduler;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.silverpeas.scheduler.SchedulerException;
-import com.silverpeas.scheduler.SchedulerFactory;
+import com.silverpeas.scheduler.SchedulerProvider;
 import com.silverpeas.scheduler.trigger.TimeUnit;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
@@ -74,8 +74,7 @@ public class MailCheckerInitialize {
     try {
       SilverTrace.info("mailingList", "MailCheckerInitialize.Initialize",
           "mailinglist.initialization.start", " " + checker);
-      SchedulerFactory schedulerFactory = SchedulerFactory.getFactory();
-      Scheduler scheduler = schedulerFactory.getScheduler();
+      Scheduler scheduler = SchedulerProvider.getScheduler();
       if (scheduler.isJobScheduled(MAILING_LIST_JOB_NAME)) {
         scheduler.unscheduleJob(MAILING_LIST_JOB_NAME);
       }
