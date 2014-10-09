@@ -230,6 +230,10 @@ public class GalleryResource extends AbstractGalleryResource {
           break;
       }
       checkNotFoundStatus(entity);
+      if (getHttpRequest().isSecure()) {
+        // Replacing HTTP scheme by HTTPS one
+        entity.setEmbedHtml(entity.getEmbedHtml().replaceAll("http://", "https://"));
+      }
       // noinspection ConstantConditions
       return entity.withURI(getUriInfo().getRequestUri());
     } catch (final WebApplicationException ex) {
