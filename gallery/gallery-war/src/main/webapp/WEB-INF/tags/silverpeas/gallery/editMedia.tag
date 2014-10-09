@@ -280,7 +280,7 @@
 
         <div class="champs">
           <c:set var="downloadChecked" value=""/>
-          <c:if test="${media.downloadable || (isNewMediaCase && defaultDownload)}">
+          <c:if test="${media.internalMedia.downloadAuthorized || (isNewMediaCase && defaultDownload)}">
             <c:set var="downloadChecked" value="checked=\"checked\""/>
           </c:if>
           <input id="download" type="checkbox" name="SP$$MediaDownloadAuthorized" value="true" ${downloadChecked} />
