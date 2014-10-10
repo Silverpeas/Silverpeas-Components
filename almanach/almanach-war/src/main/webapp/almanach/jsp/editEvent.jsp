@@ -101,9 +101,8 @@ function reallyUpdate() {
 	document.eventForm.submit();
 }
 
-function eventDeleteConfirm(t, id)
-{
-    if (window.confirm("<%=EncodeHelper.javaStringToJsString(almanach.getString("suppressionConfirmation"))%> '" + t + "' ?")){
+function eventDeleteConfirm() {
+    if (window.confirm("<%=EncodeHelper.javaStringToJsString(almanach.getString("suppressionConfirmation"))%> ?")){
     	<% if (event.getPeriodicity() != null ) { %>
     		displayBoxOnDelete();
     	<% } else { %>
@@ -391,7 +390,7 @@ $(document).ready(function(){
 	browseBar.setComponentName(componentLabel, "almanach.jsp");
 	browseBar.setExtraInformation(event.getTitle());
 
-    operationPane.addOperation(m_context + "/util/icons/almanach_to_del.gif", almanach.getString("supprimerEvenement"), "javascript:onClick=eventDeleteConfirm('" + EncodeHelper.javaStringToJsString(title) + "','" + id +"')");
+    operationPane.addOperation(m_context + "/util/icons/almanach_to_del.gif", almanach.getString("GML.delete"), "javascript:onClick=eventDeleteConfirm()");
     out.println(window.printBefore());
 
 	tabbedPane.addTab(almanach.getString("evenement"), "viewEventContent.jsp?Id="+id+"&Date="+startDateString, false);
