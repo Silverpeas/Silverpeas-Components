@@ -59,7 +59,7 @@ import org.silverpeas.util.viewGenerator.html.board.Board;
 import org.silverpeas.util.viewGenerator.html.pagination.Pagination;
 import org.apache.commons.io.FilenameUtils;
 import org.owasp.encoder.Encode;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
 import org.silverpeas.core.admin.OrganisationController;
@@ -931,7 +931,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       PublicationDetail pubDetail, ResourcesWrapper resources, boolean linkAttachment,
       boolean alias) {
     ForeignPK foreignPK = new ForeignPK(pubDetail.getPK());
-    List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
+    List<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService().
         listDocumentsByForeignKey(foreignPK, kmeliaScc.getCurrentLanguage());
     StringBuilder result = new StringBuilder(documents.size() * 256);
     boolean hasDisplayableAttachments = false;

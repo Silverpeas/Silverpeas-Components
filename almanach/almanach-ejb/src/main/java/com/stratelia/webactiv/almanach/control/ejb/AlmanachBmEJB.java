@@ -55,7 +55,7 @@ import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.CalScale;
 import net.fortuna.ical4j.model.property.ExDate;
 import net.fortuna.ical4j.model.property.RRule;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
@@ -757,7 +757,7 @@ public class AlmanachBmEJB implements AlmanachBm {
     SilverTrace.info("almanach", "AlmanachBmEJB.getAttachments()",
         "root.MSG_GEN_ENTER_METHOD", "eventId = " + eventPK.getId());
     try {
-      Collection<SimpleDocument> attachmentList = AttachmentServiceFactory.getAttachmentService().
+      Collection<SimpleDocument> attachmentList = AttachmentServiceProvider.getAttachmentService().
           listDocumentsByForeignKey(eventPK, null);
       SilverTrace.info("almanach", "AlmanachBmEJB.getAttachments()", "root.MSG_GEN_PARAM_VALUE",
           "attachmentList.size() = " + attachmentList.size());

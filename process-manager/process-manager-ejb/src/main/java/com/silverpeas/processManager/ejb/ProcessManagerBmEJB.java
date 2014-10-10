@@ -34,7 +34,7 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -183,12 +183,12 @@ public class ProcessManagerBmEJB implements ProcessManagerBm {
       // Attachment's foreignkey must be set with the just created instanceId
       for (String attachmentId : attachmentIds) {
         SimpleDocumentPK pk = new SimpleDocumentPK(attachmentId, componentId);
-        SimpleDocument document = AttachmentServiceFactory.getAttachmentService().
+        SimpleDocument document = AttachmentServiceProvider.getAttachmentService().
             searchDocumentById(pk, null);
         document.setForeignId(instanceId);
-        AttachmentServiceFactory.getAttachmentService().lock(attachmentId, userId, null);
-        AttachmentServiceFactory.getAttachmentService().updateAttachment(document, false, false);
-        AttachmentServiceFactory.getAttachmentService().unlock(new UnlockContext(attachmentId,
+        AttachmentServiceProvider.getAttachmentService().lock(attachmentId, userId, null);
+        AttachmentServiceProvider.getAttachmentService().updateAttachment(document, false, false);
+        AttachmentServiceProvider.getAttachmentService().unlock(new UnlockContext(attachmentId,
             userId, null));
       }
     } catch (ProcessManagerException e) {
@@ -485,7 +485,7 @@ public class ProcessManagerBmEJB implements ProcessManagerBm {
         new SimpleAttachment(fileName, getLanguage(), fileName, "", content.length, mimeType,
         userId, new Date(), null));
     doc.setDocumentType(context);
-    return AttachmentServiceFactory.getAttachmentService().createAttachment(doc,
+    return AttachmentServiceProvider.getAttachmentService().createAttachment(doc,
         new ByteArrayInputStream(content));
   }
 

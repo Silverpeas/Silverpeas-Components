@@ -29,7 +29,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 
 public class KmaxIndexer implements ComponentIndexerInterface {
 
@@ -42,7 +42,7 @@ public class KmaxIndexer implements ComponentIndexerInterface {
     scc.indexKmax(scc.getComponentId());
 
     for (PublicationDetail pd : scc.getAllPublications()) {
-      AttachmentServiceFactory.getAttachmentService().indexAllDocuments(pd.getPK(), null, null);
+      AttachmentServiceProvider.getAttachmentService().indexAllDocuments(pd.getPK(), null, null);
     }
   }
 }

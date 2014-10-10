@@ -45,7 +45,7 @@ import org.silverpeas.wysiwyg.control.WysiwygController;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileServerUtils;
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
@@ -628,13 +628,13 @@ public class ProcessManagerRequestRouter
         for (String attachmentId : attachmentIds) {
 
           SimpleDocumentPK pk = new SimpleDocumentPK(attachmentId, session.getComponentId());
-          SimpleDocument document = AttachmentServiceFactory.getAttachmentService().
+          SimpleDocument document = AttachmentServiceProvider.getAttachmentService().
               searchDocumentById(pk, null);
           document.setForeignId(instanceId);
-          AttachmentServiceFactory.getAttachmentService().lock(attachmentId, session.getUserId(),
+          AttachmentServiceProvider.getAttachmentService().lock(attachmentId, session.getUserId(),
               null);
-          AttachmentServiceFactory.getAttachmentService().updateAttachment(document, false, false);
-          AttachmentServiceFactory.getAttachmentService().unlock(new UnlockContext(attachmentId,
+          AttachmentServiceProvider.getAttachmentService().updateAttachment(document, false, false);
+          AttachmentServiceProvider.getAttachmentService().unlock(new UnlockContext(attachmentId,
               session.getUserId(), null));
         }
 

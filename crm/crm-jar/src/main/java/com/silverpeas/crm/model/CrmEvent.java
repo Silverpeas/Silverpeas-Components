@@ -27,7 +27,7 @@ package com.silverpeas.crm.model;
 import com.stratelia.webactiv.persistence.SilverpeasBean;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import org.silverpeas.util.WAPrimaryKey;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 
 import java.util.List;
@@ -175,13 +175,13 @@ public class CrmEvent extends SilverpeasBean implements Comparable<Object> {
   }
 
   public List<SimpleDocument> getAttachments() {
-    return AttachmentServiceFactory.getAttachmentService().listDocumentsByForeignKey(
+    return AttachmentServiceProvider.getAttachmentService().listDocumentsByForeignKey(
         new CrmPK("EVENT_" + getPK().getId(), getInstanceId()), null);
   }
 
   public void deleteAttachments() {
     for(SimpleDocument document : getAttachments()) {
-      AttachmentServiceFactory.getAttachmentService().deleteAttachment(document);
+      AttachmentServiceProvider.getAttachmentService().deleteAttachment(document);
     }
   }
 

@@ -408,8 +408,7 @@ public interface KmeliaBm extends SilverpeasComponentService<KmeliaPublication> 
    * @param pubPK - id of the publication which contains this external elements
    * @
    */
-  public void externalElementsOfPublicationHaveChanged(PublicationPK pubPK, String userId,
-      int action);
+  public void externalElementsOfPublicationHaveChanged(PublicationPK pubPK, String userId);
 
   public void sendModificationAlert(int modificationScope, PublicationPK pubPK);
 

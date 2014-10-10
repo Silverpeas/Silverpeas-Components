@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.SystemUtils;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
@@ -124,7 +124,7 @@ public class SilverpeasImageFinder {
         break;
       }
     }
-    SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService().searchDocumentById(
+    SimpleDocument attachment = AttachmentServiceProvider.getAttachmentService().searchDocumentById(
         new SimpleDocumentPK(attachmentId), lang);
     return attachment.getAttachmentPath();
   }

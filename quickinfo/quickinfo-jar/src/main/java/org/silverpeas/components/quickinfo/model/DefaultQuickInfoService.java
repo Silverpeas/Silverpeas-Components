@@ -35,7 +35,7 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import org.silverpeas.attachment.AttachmentService;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.util.SimpleDocumentList;
 import org.silverpeas.authentication.UserAuthenticationListener;
@@ -308,7 +308,7 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
 
 
     // Deleting all attached files (WYSIWYG, WYSIWYG images...)
-    AttachmentService attachmentService = AttachmentServiceFactory.getAttachmentService();
+    AttachmentService attachmentService = AttachmentServiceProvider.getAttachmentService();
     SimpleDocumentList<SimpleDocument> docs =
         attachmentService.listAllDocumentsByForeignKey(foreignPK, null);
     for (SimpleDocument document : docs) {

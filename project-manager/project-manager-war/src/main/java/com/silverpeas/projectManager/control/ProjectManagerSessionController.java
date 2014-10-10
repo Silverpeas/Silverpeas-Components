@@ -23,7 +23,7 @@ package com.silverpeas.projectManager.control;
 import java.text.ParseException;
 import java.util.*;
 
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 
 import com.silverpeas.projectManager.control.ejb.ProjectManagerBm;
@@ -320,7 +320,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
 
   public List<SimpleDocument> getAttachments(String id) {
     ForeignPK foreignKey = new ForeignPK(id, getComponentId());
-    return AttachmentServiceFactory.getAttachmentService().listDocumentsByForeignKey(foreignKey,
+    return AttachmentServiceProvider.getAttachmentService().listDocumentsByForeignKey(foreignKey,
         null);
   }
 

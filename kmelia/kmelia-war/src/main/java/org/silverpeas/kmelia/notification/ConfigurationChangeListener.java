@@ -25,7 +25,7 @@ package org.silverpeas.kmelia.notification;
 
 import javax.inject.Named;
 
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.notification.jsondiff.Operation;
 
 import com.silverpeas.admin.notification.ComponentJsonPatch;
@@ -64,7 +64,7 @@ public class ConfigurationChangeListener extends DefaultNotificationSubscriber {
       if ("kmelia".equalsIgnoreCase(patch.getComponentType())) {
         Operation operation = patch.getOperationByPath(VERSION_MODE);
         if (operation != null) {
-          AttachmentServiceFactory.getAttachmentService().switchComponentBehaviour(notification
+          AttachmentServiceProvider.getAttachmentService().switchComponentBehaviour(notification
               .getSource().getComponentInstanceId(), StringUtil.getBooleanValue(operation
               .getValue()));
         }

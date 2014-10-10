@@ -86,7 +86,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.JAXBException;
 import org.apache.commons.fileupload.FileItem;
 import org.owasp.encoder.Encode;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
@@ -1290,7 +1290,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
           this.getUserId(), creationDate, null);
       SimpleDocument document = new SimpleDocument(new SimpleDocumentPK(null, survey.
           getComponentInstanceId()), survey.getId(), 0, false, file);
-      AttachmentServiceFactory.getAttachmentService().createAttachment(document, fileSynthesis.
+      AttachmentServiceProvider.getAttachmentService().createAttachment(document, fileSynthesis.
           getInputStream(), true);
     } catch (IOException e) {
       throw new SurveyException("SurveySessionController.saveSynthesisFile", SurveyException.WARNING,
@@ -1310,16 +1310,16 @@ public class SurveySessionController extends AbstractComponentSessionController 
     SilverTrace.info("Survey", "SurveySessionController.removeSynthesisFile",
         "Survey.MSG_ENTRY_METHOD");
     SimpleDocumentPK primaryKey = new SimpleDocumentPK(idDocument);
-    SimpleDocument document = AttachmentServiceFactory.getAttachmentService().searchDocumentById(
+    SimpleDocument document = AttachmentServiceProvider.getAttachmentService().searchDocumentById(
         primaryKey, I18NHelper.defaultLanguage);
-    AttachmentServiceFactory.getAttachmentService().deleteAttachment(document);
+    AttachmentServiceProvider.getAttachmentService().deleteAttachment(document);
   }
 
   public List<SimpleDocument> getAllSynthesisFile(String surveyId) {
     SilverTrace.info("Survey", "SurveySessionController.getAllSynthesisFile",
         "Survey.MSG_ENTRY_METHOD");
     SimpleDocumentPK surveyForeignKey = new SimpleDocumentPK(surveyId, this.getComponentId());
-    return AttachmentServiceFactory.getAttachmentService().listDocumentsByForeignKey(
+    return AttachmentServiceProvider.getAttachmentService().listDocumentsByForeignKey(
         surveyForeignKey, I18NHelper.defaultLanguage);
   }
 

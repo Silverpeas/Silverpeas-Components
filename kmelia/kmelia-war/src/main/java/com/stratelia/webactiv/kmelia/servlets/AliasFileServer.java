@@ -29,7 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.util.Charsets;
@@ -89,7 +89,7 @@ public class AliasFileServer extends HttpServlet {
     SimpleDocument attachment = null;
     if (StringUtil.isDefined(attachmentId)) {
       // Check first if attachment exists
-      attachment = AttachmentServiceFactory.getAttachmentService().
+      attachment = AttachmentServiceProvider.getAttachmentService().
           searchDocumentById(new SimpleDocumentPK(attachmentId), language);
       if (attachment != null) {
         foreignKey = new ForeignPK(attachment.getForeignId(), attachment.getInstanceId());

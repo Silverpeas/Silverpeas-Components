@@ -34,7 +34,7 @@ import java.util.List;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 
 /**
@@ -128,7 +128,7 @@ public class ReplyResource extends QuestionRelyBaseWebService {
   protected ReplyEntity asWebEntity(final Reply reply, URI replyURI, SilverpeasRole profile) {
     ReplyEntity entity = ReplyEntity.fromReply(reply, getUserPreferences().getLanguage()).withURI(
         replyURI).withProfile(profile);
-    Collection<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService().
+    Collection<SimpleDocument> attachments = AttachmentServiceProvider.getAttachmentService().
         listDocumentsByForeignKey(reply.getPK(), entity.getLanguage());
     entity.withAttachments(attachments);
     AuthorEntity author = AuthorEntity.fromUser(reply.readAuthor());

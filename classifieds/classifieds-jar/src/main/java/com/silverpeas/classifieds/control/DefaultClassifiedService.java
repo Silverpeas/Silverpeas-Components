@@ -45,7 +45,7 @@ import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.util.exception.UtilException;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -60,7 +60,7 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.io.FilenameUtils;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
@@ -168,11 +168,11 @@ public class DefaultClassifiedService implements ClassifiedService {
     // remove attached files
     try {
       WAPrimaryKey classifiedForeignKey = new SimpleDocumentPK(classifiedId, instanceId);
-      List<SimpleDocument> images = AttachmentServiceFactory.getAttachmentService().
+      List<SimpleDocument> images = AttachmentServiceProvider.getAttachmentService().
           listDocumentsByForeignKeyAndType(classifiedForeignKey, DocumentType.attachment, null);
       for (SimpleDocument classifiedImage : images) {
         //delete the picture file in the file server and database
-        AttachmentServiceFactory.getAttachmentService().deleteAttachment(classifiedImage);
+        AttachmentServiceProvider.getAttachmentService().deleteAttachment(classifiedImage);
       }
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException("DefaultClassifiedService.deleteClassified()",
@@ -667,7 +667,7 @@ public class DefaultClassifiedService implements ClassifiedService {
         try {
           WAPrimaryKey classifiedForeignKey = new SimpleDocumentPK(classifiedId, classified.
               getInstanceId());
-          List<SimpleDocument> listSimpleDocument = AttachmentServiceFactory.getAttachmentService().
+          List<SimpleDocument> listSimpleDocument = AttachmentServiceProvider.getAttachmentService().
               listDocumentsByForeignKeyAndType(classifiedForeignKey, DocumentType.attachment, null);
           classified.setImages(listSimpleDocument);
         } catch (Exception e) {

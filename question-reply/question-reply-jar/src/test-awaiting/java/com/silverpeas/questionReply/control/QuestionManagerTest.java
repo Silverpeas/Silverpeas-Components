@@ -34,7 +34,7 @@ import org.junit.Before;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.silverpeas.attachment.AttachmentService;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.util.SimpleDocumentList;
@@ -64,7 +64,7 @@ public class QuestionManagerTest extends AbstractTestDao {
 
   @Before
   public void prepareMocks() {
-    AttachmentService attachmentServiceMock = AttachmentServiceFactory.getAttachmentService();
+    AttachmentService attachmentServiceMock = AttachmentServiceProvider.getAttachmentService();
     when(attachmentServiceMock.listDocumentsByForeignKeyAndType(Matchers.any(WAPrimaryKey.class),
         eq(DocumentType.wysiwyg), anyString()))
         .thenReturn(new SimpleDocumentList<SimpleDocument>());

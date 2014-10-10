@@ -47,7 +47,7 @@
   <bean id="suggestionBoxServiceFactory"
         class="org.silverpeas.components.suggestionbox.model.SuggestionBoxServiceFactory"
         factory-method="getFactory"/>
-  <bean id="attachmentServiceFactory" class="org.silverpeas.attachment.AttachmentServiceFactory"
+  <bean id="attachmentServiceFactory" class="org.silverpeas.attachment.AttachmentServiceProvider"
         factory-method="getInstance"/>
   <bean id="suggestionRepositoryProvider" class="org.silverpeas.components.suggestionbox.repository.SuggestionRepositoryProvider"
         factory-method="getInstance"/>

@@ -48,7 +48,7 @@ import org.silverpeas.util.exception.UtilException;
 import com.stratelia.webactiv.node.control.NodeBm;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.components.forum.subscription.ForumMessageSubscription;
 import org.silverpeas.components.forum.subscription.ForumMessageSubscriptionResource;
@@ -1562,10 +1562,10 @@ public class ForumsBMEJB implements ForumsBM {
 
   private void deleteAllAttachments(MessagePK messagePK) {
     ForeignPK foreignKey = new ForeignPK(messagePK);
-    List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService()
+    List<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService()
         .listAllDocumentsByForeignKey(foreignKey, null);
     for (SimpleDocument doc : documents) {
-      AttachmentServiceFactory.getAttachmentService().deleteAttachment(doc);
+      AttachmentServiceProvider.getAttachmentService().deleteAttachment(doc);
     }
   }
 

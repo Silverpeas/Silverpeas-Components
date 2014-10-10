@@ -26,7 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.SimpleDocumentService;
 import org.silverpeas.attachment.mock.SimpleDocumentServiceWrapper;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -84,7 +84,7 @@ public class ReplyGettingTest extends RESTWebServiceTest<QuestionReplyTestResour
     SimpleDocumentService mockDocumentService = mock(SimpleDocumentService.class);
     when(mockDocumentService.listDocumentsByForeignKey(Mockito.any(WAPrimaryKey.class),
         Mockito.any(String.class))).thenReturn(new SimpleDocumentList<SimpleDocument>());
-    ((SimpleDocumentServiceWrapper) AttachmentServiceFactory.getAttachmentService()).setRealService(
+    ((SimpleDocumentServiceWrapper) AttachmentServiceProvider.getAttachmentService()).setRealService(
         mockDocumentService);
     WebResource resource = resource();
 

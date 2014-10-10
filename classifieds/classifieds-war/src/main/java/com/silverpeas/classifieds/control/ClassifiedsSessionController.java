@@ -40,6 +40,7 @@ import com.silverpeas.form.record.GenericFieldTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.StringUtil;
 import com.silverpeas.comment.model.Comment;
@@ -52,7 +53,6 @@ import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -588,7 +588,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
               , mimeType, getUserId(), creationDate, null));
       sd.setDocumentType(DocumentType.attachment);
   
-      AttachmentServiceFactory.getAttachmentService().createAttachment(sd, fileImage.getInputStream(), true);
+      AttachmentServiceProvider.getAttachmentService().createAttachment(sd, fileImage.getInputStream(), true);
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException("ClassifiedsSessionController.createClassifiedImage()",
             SilverpeasRuntimeException.ERROR, "classifieds.MSG_CLASSIFIED_IMAGE_NOT_CREATE", e);
@@ -623,7 +623,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
         WAPrimaryKey classifiedForeignKey =
             new SimpleDocumentPK(classified.getId(), getComponentId());
         List<SimpleDocument> listSimpleDocument =
-            AttachmentServiceFactory.getAttachmentService().listDocumentsByForeignKeyAndType(
+            AttachmentServiceProvider.getAttachmentService().listDocumentsByForeignKeyAndType(
                 classifiedForeignKey, DocumentType.attachment, null);
         classified.setImages(listSimpleDocument);
       } catch (Exception e) {
@@ -644,7 +644,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
     SimpleDocument classifiedImage = null;
     try {
       SimpleDocumentPK sdPK = new SimpleDocumentPK(imageId, getComponentId());
-      classifiedImage = AttachmentServiceFactory.getAttachmentService().searchDocumentById(sdPK, null);
+      classifiedImage = AttachmentServiceProvider.getAttachmentService().searchDocumentById(sdPK, null);
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException("ClassifiedsSessionController.updateClassifiedImage()",
         SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_GET_IMAGE", e);
@@ -667,7 +667,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
       classifiedImage.setUpdated(updateDate);
       
       try {
-        AttachmentServiceFactory.getAttachmentService().updateAttachment(classifiedImage, fileImage.getInputStream(), true, false);
+        AttachmentServiceProvider.getAttachmentService().updateAttachment(classifiedImage, fileImage.getInputStream(), true, false);
       } catch (Exception e) {
           throw new ClassifiedsRuntimeException("ClassifiedsSessionController.updateClassifiedImage()",
             SilverpeasRuntimeException.ERROR, "classifieds.MSG_CLASSIFIED_IMAGE_NOT_UPDATE", e);
@@ -686,7 +686,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
     SimpleDocument classifiedImage = null;
     try {
       SimpleDocumentPK sdPK = new SimpleDocumentPK(imageId, getComponentId());
-      classifiedImage = AttachmentServiceFactory.getAttachmentService().searchDocumentById(sdPK, null);
+      classifiedImage = AttachmentServiceProvider.getAttachmentService().searchDocumentById(sdPK, null);
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException("ClassifiedsSessionController.deleteClassifiedImage()",
         SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_GET_IMAGE", e);
@@ -694,7 +694,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
     
     if(classifiedImage != null) {
       //delete the actual picture file in the file server and database
-      AttachmentServiceFactory.getAttachmentService().deleteAttachment(classifiedImage);
+      AttachmentServiceProvider.getAttachmentService().deleteAttachment(classifiedImage);
     } else {
       throw new ClassifiedsRuntimeException("ClassifiedsSessionController.deleteClassifiedImage()",
           SilverpeasRuntimeException.ERROR, "classifieds.MSG_CLASSIFIED_IMAGE_NOT_DELETE", imageId+" does not exist");

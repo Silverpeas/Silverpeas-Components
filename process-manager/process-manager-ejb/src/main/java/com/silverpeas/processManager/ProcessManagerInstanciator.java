@@ -31,8 +31,10 @@ import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.instance.ProcessInstance;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.calendar.backbone.TodoBackboneAccess;
+import org.silverpeas.admin.component.notification.ComponentInstanceEvent;
+import org.silverpeas.admin.component.notification.ComponentInstanceEventNotifier;
+import org.silverpeas.notification.ResourceEvent;
 import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.attachment.SimpleDocumentInstanciator;
 
 import java.sql.Connection;
 
@@ -67,7 +69,7 @@ public class ProcessManagerInstanciator implements ComponentsInstanciatorIntf {
         ((UpdatableProcessInstanceManager) Workflow.getProcessInstanceManager()).
             removeProcessInstance(instance.getInstanceId());
       }
-      new SimpleDocumentInstanciator().delete(componentId);
+
       TodoBackboneAccess tbba = new TodoBackboneAccess();
       tbba.removeEntriesByInstanceId(componentId);
     } catch (WorkflowException e) {

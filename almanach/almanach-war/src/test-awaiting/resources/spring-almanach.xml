@@ -39,7 +39,7 @@
   </ctx:component-scan>
 
 
-  <bean id="attachmentServiceFactory" class="org.silverpeas.attachment.AttachmentServiceFactory"
+  <bean id="attachmentServiceFactory" class="org.silverpeas.attachment.AttachmentServiceProvider"
         factory-method="getInstance"/>
 
 

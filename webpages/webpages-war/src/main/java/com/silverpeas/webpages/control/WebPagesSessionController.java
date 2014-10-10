@@ -44,7 +44,7 @@ import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import org.silverpeas.util.exception.SilverpeasException;
@@ -111,7 +111,7 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
       indexForm(null);
     } else {
       ForeignPK foreignPK = new ForeignPK(getComponentId(), getComponentId());
-      AttachmentServiceFactory.getAttachmentService().indexAllDocuments(foreignPK, null, null);
+      AttachmentServiceProvider.getAttachmentService().indexAllDocuments(foreignPK, null, null);
     }
   }
 

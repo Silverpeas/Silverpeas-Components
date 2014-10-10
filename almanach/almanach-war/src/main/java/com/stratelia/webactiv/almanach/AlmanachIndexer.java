@@ -30,10 +30,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.almanach.control.AlmanachSessionController;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-
-import java.util.List;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 
 public class AlmanachIndexer implements ComponentIndexerInterface {
 
@@ -53,7 +50,7 @@ public class AlmanachIndexer implements ComponentIndexerInterface {
         "root.MSG_GEN_ENTER_METHOD");
     for (EventDetail event : almanachSessionController.getAllEvents()) {
       almanachSessionController.indexEvent(event);
-      AttachmentServiceFactory.getAttachmentService().indexAllDocuments(event.getPK(), null, null);
+      AttachmentServiceProvider.getAttachmentService().indexAllDocuments(event.getPK(), null, null);
     }
   }
 }

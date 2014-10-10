@@ -30,7 +30,7 @@ import java.util.Map;
 
 import org.silverpeas.attachment.AttachmentException;
 import org.silverpeas.attachment.AttachmentService;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
@@ -277,7 +277,7 @@ public class SendInKmelia extends ExternalActionImpl {
   private String copyFormFile(ForeignPK fromPK, ForeignPK toPK, String attachmentId) {
     SimpleDocument attachment = null;
     if (StringUtil.isDefined(attachmentId)) {
-      AttachmentService service = AttachmentServiceFactory.getAttachmentService();
+      AttachmentService service = AttachmentServiceProvider.getAttachmentService();
       // Retrieve attachment detail to copy
       attachment =
           service.searchDocumentById(new SimpleDocumentPK(attachmentId, fromPK.getInstanceId()), null);
@@ -293,7 +293,7 @@ public class SendInKmelia extends ExternalActionImpl {
       DocumentType toType) {
     Map<String, String> fileIds = new HashMap<String, String>();
     try {
-      List<SimpleDocument> origins = AttachmentServiceFactory.getAttachmentService().
+      List<SimpleDocument> origins = AttachmentServiceProvider.getAttachmentService().
             listDocumentsByForeignKeyAndType(fromPK, fromType, getLanguage());
       for (SimpleDocument origin : origins) {
         SimpleDocumentPK copyPk = copyFile(origin, toPK, toType);
@@ -314,7 +314,7 @@ public class SendInKmelia extends ExternalActionImpl {
     if (type != null) {
       file.setDocumentType(type);
     }
-    return AttachmentServiceFactory.getAttachmentService().copyDocument(file, toPK);
+    return AttachmentServiceProvider.getAttachmentService().copyDocument(file, toPK);
   }
   
   private byte[] generatePDF(ProcessInstance instance) {
@@ -444,7 +444,7 @@ public class SendInKmelia extends ExternalActionImpl {
             } // Field file type
             else if (FileField.TYPE.equals(fieldTemplate.getDisplayerName()) && StringUtil.
                 isDefined(field.getValue())) {
-              SimpleDocument doc = AttachmentServiceFactory.getAttachmentService().
+              SimpleDocument doc = AttachmentServiceProvider.getAttachmentService().
                   searchDocumentById(new SimpleDocumentPK(field.getValue(), componentId), null);
               if (doc != null) {
                 fieldValue = doc.getFilename();

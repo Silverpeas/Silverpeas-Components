@@ -48,7 +48,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.xml.bind.JAXBException;
 
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
@@ -389,12 +389,12 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
         ForeignPK foreignKey = new ForeignPK(ilp.getPK().getId(), getComponentId());
         // create and fill the first message part
         MimeBodyPart mbp1 = new MimeBodyPart();
-        List<SimpleDocument> contents = AttachmentServiceFactory.getAttachmentService().
+        List<SimpleDocument> contents = AttachmentServiceProvider.getAttachmentService().
             listDocumentsByForeignKeyAndType(foreignKey, DocumentType.wysiwyg,
             I18NHelper.defaultLanguage);
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         for (SimpleDocument content : contents) {
-          AttachmentServiceFactory.getAttachmentService().getBinaryContent(buffer, content.getPk(),
+          AttachmentServiceProvider.getAttachmentService().getBinaryContent(buffer, content.getPk(),
               content.getLanguage());
         }
         mbp1.setDataHandler(new DataHandler(new ByteArrayDataSource(replaceFileServerWithLocal(
@@ -412,7 +412,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
         mp.addBodyPart(mbp1);
 
         // Images jointes
-        List<SimpleDocument> fichiers = AttachmentServiceFactory.getAttachmentService().
+        List<SimpleDocument> fichiers = AttachmentServiceProvider.getAttachmentService().
             listDocumentsByForeignKeyAndType(foreignKey, DocumentType.image, null);
         for (SimpleDocument attachment : fichiers) {
           // create the second message part
@@ -432,7 +432,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
         }
 
         // Fichiers joints
-        fichiers = AttachmentServiceFactory.getAttachmentService().
+        fichiers = AttachmentServiceProvider.getAttachmentService().
             listDocumentsByForeignKeyAndType(foreignKey, DocumentType.attachment, null);
 
 

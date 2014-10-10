@@ -33,7 +33,7 @@ import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.attachment.AttachmentService;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.components.suggestionbox.SuggestionBoxComponentSettings;
 import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepository;
 import org.silverpeas.persistence.repository.OperationContext;
@@ -128,7 +128,7 @@ public class DefaultSuggestionBoxService
     commentService.deleteAllCommentsByComponentInstanceId(box.getComponentInstanceId());
 
     // Deletion of all attachments, WYSIWYG comprised.
-    AttachmentService attachmentService = AttachmentServiceFactory.getAttachmentService();
+    AttachmentService attachmentService = AttachmentServiceProvider.getAttachmentService();
     attachmentService.deleteAllAttachments(box.getComponentInstanceId());
 
     // Deleting all component subscriptions

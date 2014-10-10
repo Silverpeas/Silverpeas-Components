@@ -114,7 +114,7 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 import org.apache.commons.io.FileUtils;
 import org.owasp.encoder.Encode;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
@@ -242,7 +242,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public static List<String> getLanguagesOfAttachments(ForeignPK foreignPK) {
     List<String> languages = new ArrayList<String>();
     for (String availableLanguage : I18NHelper.getAllSupportedLanguages()) {
-      List<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService()
+      List<SimpleDocument> attachments = AttachmentServiceProvider.getAttachmentService()
           .listDocumentsByForeignKeyAndType(foreignPK, DocumentType.attachment, availableLanguage);
       for (SimpleDocument attachment : attachments) {
         if (availableLanguage.equalsIgnoreCase(attachment.getLanguage())) {
@@ -2964,7 +2964,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    */
   public String getFirstAttachmentURLOfCurrentPublication() throws RemoteException {
     PublicationPK pubPK = getSessionPublication().getDetail().getPK();
-    List<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService().
+    List<SimpleDocument> attachments = AttachmentServiceProvider.getAttachmentService().
         listDocumentsByForeignKey(pubPK, getLanguage());
     if (!attachments.isEmpty()) {
       SimpleDocument document = attachments.get(0);
@@ -2981,7 +2981,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    * @throws RemoteException
    */
   public String getAttachmentURL(String fileId) throws RemoteException {
-    SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService().
+    SimpleDocument attachment = AttachmentServiceProvider.getAttachmentService().
         searchDocumentById(new SimpleDocumentPK(fileId), getLanguage());
     return getDocumentVersionURL(attachment);
   }

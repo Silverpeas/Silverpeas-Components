@@ -28,7 +28,6 @@ import com.silverpeas.admin.components.InstanciationException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
 import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.attachment.SimpleDocumentInstanciator;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -53,7 +52,6 @@ public class AlmanachInstanciator extends SQLRequest implements ComponentsInstan
         "spaceId : " + spaceId);
     setDeleteQueries();
     deleteDataOfInstance(con, componentId, "Event");
-    new SimpleDocumentInstanciator().delete(componentId);
     SilverTrace.info("almanach", "AlmanachInstanciator.delete()", "root.MSG_GEN_EXIT_METHOD");
   }
 

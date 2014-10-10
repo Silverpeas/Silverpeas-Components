@@ -59,6 +59,7 @@ import com.silverpeas.thumbnail.ThumbnailException;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.thumbnail.service.ThumbnailServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.ForeignPK;
@@ -113,7 +114,6 @@ import com.stratelia.webactiv.statistic.control.StatisticBm;
 import com.stratelia.webactiv.statistic.model.HistoryObjectDetail;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.attachment.AttachmentException;
-import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleAttachment;
@@ -123,7 +123,7 @@ import org.silverpeas.component.kmelia.InstanceParameters;
 import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.process.annotation.SimulationActionProcess;
-import org.silverpeas.process.annotation.SimulationActionProcessAnnotationEJBInterceptor;
+import org.silverpeas.process.annotation.SimulationActionProcessAnnotationInterceptor;
 import org.silverpeas.search.indexEngine.model.IndexManager;
 import org.silverpeas.wysiwyg.WysiwygException;
 import org.silverpeas.wysiwyg.control.WysiwygController;
@@ -1450,7 +1450,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     return beginVisibilityPeriodUpdated || endVisibilityPeriodUpdated;
   }
 
-  @Interceptors(SimulationActionProcessAnnotationEJBInterceptor.class)
+  @Interceptors(SimulationActionProcessAnnotationInterceptor.class)
   @SimulationActionProcess(elementLister = KmeliaPublicationSimulationElementLister.class)
   @Action(ActionType.MOVE)
   @Override
@@ -1465,7 +1465,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     }
   }
 
-  @Interceptors(SimulationActionProcessAnnotationEJBInterceptor.class)
+  @Interceptors(SimulationActionProcessAnnotationInterceptor.class)
   @SimulationActionProcess(elementLister = KmeliaPublicationSimulationElementLister.class)
   @Action(ActionType.MOVE)
   @Override
@@ -1512,7 +1512,7 @@ public class KmeliaBmEJB implements KmeliaBm {
    * </ul>
    */
 
-  @Interceptors(SimulationActionProcessAnnotationEJBInterceptor.class)
+  @Interceptors(SimulationActionProcessAnnotationInterceptor.class)
   @SimulationActionProcess(elementLister = KmeliaPublicationSimulationElementLister.class)
   @Action(ActionType.MOVE)
   @Override
@@ -1532,12 +1532,12 @@ public class KmeliaBmEJB implements KmeliaBm {
 
       try {
         // move additional files
-        List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
+        List<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService().
             listDocumentsByForeignKeyAndType(fromForeignPK, DocumentType.image, null);
-        documents.addAll(AttachmentServiceFactory.getAttachmentService().
+        documents.addAll(AttachmentServiceProvider.getAttachmentService().
             listDocumentsByForeignKeyAndType(fromForeignPK, DocumentType.wysiwyg, null));
         for (SimpleDocument doc : documents) {
-          AttachmentServiceFactory.getAttachmentService().moveDocument(doc, toPubliForeignPK);
+          AttachmentServiceProvider.getAttachmentService().moveDocument(doc, toPubliForeignPK);
         }
       } catch (org.silverpeas.attachment.AttachmentException e) {
         SilverTrace.error("kmelia", "KmeliaBmEJB.movePublicationInAnotherApplication()",
@@ -1549,10 +1549,10 @@ public class KmeliaBmEJB implements KmeliaBm {
           to.getInstanceId(), pub.getPK().getId());
 
       // move regular files
-      List<SimpleDocument> docs = AttachmentServiceFactory.getAttachmentService().
+      List<SimpleDocument> docs = AttachmentServiceProvider.getAttachmentService().
           listDocumentsByForeignKeyAndType(fromForeignPK, DocumentType.attachment, null);
       for (SimpleDocument doc : docs) {
-        AttachmentServiceFactory.getAttachmentService().moveDocument(doc, toPubliForeignPK);
+        AttachmentServiceProvider.getAttachmentService().moveDocument(doc, toPubliForeignPK);
       }
 
       // move form content
@@ -1637,8 +1637,7 @@ public class KmeliaBmEJB implements KmeliaBm {
   }
 
   @Override
-  public void externalElementsOfPublicationHaveChanged(PublicationPK pubPK, String userId,
-      int action) {
+  public void externalElementsOfPublicationHaveChanged(PublicationPK pubPK, String userId) {
     // check if related contribution is managed by kmelia
     if (pubPK != null && StringUtil.isDefined(pubPK.getInstanceId()) && (pubPK.getInstanceId().
         startsWith("kmelia") || pubPK.getInstanceId().startsWith("toolbox")
@@ -2614,7 +2613,7 @@ public class KmeliaBmEJB implements KmeliaBm {
       // merge des fichiers joints
       ForeignPK pkFrom = new ForeignPK(pubPK.getId(), pubPK.getInstanceId());
       ForeignPK pkTo = new ForeignPK(cloneId, tempPK.getInstanceId());
-      Map<String, String> attachmentIds = AttachmentServiceFactory.getAttachmentService().
+      Map<String, String> attachmentIds = AttachmentServiceProvider.getAttachmentService().
           mergeDocuments(pkFrom, pkTo, DocumentType.attachment);
       // merge du contenu XMLModel
       String infoId = tempPubli.getPublicationDetail().getInfoId();
@@ -2983,7 +2982,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     SilverTrace.info("kmelia", "KmeliaBmEJB.getAlertNotificationMetaData(document)",
         "root.MSG_GEN_ENTER_METHOD");
     final PublicationDetail pubDetail = getPublicationDetail(pubPK);
-    final SimpleDocument document = AttachmentServiceFactory.getAttachmentService().
+    final SimpleDocument document = AttachmentServiceProvider.getAttachmentService().
         searchDocumentById(documentPk, null);
     SimpleDocument version = document.getLastPublicVersion();
     if (version == null) {
@@ -3308,7 +3307,7 @@ public class KmeliaBmEJB implements KmeliaBm {
   private void indexExternalElementsOfPublication(PublicationDetail pubDetail) {
     if (KmeliaHelper.isIndexable(pubDetail)) {
       try {
-        AttachmentServiceFactory.getAttachmentService().indexAllDocuments(pubDetail.getPK(),
+        AttachmentServiceProvider.getAttachmentService().indexAllDocuments(pubDetail.getPK(),
             pubDetail.getBeginDate(), pubDetail.getEndDate());
       } catch (Exception e) {
         SilverTrace.error("kmelia", "KmeliaBmEJB.indexExternalElementsOfPublication",
@@ -3327,7 +3326,7 @@ public class KmeliaBmEJB implements KmeliaBm {
 
   private void unIndexExternalElementsOfPublication(PublicationPK pubPK) {
     try {
-      AttachmentServiceFactory.getAttachmentService().unindexAttachmentsOfExternalObject(pubPK);
+      AttachmentServiceProvider.getAttachmentService().unindexAttachmentsOfExternalObject(pubPK);
     } catch (Exception e) {
       SilverTrace.error("kmelia", "KmeliaBmEJB.indexExternalElementsOfPublication",
           "Indexing versioning documents failed", "pubPK = " + pubPK.toString(), e);
@@ -3344,10 +3343,10 @@ public class KmeliaBmEJB implements KmeliaBm {
 
   private void removeExternalElementsOfPublications(PublicationPK pubPK) {
     // remove attachments
-    List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
+    List<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService().
         listAllDocumentsByForeignKey(pubPK, null);
     for (SimpleDocument doc : documents) {
-      AttachmentServiceFactory.getAttachmentService().deleteAttachment(doc);
+      AttachmentServiceProvider.getAttachmentService().deleteAttachment(doc);
     }
     // remove comments
     try {
@@ -4064,7 +4063,7 @@ public class KmeliaBmEJB implements KmeliaBm {
         document = new SimpleDocument(new SimpleDocumentPK(null, pubPK.getComponentName()), pubPK.
             getId(), 0, false, file);
       }
-      AttachmentServiceFactory.getAttachmentService().createAttachment(document,
+      AttachmentServiceProvider.getAttachmentService().createAttachment(document,
           new ByteArrayInputStream(contents));
     } catch (org.silverpeas.attachment.AttachmentException fnfe) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.addAttachmentToPublication()", ERROR,
@@ -4268,11 +4267,11 @@ public class KmeliaBmEJB implements KmeliaBm {
       cloneId = clonePK.getId();
 
       // clone attachments
-      List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService()
+      List<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService()
           .listDocumentsByForeignKey(new ForeignPK(fromId, fromComponentId), null);
       Map<String, String> attachmentIds = new HashMap<String, String>(documents.size());
       for (SimpleDocument document : documents) {
-        AttachmentServiceFactory.getAttachmentService().cloneDocument(document, cloneId);
+        AttachmentServiceProvider.getAttachmentService().cloneDocument(document, cloneId);
       }
 
       // eventually, paste the form content
@@ -4743,7 +4742,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     return new ResourceLocator(MESSAGES_PATH, language);
   }
 
-  @Interceptors(SimulationActionProcessAnnotationEJBInterceptor.class)
+  @Interceptors(SimulationActionProcessAnnotationInterceptor.class)
   @SimulationActionProcess(elementLister = KmeliaNodeSimulationElementLister.class)
   @Action(ActionType.MOVE)
   @Override
@@ -4793,7 +4792,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     }
   }
 
-  @Interceptors(SimulationActionProcessAnnotationEJBInterceptor.class)
+  @Interceptors(SimulationActionProcessAnnotationInterceptor.class)
   @SimulationActionProcess(elementLister = KmeliaNodeSimulationElementLister.class)
   @Action(ActionType.COPY)
   @Override
@@ -4877,7 +4876,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     return node;
   }
 
-  @Interceptors(SimulationActionProcessAnnotationEJBInterceptor.class)
+  @Interceptors(SimulationActionProcessAnnotationInterceptor.class)
   @SimulationActionProcess(elementLister = KmeliaPublicationSimulationElementLister.class)
   @Action(ActionType.COPY)
   @Override
@@ -4888,7 +4887,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     }
   }
 
-  @Interceptors(SimulationActionProcessAnnotationEJBInterceptor.class)
+  @Interceptors(SimulationActionProcessAnnotationInterceptor.class)
   @SimulationActionProcess(elementLister = KmeliaPublicationSimulationElementLister.class)
   @Action(ActionType.COPY)
   @Override
@@ -4986,10 +4985,10 @@ public class KmeliaBmEJB implements KmeliaBm {
   private Map<String, String> copyFiles(PublicationPK fromPK, PublicationPK toPK)
       throws IOException {
     Map<String, String> fileIds = new HashMap<String, String>();
-    List<SimpleDocument> origins = AttachmentServiceFactory.getAttachmentService().
+    List<SimpleDocument> origins = AttachmentServiceProvider.getAttachmentService().
         listDocumentsByForeignKeyAndType(fromPK, DocumentType.attachment, null);
     for (SimpleDocument origin : origins) {
-      SimpleDocumentPK copyPk = AttachmentServiceFactory.getAttachmentService().copyDocument(
+      SimpleDocumentPK copyPk = AttachmentServiceProvider.getAttachmentService().copyDocument(
           origin, new ForeignPK(toPK));
       fileIds.put(origin.getId(), copyPk.getId());
     }

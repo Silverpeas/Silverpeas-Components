@@ -28,7 +28,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.util.UnitUtil;
 import org.silverpeas.wysiwyg.control.WysiwygController;
@@ -345,7 +345,7 @@ public class ODTDocumentBuilder {
 
   private void buildAttachmentsSection(final TextDocument odtDocument,
       final KmeliaPublication publication) {
-    List<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService()
+    List<SimpleDocument> attachments = AttachmentServiceProvider.getAttachmentService()
         .listDocumentsByForeignKey(publication.getPk(), getLanguage());
     boolean hasNoAttachmentToDisplay = true;
     Table attachmentsTable = odtDocument.getTableByName(LIST_OF_ATTACHMENTS);

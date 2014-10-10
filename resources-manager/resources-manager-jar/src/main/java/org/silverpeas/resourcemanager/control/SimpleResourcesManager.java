@@ -31,7 +31,7 @@ import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.date.Period;
 import org.silverpeas.resourcemanager.model.Category;
@@ -261,10 +261,10 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
   @Override
   public void deleteReservation(Long id, String componentId) {
     deleteIndex(id, "Reservation", componentId);
-    List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService()
+    List<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService()
         .listDocumentsByForeignKey(new ForeignPK(id.toString(), componentId), null);
     for (SimpleDocument document : documents) {
-      AttachmentServiceFactory.getAttachmentService().deleteAttachment(document);
+      AttachmentServiceProvider.getAttachmentService().deleteAttachment(document);
     }
     reservationService.deleteReservation(id);
   }

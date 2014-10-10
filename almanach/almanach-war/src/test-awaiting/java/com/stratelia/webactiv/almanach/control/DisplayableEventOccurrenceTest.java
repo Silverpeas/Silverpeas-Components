@@ -37,7 +37,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.silverpeas.attachment.AttachmentService;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.util.SimpleDocumentList;
@@ -76,7 +76,7 @@ private static ApplicationContext context;
 
   @Before
   public void setUp() {
-    AttachmentService attachmentService = AttachmentServiceFactory.getAttachmentService();
+    AttachmentService attachmentService = AttachmentServiceProvider.getAttachmentService();
     when(attachmentService
         .listDocumentsByForeignKeyAndType(any(WAPrimaryKey.class), eq(DocumentType.wysiwyg),
             anyString())).thenReturn(new SimpleDocumentList<SimpleDocument>());

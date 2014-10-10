@@ -46,7 +46,7 @@
   <bean id="adminReference" class="com.stratelia.webactiv.beans.admin.AdminReference"
         factory-method="getInstance"/>
 
-  <bean id="attachmentServiceFactory" class="org.silverpeas.attachment.AttachmentServiceFactory"
+  <bean id="attachmentServiceFactory" class="org.silverpeas.attachment.AttachmentServiceProvider"
         factory-method="getInstance"/>
 
   <import resource="spring-silverpeas.xml"/>

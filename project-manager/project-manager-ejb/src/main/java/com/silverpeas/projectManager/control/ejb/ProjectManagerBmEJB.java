@@ -38,7 +38,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.calendar.backbone.TodoBackboneAccess;
 import com.stratelia.webactiv.calendar.backbone.TodoDetail;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
@@ -302,10 +302,10 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
     removeTodo(id, instanceId);
     // supprime les fichiers joint à la tâche
     TaskPK taskPK = new TaskPK(id, instanceId);
-    List<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService().
+    List<SimpleDocument> attachments = AttachmentServiceProvider.getAttachmentService().
         listDocumentsByForeignKey(taskPK, null);
     for (SimpleDocument attachment : attachments) {
-      AttachmentServiceFactory.getAttachmentService().deleteAttachment(attachment);
+      AttachmentServiceProvider.getAttachmentService().deleteAttachment(attachment);
     }
     // supprime les commentaires de la tâche
     getCommentService().deleteAllCommentsOnPublication(TaskDetail.getResourceType(), taskPK);
@@ -864,7 +864,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
     // index task itself
     createIndex(task);
     TaskPK taskPK = new TaskPK(task.getId(), task.getInstanceId());
-    AttachmentServiceFactory.getAttachmentService().indexAllDocuments(taskPK, null, null);
+    AttachmentServiceProvider.getAttachmentService().indexAllDocuments(taskPK, null, null);
     // index comments
     getCommentService().indexAllCommentsOnPublication(TaskDetail.getResourceType(), taskPK);
   }

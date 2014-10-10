@@ -30,9 +30,9 @@ import com.silverpeas.mailinglist.service.job.MessageChecker;
 import com.silverpeas.mailinglist.service.model.MailingListService;
 import com.silverpeas.mailinglist.service.model.beans.MailingList;
 import com.silverpeas.scheduler.Scheduler;
+import com.silverpeas.scheduler.SchedulerProvider;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.silverpeas.scheduler.SchedulerException;
-import com.silverpeas.scheduler.SchedulerProvider;
 import com.silverpeas.scheduler.trigger.TimeUnit;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 

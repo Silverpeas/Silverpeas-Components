@@ -33,7 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.calendar.CalendarViewType;
 import org.silverpeas.date.Period;
@@ -298,10 +298,10 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     EventDetail event = getAlmanachBm().getEventDetail(pk);
     getAlmanachBm().removeEvent(pk);
     // remove attachments from filesystem
-    List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
+    List<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService().
         listDocumentsByForeignKey(pk, null);
     for (SimpleDocument document : documents) {
-      AttachmentServiceFactory.getAttachmentService().deleteAttachment(document);
+      AttachmentServiceProvider.getAttachmentService().deleteAttachment(document);
     }
     // Delete the Wysiwyg if exists
 
