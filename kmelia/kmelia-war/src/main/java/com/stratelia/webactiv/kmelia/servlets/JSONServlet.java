@@ -150,7 +150,7 @@ public class JSONServlet extends HttpServlet {
       operations.put("exportSelection", !kmeliaSC.getUserDetail().isAnonymous());
       operations.put("manageSubscriptions", isAdmin);
       operations.put("subscriptions", !isBasket && !kmeliaSC.getUserDetail().isAnonymous());
-      operations.put("favorites", !isBasket && !kmeliaSC.getUserDetail().isAnonymous());
+      operations.put("favorites", !isRoot && !isBasket && !kmeliaSC.getUserDetail().isAnonymous());
       if (statisticEnable && isRoot && canShowStats) {
         operations.put("statistics", true);
       }
