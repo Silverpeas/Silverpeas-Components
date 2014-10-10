@@ -61,7 +61,12 @@ function displayNews(index) {
    	success : function(news){
    	  currentNews = news;
 	  $(".actuality-title").text(news.title);
-	  $(".quickInfo-description").html(news.description);
+	  if (typeof news.description === 'string'&& news.description.length > 0) {
+	    $(".quickInfo-description").show();
+	  	$(".quickInfo-description").html(news.description);
+	  } else {
+	    $(".quickInfo-description").hide();
+	  }
 	  var forNbDays = news.publishedForNbDays;
 	  var dateLabel = news.publishTime;
 	  if (forNbDays == 0) {

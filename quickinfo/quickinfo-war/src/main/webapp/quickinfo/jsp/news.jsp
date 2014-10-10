@@ -105,7 +105,7 @@ function submitOnHomepage() {
 	</c:if>
 </view:operationPane>
 </c:if>
-<view:window>
+<view:window popup="${viewOnly}">
 
 <!--INTEGRATION  UNE ACTU -->
 <div class="rightContent">
@@ -163,7 +163,7 @@ function submitOnHomepage() {
 		${news.content}
 	</div>
     
-    <c:if test="${appSettings.commentsEnabled}">
+    <c:if test="${appSettings.commentsEnabled && not viewOnly}">
 		<view:comments userId="${userId}" componentId="${news.componentInstanceId}" resourceType="<%=News.CONTRIBUTION_TYPE %>" resourceId="${news.id}" indexed="true"/>
 	</c:if>
 </div>
