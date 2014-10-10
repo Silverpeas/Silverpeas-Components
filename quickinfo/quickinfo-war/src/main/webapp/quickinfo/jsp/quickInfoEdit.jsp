@@ -177,7 +177,7 @@ function abortNews() {
 }
 
 $(document).ready(function() {
-	<view:wysiwyg replace="Content" language="<%=language%>" width="98%" height="300" toolbar="quickInfo" displayFileBrowser="${false}"/>
+	<view:wysiwyg replace="Content" language="<%=language%>" width="98%" height="300" toolbar="quickInfo" displayFileBrowser="${true}" componentId="${curQuickInfo.componentInstanceId}" objectId="${curQuickInfo.publicationId}" />
 });
 </script>
 </head>
@@ -243,6 +243,9 @@ $(document).ready(function() {
     <div class="field" id="contentArea">
       <label class="txtlibform" for="content"><fmt:message key="quickinfo.news.content" /> </label>
       <div class="champs">
+      	<div class="container-wysiwyg wysiwyg-fileStorage">			
+   			<viewTags:displayToolBarWysiwyg editorName="Content" componentId="${curQuickInfo.componentInstanceId}" objectId="${curQuickInfo.publicationId}" />
+		</div>
         <textarea name="Content" id="Content" rows="50" cols="10"><%=codeHtml%></textarea>
       </div>
     </div>
