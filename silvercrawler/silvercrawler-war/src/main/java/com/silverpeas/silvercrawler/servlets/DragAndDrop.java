@@ -25,7 +25,7 @@ package com.silverpeas.silvercrawler.servlets;
 
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
-import com.silverpeas.session.SessionManagementFactory;
+import com.silverpeas.session.SessionManagementProvider;
 import com.silverpeas.silvercrawler.control.SilverCrawlerSessionController;
 import com.silverpeas.silvercrawler.control.UploadItem;
 import com.silverpeas.silvercrawler.control.UploadReport;
@@ -89,8 +89,7 @@ public class DragAndDrop extends HttpServlet {
       String instanceId = request.getParameter("ComponentId");
       String ignoreFolders = request.getParameter("IgnoreFolders");
 
-      SessionManagementFactory factory = SessionManagementFactory.getFactory();
-      SessionManagement sessionManagement = factory.getSessionManagement();
+      SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
       SessionInfo session = sessionManagement.getSessionInfo(sessionId);
 
       SilverCrawlerSessionController sessionController =
