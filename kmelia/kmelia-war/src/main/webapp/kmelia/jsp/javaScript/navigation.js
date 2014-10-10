@@ -78,6 +78,7 @@ function displayTopicDescription(id) {
   $.get(getWebContext() + '/KmeliaAJAXServlet', {Id: id, Action: 'GetTopicWysiwyg', ComponentId: componentId, IEFix: ieFix},
   function(data) {
     $("#topicDescription").html(data);
+    activateIDCards();
   }, "html");
 }
 
@@ -158,16 +159,6 @@ function displayPublications(id) {
 	updateHtmlContainingAngularDirectives($('#pubList'), data);
     activateUserZoom();
   }, "html");
-}
-
-function activateUserZoom() {
-  $('.userToZoom').each(function() {
-    var $this = $(this);
-    if ($this.data('userZoom') == null)
-      $this.userZoom({
-        id: $this.attr('rel')
-      });
-  });
 }
 
 function displayOperations(id) {
