@@ -61,7 +61,7 @@ function displayNews(index) {
    	success : function(news){
    	  currentNews = news;
 	  $(".actuality-title").text(news.title);
-	  if (news.description && news.description > 0) {
+	  if (typeof news.description === 'string'&& news.description.length > 0) {
 	    $(".quickInfo-description").show();
 	  	$(".quickInfo-description").html(news.description);
 	  } else {
