@@ -71,6 +71,9 @@
 <%@ attribute name="supportedMediaMimeTypes" required="true"
               type="java.util.Set"
               description="Supported media types." %>
+<%@ attribute name="isUpdateMediaFromAlbumCase" required="true"
+              type="java.lang.Boolean"
+              description="Indicates if the user comes directly from an album (instead the view of a media)." %>
 <c:if test="${not empty supportedMediaMimeTypes}">
   <jsp:useBean id="supportedMediaMimeTypes" type="java.util.Set<com.silverpeas.gallery.constant.MediaMimeType>"/>
 </c:if>
@@ -207,6 +210,7 @@
 
 </script>
 
+<input type="hidden" name="isUpdateMediaFromAlbumCase" value="${isUpdateMediaFromAlbumCase}">
 <fieldset id="${fn:toLowerCase(mediaType)}Info" class="skinFieldset">
   <legend><fmt:message key="GML.bloc.information.principals"/></legend>
   <div class="fields">

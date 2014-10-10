@@ -352,6 +352,8 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         request.setAttribute("MediaId", mediaId);
         destination = getDestination("MediaView", gallerySC, request);
       } else if ("UpdateMedia".equals(function) || "UpdateInformation".equals(function)) {
+        boolean isUpdateMediaFromAlbumCase =
+            StringUtil.getBooleanValue(request.getParameter("isUpdateMediaFromAlbumCase"));
         if (!StringUtil.isDefined(request.getCharacterEncoding())) {
           request.setCharacterEncoding("UTF-8");
         }
@@ -359,9 +361,17 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         String mediaId = FileUploadUtil
             .getParameter(parameters, "MediaId", null, request.getCharacterEncoding());
         updateMediaData(mediaId, request, gallerySC);
-        // retour à la preview
-        request.setAttribute("MediaId", mediaId);
-        destination = getDestination("MediaView", gallerySC, request);
+        if (isUpdateMediaFromAlbumCase) {
+          // Reload and clean the current album
+          gallerySC.loadCurrentAlbum();
+          deselectAll(gallerySC);
+          // Back to the current album
+          destination = returnToAlbum(request, gallerySC);
+        } else {
+          // Back to the view of the updated media
+          request.setAttribute("MediaId", mediaId);
+          destination = getDestination("MediaView", gallerySC, request);
+        }
       } else if ("DeleteMedia".equals(function)) {
         // Retrieve media identifier to delete
         String mediaId = request.getParameter("MediaId");
@@ -541,31 +551,37 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
         // liste des médias sélectionnés
         if (!gallerySC.getListSelected().isEmpty()) {
-          // passage des paramètres globaux
-          request.setAttribute("SelectedMediaIds", gallerySC.getListSelected());
-          request.setAttribute("AlbumId", albumId);
-          request.setAttribute("SearchKeyWord", searchKeyWord);
-          request.setAttribute("Path", gallerySC.getPath());
-          request.setAttribute("GetLanguage", gallerySC.getLanguage());
+          if (gallerySC.getListSelected().size() == 1) {
+            // One media is being to be edited, the user is redirected to the edit page of the media
+            request.setAttribute("MediaIdFromAlbum", gallerySC.getListSelected().iterator().next());
+            destination = getDestination("EditInformation", gallerySC, request);
+          } else {
+            // passage des paramètres globaux
+            request.setAttribute("SelectedMediaIds", gallerySC.getListSelected());
+            request.setAttribute("AlbumId", albumId);
+            request.setAttribute("SearchKeyWord", searchKeyWord);
+            request.setAttribute("Path", gallerySC.getPath());
+            request.setAttribute("GetLanguage", gallerySC.getLanguage());
 
-          // passage des paramètres pour le formulaire
-          String xmlFormName = gallerySC.getXMLFormName();
-          String xmlFormShortName;
-          if (isDefined(xmlFormName)) {
-            xmlFormShortName =
-                xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
-            PublicationTemplateImpl pubTemplate =
-                (PublicationTemplateImpl) getPublicationTemplateManager()
-                    .getPublicationTemplate(gallerySC.getComponentId() + ":" + xmlFormShortName,
-                        xmlFormName);
-            Form formUpdate = pubTemplate.getUpdateForm();
-            RecordSet recordSet = pubTemplate.getRecordSet();
-            DataRecord data = recordSet.getEmptyRecord();
-            request.setAttribute("Form", formUpdate);
-            request.setAttribute("Data", data);
+            // passage des paramètres pour le formulaire
+            String xmlFormName = gallerySC.getXMLFormName();
+            String xmlFormShortName;
+            if (isDefined(xmlFormName)) {
+              xmlFormShortName =
+                  xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
+              PublicationTemplateImpl pubTemplate =
+                  (PublicationTemplateImpl) getPublicationTemplateManager()
+                      .getPublicationTemplate(gallerySC.getComponentId() + ":" + xmlFormShortName,
+                          xmlFormName);
+              Form formUpdate = pubTemplate.getUpdateForm();
+              RecordSet recordSet = pubTemplate.getRecordSet();
+              DataRecord data = recordSet.getEmptyRecord();
+              request.setAttribute("Form", formUpdate);
+              request.setAttribute("Data", data);
+            }
+
+            destination = rootDest + "selectedMediaManager.jsp";
           }
-
-          destination = rootDest + "selectedMediaManager.jsp";
         } else {
           destination = returnToAlbum(request, gallerySC);
         }
@@ -674,6 +690,13 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
       } else if ("EditInformation".equals(function)) {
         // récupération des paramètres
         String mediaId = request.getParameter("MediaId");
+        if (StringUtil.isNotDefined(mediaId)) {
+          // Firstly, verifying that the user tries to modify a media from album
+          mediaId = (String) request.getAttribute("MediaIdFromAlbum");
+          if (StringUtil.isDefined(mediaId)) {
+            request.setAttribute("isUpdateMediaFromAlbumCase", true);
+          }
+        }
         // récupération du média
         Media media = gallerySC.getMedia(mediaId);
 
