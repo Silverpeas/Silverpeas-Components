@@ -95,9 +95,8 @@ function goToNotify(url)
     notifyWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
 }
 
-function eventDeleteConfirm(t)
-{
-    if (window.confirm("<%=EncodeHelper.javaStringToJsString(almanach.getString("suppressionConfirmation"))%> '" + t + "' ?")){
+function eventDeleteConfirm() {
+    if (window.confirm("<%=EncodeHelper.javaStringToJsString(almanach.getString("suppressionConfirmation"))%> ?")){
     	<% if (event.isPeriodic()) { %>
     		$("#modalDialogOnDelete").dialog("open");
     	<% } else { %>
@@ -149,7 +148,7 @@ $(document).ready(function(){
     if (!"user".equals(user))
     {
       operationPane.addLine();
-      operationPane.addOperation(m_context + "/util/icons/almanach_to_del.gif", almanach.getString("supprimerEvenement"), "javascript:onClick=eventDeleteConfirm('" + EncodeHelper.javaStringToJsString(title) + "')");
+      operationPane.addOperation(m_context + "/util/icons/almanach_to_del.gif", almanach.getString("GML.delete"), "javascript:onclick=eventDeleteConfirm()");
     }
 
     out.println(window.printBefore());
