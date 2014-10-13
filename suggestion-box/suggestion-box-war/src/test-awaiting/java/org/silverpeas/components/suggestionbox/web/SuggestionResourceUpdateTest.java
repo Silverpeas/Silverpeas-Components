@@ -30,10 +30,9 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.silverpeas.cache.service.CacheServiceFactory;
+import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
-import org.silverpeas.components.suggestionbox.model.SuggestionBoxService;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.*;
@@ -65,7 +64,7 @@ public class SuggestionResourceUpdateTest extends ResourceUpdateTest<SuggestionB
         .thenReturn(getTestResources().aSuggestion());
     suggestionEntity =
         SuggestionEntity.fromSuggestion(getTestResources().aSuggestion());
-    CacheServiceFactory.getRequestCacheService()
+    CacheServiceProvider.getRequestCacheService()
         .put(UserDetail.CURRENT_REQUESTER_KEY, authenticatedUser);
   }
 

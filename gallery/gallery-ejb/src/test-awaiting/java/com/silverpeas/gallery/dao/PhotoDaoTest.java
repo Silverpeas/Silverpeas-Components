@@ -29,9 +29,9 @@ import com.silverpeas.gallery.model.Photo;
 import com.silverpeas.gallery.socialNetwork.SocialInformationGallery;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.util.DateUtil;
 import org.junit.Test;
-import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.date.Period;
 import org.silverpeas.media.Definition;
 
@@ -285,14 +285,14 @@ public class PhotoDaoTest extends BaseGalleryTest {
   public void testGetLastUploaded() throws Exception {
     Connection con = getConnection();
     try {
-      CacheServiceFactory.getSessionCacheService()
+      CacheServiceProvider.getSessionCacheService()
           .put(UserDetail.CURRENT_REQUESTER_KEY, publisherUser);
 
       Collection<Photo> allLastUploadedPhotos = PhotoDAO.getLastRegisteredMedia(con, GALLERY1);
       assertThat(allLastUploadedPhotos, notNullValue());
       assertThat(allLastUploadedPhotos, hasSize(4));
 
-      CacheServiceFactory.getSessionCacheService().put(UserDetail.CURRENT_REQUESTER_KEY, null);
+      CacheServiceProvider.getSessionCacheService().put(UserDetail.CURRENT_REQUESTER_KEY, null);
 
       Collection<Photo> lastUploadedPhotos = PhotoDAO.getLastRegisteredMedia(con, GALLERY1);
       assertThat(lastUploadedPhotos, notNullValue());

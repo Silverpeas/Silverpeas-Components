@@ -26,6 +26,7 @@ package org.silverpeas.components.suggestionbox.control;
 import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.personalization.service.PersonalizationService;
+import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.StringUtil;
 import com.silverpeas.web.TestResources;
@@ -41,7 +42,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.cache.service.InMemoryCacheService;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
@@ -93,7 +93,7 @@ public class SuggestionBoxWebControllerTest {
     when(mock.getUserSettings(anyString())).thenReturn(preferences);
     InMemoryCacheService sessionCache = new InMemoryCacheService();
     sessionCache.put(UserDetail.CURRENT_REQUESTER_KEY, new UserDetail());
-    CacheServiceFactory.getRequestCacheService().put("@SessionCache@", sessionCache);
+    CacheServiceProvider.getRequestCacheService().put("@SessionCache@", sessionCache);
 
   }
 

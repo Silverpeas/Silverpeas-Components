@@ -23,7 +23,6 @@
  */
 package org.silverpeas.components.suggestionbox.web;
 
-import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.web.ResourceGettingTest;
 import com.silverpeas.web.mock.UserDetailWithProfiles;
 import com.stratelia.webactiv.SilverpeasRole;
@@ -39,10 +38,8 @@ import org.mockito.stubbing.Answer;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBoxService;
-import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
 
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;

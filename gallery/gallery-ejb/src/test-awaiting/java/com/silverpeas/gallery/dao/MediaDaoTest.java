@@ -35,12 +35,12 @@ import com.silverpeas.gallery.model.Streaming;
 import com.silverpeas.gallery.model.Video;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.util.DateUtil;
 import org.apache.commons.lang3.time.DateUtils;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
 import org.junit.Test;
-import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.date.Period;
 import org.silverpeas.media.Definition;
 import org.silverpeas.persistence.repository.OperationContext;
@@ -262,7 +262,7 @@ public class MediaDaoTest extends BaseGalleryTest {
         assertThat(media.get(0).getId(), is("stream_2"));
 
         // Simulating a connected publisher user
-        CacheServiceFactory.getSessionCacheService()
+        CacheServiceProvider.getSessionCacheService()
             .put(UserDetail.CURRENT_REQUESTER_KEY, publisherUser);
 
         media = MediaDAO.findByCriteria(connection,
@@ -271,7 +271,7 @@ public class MediaDaoTest extends BaseGalleryTest {
         assertMediaType(media, MediaType.Streaming, Streaming.class);
 
         // Simulating a connected writer user
-        CacheServiceFactory.getSessionCacheService()
+        CacheServiceProvider.getSessionCacheService()
             .put(UserDetail.CURRENT_REQUESTER_KEY, writerUser);
 
         media = MediaDAO.findByCriteria(connection,
@@ -301,7 +301,7 @@ public class MediaDaoTest extends BaseGalleryTest {
         assertThat(media.get(0).getId(), is("stream_2"));
 
         // Simulating a connected publisher user
-        CacheServiceFactory.getSessionCacheService()
+        CacheServiceProvider.getSessionCacheService()
             .put(UserDetail.CURRENT_REQUESTER_KEY, publisherUser);
 
         media = MediaDAO.findByCriteria(connection,

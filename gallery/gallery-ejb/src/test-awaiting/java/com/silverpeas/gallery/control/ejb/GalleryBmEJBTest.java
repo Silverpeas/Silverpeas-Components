@@ -38,7 +38,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.silverpeas.cache.service.CacheServiceFactory;
+import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.date.Period;
 
 import java.util.ArrayList;
@@ -61,7 +61,7 @@ public class GalleryBmEJBTest extends BaseGalleryTest {
   public void setUp() throws Exception {
     super.setUp();
     // Simulating a connected publisher user
-    CacheServiceFactory.getSessionCacheService()
+    CacheServiceProvider.getSessionCacheService()
         .put(UserDetail.CURRENT_REQUESTER_KEY, publisherUser);
   }
 
@@ -69,7 +69,7 @@ public class GalleryBmEJBTest extends BaseGalleryTest {
   public void tearDown() throws Exception {
     super.tearDown();
     // Simulating a connected publisher user
-    CacheServiceFactory.getSessionCacheService().put(UserDetail.CURRENT_REQUESTER_KEY, null);
+    CacheServiceProvider.getSessionCacheService().put(UserDetail.CURRENT_REQUESTER_KEY, null);
   }
 
   @Before

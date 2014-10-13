@@ -23,6 +23,7 @@ package com.silverpeas.gallery.servlets;
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.delegate.MediaDataCreateDelegate;
 import com.silverpeas.gallery.model.GalleryRuntimeException;
+import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.ZipUtil;
@@ -35,7 +36,6 @@ import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.fileFolder.FileFolderManager;
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.servlet.HttpRequest;
@@ -160,7 +160,7 @@ public class GalleryDragAndDrop extends HttpServlet {
     try {
 
       final UserDetail user = UserDetail.getById(userId);
-      CacheServiceFactory.getSessionCacheService().put(UserDetail.CURRENT_REQUESTER_KEY, user);
+      CacheServiceProvider.getSessionCacheService().put(UserDetail.CURRENT_REQUESTER_KEY, user);
       final MediaDataCreateDelegate delegate =
           new MediaDataCreateDelegate(null, user.getUserPreferences().getLanguage(),
               albumId);
