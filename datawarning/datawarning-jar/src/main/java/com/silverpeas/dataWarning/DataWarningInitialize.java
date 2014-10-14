@@ -23,19 +23,23 @@
  */
 package com.silverpeas.dataWarning;
 
-import com.stratelia.silverpeas.silverpeasinitialize.IInitialize;
+import com.silverpeas.dataWarning.control.DataWarningSchedulerTable;
+import com.silverpeas.dataWarning.model.DataWarningDataManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.silverpeas.dataWarning.model.*;
-import com.silverpeas.dataWarning.control.*;
-import java.util.*;
+import org.silverpeas.initialization.Initialization;
 
-public class DataWarningInitialize implements IInitialize {
+import java.util.List;
+
+/**
+ * Initializes the data warning application by setting up the schedulers.
+ */
+public class DataWarningInitialize implements Initialization {
 
   public DataWarningInitialize() {
   }
 
   @Override
-  public boolean Initialize() {
+  public void init() {
     try {
       DataWarningDataManager dwdm = new DataWarningDataManager();
       List<String> schedulerInstances = dwdm.getDataWarningSchedulerInstances();
@@ -45,6 +49,5 @@ public class DataWarningInitialize implements IInitialize {
     } catch (Exception e) {
       SilverTrace.error("dataWarning", "DataWarningInitialize.initialize()", "", e);
     }
-    return true;
   }
 }

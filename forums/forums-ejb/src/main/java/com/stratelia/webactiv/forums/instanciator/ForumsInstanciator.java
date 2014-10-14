@@ -31,12 +31,9 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
 import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsBM;
 import com.stratelia.webactiv.forums.models.Forum;
-import org.silverpeas.admin.component.notification.ComponentInstanceEvent;
-import org.silverpeas.admin.component.notification.ComponentInstanceEventNotifier;
-import org.silverpeas.notification.ResourceEvent;
+import com.stratelia.webactiv.node.model.NodeDetail;
 import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.JNDINames;
-import com.stratelia.webactiv.node.model.NodeDetail;
 
 import javax.ejb.EJBException;
 import java.sql.Connection;
@@ -49,17 +46,19 @@ public class ForumsInstanciator extends SQLRequest implements ComponentsInstanci
    */
   private ForumsBM forumsBM;
 
-  /** Creates new ForumsInstanciator */
+  /**
+   * Creates new ForumsInstanciator
+   */
   public ForumsInstanciator() {
     super("com.stratelia.webactiv.forums");
   }
 
   @Override
-  public void create(Connection con, String spaceId, String componentId, String userId) throws
-      InstanciationException {
-    SilverTrace.info("forums", "ForumsInstanciator.create()",
-        "forums.MSG_CREATE_WITH_SPACE_AND_COMPONENT",
-        "space : " + spaceId + "component : " + componentId);
+  public void create(Connection con, String spaceId, String componentId, String userId)
+      throws InstanciationException {
+    SilverTrace
+        .info("forums", "ForumsInstanciator.create()", "forums.MSG_CREATE_WITH_SPACE_AND_COMPONENT",
+            "space : " + spaceId + "component : " + componentId);
   }
 
   /**
@@ -70,8 +69,8 @@ public class ForumsInstanciator extends SQLRequest implements ComponentsInstanci
    * @param userId (String) the owner of the component
    */
   @Override
-  public void delete(Connection con, String spaceId, String componentId, String userId) throws
-      InstanciationException {
+  public void delete(Connection con, String spaceId, String componentId, String userId)
+      throws InstanciationException {
     SilverTrace.info("forums", "ForumsInstanciator.delete()", "forums.MSG_DELETE_WITH_SPACE",
         "spaceId : " + spaceId);
 

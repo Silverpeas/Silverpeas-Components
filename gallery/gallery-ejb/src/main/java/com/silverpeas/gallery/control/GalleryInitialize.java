@@ -23,17 +23,21 @@
  */
 package com.silverpeas.gallery.control;
 
-import com.stratelia.silverpeas.silverpeasinitialize.IInitialize;
+import org.silverpeas.initialization.Initialization;
 
-public class GalleryInitialize implements IInitialize {
+/**
+ * Initializes the Gallery application by setting up the different schedulers, one to alert the
+ * user, the other to delete orders.
+ */
+public class GalleryInitialize implements Initialization {
   public GalleryInitialize() {
   }
 
-  public boolean Initialize() {
+  @Override
+  public void init() {
     ScheduledAlertUser sa = new ScheduledAlertUser();
     sa.initialize();
     ScheduledDeleteOrder so = new ScheduledDeleteOrder();
     so.initialize();
-    return true;
   }
 }

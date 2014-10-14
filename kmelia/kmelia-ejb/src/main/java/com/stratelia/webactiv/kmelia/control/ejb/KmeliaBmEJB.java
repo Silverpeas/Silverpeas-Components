@@ -59,18 +59,11 @@ import com.silverpeas.thumbnail.ThumbnailException;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.thumbnail.service.ThumbnailServiceFactory;
-import org.silverpeas.attachment.AttachmentServiceProvider;
-import org.silverpeas.util.CollectionUtil;
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
-import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.AdminController;
@@ -80,6 +73,10 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.calendar.backbone.TodoBackboneAccess;
 import com.stratelia.webactiv.calendar.backbone.TodoDetail;
 import com.stratelia.webactiv.calendar.model.Attendee;
+import com.stratelia.webactiv.coordinates.control.CoordinatesBm;
+import com.stratelia.webactiv.coordinates.model.Coordinate;
+import com.stratelia.webactiv.coordinates.model.CoordinatePK;
+import com.stratelia.webactiv.coordinates.model.CoordinatePoint;
 import com.stratelia.webactiv.kmelia.KmeliaContentManager;
 import com.stratelia.webactiv.kmelia.KmeliaSecurity;
 import com.stratelia.webactiv.kmelia.PublicationImport;
@@ -88,18 +85,6 @@ import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.kmelia.model.TopicComparator;
 import com.stratelia.webactiv.kmelia.model.TopicDetail;
-import org.silverpeas.util.ActionType;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.annotation.Action;
-import org.silverpeas.util.annotation.SourcePK;
-import org.silverpeas.util.annotation.TargetPK;
-import com.stratelia.webactiv.coordinates.control.CoordinatesBm;
-import com.stratelia.webactiv.coordinates.model.Coordinate;
-import com.stratelia.webactiv.coordinates.model.CoordinatePK;
-import com.stratelia.webactiv.coordinates.model.CoordinatePoint;
 import com.stratelia.webactiv.node.control.NodeBm;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
@@ -114,6 +99,7 @@ import com.stratelia.webactiv.statistic.control.StatisticBm;
 import com.stratelia.webactiv.statistic.model.HistoryObjectDetail;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.attachment.AttachmentException;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleAttachment;
@@ -122,9 +108,25 @@ import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.component.kmelia.InstanceParameters;
 import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
 import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.notification.ResourceEvent;
+import org.silverpeas.notification.ResourceEventNotifier;
 import org.silverpeas.process.annotation.SimulationActionProcess;
 import org.silverpeas.process.annotation.SimulationActionProcessAnnotationInterceptor;
+import org.silverpeas.publication.notification.PublicationEvent;
 import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.util.ActionType;
+import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.annotation.Action;
+import org.silverpeas.util.annotation.SourcePK;
+import org.silverpeas.util.annotation.TargetPK;
+import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.wysiwyg.WysiwygException;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
@@ -132,6 +134,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
@@ -144,10 +147,10 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static org.silverpeas.util.StringUtil.*;
-import static org.silverpeas.util.exception.SilverpeasRuntimeException.ERROR;
 import static org.silverpeas.attachment.AttachmentService.VERSION_MODE;
 import static org.silverpeas.core.admin.OrganisationControllerFactory.getOrganisationController;
+import static org.silverpeas.util.StringUtil.*;
+import static org.silverpeas.util.exception.SilverpeasRuntimeException.ERROR;
 
 /**
  * This is the KMelia EJB-tier controller of the MVC. It is implemented as a session EJB. It
@@ -174,6 +177,9 @@ public class KmeliaBmEJB implements KmeliaBm {
   @EJB
   private CoordinatesBm coordinatesBm;
 
+  @Inject
+  private ResourceEventNotifier<PublicationEvent> notifier;
+
   private CommentService commentService = null;
 
   public KmeliaBmEJB() {
@@ -188,6 +194,7 @@ public class KmeliaBmEJB implements KmeliaBm {
       return Integer.parseInt(parameterValue);
     } else {
       if (KmeliaHelper.isToolbox(componentId)) {
+
         return 0;
       }
       // lecture du properties
@@ -1424,10 +1431,7 @@ public class KmeliaBmEJB implements KmeliaBm {
       boolean isNewsManage = getBooleanValue(getOrganisationController().getComponentParameterValue(
           pubDetail.getPK().getInstanceId(), "isNewsManage"));
       if (isNewsManage) {
-        // mécanisme de callback
-        CallBackManager callBackManager = CallBackManager.get();
-        callBackManager.invoke(CallBackManager.ACTION_HEADER_PUBLICATION_UPDATE,
-            Integer.parseInt(pubDetail.getId()), pubDetail.getInstanceId(), pubDetail);
+        notifier.notifyEventOn(ResourceEvent.Type.UPDATE, pubDetail);
       }
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.updatePublication()",
@@ -1748,7 +1752,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     SilverTrace.info("kmelia", "KmeliaBmEJB.sendPublicationToBasket()",
         "root.MSG_GEN_ENTER_METHOD");
     try {
-
+      PublicationDetail pubDetail = publicationBm.getDetail(pubPK);
       // remove coordinates for Kmax
       if (kmaxMode) {
         CoordinatePK coordinatePK = new CoordinatePK("unknown", pubPK.getSpaceId(), pubPK.
@@ -1785,10 +1789,7 @@ public class KmeliaBmEJB implements KmeliaBm {
       boolean isNewsManage = getBooleanValue(getOrganisationController().getComponentParameterValue(
           pubPK.getInstanceId(), "isNewsManage"));
       if (isNewsManage) {
-        // mécanisme de callback
-        CallBackManager callBackManager = CallBackManager.get();
-        callBackManager.invoke(CallBackManager.ACTION_PUBLICATION_REMOVE,
-            Integer.parseInt(pubPK.getId()), pubPK.getInstanceId(), "");
+        notifier.notifyEventOn(ResourceEvent.Type.DELETION, pubDetail);
       }
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.sendPublicationToBasket()", ERROR,
@@ -2924,10 +2925,7 @@ public class KmeliaBmEJB implements KmeliaBm {
         boolean isNewsManage = getBooleanValue(getOrganisationController().getComponentParameterValue(
             pubDetail.getPK().getInstanceId(), "isNewsManage"));
         if (isNewsManage) {
-          // mécanisme de callback
-          CallBackManager callBackManager = CallBackManager.get();
-          callBackManager.invoke(CallBackManager.ACTION_PUBLICATION_REMOVE,
-              Integer.parseInt(pubDetail.getId()), pubDetail.getInstanceId(), pubDetail);
+          notifier.notifyEventOn(ResourceEvent.Type.DELETION, pubDetail);
         }
       }
       SilverTrace.info("kmelia", "KmeliaBmEJB.draftInPublication()",

@@ -28,9 +28,6 @@ import com.silverpeas.admin.components.InstanciationException;
 import com.silverpeas.comment.CommentInstanciator;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.calendar.backbone.TodoBackboneAccess;
-import org.silverpeas.admin.component.notification.ComponentInstanceEvent;
-import org.silverpeas.admin.component.notification.ComponentInstanceEventNotifier;
-import org.silverpeas.notification.ResourceEvent;
 import org.silverpeas.util.DBUtil;
 
 import java.sql.Connection;
@@ -50,22 +47,22 @@ public class ProjectManagerInstanciator implements ComponentsInstanciatorIntf {
   }
 
   @Override
-  public void create(Connection con, String spaceId, String componentId, String userId) throws
-      InstanciationException {
-    SilverTrace.info("projectManager", "ProjectManagerInstanciator.create()",
-        "root.MSG_GEN_ENTER_METHOD",
-        "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
+  public void create(Connection con, String spaceId, String componentId, String userId)
+      throws InstanciationException {
+    SilverTrace
+        .info("projectManager", "ProjectManagerInstanciator.create()", "root.MSG_GEN_ENTER_METHOD",
+            "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
 
-    SilverTrace.info("projectManager", "ProjectManagerInstanciator.create()",
-        "root.MSG_GEN_EXIT_METHOD");
+    SilverTrace
+        .info("projectManager", "ProjectManagerInstanciator.create()", "root.MSG_GEN_EXIT_METHOD");
   }
 
   @Override
   public void delete(Connection con, String spaceId, String componentId, String userId)
       throws InstanciationException {
-    SilverTrace.info("projectManager", "ProjectManagerInstanciator.delete()",
-        "root.MSG_GEN_ENTER_METHOD", "space = " + spaceId + ", componentId = "
-        + componentId + ", userId =" + userId);
+    SilverTrace
+        .info("projectManager", "ProjectManagerInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD",
+            "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
 
     CommentInstanciator comment = new CommentInstanciator();
     comment.delete(con, spaceId, componentId, userId);
@@ -87,7 +84,7 @@ public class ProjectManagerInstanciator implements ComponentsInstanciatorIntf {
     } finally {
       DBUtil.close(stmt);
     }
-    SilverTrace.info("projectManager", "ProjectManagerInstanciator.delete()",
-        "root.MSG_GEN_EXIT_METHOD");
+    SilverTrace
+        .info("projectManager", "ProjectManagerInstanciator.delete()", "root.MSG_GEN_EXIT_METHOD");
   }
 }

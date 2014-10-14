@@ -30,13 +30,10 @@ import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.silverpeas.attachment.notification.AttachmentEvent;
 import org.silverpeas.attachment.notification.AttachmentRef;
 import org.silverpeas.notification.JMSResourceEventListener;
-import org.silverpeas.util.exception.DecodingException;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.inject.Inject;
-import javax.jms.JMSException;
-import javax.jms.TextMessage;
 
 /**
  * @author neysseri
@@ -53,10 +50,10 @@ public class AttachmentKmeliaListener extends JMSResourceEventListener<Attachmen
   @Inject
   private KmeliaBm kmeliaBm;
 
+
   @Override
-  protected AttachmentEvent decodeResourceEventFrom(final TextMessage message)
-      throws JMSException, DecodingException {
-    return AttachmentEvent.fromMessage(message);
+  protected Class<AttachmentEvent> getResourceEventClass() {
+    return AttachmentEvent.class;
   }
 
   @Override
@@ -84,8 +81,18 @@ public class AttachmentKmeliaListener extends JMSResourceEventListener<Attachmen
   }
 
   private void anExternalPublicationElementHaveChanged(AttachmentRef attachment, String userId) {
-    PublicationPK pubPK =
-        new PublicationPK(attachment.getForeignId(), attachment.getInstanceId());
-    kmeliaBm.externalElementsOfPublicationHaveChanged(pubPK, userId);
+    if (isAboutKmeliaPublication(attachment)) {
+      PublicationPK pubPK =
+          new PublicationPK(attachment.getForeignId(), attachment.getInstanceId());
+      kmeliaBm.externalElementsOfPublicationHaveChanged(pubPK, userId);
+    }
+  }
+
+  private boolean isAboutKmeliaPublication(AttachmentRef attachment) {
+    return !attachment.getForeignId().startsWith("Node") && (
+        attachment.getInstanceId().startsWith("kmelia") ||
+            attachment.getInstanceId().startsWith("kmax") ||
+            attachment.getInstanceId().startsWith("kmelia") ||
+            attachment.getInstanceId().startsWith("toolbox"));
   }
 }

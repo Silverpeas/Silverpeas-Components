@@ -20,20 +20,22 @@
  */
 package com.stratelia.webactiv.kmelia.control;
 
-import com.stratelia.silverpeas.silverpeasinitialize.IInitialize;
+import org.silverpeas.initialization.Initialization;
 
-public class KmeliaInitialize implements IInitialize {
+/**
+ * Initializes the resources required by the Kmelia application instances.
+ */
+public class KmeliaInitialize implements Initialization {
 
   public KmeliaInitialize() {
   }
 
   @Override
-  public boolean Initialize() {
+  public void init() {
     AutomaticDraftOut ado = new AutomaticDraftOut();
     ado.initialize();
 
     CommentNotificationSourceRegister register = new CommentNotificationSourceRegister();
     register.initialize();
-    return true;
   }
 }

@@ -23,15 +23,18 @@
  */
 package com.silverpeas.silvercrawler.control;
 
-import com.stratelia.silverpeas.silverpeasinitialize.IInitialize;
+import org.silverpeas.initialization.Initialization;
 
-public class SilverCrawlerInitialize implements IInitialize {
+/**
+ * Initializes the SilverCrawler application.
+ */
+public class SilverCrawlerInitialize implements Initialization {
   public SilverCrawlerInitialize() {
   }
 
-  public boolean Initialize() {
+  @Override
+  public void init() {
     ScheduledIndexFiles sif = new ScheduledIndexFiles();
     sif.initialize();
-    return true;
   }
 }

@@ -31,9 +31,6 @@ import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.instance.ProcessInstance;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.calendar.backbone.TodoBackboneAccess;
-import org.silverpeas.admin.component.notification.ComponentInstanceEvent;
-import org.silverpeas.admin.component.notification.ComponentInstanceEventNotifier;
-import org.silverpeas.notification.ResourceEvent;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import java.sql.Connection;
@@ -44,11 +41,12 @@ public class ProcessManagerInstanciator implements ComponentsInstanciatorIntf {
   }
 
   @Override
-  public void create(Connection con, String spaceId, String componentId, String userId) throws
-      InstanciationException {
+  public void create(Connection con, String spaceId, String componentId, String userId)
+      throws InstanciationException {
     String xmlFilename = null;
     try {
-      xmlFilename = AdminReference.getAdminService().getComponentParameterValue(componentId, "XMLFileName");
+      xmlFilename =
+          AdminReference.getAdminService().getComponentParameterValue(componentId, "XMLFileName");
       Workflow.getProcessModelManager().createProcessModel(xmlFilename, componentId);
     } catch (WorkflowException e) {
       throw new InstanciationException("ProcessManagerInstanciator", SilverpeasException.ERROR,
@@ -58,13 +56,13 @@ public class ProcessManagerInstanciator implements ComponentsInstanciatorIntf {
   }
 
   @Override
-  public void delete(Connection con, String spaceId, String componentId, String userId) throws
-      InstanciationException {
+  public void delete(Connection con, String spaceId, String componentId, String userId)
+      throws InstanciationException {
     try {
       Workflow.getProcessModelManager().deleteProcessModel(componentId);
 
-      ProcessInstance[] processInstances = Workflow.getProcessInstanceManager().getProcessInstances(
-          componentId, null, "supervisor");
+      ProcessInstance[] processInstances =
+          Workflow.getProcessInstanceManager().getProcessInstances(componentId, null, "supervisor");
       for (ProcessInstance instance : processInstances) {
         ((UpdatableProcessInstanceManager) Workflow.getProcessInstanceManager()).
             removeProcessInstance(instance.getInstanceId());
