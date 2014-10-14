@@ -50,8 +50,7 @@ public class BlogPostWriteAccessController extends AbstractAccessController<Stri
   private OrganisationController organisationController;
 
   @Inject
-  @ComponentAccessControl
-  private AccessController<String> componentAccessController;
+  private @ComponentAccessControl AccessController<String> componentAccessController;
 
   /**
    * Hidden constructor.
