@@ -26,7 +26,7 @@ package org.silverpeas.components.suggestionbox.model;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.persistence.model.jpa.AbstractJpaEntity;
 
@@ -130,7 +130,7 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
    */
   private ComponentInstLight getComponentInst() {
     if (componentInst == null) {
-      componentInst = OrganisationControllerFactory.getOrganisationController()
+      componentInst = OrganisationControllerProvider.getOrganisationController()
           .getComponentInstLight(getComponentInstanceId());
     }
     return componentInst;
@@ -151,7 +151,7 @@ public class SuggestionBox extends AbstractJpaEntity<SuggestionBox, UuidIdentifi
    * @return a {@link SilverpeasRole} instance.
    */
   public SilverpeasRole getGreaterUserRole(UserDetail user) {
-    String[] profiles = OrganisationControllerFactory.getOrganisationController()
+    String[] profiles = OrganisationControllerProvider.getOrganisationController()
         .getUserProfiles(user.getId(), getComponentInstanceId());
     Set<SilverpeasRole> userRoles = SilverpeasRole.from(profiles);
     SilverpeasRole role = SilverpeasRole.getGreaterFrom(userRoles);

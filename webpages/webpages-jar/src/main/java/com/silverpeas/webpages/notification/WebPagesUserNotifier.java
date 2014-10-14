@@ -23,7 +23,7 @@
  */
 package com.silverpeas.webpages.notification;
 
-import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuilder;
 import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.notification.model.NotificationResourceData;
@@ -102,7 +102,7 @@ public class WebPagesUserNotifier extends AbstractTemplateUserNotificationBuilde
         .addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()),
             "");
     template.setAttribute("path", "");
-    template.setAttribute("senderName", OrganisationControllerFactory.getOrganisationController().
+    template.setAttribute("senderName", OrganisationControllerProvider.getOrganisationController().
         getUserDetail(userId).getDisplayedName());
     template.setAttribute("silverpeasURL", getResourceURL(resource));
   }
@@ -117,7 +117,7 @@ public class WebPagesUserNotifier extends AbstractTemplateUserNotificationBuilde
   protected void performNotificationResource(final String language, final NodePK resource,
       final NotificationResourceData notificationResourceData) {
     // The resource name corresponds at the label of the instantiated application
-    notificationResourceData.setResourceName(OrganisationControllerFactory.
+    notificationResourceData.setResourceName(OrganisationControllerProvider.
         getOrganisationController().getComponentInstLight(getComponentInstanceId()).getLabel());
     notificationResourceData.setResourceId(resource.getId());
     notificationResourceData.setResourceType(getTemplatePath());

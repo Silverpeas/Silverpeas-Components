@@ -40,7 +40,7 @@ import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
@@ -148,7 +148,7 @@ public class ProcessManagerBmEJB implements ProcessManagerBm {
           processModel, userRole);
       PagesContext pagesContext = new PagesContext("creationForm", "0", getLanguage(), true,
           componentId, userId);
-      boolean versioningUsed = StringUtil.getBooleanValue(OrganisationControllerFactory.
+      boolean versioningUsed = StringUtil.getBooleanValue(OrganisationControllerProvider.
           getOrganisationController().getComponentParameterValue(componentId, VERSION_MODE));
       pagesContext.setVersioningUsed(versioningUsed);
 

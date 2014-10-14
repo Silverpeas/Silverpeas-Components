@@ -26,12 +26,12 @@ package com.silverpeas.gallery;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.cache.service.CacheServiceProvider;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.util.DBUtil;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.persistence.dao.DAOBasedTest;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -90,7 +90,7 @@ public abstract class BaseGalleryTest extends DAOBasedTest {
     super.setUp();
     organisationControllerMock = mock(OrganisationController.class);
     ReflectionTestUtils
-        .setField(OrganisationControllerFactory.getFactory(), "organisationController",
+        .setField(OrganisationControllerProvider.getFactory(), "organisationController",
             organisationControllerMock);
     DBUtil.getInstanceForTest(getDataSource().getConnection());
 
@@ -132,7 +132,7 @@ public abstract class BaseGalleryTest extends DAOBasedTest {
   public void tearDown() throws Exception {
     try {
       super.tearDown();
-      OrganisationControllerFactory.getFactory().clearFactory();
+      OrganisationControllerProvider.getFactory().clearFactory();
       CacheServiceProvider.getSessionCacheService().put(UserDetail.CURRENT_REQUESTER_KEY, null);
     } finally {
       DBUtil.clearTestInstance();

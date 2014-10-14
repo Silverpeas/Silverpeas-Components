@@ -74,9 +74,9 @@
         class="org.silverpeas.components.suggestionbox.model.SuggestionBoxServiceFactory"
         factory-method="getFactory"/>
 
-  <bean id="organisationControllerFactory"
-        class="org.silverpeas.core.admin.OrganisationControllerFactory"
-        factory-method="getFactory"/>
+  <!-- ebo <bean id="organisationControllerFactory"
+        class="org.silverpeas.core.admin.OrganisationControllerProvider"
+        factory-method="getFactory"/> -->
 
   <bean id="attachmentServiceFactory" class="org.silverpeas.attachment.AttachmentServiceProvider"
         factory-method="getInstance"/>

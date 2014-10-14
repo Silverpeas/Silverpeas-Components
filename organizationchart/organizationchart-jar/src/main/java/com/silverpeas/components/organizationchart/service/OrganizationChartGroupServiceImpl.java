@@ -31,7 +31,7 @@ import java.util.Set;
 
 import javax.naming.NamingException;
 
-import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 
 import com.silverpeas.components.organizationchart.model.OrganizationalChart;
 import com.silverpeas.components.organizationchart.model.OrganizationalChartType;
@@ -57,12 +57,12 @@ public class OrganizationChartGroupServiceImpl extends AbstractOrganizationChart
       groupId = config.getRoot();
     }
 
-    Group group = OrganisationControllerFactory.getOrganisationController().getGroup(groupId);
+    Group group = OrganisationControllerProvider.getOrganisationController().getGroup(groupId);
 
     OrganizationalUnit root = new OrganizationalUnit(group.getName(), groupId);
     if (!groupId.equals(config.getRoot())) {
       if (!group.isRoot()) {
-        Group parent = OrganisationControllerFactory.getOrganisationController().getGroup(group.
+        Group parent = OrganisationControllerProvider.getOrganisationController().getGroup(group.
             getSuperGroupId());
         if (parent != null) {
           root.setParentName(parent.getName());
@@ -103,7 +103,7 @@ public class OrganizationChartGroupServiceImpl extends AbstractOrganizationChart
   }
 
   private OrganizationalPerson loadOrganizationalPerson(String id, OrganizationalChartType type) {
-    UserFull user = OrganisationControllerFactory.getOrganisationController().getUserFull(id);
+    UserFull user = OrganisationControllerProvider.getOrganisationController().getUserFull(id);
 
     String userFunction = user.getValue(config.getAttTitle());
     String userDescription = user.getValue(config.getAttDesc());

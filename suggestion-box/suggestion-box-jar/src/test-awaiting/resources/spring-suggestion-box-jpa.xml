@@ -44,9 +44,9 @@
   <bean id="organizationController"
         class="org.silverpeas.components.suggestionbox.mock.OrganisationControllerMockWrapper"/>
 
-  <bean id="organisationControllerFactory"
-        class="org.silverpeas.core.admin.OrganisationControllerFactory"
-        factory-method="getFactory"/>
+  <!-- ebo <bean id="organisationControllerFactory"
+        class="org.silverpeas.core.admin.OrganisationControllerProvider"
+        factory-method="getFactory"/> -->
 
   <bean id="commentUserNotificationService"
         class="org.silverpeas.components.suggestionbox.mock.CommentUserNotificationServiceMockWrapper"/>

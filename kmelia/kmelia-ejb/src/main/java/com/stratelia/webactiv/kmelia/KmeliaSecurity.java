@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.security.ComponentSecurity;
@@ -75,7 +75,7 @@ public class KmeliaSecurity implements ComponentSecurity {
       "org.silverpeas.kmelia.settings.kmeliaSettings", "fr");
 
   public KmeliaSecurity() {
-    this.controller = OrganisationControllerFactory.getOrganisationController();
+    this.controller = OrganisationControllerProvider.getOrganisationController();
   }
 
   public KmeliaSecurity(OrganisationController controller) {

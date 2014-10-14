@@ -1,6 +1,6 @@
 package org.silverpeas.component.kmelia;
 
-import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -68,7 +68,7 @@ public class KmeliaPublicationHelper {
   }
 
   private static String getParameterValue(String instanceId, String name) {
-    return OrganisationControllerFactory.getOrganisationController().getComponentParameterValue(
+    return OrganisationControllerProvider.getOrganisationController().getComponentParameterValue(
         instanceId, name);
   }
 }

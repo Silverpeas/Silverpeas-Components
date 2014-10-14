@@ -25,8 +25,7 @@ package com.silverpeas.gallery.process;
 
 import com.silverpeas.gallery.model.Media;
 import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-import org.silverpeas.process.io.file.FileBasePath;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.process.management.AbstractFileProcess;
 
 /**
@@ -59,7 +58,7 @@ public abstract class AbstractGalleryFileProcess
    */
   protected OrganisationController getOrganisationController() {
     if (organizationController == null) {
-      organizationController = OrganisationControllerFactory.getOrganisationController();
+      organizationController = OrganisationControllerProvider.getOrganisationController();
     }
     return organizationController;
   }

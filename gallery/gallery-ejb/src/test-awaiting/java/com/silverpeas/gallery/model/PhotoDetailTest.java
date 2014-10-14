@@ -29,6 +29,7 @@ import com.silverpeas.gallery.constant.MediaMimeType;
 import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.MediaType;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.util.DateUtil;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.After;
@@ -36,7 +37,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.date.Period;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -92,7 +92,7 @@ public class PhotoDetailTest extends AbstractMediaTest {
     when(organisationControllerMock.getUserDetail(lastUpdaterForTest.getId()))
         .thenReturn(lastUpdaterForTest);
     ReflectionTestUtils
-        .setField(OrganisationControllerFactory.getFactory(), "organisationController",
+        .setField(OrganisationControllerProvider.getFactory(), "organisationController",
             organisationControllerMock);
   }
 

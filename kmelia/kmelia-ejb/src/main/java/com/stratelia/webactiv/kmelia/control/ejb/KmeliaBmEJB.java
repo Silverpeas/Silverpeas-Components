@@ -148,7 +148,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static org.silverpeas.attachment.AttachmentService.VERSION_MODE;
-import static org.silverpeas.core.admin.OrganisationControllerFactory.getOrganisationController;
+import static org.silverpeas.core.admin.OrganisationControllerProvider.getOrganisationController;
 import static org.silverpeas.util.StringUtil.*;
 import static org.silverpeas.util.exception.SilverpeasRuntimeException.ERROR;
 

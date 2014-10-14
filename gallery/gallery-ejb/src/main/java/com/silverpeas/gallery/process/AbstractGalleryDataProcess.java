@@ -33,9 +33,9 @@ import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.MediaPK;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.persistence.repository.OperationContext;
 import org.silverpeas.process.management.AbstractDataProcess;
 import org.silverpeas.process.session.ProcessSession;
@@ -186,7 +186,7 @@ public abstract class AbstractGalleryDataProcess extends
    */
   protected OrganisationController getOrganisationController() {
     if (organizationController == null) {
-      organizationController = OrganisationControllerFactory.getOrganisationController();
+      organizationController = OrganisationControllerProvider.getOrganisationController();
     }
     return organizationController;
   }

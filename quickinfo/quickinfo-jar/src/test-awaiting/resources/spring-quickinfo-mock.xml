@@ -49,8 +49,8 @@
   <bean id="organizationController"
         class="org.silverpeas.components.quickinfo.mock.OrganisationControllerMockWrapper"/>
 
-  <bean id="organisationControllerFactory"
-        class="org.silverpeas.core.admin.OrganisationControllerFactory"
-        factory-method="getFactory"/>
+  <!-- ebo <bean id="organisationControllerFactory"
+        class="org.silverpeas.core.admin.OrganisationControllerProvider"
+        factory-method="getFactory"/> -->
 
 </beans>

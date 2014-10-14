@@ -29,7 +29,7 @@ import org.mockito.stubbing.Answer;
 import org.silverpeas.components.suggestionbox.mock.OrganisationControllerMockWrapper;
 import org.silverpeas.components.suggestionbox.model.PersistenceService;
 import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
@@ -78,7 +78,7 @@ public abstract class RepositoryBasedTest
   }
 
   public OrganisationController getOrganisationController() {
-    OrganisationController organisationController = OrganisationControllerFactory.
+    OrganisationController organisationController = OrganisationControllerProvider.
         getOrganisationController();
     return ((OrganisationControllerMockWrapper) organisationController).getMock();
   }

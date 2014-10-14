@@ -24,6 +24,7 @@
 package org.silverpeas.components.suggestionbox.common;
 
 import com.silverpeas.personalization.UserPreferences;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.comparator.AbstractComplexComparator;
@@ -37,7 +38,6 @@ import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
 import org.silverpeas.components.suggestionbox.web.SuggestionEntity;
 import org.silverpeas.contribution.ContributionStatus;
 import org.silverpeas.contribution.model.ContributionValidation;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.util.NotifierUtil;
 import org.silverpeas.util.PaginationList;
 
@@ -385,7 +385,7 @@ public class SuggestionBoxWebServiceProvider {
   public static void checkAdminAccessOrUserIsModerator(UserDetail user,
       SuggestionBox suggestionBox) {
     Set<String> moderatorIds = CollectionUtil.asSet(
-        OrganisationControllerFactory.getOrganisationController()
+        OrganisationControllerProvider.getOrganisationController()
             .getUsersIdsByRoleNames(suggestionBox.getComponentInstanceId(),
                 CollectionUtil.asList(SilverpeasRole.admin.name(), SilverpeasRole.publisher.name()))
     );

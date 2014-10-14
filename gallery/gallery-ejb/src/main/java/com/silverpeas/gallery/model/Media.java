@@ -37,7 +37,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.accesscontrol.ComponentAccessControl;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.date.Period;
 import org.silverpeas.file.SilverpeasFile;
 import org.silverpeas.process.io.file.FileBasePath;
@@ -509,7 +509,7 @@ public abstract class Media implements SilverpeasContent, SilverContentInterface
    */
   protected SilverpeasRole getGreatestUserRole(final UserDetail user) {
     Set<SilverpeasRole> userRoles =
-        SilverpeasRole.from(OrganisationControllerFactory.getOrganisationController()
+        SilverpeasRole.from(OrganisationControllerProvider.getOrganisationController()
             .getUserProfiles(user.getId(), getComponentInstanceId()));
     return SilverpeasRole.getGreaterFrom(userRoles);
   }
