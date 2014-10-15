@@ -58,7 +58,7 @@ import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
 import com.silverpeas.thumbnail.ThumbnailException;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
-import com.silverpeas.thumbnail.service.ThumbnailServiceFactory;
+import com.silverpeas.thumbnail.service.ThumbnailServiceProvider;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
@@ -4325,7 +4325,7 @@ public class KmeliaBmEJB implements KmeliaBm {
           FileRepositoryManager.copyFile(from, to);
           thumbDetail.setOriginalFileName(newVignette);
         }
-        ThumbnailServiceFactory.getThumbnailService().createThumbnail(thumbDetail);
+        ThumbnailServiceProvider.getThumbnailService().createThumbnail(thumbDetail);
       }
     } catch (IOException e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.clonePublication", ERROR,
