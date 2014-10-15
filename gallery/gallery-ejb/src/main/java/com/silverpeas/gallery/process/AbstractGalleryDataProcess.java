@@ -63,9 +63,9 @@ public abstract class AbstractGalleryDataProcess extends
    * ProcessExecutionContext, org.silverpeas.process.session.ProcessSession)
    */
   @Override
-  public final void process(final GalleryProcessExecutionContext context,
+  public final void process(final GalleryProcessExecutionContext processExecutionContext,
       final ProcessSession session) throws Exception {
-    processData(context, session);
+    processData(processExecutionContext, session);
   }
 
   /**

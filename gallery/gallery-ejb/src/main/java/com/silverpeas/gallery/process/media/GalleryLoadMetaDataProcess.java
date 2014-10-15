@@ -25,7 +25,7 @@ package com.silverpeas.gallery.process.media;
 
 import com.silverpeas.gallery.MediaUtil;
 import com.silverpeas.gallery.model.InternalMedia;
-import org.silverpeas.process.ProcessFactory;
+import org.silverpeas.process.ProcessProvider;
 import org.silverpeas.process.io.file.FileHandler;
 import org.silverpeas.process.management.AbstractFileProcess;
 import org.silverpeas.process.management.ProcessExecutionContext;
@@ -45,7 +45,7 @@ public class GalleryLoadMetaDataProcess extends AbstractFileProcess<ProcessExecu
    * @throws Exception
    */
   public static void load(final InternalMedia media) throws Exception {
-    ProcessFactory.getProcessManagement().execute(new GalleryLoadMetaDataProcess(media),
+    ProcessProvider.getProcessManagement().execute(new GalleryLoadMetaDataProcess(media),
         new ProcessExecutionContext(null, null));
   }
 

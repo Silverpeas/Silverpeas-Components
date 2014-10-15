@@ -38,7 +38,7 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 
 import org.silverpeas.date.Period;
-import org.silverpeas.process.ProcessFactory;
+import org.silverpeas.process.ProcessProvider;
 import org.silverpeas.process.util.ProcessList;
 import org.silverpeas.search.SearchEngineFactory;
 import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
@@ -73,7 +73,6 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.util.exception.UtilException;
 import com.stratelia.webactiv.node.control.NodeBm;
 import com.stratelia.webactiv.node.control.dao.NodeDAO;
 import com.stratelia.webactiv.node.model.NodeDetail;
@@ -837,7 +836,7 @@ public class GalleryBmEJB implements GalleryBm {
     final Connection connection = initCon();
     try {
       processExecutionContext.setConnection(connection);
-      ProcessFactory.getProcessManagement().execute(processList, processExecutionContext);
+      ProcessProvider.getProcessManagement().execute(processList, processExecutionContext);
     } catch (final Exception e) {
       throw new GalleryRuntimeException("executeProcessList()", SilverpeasRuntimeException.ERROR,
           "gallery.TRANSACTION_ERROR", e);

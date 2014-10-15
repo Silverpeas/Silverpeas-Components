@@ -111,7 +111,6 @@ import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.notification.ResourceEvent;
 import org.silverpeas.notification.ResourceEventNotifier;
 import org.silverpeas.process.annotation.SimulationActionProcess;
-import org.silverpeas.process.annotation.SimulationActionProcessAnnotationInterceptor;
 import org.silverpeas.publication.notification.PublicationEvent;
 import org.silverpeas.search.indexEngine.model.IndexManager;
 import org.silverpeas.util.ActionType;
@@ -135,7 +134,6 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
-import javax.interceptor.Interceptors;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 import java.io.ByteArrayInputStream;
@@ -1454,7 +1452,6 @@ public class KmeliaBmEJB implements KmeliaBm {
     return beginVisibilityPeriodUpdated || endVisibilityPeriodUpdated;
   }
 
-  @Interceptors(SimulationActionProcessAnnotationInterceptor.class)
   @SimulationActionProcess(elementLister = KmeliaPublicationSimulationElementLister.class)
   @Action(ActionType.MOVE)
   @Override
@@ -1469,7 +1466,6 @@ public class KmeliaBmEJB implements KmeliaBm {
     }
   }
 
-  @Interceptors(SimulationActionProcessAnnotationInterceptor.class)
   @SimulationActionProcess(elementLister = KmeliaPublicationSimulationElementLister.class)
   @Action(ActionType.MOVE)
   @Override
@@ -1516,7 +1512,6 @@ public class KmeliaBmEJB implements KmeliaBm {
    * </ul>
    */
 
-  @Interceptors(SimulationActionProcessAnnotationInterceptor.class)
   @SimulationActionProcess(elementLister = KmeliaPublicationSimulationElementLister.class)
   @Action(ActionType.MOVE)
   @Override
@@ -4740,7 +4735,6 @@ public class KmeliaBmEJB implements KmeliaBm {
     return new ResourceLocator(MESSAGES_PATH, language);
   }
 
-  @Interceptors(SimulationActionProcessAnnotationInterceptor.class)
   @SimulationActionProcess(elementLister = KmeliaNodeSimulationElementLister.class)
   @Action(ActionType.MOVE)
   @Override
@@ -4790,7 +4784,6 @@ public class KmeliaBmEJB implements KmeliaBm {
     }
   }
 
-  @Interceptors(SimulationActionProcessAnnotationInterceptor.class)
   @SimulationActionProcess(elementLister = KmeliaNodeSimulationElementLister.class)
   @Action(ActionType.COPY)
   @Override
@@ -4874,7 +4867,6 @@ public class KmeliaBmEJB implements KmeliaBm {
     return node;
   }
 
-  @Interceptors(SimulationActionProcessAnnotationInterceptor.class)
   @SimulationActionProcess(elementLister = KmeliaPublicationSimulationElementLister.class)
   @Action(ActionType.COPY)
   @Override
@@ -4885,7 +4877,6 @@ public class KmeliaBmEJB implements KmeliaBm {
     }
   }
 
-  @Interceptors(SimulationActionProcessAnnotationInterceptor.class)
   @SimulationActionProcess(elementLister = KmeliaPublicationSimulationElementLister.class)
   @Action(ActionType.COPY)
   @Override
