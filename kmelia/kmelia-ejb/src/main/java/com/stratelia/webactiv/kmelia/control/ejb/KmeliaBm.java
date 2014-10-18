@@ -20,7 +20,7 @@
  */
 package com.stratelia.webactiv.kmelia.control.ejb;
 
-import com.silverpeas.SilverpeasComponentService;
+import com.silverpeas.ApplicationService;
 import com.silverpeas.component.kmelia.KmeliaCopyDetail;
 import com.silverpeas.form.importExport.XMLField;
 import com.silverpeas.pdc.model.PdcClassification;
@@ -54,7 +54,7 @@ import org.silverpeas.attachment.model.SimpleDocumentPK;
  * @author Nicolas Eysseric
  */
 @Local
-public interface KmeliaBm extends SilverpeasComponentService<KmeliaPublication> {
+public interface KmeliaBm extends ApplicationService<KmeliaPublication> {
 
   /**
    * Return the detail of a topic.

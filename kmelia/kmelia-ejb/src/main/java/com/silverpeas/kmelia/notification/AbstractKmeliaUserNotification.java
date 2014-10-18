@@ -31,7 +31,7 @@ import java.util.List;
 
 import org.silverpeas.core.admin.OrganisationController;
 
-import com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuilder;
+import com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationBuilder;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 

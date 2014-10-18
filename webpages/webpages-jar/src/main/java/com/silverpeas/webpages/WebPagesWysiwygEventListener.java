@@ -54,12 +54,12 @@ public class WebPagesWysiwygEventListener extends JMSResourceEventListener<Wysiw
 
   @Override
   public void onUpdate(final WysiwygEvent event) throws Exception {
-    notifyUsersAboutChange(event.getResource());
+    notifyUsersAboutChange(event.getTransition().getAfter());
   }
 
   @Override
   public void onCreation(final WysiwygEvent event) throws Exception {
-    notifyUsersAboutChange(event.getResource());
+    notifyUsersAboutChange(event.getTransition().getAfter());
   }
 
   private void notifyUsersAboutChange(WysiwygContent content) {

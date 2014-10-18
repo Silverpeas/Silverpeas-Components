@@ -23,7 +23,7 @@
  */
 package com.silverpeas.scheduleevent.test.stub;
 
-import com.silverpeas.SilverpeasComponentService;
+import com.silverpeas.ApplicationService;
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.service.CommentUserNotificationService;
@@ -37,7 +37,7 @@ public class CommentUserNotificationServiceStub implements CommentUserNotificati
 
   @Override
   public void register(String component,
-      SilverpeasComponentService<? extends SilverpeasContent> service) {
+      ApplicationService<? extends SilverpeasContent> service) {
   }
 
   @Override

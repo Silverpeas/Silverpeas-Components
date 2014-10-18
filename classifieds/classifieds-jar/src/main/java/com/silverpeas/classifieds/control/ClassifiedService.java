@@ -23,7 +23,7 @@
  */
 package com.silverpeas.classifieds.control;
 
-import com.silverpeas.SilverpeasComponentService;
+import com.silverpeas.ApplicationService;
 import com.silverpeas.classifieds.model.ClassifiedDetail;
 import com.silverpeas.classifieds.model.Subscribe;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
@@ -35,7 +35,7 @@ import java.util.Map;
  * Services provided by the Classified Silverpeas component.
  * It has to be managed by the IoC container under the name classifiedService.
  */
-public interface ClassifiedService extends SilverpeasComponentService<ClassifiedDetail> {
+public interface ClassifiedService extends ApplicationService<ClassifiedDetail> {
 
   /**
    * create a classified

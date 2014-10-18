@@ -2,7 +2,7 @@ package org.silverpeas.components.quickinfo.notification;
 
 import org.silverpeas.components.quickinfo.QuickInfoComponentSettings;
 
-import com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuilder;
+import com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationBuilder;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.stratelia.webactiv.beans.admin.UserDetail;

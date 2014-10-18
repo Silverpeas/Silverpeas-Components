@@ -1,4 +1,4 @@
-package com.silverpeas.notification.mock;
+package com.silverpeas.usernotification.mock;
 
 import javax.inject.Named;
 

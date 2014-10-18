@@ -25,7 +25,7 @@ import com.silverpeas.export.ExportException;
 import com.silverpeas.export.Exporter;
 import com.silverpeas.export.ExporterProvider;
 import com.silverpeas.export.ical.ExportableCalendar;
-import com.silverpeas.notification.builder.helper.UserNotificationHelper;
+import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.silverpeas.scheduleevent.notification.ScheduleEventUserNotification;
 import com.silverpeas.scheduleevent.service.CalendarEventEncoder;
 import com.silverpeas.scheduleevent.service.ScheduleEventService;

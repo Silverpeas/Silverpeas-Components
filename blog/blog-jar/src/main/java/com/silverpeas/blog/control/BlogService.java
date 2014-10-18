@@ -26,7 +26,7 @@ package com.silverpeas.blog.control;
 import java.util.Collection;
 import java.util.Date;
 
-import com.silverpeas.SilverpeasComponentService;
+import com.silverpeas.ApplicationService;
 import com.silverpeas.blog.model.Archive;
 import com.silverpeas.blog.model.Category;
 import com.silverpeas.blog.model.PostDetail;
@@ -39,7 +39,7 @@ import com.stratelia.webactiv.publication.model.PublicationPK;
 /**
  * Services provided by the Blog Silverpeas component.
  */
-public interface BlogService extends SilverpeasComponentService<PostDetail> {
+public interface BlogService extends ApplicationService<PostDetail> {
 
   public String createPost(final PostDetail post);
 

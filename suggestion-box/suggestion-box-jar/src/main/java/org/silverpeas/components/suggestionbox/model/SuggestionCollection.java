@@ -1,6 +1,6 @@
 package org.silverpeas.components.suggestionbox.model;
 
-import com.silverpeas.notification.builder.helper.UserNotificationHelper;
+import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.SilverpeasRole;

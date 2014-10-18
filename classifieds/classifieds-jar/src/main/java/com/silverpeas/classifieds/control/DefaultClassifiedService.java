@@ -30,35 +30,14 @@ import com.silverpeas.classifieds.model.Subscribe;
 import com.silverpeas.classifieds.notification.ClassifiedSubscriptionUserNotification;
 import com.silverpeas.classifieds.notification.ClassifiedSupervisorUserNotification;
 import com.silverpeas.classifieds.notification.ClassifiedValidationUserNotification;
-import com.silverpeas.comment.service.CommentUserNotificationService;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.RecordSet;
-import com.silverpeas.notification.builder.helper.UserNotificationHelper;
+import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.WAPrimaryKey;
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.inject.Inject;
-import javax.inject.Named;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.DocumentType;
@@ -71,6 +50,23 @@ import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+
+import javax.inject.Named;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Services provided by the Classified Silverpeas component.
@@ -78,32 +74,11 @@ import org.silverpeas.search.searchEngine.model.QueryDescription;
 @Named("classifiedService")
 public class DefaultClassifiedService implements ClassifiedService {
 
-  public static final String COMPONENT_NAME = "classifieds";
   private static final String MESSAGES_PATH =
       "com.silverpeas.classifieds.multilang.classifiedsBundle";
   private static final String SETTINGS_PATH =
       "com.silverpeas.classifieds.settings.classifiedsSettings";
   private static final ResourceLocator settings = new ResourceLocator(SETTINGS_PATH, "");
-  @Inject
-  private CommentUserNotificationService commentUserNotificationService;
-
-  /**
-   * Initializes this service by registering itself among Silverpeas core services as interested by
-   * events.
-   */
-  @PostConstruct
-  public void initialize() {
-    commentUserNotificationService.register(COMPONENT_NAME, this);
-  }
-
-  /**
-   * Releases all the resources required by this service. For instance, it unregisters from the
-   * Silverpeas core services.
-   */
-  @PreDestroy
-  public void release() {
-    commentUserNotificationService.unregister(COMPONENT_NAME);
-  }
 
   @Override
   public ClassifiedDetail getContentById(String classifiedId) {
@@ -126,6 +101,11 @@ public class DefaultClassifiedService implements ClassifiedService {
   @Override
   public ResourceLocator getComponentMessages(String language) {
     return new ResourceLocator(MESSAGES_PATH, language);
+  }
+
+  @Override
+  public boolean isRelatedTo(final String instanceId) {
+    return instanceId.startsWith("classified");
   }
 
   @Override

@@ -20,8 +20,51 @@
  */
 package org.silverpeas.components.quickinfo.model;
 
-import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
+import com.silverpeas.ApplicationService;
+import com.silverpeas.annotation.Service;
+import com.silverpeas.comment.service.CommentService;
+import com.silverpeas.delegatednews.service.DelegatedNewsService;
+import com.silverpeas.delegatednews.service.ServicesFactory;
+import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
+import com.silverpeas.pdc.PdcServiceFactory;
+import com.silverpeas.pdc.model.PdcClassification;
+import com.silverpeas.pdc.model.PdcPosition;
+import com.silverpeas.pdc.service.PdcClassificationService;
+import com.silverpeas.thumbnail.control.ThumbnailController;
+import com.silverpeas.thumbnail.model.ThumbnailDetail;
+import com.stratelia.silverpeas.contentManager.ContentManagerException;
+import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.CompoSpace;
+import com.stratelia.webactiv.publication.control.PublicationBm;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationPK;
+import com.stratelia.webactiv.quickinfo.QuickInfoContentManager;
+import com.stratelia.webactiv.quickinfo.control.QuickInfoDateComparatorDesc;
+import com.stratelia.webactiv.statistic.control.StatisticBm;
+import org.silverpeas.attachment.AttachmentService;
+import org.silverpeas.attachment.AttachmentServiceProvider;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.util.SimpleDocumentList;
+import org.silverpeas.authentication.UserAuthenticationListener;
+import org.silverpeas.components.quickinfo.NewsByStatus;
+import org.silverpeas.components.quickinfo.QuickInfoComponentSettings;
+import org.silverpeas.components.quickinfo.notification.QuickInfoSubscriptionUserNotification;
+import org.silverpeas.components.quickinfo.repository.NewsRepository;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.persistence.Transaction;
+import org.silverpeas.persistence.repository.OperationContext;
+import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -30,65 +73,14 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.inject.Inject;
-
-import org.silverpeas.attachment.AttachmentService;
-import org.silverpeas.attachment.AttachmentServiceProvider;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.util.SimpleDocumentList;
-import org.silverpeas.authentication.UserAuthenticationListener;
-import org.silverpeas.authentication.UserAuthenticationListenerRegistration;
-import org.silverpeas.components.quickinfo.NewsByStatus;
-import org.silverpeas.components.quickinfo.QuickInfoComponentSettings;
-import org.silverpeas.components.quickinfo.QuickInfoUserAuthenticationListener;
-import org.silverpeas.components.quickinfo.notification.QuickInfoSubscriptionUserNotification;
-import org.silverpeas.components.quickinfo.repository.NewsRepository;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
-import org.silverpeas.persistence.Transaction;
-import org.silverpeas.persistence.repository.OperationContext;
-import org.silverpeas.search.indexEngine.model.IndexManager;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-
-import com.silverpeas.SilverpeasComponentService;
-import com.silverpeas.annotation.Service;
-import com.silverpeas.comment.service.CommentService;
-import com.silverpeas.comment.service.CommentUserNotificationService;
-import com.silverpeas.delegatednews.service.DelegatedNewsService;
-import com.silverpeas.delegatednews.service.ServicesFactory;
-import com.silverpeas.notification.builder.helper.UserNotificationHelper;
-import com.silverpeas.pdc.PdcServiceFactory;
-import com.silverpeas.pdc.model.PdcClassification;
-import com.silverpeas.pdc.model.PdcPosition;
-import com.silverpeas.pdc.service.PdcClassificationService;
-import com.silverpeas.thumbnail.control.ThumbnailController;
-import com.silverpeas.thumbnail.model.ThumbnailDetail;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.silverpeas.contentManager.ContentManagerException;
-import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.CompoSpace;
-import com.stratelia.webactiv.quickinfo.QuickInfoContentManager;
-import com.stratelia.webactiv.quickinfo.control.QuickInfoDateComparatorDesc;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
-import org.silverpeas.util.ResourceLocator;
-import com.stratelia.webactiv.publication.control.PublicationBm;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
-import com.stratelia.webactiv.publication.model.PublicationPK;
-import com.stratelia.webactiv.statistic.control.StatisticBm;
+import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
 @Service
-public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComponentService<News> {
+@Named("quickInfoService")
+public class DefaultQuickInfoService implements QuickInfoService, ApplicationService<News> {
 
   @Inject
   private NewsRepository newsRepository;
-
-  @Inject
-  private CommentUserNotificationService commentUserNotificationService;
 
   @Inject
   private CommentService commentService;
@@ -176,6 +168,11 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
   @Override
   public ResourceLocator getComponentMessages(String language) {
     return QuickInfoComponentSettings.getMessagesIn(language);
+  }
+
+  @Override
+  public boolean isRelatedTo(final String instanceId) {
+    return instanceId.startsWith("quickInfo");
   }
 
   @Override
@@ -418,27 +415,6 @@ public class DefaultQuickInfoService implements QuickInfoService, SilverpeasComp
         service.classifyContent(publi, classification);
       }
     }
-  }
-
-  /**
-   * Initializes the component by setting some transversal core services for their
-   * use by the component instances. One of these services is the user comment notification.
-   */
-  @PostConstruct
-  public void initialize() {
-    commentUserNotificationService.register(QuickInfoComponentSettings.COMPONENT_NAME, this);
-    userAuthenticationListener = new QuickInfoUserAuthenticationListener();
-    UserAuthenticationListenerRegistration.register(userAuthenticationListener);
-  }
-
-  /**
-   * Releases the uses of the transverse core services that were used by the instances of the
-   * component.
-   */
-  @PreDestroy
-  public void release() {
-    commentUserNotificationService.unregister(QuickInfoComponentSettings.COMPONENT_NAME);
-    UserAuthenticationListenerRegistration.unregister(userAuthenticationListener);
   }
 
   private StatisticBm getStatisticService() {

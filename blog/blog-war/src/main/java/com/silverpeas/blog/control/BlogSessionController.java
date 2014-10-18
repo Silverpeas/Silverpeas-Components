@@ -33,7 +33,7 @@ import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceProvider;
 import com.silverpeas.myLinks.ejb.MyLinksBm;
 import com.silverpeas.myLinks.model.LinkDetail;
-import com.silverpeas.notification.builder.helper.UserNotificationHelper;
+import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.web.PdcClassificationEntity;

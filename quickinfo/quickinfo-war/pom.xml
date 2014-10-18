@@ -76,10 +76,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>javax.validation</groupId>
-      <artifactId>validation-api</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.silverpeas.components.delegatednews</groupId>
       <artifactId>delegatednews-jar</artifactId>
       <version>${project.version}</version>

@@ -26,8 +26,8 @@ package com.stratelia.webactiv.survey.notification;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuilder;
-import com.silverpeas.notification.model.NotificationResourceData;
+import com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationBuilder;
+import com.silverpeas.usernotification.model.NotificationResourceData;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;

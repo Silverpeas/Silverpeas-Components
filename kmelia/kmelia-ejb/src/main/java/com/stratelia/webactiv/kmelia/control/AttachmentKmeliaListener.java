@@ -58,7 +58,7 @@ public class AttachmentKmeliaListener extends JMSResourceEventListener<Attachmen
 
   @Override
   public void onDeletion(final AttachmentEvent event) throws Exception {
-    AttachmentRef attachment = event.getResource();
+    AttachmentRef attachment = event.getTransition().getBefore();
     if (attachment != null) {
       anExternalPublicationElementHaveChanged(attachment, null);
     }
@@ -66,7 +66,7 @@ public class AttachmentKmeliaListener extends JMSResourceEventListener<Attachmen
 
   @Override
   public void onUpdate(final AttachmentEvent event) throws Exception {
-    AttachmentRef attachment = event.getResource();
+    AttachmentRef attachment = event.getTransition().getAfter();
     if (attachment != null) {
       anExternalPublicationElementHaveChanged(attachment, attachment.getUserId());
     }
@@ -74,7 +74,7 @@ public class AttachmentKmeliaListener extends JMSResourceEventListener<Attachmen
 
   @Override
   public void onCreation(final AttachmentEvent event) throws Exception {
-    AttachmentRef attachment = event.getResource();
+    AttachmentRef attachment = event.getTransition().getAfter();
     if (attachment != null) {
       anExternalPublicationElementHaveChanged(attachment, attachment.getUserId());
     }

@@ -24,9 +24,9 @@
 package com.silverpeas.webpages.notification;
 
 import org.silverpeas.core.admin.OrganisationControllerProvider;
-import com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuilder;
-import com.silverpeas.notification.builder.helper.UserNotificationHelper;
-import com.silverpeas.notification.model.NotificationResourceData;
+import com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationBuilder;
+import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
+import com.silverpeas.usernotification.model.NotificationResourceData;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.constant.SubscriberType;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;

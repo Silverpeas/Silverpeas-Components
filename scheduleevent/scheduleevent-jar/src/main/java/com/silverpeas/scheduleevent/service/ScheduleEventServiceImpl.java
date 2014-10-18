@@ -20,24 +20,20 @@
  */
 package com.silverpeas.scheduleevent.service;
 
-import com.silverpeas.annotation.Service;
-import com.silverpeas.comment.service.CommentUserNotificationService;
-import com.silverpeas.scheduleevent.constant.ScheduleEventConstant;
 import com.silverpeas.scheduleevent.service.model.beans.Contributor;
 import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
 import com.silverpeas.scheduleevent.service.model.dao.ScheduleEventDao;
 import org.silverpeas.util.ResourceLocator;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.inject.Inject;
 
-@Service("scheduleEventService")
+@Named("scheduleEventService")
 public class ScheduleEventServiceImpl implements ScheduleEventService {
 
-  public static final String COMPONENT_NAME = ScheduleEventConstant.TOOL_ID;
   private static final String MESSAGES_PATH
       = "com.silverpeas.components.scheduleevent.multilang.ScheduleEventBundle";
   private static final String SETTINGS_PATH
@@ -45,26 +41,6 @@ public class ScheduleEventServiceImpl implements ScheduleEventService {
   private static final ResourceLocator settings = new ResourceLocator(SETTINGS_PATH, "");
   @Inject
   private ScheduleEventDao scheduleEventDao;
-  @Inject
-  private CommentUserNotificationService commentUserNotificationService;
-
-  /**
-   * Initializes this service by registering itself among Silverpeas core services as interested by
-   * events.
-   */
-  @PostConstruct
-  public void initialize() {
-    commentUserNotificationService.register(COMPONENT_NAME, this);
-  }
-
-  /**
-   * Releases all the resources required by this service. For instance, it unregisters from the
-   * Silverpeas core services.
-   */
-  @PreDestroy
-  public void release() {
-    commentUserNotificationService.unregister(COMPONENT_NAME);
-  }
 
   @Override
   public String createScheduleEvent(ScheduleEvent scheduleEvent) {
@@ -141,5 +117,10 @@ public class ScheduleEventServiceImpl implements ScheduleEventService {
   @Override
   public ResourceLocator getComponentMessages(String language) {
     return new ResourceLocator(MESSAGES_PATH, language);
+  }
+
+  @Override
+  public boolean isRelatedTo(final String instanceId) {
+    return instanceId.startsWith("scheduleEvent");
   }
 }

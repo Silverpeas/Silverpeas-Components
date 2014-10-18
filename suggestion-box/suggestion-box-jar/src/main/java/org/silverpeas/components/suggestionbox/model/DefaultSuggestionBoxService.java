@@ -23,40 +23,34 @@
  */
 package org.silverpeas.components.suggestionbox.model;
 
-import com.silverpeas.SilverpeasComponentService;
-import com.silverpeas.annotation.Service;
+import com.silverpeas.ApplicationService;
 import com.silverpeas.comment.service.CommentService;
-import com.silverpeas.comment.service.CommentUserNotificationService;
 import com.silverpeas.notation.ejb.RatingServiceProvider;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.components.suggestionbox.SuggestionBoxComponentSettings;
 import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepository;
 import org.silverpeas.persistence.repository.OperationContext;
+import org.silverpeas.util.ResourceLocator;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * The default implementation of the {@link SuggestionBoxService} interface and of the
- * {@link SilverpeasComponentService} interface.
+ * {@link com.silverpeas.ApplicationService} interface.
  * @author mmoquillon
  */
-@Service
+@Named("suggestionBoxService")
 public class DefaultSuggestionBoxService
-    implements SuggestionBoxService, SilverpeasComponentService<Suggestion> {
+    implements SuggestionBoxService, ApplicationService<Suggestion> {
 
   @Inject
   private SuggestionBoxRepository suggestionBoxRepository;
-
-  @Inject
-  private CommentUserNotificationService commentUserNotificationService;
 
   @Inject
   private CommentService commentService;
@@ -71,24 +65,6 @@ public class DefaultSuggestionBoxService
   public static SuggestionBoxService getInstance() {
     SuggestionBoxServiceFactory factory = SuggestionBoxServiceFactory.getFactory();
     return factory.getSuggestionBoxService();
-  }
-
-  /**
-   * Initializes the Suggestion Box component by setting some transversal core services for their
-   * use by the component instances. One of these services is the user comment notification.
-   */
-  @PostConstruct
-  public void initialize() {
-    commentUserNotificationService.register(SuggestionBoxComponentSettings.COMPONENT_NAME, this);
-  }
-
-  /**
-   * Releases the uses of the transverse core services that were used by the instances of the
-   * Suggestion Box component.
-   */
-  @PreDestroy
-  public void release() {
-    commentUserNotificationService.unregister(SuggestionBoxComponentSettings.COMPONENT_NAME);
   }
 
   @Override
@@ -124,6 +100,8 @@ public class DefaultSuggestionBoxService
     suggestionBoxRepository.delete(box);
     suggestionBoxRepository.flush();
 
+    // TODO the deletion of comments, attachments are now taken automatically account when an
+    // application instance is deleted. See to remove these instructions below
     // Deletion of comments
     commentService.deleteAllCommentsByComponentInstanceId(box.getComponentInstanceId());
 
@@ -152,5 +130,10 @@ public class DefaultSuggestionBoxService
   @Override
   public ResourceLocator getComponentMessages(String language) {
     return SuggestionBoxComponentSettings.getMessagesIn(language);
+  }
+
+  @Override
+  public boolean isRelatedTo(final String instanceId) {
+    return instanceId.startsWith("suggestionBox");
   }
 }

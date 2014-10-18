@@ -2,12 +2,12 @@ package org.silverpeas.components.quickinfo.model;
 
 import java.util.List;
 
+import com.silverpeas.ApplicationService;
 import org.silverpeas.components.quickinfo.NewsByStatus;
 
-import com.silverpeas.SilverpeasComponentService;
 import com.silverpeas.pdc.model.PdcPosition;
 
-public interface QuickInfoService extends SilverpeasComponentService<News> {
+public interface QuickInfoService extends ApplicationService<News> {
   
   public News create(News news);
   

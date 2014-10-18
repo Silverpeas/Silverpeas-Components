@@ -21,7 +21,6 @@
 package com.stratelia.webactiv.kmelia.control.ejb;
 
 import com.silverpeas.comment.service.CommentService;
-import com.silverpeas.comment.service.CommentServiceProvider;
 import com.silverpeas.component.kmelia.KmeliaCopyDetail;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
@@ -39,7 +38,6 @@ import com.silverpeas.kmelia.notification.KmeliaSubscriptionPublicationUserNotif
 import com.silverpeas.kmelia.notification.KmeliaSupervisorPublicationUserNotification;
 import com.silverpeas.kmelia.notification.KmeliaTopicUserNotification;
 import com.silverpeas.kmelia.notification.KmeliaValidationPublicationUserNotification;
-import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.ejb.PdcBm;
 import com.silverpeas.pdc.model.PdcClassification;
@@ -59,6 +57,7 @@ import com.silverpeas.thumbnail.ThumbnailException;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.thumbnail.service.ThumbnailServiceProvider;
+import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
@@ -109,9 +108,8 @@ import org.silverpeas.component.kmelia.InstanceParameters;
 import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.notification.ResourceEvent;
-import org.silverpeas.notification.ResourceEventNotifier;
 import org.silverpeas.process.annotation.SimulationActionProcess;
-import org.silverpeas.publication.notification.PublicationEvent;
+import org.silverpeas.publication.notification.PublicationEventNotifier;
 import org.silverpeas.search.indexEngine.model.IndexManager;
 import org.silverpeas.util.ActionType;
 import org.silverpeas.util.CollectionUtil;
@@ -176,8 +174,8 @@ public class KmeliaBmEJB implements KmeliaBm {
   private CoordinatesBm coordinatesBm;
 
   @Inject
-  private ResourceEventNotifier<PublicationEvent> notifier;
-
+  private PublicationEventNotifier notifier;
+  @Inject
   private CommentService commentService = null;
 
   public KmeliaBmEJB() {
@@ -4344,9 +4342,6 @@ public class KmeliaBmEJB implements KmeliaBm {
    * @return a DefaultCommentService instance.
    */
   private CommentService getCommentService() {
-    if (commentService == null) {
-      commentService = CommentServiceProvider.getCommentService();
-    }
     return commentService;
   }
 
@@ -4733,6 +4728,12 @@ public class KmeliaBmEJB implements KmeliaBm {
   @Override
   public ResourceLocator getComponentMessages(String language) {
     return new ResourceLocator(MESSAGES_PATH, language);
+  }
+
+  @Override
+  public boolean isRelatedTo(final String instanceId) {
+    return instanceId.startsWith("kmelia") || instanceId.startsWith("kmax") ||
+        instanceId.startsWith("toolbox");
   }
 
   @SimulationActionProcess(elementLister = KmeliaNodeSimulationElementLister.class)

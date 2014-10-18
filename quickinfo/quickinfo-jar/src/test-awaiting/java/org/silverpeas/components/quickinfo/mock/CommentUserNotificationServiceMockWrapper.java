@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.quickinfo.mock;
 
-import com.silverpeas.SilverpeasComponentService;
+import com.silverpeas.ApplicationService;
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.service.CommentUserNotificationService;
@@ -56,7 +56,7 @@ public class CommentUserNotificationServiceMockWrapper implements CommentUserNot
 
   @Override
   public void register(String component,
-      SilverpeasComponentService<? extends SilverpeasContent> service) {
+      ApplicationService<? extends SilverpeasContent> service) {
     mock.register(component, service);
   }
 

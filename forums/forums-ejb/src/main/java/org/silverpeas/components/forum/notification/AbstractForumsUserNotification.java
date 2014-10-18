@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.forum.notification;
 
-import com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuilder;
+import com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationBuilder;
 import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsBM;
 import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.JNDINames;

@@ -20,7 +20,7 @@
  */
 package com.stratelia.webactiv.survey.control;
 
-import com.silverpeas.notification.builder.helper.UserNotificationHelper;
+import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;

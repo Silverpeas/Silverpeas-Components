@@ -54,12 +54,12 @@ public class BlogWysiwygEventListener extends JMSResourceEventListener<WysiwygEv
 
   @Override
   public void onUpdate(final WysiwygEvent event) throws Exception {
-    updatePublication(event.getResource());
+    updatePublication(event.getTransition().getAfter());
   }
 
   @Override
   public void onCreation(final WysiwygEvent event) throws Exception {
-    updatePublication(event.getResource());
+    updatePublication(event.getTransition().getAfter());
   }
 
   private void updatePublication(final WysiwygContent content) {

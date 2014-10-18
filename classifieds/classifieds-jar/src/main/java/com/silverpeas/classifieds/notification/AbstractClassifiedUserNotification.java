@@ -25,8 +25,8 @@ package com.silverpeas.classifieds.notification;
 
 import com.silverpeas.classifieds.ClassifiedUtil;
 import com.silverpeas.classifieds.model.ClassifiedDetail;
-import com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuilder;
-import com.silverpeas.notification.model.NotificationResourceData;
+import com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationBuilder;
+import com.silverpeas.usernotification.model.NotificationResourceData;
 import org.silverpeas.util.template.SilverpeasTemplate;
 
 /**

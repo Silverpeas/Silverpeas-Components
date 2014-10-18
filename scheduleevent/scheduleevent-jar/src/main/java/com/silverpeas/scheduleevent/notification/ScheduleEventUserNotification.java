@@ -28,8 +28,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuilder;
-import com.silverpeas.notification.model.NotificationResourceData;
+import com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationBuilder;
+import com.silverpeas.usernotification.model.NotificationResourceData;
 import com.silverpeas.scheduleevent.service.model.beans.Contributor;
 import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
 import org.silverpeas.util.template.SilverpeasTemplate;

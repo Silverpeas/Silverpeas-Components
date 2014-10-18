@@ -38,7 +38,7 @@ public class DelegatedPublicationEventListener {
   private DelegatedNewsService delegatedNewsService;
 
   public void onPublicationUpdate(@Observes PublicationEvent event) throws Exception {
-    PublicationDetail pubDetail = event.getResource();
+    PublicationDetail pubDetail = event.getTransition().getAfter();
     int pubId = Integer.parseInt(pubDetail.getId());
     if (event.isOnUpdate()) {
       DelegatedNews delegatedNews = delegatedNewsService.getDelegatedNews(pubId);

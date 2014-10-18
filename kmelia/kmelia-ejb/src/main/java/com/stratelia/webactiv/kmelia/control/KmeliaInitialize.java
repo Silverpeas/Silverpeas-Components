@@ -34,8 +34,5 @@ public class KmeliaInitialize implements Initialization {
   public void init() {
     AutomaticDraftOut ado = new AutomaticDraftOut();
     ado.initialize();
-
-    CommentNotificationSourceRegister register = new CommentNotificationSourceRegister();
-    register.initialize();
   }
 }

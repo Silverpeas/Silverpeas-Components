@@ -2884,7 +2884,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     for (SpaceInstLight space : spaces) {
       String path = "";
       String[] componentIds = getOrganisationController().getAvailCompoIdsAtRoot(
-          space.getFullId(), getUserId());
+          space.getId(), getUserId());
       for (String componentId : componentIds) {
         String instanceId = componentId;
 
@@ -2899,7 +2899,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
             }
 
             if (!StringUtil.isDefined(path)) {
-              List<SpaceInst> sPath = getOrganisationController().getSpacePath(space.getFullId());
+              List<SpaceInst> sPath = getOrganisationController().getSpacePath(space.getId());
               boolean first = true;
               for (SpaceInst spaceInPath : sPath) {
                 if (!first) {

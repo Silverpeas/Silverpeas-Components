@@ -34,7 +34,7 @@ import org.silverpeas.components.quickinfo.model.QuickInfoServiceFactory;
 import org.silverpeas.components.quickinfo.notification.NewsManualUserNotification;
 import org.silverpeas.date.Period;
 
-import com.silverpeas.notification.builder.helper.UserNotificationHelper;
+import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.subscribe.SubscriptionService;

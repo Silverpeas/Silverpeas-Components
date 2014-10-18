@@ -23,8 +23,6 @@ package com.stratelia.webactiv.kmelia.control;
 
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
 import com.stratelia.webactiv.publication.model.PublicationPK;
-import org.silverpeas.attachment.notification.AttachmentEvent;
-import org.silverpeas.attachment.notification.AttachmentRef;
 import org.silverpeas.contribution.model.ContributionIdentifier;
 import org.silverpeas.notification.JMSResourceEventListener;
 import org.silverpeas.wysiwyg.control.WysiwygContent;
@@ -56,7 +54,7 @@ public class KmeliaWysiwygEventListener extends JMSResourceEventListener<Wysiwyg
 
   @Override
   public void onUpdate(final WysiwygEvent event) throws Exception {
-    WysiwygContent content = event.getResource();
+    WysiwygContent content = event.getTransition().getAfter();
     if (content != null) {
       anExternalPublicationElementHaveChanged(content);
     }
@@ -64,7 +62,7 @@ public class KmeliaWysiwygEventListener extends JMSResourceEventListener<Wysiwyg
 
   @Override
   public void onCreation(final WysiwygEvent event) throws Exception {
-    WysiwygContent content = event.getResource();
+    WysiwygContent content = event.getTransition().getAfter();
     if (content != null) {
       anExternalPublicationElementHaveChanged(content);
     }
