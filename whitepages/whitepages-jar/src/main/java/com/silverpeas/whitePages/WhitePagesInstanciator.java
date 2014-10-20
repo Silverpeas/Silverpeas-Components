@@ -25,7 +25,7 @@ import com.silverpeas.admin.components.InstanciationException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.whitePages.service.ServicesFactory;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AdminReference;
+import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
 import org.silverpeas.util.exception.SilverpeasException;
 import java.sql.Connection;
@@ -45,7 +45,7 @@ public class WhitePagesInstanciator extends SQLRequest implements ComponentsInst
   public void create(Connection con, String spaceId, String componentId, String userId) throws
       InstanciationException {
     try {
-      String template = AdminReference.getAdminService().getComponentParameterValue(componentId,
+      String template = AdministrationServiceProvider.getAdminService().getComponentParameterValue(componentId,
           "cardTemplate");
       PublicationTemplateManager.getInstance().addDynamicPublicationTemplate(componentId,
           template);

@@ -85,7 +85,6 @@
 <%@ page import="org.silverpeas.search.searchEngine.model.* "%>
 
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.CollectionUtil"%>
 
 <%@ page import="com.stratelia.webactiv.kmelia.control.KmeliaSessionController"%>
 <%@ page import="com.stratelia.webactiv.kmelia.KmeliaException"%>

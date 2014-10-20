@@ -43,8 +43,8 @@
   <bean id="questionManagerFactory" class="com.silverpeas.questionReply.control.QuestionManagerFactory"
         factory-method="getFactory"/>
 
-  <bean id="adminReference" class="com.stratelia.webactiv.beans.admin.AdminReference"
-        factory-method="getInstance"/>
+  <!-- YCH <bean id="adminReference" class="com.stratelia.webactiv.beans.admin.AdminServiceProvider"-->
+        <!--factory-method="getInstance"/>-->
 
   <bean id="attachmentServiceFactory" class="org.silverpeas.attachment.AttachmentServiceProvider"
         factory-method="getInstance"/>

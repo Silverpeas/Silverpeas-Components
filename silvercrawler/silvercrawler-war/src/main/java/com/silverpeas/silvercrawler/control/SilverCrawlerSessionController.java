@@ -32,6 +32,7 @@ import com.silverpeas.silvercrawler.statistic.HistoryByUser;
 import com.silverpeas.silvercrawler.statistic.HistoryDetail;
 import com.silverpeas.silvercrawler.statistic.Statistic;
 import com.silverpeas.silvercrawler.util.FileServerUtils;
+import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.ZipUtil;
@@ -40,7 +41,6 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.exception.SilverpeasException;
@@ -482,7 +482,7 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
     // only people with admin profil AND listed in silverpeas configuration are allowed to set read/write access
     checkRWSettingsAccess(true);
     try {
-      ComponentInst instance = AdminReference.getAdminService().getComponentInst(getComponentId());
+      ComponentInst instance = AdministrationServiceProvider.getAdminService().getComponentInst(getComponentId());
       List<Parameter> params = instance.getParameters();
       for (Parameter param : params) {
         if (param.getName().equals("readWriteActivated")) {
@@ -499,7 +499,7 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
       rwAccessParam.setValue(active ? "yes" : "no");
       params.add(rwAccessParam);
 
-      AdminReference.getAdminService().updateComponentInst(instance);
+      AdministrationServiceProvider.getAdminService().updateComponentInst(instance);
     } catch (AdminException e) {
       throw new SilverCrawlerRuntimeException(
         "SilverCrawlerSessionController.switchReadWriteAccess", SilverpeasException.ERROR,

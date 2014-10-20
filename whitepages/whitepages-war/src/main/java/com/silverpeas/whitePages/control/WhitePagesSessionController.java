@@ -642,7 +642,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
    * retourne la valeur d'un paramètre affecté lors de l'instanciation pour un annuaire donné
    */
   private String getParam(String paramName, String instanceId) {
-    return AdminReference.getAdminService().getComponentParameterValue(instanceId, paramName);
+    return AdministrationServiceProvider.getAdminService().getComponentParameterValue(instanceId, paramName);
   }
 
   /*

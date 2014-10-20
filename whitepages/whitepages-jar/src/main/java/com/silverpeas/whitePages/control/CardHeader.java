@@ -26,13 +26,13 @@ package com.silverpeas.whitePages.control;
 
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
+import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import org.silverpeas.util.i18n.AbstractBean;
 import com.silverpeas.whitePages.model.Card;
 import com.silverpeas.whitePages.record.UserRecord;
 import com.silverpeas.whitePages.record.UserTemplate;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.beans.admin.AdminReference;
 import org.silverpeas.util.ResourceLocator;
 
 import java.util.HashMap;
@@ -146,7 +146,7 @@ public final class CardHeader extends AbstractBean implements SilverContentInter
   }
 
   static private String getParam(String paramName, String instanceId) {
-    return AdminReference.getAdminService().getComponentParameterValue(instanceId, paramName);
+    return AdministrationServiceProvider.getAdminService().getComponentParameterValue(instanceId, paramName);
   }
 
   static Map<String, UserTemplate> templates = new HashMap<String, UserTemplate>();

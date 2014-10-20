@@ -28,7 +28,7 @@ import com.silverpeas.whitePages.control.CardManager;
 import com.silverpeas.whitePages.model.Card;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AdminReference;
+import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import com.stratelia.webactiv.beans.admin.CompoSpace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import org.silverpeas.util.GeneralPropertiesManager;
@@ -93,17 +93,17 @@ public class LoginFilter implements Filter {
     else {
       String userId = mainSessionCtrl.getUserId();
       try {
-        CompoSpace[] availableInstances = AdminReference.getAdminService().getCompoForUser(userId, "whitePages");
+        CompoSpace[] availableInstances = AdministrationServiceProvider.getAdminService().getCompoForUser(userId, "whitePages");
 
         for (int i = 0; i < availableInstances.length; i++) {
           String instanceId = availableInstances[i].getComponentId();
 
           /* Retrieve component */
-          ComponentInst instance = AdminReference.getAdminService().getComponentInst(instanceId);
+          ComponentInst instance = AdministrationServiceProvider.getAdminService().getComponentInst(instanceId);
 
           /* Is user is administrator for that instance */
           boolean userIsAdmin = false;
-          String[] activeProfiles = AdminReference.getAdminService().getCurrentProfiles(userId,
+          String[] activeProfiles = AdministrationServiceProvider.getAdminService().getCurrentProfiles(userId,
               instance);
           for (int j = 0; j < activeProfiles.length; j++) {
             if ("admin".equals(activeProfiles[j]))
@@ -111,7 +111,7 @@ public class LoginFilter implements Filter {
           }
 
           /* Is forcedCardFilling parameter turned on */
-          String forcedCardFilling = AdminReference.getAdminService().getComponentParameterValue(
+          String forcedCardFilling = AdministrationServiceProvider.getAdminService().getComponentParameterValue(
               instanceId, "isForcedCardFilling");
           boolean isForcedCardFilling = ((forcedCardFilling != null) && (forcedCardFilling
               .equals("yes")));

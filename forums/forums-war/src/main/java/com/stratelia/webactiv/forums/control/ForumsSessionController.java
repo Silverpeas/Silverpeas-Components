@@ -36,7 +36,6 @@ import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.CollectionUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.forums.bean.ForumModeratorBean;
 import com.stratelia.webactiv.forums.forumsException.ForumsException;
@@ -77,6 +76,7 @@ import java.util.List;
 
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 import static com.stratelia.webactiv.SilverpeasRole.*;
+import static com.stratelia.webactiv.beans.admin.UserDetail.OnFirstNameAndLastName;
 import static com.stratelia.webactiv.forums.models.Message.*;
 
 /**
@@ -741,10 +741,14 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     getForumsBM().setLastVisit(userId, messageId);
   }
 
-  public UserDetail[] listUsers() {
-    UserDetail[] userDetails = CollectionUtil.sortUserDetailArray(getOrganisationController().
-        getAllUsers(getComponentId()));
-    return (userDetails != null ? userDetails : new UserDetail[0]);
+  public List<UserDetail> listUsers() {
+    List<UserDetail> userDetailList = new ArrayList<>();
+    UserDetail[] userDetailArray = getOrganisationController().getAllUsers(getComponentId());
+    if (userDetailArray != null) {
+      Collections.addAll(userDetailList, userDetailArray);
+      Collections.sort(userDetailList, new OnFirstNameAndLastName());
+    }
+    return userDetailList;
   }
 
   public String getAuthorName(String userId) {

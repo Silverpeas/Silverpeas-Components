@@ -31,9 +31,8 @@ import com.silverpeas.kmelia.model.StatisticActivityVO;
 import com.silverpeas.kmelia.model.StatsFilterVO;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.AdminReference;
+import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import org.silverpeas.util.EJBUtilitaire;
@@ -50,6 +49,7 @@ import com.stratelia.webactiv.publication.model.PublicationPK;
 import com.stratelia.webactiv.statistic.control.StatisticBm;
 import com.stratelia.webactiv.statistic.model.StatisticRuntimeException;
 
+import static com.stratelia.webactiv.beans.admin.AdministrationServiceProvider.getAdminService;
 import static org.silverpeas.util.JNDINames.NODEBM_EJBHOME;
 import static org.silverpeas.util.exception.SilverpeasRuntimeException.ERROR;
 
@@ -138,8 +138,7 @@ public class StatisticServiceImpl implements StatisticService {
   private List<String> getListUserIdsFromGroup(Integer groupId) {
     List<String> userIds = new ArrayList<String>();
     try {
-      Admin admin = AdminReference.getAdminService();
-      Group selectedGroup = admin.getGroup(Integer.toString(groupId));
+      Group selectedGroup = getAdminService().getGroup(Integer.toString(groupId));
       String[] arrayUserIds = selectedGroup.getUserIds();
       for (String userId : arrayUserIds) {
         userIds.add(userId);

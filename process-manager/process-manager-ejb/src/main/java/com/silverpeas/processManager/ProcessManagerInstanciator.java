@@ -29,7 +29,7 @@ import com.silverpeas.workflow.api.UpdatableProcessInstanceManager;
 import com.silverpeas.workflow.api.Workflow;
 import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.instance.ProcessInstance;
-import com.stratelia.webactiv.beans.admin.AdminReference;
+import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import com.stratelia.webactiv.calendar.backbone.TodoBackboneAccess;
 import org.silverpeas.util.exception.SilverpeasException;
 
@@ -46,7 +46,7 @@ public class ProcessManagerInstanciator implements ComponentsInstanciatorIntf {
     String xmlFilename = null;
     try {
       xmlFilename =
-          AdminReference.getAdminService().getComponentParameterValue(componentId, "XMLFileName");
+          AdministrationServiceProvider.getAdminService().getComponentParameterValue(componentId, "XMLFileName");
       Workflow.getProcessModelManager().createProcessModel(xmlFilename, componentId);
     } catch (WorkflowException e) {
       throw new InstanciationException("ProcessManagerInstanciator", SilverpeasException.ERROR,
