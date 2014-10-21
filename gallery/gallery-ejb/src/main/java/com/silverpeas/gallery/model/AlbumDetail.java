@@ -48,6 +48,7 @@ public class AlbumDetail extends NodeDetail {
     setChildrenDetails(node.getChildrenDetails());
     setType(node.getType());
     setOrder(node.getOrder());
+    setTranslations(node.getTranslations());
   }
 
   public List<PhotoDetail> getPhotos() {
