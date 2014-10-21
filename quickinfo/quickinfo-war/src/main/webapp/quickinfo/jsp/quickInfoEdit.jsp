@@ -193,7 +193,7 @@ $(document).ready(function() {
 	<view:operationPane>
 	  <fmt:message var="deleteMsg" key="GML.delete"/>
 	  <fmt:message var="deleteConfirmMsg" key="supprimerQIConfirmation"/>
-	  <view:operation altText="${deleteMsg}" icon="${deleteIconUrl}" action="javascript:onclick=confirmDelete(${news.id}, '${deleteConfirmMsg}')"/>
+	  <view:operation altText="${deleteMsg}" icon="${deleteIconUrl}" action="javascript:onclick=confirmDelete('${curQuickInfo.id}', '${deleteConfirmMsg}')"/>
 	</view:operationPane>
 </c:if>
 
