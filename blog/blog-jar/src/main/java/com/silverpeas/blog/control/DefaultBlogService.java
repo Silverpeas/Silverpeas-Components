@@ -249,16 +249,16 @@ public class DefaultBlogService implements BlogService {
       PostDAO.updateDateEvent(con, pubPk.getId(), post.getDateEvent());
       
       // Save wysiwyg content
-      if (pub.getStatus().equals(PublicationDetail.VALID)) {
+      if (pub.isValid()) {
         WysiwygController.updateFileAndAttachment(post.getContent(),
             pub.getInstanceId(), pubPk.getId(), pub.getUpdaterId(), pub.getLanguage());
-      } else if (pub.getStatus().equals(PublicationDetail.DRAFT)) {//DRAFT mode -> do not index
+      } else if (pub.isDraft()) {//DRAFT mode -> do not index
         WysiwygController.updateFileAndAttachment(post.getContent(),
             pub.getInstanceId(), pubPk.getId(), pub.getUpdaterId(), pub.getLanguage(), false);
       }
 
       // Send notification if subscription
-      if (pub.getStatus().equals(PublicationDetail.VALID)) {
+      if (pub.isValid()) {
         sendSubscriptionsNotification(new NodePK("0", pub.getPK().getSpaceId(), pub.getPK().
             getInstanceId()), post, null, "update", pub.getUpdaterId());
       }
