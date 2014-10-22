@@ -89,9 +89,8 @@ function refreshPublications()
   var componentId = getComponentId();
   $.get(getWebContext() + '/RAjaxPublicationsListServlet', {Id: nodeId, ComponentId: componentId, IEFix: ieFix},
   function(data) {
-    //$('#pubList').html(data);
-	updateHtmlContainingAngularDirectives($('#pubList'), data);
-    activateUserZoom();
+    updateHtmlContainingAngularDirectives($('#pubList'), data);
+      activateUserZoom();
   }, "html");
 }
 
