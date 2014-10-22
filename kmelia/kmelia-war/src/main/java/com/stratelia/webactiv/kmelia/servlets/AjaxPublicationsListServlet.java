@@ -64,7 +64,7 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.rating.web.RaterRatingEntity;
-import org.silverpeas.viewer.ViewerFactory;
+import org.silverpeas.viewer.ViewerProvider;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -961,8 +961,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         if (alias) {
           url = attachment.getAliasURL();
         }
-        boolean previewable = ViewerFactory.isPreviewable(attachment.getAttachmentPath());
-        boolean viewable = ViewerFactory.isViewable(attachment.getAttachmentPath());
+        boolean previewable = ViewerProvider.isPreviewable(attachment.getAttachmentPath());
+        boolean viewable = ViewerProvider.isViewable(attachment.getAttachmentPath());
         result.append(displayFile(url, title, Encode.forHtml(attachment.getDescription()), icon,
             logicalName, size,
             downloadTime, attachment.getCreated(), permalink, resources, linkAttachment,
