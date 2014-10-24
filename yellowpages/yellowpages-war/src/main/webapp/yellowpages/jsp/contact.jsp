@@ -24,7 +24,6 @@
 
 --%>
 <%@page import="com.silverpeas.form.PagesContext"%>
-<%@page import="com.silverpeas.form.DataRecord"%>
 <%@page import="com.silverpeas.form.Form"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
@@ -39,11 +38,10 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ include file="checkYellowpages.jsp" %>
 
 <%
-UserCompleteContact userContactComplete = (UserCompleteContact) request.getAttribute("Contact");
-ContactDetail contact = userContactComplete.getContact().getContactDetail();
+CompleteContact fullContact = (CompleteContact) request.getAttribute("Contact");
+ContactDetail contact = fullContact.getContactDetail();
 
-Form formView    = (Form) request.getAttribute("Form");
-DataRecord data    = (DataRecord) request.getAttribute("Data");
+Form formView    = fullContact.getViewForm();
 PagesContext context = (PagesContext) request.getAttribute("PagesContext");
 %>
 
@@ -83,7 +81,7 @@ PagesContext context = (PagesContext) request.getAttribute("PagesContext");
 
 <%
 if (formView != null) {
-	formView.display(out, context, data);
+	formView.display(out, context);
 }
 %>
 

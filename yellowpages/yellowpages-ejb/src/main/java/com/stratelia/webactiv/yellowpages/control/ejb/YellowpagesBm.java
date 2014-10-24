@@ -25,13 +25,14 @@ import java.util.List;
 
 import javax.ejb.Local;
 
+import com.stratelia.webactiv.util.contact.model.CompleteContact;
+import com.stratelia.webactiv.util.contact.model.Contact;
 import com.stratelia.webactiv.util.contact.model.ContactDetail;
 import com.stratelia.webactiv.util.contact.model.ContactFatherDetail;
 import com.stratelia.webactiv.util.contact.model.ContactPK;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.yellowpages.model.TopicDetail;
-import com.stratelia.webactiv.yellowpages.model.UserCompleteContact;
 import com.stratelia.webactiv.yellowpages.model.UserContact;
 
 @Local
@@ -128,16 +129,16 @@ public interface YellowpagesBm {
    * @see com.stratelia.webactiv.util.contact.model.ContactDetail
    * @since 1.0
    */
-  public String createContact(ContactDetail contactDetail, NodePK nodePK);
+  public String createContact(Contact contact, NodePK nodePK);
 
   /**
    * Update a contact (only the header - parameters)
    *
    * @param pubDetail a ContactDetail
-   * @see com.stratelia.webactiv.util.contact.model.ContactDetail
+   * @see com.stratelia.webactiv.util.contact.model.Contact
    * @since 1.0
    */
-  public void updateContact(ContactDetail detail);
+  public void updateContact(Contact contact);
 
   /**
    * Delete a contact If this contact is in the basket or in the DZ, it's deleted from the database
@@ -185,7 +186,7 @@ public interface YellowpagesBm {
    * @return a CompleteContact
    * @see com.stratelia.webactiv.util.contact.model.CompleteContact
    */
-  public UserCompleteContact getCompleteContactInNode(ContactPK contactPK, String nodeId);
+  public CompleteContact getCompleteContactInNode(ContactPK contactPK, String nodeId);
 
   /**
    * Return a collection of ContactDetail throught a collection of contact ids

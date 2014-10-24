@@ -32,6 +32,7 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.contact.control.ContactBm;
 import com.stratelia.webactiv.util.contact.model.CompleteContact;
+import com.stratelia.webactiv.util.contact.model.Contact;
 import com.stratelia.webactiv.util.contact.model.ContactDetail;
 import com.stratelia.webactiv.util.contact.model.ContactFatherDetail;
 import com.stratelia.webactiv.util.contact.model.ContactPK;
@@ -601,22 +602,21 @@ public class YellowpagesBmEJB implements YellowpagesBm {
    *
    * @param contactDetail a ContactDetail
    * @return the id of the new contact
-   * @see com.stratelia.webactiv.util.contact.model.ContactDetail
+   * @see com.stratelia.webactiv.util.contact.model.Contact
    * @since 1.0
    */
   @Override
   @TransactionAttribute(TransactionAttributeType.REQUIRED)
-  public String createContact(ContactDetail contactDetail, NodePK nodePK) {
+  public String createContact(Contact contact, NodePK nodePK) {
     SilverTrace.info("yellowpages", "YellowpagesBmEJB.createContact()",
-        "root.MSG_GEN_ENTER_METHOD", "contactDetail = " + contactDetail.toString());
+        "root.MSG_GEN_ENTER_METHOD", "contactDetail = " + contact.toString());
     ContactPK contactPK = null;
-    contactDetail.getPK().setComponentName(nodePK.getInstanceId());
-    contactDetail.setCreationDate(new Date());
+    contact.getPK().setComponentName(nodePK.getInstanceId());
 
     try {
       // create the contact
-      contactPK = contactBm.createContact(contactDetail);
-      contactDetail.getPK().setId(contactPK.getId());
+      contactPK = contactBm.createContact(contact);
+      contact.getPK().setId(contactPK.getId());
       // add this contact to the current topic
       addContactToTopic(contactPK, nodePK.getId());
     } catch (Exception re) {
@@ -633,11 +633,11 @@ public class YellowpagesBmEJB implements YellowpagesBm {
    * Update a contact (only the header - parameters)
    *
    * @param contactDetail a ContactDetail
-   * @see com.stratelia.webactiv.util.contact.model.ContactDetail
+   * @see com.stratelia.webactiv.util.contact.model.Contact
    * @since 1.0
    */
   @Override
-  public void updateContact(ContactDetail contactDetail) {
+  public void updateContact(Contact contactDetail) {
     SilverTrace.info("yellowpages", "YellowpagesBmEJB.updateContact()",
         "root.MSG_GEN_ENTER_METHOD", "contactDetail = " + contactDetail);
     try {
@@ -828,7 +828,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
    * @see com.stratelia.webactiv.util.contact.model.CompleteContact
    */
   @Override
-  public UserCompleteContact getCompleteContactInNode(ContactPK contactPK, String nodeId) {
+  public CompleteContact getCompleteContactInNode(ContactPK contactPK, String nodeId) {
     SilverTrace.info("yellowpages", "YellowpagesBmEJB.getCompleteContactInNode()",
         "root.MSG_GEN_ENTER_METHOD", "ContactPK = " + contactPK.toString() + ", NodeId=" + nodeId);
     CompleteContact completeContact = null;
@@ -859,12 +859,9 @@ public class YellowpagesBmEJB implements YellowpagesBm {
             "yellowpages.EX_GET_USER_DETAIL_FAILED", "contactPK = " + contactPK.toString(), e);
       }
     }
-    OrganisationController orga = getOrganisationController();
-    UserDetail userDetail = orga.getUserDetail(contactDetail.getCreatorId());
-    UserCompleteContact userCompleteContact = new UserCompleteContact(userDetail, completeContact);
     SilverTrace.info("yellowpages", "YellowpagesBmEJB.getCompleteContactInNode()",
         "root.MSG_GEN_EXIT_METHOD");
-    return userCompleteContact;
+    return completeContact;
   }
 
   /**

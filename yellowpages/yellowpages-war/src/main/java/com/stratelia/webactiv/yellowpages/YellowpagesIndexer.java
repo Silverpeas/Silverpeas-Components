@@ -23,9 +23,12 @@ package com.stratelia.webactiv.yellowpages;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
+import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.contact.model.ContactDetail;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.yellowpages.control.YellowpagesSessionController;
+import com.stratelia.webactiv.yellowpages.control.ejb.YellowpagesBm;
 import com.stratelia.webactiv.yellowpages.model.TopicDetail;
 import com.stratelia.webactiv.yellowpages.model.UserContact;
 import java.util.Collection;
@@ -65,7 +68,12 @@ public class YellowpagesIndexer implements ComponentIndexerInterface {
     Collection<UserContact> contacts = topic.getContactDetails();
     for (UserContact contact : contacts) {
       ContactDetail pub = contact.getContact();
-      scc.updateContact(pub);
+      //scc.updateContact(pub);
+      //TODO
     }
+  }
+  
+  public YellowpagesBm getEJB() {
+    return EJBUtilitaire.getEJBObjectRef(JNDINames.YELLOWPAGESBM_EJBHOME, YellowpagesBm.class);
   }
 }

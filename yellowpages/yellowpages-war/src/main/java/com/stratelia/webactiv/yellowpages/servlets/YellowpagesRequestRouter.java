@@ -20,15 +20,20 @@
  */
 package com.stratelia.webactiv.yellowpages.servlets;
 
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.Form;
-import com.silverpeas.form.PagesContext;
-import com.silverpeas.form.RecordSet;
-import com.silverpeas.publicationTemplate.PublicationTemplate;
-import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
-import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import com.silverpeas.util.StringUtil;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.servlet.FileUploadUtil;
+import org.silverpeas.servlet.HttpRequest;
+
+import com.silverpeas.form.PagesContext;
+import com.silverpeas.publicationTemplate.PublicationTemplate;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
@@ -36,21 +41,13 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
+import com.stratelia.webactiv.util.contact.model.CompleteContact;
 import com.stratelia.webactiv.util.contact.model.ContactDetail;
 import com.stratelia.webactiv.util.contact.model.ContactFatherDetail;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.yellowpages.control.YellowpagesSessionController;
 import com.stratelia.webactiv.yellowpages.model.GroupDetail;
 import com.stratelia.webactiv.yellowpages.model.TopicDetail;
-import com.stratelia.webactiv.yellowpages.model.UserCompleteContact;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.FilenameUtils;
-import org.silverpeas.servlet.HttpRequest;
 
 public class YellowpagesRequestRouter extends ComponentRequestRouter<YellowpagesSessionController> {
 
@@ -371,15 +368,6 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
     return destination;
   }
 
-  /**
-   * Gets an instance of PublicationTemplateManager.
-   *
-   * @return an instance of PublicationTemplateManager.
-   */
-  private PublicationTemplateManager getPublicationTemplateManager() {
-    return PublicationTemplateManager.getInstance();
-  }
-
   private void setAvailableForms(HttpServletRequest request, YellowpagesSessionController ysc) {
     List<PublicationTemplate> listTemplates = new ArrayList<PublicationTemplate>();
     List<String> usedTemplates = new ArrayList<String>(ysc.getModelUsed());
@@ -399,7 +387,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
       String contactId = request.getParameter("ContactId");
       String topicId = request.getParameter("TopicId");
 
-      UserCompleteContact contact;
+      CompleteContact contact;
       if (StringUtil.isDefined(topicId)) {
         contact = ysc.getCompleteContactInNode(contactId, topicId);
       } else {
@@ -409,30 +397,27 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
       ysc.setCurrentContact(contact);
       request.setAttribute("Contact", contact);
       request.setAttribute("TopicId", topicId);
+      
+      setPageContext(contactId, request, ysc);
 
-      String modelId = ysc.getSubTopicDetail(topicId).getModelId();
-      if (StringUtil.isDefined(modelId) && modelId.endsWith(".xml")) {
-        setForm(contactId, modelId, true, request, ysc);
-      }
       return "/yellowpages/jsp/contact.jsp";
     } else if ("ContactNew".equals(function)) {
       String modelId = ysc.getCurrentTopic().getNodeDetail().getModelId();
-      if (StringUtil.isDefined(modelId) && modelId.endsWith(".xml")) {
-        setForm(null, modelId, false, request, ysc);
-      }
+      CompleteContact contact = new CompleteContact(ysc.getComponentId(), modelId);
+      setPageContext(null, request, ysc);
+      request.setAttribute("Contact", contact);
       return "/yellowpages/jsp/contactManager.jsp";
     } else if ("ContactNewFromUser".equals(function)) {
-      request.setAttribute("Contact", ysc.getCurrentContact());
       String modelId = ysc.getCurrentTopic().getNodeDetail().getModelId();
-      if (StringUtil.isDefined(modelId) && modelId.endsWith(".xml")) {
-        setForm(null, modelId, false, request, ysc);
-      }
+      ysc.getCurrentContact().setModelId(modelId);
+      setPageContext(null, request, ysc);
+      request.setAttribute("Contact", ysc.getCurrentContact());
       return "/yellowpages/jsp/contactManager.jsp";
     } else if ("ContactUpdate".equals(function)) {
       String contactId = request.getParameter("ContactId");
       String topicId = request.getParameter("TopicId");
 
-      UserCompleteContact contact;
+      CompleteContact contact;
       if (StringUtil.isDefined(topicId)) {
         contact = ysc.getCompleteContactInNode(contactId, topicId);
       } else {
@@ -441,32 +426,28 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
       }
       ysc.setCurrentContact(contact);
       request.setAttribute("Contact", contact);
-
-      String modelId = ysc.getSubTopicDetail(topicId).getModelId();
-      if (StringUtil.isDefined(modelId) && modelId.endsWith(".xml")) {
-        setForm(contactId, modelId, false, request, ysc);
-      }
+      
+      setPageContext(contactId, request, ysc);
 
       return "/yellowpages/jsp/contactManager.jsp";
     } else if ("ContactSave".equals(function)) {
       List<FileItem> items = request.getFileItems();
       String modelId = ysc.getCurrentTopic().getNodeDetail().getModelId();
       String contactId = FileUploadUtil.getParameter(items, "ContactId");
+      ContactDetail contact = request2ContactDetail(items);
+      CompleteContact fullContact = new CompleteContact(contact, modelId);
+      fullContact.setFormItems(items);
       if (StringUtil.isInteger(contactId)) {
         // update an existing contact
-        ContactDetail contact = request2ContactDetail(items);
         contact.getPK().setId(contactId);
-        ysc.updateContact(contact);
+        ysc.updateContact(fullContact);
       } else {
         // create a new contact
-        ContactDetail contact = request2ContactDetail(items);
-        contactId = ysc.createContact(contact);
+        contactId = ysc.createContact(fullContact);
       }
+      
       ysc.setCurrentContact(ysc.getCompleteContact(contactId));
-      if (StringUtil.isDefined(modelId) && modelId.endsWith(".xml")) {
-        saveForm(contactId, modelId, items, ysc);
-        ysc.createInfoModel(contactId, modelId);
-      }
+      
       return getDestination("topicManager", ysc, request);
     } else if ("ContactSetFolders".equals(function)) {
       String listeTopics = request.getParameter("ListeTopics");
@@ -498,77 +479,15 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
 
     return contact;
   }
-
-  private void setForm(String contactId, String modelId, boolean view, HttpServletRequest request,
+  
+  private void setPageContext(String contactId, HttpServletRequest request,
       YellowpagesSessionController ysc) {
-    try {
-      String xmlFormName = modelId;
-      String xmlFormShortName = FilenameUtils.getBaseName(xmlFormName);
-      // création du PublicationTemplate
-      String key = ysc.getComponentId() + ":" + xmlFormShortName;
-      PublicationTemplateManager templateManager = getPublicationTemplateManager();
-      templateManager.addDynamicPublicationTemplate(key, xmlFormName);
-      PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) templateManager.
-          getPublicationTemplate(key, xmlFormName);
+    PagesContext context =
+        new PagesContext("modelForm", "0", ysc.getLanguage(), false, ysc.getComponentId(),
+            ysc.getUserId());
+    context.setBorderPrinted(false);
+    context.setObjectId(contactId);
 
-      // création du formulaire et du DataRecord
-      Form form;
-      if (view) {
-        form = pubTemplate.getViewForm();
-      } else {
-        form = pubTemplate.getUpdateForm();
-      }
-      RecordSet recordSet = pubTemplate.getRecordSet();
-      DataRecord data = recordSet.getRecord(contactId);
-      if (data == null) {
-        data = recordSet.getEmptyRecord();
-        data.setId(contactId);// id contact
-      }
-
-      PagesContext context =
-          new PagesContext("modelForm", "0", ysc.getLanguage(), false, ysc.getComponentId(),
-          ysc.getUserId());
-      context.setBorderPrinted(false);
-      context.setObjectId(contactId);
-
-      request.setAttribute("PagesContext", context);
-      request.setAttribute("Form", form);
-      request.setAttribute("Data", data);
-    } catch (Exception e) {
-      SilverTrace.
-          error("yellowpages", getClass().getSimpleName() + ".setForm()", "root.NO_EX_MESSAGE", e);
-    }
-  }
-
-  private void saveForm(String contactId, String modelId, List<FileItem> items,
-      YellowpagesSessionController ysc) {
-    try {
-      String xmlFormName = modelId;
-      String xmlFormShortName = FilenameUtils.getBaseName(xmlFormName);
-      // création du PublicationTemplate
-      String key = ysc.getComponentId() + ":" + xmlFormShortName;
-      PublicationTemplateManager templateManager = getPublicationTemplateManager();
-      templateManager.addDynamicPublicationTemplate(key, xmlFormName);
-      PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) templateManager.
-          getPublicationTemplate(key, xmlFormName);
-
-      Form formUpdate = pubTemplate.getUpdateForm();
-      RecordSet recordSet = pubTemplate.getRecordSet();
-      DataRecord data = recordSet.getRecord(contactId);
-      if (data == null) {
-        data = recordSet.getEmptyRecord();
-        data.setId(contactId);// id contact
-      }
-
-      // sauvegarde des données du formulaire
-      PagesContext context = new PagesContext("modelForm", "0", ysc.getLanguage(), false, ysc.
-          getComponentId(), ysc.getUserId());
-      context.setObjectId(contactId);
-      formUpdate.update(items, data, context);
-      recordSet.save(data);
-    } catch (Exception e) {
-      SilverTrace.
-          error("yellowpages", getClass().getSimpleName() + ".setForm()", "root.NO_EX_MESSAGE", e);
-    }
+    request.setAttribute("PagesContext", context);
   }
 }
