@@ -13,6 +13,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
+import com.silverpeas.web.UserPriviledgeValidation;
 import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.components.quickinfo.model.QuickInfoService;
 import org.silverpeas.components.quickinfo.model.QuickInfoServiceFactory;
@@ -33,7 +34,14 @@ public class NewsResource extends RESTWebService {
     // TODO Auto-generated method stub
     return null;
   }
-  
+
+  @Override
+  public void validateUserAuthentication(final UserPriviledgeValidation validation)
+      throws WebApplicationException {
+    super.validateUserAuthentication(
+        validation.skipLastUserAccessTimeRegistering(getHttpServletRequest()));
+  }
+
   @GET
   @Path("ticker")
   @Produces(MediaType.APPLICATION_JSON)
