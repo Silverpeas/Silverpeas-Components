@@ -43,7 +43,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.media.Definition;
 import org.silverpeas.media.video.VideoThumbnailExtractor;
-import org.silverpeas.media.video.VideoThumbnailExtractorFactory;
+import org.silverpeas.media.video.VideoThumbnailExtractorProvider;
 import org.silverpeas.process.io.file.FileHandler;
 import org.silverpeas.process.io.file.HandledFile;
 import org.silverpeas.util.ImageLoader;
@@ -202,7 +202,8 @@ public class MediaUtil {
   }
 
   /**
-   * Saves uploaded photo file on file system with associated thumbnails and watermarks. (In case of
+   * Saves uploaded photo file on file system with associated thumbnails and watermarks. (In case
+   * of
    * drag And Drop upload)
    * @param fileHandler
    * @param photo
@@ -347,11 +348,9 @@ public class MediaUtil {
   public static void setMetaData(final FileHandler fileHandler, final Photo photo,
       final String lang) throws MediaMetadataException, IOException {
     if (MediaMimeType.JPG == photo.getFileMimeType()) {
-      final HandledFile handledFile =
-          fileHandler
-              .getHandledFile(Media.BASE_PATH, photo.getInstanceId(),
-                  photo.getWorkspaceSubFolderName(),
-                  photo.getFileName());
+      final HandledFile handledFile = fileHandler
+          .getHandledFile(Media.BASE_PATH, photo.getInstanceId(), photo.getWorkspaceSubFolderName(),
+              photo.getFileName());
       if (handledFile.exists()) {
         try {
           final MediaMetadataExtractor extractor = new DrewMediaMetadataExtractor(photo.
@@ -394,8 +393,7 @@ public class MediaUtil {
    * @param nameWatermark
    * @throws Exception
    */
-  private static void createThumbnails(final HandledFile originalHandedImageFile,
-      final Photo photo,
+  private static void createThumbnails(final HandledFile originalHandedImageFile, final Photo photo,
       final BufferedImage originalImage, final boolean watermark, final String nameWatermark)
       throws Exception {
 
@@ -413,7 +411,7 @@ public class MediaUtil {
     // Small
     // Tiny
     final MediaResolution[] mediaResolutions =
-        new MediaResolution[] { LARGE, PREVIEW, MEDIUM, SMALL, TINY };
+        new MediaResolution[]{LARGE, PREVIEW, MEDIUM, SMALL, TINY};
     BufferedImage previewImage = null;
     for (MediaResolution mediaResolution : mediaResolutions) {
       // Current thumbnail
@@ -536,8 +534,8 @@ public class MediaUtil {
     if (fromDir.exists()) {
 
       // Copy thumbnails & watermark (only if it does exist)
-      for (final MediaResolution mediaResolution : new MediaResolution[] { MEDIUM, SMALL, TINY,
-          PREVIEW, LARGE, WATERMARK }) {
+      for (final MediaResolution mediaResolution : new MediaResolution[]{MEDIUM, SMALL, TINY,
+          PREVIEW, LARGE, WATERMARK}) {
         pasteFile(fromDir.getHandledFile(fromPK.getId() + mediaResolution.getThumbnailSuffix()),
             toDir.getHandledFile(media.getId() + mediaResolution.getThumbnailSuffix()), cut);
       }
@@ -550,8 +548,7 @@ public class MediaUtil {
         try {
           fromDir.delete();
         } catch (Exception e) {
-          SilverTrace.error("gallery", "MediaHelper.pasteInternalMedia",
-              "root.MSG_GEN_PARAM_VALUE",
+          SilverTrace.error("gallery", "MediaHelper.pasteInternalMedia", "root.MSG_GEN_PARAM_VALUE",
               "Unable to delete source folder : folder path = " + fromDir.getFile().getPath(), e);
         }
       }
@@ -615,8 +612,7 @@ public class MediaUtil {
           }
         }
       } catch (MediaMetadataException e) {
-        SilverTrace.error("gallery", "MediaHelper.computeWatermarkText",
-            "root.MSG_BAD_FILE_FORMAT",
+        SilverTrace.error("gallery", "MediaHelper.computeWatermarkText", "root.MSG_BAD_FILE_FORMAT",
             "Bad image file format " + image.getFile().getPath() + ": " + e.getMessage());
       } catch (UnsupportedEncodingException e) {
         SilverTrace.error("gallery", "MediaHelper.computeWatermarkText", "root.MSG_BAD_ENCODING",
@@ -638,8 +634,7 @@ public class MediaUtil {
   }
 
   private static void generateVideoThumbnails(File videoFile) {
-    VideoThumbnailExtractor vte =
-        VideoThumbnailExtractorFactory.getInstance().getVideoThumbnailExtractor();
+    VideoThumbnailExtractor vte = VideoThumbnailExtractorProvider.getVideoThumbnailExtractor();
     if (vte.isActivated()) {
       vte.generateThumbnailsFrom(videoFile);
     }
