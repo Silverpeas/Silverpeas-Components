@@ -31,10 +31,7 @@ response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
-<%@ page import="com.silverpeas.publicationTemplate.PublicationTemplate"%>
-<%@ page import="com.silverpeas.form.DataRecord"%>
 <%@ page import="com.silverpeas.form.Form"%>
-<%@ page import="com.silverpeas.form.RecordSet"%>
 <%@ page import="com.silverpeas.form.PagesContext"%>
 <%@ page import="org.silverpeas.util.StringUtil"%>
 
@@ -62,20 +59,14 @@ Frame frame = gef.getFrame();
 
 //Vrai si le user connecte est le createur de ce contact ou si il est admin
 boolean isOwner = false;
-boolean creation = true;
 
-UserDetail ownerDetail = null;
-CompleteContact contactComplete = null;
-ContactDetail contactDetail = null;
 String id = null;
 
 String profile = (String) request.getAttribute("Profile");
-UserCompleteContact userContactComplete = (UserCompleteContact) request.getAttribute("Contact");
-if (userContactComplete != null) {
-  contactComplete = userContactComplete.getContact();
-  contactDetail = contactComplete.getContactDetail();
-  ownerDetail = userContactComplete.getOwner();
-  
+CompleteContact contactComplete = (CompleteContact) request.getAttribute("Contact");
+ContactDetail contactDetail = contactComplete.getContactDetail();
+boolean creation = !StringUtil.isDefined(contactDetail.getPK().getId());
+if (!creation) {
   id = contactDetail.getPK().getId();
   if (StringUtil.isInteger(id)) {
     creation = false;
@@ -87,8 +78,8 @@ if (userContactComplete != null) {
   fax = contactDetail.getFax();
   userId = contactDetail.getUserId();
   creationDate = resources.getOutputDate(contactDetail.getCreationDate());
-  if (ownerDetail != null) {
-      creatorName = ownerDetail.getDisplayedName();
+  if (StringUtil.isDefined(contactDetail.getCreatorId())) {
+      creatorName = UserDetail.getById(contactDetail.getCreatorId()).getDisplayedName();
   } else {
       creatorName = yellowpagesScc.getString("UnknownAuthor");
   }
@@ -101,16 +92,15 @@ if (creation) {
   browseBar.setPath(resources.getString("ContactUpdate"));
   operationPane.addOperation(resources.getIcon("yellowpages.contactTopicLink"), resources.getString("TopicLink"), "javascript:topicAddGoTo();");
 	
-  if (profile.equals("admin") || (ownerDetail!=null && yellowpagesScc.getUserId().equals(ownerDetail.getId()))) {
+  if (profile.equals("admin") || yellowpagesScc.getUserId().equals(contactDetail.getCreatorId())) {
       isOwner = true;
   }
 }
 
-Form formUpdate = (Form) request.getAttribute("Form");
-DataRecord data = (DataRecord) request.getAttribute("Data"); 
+Form formUpdate = contactComplete.getUpdateForm();
 PagesContext context = (PagesContext) request.getAttribute("PagesContext");
 if (context != null) {
-	context.setBorderPrinted(false);
+  context.setBorderPrinted(false);
 }
 
 String linkedPathString = yellowpagesScc.getPath();
@@ -221,7 +211,7 @@ out.println(window.printBefore());
 
 <%
 if (formUpdate != null) {
-    formUpdate.display(out, context, data);
+    formUpdate.display(out, context);
 }
 %>
   

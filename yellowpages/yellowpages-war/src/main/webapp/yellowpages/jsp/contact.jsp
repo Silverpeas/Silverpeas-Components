@@ -23,8 +23,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="org.apache.commons.lang3.BooleanUtils"%>
 <%@page import="com.silverpeas.form.PagesContext"%>
-<%@page import="com.silverpeas.form.DataRecord"%>
 <%@page import="com.silverpeas.form.Form"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
@@ -39,12 +39,13 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ include file="checkYellowpages.jsp" %>
 
 <%
-UserCompleteContact userContactComplete = (UserCompleteContact) request.getAttribute("Contact");
-ContactDetail contact = userContactComplete.getContact().getContactDetail();
+CompleteContact fullContact = (CompleteContact) request.getAttribute("Contact");
+ContactDetail contact = fullContact.getContactDetail();
 
-Form formView    = (Form) request.getAttribute("Form");
-DataRecord data    = (DataRecord) request.getAttribute("Data");
+Form formView    = fullContact.getViewForm();
 PagesContext context = (PagesContext) request.getAttribute("PagesContext");
+
+boolean externalView = BooleanUtils.isTrue((Boolean) request.getAttribute("ExternalView"));
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -52,6 +53,13 @@ PagesContext context = (PagesContext) request.getAttribute("PagesContext");
 <head>
 <title><%=resources.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
+<style type="text/css">
+<% if (externalView) { %>
+.cellBrowseBar, .cellOperation {
+  display: none;
+}
+<% } %>
+</style>
 </head>
 <body>
 <view:browseBar path='<%=resources.getString("BBarconsultManager")%>'/>
@@ -67,23 +75,29 @@ PagesContext context = (PagesContext) request.getAttribute("PagesContext");
    	<td class="txtlibform"><%=resources.getString("Contact") %> :</td>
    	<td class="txtnav"><%=EncodeHelper.javaStringToHtmlString(contact.getFirstName()) %> <%= EncodeHelper.javaStringToHtmlString(contact.getLastName()) %></td>
    </tr>
-   <tr>
-   	<td class="txtlibform"><%=resources.getString("GML.phoneNumber") %> :</td>
-   	<td><%=EncodeHelper.javaStringToHtmlString(contact.getPhone()) %></td>
-   </tr>
+   <% if (StringUtil.isDefined(contact.getPhone())) { %>
+   	<tr>
+   		<td class="txtlibform"><%=resources.getString("GML.phoneNumber") %> :</td>
+   		<td><%=EncodeHelper.javaStringToHtmlString(contact.getPhone()) %></td>
+   	</tr>
+   <% } %>
+   <% if (StringUtil.isDefined(contact.getFax())) { %>
    <tr>
    	<td class="txtlibform"><%=resources.getString("GML.faxNumber") %> :</td>
    	<td><%=EncodeHelper.javaStringToHtmlString(contact.getFax()) %></td>
    </tr>
+   <% } %>
+   <% if (StringUtil.isDefined(contact.getEmail())) { %>
    <tr>
    	<td class="txtlibform"><%=resources.getString("GML.eMail") %> :</td>
    	<td><a href=mailto:"<%=EncodeHelper.javaStringToHtmlString(contact.getEmail()) %>"><%=EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToHtmlString(contact.getEmail())) %></a></td>
    </tr>
+   <% } %>
 </table>
 
 <%
 if (formView != null) {
-	formView.display(out, context, data);
+	formView.display(out, context);
 }
 %>
 

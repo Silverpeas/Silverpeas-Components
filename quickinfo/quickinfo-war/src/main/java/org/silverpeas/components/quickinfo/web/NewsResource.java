@@ -1,8 +1,13 @@
 package org.silverpeas.components.quickinfo.web;
 
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
+import com.silverpeas.annotation.Authenticated;
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
+import com.silverpeas.web.RESTWebService;
+import com.silverpeas.web.UserPrivilegeValidation;
+import org.silverpeas.components.quickinfo.model.News;
+import org.silverpeas.components.quickinfo.model.QuickInfoService;
+import org.silverpeas.components.quickinfo.model.QuickInfoServiceFactory;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -12,15 +17,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
-
-import org.silverpeas.components.quickinfo.model.News;
-import org.silverpeas.components.quickinfo.model.QuickInfoService;
-import org.silverpeas.components.quickinfo.model.QuickInfoServiceFactory;
-
-import com.silverpeas.annotation.Authenticated;
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
-import com.silverpeas.web.RESTWebService;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequestScoped
@@ -33,7 +32,14 @@ public class NewsResource extends RESTWebService {
     // TODO Auto-generated method stub
     return null;
   }
-  
+
+  @Override
+  public void validateUserAuthentication(final UserPrivilegeValidation validation)
+      throws WebApplicationException {
+    super.validateUserAuthentication(
+        validation.skipLastUserAccessTimeRegistering(getHttpServletRequest()));
+  }
+
   @GET
   @Path("ticker")
   @Produces(MediaType.APPLICATION_JSON)
