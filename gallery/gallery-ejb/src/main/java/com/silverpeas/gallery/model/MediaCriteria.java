@@ -41,7 +41,7 @@ import static com.silverpeas.gallery.model.MediaCriteria.VISIBILITY.FORCE_GET_AL
 
 /**
  * Class that permits to set media search criteria for media application.
- * @author: Yohann Chastagnier
+ * @author Yohann Chastagnier
  */
 public class MediaCriteria {
 
@@ -103,10 +103,10 @@ public class MediaCriteria {
   private SilverpeasRole componentHighestRequesterRole;
   private String componentInstanceId;
   private UserDetail creator;
-  private final List<String> albumIds = new ArrayList<String>();
-  private final List<MediaType> mediaTypes = new ArrayList<MediaType>();
-  private final List<QUERY_ORDER_BY> orderByList = new ArrayList<QUERY_ORDER_BY>();
-  private final List<String> identifiers = new ArrayList<String>();
+  private final List<String> albumIds = new ArrayList<>();
+  private final List<MediaType> mediaTypes = new ArrayList<>();
+  private final List<QUERY_ORDER_BY> orderByList = new ArrayList<>();
+  private final List<String> identifiers = new ArrayList<>();
   private VISIBILITY visibility = BY_DEFAULT;
   private Date referenceDate = DateUtil.getDate();
   private Integer nbDaysBeforeThatMediaIsNotVisible;
@@ -267,7 +267,7 @@ public class MediaCriteria {
 
   /**
    * Gets the maximum number of media in a result list.
-   * @return
+   * @return the result limit.
    */
   public int getResultLimit() {
     return resultLimit;
@@ -360,7 +360,7 @@ public class MediaCriteria {
 
   /**
    * Gets the criterion of the nb of days before that a media is not visible.
-   * @return
+   * @return the nb of days before that a media is not visible.
    */
   public Integer getNbDaysBeforeThatMediaIsNotVisible() {
     return nbDaysBeforeThatMediaIsNotVisible;

@@ -49,7 +49,6 @@ import com.stratelia.webactiv.node.control.NodeBm;
 import com.stratelia.webactiv.node.control.dao.NodeDAO;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
-import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.date.Period;
 import org.silverpeas.process.ProcessProvider;
 import org.silverpeas.process.util.ProcessList;
@@ -60,11 +59,9 @@ import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -78,20 +75,13 @@ import static com.silverpeas.gallery.model.MediaCriteria.QUERY_ORDER_BY.CREATE_D
 import static com.silverpeas.gallery.model.MediaCriteria.QUERY_ORDER_BY.IDENTIFIER_DESC;
 
 @Stateless(name = "Gallery", description = "Stateless session bean to manage a media gallery")
-@TransactionAttribute(TransactionAttributeType.SUPPORTS)
+@Transactional(Transactional.TxType.SUPPORTS)
 public class GalleryBmEJB implements GalleryBm {
 
-  @EJB
+  @Inject
   private NodeBm nodeBm;
   @Inject
   private OrganizationController organizationController;
-
-  public GalleryBmEJB() {
-  }
-
-  protected GalleryBmEJB(NodeBm nodeBm) {
-    this.nodeBm = nodeBm;
-  }
 
   @Override
   public AlbumDetail getAlbum(final NodePK nodePK) {
@@ -118,7 +108,7 @@ public class GalleryBmEJB implements GalleryBm {
     try {
       final NodePK nodePK = new NodePK(NodePK.ROOT_NODE_ID, instanceId);
       final Collection<NodeDetail> nodes = nodeBm.getSubTree(nodePK);
-      final List<AlbumDetail> albums = new ArrayList<AlbumDetail>(nodes.size());
+      final List<AlbumDetail> albums = new ArrayList<>(nodes.size());
       for (final NodeDetail node : nodes) {
         albums.add(new AlbumDetail(node));
       }
@@ -130,7 +120,7 @@ public class GalleryBmEJB implements GalleryBm {
   }
 
   @Override
-  @TransactionAttribute(TransactionAttributeType.REQUIRED)
+  @Transactional(Transactional.TxType.REQUIRED)
   public NodePK createAlbum(final AlbumDetail album, final NodePK nodePK) {
     try {
       final AlbumDetail currentAlbum = getAlbum(nodePK);
@@ -142,7 +132,7 @@ public class GalleryBmEJB implements GalleryBm {
   }
 
   @Override
-  @TransactionAttribute(TransactionAttributeType.REQUIRED)
+  @Transactional(Transactional.TxType.REQUIRED)
   public void updateAlbum(final AlbumDetail album) {
     try {
       nodeBm.setDetail(album);
@@ -153,7 +143,7 @@ public class GalleryBmEJB implements GalleryBm {
   }
 
   @Override
-  @TransactionAttribute(TransactionAttributeType.REQUIRED)
+  @Transactional(Transactional.TxType.REQUIRED)
   public void deleteAlbum(final UserDetail user, final String componentInstanceId,
       final NodePK nodePK) {
     try {
@@ -169,14 +159,11 @@ public class GalleryBmEJB implements GalleryBm {
 
   @Override
   public Photo getPhoto(final MediaPK mediaPK) {
-    final Connection con = initCon();
     try {
-      return PhotoDAO.getPhoto(con, mediaPK.getId());
+      return PhotoDAO.getPhoto(mediaPK.getId());
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getPhoto()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
@@ -187,16 +174,12 @@ public class GalleryBmEJB implements GalleryBm {
 
   @Override
   public Media getMedia(final MediaPK mediaPK, final MediaCriteria.VISIBILITY visibility) {
-    final Connection con = initCon();
     try {
-      return MediaDAO.getByCriteria(con,
-          MediaCriteria.fromComponentInstanceId(mediaPK.getInstanceId())
+      return MediaDAO.getByCriteria(MediaCriteria.fromComponentInstanceId(mediaPK.getInstanceId())
               .identifierIsOneOf(mediaPK.getId()).withVisibility(visibility));
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getPhoto()", SilverpeasRuntimeException.ERROR,
           "gallery.MSG_PHOTO_NOT_EXIST", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
@@ -208,15 +191,12 @@ public class GalleryBmEJB implements GalleryBm {
   @Override
   public Collection<Media> getAllMedia(final String instanceId,
       final MediaCriteria.VISIBILITY visibility) {
-    final Connection con = initCon();
     try {
-      return MediaDAO.findByCriteria(con,
+      return MediaDAO.findByCriteria(
           MediaCriteria.fromComponentInstanceId(instanceId).withVisibility(visibility));
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getAllPhotos()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
@@ -228,18 +208,15 @@ public class GalleryBmEJB implements GalleryBm {
   @Override
   public Collection<Media> getAllMedia(final NodePK nodePK,
       final MediaCriteria.VISIBILITY visibility) {
-    final Connection con = initCon();
     try {
       final String albumId = nodePK.getId();
       final String instanceId = nodePK.getInstanceId();
-      return MediaDAO.findByCriteria(con,
+      return MediaDAO.findByCriteria(
           MediaCriteria.fromComponentInstanceId(instanceId).albumIdentifierIsOneOf(albumId)
               .withVisibility(visibility));
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getAllPhoto()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
@@ -251,35 +228,29 @@ public class GalleryBmEJB implements GalleryBm {
   @Override
   public Collection<Photo> getAllPhotos(final NodePK nodePK,
       final MediaCriteria.VISIBILITY visibility) {
-    final Connection con = initCon();
     try {
       final String albumId = nodePK.getId();
       final String instanceId = nodePK.getInstanceId();
-      return PhotoDAO.getAllPhoto(con, albumId, instanceId, visibility);
+      return PhotoDAO.getAllPhoto(albumId, instanceId, visibility);
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getAllPhoto()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
   @Override
   public Collection<Media> getNotVisible(final String instanceId) {
-    final Connection con = initCon();
     try {
-      return MediaDAO.findByCriteria(con, MediaCriteria.fromComponentInstanceId(instanceId)
+      return MediaDAO.findByCriteria(MediaCriteria.fromComponentInstanceId(instanceId)
           .withVisibility(MediaCriteria.VISIBILITY.HIDDEN_ONLY));
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getNotVisible()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
   @Override
-  @TransactionAttribute(TransactionAttributeType.REQUIRED)
+  @Transactional(Transactional.TxType.REQUIRED)
   public void paste(final UserDetail user, final String componentInstanceId,
       final GalleryPasteDelegate delegate) {
     try {
@@ -308,7 +279,7 @@ public class GalleryBmEJB implements GalleryBm {
 
   @SuppressWarnings("EjbProhibitedPackageUsageInspection")
   @Override
-  @TransactionAttribute(TransactionAttributeType.REQUIRED)
+  @Transactional(Transactional.TxType.REQUIRED)
   public void importFromRepository(final UserDetail user, final String componentInstanceId,
       final File repository, final boolean watermark, final String watermarkHD,
       final String watermarkOther, final MediaDataCreateDelegate delegate) {
@@ -325,7 +296,7 @@ public class GalleryBmEJB implements GalleryBm {
   }
 
   @Override
-  @TransactionAttribute(TransactionAttributeType.REQUIRED)
+  @Transactional(Transactional.TxType.REQUIRED)
   public Media createMedia(final UserDetail user, final String componentInstanceId,
       final boolean watermark, final String watermarkHD, final String watermarkOther,
       final MediaDataCreateDelegate delegate) {
@@ -339,13 +310,13 @@ public class GalleryBmEJB implements GalleryBm {
       processManagement.execute();
       return newMedia;
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("GalleryBm.createPhoto()",
+      throw new GalleryRuntimeException("GalleryBm.createMedia()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_CREATE", e);
     }
   }
 
   @Override
-  @TransactionAttribute(TransactionAttributeType.REQUIRED)
+  @Transactional(Transactional.TxType.REQUIRED)
   public void updateMedia(final UserDetail user, final String componentInstanceId,
       final Collection<String> mediaIds, final String albumId,
       final MediaDataUpdateDelegate delegate) {
@@ -359,13 +330,13 @@ public class GalleryBmEJB implements GalleryBm {
       }
       processManagement.execute();
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("GalleryBm.updatePhoto()",
+      throw new GalleryRuntimeException("GalleryBm.updateMedia()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_UPDATE", e);
     }
   }
 
   @Override
-  @TransactionAttribute(TransactionAttributeType.REQUIRED)
+  @Transactional(Transactional.TxType.REQUIRED)
   public void updateMedia(final UserDetail user, final String componentInstanceId,
       final Media media, final boolean watermark, final String watermarkHD,
       final String watermarkOther, final MediaDataUpdateDelegate delegate) {
@@ -376,13 +347,13 @@ public class GalleryBmEJB implements GalleryBm {
           .addUpdateMediaProcesses(media, watermark, watermarkHD, watermarkOther, delegate);
       processManagement.execute();
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("GalleryBm.updatePhoto()",
+      throw new GalleryRuntimeException("GalleryBm.updateMedia()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_UPDATE", e);
     }
   }
 
   @Override
-  @TransactionAttribute(TransactionAttributeType.REQUIRED)
+  @Transactional(Transactional.TxType.REQUIRED)
   public void deleteMedia(final UserDetail user, final String componentInstanceId,
       final Collection<String> mediaIds) {
     try {
@@ -401,31 +372,23 @@ public class GalleryBmEJB implements GalleryBm {
 
   @Override
   public List<Media> getLastRegisteredMedia(final String instanceId) {
-    final Connection con = initCon();
     try {
-      return MediaDAO.findByCriteria(con, MediaCriteria.fromComponentInstanceId(instanceId)
+      return MediaDAO.findByCriteria(MediaCriteria.fromComponentInstanceId(instanceId)
           .orderedBy(CREATE_DATE_DESC, IDENTIFIER_DESC)
           .limitResultTo(GalleryComponentSettings.getNbMediaDisplayedPerPage()));
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getAllPhoto()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
-  protected Connection initCon() {
-    Connection con;
-    // initialisation de la connexion
+  protected Connection openConnection() {
     try {
-      con = DBUtil.openConnection();
+      return DBUtil.openConnection();
     } catch (final SQLException e) {
-      // traitement des exceptions
-
       throw new GalleryRuntimeException("GalleryBmEJB.initCon()", SilverpeasException.ERROR,
           "root.EX_CONNECTION_OPEN_FAILED", e);
     }
-    return con;
   }
 
   @Override
@@ -442,48 +405,39 @@ public class GalleryBmEJB implements GalleryBm {
 
   @Override
   public Collection<String> getAlbumIdsOf(final Media media) {
-    final Connection con = initCon();
     try {
-      return MediaDAO.getAlbumIdsOf(con, media);
+      return MediaDAO.getAlbumIdsOf(media);
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getPathList()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PATH", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
   @Override
   public void removeMediaFromAllAlbums(final Media media) {
-    final Connection con = initCon();
     try {
-      MediaDAO.deleteAllMediaPath(con, media);
+      MediaDAO.deleteAllMediaPath(media);
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.deleteAllMediaPath()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PATH", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
   @Override
   public void addMediaToAlbums(final Media media, final String... albums) {
-    final Connection con = initCon();
     try {
       for (final String albumId : albums) {
-        MediaDAO.saveMediaPath(con, media, albumId);
+        MediaDAO.saveMediaPath(media, albumId);
       }
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.deleteAllMediaPath()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PATH", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
   @Override
   public String getHTMLNodePath(final NodePK nodePK) {
-    String htmlPath = "";
+    String htmlPath;
     try {
       final List<NodeDetail> path = (List<NodeDetail>) getPath(nodePK);
       if (!path.isEmpty()) {
@@ -585,7 +539,7 @@ public class GalleryBmEJB implements GalleryBm {
       processManagement.addIndexMediaProcesses(media);
       processManagement.execute();
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("GalleryBm.createPhoto()", SilverpeasRuntimeException.ERROR,
+      throw new GalleryRuntimeException("GalleryBm.createIndex()", SilverpeasRuntimeException.ERROR,
           "gallery.MSG_PHOTO_NOT_CREATE", e);
     }
   }
@@ -594,14 +548,14 @@ public class GalleryBmEJB implements GalleryBm {
   public int getSilverObjectId(final MediaPK mediaPK) {
     SilverTrace.info("gallery", "GalleryBmEJB.getSilverObjectId()", "root.MSG_GEN_ENTER_METHOD",
         "photoId = " + mediaPK.getId());
-    int silverObjectId = -1;
+    int silverObjectId;
     try {
       silverObjectId = getGalleryContentManager().getSilverObjectId(mediaPK.getId(), mediaPK
           .getInstanceId());
 
       if (silverObjectId == -1) {
         Media media = getMedia(mediaPK, MediaCriteria.VISIBILITY.FORCE_GET_ALL);
-        final Connection con = initCon();
+        final Connection con = openConnection();
         try {
           silverObjectId = createSilverContent(con, media, media.getCreatorId());
         } finally {
@@ -628,24 +582,25 @@ public class GalleryBmEJB implements GalleryBm {
 
   @Override
   public Collection<Media> search(final QueryDescription query) {
-    final Collection<Media> mediaList = new ArrayList<Media>();
+    final Collection<Media> mediaList = new ArrayList<>();
     try {
       final List<MatchingIndexEntry> result = SearchEngineFactory.getSearchEngine().search(query).
           getEntries();
       // création des médias à partir des résultats
-      for (final MatchingIndexEntry matchIndex : result) {
-        // Ne retourne que les médias
-        if (MediaType.from(matchIndex.getObjectType()) != MediaType.Unknown) {
-          final MediaPK mediaPK = new MediaPK(matchIndex.getObjectId());
-          final Media media = getMedia(mediaPK);
+      // Ne retourne que les médias
+      result.stream()
+          .filter(matchIndex -> MediaType.from(matchIndex.getObjectType()) != MediaType.Unknown)
+          .forEach(matchIndex -> {
+            final MediaPK mediaPK = new MediaPK(matchIndex.getObjectId());
+            final Media media = getMedia(mediaPK);
 
-          if (media != null) {
-            SilverTrace.info("gallery", "GalleryBmEJB.getResultSearch()",
-                "root.MSG_GEN_ENTER_METHOD", "media = " + media.getMediaPK().getId());
-            mediaList.add(media);
-          }
-        }
-      }
+            if (media != null) {
+              SilverTrace
+                  .info("gallery", "GalleryBmEJB.getResultSearch()", "root.MSG_GEN_ENTER_METHOD",
+                      "media = " + media.getMediaPK().getId());
+              mediaList.add(media);
+            }
+          });
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GallerySessionController.getResultSearch()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_ADD_OBJECT", e);
@@ -655,113 +610,88 @@ public class GalleryBmEJB implements GalleryBm {
 
   @Override
   public Collection<Media> getAllMediaThatWillBeNotVisible(final int nbDays) {
-    final Connection con = initCon();
     try {
-      return MediaDAO.findByCriteria(con,
-          MediaCriteria.fromNbDaysBeforeThatMediaIsNotVisible(nbDays)
-              .withVisibility(MediaCriteria.VISIBILITY.FORCE_GET_ALL));
+      return MediaDAO.findByCriteria(MediaCriteria.fromNbDaysBeforeThatMediaIsNotVisible(nbDays)
+          .withVisibility(MediaCriteria.VISIBILITY.FORCE_GET_ALL));
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getAllPhotos()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
   @Override
   public String createOrder(final Collection<String> basket, final String userId,
       final String componentId) {
-    final Connection con = initCon();
     try {
-      return OrderDAO.createOrder(con, basket, userId, componentId);
+      return OrderDAO.createOrder(basket, userId, componentId);
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.createOrder()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_REQUEST_NOT_CREATE", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
   @Override
   public List<Order> getAllOrders(final String userId, final String instanceId) {
-    final Connection con = initCon();
     try {
-      return OrderDAO.findByCriteria(con,
+      return OrderDAO.findByCriteria(
           MediaOrderCriteria.fromComponentInstanceId(instanceId).withOrdererId(userId));
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getAllOrders()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_REQUEST_LIST_NOT_EXIST", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
   @Override
   public void updateOrder(final Order order) {
-    final Connection con = initCon();
     try {
-      OrderDAO.updateOrder(con, order);
+      OrderDAO.updateOrder(order);
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.updateORder()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_REQUEST_ORDER_NOT_EXIST", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
   @Override
   public void updateOrderRow(final OrderRow row) {
-    final Connection con = initCon();
     try {
-      OrderDAO.updateOrderRow(con, row);
+      OrderDAO.updateOrderRow(row);
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.updateOrderRow()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_REQUEST_ORDER_ROW_NOT_EXIST", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
   @Override
   public Order getOrder(final String orderId, final String instanceId) {
-    final Connection con = initCon();
     try {
-      return OrderDAO.getByCriteria(con,
+      return OrderDAO.getByCriteria(
           MediaOrderCriteria.fromComponentInstanceId(instanceId).identifierIsOneOf(orderId));
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getOrder()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_ORDER_NOT_EXIST", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
   @Override
   public List<Order> getAllOrderToDelete(final int nbDays) {
-    final Connection con = initCon();
     try {
-      return OrderDAO
-          .findByCriteria(con, MediaOrderCriteria.fromNbDaysAfterThatDeleteAnOrder(nbDays));
+      return OrderDAO.findByCriteria(MediaOrderCriteria.fromNbDaysAfterThatDeleteAnOrder(nbDays));
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getOrder()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_ORDER_NOT_EXIST", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
+  @SuppressWarnings("Convert2streamapi")
   @Override
   public void deleteOrders(final List<Order> orders) {
-    final Connection con = initCon();
     try {
       for (Order order : orders) {
-        OrderDAO.deleteOrder(con, order);
+        OrderDAO.deleteOrder(order);
       }
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.deleteOrder()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_ORDER_NOT_EXIST", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
@@ -771,78 +701,62 @@ public class GalleryBmEJB implements GalleryBm {
 
   /**
    * get my list of SocialInformationGallery according to options and number of Item and the first
-   * Index
-   *
-   * @return: List <SocialInformation>
-   * @param period
+   * Index.
+   * @param period the period on which the data are requested.
+   * @return List <SocialInformation>
    */
   @Override
   public List<SocialInformation> getAllMediaByUserId(final String userId, final Period period) {
-    final Connection con = initCon();
     try {
-      return MediaDAO.getAllMediaIdByUserId(con, userId, period);
+      return MediaDAO.getAllMediaIdByUserId(userId, period);
     } catch (final SQLException e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getAllPhotosUpdatebyUserid()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
   /**
    * get list of SocialInformationGallery of my contacts according to options and number of Item and
-   * the first Index
-   *
-   * @return: List <SocialInformation>
-   * @param period
+   * the first Index.
+   * @param period the period on which the data are requested.
+   * @return List <SocialInformation>
    */
   @Override
   public List<SocialInformation> getSocialInformationListOfMyContacts(
-      final List<String> listOfuserId, final List<String> availableComponent, final Period period) {
-    final Connection con = initCon();
+      final List<String> listOfUserId, final List<String> availableComponent, final Period period) {
     try {
       return MediaDAO
-          .getSocialInformationListOfMyContacts(con, listOfuserId, availableComponent, period);
+          .getSocialInformationListOfMyContacts(listOfUserId, availableComponent, period);
     } catch (final SQLException e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getAllPhotosUpdatebyUserid()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
   @Override
   public void sortAlbums(final List<NodePK> nodePKs) {
-    final Connection con = initCon();
-    try {
+    try (final Connection con = openConnection()) {
       NodeDAO.sortNodes(con, nodePKs);
     } catch (final SQLException e) {
       throw new GalleryRuntimeException("sortAlbums()", SilverpeasRuntimeException.ERROR,
           "gallery.MSG_NOT_ORDER", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
   /**
    * Executes a process list
-   *
-   * @param processList
-   * @throws Exception
+   * @param processList the list of processes to execute.
    */
   @Override
-  @TransactionAttribute(TransactionAttributeType.REQUIRED)
+  @Transactional(Transactional.TxType.REQUIRED)
   public void executeProcessList(final ProcessList<GalleryProcessExecutionContext> processList,
       final GalleryProcessExecutionContext processExecutionContext) {
-    final Connection connection = initCon();
-    try {
+    try (final Connection connection = openConnection()) {
       processExecutionContext.setConnection(connection);
       ProcessProvider.getProcessManagement().execute(processList, processExecutionContext);
     } catch (final Exception e) {
       throw new GalleryRuntimeException("executeProcessList()", SilverpeasRuntimeException.ERROR,
           "gallery.TRANSACTION_ERROR", e);
-    } finally {
-      DBUtil.close(connection);
     }
   }
 }

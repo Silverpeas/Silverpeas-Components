@@ -149,9 +149,9 @@ public class GalleryPasteMediaDataProcess extends AbstractGalleryDataProcess {
   private void moveMediaPath(final String fromComponentInstanceId, final String albumId,
       final GalleryProcessExecutionContext context) throws Exception {
     getMedia().setComponentInstanceId(fromComponentInstanceId);
-    MediaDAO.deleteAllMediaPath(context.getConnection(), getMedia());
+    MediaDAO.deleteAllMediaPath(getMedia());
     getMedia().setComponentInstanceId(context.getComponentInstanceId());
-    MediaDAO.saveMediaPath(context.getConnection(), getMedia(), albumId);
+    MediaDAO.saveMediaPath(getMedia(), albumId);
   }
 
   /**

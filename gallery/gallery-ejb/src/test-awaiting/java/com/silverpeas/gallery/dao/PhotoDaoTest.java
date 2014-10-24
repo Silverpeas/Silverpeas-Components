@@ -76,7 +76,7 @@ public class PhotoDaoTest extends BaseGalleryTest {
       Date begin = DateUtil.parse("2010/05/01");
       Date end = DateUtil.parse("2010/08/31");
       List<SocialInformation> photos =
-          MediaDAO.getAllMediaIdByUserId(connexion, userid, Period.from(begin, end));
+          MediaDAO.getAllMediaIdByUserId(userid, Period.from(begin, end));
       assertThat(photos, notNullValue());
       assertThat(photos, hasSize(4));
       assertThat(photos.get(0), equalTo(socialmer1));
@@ -130,38 +130,6 @@ public class PhotoDaoTest extends BaseGalleryTest {
     fleur.setFileMimeType(MediaMimeType.PNG);
     return fleur;
   }
-
-  @Test
-  public void testUpdatePhotoDetail() throws Exception {
-    Connection con = getConnection();
-    Date now = DateUtil.getNow();
-    Date createdFlowerDate = Timestamp.valueOf("2010-06-15 00:00:00.0");
-    String flowerId = "3";
-    MediaPK mediaPK = new MediaPK(String.valueOf(flowerId), GALLERY1);
-    Photo flower = prepareExpectedPhoto(createdFlowerDate, createdFlowerDate, mediaPK);
-    long imageSize = 6000;
-    flower.setLastUpdatedBy("0");
-    flower.setDefinition(Definition.of(220, 220));
-    flower.setFileName("flower.jpg");
-    flower.setFileSize(imageSize);
-    flower.setFileMimeType(MediaMimeType.PNG);
-    flower.setKeyWord("flower test");
-    try {
-      PhotoDAO.updatePhoto(con, flower);
-      Photo photo = PhotoDAO.getPhoto(con, flowerId);
-      assertThat(photo, notNullValue());
-      assertThat(photo.getTitle(), equalTo(flower.getTitle()));
-      assertThat(photo.getId(), equalTo(mediaPK.getId()));
-      assertThat(photo.getDescription(), equalTo(flower.getDescription()));
-      assertThat(photo.getCreationDate(), equalTo(createdFlowerDate));
-      assertThat(photo.getLastUpdateDate(), greaterThanOrEqualTo(now));
-      assertThat(photo.getFileSize(), equalTo(imageSize));
-      assertThat(photo, equalTo(flower));
-    } finally {
-      con.close();
-    }
-  }
-
   @Test
   public void testgetSocialInformationsList() throws Exception {
     Connection connexion = getConnection();
@@ -181,47 +149,15 @@ public class PhotoDaoTest extends BaseGalleryTest {
       Date begin = DateUtil.parse("2010/05/01");
       Date end = DateUtil.parse("2010/08/31");
 
-      List<SocialInformation> photos = MediaDAO.getSocialInformationListOfMyContacts(connexion,
-          listOfuserId, null, Period.from(begin, end));
+      List<SocialInformation> photos = MediaDAO.getSocialInformationListOfMyContacts(listOfuserId, null, Period.from(begin, end));
       assertThat(photos, notNullValue());
-      photos = MediaDAO.getSocialInformationListOfMyContacts(connexion,
-          listOfuserId, availableList, Period.from(begin, end));
+      photos = MediaDAO.getSocialInformationListOfMyContacts(listOfuserId, availableList, Period.from(begin, end));
       assertThat(photos, notNullValue());
       assertThat(photos, hasSize(4));
       assertThat(photos.get(0), equalTo(socialCiel));
       assertThat(photos.get(1), equalTo(socialFleur));
     } finally {
       connexion.close();
-    }
-  }
-
-  @Test
-  public void testDeletePhoto() throws Exception {
-    Connection con = getConnection();
-    String photoIdToDelete = "2";
-    try {
-      assertThat(PhotoDAO.getPhoto(con, photoIdToDelete), notNullValue());
-      PhotoDAO.removePhoto(con, photoIdToDelete);
-      assertThat(PhotoDAO.getPhoto(con, photoIdToDelete).getMediaPK().getId(), nullValue());
-    } finally {
-      con.close();
-    }
-  }
-
-  @Test
-  public void testGetPhotoNotVisible() throws Exception {
-    Connection con = getConnection();
-    try {
-      String instanceWithNotVisiblePhoto = GALLERY1;
-      Collection<Photo> photos =
-          PhotoDAO.getPhotoNotVisible(con, instanceWithNotVisiblePhoto);
-      assertThat(photos, notNullValue());
-      assertThat(photos, hasSize(1));
-      String instanceWithoutNotVisiblePhoto = GALLERY2;
-      photos = PhotoDAO.getPhotoNotVisible(con, instanceWithoutNotVisiblePhoto);
-      assertThat(photos, empty());
-    } finally {
-      con.close();
     }
   }
 
@@ -234,70 +170,10 @@ public class PhotoDaoTest extends BaseGalleryTest {
       media.setId(mediaIdToPerform);
       media.setComponentInstanceId(GALLERY1);
 
-      Collection<String> pathList = MediaDAO.getAlbumIdsOf(con, media);
+      Collection<String> pathList = MediaDAO.getAlbumIdsOf(media);
       assertThat(pathList, notNullValue());
       assertThat(pathList, hasSize(1));
       assertThat(pathList, contains("2"));
-    } finally {
-      con.close();
-    }
-  }
-
-  @Test
-  public void testDeletePhotoPath() throws Exception {
-    String photoId = "5";
-    Connection con = getConnection();
-    try {
-      Media media = new Photo();
-      media.setId(photoId);
-      media.setComponentInstanceId(GALLERY2);
-
-      PhotoDAO.deletePhotoPath(con, media.getId(), media.getComponentInstanceId());
-      Collection<String> pathList = MediaDAO.getAlbumIdsOf(con, media);
-      assertThat(pathList, empty());
-    } finally {
-      con.close();
-    }
-  }
-
-  @Test
-  public void testCreatePhotoPath() throws Exception {
-    String merPhotoId = "4";
-    Connection con = getConnection();
-    try {
-      Media media = new Photo();
-      media.setId(merPhotoId);
-      media.setComponentInstanceId(GALLERY1);
-
-      Collection<String> pathList = MediaDAO.getAlbumIdsOf(con, media);
-      assertThat(pathList, hasSize(1));
-      Photo mer = PhotoDAO.getPhoto(con, merPhotoId);
-      PhotoDAO.createPath(con, mer, "2");
-      pathList = MediaDAO.getAlbumIdsOf(con, media);
-      assertThat(pathList, hasSize(2));
-    } finally {
-      con.close();
-    }
-
-  }
-
-  @Test
-  public void testGetLastUploaded() throws Exception {
-    Connection con = getConnection();
-    try {
-      CacheServiceProvider.getSessionCacheService()
-          .put(UserDetail.CURRENT_REQUESTER_KEY, publisherUser);
-
-      Collection<Photo> allLastUploadedPhotos = PhotoDAO.getLastRegisteredMedia(con, GALLERY1);
-      assertThat(allLastUploadedPhotos, notNullValue());
-      assertThat(allLastUploadedPhotos, hasSize(4));
-
-      CacheServiceProvider.getSessionCacheService().put(UserDetail.CURRENT_REQUESTER_KEY, null);
-
-      Collection<Photo> lastUploadedPhotos = PhotoDAO.getLastRegisteredMedia(con, GALLERY1);
-      assertThat(lastUploadedPhotos, notNullValue());
-      assertThat(lastUploadedPhotos, hasSize(3));
-
     } finally {
       con.close();
     }

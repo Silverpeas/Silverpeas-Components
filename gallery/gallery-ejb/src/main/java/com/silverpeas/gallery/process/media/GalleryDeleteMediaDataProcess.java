@@ -71,7 +71,7 @@ public class GalleryDeleteMediaDataProcess extends AbstractGalleryDataProcess {
   @Override
   protected void processData(final GalleryProcessExecutionContext context,
       final ProcessSession session) throws Exception {
-    MediaDAO.deleteMedia(context.getConnection(), getMedia());
+    MediaDAO.deleteMedia(getMedia());
 
     // Delete form data
     removeXMLContentOfMedia(getMedia().getId(), context);

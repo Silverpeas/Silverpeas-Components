@@ -68,7 +68,7 @@ public class MediaDaoTest extends BaseGalleryTest {
     performDAOTest(new DAOTest() {
       @Override
       public void test(final Connection connection) throws Exception {
-        List<Media> media = MediaDAO.findByCriteria(connection, defaultMediaCriteria());
+        List<Media> media = MediaDAO.findByCriteria(defaultMediaCriteria());
         assertThat(media, hasSize(8));
         assertMediaIdentifiers(media, false, "1", "2", "v_1", "v_2", "s_1", "s_2", "stream_1",
             "stream_2");
@@ -82,30 +82,29 @@ public class MediaDaoTest extends BaseGalleryTest {
       @Override
       public void test(final Connection connection) throws Exception {
         List<Media> media =
-            MediaDAO.findByCriteria(connection, defaultMediaCriteria().albumIdentifierIsOneOf("1"));
+            MediaDAO.findByCriteria(defaultMediaCriteria().albumIdentifierIsOneOf("1"));
         assertMediaIdentifiers(media, false, "1", "v_1", "v_2", "s_1", "s_2", "stream_2");
 
         media =
-            MediaDAO.findByCriteria(connection, defaultMediaCriteria().albumIdentifierIsOneOf("2"));
+            MediaDAO.findByCriteria(defaultMediaCriteria().albumIdentifierIsOneOf("2"));
         assertMediaIdentifiers(media, false, "2", "v_1", "stream_1");
 
         // Album that does not exist
         media = MediaDAO
-            .findByCriteria(connection, defaultMediaCriteria().albumIdentifierIsOneOf("999"));
+            .findByCriteria(defaultMediaCriteria().albumIdentifierIsOneOf("999"));
         assertThat(media, hasSize(0));
 
         // Several albums
-        media = MediaDAO.findByCriteria(connection,
-            defaultMediaCriteria().albumIdentifierIsOneOf("1", "999", "2", "89"));
+        media = MediaDAO.findByCriteria(defaultMediaCriteria().albumIdentifierIsOneOf("1", "999", "2", "89"));
         assertMediaIdentifiers(media, false, "1", "v_2", "s_1", "s_2", "stream_2", "2", "v_1",
             "stream_1");
 
         // Removing the identifier of component instance
-        media = MediaDAO.findByCriteria(connection,
+        media = MediaDAO.findByCriteria(
             defaultMediaCriteria().albumIdentifierIsOneOf("1").onComponentInstanceId(null));
         assertMediaIdentifiers(media, false, "1", "v_1", "v_2", "s_1", "s_2", "stream_2");
 
-        media = MediaDAO.findByCriteria(connection,
+        media = MediaDAO.findByCriteria(
             defaultMediaCriteria().albumIdentifierIsOneOf("2").onComponentInstanceId(null));
         assertMediaIdentifiers(media, false, "2", "v_1", "stream_1");
       }
@@ -118,7 +117,7 @@ public class MediaDaoTest extends BaseGalleryTest {
       @Override
       public void test(final Connection connection) throws Exception {
         List<Media> media = MediaDAO
-            .findByCriteria(connection, defaultMediaCriteria().mediaTypeIsOneOf(MediaType.Photo));
+            .findByCriteria(defaultMediaCriteria().mediaTypeIsOneOf(MediaType.Photo));
         assertThat(media, hasSize(2));
         assertMediaType(media, MediaType.Photo, Photo.class);
       }
@@ -131,7 +130,7 @@ public class MediaDaoTest extends BaseGalleryTest {
       @Override
       public void test(final Connection connection) throws Exception {
         List<Media> media = MediaDAO
-            .findByCriteria(connection, defaultMediaCriteria().mediaTypeIsOneOf(MediaType.Video));
+            .findByCriteria(defaultMediaCriteria().mediaTypeIsOneOf(MediaType.Video));
         assertThat(media, hasSize(2));
         assertMediaType(media, MediaType.Video, Video.class);
       }
@@ -143,12 +142,10 @@ public class MediaDaoTest extends BaseGalleryTest {
     performDAOTest(new DAOTest() {
       @Override
       public void test(final Connection connection) throws Exception {
-        List<Media> media = MediaDAO.findByCriteria(connection,
-            defaultMediaCriteria().mediaTypeIsOneOf(MediaType.Photo, MediaType.Video));
+        List<Media> media = MediaDAO.findByCriteria(defaultMediaCriteria().mediaTypeIsOneOf(MediaType.Photo, MediaType.Video));
         assertThat(media, hasSize(4));
 
-        media = MediaDAO.findByCriteria(connection,
-            defaultMediaCriteria().mediaTypeIsOneOf(MediaType.Photo, MediaType.Video)
+        media = MediaDAO.findByCriteria(defaultMediaCriteria().mediaTypeIsOneOf(MediaType.Photo, MediaType.Video)
                 .limitResultTo(2));
         assertThat(media, hasSize(2));
       }
@@ -161,7 +158,7 @@ public class MediaDaoTest extends BaseGalleryTest {
       @Override
       public void test(final Connection connection) throws Exception {
         List<Media> media = MediaDAO
-            .findByCriteria(connection, defaultMediaCriteria().mediaTypeIsOneOf(MediaType.Sound));
+            .findByCriteria(defaultMediaCriteria().mediaTypeIsOneOf(MediaType.Sound));
         assertThat(media, hasSize(2));
         assertMediaType(media, MediaType.Sound, Sound.class);
       }
@@ -173,8 +170,7 @@ public class MediaDaoTest extends BaseGalleryTest {
     performDAOTest(new DAOTest() {
       @Override
       public void test(final Connection connection) throws Exception {
-        List<Media> media = MediaDAO.findByCriteria(connection,
-            defaultMediaCriteria().mediaTypeIsOneOf(MediaType.Streaming));
+        List<Media> media = MediaDAO.findByCriteria(defaultMediaCriteria().mediaTypeIsOneOf(MediaType.Streaming));
         assertThat(media, hasSize(2));
         assertMediaType(media, MediaType.Streaming, Streaming.class);
       }
@@ -187,13 +183,13 @@ public class MediaDaoTest extends BaseGalleryTest {
       @Override
       public void test(final Connection connection) throws Exception {
         Media media =
-            MediaDAO.getByCriteria(connection, defaultMediaCriteria().identifierIsOneOf("v_2"));
+            MediaDAO.getByCriteria(defaultMediaCriteria().identifierIsOneOf("v_2"));
         assertThat(media, instanceOf(Video.class));
         assertThat(media.getId(), is("v_2"));
 
         // Media that does not exist
         media = MediaDAO
-            .getByCriteria(connection, defaultMediaCriteria().identifierIsOneOf("v_989898"));
+            .getByCriteria(defaultMediaCriteria().identifierIsOneOf("v_989898"));
         assertThat(media, nullValue());
       }
     });
@@ -204,7 +200,7 @@ public class MediaDaoTest extends BaseGalleryTest {
     performDAOTest(new DAOTest() {
       @Override
       public void test(final Connection connection) throws Exception {
-        MediaDAO.getByCriteria(connection, defaultMediaCriteria());
+        MediaDAO.getByCriteria(defaultMediaCriteria());
       }
     });
   }
@@ -215,16 +211,14 @@ public class MediaDaoTest extends BaseGalleryTest {
       @Override
       public void test(final Connection connection) throws Exception {
         List<Media> media =
-            MediaDAO.findByCriteria(connection, defaultMediaCriteria().identifierIsOneOf("v_2"));
+            MediaDAO.findByCriteria(defaultMediaCriteria().identifierIsOneOf("v_2"));
         assertMediaIdentifiers(media, false, "v_2");
 
-        media = MediaDAO.findByCriteria(connection,
-            defaultMediaCriteria().identifierIsOneOf("v_2", "v_26", "stream_9", "2"));
+        media = MediaDAO.findByCriteria(defaultMediaCriteria().identifierIsOneOf("v_2", "v_26", "stream_9", "2"));
         assertMediaIdentifiers(media, false, "v_2", "2");
 
         // Removing the identifier of component instance
-        media = MediaDAO.findByCriteria(connection,
-            defaultMediaCriteria().identifierIsOneOf("v_2", "v_26", "stream_9", "2")
+        media = MediaDAO.findByCriteria(defaultMediaCriteria().identifierIsOneOf("v_2", "v_26", "stream_9", "2")
                 .onComponentInstanceId(null));
         assertMediaIdentifiers(media, false, "v_2", "stream_9", "2");
       }
@@ -236,26 +230,22 @@ public class MediaDaoTest extends BaseGalleryTest {
     performDAOTest(new DAOTest() {
       @Override
       public void test(final Connection connection) throws Exception {
-        List<Media> media = MediaDAO.findByCriteria(connection,
-            mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming));
+        List<Media> media = MediaDAO.findByCriteria(mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming));
         assertThat(media, hasSize(1));
         assertMediaType(media, MediaType.Streaming, Streaming.class);
         assertThat(media.get(0).getId(), is("stream_2"));
 
-        media = MediaDAO.findByCriteria(connection,
-            mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming)
+        media = MediaDAO.findByCriteria(mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming)
                 .setRequester(adminAccessUser));
         assertThat(media, hasSize(2));
         assertMediaType(media, MediaType.Streaming, Streaming.class);
 
-        media = MediaDAO.findByCriteria(connection,
-            mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming)
+        media = MediaDAO.findByCriteria(mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming)
                 .setRequester(publisherUser));
         assertThat(media, hasSize(2));
         assertMediaType(media, MediaType.Streaming, Streaming.class);
 
-        media = MediaDAO.findByCriteria(connection,
-            mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming)
+        media = MediaDAO.findByCriteria(mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming)
                 .setRequester(writerUser));
         assertThat(media, hasSize(1));
         assertMediaType(media, MediaType.Streaming, Streaming.class);
@@ -265,8 +255,7 @@ public class MediaDaoTest extends BaseGalleryTest {
         CacheServiceProvider.getSessionCacheService()
             .put(UserDetail.CURRENT_REQUESTER_KEY, publisherUser);
 
-        media = MediaDAO.findByCriteria(connection,
-            mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming));
+        media = MediaDAO.findByCriteria(mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming));
         assertThat(media, hasSize(2));
         assertMediaType(media, MediaType.Streaming, Streaming.class);
 
@@ -274,27 +263,23 @@ public class MediaDaoTest extends BaseGalleryTest {
         CacheServiceProvider.getSessionCacheService()
             .put(UserDetail.CURRENT_REQUESTER_KEY, writerUser);
 
-        media = MediaDAO.findByCriteria(connection,
-            mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming));
+        media = MediaDAO.findByCriteria(mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming));
         assertThat(media, hasSize(1));
         assertMediaType(media, MediaType.Streaming, Streaming.class);
         assertThat(media.get(0).getId(), is("stream_2"));
 
-        media = MediaDAO.findByCriteria(connection,
-            mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming)
+        media = MediaDAO.findByCriteria(mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming)
                 .withVisibility(FORCE_GET_ALL));
         assertThat(media, hasSize(2));
         assertMediaType(media, MediaType.Streaming, Streaming.class);
 
-        media = MediaDAO.findByCriteria(connection,
-            mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming)
+        media = MediaDAO.findByCriteria(mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming)
                 .withVisibility(HIDDEN_ONLY));
         assertThat(media, hasSize(1));
         assertMediaType(media, MediaType.Streaming, Streaming.class);
         assertThat(media.get(0).getId(), is("stream_1"));
 
-        media = MediaDAO.findByCriteria(connection,
-            mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming)
+        media = MediaDAO.findByCriteria(mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming)
                 .withVisibility(VISIBLE_ONLY));
         assertThat(media, hasSize(1));
         assertMediaType(media, MediaType.Streaming, Streaming.class);
@@ -304,15 +289,13 @@ public class MediaDaoTest extends BaseGalleryTest {
         CacheServiceProvider.getSessionCacheService()
             .put(UserDetail.CURRENT_REQUESTER_KEY, publisherUser);
 
-        media = MediaDAO.findByCriteria(connection,
-            mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming)
+        media = MediaDAO.findByCriteria(mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming)
                 .withVisibility(HIDDEN_ONLY));
         assertThat(media, hasSize(1));
         assertMediaType(media, MediaType.Streaming, Streaming.class);
         assertThat(media.get(0).getId(), is("stream_1"));
 
-        media = MediaDAO.findByCriteria(connection,
-            mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming)
+        media = MediaDAO.findByCriteria(mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Streaming)
                 .withVisibility(VISIBLE_ONLY));
         assertThat(media, hasSize(1));
         assertMediaType(media, MediaType.Streaming, Streaming.class);
@@ -326,32 +309,27 @@ public class MediaDaoTest extends BaseGalleryTest {
     performDAOTest(new DAOTest() {
       @Override
       public void test(final Connection connection) throws Exception {
-        List<Media> media = MediaDAO.findByCriteria(connection,
-            mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Sound));
+        List<Media> media = MediaDAO.findByCriteria(mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Sound));
         assertThat(media, hasSize(1));
         assertMediaType(media, MediaType.Sound, Sound.class);
         assertThat(media.get(0).getId(), is("s_2"));
 
-        media = MediaDAO.findByCriteria(connection,
-            mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Sound)
+        media = MediaDAO.findByCriteria(mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Sound)
                 .setRequester(adminAccessUser));
         assertThat(media, hasSize(2));
         assertMediaType(media, MediaType.Sound, Sound.class);
 
-        media = MediaDAO.findByCriteria(connection,
-            mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Sound)
+        media = MediaDAO.findByCriteria(mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Sound)
                 .setRequester(publisherUser));
         assertThat(media, hasSize(2));
         assertMediaType(media, MediaType.Sound, Sound.class);
 
-        media = MediaDAO.findByCriteria(connection,
-            mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Sound)
+        media = MediaDAO.findByCriteria(mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Sound)
                 .setRequester(writerUser));
         assertThat(media, hasSize(2));
         assertMediaType(media, MediaType.Sound, Sound.class);
 
-        media = MediaDAO.findByCriteria(connection,
-            mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Sound)
+        media = MediaDAO.findByCriteria(mediaCriteriaFutureReferenceDate().mediaTypeIsOneOf(MediaType.Sound)
                 .setRequester(userUser));
         assertThat(media, hasSize(1));
         assertMediaType(media, MediaType.Sound, Sound.class);
@@ -366,15 +344,15 @@ public class MediaDaoTest extends BaseGalleryTest {
       @Override
       public void test(final Connection connection) throws Exception {
         Date today = Timestamp.valueOf("2014-03-30 11:33:45.854");
-        List<Media> media = MediaDAO.findByCriteria(connection,
+        List<Media> media = MediaDAO.findByCriteria(
             MediaCriteria.fromNbDaysBeforeThatMediaIsNotVisible(0).referenceDateOf(today));
         assertThat(media, hasSize(0));
 
-        media = MediaDAO.findByCriteria(connection,
+        media = MediaDAO.findByCriteria(
             MediaCriteria.fromNbDaysBeforeThatMediaIsNotVisible(1).referenceDateOf(today));
         assertThat(media, hasSize(1));
 
-        media = MediaDAO.findByCriteria(connection,
+        media = MediaDAO.findByCriteria(
             MediaCriteria.fromNbDaysBeforeThatMediaIsNotVisible(2).referenceDateOf(today));
         assertThat(media, hasSize(0));
       }
@@ -391,12 +369,12 @@ public class MediaDaoTest extends BaseGalleryTest {
         media.setId(mediaIdToPerform);
         media.setComponentInstanceId(INSTANCE_A);
 
-        Collection<String> pathList = MediaDAO.getAlbumIdsOf(connection, media);
+        Collection<String> pathList = MediaDAO.getAlbumIdsOf(media);
         assertThat(pathList, contains("1"));
 
         media.setId("v_1");
 
-        pathList = MediaDAO.getAlbumIdsOf(connection, media);
+        pathList = MediaDAO.getAlbumIdsOf(media);
         assertThat(pathList, containsInAnyOrder("1", "2"));
       }
     });
@@ -410,19 +388,19 @@ public class MediaDaoTest extends BaseGalleryTest {
         Date beginDate = DateUtils.addDays(CREATE_DATE, +1);
         Date endDate = DateUtils.addDays(CREATE_DATE, +2);
         List<SocialInformation> socialInformationList = MediaDAO
-            .getAllMediaIdByUserId(connection, writerUser.getId(), Period.from(beginDate, endDate));
+            .getAllMediaIdByUserId(writerUser.getId(), Period.from(beginDate, endDate));
         assertThat(socialInformationList, hasSize(0));
 
         beginDate = DateUtils.addDays(CREATE_DATE, 0);
         endDate = DateUtils.addDays(CREATE_DATE, +2);
         socialInformationList = MediaDAO
-            .getAllMediaIdByUserId(connection, writerUser.getId(), Period.from(beginDate, endDate));
+            .getAllMediaIdByUserId(writerUser.getId(), Period.from(beginDate, endDate));
         assertThat(socialInformationList, hasSize(1));
 
         beginDate = DateUtils.addDays(LAST_UPDATE_DATE, -2);
         endDate = DateUtils.addDays(LAST_UPDATE_DATE, +2);
         socialInformationList = MediaDAO
-            .getAllMediaIdByUserId(connection, writerUser.getId(), Period.from(beginDate, endDate));
+            .getAllMediaIdByUserId(writerUser.getId(), Period.from(beginDate, endDate));
         assertThat(socialInformationList, hasSize(1));
       }
     });
@@ -436,22 +414,19 @@ public class MediaDaoTest extends BaseGalleryTest {
         Date beginDate = DateUtils.addDays(CREATE_DATE, +1);
         Date endDate = DateUtils.addDays(CREATE_DATE, +2);
         List<SocialInformation> socialInformationList = MediaDAO
-            .getSocialInformationListOfMyContacts(connection,
-                Arrays.asList(writerUser.getId(), adminAccessUser.getId(), publisherUser.getId()),
+            .getSocialInformationListOfMyContacts(Arrays.asList(writerUser.getId(), adminAccessUser.getId(), publisherUser.getId()),
                 Arrays.asList(INSTANCE_A, "otherInstanceId"), Period.from(beginDate, endDate));
         assertThat(socialInformationList, hasSize(0));
 
         beginDate = DateUtils.addDays(CREATE_DATE, 0);
         endDate = DateUtils.addDays(CREATE_DATE, +2);
-        socialInformationList = MediaDAO.getSocialInformationListOfMyContacts(connection,
-            Arrays.asList(writerUser.getId(), adminAccessUser.getId(), publisherUser.getId()),
+        socialInformationList = MediaDAO.getSocialInformationListOfMyContacts(Arrays.asList(writerUser.getId(), adminAccessUser.getId(), publisherUser.getId()),
             Arrays.asList(INSTANCE_A, "otherInstanceId"), Period.from(beginDate, endDate));
         assertThat(socialInformationList, hasSize(4));
 
         beginDate = DateUtils.addDays(LAST_UPDATE_DATE, -2);
         endDate = DateUtils.addDays(LAST_UPDATE_DATE, +2);
-        socialInformationList = MediaDAO.getSocialInformationListOfMyContacts(connection,
-            Arrays.asList(writerUser.getId(), adminAccessUser.getId(), publisherUser.getId()),
+        socialInformationList = MediaDAO.getSocialInformationListOfMyContacts(Arrays.asList(writerUser.getId(), adminAccessUser.getId(), publisherUser.getId()),
             Arrays.asList(INSTANCE_A, "otherInstanceId"), Period.from(beginDate, endDate));
         assertThat(socialInformationList, hasSize(7));
       }
@@ -464,7 +439,7 @@ public class MediaDaoTest extends BaseGalleryTest {
       @Override
       public void test(final Connection connection) throws Exception {
         Photo photo =
-            MediaDAO.getByCriteria(connection, defaultMediaCriteria().identifierIsOneOf("1"))
+            MediaDAO.getByCriteria(defaultMediaCriteria().identifierIsOneOf("1"))
                 .getPhoto();
         assertThat(photo, notNullValue());
         assertThat(photo.getMediaPK(), notNullValue());
@@ -500,7 +475,7 @@ public class MediaDaoTest extends BaseGalleryTest {
       @Override
       public void test(final Connection connection) throws Exception {
         Video video =
-            MediaDAO.getByCriteria(connection, defaultMediaCriteria().identifierIsOneOf("v_1"))
+            MediaDAO.getByCriteria(defaultMediaCriteria().identifierIsOneOf("v_1"))
                 .getVideo();
         assertThat(video, notNullValue());
         assertThat(video.getMediaPK(), notNullValue());
@@ -540,7 +515,7 @@ public class MediaDaoTest extends BaseGalleryTest {
       @Override
       public void test(final Connection connection) throws Exception {
         Sound sound =
-            MediaDAO.getByCriteria(connection, defaultMediaCriteria().identifierIsOneOf("s_1"))
+            MediaDAO.getByCriteria(defaultMediaCriteria().identifierIsOneOf("s_1"))
                 .getSound();
         assertThat(sound, notNullValue());
         assertThat(sound.getMediaPK(), notNullValue());
@@ -578,7 +553,7 @@ public class MediaDaoTest extends BaseGalleryTest {
       @Override
       public void test(final Connection connection) throws Exception {
         Streaming streaming =
-            MediaDAO.getByCriteria(connection, defaultMediaCriteria().identifierIsOneOf("stream_1"))
+            MediaDAO.getByCriteria(defaultMediaCriteria().identifierIsOneOf("stream_1"))
                 .getStreaming();
         assertThat(streaming, notNullValue());
         assertThat(streaming.getMediaPK(), notNullValue());
@@ -607,12 +582,12 @@ public class MediaDaoTest extends BaseGalleryTest {
     performDAOTest(new DAOTest() {
       @Override
       public void test(final Connection connection) throws Exception {
-        List<Media> media = MediaDAO.findByCriteria(connection, defaultMediaCriteria());
+        List<Media> media = MediaDAO.findByCriteria(defaultMediaCriteria());
         assertThat(media, hasSize(8));
         assertMediaIdentifiers(media, false, "1", "2", "v_1", "v_2", "s_1", "s_2", "stream_1",
             "stream_2");
 
-        media = MediaDAO.findByCriteria(connection, defaultMediaCriteria().orderedBy(AUTHOR_ASC));
+        media = MediaDAO.findByCriteria(defaultMediaCriteria().orderedBy(AUTHOR_ASC));
         assertThat(media, hasSize(8));
         int index = 3;
         assertThat(media.get(index++).getAuthor(), isEmptyString());
@@ -622,7 +597,7 @@ public class MediaDaoTest extends BaseGalleryTest {
         assertThat(media.get(index++).getAuthor(), is("an author v_2"));
         assertThat(index, is(8));
 
-        media = MediaDAO.findByCriteria(connection, defaultMediaCriteria().orderedBy(AUTHOR_DESC));
+        media = MediaDAO.findByCriteria(defaultMediaCriteria().orderedBy(AUTHOR_DESC));
         assertThat(media, hasSize(8));
         index = 0;
         assertThat(media.get(index++).getAuthor(), is("an author v_2"));
@@ -633,7 +608,7 @@ public class MediaDaoTest extends BaseGalleryTest {
         assertThat(index, is(5));
 
         media = MediaDAO
-            .findByCriteria(connection, defaultMediaCriteria().orderedBy(AUTHOR_ASC_EMPTY_END));
+            .findByCriteria(defaultMediaCriteria().orderedBy(AUTHOR_ASC_EMPTY_END));
         assertThat(media, hasSize(8));
         index = 0;
         assertThat(media.get(index++).getAuthor(), is("an author 1"));
@@ -644,7 +619,7 @@ public class MediaDaoTest extends BaseGalleryTest {
         assertThat(index, is(5));
 
         media = MediaDAO
-            .findByCriteria(connection, defaultMediaCriteria().orderedBy(AUTHOR_DESC_EMPTY_END));
+            .findByCriteria(defaultMediaCriteria().orderedBy(AUTHOR_DESC_EMPTY_END));
         assertThat(media, hasSize(8));
         index = 0;
         assertThat(media.get(index++).getAuthor(), is("an author v_2"));
@@ -656,8 +631,7 @@ public class MediaDaoTest extends BaseGalleryTest {
 
 
         // Two stupid orderings that shows that it works !
-        media = MediaDAO.findByCriteria(connection,
-            defaultMediaCriteria().orderedBy(AUTHOR_ASC_EMPTY_END, AUTHOR_ASC));
+        media = MediaDAO.findByCriteria(defaultMediaCriteria().orderedBy(AUTHOR_ASC_EMPTY_END, AUTHOR_ASC));
         assertThat(media, hasSize(8));
         index = 0;
         assertThat(media.get(index++).getAuthor(), is("an author 1"));
@@ -667,8 +641,7 @@ public class MediaDaoTest extends BaseGalleryTest {
         assertThat(media.get(index++).getAuthor(), isEmptyString());
         assertThat(index, is(5));
 
-        media = MediaDAO.findByCriteria(connection,
-            defaultMediaCriteria().orderedBy(AUTHOR_ASC, AUTHOR_ASC_EMPTY_END));
+        media = MediaDAO.findByCriteria(defaultMediaCriteria().orderedBy(AUTHOR_ASC, AUTHOR_ASC_EMPTY_END));
         assertThat(media, hasSize(8));
         index = 3;
         assertThat(media.get(index++).getAuthor(), isEmptyString());
@@ -686,12 +659,12 @@ public class MediaDaoTest extends BaseGalleryTest {
     performDAOTest(new DAOTest() {
       @Override
       public void test(final Connection connection) throws Exception {
-        List<Media> media = MediaDAO.findByCriteria(connection, defaultMediaCriteria());
+        List<Media> media = MediaDAO.findByCriteria(defaultMediaCriteria());
         assertThat(media, hasSize(8));
         assertMediaIdentifiers(media, false, "1", "2", "v_1", "v_2", "s_1", "s_2", "stream_1",
             "stream_2");
 
-        media = MediaDAO.findByCriteria(connection, defaultMediaCriteria().orderedBy(TITLE_ASC));
+        media = MediaDAO.findByCriteria(defaultMediaCriteria().orderedBy(TITLE_ASC));
         assertThat(media, hasSize(8));
         int index = 0;
         assertThat(media.get(index++).getTitle(), is("title 1"));
@@ -705,7 +678,7 @@ public class MediaDaoTest extends BaseGalleryTest {
         assertThat(index, is(8));
 
         media = MediaDAO
-            .findByCriteria(connection, defaultMediaCriteria().orderedBy(TITLE_DESC, AUTHOR_DESC));
+            .findByCriteria(defaultMediaCriteria().orderedBy(TITLE_DESC, AUTHOR_DESC));
         assertThat(media, hasSize(8));
         index = 0;
         assertThat(media.get(index++).getTitle(), is("title v_2"));
@@ -718,8 +691,7 @@ public class MediaDaoTest extends BaseGalleryTest {
         assertThat(media.get(index++).getTitle(), is("title 1"));
         assertThat(index, is(8));
 
-        media = MediaDAO.findByCriteria(connection,
-            defaultMediaCriteria().orderedBy(AUTHOR_DESC_EMPTY_END, TITLE_ASC));
+        media = MediaDAO.findByCriteria(defaultMediaCriteria().orderedBy(AUTHOR_DESC_EMPTY_END, TITLE_ASC));
         assertThat(media, hasSize(8));
         index = 0;
         assertThat(media.get(index++).getTitle(), is("title v_2"));
@@ -740,13 +712,13 @@ public class MediaDaoTest extends BaseGalleryTest {
     performDAOTest(new DAOTest() {
       @Override
       public void test(final Connection connection) throws Exception {
-        List<Media> media = MediaDAO.findByCriteria(connection, defaultMediaCriteria());
+        List<Media> media = MediaDAO.findByCriteria(defaultMediaCriteria());
         assertThat(media, hasSize(8));
         assertMediaIdentifiers(media, false, "1", "2", "v_1", "v_2", "s_1", "s_2", "stream_1",
             "stream_2");
 
         media =
-            MediaDAO.findByCriteria(connection, defaultMediaCriteria().orderedBy(DIMENSION_ASC));
+            MediaDAO.findByCriteria(defaultMediaCriteria().orderedBy(DIMENSION_ASC));
         assertThat(media, hasSize(8));
         int index = 0;
         assertThat(media.get(index++).getId(), is("2"));
@@ -756,7 +728,7 @@ public class MediaDaoTest extends BaseGalleryTest {
         assertThat(index, is(4));
 
         media =
-            MediaDAO.findByCriteria(connection, defaultMediaCriteria().orderedBy(DIMENSION_DESC));
+            MediaDAO.findByCriteria(defaultMediaCriteria().orderedBy(DIMENSION_DESC));
         assertThat(media, hasSize(8));
         index = 0;
         assertThat(media.get(index++).getId(), is("v_1"));
@@ -798,7 +770,7 @@ public class MediaDaoTest extends BaseGalleryTest {
 
         assertThat(newPhoto.getId(), nullValue());
         String newId =
-            MediaDAO.saveMedia(connection, OperationContext.fromUser(adminAccessUser), newPhoto);
+            MediaDAO.saveMedia(OperationContext.fromUser(adminAccessUser), newPhoto);
         assertThat(newPhoto.getId(), notNullValue());
         assertThat(newPhoto.getId(), is(newId));
 
@@ -907,7 +879,7 @@ public class MediaDaoTest extends BaseGalleryTest {
         assertThat(photoRow.getInteger("resolutionW"), is(800));
 
         Photo photoToUpdate = MediaDAO
-            .getByCriteria(connection, defaultMediaCriteria().identifierIsOneOf(mediaIdToUpdate))
+            .getByCriteria(defaultMediaCriteria().identifierIsOneOf(mediaIdToUpdate))
             .getPhoto();
 
         photoToUpdate.setTitle(photoToUpdate.getTitle() + "_updated");
@@ -924,7 +896,7 @@ public class MediaDaoTest extends BaseGalleryTest {
 
         String savedMediaId = photoToUpdate.getId();
         String mediaId =
-            MediaDAO.saveMedia(connection, OperationContext.fromUser(publisherUser), photoToUpdate);
+            MediaDAO.saveMedia(OperationContext.fromUser(publisherUser), photoToUpdate);
         assertThat(mediaId, is(savedMediaId));
         assertThat(mediaId, is(photoToUpdate.getId()));
 
@@ -981,7 +953,7 @@ public class MediaDaoTest extends BaseGalleryTest {
     performDAOTest(new DAOTest() {
       @Override
       public void test(final Connection connection) throws Exception {
-        MediaDAO.deleteMedia(connection, null);
+        MediaDAO.deleteMedia(null);
       }
     });
   }
@@ -1011,10 +983,10 @@ public class MediaDaoTest extends BaseGalleryTest {
         String mediaIdToDelete = "2";
 
         Photo photoToDelete = MediaDAO
-            .getByCriteria(connection, defaultMediaCriteria().identifierIsOneOf(mediaIdToDelete))
+            .getByCriteria(defaultMediaCriteria().identifierIsOneOf(mediaIdToDelete))
             .getPhoto();
 
-        MediaDAO.deleteMedia(connection, photoToDelete);
+        MediaDAO.deleteMedia(photoToDelete);
 
         actualDataSet = getActualDataSet();
         mediaTable = actualDataSet.getTable("SC_Gallery_Media");
@@ -1032,7 +1004,7 @@ public class MediaDaoTest extends BaseGalleryTest {
         pathTable = actualDataSet.getTable("SC_Gallery_Path");
         assertThat(pathTable.getRowCount(), is(MEDIA_PATH_ROW_COUNT - 1));
 
-        MediaDAO.deleteMedia(connection, photoToDelete);
+        MediaDAO.deleteMedia(photoToDelete);
 
         actualDataSet = getActualDataSet();
         mediaTable = actualDataSet.getTable("SC_Gallery_Media");
@@ -1080,7 +1052,7 @@ public class MediaDaoTest extends BaseGalleryTest {
 
         assertThat(newVideo.getId(), nullValue());
         String newId =
-            MediaDAO.saveMedia(connection, OperationContext.fromUser(writerUser), newVideo);
+            MediaDAO.saveMedia(OperationContext.fromUser(writerUser), newVideo);
         assertThat(newVideo.getId(), notNullValue());
         assertThat(newVideo.getId(), is(newId));
 
@@ -1166,7 +1138,7 @@ public class MediaDaoTest extends BaseGalleryTest {
         assertThat(videoRow.getLong("duration"), nullValue());
 
         Video videoToUpdate = MediaDAO
-            .getByCriteria(connection, defaultMediaCriteria().identifierIsOneOf(mediaIdToUpdate))
+            .getByCriteria(defaultMediaCriteria().identifierIsOneOf(mediaIdToUpdate))
             .getVideo();
 
         videoToUpdate.setDefinition(Definition.of(1920, 1080));
@@ -1175,7 +1147,7 @@ public class MediaDaoTest extends BaseGalleryTest {
 
         String savedMediaId = videoToUpdate.getId();
         String mediaId =
-            MediaDAO.saveMedia(connection, OperationContext.fromUser(writerUser), videoToUpdate);
+            MediaDAO.saveMedia(OperationContext.fromUser(writerUser), videoToUpdate);
         assertThat(mediaId, is(savedMediaId));
         assertThat(mediaId, is(videoToUpdate.getId()));
 
@@ -1230,10 +1202,10 @@ public class MediaDaoTest extends BaseGalleryTest {
         String mediaIdToDelete = "v_1";
 
         Video videoToDelete = MediaDAO
-            .getByCriteria(connection, defaultMediaCriteria().identifierIsOneOf(mediaIdToDelete))
+            .getByCriteria(defaultMediaCriteria().identifierIsOneOf(mediaIdToDelete))
             .getVideo();
 
-        MediaDAO.deleteMedia(connection, videoToDelete);
+        MediaDAO.deleteMedia(videoToDelete);
 
         actualDataSet = getActualDataSet();
         mediaTable = actualDataSet.getTable("SC_Gallery_Media");
@@ -1251,7 +1223,7 @@ public class MediaDaoTest extends BaseGalleryTest {
         pathTable = actualDataSet.getTable("SC_Gallery_Path");
         assertThat(pathTable.getRowCount(), is(MEDIA_PATH_ROW_COUNT - 2));
 
-        MediaDAO.deleteMedia(connection, videoToDelete);
+        MediaDAO.deleteMedia(videoToDelete);
 
         actualDataSet = getActualDataSet();
         mediaTable = actualDataSet.getTable("SC_Gallery_Media");
@@ -1296,7 +1268,7 @@ public class MediaDaoTest extends BaseGalleryTest {
 
         assertThat(newSound.getId(), nullValue());
         String newId =
-            MediaDAO.saveMedia(connection, OperationContext.fromUser(adminAccessUser), newSound);
+            MediaDAO.saveMedia(OperationContext.fromUser(adminAccessUser), newSound);
         assertThat(newSound.getId(), notNullValue());
         assertThat(newSound.getId(), is(newId));
 
@@ -1378,7 +1350,7 @@ public class MediaDaoTest extends BaseGalleryTest {
         assertThat(soundRow.getLong("duration"), is(3600000L));
 
         Sound soundToUpdate = MediaDAO
-            .getByCriteria(connection, defaultMediaCriteria().identifierIsOneOf(mediaIdToUpdate))
+            .getByCriteria(defaultMediaCriteria().identifierIsOneOf(mediaIdToUpdate))
             .getSound();
 
         soundToUpdate.setBitrate(1500);
@@ -1386,7 +1358,7 @@ public class MediaDaoTest extends BaseGalleryTest {
 
         String savedMediaId = soundToUpdate.getId();
         String mediaId =
-            MediaDAO.saveMedia(connection, OperationContext.fromUser(writerUser), soundToUpdate);
+            MediaDAO.saveMedia(OperationContext.fromUser(writerUser), soundToUpdate);
         assertThat(mediaId, is(savedMediaId));
         assertThat(mediaId, is(soundToUpdate.getId()));
 
@@ -1439,10 +1411,10 @@ public class MediaDaoTest extends BaseGalleryTest {
         String mediaIdToDelete = "s_1";
 
         Sound soundToDelete = MediaDAO
-            .getByCriteria(connection, defaultMediaCriteria().identifierIsOneOf(mediaIdToDelete))
+            .getByCriteria(defaultMediaCriteria().identifierIsOneOf(mediaIdToDelete))
             .getSound();
 
-        MediaDAO.deleteMedia(connection, soundToDelete);
+        MediaDAO.deleteMedia(soundToDelete);
 
         actualDataSet = getActualDataSet();
         mediaTable = actualDataSet.getTable("SC_Gallery_Media");
@@ -1460,7 +1432,7 @@ public class MediaDaoTest extends BaseGalleryTest {
         pathTable = actualDataSet.getTable("SC_Gallery_Path");
         assertThat(pathTable.getRowCount(), is(MEDIA_PATH_ROW_COUNT - 1));
 
-        MediaDAO.deleteMedia(connection, soundToDelete);
+        MediaDAO.deleteMedia(soundToDelete);
 
         actualDataSet = getActualDataSet();
         mediaTable = actualDataSet.getTable("SC_Gallery_Media");
@@ -1500,7 +1472,7 @@ public class MediaDaoTest extends BaseGalleryTest {
 
         assertThat(newStreaming.getId(), nullValue());
         String newId =
-            MediaDAO.saveMedia(connection, OperationContext.fromUser(writerUser), newStreaming);
+            MediaDAO.saveMedia(OperationContext.fromUser(writerUser), newStreaming);
         assertThat(newStreaming.getId(), notNullValue());
         assertThat(newStreaming.getId(), is(newId));
 
@@ -1546,7 +1518,7 @@ public class MediaDaoTest extends BaseGalleryTest {
 
         // Updating to test (to verify update data in context of creation)
         Thread.sleep(100);
-        MediaDAO.saveMedia(connection, OperationContext.fromUser(adminAccessUser), newStreaming);
+        MediaDAO.saveMedia(OperationContext.fromUser(adminAccessUser), newStreaming);
 
         actualDataSet = getActualDataSet();
         mediaTable = actualDataSet.getTable("SC_Gallery_Media");
@@ -1561,8 +1533,7 @@ public class MediaDaoTest extends BaseGalleryTest {
         assertThat(mediaRow.getString("lastUpdatedBy"), is(adminAccessUser.getId()));
 
         Thread.sleep(100);
-        MediaDAO.saveMedia(connection,
-            OperationContext.fromUser(writerUser).setUpdatingInCaseOfCreation(), newStreaming);
+        MediaDAO.saveMedia(OperationContext.fromUser(writerUser).setUpdatingInCaseOfCreation(), newStreaming);
 
         actualDataSet = getActualDataSet();
         mediaTable = actualDataSet.getTable("SC_Gallery_Media");
@@ -1607,7 +1578,7 @@ public class MediaDaoTest extends BaseGalleryTest {
         assertThat(streamingRow.getString("provider"), is("yOuTuBE"));
 
         Streaming streamingToUpdate = MediaDAO
-            .getByCriteria(connection, defaultMediaCriteria().identifierIsOneOf(mediaIdToUpdate))
+            .getByCriteria(defaultMediaCriteria().identifierIsOneOf(mediaIdToUpdate))
             .getStreaming();
 
         streamingToUpdate.setHomepageUrl("streaming URL");
@@ -1615,7 +1586,7 @@ public class MediaDaoTest extends BaseGalleryTest {
 
         String savedMediaId = streamingToUpdate.getId();
         String mediaId = MediaDAO
-            .saveMedia(connection, OperationContext.fromUser(writerUser), streamingToUpdate);
+            .saveMedia(OperationContext.fromUser(writerUser), streamingToUpdate);
         assertThat(mediaId, is(savedMediaId));
         assertThat(mediaId, is(streamingToUpdate.getId()));
 
@@ -1668,10 +1639,10 @@ public class MediaDaoTest extends BaseGalleryTest {
         String mediaIdToDelete = "stream_2";
 
         Streaming streamingToDelete = MediaDAO
-            .getByCriteria(connection, defaultMediaCriteria().identifierIsOneOf(mediaIdToDelete))
+            .getByCriteria(defaultMediaCriteria().identifierIsOneOf(mediaIdToDelete))
             .getStreaming();
 
-        MediaDAO.deleteMedia(connection, streamingToDelete);
+        MediaDAO.deleteMedia(streamingToDelete);
 
         actualDataSet = getActualDataSet();
         mediaTable = actualDataSet.getTable("SC_Gallery_Media");
@@ -1689,7 +1660,7 @@ public class MediaDaoTest extends BaseGalleryTest {
         pathTable = actualDataSet.getTable("SC_Gallery_Path");
         assertThat(pathTable.getRowCount(), is(MEDIA_PATH_ROW_COUNT - 1));
 
-        MediaDAO.deleteMedia(connection, streamingToDelete);
+        MediaDAO.deleteMedia(streamingToDelete);
 
         actualDataSet = getActualDataSet();
         mediaTable = actualDataSet.getTable("SC_Gallery_Media");
@@ -1735,13 +1706,13 @@ public class MediaDaoTest extends BaseGalleryTest {
         String mediaIdToPerform = "stream_1";
 
         Streaming streamingToPerform = MediaDAO
-            .getByCriteria(connection, defaultMediaCriteria().identifierIsOneOf(mediaIdToPerform))
+            .getByCriteria(defaultMediaCriteria().identifierIsOneOf(mediaIdToPerform))
             .getStreaming();
 
         TableRow mediaPathRow = getTableRowFor(pathTable, "nodeId", "26");
         assertThat(mediaPathRow, nullValue());
 
-        MediaDAO.saveMediaPath(connection, streamingToPerform, "26");
+        MediaDAO.saveMediaPath(streamingToPerform, "26");
 
         actualDataSet = getActualDataSet();
         mediaTable = actualDataSet.getTable("SC_Gallery_Media");
@@ -1764,7 +1735,7 @@ public class MediaDaoTest extends BaseGalleryTest {
         assertThat(mediaPathRow.getString("instanceId"), is(INSTANCE_A));
         assertThat(mediaPathRow.getInteger("nodeId"), is(26));
 
-        MediaDAO.saveMediaPath(connection, streamingToPerform, "26");
+        MediaDAO.saveMediaPath(streamingToPerform, "26");
 
         actualDataSet = getActualDataSet();
         mediaTable = actualDataSet.getTable("SC_Gallery_Media");
@@ -1782,7 +1753,7 @@ public class MediaDaoTest extends BaseGalleryTest {
         pathTable = actualDataSet.getTable("SC_Gallery_Path");
         assertThat(pathTable.getRowCount(), is(MEDIA_PATH_ROW_COUNT + 1));
 
-        MediaDAO.saveMediaPath(connection, streamingToPerform, "38");
+        MediaDAO.saveMediaPath(streamingToPerform, "38");
 
         actualDataSet = getActualDataSet();
         mediaTable = actualDataSet.getTable("SC_Gallery_Media");
@@ -1838,10 +1809,10 @@ public class MediaDaoTest extends BaseGalleryTest {
         String mediaIdToPerform = "v_1";
 
         Video videoToPerform = MediaDAO
-            .getByCriteria(connection, defaultMediaCriteria().identifierIsOneOf(mediaIdToPerform))
+            .getByCriteria(defaultMediaCriteria().identifierIsOneOf(mediaIdToPerform))
             .getVideo();
 
-        MediaDAO.deleteAllMediaPath(connection, videoToPerform);
+        MediaDAO.deleteAllMediaPath(videoToPerform);
 
         actualDataSet = getActualDataSet();
         mediaTable = actualDataSet.getTable("SC_Gallery_Media");
@@ -1859,7 +1830,7 @@ public class MediaDaoTest extends BaseGalleryTest {
         pathTable = actualDataSet.getTable("SC_Gallery_Path");
         assertThat(pathTable.getRowCount(), is(MEDIA_PATH_ROW_COUNT - 2));
 
-        MediaDAO.deleteAllMediaPath(connection, videoToPerform);
+        MediaDAO.deleteAllMediaPath(videoToPerform);
 
         actualDataSet = getActualDataSet();
         mediaTable = actualDataSet.getTable("SC_Gallery_Media");

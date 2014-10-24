@@ -38,19 +38,18 @@ import com.silverpeas.gallery.model.Streaming;
 import com.silverpeas.gallery.model.Video;
 import com.silverpeas.gallery.socialNetwork.SocialInformationGallery;
 import com.silverpeas.socialnetwork.model.SocialInformation;
-import org.silverpeas.util.CollectionUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.exception.UtilException;
-import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.date.Period;
 import org.silverpeas.media.Definition;
+import org.silverpeas.persistence.jdbc.JdbcSqlQueries;
+import org.silverpeas.persistence.jdbc.JdbcSqlQuery;
+import org.silverpeas.persistence.jdbc.ResultSetWrapper;
+import org.silverpeas.persistence.jdbc.SelectResultRowProcessor;
 import org.silverpeas.persistence.repository.OperationContext;
+import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.exception.UtilException;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -58,10 +57,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import static org.silverpeas.util.DBUtil.*;
+import static org.silverpeas.persistence.jdbc.JdbcSqlQuery.*;
+import static org.silverpeas.util.DBUtil.getUniqueId;
 
 public class MediaDAO {
 
@@ -69,48 +70,45 @@ public class MediaDAO {
   }
 
   private static final String SELECT_INTERNAL_MEDIA_PREFIX =
-      "select I.mediaId, I.fileName, I.fileSize, I.fileMimeType, I.download, I.beginDownloadDate," +
+      "I.mediaId, I.fileName, I.fileSize, I.fileMimeType, I.download, I.beginDownloadDate," +
           " I.endDownloadDate, ";
 
   /**
    * Gets the media behind the specified criteria.
-   * @param con the database connection.
    * @param criteria the media criteria.
    * @return the media behind the criteria, null if no media found and throws
    * {@link IllegalArgumentException} if several media are found.
    * @throws SQLException
    * @throws IllegalArgumentException
    */
-  public static Media getByCriteria(final Connection con, final MediaCriteria criteria)
+  public static Media getByCriteria(final MediaCriteria criteria)
       throws SQLException, IllegalArgumentException {
-    return unique(findByCriteria(con, criteria));
+    return unique(findByCriteria(criteria));
   }
 
   /**
    * Finds media according to the given criteria.
-   * @param con the database connection.
    * @param criteria the media criteria.
    * @return the media list corresponding to the given criteria.
    */
-  public static List<Media> findByCriteria(final Connection con, final MediaCriteria criteria)
-      throws SQLException {
+  public static List<Media> findByCriteria(final MediaCriteria criteria) throws SQLException {
     MediaSQLQueryBuilder queryBuilder = new MediaSQLQueryBuilder();
     criteria.processWith(queryBuilder);
 
-    Pair<String, List<Object>> queryBuild = queryBuilder.result();
+    JdbcSqlQuery selectQuery = queryBuilder.result();
 
-    final Map<String, Photo> photos = new HashMap<String, Photo>();
-    final Map<String, Video> videos = new HashMap<String, Video>();
-    final Map<String, Sound> sounds = new HashMap<String, Sound>();
-    final Map<String, Streaming> streamings = new HashMap<String, Streaming>();
+    final Map<String, Photo> photos = new HashMap<>();
+    final Map<String, Video> videos = new HashMap<>();
+    final Map<String, Sound> sounds = new HashMap<>();
+    final Map<String, Streaming> streamings = new HashMap<>();
 
-    List<Media> media = select(con, queryBuild.getLeft(), queryBuild.getRight(),
-        new SelectResultRowProcessor<Media>(criteria.getResultLimit()) {
+    List<Media> media =
+        selectQuery.execute(new SelectResultRowProcessor<Media>(criteria.getResultLimit()) {
           @Override
-          protected Media currentRow(final int rowIndex, final ResultSet rs) throws SQLException {
-            String mediaId = rs.getString(1);
-            MediaType mediaType = MediaType.from(rs.getString(2));
-            String instanceId = rs.getString(3);
+          protected Media currentRow(final ResultSetWrapper row) throws SQLException {
+            String mediaId = row.getString(1);
+            MediaType mediaType = MediaType.from(row.getString(2));
+            String instanceId = row.getString(3);
             final Media currentMedia;
             switch (mediaType) {
               case Photo:
@@ -134,68 +132,60 @@ public class MediaDAO {
             }
             if (currentMedia == null) {
               // Unknown media ...
-              SilverTrace.warn(GalleryComponentSettings.COMPONENT_NAME,
-                  "MediaDAO.findByCriteria()",
+              SilverTrace.warn(GalleryComponentSettings.COMPONENT_NAME, "MediaDAO.findByCriteria()",
                   "root.MSG_GEN_PARAM_VALUE", "unknown media type: " + mediaType);
               return null;
             }
 
             currentMedia.setMediaPK(new MediaPK(mediaId, instanceId));
-            currentMedia.setTitle(rs.getString(4));
-            currentMedia.setDescription(rs.getString(5));
-            currentMedia.setAuthor(rs.getString(6));
-            currentMedia.setKeyWord(rs.getString(7));
+            currentMedia.setTitle(row.getString(4));
+            currentMedia.setDescription(row.getString(5));
+            currentMedia.setAuthor(row.getString(6));
+            currentMedia.setKeyWord(row.getString(7));
             currentMedia.setVisibilityPeriod(
-                Period.check(Period.from(new Date(rs.getLong(8)), new Date(rs.getLong(9)))));
-            currentMedia.setCreationDate(rs.getTimestamp(10));
-            currentMedia.setCreatorId(rs.getString(11));
-            currentMedia.setLastUpdateDate(rs.getTimestamp(12));
-            currentMedia.setLastUpdatedBy(rs.getString(13));
+                Period.check(Period.from(new Date(row.getLong(8)), new Date(row.getLong(9)))));
+            currentMedia.setCreationDate(row.getTimestamp(10));
+            currentMedia.setCreatorId(row.getString(11));
+            currentMedia.setLastUpdateDate(row.getTimestamp(12));
+            currentMedia.setLastUpdatedBy(row.getString(13));
             return currentMedia;
           }
         });
 
-    decoratePhotos(con, media, photos);
-    decorateVideos(con, media, videos);
-    decorateSounds(con, media, sounds);
-    decorateStreamings(con, media, streamings);
+    decoratePhotos(media, photos);
+    decorateVideos(media, videos);
+    decorateSounds(media, sounds);
+    decorateStreamings(media, streamings);
 
     return queryBuilder.orderingResult(media);
   }
 
   /**
    * Adding all data of photos.
-   * @param con
-   * @param media
-   * @param photos
+   * @param media the list of media that have not been yet decorated.
+   * @param photos indexed photo media to decorate.
    * @throws SQLException
    */
-  private static void decoratePhotos(final Connection con, List<Media> media,
-      Map<String, Photo> photos) throws SQLException {
+  private static void decoratePhotos(List<Media> media, Map<String, Photo> photos)
+      throws SQLException {
     if (!photos.isEmpty()) {
       Collection<Collection<String>> idGroups =
-          CollectionUtil.split(new ArrayList<String>(photos.keySet()));
-      StringBuilder queryBase = new StringBuilder(SELECT_INTERNAL_MEDIA_PREFIX).append(
+          CollectionUtil.split(new ArrayList<>(photos.keySet()));
+      String queryBase = SELECT_INTERNAL_MEDIA_PREFIX +
           "P.resolutionW, P.resolutionH from SC_Gallery_Internal I join SC_Gallery_Photo P on I" +
-              ".mediaId = P.mediaId where I.mediaId in ");
+          ".mediaId = P.mediaId where I.mediaId";
       for (Collection<String> mediaIds : idGroups) {
-        PreparedStatement prepStmt = null;
-        ResultSet rs = null;
-        try {
-          prepStmt =
-              con.prepareStatement(DBUtil.appendListOfParameters(queryBase, mediaIds).toString());
-          DBUtil.setParameters(prepStmt, mediaIds);
-          rs = prepStmt.executeQuery();
-          while (rs.next()) {
-            String mediaId = rs.getString(1);
+        createSelect(queryBase).in(mediaIds).execute(new SelectResultRowProcessor<Photo>() {
+          @Override
+          protected Photo currentRow(final ResultSetWrapper row) throws SQLException {
+            String mediaId = row.getString(1);
             mediaIds.remove(mediaId);
             Photo currentPhoto = photos.get(mediaId);
-            decorateInternalMedia(rs, currentPhoto);
-            currentPhoto.setDefinition(Definition.of(rs.getInt(8),rs.getInt(9)));
+            decorateInternalMedia(row, currentPhoto);
+            currentPhoto.setDefinition(Definition.of(row.getInt(8), row.getInt(9)));
+            return null;
           }
-        } finally {
-          DBUtil.close(rs, prepStmt);
-        }
+        });
         // Not found
         for (String mediaIdNotFound : mediaIds) {
           Photo currentPhoto = photos.remove(mediaIdNotFound);
@@ -210,39 +200,32 @@ public class MediaDAO {
 
   /**
    * Adding all data of videos.
-   * @param con
-   * @param media
-   * @param videos
+   * @param media the list of media that have not been yet decorated.
+   * @param videos indexed video media to decorate.
    * @throws SQLException
    */
-  private static void decorateVideos(final Connection con, List<Media> media,
-      Map<String, Video> videos) throws SQLException {
+  private static void decorateVideos(List<Media> media, Map<String, Video> videos)
+      throws SQLException {
     if (!videos.isEmpty()) {
       Collection<Collection<String>> idGroups =
-          CollectionUtil.split(new ArrayList<String>(videos.keySet()));
-      StringBuilder queryBase = new StringBuilder(SELECT_INTERNAL_MEDIA_PREFIX).append(
+          CollectionUtil.split(new ArrayList<>(videos.keySet()));
+      String queryBase = SELECT_INTERNAL_MEDIA_PREFIX +
           "V.resolutionW, V.resolutionH, V.bitrate, V.duration from SC_Gallery_Internal I join " +
-              "SC_Gallery_Video V on I.mediaId = V.mediaId where I.mediaId in ");
+          "SC_Gallery_Video V on I.mediaId = V.mediaId where I.mediaId";
       for (Collection<String> mediaIds : idGroups) {
-        PreparedStatement prepStmt = null;
-        ResultSet rs = null;
-        try {
-          prepStmt =
-              con.prepareStatement(DBUtil.appendListOfParameters(queryBase, mediaIds).toString());
-          DBUtil.setParameters(prepStmt, mediaIds);
-          rs = prepStmt.executeQuery();
-          while (rs.next()) {
-            String mediaId = rs.getString(1);
+        createSelect(queryBase).in(mediaIds).execute(new SelectResultRowProcessor<Video>() {
+          @Override
+          protected Video currentRow(final ResultSetWrapper row) throws SQLException {
+            String mediaId = row.getString(1);
             mediaIds.remove(mediaId);
             Video currentVideo = videos.get(mediaId);
-            decorateInternalMedia(rs, currentVideo);
-            currentVideo.setDefinition(Definition.of(rs.getInt(8),rs.getInt(9)));
-            currentVideo.setBitrate(rs.getLong(10));
-            currentVideo.setDuration(rs.getLong(11));
+            decorateInternalMedia(row, currentVideo);
+            currentVideo.setDefinition(Definition.of(row.getInt(8), row.getInt(9)));
+            currentVideo.setBitrate(row.getLong(10));
+            currentVideo.setDuration(row.getLong(11));
+            return null;
           }
-        } finally {
-          DBUtil.close(rs, prepStmt);
-        }
+        });
         // Not found
         for (String mediaIdNotFound : mediaIds) {
           Video currentVideo = videos.remove(mediaIdNotFound);
@@ -257,38 +240,31 @@ public class MediaDAO {
 
   /**
    * Adding all data of sounds.
-   * @param con
-   * @param media
-   * @param sounds
+   * @param media the list of media that have not been yet decorated.
+   * @param sounds indexed sound media to decorate.
    * @throws SQLException
    */
-  private static void decorateSounds(final Connection con, List<Media> media,
-      Map<String, Sound> sounds) throws SQLException {
+  private static void decorateSounds(List<Media> media, Map<String, Sound> sounds)
+      throws SQLException {
     if (!sounds.isEmpty()) {
       Collection<Collection<String>> idGroups =
-          CollectionUtil.split(new ArrayList<String>(sounds.keySet()));
-      StringBuilder queryBase = new StringBuilder(SELECT_INTERNAL_MEDIA_PREFIX).append(
+          CollectionUtil.split(new ArrayList<>(sounds.keySet()));
+      String queryBase = SELECT_INTERNAL_MEDIA_PREFIX +
           "S.bitrate, S.duration from SC_Gallery_Internal I join SC_Gallery_Sound S on I.mediaId " +
-              "= S.mediaId where I.mediaId in ");
+          "= S.mediaId where I.mediaId";
       for (Collection<String> mediaIds : idGroups) {
-        PreparedStatement prepStmt = null;
-        ResultSet rs = null;
-        try {
-          prepStmt =
-              con.prepareStatement(DBUtil.appendListOfParameters(queryBase, mediaIds).toString());
-          DBUtil.setParameters(prepStmt, mediaIds);
-          rs = prepStmt.executeQuery();
-          while (rs.next()) {
-            String mediaId = rs.getString(1);
+        createSelect(queryBase).in(mediaIds).execute(new SelectResultRowProcessor<Sound>() {
+          @Override
+          protected Sound currentRow(final ResultSetWrapper row) throws SQLException {
+            String mediaId = row.getString(1);
             mediaIds.remove(mediaId);
             Sound currentSound = sounds.get(mediaId);
-            decorateInternalMedia(rs, currentSound);
-            currentSound.setBitrate(rs.getLong(8));
-            currentSound.setDuration(rs.getLong(9));
+            decorateInternalMedia(row, currentSound);
+            currentSound.setBitrate(row.getLong(8));
+            currentSound.setDuration(row.getLong(9));
+            return null;
           }
-        } finally {
-          DBUtil.close(rs, prepStmt);
-        }
+        });
         // Not found
         for (String mediaIdNotFound : mediaIds) {
           Sound currentSound = sounds.remove(mediaIdNotFound);
@@ -303,43 +279,34 @@ public class MediaDAO {
 
   /**
    * Adding all data of streamings.
-   * @param con
-   * @param media
-   * @param streamings
+   * @param media the list of media that have not been yet decorated.
+   * @param streamings indexed streaming media to decorate.
    * @throws SQLException
    */
-  private static void decorateStreamings(final Connection con, List<Media> media,
-      Map<String, Streaming> streamings) throws SQLException {
+  private static void decorateStreamings(List<Media> media, Map<String, Streaming> streamings)
+      throws SQLException {
     if (!streamings.isEmpty()) {
       Collection<Collection<String>> idGroups =
-          CollectionUtil.split(new ArrayList<String>(streamings.keySet()));
-      StringBuilder queryBase = new StringBuilder(
-          "select S.mediaId, S.homepageUrl, S.provider from SC_Gallery_Streaming S where S" +
-              ".mediaId in ");
+          CollectionUtil.split(new ArrayList<>(streamings.keySet()));
+      String queryBase =
+          "select S.mediaId, S.homepageUrl, S.provider from SC_Gallery_Streaming S where S.mediaId";
       for (Collection<String> mediaIds : idGroups) {
-        PreparedStatement prepStmt = null;
-        ResultSet rs = null;
-        try {
-          prepStmt =
-              con.prepareStatement(DBUtil.appendListOfParameters(queryBase, mediaIds).toString());
-          DBUtil.setParameters(prepStmt, mediaIds);
-          rs = prepStmt.executeQuery();
-          while (rs.next()) {
-            String mediaId = rs.getString(1);
+        createSelect(queryBase).in(mediaIds).execute(new SelectResultRowProcessor<Streaming>() {
+          @Override
+          protected Streaming currentRow(final ResultSetWrapper row) throws SQLException {
+            String mediaId = row.getString(1);
             mediaIds.remove(mediaId);
             Streaming currentStreaming = streamings.get(mediaId);
-            currentStreaming.setHomepageUrl(rs.getString(2));
-            currentStreaming.setProvider(StreamingProvider.from(rs.getString(3)));
+            currentStreaming.setHomepageUrl(row.getString(2));
+            currentStreaming.setProvider(StreamingProvider.from(row.getString(3)));
+            return null;
           }
-        } finally {
-          DBUtil.close(rs, prepStmt);
-        }
+        });
         // Not found
         for (String mediaIdNotFound : mediaIds) {
           Streaming currentStreaming = streamings.remove(mediaIdNotFound);
           media.remove(currentStreaming);
-          SilverTrace.warn(GalleryComponentSettings.COMPONENT_NAME,
-              "MediaDAO.decorateStreamings()",
+          SilverTrace.warn(GalleryComponentSettings.COMPONENT_NAME, "MediaDAO.decorateStreamings()",
               "root.MSG_GEN_PARAM_VALUE",
               "streaming not found (removed from result): " + mediaIdNotFound);
         }
@@ -349,32 +316,33 @@ public class MediaDAO {
 
   /**
    * Centralization of internal media decoration.
-   * @param rs
-   * @param iMedia
+   * @param rsw the wrapper of the result set.
+   * @param iMedia the internal media instance to decorate.
    */
-  private static void decorateInternalMedia(ResultSet rs, InternalMedia iMedia)
+  private static void decorateInternalMedia(ResultSetWrapper rsw, InternalMedia iMedia)
       throws SQLException {
-    iMedia.setFileName(rs.getString(2));
-    iMedia.setFileSize(rs.getLong(3));
-    iMedia.setFileMimeType(MediaMimeType.fromMimeType(rs.getString(4)));
-    iMedia.setDownloadAuthorized(rs.getInt(5) == 1);
-    iMedia.setDownloadPeriod(getPeriod(rs, 6, 7));
+    iMedia.setFileName(rsw.getString(2));
+    iMedia.setFileSize(rsw.getLong(3));
+    iMedia.setFileMimeType(MediaMimeType.fromMimeType(rsw.getString(4)));
+    iMedia.setDownloadAuthorized(rsw.getInt(5) == 1);
+    iMedia.setDownloadPeriod(getPeriod(rsw, 6, 7));
   }
 
   /**
    * Gets a period.
-   * @param rs
-   * @param indexBegin
-   * @param indexEnd
-   * @return
+   * @param rsw the wrapper of the result set.
+   * @param indexBegin the index of the start date information in the current result set row.
+   * @param indexEnd the index of the end date information in the current result set row.
+   * @return the period guessed from the given indexes of start and end date information.
    * @throws SQLException
    */
-  private static Period getPeriod(ResultSet rs, int indexBegin, int indexEnd) throws SQLException {
-    Date begin = DBUtil.getDateFromLong(rs, indexBegin);
+  private static Period getPeriod(ResultSetWrapper rsw, int indexBegin, int indexEnd)
+      throws SQLException {
+    Date begin = rsw.getDateFromLong(indexBegin);
     if (begin == null) {
       begin = DateUtil.MINIMUM_DATE;
     }
-    Date end = DBUtil.getDateFromLong(rs, indexEnd);
+    Date end = rsw.getDateFromLong(indexEnd);
     if (end == null) {
       end = DateUtil.MAXIMUM_DATE;
     }
@@ -383,22 +351,21 @@ public class MediaDAO {
 
   /**
    * Saves (insert or update) a media.
-   * @param con
-   * @param context
-   * @param media
+   * @param context the context of save operation.
+   * @param media the media to save.
    * @return the id of the saved media.
    * @throws SQLException
    * @throws UtilException
    */
-  public static String saveMedia(Connection con, OperationContext context, Media media)
+  public static String saveMedia(OperationContext context, Media media)
       throws SQLException, UtilException {
-    List<Pair<String, List<Object>>> updateQueries = new ArrayList<Pair<String, List<Object>>>();
+    List<JdbcSqlQuery> updateQueries = new ArrayList<>();
 
     // The current Uuid
     String uuid = media.getId();
 
     boolean isInsert = !isSqlDefined(uuid) ||
-        selectCount(con, "select count(*) from SC_Gallery_Media where mediaId = ?", uuid) == 0;
+        createCountFor("SC_Gallery_Media").where("mediaId = ?", uuid).execute() == 0;
 
     // A new ID
     if (isInsert) {
@@ -411,15 +378,15 @@ public class MediaDAO {
 
     // Photo
     if (media.getType().isPhoto()) {
-      updateQueries.addAll(prepareSavePhoto(context, media.getPhoto(), isInsert));
+      updateQueries.addAll(prepareSavePhoto(media.getPhoto(), isInsert));
     }
     // Video
     if (media.getType().isVideo()) {
-      updateQueries.addAll(prepareSaveVideo(context, media.getVideo(), isInsert));
+      updateQueries.addAll(prepareSaveVideo(media.getVideo(), isInsert));
     }
     // Sound
     if (media.getType().isSound()) {
-      updateQueries.addAll(prepareSaveSound(context, media.getSound(), isInsert));
+      updateQueries.addAll(prepareSaveSound(media.getSound(), isInsert));
     }
     // Streaming
     if (media.getType().isStreaming()) {
@@ -427,345 +394,303 @@ public class MediaDAO {
     }
 
     // Execution of update queries
-    executeUpdate(con, updateQueries);
+    JdbcSqlQueries.execute(updateQueries);
     return uuid;
   }
 
   /**
    * Prepares query and parameters in order to save a photo.
-   * @param context
-   * @param photo
-   * @param isInsert
-   * @return
+   * @param photo the photo media to save.
+   * @param isInsert true to indicate an insert context, false to indicated an update one.
+   * @return the prepared query to save data at photo media level.
    */
-  private static List<Pair<String, List<Object>>> prepareSavePhoto(OperationContext context,
-      Photo photo, boolean isInsert) {
-    List<Pair<String, List<Object>>> updateQueries = new ArrayList<Pair<String, List<Object>>>();
+  private static List<JdbcSqlQuery> prepareSavePhoto(Photo photo, boolean isInsert) {
+    List<JdbcSqlQuery> updateQueries = new ArrayList<>();
     updateQueries.add(prepareSaveInternalMedia(photo, isInsert));
-    StringBuilder photoSave = new StringBuilder();
-    List<Object> photoParams = new ArrayList<Object>();
+    final JdbcSqlQuery photoSave;
     if (isInsert) {
-      photoSave.append("insert into SC_Gallery_Photo (");
-      appendSaveParameter(photoSave, "mediaId", photo.getId(), true, photoParams);
+      photoSave = createInsertFor("SC_Gallery_Photo");
+      photoSave.addInsertParam("mediaId", photo.getId());
     } else {
-      photoSave.append("update SC_Gallery_Photo set ");
+      photoSave = createUpdateFor("SC_Gallery_Photo");
     }
     Definition definition = photo.getDefinition();
-    appendSaveParameter(photoSave, "resolutionW", definition.getWidth(), isInsert, photoParams);
-    appendSaveParameter(photoSave, "resolutionH", definition.getHeight(), isInsert, photoParams);
-    if (isInsert) {
-      appendListOfParameters(photoSave.append(") values "), photoParams);
-    } else {
-      appendParameter(photoSave, " where mediaId = ?", photo.getId(), photoParams);
+    photoSave.addSaveParam("resolutionW", definition.getWidth(), isInsert);
+    photoSave.addSaveParam("resolutionH", definition.getHeight(), isInsert);
+    if (!isInsert) {
+      photoSave.where("mediaId = ?", photo.getId());
     }
-    updateQueries.add(Pair.of(photoSave.toString(), photoParams));
+    updateQueries.add(photoSave);
     return updateQueries;
   }
 
   /**
    * Prepares query and parameters in order to save a video.
-   * @param context
-   * @param video
-   * @param isInsert
-   * @return
+   * @param video the video media to save.
+   * @param isInsert true to indicate an insert context, false to indicated an update one.
+   * @return the prepared query to save data at video media level.
    */
-  private static List<Pair<String, List<Object>>> prepareSaveVideo(OperationContext context,
-      Video video, boolean isInsert) {
-    List<Pair<String, List<Object>>> updateQueries = new ArrayList<Pair<String, List<Object>>>();
+  private static List<JdbcSqlQuery> prepareSaveVideo(Video video, boolean isInsert) {
+    List<JdbcSqlQuery> updateQueries = new ArrayList<>();
     updateQueries.add(prepareSaveInternalMedia(video, isInsert));
-    StringBuilder videoSave = new StringBuilder();
-    List<Object> videoParams = new ArrayList<Object>();
+    final JdbcSqlQuery videoSave;
     if (isInsert) {
-      videoSave.append("insert into SC_Gallery_Video (");
-      appendSaveParameter(videoSave, "mediaId", video.getId(), true, videoParams);
+      videoSave = createInsertFor("SC_Gallery_Video");
+      videoSave.addInsertParam("mediaId", video.getId());
     } else {
-      videoSave.append("update SC_Gallery_Video set ");
+      videoSave = createUpdateFor("SC_Gallery_Video");
     }
     Definition definition = video.getDefinition();
-    appendSaveParameter(videoSave, "resolutionW", definition.getWidth(), isInsert, videoParams);
-    appendSaveParameter(videoSave, "resolutionH", definition.getHeight(), isInsert, videoParams);
-    appendSaveParameter(videoSave, "bitrate", video.getBitrate(), isInsert, videoParams);
-    appendSaveParameter(videoSave, "duration", video.getDuration(), isInsert, videoParams);
-    if (isInsert) {
-      appendListOfParameters(videoSave.append(") values "), videoParams);
-    } else {
-      appendParameter(videoSave, " where mediaId = ?", video.getId(), videoParams);
+    videoSave.addSaveParam("resolutionW", definition.getWidth(), isInsert);
+    videoSave.addSaveParam("resolutionH", definition.getHeight(), isInsert);
+    videoSave.addSaveParam("bitrate", video.getBitrate(), isInsert);
+    videoSave.addSaveParam("duration", video.getDuration(), isInsert);
+    if (!isInsert) {
+      videoSave.where("mediaId = ?", video.getId());
     }
-    updateQueries.add(Pair.of(videoSave.toString(), videoParams));
+    updateQueries.add(videoSave);
     return updateQueries;
   }
 
   /**
    * Prepares query and parameters in order to save a sound.
-   * @param context
-   * @param sound
-   * @param isInsert
-   * @return
+   * @param sound the sound media to save.
+   * @param isInsert true to indicate an insert context, false to indicated an update one.
+   * @return the prepared query to save data at sound media level.
    */
-  private static List<Pair<String, List<Object>>> prepareSaveSound(OperationContext context,
-      Sound sound, boolean isInsert) {
-    List<Pair<String, List<Object>>> updateQueries = new ArrayList<Pair<String, List<Object>>>();
+  private static List<JdbcSqlQuery> prepareSaveSound(Sound sound, boolean isInsert) {
+    List<JdbcSqlQuery> updateQueries = new ArrayList<>();
     updateQueries.add(prepareSaveInternalMedia(sound, isInsert));
-    StringBuilder soundSave = new StringBuilder();
-    List<Object> soundParams = new ArrayList<Object>();
+    final JdbcSqlQuery soundSave;
     if (isInsert) {
-      soundSave.append("insert into SC_Gallery_Sound (");
-      appendSaveParameter(soundSave, "mediaId", sound.getId(), true, soundParams);
+      soundSave = createInsertFor("SC_Gallery_Sound");
+      soundSave.addInsertParam("mediaId", sound.getId());
     } else {
-      soundSave.append("update SC_Gallery_Sound set ");
+      soundSave = createUpdateFor("SC_Gallery_Sound");
     }
-    appendSaveParameter(soundSave, "bitrate", sound.getBitrate(), isInsert, soundParams);
-    appendSaveParameter(soundSave, "duration", sound.getDuration(), isInsert, soundParams);
-    if (isInsert) {
-      appendListOfParameters(soundSave.append(") values "), soundParams);
-    } else {
-      appendParameter(soundSave, " where mediaId = ?", sound.getId(), soundParams);
+    soundSave.addSaveParam("bitrate", sound.getBitrate(), isInsert);
+    soundSave.addSaveParam("duration", sound.getDuration(), isInsert);
+    if (!isInsert) {
+      soundSave.where("mediaId = ?", sound.getId());
     }
-    updateQueries.add(Pair.of(soundSave.toString(), soundParams));
+    updateQueries.add(soundSave);
     return updateQueries;
   }
 
   /**
    * Prepares query and parameters in order to save a streaming.
-   * @param streaming
-   * @param isInsert
-   * @return
+   * @param streaming the streaming to save.
+   * @param isInsert true to indicate an insert context, false to indicated an update one.
+   * @return the prepared query to save data at streaming media level.
    */
-  private static Pair<String, List<Object>> prepareSaveStreaming(Streaming streaming,
-      boolean isInsert) {
-    StringBuilder streamingSave = new StringBuilder();
-    List<Object> streamingParams = new ArrayList<Object>();
+  private static JdbcSqlQuery prepareSaveStreaming(Streaming streaming, boolean isInsert) {
+    final JdbcSqlQuery streamingSave;
     if (isInsert) {
-      streamingSave.append("insert into SC_Gallery_Streaming (");
-      appendSaveParameter(streamingSave, "mediaId", streaming.getId(), true, streamingParams);
+      streamingSave = createInsertFor("SC_Gallery_Streaming");
+      streamingSave.addInsertParam("mediaId", streaming.getId());
     } else {
+      streamingSave = createUpdateFor("SC_Gallery_Streaming");
       streamingSave.append("update SC_Gallery_Streaming set ");
     }
-    appendSaveParameter(streamingSave, "homepageUrl", streaming.getHomepageUrl(), isInsert,
-        streamingParams);
-    appendSaveParameter(streamingSave, "provider", streaming.getProvider(), isInsert,
-        streamingParams);
-    if (isInsert) {
-      appendListOfParameters(streamingSave.append(") values "), streamingParams);
-    } else {
-      appendParameter(streamingSave, " where mediaId = ?", streaming.getId(), streamingParams);
+    streamingSave.addSaveParam("homepageUrl", streaming.getHomepageUrl(), isInsert);
+    streamingSave.addSaveParam("provider", streaming.getProvider(), isInsert);
+    if (!isInsert) {
+      streamingSave.where("mediaId = ?", streaming.getId());
     }
-    return Pair.of(streamingSave.toString(), streamingParams);
+    return streamingSave;
   }
 
   /**
    * Prepares query and parameters in order to save a media.
-   * @param context
-   * @param media
-   * @param isInsert
-   * @return
+   * @param context the context of save operation.
+   * @param media the media to save.
+   * @param isInsert true to indicate an insert context, false to indicated an update one.
+   * @return the prepared query to save data at common media level.
    */
-  private static Pair<String, List<Object>> prepareSaveMedia(OperationContext context, Media media,
+  private static JdbcSqlQuery prepareSaveMedia(OperationContext context, Media media,
       boolean isInsert) {
-    StringBuilder mediaSave = new StringBuilder();
-    List<Object> mediaParams = new ArrayList<Object>();
+    final JdbcSqlQuery mediaSave;
     if (isInsert) {
-      mediaSave.append("insert into SC_Gallery_Media (");
-      appendSaveParameter(mediaSave, "mediaId", media.getId(), true, mediaParams);
+      mediaSave = createInsertFor("SC_Gallery_Media");
+      mediaSave.addInsertParam("mediaId", media.getId());
     } else {
-      mediaSave.append("update SC_Gallery_Media set ");
+      mediaSave = createUpdateFor("SC_Gallery_Media");
     }
-    appendSaveParameter(mediaSave, "mediaType", media.getType(), isInsert, mediaParams);
-    appendSaveParameter(mediaSave, "instanceId", media.getComponentInstanceId(), isInsert,
-        mediaParams);
-    appendSaveParameter(mediaSave, "title", media.getTitle(), isInsert, mediaParams);
-    appendSaveParameter(mediaSave, "description", media.getDescription(), isInsert, mediaParams);
-    appendSaveParameter(mediaSave, "author", media.getAuthor(), isInsert, mediaParams);
-    appendSaveParameter(mediaSave, "keyword", media.getKeyWord(), isInsert, mediaParams);
-    appendSaveParameter(mediaSave, "beginVisibilityDate",
-        media.getVisibilityPeriod().getBeginDate().getTime(), isInsert, mediaParams);
-    appendSaveParameter(mediaSave, "endVisibilityDate",
-        media.getVisibilityPeriod().getEndDate().getTime(), isInsert, mediaParams);
+    mediaSave.addSaveParam("mediaType", media.getType(), isInsert);
+    mediaSave.addSaveParam("instanceId", media.getComponentInstanceId(), isInsert);
+    mediaSave.addSaveParam("title", media.getTitle(), isInsert);
+    mediaSave.addSaveParam("description", media.getDescription(), isInsert);
+    mediaSave.addSaveParam("author", media.getAuthor(), isInsert);
+    mediaSave.addSaveParam("keyword", media.getKeyWord(), isInsert);
+    mediaSave
+        .addSaveParam("beginVisibilityDate", media.getVisibilityPeriod().getBeginDate().getTime(),
+            isInsert);
+    mediaSave.addSaveParam("endVisibilityDate", media.getVisibilityPeriod().getEndDate().getTime(),
+        isInsert);
     Timestamp saveDate = new Timestamp(new Date().getTime());
     if (isInsert) {
       media.setCreationDate(saveDate);
       media.setCreator(context.getUser());
       media.setLastUpdateDate(saveDate);
       media.setLastUpdater(context.getUser());
-      appendSaveParameter(mediaSave, "createDate", media.getCreationDate(), true, mediaParams);
-      appendSaveParameter(mediaSave, "createdBy", media.getCreatorId(), true, mediaParams);
-      appendSaveParameter(mediaSave, "lastUpdateDate", media.getLastUpdateDate(), true, mediaParams);
-      appendSaveParameter(mediaSave, "lastUpdatedBy", media.getLastUpdatedBy(), true, mediaParams);
+      mediaSave.addInsertParam("createDate", media.getCreationDate());
+      mediaSave.addInsertParam("createdBy", media.getCreatorId());
+      mediaSave.addInsertParam("lastUpdateDate", media.getLastUpdateDate());
+      mediaSave.addInsertParam("lastUpdatedBy", media.getLastUpdatedBy());
     } else if (!context.isUpdatingInCaseOfCreation()) {
       media.setLastUpdateDate(saveDate);
       media.setLastUpdater(context.getUser());
-      appendSaveParameter(mediaSave, "lastUpdateDate", media.getLastUpdateDate(), false,
-          mediaParams);
-      appendSaveParameter(mediaSave, "lastUpdatedBy", media.getLastUpdatedBy(), false, mediaParams);
+      mediaSave.addUpdateParam("lastUpdateDate", media.getLastUpdateDate());
+      mediaSave.addUpdateParam("lastUpdatedBy", media.getLastUpdatedBy());
     }
-    if (isInsert) {
-      appendListOfParameters(mediaSave.append(") values "), mediaParams);
-    } else {
-      appendParameter(mediaSave, " where mediaId = ?", media.getId(), mediaParams);
+    if (!isInsert) {
+      mediaSave.where("mediaId = ?", media.getId());
     }
-    return Pair.of(mediaSave.toString(), mediaParams);
+    return mediaSave;
   }
 
   /**
    * Prepares query and parameters in order to save a media.
-   * @param iMedia
-   * @param isInsert
-   * @return
+   * @param iMedia the internal media to save.
+   * @param isInsert true to indicate an insert context, false to indicated an update one.
+   * @return the prepared query to save data at internal media level.
    */
-  private static Pair<String, List<Object>> prepareSaveInternalMedia(InternalMedia iMedia,
-      boolean isInsert) {
-    StringBuilder iMediaSave = new StringBuilder();
-    List<Object> iMediaParams = new ArrayList<Object>();
+  private static JdbcSqlQuery prepareSaveInternalMedia(InternalMedia iMedia, boolean isInsert) {
+    final JdbcSqlQuery iMediaSave;
     if (isInsert) {
-      iMediaSave.append("insert into SC_Gallery_Internal (");
-      appendSaveParameter(iMediaSave, "mediaId", iMedia.getId(), true, iMediaParams);
+      iMediaSave = createInsertFor("SC_Gallery_Internal");
+      iMediaSave.addInsertParam("mediaId", iMedia.getId());
     } else {
-      iMediaSave.append("update SC_Gallery_Internal set ");
+      iMediaSave = createUpdateFor("SC_Gallery_Internal");
     }
-    appendSaveParameter(iMediaSave, "fileName", iMedia.getFileName(), isInsert, iMediaParams);
-    appendSaveParameter(iMediaSave, "fileSize", iMedia.getFileSize(), isInsert, iMediaParams);
-    appendSaveParameter(iMediaSave, "fileMimeType", iMedia.getFileMimeType().getMimeType(),
-        isInsert, iMediaParams);
-    appendSaveParameter(iMediaSave, "download", iMedia.isDownloadAuthorized() ? 1 : 0, isInsert,
-        iMediaParams);
+    iMediaSave.addSaveParam("fileName", iMedia.getFileName(), isInsert);
+    iMediaSave.addSaveParam("fileSize", iMedia.getFileSize(), isInsert);
+    iMediaSave.addSaveParam("fileMimeType", iMedia.getFileMimeType().getMimeType(), isInsert);
+    iMediaSave.addSaveParam("download", iMedia.isDownloadAuthorized() ? 1 : 0, isInsert);
     Long beginDate = iMedia.getDownloadPeriod().getBeginDatable().isDefined() ?
         iMedia.getDownloadPeriod().getBeginDate().getTime() : null;
-    appendSaveParameter(iMediaSave, "beginDownloadDate", beginDate, isInsert, iMediaParams);
+    iMediaSave.addSaveParam("beginDownloadDate", beginDate, isInsert);
     Long endDate = iMedia.getDownloadPeriod().getEndDatable().isDefined() ?
         iMedia.getDownloadPeriod().getEndDate().getTime() : null;
-    appendSaveParameter(iMediaSave, "endDownloadDate", endDate, isInsert, iMediaParams);
-    if (isInsert) {
-      appendListOfParameters(iMediaSave.append(") values "), iMediaParams);
-    } else {
-      appendParameter(iMediaSave, " where mediaId = ?", iMedia.getId(), iMediaParams);
+    iMediaSave.addSaveParam("endDownloadDate", endDate, isInsert);
+    if (!isInsert) {
+      iMediaSave.where("mediaId = ?", iMedia.getId());
     }
-    return Pair.of(iMediaSave.toString(), iMediaParams);
+    return iMediaSave;
   }
 
   /**
-   * Deletes the specified media (and its paths).
-   * @param con
-   * @param media
+   * Deletes the specified media (and its album links).
+   * @param media the media to delete.
    * @throws SQLException
    */
-  public static void deleteMedia(Connection con, Media media) throws SQLException {
-    List<Object> mediaIdParam = Arrays.asList((Object) media.getId());
-    List<Pair<String, List<Object>>> updateQueries = new ArrayList<Pair<String, List<Object>>>();
-    updateQueries.add(Pair.of("delete from SC_Gallery_Media where mediaId = ?", mediaIdParam));
+  public static void deleteMedia(Media media) throws SQLException {
+    String mediaId = media.getId();
+    List<JdbcSqlQuery> updateQueries = new ArrayList<>();
+    updateQueries.add(createDeleteFor("SC_Gallery_Media").where("mediaId = ?", mediaId));
     if (MediaType.Photo == media.getType() || MediaType.Video == media.getType() ||
         MediaType.Sound == media.getType()) {
-      updateQueries.add(Pair.of("delete from SC_Gallery_Internal where mediaId = ?", mediaIdParam));
+      updateQueries.add(createDeleteFor("SC_Gallery_Internal").where("mediaId = ?", mediaId));
     }
     switch (media.getType()) {
       case Photo:
-        updateQueries.add(Pair.of("delete from SC_Gallery_Photo where mediaId = ?", mediaIdParam));
+        updateQueries.add(createDeleteFor("SC_Gallery_Photo").where("mediaId = ?", mediaId));
         break;
       case Video:
-        updateQueries.add(Pair.of("delete from SC_Gallery_Video where mediaId = ?", mediaIdParam));
+        updateQueries.add(createDeleteFor("SC_Gallery_Video").where("mediaId = ?", mediaId));
         break;
       case Sound:
-        updateQueries.add(Pair.of("delete from SC_Gallery_Sound where mediaId = ?", mediaIdParam));
+        updateQueries.add(createDeleteFor("SC_Gallery_Sound").where("mediaId = ?", mediaId));
         break;
       case Streaming:
-        updateQueries
-            .add(Pair.of("delete from SC_Gallery_Streaming where mediaId = ?", mediaIdParam));
+        updateQueries.add(createDeleteFor("SC_Gallery_Streaming").where("mediaId = ?", mediaId));
         break;
       default:
-        SilverTrace
-            .warn(GalleryComponentSettings.COMPONENT_NAME, "MediaDAO.deleteMedia",
-                "Unknown media type to delete id=" + media.getId());
+        SilverTrace.warn(GalleryComponentSettings.COMPONENT_NAME, "MediaDAO.deleteMedia",
+            "Unknown media type to delete id=" + media.getId());
         break;
     }
-    executeUpdate(con, updateQueries);
-    deleteAllMediaPath(con, media);
+    JdbcSqlQueries.execute(updateQueries);
+    deleteAllMediaPath(media);
   }
 
   /**
-   * Saves the path of the media.
-   * @param con
-   * @param media
-   * @param albumId
+   * Saves the album link for the given media.
+   * @param media the media that must be associated to the given album.
+   * @param albumId the identifier of the album.
    * @throws SQLException
    * @throws UtilException
    */
-  public static void saveMediaPath(Connection con, Media media, String albumId)
-      throws SQLException, UtilException {
+  public static void saveMediaPath(Media media, String albumId) throws SQLException, UtilException {
     List<?> pathParams =
         Arrays.asList(media.getId(), media.getInstanceId(), Integer.valueOf(albumId));
 
-    boolean isInsert = selectCount(con,
-        "select count(*) from SC_Gallery_Path where mediaId = ? and instanceId = ? and nodeId" +
-            " = ?", pathParams) == 0;
+    boolean isInsert = createCountFor("SC_Gallery_Path")
+        .where("mediaId = ? and instanceId = ? and nodeId = ?", pathParams).execute() == 0;
 
     if (isInsert) {
-      executeUpdate(con,
-          "insert into SC_Gallery_Path (mediaId, instanceId, nodeId) values (?,?,?)",
-          pathParams);
+      Iterator<?> paramIt = pathParams.iterator();
+      JdbcSqlQuery insert = createInsertFor("SC_Gallery_Path");
+      insert.addInsertParam("mediaId", paramIt.next());
+      insert.addInsertParam("instanceId", paramIt.next());
+      insert.addInsertParam("nodeId", paramIt.next());
+      insert.execute();
     }
   }
 
   /**
-   * Deletes the paths of the specified media.
-   * @param con
-   * @param media
+   * Deletes the album links of the specified media.
+   * @param media the media for which all album links must be deleted.
    * @throws SQLException
    */
-  public static void deleteAllMediaPath(Connection con, Media media) throws SQLException {
-    executeUpdate(con, "delete from SC_Gallery_Path where mediaId = ? and instanceId = ?",
-        Arrays.asList(media.getId(), media.getInstanceId()));
+  public static void deleteAllMediaPath(Media media) throws SQLException {
+    createDeleteFor("SC_Gallery_Path")
+        .where("mediaId = ? and instanceId = ?", media.getId(), media.getInstanceId());
   }
 
   /**
-   * Gets the paths of a media.
-   * @param con
-   * @param media
-   * @return
+   * Gets the identifier list of albums which the given media is associated to.
+   * @param media the media aimed.
+   * @return the identifier list of albums in which the given media is attached to.
    * @throws SQLException
    */
-  public static Collection<String> getAlbumIdsOf(Connection con, Media media) throws SQLException {
-    return select(con,
-        "select N.NodeId from SC_Gallery_Path P, SB_Node_Node N where P.mediaId = ? and N.nodeId " +
-            "= P.NodeId and P.instanceId = ? and N.instanceId = P.instanceId",
-        Arrays.asList(media.getId(), media.getInstanceId()),
-        new SelectResultRowProcessor<String>() {
-
-          @Override
-          protected String currentRow(final int rowIndex, final ResultSet rs) throws SQLException {
-            return String.valueOf(rs.getInt(1));
-          }
-        });
+  public static Collection<String> getAlbumIdsOf(Media media) throws SQLException {
+    return createSelect(
+        "N.NodeId from SC_Gallery_Path P, SB_Node_Node N where P.mediaId = ? and N.nodeId " +
+            "= P.NodeId and P.instanceId = ? and N.instanceId = P.instanceId", media.getId(),
+        media.getInstanceId()).execute(new SelectResultRowProcessor<String>() {
+      @Override
+      protected String currentRow(final ResultSetWrapper row) throws SQLException {
+        return String.valueOf(row.getInt(1));
+      }
+    });
   }
 
   /**
-   * get my SocialInformationGallery according to the type of data base used(PostgreSQL,Oracle,MMS)
-   * .
-   * @param con
-   * @param userId
-   * @param period
+   * get my SocialInformationGallery according to the type of data base used(PostgresSQL,Oracle,
+   * MMS).
+   * @param userId the identifier of a user.
+   * @param period the period on which the data are requested.
    * @return List<SocialInformation>
    * @throws SQLException
-   * @throws java.text.ParseException
    */
-  public static List<SocialInformation> getAllMediaIdByUserId(final Connection con, String userId,
-      Period period) throws SQLException {
-    return select(con,
+  public static List<SocialInformation> getAllMediaIdByUserId(String userId, Period period)
+      throws SQLException {
+    return createSelect(
         "(select createDate AS dateinformation, mediaId, 'new' as type from SC_Gallery_Media " +
             "where createdBy = ? and createDate >= ? and createDate <= ? ) " +
             "union (select lastUpdateDate AS dateinformation, mediaId , " +
             "'update' as type from SC_Gallery_Media where lastUpdatedBy = ? and lastUpdateDate <>" +
             " createDate and lastUpdateDate >= ? and lastUpdateDate <= ? ) order by " +
-            "dateinformation desc, mediaId desc", Arrays
-            .asList(userId, period.getBeginDate(), period.getEndDate(), userId,
-                period.getBeginDate(), period.getEndDate()),
-        new SelectResultRowProcessor<SocialInformation>() {
-
+            "dateinformation desc, mediaId desc", userId, period.getBeginDate(),
+        period.getEndDate(), userId, period.getBeginDate(), period.getEndDate())
+        .execute(new SelectResultRowProcessor<SocialInformation>() {
           @Override
-          protected SocialInformation currentRow(final int rowIndex, final ResultSet rs)
-              throws SQLException {
-            Media media = getByCriteria(con, MediaCriteria.fromMediaId(rs.getString(2))
+          protected SocialInformation currentRow(final ResultSetWrapper row) throws SQLException {
+            Media media = getByCriteria(MediaCriteria.fromMediaId(row.getString(2))
                 .withVisibility(MediaCriteria.VISIBILITY.FORCE_GET_ALL));
             MediaWithStatus withStatus =
-                new MediaWithStatus(media, "update".equalsIgnoreCase(rs.getString(3)));
+                new MediaWithStatus(media, "update".equalsIgnoreCase(row.getString(3)));
             return new SocialInformationGallery(withStatus);
           }
         });
@@ -773,47 +698,35 @@ public class MediaDAO {
 
   /**
    * get list of socialInformationGallery of my contacts according to the type of data base
-   * used(PostgreSQL,Oracle,MMS) .
-   * @param con
-   * @param userIds
-   * @param availableComponents
-   * @param period
-   * @return
+   * used(PostgresSQL,Oracle,MMS) .
+   * @param userIds the identifiers of users.
+   * @param availableComponents the list of available components.
+   * @param period the period on which the data are requested.
+   * @return the information for social data.
    * @throws SQLException
-   * @throws java.text.ParseException
    */
-  public static List<SocialInformation> getSocialInformationListOfMyContacts(final Connection con,
-      List<String> userIds, List<String> availableComponents, Period period) throws SQLException {
-    List<Object> params = new ArrayList<Object>();
-    StringBuilder query =
-        new StringBuilder("(select createDate AS dateinformation, mediaId, 'new' as type ");
-    query.append("from SC_Gallery_Media where createdBy in ");
-    appendListOfParameters(query, userIds, params);
-    query.append(" and instanceId in ");
-    appendListOfParameters(query, availableComponents, params);
-    query.append(" AND createDate >= ? AND createDate <= ?) ");
-    params.add(period.getBeginDate());
-    params.add(period.getEndDate());
-    query.append(" union (SELECT lastUpdateDate AS dateinformation, mediaId, 'update' as type ");
-    query.append("from SC_Gallery_Media where lastUpdatedBy in ");
-    appendListOfParameters(query, userIds, params);
-    query.append(" and instanceId in ");
-    appendListOfParameters(query, availableComponents, params);
-    query.append(" and lastUpdateDate <> createDate ");
-    query.append("and lastUpdateDate >= ? and lastUpdateDate <= ?) ");
-    params.add(period.getBeginDate());
-    params.add(period.getEndDate());
+  public static List<SocialInformation> getSocialInformationListOfMyContacts(List<String> userIds,
+      List<String> availableComponents, Period period) throws SQLException {
+    JdbcSqlQuery query = create("(select createDate as dateinformation, mediaId, 'new' as type");
+    query.append("from SC_Gallery_Media where createdBy").in(userIds);
+    query.append("and instanceId").in(availableComponents);
+    query.append("and createDate >= ? and createDate <= ?)", period.getBeginDate(),
+        period.getEndDate());
+    query.append("union (select lastUpdateDate as dateinformation, mediaId, 'update' as type");
+    query.append("from SC_Gallery_Media where lastUpdatedBy").in(userIds);
+    query.append("and instanceId").in(availableComponents);
+    query.append("and lastUpdateDate <> createDate");
+    query.append("and lastUpdateDate >= ? and lastUpdateDate <= ?)", period.getBeginDate(),
+        period.getEndDate());
     query.append("order by dateinformation desc, mediaId desc");
 
-    return select(con, query.toString(), params, new SelectResultRowProcessor<SocialInformation>() {
-
+    return query.execute(new SelectResultRowProcessor<SocialInformation>() {
       @Override
-      protected SocialInformation currentRow(final int rowIndex, final ResultSet rs)
-          throws SQLException {
-        Media media = getByCriteria(con, MediaCriteria.fromMediaId(rs.getString(2))
+      protected SocialInformation currentRow(final ResultSetWrapper row) throws SQLException {
+        Media media = getByCriteria(MediaCriteria.fromMediaId(row.getString(2))
             .withVisibility(MediaCriteria.VISIBILITY.FORCE_GET_ALL));
         MediaWithStatus withStatus =
-            new MediaWithStatus(media, "update".equalsIgnoreCase(rs.getString(3)));
+            new MediaWithStatus(media, "update".equalsIgnoreCase(row.getString(3)));
         return new SocialInformationGallery(withStatus);
       }
     });

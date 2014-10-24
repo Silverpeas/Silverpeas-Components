@@ -26,7 +26,7 @@ package com.silverpeas.gallery.dao;
 import com.silverpeas.gallery.model.MediaOrderCriteriaProcessor;
 import com.silverpeas.gallery.model.Order;
 import org.apache.commons.lang3.time.DateUtils;
-import org.apache.commons.lang3.tuple.Pair;
+import org.silverpeas.persistence.jdbc.JdbcSqlQuery;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -41,13 +41,13 @@ public class MediaOrderSQLQueryBuilder implements MediaOrderCriteriaProcessor {
   private final StringBuilder sqlQuery = new StringBuilder();
   private final StringBuilder from = new StringBuilder();
   private final StringBuilder where = new StringBuilder();
-  private final List<Object> parameters = new ArrayList<Object>();
+  private final List<Object> parameters = new ArrayList<>();
   private String conjunction = "";
 
   @Override
   public void startProcessing() {
-    sqlQuery.append(
-        "select O.orderId, O.userId, O.instanceId, O.createDate, O.processDate, O.processUser ");
+    sqlQuery
+        .append("O.orderId, O.userId, O.instanceId, O.createDate, O.processDate, O.processUser ");
     from.append("from SC_Gallery_Order O ");
   }
 
@@ -60,9 +60,10 @@ public class MediaOrderSQLQueryBuilder implements MediaOrderCriteriaProcessor {
     done = true;
   }
 
+  @SuppressWarnings("unchecked")
   @Override
-  public Pair<String, List<Object>> result() {
-    return Pair.of(sqlQuery.toString(), parameters);
+  public JdbcSqlQuery result() {
+    return JdbcSqlQuery.createSelect(sqlQuery.toString(), parameters);
   }
 
   @Override
@@ -128,8 +129,8 @@ public class MediaOrderSQLQueryBuilder implements MediaOrderCriteriaProcessor {
 
   /**
    * Centralization to perform the where clause.
-   * @param conjunction
-   * @return
+   * @param conjunction the conjunction.
+   * @return the builder completed with conjunction.
    */
   private StringBuilder where(String conjunction) {
     if (where.length() > 0) {

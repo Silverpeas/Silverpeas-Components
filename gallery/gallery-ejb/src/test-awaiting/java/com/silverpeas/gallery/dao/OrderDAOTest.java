@@ -117,7 +117,7 @@ public class OrderDAOTest extends BaseGalleryTest {
       @Override
       public void test(final Connection connection) throws Exception {
         String orderId = "201";
-        List<OrderRow> orderDetails = OrderDAO.getAllOrderDetails(connection, orderId);
+        List<OrderRow> orderDetails = OrderDAO.getAllOrderDetails(orderId);
         assertThat(orderDetails, hasSize(2));
         assertThat(
             Arrays.asList(orderDetails.get(0).getMediaId(), orderDetails.get(1).getMediaId()),

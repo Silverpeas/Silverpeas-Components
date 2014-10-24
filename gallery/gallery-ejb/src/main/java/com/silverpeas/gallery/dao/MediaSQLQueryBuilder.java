@@ -28,10 +28,10 @@ import com.silverpeas.gallery.constant.MediaType;
 import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.MediaCriteriaProcessor;
 import com.silverpeas.gallery.model.MediaLogicalComparator;
-import org.silverpeas.util.CollectionUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.lang3.time.DateUtils;
-import org.apache.commons.lang3.tuple.Pair;
+import org.silverpeas.persistence.jdbc.JdbcSqlQuery;
+import org.silverpeas.util.CollectionUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -52,14 +52,14 @@ public class MediaSQLQueryBuilder implements MediaCriteriaProcessor {
   private final StringBuilder sqlQuery = new StringBuilder();
   private final StringBuilder from = new StringBuilder();
   private final StringBuilder where = new StringBuilder();
-  private final List<Object> parameters = new ArrayList<Object>();
+  private final List<Object> parameters = new ArrayList<>();
   private String conjunction = "";
   private List<QUERY_ORDER_BY> logicalOrderBy;
   private boolean distinct = false;
 
   @Override
   public void startProcessing() {
-    sqlQuery.append("select M.mediaId, M.mediaType, M.instanceId")
+    sqlQuery.append("M.mediaId, M.mediaType, M.instanceId")
         .append(", M.title, M.description, M.author, M.keyWord")
         .append(", M.beginVisibilityDate, M.endVisibilityDate")
         .append(", M.createDate, M.createdBy, M.lastUpdateDate, M.lastUpdatedBy ");
@@ -81,9 +81,10 @@ public class MediaSQLQueryBuilder implements MediaCriteriaProcessor {
     done = true;
   }
 
+  @SuppressWarnings("unchecked")
   @Override
-  public Pair<String, List<Object>> result() {
-    return Pair.of(sqlQuery.toString(), parameters);
+  public JdbcSqlQuery result() {
+    return JdbcSqlQuery.createSelect(sqlQuery.toString(), parameters);
   }
 
   @Override
@@ -247,8 +248,8 @@ public class MediaSQLQueryBuilder implements MediaCriteriaProcessor {
 
   /**
    * Centralization to perform the where clause.
-   * @param conjunction
-   * @return
+   * @param conjunction the conjunction.
+   * @return the builder completed with conjunction.
    */
   private StringBuilder where(String conjunction) {
     if (where.length() > 0) {

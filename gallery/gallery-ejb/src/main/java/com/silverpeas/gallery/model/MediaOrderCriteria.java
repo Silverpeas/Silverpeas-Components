@@ -24,23 +24,23 @@
 package com.silverpeas.gallery.model;
 
 import org.silverpeas.util.CollectionUtil;
-import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.silverpeas.util.DBUtil.isSqlDefined;
+import static org.silverpeas.persistence.jdbc.JdbcSqlQuery.isSqlDefined;
 
 /**
  * Class that permits to set order search criteria for order application.
- * @author: Yohann Chastagnier
+ * @author Yohann Chastagnier
  */
 public class MediaOrderCriteria {
 
   private String componentInstanceId;
-  private final List<String> identifiers = new ArrayList<String>();
+  private final List<String> identifiers = new ArrayList<>();
   private String ordererId;
   private Date referenceDate = DateUtil.getDate();
   private Integer nbDaysAfterThatDeleteAnOrder;
@@ -141,7 +141,7 @@ public class MediaOrderCriteria {
 
   /**
    * Gets the number of days after that an order should be deleted.
-   * @return
+   * @return the number of days after that an order should be deleted.
    */
   private Integer getNbDaysAfterThatDeleteAnOrder() {
     return nbDaysAfterThatDeleteAnOrder;

@@ -156,11 +156,11 @@ public abstract class AbstractGalleryDataProcess extends
 
     // Insert media in database
     getMedia().getMediaPK().setId(MediaDAO
-        .saveMedia(context.getConnection(), OperationContext.fromUser(context.getUser()),
+        .saveMedia(OperationContext.fromUser(context.getUser()),
             getMedia()));
 
     // Insert path of the media
-    MediaDAO.saveMediaPath(context.getConnection(), getMedia(), albumId);
+    MediaDAO.saveMediaPath(getMedia(), albumId);
   }
 
   /**
@@ -176,7 +176,7 @@ public abstract class AbstractGalleryDataProcess extends
         getMedia().setTitle(((InternalMedia) getMedia()).getFileName());
       }
     }
-    MediaDAO.saveMedia(context.getConnection(), OperationContext.fromUser(context.getUser())
+    MediaDAO.saveMedia(OperationContext.fromUser(context.getUser())
         .setUpdatingInCaseOfCreation(!updateTechnicalDataRequired), getMedia());
   }
 

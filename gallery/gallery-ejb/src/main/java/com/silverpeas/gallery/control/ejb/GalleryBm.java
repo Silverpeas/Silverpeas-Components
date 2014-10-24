@@ -148,12 +148,12 @@ public interface GalleryBm {
    * get list of SocialInformationGallery of my contacts according to options and number of Item and
    * the first Index
    *
-   * @param listOfuserId
+   * @param listOfUserId
    * @param availableComponent
    * @param period
    * @return List<SocialInformation>
    */
-  public List<SocialInformation> getSocialInformationListOfMyContacts(List<String> listOfuserId,
+  public List<SocialInformation> getSocialInformationListOfMyContacts(List<String> listOfUserId,
       List<String> availableComponent, Period period);
 
   public void sortAlbums(List<NodePK> albumIds);
