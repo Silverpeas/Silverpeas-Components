@@ -26,11 +26,9 @@ package com.silverpeas.classifieds.model;
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.AccessControllerProvider;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.accesscontrol.ComponentAccessControl;
 import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.core.admin.OrganisationController;
 
 import javax.enterprise.util.AnnotationLiteral;
 import java.util.ArrayList;
@@ -197,8 +195,7 @@ public class ClassifiedDetail implements SilverpeasContent {
 
   @Override
   public UserDetail getCreator() {
-    OrganisationController controller = new OrganizationController();
-    return controller.getUserDetail(creatorId);
+    return UserDetail.getById(creatorId);
   }
 
   @Override

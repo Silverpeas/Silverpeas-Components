@@ -23,33 +23,33 @@
  */
 package com.stratelia.webactiv.kmelia.model;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceProvider;
 import com.silverpeas.pdc.ejb.PdcBm;
-import org.silverpeas.util.ForeignPK;
-
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.GeneralPropertiesManager;
-import org.silverpeas.util.JNDINames;
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.publication.model.CompletePublication;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import com.stratelia.webactiv.statistic.control.StatisticBm;
 import com.stratelia.webactiv.statistic.model.StatisticRuntimeException;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.GeneralPropertiesManager;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 /**
  * A publication as defined in a Kmelia component. A publication in Kmelia can be positionned in the
@@ -58,7 +58,6 @@ import com.stratelia.webactiv.statistic.model.StatisticRuntimeException;
 public class KmeliaPublication implements SilverpeasContent {
 
   private static final long serialVersionUID = 4861635754389280165L;
-  private static final OrganizationController organisationService = new OrganizationController();
   private PublicationDetail detail;
   private CompletePublication completeDetail;
   private boolean alias = false;
@@ -307,7 +306,7 @@ public class KmeliaPublication implements SilverpeasContent {
   }
 
   private OrganizationController getOrganizationController() {
-    return organisationService;
+    return OrganizationControllerProvider.getOrganisationController();
   }
 
   @Override

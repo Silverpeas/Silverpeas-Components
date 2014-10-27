@@ -25,13 +25,12 @@ package com.silverpeas.silvercrawler.statistic;
 
 import com.silverpeas.silvercrawler.model.SilverCrawlerRuntimeException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.util.exception.UtilException;
-import org.silverpeas.core.admin.OrganisationController;
 
 import java.io.File;
 import java.sql.Connection;
@@ -122,7 +121,7 @@ public class Statistic {
         .info("silverCrawler", "Statistic.getHistoryByObject()", "root.MSG_GEN_ENTER_METHOD");
     Collection<HistoryDetail> list = getHistoryByAction(path, componentId);
 
-    OrganisationController orga = new OrganizationController();
+    OrganizationController orga = OrganizationControllerProvider.getOrganisationController();
     Collection<HistoryByUser> statByUser = new ArrayList<HistoryByUser>();
 
     for (final HistoryDetail historyObject : list) {

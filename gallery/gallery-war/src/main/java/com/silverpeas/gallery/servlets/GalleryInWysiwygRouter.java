@@ -24,35 +24,33 @@
 
 package com.silverpeas.gallery.servlets;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Collection;
+import com.silverpeas.gallery.control.ejb.GalleryBm;
+import com.silverpeas.gallery.model.AlbumDetail;
+import com.silverpeas.gallery.model.GalleryRuntimeException;
+import com.silverpeas.gallery.model.MediaPK;
+import com.silverpeas.gallery.model.Photo;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
+import javax.inject.Inject;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.silverpeas.core.admin.OrganisationController;
-
-import com.silverpeas.gallery.control.ejb.GalleryBm;
-import com.silverpeas.gallery.model.AlbumDetail;
-import com.silverpeas.gallery.model.GalleryRuntimeException;
-import com.silverpeas.gallery.model.MediaPK;
-import com.silverpeas.gallery.model.Photo;
-import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.JNDINames;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.node.model.NodePK;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Collection;
 
 /**
  * Class declaration
@@ -61,6 +59,9 @@ import com.stratelia.webactiv.node.model.NodePK;
 public class GalleryInWysiwygRouter extends HttpServlet {
 
   private static final long serialVersionUID = 1L;
+
+  @Inject
+  private OrganizationController organizationController;
 
   public void init(ServletConfig config) {
     try {
@@ -203,7 +204,7 @@ public class GalleryInWysiwygRouter extends HttpServlet {
     return EJBUtilitaire.getEJBObjectRef(JNDINames.GALLERYBM_EJBHOME, GalleryBm.class);
   }
 
-  private OrganisationController getOrganisationController() {
-    return new OrganizationController();
+  private OrganizationController getOrganisationController() {
+    return organizationController;
   }
 }

@@ -26,7 +26,7 @@ package org.silverpeas.components.suggestionbox.mock;
 import com.silverpeas.admin.components.WAComponent;
 import com.stratelia.webactiv.beans.admin.*;
 import org.mockito.Mockito;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.util.ListSlice;
 
 import javax.inject.Named;
@@ -40,13 +40,13 @@ import java.util.Map;
  * @author mmoquillon
  */
 @Named("organizationController")
-public class OrganisationControllerMockWrapper implements OrganisationController {
+public class OrganisationControllerMockWrapper implements OrganizationController {
 
   private static final long serialVersionUID = 1775004958936196267L;
 
-  private final OrganisationController mock = Mockito.mock(OrganisationController.class);
+  private final OrganizationController mock = Mockito.mock(OrganizationController.class);
 
-  public OrganisationController getMock() {
+  public OrganizationController getMock() {
     return mock;
   }
 

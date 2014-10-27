@@ -28,7 +28,7 @@ import com.silverpeas.accesscontrol.AccessControlContext;
 import com.silverpeas.accesscontrol.AccessController;
 import com.stratelia.webactiv.SilverpeasRole;
 import org.silverpeas.accesscontrol.ComponentAccessControl;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -45,7 +45,7 @@ import javax.inject.Singleton;
 public class BlogPostWriteAccessController extends AbstractAccessController<String> {
 
   @Inject
-  private OrganisationController organisationController;
+  private OrganizationController organisationController;
 
   @Inject
   private @ComponentAccessControl AccessController<String> componentAccessController;

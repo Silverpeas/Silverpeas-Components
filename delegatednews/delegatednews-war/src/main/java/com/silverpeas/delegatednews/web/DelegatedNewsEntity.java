@@ -23,20 +23,19 @@
  */
 package com.silverpeas.delegatednews.web;
 
-import java.net.URI;
-import java.util.Date;
+import com.silverpeas.delegatednews.model.DelegatedNews;
+import com.silverpeas.profile.web.UserProfileEntity;
+import com.silverpeas.web.Exposable;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import com.silverpeas.delegatednews.model.DelegatedNews;
-import com.silverpeas.profile.web.UserProfileEntity;
-import com.silverpeas.web.Exposable;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.core.admin.OrganisationController;
+import java.net.URI;
+import java.util.Date;
 
 /**
  * The delegated news entity is a delegated news object that is exposed in the web as an entity (web entity).
@@ -167,7 +166,8 @@ public class DelegatedNewsEntity implements Exposable {
     this.pubId = delegatednews.getPubId();
     this.instanceId = delegatednews.getInstanceId();
     this.status = delegatednews.getStatus();
-    OrganisationController organizationController = new OrganizationController();
+    OrganizationController organizationController =
+        OrganizationControllerProvider.getOrganisationController();
     UserDetail user = organizationController.getUserDetail(delegatednews.getContributorId());
     this.contributor =  UserProfileEntity.fromUser(user);
     if(delegatednews.getValidatorId() != null) {

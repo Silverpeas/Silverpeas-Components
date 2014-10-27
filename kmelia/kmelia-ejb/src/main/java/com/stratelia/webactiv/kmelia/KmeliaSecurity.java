@@ -28,8 +28,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.security.ComponentSecurity;
@@ -68,17 +68,17 @@ public class KmeliaSecurity implements ComponentSecurity {
   private PublicationBm publicationBm;
   private NodeBm nodeBm;
   private KmeliaBm kmeliaBm;
-  private OrganisationController controller = null;
+  private OrganizationController controller = null;
   private Map<String, Boolean> cache = Collections.synchronizedMap(new HashMap<String, Boolean>());
   private volatile boolean cacheEnabled = false;
   private ResourceLocator kmeliaSettings = new ResourceLocator(
       "org.silverpeas.kmelia.settings.kmeliaSettings", "fr");
 
   public KmeliaSecurity() {
-    this.controller = OrganisationControllerProvider.getOrganisationController();
+    this.controller = OrganizationControllerProvider.getOrganisationController();
   }
 
-  public KmeliaSecurity(OrganisationController controller) {
+  public KmeliaSecurity(OrganizationController controller) {
     this.controller = controller;
   }
 

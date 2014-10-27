@@ -27,16 +27,14 @@
 
 <%@ include file="check.jsp" %>
 
-<%@page import="java.util.List"%>
 <%@page import="com.silverpeas.formsonline.model.FormDetail"%>
-<%@page import="org.silverpeas.util.StringUtil"%>
 <%@page import="com.silverpeas.publicationTemplate.PublicationTemplate"%>
-<%@page import="java.util.Iterator"%>
-<%@page import="com.stratelia.webactiv.beans.admin.OrganizationController"%>
 <%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
+<%@page import="org.silverpeas.core.admin.OrganizationControllerProvider"%>
 <%@page import="java.text.DateFormat"%>
-<%@page import="java.text.SimpleDateFormat"%>
-<%@ page import="org.silverpeas.core.admin.OrganisationController" %>
+<%@page import="java.text.SimpleDateFormat" %>
+<%@page import="java.util.Iterator"%>
+<%@page import="java.util.List"%>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
@@ -120,8 +118,9 @@ function valider() {
 	    tabbedPane.addTab(resource.getString("formsOnline.Preview"), "Preview", false,1);
 	}
 
-	OrganisationController controller = new OrganizationController();
-	UserDetail userDetail = controller.getUserDetail(form.getCreatorId());
+  org.silverpeas.core.admin.OrganizationController controller =
+      OrganizationControllerProvider.getOrganisationController();
+  UserDetail userDetail = controller.getUserDetail(form.getCreatorId());
 %>
 
 	<%=window.printBefore()%>

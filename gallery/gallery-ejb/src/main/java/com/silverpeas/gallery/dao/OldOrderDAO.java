@@ -22,11 +22,9 @@ package com.silverpeas.gallery.dao;
 
 import com.silverpeas.gallery.model.Order;
 import com.silverpeas.gallery.model.OrderRow;
-import org.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.exception.UtilException;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.util.StringUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -41,13 +39,9 @@ import java.util.Locale;
 
 public class OldOrderDAO {
 
-  private OrganisationController orga;
+  private OrganizationController orga;
 
-  public OldOrderDAO() {
-    this(new OrganizationController());
-  }
-
-  OldOrderDAO(OrganisationController orga) {
+  OldOrderDAO(OrganizationController orga) {
     this.orga = orga;
   }
 

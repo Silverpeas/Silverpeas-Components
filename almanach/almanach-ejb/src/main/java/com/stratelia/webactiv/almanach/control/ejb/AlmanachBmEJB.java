@@ -23,8 +23,6 @@ package com.stratelia.webactiv.almanach.control.ejb;
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.service.PdcClassificationService;
-import org.silverpeas.util.CollectionUtil;
-import org.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.almanach.AlmanachContentManager;
 import com.stratelia.webactiv.almanach.model.EventDAO;
@@ -34,15 +32,11 @@ import com.stratelia.webactiv.almanach.model.EventPK;
 import com.stratelia.webactiv.almanach.model.Periodicity;
 import com.stratelia.webactiv.almanach.model.PeriodicityException;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.persistence.PersistenceException;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Component;
 import net.fortuna.ical4j.model.ComponentList;
@@ -57,15 +51,22 @@ import net.fortuna.ical4j.model.property.ExDate;
 import net.fortuna.ical4j.model.property.RRule;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 import org.silverpeas.upload.UploadedFile;
+import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.inject.Inject;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -76,8 +77,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.silverpeas.util.StringUtil.isDefined;
 import static org.silverpeas.util.DateUtil.*;
+import static org.silverpeas.util.StringUtil.isDefined;
 
 @Stateless(name = "Almanach", description
     = "Stateless session bean to manage the almanach component.")
@@ -91,6 +92,9 @@ public class AlmanachBmEJB implements AlmanachBm {
   private SilverpeasBeanDAO<Periodicity> eventPeriodicityDAO = null;
   private SilverpeasBeanDAO<PeriodicityException> periodicityExceptionDAO = null;
   private EventDAO eventDAO = new EventDAO();
+
+  @Inject
+  private OrganizationController organizationController;
 
   /*
    * (non-Javadoc)
@@ -824,7 +828,7 @@ public class AlmanachBmEJB implements AlmanachBm {
    * @return
    */
   private OrganizationController getOrganizationController() {
-    return new OrganizationController();
+    return organizationController;
   }
 
   @Override

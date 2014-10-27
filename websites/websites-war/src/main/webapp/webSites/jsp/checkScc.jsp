@@ -49,7 +49,6 @@
 <%@ page import="javax.servlet.http.*"%>
 <%@ page import="javax.servlet.jsp.*"%>
 
-<%@ page import="com.stratelia.webactiv.beans.admin.OrganizationController"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 
 <%@ page import="org.silverpeas.util.ResourceLocator"%>

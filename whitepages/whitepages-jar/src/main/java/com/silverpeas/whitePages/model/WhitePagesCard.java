@@ -20,15 +20,15 @@
  */
 package com.silverpeas.whitePages.model;
 
-import com.stratelia.webactiv.beans.admin.*;
-import org.silverpeas.core.admin.OrganisationController;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 
 public class WhitePagesCard implements Comparable {
 
   private long userCardId = 0;
   private String instanceLabel;
   private String instanceId;
-  private static OrganisationController organizationController = new OrganizationController();
 
   public WhitePagesCard() {
   }
@@ -56,6 +56,8 @@ public class WhitePagesCard implements Comparable {
 
   public void setInstanceId(String instanceId) {
     this.instanceId = instanceId;
+    OrganizationController organizationController =
+        OrganizationControllerProvider.getOrganisationController();
     ComponentInstLight app = organizationController.getComponentInstLight(instanceId);
     if (app != null) {
       this.instanceLabel = app.getLabel();

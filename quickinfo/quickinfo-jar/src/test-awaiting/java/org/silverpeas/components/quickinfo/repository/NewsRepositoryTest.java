@@ -14,7 +14,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.silverpeas.components.quickinfo.mock.OrganisationControllerMockWrapper;
 import org.silverpeas.components.quickinfo.model.News;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.date.Period;
 import org.silverpeas.date.PeriodType;
 import org.silverpeas.persistence.Transaction;
@@ -115,7 +115,7 @@ public class NewsRepositoryTest extends RepositoryBasedTest {
     assertThat(table.getRowCount(), is(ROW_COUNT+1));
   }
 
-  private OrganisationController getOrganisationControllerMock() {
+  private OrganizationController getOrganisationControllerMock() {
     return getApplicationContext().getBean(OrganisationControllerMockWrapper.class).getMock();
   }
 

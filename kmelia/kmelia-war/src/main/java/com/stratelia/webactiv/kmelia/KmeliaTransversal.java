@@ -20,6 +20,19 @@
  */
 package com.stratelia.webactiv.kmelia;
 
+import com.silverpeas.look.PublicationHelper;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.publication.control.PublicationBm;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationPK;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.StringUtil;
+
+import javax.ejb.EJBException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -27,27 +40,12 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import javax.ejb.EJBException;
-
-import org.silverpeas.core.admin.OrganisationController;
-
-import com.silverpeas.look.PublicationHelper;
-import org.silverpeas.util.StringUtil;
-
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
-import com.stratelia.webactiv.publication.control.PublicationBm;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
-import com.stratelia.webactiv.publication.model.PublicationPK;
-
 public class KmeliaTransversal implements PublicationHelper {
 
   private String userId = null;
   private PublicationBm publicationBm = null;
-  private OrganisationController organizationControl = null;
+  private OrganizationController organizationControl =
+      OrganizationControllerProvider.getOrganisationController();
 
   public KmeliaTransversal() {
   }
@@ -219,10 +217,7 @@ public class KmeliaTransversal implements PublicationHelper {
     return filteredPublicationPKs;
   }
 
-  private OrganisationController getOrganizationControl() {
-    if (organizationControl == null) {
-      organizationControl = new OrganizationController();
-    }
+  private OrganizationController getOrganizationControl() {
     return organizationControl;
   }
 

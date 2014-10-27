@@ -25,22 +25,12 @@ import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.clipboard.ClipboardException;
-import org.silverpeas.util.clipboard.ClipboardSelection;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.quizz.QuizzException;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.JNDINames;
-import org.silverpeas.util.ResourceLocator;
 import com.stratelia.webactiv.answer.model.Answer;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.question.model.Question;
 import com.stratelia.webactiv.questionContainer.control.QuestionContainerBm;
 import com.stratelia.webactiv.questionContainer.model.QuestionContainerDetail;
@@ -48,8 +38,24 @@ import com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader;
 import com.stratelia.webactiv.questionContainer.model.QuestionContainerPK;
 import com.stratelia.webactiv.questionContainer.model.QuestionContainerSelection;
 import com.stratelia.webactiv.questionResult.model.QuestionResult;
+import com.stratelia.webactiv.quizz.QuizzException;
 import com.stratelia.webactiv.score.control.ScoreBm;
 import com.stratelia.webactiv.score.model.ScoreDetail;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.clipboard.ClipboardException;
+import org.silverpeas.util.clipboard.ClipboardSelection;
+
+import javax.ejb.EJBException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -58,11 +64,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import javax.ejb.EJBException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.xml.bind.JAXBException;
-import org.silverpeas.core.admin.OrganisationController;
 
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
@@ -664,7 +665,8 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
 
   public List<ComponentInstLight> getGalleries() {
     List<ComponentInstLight> galleries = null;
-    OrganisationController orgaController = new OrganizationController();
+    OrganizationController orgaController =
+        OrganizationControllerProvider.getOrganisationController();
     String[] compoIds = orgaController.getCompoId("gallery");
     for (final String compoId : compoIds) {
       if ("yes".equalsIgnoreCase(

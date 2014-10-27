@@ -38,7 +38,7 @@ import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
 import org.junit.After;
 import org.junit.Before;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -66,8 +66,8 @@ public abstract class AbstractMailingListTest {
     return context.getBean(beanType);
   }
 
-  public OrganisationController getOrganisationController() {
-    return context.getBean(OrganisationController.class);
+  public OrganizationController getOrganisationController() {
+    return context.getBean(OrganizationController.class);
   }
 
   protected void registerDatasource() {

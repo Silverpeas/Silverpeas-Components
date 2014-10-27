@@ -20,16 +20,20 @@
  */
 package com.silverpeas.whitePages.record;
 
-import com.silverpeas.form.*;
+import com.silverpeas.form.DataRecord;
+import com.silverpeas.form.FieldTemplate;
+import com.silverpeas.form.Form;
+import com.silverpeas.form.FormException;
+import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.fieldType.TextField;
-import com.silverpeas.form.form.*;
-import com.silverpeas.form.record.*;
-import com.stratelia.webactiv.beans.admin.*;
+import com.silverpeas.form.form.HtmlForm;
+import com.silverpeas.form.record.GenericFieldTemplate;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.UserFull;
+import org.silverpeas.util.ResourceLocator;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.util.ResourceLocator;
 
 public class UserTemplate implements RecordTemplate {
 
@@ -149,8 +153,7 @@ public class UserTemplate implements RecordTemplate {
    * Returns the UserRecord
    */
   public UserRecord getRecord(String idUser) {
-    OrganisationController organisation = new OrganizationController();
-    UserDetail userDetail = organisation.getUserFull(idUser);
+    UserDetail userDetail = UserFull.getById(idUser);
     return new UserRecord(userDetail);
   }
 }

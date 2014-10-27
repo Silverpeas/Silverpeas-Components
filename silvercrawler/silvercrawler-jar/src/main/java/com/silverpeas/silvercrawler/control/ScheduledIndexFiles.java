@@ -23,24 +23,24 @@
  */
 package com.silverpeas.silvercrawler.control;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import com.silverpeas.silvercrawler.model.SilverCrawlerRuntimeException;
 import com.silverpeas.scheduler.Scheduler;
 import com.silverpeas.scheduler.SchedulerEvent;
 import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.SchedulerProvider;
 import com.silverpeas.scheduler.trigger.JobTrigger;
+import com.silverpeas.silvercrawler.model.SilverCrawlerRuntimeException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.search.indexEngine.model.RepositoryIndexer;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.search.indexEngine.model.RepositoryIndexer;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public class ScheduledIndexFiles
     implements SchedulerEventListener {
@@ -68,7 +68,7 @@ public class ScheduledIndexFiles
 
     try {
       // indexation des fichiers du composant
-      OrganisationController orga = new OrganizationController();
+      OrganizationController orga = OrganizationControllerProvider.getOrganisationController();
       String[] instanceIds = orga.getCompoId("silverCrawler");
       for (int i = 0; instanceIds != null && i < instanceIds.length; i++) {
         ComponentInst instance = orga.getComponentInst("silverCrawler"

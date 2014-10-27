@@ -22,8 +22,8 @@ package com.silverpeas.kmelia.importexport;
 
 import java.util.Date;
 
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 
 import com.silverpeas.importExport.control.GEDImportExport;
 import com.silverpeas.importExport.model.ImportExportException;
@@ -101,7 +101,7 @@ public class KmeliaImportExport extends GEDImportExport {
   @Override
   protected String createPublicationIntoTopic(PublicationDetail pubDet_temp, NodePK topicPK,
       UserDetail userDetail) throws Exception {
-    OrganisationController orgnaisationController = OrganisationControllerProvider
+    OrganizationController orgnaisationController = OrganizationControllerProvider
         .getOrganisationController();
     if (pubDet_temp.isStatusMustBeChecked()) {
       String profile = "writer";

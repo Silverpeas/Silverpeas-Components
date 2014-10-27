@@ -1,8 +1,5 @@
 package com.silverpeas.crm.implementation;
 
-import java.sql.Connection;
-import java.util.ArrayList;
-
 import com.silverpeas.crm.CrmException;
 import com.silverpeas.crm.model.Crm;
 import com.silverpeas.crm.model.CrmContact;
@@ -15,10 +12,14 @@ import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.persistence.PersistenceException;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.admin.OrganisationController;
+
+import java.sql.Connection;
+import java.util.ArrayList;
 
 /**
  * Class declaration
@@ -171,8 +172,7 @@ public class CrmDataManager implements CrmDataInterface {
 
   // Creation de la lettre par defaut a l'instanciation
   public Crm createDefaultCrm(String spaceId, String componentId) {
-    OrganisationController oc =
-        new com.stratelia.webactiv.beans.admin.OrganizationController();
+    OrganizationController oc = OrganizationControllerProvider.getOrganisationController();
     com.stratelia.webactiv.beans.admin.ComponentInst ci = oc.getComponentInst(componentId);
     Crm crm = new Crm();
 

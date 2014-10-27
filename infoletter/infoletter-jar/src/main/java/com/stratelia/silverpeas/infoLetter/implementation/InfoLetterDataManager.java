@@ -31,8 +31,6 @@ import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.silverpeas.subscribe.service.GroupSubscriptionSubscriber;
 import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
 import com.silverpeas.subscribe.util.SubscriptionUtil;
-import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.infoLetter.InfoLetterContentManager;
 import com.stratelia.silverpeas.infoLetter.InfoLetterException;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetter;
@@ -42,17 +40,19 @@ import com.stratelia.silverpeas.infoLetter.model.InfoLetterPublicationPdC;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.persistence.PersistenceException;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.wysiwyg.control.WysiwygController;
-
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -235,7 +235,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   // Creation de la lettre par defaut a l'instanciation
   @Override
   public InfoLetter createDefaultLetter(String componentId) {
-    OrganizationController oc = new OrganizationController();
+    OrganizationController oc = OrganizationControllerProvider.getOrganisationController();
     ComponentInst ci = oc.getComponentInst(componentId);
     InfoLetter ie = new InfoLetter();
     ie.setInstanceId(componentId);

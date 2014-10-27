@@ -24,12 +24,12 @@
 
 package com.silverpeas.crm.model;
 
-import java.io.Serializable;
-
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.WAPrimaryKey;
-import org.silverpeas.core.admin.OrganisationController;
+
+import java.io.Serializable;
 
 /**
  * Class declaration
@@ -39,10 +39,10 @@ public class CrmPK extends WAPrimaryKey implements Serializable {
 
   private static final long serialVersionUID = 135542061633931139L;
 
-  protected static OrganisationController organizationController = new OrganizationController();
-
   public CrmPK(String id, String componentId) {
     super(id);
+    OrganizationController organizationController =
+        OrganizationControllerProvider.getOrganisationController();
     ComponentInst component = organizationController.getComponentInst(componentId);
     setComponentName(componentId);
     setSpace(component.getDomainFatherId());

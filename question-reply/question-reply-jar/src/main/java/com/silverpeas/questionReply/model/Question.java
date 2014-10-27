@@ -24,12 +24,12 @@
 package com.silverpeas.questionReply.model;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.SilverpeasBean;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.DateUtil;
-import org.silverpeas.core.admin.OrganisationController;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -170,11 +170,12 @@ public class Question extends SilverpeasBean {
   }
 
   public String readCreatorName() {
-    OrganisationController organizationController = new OrganizationController();
+    OrganizationController organizationController =
+        OrganizationControllerProvider.getOrganisationController();
     return readCreatorName(organizationController);
   }
 
-  public String readCreatorName(OrganisationController organizationController) {
+  public String readCreatorName(OrganizationController organizationController) {
     String creatorName = null;
     UserDetail userDetail = readAuthor(organizationController);
     if (userDetail != null) {
@@ -184,7 +185,7 @@ public class Question extends SilverpeasBean {
   }
 
 
-  public UserDetail readAuthor(OrganisationController organizationController) {
+  public UserDetail readAuthor(OrganizationController organizationController) {
     return organizationController.getUserDetail(getCreatorId());
   }
 

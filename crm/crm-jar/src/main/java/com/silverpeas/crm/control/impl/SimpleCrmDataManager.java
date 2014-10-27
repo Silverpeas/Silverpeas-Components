@@ -33,14 +33,14 @@ import com.silverpeas.crm.model.CrmEvent;
 import com.silverpeas.crm.model.CrmParticipant;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.persistence.PersistenceException;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.admin.OrganisationController;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -202,7 +202,7 @@ public class SimpleCrmDataManager implements CrmDataManager {
   // Creation de la lettre par defaut a l'instanciation
   @Override
   public Crm createDefaultCrm(String spaceId, String componentId) {
-    OrganisationController oc = new OrganizationController();
+    OrganizationController oc = OrganizationControllerProvider.getOrganisationController();
     ComponentInst ci = oc.getComponentInst(componentId);
     Crm crm = new Crm();
     SilverTrace.debug("crm", "SimpleCrmDataManager.createCrm()",

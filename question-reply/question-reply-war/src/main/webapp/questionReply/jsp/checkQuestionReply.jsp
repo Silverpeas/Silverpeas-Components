@@ -75,7 +75,6 @@
 <%@ page import="org.silverpeas.util.*"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.OrganizationController"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>

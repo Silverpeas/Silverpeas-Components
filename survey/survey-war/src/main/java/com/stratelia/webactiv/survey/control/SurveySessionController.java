@@ -90,7 +90,7 @@ import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.servlet.HttpRequest;
 
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
@@ -810,7 +810,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
    */
   public List<ComponentInstLight> getGalleries() {
     List<ComponentInstLight> galleries = new ArrayList<ComponentInstLight>();
-    OrganisationController orgaController = getOrganisationController();
+    OrganizationController orgaController = getOrganisationController();
     String[] compoIds = orgaController.getCompoId("gallery");
     for (int c = 0; c < compoIds.length; c++) {
       if ("yes".equalsIgnoreCase(orgaController.getComponentParameterValue("gallery" + compoIds[c],

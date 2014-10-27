@@ -23,22 +23,34 @@
  */
 package com.silverpeas.dataWarning.control;
 
-import com.silverpeas.scheduler.SchedulerEvent;
-import java.util.*;
-
-import com.silverpeas.dataWarning.model.*;
+import com.silverpeas.dataWarning.model.DataWarning;
+import com.silverpeas.dataWarning.model.DataWarningGroup;
+import com.silverpeas.dataWarning.model.DataWarningQueryResult;
+import com.silverpeas.dataWarning.model.DataWarningResult;
+import com.silverpeas.dataWarning.model.DataWarningUser;
 import com.silverpeas.scheduler.ScheduledJob;
 import com.silverpeas.scheduler.Scheduler;
+import com.silverpeas.scheduler.SchedulerEvent;
 import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.SchedulerProvider;
 import com.silverpeas.scheduler.trigger.JobTrigger;
+import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
+import com.stratelia.silverpeas.notificationManager.NotificationParameters;
+import com.stratelia.silverpeas.notificationManager.NotificationSender;
+import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.notificationManager.*;
 import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.core.admin.OrganisationController;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
 
 public class DataWarningSchedulerImpl implements SchedulerEventListener {
 
@@ -55,7 +67,7 @@ public class DataWarningSchedulerImpl implements SchedulerEventListener {
           "com.silverpeas.dataWarning.multilang.dataWarning", "");
 
   public DataWarningSchedulerImpl(String compoId) {
-    OrganisationController oc = new OrganizationController();
+    OrganizationController oc = OrganizationControllerProvider.getOrganisationController();
     this.instanceId = compoId;
     this.jobName = DATAWARNING_JOB_NAME + instanceId;
     HashSet hs = new HashSet();
@@ -142,7 +154,7 @@ public class DataWarningSchedulerImpl implements SchedulerEventListener {
             getErrorFullText());
     if (!dwr.hasError()) {
       try {
-        OrganisationController oc = new OrganizationController();
+        OrganizationController oc = OrganizationControllerProvider.getOrganisationController();
         StringBuilder msgForManager = new StringBuilder();
         DataWarningQueryResult dwqr = dwr.getQueryResult();
         String descriptionRequete = dwr.getDataQuery().getDescription();

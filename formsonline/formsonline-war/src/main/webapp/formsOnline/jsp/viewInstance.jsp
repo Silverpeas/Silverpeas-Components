@@ -28,19 +28,10 @@
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <%@ include file="check.jsp" %>
 
-<%@page import="java.util.List"%>
-<%@page import="java.util.Iterator"%>
-<%@page import="java.text.DateFormat"%>
-<%@page import="java.text.SimpleDateFormat"%>
-<%@page import="com.stratelia.webactiv.beans.admin.Group"%>
-<%@page import="com.stratelia.webactiv.beans.admin.OrganizationController"%>
-<%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@page import="com.silverpeas.formsonline.model.FormDetail"%>
+<%@page import="com.silverpeas.form.DataRecord"%>
 <%@page import="com.silverpeas.form.Form"%>
 <%@page import="com.silverpeas.form.PagesContext"%>
 <%@page import="com.silverpeas.formsonline.model.FormInstance"%>
-<%@page import="com.silverpeas.form.DataRecord"%>
-<%@page import="com.silverpeas.publicationTemplate.PublicationTemplate"%>
 <%@page import="org.silverpeas.util.StringUtil"%>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>

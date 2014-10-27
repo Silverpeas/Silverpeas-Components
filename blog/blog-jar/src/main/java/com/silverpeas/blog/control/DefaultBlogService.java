@@ -33,7 +33,6 @@ import com.silverpeas.blog.notification.BlogUserNotification;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.service.CommentService;
-import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.ejb.PdcBm;
 import com.silverpeas.pdc.model.PdcClassification;
@@ -43,11 +42,11 @@ import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
+import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ObjectType;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.node.control.NodeBm;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodeOrderComparator;
@@ -55,7 +54,7 @@ import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.control.PublicationBm;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.search.SearchEngineFactory;
 import org.silverpeas.search.indexEngine.model.IndexManager;
 import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
@@ -97,6 +96,8 @@ public class DefaultBlogService implements BlogService {
   private static final ResourceLocator settings = new ResourceLocator(SETTINGS_PATH, "");
   @Inject
   private CommentService commentService;
+  @Inject
+  private OrganizationController organizationController;
 
   @Override
   public PostDetail getContentById(String contentId) {
@@ -181,15 +182,13 @@ public class DefaultBlogService implements BlogService {
       final Comment comment, final String type, final String senderId) {
     Collection<String> subscriberIds = getSubscribeBm()
         .getUserSubscribers(ComponentSubscriptionResource.from(fatherPK.getInstanceId()));
-    OrganisationController orgaController = new OrganizationController();
     if (subscriberIds != null && !subscriberIds.isEmpty()) {
       // get only subscribers who have sufficient rights to read pubDetail
       NodeDetail node = getNodeBm().getHeader(fatherPK);
       final List<String> newSubscribers = new ArrayList<String>(subscriberIds.size());
       for (String userId : subscriberIds) {
-        if (orgaController.isComponentAvailable(fatherPK.getInstanceId(), userId)) {
-          if (!node.haveRights() || orgaController
-              .isObjectAvailable(node.getRightsDependsOn(), ObjectType.NODE,
+        if (organizationController.isComponentAvailable(fatherPK.getInstanceId(), userId)) {
+          if (!node.haveRights() || organizationController.isObjectAvailable(node.getRightsDependsOn(), ObjectType.NODE,
                   fatherPK.getInstanceId(), userId)) {
             newSubscribers.add(userId);
           }

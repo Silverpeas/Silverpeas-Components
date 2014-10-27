@@ -106,7 +106,7 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.component.kmelia.InstanceParameters;
 import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.notification.ResourceEvent;
 import org.silverpeas.process.annotation.SimulationActionProcess;
 import org.silverpeas.publication.notification.PublicationEventNotifier;
@@ -144,7 +144,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static org.silverpeas.attachment.AttachmentService.VERSION_MODE;
-import static org.silverpeas.core.admin.OrganisationControllerProvider.getOrganisationController;
+import static org.silverpeas.core.admin.OrganizationControllerProvider.getOrganisationController;
 import static org.silverpeas.util.StringUtil.*;
 import static org.silverpeas.util.exception.SilverpeasRuntimeException.ERROR;
 
@@ -231,7 +231,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     try {
       nodeDetail = nodeBm.getDetail(pk);
       if (isRightsOnTopicsUsed) {
-        OrganisationController orga = getOrganisationController();
+        OrganizationController orga = getOrganisationController();
         if (nodeDetail.haveRights() && !orga.isObjectAvailable(nodeDetail.getRightsDependsOn(),
             ObjectType.NODE, pk.getInstanceId(), userId)) {
           nodeDetail.setUserRole("noRights");
@@ -331,7 +331,7 @@ public class KmeliaBmEJB implements KmeliaBm {
 
   @Override
   public List<NodeDetail> getAllowedSubfolders(NodeDetail folder, String userId) {
-    OrganisationController orga = getOrganisationController();
+    OrganizationController orga = getOrganisationController();
     NodePK pk = folder.getNodePK();
     List<NodeDetail> children = (List<NodeDetail>) folder.getChildrenDetails();
     List<NodeDetail> availableChildren = new ArrayList<NodeDetail>();
@@ -767,7 +767,7 @@ public class KmeliaBmEJB implements KmeliaBm {
       profile = getProfile(userId, nodePK);
     }
 
-    OrganisationController orga = getOrganisationController();
+    OrganizationController orga = getOrganisationController();
     List<NodeDetail> allowedTree = new ArrayList<NodeDetail>();
     if (isRightsOnTopicsUsed) {
       // filter allowed nodes
@@ -1244,7 +1244,7 @@ public class KmeliaBmEJB implements KmeliaBm {
 
   private String getProfile(String userId, NodePK nodePK) {
     String profile;
-    OrganisationController orgCtrl = getOrganisationController();
+    OrganizationController orgCtrl = getOrganisationController();
     if (isRightsOnTopicsEnabled(nodePK.getInstanceId())) {
       NodeDetail topic = nodeBm.getHeader(nodePK);
       if (topic.haveRights()) {

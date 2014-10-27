@@ -24,17 +24,15 @@
 
 package com.silverpeas.questionReply.control;
 
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.genericPanel.PanelLine;
 import com.stratelia.silverpeas.genericPanel.PanelProvider;
 import com.stratelia.silverpeas.genericPanel.PanelSearchEdit;
 import com.stratelia.silverpeas.genericPanel.PanelSearchToken;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,8 +46,6 @@ public class ExpertPanel extends PanelProvider {
 
   protected static final int COL_LASTNAME = 0;
   protected static final int COL_FIRSTNAME = 1;
-
-  protected static final OrganisationController organizationController = new OrganizationController();
 
   protected Map<String, UserDetail> allUserDetails = new HashMap<String, UserDetail>();
 

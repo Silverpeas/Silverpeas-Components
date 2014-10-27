@@ -21,7 +21,6 @@
 package org.silverpeas.resourcesmanager.control;
 
 
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -33,20 +32,21 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
-import org.silverpeas.util.PairObject;
-import org.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.resourcemanager.ResourcesManagerFactory;
 import org.silverpeas.resourcemanager.control.ResourcesManagerRuntimeException;
 import org.silverpeas.resourcemanager.model.Category;
 import org.silverpeas.resourcemanager.model.Reservation;
 import org.silverpeas.resourcemanager.model.Resource;
 import org.silverpeas.resourcemanager.model.ResourceValidator;
+import org.silverpeas.util.PairObject;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -299,7 +299,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
         resourceId, reservationId);
     if (STATUS_FOR_VALIDATION.equals(status)) {
       // envoyer une notification aux responsables de la ressource
-      OrganisationController orga = new OrganizationController();
+      OrganizationController orga = OrganizationControllerProvider.getOrganisationController();
       String user = orga.getUserDetail(getUserId()).getDisplayedName();
 
       ResourceLocator message = new ResourceLocator(
@@ -558,7 +558,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   public void sendNotificationValidateReservation(Reservation reservation)
       throws NotificationManagerException {
     // envoyer une notification au créateur de la réservation
-    OrganisationController orga = new OrganizationController();
+    OrganizationController orga = OrganizationControllerProvider.getOrganisationController();
     String user = orga.getUserDetail(getUserId()).getDisplayedName();
 
     ResourceLocator message = new ResourceLocator(
@@ -597,7 +597,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   public void sendNotificationRefuseReservation(Reservation reservation, Long resourceId,
       String motive) throws NotificationManagerException {
     // envoyer une notification au créateur de la réservation
-    OrganisationController orga = new OrganizationController();
+    OrganizationController orga = OrganizationControllerProvider.getOrganisationController();
     String user = orga.getUserDetail(getUserId()).getDisplayedName();
 
     ResourceLocator message =

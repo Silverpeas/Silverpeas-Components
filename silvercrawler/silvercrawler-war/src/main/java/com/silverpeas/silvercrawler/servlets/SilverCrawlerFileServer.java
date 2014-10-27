@@ -24,7 +24,7 @@
 package com.silverpeas.silvercrawler.servlets;
 
 import com.silverpeas.silvercrawler.statistic.Statistic;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.exception.RelativeFileAccessException;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -86,7 +86,7 @@ public class SilverCrawlerFileServer extends SilverpeasAuthenticatedHttpServlet 
     String userId = mainSessionCtrl.getUserId();
 
     // Check user rights on identified component
-    if (!OrganisationControllerProvider.getOrganisationController()
+    if (!OrganizationControllerProvider.getOrganisationController()
         .isComponentAvailable(componentId, userId)) {
       throwHttpForbiddenError();
     }

@@ -20,24 +20,10 @@
  */
 package com.stratelia.webactiv.yellowpages;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-
-import javax.ejb.EJBException;
-
-import org.silverpeas.core.admin.OrganisationController;
-
 import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
 import com.stratelia.webactiv.contact.model.ContactDetail;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.node.control.NodeBm;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
@@ -45,6 +31,17 @@ import com.stratelia.webactiv.yellowpages.control.ejb.YellowpagesBm;
 import com.stratelia.webactiv.yellowpages.model.TopicDetail;
 import com.stratelia.webactiv.yellowpages.model.UserContact;
 import com.stratelia.webactiv.yellowpages.model.YellowpagesRuntimeException;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+
+import javax.ejb.EJBException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Class declaration
@@ -120,10 +117,12 @@ public class YellowpagesStatistics implements ComponentStatisticsInterface {
       return c;
     }
 
-    OrganisationController myOrga = new OrganizationController();
+    OrganizationController organisationController =
+        OrganizationControllerProvider.getOrganisationController();
 
     if (topicId.startsWith("group_")) {
-      int nbUsers = myOrga.getAllSubUsersNumber(topicId.substring("group_".length()));
+      int nbUsers =
+          organisationController.getAllSubUsersNumber(topicId.substring("group_".length()));
       for (int n = 0; n < nbUsers; n++) {
         ContactDetail detail = new ContactDetail("useless", "useless", "useless", "useless",
                 "useless", "useless", "useless", new Date(), "0");

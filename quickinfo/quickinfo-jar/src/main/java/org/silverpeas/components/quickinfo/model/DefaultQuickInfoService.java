@@ -51,7 +51,7 @@ import org.silverpeas.components.quickinfo.NewsByStatus;
 import org.silverpeas.components.quickinfo.QuickInfoComponentSettings;
 import org.silverpeas.components.quickinfo.notification.QuickInfoSubscriptionUserNotification;
 import org.silverpeas.components.quickinfo.repository.NewsRepository;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.persistence.Transaction;
 import org.silverpeas.persistence.repository.OperationContext;
 import org.silverpeas.search.indexEngine.model.IndexManager;
@@ -342,7 +342,7 @@ public class DefaultQuickInfoService implements QuickInfoService, ApplicationSer
         "root.MSG_GEN_PARAM_VALUE", "Enter Get All Quick Info : User=" + userId);
     List<News> result = new ArrayList<News>();
     CompoSpace[] compoSpaces =
-        OrganisationControllerProvider.getOrganisationController().getCompoForUser(userId,
+        OrganizationControllerProvider.getOrganisationController().getCompoForUser(userId,
             QuickInfoComponentSettings.COMPONENT_NAME);
     for (CompoSpace compoSpace : compoSpaces) {
       String componentId = compoSpace.getComponentId();
@@ -427,7 +427,7 @@ public class DefaultQuickInfoService implements QuickInfoService, ApplicationSer
 
   private boolean isDelegatedNewsActivated(String componentId) {
     String paramValue =
-        OrganisationControllerProvider.getOrganisationController().getComponentParameterValue(
+        OrganizationControllerProvider.getOrganisationController().getComponentParameterValue(
             componentId, QuickInfoComponentSettings.PARAM_DELEGATED);
     return StringUtil.getBooleanValue(paramValue);
   }

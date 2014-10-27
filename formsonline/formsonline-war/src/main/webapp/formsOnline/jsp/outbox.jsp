@@ -27,16 +27,14 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 
-<%@page import="java.util.List"%>
 <%@page import="com.silverpeas.formsonline.model.FormDetail"%>
-<%@page import="org.silverpeas.util.StringUtil"%>
-<%@page import="java.util.Iterator"%>
-<%@page import="com.stratelia.webactiv.beans.admin.OrganizationController"%>
-<%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@page import="java.text.DateFormat"%>
-<%@page import="java.text.SimpleDateFormat"%>
 <%@page import="com.silverpeas.formsonline.model.FormInstance"%>
-<%@ page import="org.silverpeas.core.admin.OrganisationController" %>
+<%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
+<%@page import="org.silverpeas.core.admin.OrganizationControllerProvider"%>
+<%@page import="java.text.DateFormat" %>
+<%@page import="java.text.SimpleDateFormat"%>
+<%@page import="java.util.Iterator"%>
+<%@page import="java.util.List"%>
 
 <%!
 	String iconsPath 			= GeneralPropertiesManager.getString("ApplicationURL");
@@ -51,8 +49,9 @@
 	FormDetail 				choosenForm 	= (FormDetail) request.getAttribute("choosenForm");
 	List					formInstances	= (List) request.getAttribute("formInstances");
 	String 					userBestProfile = (String) request.getAttribute("userBestProfile");
-	OrganisationController controller		= new OrganizationController();
-	UserDetail 				userDetail 		= (choosenForm == null ) ? null : controller.getUserDetail(choosenForm.getCreatorId());
+  org.silverpeas.core.admin.OrganizationController controller =
+      OrganizationControllerProvider.getOrganisationController();
+  UserDetail 				userDetail 		= (choosenForm == null ) ? null : controller.getUserDetail(choosenForm.getCreatorId());
 
 	filteredState = (filteredState == null) ? "" : filteredState;
 %>

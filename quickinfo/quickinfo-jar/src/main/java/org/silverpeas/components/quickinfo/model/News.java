@@ -15,7 +15,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import com.stratelia.webactiv.statistic.control.StatisticBm;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.date.Period;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.persistence.model.jpa.AbstractJpaEntity;
@@ -218,7 +218,7 @@ public class News extends AbstractJpaEntity<News, UuidIdentifier> implements Sil
 
   @Override
   public boolean canBeAccessedBy(UserDetail user) {
-    return OrganisationControllerProvider.getOrganisationController().isComponentAvailable(
+    return OrganizationControllerProvider.getOrganisationController().isComponentAvailable(
         getComponentInstanceId(), user.getId());
   }
 

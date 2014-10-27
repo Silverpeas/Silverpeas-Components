@@ -20,30 +20,6 @@
  */
 package com.silverpeas.gallery.control.ejb;
 
-import static com.silverpeas.gallery.model.MediaCriteria.QUERY_ORDER_BY.CREATE_DATE_DESC;
-import static com.silverpeas.gallery.model.MediaCriteria.QUERY_ORDER_BY.IDENTIFIER_DESC;
-
-import java.io.File;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-
-import org.silverpeas.date.Period;
-import org.silverpeas.process.ProcessProvider;
-import org.silverpeas.process.util.ProcessList;
-import org.silverpeas.search.SearchEngineFactory;
-import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
-import org.silverpeas.search.searchEngine.model.QueryDescription;
-
 import com.silverpeas.gallery.GalleryComponentSettings;
 import com.silverpeas.gallery.GalleryContentManager;
 import com.silverpeas.gallery.constant.MediaType;
@@ -67,16 +43,39 @@ import com.silverpeas.gallery.process.GalleryProcessManagement;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.node.control.NodeBm;
 import com.stratelia.webactiv.node.control.dao.NodeDAO;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.date.Period;
+import org.silverpeas.process.ProcessProvider;
+import org.silverpeas.process.util.ProcessList;
+import org.silverpeas.search.SearchEngineFactory;
+import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.inject.Inject;
+import java.io.File;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import static com.silverpeas.gallery.model.MediaCriteria.QUERY_ORDER_BY.CREATE_DATE_DESC;
+import static com.silverpeas.gallery.model.MediaCriteria.QUERY_ORDER_BY.IDENTIFIER_DESC;
 
 @Stateless(name = "Gallery", description = "Stateless session bean to manage a media gallery")
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
@@ -84,6 +83,8 @@ public class GalleryBmEJB implements GalleryBm {
 
   @EJB
   private NodeBm nodeBm;
+  @Inject
+  private OrganizationController organizationController;
 
   public GalleryBmEJB() {
   }
@@ -520,7 +521,7 @@ public class GalleryBmEJB implements GalleryBm {
   }
 
   private OrganizationController getOrganizationController() {
-    return new OrganizationController();
+    return organizationController;
   }
 
   private String displayPath(final Collection<NodeDetail> path, final int beforeAfter) {

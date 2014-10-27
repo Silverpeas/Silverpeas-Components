@@ -23,16 +23,16 @@
  */
 package com.silverpeas.classifieds.notification;
 
+import com.silverpeas.classifieds.model.ClassifiedDetail;
+import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-
-import com.silverpeas.classifieds.model.ClassifiedDetail;
-import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import org.silverpeas.core.admin.OrganisationController;
 
 /**
  * @author Yohann Chastagnier
@@ -46,8 +46,10 @@ public class ClassifiedSupervisorUserNotification extends AbstractClassifiedUser
   @Override
   protected Collection<String> getUserIdsToNotify() {
     final List<String> roles = Collections.singletonList("admin");
-    final OrganisationController orga = new OrganizationController();
-    return new ArrayList<String>(Arrays.asList(orga.getUsersIdsByRoleNames(getComponentInstanceId(), roles)));
+    final OrganizationController organizationController =
+        OrganizationControllerProvider.getOrganisationController();
+    return new ArrayList<>(Arrays
+        .asList(organizationController.getUsersIdsByRoleNames(getComponentInstanceId(), roles)));
   }
 
   @Override

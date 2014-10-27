@@ -25,15 +25,16 @@ package com.silverpeas.webpages;
 
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.InstanciationException;
-import java.sql.Connection;
-
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
+import java.sql.Connection;
 
 public class WebPagesInstanciator implements ComponentsInstanciatorIntf {
 
@@ -65,8 +66,10 @@ public class WebPagesInstanciator implements ComponentsInstanciatorIntf {
   }
 
   private void removeXMLContent(String componentId) throws InstanciationException {
-    String xmlFormName = new OrganizationController().getComponentParameterValue(componentId,
-        "xmlTemplate");
+    OrganizationController organizationController =
+        OrganizationControllerProvider.getOrganisationController();
+    String xmlFormName =
+        organizationController.getComponentParameterValue(componentId, "xmlTemplate");
     if (StringUtil.isDefined(xmlFormName)) {
       String xmlShortName = xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf(
           '.'));

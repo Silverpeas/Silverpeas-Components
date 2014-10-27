@@ -33,17 +33,17 @@ import com.silverpeas.classifieds.notification.ClassifiedValidationUserNotificat
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.RecordSet;
-import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.search.SearchEngineFactory;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
@@ -57,6 +57,7 @@ import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -79,6 +80,9 @@ public class DefaultClassifiedService implements ClassifiedService {
   private static final String SETTINGS_PATH =
       "com.silverpeas.classifieds.settings.classifiedsSettings";
   private static final ResourceLocator settings = new ResourceLocator(SETTINGS_PATH, "");
+
+  @Inject
+  private OrganizationController organizationController;
 
   @Override
   public ClassifiedDetail getContentById(String classifiedId) {
@@ -250,13 +254,11 @@ public class DefaultClassifiedService implements ClassifiedService {
   public Collection<ClassifiedDetail> getClassifiedsByUser(String instanceId, String userId) {
     Connection con = openConnection();
     try {
-      OrganizationController orga = new OrganizationController();
       Collection<ClassifiedDetail> listClassified = ClassifiedsDAO.getClassifiedsByUser(con,
           instanceId, userId);
       for (ClassifiedDetail classified : listClassified) {
         // add the creator name
-        classified.setCreatorName(orga.getUserDetail(classified.getCreatorId())
-            .getDisplayedName());
+        classified.setCreatorName(UserDetail.getById(classified.getCreatorId()).getDisplayedName());
       }
       return listClassified;
     } catch (Exception e) {
@@ -271,13 +273,11 @@ public class DefaultClassifiedService implements ClassifiedService {
   public Collection<ClassifiedDetail> getClassifiedsToValidate(String instanceId) {
     Connection con = openConnection();
     try {
-      OrganizationController orga = new OrganizationController();
       Collection<ClassifiedDetail> listClassified = ClassifiedsDAO.getClassifiedsWithStatus(con,
           instanceId, ClassifiedDetail.TO_VALIDATE, 0, -1);
       for (ClassifiedDetail classified : listClassified) {
         //add the creator name
-        classified.setCreatorName(orga.getUserDetail(classified.getCreatorId())
-            .getDisplayedName());
+        classified.setCreatorName(UserDetail.getById(classified.getCreatorId()).getDisplayedName());
       }
       return listClassified;
     } catch (Exception e) {
@@ -457,8 +457,8 @@ public class DefaultClassifiedService implements ClassifiedService {
 
   private PublicationTemplate getTemplate(String instanceId) {
     try {
-      OrganisationController orga = new OrganizationController();
-      String xmlFormName = orga.getComponentParameterValue(instanceId, "XMLFormName");
+      String xmlFormName =
+          organizationController.getComponentParameterValue(instanceId, "XMLFormName");
       if (StringUtil.isDefined(xmlFormName)) {
         String xmlFormShortName =
             xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
@@ -627,7 +627,6 @@ public class DefaultClassifiedService implements ClassifiedService {
       int currentPage, int elementsPerPage) {
     Connection con = openConnection();
     try {
-      OrganizationController orga = new OrganizationController();
       List<ClassifiedDetail> listClassified = ClassifiedsDAO.getClassifiedsWithStatus(con,
           instanceId, ClassifiedDetail.VALID, currentPage, elementsPerPage);
 
@@ -635,12 +634,11 @@ public class DefaultClassifiedService implements ClassifiedService {
         String classifiedId = Integer.toString(classified.getClassifiedId());
 
         // add the creator name
-        classified.setCreatorName(orga.getUserDetail(classified.getCreatorId())
-            .getDisplayedName());
+        classified.setCreatorName(UserDetail.getById(classified.getCreatorId()).getDisplayedName());
 
         // add the search fields
-        String xmlFormName =
-            orga.getComponentParameterValue(classified.getInstanceId(), "XMLFormName");
+        String xmlFormName = organizationController
+            .getComponentParameterValue(classified.getInstanceId(), "XMLFormName");
         setClassification(classified, searchField1, searchField2, xmlFormName);
 
         // add the images

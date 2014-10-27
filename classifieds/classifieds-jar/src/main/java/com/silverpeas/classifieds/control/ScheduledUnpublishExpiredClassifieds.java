@@ -33,7 +33,7 @@ import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -48,7 +48,7 @@ public class ScheduledUnpublishExpiredClassifieds implements SchedulerEventListe
   private Scheduler scheduler;
 
   @Inject
-  private OrganisationController organizationController;
+  private OrganizationController organizationController;
 
   @Inject
   private ClassifiedService classifiedService;

@@ -20,23 +20,7 @@
  */
 package com.silverpeas.kmelia.workflowextensions;
 
-import java.awt.Color;
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.silverpeas.attachment.AttachmentException;
-import org.silverpeas.attachment.AttachmentService;
-import org.silverpeas.attachment.AttachmentServiceProvider;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-
 import au.id.jericho.lib.html.Source;
-
 import com.lowagie.text.Element;
 import com.lowagie.text.Font;
 import com.lowagie.text.Phrase;
@@ -57,8 +41,6 @@ import com.silverpeas.form.record.GenericFieldTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.StringUtil;
 import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.instance.HistoryStep;
 import com.silverpeas.workflow.api.instance.ProcessInstance;
@@ -68,19 +50,36 @@ import com.silverpeas.workflow.api.model.Parameter;
 import com.silverpeas.workflow.api.model.State;
 import com.silverpeas.workflow.external.impl.ExternalActionImpl;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.node.control.NodeBm;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
+import org.silverpeas.attachment.AttachmentException;
+import org.silverpeas.attachment.AttachmentService;
+import org.silverpeas.attachment.AttachmentServiceProvider;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+
+import java.awt.*;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class SendInKmelia extends ExternalActionImpl {
 
@@ -94,7 +93,6 @@ public class SendInKmelia extends ExternalActionImpl {
   // Add pdf history before instance attachments
   private boolean addPDFHistoryFirst = true;
   private String pdfHistoryName = null;
-  private OrganizationController orga = null;
   private String userId = null;
   private final String ADMIN_ID = "0";
 
@@ -224,7 +222,6 @@ public class SendInKmelia extends ExternalActionImpl {
       // target app do not use form : copy files of worflow folder
       copyFiles(fromPK, toPK, DocumentType.form, DocumentType.attachment);
     }
-    orga = null;
   }
 
   public void populateFields(String pubId, ForeignPK fromPK, ForeignPK toPK) {    
@@ -480,10 +477,7 @@ public class SendInKmelia extends ExternalActionImpl {
   }
 
   private OrganizationController getOrganizationController() {
-    if (orga == null) {
-      orga = new OrganizationController();
-    }
-    return orga;
+    return OrganizationControllerProvider.getOrganisationController();
   }
 
   private String getString(String key) {

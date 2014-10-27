@@ -28,8 +28,8 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.silverpeas.components.suggestionbox.mock.OrganisationControllerMockWrapper;
 import org.silverpeas.components.suggestionbox.model.PersistenceService;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
@@ -77,8 +77,8 @@ public abstract class RepositoryBasedTest
     return "spring-suggestion-box-jpa.xml";
   }
 
-  public OrganisationController getOrganisationController() {
-    OrganisationController organisationController = OrganisationControllerProvider.
+  public OrganizationController getOrganisationController() {
+    OrganizationController organisationController = OrganizationControllerProvider.
         getOrganisationController();
     return ((OrganisationControllerMockWrapper) organisationController).getMock();
   }
@@ -86,7 +86,7 @@ public abstract class RepositoryBasedTest
   public UserDetail aUser() {
     UserDetail user = new UserDetail();
     user.setId("1");
-    OrganisationController organisationController = getOrganisationController();
+    OrganizationController organisationController = getOrganisationController();
     when(organisationController.getUserDetail("1")).thenReturn(user);
 
     return user;

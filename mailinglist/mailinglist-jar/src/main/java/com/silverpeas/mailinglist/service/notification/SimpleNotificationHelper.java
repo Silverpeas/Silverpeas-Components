@@ -57,7 +57,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 
 /**
  * Utility class to send notifications.
@@ -73,7 +73,7 @@ public class SimpleNotificationHelper implements NotificationHelper {
   private SmtpConfiguration smtpConfig;
   private boolean externalThread = true;
   private SilverpeasCalendar calendarBm;
-  private OrganisationController controller;
+  private OrganizationController controller;
 
   public void notifyModerators(Message message, MailingList list)
       throws NotificationManagerException {
@@ -254,7 +254,7 @@ public class SimpleNotificationHelper implements NotificationHelper {
     return result;
   }
 
-  public OrganisationController getOrganisationController() {
+  public OrganizationController getOrganisationController() {
     return controller;
   }
 
@@ -308,7 +308,7 @@ public class SimpleNotificationHelper implements NotificationHelper {
     }
   }
 
-  public void setOrganisationController(OrganisationController controller) {
+  public void setOrganisationController(OrganizationController controller) {
     this.controller = controller;
   }
 }

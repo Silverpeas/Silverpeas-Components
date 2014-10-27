@@ -25,28 +25,28 @@ package com.silverpeas.kmelia;
 
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
-import org.silverpeas.util.MimeTypes;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.Domain;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.kmelia.KmeliaTransversal;
-import org.silverpeas.util.ResourceLocator;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import de.nava.informa.core.ChannelIF;
 import de.nava.informa.core.ItemIF;
 import de.nava.informa.exporters.RSS_2_0_Exporter;
 import de.nava.informa.impl.basic.Channel;
 import de.nava.informa.impl.basic.Item;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.util.MimeTypes;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
 
+import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -65,10 +65,12 @@ public class RssLastPublicationsServlet extends HttpServlet {
   public static final String PASSWORD_PARAM = "password";
   public static final String LOGIN_PARAM = "login";
   private static final SilverpeasWebUtil util = new SilverpeasWebUtil();
-  private static final OrganisationController orga = new OrganizationController();
   private static final AdminController adminController = new AdminController(null);
   private static final ResourceLocator settings = new ResourceLocator(
       "com.stratelia.webactiv.kmelia.settings.kmeliaSettings", "");
+
+  @Inject
+  private OrganizationController organizationController;
 
   @Override
   public void service(HttpServletRequest request, HttpServletResponse response)
@@ -148,7 +150,7 @@ public class RssLastPublicationsServlet extends HttpServlet {
   }
 
   public String getChannelTitle(String spaceId) {
-    SpaceInstLight space = orga.getSpaceInstLightById(spaceId);
+    SpaceInstLight space = organizationController.getSpaceInstLightById(spaceId);
     if (space != null) {
       return space.getName();
     }

@@ -23,20 +23,13 @@ package com.stratelia.webactiv.yellowpages.control.ejb;
 import com.silverpeas.formTemplate.dao.ModelDAO;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.ResourceLocator;
 import com.stratelia.webactiv.contact.control.ContactBm;
 import com.stratelia.webactiv.contact.model.CompleteContact;
 import com.stratelia.webactiv.contact.model.ContactDetail;
 import com.stratelia.webactiv.contact.model.ContactFatherDetail;
 import com.stratelia.webactiv.contact.model.ContactPK;
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.util.exception.UtilException;
 import com.stratelia.webactiv.node.control.NodeBm;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
@@ -45,6 +38,21 @@ import com.stratelia.webactiv.yellowpages.model.TopicDetail;
 import com.stratelia.webactiv.yellowpages.model.UserCompleteContact;
 import com.stratelia.webactiv.yellowpages.model.UserContact;
 import com.stratelia.webactiv.yellowpages.model.YellowpagesRuntimeException;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.inject.Inject;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -52,14 +60,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
-import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 
 /**
  * This is the Yellowpages EJB-tier controller of the MVC. It is implemented as a session EJB. It
@@ -73,7 +73,8 @@ import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class YellowpagesBmEJB implements YellowpagesBm {
 
-  private OrganisationController organizationController;
+  @Inject
+  private OrganizationController organizationController;
   @EJB
   private NodeBm nodeBm;
   @EJB
@@ -82,10 +83,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
   public YellowpagesBmEJB() {
   }
 
-  private OrganisationController getOrganisationController() {
-    if (this.organizationController == null) {
-      this.organizationController = new OrganizationController();
-    }
+  private OrganizationController getOrganisationController() {
     return this.organizationController;
   }
 
@@ -164,7 +162,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
       }
 
       if (contactDetails != null) {
-        OrganisationController orga = getOrganisationController();
+        OrganizationController orga = getOrganisationController();
         for (ContactDetail contactDetail : contactDetails) {
           if (contactDetail.getUserId() != null) {// contact de type user Silverpeas
             try {
@@ -402,7 +400,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
       users[i] = iterator.next().getCreatorId();
       i++;
     }
-    OrganisationController orga = getOrganisationController();
+    OrganizationController orga = getOrganisationController();
     UserDetail[] userDetails = orga.getUserDetails(users);
     ArrayList<UserContact> list = new ArrayList<UserContact>(contactDetails.size());
     iterator = contactDetails.iterator();
@@ -430,7 +428,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
     try {
       ContactDetail contactDetail = contactBm.getDetail(pk);
       if (contactDetail.getUserId() != null) {  // contact de type user Silverpeas
-        OrganisationController orga = getOrganisationController();
+        OrganizationController orga = getOrganisationController();
         UserDetail userDetail = orga.getUserDetail(contactDetail.getUserId());
         if (userDetail != null) {
           setContactAttributes(contactDetail, userDetail, orga, false);
@@ -451,7 +449,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
   }
 
   private void setContactAttributes(ContactDetail contactDetail, UserDetail userDetail,
-      OrganisationController orga, boolean filterExtraInfos) {
+      OrganizationController orga, boolean filterExtraInfos) {
     contactDetail.setFirstName(userDetail.getFirstName());
     contactDetail.setLastName(userDetail.getLastName());
     contactDetail.setEmail(userDetail.geteMail());
@@ -530,7 +528,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
           ContactDetail contactDetail = contactFatherDetail.getContactDetail();
           if (contactDetail.getUserId() != null) { // contact de type user Silverpeas
             try {
-              OrganisationController orga = getOrganisationController();
+              OrganizationController orga = getOrganisationController();
               UserDetail userDetail = orga.getUserDetail(contactDetail.getUserId());
               if (userDetail != null) {
                 setContactAttributes(contactDetail, userDetail, orga, true);
@@ -845,7 +843,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
     if (contactDetail.getUserId() != null) {
       // contact de type user Silverpeas
       try {
-        OrganisationController orga = getOrganisationController();
+        OrganizationController orga = getOrganisationController();
         UserDetail userDetail = orga.getUserDetail(contactDetail.getUserId());
         if (userDetail != null) {
           setContactAttributes(contactDetail, userDetail, orga, false);
@@ -859,7 +857,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
             "yellowpages.EX_GET_USER_DETAIL_FAILED", "contactPK = " + contactPK.toString(), e);
       }
     }
-    OrganisationController orga = getOrganisationController();
+    OrganizationController orga = getOrganisationController();
     UserDetail userDetail = orga.getUserDetail(contactDetail.getCreatorId());
     UserCompleteContact userCompleteContact = new UserCompleteContact(userDetail, completeContact);
     SilverTrace.info("yellowpages", "YellowpagesBmEJB.getCompleteContactInNode()",
@@ -891,7 +889,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
           if (contactDetail.getUserId() != null) {
             // contact de type user Silverpeas
             try {
-              OrganisationController orga = getOrganisationController();
+              OrganizationController orga = getOrganisationController();
               UserDetail userDetail = orga.getUserDetail(contactDetail.getUserId());
               if (userDetail != null) {
                 setContactAttributes(contactDetail, userDetail, orga, true);

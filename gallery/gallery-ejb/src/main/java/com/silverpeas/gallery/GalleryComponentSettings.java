@@ -24,7 +24,7 @@
 package com.silverpeas.gallery;
 
 import com.silverpeas.gallery.constant.MediaResolution;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.ResourceLocator;
 
@@ -110,22 +110,22 @@ public final class GalleryComponentSettings {
   }
 
   public static boolean isDragAndDropEnabled(String componentInstanceId) {
-    return StringUtil.getBooleanValue(OrganisationControllerProvider.getOrganisationController()
+    return StringUtil.getBooleanValue(OrganizationControllerProvider.getOrganisationController()
         .getComponentParameterValue(componentInstanceId, "dragAndDrop"));
   }
 
   public static boolean isPdcEnabled(String componentInstanceId) {
-    return StringUtil.getBooleanValue(OrganisationControllerProvider.getOrganisationController()
+    return StringUtil.getBooleanValue(OrganizationControllerProvider.getOrganisationController()
         .getComponentParameterValue(componentInstanceId, "usePdc"));
   }
 
   public static boolean isViewMetadataEnabled(String componentInstanceId) {
-    return StringUtil.getBooleanValue(OrganisationControllerProvider.getOrganisationController()
+    return StringUtil.getBooleanValue(OrganizationControllerProvider.getOrganisationController()
         .getComponentParameterValue(componentInstanceId, "viewMetadata"));
   }
 
   public static boolean isMakeWatermarkEnabled(String componentInstanceId) {
-    return StringUtil.getBooleanValue(OrganisationControllerProvider.getOrganisationController()
+    return StringUtil.getBooleanValue(OrganizationControllerProvider.getOrganisationController()
         .getComponentParameterValue(componentInstanceId, "watermark"));
   }
 

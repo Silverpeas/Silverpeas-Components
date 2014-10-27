@@ -32,7 +32,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -76,7 +76,7 @@ public class KmeliaSubscriptionPublicationUserNotification
     }
 
     // Identifying users to be excluded from notifying
-    final OrganisationController orgaController = getOrganisationController();
+    final OrganizationController orgaController = getOrganisationController();
     final Collection<String> allUserSubscriberIds =
         new ArrayList<String>(subscriberIdsByTypes.get(SubscriberType.USER));
     for (String groupId : subscriberIdsByTypes.get(SubscriberType.GROUP)) {

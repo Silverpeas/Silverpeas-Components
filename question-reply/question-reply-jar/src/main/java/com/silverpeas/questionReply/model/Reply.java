@@ -20,7 +20,7 @@
  */
 package com.silverpeas.questionReply.model;
 
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.i18n.I18NHelper;
 
 import org.silverpeas.wysiwyg.control.WysiwygController;
@@ -130,7 +130,7 @@ public class Reply extends SilverpeasBean {
   }
 
   public UserDetail readAuthor() {
-    return OrganisationControllerProvider.getOrganisationController().getUserDetail(String.valueOf(
+    return OrganizationControllerProvider.getOrganisationController().getUserDetail(String.valueOf(
         getCreatorId()));
   }
 

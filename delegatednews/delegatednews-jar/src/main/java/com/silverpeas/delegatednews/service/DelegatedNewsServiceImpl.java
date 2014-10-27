@@ -21,12 +21,10 @@
 package com.silverpeas.delegatednews.service;
 
 import com.silverpeas.SilverpeasContent;
+import com.silverpeas.annotation.Service;
 import com.silverpeas.delegatednews.dao.DelegatedNewsDao;
 import com.silverpeas.delegatednews.model.DelegatedNews;
 import com.silverpeas.ui.DisplayI18NHelper;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.template.SilverpeasTemplate;
-import org.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -34,26 +32,25 @@ import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.ResourceLocator;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.date.Period;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.template.SilverpeasTemplateFactory;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort.Order;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.inject.Inject;
-
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.date.Period;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.domain.Sort.Order;
-
-import com.silverpeas.annotation.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
@@ -61,6 +58,8 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
 
   @Inject
   private DelegatedNewsDao dao;
+  @Inject
+  private OrganizationController organizationController;
 
   /**
    * Ajout d'une actualité déléguée
@@ -164,11 +163,8 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
   /**
    * @return
    */
-  private OrganisationController getOrganisationController() {
-    // must return a new instance each time
-    // This is to resolve Serializable problems
-    OrganisationController orga = new OrganizationController();
-    return orga;
+  private OrganizationController getOrganisationController() {
+    return organizationController;
   }
   
   private String getAppId() {

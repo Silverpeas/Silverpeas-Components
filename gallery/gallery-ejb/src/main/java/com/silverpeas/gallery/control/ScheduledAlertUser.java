@@ -27,7 +27,6 @@ import com.silverpeas.scheduler.SchedulerEvent;
 import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.SchedulerProvider;
 import com.silverpeas.scheduler.trigger.JobTrigger;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -35,11 +34,12 @@ import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.admin.OrganisationController;
 
 import java.util.Collection;
 
@@ -77,7 +77,7 @@ public class ScheduledAlertUser implements SchedulerEventListener {
       SilverTrace.info("gallery", "ScheduledAlertUser.doScheduledAlertUser()",
           "root.MSG_GEN_PARAM_VALUE", "MediaList=" + mediaList.toString());
 
-      OrganisationController orga = new OrganizationController();
+      OrganizationController orga = OrganizationControllerProvider.getOrganisationController();
 
       // pour chaque photo, construction d'une ligne ...
       String currentInstanceId = null;

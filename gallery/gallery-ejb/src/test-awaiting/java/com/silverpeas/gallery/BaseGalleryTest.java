@@ -26,12 +26,12 @@ package com.silverpeas.gallery;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.cache.service.CacheServiceProvider;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.DBUtil;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.persistence.dao.DAOBasedTest;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -73,7 +73,7 @@ public abstract class BaseGalleryTest extends DAOBasedTest {
   protected UserDetail writerUser;
   protected UserDetail userUser;
 
-  private OrganisationController organisationControllerMock;
+  private OrganizationController organisationControllerMock;
 
   @Override
   public String[] getApplicationContextPath() {
@@ -88,9 +88,9 @@ public abstract class BaseGalleryTest extends DAOBasedTest {
   @Override
   public void setUp() throws Exception {
     super.setUp();
-    organisationControllerMock = mock(OrganisationController.class);
+    organisationControllerMock = mock(OrganizationController.class);
     ReflectionTestUtils
-        .setField(OrganisationControllerProvider.getFactory(), "organisationController",
+        .setField(OrganizationControllerProvider.getFactory(), "organisationController",
             organisationControllerMock);
     DBUtil.getInstanceForTest(getDataSource().getConnection());
 
@@ -132,14 +132,14 @@ public abstract class BaseGalleryTest extends DAOBasedTest {
   public void tearDown() throws Exception {
     try {
       super.tearDown();
-      OrganisationControllerProvider.getFactory().clearFactory();
+      OrganizationControllerProvider.getFactory().clearFactory();
       CacheServiceProvider.getSessionCacheService().put(UserDetail.CURRENT_REQUESTER_KEY, null);
     } finally {
       DBUtil.clearTestInstance();
     }
   }
 
-  protected OrganisationController getOrganisationControllerMock() {
+  protected OrganizationController getOrganisationControllerMock() {
     return organisationControllerMock;
   }
 

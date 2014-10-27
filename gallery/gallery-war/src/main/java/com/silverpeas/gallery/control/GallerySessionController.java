@@ -66,7 +66,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.node.model.NodeSelection;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.search.indexEngine.model.FieldDescription;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
 import org.silverpeas.util.DateUtil;
@@ -674,7 +674,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     // envoyer une notification au gestionnaire de la médiathèque concernant la
     // demande de média
     // 1. création du message
-    OrganisationController orga = getOrganisationController();
+    OrganizationController orga = getOrganisationController();
     UserDetail[] admins = orga.getUsers("useless", getComponentId(), "admin");
     String user = getUserDetail().getDisplayedName();
 
@@ -927,7 +927,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     // de l'utilisateur
     // 1. création du message
 
-    OrganisationController orga = getOrganisationController();
+    OrganizationController orga = getOrganisationController();
     UserDetail[] admins = orga.getUsers("useless", getComponentId(), "admin");
     String user = getUserDetail().getDisplayedName();
 

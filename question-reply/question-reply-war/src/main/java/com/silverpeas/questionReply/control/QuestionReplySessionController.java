@@ -35,7 +35,7 @@ import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 
 import com.silverpeas.importExport.report.ExportReport;
 import com.silverpeas.pdc.PdcServiceFactory;
@@ -598,7 +598,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * Récupère la liste des experts du domaine de la question
    */
   public Collection<UserDetail> getCurrentQuestionWriters() throws QuestionReplyException {
-    OrganisationController orga = getOrganisationController();
+    OrganizationController orga = getOrganisationController();
     List<UserDetail> arrayUsers = new ArrayList<UserDetail>();
 
     try {

@@ -20,28 +20,6 @@
  */
 package com.silverpeas.processManager.ejb;
 
-import java.io.ByteArrayInputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-
-import org.silverpeas.attachment.AttachmentServiceProvider;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.attachment.model.UnlockContext;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
-
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldTemplate;
@@ -54,9 +32,6 @@ import com.silverpeas.form.fieldType.TextField;
 import com.silverpeas.form.form.XmlForm;
 import com.silverpeas.form.record.GenericDataRecord;
 import com.silverpeas.processManager.ProcessManagerException;
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.MimeTypes;
-import org.silverpeas.util.StringUtil;
 import com.silverpeas.workflow.api.Workflow;
 import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.event.TaskDoneEvent;
@@ -65,11 +40,33 @@ import com.silverpeas.workflow.api.model.ProcessModel;
 import com.silverpeas.workflow.api.task.Task;
 import com.silverpeas.workflow.api.user.User;
 import com.silverpeas.workflow.engine.user.UserImpl;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.attachment.AttachmentServiceProvider;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.model.UnlockContext;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.MimeTypes;
+import org.silverpeas.util.StringUtil;
+
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import java.io.ByteArrayInputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.silverpeas.attachment.AttachmentService.VERSION_MODE;
 
@@ -148,7 +145,7 @@ public class ProcessManagerBmEJB implements ProcessManagerBm {
           processModel, userRole);
       PagesContext pagesContext = new PagesContext("creationForm", "0", getLanguage(), true,
           componentId, userId);
-      boolean versioningUsed = StringUtil.getBooleanValue(OrganisationControllerProvider.
+      boolean versioningUsed = StringUtil.getBooleanValue(OrganizationControllerProvider.
           getOrganisationController().getComponentParameterValue(componentId, VERSION_MODE));
       pagesContext.setVersioningUsed(versioningUsed);
 
@@ -428,8 +425,7 @@ public class ProcessManagerBmEJB implements ProcessManagerBm {
       String currentRole) throws ProcessManagerException {
 
     try {
-      OrganizationController controller = new OrganizationController();
-      User user = new UserImpl(controller.getUserDetail(userId));
+      User user = new UserImpl(UserDetail.getById(userId));
       Task creationTask = Workflow.getTaskManager().getCreationTask(user, currentRole, processModel);
       return creationTask;
 

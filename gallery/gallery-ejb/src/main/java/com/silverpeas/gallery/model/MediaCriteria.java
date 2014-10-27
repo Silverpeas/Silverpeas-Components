@@ -24,7 +24,7 @@
 package com.silverpeas.gallery.model;
 
 import com.silverpeas.gallery.constant.MediaType;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.SilverpeasRole;
@@ -295,7 +295,7 @@ public class MediaCriteria {
   private SilverpeasRole getComponentHighestRequesterRole() {
     if (componentHighestRequesterRole == null) {
       Set<SilverpeasRole> requesterRoles = SilverpeasRole.from(
-          OrganisationControllerProvider.getOrganisationController()
+          OrganizationControllerProvider.getOrganisationController()
               .getUserProfiles(getRequester().getId(), getComponentInstanceId()));
       componentHighestRequesterRole = SilverpeasRole.getGreaterFrom(requesterRoles);
     }

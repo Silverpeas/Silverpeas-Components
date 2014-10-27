@@ -62,7 +62,7 @@ import org.owasp.encoder.Encode;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.rating.web.RaterRatingEntity;
 import org.silverpeas.viewer.ViewerProvider;
 
@@ -1238,7 +1238,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
   private String displayPublicationFullPath(KmeliaSessionController kmelia, PublicationDetail pub) {
     // Get space and componentLabel of the publication (can be different from context)
-    OrganisationController orga = kmelia.getOrganisationController();
+    OrganizationController orga = kmelia.getOrganisationController();
     ComponentInstLight compoInstLight = orga.getComponentInstLight(pub.getInstanceId());
     String componentLabel = compoInstLight.getLabel(kmelia.getCurrentLanguage());
     String spaceLabel = Encode.forHtml(orga.

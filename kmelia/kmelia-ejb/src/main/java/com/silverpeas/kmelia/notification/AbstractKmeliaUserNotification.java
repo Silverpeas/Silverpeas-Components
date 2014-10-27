@@ -23,27 +23,25 @@
  */
 package com.silverpeas.kmelia.notification;
 
+import com.silverpeas.subscribe.SubscriptionService;
+import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationBuilder;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.beans.admin.SpaceInst;
+import com.stratelia.webactiv.kmelia.model.KmaxRuntimeException;
+import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
+import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.model.NodeDetail;
+import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.util.EJBUtilitaire;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-
-import org.silverpeas.core.admin.OrganisationController;
-
-import com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationBuilder;
-import com.silverpeas.subscribe.SubscriptionService;
-import com.silverpeas.subscribe.SubscriptionServiceFactory;
-
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.SpaceInst;
-import com.stratelia.webactiv.kmelia.model.KmaxRuntimeException;
-import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
-import org.silverpeas.util.EJBUtilitaire;
-import com.stratelia.webactiv.node.control.NodeBm;
-import com.stratelia.webactiv.node.model.NodeDetail;
-import com.stratelia.webactiv.node.model.NodePK;
 
 import static org.silverpeas.util.JNDINames.NODEBM_EJBHOME;
 import static org.silverpeas.util.exception.SilverpeasRuntimeException.ERROR;
@@ -71,10 +69,8 @@ public abstract class AbstractKmeliaUserNotification<T> extends AbstractTemplate
     return "kmelia";
   }
 
-  protected OrganisationController getOrganisationController() {
-    // Must return a new instance each time.
-    // This is to resolve Serializable problems
-    return new OrganizationController();
+  protected OrganizationController getOrganisationController() {
+    return OrganizationControllerProvider.getOrganisationController();
   }
 
   protected SubscriptionService getSubscribeBm() {

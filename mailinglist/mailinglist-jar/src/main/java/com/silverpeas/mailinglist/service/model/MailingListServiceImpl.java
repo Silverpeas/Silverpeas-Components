@@ -41,7 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service("mailingListService")
@@ -52,13 +52,13 @@ public class MailingListServiceImpl implements MailingListService {
   @Inject
   private MailingListDao mailingListDao;
   @Inject
-  private OrganisationController organisationController;
+  private OrganizationController organisationController;
 
   public MailingListDao getMailingListDao() {
     return mailingListDao;
   }
 
-  public OrganisationController getOrganisationController() {
+  public OrganizationController getOrganisationController() {
     return organisationController;
   }
 

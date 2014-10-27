@@ -25,6 +25,7 @@ package org.silverpeas.components.suggestionbox.model;
 
 import com.silverpeas.usernotification.builder.UserNotificationBuider;
 import com.silverpeas.usernotification.builder.helper.UserNotificationManager;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.util.CollectionUtil;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -47,7 +48,6 @@ import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepositor
 import org.silverpeas.components.suggestionbox.repository.SuggestionRepository;
 import org.silverpeas.contribution.ContributionStatus;
 import org.silverpeas.contribution.model.ContributionValidation;
-import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.persistence.repository.OperationContext;
 import org.springframework.context.support.AbstractApplicationContext;
@@ -115,7 +115,7 @@ public class SuggestionCollectionTest {
     suggestion.setContent("the content of my suggestion");
     suggestion.setCreator(suggestionBox.getCreator());
 
-    OrganisationController organisationController = getOrganisationController();
+    OrganizationController organisationController = getOrganisationController();
     when(organisationController.getUserProfiles(suggestionBox.getCreator().getId(),
         suggestionBox.getComponentInstanceId()))
         .thenReturn(new String[]{SilverpeasRole.user.name()});
@@ -141,7 +141,7 @@ public class SuggestionCollectionTest {
     suggestion.setContent("the content of my suggestion");
     suggestion.setCreator(suggestionBox.getCreator());
 
-    OrganisationController organisationController = getOrganisationController();
+    OrganizationController organisationController = getOrganisationController();
     when(organisationController.getUserProfiles(suggestionBox.getCreator().getId(),
         suggestionBox.getComponentInstanceId()))
         .thenReturn(new String[]{SilverpeasRole.writer.name()});
@@ -168,7 +168,7 @@ public class SuggestionCollectionTest {
     suggestion.setContent("the content of my suggestion");
     suggestion.setCreator(suggestionBox.getCreator());
 
-    OrganisationController organisationController = getOrganisationController();
+    OrganizationController organisationController = getOrganisationController();
     when(organisationController.getUserProfiles(suggestionBox.getCreator().getId(),
         suggestionBox.getComponentInstanceId()))
         .thenReturn(new String[]{SilverpeasRole.publisher.name()});
@@ -196,7 +196,7 @@ public class SuggestionCollectionTest {
     suggestion.setCreator(suggestionBox.getCreator());
     suggestion.getValidation().setStatus(ContributionStatus.DRAFT);
 
-    OrganisationController organisationController = getOrganisationController();
+    OrganizationController organisationController = getOrganisationController();
     when(organisationController.getUserProfiles(suggestionBox.getCreator().getId(),
         suggestionBox.getComponentInstanceId()))
         .thenReturn(new String[]{SilverpeasRole.writer.name()});
@@ -226,7 +226,7 @@ public class SuggestionCollectionTest {
     suggestion.setCreator(suggestionBox.getCreator());
     suggestion.getValidation().setStatus(ContributionStatus.REFUSED);
 
-    OrganisationController organisationController = getOrganisationController();
+    OrganizationController organisationController = getOrganisationController();
     when(organisationController.getUserProfiles(suggestionBox.getCreator().getId(),
         suggestionBox.getComponentInstanceId()))
         .thenReturn(new String[]{SilverpeasRole.writer.name()});
@@ -256,7 +256,7 @@ public class SuggestionCollectionTest {
     suggestion.setCreator(suggestionBox.getCreator());
     suggestion.getValidation().setStatus(ContributionStatus.PENDING_VALIDATION);
 
-    OrganisationController organisationController = getOrganisationController();
+    OrganizationController organisationController = getOrganisationController();
     when(organisationController.getUserProfiles(suggestionBox.getCreator().getId(),
         suggestionBox.getComponentInstanceId()))
         .thenReturn(new String[]{SilverpeasRole.publisher.name()});
@@ -294,7 +294,7 @@ public class SuggestionCollectionTest {
     suggestion.setCreator(suggestionBox.getCreator());
     suggestion.getValidation().setStatus(ContributionStatus.PENDING_VALIDATION);
 
-    OrganisationController organisationController = getOrganisationController();
+    OrganizationController organisationController = getOrganisationController();
     when(organisationController.getUserProfiles(suggestionBox.getCreator().getId(),
         suggestionBox.getComponentInstanceId()))
         .thenReturn(new String[]{SilverpeasRole.publisher.name()});
@@ -317,7 +317,7 @@ public class SuggestionCollectionTest {
     verify(suggestionRepository, times(0)).index(actual);
   }
 
-  private OrganisationController getOrganisationController() {
+  private OrganizationController getOrganisationController() {
     OrganisationControllerMockWrapper mockWrapper = context.
         getBean(OrganisationControllerMockWrapper.class);
     return mockWrapper.getMock();

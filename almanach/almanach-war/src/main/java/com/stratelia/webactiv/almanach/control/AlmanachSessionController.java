@@ -20,6 +20,54 @@
  */
 package com.stratelia.webactiv.almanach.control;
 
+import com.silverpeas.calendar.CalendarEvent;
+import com.silverpeas.export.ExportException;
+import com.silverpeas.export.Exporter;
+import com.silverpeas.export.ExporterProvider;
+import com.silverpeas.export.ical.ExportableCalendar;
+import com.silverpeas.pdc.model.PdcClassification;
+import com.silverpeas.pdc.model.PdcPosition;
+import com.silverpeas.pdc.web.PdcClassificationEntity;
+import com.stratelia.silverpeas.alertUser.AlertUser;
+import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
+import com.stratelia.silverpeas.notificationManager.NotificationParameters;
+import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
+import com.stratelia.silverpeas.peasCore.ComponentContext;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.almanach.control.ejb.AlmanachBadParamException;
+import com.stratelia.webactiv.almanach.control.ejb.AlmanachBm;
+import com.stratelia.webactiv.almanach.control.ejb.AlmanachException;
+import com.stratelia.webactiv.almanach.control.ejb.AlmanachNoSuchFindEventException;
+import com.stratelia.webactiv.almanach.control.ejb.AlmanachRuntimeException;
+import com.stratelia.webactiv.almanach.model.EventDetail;
+import com.stratelia.webactiv.almanach.model.EventOccurrence;
+import com.stratelia.webactiv.almanach.model.EventPK;
+import com.stratelia.webactiv.almanach.model.PeriodicityException;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+import org.apache.commons.io.FileUtils;
+import org.silverpeas.attachment.AttachmentServiceProvider;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.calendar.CalendarViewType;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.date.Period;
+import org.silverpeas.date.PeriodType;
+import org.silverpeas.upload.UploadedFile;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.FileServerUtils;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.PairObject;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.wysiwyg.WysiwygException;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
+import javax.inject.Inject;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -33,62 +81,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.silverpeas.attachment.AttachmentServiceProvider;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.calendar.CalendarViewType;
-import org.silverpeas.date.Period;
-import org.silverpeas.date.PeriodType;
-import org.silverpeas.upload.UploadedFile;
-import org.silverpeas.wysiwyg.WysiwygException;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-
-import com.silverpeas.calendar.CalendarEvent;
-import com.silverpeas.export.ExportException;
-import com.silverpeas.export.Exporter;
-import com.silverpeas.export.ExporterProvider;
-import com.silverpeas.export.ical.ExportableCalendar;
-import com.silverpeas.pdc.model.PdcClassification;
-import com.silverpeas.pdc.model.PdcPosition;
-import com.silverpeas.pdc.web.PdcClassificationEntity;
-import org.silverpeas.util.StringUtil;
-
-import com.stratelia.silverpeas.alertUser.AlertUser;
-import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
-import com.stratelia.silverpeas.notificationManager.NotificationParameters;
-import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.PairObject;
-import com.stratelia.webactiv.almanach.control.ejb.AlmanachBadParamException;
-import com.stratelia.webactiv.almanach.control.ejb.AlmanachBm;
-import com.stratelia.webactiv.almanach.control.ejb.AlmanachException;
-import com.stratelia.webactiv.almanach.control.ejb.AlmanachNoSuchFindEventException;
-import com.stratelia.webactiv.almanach.control.ejb.AlmanachRuntimeException;
-import com.stratelia.webactiv.almanach.model.EventDetail;
-import com.stratelia.webactiv.almanach.model.EventOccurrence;
-import com.stratelia.webactiv.almanach.model.EventPK;
-import com.stratelia.webactiv.almanach.model.PeriodicityException;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.SpaceInstLight;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.FileServerUtils;
-import org.silverpeas.util.JNDINames;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.UtilException;
-
-import org.apache.commons.io.FileUtils;
-
 import static com.silverpeas.export.ExportDescriptor.withWriter;
 import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
-import static org.silverpeas.util.StringUtil.isDefined;
-import static org.silverpeas.util.DateUtil.parse;
 import static org.silverpeas.calendar.CalendarViewType.*;
+import static org.silverpeas.util.DateUtil.parse;
+import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
  * The AlmanachSessionController provides features to handle almanachs and theirs events. A such
@@ -116,7 +114,9 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   private static final String DEFAULT_VIEW_PARAMETER = "defaultView";
   private Map<String, String> colors = null;
   private CalendarViewType viewMode;
-  private OrganizationController organizationController = new OrganizationController();
+
+  @Inject
+  private OrganizationController organizationController;
 
   /**
    * Constructs a new AlmanachSessionController instance.

@@ -31,7 +31,7 @@ import com.silverpeas.web.mock.OrganizationControllerMockWrapper;
 import com.silverpeas.web.mock.UserDetailWithProfiles;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.components.suggestionbox.model.SuggestionCollection;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 
 import static org.mockito.Matchers.*;
 
@@ -103,7 +103,7 @@ public class SuggestionBoxTestResources extends TestResources {
     if (creator == null) {
       creator = aUser();
       creator.setId("creatorId");
-      OrganisationController organisationController = getOrganisationController();
+      OrganizationController organisationController = getOrganisationController();
       when(organisationController.getUserDetail(creator.getId())).thenReturn(creator);
     }
     return creator;
@@ -147,7 +147,7 @@ public class SuggestionBoxTestResources extends TestResources {
     return suggestion;
   }
 
-  public OrganisationController getOrganisationController() {
+  public OrganizationController getOrganisationController() {
     return organizationControllerMockWrapper.getOrganizationControllerMock();
   }
 }

@@ -23,16 +23,6 @@
  */
 package com.silverpeas.kmelia.export;
 
-import java.io.File;
-import java.util.Calendar;
-import java.util.List;
-import java.util.UUID;
-
-import org.silverpeas.attachment.AttachmentServiceProvider;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.util.UnitUtil;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.converter.DocumentFormatConverterProvider;
 import com.silverpeas.converter.HTMLConverter;
@@ -43,23 +33,15 @@ import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.RenderingContext;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.ClassifyValue;
 import com.stratelia.silverpeas.pdc.model.Value;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
 import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.JNDINames;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.odftoolkit.odfdom.dom.element.text.TextAElement;
@@ -70,6 +52,22 @@ import org.odftoolkit.simple.table.Table;
 import org.odftoolkit.simple.text.Paragraph;
 import org.odftoolkit.simple.text.Section;
 import org.odftoolkit.simple.text.list.ListItem;
+import org.silverpeas.attachment.AttachmentServiceProvider;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.UnitUtil;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
+import java.io.File;
+import java.util.Calendar;
+import java.util.List;
+import java.util.UUID;
 
 import static com.silverpeas.converter.DocumentFormat.inFormat;
 import static com.silverpeas.converter.DocumentFormat.odt;
@@ -77,9 +75,10 @@ import static com.silverpeas.kmelia.export.DocumentTemplateParts.*;
 import static com.silverpeas.kmelia.export.ODTDocumentTextTranslator.aTranslatorWith;
 import static com.silverpeas.kmelia.export.ODTDocumentsMerging.atSection;
 import static com.silverpeas.kmelia.export.ODTDocumentsMerging.decorates;
+import static org.silverpeas.util.DateUtil.formatDate;
+import static org.silverpeas.util.DateUtil.getOutputDate;
 import static org.silverpeas.util.StringUtil.isDefined;
 import static org.silverpeas.util.StringUtil.isInteger;
-import static org.silverpeas.util.DateUtil.*;
 
 /**
  * A builder of an ODT document based on a given template and from a specified Kmelia publication.
@@ -517,6 +516,6 @@ public class ODTDocumentBuilder {
    * @return an instance of OrganizationController.
    */
   protected OrganizationController getOrganizationService() {
-    return new OrganizationController();
+    return OrganizationControllerProvider.getOrganisationController();
   }
 }

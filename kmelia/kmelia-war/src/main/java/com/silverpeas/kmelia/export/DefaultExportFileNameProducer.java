@@ -22,15 +22,16 @@
  */
 package com.silverpeas.kmelia.export;
 
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
 import com.stratelia.webactiv.publication.model.PublicationPK;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 
 import java.util.List;
 import java.util.UUID;
-import static org.silverpeas.util.StringUtil.*;
+
+import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
  * A default export file name producer.
@@ -76,7 +77,7 @@ public class DefaultExportFileNameProducer implements ExportFileNameProducer {
     return getOrganisationController().getComponentInst(componentId).getLabel();
   }
 
-  private OrganisationController getOrganisationController() {
-    return new OrganizationController();
+  private OrganizationController getOrganisationController() {
+    return OrganizationControllerProvider.getOrganisationController();
   }
 }

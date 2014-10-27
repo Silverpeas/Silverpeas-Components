@@ -49,7 +49,7 @@ import org.silverpeas.components.suggestionbox.model.SuggestionCollection;
 import org.silverpeas.components.suggestionbox.web.SuggestionEntity;
 import org.silverpeas.contribution.ContributionStatus;
 import org.silverpeas.contribution.model.ContributionValidation;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.rating.ContributionRating;
 import org.silverpeas.rating.ContributionRatingPK;
@@ -741,7 +741,7 @@ public class SuggestionBoxWebControllerTest {
     return context;
   }
 
-  private OrganisationController getOrganisationController() {
+  private OrganizationController getOrganisationController() {
     OrganizationControllerMockWrapper mockWrapper =
         appContext.getBean(OrganizationControllerMockWrapper.class);
     return mockWrapper.getOrganizationControllerMock();

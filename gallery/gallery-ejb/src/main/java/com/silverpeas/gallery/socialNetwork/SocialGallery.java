@@ -35,7 +35,7 @@ import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.provider.SocialGalleryInterface;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasException;
@@ -91,7 +91,7 @@ public class SocialGallery implements SocialGalleryInterface {
    * @return List<String>
    */
   private List<String> getListAvailable(String userId) {
-    List<ComponentInstLight> availableList = OrganisationControllerProvider.
+    List<ComponentInstLight> availableList = OrganizationControllerProvider.
         getOrganisationController().getAvailComponentInstLights(userId, "gallery");
     List<String> idsList = new ArrayList<String>(availableList.size());
     for (ComponentInstLight comp : availableList) {

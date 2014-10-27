@@ -23,7 +23,7 @@ package com.silverpeas.webpages;
 
 import com.silverpeas.webpages.notification.WebPagesUserNotifier;
 import com.stratelia.webactiv.node.model.NodePK;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.notification.JMSResourceEventListener;
 import org.silverpeas.wysiwyg.control.WysiwygContent;
 import org.silverpeas.wysiwyg.notification.WysiwygEvent;
@@ -45,7 +45,7 @@ import javax.inject.Inject;
 public class WebPagesWysiwygEventListener extends JMSResourceEventListener<WysiwygEvent> {
 
   @Inject
-  private OrganisationController organisationController;
+  private OrganizationController organisationController;
 
   @Override
   protected Class<WysiwygEvent> getResourceEventClass() {

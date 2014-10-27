@@ -27,7 +27,7 @@ package com.stratelia.webactiv.kmelia;
 
 import com.silverpeas.jcrutil.RandomGenerator;
 import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.DefaultOrganizationController;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
 import com.stratelia.webactiv.node.control.NodeBm;
 import com.stratelia.webactiv.publication.control.PublicationBm;
@@ -38,7 +38,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -97,7 +97,7 @@ public class KmeliaSecurityTest {
   public void testIsAccessAuthorizedForValidPublication() throws Exception {
     String instanceId = "100";
     String adminId = "11";
-    OrganisationController controller = mock(OrganizationController.class);
+    OrganizationController controller = mock(DefaultOrganizationController.class);
     when(controller.isComponentAvailable(eq(instanceId), anyString())).thenReturn(Boolean.TRUE);
     when(controller.isComponentAvailable(instanceId, "10")).thenReturn(Boolean.FALSE);
     when(controller.getComponentParameterValue(instanceId, KmeliaSecurity.RIGHTS_ON_TOPIC_PARAM)).
@@ -134,7 +134,7 @@ public class KmeliaSecurityTest {
     String publisherId = "13";
     String authorWriterId = "14";
     String notAuthorizedWriterId = "15";
-    OrganisationController controller = mock(OrganizationController.class);
+    OrganizationController controller = mock(DefaultOrganizationController.class);
     when(controller.isComponentAvailable(eq(instanceId), anyString())).thenReturn(Boolean.TRUE);
     when(controller.getComponentParameterValue(instanceId, KmeliaSecurity.RIGHTS_ON_TOPIC_PARAM)).
         thenReturn(null);
@@ -185,7 +185,7 @@ public class KmeliaSecurityTest {
     String publisherId = "13";
     String authorWriterId = "14";
     String notAuthorizedWriterId = "15";
-    OrganisationController controller = mock(OrganizationController.class);
+    OrganizationController controller = mock(DefaultOrganizationController.class);
     when(controller.isComponentAvailable(eq(instanceId), anyString())).thenReturn(Boolean.TRUE);
     when(controller.getComponentParameterValue(instanceId, KmeliaSecurity.RIGHTS_ON_TOPIC_PARAM)).
         thenReturn(null);
@@ -249,7 +249,7 @@ public class KmeliaSecurityTest {
    */
   @Test
   public void testIsObjectAvailable() {
-    OrganisationController controller = mock(OrganizationController.class);
+    OrganizationController controller = mock(DefaultOrganizationController.class);
     KmeliaSecurity instance = new KmeliaSecurity(controller);
     assertTrue("Object not of type kmelia", instance.isObjectAvailable("100", "10", "1000", "toto"));
   }
@@ -275,7 +275,7 @@ public class KmeliaSecurityTest {
    */
   @Test
   public void testIsRightsOnTopicsEnabled() {
-    OrganisationController controller = mock(OrganizationController.class);
+    OrganizationController controller = mock(DefaultOrganizationController.class);
     when(controller.getComponentParameterValue("100", KmeliaSecurity.RIGHTS_ON_TOPIC_PARAM)).
         thenReturn("yes");
     when(controller.getComponentParameterValue("101", KmeliaSecurity.RIGHTS_ON_TOPIC_PARAM)).

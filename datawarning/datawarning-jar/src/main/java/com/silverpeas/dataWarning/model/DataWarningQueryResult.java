@@ -23,16 +23,17 @@
  */
 package com.silverpeas.dataWarning.model;
 
-import java.util.*;
-
 import com.silverpeas.dataWarning.DataWarningException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.WithNested;
-import org.silverpeas.core.admin.OrganisationController;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class DataWarningQueryResult extends Object {
 
@@ -48,7 +49,6 @@ public class DataWarningQueryResult extends Object {
   protected HashMap valuesByUser = null;
   protected int persoColumnNumber = 0;
   protected String persoUID = "";
-  protected OrganisationController oc = new OrganizationController();
 
   public DataWarningQueryResult(DataWarningQuery qp, boolean pe, int colNum, String puid) {
     queryParent = qp;
@@ -352,6 +352,7 @@ public class DataWarningQueryResult extends Object {
 
   public String returnPersoValue(String userId) {
     try {
+      OrganizationController oc = OrganizationControllerProvider.getOrganisationController();
       UserDetail ud = oc.getUserDetail(userId);
 
       if (ud == null) {

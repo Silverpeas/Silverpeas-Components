@@ -24,7 +24,7 @@
 package org.silverpeas.components.suggestionbox.common;
 
 import com.silverpeas.personalization.UserPreferences;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.comparator.AbstractComplexComparator;
@@ -385,7 +385,7 @@ public class SuggestionBoxWebServiceProvider {
   public static void checkAdminAccessOrUserIsModerator(UserDetail user,
       SuggestionBox suggestionBox) {
     Set<String> moderatorIds = CollectionUtil.asSet(
-        OrganisationControllerProvider.getOrganisationController()
+        OrganizationControllerProvider.getOrganisationController()
             .getUsersIdsByRoleNames(suggestionBox.getComponentInstanceId(),
                 CollectionUtil.asList(SilverpeasRole.admin.name(), SilverpeasRole.publisher.name()))
     );

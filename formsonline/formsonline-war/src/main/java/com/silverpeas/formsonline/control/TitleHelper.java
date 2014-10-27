@@ -24,16 +24,13 @@
 
 package com.silverpeas.formsonline.control;
 
-import java.util.StringTokenizer;
-
 import com.silverpeas.formsonline.model.FormInstance;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import org.silverpeas.core.admin.OrganisationController;
+
+import java.util.StringTokenizer;
 
 public class TitleHelper {
-  private static OrganisationController controller = new OrganizationController();
 
   /**
    * Hide Utility Class Constructor with a private constuctor...
@@ -62,7 +59,7 @@ public class TitleHelper {
         return "$$" + keyword + "$$";
       }
       String fieldName = tokenizer.nextToken();
-      UserDetail user = controller.getUserDetail(instance.getCreatorId());
+      UserDetail user = UserDetail.getById(instance.getCreatorId());
       String value = "";
 
       if (fieldName.equals("firstName")) {
@@ -95,7 +92,7 @@ public class TitleHelper {
         return "$$" + keyword + "$$";
       }
 
-      UserFull user = controller.getUserFull(instance.getCreatorId());
+      UserFull user = UserFull.getById(instance.getCreatorId());
       String propertyName = tokenizer.nextToken();
       return user.getValue(propertyName, "$$" + keyword + "$$");
     }
@@ -104,4 +101,5 @@ public class TitleHelper {
       return "$$" + keyword + "$$";
     }
   }
+
 }

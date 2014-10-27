@@ -23,25 +23,25 @@ package com.silverpeas.gallery.servlets;
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.delegate.MediaDataCreateDelegate;
 import com.silverpeas.gallery.model.GalleryRuntimeException;
-import org.silverpeas.cache.service.CacheServiceProvider;
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.ZipUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.JNDINames;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.util.fileFolder.FileFolderManager;
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.cache.service.CacheServiceProvider;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.ZipUtil;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.fileFolder.FileFolderManager;
 import org.silverpeas.web.util.SilverpeasTransverseWebErrorUtil;
 
 import javax.ejb.EJBException;
+import javax.inject.Inject;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -62,6 +62,9 @@ import static org.silverpeas.util.StringUtil.isDefined;
 public class GalleryDragAndDrop extends HttpServlet {
 
   private static final long serialVersionUID = -3063286463794353943L;
+
+  @Inject
+  private OrganizationController organizationController;
 
   @Override
   public void init(ServletConfig config) {
@@ -143,16 +146,17 @@ public class GalleryDragAndDrop extends HttpServlet {
 
   private void importRepository(final File repository, final String userId, final String componentId,
       final String albumId) throws Exception {
-    OrganisationController orga = new OrganizationController();
-    boolean watermark =
-        "yes".equalsIgnoreCase(orga.getComponentParameterValue(componentId, "watermark"));
-    boolean download =
-        !"no".equalsIgnoreCase(orga.getComponentParameterValue(componentId, "download"));
-    String watermarkHD = orga.getComponentParameterValue(componentId, "WatermarkHD");
+    boolean watermark = "yes".equalsIgnoreCase(
+        organizationController.getComponentParameterValue(componentId, "watermark"));
+    boolean download = !"no".equalsIgnoreCase(
+        organizationController.getComponentParameterValue(componentId, "download"));
+    String watermarkHD =
+        organizationController.getComponentParameterValue(componentId, "WatermarkHD");
     if (!StringUtil.isInteger(watermarkHD)) {
       watermarkHD = "";
     }
-    String watermarkOther = orga.getComponentParameterValue(componentId, "WatermarkOther");
+    String watermarkOther =
+        organizationController.getComponentParameterValue(componentId, "WatermarkOther");
     if (!StringUtil.isInteger(watermarkOther)) {
       watermarkOther = "";
     }

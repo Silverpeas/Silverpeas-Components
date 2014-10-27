@@ -24,6 +24,7 @@ import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
 
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.upload.UploadedFile;
 
 import com.silverpeas.form.DataRecordUtil;
@@ -36,11 +37,12 @@ import com.stratelia.webactiv.almanach.control.ejb.AlmanachBm;
 import com.stratelia.webactiv.almanach.control.ejb.AlmanachRuntimeException;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.EventPK;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
+
+import javax.inject.Inject;
 
 /**
  * The aim of this class is to provide a new workflow extension in order to create an almanach event
@@ -59,7 +61,9 @@ public class SendInAlmanach extends ExternalActionImpl {
 
   private String role = "unknown";
   private final String ADMIN_ID = "0";
-  private OrganizationController orga;
+
+  @Inject
+  private OrganizationController organizationController;
 
   public SendInAlmanach() {
   }
@@ -218,10 +222,7 @@ public class SendInAlmanach extends ExternalActionImpl {
   }
 
   protected OrganizationController getOrganizationController() {
-    if (orga == null) {
-      orga = new OrganizationController();
-    }
-    return orga;
+    return organizationController;
   }
 
 }

@@ -26,7 +26,7 @@ package org.silverpeas.components.suggestionbox.notification;
 import com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationBuilder;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.CollectionUtil;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -65,7 +65,7 @@ public abstract class AbstractSuggestionBoxUserNotification<T>
    * @return identifier array of users.
    */
   protected Collection<String> getSuggestionBoxModerators() {
-    return CollectionUtil.asList(OrganisationControllerProvider.getOrganisationController()
+    return CollectionUtil.asList(OrganizationControllerProvider.getOrganisationController()
         .getUsersIdsByRoleNames(getComponentInstanceId(),
             Collections.singletonList(SilverpeasRole.admin.name())));
   }

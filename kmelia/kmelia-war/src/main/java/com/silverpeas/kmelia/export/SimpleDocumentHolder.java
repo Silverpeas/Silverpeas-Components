@@ -23,7 +23,7 @@
 package com.silverpeas.kmelia.export;
 
 import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 
 import org.silverpeas.util.StringUtil;
 
@@ -59,7 +59,7 @@ class SimpleDocumentHolder {
     if (!StringUtil.isDefined(author)) {
       author = document.getCreatedBy();
     }
-    return OrganisationControllerProvider.getOrganisationController().getUserDetail(author)
+    return OrganizationControllerProvider.getOrganisationController().getUserDetail(author)
         .getDisplayedName();
   }
 
