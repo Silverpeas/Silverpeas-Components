@@ -359,7 +359,7 @@ public class MediaDAO {
    */
   public static String saveMedia(OperationContext context, Media media)
       throws SQLException, UtilException {
-    List<JdbcSqlQuery> updateQueries = new ArrayList<>();
+    JdbcSqlQueries updateQueries = new JdbcSqlQueries();
 
     // The current Uuid
     String uuid = media.getId();
@@ -394,7 +394,7 @@ public class MediaDAO {
     }
 
     // Execution of update queries
-    JdbcSqlQueries.execute(updateQueries);
+    updateQueries.execute();
     return uuid;
   }
 
@@ -490,7 +490,7 @@ public class MediaDAO {
       streamingSave.addInsertParam("mediaId", streaming.getId());
     } else {
       streamingSave = createUpdateFor("SC_Gallery_Streaming");
-      streamingSave.append("update SC_Gallery_Streaming set ");
+      streamingSave.addSqlPart("update SC_Gallery_Streaming set ");
     }
     streamingSave.addSaveParam("homepageUrl", streaming.getHomepageUrl(), isInsert);
     streamingSave.addSaveParam("provider", streaming.getProvider(), isInsert);
@@ -586,7 +586,7 @@ public class MediaDAO {
    */
   public static void deleteMedia(Media media) throws SQLException {
     String mediaId = media.getId();
-    List<JdbcSqlQuery> updateQueries = new ArrayList<>();
+    JdbcSqlQueries updateQueries = new JdbcSqlQueries();
     updateQueries.add(createDeleteFor("SC_Gallery_Media").where("mediaId = ?", mediaId));
     if (MediaType.Photo == media.getType() || MediaType.Video == media.getType() ||
         MediaType.Sound == media.getType()) {
@@ -610,7 +610,7 @@ public class MediaDAO {
             "Unknown media type to delete id=" + media.getId());
         break;
     }
-    JdbcSqlQueries.execute(updateQueries);
+    updateQueries.execute();
     deleteAllMediaPath(media);
   }
 
@@ -708,17 +708,17 @@ public class MediaDAO {
   public static List<SocialInformation> getSocialInformationListOfMyContacts(List<String> userIds,
       List<String> availableComponents, Period period) throws SQLException {
     JdbcSqlQuery query = create("(select createDate as dateinformation, mediaId, 'new' as type");
-    query.append("from SC_Gallery_Media where createdBy").in(userIds);
-    query.append("and instanceId").in(availableComponents);
-    query.append("and createDate >= ? and createDate <= ?)", period.getBeginDate(),
+    query.addSqlPart("from SC_Gallery_Media where createdBy").in(userIds);
+    query.and("instanceId").in(availableComponents);
+    query.and("createDate >= ? and createDate <= ?)", period.getBeginDate(),
         period.getEndDate());
-    query.append("union (select lastUpdateDate as dateinformation, mediaId, 'update' as type");
-    query.append("from SC_Gallery_Media where lastUpdatedBy").in(userIds);
-    query.append("and instanceId").in(availableComponents);
-    query.append("and lastUpdateDate <> createDate");
-    query.append("and lastUpdateDate >= ? and lastUpdateDate <= ?)", period.getBeginDate(),
+    query.addSqlPart("union (select lastUpdateDate as dateinformation, mediaId, 'update' as type");
+    query.addSqlPart("from SC_Gallery_Media where lastUpdatedBy").in(userIds);
+    query.and("instanceId").in(availableComponents);
+    query.and("lastUpdateDate <> createDate");
+    query.and("lastUpdateDate >= ? and lastUpdateDate <= ?)", period.getBeginDate(),
         period.getEndDate());
-    query.append("order by dateinformation desc, mediaId desc");
+    query.addSqlPart("order by dateinformation desc, mediaId desc");
 
     return query.execute(new SelectResultRowProcessor<SocialInformation>() {
       @Override
