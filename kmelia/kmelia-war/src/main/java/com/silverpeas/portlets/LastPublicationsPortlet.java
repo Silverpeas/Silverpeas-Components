@@ -24,6 +24,7 @@
 
 package com.silverpeas.portlets;
 
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.beans.admin.AdminController;
@@ -48,8 +49,6 @@ import java.net.URLEncoder;
 import java.util.List;
 
 public class LastPublicationsPortlet extends GenericPortlet implements FormNames {
-
-  private static final AdminController adminController = new AdminController(null);
 
   @Override
   public void doView(RenderRequest request, RenderResponse response)
@@ -181,6 +180,7 @@ public class LastPublicationsPortlet extends GenericPortlet implements FormNames
 
   public static String getRSSUrl(MainSessionController mainSessionController, String spaceId) {
     String userId = mainSessionController.getUserId();
+    AdminController adminController = ServiceProvider.getService(AdminController.class);
     UserFull user = adminController.getUserFull(userId);
     StringBuilder builder = new StringBuilder();
     builder.append("/rsslastpublications/").append(spaceId);

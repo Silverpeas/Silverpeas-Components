@@ -216,7 +216,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public boolean isKmaxMode = false;
   // i18n
   private String currentLanguage = null;
-  private AdminController m_AdminCtrl = null;
   // sauvegarde pour mise à jour à la chaine
   Fields saveFields = new Fields();
   boolean isDragAndDropEnableByUser = false;
@@ -2645,10 +2644,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   private AdminController getAdmin() {
-    if (m_AdminCtrl == null) {
-      m_AdminCtrl = new AdminController(getUserId());
-    }
-    return m_AdminCtrl;
+    return ServiceProvider.getService(AdminController.class);
   }
 
   private ProfileInst getProfile(List<ProfileInst> profiles, String role) {

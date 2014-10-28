@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.CreateException;
+import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -71,6 +72,8 @@ public class AlmanachICSProducer {
   private String login;
   @QueryParam("password")
   private String password;
+  @Inject
+  private AdminController adminController;
 
   /**
    * Gets the almanach content specified by its identifier in the ICS format. The credence
@@ -88,7 +91,6 @@ public class AlmanachICSProducer {
     StringWriter writer = new StringWriter();
 
     // Check login/pwd must be an identified user
-    AdminController adminController = new AdminController(null);
     UserFull user = adminController.getUserFull(userId);
     if (user != null && user.getLogin().equals(login)
         && user.getPassword().equals(password) && adminController.isComponentAvailable(almanachId,

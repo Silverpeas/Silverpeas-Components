@@ -65,9 +65,11 @@ public class RssLastPublicationsServlet extends HttpServlet {
   public static final String PASSWORD_PARAM = "password";
   public static final String LOGIN_PARAM = "login";
   private static final SilverpeasWebUtil util = new SilverpeasWebUtil();
-  private static final AdminController adminController = new AdminController(null);
   private static final ResourceLocator settings = new ResourceLocator(
       "com.stratelia.webactiv.kmelia.settings.kmeliaSettings", "");
+
+  @Inject
+  private AdminController adminController;
 
   @Inject
   private OrganizationController organizationController;

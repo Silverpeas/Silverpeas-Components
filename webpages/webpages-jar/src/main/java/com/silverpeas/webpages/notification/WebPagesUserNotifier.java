@@ -31,6 +31,7 @@ import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.constant.SubscriberType;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.silverpeas.subscribe.util.SubscriptionUtil;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -133,8 +134,9 @@ public class WebPagesUserNotifier extends AbstractTemplateUserNotificationBuilde
    */
   private String buildResourceLocation() {
     final StringBuilder sb = new StringBuilder();
+    AdminController adminController = ServiceProvider.getService(AdminController.class);
     final List<SpaceInstLight> spaces =
-        new AdminController(null).getPathToComponent(getComponentInstanceId());
+        adminController.getPathToComponent(getComponentInstanceId());
     if (spaces != null) {
       for (final SpaceInstLight space : spaces) {
         if (sb.length() > 0) {

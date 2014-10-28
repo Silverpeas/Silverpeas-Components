@@ -43,6 +43,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.viewGenerator.html.UserNameGenerator;
 
@@ -481,7 +482,7 @@ public class OrganizationChartSessionController extends AbstractComponentSession
     String domainId = getDomainId();
 
     if (StringUtil.isDefined(domainId)) {
-      AdminController adminController = new AdminController(getUserId());
+      AdminController adminController = ServiceProvider.getService(AdminController.class);
       userId = adminController.getUserIdByLoginAndDomain(login, domainId);
     }
 

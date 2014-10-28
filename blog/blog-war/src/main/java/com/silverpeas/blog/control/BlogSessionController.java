@@ -52,6 +52,7 @@ import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileServerUtils;
 import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.exception.UtilException;
@@ -106,7 +107,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext, "org.silverpeas.blog.multilang.blogBundle",
         "org.silverpeas.blog.settings.blogIcons");
-    AdminController admin = new AdminController("useless");
+    AdminController admin = ServiceProvider.getService(AdminController.class);
     Domain defaultDomain = admin.getDomain(getUserDetail().getDomainId());
     serverURL = defaultDomain.getSilverpeasServerURL();
     setWallPaper();

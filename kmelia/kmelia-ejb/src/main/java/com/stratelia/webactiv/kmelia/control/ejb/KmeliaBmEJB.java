@@ -176,7 +176,9 @@ public class KmeliaBmEJB implements KmeliaBm {
   @Inject
   private PublicationEventNotifier notifier;
   @Inject
-  private CommentService commentService = null;
+  private CommentService commentService;
+  @Inject
+  private AdminController adminController;
 
   public KmeliaBmEJB() {
   }
@@ -493,15 +495,14 @@ public class KmeliaBmEJB implements KmeliaBm {
             NodeDetail father = nodeBm.getHeader(oldNode.getFatherPK());
             topic.setRightsDependsOn(father.getRightsDependsOn());
             
-            AdminController admin = new AdminController(null);
-            
             // Topic profiles must be removed
-            List<ProfileInst> profiles = admin.getProfilesByObject(topic.getNodePK().getId(),
-                ObjectType.NODE.getCode(), topic.getNodePK().getInstanceId());
+            List<ProfileInst> profiles = adminController
+                .getProfilesByObject(topic.getNodePK().getId(), ObjectType.NODE.getCode(),
+                    topic.getNodePK().getInstanceId());
             if (profiles != null) {
               for (ProfileInst profile : profiles) {
                 if (profile != null) {
-                  admin.deleteProfileInst(profile.getId());
+                  adminController.deleteProfileInst(profile.getId());
                 }
               }
             }
@@ -4599,12 +4600,9 @@ public class KmeliaBmEJB implements KmeliaBm {
           .iterator();
       while (!checked && descendants.hasNext()) {
         NodeDetail descendant = descendants.next();
-        AdminController admin = null;
         if (descendant.haveLocalRights()) {
           // check if user is admin, publisher or writer on this topic
-          admin = new AdminController(userId);
-          String[] profiles = admin
-              .getProfilesByObjectAndUserId(descendant.getId(), ObjectType.NODE.getCode(),
+          String[] profiles = adminController.getProfilesByObjectAndUserId(descendant.getId(), ObjectType.NODE.getCode(),
                   componentId, userId);
           if (profiles != null && profiles.length > 0) {
             userProfile = SilverpeasRole.from(KmeliaHelper.getProfile(profiles));
@@ -4745,20 +4743,19 @@ public class KmeliaBmEJB implements KmeliaBm {
     // move node and subtree
     nodeBm.moveNode(nodePK, to);
 
-    AdminController admin = new AdminController(userId);
     for (NodeDetail fromNode : treeToPaste) {
       if (fromNode != null) {
         NodePK toNodePK = new NodePK(fromNode.getNodePK().getId(), to);
 
         // remove rights
         if (fromNode.haveLocalRights()) {
-          List<ProfileInst> profiles =
-              admin.getProfilesByObject(fromNode.getNodePK().getId(), ObjectType.NODE.getCode(),
+          List<ProfileInst> profiles = adminController
+              .getProfilesByObject(fromNode.getNodePK().getId(), ObjectType.NODE.getCode(),
                   fromNode.getNodePK().getInstanceId());
           if (profiles != null) {
             for (ProfileInst profile : profiles) {
               if (profile != null && StringUtil.isDefined(profile.getId())) {
-                admin.deleteProfileInst(profile.getId());
+                adminController.deleteProfileInst(profile.getId());
               }
             }
           }
@@ -4826,9 +4823,8 @@ public class KmeliaBmEJB implements KmeliaBm {
       }
       // Set topic rights if necessary
       if (nodeToCopy.haveLocalRights()) {
-        AdminController admin = new AdminController(userId);
-        List<ProfileInst> topicProfiles =
-            admin.getProfilesByObject(nodeToCopy.getNodePK().getId(), ObjectType.NODE.getCode(),
+        List<ProfileInst> topicProfiles = adminController
+            .getProfilesByObject(nodeToCopy.getNodePK().getId(), ObjectType.NODE.getCode(),
                 nodeToCopy.getNodePK().getInstanceId());
         for (ProfileInst nodeToPasteProfile : topicProfiles) {
           if (nodeToPasteProfile != null) {
@@ -4838,7 +4834,7 @@ public class KmeliaBmEJB implements KmeliaBm {
             nodeProfileInst.setObjectId(Integer.parseInt(nodePK.getId()));
             nodeProfileInst.setObjectFatherId(father.getId());
             // Add the profile
-            admin.addProfileInst(nodeProfileInst, userId);
+            adminController.addProfileInst(nodeProfileInst, userId);
           }
         }
       }
