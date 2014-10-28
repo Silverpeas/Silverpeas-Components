@@ -33,6 +33,7 @@ import com.stratelia.webactiv.calendar.backbone.TodoBackboneAccess;
 import com.stratelia.webactiv.node.NodeInstanciator;
 import com.stratelia.webactiv.publication.PublicationInstanciator;
 import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.ServiceProvider;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -68,7 +69,7 @@ public class KmeliaInstanciator extends SQLRequest implements ComponentsInstanci
         "Space = " + spaceId);
     PublicationInstanciator pub = new PublicationInstanciator("com.stratelia.webactiv.kmelia");
     pub.delete(con, spaceId, componentId, userId);
-    TodoBackboneAccess todoBBA = new TodoBackboneAccess();
+    TodoBackboneAccess todoBBA = ServiceProvider.getService(TodoBackboneAccess.class);
     todoBBA.removeEntriesByInstanceId(componentId);
     NodeInstanciator node = new NodeInstanciator("com.stratelia.webactiv.kmelia");
     node.delete(con, spaceId, componentId, userId);

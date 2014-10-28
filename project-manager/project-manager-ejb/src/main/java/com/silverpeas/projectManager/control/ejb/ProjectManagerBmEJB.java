@@ -49,6 +49,7 @@ import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.inject.Inject;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Calendar;
@@ -60,7 +61,12 @@ import java.util.List;
 public class ProjectManagerBmEJB implements ProjectManagerBm {
 
   private static final long serialVersionUID = -1707326539051696107L;
-  private CommentService commentController = null;
+
+  @Inject
+  private CommentService commentController;
+
+  @Inject
+  private TodoBackboneAccess todoAccessor;
 
   /**
    * Gets a comment service.
@@ -68,9 +74,6 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
    * @return a DefaultCommentService instance.
    */
   private CommentService getCommentService() {
-    if (commentController == null) {
-      commentController = CommentServiceProvider.getCommentService();
-    }
     return commentController;
   }
 
@@ -806,32 +809,28 @@ public class ProjectManagerBmEJB implements ProjectManagerBm {
   private TodoDetail getTodo(String todoId) {
     SilverTrace.info("projectManager", "ProjectManagerBmEJB.getTodo()", "root.MSG_GEN_ENTER_METHOD",
         "todoId=" + todoId);
-    TodoBackboneAccess todoBBA = new TodoBackboneAccess();
-    return todoBBA.getEntry(todoId);
+    return todoAccessor.getEntry(todoId);
   }
 
   private void addTodo(TaskDetail task) {
     SilverTrace.info("projectManager", "ProjectManagerBmEJB.addTodo()", "root.MSG_GEN_ENTER_METHOD",
         "actionId=" + task.getId());
-    TodoBackboneAccess todoBBA = new TodoBackboneAccess();
     TodoDetail todo = task.toTodoDetail();
-    todoBBA.addEntry(todo);
+    todoAccessor.addEntry(todo);
   }
 
   private void removeTodo(int id, String instanceId) {
     SilverTrace.info("projectManager", "ProjectManagerBmEJB.removeTodo()",
         "root.MSG_GEN_ENTER_METHOD", "id = " + id + ", instanceId=" + instanceId);
-    TodoBackboneAccess todoBBA = new TodoBackboneAccess();
-    todoBBA.removeEntriesFromExternal("useless", instanceId, Integer.toString(id));
+    todoAccessor.removeEntriesFromExternal("useless", instanceId, Integer.toString(id));
   }
 
   private void updateTodo(TaskDetail task) {
     SilverTrace.info("projectManager", "ProjectManagerBmEJB.updateTodo()",
         "root.MSG_GEN_ENTER_METHOD", "actionId=" + task.getId());
-    TodoBackboneAccess todoBBA = new TodoBackboneAccess();
-    todoBBA.removeEntriesFromExternal("useless", task.getInstanceId(), Integer.
+    todoAccessor.removeEntriesFromExternal("useless", task.getInstanceId(), Integer.
         toString(task.getId()));
-    todoBBA.addEntry(task.toTodoDetail());
+    todoAccessor.addEntry(task.toTodoDetail());
   }
 
   private void createIndex(TaskDetail task) {

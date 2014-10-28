@@ -179,6 +179,8 @@ public class KmeliaBmEJB implements KmeliaBm {
   private CommentService commentService;
   @Inject
   private AdminController adminController;
+  @Inject
+  private TodoBackboneAccess todoAccessor;
 
   public KmeliaBmEJB() {
   }
@@ -3182,8 +3184,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     }
     todo.setExternalId(pubDetail.getPK().getId());
 
-    TodoBackboneAccess todoBBA = new TodoBackboneAccess();
-    return todoBBA.addEntry(todo);
+    return todoAccessor.addEntry(todo);
   }
 
   /*
@@ -3194,16 +3195,14 @@ public class KmeliaBmEJB implements KmeliaBm {
     SilverTrace.info("kmelia", "KmeliaBmEJB.removeAllTodosForPublication()",
         "root.MSG_GEN_ENTER_METHOD", "Enter pubPK =" + pubPK.toString());
 
-    TodoBackboneAccess todoBBA = new TodoBackboneAccess();
-    todoBBA.removeEntriesFromExternal("useless", pubPK.getInstanceId(), pubPK.getId());
+    todoAccessor.removeEntriesFromExternal("useless", pubPK.getInstanceId(), pubPK.getId());
   }
 
   private void removeTodoForPublication(PublicationPK pubPK, String userId) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.removeTodoForPublication()",
         "root.MSG_GEN_ENTER_METHOD", "Enter pubPK =" + pubPK.toString());
 
-    TodoBackboneAccess todoBBA = new TodoBackboneAccess();
-    todoBBA.removeAttendeeToEntryFromExternal(pubPK.getInstanceId(), pubPK.getId(), userId);
+    todoAccessor.removeAttendeeToEntryFromExternal(pubPK.getInstanceId(), pubPK.getId(), userId);
   }
 
   private void sendValidationAlert(final PublicationDetail pubDetail, final String[] users) {
