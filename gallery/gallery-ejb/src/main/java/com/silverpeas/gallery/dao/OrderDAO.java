@@ -27,8 +27,6 @@ import com.silverpeas.gallery.model.MediaOrderCriteria;
 import com.silverpeas.gallery.model.Order;
 import com.silverpeas.gallery.model.OrderRow;
 import org.silverpeas.persistence.jdbc.JdbcSqlQuery;
-import org.silverpeas.persistence.jdbc.ResultSetWrapper;
-import org.silverpeas.persistence.jdbc.SelectResultRowProcessor;
 import org.silverpeas.util.exception.UtilException;
 
 import java.sql.SQLException;
@@ -150,18 +148,15 @@ public class OrderDAO {
    */
   public static List<OrderRow> getAllOrderDetails(final String orderId) throws SQLException {
     return createSelect(
-        "mediaId, instanceId, downloadDate, downloadDecision  from SC_Gallery_OrderDetail " +
-            "where orderId = ?", orderId).execute(new SelectResultRowProcessor<OrderRow>() {
-      @Override
-      protected OrderRow currentRow(final ResultSetWrapper row) throws SQLException {
-        String mediaId = row.getString(1);
-        String instanceId = row.getString(2);
-        OrderRow orderRow = new OrderRow(orderId, mediaId, instanceId);
-        orderRow.setDownloadDate(row.getTimestamp(3));
-        orderRow.setDownloadDecision(row.getString(4));
-        return orderRow;
-      }
-    });
+        "mediaId, instanceId, downloadDate, downloadDecision from SC_Gallery_OrderDetail")
+        .where("orderId = ?", orderId).execute(row -> {
+          String mediaId = row.getString(1);
+          String instanceId = row.getString(2);
+          OrderRow orderRow = new OrderRow(orderId, mediaId, instanceId);
+          orderRow.setDownloadDate(row.getTimestamp(3));
+          orderRow.setDownloadDecision(row.getString(4));
+          return orderRow;
+        });
   }
 
   /**
@@ -199,18 +194,15 @@ public class OrderDAO {
 
     JdbcSqlQuery queryBuild = queryBuilder.result();
 
-    return queryBuilder.orderingResult(queryBuild.execute(new SelectResultRowProcessor<Order>() {
-      @Override
-      protected Order currentRow(final ResultSetWrapper row) throws SQLException {
-        Order order = new Order(row.getString(1));
-        order.setUserId(row.getString(2));
-        order.setInstanceId(row.getString(3));
-        order.setCreationDate(row.getTimestamp(4));
-        order.setProcessDate(row.getTimestamp(5));
-        order.setProcessUserId(row.getString(6));
-        order.setRows(getAllOrderDetails(order.getOrderId()));
-        return order;
-      }
+    return queryBuilder.orderingResult(queryBuild.execute(row -> {
+      Order order = new Order(row.getString(1));
+      order.setUserId(row.getString(2));
+      order.setInstanceId(row.getString(3));
+      order.setCreationDate(row.getTimestamp(4));
+      order.setProcessDate(row.getTimestamp(5));
+      order.setProcessUserId(row.getString(6));
+      order.setRows(getAllOrderDetails(order.getOrderId()));
+      return order;
     }));
   }
 }

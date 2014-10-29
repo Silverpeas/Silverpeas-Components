@@ -56,6 +56,7 @@ public class MediaSQLQueryBuilder implements MediaCriteriaProcessor {
   private String conjunction = "";
   private List<QUERY_ORDER_BY> logicalOrderBy;
   private boolean distinct = false;
+  private int resultLimit = 0;
 
   @Override
   public void startProcessing() {
@@ -84,7 +85,8 @@ public class MediaSQLQueryBuilder implements MediaCriteriaProcessor {
   @SuppressWarnings("unchecked")
   @Override
   public JdbcSqlQuery result() {
-    return JdbcSqlQuery.createSelect(sqlQuery.toString(), parameters);
+    return JdbcSqlQuery.createSelect(sqlQuery.toString(), parameters)
+        .configure(config -> config.withResultLimit(resultLimit));
   }
 
   @Override
@@ -92,6 +94,12 @@ public class MediaSQLQueryBuilder implements MediaCriteriaProcessor {
     if (!done) {
       conjunction = " and ";
     }
+    return this;
+  }
+
+  @Override
+  public MediaCriteriaProcessor processResultLimit(final int resultLimit) {
+    this.resultLimit = resultLimit;
     return this;
   }
 

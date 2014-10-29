@@ -44,7 +44,6 @@ import org.silverpeas.media.Definition;
 import org.silverpeas.persistence.jdbc.JdbcSqlQueries;
 import org.silverpeas.persistence.jdbc.JdbcSqlQuery;
 import org.silverpeas.persistence.jdbc.ResultSetWrapper;
-import org.silverpeas.persistence.jdbc.SelectResultRowProcessor;
 import org.silverpeas.persistence.repository.OperationContext;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.DateUtil;
@@ -102,55 +101,51 @@ public class MediaDAO {
     final Map<String, Sound> sounds = new HashMap<>();
     final Map<String, Streaming> streamings = new HashMap<>();
 
-    List<Media> media =
-        selectQuery.execute(new SelectResultRowProcessor<Media>(criteria.getResultLimit()) {
-          @Override
-          protected Media currentRow(final ResultSetWrapper row) throws SQLException {
-            String mediaId = row.getString(1);
-            MediaType mediaType = MediaType.from(row.getString(2));
-            String instanceId = row.getString(3);
-            final Media currentMedia;
-            switch (mediaType) {
-              case Photo:
-                currentMedia = new Photo();
-                photos.put(mediaId, (Photo) currentMedia);
-                break;
-              case Video:
-                currentMedia = new Video();
-                videos.put(mediaId, (Video) currentMedia);
-                break;
-              case Sound:
-                currentMedia = new Sound();
-                sounds.put(mediaId, (Sound) currentMedia);
-                break;
-              case Streaming:
-                currentMedia = new Streaming();
-                streamings.put(mediaId, (Streaming) currentMedia);
-                break;
-              default:
-                currentMedia = null;
-            }
-            if (currentMedia == null) {
-              // Unknown media ...
-              SilverTrace.warn(GalleryComponentSettings.COMPONENT_NAME, "MediaDAO.findByCriteria()",
-                  "root.MSG_GEN_PARAM_VALUE", "unknown media type: " + mediaType);
-              return null;
-            }
+    List<Media> media = selectQuery.execute(row -> {
+      String mediaId = row.getString(1);
+      MediaType mediaType = MediaType.from(row.getString(2));
+      String instanceId = row.getString(3);
+      final Media currentMedia;
+      switch (mediaType) {
+        case Photo:
+          currentMedia = new Photo();
+          photos.put(mediaId, (Photo) currentMedia);
+          break;
+        case Video:
+          currentMedia = new Video();
+          videos.put(mediaId, (Video) currentMedia);
+          break;
+        case Sound:
+          currentMedia = new Sound();
+          sounds.put(mediaId, (Sound) currentMedia);
+          break;
+        case Streaming:
+          currentMedia = new Streaming();
+          streamings.put(mediaId, (Streaming) currentMedia);
+          break;
+        default:
+          currentMedia = null;
+      }
+      if (currentMedia == null) {
+        // Unknown media ...
+        SilverTrace.warn(GalleryComponentSettings.COMPONENT_NAME, "MediaDAO.findByCriteria()",
+            "root.MSG_GEN_PARAM_VALUE", "unknown media type: " + mediaType);
+        return null;
+      }
 
-            currentMedia.setMediaPK(new MediaPK(mediaId, instanceId));
-            currentMedia.setTitle(row.getString(4));
-            currentMedia.setDescription(row.getString(5));
-            currentMedia.setAuthor(row.getString(6));
-            currentMedia.setKeyWord(row.getString(7));
-            currentMedia.setVisibilityPeriod(
-                Period.check(Period.from(new Date(row.getLong(8)), new Date(row.getLong(9)))));
-            currentMedia.setCreationDate(row.getTimestamp(10));
-            currentMedia.setCreatorId(row.getString(11));
-            currentMedia.setLastUpdateDate(row.getTimestamp(12));
-            currentMedia.setLastUpdatedBy(row.getString(13));
-            return currentMedia;
-          }
-        });
+      currentMedia.setMediaPK(new MediaPK(mediaId, instanceId));
+      currentMedia.setTitle(row.getString(4));
+      currentMedia.setDescription(row.getString(5));
+      currentMedia.setAuthor(row.getString(6));
+      currentMedia.setKeyWord(row.getString(7));
+      currentMedia.setVisibilityPeriod(
+          Period.check(Period.from(new Date(row.getLong(8)), new Date(row.getLong(9)))));
+      currentMedia.setCreationDate(row.getTimestamp(10));
+      currentMedia.setCreatorId(row.getString(11));
+      currentMedia.setLastUpdateDate(row.getTimestamp(12));
+      currentMedia.setLastUpdatedBy(row.getString(13));
+      return currentMedia;
+    });
 
     decoratePhotos(media, photos);
     decorateVideos(media, videos);
@@ -175,16 +170,13 @@ public class MediaDAO {
           "P.resolutionW, P.resolutionH from SC_Gallery_Internal I join SC_Gallery_Photo P on I" +
           ".mediaId = P.mediaId where I.mediaId";
       for (Collection<String> mediaIds : idGroups) {
-        createSelect(queryBase).in(mediaIds).execute(new SelectResultRowProcessor<Photo>() {
-          @Override
-          protected Photo currentRow(final ResultSetWrapper row) throws SQLException {
-            String mediaId = row.getString(1);
-            mediaIds.remove(mediaId);
-            Photo currentPhoto = photos.get(mediaId);
-            decorateInternalMedia(row, currentPhoto);
-            currentPhoto.setDefinition(Definition.of(row.getInt(8), row.getInt(9)));
-            return null;
-          }
+        createSelect(queryBase).in(mediaIds).execute(row -> {
+          String mediaId = row.getString(1);
+          mediaIds.remove(mediaId);
+          Photo currentPhoto = photos.get(mediaId);
+          decorateInternalMedia(row, currentPhoto);
+          currentPhoto.setDefinition(Definition.of(row.getInt(8), row.getInt(9)));
+          return null;
         });
         // Not found
         for (String mediaIdNotFound : mediaIds) {
@@ -213,18 +205,15 @@ public class MediaDAO {
           "V.resolutionW, V.resolutionH, V.bitrate, V.duration from SC_Gallery_Internal I join " +
           "SC_Gallery_Video V on I.mediaId = V.mediaId where I.mediaId";
       for (Collection<String> mediaIds : idGroups) {
-        createSelect(queryBase).in(mediaIds).execute(new SelectResultRowProcessor<Video>() {
-          @Override
-          protected Video currentRow(final ResultSetWrapper row) throws SQLException {
-            String mediaId = row.getString(1);
-            mediaIds.remove(mediaId);
-            Video currentVideo = videos.get(mediaId);
-            decorateInternalMedia(row, currentVideo);
-            currentVideo.setDefinition(Definition.of(row.getInt(8), row.getInt(9)));
-            currentVideo.setBitrate(row.getLong(10));
-            currentVideo.setDuration(row.getLong(11));
-            return null;
-          }
+        createSelect(queryBase).in(mediaIds).execute(row -> {
+          String mediaId = row.getString(1);
+          mediaIds.remove(mediaId);
+          Video currentVideo = videos.get(mediaId);
+          decorateInternalMedia(row, currentVideo);
+          currentVideo.setDefinition(Definition.of(row.getInt(8), row.getInt(9)));
+          currentVideo.setBitrate(row.getLong(10));
+          currentVideo.setDuration(row.getLong(11));
+          return null;
         });
         // Not found
         for (String mediaIdNotFound : mediaIds) {
@@ -253,17 +242,14 @@ public class MediaDAO {
           "S.bitrate, S.duration from SC_Gallery_Internal I join SC_Gallery_Sound S on I.mediaId " +
           "= S.mediaId where I.mediaId";
       for (Collection<String> mediaIds : idGroups) {
-        createSelect(queryBase).in(mediaIds).execute(new SelectResultRowProcessor<Sound>() {
-          @Override
-          protected Sound currentRow(final ResultSetWrapper row) throws SQLException {
-            String mediaId = row.getString(1);
-            mediaIds.remove(mediaId);
-            Sound currentSound = sounds.get(mediaId);
-            decorateInternalMedia(row, currentSound);
-            currentSound.setBitrate(row.getLong(8));
-            currentSound.setDuration(row.getLong(9));
-            return null;
-          }
+        createSelect(queryBase).in(mediaIds).execute(row -> {
+          String mediaId = row.getString(1);
+          mediaIds.remove(mediaId);
+          Sound currentSound = sounds.get(mediaId);
+          decorateInternalMedia(row, currentSound);
+          currentSound.setBitrate(row.getLong(8));
+          currentSound.setDuration(row.getLong(9));
+          return null;
         });
         // Not found
         for (String mediaIdNotFound : mediaIds) {
@@ -291,16 +277,13 @@ public class MediaDAO {
       String queryBase =
           "select S.mediaId, S.homepageUrl, S.provider from SC_Gallery_Streaming S where S.mediaId";
       for (Collection<String> mediaIds : idGroups) {
-        createSelect(queryBase).in(mediaIds).execute(new SelectResultRowProcessor<Streaming>() {
-          @Override
-          protected Streaming currentRow(final ResultSetWrapper row) throws SQLException {
-            String mediaId = row.getString(1);
-            mediaIds.remove(mediaId);
-            Streaming currentStreaming = streamings.get(mediaId);
-            currentStreaming.setHomepageUrl(row.getString(2));
-            currentStreaming.setProvider(StreamingProvider.from(row.getString(3)));
-            return null;
-          }
+        createSelect(queryBase).in(mediaIds).execute(row -> {
+          String mediaId = row.getString(1);
+          mediaIds.remove(mediaId);
+          Streaming currentStreaming = streamings.get(mediaId);
+          currentStreaming.setHomepageUrl(row.getString(2));
+          currentStreaming.setProvider(StreamingProvider.from(row.getString(3)));
+          return null;
         });
         // Not found
         for (String mediaIdNotFound : mediaIds) {
@@ -658,12 +641,7 @@ public class MediaDAO {
     return createSelect(
         "N.NodeId from SC_Gallery_Path P, SB_Node_Node N where P.mediaId = ? and N.nodeId " +
             "= P.NodeId and P.instanceId = ? and N.instanceId = P.instanceId", media.getId(),
-        media.getInstanceId()).execute(new SelectResultRowProcessor<String>() {
-      @Override
-      protected String currentRow(final ResultSetWrapper row) throws SQLException {
-        return String.valueOf(row.getInt(1));
-      }
-    });
+        media.getInstanceId()).execute(row -> String.valueOf(row.getInt(1)));
   }
 
   /**
@@ -683,17 +661,13 @@ public class MediaDAO {
             "'update' as type from SC_Gallery_Media where lastUpdatedBy = ? and lastUpdateDate <>" +
             " createDate and lastUpdateDate >= ? and lastUpdateDate <= ? ) order by " +
             "dateinformation desc, mediaId desc", userId, period.getBeginDate(),
-        period.getEndDate(), userId, period.getBeginDate(), period.getEndDate())
-        .execute(new SelectResultRowProcessor<SocialInformation>() {
-          @Override
-          protected SocialInformation currentRow(final ResultSetWrapper row) throws SQLException {
-            Media media = getByCriteria(MediaCriteria.fromMediaId(row.getString(2))
-                .withVisibility(MediaCriteria.VISIBILITY.FORCE_GET_ALL));
-            MediaWithStatus withStatus =
-                new MediaWithStatus(media, "update".equalsIgnoreCase(row.getString(3)));
-            return new SocialInformationGallery(withStatus);
-          }
-        });
+        period.getEndDate(), userId, period.getBeginDate(), period.getEndDate()).execute(row -> {
+      Media media = getByCriteria(MediaCriteria.fromMediaId(row.getString(2))
+          .withVisibility(MediaCriteria.VISIBILITY.FORCE_GET_ALL));
+      MediaWithStatus withStatus =
+          new MediaWithStatus(media, "update".equalsIgnoreCase(row.getString(3)));
+      return new SocialInformationGallery(withStatus);
+    });
   }
 
   /**
@@ -720,15 +694,12 @@ public class MediaDAO {
         period.getEndDate());
     query.addSqlPart("order by dateinformation desc, mediaId desc");
 
-    return query.execute(new SelectResultRowProcessor<SocialInformation>() {
-      @Override
-      protected SocialInformation currentRow(final ResultSetWrapper row) throws SQLException {
-        Media media = getByCriteria(MediaCriteria.fromMediaId(row.getString(2))
-            .withVisibility(MediaCriteria.VISIBILITY.FORCE_GET_ALL));
-        MediaWithStatus withStatus =
-            new MediaWithStatus(media, "update".equalsIgnoreCase(row.getString(3)));
-        return new SocialInformationGallery(withStatus);
-      }
+    return query.execute(row -> {
+      Media media = getByCriteria(MediaCriteria.fromMediaId(row.getString(2))
+          .withVisibility(MediaCriteria.VISIBILITY.FORCE_GET_ALL));
+      MediaWithStatus withStatus =
+          new MediaWithStatus(media, "update".equalsIgnoreCase(row.getString(3)));
+      return new SocialInformationGallery(withStatus);
     });
   }
 }

@@ -66,6 +66,13 @@ public interface MediaCriteriaProcessor {
   MediaCriteriaProcessor then();
 
   /**
+   * Processes the criterion on the media result limit.
+   * @param resultLimit the limit of the result (0 = no limit)
+   * @return the processor itself.
+   */
+  MediaCriteriaProcessor processResultLimit(final int resultLimit);
+
+  /**
    * Processes the criterion on the media visibility.
    * @param visibility the requested visibility.
    * @param dateReference

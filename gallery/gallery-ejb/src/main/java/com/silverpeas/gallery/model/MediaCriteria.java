@@ -412,6 +412,9 @@ public class MediaCriteria {
       processor.then().processOrdering(getOrderByList());
     }
 
+    // Configuration
+    processor.processResultLimit(getResultLimit());
+
     processor.endProcessing();
   }
 }
