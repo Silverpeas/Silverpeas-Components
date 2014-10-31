@@ -45,7 +45,7 @@ import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.exception.UtilException;
-import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.control.PublicationBm;
@@ -66,7 +66,7 @@ public class KmeliaSecurity implements ComponentSecurity {
   public static final String NODE_TYPE = "Node";
   public static final String RIGHTS_ON_TOPIC_PARAM = "rightsOnTopics";
   private PublicationBm publicationBm;
-  private NodeBm nodeBm;
+  private NodeService nodeService = NodeService.getNodeService();
   private KmeliaBm kmeliaBm;
   private OrganizationController controller = null;
   private Map<String, Boolean> cache = Collections.synchronizedMap(new HashMap<String, Boolean>());
@@ -320,7 +320,7 @@ public class KmeliaSecurity implements ComponentSecurity {
     }
     boolean objectAvailable = false;
     if (isRightsOnTopicsEnabled(nodePK.getInstanceId())) {
-      NodeDetail node = getNodeBm().getHeader(nodePK, false);
+      NodeDetail node = getNodeService().getHeader(nodePK, false);
       if (node != null) {
         if (!node.haveRights()) {
           objectAvailable = true;
@@ -348,7 +348,7 @@ public class KmeliaSecurity implements ComponentSecurity {
       Collection<NodePK> nodePKs = getPublicationBm().getAllFatherPK(pubPK);
       List<String> lProfiles = new ArrayList<String>();
       for (NodePK nodePK : nodePKs) {
-        NodeDetail node = getNodeBm().getHeader(nodePK);
+        NodeDetail node = getNodeService().getHeader(nodePK);
         if (node != null) {
           SilverTrace.debug("kmelia", "KmeliaSecurity.getProfile",
               "root.MSG_GEN_PARAM_VALUE", "nodePK = " + nodePK.toString());
@@ -383,16 +383,8 @@ public class KmeliaSecurity implements ComponentSecurity {
     return publicationBm;
   }
 
-  public NodeBm getNodeBm() {
-    if (nodeBm == null) {
-      try {
-        setNodeBm(EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class));
-      } catch (UtilException e) {
-        throw new KmeliaRuntimeException("KmeliaSecurity.getNodeBm()",
-            SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_NODEBM_HOME", e);
-      }
-    }
-    return nodeBm;
+  public NodeService getNodeService() {
+    return nodeService;
   }
 
   public KmeliaBm getKmeliaBm() {
@@ -416,13 +408,6 @@ public class KmeliaSecurity implements ComponentSecurity {
    */
   void setPublicationBm(PublicationBm publicationBm) {
     this.publicationBm = publicationBm;
-  }
-
-  /**
-   * @param nodeBm the nodeBm to set
-   */
-  void setNodeBm(NodeBm nodeBm) {
-    this.nodeBm = nodeBm;
   }
 
   /**

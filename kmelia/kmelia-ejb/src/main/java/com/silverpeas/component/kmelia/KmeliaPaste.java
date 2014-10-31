@@ -33,7 +33,7 @@ import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 
@@ -76,11 +76,11 @@ public class KmeliaPaste implements ComponentPasteInterface {
     SilverTrace.debug("kmelia", "KmeliaPaste.paste()", "root.MSG_GEN_EXIT_METHOD");
   }
 
-  private NodeBm getNodeBm() {
+  private NodeService getNodeBm() {
     try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
+      return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeService.class);
     } catch (Exception e) {
-      throw new KmeliaRuntimeException("PasteDetail.getNodeBm()", SilverpeasRuntimeException.ERROR,
+      throw new KmeliaRuntimeException("PasteDetail.getNodeService()", SilverpeasRuntimeException.ERROR,
           "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_NODEBM_HOME", e);
     }
   }

@@ -25,7 +25,7 @@ package org.silverpeas.components.suggestionbox.control;
 
 import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.silverpeas.subscribe.SubscriptionService;
-import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.alertUser.AlertUser;
@@ -332,8 +332,7 @@ public class SuggestionBoxWebController extends
   @Invokable("isUserSubscribed")
   public void setIsUserSubscribed(SuggestionBoxWebRequestContext context) {
     if (!getUserDetail().isAccessGuest()) {
-      SubscriptionService subscriptionService = SubscriptionServiceFactory.getFactory().
-          getSubscribeService();
+      SubscriptionService subscriptionService = SubscriptionServiceProvider.getSubscribeService();
       boolean isUserSubscribed = subscriptionService.existsSubscription(
           new ComponentSubscription(context.getUser().getId(), context.getComponentInstanceId()));
       context.getRequest().setAttribute("isUserSubscribed", isUserSubscribed);

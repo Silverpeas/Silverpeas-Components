@@ -38,7 +38,7 @@ import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.subscribe.SubscriptionService;
-import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.thumbnail.ThumbnailSettings;
 import org.silverpeas.util.StringUtil;
@@ -216,8 +216,7 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
   public Boolean isSubscriberUser() {
     Boolean subscriber = null;
     if (!getUserDetail().isAccessGuest()) {
-      SubscriptionService subscriptionService = SubscriptionServiceFactory.getFactory().
-          getSubscribeService();
+      SubscriptionService subscriptionService = SubscriptionServiceProvider.getSubscribeService();
       boolean isUserSubscribed = subscriptionService.existsSubscription(
           new ComponentSubscription(getUserId(), getComponentId()));
       subscriber = Boolean.valueOf(isUserSubscribed);

@@ -29,7 +29,7 @@ import com.silverpeas.gallery.model.Order;
 import com.silverpeas.gallery.model.Photo;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.apache.commons.lang3.time.DateUtils;
@@ -90,9 +90,9 @@ public class GalleryBmEJBTest extends BaseGalleryTest {
             null, null);
     nodeDetail.setChildrenDetails(nodes);
 
-    final NodeBm nodeBm = Mockito.mock(NodeBm.class);
+    final NodeService nodeService = Mockito.mock(NodeService.class);
 
-    when(nodeBm.getDetailTransactionally(Mockito.any(NodePK.class))).thenAnswer(new Answer<NodeDetail>() {
+    when(nodeService.getDetailTransactionally(Mockito.any(NodePK.class))).thenAnswer(new Answer<NodeDetail>() {
       @Override
       public NodeDetail answer(InvocationOnMock invocation) throws Throwable {
         Object[] arguments = invocation.getArguments();
@@ -110,7 +110,7 @@ public class GalleryBmEJBTest extends BaseGalleryTest {
       }
     });
 
-    galleryBmEJB = new GalleryBmEJBMock(nodeBm, getDataSource());
+    galleryBmEJB = new GalleryBmEJBMock(nodeService, getDataSource());
   }
 
   @Test

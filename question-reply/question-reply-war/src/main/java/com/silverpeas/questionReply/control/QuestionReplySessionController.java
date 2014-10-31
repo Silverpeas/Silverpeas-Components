@@ -74,17 +74,15 @@ import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.IdPK;
 import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileServerUtils;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.fileFolder.FileFolderManager;
-import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 
@@ -761,7 +759,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   public Collection<NodeDetail> getAllCategories() throws QuestionReplyException {
     try {
       NodePK nodePK = new NodePK(NodePK.ROOT_NODE_ID, getComponentId());
-      return getNodeBm().getChildrenDetails(nodePK);
+      return getNodeService().getChildrenDetails(nodePK);
     } catch (Exception e) {
       throw new QuestionReplyException("QuestionReplySessioncontroller.getAllCategories()",
           SilverpeasRuntimeException.ERROR, "QuestionReply.MSG_CATEGORIES_NOT_EXIST", e);
@@ -774,7 +772,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       category.setCreationDate(DateUtil.date2SQLDate(new Date()));
       category.setCreatorId(getUserId());
       category.getNodePK().setComponentName(getComponentId());
-      getNodeBm().createNode(category, new NodeDetail());
+      getNodeService().createNode(category, new NodeDetail());
     } catch (Exception e) {
       throw new QuestionReplyException("QuestionReplySessioncontroller.createCategory()",
           SilverpeasRuntimeException.ERROR, "QuestionReply.MSG_CATEGORIES_NOT_CREATE", e);
@@ -784,7 +782,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   public Category getCategory(String categoryId) throws QuestionReplyException {
     try {
       NodePK nodePK = new NodePK(categoryId, getComponentId());
-      return new Category(getNodeBm().getDetail(nodePK));
+      return new Category(getNodeService().getDetail(nodePK));
     } catch (Exception e) {
       throw new QuestionReplyException("QuestionReplySessioncontroller.getCategory()",
           SilverpeasRuntimeException.ERROR, "QuestionReply.MSG_CATEGORY_NOT_EXIST", e);
@@ -794,7 +792,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   public synchronized void updateCategory(Category category)
       throws QuestionReplyException {
     try {
-      getNodeBm().setDetail(category);
+      getNodeService().setDetail(category);
     } catch (Exception e) {
       throw new QuestionReplyException("QuestionReplySessioncontroller.updateCategory()",
           SilverpeasRuntimeException.ERROR, "QuestionReply.MSG_CATEGORY_NOT_EXIST", e);
@@ -809,7 +807,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
         QuestionManagerFactory.getQuestionManager().updateQuestion(question);
       }
       NodePK nodePk = new NodePK(categoryId, getComponentId());
-      getNodeBm().removeNode(nodePk);
+      getNodeService().removeNode(nodePk);
     } catch (Exception e) {
       throw new QuestionReplyException("QuestionReplySessioncontroller.deleteCategory()",
           SilverpeasRuntimeException.ERROR, "QuestionReply.MSG_CATEGORY_NOT_EXIST", e);
@@ -997,15 +995,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     sb.append("</tr>\n");
   }
 
-  private NodeBm getNodeBm() throws QuestionReplyException {
-    NodeBm nodeBm;
-    try {
-      nodeBm = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
-    } catch (Exception e) {
-      throw new QuestionReplyException("QuestionReplySessioncontroller.getNodeBm()",
-          SilverpeasRuntimeException.ERROR, "QuestionReply.MSG_NODEBM_NOT_EXIST", e);
-    }
-    return nodeBm;
+  private NodeService getNodeService() {
+    return NodeService.getNodeService();
   }
 
   /**

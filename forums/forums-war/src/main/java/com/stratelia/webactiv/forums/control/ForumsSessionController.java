@@ -26,7 +26,7 @@ import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
-import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.StringUtil;
@@ -691,12 +691,12 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   }
 
   public void subscribeComponent() {
-    SubscriptionServiceFactory.getFactory().getSubscribeService()
+    SubscriptionServiceProvider.getSubscribeService()
         .subscribe(new ComponentSubscription(getUserId(), getComponentId()));
   }
 
   public void unsubscribeComponent() {
-    SubscriptionServiceFactory.getFactory().getSubscribeService()
+    SubscriptionServiceProvider.getSubscribeService()
         .unsubscribe(new ComponentSubscription(getUserId(), getComponentId()));
     setComponentSubscriptionInfoDisplayed(false);
   }

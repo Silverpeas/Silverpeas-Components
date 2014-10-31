@@ -51,7 +51,7 @@ public class KmeliaNodeSimulationElementLister extends AbstractKmeliaSimulationE
     NodePK nodePK = (NodePK) sourcePK;
 
     // Retrieving all nodes to copy or move
-    List<NodeDetail> treeToPaste = getNodeBm().getSubTree(nodePK);
+    List<NodeDetail> treeToPaste = getNodeService().getSubTree(nodePK);
 
     for (NodeDetail node : treeToPaste) {
 

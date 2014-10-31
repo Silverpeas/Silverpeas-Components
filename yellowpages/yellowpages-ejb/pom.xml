@@ -22,7 +22,6 @@
       <groupId>org.silverpeas.core.ejb-core</groupId>
       <artifactId>contact</artifactId>
       <version>${core.version}</version>
-      <classifier>client</classifier>
       <scope>provided</scope>
     </dependency>
     <dependency>

@@ -42,7 +42,7 @@ import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.apache.commons.fileupload.FileItem;
@@ -354,11 +354,11 @@ public class GalleryProcessManagement {
    * Gets the NodeBm EJB proxy
    * @return
    */
-  private static NodeBm getNodeBm() {
+  private static NodeService getNodeBm() {
     try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
+      return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeService.class);
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("GalleryProcessBuilder.getNodeBm()",
+      throw new GalleryRuntimeException("GalleryProcessBuilder.getNodeService()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }

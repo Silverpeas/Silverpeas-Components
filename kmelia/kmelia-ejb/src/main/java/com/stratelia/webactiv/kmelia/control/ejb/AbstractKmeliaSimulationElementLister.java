@@ -26,7 +26,7 @@ package com.stratelia.webactiv.kmelia.control.ejb;
 import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.WAPrimaryKey;
-import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.publication.control.PublicationBm;
 import org.silverpeas.process.annotation.SimulationElementLister;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -45,14 +45,11 @@ public abstract class AbstractKmeliaSimulationElementLister extends SimulationEl
     super(parentElementLister);
   }
 
-  private NodeBm nodeBm;
+  private NodeService nodeService = NodeService.getNodeService();
   private PublicationBm publicationBm;
 
-  public NodeBm getNodeBm() {
-    if (nodeBm == null) {
-      nodeBm = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
-    }
-    return nodeBm;
+  public NodeService getNodeService() {
+    return nodeService;
   }
 
   public PublicationBm getPublicationBm() {

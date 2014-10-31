@@ -49,7 +49,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.subscribe.Subscription;
 import com.silverpeas.subscribe.SubscriptionResource;
 import com.silverpeas.subscribe.SubscriptionService;
-import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.service.NodeSubscription;
 import com.silverpeas.subscribe.service.NodeSubscriptionResource;
 import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
@@ -72,7 +72,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.calendar.backbone.TodoBackboneAccess;
 import com.stratelia.webactiv.calendar.backbone.TodoDetail;
 import com.stratelia.webactiv.calendar.model.Attendee;
-import com.stratelia.webactiv.coordinates.control.CoordinatesBm;
+import com.stratelia.webactiv.coordinates.control.CoordinatesService;
 import com.stratelia.webactiv.coordinates.model.Coordinate;
 import com.stratelia.webactiv.coordinates.model.CoordinatePK;
 import com.stratelia.webactiv.coordinates.model.CoordinatePoint;
@@ -84,7 +84,7 @@ import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.kmelia.model.TopicComparator;
 import com.stratelia.webactiv.kmelia.model.TopicDetail;
-import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.control.PublicationBm;
@@ -162,16 +162,16 @@ public class KmeliaBmEJB implements KmeliaBm {
   private static final String MESSAGES_PATH = "org.silverpeas.kmelia.multilang.kmeliaBundle";
   private static final String SETTINGS_PATH = "org.silverpeas.kmelia.settings.kmeliaSettings";
   private static final ResourceLocator settings = new ResourceLocator(SETTINGS_PATH, "");
-  @EJB
-  private NodeBm nodeBm;
+  @Inject
+  private NodeService nodeService;
   @EJB
   private PublicationBm publicationBm;
   @EJB
   private StatisticBm statisticBm;
   @EJB
   private PdcBm pdcBm;
-  @EJB
-  private CoordinatesBm coordinatesBm;
+  @Inject
+  private CoordinatesService coordinatesService;
 
   @Inject
   private PublicationEventNotifier notifier;
@@ -208,8 +208,8 @@ public class KmeliaBmEJB implements KmeliaBm {
         equals(getOrganisationController().getComponentParameterValue(componentId, "draft"));
   }
 
-  public SubscriptionService getSubscribeBm() {
-    return SubscriptionServiceFactory.getFactory().getSubscribeService();
+  public SubscriptionService getSubscribeService() {
+    return SubscriptionServiceProvider.getSubscribeService();
   }
 
   /**
@@ -233,7 +233,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     SilverTrace.info("kmelia", "KmeliaBmEJB.goTo()",
         "root.MSG_GEN_PARAM_VALUE", "nodeBm.getDetail(pk) BEGIN");
     try {
-      nodeDetail = nodeBm.getDetail(pk);
+      nodeDetail = nodeService.getDetail(pk);
       if (isRightsOnTopicsUsed) {
         OrganizationController orga = getOrganisationController();
         if (nodeDetail.haveRights() && !orga.isObjectAvailable(nodeDetail.getRightsDependsOn(),
@@ -350,7 +350,7 @@ public class KmeliaBmEJB implements KmeliaBm {
         if (nodeAvailable) {
           availableChildren.add(child);
         } else { // check if at least one descendant is available
-          Iterator<NodeDetail> descendants = nodeBm.getDescendantDetails(child).iterator();
+          Iterator<NodeDetail> descendants = nodeService.getDescendantDetails(child).iterator();
           boolean childAllowed = false;
           while (!childAllowed && descendants.hasNext()) {
             NodeDetail descendant = descendants.next();
@@ -376,7 +376,7 @@ public class KmeliaBmEJB implements KmeliaBm {
   private Collection<NodeDetail> getPathFromAToZ(NodeDetail nd) {
     Collection<NodeDetail> newPath = new ArrayList<NodeDetail>();
     try {
-      List<NodeDetail> pathInReverse = (List<NodeDetail>) nodeBm.getPath(nd.getNodePK());
+      List<NodeDetail> pathInReverse = (List<NodeDetail>) nodeService.getPath(nd.getNodePK());
       // reverse the path from root to leaf
       for (int i = pathInReverse.size() - 1; i >= 0; i--) {
         newPath.add(pathInReverse.get(i));
@@ -404,8 +404,8 @@ public class KmeliaBmEJB implements KmeliaBm {
     SilverTrace.info("kmelia", "KmeliaBmEJB.addToTopic()", "root.MSG_GEN_ENTER_METHOD");
     NodePK theNodePK = null;
     try {
-      NodeDetail fatherDetail = nodeBm.getHeader(fatherPK);
-      theNodePK = nodeBm.createNode(subTopic, fatherDetail);
+      NodeDetail fatherDetail = nodeService.getHeader(fatherPK);
+      theNodePK = nodeService.createNode(subTopic, fatherDetail);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.addToTopic()", ERROR,
           "kmelia.EX_IMPOSSIBLE_DE_CREER_LE_THEME", e);
@@ -483,10 +483,10 @@ public class KmeliaBmEJB implements KmeliaBm {
   public NodePK updateTopic(NodeDetail topic, String alertType) {
     try {
       // Order of the node must be unchanged
-      NodeDetail oldNode = nodeBm.getHeader(topic.getNodePK());
+      NodeDetail oldNode = nodeService.getHeader(topic.getNodePK());
       int order = oldNode.getOrder();
       topic.setOrder(order);
-      nodeBm.setDetail(topic);
+      nodeService.setDetail(topic);
       
       // manage operations relative to folder rights
       if (isRightsOnTopicsEnabled(topic.getNodePK().getInstanceId())) {
@@ -494,7 +494,7 @@ public class KmeliaBmEJB implements KmeliaBm {
           // rights dependency have changed
           if (!topic.haveRights()) {
             
-            NodeDetail father = nodeBm.getHeader(oldNode.getFatherPK());
+            NodeDetail father = nodeService.getHeader(oldNode.getFatherPK());
             topic.setRightsDependsOn(father.getRightsDependsOn());
             
             // Topic profiles must be removed
@@ -511,7 +511,7 @@ public class KmeliaBmEJB implements KmeliaBm {
           } else {
             topic.setRightsDependsOnMe();
           }
-          nodeBm.updateRightsDependency(topic);
+          nodeService.updateRightsDependency(topic);
         }
       }
     } catch (Exception e) {
@@ -528,7 +528,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     NodeDetail subTopic = null;
     // get the basic information (Header) of this topic
     try {
-      subTopic = nodeBm.getDetail(pk);
+      subTopic = nodeService.getDetail(pk);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.getSubTopicDetail()",
           ERROR, "kmelia.EX_IMPOSSIBLE_DACCEDER_AU_THEME", e);
@@ -550,7 +550,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     SilverTrace.info("kmelia", "KmeliaBmEJB.deleteTopic()", "root.MSG_GEN_ENTER_METHOD");
     try {
       // get all nodes which will be deleted
-      Collection<NodePK> nodesToDelete = nodeBm.getDescendantPKs(pkToDelete);
+      Collection<NodePK> nodesToDelete = nodeService.getDescendantPKs(pkToDelete);
       nodesToDelete.add(pkToDelete);
       SilverTrace.info("kmelia", "KmeliaBmEJB.deleteTopic()", "root.MSG_GEN_PARAM_VALUE",
           "nodesToDelete = " + nodesToDelete);
@@ -600,7 +600,7 @@ public class KmeliaBmEJB implements KmeliaBm {
       removeSubscriptionsByTopic(nodesToDelete);
 
       // Delete the topic
-      nodeBm.removeNode(pkToDelete);
+      nodeService.removeNode(pkToDelete);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.deleteTopic()", ERROR,
           "kmelia.EX_IMPOSSIBLE_DE_SUPPRIMER_THEME", e);
@@ -616,7 +616,7 @@ public class KmeliaBmEJB implements KmeliaBm {
 
     List<NodeDetail> subTopics = null;
     try {
-      subTopics = (List<NodeDetail>) nodeBm.getChildrenDetails(fatherPK);
+      subTopics = (List<NodeDetail>) nodeService.getChildrenDetails(fatherPK);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.changeSubTopicsOrder()", ERROR,
           "kmelia.EX_IMPOSSIBLE_DE_LISTER_THEMES", e);
@@ -657,7 +657,7 @@ public class KmeliaBmEJB implements KmeliaBm {
             + nodeDetail.getNodePK().getId() + ", order = " + i);
         try {
           nodeDetail.setOrder(i);
-          nodeBm.setDetail(nodeDetail);
+          nodeService.setDetail(nodeDetail);
         } catch (Exception e) {
           throw new KmeliaRuntimeException("KmeliaBmEJB.changeSubTopicsOrder()",
               ERROR, "kmelia.EX_IMPOSSIBLE_DE_MODIFIER_THEME", e);
@@ -692,10 +692,10 @@ public class KmeliaBmEJB implements KmeliaBm {
         + ", recursiveChanges = " + recursiveChanges);
     try {
       if (!recursiveChanges) {
-        NodeDetail nodeDetail = nodeBm.getHeader(nodePK);
+        NodeDetail nodeDetail = nodeService.getHeader(nodePK);
         changeTopicStatus(newStatus, nodeDetail);
       } else {
-        List<NodeDetail> subTree = nodeBm.getSubTree(nodePK);
+        List<NodeDetail> subTree = nodeService.getSubTree(nodePK);
         for (NodeDetail aSubTree : subTree) {
           NodeDetail nodeDetail = aSubTree;
           changeTopicStatus(newStatus, nodeDetail);
@@ -719,7 +719,7 @@ public class KmeliaBmEJB implements KmeliaBm {
 
     List<NodeDetail> subTopics = null;
     try {
-      subTopics = (List<NodeDetail>) nodeBm.getChildrenDetails(fatherPK);
+      subTopics = (List<NodeDetail>) nodeService.getChildrenDetails(fatherPK);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.sortSubTopics()", ERROR,
           "kmelia.EX_IMPOSSIBLE_DE_LISTER_THEMES", e);
@@ -734,7 +734,7 @@ public class KmeliaBmEJB implements KmeliaBm {
             "updating Node : nodeId = " + nodeDetail.getNodePK().getId() + ", order = " + i);
         try {
           nodeDetail.setOrder(i);
-          nodeBm.setDetail(nodeDetail);
+          nodeService.setDetail(nodeDetail);
         } catch (Exception e) {
           throw new KmeliaRuntimeException("KmeliaBmEJB.sortSubTopics()", ERROR,
               "kmelia.EX_IMPOSSIBLE_DE_MODIFIER_THEME", e);
@@ -752,7 +752,7 @@ public class KmeliaBmEJB implements KmeliaBm {
         + topic.getNodePK().toString());
     try {
       topic.setStatus(newStatus);
-      nodeBm.setDetail(topic);
+      nodeService.setDetail(topic);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.changeTopicStatus()", ERROR,
           "kmelia.EX_IMPOSSIBLE_DE_MODIFIER_THEME", e);
@@ -764,7 +764,7 @@ public class KmeliaBmEJB implements KmeliaBm {
       boolean draftVisibleWithCoWriting, String userId, boolean displayNb,
       boolean isRightsOnTopicsUsed) {
     String instanceId = nodePK.getInstanceId();
-    List<NodeDetail> tree = nodeBm.getSubTree(nodePK);
+    List<NodeDetail> tree = nodeService.getSubTree(nodePK);
     
     if (profile == null) {
       profile = getProfile(userId, nodePK);
@@ -794,7 +794,7 @@ public class KmeliaBmEJB implements KmeliaBm {
             node2Check.setUserRole(KmeliaHelper.getProfile(profiles));
             allowedTree.add(node2Check);
           } else { // check if at least one descendant is available
-            Iterator<NodeDetail> descendants = nodeBm.getDescendantDetails(node2Check).
+            Iterator<NodeDetail> descendants = nodeService.getDescendantDetails(node2Check).
                 iterator();
             NodeDetail descendant;
             boolean node2CheckAllowed = false;
@@ -1008,12 +1008,12 @@ public class KmeliaBmEJB implements KmeliaBm {
   public Collection<Collection<NodeDetail>> getSubscriptionList(String userId, String componentId) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.getSubscriptionList()", "root.MSG_GEN_ENTER_METHOD");
     try {
-      Collection<Subscription> list = getSubscribeBm()
+      Collection<Subscription> list = getSubscribeService()
           .getBySubscriberAndComponent(UserSubscriptionSubscriber.from(userId), componentId);
       Collection<Collection<NodeDetail>> detailedList = new ArrayList<Collection<NodeDetail>>();
       // For each favorite, get the path from root to favorite
       for (Subscription subscription : list) {
-        Collection<NodeDetail> path = nodeBm.getPath((NodePK) subscription.getResource().getPK());
+        Collection<NodeDetail> path = nodeService.getPath((NodePK) subscription.getResource().getPK());
         detailedList.add(path);
       }
       SilverTrace.info("kmelia", "KmeliaBmEJB.getSubscriptionList()", "root.MSG_GEN_EXIT_METHOD");
@@ -1036,7 +1036,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     SilverTrace.info("kmelia", "KmeliaBmEJB.removeSubscriptionToCurrentUser()",
         "root.MSG_GEN_ENTER_METHOD");
     try {
-      getSubscribeBm().unsubscribe(new NodeSubscription(userId, topicPK));
+      getSubscribeService().unsubscribe(new NodeSubscription(userId, topicPK));
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.removeSubscriptionToCurrentUser()",
           ERROR, "kmelia.EX_IMPOSSIBLE_DE_SUPPRIMER_ABONNEMENT", e);
@@ -1060,7 +1060,7 @@ public class KmeliaBmEJB implements KmeliaBm {
       for (NodePK topicPK : topicPKsToDelete) {
         subscriptionResourcesToDelete.add(NodeSubscriptionResource.from(topicPK));
       }
-      getSubscribeBm().unsubscribeByResources(subscriptionResourcesToDelete);
+      getSubscribeService().unsubscribeByResources(subscriptionResourcesToDelete);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.removeSubscriptionsByTopic()", ERROR,
           "kmelia.EX_IMPOSSIBLE_DE_SUPPRIMER_LES_ABONNEMENTS", e);
@@ -1079,7 +1079,7 @@ public class KmeliaBmEJB implements KmeliaBm {
   @Override
   public void addSubscription(NodePK topicPK, String userId) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.addSubscription()", "root.MSG_GEN_ENTER_METHOD");
-    getSubscribeBm().subscribe(new NodeSubscription(userId, topicPK));
+    getSubscribeService().subscribe(new NodeSubscription(userId, topicPK));
     SilverTrace.info("kmelia", "KmeliaBmEJB.addSubscription()", "root.MSG_GEN_EXIT_METHOD");
   }
 
@@ -1091,7 +1091,7 @@ public class KmeliaBmEJB implements KmeliaBm {
    */
   @Override
   public boolean checkSubscription(NodePK topicPK, String userId) {
-    return !getSubscribeBm().existsSubscription(new NodeSubscription(userId, topicPK));
+    return !getSubscribeService().existsSubscription(new NodeSubscription(userId, topicPK));
   }
 
   /**
@@ -1152,7 +1152,7 @@ public class KmeliaBmEJB implements KmeliaBm {
       if (fatherPKs != null) {
         // For each topic, get the path to it
         for (NodePK pk : fatherPKs) {
-          Collection<NodeDetail> path = nodeBm.getAnotherPath(pk);
+          Collection<NodeDetail> path = nodeService.getAnotherPath(pk);
           // add this path
           pathList.add(path);
         }
@@ -1249,7 +1249,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     String profile;
     OrganizationController orgCtrl = getOrganisationController();
     if (isRightsOnTopicsEnabled(nodePK.getInstanceId())) {
-      NodeDetail topic = nodeBm.getHeader(nodePK);
+      NodeDetail topic = nodeService.getHeader(nodePK);
       if (topic.haveRights()) {
         profile = KmeliaHelper.getProfile(orgCtrl.getUserProfiles(userId, nodePK.getInstanceId(),
             topic.getRightsDependsOn(), ObjectType.NODE));
@@ -1765,7 +1765,7 @@ public class KmeliaBmEJB implements KmeliaBm {
           coordinates.add(coordinateId);
         }
         if (coordinates.size() > 0) {
-          coordinatesBm.deleteCoordinates(coordinatePK, (ArrayList<String>) coordinates);
+          coordinatesService.deleteCoordinates(coordinatePK, (ArrayList<String>) coordinates);
         }
       }
 
@@ -3115,12 +3115,12 @@ public class KmeliaBmEJB implements KmeliaBm {
 
   private void indexTopics(NodePK nodePK) {
     try {
-      Collection<NodeDetail> nodes = nodeBm.getAllNodes(nodePK);
+      Collection<NodeDetail> nodes = nodeService.getAllNodes(nodePK);
       if (nodes != null) {
         for (NodeDetail node : nodes) {
           if (!node.getNodePK().isRoot() && !node.getNodePK().isTrash()
               && !node.getNodePK().getId().equals("2")) {
-            nodeBm.createIndex(node);
+            nodeService.createIndex(node);
           }
         }
       }
@@ -3451,7 +3451,7 @@ public class KmeliaBmEJB implements KmeliaBm {
           instanceId, nodeId);
       if (isDefined(nodeId) && result.isEmpty()) {
         // there is no templates defined for the given node, check the parent nodes
-        Collection<NodeDetail> parents = nodeBm.getPath(new NodePK(nodeId, instanceId));
+        Collection<NodeDetail> parents = nodeService.getPath(new NodePK(nodeId, instanceId));
         Iterator<NodeDetail> iter = parents.iterator();
         while (iter.hasNext() && result.isEmpty()) {
           NodeDetail parent = iter.next();
@@ -3486,7 +3486,7 @@ public class KmeliaBmEJB implements KmeliaBm {
         // Do not get hidden nodes (Basket and unclassified)
         if (!NodeDetail.STATUS_INVISIBLE.equals(header.getStatus())) {
           // get content  of  this axis
-          axis.addAll(nodeBm.getSubTree(header.getNodePK(), sortField + " " + sortOrder));
+          axis.addAll(nodeService.getSubTree(header.getNodePK(), sortField + " " + sortOrder));
         }
       }
     } catch (Exception e) {
@@ -3500,7 +3500,7 @@ public class KmeliaBmEJB implements KmeliaBm {
   public List<NodeDetail> getAxisHeaders(String componentId) {
     List<NodeDetail> axisHeaders = null;
     try {
-      axisHeaders = nodeBm.getHeadersByLevel(
+      axisHeaders = nodeService.getHeadersByLevel(
           new NodePK("useless", componentId), 2);
     } catch (Exception e) {
       throw new KmaxRuntimeException("KmeliaBmEJB.getAxisHeaders()", ERROR,
@@ -3519,10 +3519,10 @@ public class KmeliaBmEJB implements KmeliaBm {
     CoordinatePK coordinatePK = new CoordinatePK("useless", axisPK);
     try {
       // axis creation
-      axisPK = nodeBm.createNode(axis, rootDetail);
+      axisPK = nodeService.createNode(axis, rootDetail);
       // add this new axis to existing coordinates
       CoordinatePoint point = new CoordinatePoint(-1, Integer.parseInt(axisPK.getId()), true);
-      coordinatesBm.addPointToAllCoordinates(coordinatePK, point);
+      coordinatesService.addPointToAllCoordinates(coordinatePK, point);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.addAxis()", ERROR,
           "kmax.EX_IMPOSSIBLE_DE_CREER_L_AXE", e);
@@ -3537,7 +3537,7 @@ public class KmeliaBmEJB implements KmeliaBm {
         "componentId = " + componentId + " nodePk.getComponentId()=" + axis.getNodePK().
         getInstanceId());
     try {
-      nodeBm.setDetail(axis);
+      nodeService.setDetail(axis);
     } catch (Exception e) {
       throw new KmaxRuntimeException("KmeliaBmEJB.updateAxis()", ERROR,
           "kmax.EX_IMPOSSIBLE_DE_MODIFIER_L_AXE", e);
@@ -3556,7 +3556,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     try {
       // delete publicationFathers
       if (getAxisHeaders(componentId).size() == 1) {
-        coordinateIds = coordinatesBm.getCoordinateIdsByNodeId(coordinatePK, axisId);
+        coordinateIds = coordinatesService.getCoordinateIdsByNodeId(coordinatePK, axisId);
         Iterator<String> coordinateIdsIt = coordinateIds.iterator();
         String coordinateId;
         while (coordinateIdsIt.hasNext()) {
@@ -3568,7 +3568,7 @@ public class KmeliaBmEJB implements KmeliaBm {
         }
       }
       // delete coordinate which contains subComponents of this component
-      Collection<NodeDetail> subComponents = nodeBm.getDescendantDetails(pkToDelete);
+      Collection<NodeDetail> subComponents = nodeService.getDescendantDetails(pkToDelete);
       Iterator<NodeDetail> it = subComponents.iterator();
       List<NodePK> points = new ArrayList<NodePK>();
       points.add(pkToDelete);
@@ -3577,7 +3577,7 @@ public class KmeliaBmEJB implements KmeliaBm {
       }
       removeCoordinatesByPoints(points, componentId);
       // delete axis
-      nodeBm.removeNode(pkToDelete);
+      nodeService.removeNode(pkToDelete);
     } catch (Exception e) {
       throw new KmaxRuntimeException("KmeliaBmEJB.deleteAxis()", ERROR,
           "kmax.EX_IMPOSSIBLE_DE_SUPPRIMER_L_AXE", e);
@@ -3594,7 +3594,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     }
     CoordinatePK coordinatePK = new CoordinatePK("useless", "useless", componentId);
     try {
-      coordinatesBm.deleteCoordinatesByPoints(coordinatePK,
+      coordinatesService.deleteCoordinatesByPoints(coordinatePK,
           (ArrayList<String>) coordinatePoints);
     } catch (Exception e) {
       throw new KmaxRuntimeException("KmeliaBmEJB.removeCoordinatesByPoints()", ERROR,
@@ -3611,7 +3611,7 @@ public class KmeliaBmEJB implements KmeliaBm {
   private NodeDetail getNodeHeader(NodePK pk) {
     NodeDetail nodeDetail = null;
     try {
-      nodeDetail = nodeBm.getHeader(pk);
+      nodeDetail = nodeService.getHeader(pk);
     } catch (Exception e) {
       throw new KmaxRuntimeException("KmeliaBmEJB.getNodeHeader()", ERROR,
           "kmax.EX_IMPOSSIBLE_DOBTENIR_LE_NOEUD", e);
@@ -3634,7 +3634,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     SilverTrace.info("kmax", "KmeliaBmEjb.addPosition()", "root.MSG_GEN_PARAM_VALUE",
         "fatherDetail = " + fatherDetail.toString());
     try {
-      componentPK = nodeBm.createNode(position, fatherDetail);
+      componentPK = nodeService.createNode(position, fatherDetail);
     } catch (Exception e) {
       throw new KmaxRuntimeException("KmeliaBmEjb.addPosition()", ERROR,
           "kmax.EX_IMPOSSIBLE_DAJOUTER_UNE_COMPOSANTE_A_L_AXE", e);
@@ -3646,7 +3646,7 @@ public class KmeliaBmEJB implements KmeliaBm {
   public void updatePosition(NodeDetail position, String componentId) {
     position.getNodePK().setComponentName(componentId);
     try {
-      nodeBm.setDetail(position);
+      nodeService.setDetail(position);
     } catch (Exception e) {
       throw new KmaxRuntimeException("KmeliaBmEjb.updatePosition()", ERROR,
           "kmax.EX_IMPOSSIBLE_DE_MODIFIER_LA_COMPOSANTE_DE_L_AXE", e);
@@ -3659,7 +3659,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     // Delete the axis
     try {
       // delete coordinate which contains subPositions of this position
-      Collection<NodeDetail> subComponents = nodeBm.getDescendantDetails(pkToDelete);
+      Collection<NodeDetail> subComponents = nodeService.getDescendantDetails(pkToDelete);
       Iterator<NodeDetail> it = subComponents.iterator();
       List<NodePK> points = new ArrayList<NodePK>();
       points.add(pkToDelete);
@@ -3668,7 +3668,7 @@ public class KmeliaBmEJB implements KmeliaBm {
       }
       removeCoordinatesByPoints(points, componentId);
       // delete component
-      nodeBm.removeNode(pkToDelete);
+      nodeService.removeNode(pkToDelete);
     } catch (Exception e) {
       throw new KmaxRuntimeException("KmeliaBmEjb.deletePosition()", ERROR,
           "kmax.EX_IMPOSSIBLE_DE_SUPPRIMER_LA_COMPOSANTE_DE_L_AXE", e);
@@ -3682,7 +3682,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     // compute path from a to z
 
     try {
-      List<NodeDetail> pathInReverse = (List<NodeDetail>) nodeBm.getPath(nodePK);
+      List<NodeDetail> pathInReverse = (List<NodeDetail>) nodeService.getPath(nodePK);
       // reverse the path from root to leaf
       for (int i = pathInReverse.size() - 1; i >= 0; i--) {
         newPath.add(pathInReverse.get(i));
@@ -3751,7 +3751,7 @@ public class KmeliaBmEJB implements KmeliaBm {
         publications = publicationBm.getDetailsNotInFatherPK(basketPK);
       } else {
         if (combination != null && combination.size() > 0) {
-          coordinates = coordinatesBm.getCoordinatesByFatherPaths(
+          coordinates = coordinatesService.getCoordinatesByFatherPaths(
               (ArrayList<String>) combination, coordinatePK);
         }
         if (!coordinates.isEmpty()) {
@@ -3818,13 +3818,13 @@ public class KmeliaBmEJB implements KmeliaBm {
   private void indexAxis(String componentId) {
     NodePK nodePK = new NodePK("useless", componentId);
     try {
-      Collection<NodeDetail> nodes = nodeBm.getAllNodes(nodePK);
+      Collection<NodeDetail> nodes = nodeService.getAllNodes(nodePK);
       if (nodes != null) {
         for (NodeDetail nodeDetail : nodes) {
           if ("corbeille".equalsIgnoreCase(nodeDetail.getName()) && nodeDetail.getNodePK().isTrash()) {
             // do not index the bin
           } else {
-            nodeBm.createIndex(nodeDetail);
+            nodeService.createIndex(nodeDetail);
           }
         }
       }
@@ -3893,7 +3893,7 @@ public class KmeliaBmEJB implements KmeliaBm {
         NodePK nodePK = new NodePK(nodeId, componentId);
         SilverTrace.info("kmax", "KmeliaBmEjb.addPublicationToCombination()",
             "root.MSG_GEN_PARAM_VALUE", "avant nodeBm.getPath() ! i = " + i);
-        Collection<NodeDetail> path = nodeBm.getPath(nodePK);
+        Collection<NodeDetail> path = nodeService.getPath(nodePK);
         SilverTrace.info("kmax", "KmeliaBmEjb.addPublicationToCombination()",
             "root.MSG_GEN_PARAM_VALUE", "path for nodeId " + nodeId + " = "
             + path.toString());
@@ -3913,7 +3913,7 @@ public class KmeliaBmEJB implements KmeliaBm {
         }
         i++;
       }
-      int coordinateId = coordinatesBm.addCoordinate(coordinatePK, allnodes);
+      int coordinateId = coordinatesService.addCoordinate(coordinatePK, allnodes);
       publicationBm.addFather(pubPK, new NodePK(String.valueOf(coordinateId), pubPK));
     } catch (Exception e) {
       throw new KmaxRuntimeException("KmeliaBmEjb.addPublicationToCombination()", ERROR,
@@ -3956,7 +3956,7 @@ public class KmeliaBmEJB implements KmeliaBm {
 
   @Override
   public void deleteCoordinates(CoordinatePK coordinatePK, List<String> coordinates) {
-    coordinatesBm.deleteCoordinates(coordinatePK, coordinates);
+    coordinatesService.deleteCoordinates(coordinatePK, coordinates);
   }
 
   @Override
@@ -3973,7 +3973,7 @@ public class KmeliaBmEJB implements KmeliaBm {
       // remove coordinate
       List<String> coordinateIds = new ArrayList<String>(1);
       coordinateIds.add(combinationId);
-      coordinatesBm.deleteCoordinates(coordinatePK, coordinateIds);
+      coordinatesService.deleteCoordinates(coordinatePK, coordinateIds);
     } catch (Exception e) {
       throw new KmaxRuntimeException("KmeliaBmEjb.deletePublicationFromCombination()", ERROR,
           "kmax.EX_IMPOSSIBLE_DE_SUPPRIMER_LA_COMBINAISON_DE_LA_PUBLICATION", e);
@@ -4356,7 +4356,7 @@ public class KmeliaBmEJB implements KmeliaBm {
 
   private NodeDetail getRoot(String componentId, String userId, List<NodeDetail> treeview) {
     NodePK rootPK = new NodePK(NodePK.ROOT_NODE_ID, componentId);
-    NodeDetail root = nodeBm.getDetail(rootPK);
+    NodeDetail root = nodeService.getDetail(rootPK);
     setRole(root, userId);
     root.setChildrenDetails(getRootChildren(root, userId, treeview));
     return root;
@@ -4409,7 +4409,7 @@ public class KmeliaBmEJB implements KmeliaBm {
 
   @Override
   public Collection<NodeDetail> getFolderChildren(NodePK nodePK, String userId) {
-    NodeDetail node = nodeBm.getDetail(nodePK);
+    NodeDetail node = nodeService.getDetail(nodePK);
     if (node.getNodePK().isRoot()) {
       node.setChildrenDetails(getRootChildren(node, userId, null));
     } else {
@@ -4595,7 +4595,7 @@ public class KmeliaBmEJB implements KmeliaBm {
 
     if (!checked && isRightsOnTopicsEnabled(componentId)) {
       // check if current user is publisher or admin on at least one descendant
-      Iterator<NodeDetail> descendants = nodeBm.getDescendantDetails(getRootPK(componentId))
+      Iterator<NodeDetail> descendants = nodeService.getDescendantDetails(getRootPK(componentId))
           .iterator();
       while (!checked && descendants.hasNext()) {
         NodeDetail descendant = descendants.next();
@@ -4616,7 +4616,7 @@ public class KmeliaBmEJB implements KmeliaBm {
   @Override
   public NodeDetail getExpandedPathToNode(NodePK pk, String userId) {
     String instanceId = pk.getInstanceId();
-    List<NodeDetail> nodes = new ArrayList<NodeDetail>(nodeBm.getPath(pk));
+    List<NodeDetail> nodes = new ArrayList<NodeDetail>(nodeService.getPath(pk));
     Collections.reverse(nodes);
     nodes.remove(0);
 
@@ -4639,7 +4639,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     for (NodeDetail node : nodes) {
       currentNode = find(currentNode.getChildrenDetails(), node);
       // get children of each node on path to target node
-      Collection<NodeDetail> children = nodeBm.getChildrenDetails(node.getNodePK());
+      Collection<NodeDetail> children = nodeService.getChildrenDetails(node.getNodePK());
       node.setChildrenDetails(children);
       setAllowedSubfolders(node, userId);
       if (treeview != null) {
@@ -4737,10 +4737,10 @@ public class KmeliaBmEJB implements KmeliaBm {
   @Action(ActionType.MOVE)
   @Override
   public NodeDetail moveNode(@SourcePK NodePK nodePK, @TargetPK NodePK to, String userId) {
-    List<NodeDetail> treeToPaste = nodeBm.getSubTree(nodePK);
+    List<NodeDetail> treeToPaste = nodeService.getSubTree(nodePK);
 
     // move node and subtree
-    nodeBm.moveNode(nodePK, to);
+    nodeService.moveNode(nodePK, to);
 
     for (NodeDetail fromNode : treeToPaste) {
       if (fromNode != null) {
@@ -4795,7 +4795,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     String userId = copyDetail.getUserId();
     SilverTrace.debug("kmelia", "KmeliaBmEJB.copyNode()", "root.MSG_GEN_ENTER_METHOD", "from = " +
         nodePKToCopy.toString() + ", to = " + targetPK.toString());
-    NodeDetail nodeToCopy = nodeBm.getDetail(nodePKToCopy);
+    NodeDetail nodeToCopy = nodeService.getDetail(nodePKToCopy);
     NodeDetail father = getNodeHeader(targetPK);
 
     // paste topic
@@ -4805,7 +4805,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     node.setCreatorId(userId);
     node.setRightsDependsOn(father.getRightsDependsOn());
     node.setCreationDate(DateUtil.today2SQLDate());
-    nodePK = nodeBm.createNode(node, father);
+    nodePK = nodeService.createNode(node, father);
 
     // duplicate rights
     if (copyDetail.isNodeRightsMustBeCopied()) {
@@ -4818,7 +4818,7 @@ public class KmeliaBmEJB implements KmeliaBm {
           Integer newRightsDependsOn = oldAndNewIds.get(Integer.valueOf(oldRightsDependsOn));
           node.setRightsDependsOn(newRightsDependsOn);
         }
-        nodeBm.updateRightsDependency(node);
+        nodeService.updateRightsDependency(node);
       }
       // Set topic rights if necessary
       if (nodeToCopy.haveLocalRights()) {

@@ -47,7 +47,7 @@ public class SuggestionBoxSubscriptionUserNotification extends AbstractSuggestio
   @Override
   protected void initialize() {
     super.initialize();
-    SubscriptionUtil.indexSubscriberIdsByType(subscriberIdsByTypes, getSubscribeBm().getSubscribers(
+    SubscriptionUtil.indexSubscriberIdsByType(subscriberIdsByTypes, getSubscribeService().getSubscribers(
         ComponentSubscriptionResource.from(getResource().getComponentInstanceId())));
     subscriberIdsByTypes.get(SubscriberType.USER).remove(getSender());
   }

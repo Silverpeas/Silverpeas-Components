@@ -84,7 +84,7 @@
   <!-- ebo <bean id="commentServiceFactory" class="com.silverpeas.comment.service.CommentServiceFactory"
         factory-method="getFactory"/> -->
 
-  <bean id="subscriptionServiceFactory" class="com.silverpeas.subscribe.SubscriptionServiceFactory"
+  <bean id="subscriptionServiceFactory" class="com.silverpeas.subscribe.SubscriptionServiceProvider"
         factory-method="getFactory"/>
 
   <!-- ebo <bean id="ratingServiceFactory" class="com.silverpeas.notation.ejb.RatingServiceProvider"

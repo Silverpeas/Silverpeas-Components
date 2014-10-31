@@ -22,7 +22,7 @@ package com.stratelia.webactiv.forums.forumsManager.ejb;
 
 import com.silverpeas.notation.ejb.RatingBm;
 import com.silverpeas.subscribe.SubscriptionService;
-import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.constant.SubscriberType;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.silverpeas.subscribe.util.SubscriptionUtil;
@@ -45,7 +45,7 @@ import com.stratelia.webactiv.forums.models.Moderator;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.exception.UtilException;
-import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.silverpeas.attachment.AttachmentServiceProvider;
@@ -64,6 +64,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.inject.Inject;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -87,8 +88,8 @@ public class ForumsBMEJB implements ForumsBM {
   private TagCloudBm tagcloud;
   @EJB
   private RatingBm notation;
-  @EJB
-  private NodeBm node;
+  @Inject
+  private NodeService node;
   private static final long serialVersionUID = -6809840977338911593L;
   private final ForumsContentManager forumsContentManager = new ForumsContentManager();
 
@@ -348,7 +349,7 @@ public class ForumsBMEJB implements ForumsBM {
     try {
 
       // Deleting subscriptions
-      getSubscribeBm().unsubscribeByResource(ForumSubscriptionResource.from(forumPK));
+      getSubscribeService().unsubscribeByResource(ForumSubscriptionResource.from(forumPK));
 
       // Recuperation des ids de messages
       List<String> messagesIds = getMessagesIds(forumPK);
@@ -852,7 +853,7 @@ public class ForumsBMEJB implements ForumsBM {
       }
 
       // Deleting subscriptions
-      getSubscribeBm().unsubscribeByResource(ForumMessageSubscriptionResource.from(messagePK));
+      getSubscribeService().unsubscribeByResource(ForumMessageSubscriptionResource.from(messagePK));
 
       ForumsDAO.deleteMessage(con, messagePK);
       deleteIndex(messagePK);
@@ -1048,7 +1049,7 @@ public class ForumsBMEJB implements ForumsBM {
   @TransactionAttribute(TransactionAttributeType.REQUIRED)
   @Override
   public void subscribeMessage(MessagePK messagePK, String userId) {
-    getSubscribeBm().subscribe(new ForumMessageSubscription(userId, messagePK));
+    getSubscribeService().subscribe(new ForumMessageSubscription(userId, messagePK));
   }
 
   /**
@@ -1060,7 +1061,7 @@ public class ForumsBMEJB implements ForumsBM {
   @TransactionAttribute(TransactionAttributeType.REQUIRED)
   @Override
   public void unsubscribeMessage(MessagePK messagePK, String userId) {
-    getSubscribeBm().unsubscribe(new ForumMessageSubscription(userId, messagePK));
+    getSubscribeService().unsubscribe(new ForumMessageSubscription(userId, messagePK));
   }
 
   /**
@@ -1071,7 +1072,7 @@ public class ForumsBMEJB implements ForumsBM {
   @TransactionAttribute(TransactionAttributeType.REQUIRED)
   @Override
   public void subscribeForum(final ForumPK forumPK, final String userId) {
-    getSubscribeBm().subscribe(new ForumSubscription(userId, forumPK));
+    getSubscribeService().subscribe(new ForumSubscription(userId, forumPK));
   }
 
   /**
@@ -1082,7 +1083,7 @@ public class ForumsBMEJB implements ForumsBM {
   @TransactionAttribute(TransactionAttributeType.REQUIRED)
   @Override
   public void unsubscribeForum(final ForumPK forumPK, final String userId) {
-    getSubscribeBm().unsubscribe(new ForumSubscription(userId, forumPK));
+    getSubscribeService().unsubscribe(new ForumSubscription(userId, forumPK));
   }
 
   /**
@@ -1098,14 +1099,14 @@ public class ForumsBMEJB implements ForumsBM {
     // Subsribers of the message
     Map<SubscriberType, Collection<String>> allSubscribers = SubscriptionUtil
         .indexSubscriberIdsByType(
-            getSubscribeBm().getSubscribers(ForumMessageSubscriptionResource.from(messagePK)));
+            getSubscribeService().getSubscribers(ForumMessageSubscriptionResource.from(messagePK)));
 
     // Subscribers of parent forum messages if any
     Message currentMessage = message;
     while (!currentMessage.isSubject()) {
       currentMessage = getMessage(
           new MessagePK(messagePK.getInstanceId(), currentMessage.getParentIdAsString()));
-      SubscriptionUtil.indexSubscriberIdsByType(allSubscribers, getSubscribeBm()
+      SubscriptionUtil.indexSubscriberIdsByType(allSubscribers, getSubscribeService()
           .getSubscribers(ForumMessageSubscriptionResource.from(currentMessage.getPk())));
     }
 
@@ -1129,7 +1130,7 @@ public class ForumsBMEJB implements ForumsBM {
     // Subscribers of the forum
     Map<SubscriberType, Collection<String>> allSubscribers = SubscriptionUtil
         .indexSubscriberIdsByType(
-            getSubscribeBm().getSubscribers(ForumSubscriptionResource.from(forumPK)));
+            getSubscribeService().getSubscribers(ForumSubscriptionResource.from(forumPK)));
 
     // Subscribers of parent forums if any
     Forum currentForum = getForum(forumPK);
@@ -1137,7 +1138,7 @@ public class ForumsBMEJB implements ForumsBM {
       currentForum =
           getForum(new ForumPK(forumPK.getInstanceId(), currentForum.getParentIdAsString()));
       SubscriptionUtil.indexSubscriberIdsByType(allSubscribers,
-          getSubscribeBm().getSubscribers(ForumSubscriptionResource.from(currentForum.getPk())));
+          getSubscribeService().getSubscribers(ForumSubscriptionResource.from(currentForum.getPk())));
     }
 
     // Subscribers on component instance id
@@ -1156,7 +1157,7 @@ public class ForumsBMEJB implements ForumsBM {
   @Override
   public Map<SubscriberType, Collection<String>> listAllSubscribers(final String instanceId) {
     return SubscriptionUtil.indexSubscriberIdsByType(
-        getSubscribeBm().getSubscribers(ComponentSubscriptionResource.from(instanceId)));
+        getSubscribeService().getSubscribers(ComponentSubscriptionResource.from(instanceId)));
   }
 
   /**
@@ -1167,7 +1168,7 @@ public class ForumsBMEJB implements ForumsBM {
    */
   @Override
   public boolean isSubscriber(MessagePK messagePK, String userId) {
-    return getSubscribeBm()
+    return getSubscribeService()
         .isUserSubscribedToResource(userId, ForumMessageSubscriptionResource.from(messagePK));
   }
 
@@ -1205,7 +1206,7 @@ public class ForumsBMEJB implements ForumsBM {
    */
   @Override
   public boolean isSubscriber(final ForumPK forumPK, final String userId) {
-    return getSubscribeBm()
+    return getSubscribeService()
         .isUserSubscribedToResource(userId, ForumSubscriptionResource.from(forumPK));
   }
 
@@ -1240,7 +1241,7 @@ public class ForumsBMEJB implements ForumsBM {
    */
   @Override
   public boolean isSubscriber(final String instanceId, final String userId) {
-    return getSubscribeBm()
+    return getSubscribeService()
         .isUserSubscribedToResource(userId, ComponentSubscriptionResource.from(instanceId));
   }
 
@@ -1573,7 +1574,7 @@ public class ForumsBMEJB implements ForumsBM {
    * Gets instance of centralized subscription services.
    * @return
    */
-  protected SubscriptionService getSubscribeBm() {
-    return SubscriptionServiceFactory.getFactory().getSubscribeService();
+  protected SubscriptionService getSubscribeService() {
+    return SubscriptionServiceProvider.getSubscribeService();
   }
 }

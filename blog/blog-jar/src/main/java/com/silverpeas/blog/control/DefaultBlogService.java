@@ -39,7 +39,7 @@ import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.pdcSubscription.util.PdcSubscriptionUtil;
 import com.silverpeas.subscribe.SubscriptionService;
-import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
@@ -47,7 +47,7 @@ import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ObjectType;
-import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodeOrderComparator;
 import com.stratelia.webactiv.node.model.NodePK;
@@ -180,7 +180,7 @@ public class DefaultBlogService implements BlogService {
   @Override
   public void sendSubscriptionsNotification(final NodePK fatherPK, final PostDetail post,
       final Comment comment, final String type, final String senderId) {
-    Collection<String> subscriberIds = getSubscribeBm()
+    Collection<String> subscriberIds = getSubscribeService()
         .getUserSubscribers(ComponentSubscriptionResource.from(fatherPK.getInstanceId()));
     if (subscriberIds != null && !subscriberIds.isEmpty()) {
       // get only subscribers who have sufficient rights to read pubDetail
@@ -664,17 +664,17 @@ public class DefaultBlogService implements BlogService {
 
   @Override
   public void addSubscription(final String userId, final String instanceId) {
-    getSubscribeBm().subscribe(new ComponentSubscription(userId, instanceId));
+    getSubscribeService().subscribe(new ComponentSubscription(userId, instanceId));
   }
 
   @Override
   public void removeSubscription(final String userId, final String instanceId) {
-    getSubscribeBm().unsubscribe(new ComponentSubscription(userId, instanceId));
+    getSubscribeService().unsubscribe(new ComponentSubscription(userId, instanceId));
   }
 
   @Override
   public boolean isSubscribed(final String userId, final String instanceId) {
-    return getSubscribeBm().existsSubscription(new ComponentSubscription(userId, instanceId));
+    return getSubscribeService().existsSubscription(new ComponentSubscription(userId, instanceId));
   }
 
   private void indexExternalElementsOfPublication(PublicationPK pubPK) {
@@ -817,16 +817,16 @@ public class DefaultBlogService implements BlogService {
     return silverObjectId;
   }
 
-  private SubscriptionService getSubscribeBm() {
-    return SubscriptionServiceFactory.getFactory().getSubscribeService();
+  private SubscriptionService getSubscribeService() {
+    return SubscriptionServiceProvider.getSubscribeService();
   }
 
   private PublicationBm getPublicationBm() {
     return EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBm.class);
   }
 
-  private NodeBm getNodeBm() {
-    return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
+  private NodeService getNodeBm() {
+    return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeService.class);
   }
 
   private PdcBm getPdcBm() {

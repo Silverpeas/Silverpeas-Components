@@ -25,7 +25,7 @@ package org.silverpeas.components.suggestionbox.notification;
 
 import com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationBuilder;
 import com.silverpeas.subscribe.SubscriptionService;
-import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.CollectionUtil;
 import com.stratelia.webactiv.SilverpeasRole;
@@ -74,8 +74,8 @@ public abstract class AbstractSuggestionBoxUserNotification<T>
    * Gets the service instance of subscription management.
    * @return the subscriptions service instance.
    */
-  protected SubscriptionService getSubscribeBm() {
-    return SubscriptionServiceFactory.getFactory().getSubscribeService();
+  protected SubscriptionService getSubscribeService() {
+    return SubscriptionServiceProvider.getSubscribeService();
   }
 
   /**

@@ -29,7 +29,7 @@ import com.silverpeas.jcrutil.RandomGenerator;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.DefaultOrganizationController;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
-import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.publication.control.PublicationBm;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
@@ -105,8 +105,8 @@ public class KmeliaSecurityTest {
     when(controller.getUserProfiles(adminId, instanceId)).thenReturn(new String[]{
       SilverpeasRole.admin.toString(), SilverpeasRole.user.toString()});
     KmeliaSecurity instance = new KmeliaSecurity(controller);
-    NodeBm nodeBm = mock(NodeBm.class);
-    instance.setNodeBm(nodeBm);
+    NodeService nodeService = mock(NodeService.class);
+    instance.setNodeBm(nodeService);
     PublicationBm validBm = mock(PublicationBm.class);
     PublicationDetail validPublication = mock(PublicationDetail.class);
     when(validPublication.getStatus()).thenReturn(PublicationDetail.VALID);
@@ -149,8 +149,8 @@ public class KmeliaSecurityTest {
     when(controller.getUserProfiles(notAuthorizedWriterId, instanceId)).thenReturn(new String[]{
       SilverpeasRole.user.toString(), SilverpeasRole.writer.toString()});
     KmeliaSecurity instance = new KmeliaSecurity(controller);
-    NodeBm nodeBm = mock(NodeBm.class);
-    instance.setNodeBm(nodeBm);
+    NodeService nodeService = mock(NodeService.class);
+    instance.setNodeBm(nodeService);
     PublicationBm validBm = mock(PublicationBm.class);
     PublicationDetail toValidatePublication = mock(PublicationDetail.class);
     when(toValidatePublication.getStatus()).thenReturn(PublicationDetail.TO_VALIDATE);
@@ -200,8 +200,8 @@ public class KmeliaSecurityTest {
     when(controller.getUserProfiles(notAuthorizedWriterId, instanceId)).thenReturn(new String[]{
       SilverpeasRole.user.toString(), SilverpeasRole.writer.toString()});
     KmeliaSecurity instance = new KmeliaSecurity(controller);
-    NodeBm nodeBm = mock(NodeBm.class);
-    instance.setNodeBm(nodeBm);
+    NodeService nodeService = mock(NodeService.class);
+    instance.setNodeBm(nodeService);
     PublicationBm validBm = mock(PublicationBm.class);
     PublicationDetail toValidatePublication = mock(PublicationDetail.class);
     when(toValidatePublication.getStatus()).thenReturn(PublicationDetail.DRAFT);

@@ -71,7 +71,7 @@ public class KmeliaSubscriptionPublicationUserNotification
     if (path != null) {
       for (final NodeDetail descendant : path) {
         SubscriptionUtil.indexSubscriberIdsByType(subscriberIdsByTypes,
-            getSubscribeBm().getSubscribers(NodeSubscriptionResource.from(descendant.getNodePK())));
+            getSubscribeService().getSubscribers(NodeSubscriptionResource.from(descendant.getNodePK())));
       }
     }
 

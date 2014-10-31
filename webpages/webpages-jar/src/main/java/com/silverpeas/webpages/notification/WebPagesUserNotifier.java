@@ -27,7 +27,7 @@ import org.silverpeas.core.admin.OrganizationControllerProvider;
 import com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationBuilder;
 import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.silverpeas.usernotification.model.NotificationResourceData;
-import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.constant.SubscriberType;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.silverpeas.subscribe.util.SubscriptionUtil;
@@ -85,7 +85,7 @@ public class WebPagesUserNotifier extends AbstractTemplateUserNotificationBuilde
 
     // Subscribers
     subscriberIdsByTypes = SubscriptionUtil.indexSubscriberIdsByType(
-        SubscriptionServiceFactory.getFactory().getSubscribeService()
+        SubscriptionServiceProvider.getSubscribeService()
             .getSubscribers(ComponentSubscriptionResource.from(getResource().getInstanceId())));
   }
 

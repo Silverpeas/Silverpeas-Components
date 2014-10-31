@@ -33,7 +33,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.subscribe.SubscriptionService;
-import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.StringUtil;
@@ -118,7 +118,7 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
   public synchronized void removeSubscription() {
     SilverTrace.info("webPages", "WebPagesSessionController.unsubscribeFromNode()",
             "root.MSG_GEN_ENTER_METHOD");
-    getSubscribeBm().unsubscribe(new ComponentSubscription(getUserId(), getComponentId()));
+    getSubscribeService().unsubscribe(new ComponentSubscription(getUserId(), getComponentId()));
   }
 
   public synchronized void addSubscription() {
@@ -127,22 +127,22 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
     if (isSubscriber()) {
       return;
     }
-    getSubscribeBm().subscribe(new ComponentSubscription(getUserId(), getComponentId()));
+    getSubscribeService().subscribe(new ComponentSubscription(getUserId(), getComponentId()));
   }
 
   public boolean isSubscriber() {
     SilverTrace.info("webPages", "WebPagesSessionController.isSubscriber()",
             "root.MSG_GEN_ENTER_METHOD");
-    return getSubscribeBm().existsSubscription(new ComponentSubscription(getUserId(),
-        getComponentId()));
+    return getSubscribeService().existsSubscription(
+        new ComponentSubscription(getUserId(), getComponentId()));
   }
 
   private NodePK getNodePK() {
     return new NodePK(NodePK.ROOT_NODE_ID, getSpaceId(), getComponentId());
   }
 
-  private SubscriptionService getSubscribeBm() {
-    return SubscriptionServiceFactory.getFactory().getSubscribeService();
+  private SubscriptionService getSubscribeService() {
+    return SubscriptionServiceProvider.getSubscribeService();
   }
 
   /**

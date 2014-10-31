@@ -24,13 +24,13 @@
 package com.silverpeas.kmelia.notification;
 
 import com.silverpeas.subscribe.SubscriptionService;
-import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationBuilder;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.kmelia.model.KmaxRuntimeException;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
-import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.silverpeas.core.admin.OrganizationController;
@@ -73,15 +73,15 @@ public abstract class AbstractKmeliaUserNotification<T> extends AbstractTemplate
     return OrganizationControllerProvider.getOrganisationController();
   }
 
-  protected SubscriptionService getSubscribeBm() {
-    return SubscriptionServiceFactory.getFactory().getSubscribeService();
+  protected SubscriptionService getSubscribeService() {
+    return SubscriptionServiceProvider.getSubscribeService();
   }
 
-  protected NodeBm getNodeBm() {
+  protected NodeService getNodeBm() {
     try {
-      return EJBUtilitaire.getEJBObjectRef(NODEBM_EJBHOME, NodeBm.class);
+      return EJBUtilitaire.getEJBObjectRef(NODEBM_EJBHOME, NodeService.class);
     } catch (final Exception e) {
-      throw new KmeliaRuntimeException("AbstractKmeliaNotificationBuilder.getNodeBm()", ERROR,
+      throw new KmeliaRuntimeException("AbstractKmeliaNotificationBuilder.getNodeService()", ERROR,
           "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_NODEBM_HOME", e);
     }
   }

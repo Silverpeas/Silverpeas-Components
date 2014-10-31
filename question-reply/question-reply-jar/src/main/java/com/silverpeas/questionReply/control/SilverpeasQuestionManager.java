@@ -26,7 +26,7 @@ import com.silverpeas.questionReply.index.QuestionIndexer;
 import com.silverpeas.questionReply.model.Question;
 import com.silverpeas.questionReply.model.Recipient;
 import com.silverpeas.questionReply.model.Reply;
-import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
@@ -949,7 +949,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
       UserDetail sender = reply.readAuthor();
       SubscriptionNotifier notifier = new SubscriptionNotifier(sender, URLManager.getServerURL(null),
               question, reply);
-      Collection<String> subscribers = SubscriptionServiceFactory.getFactory().getSubscribeService().
+      Collection<String> subscribers = SubscriptionServiceProvider.getSubscribeService().
               getUserSubscribers(ComponentSubscriptionResource.from(question.getInstanceId()));
       Set<UserRecipient> userRecipients = new HashSet<UserRecipient>();
       for (String subscriberId : subscribers) {

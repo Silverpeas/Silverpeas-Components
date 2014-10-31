@@ -26,7 +26,7 @@ package org.silverpeas.components.suggestionbox.model;
 import com.silverpeas.ApplicationService;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.notation.ejb.RatingServiceProvider;
-import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.attachment.AttachmentService;
@@ -110,7 +110,7 @@ public class DefaultSuggestionBoxService
     attachmentService.deleteAllAttachments(box.getComponentInstanceId());
 
     // Deleting all component subscriptions
-    SubscriptionServiceFactory.getFactory().getSubscribeService()
+    SubscriptionServiceProvider.getSubscribeService()
         .unsubscribeByResource(ComponentSubscriptionResource.from(box.getComponentInstanceId()));
 
     // Deleting all user ratings

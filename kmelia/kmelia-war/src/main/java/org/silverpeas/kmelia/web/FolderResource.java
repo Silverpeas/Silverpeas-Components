@@ -39,7 +39,7 @@ import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
 import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.ResourceLocator;
-import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.silverpeas.node.web.NodeAttrEntity;
@@ -335,9 +335,9 @@ public class FolderResource extends RESTWebService {
     return new NodePK(id, getComponentId());
   }
 
-  private NodeBm getNodeBm() {
+  private NodeService getNodeBm() {
     try {
-      return EJBUtilitaire.getEJBObjectRef(NODEBM_EJBHOME, NodeBm.class);
+      return EJBUtilitaire.getEJBObjectRef(NODEBM_EJBHOME, NodeService.class);
     } catch (Exception e) {
       throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
     }

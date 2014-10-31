@@ -24,7 +24,7 @@
 package com.stratelia.silverpeas.infoLetter.implementation;
 
 import com.silverpeas.subscribe.Subscription;
-import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.constant.SubscriberType;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
@@ -268,7 +268,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   @Override
   public Map<SubscriberType, Collection<String>> getInternalSuscribers(final String componentId) {
     return SubscriptionUtil.indexSubscriberIdsByType(
-        SubscriptionServiceFactory.getFactory().getSubscribeService()
+        SubscriptionServiceProvider.getSubscribeService()
             .getSubscribers(ComponentSubscriptionResource.from(componentId)));
   }
 
@@ -290,16 +290,16 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
 
     // Getting all existing subscriptions and selecting those that have to be deleted
     Collection<Subscription> subscriptionsToDelete =
-        SubscriptionServiceFactory.getFactory().getSubscribeService()
+        SubscriptionServiceProvider.getSubscribeService()
             .getByResource(ComponentSubscriptionResource.from(componentId));
     subscriptionsToDelete.removeAll(subscriptions);
 
     // Deleting
-    SubscriptionServiceFactory.getFactory().getSubscribeService()
+    SubscriptionServiceProvider.getSubscribeService()
         .unsubscribe(subscriptionsToDelete);
 
     // Creating subscriptions (nothing is registered for subscriptions that already exist)
-    SubscriptionServiceFactory.getFactory().getSubscribeService().subscribe(subscriptions);
+    SubscriptionServiceProvider.getSubscribeService().subscribe(subscriptions);
   }
 
   // Recuperation de la liste des emails externes
@@ -373,16 +373,16 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
     Subscription subscription =
         new ComponentSubscription(UserSubscriptionSubscriber.from(userId), componentId);
     if (isUserSubscribing) {
-      SubscriptionServiceFactory.getFactory().getSubscribeService().subscribe(subscription);
+      SubscriptionServiceProvider.getSubscribeService().subscribe(subscription);
     } else {
-      SubscriptionServiceFactory.getFactory().getSubscribeService().unsubscribe(subscription);
+      SubscriptionServiceProvider.getSubscribeService().unsubscribe(subscription);
     }
   }
 
   // test d'abonnement d'un utilisateur interne
   @Override
   public boolean isUserSuscribed(String userId, String componentId) {
-    return SubscriptionServiceFactory.getFactory().getSubscribeService().existsSubscription(
+    return SubscriptionServiceProvider.getSubscribeService().existsSubscription(
         new ComponentSubscription(UserSubscriptionSubscriber.from(userId), componentId));
   }
 

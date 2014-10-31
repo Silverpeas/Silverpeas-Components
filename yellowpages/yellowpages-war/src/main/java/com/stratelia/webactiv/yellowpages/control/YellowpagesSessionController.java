@@ -60,7 +60,7 @@ import com.stratelia.webactiv.contact.model.ContactFatherDetail;
 import com.stratelia.webactiv.contact.model.ContactPK;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.exception.UtilTrappedException;
-import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.yellowpages.ImportReport;
@@ -1066,11 +1066,11 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     this.portletMode = portletMode;
   }
 
-  public NodeBm getNodeBm() {
+  public NodeService getNodeBm() {
     try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
+      return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeService.class);
     } catch (Exception re) {
-      throw new YellowpagesRuntimeException("YellowpagesSessionController.getNodeBm()",
+      throw new YellowpagesRuntimeException("YellowpagesSessionController.getNodeService()",
           SilverpeasRuntimeException.ERROR, "yellowpages.EX_GET_NODEBM_HOME_FAILED", re);
     }
   }

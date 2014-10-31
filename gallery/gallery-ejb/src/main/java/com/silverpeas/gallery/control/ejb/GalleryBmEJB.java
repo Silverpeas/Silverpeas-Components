@@ -45,7 +45,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.control.dao.NodeDAO;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
@@ -80,7 +80,7 @@ import static com.silverpeas.gallery.model.MediaCriteria.QUERY_ORDER_BY.IDENTIFI
 public class GalleryBmEJB implements GalleryBm {
 
   @Inject
-  private NodeBm nodeBm;
+  private NodeService nodeService;
   @Inject
   private OrganizationController organizationController;
 
@@ -92,7 +92,7 @@ public class GalleryBmEJB implements GalleryBm {
   @Override
   public AlbumDetail getAlbum(final NodePK nodePK, MediaCriteria.VISIBILITY visibility) {
     try {
-      final AlbumDetail album = new AlbumDetail(nodeBm.getDetailTransactionally(nodePK));
+      final AlbumDetail album = new AlbumDetail(nodeService.getDetailTransactionally(nodePK));
       // Loading the media
       final Collection<Media> media = getAllMedia(nodePK, visibility);
       // Setting the media into the album object instance.
@@ -108,7 +108,7 @@ public class GalleryBmEJB implements GalleryBm {
   public Collection<AlbumDetail> getAllAlbums(final String instanceId) {
     try {
       final NodePK nodePK = new NodePK(NodePK.ROOT_NODE_ID, instanceId);
-      final Collection<NodeDetail> nodes = nodeBm.getSubTree(nodePK);
+      final Collection<NodeDetail> nodes = nodeService.getSubTree(nodePK);
       final List<AlbumDetail> albums = new ArrayList<>(nodes.size());
       for (final NodeDetail node : nodes) {
         albums.add(new AlbumDetail(node));
@@ -125,7 +125,7 @@ public class GalleryBmEJB implements GalleryBm {
   public NodePK createAlbum(final AlbumDetail album, final NodePK nodePK) {
     try {
       final AlbumDetail currentAlbum = getAlbum(nodePK);
-      return nodeBm.createNode(album, currentAlbum);
+      return nodeService.createNode(album, currentAlbum);
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.createAlbum()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_ALBUM_NOT_CREATE", e);
@@ -136,7 +136,7 @@ public class GalleryBmEJB implements GalleryBm {
   @Transactional(Transactional.TxType.REQUIRED)
   public void updateAlbum(final AlbumDetail album) {
     try {
-      nodeBm.setDetail(album);
+      nodeService.setDetail(album);
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.updateAlbum()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_ALBUM_NOT_UPDATE", e);
@@ -396,7 +396,7 @@ public class GalleryBmEJB implements GalleryBm {
   public Collection<NodeDetail> getPath(final NodePK nodePK) {
     Collection<NodeDetail> path;
     try {
-      path = nodeBm.getPath(nodePK);
+      path = nodeService.getPath(nodePK);
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getPath()", SilverpeasRuntimeException.ERROR,
           "gallery.MSG_PATH", e);
@@ -516,7 +516,7 @@ public class GalleryBmEJB implements GalleryBm {
 
         // indexation de l'album
         try {
-          nodeBm.createIndex(album);
+          nodeService.createIndex(album);
         } catch (final Exception e) {
           throw new GalleryRuntimeException("GalleryBmEJB.indexGallery()",
               SilverpeasRuntimeException.ERROR, "gallery.MSG_INDEXALBUM", e);

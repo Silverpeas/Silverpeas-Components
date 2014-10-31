@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import com.silverpeas.kmelia.model.StatisticActivityVO;
@@ -32,7 +33,6 @@ import com.silverpeas.kmelia.model.StatsFilterVO;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import org.silverpeas.util.EJBUtilitaire;
@@ -40,7 +40,7 @@ import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.control.PublicationBm;
@@ -50,14 +50,13 @@ import com.stratelia.webactiv.statistic.control.StatisticBm;
 import com.stratelia.webactiv.statistic.model.StatisticRuntimeException;
 
 import static com.stratelia.webactiv.beans.admin.AdministrationServiceProvider.getAdminService;
-import static org.silverpeas.util.JNDINames.NODEBM_EJBHOME;
-import static org.silverpeas.util.exception.SilverpeasRuntimeException.ERROR;
 
 @Named("statisticService")
 public class StatisticServiceImpl implements StatisticService {
 
   private PublicationBm publicationBm;
-  private NodeBm nodeBm;
+  @Inject
+  private NodeService nodeService;
   private StatisticBm statisticBm;
 
   /*
@@ -159,7 +158,7 @@ public class StatisticServiceImpl implements StatisticService {
         new NodePK(Integer.toString(statFilter.getTopicId()), statFilter.getInstanceId());
     Collection<PublicationDetail> validPubli = null;
     List<PublicationDetail> publis = new ArrayList<PublicationDetail>();
-    List<NodeDetail> nodes = getNodeBm().getSubTree(fatherPK);
+    List<NodeDetail> nodes = getNodeService().getSubTree(fatherPK);
     if (nodes != null) {
       ArrayList<String> fatherIds = new ArrayList<String>();
       for (NodeDetail node : nodes) {
@@ -253,16 +252,8 @@ public class StatisticServiceImpl implements StatisticService {
     return publicationBm;
   }
 
-  private NodeBm getNodeBm() {
-    if (nodeBm == null) {
-      try {
-        nodeBm = EJBUtilitaire.getEJBObjectRef(NODEBM_EJBHOME, NodeBm.class);
-      } catch (Exception e) {
-        throw new KmeliaRuntimeException("KmeliaBmEJB.getNodeBm()", ERROR,
-            "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_NODEBM_HOME", e);
-      }
-    }
-    return nodeBm;
+  private NodeService getNodeService() {
+    return nodeService;
   }
 
   private StatisticBm getStatisticBm() {

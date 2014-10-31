@@ -107,7 +107,7 @@ public class KmeliaImportExport extends GEDImportExport {
       String profile = "writer";
       if ("yes".equalsIgnoreCase(orgnaisationController.getComponentParameterValue(topicPK
           .getInstanceId(), "rightsOnTopics"))) {
-        NodeDetail topic = getNodeBm().getHeader(topicPK);
+        NodeDetail topic = getNodeService().getHeader(topicPK);
         if (topic.haveRights()) {
           profile = KmeliaHelper.getProfile(orgnaisationController.getUserProfiles(userDetail
               .getId(), topicPK.getInstanceId(), topic.getRightsDependsOn(), ObjectType.NODE));
@@ -158,7 +158,7 @@ public class KmeliaImportExport extends GEDImportExport {
 
       // Recherche si le noeud existe déjà, on s'arrête si c'est le cas
       try {
-        NodeDetail header = getNodeBm().getHeader(nodePk);
+        NodeDetail header = getNodeService().getHeader(nodePk);
         if (header != null) {
           return header.getNodePK();
         }
@@ -207,7 +207,7 @@ public class KmeliaImportExport extends GEDImportExport {
     NodePK nodePK = null;
     try {
       // On renvoie le topic déjà existant si c'est le cas
-      nodePK = getNodeBm().getDetailByNameAndFatherId(new NodePK("unKnown", null,
+      nodePK = getNodeService().getDetailByNameAndFatherId(new NodePK("unKnown", null,
           getCurrentComponentId()), nodeDetail.getName(), topicId).getNodePK();
     } catch (Exception ex) {
       SilverTrace.info("importExport", "GEDImportExport.addSubTopicToTopic()",

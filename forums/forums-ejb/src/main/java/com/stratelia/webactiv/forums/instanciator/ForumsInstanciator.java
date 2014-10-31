@@ -25,7 +25,7 @@ package com.stratelia.webactiv.forums.instanciator;
 
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.InstanciationException;
-import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
@@ -86,7 +86,7 @@ public class ForumsInstanciator extends SQLRequest implements ComponentsInstanci
     }
 
     // Unsubscribe component subscribers
-    SubscriptionServiceFactory.getFactory().getSubscribeService()
+    SubscriptionServiceProvider.getSubscribeService()
         .unsubscribeByResource(ComponentSubscriptionResource.from(componentId));
   }
 

@@ -30,10 +30,10 @@ package com.stratelia.webactiv.webSites.control.ejb;
  */
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.node.control.NodeService;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.node.control.NodeBm;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.control.PublicationBm;
@@ -51,6 +51,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.inject.Inject;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -62,8 +63,8 @@ import java.util.List;
 public class WebSiteBmEJB implements WebSiteBm {
 
   private static final long serialVersionUID = 7063837019701682671L;
-  @EJB
-  private NodeBm nodeBm;
+  @Inject
+  private NodeService nodeService;
   @EJB
   private PublicationBm publicationBm;
   /**
@@ -81,7 +82,7 @@ public class WebSiteBmEJB implements WebSiteBm {
     NodeDetail nodeDetail;
     // get the basic information (Header) of this folder
     try {
-      nodeDetail = nodeBm.getDetail(pk);
+      nodeDetail = nodeService.getDetail(pk);
     } catch (Exception re) {
       throw new WebSitesRuntimeException("WebSiteBmEJB.goTo()",
           SilverpeasRuntimeException.ERROR, "webSites.EX_NODEBM_DETAIL_FAILED",
@@ -144,7 +145,7 @@ public class WebSiteBmEJB implements WebSiteBm {
     Collection<NodeDetail> newPath = new ArrayList<NodeDetail>();
 
     try {
-      List<NodeDetail> pathInReverse = (List<NodeDetail>) nodeBm.getPath(nd.getNodePK());
+      List<NodeDetail> pathInReverse = (List<NodeDetail>) nodeService.getPath(nd.getNodePK());
       // reverse the path from root to leaf
       for (int i = pathInReverse.size() - 1; i >= 0; i--) {
         newPath.add(pathInReverse.get(i));
@@ -160,8 +161,8 @@ public class WebSiteBmEJB implements WebSiteBm {
   public NodePK addToFolder(NodePK fatherId, NodeDetail subTopic) {
     SilverTrace.info("webSites", "WebSiteBmEJB.addToFolder()", "root.MSG_GEN_ENTER_METHOD");
     try {
-      NodeDetail father = nodeBm.getDetail(fatherId);
-      return nodeBm.createNode(subTopic, father);
+      NodeDetail father = nodeService.getDetail(fatherId);
+      return nodeService.createNode(subTopic, father);
     } catch (Exception re) {
       throw new WebSitesRuntimeException("WebSiteBmEJB.addToFolder()",
           SilverpeasRuntimeException.ERROR, "webSites.EX_NODE_CREATE_FAILED", re);
@@ -202,11 +203,11 @@ public class WebSiteBmEJB implements WebSiteBm {
   @Override
   public NodePK updateFolder(NodeDetail topic, NodePK fatherPK) {
     try {
-      NodeDetail father = nodeBm.getDetail(fatherPK);
+      NodeDetail father = nodeService.getDetail(fatherPK);
       topic.setLevel(father.getLevel());
       topic.setFatherPK(fatherPK);
       topic.getNodePK().setComponentName(fatherPK.getComponentName());
-      nodeBm.setDetail(topic);
+      nodeService.setDetail(topic);
     } catch (Exception re) {
       throw new WebSitesRuntimeException("WebSiteBmEJB.updateFolder()",
           SilverpeasRuntimeException.ERROR, "webSites.EX_NODE_UPDATE_FAILED",
@@ -223,7 +224,7 @@ public class WebSiteBmEJB implements WebSiteBm {
   public NodeDetail getFolderDetail(NodePK pk) {
     // get the basic information (Header) of this topic
     try {
-      return nodeBm.getDetail(pk);
+      return nodeService.getDetail(pk);
     } catch (Exception re) {
       throw new WebSitesRuntimeException("WebSiteBmEJB.getFolderDetail()",
           SilverpeasRuntimeException.ERROR, "webSites.EX_GET_NODE_DETAIL_FAILED", "pk = " + pk, re);
@@ -239,7 +240,7 @@ public class WebSiteBmEJB implements WebSiteBm {
     SilverTrace.info("webSites", "WebSiteBmEJB.deleteFolder()", "root.MSG_GEN_ENTER_METHOD");
     try {
       // get all nodes which will be deleted
-      Collection<NodePK> nodesToDelete = nodeBm.getDescendantPKs(pkToDelete);
+      Collection<NodePK> nodesToDelete = nodeService.getDescendantPKs(pkToDelete);
       nodesToDelete.add(pkToDelete);
       for (NodePK oneNodeToDelete : nodesToDelete) {
         // get pubs linked to current node
@@ -250,7 +251,7 @@ public class WebSiteBmEJB implements WebSiteBm {
         }
       }
       // Delete the topic
-      nodeBm.removeNode(pkToDelete);
+      nodeService.removeNode(pkToDelete);
     } catch (Exception re) {
       throw new WebSitesRuntimeException("WebSiteBmEJB.deleteFolder()",
           SilverpeasRuntimeException.ERROR, "webSites.EX_NODE_DELETE_FAILED", "pk = " + pkToDelete,
@@ -296,7 +297,7 @@ public class WebSiteBmEJB implements WebSiteBm {
         "root.MSG_GEN_ENTER_METHOD", "way = " + way + ", topicPK = "
         + topicPK.toString());
 
-    List<NodeDetail> subTopics = (List<NodeDetail>) nodeBm.getChildrenDetails(fatherPK);
+    List<NodeDetail> subTopics = (List<NodeDetail>) nodeService.getChildrenDetails(fatherPK);
 
     if (subTopics != null && !subTopics.isEmpty()) {
       // search the place of the topic we want to move
@@ -324,7 +325,7 @@ public class WebSiteBmEJB implements WebSiteBm {
             + nodeDetail.getNodePK().getId() + ", order = " + i);
         try {
           nodeDetail.setOrder(i);
-          nodeBm.setDetail(nodeDetail);
+          nodeService.setDetail(nodeDetail);
         } catch (Exception e) {
           throw new WebSitesRuntimeException("WebSiteBmEJB.changeTopicsOrder()",
               SilverpeasRuntimeException.ERROR, "webSites.EX_NODE_UPDATE_FAILED", e);
@@ -730,9 +731,9 @@ public class WebSiteBmEJB implements WebSiteBm {
     try {
       // index all topics
       NodePK rootPK = new NodePK("0", "useless", componentId);
-      List<NodeDetail> tree = nodeBm.getSubTree(rootPK);
+      List<NodeDetail> tree = nodeService.getSubTree(rootPK);
       for (NodeDetail node : tree) {
-        nodeBm.createIndex(node);
+        nodeService.createIndex(node);
       }
       // index all publications
       PublicationPK pubPK = new PublicationPK("useless", "useless", componentId);

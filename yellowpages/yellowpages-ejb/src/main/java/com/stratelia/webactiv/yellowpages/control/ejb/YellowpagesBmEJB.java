@@ -30,7 +30,7 @@ import com.stratelia.webactiv.contact.model.CompleteContact;
 import com.stratelia.webactiv.contact.model.ContactDetail;
 import com.stratelia.webactiv.contact.model.ContactFatherDetail;
 import com.stratelia.webactiv.contact.model.ContactPK;
-import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.yellowpages.dao.GroupDAO;
@@ -75,8 +75,8 @@ public class YellowpagesBmEJB implements YellowpagesBm {
 
   @Inject
   private OrganizationController organizationController;
-  @EJB
-  private NodeBm nodeBm;
+  @Inject
+  private NodeService nodeService;
   @EJB
   private ContactBm contactBm;
 
@@ -117,7 +117,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
           String childPath = child.getPath();
           nbContacts = contactBm.getNbPubByFatherPath(childPK, childPath);
           // traitement des sous-rubriques et des sous-groupes
-          nbContactsBySubTopic = getRecursiveNbContact(nodeBm.getDetail(childPK));
+          nbContactsBySubTopic = getRecursiveNbContact(nodeService.getDetail(childPK));
           itSub = nbContactsBySubTopic.iterator();
           while (itSub.hasNext()) {
             nbSubContact = itSub.next().intValue();
@@ -148,7 +148,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
     Collection<NodeDetail> newPath = new ArrayList<NodeDetail>();
     List<ContactDetail> contactDetailsR = new ArrayList<ContactDetail>();
     try {
-      NodeDetail nodeDetail = nodeBm.getDetail(pk);
+      NodeDetail nodeDetail = nodeService.getDetail(pk);
       Collection<ContactDetail> contactDetails;
       if (pk.isUnclassed()) {
         ContactPK contactPK = new ContactPK("unknown", pk);
@@ -200,7 +200,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
     List<NodeDetail> result = new ArrayList<NodeDetail>();
     Connection con = getConnection();
     try {
-      List<NodeDetail> tree = nodeBm.getSubTree(new NodePK("0", instanceId));
+      List<NodeDetail> tree = nodeService.getSubTree(new NodePK("0", instanceId));
       // TODO :getting all groups linked in this component instance
       for (NodeDetail node : tree) {
         result.add(node);
@@ -265,7 +265,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
       return new NodePK("-1");
     } else {
       try {
-        return nodeBm.createNode(subTopic, father);
+        return nodeService.createNode(subTopic, father);
       } catch (Exception re) {
         throw new YellowpagesRuntimeException("YellowpagesBmEJB.addToTopic()",
             SilverpeasRuntimeException.ERROR, "yellowpages.EX_GET_NODEBM_HOME_FAILED", re);
@@ -283,7 +283,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
    */
   private boolean isSameTopicSameLevelOnCreation(NodeDetail subTopic) {
     try {
-      return nodeBm.isSameNameSameLevelOnCreation(subTopic);
+      return nodeService.isSameNameSameLevelOnCreation(subTopic);
     } catch (Exception re) {
       throw new YellowpagesRuntimeException("YellowpagesBmEJB.isSameNameSameLevelOnCreation()",
           SilverpeasRuntimeException.ERROR, "yellowpages.EX_GET_NODEBM_HOME_FAILED", re);
@@ -300,7 +300,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
    */
   private boolean isSameTopicSameLevelOnUpdate(NodeDetail subTopic) {
     try {
-      return nodeBm.isSameNameSameLevelOnUpdate(subTopic);
+      return nodeService.isSameNameSameLevelOnUpdate(subTopic);
     } catch (Exception re) {
       throw new YellowpagesRuntimeException("YellowpagesBmEJB.isSameTopicSameLevelOnUpdate()",
           SilverpeasRuntimeException.ERROR, "yellowpages.EX_GET_NODEBM_HOME_FAILED", re);
@@ -329,7 +329,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
       return new NodePK("-1");
     } else {
       try {
-        nodeBm.setDetail(topic);
+        nodeService.setDetail(topic);
       } catch (Exception re) {
         throw new YellowpagesRuntimeException("YellowpagesBmEJB.updateTopic()",
             SilverpeasRuntimeException.ERROR, "root.EX_UPDATE_TOPIC_FAILED", "topic = " + topic, re);
@@ -343,7 +343,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
 
   @Override
   public NodeDetail getSubTopicDetail(NodePK pk) {
-    return nodeBm.getDetail(pk);
+    return nodeService.getDetail(pk);
   }
 
   /**
@@ -375,7 +375,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
 
     // Delete the topic
     try {
-      nodeBm.removeNode(pkToDelete);
+      nodeService.removeNode(pkToDelete);
     } catch (Exception re) {
       throw new YellowpagesRuntimeException("YellowpagesBmEJB.deleteTopic()",
           SilverpeasRuntimeException.ERROR, "root.EX_DELETE_TOPIC_FAILED",
@@ -513,7 +513,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
     ArrayList<NodePK> nodePKsWithout12 = new ArrayList<NodePK>();
     ArrayList<ContactFatherDetail> contactDetailsR = new ArrayList<ContactFatherDetail>();
     try {
-      Collection<NodePK> nodePKs = nodeBm.getDescendantPKs(nodePK);
+      Collection<NodePK> nodePKs = nodeService.getDescendantPKs(nodePK);
       nodePKsWithout12.add(nodePK);
       for (NodePK pk : nodePKs) {
         if ((!"1".equals(pk.getId())) && (!"2".equals(pk.getId()))) {
@@ -581,7 +581,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
       if (fatherPKs != null) {
         // For each topic, get the path to it
         for (NodePK pk : fatherPKs) {
-          Collection<NodeDetail> path = nodeBm.getAnotherPath(pk);
+          Collection<NodeDetail> path = nodeService.getAnotherPath(pk);
           // add this path
           pathList.add(path);
         }
@@ -832,7 +832,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
     CompleteContact completeContact = null;
     try {
       NodePK nodePK = new NodePK(nodeId, contactPK.getInstanceId());
-      NodeDetail nodeDetail = nodeBm.getDetail(nodePK);
+      NodeDetail nodeDetail = nodeService.getDetail(nodePK);
       String modelId = nodeDetail.getModelId();
       completeContact = contactBm.getCompleteContact(contactPK, modelId);
     } catch (Exception re) {

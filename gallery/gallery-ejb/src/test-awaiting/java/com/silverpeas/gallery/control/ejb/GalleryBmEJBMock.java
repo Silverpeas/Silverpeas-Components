@@ -26,13 +26,13 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
-import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.control.NodeService;
 
 public class GalleryBmEJBMock extends GalleryBmEJB {
 
   private DataSource datasource;
 
-  public GalleryBmEJBMock(NodeBm node, DataSource datasource) {
+  public GalleryBmEJBMock(NodeService node, DataSource datasource) {
     super(node);
     this.datasource = datasource;
   }
