@@ -61,7 +61,6 @@
     <dependency>
       <groupId>org.silverpeas.core.ejb-core</groupId>
       <artifactId>notation</artifactId>
-      <classifier>client</classifier>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>

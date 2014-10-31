@@ -66,7 +66,7 @@ public class KmeliaSecurity implements ComponentSecurity {
   public static final String NODE_TYPE = "Node";
   public static final String RIGHTS_ON_TOPIC_PARAM = "rightsOnTopics";
   private PublicationBm publicationBm;
-  private NodeService nodeService = NodeService.getNodeService();
+  private NodeService nodeService = NodeService.getInstance();
   private KmeliaBm kmeliaBm;
   private OrganizationController controller = null;
   private Map<String, Boolean> cache = Collections.synchronizedMap(new HashMap<String, Boolean>());

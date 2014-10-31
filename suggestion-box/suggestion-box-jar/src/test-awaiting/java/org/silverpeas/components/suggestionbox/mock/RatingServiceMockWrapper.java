@@ -24,7 +24,7 @@
 package org.silverpeas.components.suggestionbox.mock;
 
 import com.silverpeas.SilverpeasContent;
-import com.silverpeas.notation.ejb.RatingBm;
+import com.silverpeas.notation.ejb.RatingService;
 import org.mockito.Mockito;
 import org.silverpeas.rating.ContributionRating;
 import org.silverpeas.rating.ContributionRatingPK;
@@ -35,11 +35,11 @@ import java.util.Map;
 /**
  * @author: Yohann Chastagnier
  */
-public class RatingServiceMockWrapper implements RatingBm {
+public class RatingServiceMockWrapper implements RatingService {
 
-  private final RatingBm mock = Mockito.mock(RatingBm.class);
+  private final RatingService mock = Mockito.mock(RatingService.class);
 
-  public RatingBm getMock() {
+  public RatingService getMock() {
     return mock;
   }
 

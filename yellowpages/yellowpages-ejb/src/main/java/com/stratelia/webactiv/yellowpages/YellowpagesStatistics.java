@@ -49,7 +49,7 @@ import java.util.List;
 public class YellowpagesStatistics implements ComponentStatisticsInterface {
 
   private YellowpagesBm kscEjb = null;
-  private NodeService currentNodeService = NodeService.getNodeService();
+  private NodeService currentNodeService = NodeService.getInstance();
 
   /**
    * Method declaration
