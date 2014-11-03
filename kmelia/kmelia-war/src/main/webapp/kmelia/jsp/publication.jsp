@@ -451,7 +451,7 @@
               componentId: "<%=contextComponentId%>",
               type       : "Publication",
               id         : "<%=id%>",
-              name   : "<%=pubDetail.getName(language)%>"
+              name   : "<%=EncodeHelper.javaStringToJsString(pubDetail.getName(language))%>"
           };
           createSharingTicketPopup(sharingObject);
         }
