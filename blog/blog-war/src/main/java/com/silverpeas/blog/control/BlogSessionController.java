@@ -30,7 +30,7 @@ import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceProvider;
-import com.silverpeas.myLinks.ejb.MyLinksBm;
+import com.silverpeas.myLinks.control.MyLinksBm;
 import com.silverpeas.myLinks.model.LinkDetail;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
