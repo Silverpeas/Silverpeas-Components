@@ -48,7 +48,6 @@ import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -77,7 +76,7 @@ public class YellowpagesBmEJB implements YellowpagesBm {
   private OrganizationController organizationController;
   @Inject
   private NodeService nodeService;
-  @EJB
+  @Inject
   private ContactBm contactBm;
 
   public YellowpagesBmEJB() {
