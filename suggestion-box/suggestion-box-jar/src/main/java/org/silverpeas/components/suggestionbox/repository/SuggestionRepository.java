@@ -25,18 +25,18 @@ package org.silverpeas.components.suggestionbox.repository;
 
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.comment.service.CommentService;
-import com.silverpeas.notation.ejb.RatingServiceProvider;
-import org.silverpeas.util.ForeignPK;
+import com.silverpeas.notation.control.RatingService;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
-import org.silverpeas.persistence.repository.SilverpeasEntityRepository;
 import org.silverpeas.persistence.repository.OperationContext;
+import org.silverpeas.persistence.repository.SilverpeasEntityRepository;
 import org.silverpeas.persistence.repository.jpa.NamedParameters;
 import org.silverpeas.rating.ContributionRating;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.util.ForeignPK;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import javax.inject.Inject;
@@ -160,14 +160,14 @@ public class SuggestionRepository implements
       withContent(suggestion);
     }
     withCommentCount(suggestion);
-    suggestion.setRating(RatingServiceProvider.getRatingService().getRating(suggestion));
+    suggestion.setRating(RatingService.getInstance().getRating(suggestion));
     return suggestion;
   }
 
   private List<Suggestion> decorate(final List<Suggestion> suggestions,
       final SuggestionCriteria criteria) {
-    Map<String, ContributionRating> suggestionRatings = RatingServiceProvider.getRatingService().getRatings(
-        suggestions.toArray(new SilverpeasContent[suggestions.size()]));
+    Map<String, ContributionRating> suggestionRatings = RatingService.getInstance()
+        .getRatings(suggestions.toArray(new SilverpeasContent[suggestions.size()]));
     for (Suggestion suggestion : suggestions) {
       if (criteria.mustLoadWysiwygContent()) {
         withContent(suggestion);

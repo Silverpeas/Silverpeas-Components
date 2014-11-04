@@ -24,7 +24,7 @@
 package org.silverpeas.components.suggestionbox.model;
 
 import com.silverpeas.comment.service.CommentService;
-import com.silverpeas.notation.ejb.RatingService;
+import com.silverpeas.notation.control.RatingService;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.stratelia.webactiv.beans.admin.UserDetail;

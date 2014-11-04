@@ -20,7 +20,7 @@
  */
 package com.stratelia.webactiv.forums.forumsManager.ejb;
 
-import com.silverpeas.notation.ejb.RatingService;
+import com.silverpeas.notation.control.RatingService;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.constant.SubscriberType;
