@@ -20,22 +20,19 @@
  */
 package com.stratelia.webactiv.quizz;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.ejb.EJBException;
-
 import com.stratelia.silverpeas.contentManager.ContentInterface;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
-import com.stratelia.webactiv.questionContainer.control.QuestionContainerBm;
+import com.stratelia.webactiv.questionContainer.control.QuestionContainerService;
 import com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader;
 import com.stratelia.webactiv.questionContainer.model.QuestionContainerPK;
+
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * The kmelia implementation of ContentInterface.
@@ -43,12 +40,12 @@ import com.stratelia.webactiv.questionContainer.model.QuestionContainerPK;
 public class QuizzContentManager implements ContentInterface {
 
   private ContentManager contentManager = null;
-  private QuestionContainerBm questionContainerBm = null;
+  @Inject
+  private QuestionContainerService questionContainerService;
 
   @Override
   public List<SilverContentInterface> getSilverContentById(List<Integer> ids, String peasId,
-      String userId,
-      List<String> userRoles) {
+      String userId, List<String> userRoles) {
     if (getContentManager() == null) {
       return new ArrayList<SilverContentInterface>();
     }
@@ -58,7 +55,6 @@ public class QuizzContentManager implements ContentInterface {
 
   /**
    * return a list of publicationPK according to a list of silverContentId
-   *
    * @param idList a list of silverContentId
    * @param peasId the id of the instance
    * @return a list of publicationPK
@@ -86,13 +82,12 @@ public class QuizzContentManager implements ContentInterface {
 
   /**
    * return a list of silverContent according to a list of publicationPK
-   *
    * @param ids a list of publicationPK
    * @return a list of publicationDetail
    */
   private List<SilverContentInterface> getHeaders(List<QuestionContainerPK> ids) {
     ArrayList<QuestionContainerHeader> questionHeaders =
-        new ArrayList<QuestionContainerHeader>(getQuestionBm().getQuestionContainerHeaders(ids));    
+        new ArrayList<QuestionContainerHeader>(getQuestionBm().getQuestionContainerHeaders(ids));
     List headers = new ArrayList(questionHeaders.size());
     for (QuestionContainerHeader questionContainerHeader : questionHeaders) {
       questionContainerHeader.setIconUrl("quizzSmall.gif");
@@ -112,15 +107,7 @@ public class QuizzContentManager implements ContentInterface {
     return contentManager;
   }
 
-  private QuestionContainerBm getQuestionBm() {
-    if (questionContainerBm == null) {
-      try {
-        this.questionContainerBm = EJBUtilitaire.getEJBObjectRef(
-            JNDINames.QUESTIONCONTAINERBM_EJBHOME, QuestionContainerBm.class);
-      } catch (Exception e) {
-        throw new EJBException(e.getMessage(), e);
-      }
-    }
-    return questionContainerBm;
+  private QuestionContainerService getQuestionBm() {
+    return questionContainerService;
   }
 }

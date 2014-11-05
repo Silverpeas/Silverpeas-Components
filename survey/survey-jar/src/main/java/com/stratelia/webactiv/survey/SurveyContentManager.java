@@ -20,21 +20,20 @@
  */
 package com.stratelia.webactiv.survey;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
 import com.stratelia.silverpeas.contentManager.ContentInterface;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
-import com.stratelia.webactiv.questionContainer.control.QuestionContainerBm;
+import com.stratelia.webactiv.questionContainer.control.QuestionContainerService;
 import com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader;
 import com.stratelia.webactiv.questionContainer.model.QuestionContainerPK;
+
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * The survey implementation of ContentInterface
@@ -42,7 +41,8 @@ import com.stratelia.webactiv.questionContainer.model.QuestionContainerPK;
 public class SurveyContentManager implements ContentInterface {
 
   private ContentManager contentManager = null;
-  private QuestionContainerBm currentQuestionContainerBm = null;
+  @Inject
+  private QuestionContainerService currentQuestionContainerService;
 
   /**
    * Find all the SilverContent with the given list of SilverContentId
@@ -124,16 +124,11 @@ public class SurveyContentManager implements ContentInterface {
     return contentManager;
   }
 
-  private QuestionContainerBm getQuestionContainerBm() {
-    if (currentQuestionContainerBm == null) {
-      try {
-        currentQuestionContainerBm = EJBUtilitaire.getEJBObjectRef(
-            JNDINames.QUESTIONCONTAINERBM_EJBHOME, QuestionContainerBm.class);
-      } catch (Exception e) {
-        SilverTrace.fatal("survey", "SurveyContentManager.getQuestionContainerBm()",
-            "root.EX_UNKNOWN_CONTENT_MANAGER", e);
-      }
+  private QuestionContainerService getQuestionContainerBm() {
+    if (currentQuestionContainerService == null) {
+      SilverTrace.fatal("survey", "SurveyContentManager.getQuestionContainerBm()",
+          "cannot inject question container BM");
     }
-    return currentQuestionContainerBm;
+    return currentQuestionContainerService;
   }
 }

@@ -32,27 +32,25 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.answer.model.Answer;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.question.model.Question;
-import com.stratelia.webactiv.questionContainer.control.QuestionContainerBm;
+import com.stratelia.webactiv.questionContainer.control.QuestionContainerService;
 import com.stratelia.webactiv.questionContainer.model.QuestionContainerDetail;
 import com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader;
 import com.stratelia.webactiv.questionContainer.model.QuestionContainerPK;
 import com.stratelia.webactiv.questionContainer.model.QuestionContainerSelection;
 import com.stratelia.webactiv.questionResult.model.QuestionResult;
 import com.stratelia.webactiv.quizz.QuizzException;
-import com.stratelia.webactiv.score.control.ScoreBm;
+import com.stratelia.webactiv.score.control.ScoreService;
 import com.stratelia.webactiv.score.model.ScoreDetail;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.clipboard.ClipboardException;
 import org.silverpeas.util.clipboard.ClipboardSelection;
 
-import javax.ejb.EJBException;
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.bind.JAXBException;
@@ -69,9 +67,10 @@ import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfCon
 
 public final class QuizzSessionController extends AbstractComponentSessionController {
 
-  private QuestionContainerBm questionContainerBm = null;
+  @Inject
+  private QuestionContainerService questionContainerService;
   private ResourceLocator settings = null;
-  private ScoreBm scoreBm = null;
+  private ScoreService scoreService = null;
   private int nbTopScores = 0;
   private boolean isAllowedTopScores = false;
   private List<PdcPosition> positions = null;
@@ -82,7 +81,6 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
   public QuizzSessionController(MainSessionController mainSessionCtrl,
       ComponentContext context) {
     super(mainSessionCtrl, context, "org.silverpeas.quizz.multilang.quizz");
-    setQuestionContainerBm();
     String nbTop = getSettings().getString("nbTopScores");
     String isAllowedTop = getSettings().getString("isAllowedTopScores");
     setNbTopScores(Integer.parseInt(nbTop));
@@ -105,19 +103,8 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
     this.isAllowedTopScores = isAllowedTopScores;
   }
 
-  public QuestionContainerBm getQuestionContainerBm() {
-    return questionContainerBm;
-  }
-
-  private void setQuestionContainerBm() {
-    if (questionContainerBm == null) {
-      try {
-        this.questionContainerBm = EJBUtilitaire.getEJBObjectRef(
-            JNDINames.QUESTIONCONTAINERBM_EJBHOME, QuestionContainerBm.class);
-      } catch (Exception e) {
-        throw new EJBException(e.getMessage(), e);
-      }
-    }
+  public QuestionContainerService getQuestionContainerService() {
+    return questionContainerService;
   }
 
   /**
@@ -156,7 +143,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
       QuestionContainerPK questionContainerPK = new QuestionContainerPK(null,
           getSpaceId(), getComponentId());
 
-      return questionContainerBm.getOpenedQuestionContainersAndUserScores(
+      return questionContainerService.getOpenedQuestionContainersAndUserScores(
           questionContainerPK, getUserId());
     } catch (Exception e) {
       throw new QuizzException("QuizzSessionController.getUserQuizzList",
@@ -179,7 +166,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
       QuestionContainerPK questionContainerPK = new QuestionContainerPK(null,
           getSpaceId(), getComponentId());
 
-      return questionContainerBm
+      return questionContainerService
           .getNotClosedQuestionContainers(questionContainerPK);
     } catch (Exception e) {
       throw new QuizzException("QuizzSessionController.getUserQuizzList",
@@ -204,7 +191,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
       QuestionContainerPK questionContainerPK = new QuestionContainerPK(id,
           getSpaceId(), getComponentId());
 
-      return questionContainerBm.getQuestionContainer(questionContainerPK,
+      return questionContainerService.getQuestionContainer(questionContainerPK,
           getUserId());
     } catch (Exception e) {
       throw new QuizzException("QuizzSessionController.getUserQuizzList",
@@ -222,7 +209,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
   public void createQuizz(QuestionContainerDetail quizzDetail) throws QuizzException {
     QuestionContainerPK qcPK = new QuestionContainerPK(null, getSpaceId(), getComponentId());
     try {
-      qcPK = questionContainerBm.createQuestionContainer(qcPK, quizzDetail, getUserId());
+      qcPK = questionContainerService.createQuestionContainer(qcPK, quizzDetail, getUserId());
     } catch (Exception e) {
       throw new QuizzException("QuizzSessionController.createQuizz",
           QuizzException.ERROR, "Quizz.EX_PROBLEM_TO_CREATE", e);
@@ -240,7 +227,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
       throws QuizzException {
     QuestionContainerPK qcPK = new QuestionContainerPK(null, null, componentId);
     try {
-      qcPK = questionContainerBm.createQuestionContainer(qcPK, quizzDetail, getUserId());
+      qcPK = questionContainerService.createQuestionContainer(qcPK, quizzDetail, getUserId());
     } catch (Exception e) {
       throw new QuizzException("QuizzSessionController.createQuizz", QuizzException.ERROR,
           "Quizz.EX_PROBLEM_TO_CREATE", e);
@@ -283,7 +270,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
       throws QuizzException {
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(), getComponentId());
-      questionContainerBm.recordReplyToQuestionContainerByUser(qcPK, getUserId(), reply);
+      questionContainerService.recordReplyToQuestionContainerByUser(qcPK, getUserId(), reply);
     } catch (Exception e) {
       throw new QuizzException("QuizzSessionController.recordReply", QuizzException.ERROR,
           "Quizz.EX_RECORD_REPLY_FAILED", e);
@@ -303,7 +290,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
   public Collection<QuestionResult> getSuggestions(String quizzId) throws QuizzException {
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(), getComponentId());
-      return questionContainerBm.getSuggestions(qcPK);
+      return questionContainerService.getSuggestions(qcPK);
     } catch (Exception e) {
       throw new QuizzException("QuizzSessionController.getSuggestions", QuizzException.ERROR,
           "Quizz.EX_PROBLEM_TO_RETURN_SUGGESTION", e);
@@ -322,8 +309,8 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
   public void closeQuizz(String quizzId) throws QuizzException {
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(), getComponentId());
-      questionContainerBm.deleteIndex(qcPK);
-      questionContainerBm.closeQuestionContainer(qcPK);
+      questionContainerService.deleteIndex(qcPK);
+      questionContainerService.closeQuestionContainer(qcPK);
     } catch (Exception e) {
       throw new QuizzException("QuizzSessionController.closeQuizz", QuizzException.ERROR,
           "Quizz.EX_PROBLEM_TO_CLOSE_QUIZZ", e);
@@ -343,7 +330,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
   public int getNbVoters(String quizzId) throws QuizzException {
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(), getComponentId());
-      return questionContainerBm.getNbVotersByQuestionContainer(qcPK);
+      return questionContainerService.getNbVotersByQuestionContainer(qcPK);
     } catch (Exception e) {
       throw new QuizzException("QuizzSessionController.getNbVoters", QuizzException.ERROR,
           "Quizz.EX_PROBLEM_OBTAIN_NB_VOTERS", e);
@@ -363,7 +350,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
   public float getAveragePoints(String quizzId) throws QuizzException {
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(), getComponentId());
-      return questionContainerBm.getAverageScoreByFatherId(qcPK);
+      return questionContainerService.getAverageScoreByFatherId(qcPK);
     } catch (Exception e) {
       throw new QuizzException("QuizzSessionController.getAveragePoints", QuizzException.ERROR,
           "Quizz.EX_PROBLEM_OBTAIN_AVERAGE", e);
@@ -382,7 +369,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
   public Collection<QuestionContainerHeader> getAdminResults() throws QuizzException {
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK("unknown", getSpaceId(), getComponentId());
-      return questionContainerBm.getQuestionContainersWithScores(qcPK);
+      return questionContainerService.getQuestionContainersWithScores(qcPK);
     } catch (Exception e) {
       throw new QuizzException("QuizzSessionController.getAdminResults", QuizzException.ERROR,
           "Quizz.EX_PROBLEM_OBTAIN_RESULT", e);
@@ -401,7 +388,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
   public Collection<QuestionContainerHeader> getUserResults() throws QuizzException {
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK("unknown", getSpaceId(), getComponentId());
-      return questionContainerBm.getQuestionContainersWithUserScores(qcPK, getUserId());
+      return questionContainerService.getQuestionContainersWithUserScores(qcPK, getUserId());
     } catch (Exception e) {
       throw new QuizzException("QuizzSessionController.getUserResults", QuizzException.ERROR,
           "Quizz.EX_PROBLEM_OBTAIN_RESULT", e);
@@ -421,7 +408,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
   public Collection<ScoreDetail> getUserScoresByFatherId(String quizzId) throws QuizzException {
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(), getComponentId());
-      return questionContainerBm.getUserScoresByFatherId(qcPK, getUserId());
+      return questionContainerService.getUserScoresByFatherId(qcPK, getUserId());
     } catch (Exception e) {
       throw new QuizzException("QuizzSessionController.getUserScoresByFatherId",
           QuizzException.ERROR, "Quizz.EX_PROBLEM_TO_OBTAIN_SCORE", e);
@@ -441,7 +428,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
   public Collection<ScoreDetail> getUserPalmares(String quizzId) throws QuizzException {
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(), getComponentId());
-      return questionContainerBm.getBestScoresByFatherId(qcPK, nbTopScores);
+      return questionContainerService.getBestScoresByFatherId(qcPK, nbTopScores);
     } catch (Exception e) {
       throw new QuizzException("QuizzSessionController.getUserPalmares", QuizzException.ERROR,
           "Quizz.EX_PROBLEM_OBTAIN_USERPALMARES", e);
@@ -462,7 +449,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
     Collection<ScoreDetail> scores = null;
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(), getComponentId());
-      scores = questionContainerBm.getScoresByFatherId(qcPK);
+      scores = questionContainerService.getScoresByFatherId(qcPK);
     } catch (Exception e) {
       throw new QuizzException("QuizzSessionController.getAdminPalmares", QuizzException.ERROR,
           "Quizz.EX_PROBLEM_OBTAIN_PALMARES", e);
@@ -488,7 +475,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
     QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(), getComponentId());
     try {
       questionContainerDetail =
-          questionContainerBm.getQuestionContainerByParticipationId(qcPK, userId, participationId);
+          questionContainerService.getQuestionContainerByParticipationId(qcPK, userId, participationId);
     } catch (Exception e) {
       throw new QuizzException("QuizzSessionController.getQuestionContainerByParticipationId",
           QuizzException.ERROR, "Quizz.EX_PROBLEM_TO_OBTAIN_QUIZZ", e);
@@ -513,7 +500,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
     QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(), getComponentId());
     try {
       questionContainerDetail =
-          questionContainerBm.getQuestionContainerByParticipationId(qcPK, getUserId(),
+          questionContainerService.getQuestionContainerByParticipationId(qcPK, getUserId(),
           participationId);
     } catch (Exception e) {
       throw new QuizzException(
@@ -538,7 +525,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
     QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(), getComponentId());
     int nbPart = 0;
     try {
-      nbPart = questionContainerBm.getUserNbParticipationsByFatherId(qcPK, userId);
+      nbPart = questionContainerService.getUserNbParticipationsByFatherId(qcPK, userId);
     } catch (Exception e) {
       throw new QuizzException("QuizzSessionController.getUserNbParticipationsByFatherId",
           QuizzException.ERROR, "Quizz.EX_PROBLEM_OBTAIN_NB_VOTERS", e);
@@ -564,7 +551,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
     ScoreDetail scoreDetail = null;
     try {
       scoreDetail =
-          questionContainerBm.getUserScoreByFatherIdAndParticipationId(qcPK, userId,
+          questionContainerService.getUserScoreByFatherIdAndParticipationId(qcPK, userId,
           participationId);
     } catch (Exception e) {
       throw new QuizzException("QuizzSessionController.getUserScoreByFatherIdAndParticipationId",
@@ -590,7 +577,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
     ScoreDetail scoreDetail = null;
     try {
       scoreDetail =
-          questionContainerBm.getUserScoreByFatherIdAndParticipationId(qcPK, getUserId(),
+          questionContainerService.getUserScoreByFatherIdAndParticipationId(qcPK, getUserId(),
           participationId);
     } catch (Exception e) {
       throw new QuizzException(
@@ -613,7 +600,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
   public void updateScore(ScoreDetail scoreDetail) throws QuizzException {
     QuestionContainerPK qcPK = new QuestionContainerPK("", getSpaceId(), getComponentId());
     try {
-      questionContainerBm.updateScore(qcPK, scoreDetail);
+      questionContainerService.updateScore(qcPK, scoreDetail);
     } catch (Exception e) {
       throw new QuizzException("QuizzSessionController.updateScore", QuizzException.ERROR,
           "Quizz.EX_PROBLEM_TO_UPDATE_SCORE", e);
@@ -635,7 +622,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(), getComponentId());
       quizzHeader.setPK(qcPK);
-      questionContainerBm.updateQuestionContainerHeader(quizzHeader);
+      questionContainerService.updateQuestionContainerHeader(quizzHeader);
     } catch (Exception e) {
       throw new QuizzException("QuizzSessionController.updateQuizzHeader", QuizzException.ERROR,
           "Quizz.EX_PROBLEM_TO_UPDATE_QUIZZHEADER", e);
@@ -656,7 +643,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
       throws QuizzException {
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(), getComponentId());
-      questionContainerBm.updateQuestions(qcPK, questions);
+      questionContainerService.updateQuestions(qcPK, questions);
     } catch (Exception e) {
       throw new QuizzException("QuizzSessionController.updateQuestions", QuizzException.ERROR,
           "Quizz.EX_PROBLEM_TO_UPDATE_QUESTIONS", e);
@@ -775,7 +762,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
     int silverObjectId = -1;
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(objectId, getSpaceId(), getComponentId());
-      silverObjectId = questionContainerBm.getSilverObjectId(qcPK);
+      silverObjectId = questionContainerService.getSilverObjectId(qcPK);
     } catch (Exception e) {
       SilverTrace.error("quizz", "QuizzSessionController.getSilverObjectId()",
           "root.EX_CANT_GET_LANGUAGE_RESOURCE", "objectId=" + objectId, e);
@@ -787,7 +774,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
     QuestionContainerDetail quizz;
     try {
       quizz = getQuizzDetail(quizzId);
-      return questionContainerBm.exportCSV(quizz, true);
+      return questionContainerService.exportCSV(quizz, true);
     } catch (Exception e) {
       SilverTrace.error("quizzSession", "QuizzSessionController.exportQuizzCSV", "quizzId="
           + quizzId, e);
@@ -803,11 +790,11 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
 
   @Override
   public void close() {
-    if (questionContainerBm != null) {
-      questionContainerBm = null;
+    if (questionContainerService != null) {
+      questionContainerService = null;
     }
-    if (scoreBm != null) {
-      scoreBm = null;
+    if (scoreService != null) {
+      scoreService = null;
     }
   }
 

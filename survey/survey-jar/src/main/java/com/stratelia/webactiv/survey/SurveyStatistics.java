@@ -20,20 +20,17 @@
  */
 package com.stratelia.webactiv.survey;
 
+import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.questionContainer.control.QuestionContainerService;
+import com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader;
+import com.stratelia.webactiv.questionContainer.model.QuestionContainerPK;
+
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import javax.ejb.EJBException;
-
-import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
-import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
-
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
-import com.stratelia.webactiv.questionContainer.control.QuestionContainerBm;
-import com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader;
-import com.stratelia.webactiv.questionContainer.model.QuestionContainerPK;
 
 /**
  * Class declaration
@@ -42,7 +39,8 @@ import com.stratelia.webactiv.questionContainer.model.QuestionContainerPK;
  */
 public class SurveyStatistics implements ComponentStatisticsInterface {
 
-  private QuestionContainerBm questionContainerBm = null;
+  @Inject
+  private QuestionContainerService questionContainerService;
 
   /**
    * Method declaration
@@ -82,16 +80,12 @@ public class SurveyStatistics implements ComponentStatisticsInterface {
    * @return
    * @see
    */
-  private QuestionContainerBm getQuestionContainerBm() {
-    if (questionContainerBm == null) {
-      try {
-        questionContainerBm = EJBUtilitaire.getEJBObjectRef(JNDINames.QUESTIONCONTAINERBM_EJBHOME,
-            QuestionContainerBm.class);
-      } catch (Exception e) {
-        throw new EJBException(e);
-      }
+  private QuestionContainerService getQuestionContainerService() {
+    if (questionContainerService == null) {
+      SilverTrace.fatal("survey", "SurveyStatistics.getQuestionContainerService()",
+          "cannot inject question container BM");
     }
-    return questionContainerBm;
+    return questionContainerService;
   }
 
   /**
@@ -103,17 +97,17 @@ public class SurveyStatistics implements ComponentStatisticsInterface {
    * @see
    */
   public Collection getOpenedSurveys(String spaceId, String componentId) {
-    return getQuestionContainerBm().getOpenedQuestionContainers(new QuestionContainerPK(null,
+    return getQuestionContainerService().getOpenedQuestionContainers(new QuestionContainerPK(null,
         spaceId, componentId));
   }
 
   public Collection<QuestionContainerHeader> getClosedSurveys(String spaceId, String componentId) {
-    return getQuestionContainerBm().getClosedQuestionContainers(new QuestionContainerPK(
+    return getQuestionContainerService().getClosedQuestionContainers(new QuestionContainerPK(
         null, spaceId, componentId));
   }
 
   public Collection<QuestionContainerHeader> getInWaitSurveys(String spaceId, String componentId) {
-    return getQuestionContainerBm().getInWaitQuestionContainers(new QuestionContainerPK(null,
+    return getQuestionContainerService().getInWaitQuestionContainers(new QuestionContainerPK(null,
         spaceId, componentId));
   }
 }

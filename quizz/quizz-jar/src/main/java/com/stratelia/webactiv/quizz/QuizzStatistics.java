@@ -20,20 +20,16 @@
  */
 package com.stratelia.webactiv.quizz;
 
+import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
+import com.stratelia.webactiv.questionContainer.control.QuestionContainerService;
+import com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader;
+import com.stratelia.webactiv.questionContainer.model.QuestionContainerPK;
+
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import javax.ejb.EJBException;
-
-import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
-import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
-
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
-import com.stratelia.webactiv.questionContainer.control.QuestionContainerBm;
-import com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader;
-import com.stratelia.webactiv.questionContainer.model.QuestionContainerPK;
 
 /**
  * Class declaration
@@ -42,7 +38,8 @@ import com.stratelia.webactiv.questionContainer.model.QuestionContainerPK;
  */
 public class QuizzStatistics implements ComponentStatisticsInterface {
 
-  private QuestionContainerBm questionContainerBm = null;
+  @Inject
+  private QuestionContainerService questionContainerService;
 
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
@@ -60,21 +57,13 @@ public class QuizzStatistics implements ComponentStatisticsInterface {
     return myArrayList;
   }
 
-  private QuestionContainerBm getQuestionContainerBm() {
-    if (questionContainerBm == null) {
-      try {
-        questionContainerBm = EJBUtilitaire.getEJBObjectRef(JNDINames.QUESTIONCONTAINERBM_EJBHOME,
-            QuestionContainerBm.class);
-      } catch (Exception e) {
-        throw new EJBException(e);
-      }
-    }
-    return questionContainerBm;
+  private QuestionContainerService getQuestionContainerService() {
+    return questionContainerService;
   }
 
   public Collection<QuestionContainerHeader> getQuizz(String spaceId, String componentId)
       throws Exception {
-    return getQuestionContainerBm().getNotClosedQuestionContainers(
+    return getQuestionContainerService().getNotClosedQuestionContainers(
         new QuestionContainerPK(null, spaceId, componentId));
   }
 }

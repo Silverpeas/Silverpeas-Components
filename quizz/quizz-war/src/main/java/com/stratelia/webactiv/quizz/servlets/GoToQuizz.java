@@ -20,20 +20,16 @@
  */
 package com.stratelia.webactiv.quizz.servlets;
 
-import java.net.URLEncoder;
+import com.silverpeas.peasUtil.GoTo;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.questionContainer.control.QuestionContainerService;
+import com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader;
+import com.stratelia.webactiv.questionContainer.model.QuestionContainerPK;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.silverpeas.peasUtil.GoTo;
-
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
-import com.stratelia.webactiv.questionContainer.control.QuestionContainerBm;
-import com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader;
-import com.stratelia.webactiv.questionContainer.model.QuestionContainerPK;
+import java.net.URLEncoder;
 
 public class GoToQuizz extends GoTo {
 
@@ -60,14 +56,7 @@ public class GoToQuizz extends GoTo {
     return null;
   }
 
-  private QuestionContainerBm getQuestionContainerBm() {
-    QuestionContainerBm currentQuestionContainerBm = null;
-    try {
-      currentQuestionContainerBm = EJBUtilitaire.getEJBObjectRef(
-          JNDINames.QUESTIONCONTAINERBM_EJBHOME, QuestionContainerBm.class);
-    } catch (Exception e) {
-      displayError(null);
-    }
-    return currentQuestionContainerBm;
+  private QuestionContainerService getQuestionContainerBm() {
+    return QuestionContainerService.getInstance();
   }
 }
