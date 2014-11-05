@@ -26,7 +26,7 @@ import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.constant.SubscriberType;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.silverpeas.subscribe.util.SubscriptionUtil;
-import com.silverpeas.tagcloud.ejb.TagCloudBm;
+import com.silverpeas.tagcloud.control.TagCloudService;
 import com.silverpeas.tagcloud.model.TagCloud;
 import com.silverpeas.tagcloud.model.TagCloudPK;
 import com.silverpeas.tagcloud.model.TagCloudUtil;
@@ -60,7 +60,6 @@ import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -84,9 +83,9 @@ import static org.silverpeas.util.i18n.I18NHelper.defaultLanguage;
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class ForumsBMEJB implements ForumsBM {
 
-  @EJB
-  private TagCloudBm tagcloud;
-  @EJB
+  @Inject
+  private TagCloudService tagcloud;
+  @Inject
   private RatingService notation;
   @Inject
   private NodeService node;
