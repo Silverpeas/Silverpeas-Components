@@ -41,7 +41,6 @@
     <dependency>
       <groupId>org.silverpeas.core.ejb-core</groupId>
       <artifactId>statistic</artifactId>
-      <classifier>client</classifier>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>

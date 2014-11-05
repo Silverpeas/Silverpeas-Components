@@ -46,18 +46,18 @@ import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.control.PublicationBm;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
-import com.stratelia.webactiv.statistic.control.StatisticBm;
+import com.stratelia.webactiv.statistic.control.StatisticService;
 import com.stratelia.webactiv.statistic.model.StatisticRuntimeException;
 
 import static com.stratelia.webactiv.beans.admin.AdministrationServiceProvider.getAdminService;
 
 @Named("statisticService")
-public class StatisticServiceImpl implements StatisticService {
+public class StatisticServiceImpl implements com.silverpeas.kmelia.stats.StatisticService {
 
   private PublicationBm publicationBm;
   @Inject
   private NodeService nodeService;
-  private StatisticBm statisticBm;
+  private StatisticService statisticService;
 
   /*
    * @Inject private KmeliaBm kmeliaBm;
@@ -94,7 +94,7 @@ public class StatisticServiceImpl implements StatisticService {
         List<String> userIds = getListUserIdsFromGroup(groupId);
         try {
           // Retrieve the number of publication
-          nbPubli = getStatisticBm().getCountByPeriodAndUser(publiPKs, "Publication",
+          nbPubli = getStatisticService().getCountByPeriodAndUser(publiPKs, "Publication",
               statFilter.getStartDate(), statFilter.getEndDate(), userIds);
 
         } catch (Exception e) {
@@ -104,7 +104,7 @@ public class StatisticServiceImpl implements StatisticService {
 
       } else {
         try {
-          nbPubli = getStatisticBm().getCountByPeriod(publiPKs, 1, "Publication",
+          nbPubli = getStatisticService().getCountByPeriod(publiPKs, 1, "Publication",
               statFilter.getStartDate(), statFilter.getEndDate());
         } catch (Exception e) {
           SilverTrace.error("kmelia", getClass().getSimpleName() + ".getNbConsultedPublication",
@@ -256,17 +256,17 @@ public class StatisticServiceImpl implements StatisticService {
     return nodeService;
   }
 
-  private StatisticBm getStatisticBm() {
-    if (statisticBm == null) {
+  private StatisticService getStatisticService() {
+    if (statisticService == null) {
       try {
-        statisticBm = EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME,
-            StatisticBm.class);
+        statisticService = EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME,
+            StatisticService.class);
       } catch (Exception e) {
-        throw new StatisticRuntimeException("PdcSearchSessionController.getStatisticBm()",
+        throw new StatisticRuntimeException("PdcSearchSessionController.getStatisticService()",
             SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
       }
     }
-    return statisticBm;
+    return statisticService;
   }
 
   @Override
@@ -332,7 +332,7 @@ public class StatisticServiceImpl implements StatisticService {
       // Retrieve the list of user identifiers
       List<String> userIds = getListUserIdsFromGroup(statFilter.getGroupId());
       try {
-        return getStatisticBm().getDistinctCountByPeriodUser(publiPKs, 1, "Publication",
+        return getStatisticService().getDistinctCountByPeriodUser(publiPKs, 1, "Publication",
             statFilter.getStartDate(), statFilter.getEndDate(), userIds);
       } catch (Exception e) {
         SilverTrace.error("kmelia", getClass().getSimpleName() + ".getNumberOfDifferentConsu...",
@@ -340,7 +340,7 @@ public class StatisticServiceImpl implements StatisticService {
       }
     } else {
       try {
-        return getStatisticBm().getDistinctCountByPeriod(publiPKs, 1, "Publication",
+        return getStatisticService().getDistinctCountByPeriod(publiPKs, 1, "Publication",
             statFilter.getStartDate(), statFilter.getEndDate());
       } catch (Exception e) {
         SilverTrace.error("kmelia", getClass().getSimpleName() + ".getNumberOfDifferentConsu...",

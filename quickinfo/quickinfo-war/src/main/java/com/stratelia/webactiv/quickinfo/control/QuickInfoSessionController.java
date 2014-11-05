@@ -54,7 +54,7 @@ import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.JNDINames;
 import com.stratelia.webactiv.publication.control.PublicationBm;
-import com.stratelia.webactiv.statistic.control.StatisticBm;
+import com.stratelia.webactiv.statistic.control.StatisticService;
 
 /**
  * @author squere
@@ -269,8 +269,8 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     return pdcPositions;
   }
 
-  private StatisticBm getStatisticService() {
-    return EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticBm.class);
+  private StatisticService getStatisticService() {
+    return EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticService.class);
   }
 
 }

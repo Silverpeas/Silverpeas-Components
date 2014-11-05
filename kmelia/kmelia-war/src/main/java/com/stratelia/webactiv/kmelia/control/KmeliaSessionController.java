@@ -107,7 +107,7 @@ import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import com.stratelia.webactiv.publication.model.PublicationSelection;
 import com.stratelia.webactiv.publication.model.ValidationStep;
-import com.stratelia.webactiv.statistic.control.StatisticBm;
+import com.stratelia.webactiv.statistic.control.StatisticService;
 import com.stratelia.webactiv.statistic.model.HistoryObjectDetail;
 import com.stratelia.webactiv.statistic.model.StatisticRuntimeException;
 import com.thoughtworks.xstream.XStream;
@@ -167,7 +167,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   /* EJBs used by sessionController */
   private CommentService commentService = null;
   private PdcBm pdcBm = null;
-  private StatisticBm statisticBm = null;
+  private StatisticService statisticService = null;
   private NotificationManager notificationManager = null;
   // Session objects
   private TopicDetail sessionTopic = null;
@@ -298,17 +298,17 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     }
   }
 
-  public StatisticBm getStatisticBm() {
-    if (statisticBm == null) {
+  public StatisticService getStatisticService() {
+    if (statisticService == null) {
       try {
-        statisticBm = EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME,
-            StatisticBm.class);
+        statisticService = EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME,
+            StatisticService.class);
       } catch (Exception e) {
-        throw new StatisticRuntimeException("KmeliaSessionController.getStatisticBm()",
+        throw new StatisticRuntimeException("KmeliaSessionController.getStatisticService()",
             SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
       }
     }
-    return statisticBm;
+    return statisticService;
   }
 
   public ResourceLocator getPublicationSettings() {
@@ -1183,10 +1183,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     if (getSessionPublication() != null) {
       if (!pubId.equals(getSessionPublication().getId())) {
         // memorize the reading of the publication by the user
-        getStatisticBm().addStat(getUserId(), foreignPK, 1, "Publication");
+        getStatisticService().addStat(getUserId(), foreignPK, 1, "Publication");
       }
     } else {
-      getStatisticBm().addStat(getUserId(), foreignPK, 1, "Publication");
+      getStatisticService().addStat(getUserId(), foreignPK, 1, "Publication");
     }
 
     if (processIndex) {

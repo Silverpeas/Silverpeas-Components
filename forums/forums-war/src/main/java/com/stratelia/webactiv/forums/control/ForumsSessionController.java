@@ -56,7 +56,7 @@ import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.control.PublicationBm;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
-import com.stratelia.webactiv.statistic.control.StatisticBm;
+import com.stratelia.webactiv.statistic.control.StatisticService;
 import com.stratelia.webactiv.statistic.model.StatisticRuntimeException;
 import org.silverpeas.components.forum.notification.ForumsForumSubscriptionUserNotification;
 import org.silverpeas.components.forum.notification.ForumsMessagePendingValidationUserNotification;
@@ -108,7 +108,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   public String typeSubjects = "Subjects";
   private ResourceLocator settings = null;
   private PublicationBm publicationBm = null;
-  private StatisticBm statisticBm = null;
+  private StatisticService statisticService = null;
   private boolean displayAllMessages = true;
   private boolean external = false;
   private boolean resizeFrame = false;
@@ -836,12 +836,12 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   }
 
   public void addMessageStat(int messageId, String userId) {
-    getStatisticBm().addStat(userId, new ForeignPK(String.valueOf(messageId), getComponentId()), 1,
+    getStatisticService().addStat(userId, new ForeignPK(String.valueOf(messageId), getComponentId()), 1,
         STAT_TYPE);
   }
 
   public int getMessageStat(int messageId) {
-    return getStatisticBm().getCount(new ForeignPK(String.valueOf(messageId), getComponentId()),
+    return getStatisticService().getCount(new ForeignPK(String.valueOf(messageId), getComponentId()),
         STAT_TYPE);
   }
 
@@ -903,17 +903,17 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     return publicationBm;
   }
 
-  protected StatisticBm getStatisticBm() {
-    if (statisticBm == null) {
+  protected StatisticService getStatisticService() {
+    if (statisticService == null) {
       try {
-        statisticBm = EJBUtilitaire.
-            getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticBm.class);
+        statisticService = EJBUtilitaire.
+            getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticService.class);
       } catch (Exception e) {
-        throw new StatisticRuntimeException("KmeliaSessionController.getStatisticBm()",
+        throw new StatisticRuntimeException("KmeliaSessionController.getStatisticService()",
             SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
       }
     }
-    return statisticBm;
+    return statisticService;
   }
 
   protected ForumsBM getForumsBM() {

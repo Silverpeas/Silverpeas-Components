@@ -29,7 +29,7 @@ import com.silverpeas.comment.service.CommentServiceProvider;
 import com.silverpeas.thumbnail.ThumbnailInstanciator;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.publication.PublicationInstanciator;
-import com.stratelia.webactiv.statistic.control.StatisticBm;
+import com.stratelia.webactiv.statistic.control.StatisticService;
 import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.JNDINames;
 
@@ -75,7 +75,7 @@ public class QuickInfoInstanciator extends Object implements ComponentsInstancia
         "QuickInfoInstanciator.delete finished");
   }
   
-  private StatisticBm getStatisticService() {
-    return EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticBm.class);
+  private StatisticService getStatisticService() {
+    return EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticService.class);
   }
 }

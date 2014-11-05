@@ -94,7 +94,7 @@ import com.stratelia.webactiv.publication.model.NodeTree;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import com.stratelia.webactiv.publication.model.ValidationStep;
-import com.stratelia.webactiv.statistic.control.StatisticBm;
+import com.stratelia.webactiv.statistic.control.StatisticService;
 import com.stratelia.webactiv.statistic.model.HistoryObjectDetail;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.attachment.AttachmentException;
@@ -167,7 +167,7 @@ public class KmeliaBmEJB implements KmeliaBm {
   @EJB
   private PublicationBm publicationBm;
   @EJB
-  private StatisticBm statisticBm;
+  private StatisticService statisticService;
   @EJB
   private PdcBm pdcBm;
   @Inject
@@ -1588,7 +1588,7 @@ public class KmeliaBmEJB implements KmeliaBm {
       deleteSilverContent(pub.getPK());
 
       // move statistics
-      statisticBm.moveStat(toPubliForeignPK, 1, "Publication");
+      statisticService.moveStat(toPubliForeignPK, 1, "Publication");
 
       // move publication itself
       publicationBm.movePublication(pub.getPK(), to, false);
@@ -3001,7 +3001,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     SilverTrace.info("kmelia", "KmeliaBmEJB.deleteAllReadingControlsByPublication()",
         "root.MSG_GEN_ENTER_METHOD");
     try {
-      statisticBm.deleteStats(new ForeignPK(pubPK.getId(), pubPK.getInstanceId()), "Publication");
+      statisticService.deleteStats(new ForeignPK(pubPK.getId(), pubPK.getInstanceId()), "Publication");
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.deleteAllReadingControlsByPublication()",
           ERROR, "kmelia.EX_IMPOSSIBLE_DE_SUPPRIMER_LES_CONTROLES_DE_LECTURE", e);
@@ -3014,7 +3014,7 @@ public class KmeliaBmEJB implements KmeliaBm {
   public List<HistoryObjectDetail> getLastAccess(PublicationPK pk, NodePK nodePK, String excludedUserId) {
 
     Collection<HistoryObjectDetail> allAccess =
-        statisticBm.getHistoryByAction(new ForeignPK(pk), 1, "Publication");
+        statisticService.getHistoryByAction(new ForeignPK(pk), 1, "Publication");
     List<String> userIds = getUserIdsOfFolder(nodePK);
     List<String> readerIds = new ArrayList<String>();
 

@@ -14,7 +14,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
-import com.stratelia.webactiv.statistic.control.StatisticBm;
+import com.stratelia.webactiv.statistic.control.StatisticService;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.date.Period;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
@@ -279,8 +279,8 @@ public class News extends AbstractJpaEntity<News, UuidIdentifier> implements Sil
     getPublication().setStatus(PublicationDetail.VALID);
   }
   
-  private StatisticBm getStatisticService() {
-    return EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticBm.class);
+  private StatisticService getStatisticService() {
+    return EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticService.class);
   }
   
   public List<ClassifyPosition> getTaxonomyPositions() throws PdcException {

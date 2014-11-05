@@ -41,7 +41,7 @@ import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import com.stratelia.webactiv.quickinfo.QuickInfoContentManager;
 import com.stratelia.webactiv.quickinfo.control.QuickInfoDateComparatorDesc;
-import com.stratelia.webactiv.statistic.control.StatisticBm;
+import com.stratelia.webactiv.statistic.control.StatisticService;
 import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -417,8 +417,8 @@ public class DefaultQuickInfoService implements QuickInfoService, ApplicationSer
     }
   }
 
-  private StatisticBm getStatisticService() {
-    return EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticBm.class);
+  private StatisticService getStatisticService() {
+    return EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticService.class);
   }
 
   private DelegatedNewsService getDelegatedNewsService() {
