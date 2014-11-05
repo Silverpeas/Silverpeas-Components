@@ -46,7 +46,6 @@
       <groupId>org.silverpeas.core.ejb-core</groupId>
       <artifactId>questioncontainer</artifactId>
       <version>${core.version}</version>
-      <classifier>client</classifier>
       <scope>provided</scope>
     </dependency>
   </dependencies>
