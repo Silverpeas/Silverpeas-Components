@@ -44,6 +44,7 @@ import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
@@ -294,7 +295,7 @@ public class KmeliaPublication implements SilverpeasContent {
 
   private StatisticService getStatisticService() {
     try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticService.class);
+      return ServiceProvider.getService(StatisticService.class);
     } catch (Exception e) {
       throw new StatisticRuntimeException("KmeliaPublication.getStatisticService()",
           SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);

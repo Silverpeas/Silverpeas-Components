@@ -59,6 +59,7 @@ import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.wysiwyg.control.WysiwygController;
@@ -418,7 +419,7 @@ public class DefaultQuickInfoService implements QuickInfoService, ApplicationSer
   }
 
   private StatisticService getStatisticService() {
-    return EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticService.class);
+    return ServiceProvider.getService(StatisticService.class);
   }
 
   private DelegatedNewsService getDelegatedNewsService() {

@@ -41,6 +41,7 @@ import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.thumbnail.ThumbnailSettings;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
@@ -270,7 +271,7 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
   }
 
   private StatisticService getStatisticService() {
-    return EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticService.class);
+    return ServiceProvider.getService(StatisticService.class);
   }
 
 }

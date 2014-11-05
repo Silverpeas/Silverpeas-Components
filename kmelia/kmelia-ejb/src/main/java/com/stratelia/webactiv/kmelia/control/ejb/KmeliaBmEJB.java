@@ -166,7 +166,7 @@ public class KmeliaBmEJB implements KmeliaBm {
   private NodeService nodeService;
   @EJB
   private PublicationBm publicationBm;
-  @EJB
+  @Inject
   private StatisticService statisticService;
   @EJB
   private PdcBm pdcBm;

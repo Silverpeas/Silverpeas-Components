@@ -29,6 +29,7 @@ import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
@@ -906,8 +907,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   protected StatisticService getStatisticService() {
     if (statisticService == null) {
       try {
-        statisticService = EJBUtilitaire.
-            getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticService.class);
+        statisticService = ServiceProvider.getService(StatisticService.class);
       } catch (Exception e) {
         throw new StatisticRuntimeException("KmeliaSessionController.getStatisticService()",
             SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);

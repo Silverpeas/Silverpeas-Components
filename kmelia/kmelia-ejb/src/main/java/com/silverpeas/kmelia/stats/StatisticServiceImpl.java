@@ -20,26 +20,12 @@
  */
 package com.silverpeas.kmelia.stats;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import com.silverpeas.kmelia.model.StatisticActivityVO;
 import com.silverpeas.kmelia.model.StatsFilterVO;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
-import org.silverpeas.util.WAPrimaryKey;
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
@@ -48,6 +34,18 @@ import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import com.stratelia.webactiv.statistic.control.StatisticService;
 import com.stratelia.webactiv.statistic.model.StatisticRuntimeException;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 import static com.stratelia.webactiv.beans.admin.AdministrationServiceProvider.getAdminService;
 
@@ -57,6 +55,7 @@ public class StatisticServiceImpl implements com.silverpeas.kmelia.stats.Statist
   private PublicationBm publicationBm;
   @Inject
   private NodeService nodeService;
+  @Inject
   private StatisticService statisticService;
 
   /*
@@ -258,13 +257,8 @@ public class StatisticServiceImpl implements com.silverpeas.kmelia.stats.Statist
 
   private StatisticService getStatisticService() {
     if (statisticService == null) {
-      try {
-        statisticService = EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME,
-            StatisticService.class);
-      } catch (Exception e) {
         throw new StatisticRuntimeException("PdcSearchSessionController.getStatisticService()",
-            SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-      }
+            SilverpeasException.ERROR, "Cant bootstrap StatisticService with CDI");
     }
     return statisticService;
   }

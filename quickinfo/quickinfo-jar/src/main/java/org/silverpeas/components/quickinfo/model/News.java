@@ -20,8 +20,7 @@ import org.silverpeas.date.Period;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.persistence.model.jpa.AbstractJpaEntity;
 import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ServiceProvider;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -280,7 +279,7 @@ public class News extends AbstractJpaEntity<News, UuidIdentifier> implements Sil
   }
   
   private StatisticService getStatisticService() {
-    return EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticService.class);
+    return ServiceProvider.getService(StatisticService.class);
   }
   
   public List<ClassifyPosition> getTaxonomyPositions() throws PdcException {

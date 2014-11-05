@@ -301,8 +301,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public StatisticService getStatisticService() {
     if (statisticService == null) {
       try {
-        statisticService = EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME,
-            StatisticService.class);
+        statisticService = ServiceProvider.getService(StatisticService.class);
       } catch (Exception e) {
         throw new StatisticRuntimeException("KmeliaSessionController.getStatisticService()",
             SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
