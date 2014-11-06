@@ -40,7 +40,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.silverpeas.search.SearchEngineFactory;
+import org.silverpeas.search.SearchEngineProvider;
 import org.silverpeas.search.indexEngine.model.FieldDescription;
 import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
@@ -137,7 +137,7 @@ public class MixedSearchServiceImpl implements MixedSearchService {
           "root.MSG_GEN_PARAM_VALUE", "search processed !");
 
       //retrieve results
-      List<MatchingIndexEntry> fullTextResult = SearchEngineFactory.getSearchEngine().search(query).
+      List<MatchingIndexEntry> fullTextResult = SearchEngineProvider.getSearchEngine().search(query).
           getEntries();
       SilverTrace.info("searchEngine", "SearchEngineTagUtil.getResults()",
           "root.MSG_GEN_PARAM_VALUE", "results retrieved !");

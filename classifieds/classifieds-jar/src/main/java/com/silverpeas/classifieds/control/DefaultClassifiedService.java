@@ -44,7 +44,7 @@ import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.admin.OrganizationController;
-import org.silverpeas.search.SearchEngineFactory;
+import org.silverpeas.search.SearchEngineProvider;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
@@ -387,7 +387,7 @@ public class DefaultClassifiedService implements ClassifiedService {
   public List<ClassifiedDetail> search(QueryDescription query) {
     List<ClassifiedDetail> classifieds = new ArrayList<ClassifiedDetail>();
     try {
-      List<MatchingIndexEntry> result = SearchEngineFactory.getSearchEngine().search(query).
+      List<MatchingIndexEntry> result = SearchEngineProvider.getSearchEngine().search(query).
           getEntries();
       //classified creation from the results
       for (MatchingIndexEntry matchIndex : result) {

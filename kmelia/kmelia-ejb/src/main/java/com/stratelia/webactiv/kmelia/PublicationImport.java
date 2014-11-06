@@ -29,7 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.silverpeas.search.SearchEngineFactory;
+import org.silverpeas.search.SearchEngineProvider;
 import org.silverpeas.search.indexEngine.model.IndexManager;
 import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
 import org.silverpeas.search.searchEngine.model.ParseException;
@@ -343,7 +343,7 @@ public class PublicationImport {
     query.setXmlQuery(newXmlQuery);
 
     try {
-      List<MatchingIndexEntry> result = SearchEngineFactory.getSearchEngine().search(query).
+      List<MatchingIndexEntry> result = SearchEngineProvider.getSearchEngine().search(query).
           getEntries();
       for (MatchingIndexEntry mie : result) {
         if ("Publication".equals(mie.getObjectType())) {

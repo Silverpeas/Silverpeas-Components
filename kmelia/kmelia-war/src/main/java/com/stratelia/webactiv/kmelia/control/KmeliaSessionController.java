@@ -121,7 +121,7 @@ import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.component.kmelia.InstanceParameters;
 import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
 import org.silverpeas.importExport.attachment.AttachmentImportExport;
-import org.silverpeas.search.SearchEngineFactory;
+import org.silverpeas.search.SearchEngineProvider;
 import org.silverpeas.search.indexEngine.model.IndexManager;
 import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
@@ -3311,7 +3311,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
     try {
 
-      List<MatchingIndexEntry> results = SearchEngineFactory.getSearchEngine().search(
+      List<MatchingIndexEntry> results = SearchEngineProvider.getSearchEngine().search(
           queryDescription).getEntries();
 
       List<String> pubIds = new ArrayList<String>();

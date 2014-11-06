@@ -55,7 +55,7 @@ import com.stratelia.webactiv.publication.control.PublicationBm;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.silverpeas.core.admin.OrganizationController;
-import org.silverpeas.search.SearchEngineFactory;
+import org.silverpeas.search.SearchEngineProvider;
 import org.silverpeas.search.indexEngine.model.IndexManager;
 import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
@@ -491,7 +491,7 @@ public class DefaultBlogService implements BlogService {
         "query =" + query.getQuery());
     Connection con = openConnection();
     try {
-      List<MatchingIndexEntry> result = SearchEngineFactory.getSearchEngine().search(query).
+      List<MatchingIndexEntry> result = SearchEngineProvider.getSearchEngine().search(query).
           getEntries();
       SilverTrace.info("blog", "DefaultBlogService.getResultSearch()", "root.MSG_GEN_PARAM_VALUE",
           "result =" + result.size());

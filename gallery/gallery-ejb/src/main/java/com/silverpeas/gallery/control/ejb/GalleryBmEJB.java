@@ -53,7 +53,7 @@ import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.date.Period;
 import org.silverpeas.process.ProcessProvider;
 import org.silverpeas.process.util.ProcessList;
-import org.silverpeas.search.SearchEngineFactory;
+import org.silverpeas.search.SearchEngineProvider;
 import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
 import org.silverpeas.util.DBUtil;
@@ -585,7 +585,7 @@ public class GalleryBmEJB implements GalleryBm {
   public Collection<Media> search(final QueryDescription query) {
     final Collection<Media> mediaList = new ArrayList<>();
     try {
-      final List<MatchingIndexEntry> result = SearchEngineFactory.getSearchEngine().search(query).
+      final List<MatchingIndexEntry> result = SearchEngineProvider.getSearchEngine().search(query).
           getEntries();
       // création des médias à partir des résultats
       // Ne retourne que les médias

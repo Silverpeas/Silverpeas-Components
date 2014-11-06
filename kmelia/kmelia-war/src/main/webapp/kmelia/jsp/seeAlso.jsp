@@ -1,5 +1,5 @@
 <%@page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
-<%@page import="org.silverpeas.search.SearchEngineFactory"%>
+<%@page import="org.silverpeas.search.SearchEngineProvider"%>
 <%@ page import="org.silverpeas.search.SearchEngine" %>
 <%--
 
@@ -210,7 +210,7 @@ function closeWindows() {
             query.setSearchingUser(kmeliaScc.getUserDetail().getId());
             query.addSpaceComponentPair(kmeliaScc.getSpaceId(), kmeliaScc.getComponentId());
             
-            List<MatchingIndexEntry> results = SearchEngineFactory.getSearchEngine().search(query).getEntries();
+            List<MatchingIndexEntry> results = SearchEngineProvider.getSearchEngine().search(query).getEntries();
             
             displaySearchResults(results, resources.getString("PubDeMemeSujet"), kmeliaScc, id, resources, out);
         }else if(action.equals("PubReferencedBy")){

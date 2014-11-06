@@ -33,6 +33,7 @@ import com.silverpeas.silvercrawler.statistic.HistoryDetail;
 import com.silverpeas.silvercrawler.statistic.Statistic;
 import com.silverpeas.silvercrawler.util.FileServerUtils;
 import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
+import org.silverpeas.search.SearchEngineProvider;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.ZipUtil;
@@ -48,7 +49,6 @@ import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.fileFolder.FileFolderManager;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
-import org.silverpeas.search.SearchEngineFactory;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 import org.silverpeas.search.indexEngine.model.RepositoryIndexer;
@@ -382,7 +382,7 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
         SilverTrace.info("silverCrawler",
           "SilverCrawlerSessionController.getResultSearch()",
           "root.MSG_GEN_PARAM_VALUE", "query =" + query.getQuery());
-        List<MatchingIndexEntry> result = SearchEngineFactory.getSearchEngine().search(query)
+        List<MatchingIndexEntry> result = SearchEngineProvider.getSearchEngine().search(query)
           .getEntries();
         SilverTrace.info("silverCrawler", "SilverCrawlerSessionController.getResultSearch()",
           "root.MSG_GEN_PARAM_VALUE", "result =" + result.size());
