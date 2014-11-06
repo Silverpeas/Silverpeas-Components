@@ -211,7 +211,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   }
 
   private ContactPK getContactPK(String id) {
-    return new ContactPK(id, null, getComponentId());
+    return new ContactPK(id, getComponentId());
   }
 
   public GroupDetail getGroup(String groupId) {
@@ -377,8 +377,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   }
 
   public String createContact(CompleteContact contact) {
-    contact.setCreationDate(new Date());
-    contact.setCreatorId(getUserId());
+    setTechnicalData(contact);
     String contactId = getKSCEJB().createContact(contact, getCurrentTopic().getNodePK());
     resetCurrentFullCompleteUsers();
     return contactId;
@@ -386,10 +385,15 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
 
   public void updateContact(CompleteContact contact) {
     contact.getPK().setComponentName(getComponentId());
-    contact.setCreationDate(new Date());
-    contact.setCreatorId(getUserId());
+    setTechnicalData(contact);
     getKSCEJB().updateContact(contact);
     resetCurrentFullCompleteUsers();
+  }
+  
+  private void setTechnicalData(CompleteContact contact) {
+    contact.setCreationDate(new Date());
+    contact.setCreatorId(getUserId());
+    contact.setCreatorLanguage(getLanguage());
   }
 
   public void deleteContact(String contactId) {
@@ -414,8 +418,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   }
 
   public CompleteContact getCompleteContact(String contactId) {
-    return getKSCEJB().getCompleteContactInNode(getContactPK(contactId),
-        getCurrentTopic().getNodePK().getId());
+    return getKSCEJB().getCompleteContact(getContactPK(contactId));
   }
 
   public CompleteContact getCompleteContactInNode(String contactId, String nodeId) {
@@ -645,7 +648,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
       UserFull user = getOrganisationController().getUserFull(userId);
       if (user != null) {
         ContactDetail cUser = new ContactDetail(new ContactPK("fromGroup",
-            null, getComponentId()), user.getFirstName(), user.getLastName(),
+            getComponentId()), user.getFirstName(), user.getLastName(),
             user.geteMail(), user.getValue("phone"), user.getValue("fax"), user.getId(), null,
             null);
         cUser.setUserFull(user);
@@ -659,7 +662,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
       UserDetail user = getOrganisationController().getUserDetail(userId);
       if (user != null) {
         ContactDetail cUser = new ContactDetail(new ContactPK("fromGroup",
-            null, getComponentId()), user.getFirstName(), user.getLastName(),
+            getComponentId()), user.getFirstName(), user.getLastName(),
             user.geteMail(), "", "", user.getId(), null, null);
 
         contactFather = new ContactFatherDetail(
@@ -930,17 +933,17 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
       List<ContactDetail> contacts = new ArrayList<ContactDetail>();
       if ("LastName".equals(typeSearch)) {
         contacts = (List<ContactDetail>) getKSCEJB().getContactDetailsByLastName(new ContactPK(
-            "useless", "useless", getComponentId()), nom);
+            "useless", getComponentId()), nom);
       } else if ("FirstName".equals(typeSearch)) {
         contacts = (List<ContactDetail>) getKSCEJB().getContactDetailsByLastNameAndFirstName(
-            new ContactPK("useless", "useless", getComponentId()), nom, prenom);
+            new ContactPK("useless", getComponentId()), nom, prenom);
       } else if ("LastNameFirstName".equals(typeSearch)) {
         if (prenom == null) {// nom ou prenom
           contacts = (List<ContactDetail>) getKSCEJB().getContactDetailsByLastNameOrFirstName(
-              new ContactPK("useless", "useless", getComponentId()), nom);
+              new ContactPK("useless", getComponentId()), nom);
         } else {// nom et prenom
           contacts = (List<ContactDetail>) getKSCEJB().getContactDetailsByLastNameAndFirstName(
-              new ContactPK("useless", "useless", getComponentId()), nom,
+              new ContactPK("useless", getComponentId()), nom,
               prenom);
         }
       }

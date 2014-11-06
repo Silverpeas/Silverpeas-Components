@@ -187,6 +187,8 @@ public interface YellowpagesBm {
    * @see com.stratelia.webactiv.util.contact.model.CompleteContact
    */
   public CompleteContact getCompleteContactInNode(ContactPK contactPK, String nodeId);
+  
+  public CompleteContact getCompleteContact(ContactPK contactPK);
 
   /**
    * Return a collection of ContactDetail throught a collection of contact ids
@@ -219,4 +221,6 @@ public interface YellowpagesBm {
   public void addModelUsed(String[] models, String instanceId);
 
   public Collection<String> getModelUsed(String instanceId);
+  
+  public void index(String instanceId);
 }

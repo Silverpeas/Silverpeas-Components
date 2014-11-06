@@ -88,4 +88,22 @@
       </help>
     </profile>
   </profiles>
+  <parameters>
+    <parameter>
+      <name>displayedInDirectory</name>
+      <label>
+        <message lang="fr">Annuaire général</message>
+        <message lang="en">Global directory</message>
+      </label>
+      <order>1</order>
+      <mandatory>false</mandatory>
+      <value>true</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Permet d'afficher les contacts de cette application dans l'annuaire général de la plate-forme</message>
+        <message lang="en">Permet d'afficher les contacts de cette application dans l'annuaire général de la plate-forme</message>
+      </help>
+    </parameter>
+  </parameters>
 </WAComponent>

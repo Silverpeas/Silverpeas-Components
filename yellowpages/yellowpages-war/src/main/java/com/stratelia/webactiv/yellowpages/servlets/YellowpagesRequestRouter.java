@@ -401,6 +401,16 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
       setPageContext(contactId, request, ysc);
 
       return "/yellowpages/jsp/contact.jsp";
+    } else if ("ContactExternalView".equals(function)) {
+      // case of contacts displayed in global directory
+      String contactId = request.getParameter("Id");
+      CompleteContact contact = ysc.getCompleteContact(contactId);
+      
+      setPageContext(contactId, request, ysc);
+      
+      request.setAttribute("Contact", contact);
+      request.setAttribute("ExternalView", true);
+      return "/yellowpages/jsp/contact.jsp";
     } else if ("ContactNew".equals(function)) {
       String modelId = ysc.getCurrentTopic().getNodeDetail().getModelId();
       CompleteContact contact = new CompleteContact(ysc.getComponentId(), modelId);
