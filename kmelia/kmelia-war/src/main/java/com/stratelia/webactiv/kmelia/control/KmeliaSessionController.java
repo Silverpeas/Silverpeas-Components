@@ -2664,7 +2664,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public void copyPublication(String pubId) throws ClipboardException, RemoteException {
-    CompletePublication pub = getCompletePublication(pubId);
+    PublicationDetail pub = getPublicationDetail(pubId);
     PublicationSelection pubSelect = new PublicationSelection(pub);
     SilverTrace.info("kmelia", "KmeliaSessionController.copyPublication()",
         "root.MSG_GEN_PARAM_VALUE", "clipboard = " + getClipboardName() + "' count="
@@ -2686,7 +2686,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public void cutPublication(String pubId) throws ClipboardException, RemoteException {
-    CompletePublication pub = getCompletePublication(pubId);
+    PublicationDetail pub = getPublicationDetail(pubId);
     PublicationSelection pubSelect = new PublicationSelection(pub);
     pubSelect.setCutted(true);
 
@@ -2742,16 +2742,15 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       Collection<ClipboardSelection> clipObjects = getClipboardSelectedObjects();
       for (ClipboardSelection clipObject : clipObjects) {
         if (clipObject != null) {
-          if (clipObject.isDataFlavorSupported(PublicationSelection.CompletePublicationFlavor)) {
-            CompletePublication pub = (CompletePublication) clipObject.getTransferData(
-                PublicationSelection.CompletePublicationFlavor);
+          if (clipObject.isDataFlavorSupported(PublicationSelection.PublicationDetailFlavor)) {
+            PublicationDetail pub = (PublicationDetail) clipObject.getTransferData(
+                PublicationSelection.PublicationDetailFlavor);
             if (clipObject.isCutted()) {
-              movePublication(pub.getPublicationDetail().getPK(), folder.getNodePK());
+              movePublication(pub.getPK(), folder.getNodePK());
             } else {
-              getKmeliaBm().copyPublication(pub.getPublicationDetail(), folder.getNodePK(),
-                  getUserId());
+              getKmeliaBm().copyPublication(pub, folder.getNodePK(), getUserId());
             }
-            pastedItems.add(pub.getPublicationDetail());
+            pastedItems.add(pub);
           } else if (clipObject.isDataFlavorSupported(NodeSelection.NodeDetailFlavor)) {
             NodeDetail node = (NodeDetail) clipObject.getTransferData(
                 NodeSelection.NodeDetailFlavor);
