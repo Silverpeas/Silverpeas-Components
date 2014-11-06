@@ -38,7 +38,7 @@ import javax.xml.bind.JAXBException;
 import org.silverpeas.core.admin.OrganizationController;
 
 import com.silverpeas.importExport.report.ExportReport;
-import com.silverpeas.pdc.PdcServiceFactory;
+import com.silverpeas.pdc.PdcServiceProvider;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.service.PdcClassificationService;
@@ -1030,8 +1030,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
             .getComponentInstanceId())
             .withPositions(pdcPositions);
         if (!classification.isEmpty()) {
-          PdcClassificationService service = PdcServiceFactory.getFactory()
-              .getPdcClassificationService();
+          PdcClassificationService service = PdcServiceProvider.getPdcClassificationService();
           classification.ofContent(questionIdStr);
           service.classifyContent(questionDetail, classification);
         }

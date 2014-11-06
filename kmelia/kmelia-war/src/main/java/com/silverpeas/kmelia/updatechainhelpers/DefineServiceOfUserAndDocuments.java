@@ -83,11 +83,11 @@ public class DefineServiceOfUserAndDocuments extends UpdateChainHelperImpl {
     String positionLabel = service;
     int silverObjectId = kmeliaScc.getSilverObjectId(pubDetail.getId());
     try {
-      List<Value> axisValues = kmeliaScc.getPdcBm().getAxisValuesByName(positionLabel);
+      List<Value> axisValues = kmeliaScc.getPdcManager().getAxisValuesByName(positionLabel);
       for (Value axisValue : axisValues) {
         String selectedPosition = axisValue.getTreeId() + "|" + axisValue.getFullPath();
         ClassifyPosition position = buildPosition(null, selectedPosition);
-        kmeliaScc.getPdcBm().addPosition(silverObjectId, position, kmeliaScc.getComponentId(),
+        kmeliaScc.getPdcManager().addPosition(silverObjectId, position, kmeliaScc.getComponentId(),
             false);
       }
     } catch (PdcException pde) {

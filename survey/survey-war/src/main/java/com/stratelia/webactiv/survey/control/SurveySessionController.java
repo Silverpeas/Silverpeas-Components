@@ -21,7 +21,7 @@
 package com.stratelia.webactiv.survey.control;
 
 import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
-import com.silverpeas.pdc.PdcServiceFactory;
+import com.silverpeas.pdc.PdcServiceProvider;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.service.PdcClassificationService;
@@ -370,7 +370,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
           this.getNewSurveyPositions());
       if (!classification.isEmpty()) {
         PdcClassificationService service =
-            PdcServiceFactory.getFactory().getPdcClassificationService();
+            PdcServiceProvider.getPdcClassificationService();
         classification.ofContent(qcPK.getId());
         service.classifyContent(surveyDetail, classification);
       }

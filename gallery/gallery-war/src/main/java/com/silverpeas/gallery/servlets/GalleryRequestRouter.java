@@ -48,8 +48,8 @@ import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.stratelia.silverpeas.contentManager.ContentManager;
-import com.stratelia.silverpeas.pdc.control.PdcBm;
-import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
+import com.stratelia.silverpeas.pdc.control.PdcManager;
+import com.stratelia.silverpeas.pdc.control.GlobalPdcManager;
 import com.stratelia.silverpeas.pdc.model.SearchContext;
 import com.stratelia.silverpeas.pdc.model.SearchCriteria;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -1004,7 +1004,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           List<String> componentIds = new ArrayList<String>();
           componentIds.add(gallerySC.getComponentId());
 
-          PdcBm pdc = new PdcBmImpl();
+          PdcManager pdc = new GlobalPdcManager();
           silverObjectIds = pdc.findSilverContentIdByPosition(pdcContext, componentIds);
         }
 

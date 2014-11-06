@@ -45,7 +45,7 @@ import com.silverpeas.kmelia.domain.TopicSearch;
 import com.silverpeas.kmelia.export.ExportFileNameProducer;
 import com.silverpeas.kmelia.export.KmeliaPublicationExporter;
 import com.silverpeas.kmelia.search.KmeliaSearchServiceFactory;
-import com.silverpeas.pdc.PdcServiceFactory;
+import com.silverpeas.pdc.PdcServiceProvider;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.service.PdcClassificationService;
@@ -58,8 +58,8 @@ import com.silverpeas.thumbnail.ThumbnailSettings;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.notificationManager.NotificationManager;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
-import com.stratelia.silverpeas.pdc.control.PdcBm;
-import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
+import com.stratelia.silverpeas.pdc.control.PdcManager;
+import com.stratelia.silverpeas.pdc.control.GlobalPdcManager;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
@@ -166,8 +166,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   /* EJBs used by sessionController */
   private CommentService commentService = null;
-  private PdcBm pdcBm = null;
   private StatisticService statisticService = null;
+  private PdcManager pdcManager = null;
   private NotificationManager notificationManager = null;
   // Session objects
   private TopicDetail sessionTopic = null;
@@ -1996,7 +1996,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     if (pubId != null && pubId.length() > 0) {
       try {
         int silverObjectId = getKmeliaBm().getSilverObjectId(getPublicationPK(pubId));
-        List<ClassifyPosition> positions = getPdcBm().getPositions(silverObjectId,
+        List<ClassifyPosition> positions = getPdcManager().getPositions(silverObjectId,
             getComponentId());
         return !positions.isEmpty();
       } catch (Exception e) {
@@ -2015,7 +2015,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   public boolean isPDCClassifyingMandatory() {
     try {
-      return getPdcBm().isClassifyingMandatory(getComponentId());
+      return getPdcManager().isClassifyingMandatory(getComponentId());
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaSessionController.isPDCClassifyingMandatory()",
           SilverpeasRuntimeException.ERROR, "kmelia.MSG_ERR_GENERAL", e);
@@ -2025,11 +2025,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   /**
    * @return
    */
-  public PdcBm getPdcBm() {
-    if (pdcBm == null) {
-      pdcBm = new PdcBmImpl();
+  public PdcManager getPdcManager() {
+    if (pdcManager == null) {
+      pdcManager = new GlobalPdcManager();
     }
-    return pdcBm;
+    return pdcManager;
   }
 
   public NodeService getNodeBm() {
@@ -3513,7 +3513,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    * @throws PdcException if an error occurs while verifying the publication is classified.
    */
   public boolean isClassifiedOnThePdC(final PublicationDetail publication) throws PdcException {
-    List<ClassifyPosition> positions = getPdcBm().getPositions(
+    List<ClassifyPosition> positions = getPdcManager().getPositions(
         Integer.valueOf(publication.getSilverObjectId()),
         publication.getComponentInstanceId());
     return !positions.isEmpty();
@@ -3531,8 +3531,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    * classification of the imported publications. False otherwise.
    */
   public boolean isDefaultClassificationModifiable(String topicId, String componentId) {
-    PdcClassificationService classificationService = PdcServiceFactory.getFactory().
-        getPdcClassificationService();
+    PdcClassificationService classificationService =
+        PdcServiceProvider.getPdcClassificationService();
     PdcClassification defaultClassification = classificationService.findAPreDefinedClassification(
         topicId, componentId);
     return defaultClassification != NONE_CLASSIFICATION && defaultClassification.isModifiable();

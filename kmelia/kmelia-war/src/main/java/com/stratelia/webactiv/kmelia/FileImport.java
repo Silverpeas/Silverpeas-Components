@@ -96,7 +96,7 @@ public class FileImport {
    * @throws ImportExportException
    */
   public ImportReport importFile(boolean draft) throws ImportExportException {
-    MassiveDocumentImport massiveImporter = new MassiveDocumentImport();
+    MassiveDocumentImport massiveImporter = MassiveDocumentImport.getInstance();
     ImportSettings settings = getImportSettings(fileUploaded.getParent(), draft);
 
     return massiveImporter.importDocuments(settings, new MassiveReport());
@@ -199,7 +199,7 @@ public class FileImport {
     ImportReport importReport = null;
     try {
       String tempFolderPath = unzipUploadedFile();
-      MassiveDocumentImport massiveImporter = new MassiveDocumentImport();
+      MassiveDocumentImport massiveImporter = MassiveDocumentImport.getInstance();
       ImportSettings settings = getImportSettings(tempFolderPath, draft);
       importReport = massiveImporter.importDocuments(settings, new MassiveReport());
     } catch (Exception e) {

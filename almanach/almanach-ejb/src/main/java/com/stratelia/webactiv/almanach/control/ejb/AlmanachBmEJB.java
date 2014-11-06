@@ -20,7 +20,7 @@
  */
 package com.stratelia.webactiv.almanach.control.ejb;
 
-import com.silverpeas.pdc.PdcServiceFactory;
+import com.silverpeas.pdc.PdcServiceProvider;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.service.PdcClassificationService;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -201,8 +201,7 @@ public class AlmanachBmEJB implements AlmanachBm {
       }
       createSilverContent(connection, event, event.getCreatorId());
       if (!classification.isEmpty()) {
-        PdcClassificationService service = PdcServiceFactory.getFactory().
-            getPdcClassificationService();
+        PdcClassificationService service = PdcServiceProvider.getPdcClassificationService();
         classification.ofContent(event.getId());
         service.classifyContent(event, classification);
       }

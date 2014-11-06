@@ -33,18 +33,18 @@ import com.silverpeas.blog.notification.BlogUserNotification;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.service.CommentService;
-import com.silverpeas.pdc.PdcServiceFactory;
-import com.silverpeas.pdc.ejb.PdcBm;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.service.PdcClassificationService;
-import com.silverpeas.pdcSubscription.util.PdcSubscriptionUtil;
+import com.silverpeas.pdcSubscription.util.PdcSubscriptionManager;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
+import com.stratelia.silverpeas.pdc.control.PdcManager;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
+import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.node.control.NodeService;
@@ -98,6 +98,12 @@ public class DefaultBlogService implements BlogService {
   private CommentService commentService;
   @Inject
   private OrganizationController organizationController;
+  @Inject
+  private PdcManager pdcManager;
+  @Inject
+  private PdcClassificationService pdcClassificationService;
+  @Inject
+  private PdcSubscriptionManager pdcSubscriptionManager;
 
   @Override
   public PostDetail getContentById(String contentId) {
@@ -162,10 +168,8 @@ public class DefaultBlogService implements BlogService {
 
       // classify the publication on the PdC if its classification is defined
       if (classification != null && !classification.isEmpty()) {
-        PdcClassificationService service = PdcServiceFactory.getFactory().
-            getPdcClassificationService();
         classification.ofContent(pk.getId());
-        service.classifyContent(pub, classification);
+        pdcClassificationService.classifyContent(pub, classification);
       }
 
       return pk.getId();
@@ -765,16 +769,15 @@ public class DefaultBlogService implements BlogService {
       // send notification if PDC subscription
       try {
         int silverObjectId = getSilverObjectId(pub.getPK());
-        List<ClassifyPosition> positions = getPdcBm().getPositions(silverObjectId, pub.getPK().
+        List<ClassifyPosition> positions = pdcManager.getPositions(silverObjectId, pub.getPK().
             getInstanceId());
-        PdcSubscriptionUtil pdc = new PdcSubscriptionUtil();
         if (positions != null) {
           for (ClassifyPosition position : positions) {
-            pdc.checkSubscriptions(position.getValues(), pub.getPK().getInstanceId(),
-                silverObjectId);
+            pdcSubscriptionManager.checkSubscriptions(position.getValues(),
+                pub.getPK().getInstanceId(), silverObjectId);
           }
         }
-      } catch (RemoteException e) {
+      } catch (RemoteException | PdcException e) {
         SilverTrace
             .error("blog", "DefaultBlogService.draftOutPost", "blog.EX_SEND_PDC_SUBSCRIPTION", e);
       }
@@ -827,10 +830,6 @@ public class DefaultBlogService implements BlogService {
 
   private NodeService getNodeBm() {
     return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeService.class);
-  }
-
-  private PdcBm getPdcBm() {
-    return EJBUtilitaire.getEJBObjectRef(JNDINames.PDCBM_EJBHOME, PdcBm.class);
   }
 
   /**

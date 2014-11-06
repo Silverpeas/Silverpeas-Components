@@ -31,7 +31,7 @@ import com.silverpeas.gallery.model.Media;
 import com.silverpeas.gallery.model.MediaPK;
 import com.silverpeas.gallery.process.AbstractGalleryDataProcess;
 import com.silverpeas.gallery.process.GalleryProcessExecutionContext;
-import com.silverpeas.pdc.PdcServiceFactory;
+import com.silverpeas.pdc.PdcServiceProvider;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import org.silverpeas.util.ForeignPK;
@@ -164,7 +164,7 @@ public class GalleryPasteMediaDataProcess extends AbstractGalleryDataProcess {
       final int fromSilverObjectId = getGalleryBm().getSilverObjectId(fromMediaPk);
       final int toSilverObjectId = getGalleryBm().getSilverObjectId(toMediaPK);
 
-      PdcServiceFactory.getFactory().getPdcManager()
+      PdcServiceProvider.getPdcManager()
           .copyPositions(fromSilverObjectId, fromMediaPk.getInstanceId(), toSilverObjectId,
               context.getComponentInstanceId());
 

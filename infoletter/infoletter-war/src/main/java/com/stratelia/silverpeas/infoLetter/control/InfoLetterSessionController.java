@@ -56,7 +56,7 @@ import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
-import com.silverpeas.pdc.PdcServiceFactory;
+import com.silverpeas.pdc.PdcServiceProvider;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.service.PdcClassificationService;
@@ -250,8 +250,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
         PdcClassification classification = aPdcClassificationOfContent(ilpId, ilp.getInstanceId()).
             withPositions(pdcPositions);
         if (!classification.isEmpty()) {
-          PdcClassificationService service = PdcServiceFactory.getFactory()
-              .getPdcClassificationService();
+          PdcClassificationService service = PdcServiceProvider.getPdcClassificationService();
           classification.ofContent(ilpId);
           service.classifyContent(ilp, classification);
         }

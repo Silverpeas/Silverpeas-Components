@@ -21,16 +21,19 @@
 package com.silverpeas.whitePages.service;
 
 import com.silverpeas.annotation.Service;
-import com.silverpeas.pdc.ejb.PdcBm;
-import com.silverpeas.pdc.ejb.PdcBmRuntimeException;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
 import com.stratelia.silverpeas.contentManager.GlobalSilverContentI18N;
+import com.stratelia.silverpeas.pdc.control.PdcManager;
 import com.stratelia.silverpeas.pdc.model.SearchContext;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.search.SearchEngineProvider;
+import org.silverpeas.search.indexEngine.model.FieldDescription;
+import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
+import org.silverpeas.search.searchEngine.model.ScoreComparator;
+import org.silverpeas.util.StringUtil;
+
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -40,16 +43,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.silverpeas.search.SearchEngineProvider;
-import org.silverpeas.search.indexEngine.model.FieldDescription;
-import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
-import org.silverpeas.search.searchEngine.model.QueryDescription;
-import org.silverpeas.search.searchEngine.model.ScoreComparator;
 
 @Service("mixedSearchService")
 public class MixedSearchServiceImpl implements MixedSearchService {
 
-  private PdcBm pdcBm = null;
+  @Inject
+  private PdcManager pdcManager = null;
 
   @Override
   public Collection<GlobalSilverContent> search(String spaceId, String componentId, String userId,
@@ -80,9 +79,9 @@ public class MixedSearchServiceImpl implements MixedSearchService {
       alComponentIds.add(componentId);
 
       boolean visibilitySensitive = true;
-      List<GlobalSilverContent> alSilverContents = getPdcBm().findGlobalSilverContents(pdcContext,
-          alComponentIds, true,
-          visibilitySensitive);
+      List<GlobalSilverContent> alSilverContents =
+          pdcManager.findGlobalSilverContents(pdcContext, alComponentIds, true,
+              visibilitySensitive);
 
       if (queryString != null && queryString.length() > 0) {
         //extract the silvercontent ids
@@ -204,18 +203,6 @@ public class MixedSearchServiceImpl implements MixedSearchService {
     }
 
     return silverContents;
-  }
-
-  private PdcBm getPdcBm() {
-    if (pdcBm == null) {
-      try {
-        pdcBm = EJBUtilitaire.getEJBObjectRef(JNDINames.PDCBM_EJBHOME, PdcBm.class);
-      } catch (Exception e) {
-        throw new PdcBmRuntimeException("MixedSearchServiceImpl.getPdcBm",
-            SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-      }
-    }
-    return pdcBm;
   }
 
   private GlobalSilverContent matchingIndexEntry2SilverContent(MatchingIndexEntry mie,

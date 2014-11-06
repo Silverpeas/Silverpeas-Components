@@ -39,6 +39,7 @@ import com.stratelia.webactiv.forums.models.ForumDetail;
 import com.stratelia.webactiv.forums.models.ForumPK;
 import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 /**
@@ -80,7 +81,7 @@ public class ForumsContentManager implements ContentInterface {
    * add a new content. It is registered to contentManager service
    *
    * @param con a Connection
-   * @param forumDetail the content to register
+   * @param forumPK the content to register
    * @param userId the creator of the content
    * @return the unique silverObjectId which identified the new content
    */
@@ -96,8 +97,8 @@ public class ForumsContentManager implements ContentInterface {
   /**
    * update the visibility attributes of the content. Here, the type of content is a ForumDetail
    *
-   * @param forumDetail the content
-   * @param silverObjectId the unique identifier of the content
+   * @param forumPK the content
+   * @param userId the unique identifier of the user
    */
   public void updateSilverContentVisibility(ForumPK forumPK, String userId)
       throws ContentManagerException {
@@ -140,7 +141,6 @@ public class ForumsContentManager implements ContentInterface {
   /**
    * Method declaration
    *
-   * @param forumDetail
    * @return
    * @see
    */
@@ -203,11 +203,7 @@ public class ForumsContentManager implements ContentInterface {
    */
   private ContentManager getContentManager() {
     if (contentManager == null) {
-      try {
-        contentManager = new ContentManager();
-      } catch (ContentManagerException e) {
-        SilverTrace.fatal("forums", "ForumsContentManager", "root.EX_UNKNOWN_CONTENT_MANAGER", e);
-      }
+      contentManager = ServiceProvider.getService(ContentManager.class);
     }
     return contentManager;
   }

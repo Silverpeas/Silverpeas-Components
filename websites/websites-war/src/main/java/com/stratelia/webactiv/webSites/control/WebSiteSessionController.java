@@ -26,7 +26,7 @@ package com.stratelia.webactiv.webSites.control;
  *
  * @author Cécile BONIN
  */
-import com.silverpeas.pdc.PdcServiceFactory;
+import com.silverpeas.pdc.PdcServiceProvider;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.service.PdcClassificationService;
@@ -497,8 +497,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
         PdcClassification classification = aPdcClassificationOfContent(siteId, getComponentId())
             .withPositions(pdcPositions);
         if (!classification.isEmpty()) {
-          PdcClassificationService service = PdcServiceFactory.getFactory().
-              getPdcClassificationService();
+          PdcClassificationService service = PdcServiceProvider.getPdcClassificationService();
           classification.ofContent(siteId);
           service.classifyContent(siteDetail, classification);
         }

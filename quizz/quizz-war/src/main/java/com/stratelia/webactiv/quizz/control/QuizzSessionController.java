@@ -20,7 +20,7 @@
  */
 package com.stratelia.webactiv.quizz.control;
 
-import com.silverpeas.pdc.PdcServiceFactory;
+import com.silverpeas.pdc.PdcServiceProvider;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.service.PdcClassificationService;
@@ -251,7 +251,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
           this.getPositions());
       if (!classification.isEmpty()) {
         PdcClassificationService service =
-            PdcServiceFactory.getFactory().getPdcClassificationService();
+            PdcServiceProvider.getPdcClassificationService();
         classification.ofContent(qcPK.getId());
         service.classifyContent(quizDetail, classification);
       }

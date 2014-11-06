@@ -6,8 +6,8 @@ import com.silverpeas.comment.service.CommentServiceProvider;
 import com.silverpeas.delegatednews.model.DelegatedNews;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
-import com.stratelia.silverpeas.pdc.control.PdcBm;
-import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
+import com.stratelia.silverpeas.pdc.control.PdcManager;
+import com.stratelia.silverpeas.pdc.control.GlobalPdcManager;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -287,8 +287,8 @@ public class News extends AbstractJpaEntity<News, UuidIdentifier> implements Sil
     return getTaxonomyService().getPositions(Integer.parseInt(silverObjectId), getComponentInstanceId());
   }
   
-  private PdcBm getTaxonomyService() {
-    return new PdcBmImpl();
+  private PdcManager getTaxonomyService() {
+    return new GlobalPdcManager();
   }
   
   public String getPermalink() {

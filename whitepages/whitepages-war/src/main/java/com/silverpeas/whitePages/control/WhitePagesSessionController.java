@@ -34,6 +34,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementProvider;
+import com.stratelia.silverpeas.pdc.control.PdcManager;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.servlet.FileUploadUtil;
 import com.silverpeas.whitePages.WhitePagesException;
@@ -52,8 +53,7 @@ import com.stratelia.silverpeas.notificationManager.NotificationManagerException
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
-import com.stratelia.silverpeas.pdc.control.PdcBm;
-import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
+import com.stratelia.silverpeas.pdc.control.GlobalPdcManager;
 import com.stratelia.silverpeas.pdc.model.*;
 import com.stratelia.silverpeas.peasCore.*;
 import com.stratelia.silverpeas.selection.Selection;
@@ -100,7 +100,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
   private String returnURL = "";
   private ContainerContext containerContext;
   private Card notifiedUserCard;
-  private PdcBm pdcBm = null;
+  private PdcManager pdcManager = null;
   private static DomainDriverManager m_DDManager = new DomainDriverManager();
 
   public boolean isAdmin() {
@@ -951,11 +951,11 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
 
   public List<SearchAxis> getUsedAxisList(SearchContext searchContext, String axisType) throws
       PdcException {
-    List<SearchAxis> searchAxis = getPdcBm().getPertinentAxisByInstanceId(searchContext, axisType,
+    List<SearchAxis> searchAxis = getPdcManager().getPertinentAxisByInstanceId(searchContext, axisType,
         getComponentId());
     if (searchAxis != null && !searchAxis.isEmpty()) {
       for (SearchAxis axis : searchAxis) {
-        axis.setValues(getPdcBm().getDaughters(Integer.toString(axis.getAxisId()), "0"));
+        axis.setValues(getPdcManager().getDaughters(Integer.toString(axis.getAxisId()), "0"));
       }
     }
     return searchAxis;
@@ -1089,17 +1089,17 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
     return cards;
   }
 
-  private PdcBm getPdcBm() {
-    if (pdcBm == null) {
-      pdcBm = (PdcBm) new PdcBmImpl();
+  private PdcManager getPdcManager() {
+    if (pdcManager == null) {
+      pdcManager = (PdcManager) new GlobalPdcManager();
     }
-    return pdcBm;
+    return pdcManager;
   }
 
   public HashMap<String, Set<ClassifyValue>> getPdcPositions(int cardId) throws PdcException {
 
     HashMap<String, Set<ClassifyValue>> result = new HashMap<String, Set<ClassifyValue>>();
-    List<ClassifyPosition> listOfPositions = getPdcBm().getPositions(cardId, getComponentId());
+    List<ClassifyPosition> listOfPositions = getPdcManager().getPositions(cardId, getComponentId());
 
     if (listOfPositions != null && listOfPositions.size() > 0) {
       for (ClassifyPosition position : listOfPositions) {

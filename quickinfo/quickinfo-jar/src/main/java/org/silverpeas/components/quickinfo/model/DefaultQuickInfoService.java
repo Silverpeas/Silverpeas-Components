@@ -26,7 +26,7 @@ import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.delegatednews.service.DelegatedNewsService;
 import com.silverpeas.delegatednews.service.ServicesFactory;
 import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
-import com.silverpeas.pdc.PdcServiceFactory;
+import com.silverpeas.pdc.PdcServiceProvider;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.service.PdcClassificationService;
@@ -411,7 +411,7 @@ public class DefaultQuickInfoService implements QuickInfoService, ApplicationSer
             publi.getInstanceId()).withPositions(pdcPositions);
       if (!classification.isEmpty()) {
         PdcClassificationService service =
-              PdcServiceFactory.getFactory().getPdcClassificationService();
+              PdcServiceProvider.getPdcClassificationService();
         classification.ofContent(qiId);
         service.classifyContent(publi, classification);
       }

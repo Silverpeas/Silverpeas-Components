@@ -38,11 +38,9 @@ import com.silverpeas.kmelia.notification.KmeliaSubscriptionPublicationUserNotif
 import com.silverpeas.kmelia.notification.KmeliaSupervisorPublicationUserNotification;
 import com.silverpeas.kmelia.notification.KmeliaTopicUserNotification;
 import com.silverpeas.kmelia.notification.KmeliaValidationPublicationUserNotification;
-import com.silverpeas.pdc.PdcServiceFactory;
-import com.silverpeas.pdc.ejb.PdcBm;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.service.PdcClassificationService;
-import com.silverpeas.pdcSubscription.util.PdcSubscriptionUtil;
+import com.silverpeas.pdcSubscription.util.PdcSubscriptionManager;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
@@ -60,7 +58,7 @@ import com.silverpeas.thumbnail.service.ThumbnailServiceProvider;
 import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
-import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
+import com.stratelia.silverpeas.pdc.control.PdcManager;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -168,11 +166,10 @@ public class KmeliaBmEJB implements KmeliaBm {
   private PublicationBm publicationBm;
   @Inject
   private StatisticService statisticService;
-  @EJB
-  private PdcBm pdcBm;
+  @Inject
+  private PdcManager pdcManager;
   @Inject
   private CoordinatesService coordinatesService;
-
   @Inject
   private PublicationEventNotifier notifier;
   @Inject
@@ -181,6 +178,10 @@ public class KmeliaBmEJB implements KmeliaBm {
   private AdminController adminController;
   @Inject
   private TodoBackboneAccess todoAccessor;
+  @Inject
+  private PdcClassificationService pdcClassificationService;
+  @Inject
+  private PdcSubscriptionManager pdcSubscriptionManager;
 
   public KmeliaBmEJB() {
   }
@@ -1176,10 +1177,9 @@ public class KmeliaBmEJB implements KmeliaBm {
   @Override
   @TransactionAttribute(TransactionAttributeType.REQUIRED)
   public String createPublicationIntoTopic(PublicationDetail pubDetail, NodePK fatherPK) {
-    PdcClassificationService classifier = PdcServiceFactory.getFactory().
-        getPdcClassificationService();
-    PdcClassification predefinedClassification = classifier.findAPreDefinedClassification(fatherPK
-        .getId(), fatherPK.getInstanceId());
+    PdcClassification predefinedClassification =
+        pdcClassificationService.findAPreDefinedClassification(fatherPK.getId(),
+            fatherPK.getInstanceId());
     return createPublicationIntoTopic(pubDetail, fatherPK, predefinedClassification);
   }
 
@@ -1229,11 +1229,9 @@ public class KmeliaBmEJB implements KmeliaBm {
       addPublicationToTopicWithoutNotifications(pubPK, fatherPK, true);
       // classify the publication on the PdC if its classification is defined
       if (!classification.isEmpty()) {
-        PdcClassificationService service = PdcServiceFactory.getFactory().
-            getPdcClassificationService();
         classification.ofContent(pubPK.getId());
         // subscribers are notified later (only if publication is valid)
-        service.classifyContent(pubDetail, classification, false);
+        pdcClassificationService.classifyContent(pubDetail, classification, false);
       }
 
     } catch (Exception e) {
@@ -1577,11 +1575,10 @@ public class KmeliaBmEJB implements KmeliaBm {
           toPubliForeignPK);
 
       // move pdc positions
-      com.stratelia.silverpeas.pdc.control.PdcBm pdcBmImpl = new PdcBmImpl();
       // Careful! positions must be moved according to taxonomy restrictions of target application
       int fromSilverObjectId = getSilverObjectId(pub.getPK());
       // get positions of cutted publication
-      List<ClassifyPosition> positions = pdcBmImpl.
+      List<ClassifyPosition> positions = pdcManager.
           getPositions(fromSilverObjectId, fromComponentId);
 
       // delete taxonomy data relative to moved publication
@@ -1604,7 +1601,7 @@ public class KmeliaBmEJB implements KmeliaBm {
       // reference pasted publication on taxonomy service
       int toSilverObjectId = getSilverObjectId(pub.getPK());
       // add original positions to pasted publication
-      pdcBmImpl.addPositions(positions, toSilverObjectId, to.getInstanceId());
+      pdcManager.addPositions(positions, toSilverObjectId, to.getInstanceId());
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.movePublication()",
           ERROR, "kmelia.EX_CANT_MOVE_PUBLICATION_INTO_ANOTHER_APP", e);
@@ -1910,16 +1907,15 @@ public class KmeliaBmEJB implements KmeliaBm {
       // PDC subscriptions
       try {
         int silverObjectId = getSilverObjectId(pubDetail.getPK());
-        List<ClassifyPosition> positions = pdcBm.getPositions(silverObjectId, pubDetail.getPK().
+        List<ClassifyPosition> positions = pdcManager.getPositions(silverObjectId, pubDetail.getPK().
             getInstanceId());
-        PdcSubscriptionUtil pdc = new PdcSubscriptionUtil();
         if (positions != null) {
           for (ClassifyPosition position : positions) {
-            pdc.checkSubscriptions(position.getValues(), pubDetail.getPK().getInstanceId(),
-                silverObjectId);
+            pdcSubscriptionManager.checkSubscriptions(position.getValues(),
+                pubDetail.getPK().getInstanceId(), silverObjectId);
           }
         }
-      } catch (RemoteException e) {
+      } catch (RemoteException | PdcException e) {
         SilverTrace.error("kmelia", "KmeliaBmEJB.sendSubscriptionsNotification",
             "kmelia.CANT_SEND_PDC_SUBSCRIPTIONS", e);
       }
@@ -4985,7 +4981,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     int fromSilverObjectId = getSilverObjectId(fromPK);
     int toSilverObjectId = getSilverObjectId(toPK);
 
-    new PdcBmImpl().copyPositions(fromSilverObjectId, fromPK.getInstanceId(), toSilverObjectId,
+    pdcManager.copyPositions(fromSilverObjectId, fromPK.getInstanceId(), toSilverObjectId,
         toPK.getInstanceId());
   }
   

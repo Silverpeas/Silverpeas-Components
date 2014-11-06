@@ -27,8 +27,9 @@ import com.silverpeas.SilverpeasContent;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceProvider;
-import com.silverpeas.pdc.ejb.PdcBm;
+import com.stratelia.silverpeas.pdc.control.PdcManager;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
+import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -230,7 +231,12 @@ public class KmeliaPublication implements SilverpeasContent {
    */
   public List<ClassifyPosition> getPDCPositions() {
     int silverObjectId = getKmeliaService().getSilverObjectId(pk);
-    return getPdcBm().getPositions(silverObjectId, pk.getInstanceId());
+    try {
+      return PdcManager.getInstance().getPositions(silverObjectId, pk.getInstanceId());
+    } catch (PdcException e) {
+      throw new KmeliaRuntimeException("kmelia", e.getErrorLevel(), e.getMessage(),
+          e.getExtraInfos(), e);
+    }
 
   }
 
@@ -359,14 +365,5 @@ public class KmeliaPublication implements SilverpeasContent {
 
   public int getRank() {
     return rank;
-  }
-
-  private PdcBm getPdcBm() {
-    try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.PDCBM_EJBHOME, PdcBm.class);
-    } catch (Exception e) {
-      throw new KmeliaRuntimeException("KmeliaPublication.getPdcBm()",
-          SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_KmeliaBm_HOME", e);
-    }
   }
 }

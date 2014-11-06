@@ -23,7 +23,7 @@ package com.silverpeas.whitePages.control;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
-import com.silverpeas.pdc.PdcServiceFactory;
+import com.silverpeas.pdc.PdcServiceProvider;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
@@ -35,8 +35,8 @@ import com.silverpeas.whitePages.model.WhitePagesCard;
 import com.silverpeas.whitePages.record.UserRecord;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
-import com.stratelia.silverpeas.pdc.control.PdcBm;
-import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
+import com.stratelia.silverpeas.pdc.control.PdcManager;
+import com.stratelia.silverpeas.pdc.control.GlobalPdcManager;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -103,8 +103,7 @@ public class CardManager {
 
       // classify the contribution on the PdC if its classification is defined
       if (classification != null && !classification.isEmpty()) {
-        PdcClassificationService service = PdcServiceFactory.getFactory().
-            getPdcClassificationService();
+        PdcClassificationService service = PdcServiceProvider.getPdcClassificationService();
         SilverCard silverCard = new SilverCard(card, silverContentId);
         classification.ofContent(Long.toString(id));
         service.classifyContent(silverCard, classification);
@@ -380,9 +379,9 @@ public class CardManager {
     ContentManager aContentManager = new ContentManager();
     int contentId = aContentManager.getSilverContentId(card.getPK().getId(),
         card.getInstanceId());
-    PdcBm pdcBm = new PdcBmImpl();
+    PdcManager pdcManager = new GlobalPdcManager();
 
-    List<ClassifyPosition> positions = pdcBm.getPositions(contentId, card.getInstanceId());
+    List<ClassifyPosition> positions = pdcManager.getPositions(contentId, card.getInstanceId());
     return !positions.isEmpty();
   }
 
