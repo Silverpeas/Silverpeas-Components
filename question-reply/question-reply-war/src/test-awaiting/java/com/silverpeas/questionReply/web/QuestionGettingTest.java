@@ -30,7 +30,7 @@ import com.silverpeas.questionReply.model.Question;
 import static com.silverpeas.questionReply.web.QuestionReplyTestResources.COMPONENT_INSTANCE_ID;
 import static com.silverpeas.questionReply.web.QuestionReplyTestResources.QUESTION_RESOURCE_PATH;
 import com.silverpeas.web.RESTWebServiceTest;
-import static com.silverpeas.web.UserPriviledgeValidation.HTTP_SESSIONKEY;
+import static com.silverpeas.web.UserPrivilegeValidation.HTTP_SESSIONKEY;
 import com.silverpeas.web.mock.UserDetailWithProfiles;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
