@@ -16,4 +16,11 @@
     <module>delegatednews-war</module>
     <module>delegatednews-config</module>
   </modules>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework.data</groupId>
+      <artifactId>spring-data-jpa</artifactId>
+    </dependency>
+  </dependencies>
 </project>

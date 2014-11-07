@@ -24,21 +24,6 @@
 
 package com.silverpeas.delegatednews.control;
 
-import static com.stratelia.webactiv.SilverpeasRole.admin;
-import static com.stratelia.webactiv.SilverpeasRole.user;
-
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import javax.xml.bind.JAXBException;
-
-import org.codehaus.jackson.map.AnnotationIntrospector;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.xc.JaxbAnnotationIntrospector;
-
 import com.silverpeas.delegatednews.DelegatedNewsRuntimeException;
 import com.silverpeas.delegatednews.model.DelegatedNews;
 import com.silverpeas.delegatednews.service.DelegatedNewsService;
@@ -47,7 +32,17 @@ import com.silverpeas.delegatednews.web.DelegatedNewsEntity;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
+import org.silverpeas.util.JSONCodec;
+import org.silverpeas.util.exception.EncodingException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
+
+import javax.xml.bind.JAXBException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import static com.stratelia.webactiv.SilverpeasRole.admin;
+import static com.stratelia.webactiv.SilverpeasRole.user;
 
 public class DelegatedNewsSessionController extends AbstractComponentSessionController {
 
@@ -174,17 +169,12 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
       throws DelegatedNewsRuntimeException {
     DelegatedNewsEntity[] entities =
         listDelegatedNewsEntity.toArray(new DelegatedNewsEntity[listDelegatedNewsEntity.size()]);
-    ObjectMapper mapper = new ObjectMapper();
-    AnnotationIntrospector introspector = new JaxbAnnotationIntrospector();
-    mapper.setAnnotationIntrospector(introspector);
-    StringWriter writer = new StringWriter();
     try {
-      mapper.writeValue(writer, entities);
-    } catch (IOException ex) {
+      return JSONCodec.encode(entities);
+    } catch (EncodingException ex) {
       throw new DelegatedNewsRuntimeException("DelegatedNewsSessionController.listAsJSON()",
           SilverpeasRuntimeException.ERROR,
           "root.EX_NO_MESSAGE", ex);
     }
-    return writer.toString();
   }
 }

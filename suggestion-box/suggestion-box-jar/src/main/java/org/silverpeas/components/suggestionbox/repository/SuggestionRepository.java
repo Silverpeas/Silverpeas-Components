@@ -155,6 +155,11 @@ public class SuggestionRepository implements
     return suggestions.size();
   }
 
+  @Override
+  public boolean contains(final Suggestion entity) {
+    return suggestionManager.contains(entity);
+  }
+
   private Suggestion decorate(final Suggestion suggestion, final SuggestionCriteria criteria) {
     if (criteria.mustLoadWysiwygContent()) {
       withContent(suggestion);

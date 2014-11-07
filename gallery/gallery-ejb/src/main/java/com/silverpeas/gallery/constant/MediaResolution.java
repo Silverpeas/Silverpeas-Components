@@ -25,10 +25,10 @@ package com.silverpeas.gallery.constant;
 
 import com.silverpeas.gallery.GalleryComponentSettings;
 import org.silverpeas.util.StringUtil;
-import org.apache.commons.collections.set.UnmodifiableSet;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonValue;
 
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -46,7 +46,7 @@ public enum MediaResolution {
 
   @SuppressWarnings("unchecked")
   public final static Set<MediaResolution> ALL =
-      UnmodifiableSet.decorate(EnumSet.allOf(MediaResolution.class));
+      Collections.unmodifiableSet(EnumSet.allOf(MediaResolution.class));
 
   @JsonCreator
   public static MediaResolution fromNameOrLabel(String nameOrLabel) {

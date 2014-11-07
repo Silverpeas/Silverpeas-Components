@@ -26,7 +26,6 @@ package com.silverpeas.gallery.constant;
 
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.StringUtil;
-import org.apache.commons.collections.set.UnmodifiableSet;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -46,12 +45,12 @@ public enum MediaMimeType {
 
   @SuppressWarnings("unchecked")
   public static final Set<MediaMimeType> PHOTOS =
-      UnmodifiableSet.decorate(EnumSet.of(BMP, GIF, PNG, JPG, TIFF));
+      Collections.unmodifiableSet(EnumSet.of(BMP, GIF, PNG, JPG, TIFF));
   @SuppressWarnings("unchecked")
   public static final Set<MediaMimeType> VIDEOS =
-      UnmodifiableSet.decorate(EnumSet.of(MOV, MP4, FLV));
+      Collections.unmodifiableSet(EnumSet.of(MOV, MP4, FLV));
   @SuppressWarnings("unchecked")
-  public static final Set<MediaMimeType> SOUNDS = UnmodifiableSet.decorate(EnumSet.of(MP3));
+  public static final Set<MediaMimeType> SOUNDS = Collections.unmodifiableSet(EnumSet.of(MP3));
 
   private static final Set<MediaMimeType> ALL_VALIDS = EnumSet.allOf(MediaMimeType.class);
 

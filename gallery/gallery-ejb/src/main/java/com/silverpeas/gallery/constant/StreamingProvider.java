@@ -24,7 +24,6 @@
 package com.silverpeas.gallery.constant;
 
 import org.silverpeas.util.StringUtil;
-import org.apache.commons.collections.set.UnmodifiableSet;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonValue;
 
@@ -51,7 +50,7 @@ public enum StreamingProvider {
     Set<StreamingProvider> allValids = EnumSet.allOf(StreamingProvider.class);
     allValids.remove(unknown);
     //noinspection unchecked
-    ALL_VALIDS = UnmodifiableSet.decorate(allValids);
+    ALL_VALIDS = Collections.unmodifiableSet(allValids);
   }
 
   StreamingProvider(final String idExtractorPattern, final String... regexpDetectionParts) {

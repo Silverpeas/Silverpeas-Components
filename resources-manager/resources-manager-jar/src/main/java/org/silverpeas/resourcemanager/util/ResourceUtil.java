@@ -24,7 +24,6 @@
 package org.silverpeas.resourcemanager.util;
 
 import org.silverpeas.util.StringUtil;
-import org.apache.commons.collections.CollectionUtils;
 import org.silverpeas.resourcemanager.model.Resource;
 
 import java.util.ArrayList;
@@ -44,7 +43,7 @@ public class ResourceUtil {
    */
   public static List<Long> toIdList(List<Resource> resources) {
     List<Long> result = new ArrayList<Long>();
-    if (CollectionUtils.isNotEmpty(resources)) {
+    if (resources != null && !resources.isEmpty()) {
       for (Resource resource : resources) {
         result.add(resource.getId());
       }

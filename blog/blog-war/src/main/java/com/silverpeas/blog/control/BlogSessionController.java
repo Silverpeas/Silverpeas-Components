@@ -49,18 +49,17 @@ import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
-import org.codehaus.jackson.map.AnnotationIntrospector;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.xc.JaxbAnnotationIntrospector;
 import org.silverpeas.node.web.NodeEntity;
 import org.silverpeas.search.indexEngine.model.IndexManager;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileServerUtils;
 import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.JSONCodec;
 import org.silverpeas.util.NotifierUtil;
 import org.silverpeas.util.PairObject;
 import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.exception.EncodingException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.fileFolder.FileFolderManager;
@@ -69,7 +68,6 @@ import javax.inject.Inject;
 import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.rmi.RemoteException;
 import java.security.AccessControlException;
 import java.text.ParseException;
@@ -479,18 +477,13 @@ public final class BlogSessionController extends AbstractComponentSessionControl
       throws BlogRuntimeException {
     NodeEntity[] entities =
         listNodeEntity.toArray(new NodeEntity[listNodeEntity.size()]);
-    ObjectMapper mapper = new ObjectMapper();
-    AnnotationIntrospector introspector = new JaxbAnnotationIntrospector();
-    mapper.setAnnotationIntrospector(introspector);
-    StringWriter writer = new StringWriter();
     try {
-      mapper.writeValue(writer, entities);
-    } catch (IOException ex) {
+      return JSONCodec.encode(entities);
+    } catch (EncodingException ex) {
       throw new BlogRuntimeException("BlogSessionController.listAsJSON()",
           SilverpeasRuntimeException.ERROR,
           "root.EX_NO_MESSAGE", ex);
     }
-    return writer.toString();
   }
 
   /**
