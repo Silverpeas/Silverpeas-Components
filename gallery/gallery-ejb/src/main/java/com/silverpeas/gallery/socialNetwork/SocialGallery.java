@@ -36,15 +36,20 @@ import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.provider.SocialGalleryInterface;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.date.Period;
 import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.date.Period;
 
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
 
+@Singleton
 public class SocialGallery implements SocialGalleryInterface {
+
+  protected SocialGallery() {
+  }
 
   /**
    * get the my SocialInformationGallery according to number of Item and the first Index
