@@ -78,7 +78,7 @@ public class ResultSearchRenderer extends AbstractResultDisplayer {
         .getString("customersTemplatePath"));
   }
   /**
-   * Attribute loaded with dependency injection (Spring)
+   * Attribute loaded with dependency injection
    */
   @Inject
   private PublicationBm publicationBm;

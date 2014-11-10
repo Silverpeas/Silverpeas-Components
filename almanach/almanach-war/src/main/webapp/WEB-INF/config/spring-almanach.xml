@@ -38,12 +38,14 @@
   <ctx:annotation-config/>
   <ctx:component-scan base-package="com.stratelia.webactiv.almanach"/>
 
+  <!-- ebo
   <jee:local-slsb id="almanachBm" jndi-name="${ALMANACHBM_EJBHOME}"
-                business-interface="com.stratelia.webactiv.almanach.control.ejb.AlmanachBm" />
-  
-  <bean id="almanachSearchResultRenderer" class="com.silverpeas.component.almanach.ui.ResultSearchRenderer">
+                business-interface="com.stratelia.webactiv.almanach.control.ejb.AlmanachBm" /> -->
+
+  <!-- ebo <bean id="almanachSearchResultRenderer" class="com.silverpeas.almanach.ui.ResultSearchRenderer">
     <property name="almanachBm" ref="almanachBm" />
   </bean>
+  -->
 
 
 </beans>

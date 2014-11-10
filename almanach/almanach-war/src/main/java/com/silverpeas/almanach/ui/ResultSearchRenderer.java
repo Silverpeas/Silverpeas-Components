@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.component.almanach.ui;
+package com.silverpeas.almanach.ui;
 
 import java.util.Properties;
 
@@ -73,7 +73,7 @@ public class ResultSearchRenderer extends AbstractResultDisplayer implements Res
   }
 
   /**
-   * Attribute loaded with dependency injection (Spring)
+   * Attribute loaded with dependency injection
    */
   @Inject
   private AlmanachBm almanachBm;
