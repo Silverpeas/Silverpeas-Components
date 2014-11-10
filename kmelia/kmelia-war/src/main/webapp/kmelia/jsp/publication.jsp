@@ -28,6 +28,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
@@ -51,6 +52,7 @@
 <%@ page import="org.silverpeas.rating.web.RaterRatingEntity" %>
 
 <c:set var="userLanguage" value="${requestScope.resources.language}"/>
+<c:set var="contentLanguage" value="${requestScope.Language}"/>
 <fmt:setLocale value="${userLanguage}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
@@ -229,6 +231,7 @@
 %>
 
 <c:set var="publication" value="<%=pubDetail%>"/>
+<jsp:useBean id="publication" type="com.stratelia.webactiv.util.publication.model.PublicationDetail"/>
 <c:set var="publicationRaterRatingEntity" value="<%=RaterRatingEntity.fromRateable(pubDetail)%>"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -450,8 +453,8 @@
           var sharingObject = {
               componentId: "<%=contextComponentId%>",
               type       : "Publication",
-              id         : "<%=id%>",
-              name   : "<%=pubDetail.getName(language)%>"
+              id         : "${publication.id}",
+              name   : "${silfn:escapeJs(publication.getName(contentLanguage))}"
           };
           createSharingTicketPopup(sharingObject);
         }
