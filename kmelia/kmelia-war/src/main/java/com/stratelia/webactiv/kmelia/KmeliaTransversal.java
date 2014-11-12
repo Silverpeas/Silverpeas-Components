@@ -30,6 +30,7 @@ import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 
 import javax.ejb.EJBException;
@@ -43,7 +44,7 @@ import java.util.List;
 public class KmeliaTransversal implements PublicationHelper {
 
   private String userId = null;
-  private PublicationBm publicationBm = null;
+  private PublicationBm publicationBm = ServiceProvider.getService(PublicationBm.class);
   private OrganizationController organizationControl =
       OrganizationControllerProvider.getOrganisationController();
 
@@ -222,17 +223,6 @@ public class KmeliaTransversal implements PublicationHelper {
   }
 
   private PublicationBm getPublicationBm() {
-    if (publicationBm == null) {
-      try {
-        publicationBm = EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-            PublicationBm.class);
-      } catch (Exception e) {
-        SilverTrace.error("quickinfo","QuickInfoTransversalSC.getPublicationBm()",
-            "root.MSG_EJB_CREATE_FAILED", JNDINames.PUBLICATIONBM_EJBHOME, e);
-        throw new EJBException(e);
-      }
-
-    }
     return publicationBm;
   }
 }

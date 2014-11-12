@@ -116,7 +116,7 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter<Classifieds
  
 
   private boolean isAnonymousAccess(HttpServletRequest request) {
-    LookHelper lookHelper = (LookHelper) request.getSession().getAttribute(LookHelper.SESSION_ATT);
+    LookHelper lookHelper = LookHelper.getLookHelper(request.getSession());
     if (lookHelper != null) {
       return lookHelper.isAnonymousAccess();
     }

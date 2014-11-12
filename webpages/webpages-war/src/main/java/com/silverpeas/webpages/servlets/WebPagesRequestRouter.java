@@ -182,7 +182,7 @@ public class WebPagesRequestRouter extends ComponentRequestRouter<WebPagesSessio
   }
 
   private boolean isAnonymousAccess(HttpServletRequest request) {
-    LookHelper lookHelper = (LookHelper) request.getSession().getAttribute("Silverpeas_LookHelper");
+    LookHelper lookHelper = LookHelper.getLookHelper(request.getSession());
     if (lookHelper != null) {
       return lookHelper.isAnonymousAccess();
     }

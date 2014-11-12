@@ -94,7 +94,7 @@ public abstract class FunctionHandler {
   }
 
   protected boolean isAnonymousAccess(HttpRequest request) {
-    LookHelper lookHelper = (LookHelper) request.getSession().getAttribute(LookHelper.SESSION_ATT);
+    LookHelper lookHelper = LookHelper.getLookHelper(request.getSession());
     if (lookHelper != null) {
       return lookHelper.isAnonymousAccess();
     }
