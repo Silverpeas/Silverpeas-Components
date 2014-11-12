@@ -46,7 +46,7 @@
     <property name="notificationFormatter" ref="notificationFormatter" />
     <property name="smtpConfig" ref="smtpConfiguration" />
     <property name="organisationController" ref="organizationController" />
-    <property name="calendarBm" ref="calendarBm" />
+    <!-- ebo <property name="calendarBm" ref="calendarBm" /> -->
     <property name="externalThread" value="false" />
   </bean>
 
@@ -58,7 +58,7 @@
     <property name="authenticate" value="${SMTPAuthentication}" />
   </bean>
 
-  <bean id="calendarBm" class="com.silverpeas.mailinglist.service.notification.StubSilverpeasCalendarBm" />
+  <!-- ebo <bean id="calendarBm" class="com.silverpeas.mailinglist.service.notification.StubSilverpeasCalendarBm" /> -->
 
   <bean id="notificationFormatter" name="notificationFormatter"
         class="com.silverpeas.mailinglist.service.notification.AdvancedNotificationFormatter" />

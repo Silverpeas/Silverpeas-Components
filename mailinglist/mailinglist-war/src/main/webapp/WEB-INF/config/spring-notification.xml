@@ -50,7 +50,7 @@
     <property name="notificationFormatter" ref="notificationFormatter" />
     <property name="smtpConfig" ref="smtpConfiguration" />
     <property name="organisationController" ref="organizationController" />
-    <property name="calendarBm" ref="calendarBm" />
+    <!-- ebo <property name="calendarBm" ref="calendarBm" /> -->
     <property name="externalThread" value="true" />
   </bean>
 
@@ -63,8 +63,9 @@
     <property name="secure" value="${SMTPSecure}" />
   </bean>
 
+  <!-- ebo
   <jee:local-slsb id="calendarBm" jndi-name="${CALENDARBM_EJBHOME}"
-                  business-interface="com.stratelia.webactiv.calendar.control.SilverpeasCalendar" />
+                  business-interface="com.stratelia.webactiv.calendar.control.SilverpeasCalendar" /> -->
 
   <bean id="mailCheckerInitializer" name="mailCheckerInitializer"
         class="com.silverpeas.mailinglist.control.MailCheckerInitialize" init-method="registerAll">

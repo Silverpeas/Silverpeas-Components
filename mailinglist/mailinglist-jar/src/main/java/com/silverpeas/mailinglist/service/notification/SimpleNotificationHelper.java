@@ -49,6 +49,7 @@ import java.util.Set;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
+import javax.inject.Inject;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Session;
@@ -72,6 +73,7 @@ public class SimpleNotificationHelper implements NotificationHelper {
   private Session session;
   private SmtpConfiguration smtpConfig;
   private boolean externalThread = true;
+  @Inject
   private SilverpeasCalendar calendarBm;
   private OrganizationController controller;
 
@@ -260,10 +262,6 @@ public class SimpleNotificationHelper implements NotificationHelper {
 
   public SilverpeasCalendar getCalendarBm() {
     return calendarBm;
-  }
-
-  public void setCalendarBm(SilverpeasCalendar calendarBm) {
-    this.calendarBm = calendarBm;
   }
 
   public SmtpConfiguration getSmtpConfig() {
