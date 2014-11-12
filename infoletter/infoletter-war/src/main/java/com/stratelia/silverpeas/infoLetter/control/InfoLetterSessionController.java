@@ -21,14 +21,11 @@
 package com.stratelia.silverpeas.infoLetter.control;
 
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -37,21 +34,8 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
-import javax.mail.Message;
-import javax.mail.Multipart;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
 import javax.xml.bind.JAXBException;
 
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
@@ -64,8 +48,6 @@ import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.subscribe.constant.SubscriberType;
 import com.silverpeas.ui.DisplayI18NHelper;
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.MimeTypes;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.csv.CSVReader;
 import com.silverpeas.util.csv.CSVWriter;
@@ -105,8 +87,6 @@ import com.stratelia.webactiv.util.exception.UtilTrappedException;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.CharEncoding;
 
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
@@ -121,11 +101,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
    * Interface metier du composant
    */
   private InfoLetterDataInterface dataInterface = null;
-  /**
-   * the tuning parameters
-   */
-  private static final ResourceLocator smtpSettings = new ResourceLocator(
-      "org.silverpeas.notificationserver.channel.smtp.smtpSettings", "");
+  
   public final static String EXPORT_CSV_NAME = "_emails.csv";
 
   /**
@@ -348,159 +324,25 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
           SilverpeasRuntimeException.ERROR, e.getMessage(), e);
     }
   }
-
+  
+  
   // Notification des abonnes externes
   public String[] notifyExternals(InfoLetterPublicationPdC ilp, String server, List<String> emails) {
-    // Retrieve SMTP server information
-    String host = getSmtpHost();
-    boolean isSmtpAuthentication = isSmtpAuthentication();
-    int smtpPort = getSmtpPort();
-    String smtpUser = getSmtpUser();
-    String smtpPwd = getSmtpPwd();
-    boolean isSmtpDebug = isSmtpDebug();
-
     List<String> emailErrors = new ArrayList<String>();
 
     if (emails.size() > 0) {
-
-      // Corps et sujet du message
+      // create the Multipart and its parts to it
+      String mimeMultipart = getSettings().getString("SMTPMimeMultipart", "related");
+      
+      // Subject of the mail
       String subject = getString("infoLetter.emailSubject") + ilp.getName();
-      // Email du publieur
-      String from = getUserDetail().geteMail();
-      // create some properties and get the default Session
-      Properties props = System.getProperties();
-      props.put("mail.smtp.host", host);
-      props.put("mail.smtp.auth", String.valueOf(isSmtpAuthentication));
+      
+      // Email address of the manager
+      String emailFrom = getUserDetail().geteMail();
+      
+      ilp.setInstanceId(getComponentId());
+      emailErrors = dataInterface.notifyExternals(ilp, server, mimeMultipart, emails, subject, emailFrom);
 
-      Session session = Session.getInstance(props, null);
-      session.setDebug(isSmtpDebug); // print on the console all SMTP messages.
-
-      SilverTrace.info("infoLetter", "InfoLetterSessionController.notifyExternals()",
-          "root.MSG_GEN_PARAM_VALUE", "subject = " + subject);
-      SilverTrace.info("infoLetter", "InfoLetterSessionController.notifyExternals()",
-          "root.MSG_GEN_PARAM_VALUE", "from = " + from);
-      SilverTrace.info("infoLetter", "InfoLetterSessionController.notifyExternals()",
-          "root.MSG_GEN_PARAM_VALUE", "host= " + host);
-
-      try {
-        // create a message
-        MimeMessage msg = new MimeMessage(session);
-        msg.setFrom(new InternetAddress(from));
-        msg.setSubject(subject, CharEncoding.UTF_8);
-        ForeignPK foreignKey = new ForeignPK(ilp.getPK().getId(), getComponentId());
-        // create and fill the first message part
-        MimeBodyPart mbp1 = new MimeBodyPart();
-        List<SimpleDocument> contents = AttachmentServiceFactory.getAttachmentService().
-            listDocumentsByForeignKeyAndType(foreignKey, DocumentType.wysiwyg,
-            I18NHelper.defaultLanguage);
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        for (SimpleDocument content : contents) {
-          AttachmentServiceFactory.getAttachmentService().getBinaryContent(buffer, content.getPk(),
-              content.getLanguage());
-        }
-        mbp1.setDataHandler(new DataHandler(new ByteArrayDataSource(replaceFileServerWithLocal(
-            IOUtils.toString(buffer.toByteArray(), CharEncoding.UTF_8), server),
-            MimeTypes.HTML_MIME_TYPE)));
-        IOUtils.closeQuietly(buffer);
-        // Fichiers joints
-        WAPrimaryKey publiPK = ilp.getPK();
-        publiPK.setComponentName(getComponentId());
-        publiPK.setSpace(getSpaceId());
-
-        // create the Multipart and its parts to it
-        String mimeMultipart = getSettings().getString("SMTPMimeMultipart", "related");
-        Multipart mp = new MimeMultipart(mimeMultipart);
-        mp.addBodyPart(mbp1);
-
-        // Images jointes
-        List<SimpleDocument> fichiers = AttachmentServiceFactory.getAttachmentService().
-            listDocumentsByForeignKeyAndType(foreignKey, DocumentType.image, null);
-        for (SimpleDocument attachment : fichiers) {
-          // create the second message part
-          MimeBodyPart mbp2 = new MimeBodyPart();
-
-          // attach the file to the message
-          FileDataSource fds = new FileDataSource(attachment.getAttachmentPath());
-          mbp2.setDataHandler(new DataHandler(fds));
-          // For Displaying images in the mail
-          mbp2.setFileName(attachment.getFilename());
-          mbp2.setHeader("Content-ID", attachment.getFilename());
-          SilverTrace.info("infoLetter", "InfoLetterSessionController.notifyExternals()",
-              "root.MSG_GEN_PARAM_VALUE", "content-ID= " + mbp2.getContentID());
-
-          // create the Multipart and its parts to it
-          mp.addBodyPart(mbp2);
-        }
-
-        // Fichiers joints
-        fichiers = AttachmentServiceFactory.getAttachmentService().
-            listDocumentsByForeignKeyAndType(foreignKey, DocumentType.attachment, null);
-
-
-        if (!fichiers.isEmpty()) {
-          for (SimpleDocument attachment : fichiers) {
-            // create the second message part
-            MimeBodyPart mbp2 = new MimeBodyPart();
-
-            // attach the file to the message
-            FileDataSource fds = new FileDataSource(attachment.getAttachmentPath());
-            mbp2.setDataHandler(new DataHandler(fds));
-            mbp2.setFileName(attachment.getFilename());
-            // For Displaying images in the mail
-            mbp2.setHeader("Content-ID", attachment.getFilename());
-            SilverTrace.info("infoLetter", "InfoLetterSessionController.notifyExternals()",
-                "root.MSG_GEN_PARAM_VALUE", "content-ID= " + mbp2.getContentID());
-
-            // create the Multipart and its parts to it
-            mp.addBodyPart(mbp2);
-          }
-        }
-
-        // add the Multipart to the message
-        msg.setContent(mp);
-        // set the Date: header
-        msg.setSentDate(new Date());
-        // create a Transport connection (TCP)
-        Transport transport = session.getTransport("smtp");
-
-        InternetAddress[] address = new InternetAddress[1];
-        for (String email : emails) {
-          try {
-            address[0] = new InternetAddress(email);
-            msg.setRecipients(Message.RecipientType.TO, address);
-            // add Transport Listener to the transport connection.
-            if (isSmtpAuthentication) {
-              SilverTrace.info("infoLetter", "InfoLetterSessionController.notifyExternals()",
-                  "root.MSG_GEN_PARAM_VALUE", "host = " + host + " m_Port=" + smtpPort + " m_User="
-                  + smtpUser);
-              transport.connect(host, smtpPort, smtpUser, smtpPwd);
-              msg.saveChanges();
-            } else {
-              transport.connect();
-            }
-            transport.sendMessage(msg, address);
-          } catch (Exception ex) {
-            SilverTrace.error("infoLetter", "InfoLetterSessionController.notifyExternals()",
-                "root.MSG_GEN_PARAM_VALUE", "Email = " + email, new InfoLetterException(
-                "com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController",
-                SilverpeasRuntimeException.ERROR, ex.getMessage(), ex));
-            emailErrors.add(email);
-          } finally {
-            if (transport != null) {
-              try {
-                transport.close();
-              } catch (Exception e) {
-                SilverTrace.error("infoLetter", "InfoLetterSessionController.notifyExternals()",
-                    "root.EX_IGNORED", "ClosingTransport", e);
-              }
-            }
-          }
-        }
-      } catch (Exception e) {
-        throw new InfoLetterException(
-            "com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController",
-            SilverpeasRuntimeException.ERROR, e.getMessage(), e);
-      }
     }
     return emailErrors.toArray(new String[emailErrors.size()]);
   }
@@ -653,48 +495,6 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     IndexEngineProxy.removeIndexEntry(indexEntry);
   }
 
-  // Remplacement des appels au FileServer par le nom de fichier simple
-  private String replaceFileServerWithLocal(String message, String server) {
-    SilverTrace.info("infoLetter", "InfoLetterSessionController.replaceFileServerWithLocal()",
-        "root.MSG_GEN_PARAM_VALUE", "wysiwygText avant = " + message);
-    String retour = replacePermalinkWithServer(message, server);
-    while (retour.contains("/FileServer/")) {
-      int place = retour.indexOf("/FileServer/");
-      String debut = retour.substring(0, place);
-      int srcPlace = debut.lastIndexOf("\"");
-      debut = debut.substring(0, srcPlace + 1);
-      String suite =
-          retour.substring(place + "/FileServer/".length(), retour.length());
-      int finNom = suite.indexOf('?');
-      String nomFichier = "cid:" + suite.substring(0, finNom);
-      nomFichier = nomFichier.replace('_', ' ');
-      int finURL = suite.indexOf('\"');
-      suite = suite.substring(finURL, suite.length());
-      retour = debut + nomFichier + suite;
-    }
-    SilverTrace.info("infoLetter", "InfoLetterSessionController.replaceFileServerWithLocal()",
-        "root.MSG_GEN_PARAM_VALUE", "wysiwygText après = " + retour);
-    return retour;
-  }
-
-  /**
-   * Replace /silverpeas/xxx by http(s)://server:port/silverpeas/xxx (Only in notifyExternals case)
-   *
-   * @param codeHtml
-   * @param serveur: http(s)://server:port
-   * @return codeHtml
-   */
-  private String replacePermalinkWithServer(String message, String server) {
-    SilverTrace.info("infoLetter", "InfoLetterSessionController.replacePermalinkWithServer()",
-        "root.MSG_GEN_PARAM_VALUE", "wysiwygText avant = " + message);
-    String urlContext = URLManager.getApplicationURL();
-    String retour = message.replaceAll("\"".toLowerCase() + urlContext + "/",
-        "\"" + server + urlContext + "/");
-    SilverTrace.info("infoLetter", "InfoLetterSessionController.replacePermalinkWithServer()",
-        "root.MSG_GEN_PARAM_VALUE", "wysiwygText après = " + retour);
-    return retour;
-  }
-
   public boolean isPdcUsed() {
     String parameterValue = getComponentParameterValue("usepdc");
     return "yes".equals(parameterValue.toLowerCase());
@@ -836,29 +636,5 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       }
     }
     return emails;
-  }
-
-  private String getSmtpHost() {
-    return smtpSettings.getString("SMTPServer");
-  }
-
-  private boolean isSmtpAuthentication() {
-    return smtpSettings.getBoolean("SMTPAuthentication", false);
-  }
-
-  private boolean isSmtpDebug() {
-    return smtpSettings.getBoolean("SMTPDebug", false);
-  }
-
-  private int getSmtpPort() {
-    return Integer.parseInt(smtpSettings.getString("SMTPPort"));
-  }
-
-  private String getSmtpUser() {
-    return smtpSettings.getString("SMTPUser");
-  }
-
-  private String getSmtpPwd() {
-    return smtpSettings.getString("SMTPPwd");
   }
 }
