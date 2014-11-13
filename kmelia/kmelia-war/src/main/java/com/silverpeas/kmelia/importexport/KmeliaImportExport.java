@@ -154,7 +154,7 @@ public class KmeliaImportExport extends GEDImportExport {
     try {
       NodePK nodePk = nodeDetail.getNodePK();
       nodePk.setComponentName(getCurrentComponentId());
-      nodeDetail.setCreatorId(getCurentUserDetail().getId());
+      nodeDetail.setCreatorId(getCurrentUserDetail().getId());
 
       // Recherche si le noeud existe déjà, on s'arrête si c'est le cas
       try {
@@ -218,7 +218,7 @@ public class KmeliaImportExport extends GEDImportExport {
         // Il n'y a pas de topic, on le crée
         NodePK topicPK = new NodePK(Integer.toString(topicId), getCurrentComponentId());
         nodeDetail.getNodePK().setComponentName(getCurrentComponentId());
-        nodeDetail.setCreatorId(getCurentUserDetail().getId());
+        nodeDetail.setCreatorId(getCurrentUserDetail().getId());
         nodePK = getKmeliaBm().addSubTopic(topicPK, nodeDetail, "None");
         massiveReport.addOneTopicCreated();
 
