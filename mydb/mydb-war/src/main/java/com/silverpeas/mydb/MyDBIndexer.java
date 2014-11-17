@@ -24,19 +24,20 @@
 
 package com.silverpeas.mydb;
 
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
+import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
+
+import javax.inject.Singleton;
 
 /**
  * MyDB Indexer.
  * @author Antoine HEDIN
  */
-public class MyDBIndexer implements ComponentIndexerInterface {
+@Singleton
+public class MyDBIndexer implements ComponentIndexation {
 
   @Override
-  public void index(MainSessionController mainSessionCtrl,
-      ComponentContext context) throws Exception {
+  public void index(ComponentInst componentInst) throws Exception {
 
   }
 

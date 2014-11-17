@@ -24,13 +24,16 @@
 
 package com.silverpeas.formsonline;
 
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
+import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
 
-public class FormsOnlineIndexer implements ComponentIndexerInterface {
+import javax.inject.Singleton;
 
-  public void index(MainSessionController mainSessionCtrl, ComponentContext context)
+@Singleton
+public class FormsOnlineIndexer implements ComponentIndexation {
+
+  @Override
+  public void index(ComponentInst componentInst)
       throws Exception {
   }
 }

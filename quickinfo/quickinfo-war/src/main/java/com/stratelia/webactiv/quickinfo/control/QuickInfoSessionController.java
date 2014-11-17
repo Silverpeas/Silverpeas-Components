@@ -200,13 +200,6 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     }
   }
 
-  public void index() throws RemoteException {
-    List<News> infos = getVisibleQuickInfos();
-    for (News news : infos) {
-      getPublicationBm().createIndex(news.getPublication().getPK());
-    }
-  }
-
   public ThumbnailSettings getThumbnailSettings() {
     int width = getSettings().getInteger("thumbnail.width", 200);
     int height = getSettings().getInteger("thumbnail.height", 200);

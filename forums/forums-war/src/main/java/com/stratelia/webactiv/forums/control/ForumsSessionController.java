@@ -276,17 +276,6 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     getForumsBM().deleteForum(getForumPK(forumId));
   }
 
-  /**
-   * Indexe un forum a partir de son ID
-   *
-   * @param forumId l'ID du forum dans la datasource
-   * @author frageade
-   * @since 23 Aout 2001
-   */
-  public void indexForum(int forumId) {
-    getForumsBM().createIndex(getForumPK(forumId));
-  }
-
   // Methodes messages
   /**
    * Liste les messages d'un forum
@@ -555,17 +544,6 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   private void sendMessageNotificationRefused(Message message, String motive) {
     UserNotificationHelper.buildAndSend(
         new ForumsMessageValidationUserNotification(message, getUserId(), motive));
-  }
-
-  /**
-   * Indexe un message a partir de son ID
-   *
-   * @param messageId l'ID du message dans la datasource
-   * @author frageade
-   * @since 23 Aout 2001
-   */
-  public void indexMessage(int messageId) {
-    getForumsBM().createIndex(getMessagePK(messageId));
   }
 
   /**

@@ -106,15 +106,6 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
         I18NHelper.defaultLanguage);
   }
 
-  public void index() throws WebPagesException {
-    if (isXMLTemplateUsed()) {
-      indexForm(null);
-    } else {
-      ForeignPK foreignPK = new ForeignPK(getComponentId(), getComponentId());
-      AttachmentServiceProvider.getAttachmentService().indexAllDocuments(foreignPK, null, null);
-    }
-  }
-
   public synchronized void removeSubscription() {
     SilverTrace.info("webPages", "WebPagesSessionController.unsubscribeFromNode()",
             "root.MSG_GEN_ENTER_METHOD");

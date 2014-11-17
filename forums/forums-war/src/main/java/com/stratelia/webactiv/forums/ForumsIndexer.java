@@ -24,40 +24,49 @@
 package com.stratelia.webactiv.forums;
 
 
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
-import com.stratelia.webactiv.forums.control.ForumsSessionController;
+import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
+import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsBM;
+import com.stratelia.webactiv.forums.models.ForumPK;
 import com.stratelia.webactiv.forums.models.Message;
+import com.stratelia.webactiv.forums.models.MessagePK;
 
-public class ForumsIndexer implements ComponentIndexerInterface {
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.util.Collection;
+import java.util.List;
 
-  private ForumsSessionController fsc = null;
+@Singleton
+public class ForumsIndexer implements ComponentIndexation {
+
+  @Inject
+  private ForumsBM forumService;
+
+  private static String ROOT_FORUM_ID = "0";
 
   @Override
-  public void index(MainSessionController mainSessionCtrl,
-      ComponentContext context) throws Exception {
-    fsc = new ForumsSessionController(mainSessionCtrl, context);
-    indexForum(0);
+  public void index(ComponentInst componentInst) throws Exception {
+    indexForum(componentInst.getId(), ROOT_FORUM_ID);
   }
 
-  private void indexForum(int forumId) throws Exception {
-    int[] sonIds = fsc.getForumSonsIds(forumId);
-    for (int i = 0; i < sonIds.length; i++) {
-      indexForum(sonIds[i]);
+  private void indexForum(String componentId, String forumId) throws Exception {
+    ForumPK pk = new ForumPK(componentId, forumId);
+    List<String> sonIds = forumService.getForumSonsIds(pk);
+    for (String aSonId : sonIds) {
+      indexForum(componentId, aSonId);
     }
-    if (forumId != 0) {
-      fsc.indexForum(forumId);
+    if (!ROOT_FORUM_ID.equals(forumId)) {
+      forumService.createIndex(pk);
     }
 
-    Message[] messages = fsc.getMessagesList(forumId);
-    for (int i = 0; i < messages.length; i++) {
-      indexMessageNoRecursive(messages[i].getId());
+    Collection<Message> messages = forumService.getMessages(pk);
+    for (Message aMessage : messages) {
+      indexMessageNoRecursive(componentId, aMessage.getId());
     }
   }
 
-  private void indexMessageNoRecursive(int messageId) throws Exception {
-    fsc.indexMessage(messageId);
+  private void indexMessageNoRecursive(String componentId, int messageId) throws Exception {
+    forumService.createIndex(new MessagePK(componentId, String.valueOf(messageId)));
   }
 
 }

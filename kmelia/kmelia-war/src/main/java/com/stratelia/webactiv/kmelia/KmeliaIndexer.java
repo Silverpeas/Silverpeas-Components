@@ -24,19 +24,21 @@
 
 package com.stratelia.webactiv.kmelia;
 
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
-import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
+import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
+import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
 
-public class KmeliaIndexer implements ComponentIndexerInterface {
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
-  private KmeliaSessionController scc = null;
+@Singleton
+public class KmeliaIndexer implements ComponentIndexation {
 
-  public void index(MainSessionController mainSessionCtrl,
-      ComponentContext context) throws Exception {
-    scc = new KmeliaSessionController(mainSessionCtrl, context);
+  @Inject
+  private KmeliaBm kmeliaBm;
 
-    scc.indexKmelia();
+  @Override
+  public void index(ComponentInst componentInst) throws Exception {
+    kmeliaBm.indexKmelia(componentInst.getId());
   }
 }

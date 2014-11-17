@@ -30,27 +30,91 @@
  */
 package com.silverpeas.webpages;
 
-import com.silverpeas.webpages.control.WebPagesSessionController;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
+import com.silverpeas.form.FormException;
+import com.silverpeas.form.RecordSet;
+import com.silverpeas.publicationTemplate.PublicationTemplate;
+import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.webpages.model.WebPagesException;
+import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
+import com.stratelia.webactiv.beans.admin.Administration;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.attachment.AttachmentService;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.exception.SilverpeasException;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.util.Date;
 
 /**
  * @author sdevolder
  */
-public class WebPagesIndexer implements ComponentIndexerInterface {
+@Singleton
+public class WebPagesIndexer implements ComponentIndexation {
 
-  /*
-   * (non-Javadoc)
-   * @see com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface
-   * #index(com.stratelia.silverpeas.peasCore.MainSessionController,
-   * com.stratelia.silverpeas.peasCore.ComponentContext)
-   */
-  public void index(MainSessionController mainSessionCtrl,
-      ComponentContext context) throws Exception {
-    WebPagesSessionController wePagesScc = new WebPagesSessionController(
-        mainSessionCtrl, context);
-    wePagesScc.index();
+  private static String XML_TEMPLATE_PARAM = "xmlTemplate";
+
+  @Inject
+  private Administration admin;
+  @Inject
+  private PublicationTemplateManager templateManager;
+  @Inject
+  private AttachmentService attachmentService;
+
+  @Override
+  public void index(ComponentInst componentInst) throws Exception {
+    if (isXMLTemplateUsed(componentInst.getId())) {
+      indexForm(componentInst);
+    } else {
+      ForeignPK foreignPK = new ForeignPK(componentInst.getId(), componentInst.getId());
+      attachmentService.indexAllDocuments(foreignPK, null, null);
+    }
+  }
+
+  private void indexForm(ComponentInst componentInst) throws WebPagesException {
+    RecordSet recordSet;
+    try {
+      PublicationTemplate pub = templateManager.getPublicationTemplate(
+          componentInst.getId() + ":" + getShortNameOfXMLTemplateUsedFor(componentInst.getId()));
+      recordSet = pub.getRecordSet();
+    } catch (Exception e) {
+      throw new WebPagesException("WebPagesIndexer.indexForm()", SilverpeasException.ERROR,
+          "webPages.EX_CANT_GET_FORM", e);
+    }
+    // index data
+    try {
+      FullIndexEntry indexEntry =
+          new FullIndexEntry(componentInst.getId(), "Component", componentInst.getId());
+      indexEntry.setCreationDate(new Date());
+      indexEntry.setCreationUser(UserDetail.getCurrentRequester().getId());
+      indexEntry.setTitle(componentInst.getLabel());
+      indexEntry.setPreView(componentInst.getDescription());
+
+      recordSet.indexRecord("0", getShortNameOfXMLTemplateUsedFor(componentInst.getId()),
+          indexEntry);
+
+      IndexEngineProxy.addIndexEntry(indexEntry);
+    } catch (FormException e) {
+      throw new WebPagesException("WebPagesIndexer.indexForm()", SilverpeasException.ERROR,
+          "webPages.EX_CANT_INDEX_DATA", e);
+    }
+  }
+
+  private String getXMLTemplateUsedFor(String componentId) {
+    return admin.getComponentParameterValue(componentId, XML_TEMPLATE_PARAM);
+  }
+
+  private boolean isXMLTemplateUsed(String componentId) {
+    return StringUtil.isDefined(getXMLTemplateUsedFor(componentId));
+  }
+
+  private String getShortNameOfXMLTemplateUsedFor(String componentId) {
+    String xmlFormName = getXMLTemplateUsedFor(componentId);
+    return xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
   }
 
 }

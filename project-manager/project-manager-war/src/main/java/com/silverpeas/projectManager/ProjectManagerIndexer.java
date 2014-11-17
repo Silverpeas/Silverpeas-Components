@@ -28,28 +28,24 @@
  */
 package com.silverpeas.projectManager;
 
-import com.silverpeas.projectManager.control.ProjectManagerSessionController;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
+import com.silverpeas.projectManager.control.ejb.ProjectManagerBm;
+import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * @author neysseri
  */
-public class ProjectManagerIndexer implements ComponentIndexerInterface {
+@Singleton
+public class ProjectManagerIndexer implements ComponentIndexation {
 
-  private ProjectManagerSessionController pm = null;
+  @Inject
+  private ProjectManagerBm projectManagerBm;
 
-  /*
-   * (non-Javadoc)
-   * @see com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface
-   * #index(com.stratelia.silverpeas.peasCore.MainSessionController,
-   * com.stratelia.silverpeas.peasCore.ComponentContext)
-   */
-  public void index(MainSessionController mainSessionCtrl,
-      ComponentContext context) throws Exception {
-    pm = new ProjectManagerSessionController(mainSessionCtrl, context);
-
-    pm.index();
+  @Override
+  public void index(ComponentInst componentInst) throws Exception {
+    projectManagerBm.index(componentInst.getId());
   }
 }

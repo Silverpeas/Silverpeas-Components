@@ -424,16 +424,6 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   }
 
   /**
-   * Indexes the specified event for the Silverpeas search engine.
-   *
-   * @param event the detail of the event to index.
-   * @throws AlmanachException if an error occurs while indexing the event.
-   */
-  public void indexEvent(EventDetail event) throws AlmanachException {
-    getAlmanachBm().createIndex(event);
-  }
-
-  /**
    * Gets the remote business object for handling almanachs and events.
    *
    * @return the remote business object.

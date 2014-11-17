@@ -21,22 +21,22 @@
 package com.silverpeas.gallery;
 
 import com.silverpeas.gallery.control.ejb.GalleryBm;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
+import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 
-public class GalleryIndexer implements ComponentIndexerInterface {
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+@Singleton
+public class GalleryIndexer implements ComponentIndexation {
+
+  @Inject
+  private GalleryBm galleryService;
 
   @Override
-  public void index(MainSessionController mainSessionCtrl, ComponentContext context) throws
+  public void index(ComponentInst componentInst) throws
       Exception {
-    getGalleryBm()
-        .indexGallery(mainSessionCtrl.getCurrentUserDetail(), context.getCurrentComponentId());
-  }
-
-  private GalleryBm getGalleryBm() {
-    return EJBUtilitaire.getEJBObjectRef(JNDINames.GALLERYBM_EJBHOME, GalleryBm.class);
+    galleryService.indexGallery(UserDetail.getCurrentRequester(), componentInst.getId());
   }
 }

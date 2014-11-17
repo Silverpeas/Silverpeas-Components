@@ -23,19 +23,16 @@
  */
 package org.silverpeas.components.spaceMembers;
 
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
+import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
 
-/**
- *
- * @author
- */
-public class SpaceMembersIndexer implements ComponentIndexerInterface {
+import javax.inject.Singleton;
+
+@Singleton
+public class SpaceMembersIndexer implements ComponentIndexation {
 
   @Override
-  public void index(MainSessionController mainSessionCtrl, ComponentContext context) throws
-      Exception {
+  public void index(ComponentInst componentInst) throws Exception {
     // nothing to index for this application
   }
 }

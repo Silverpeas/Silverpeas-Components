@@ -24,18 +24,21 @@
 package com.silverpeas.classifieds;
 
 import com.silverpeas.classifieds.control.ClassifiedService;
-import com.silverpeas.classifieds.control.ClassifiedServiceFactory;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
+import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
 
-public class ClassifiedsIndexer implements ComponentIndexerInterface {
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+@Singleton
+public class ClassifiedsIndexer implements ComponentIndexation {
+
+  @Inject
+  private ClassifiedService service;
 
   @Override
-  public void index(MainSessionController mainSessionCtrl, ComponentContext context)
+  public void index(ComponentInst componentInst)
       throws Exception {
-    ClassifiedServiceFactory factory = ClassifiedServiceFactory.getFactory();
-    ClassifiedService service = factory.getClassifiedService();
-    service.indexClassifieds(context.getCurrentComponentId());
+    service.indexClassifieds(componentInst.getId());
   }
 }

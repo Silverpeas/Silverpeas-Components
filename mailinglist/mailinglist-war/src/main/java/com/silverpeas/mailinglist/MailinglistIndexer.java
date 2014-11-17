@@ -20,27 +20,32 @@
  */
 package com.silverpeas.mailinglist;
 
-import com.silverpeas.mailinglist.service.ServicesFactory;
+import com.silverpeas.mailinglist.service.model.MailingListService;
 import com.silverpeas.mailinglist.service.model.MessageIndexer;
+import com.silverpeas.mailinglist.service.model.MessageService;
 import com.silverpeas.mailinglist.service.model.beans.MailingList;
 import com.silverpeas.mailinglist.service.model.beans.Message;
 import com.silverpeas.mailinglist.service.util.OrderBy;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
+import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.List;
 
-public class MailinglistIndexer implements ComponentIndexerInterface {
+@Singleton
+public class MailinglistIndexer implements ComponentIndexation {
+
+  @Inject
+  private MailingListService mailingListService;
+  @Inject
+  private MessageService messageService;
 
   @Override
-  public void index(MainSessionController mainSessionCtrl,
-      ComponentContext context) throws Exception {
-    ServicesFactory servicesFactory = ServicesFactory.getFactory();
-    List<MailingList> mailingLists = servicesFactory.getMailingListService()
-        .listAllMailingLists();
+  public void index(ComponentInst componentInst) throws Exception {
+    List<MailingList> mailingLists = mailingListService.listAllMailingLists();
     for (MailingList mailingList : mailingLists) {
-      List<Message> messages = servicesFactory.getMessageService()
-          .listDisplayableMessages(mailingList, -1, -1, 0,
+      List<Message> messages = messageService.listDisplayableMessages(mailingList, -1, -1, 0,
           new OrderBy("sentDate", true));
       for (Message message : messages) {
         MessageIndexer.indexMessage(message);

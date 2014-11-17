@@ -28,18 +28,19 @@
  */
 package com.silverpeas.chat;
 
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
+import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
+
+import javax.inject.Singleton;
 
 /**
  * @author neysseri
  */
-public class ChatIndexer implements ComponentIndexerInterface {
+@Singleton
+public class ChatIndexer implements ComponentIndexation {
 
   @Override
-  public void index(MainSessionController mainSessionCtrl,
-      ComponentContext context) throws Exception {
+  public void index(ComponentInst componentInst) throws Exception {
     // Ce composant n'est pas re-indexable !!!
   }
 }

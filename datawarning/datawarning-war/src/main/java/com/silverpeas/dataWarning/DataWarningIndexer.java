@@ -25,13 +25,16 @@
 
 package com.silverpeas.dataWarning;
 
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
+import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
 
-public class DataWarningIndexer implements ComponentIndexerInterface {
+import javax.inject.Singleton;
 
-    public void index(MainSessionController mainSessionCtrl, ComponentContext context) throws Exception {
+@Singleton
+public class DataWarningIndexer implements ComponentIndexation {
+
+    @Override
+    public void index(ComponentInst componentInst) throws Exception {
     }
 }
 

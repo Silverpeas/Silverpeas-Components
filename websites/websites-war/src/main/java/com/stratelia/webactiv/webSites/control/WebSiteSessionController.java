@@ -808,15 +808,6 @@ public class WebSiteSessionController extends AbstractComponentSessionController
   }
 
   /**
-   * index web sites component
-   *
-   * @throws RemoteException
-   */
-  public void index() throws RemoteException {
-    getWebSiteEJB().index(getComponentId());
-  }
-
-  /**
    * notifyPublishers
    */
   public void notifyPublishers(String auteur, String nomSite,

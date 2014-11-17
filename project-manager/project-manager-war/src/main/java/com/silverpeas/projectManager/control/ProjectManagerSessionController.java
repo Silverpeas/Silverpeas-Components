@@ -668,10 +668,6 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     return higherRole;
   }
 
-  public void index() {
-    getProjectManagerBm().index(getComponentId());
-  }
-
   public void setCurrentResources(Collection<TaskResourceDetail> resources) {
     currentResources = resources;
   }

@@ -24,33 +24,35 @@
 package com.stratelia.webactiv.almanach;
 
 
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.almanach.control.AlmanachSessionController;
+import com.stratelia.webactiv.almanach.control.ejb.AlmanachBm;
 import com.stratelia.webactiv.almanach.model.EventDetail;
-import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
-import org.silverpeas.attachment.AttachmentServiceProvider;
+import com.stratelia.webactiv.almanach.model.EventPK;
+import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
+import org.silverpeas.attachment.AttachmentService;
 
-public class AlmanachIndexer implements ComponentIndexerInterface {
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.util.Collection;
 
-  private AlmanachSessionController almanachSessionController = null;
+@Singleton
+public class AlmanachIndexer implements ComponentIndexation {
+
+  @Inject
+  private AlmanachBm almanach;
+  @Inject
+  private AttachmentService attachmentService;
 
   @Override
-  public void index(MainSessionController mainSessionCtrl,
-      ComponentContext context) throws Exception {
-
-    almanachSessionController = new AlmanachSessionController(mainSessionCtrl, context);
-
-    indexEvents();
-  }
-
-  private void indexEvents() throws Exception {
-    SilverTrace.info("almanach", "AlmanachIndexer.indexEvents()",
-        "root.MSG_GEN_ENTER_METHOD");
-    for (EventDetail event : almanachSessionController.getAllEvents()) {
-      almanachSessionController.indexEvent(event);
-      AttachmentServiceProvider.getAttachmentService().indexAllDocuments(event.getPK(), null, null);
+  public void index(ComponentInst inst) throws Exception {
+    SilverTrace.info("almanach", "AlmanachIndexer.index", "root.MSG_GEN_ENTER_METHOD");
+    EventPK pk = new EventPK("", inst.getSpaceId(), inst.getId());
+    Collection<EventDetail> allEvents = almanach.getAllEvents(pk);
+    for (EventDetail event : allEvents) {
+      almanach.createIndex(event);
+      attachmentService.indexAllDocuments(event.getPK(), null, null);
     }
   }
+
 }

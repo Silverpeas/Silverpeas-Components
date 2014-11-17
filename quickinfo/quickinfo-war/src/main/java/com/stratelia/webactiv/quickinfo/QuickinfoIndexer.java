@@ -24,19 +24,29 @@
 
 package com.stratelia.webactiv.quickinfo;
 
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
-import com.stratelia.webactiv.quickinfo.control.QuickInfoSessionController;
+import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
+import com.stratelia.webactiv.publication.control.PublicationBm;
+import org.silverpeas.components.quickinfo.model.News;
+import org.silverpeas.components.quickinfo.model.QuickInfoService;
 
-public class QuickinfoIndexer implements ComponentIndexerInterface {
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.util.List;
 
-  private QuickInfoSessionController quickinfo = null;
+@Singleton
+public class QuickinfoIndexer implements ComponentIndexation {
 
-  public void index(MainSessionController mainSessionCtrl,
-      ComponentContext context) throws Exception {
-    quickinfo = new QuickInfoSessionController(mainSessionCtrl, context);
+  @Inject
+  private QuickInfoService quickInfoService;
+  @Inject
+  private PublicationBm publicationBm;
 
-    quickinfo.index();
+  @Override
+  public void index(ComponentInst componentInst) throws Exception {
+    List<News> infos = quickInfoService.getVisibleNews(componentInst.getId());
+    for (News news : infos) {
+      publicationBm.createIndex(news.getPublication().getPK());
+    }
   }
 }

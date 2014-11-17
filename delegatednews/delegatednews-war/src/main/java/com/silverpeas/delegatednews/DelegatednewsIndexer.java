@@ -20,14 +20,16 @@
  */
 package com.silverpeas.delegatednews;
 
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
+import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
 
-public class DelegatednewsIndexer implements ComponentIndexerInterface {
+import javax.inject.Singleton;
+
+@Singleton
+public class DelegatednewsIndexer implements ComponentIndexation {
 
   @Override
-  public void index(MainSessionController mainSessionCtrl, ComponentContext context)
+  public void index(ComponentInst componentInst)
       throws Exception {
   }
 }

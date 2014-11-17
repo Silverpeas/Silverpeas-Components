@@ -24,17 +24,21 @@
 package com.silverpeas.blog;
 
 import com.silverpeas.blog.control.BlogService;
-import com.silverpeas.blog.control.BlogServiceFactory;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
+import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
 
-public class BlogIndexer implements ComponentIndexerInterface {
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+@Singleton
+public class BlogIndexer implements ComponentIndexation {
+
+  @Inject
+  private BlogService service;
 
   @Override
-  public void index(MainSessionController mainSessionCtrl, ComponentContext context) throws
+  public void index(ComponentInst componentInst) throws
       Exception {
-    BlogService service = BlogServiceFactory.getFactory().getBlogService();
-    service.indexBlog(context.getCurrentComponentId());
+    service.indexBlog(componentInst.getId());
   }
 }

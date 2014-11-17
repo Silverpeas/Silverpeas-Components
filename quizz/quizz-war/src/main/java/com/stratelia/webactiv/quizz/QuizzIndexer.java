@@ -24,25 +24,33 @@
 
 package com.stratelia.webactiv.quizz;
 
+import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
+import com.stratelia.webactiv.questionContainer.control.QuestionContainerService;
+import com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader;
+import com.stratelia.webactiv.questionContainer.model.QuestionContainerPK;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.Collection;
 
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
-import com.stratelia.webactiv.quizz.control.QuizzSessionController;
-import com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader;
+@Singleton
+public class QuizzIndexer implements ComponentIndexation {
 
-public class QuizzIndexer implements ComponentIndexerInterface {
+  @Inject
+  private QuestionContainerService service;
 
-  private QuizzSessionController scc = null;
-
-  public void index(MainSessionController mainSessionCtrl,
-      ComponentContext context) throws QuizzException {
+  @Override
+  public void index(ComponentInst componentInst) throws QuizzException {
     try {
-      scc = new QuizzSessionController(mainSessionCtrl, context);
-      Collection<QuestionContainerHeader> quizzes = scc.getAdminQuizzList();
-      for (QuestionContainerHeader questionContainerHeader : quizzes) {
-        scc.updateQuizzHeader(questionContainerHeader, questionContainerHeader.getPK().getId());
+      QuestionContainerPK pk =
+          new QuestionContainerPK(null, componentInst.getSpaceId(), componentInst.getId());
+      Collection<QuestionContainerHeader> quizzes = service.getNotClosedQuestionContainers(pk);
+      for (QuestionContainerHeader header : quizzes) {
+        pk = new QuestionContainerPK(header.getId(), componentInst.getSpaceId(),
+            componentInst.getId());
+        header.setPK(pk);
+        service.updateQuestionContainerHeader(header);
       }
     } catch (Exception e) {
       throw new QuizzException("QuizzIndexer.index", QuizzException.WARNING,

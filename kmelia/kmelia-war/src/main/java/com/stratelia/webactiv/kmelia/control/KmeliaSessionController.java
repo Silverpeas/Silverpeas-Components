@@ -1633,10 +1633,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     return metaData;
   }
 
-  public synchronized void indexKmelia() throws RemoteException {
-    getKmeliaBm().indexKmelia(getComponentId());
-  }
-
   public boolean isIndexable(PublicationDetail pubDetail) {
     return KmeliaHelper.isIndexable(pubDetail);
   }
@@ -2296,10 +2292,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   public synchronized void deletePosition(String positionId) throws RemoteException {
     getKmeliaBm().deletePosition(positionId, getComponentId());
-  }
-
-  public synchronized void indexKmax(String componentId) throws RemoteException {
-    getKmeliaBm().indexKmax(componentId);
   }
 
   /*

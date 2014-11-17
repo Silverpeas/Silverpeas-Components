@@ -24,55 +24,61 @@
 
 package com.stratelia.webactiv.survey;
 
-import java.util.Collection;
-import java.util.Iterator;
-
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
-import com.stratelia.webactiv.survey.control.SurveySessionController;
+import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
+import com.stratelia.webactiv.questionContainer.control.QuestionContainerService;
 import com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader;
+import com.stratelia.webactiv.questionContainer.model.QuestionContainerPK;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.util.Collection;
+
 /**
  * This class is the main entry point to index the content of survey component
  *
  */
-public class SurveyIndexer implements ComponentIndexerInterface {
+@Singleton
+public class SurveyIndexer implements ComponentIndexation {
 
-  private SurveySessionController scc = null;
+  @Inject
+  private QuestionContainerService questionContainerService;
 
   /**
    * Implementation of component indexer interface
    */
-  public void index(MainSessionController mainSessionCtrl, ComponentContext context)
-      throws SurveyException {
-
-    scc = new SurveySessionController(mainSessionCtrl, context);
-
-    indexOpenedSurveys();
-    indexClosedSurveys();
-    indexInWaitSurveys();
+  @Override
+  public void index(ComponentInst componentInst) {
+    QuestionContainerPK pk =
+        new QuestionContainerPK(null, componentInst.getSpaceId(), componentInst.getId());
+    indexOpenedSurveys(pk);
+    indexClosedSurveys(pk);
+    indexInWaitSurveys(pk);
   }
 
-  private void indexOpenedSurveys() throws SurveyException {
-    Collection<QuestionContainerHeader> surveys = scc.getOpenedSurveys();
-    indexSurveys(surveys);
+  private void indexOpenedSurveys(QuestionContainerPK pk) {
+    Collection<QuestionContainerHeader> surveys =
+        questionContainerService.getOpenedQuestionContainers(pk);
+    indexSurveys(pk, surveys);
   }
 
-  private void indexClosedSurveys() throws SurveyException {
-    Collection<QuestionContainerHeader> surveys = scc.getClosedSurveys();
-    indexSurveys(surveys);
+  private void indexClosedSurveys(QuestionContainerPK pk) {
+    Collection<QuestionContainerHeader> surveys =
+        questionContainerService.getClosedQuestionContainers(pk);
+    indexSurveys(pk, surveys);
   }
 
-  private void indexInWaitSurveys() throws SurveyException {
-    Collection<QuestionContainerHeader> surveys = scc.getInWaitSurveys();
-    indexSurveys(surveys);
+  private void indexInWaitSurveys(QuestionContainerPK pk) {
+    Collection<QuestionContainerHeader> surveys =
+        questionContainerService.getInWaitQuestionContainers(pk);
+    indexSurveys(pk, surveys);
   }
 
-  private void indexSurveys(Collection<QuestionContainerHeader> surveys) throws SurveyException {
-    Iterator<QuestionContainerHeader> it = surveys.iterator();
-    while (it.hasNext()) {
-      QuestionContainerHeader surveyHeader = it.next();
-      scc.updateSurveyHeader(surveyHeader, surveyHeader.getPK().getId());
+  private void indexSurveys(QuestionContainerPK pk, Collection<QuestionContainerHeader> surveys) {
+    for (QuestionContainerHeader surveyHeader : surveys) {
+      pk.setId(surveyHeader.getId());
+      surveyHeader.setPK(pk);
+      questionContainerService.updateQuestionContainerHeader(surveyHeader);
     }
   }
 }

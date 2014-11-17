@@ -24,18 +24,21 @@
 
 package com.stratelia.webactiv.webSites;
 
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
-import com.stratelia.webactiv.webSites.control.WebSiteSessionController;
+import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
+import com.stratelia.webactiv.webSites.control.ejb.WebSiteBm;
 
-public class WebSitesIndexer implements ComponentIndexerInterface {
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
-  private WebSiteSessionController scc = null;
+@Singleton
+public class WebSitesIndexer implements ComponentIndexation {
 
-  public void index(MainSessionController mainSessionCtrl,
-      ComponentContext context) throws Exception {
-    scc = new WebSiteSessionController(mainSessionCtrl, context);
-    scc.index();
+  @Inject
+  private WebSiteBm webSiteBm;
+
+  @Override
+  public void index(ComponentInst componentInst) throws Exception {
+    webSiteBm.index(componentInst.getId());
   }
 }

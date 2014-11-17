@@ -23,34 +23,32 @@
  */
 package org.silverpeas.components.suggestionbox;
 
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
+import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.model.SuggestionBoxService;
-import org.silverpeas.components.suggestionbox.model.SuggestionBoxServiceFactory;
 
-public class SuggestionBoxIndexer implements ComponentIndexerInterface {
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+@Singleton
+public class SuggestionBoxIndexer implements ComponentIndexation {
+
+  @Inject
+  private SuggestionBoxService suggestionBoxService;
 
   @Override
-  public void index(MainSessionController mainSessionCtrl, ComponentContext context)
-      throws Exception {
+  public void index(ComponentInst componentInst) throws Exception {
     SilverTrace.info("suggestionBox", "SuggestionBoxIndexer.index()", "root.MSG_GEN_PARAM_VALUE",
-        "index, context.getCurrentComponentId() = " + context.getCurrentComponentId());
-
-    SuggestionBoxService suggestionBoxService = getSuggestionBoxService();
+        "index, context.getCurrentComponentId() = " + componentInst.getId());
 
     // Getting the suggestion box entity
     SuggestionBox suggestionBoxToIndex =
-        suggestionBoxService.getByComponentInstanceId(context.getCurrentComponentId());
+        suggestionBoxService.getByComponentInstanceId(componentInst.getId());
 
     // Indexing the suggestion box
     suggestionBoxService.indexSuggestionBox(suggestionBoxToIndex);
   }
 
-  private SuggestionBoxService getSuggestionBoxService() {
-    SuggestionBoxServiceFactory serviceFactory = SuggestionBoxServiceFactory.getFactory();
-    return serviceFactory.getSuggestionBoxService();
-  }
 }

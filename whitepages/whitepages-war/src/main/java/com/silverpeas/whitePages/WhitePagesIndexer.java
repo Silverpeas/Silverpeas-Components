@@ -28,28 +28,102 @@
  */
 package com.silverpeas.whitePages;
 
-import com.silverpeas.whitePages.control.WhitePagesSessionController;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
+import com.silverpeas.form.DataRecord;
+import com.silverpeas.form.FormException;
+import com.silverpeas.publicationTemplate.PublicationTemplate;
+import com.silverpeas.publicationTemplate.PublicationTemplateException;
+import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.whitePages.control.CardManager;
+import com.silverpeas.whitePages.model.Card;
+import com.silverpeas.whitePages.record.UserTemplate;
+import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
+import com.stratelia.webactiv.beans.admin.Administration;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.exception.SilverpeasException;
+
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * @author neysseri
  */
-public class WhitePagesIndexer implements ComponentIndexerInterface {
+public class WhitePagesIndexer implements ComponentIndexation {
 
-  WhitePagesSessionController sc = null;
+  @Inject
+  private CardManager cardManager;
+  @Inject
+  private PublicationTemplateManager templateManager;
+  @Inject
+  private Administration admin;
 
-  /*
-   * (non-Javadoc)
-   * @see com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface
-   * #index(com.stratelia.silverpeas.peasCore.MainSessionController,
-   * com.stratelia.silverpeas.peasCore.ComponentContext)
-   */
-  public void index(MainSessionController mainSessionCtrl,
-      ComponentContext context) throws Exception {
-    sc = new WhitePagesSessionController(mainSessionCtrl, context);
+  @Override
+  public void index(ComponentInst componentInst) throws Exception {
+    Collection<Card> visibleCards = enrichWithUserRecordsAndCardRecords(componentInst.getId(),
+        cardManager.getVisibleCards(componentInst.getId()));
+    for (Card card : visibleCards) {
+      cardManager.indexCard(card);
+    }
+  }
 
-    sc.indexVisibleCards();
+  private Collection<Card> enrichWithUserRecordsAndCardRecords(String componentId,
+      Collection<Card> cards) throws WhitePagesException {
+    List<Card> listCards = new ArrayList<>();
+    try {
+      if (cards != null && !cards.isEmpty()) {
+        PublicationTemplate cardTemplate = getCardTemplateFor(componentId);
+        UserTemplate userTemplate = getUserTemplateFor(componentId);
+        for (Card card : cards) {
+          String idCard = card.getPK().getId();
+          if (userTemplate.getRecord(card.getUserId()).getUserDetail() == null) {
+            // the user doesn't exist anymore
+            deleteCard(cardTemplate, idCard);
+          } else {
+            card.writeUserRecord(userTemplate.getRecord(card.getUserId()));
+            DataRecord cardRecord = cardTemplate.getRecordSet().getRecord(idCard);
+            if (cardRecord == null) {
+              cardRecord = cardTemplate.getRecordSet().getEmptyRecord();
+            }
+            card.writeCardRecord(cardRecord);
+            listCards.add(card);
+          }
+        }
+      }
+    } catch (PublicationTemplateException e) {
+      throw new WhitePagesException("WhitePagesIndexer.enrichWithUserRecordsAndCardRecords",
+          SilverpeasException.ERROR, "whitePages.EX_CANT_GET_PUBLICATIONTEMPLATE", "", e);
+    } catch (FormException e) {
+      throw new WhitePagesException("WhitePagesIndexer.enrichWithUserRecordsAndCardRecords",
+          SilverpeasException.ERROR, "whitePages.EX_CANT_GET_RECORD", "", e);
+    }
+    return listCards;
+  }
+
+  private PublicationTemplate getCardTemplateFor(String componentId)
+      throws PublicationTemplateException {
+    String cardTemplateFileName = admin.getComponentParameterValue(componentId, "cardTemplate");
+    return templateManager.getPublicationTemplate(componentId, cardTemplateFileName);
+  }
+
+  private UserTemplate getUserTemplateFor(String componentId) {
+    String userTemplateFileName =
+        admin.getComponentParameterValue(componentId, "cardTemplate").replace('\\', '/');
+    ResourceLocator templateSettings =
+        new ResourceLocator("org.silverpeas.whitePages.settings.template", "");
+    UserDetail currentUser = UserDetail.getCurrentRequester();
+    String language = currentUser.getUserPreferences().getLanguage();
+    String templateDir = templateSettings.getString("templateDir").replace('\\', '/');
+    return new UserTemplate(templateDir + "/" + userTemplateFileName, language);
+  }
+
+  private void deleteCard(PublicationTemplate cardTemplate, String cardId)
+      throws PublicationTemplateException, FormException, WhitePagesException {
+    DataRecord data = cardTemplate.getRecordSet().getRecord(cardId);
+    cardTemplate.getRecordSet().delete(data);
+    cardManager.delete(Arrays.asList(cardId));
   }
 }

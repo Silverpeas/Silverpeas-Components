@@ -24,25 +24,37 @@
 
 package com.stratelia.webactiv.kmax;
 
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
-import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
+import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
+import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
+import com.stratelia.webactiv.publication.control.PublicationBm;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
-import org.silverpeas.attachment.AttachmentServiceProvider;
+import com.stratelia.webactiv.publication.model.PublicationPK;
+import org.silverpeas.attachment.AttachmentService;
 
-public class KmaxIndexer implements ComponentIndexerInterface {
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.util.Collection;
 
-  private KmeliaSessionController scc = null;
+@Singleton
+public class KmaxIndexer implements ComponentIndexation {
 
-  public void index(MainSessionController mainSessionCtrl, ComponentContext context) throws
-      Exception {
+  @Inject
+  private AttachmentService attachmentService;
+  @Inject
+  private PublicationBm publicationBm;
+  @Inject
+  private KmeliaBm kmeliaBm;
 
-    scc = new KmeliaSessionController(mainSessionCtrl, context);
-    scc.indexKmax(scc.getComponentId());
+  @Override
+  public void index(ComponentInst componentInst) throws Exception {
+    kmeliaBm.indexKmax(componentInst.getId());
 
-    for (PublicationDetail pd : scc.getAllPublications()) {
-      AttachmentServiceProvider.getAttachmentService().indexAllDocuments(pd.getPK(), null, null);
+    Collection<PublicationDetail> publications =
+        publicationBm.getAllPublications(new PublicationPK("useless", componentInst.getId()),
+            "pubId desc");
+    for (PublicationDetail aPublication : publications) {
+      attachmentService.indexAllDocuments(aPublication.getPK(), null, null);
     }
   }
 }

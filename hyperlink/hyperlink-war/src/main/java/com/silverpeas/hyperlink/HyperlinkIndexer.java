@@ -23,18 +23,20 @@
  */
 package com.silverpeas.hyperlink;
 
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
+import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
+
+import javax.inject.Singleton;
 
 /**
  *
  * @author ehugonnet
  */
-public class HyperlinkIndexer implements ComponentIndexerInterface {
+@Singleton
+public class HyperlinkIndexer implements ComponentIndexation {
 
   @Override
-  public void index(MainSessionController mainSessionCtrl, ComponentContext context) throws
+  public void index(ComponentInst componentInst) throws
       Exception {
     // nothing to index for this application
   }

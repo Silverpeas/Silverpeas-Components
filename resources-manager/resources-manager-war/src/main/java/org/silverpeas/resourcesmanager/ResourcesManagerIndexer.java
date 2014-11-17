@@ -20,21 +20,25 @@
  */
 package org.silverpeas.resourcesmanager;
 
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
-import org.silverpeas.resourcemanager.ResourcesManagerFactory;
+import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
+import org.silverpeas.resourcemanager.control.ResourcesManager;
 
-public class ResourcesManagerIndexer implements ComponentIndexerInterface {
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+@Singleton
+public class ResourcesManagerIndexer implements ComponentIndexation {
+
+  @Inject
+  private ResourcesManager resourcesManager;
 
   @Override
-  public void index(MainSessionController mainSessionCtrl, ComponentContext context) throws
-      Exception {
+  public void index(ComponentInst componentInst) throws Exception {
     SilverTrace.info("resourcesManager", "ResourcesManagerIndexer.index()",
         "root.MSG_GEN_PARAM_VALUE", "index, context.getCurrentComponentId() = " +
-         context.getCurrentComponentId());
-    ResourcesManagerFactory.getResourcesManager().indexResourceManager(
-        context.getCurrentComponentId());
+            componentInst.getId());
+    resourcesManager.indexResourceManager(componentInst.getId());
   }
 }

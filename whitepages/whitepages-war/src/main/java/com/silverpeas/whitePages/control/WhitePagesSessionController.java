@@ -475,14 +475,6 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
     return setUserRecords(getCardManager().getVisibleCards(getComponentId()));
   }
 
-  public void indexVisibleCards() throws WhitePagesException {
-    Collection<Card> visibleCards = setUserRecordsAndCardRecords(getCardManager().getVisibleCards(
-        getComponentId()));
-    for (Card card : visibleCards) {
-      getCardManager().indexCard(card);
-    }
-  }
-
   /*
    * Affecte les UserRecord à chaque Card d'une liste
    */
@@ -524,49 +516,6 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
       }
     });
 
-    return listCards;
-  }
-
-  /*
-   * Affecte les UserRecord & CardRecord à chaque Card d'une liste
-   */
-  private Collection<Card> setUserRecordsAndCardRecords(Collection<Card> cards)
-      throws WhitePagesException {
-    List<Card> listCards = new ArrayList<Card>();
-    try {
-      if (cards != null) {
-        PublicationTemplate template = getTemplate(getComponentId());
-        DataRecord cardRecord;
-        String idCard;
-        for (Card card : cards) {
-          idCard = card.getPK().getId();
-          if (getUserTemplate().getRecord(card.getUserId()).getUserDetail() == null) {
-            // l'utilisateur n'existe plus
-            List<String> listId = new ArrayList<String>();
-            listId.add(idCard);
-            delete(listId);
-          } else {
-            card.writeUserRecord(getUserTemplate().getRecord(card.getUserId()));
-
-            cardRecord = template.getRecordSet().getRecord(idCard);
-            if (cardRecord == null) {
-              cardRecord = template.getRecordSet().getEmptyRecord();
-            }
-            card.writeCardRecord(cardRecord);
-            listCards.add(card);
-          }
-        }
-      }
-    } catch (PublicationTemplateException e) {
-      throw new WhitePagesException(
-          "WhitePagesSessionController.setUserRecordsAndCardRecords",
-          SilverpeasException.ERROR,
-          "whitePages.EX_CANT_GET_PUBLICATIONTEMPLATE", "", e);
-    } catch (FormException e) {
-      throw new WhitePagesException(
-          "WhitePagesSessionController.setUserRecordsAndCardRecords",
-          SilverpeasException.ERROR, "whitePages.EX_CANT_GET_RECORD", "", e);
-    }
     return listCards;
   }
 

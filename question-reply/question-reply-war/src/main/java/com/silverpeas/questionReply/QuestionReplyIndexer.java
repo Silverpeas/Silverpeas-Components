@@ -23,34 +23,35 @@
  */
 package com.silverpeas.questionReply;
 
-import com.silverpeas.questionReply.control.QuestionManagerFactory;
+import com.silverpeas.questionReply.control.QuestionManager;
 import com.silverpeas.questionReply.index.QuestionIndexer;
 import com.silverpeas.questionReply.model.Question;
 import com.silverpeas.questionReply.model.Reply;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
+import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexation;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.Collection;
 
 /**
  *
  * @author ehugonnet
  */
-public class QuestionReplyIndexer implements ComponentIndexerInterface {
+@Singleton
+public class QuestionReplyIndexer implements ComponentIndexation {
 
   private final QuestionIndexer questionIndexer = new QuestionIndexer();
-
-  public QuestionReplyIndexer() {
-  }
+  @Inject
+  private QuestionManager questionManager;
 
   @Override
-  public void index(MainSessionController mainSessionCtrl, ComponentContext context) throws
-      Exception {
-    Collection<Question> questions = QuestionManagerFactory.getQuestionManager().getAllQuestions(context.
-        getCurrentComponentId());
+  public void index(ComponentInst componentInst) throws Exception {
+    Collection<Question> questions = questionManager.getAllQuestions(componentInst.getId());
     for (Question question : questions) {
-      Collection<Reply> replies = QuestionManagerFactory.getQuestionManager().getAllReplies(
-          Long.parseLong(question.getPK().getId()), question.getInstanceId());
+      Collection<Reply> replies =
+          questionManager.getAllReplies(Long.parseLong(question.getPK().getId()),
+              question.getInstanceId());
       questionIndexer.updateIndex(question, replies);
     }
   }
