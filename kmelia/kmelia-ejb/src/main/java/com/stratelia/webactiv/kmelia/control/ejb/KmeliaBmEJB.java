@@ -110,6 +110,7 @@ import com.stratelia.silverpeas.versioning.model.DocumentPK;
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 import com.stratelia.silverpeas.versioning.model.Worker;
 import com.stratelia.silverpeas.versioning.util.VersioningUtil;
+import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.ObjectType;
@@ -1392,8 +1393,8 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
             "root.MSG_GEN_ENTER_METHOD", "updateScope = " + updateScope);
     try {
       // if pubDetail is a clone
-      boolean isClone = isDefined(pubDetail.getCloneId()) && !"-1".equals(pubDetail.getCloneId())
-              && !isDefined(pubDetail.getCloneStatus());
+      boolean isClone = isClone(pubDetail);
+      
       SilverTrace.info("kmelia", "KmeliaBmEJB.updatePublication()", "root.MSG_GEN_PARAM_VALUE",
               "This publication is clone ? " + isClone);
       if (isClone) {
@@ -1635,16 +1636,39 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   @Override
   public void externalElementsOfPublicationHaveChanged(PublicationPK pubPK, String userId,
           int action) {
-    PublicationDetail pubDetail = getPublicationDetail(pubPK);
-    if (isDefined(userId)) {
-      pubDetail.setUpdaterId(userId);
-    }
+    // check if related contribution is managed by kmelia
+    if (pubPK != null && StringUtil.isDefined(pubPK.getInstanceId()) && (pubPK.getInstanceId().
+        startsWith("kmelia") || pubPK.getInstanceId().startsWith("toolbox")
+        || pubPK.getInstanceId().startsWith("kmax"))) {
 
-    // check if related publication is managed by kmelia
-    // test due to really hazardous abusive notifications
-    if (pubDetail.getPK().getInstanceId().startsWith("kmelia")
-            || pubDetail.getPK().getInstanceId().startsWith("toolbox")
-            || pubDetail.getPK().getInstanceId().startsWith("kmax")) {
+      PublicationDetail pubDetail = null;
+      try {
+        pubDetail = getPublicationDetail(pubPK);
+      } catch (Exception e) {
+        // publication no longer exists do not throw exception because this method is called by JMS
+        // layer
+        // if exception is throw, JMS will attempt to execute it again and again...
+        SilverTrace.info("kmelia", "KmeliaBmEJB.externalElementsOfPublicationHaveChanged",
+            "kmelia.EX_IMPOSSIBLE_DOBTENIR_LA_PUBLICATION", "pubPK = " + pubPK.toString(), e);
+      }
+      
+      // The treatment is stopped if publication is not found or if publication doesn't correspond
+      // with parameter of given publication pk. The second condition could happen, for now,
+      // with applications dealing with wysiwyg without using publication for their storage
+      // (infoletter for example).
+      if (pubDetail == null || (StringUtil.isDefined(pubPK.getInstanceId()) && !pubDetail.
+          getInstanceId().equals(pubPK.getInstanceId()))) {
+        return;
+      }
+      
+      boolean clone = isClone(pubDetail);
+      if (clone) {
+        pubDetail.setIndexOperation(IndexManager.NONE);
+      }
+      
+      if (isDefined(userId)) {
+        pubDetail.setUpdaterId(userId);
+      }
 
       // update publication header to store last modifier and update date
       if (!isDefined(userId)) {
@@ -1653,19 +1677,24 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         // check if user have sufficient rights to update a publication
         String profile = getProfileOnPublication(userId, pubDetail.getPK());
         if ("supervisor".equals(profile) || SilverpeasRole.publisher.isInRole(profile)
-                || SilverpeasRole.admin.isInRole(profile) || SilverpeasRole.writer.isInRole(profile)) {
+            || SilverpeasRole.admin.isInRole(profile) || SilverpeasRole.writer.isInRole(profile)) {
           updatePublication(pubDetail, KmeliaHelper.PUBLICATION_CONTENT, false);
         } else {
           SilverTrace.warn("kmelia", "KmeliaBmEJB.externalElementsOfPublicationHaveChanged",
-                  "kmelia.PROBLEM_DETECTED", "user " + userId
-                  + " is not allowed to update publication " + pubDetail.getPK().toString());
+              "kmelia.PROBLEM_DETECTED", "user " + userId +
+                  " is not allowed to update publication "
+                  + pubDetail.getPK());
         }
       }
 
       // index all attached files to taking into account visibility period
       indexExternalElementsOfPublication(pubDetail);
-
     }
+  }
+  
+  private boolean isClone(PublicationDetail publication) {
+    return isDefined(publication.getCloneId()) && !"-1".equals(publication.getCloneId()) &&  
+        !isDefined(publication.getCloneStatus());
   }
 
   /**
@@ -2200,7 +2229,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
                   "root.MSG_GEN_PARAM_VALUE", "Getting the publication");
           PublicationDetail publi = getPublicationBm().getDetail(pubPK);
           if (publi != null) {
-            boolean isClone = isDefined(publi.getCloneId()) && !isDefined(publi.getCloneStatus());
+            boolean isClone = isClone(publi);
             SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationFathers()",
                     "root.MSG_GEN_PARAM_VALUE", "This publication is clone ? " + isClone);
             if (isClone) {
@@ -2687,6 +2716,14 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       boolean cloneWysiwyg = WysiwygController.haveGotWysiwyg("useless", tempPK.getInstanceId(),
               cloneId);
       if (cloneWysiwyg) {
+        try {
+          // delete wysiwyg contents of public version
+          WysiwygController.deleteWysiwygAttachmentsOnly("useless", pubPK.getInstanceId(), pubPK.getId());
+        } catch (WysiwygException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        //wysiwyg contents of work version become public version ones
         WysiwygController.copy("useless", tempPK.getInstanceId(), cloneId,
                 "useless", pubPK.getInstanceId(), pubPK.getId(), tempPubli.getPublicationDetail().
                 getUpdaterId());
@@ -2698,9 +2735,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       AttachmentController.mergeAttachments(pkFrom, pkTo);
 
       // merge des fichiers versionnés
-
-      // delete xml content
-      removeXMLContentOfPublication(tempPK);
 
       // suppression du clone
       deletePublication(tempPK);
