@@ -31,6 +31,8 @@
 <%@ page import="org.silverpeas.util.StringUtil" %>
 <%@ page import="org.silverpeas.util.EncodeHelper" %>
 <%@ page import="org.silverpeas.util.DateUtil" %>
+<%@ page import="org.silverpeas.core.admin.OrganizationController" %>
+<%@ page import="org.silverpeas.core.admin.OrganizationControllerProvider" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 <%
@@ -298,7 +300,7 @@ function hideStyleSheetFile() {
 			  <%=resource.getString("GML.creationDate")%> <%=resource.getOutputDate(post.getPublication().getCreationDate())%> <%=resource.getString("GML.by")%> <%=post.getCreatorName() %>
 			  <% if (!resource.getOutputDate(post.getPublication().getCreationDate()).equals(resource.getOutputDate(post.getPublication().getUpdateDate())) || !post.getPublication().getCreatorId().equals(post.getPublication().getUpdaterId()))
 				   {
-				  UserDetail updater = m_MainSessionCtrl.getOrganisationController().getUserDetail(post.getPublication().getUpdaterId());
+				  UserDetail updater = OrganizationControllerProvider.getOrganisationController().getUserDetail(post.getPublication().getUpdaterId());
 				  String updaterName = "Unknown";
 				  if (updater != null)
 				  updaterName = updater.getDisplayedName();

@@ -27,7 +27,9 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
 import com.stratelia.webactiv.kmelia.servlets.ajax.AjaxOperation;
+import org.silverpeas.core.admin.OrganizationController;
 
+import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -40,6 +42,9 @@ import java.io.Writer;
 public class AjaxServlet extends HttpServlet {
 
   private static final long serialVersionUID = 1L;
+
+  @Inject
+  private OrganizationController organizationController;
 
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -85,7 +90,7 @@ public class AjaxServlet extends HttpServlet {
         MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     if (msc != null) {
       ComponentContext componentContext = msc.createComponentContext(null, componentId);
-      if (msc.getOrganisationController().isComponentAvailable(componentId, msc.getUserId())) {
+      if (organizationController.isComponentAvailable(componentId, msc.getUserId())) {
         return new KmeliaSessionController(msc, componentContext);
       }
     }

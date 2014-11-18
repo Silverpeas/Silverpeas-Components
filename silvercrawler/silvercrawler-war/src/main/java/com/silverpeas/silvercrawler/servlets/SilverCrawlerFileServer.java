@@ -24,17 +24,19 @@
 package com.silverpeas.silvercrawler.servlets;
 
 import com.silverpeas.silvercrawler.statistic.Statistic;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.exception.RelativeFileAccessException;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.SilverpeasAuthenticatedHttpServlet;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.ResourceLocator;
 import org.apache.commons.io.FileUtils;
 import org.apache.tika.io.IOUtils;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.exception.RelativeFileAccessException;
 
+import javax.inject.Inject;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -51,6 +53,9 @@ import java.io.StringReader;
 public class SilverCrawlerFileServer extends SilverpeasAuthenticatedHttpServlet {
 
   private static final long serialVersionUID = 4892517833096053490L;
+
+  @Inject
+  private OrganizationController organizationController;
 
   @Override
   public void init(ServletConfig config) {
@@ -91,8 +96,8 @@ public class SilverCrawlerFileServer extends SilverpeasAuthenticatedHttpServlet 
       throwHttpForbiddenError();
     }
 
-    File rootPath = FileUtils.getFile(mainSessionCtrl.getOrganisationController()
-        .getComponentParameterValue(componentId, "directory"));
+    File rootPath = FileUtils.getFile(
+        organizationController.getComponentParameterValue(componentId, "directory"));
 
     // 2 cas :
     // - téléchargement d'un zip dans répertoire temporaire
