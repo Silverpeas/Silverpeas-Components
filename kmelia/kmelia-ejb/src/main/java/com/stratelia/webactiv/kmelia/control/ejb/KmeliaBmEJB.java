@@ -1215,7 +1215,7 @@ public class KmeliaBmEJB implements KmeliaBm {
       sendAlertToSupervisors(fatherPK, pubDetail);
 
       // alert subscribers
-      sendSubscriptionsNotification(pubDetail, false, false);
+      sendSubscriptionsNotification(pubDetail, NotifAction.CREATE, false);
 
     } catch (Exception e) {
       throw new KmeliaRuntimeException(
@@ -1439,7 +1439,7 @@ public class KmeliaBmEJB implements KmeliaBm {
       }
       // notification pour modification
       if (!isPublicationInBasket) {
-        sendSubscriptionsNotification(pubDetail, true, false);
+        sendSubscriptionsNotification(pubDetail, NotifAction.UPDATE, false);
       }
 
       boolean isNewsManage = getBooleanValue(getOrganisationController().getComponentParameterValue(
@@ -1654,7 +1654,7 @@ public class KmeliaBmEJB implements KmeliaBm {
       }
     }
     // send notifications like a creation
-    sendSubscriptionsNotification(pub, false, false);
+    sendSubscriptionsNotification(pub, NotifAction.CREATE, false);
   }
 
   private void updatePublication(PublicationPK pubPK, int updateScope) {
@@ -1842,7 +1842,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     addPublicationToTopicWithoutNotifications(pubPK, fatherPK, isACreation);
     SilverTrace.info("kmelia", "KmeliaBmEJB.addPublicationToTopic()", "root.MSG_GEN_ENTER_METHOD");
     PublicationDetail pubDetail = getPublicationDetail(pubPK);
-    sendSubscriptionsNotification(pubDetail, false, false);
+    sendSubscriptionsNotification(pubDetail, NotifAction.CREATE, false);
     SilverTrace.info("kmelia", "KmeliaBmEJB.addPublicationToTopic()", "root.MSG_GEN_EXIT_METHOD");
   }
 
@@ -1910,7 +1910,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     return false;
   }
 
-  private NodePK sendSubscriptionsNotification(PublicationDetail pubDetail, boolean update,
+  private NodePK sendSubscriptionsNotification(PublicationDetail pubDetail, NotifAction action,
       final boolean sendOnlyToAliases) {
     NodePK oneFather = null;
     // We alert subscribers only if publication is Valid
@@ -1920,7 +1920,7 @@ public class KmeliaBmEJB implements KmeliaBm {
       if (!sendOnlyToAliases) {
         for (NodePK father : fathers) {
           oneFather = father;
-          sendSubscriptionsNotification(father, pubDetail, update);
+          sendSubscriptionsNotification(father, pubDetail, action);
         }
       }
 
@@ -1933,7 +1933,7 @@ public class KmeliaBmEJB implements KmeliaBm {
           // Perform subscription notification sendings when the alias is not the one of the
           // original publication
           pubDetail.setAlias(true);
-          sendSubscriptionsNotification(alias, pubDetail, update);
+          sendSubscriptionsNotification(alias, pubDetail, action);
         }
       }
 
@@ -1958,7 +1958,7 @@ public class KmeliaBmEJB implements KmeliaBm {
   }
 
   private void sendSubscriptionsNotification(NodePK fatherPK, PublicationDetail pubDetail,
-      boolean update) {
+      NotifAction action) {
 
     // Save instance id of publication
     String originalComponentId = pubDetail.getInstanceId();
@@ -1968,14 +1968,6 @@ public class KmeliaBmEJB implements KmeliaBm {
 
     // Send email alerts
     try {
-
-      // Computing the action
-      final NotifAction action;
-      if (update) {
-        action = NotifAction.UPDATE;
-      } else {
-        action = NotifAction.CREATE;
-      }
 
       // Building and sending the notification
       UserNotificationHelper.buildAndSend(new KmeliaSubscriptionPublicationUserNotification(
@@ -2578,7 +2570,6 @@ public class KmeliaBmEJB implements KmeliaBm {
   public boolean validatePublication(PublicationPK pubPK, String userId, boolean force) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.validatePublication()", "root.MSG_GEN_ENTER_METHOD");
     boolean validationComplete = false;
-    boolean update = false;
     try {
       CompletePublication currentPub = publicationBm.getCompletePublication(pubPK);
       PublicationDetail currentPubDetail = currentPub.getPublicationDetail();
@@ -2639,7 +2630,6 @@ public class KmeliaBmEJB implements KmeliaBm {
           removeAllTodosForPublication(pubPK);
         }
         if (currentPubDetail.haveGotClone()) {
-          update = currentPubDetail.isValid();
           currentPubDetail = mergeClone(currentPub, userId);
         } else if (currentPubDetail.isValidationRequired()) {
           currentPubDetail.setValidatorId(userId);
@@ -2653,7 +2643,7 @@ public class KmeliaBmEJB implements KmeliaBm {
         indexExternalElementsOfPublication(currentPubDetail);
         // the publication has been validated
         // we must alert all subscribers of the different topics
-        NodePK oneFather = sendSubscriptionsNotification(currentPubDetail, update, false);
+        NodePK oneFather = sendSubscriptionsNotification(currentPubDetail, NotifAction.VALIDATE, false);
 
         // we have to alert publication's creator
         sendValidationNotification(oneFather, currentPubDetail, null, userId);
@@ -2957,11 +2947,10 @@ public class KmeliaBmEJB implements KmeliaBm {
    */
   @Override
   public void draftOutPublication(PublicationPK pubPK, NodePK topicPK, String userProfile) {
-    boolean update = getPublicationDetail(pubPK).isValid();
     PublicationDetail pubDetail = draftOutPublicationWithoutNotifications(pubPK, topicPK,
         userProfile);
     indexExternalElementsOfPublication(pubDetail);
-    sendTodosAndNotificationsOnDraftOut(pubDetail, topicPK, userProfile, update);
+    sendTodosAndNotificationsOnDraftOut(pubDetail, topicPK, userProfile);
   }
 
   /**
@@ -2990,18 +2979,12 @@ public class KmeliaBmEJB implements KmeliaBm {
         "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubPK.getId());
     try {
       PublicationDetail changedPublication = null;
-      boolean update = false;
       CompletePublication currentPub = publicationBm.getCompletePublication(pubPK);
       PublicationDetail pubDetail = currentPub.getPublicationDetail();
       SilverTrace.info("kmelia", "KmeliaBmEJB.draftOutPublication()",
           "root.MSG_GEN_PARAM_VALUE", "actual status = " + pubDetail.getStatus());
       if (userProfile.equals("publisher") || userProfile.equals("admin")) {
         if (pubDetail.haveGotClone()) {
-          // special case when a publication is draft out
-          // check public publication status to determine
-          // if it's a creation or an update...
-          update = pubDetail.isValid();
-          
           pubDetail = mergeClone(currentPub, null);
         }
         pubDetail.setStatus(PublicationDetail.VALID);
@@ -3017,8 +3000,8 @@ public class KmeliaBmEJB implements KmeliaBm {
           changedPublication = clone;
           pubDetail.setCloneStatus(PublicationDetail.TO_VALIDATE);
         } else {
-          changedPublication = pubDetail;
           pubDetail.setStatus(PublicationDetail.TO_VALIDATE);
+          changedPublication = pubDetail;
         }
       }
       KmeliaHelper.checkIndex(pubDetail);
@@ -3032,7 +3015,7 @@ public class KmeliaBmEJB implements KmeliaBm {
       if (!inTransaction) {
         // index all publication's elements
         indexExternalElementsOfPublication(changedPublication);
-        sendTodosAndNotificationsOnDraftOut(changedPublication, topicPK, userProfile, update);
+        sendTodosAndNotificationsOnDraftOut(changedPublication, topicPK, userProfile);
       }
 
       return changedPublication;
@@ -3043,14 +3026,14 @@ public class KmeliaBmEJB implements KmeliaBm {
   }
 
   private void sendTodosAndNotificationsOnDraftOut(PublicationDetail pubDetail, NodePK topicPK,
-      String userProfile, boolean update) {
+      String userProfile) {
     if (SilverpeasRole.writer.isInRole(userProfile)) {
       createTodosForPublication(pubDetail, true);
     }
     // Subscriptions and supervisors are supported by kmelia and filebox only
     if (!KmeliaHelper.isKmax(pubDetail.getInstanceId())) {
       // alert subscribers
-      sendSubscriptionsNotification(pubDetail, update, false);
+      sendSubscriptionsNotification(pubDetail, NotifAction.DRAFTOUT, false);
 
       // alert supervisors
       if (topicPK != null) {
@@ -4211,7 +4194,7 @@ public class KmeliaBmEJB implements KmeliaBm {
 
     // Send subscriptions to aliases subscribers
     PublicationDetail pubDetail = getPublicationDetail(pubPK);
-    sendSubscriptionsNotification(pubDetail, StringUtil.isDefined(pubDetail.getUpdaterId()), true);
+    sendSubscriptionsNotification(pubDetail, NotifAction.ALIAS, true);
   }
 
   @Override
