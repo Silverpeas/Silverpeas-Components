@@ -1,5 +1,5 @@
 <div style="font-family:Arial;font-size:11px">
-Veröffentlichung <b>$publicationName$</b> erstellt worden.
+<b>$publicationName$</b> veröffentlicht wurde.
 
 Speicherort : $path$
 
