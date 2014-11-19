@@ -1,5 +1,5 @@
 <div style="font-family:Arial;font-size:11px">
-In einem Ihrer Abonnemente Dokument <b>$publicationName$</b> erstellt worden.
+In einem Ihrer Abonnemente Veröffentlichung <b>$publicationName$</b> erstellt worden.
 
 Speicherort : $path$
 

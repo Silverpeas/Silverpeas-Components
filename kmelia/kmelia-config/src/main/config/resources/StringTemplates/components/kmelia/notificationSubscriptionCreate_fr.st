@@ -1,5 +1,5 @@
 <div style="font-family:Arial;font-size:11px">
-Le document <b>$publicationName$</b> a été créé dans l'un de vos abonnements. 
+La publication <b>$publicationName$</b> a été créée dans l'un de vos abonnements. 
 
 Emplacement : $path$
 
