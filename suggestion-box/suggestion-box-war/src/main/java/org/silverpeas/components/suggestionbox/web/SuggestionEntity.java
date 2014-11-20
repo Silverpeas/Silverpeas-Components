@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.suggestionbox.web;
 
-import com.silverpeas.web.Exposable;
+import com.silverpeas.web.WebEntity;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -54,7 +54,7 @@ import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceU
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.PROPERTY)
-public class SuggestionEntity implements Exposable {
+public class SuggestionEntity implements WebEntity {
 
   private static final long serialVersionUID = 4234619816264612213L;
 

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.resourcesmanager.web;
 
-import com.silverpeas.web.Exposable;
+import com.silverpeas.web.WebEntity;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.resourcemanager.model.Category;
@@ -42,7 +42,7 @@ import java.net.URI;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ResourceCategoryEntity implements Exposable {
+public class ResourceCategoryEntity implements WebEntity {
   private static final long serialVersionUID = 2119850706264066092L;
 
   @XmlElement(defaultValue = "")
@@ -92,7 +92,7 @@ public class ResourceCategoryEntity implements Exposable {
 
   /*
    * (non-Javadoc)
-   * @see com.silverpeas.web.Exposable#getURI()
+   * @see com.silverpeas.web.WebEntity#getURI()
    */
   @Override
   public URI getURI() {

@@ -24,7 +24,7 @@
 package com.silverpeas.gallery.web;
 
 import com.silverpeas.gallery.constant.StreamingProvider;
-import com.silverpeas.web.Exposable;
+import com.silverpeas.web.WebEntity;
 import org.json.JSONObject;
 import org.silverpeas.media.Definition;
 import org.silverpeas.media.web.MediaDefinitionEntity;
@@ -42,7 +42,7 @@ import java.net.URI;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public abstract class StreamingProviderDataEntity implements Exposable {
+public abstract class StreamingProviderDataEntity implements WebEntity {
   private static final long serialVersionUID = 4017230238128160967L;
 
   @XmlElement(defaultValue = "")

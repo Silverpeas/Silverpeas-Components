@@ -25,7 +25,7 @@ package com.silverpeas.questionReply.web;
 
 import com.silverpeas.questionReply.model.Question;
 import com.silverpeas.ui.DisplayI18NHelper;
-import com.silverpeas.web.Exposable;
+import com.silverpeas.web.WebEntity;
 import com.stratelia.webactiv.SilverpeasRole;
 import static com.stratelia.webactiv.SilverpeasRole.*;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -44,7 +44,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author emmanuel.hugonnet@silverpeas.org
  */
 @XmlRootElement
-public class QuestionEntity implements Exposable {
+public class QuestionEntity implements WebEntity {
 
   @XmlTransient
   private static final long serialVersionUID = -5078903273496009079L;

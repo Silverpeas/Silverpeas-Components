@@ -26,7 +26,7 @@ package com.silverpeas.gallery.web;
 import com.silverpeas.gallery.constant.MediaResolution;
 import com.silverpeas.gallery.constant.MediaType;
 import com.silverpeas.gallery.model.Media;
-import com.silverpeas.web.Exposable;
+import com.silverpeas.web.WebEntity;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -44,7 +44,7 @@ import java.net.URI;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public abstract class AbstractMediaEntity<T extends AbstractMediaEntity<T>> implements Exposable {
+public abstract class AbstractMediaEntity<T extends AbstractMediaEntity<T>> implements WebEntity {
   private static final long serialVersionUID = -5619051121965308574L;
 
   @XmlElement(required = true, defaultValue = "")
@@ -131,7 +131,7 @@ public abstract class AbstractMediaEntity<T extends AbstractMediaEntity<T>> impl
 
   /*
    * (non-Javadoc)
-   * @see com.silverpeas.web.Exposable#getURI()
+   * @see com.silverpeas.web.WebEntity#getURI()
    */
   @Override
   public URI getURI() {

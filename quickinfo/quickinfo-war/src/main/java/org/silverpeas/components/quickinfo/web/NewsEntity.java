@@ -7,13 +7,13 @@ import java.util.Date;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlElement;
 
+import com.silverpeas.web.WebEntity;
 import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.util.UnitUtil;
 import org.silverpeas.util.time.TimeData;
 import org.silverpeas.util.time.TimeUnit;
 
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
-import com.silverpeas.web.Exposable;
 import org.silverpeas.util.DateUtil;
 
 /*
@@ -39,7 +39,7 @@ import org.silverpeas.util.DateUtil;
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public class NewsEntity implements Exposable {
+public class NewsEntity implements WebEntity {
 
   private static final long serialVersionUID = 1L;
   

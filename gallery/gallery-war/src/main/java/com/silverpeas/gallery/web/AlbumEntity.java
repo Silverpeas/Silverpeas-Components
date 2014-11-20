@@ -24,7 +24,7 @@
 package com.silverpeas.gallery.web;
 
 import com.silverpeas.gallery.model.AlbumDetail;
-import com.silverpeas.web.Exposable;
+import com.silverpeas.web.WebEntity;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -41,7 +41,7 @@ import java.util.Map;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class AlbumEntity implements Exposable {
+public class AlbumEntity implements WebEntity {
   private static final long serialVersionUID = 9156616894162079317L;
 
   @XmlElement(defaultValue = "")
@@ -104,7 +104,7 @@ public class AlbumEntity implements Exposable {
 
   /*
      * (non-Javadoc)
-     * @see com.silverpeas.web.Exposable#getURI()
+     * @see com.silverpeas.web.WebEntity#getURI()
      */
   @Override
   public URI getURI() {

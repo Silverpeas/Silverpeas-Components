@@ -25,7 +25,7 @@ package com.silverpeas.delegatednews.web;
 
 import com.silverpeas.delegatednews.model.DelegatedNews;
 import com.silverpeas.profile.web.UserProfileEntity;
-import com.silverpeas.web.Exposable;
+import com.silverpeas.web.WebEntity;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
@@ -45,7 +45,7 @@ import java.util.Date;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
-public class DelegatedNewsEntity implements Exposable {
+public class DelegatedNewsEntity implements WebEntity {
 
   private static final long serialVersionUID = 8023645204584179638L;
   @XmlElement(defaultValue = "")
