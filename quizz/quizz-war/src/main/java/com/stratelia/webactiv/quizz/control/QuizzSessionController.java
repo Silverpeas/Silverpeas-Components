@@ -49,11 +49,11 @@ import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.clipboard.ClipboardException;
 import org.silverpeas.util.clipboard.ClipboardSelection;
+import org.silverpeas.util.exception.DecodingException;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -132,11 +132,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    * Method declaration
    *
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws RemoteException
-   * @throws SQLException
-   * @see
+   * @throws QuizzException
    */
   public Collection<QuestionContainerHeader> getUserQuizzList() throws QuizzException {
     try {
@@ -155,11 +151,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    * Method declaration
    *
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws RemoteException
-   * @throws SQLException
-   * @see
+   * @throws QuizzException
    */
   public Collection<QuestionContainerHeader> getAdminQuizzList() throws QuizzException {
     try {
@@ -179,11 +171,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    *
    * @param id
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws RemoteException
-   * @throws SQLException
-   * @see
+   * @throws QuizzException
    */
   public QuestionContainerDetail getQuizzDetail(String id)
       throws QuizzException {
@@ -203,8 +191,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    * Method declaration
    *
    * @param quizzDetail
-   * @throws QizzException
-   * @see
+   * @throws QuizzException
    */
   public void createQuizz(QuestionContainerDetail quizzDetail) throws QuizzException {
     QuestionContainerPK qcPK = new QuestionContainerPK(null, getSpaceId(), getComponentId());
@@ -282,10 +269,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    *
    * @param quizzId
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
-   * @see
+   * @throws QuizzException
    */
   public Collection<QuestionResult> getSuggestions(String quizzId) throws QuizzException {
     try {
@@ -301,10 +285,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    * Method declaration
    *
    * @param quizzId
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
-   * @see
+   * @throws QuizzException
    */
   public void closeQuizz(String quizzId) throws QuizzException {
     try {
@@ -322,10 +303,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    *
    * @param quizzId
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
-   * @see
+   * @throws QuizzException
    */
   public int getNbVoters(String quizzId) throws QuizzException {
     try {
@@ -342,10 +320,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    *
    * @param quizzId
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
-   * @see
+   * @throws QuizzException
    */
   public float getAveragePoints(String quizzId) throws QuizzException {
     try {
@@ -361,10 +336,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    * Method declaration
    *
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
-   * @see
+   * @throws QuizzException
    */
   public Collection<QuestionContainerHeader> getAdminResults() throws QuizzException {
     try {
@@ -380,10 +352,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    * Method declaration
    *
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
-   * @see
+   * @throws QuizzException
    */
   public Collection<QuestionContainerHeader> getUserResults() throws QuizzException {
     try {
@@ -400,10 +369,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    *
    * @param quizzId
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
-   * @see
+   * @throws QuizzException
    */
   public Collection<ScoreDetail> getUserScoresByFatherId(String quizzId) throws QuizzException {
     try {
@@ -420,10 +386,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    *
    * @param quizzId
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
-   * @see
+   * @throws QuizzException
    */
   public Collection<ScoreDetail> getUserPalmares(String quizzId) throws QuizzException {
     try {
@@ -440,10 +403,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    *
    * @param quizzId
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
-   * @see
+   * @throws QuizzException
    */
   public Collection<ScoreDetail> getAdminPalmares(String quizzId) throws QuizzException {
     Collection<ScoreDetail> scores = null;
@@ -461,13 +421,10 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    * Method declaration
    *
    * @param quizzId
-   * @param getUserId ()
+   * @param userId
    * @param participationId
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
-   * @see
+   * @throws QuizzException
    */
   public QuestionContainerDetail getQuestionContainerByParticipationId(String quizzId,
       String userId, int participationId) throws QuizzException {
@@ -489,10 +446,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    * @param quizzId
    * @param participationId
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
-   * @see
+   * @throws QuizzException
    */
   public QuestionContainerDetail getQuestionContainerForCurrentUserByParticipationId(
       String quizzId, int participationId) throws QuizzException {
@@ -514,12 +468,9 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    * Method declaration
    *
    * @param quizzId
-   * @param getUserId ()
+   * @param userId
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
-   * @see
+   * @throws QuizzException
    */
   public int getUserNbParticipationsByFatherId(String quizzId, String userId) throws QuizzException {
     QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(), getComponentId());
@@ -537,13 +488,10 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    * Method declaration
    *
    * @param quizzId
-   * @param getUserId ()
+   * @param userId
    * @param participationId
+   * @throws QuizzException
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
-   * @see
    */
   public ScoreDetail getUserScoreByFatherIdAndParticipationId(String quizzId, String userId,
       int participationId) throws QuizzException {
@@ -565,11 +513,8 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    *
    * @param quizzId
    * @param participationId
+   * @throws QuizzException
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
-   * @see
    */
   public ScoreDetail getCurrentUserScoreByFatherIdAndParticipationId(String quizzId,
       int participationId) throws QuizzException {
@@ -591,11 +536,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    * Method declaration
    *
    * @param scoreDetail
-   * @throws CreateException
-   * @throws NamingException
-   * @throws RemoteException
-   * @throws SQLException
-   * @see
+   * @throws QuizzException
    */
   public void updateScore(ScoreDetail scoreDetail) throws QuizzException {
     QuestionContainerPK qcPK = new QuestionContainerPK("", getSpaceId(), getComponentId());
@@ -612,10 +553,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    *
    * @param quizzHeader
    * @param quizzId
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
-   * @see
+   * @throws QuizzException
    */
   public void updateQuizzHeader(QuestionContainerHeader quizzHeader, String quizzId)
       throws QuizzException {
@@ -634,10 +572,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    *
    * @param questions
    * @param quizzId
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
-   * @see
+   * @throws QuizzException
    */
   public void updateQuestions(Collection<Question> questions, String quizzId)
       throws QuizzException {
@@ -847,7 +782,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
       PdcClassificationEntity surveyClassification = null;
       try {
         surveyClassification = PdcClassificationEntity.fromJSON(positions);
-      } catch (JAXBException e) {
+      } catch (DecodingException e) {
         SilverTrace.error("Survey", "SurveySessionController.sendNewSurveyAction",
             "PdcClassificationEntity error", "Problem to read JSON", e);
       }

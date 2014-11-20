@@ -232,7 +232,7 @@ public class KmeliaPublication implements SilverpeasContent {
   public List<ClassifyPosition> getPDCPositions() {
     int silverObjectId = getKmeliaService().getSilverObjectId(pk);
     try {
-      return PdcManager.getInstance().getPositions(silverObjectId, pk.getInstanceId());
+      return PdcManager.get().getPositions(silverObjectId, pk.getInstanceId());
     } catch (PdcException e) {
       throw new KmeliaRuntimeException("kmelia", e.getErrorLevel(), e.getMessage(),
           e.getExtraInfos(), e);

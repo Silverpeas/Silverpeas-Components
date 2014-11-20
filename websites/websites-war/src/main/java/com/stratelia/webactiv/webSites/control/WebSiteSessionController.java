@@ -44,6 +44,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.exception.DecodingException;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.fileFolder.FileFolderManager;
@@ -487,7 +488,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
       PdcClassificationEntity pdcClassif = null;
       try {
         pdcClassif = PdcClassificationEntity.fromJSON(positions);
-      } catch (JAXBException e) {
+      } catch (DecodingException e) {
         SilverTrace.error("quickInfo", "QuickInfoSessionController.classifyQuickInfo",
             "PdcClassificationEntity error", "Problem to read JSON", e);
       }

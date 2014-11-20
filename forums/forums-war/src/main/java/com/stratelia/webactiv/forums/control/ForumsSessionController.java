@@ -31,6 +31,7 @@ import com.silverpeas.subscribe.service.ComponentSubscription;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.exception.DecodingException;
 import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
@@ -959,7 +960,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
       PdcClassificationEntity surveyClassification = null;
       try {
         surveyClassification = PdcClassificationEntity.fromJSON(positions);
-      } catch (JAXBException e) {
+      } catch (DecodingException e) {
         SilverTrace.error("Forum", "ForumActionHelper.actionManagement",
             "PdcClassificationEntity error", "Problem to read JSON", e);
       }

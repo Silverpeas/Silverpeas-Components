@@ -56,6 +56,7 @@ import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.JNDINames;
 import com.stratelia.webactiv.publication.control.PublicationBm;
 import com.stratelia.webactiv.statistic.control.StatisticService;
+import org.silverpeas.util.exception.DecodingException;
 
 /**
  * @author squere
@@ -141,11 +142,7 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
   /**
    * Create a new quick info (PublicationDetail)
    *
-   * @param name the quick info name
-   * @param description the quick info description
-   * @param begin the start visibility date time
-   * @param end the end visibility date time
-   * @param positions the JSON positions
+   * @param id the identifier of the quick info to publish
    */
   public void publish(String id) {
     getService().publish(id, getUserId());
@@ -252,7 +249,7 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
       PdcClassificationEntity qiClassification = null;
       try {
         qiClassification = PdcClassificationEntity.fromJSON(positions);
-      } catch (JAXBException e) {
+      } catch (DecodingException e) {
         SilverTrace.error("quickInfo", "QuickInfoSessionController.classifyQuickInfo",
             "PdcClassificationEntity error", "Problem to read JSON", e);
       }

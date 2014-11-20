@@ -78,6 +78,7 @@ import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileServerUtils;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.util.exception.DecodingException;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.exception.UtilException;
@@ -1019,7 +1020,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       PdcClassificationEntity qiClassification = null;
       try {
         qiClassification = PdcClassificationEntity.fromJSON(positions);
-      } catch (JAXBException e) {
+      } catch (DecodingException e) {
         SilverTrace.error("questionReply", "QuestionReplySessionController.classifyQuestionReply",
             "PdcClassificationEntity error", "Problem to read JSON", e);
       }

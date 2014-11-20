@@ -54,6 +54,7 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+import org.silverpeas.util.exception.DecodingException;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import com.silverpeas.pdc.PdcServiceProvider;
@@ -240,7 +241,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       PdcClassificationEntity ilClassification = null;
       try {
         ilClassification = PdcClassificationEntity.fromJSON(positions);
-      } catch (JAXBException e) {
+      } catch (DecodingException e) {
         SilverTrace.error("Forum", "ForumActionHelper.actionManagement",
             "PdcClassificationEntity error", "Problem to read JSON", e);
       }

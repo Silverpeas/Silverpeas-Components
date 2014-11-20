@@ -33,6 +33,7 @@ import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.clipboard.ClipboardException;
 import org.silverpeas.util.clipboard.ClipboardSelection;
+import org.silverpeas.util.exception.DecodingException;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import org.silverpeas.util.template.SilverpeasTemplateFactory;
@@ -1231,7 +1232,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
       PdcClassificationEntity surveyClassification = null;
       try {
         surveyClassification = PdcClassificationEntity.fromJSON(positions);
-      } catch (JAXBException e) {
+      } catch (DecodingException e) {
         SilverTrace.error("Survey", "SurveySessionController.sendNewSurveyPositionsFromJSON",
             "root.EX_IGNORED", "Problem to read JSON, positions=" + positions, e);
       }
