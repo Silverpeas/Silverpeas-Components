@@ -21,15 +21,24 @@
 package com.silverpeas.external.mailinglist.servlets;
 
 import com.silverpeas.mailinglist.service.ServicesFactory;
+import com.silverpeas.mailinglist.service.model.MailingListService;
+import com.silverpeas.mailinglist.service.model.MessageService;
 import com.silverpeas.mailinglist.service.model.beans.MailingList;
 import com.silverpeas.mailinglist.service.model.beans.Message;
 import com.silverpeas.mailinglist.service.util.OrderBy;
 import com.silverpeas.peasUtil.RssServlet;
+
+import javax.inject.Inject;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Date;
 
 public class RssMailingListServlet extends RssServlet<Message> {
+
+  @Inject
+  private MailingListService mailingListService;
+  @Inject
+  private MessageService messageService;
 
   @Override
   public String getElementCreatorId(Message element) {
@@ -63,9 +72,8 @@ public class RssMailingListServlet extends RssServlet<Message> {
 
   @Override
   public Collection getListElements(String instanceId, int nbReturned) throws RemoteException {
-    ServicesFactory servicesFactory = ServicesFactory.getFactory();
-    MailingList mailingList = servicesFactory.getMailingListService().findMailingList(instanceId);
-    return servicesFactory.getMessageService().listDisplayableMessages(mailingList, nbReturned,
+    MailingList mailingList = mailingListService.findMailingList(instanceId);
+    return messageService.listDisplayableMessages(mailingList, nbReturned,
         new OrderBy("sentDate", true));
   }
 }

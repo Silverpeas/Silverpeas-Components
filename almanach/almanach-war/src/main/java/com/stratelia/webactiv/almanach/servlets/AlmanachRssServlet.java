@@ -20,6 +20,13 @@
  */
 package com.stratelia.webactiv.almanach.servlets;
 
+import com.silverpeas.peasUtil.RssServlet;
+import com.stratelia.webactiv.almanach.control.ejb.AlmanachBm;
+import com.stratelia.webactiv.almanach.model.EventDetail;
+import com.stratelia.webactiv.almanach.model.EventPK;
+import org.silverpeas.util.DateUtil;
+
+import javax.inject.Inject;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -28,20 +35,12 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 
-import com.silverpeas.peasUtil.RssServlet;
-
-import com.stratelia.webactiv.almanach.control.ejb.AlmanachBm;
-import com.stratelia.webactiv.almanach.control.ejb.AlmanachRuntimeException;
-import com.stratelia.webactiv.almanach.model.EventDetail;
-import com.stratelia.webactiv.almanach.model.EventPK;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
-
 public class AlmanachRssServlet extends RssServlet<EventDetail> {
 
   private static final long serialVersionUID = -2142983612465351228L;
+
+  @Inject
+  private AlmanachBm almanachBm;
 
   /*
    * (non-Javadoc)
@@ -148,11 +147,6 @@ public class AlmanachRssServlet extends RssServlet<EventDetail> {
   }
 
   private AlmanachBm getAlmanachBm() {
-    try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.ALMANACHBM_EJBHOME, AlmanachBm.class);
-    } catch (Exception e) {
-      throw new AlmanachRuntimeException("AlmanachRssServlet.getAlmanachBm()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
+    return almanachBm;
   }
 }

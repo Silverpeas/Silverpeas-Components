@@ -38,9 +38,14 @@ import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
+import javax.inject.Inject;
+
 public class ForumsRssServlet extends RssServlet {
 
   private static final long serialVersionUID = -1153108746674900992L;
+
+  @Inject
+  private ForumsBM forumsBM;
 
   /*
    * (non-Javadoc)
@@ -123,13 +128,6 @@ public class ForumsRssServlet extends RssServlet {
   }
 
   private ForumsBM getForumsBM() {
-    ForumsBM forumsBM = null;
-    try {
-      forumsBM = EJBUtilitaire.getEJBObjectRef(JNDINames.FORUMSBM_EJBHOME, ForumsBM.class);
-    } catch (Exception e) {
-      throw new ForumsRuntimeException("RssServlet.getForumsBM()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
     return forumsBM;
   }
 }
